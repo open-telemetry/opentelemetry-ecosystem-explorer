@@ -1,0 +1,16 @@
+{
+  "name": "opentelemetry-ecosystem-explorer",
+  "version": "0.0.0",
+  "private": true,
+  "description": "OpenTelemetry Ecosystem Explorer - discover and explore OpenTelemetry ecosystem projects",
+  "scripts": {
+    "lint:md": "markdownlint-cli2 \"**/*.md\" \"!node_modules\" \"!CLAUDE.md\"",
+    "lint:md:fix": "markdownlint-cli2 --fix \"**/*.md\" \"!node_modules\" \"!CLAUDE.md\""
+  },
+  "devDependencies": {
+    "markdownlint-cli2": "^0.16.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
