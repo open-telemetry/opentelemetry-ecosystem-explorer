@@ -1,7 +1,7 @@
 [project]
 name = "opentelemetry-ecosystem-explorer"
 version = "0.1.0"
-description = "Multi-component project for exploring the OpenTelemetry ecosystem"
+description = "Project for exploring the OpenTelemetry ecosystem"
 requires-python = ">=3.11"
 readme = "README.md"
 license = { text = "Apache-2.0" }

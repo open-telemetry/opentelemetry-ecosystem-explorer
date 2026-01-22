@@ -1,7 +1,5 @@
 # OpenTelemetry Ecosystem Explorer
 
-<!-- COVERAGE-BADGE --> ![Coverage](https://img.shields.io/badge/coverage-92%25-brightgreen)
-
 This repository contains the components related to the OpenTelemetry Ecosystem Explorer, a web application that helps
 users discover and explore the various projects available in the OpenTelemetry ecosystem.
 
