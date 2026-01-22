@@ -1,2 +1,7 @@
 .idea/
 node_modules/
+
+*coverage.json
+.coverage
+
+*.pyc

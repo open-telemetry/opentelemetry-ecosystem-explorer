@@ -1,0 +1,33 @@
+# Pre-commit hooks for OpenTelemetry Ecosystem Explorer
+# See https://pre-commit.com for more information
+
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.1
+    hooks:
+      # Run the linter
+      - id: ruff
+        args: [--fix]
+      # Run the formatter
+      - id: ruff-format
+
+  - repo: local
+    hooks:
+      # Run tests for collector-watcher
+      - id: pytest-collector-watcher
+        name: pytest (collector-watcher)
+        entry: bash -c 'cd ecosystem-automation/collector-watcher && pytest tests/ -v'
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [commit]
+
+      # Generate coverage report and badge (optional - can be slow)
+      - id: coverage-check
+        name: coverage check (collector-watcher)
+        entry: bash -c 'cd ecosystem-automation/collector-watcher && pytest tests/ --cov=collector_watcher --cov-report=term-missing --cov-fail-under=80'
+        language: system
+        pass_filenames: false
+        # Only run if test files or source files changed
+        files: ^ecosystem-automation/collector-watcher/(tests/|src/collector_watcher/).*\.py$
+        stages: [commit]
