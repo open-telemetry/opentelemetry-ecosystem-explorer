@@ -21,6 +21,13 @@ def temp_git_repo(tmp_path):
     repo.index.add(["test.txt"])
     repo.index.commit("Initial commit")
 
+    # Explicitly create and checkout main branch to ensure it exists
+    try:
+        repo.git.checkout("-b", "main")
+    except git.exc.GitCommandError:
+        # If main already exists (depends on git config), just checkout
+        repo.git.checkout("main")
+
     repo.create_tag("v0.110.0")
 
     test_file.write_text("update 1")
@@ -57,6 +64,13 @@ def empty_git_repo(tmp_path):
     test_file.write_text("initial")
     repo.index.add(["test.txt"])
     repo.index.commit("Initial commit")
+
+    # Explicitly create and checkout main branch to ensure it exists
+    try:
+        repo.git.checkout("-b", "main")
+    except git.exc.GitCommandError:
+        # If main already exists (depends on git config), just checkout
+        repo.git.checkout("main")
 
     return repo_path
 
