@@ -9,6 +9,9 @@ dependencies = [
     "PyGithub>=2.1.1",
 ]
 
+[project.scripts]
+collector-watcher = "collector_watcher.main:main"
+
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0.0",

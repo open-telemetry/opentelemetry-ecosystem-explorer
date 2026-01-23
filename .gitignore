@@ -5,3 +5,6 @@ node_modules/
 .coverage
 
 *.pyc
+
+# Collector Watcher temporary repositories
+tmp_repos/
