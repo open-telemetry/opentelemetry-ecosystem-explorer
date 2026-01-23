@@ -4,8 +4,8 @@
   "private": true,
   "description": "OpenTelemetry Ecosystem Explorer - discover and explore OpenTelemetry ecosystem projects",
   "scripts": {
-    "lint:md": "markdownlint-cli2 \"**/*.md\" \"!node_modules\" \"!CLAUDE.md\"",
-    "lint:md:fix": "markdownlint-cli2 --fix \"**/*.md\" \"!node_modules\" \"!CLAUDE.md\""
+    "lint:md": "markdownlint-cli2",
+    "lint:md:fix": "markdownlint-cli2 --fix"
   },
   "devDependencies": {
     "markdownlint-cli2": "0.16.0"

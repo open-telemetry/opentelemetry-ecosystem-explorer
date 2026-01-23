@@ -8,6 +8,7 @@ On a nightly basis, the tool scans the OpenTelemetry Collector core and contrib 
 component metadata.
 
 Process:
+
 * Clone or update local copies of the `core` and `contrib` collector repositories.
 * Scan for components and parse their `metadata.yaml` files.
 * Create or update versioned snapshots of component metadata in YAML format.
@@ -23,8 +24,8 @@ It maintains a versioned `inventory` of component snapshots in YAML format in th
 
 You can specify custom repository locations using environment variables:
 
-- `OTEL_COLLECTOR_CORE_PATH` - Path to local opentelemetry-collector-core repository
-- `OTEL_COLLECTOR_CONTRIB_PATH` - Path to local opentelemetry-collector-contrib repository
+* `OTEL_COLLECTOR_CORE_PATH` - Path to local opentelemetry-collector-core repository
+* `OTEL_COLLECTOR_CONTRIB_PATH` - Path to local opentelemetry-collector-contrib repository
 
 If not set, repositories will be automatically cloned to `tmp_repos/`.
 

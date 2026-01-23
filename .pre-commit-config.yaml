@@ -8,6 +8,12 @@ repos:
         args: [--fix]
       - id: ruff-format
 
+  - repo: https://github.com/DavidAnson/markdownlint-cli2
+    rev: v0.16.0
+    hooks:
+      - id: markdownlint-cli2
+        args: ["--fix"]
+
   - repo: local
     hooks:
       - id: pytest-collector-watcher
@@ -16,4 +22,4 @@ repos:
         language: system
         pass_filenames: false
         always_run: true
-        stages: [commit]
+        stages: [pre-commit]
