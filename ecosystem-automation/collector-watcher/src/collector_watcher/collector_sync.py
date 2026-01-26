@@ -1,11 +1,14 @@
 """Collector metadata synchronization to registry."""
 
+import logging
 from typing import Any
 
 from .component_scanner import ComponentScanner
 from .inventory_manager import InventoryManager
 from .type_defs import DistributionName
 from .version_detector import Version, VersionDetector
+
+logger = logging.getLogger(__name__)
 
 DistributionConfig = dict[DistributionName, str]
 
@@ -76,18 +79,18 @@ class CollectorSync:
         detector = self.version_detectors[distribution]
 
         if checkout and not version.is_snapshot:
-            print(f"  Checking out {distribution} {version}...")
+            logger.info("  Checking out %s %s...", distribution, version)
             detector.checkout_version(version)
         elif checkout and version.is_snapshot:
-            print(f"  Checking out {distribution} main branch...")
+            logger.info("  Checking out %s main branch...", distribution)
             detector.checkout_main()
 
-        print(f"  Scanning {distribution} {version}...")
+        logger.info("  Scanning %s %s...", distribution, version)
         scanner = ComponentScanner(repo_path)
         components = scanner.scan_all_components()
 
         total = sum(len(comps) for comps in components.values())
-        print(f"    Found {total} components")
+        logger.info("    Found %d components", total)
 
         return components
 
@@ -112,7 +115,7 @@ class CollectorSync:
             components=components,
             repository=repository,
         )
-        print(f"  Saved {distribution} {version}")
+        logger.info("  Saved %s %s", distribution, version)
 
     def process_latest_release(self, distribution: DistributionName) -> Version | None:
         """
@@ -128,14 +131,15 @@ class CollectorSync:
 
         latest = detector.get_latest_release_tag()
         if latest is None:
-            print(f"No releases found for {distribution}")
+            logger.info("No releases found for %s", distribution)
             return None
 
         if self.inventory_manager.version_exists(distribution, latest):
-            print(f"Version {distribution} {latest} already tracked")
+            logger.info("Version %s %s already tracked", distribution, latest)
             return None
 
-        print(f"\nProcessing new release: {distribution} {latest}")
+        logger.info("")
+        logger.info("Processing new release: %s %s", distribution, latest)
 
         components = self.scan_version(distribution, latest, checkout=True)
         self.save_version(distribution, latest, components)
@@ -160,13 +164,15 @@ class CollectorSync:
         """
         detector = self.version_detectors[distribution]
 
-        print(f"\nCleaning up old {distribution} snapshots...")
+        logger.info("")
+        logger.info("Cleaning up old %s snapshots...", distribution)
         removed = self.inventory_manager.cleanup_snapshots(distribution)
         if removed > 0:
-            print(f"  Removed {removed} old snapshot(s)")
+            logger.info("  Removed %d old snapshot(s)", removed)
 
         snapshot_version = detector.determine_next_snapshot_version()
-        print(f"\nUpdating {distribution} {snapshot_version}...")
+        logger.info("")
+        logger.info("Updating %s %s...", distribution, snapshot_version)
 
         components = self.scan_version(distribution, snapshot_version, checkout=True)
         self.save_version(distribution, snapshot_version, components)
@@ -190,14 +196,15 @@ class CollectorSync:
             "snapshots_updated": [],
         }
 
-        print("=" * 60)
-        print("COLLECTOR METADATA SYNC")
-        print("=" * 60)
+        logger.info("=" * 60)
+        logger.info("COLLECTOR METADATA SYNC")
+        logger.info("=" * 60)
 
         for distribution in self.repos.keys():
-            print(f"\n{'=' * 60}")
-            print(f"Distribution: {distribution.upper()}")
-            print(f"{'=' * 60}")
+            logger.info("")
+            logger.info("=" * 60)
+            logger.info("Distribution: %s", distribution.upper())
+            logger.info("=" * 60)
 
             latest = self.process_latest_release(distribution)
             if latest:
@@ -206,14 +213,15 @@ class CollectorSync:
             snapshot = self.update_snapshot(distribution)
             summary["snapshots_updated"].append({"distribution": distribution, "version": str(snapshot)})
 
-        print(f"\n{'=' * 60}")
-        print("SYNC COMPLETE")
-        print(f"{'=' * 60}")
-        print(f"New releases processed: {len(summary['new_releases'])}")
+        logger.info("")
+        logger.info("=" * 60)
+        logger.info("SYNC COMPLETE")
+        logger.info("=" * 60)
+        logger.info("New releases processed: %d", len(summary["new_releases"]))
         for item in summary["new_releases"]:
-            print(f"  - {item['distribution']}: {item['version']}")
-        print(f"Snapshots updated: {len(summary['snapshots_updated'])}")
+            logger.info("  - %s: %s", item["distribution"], item["version"])
+        logger.info("Snapshots updated: %d", len(summary["snapshots_updated"]))
         for item in summary["snapshots_updated"]:
-            print(f"  - {item['distribution']}: {item['version']}")
+            logger.info("  - %s: %s", item["distribution"], item["version"])
 
         return summary
