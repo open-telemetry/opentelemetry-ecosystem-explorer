@@ -3,7 +3,7 @@
 This repository contains the components related to the OpenTelemetry Ecosystem Explorer, a web application that helps
 users discover and explore the various projects available in the OpenTelemetry ecosystem.
 
-See project proposal [here](https://github.com/open-telemetry/community/blob/main/projects/ecosystem-explorer.md).
+See [project proposal](https://github.com/open-telemetry/community/blob/main/projects/ecosystem-explorer.md).
 
 ## Project Structure
 
