@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 import yaml
 from collector_watcher.inventory_manager import InventoryManager
-from collector_watcher.version_detector import Version
+from collector_watcher.version import Version
 
 
 @pytest.fixture
