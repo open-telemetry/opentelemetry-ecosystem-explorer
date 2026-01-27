@@ -6,7 +6,8 @@ from typing import Any
 from .component_scanner import ComponentScanner
 from .inventory_manager import InventoryManager
 from .type_defs import DistributionName
-from .version_detector import Version, VersionDetector
+from .version import Version
+from .version_detector import VersionDetector
 
 logger = logging.getLogger(__name__)
 

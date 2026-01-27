@@ -6,14 +6,12 @@ from typing import Any
 
 import yaml
 
-from .type_defs import DistributionName
-from .version_detector import Version
+from .type_defs import COMPONENT_TYPES, DistributionName
+from .version import Version
 
 
 class InventoryManager:
     """Manages component inventory storage and retrieval."""
-
-    COMPONENT_TYPES = ["connector", "exporter", "extension", "processor", "receiver"]
 
     def __init__(self, inventory_dir: str = "ecosystem-registry/collector"):
         """
@@ -54,7 +52,7 @@ class InventoryManager:
         version_dir = self.get_version_dir(distribution, version)
         version_dir.mkdir(parents=True, exist_ok=True)
 
-        for component_type in self.COMPONENT_TYPES:
+        for component_type in COMPONENT_TYPES:
             component_list = components.get(component_type, [])
             file_path = version_dir / f"{component_type}.yaml"
 
@@ -88,7 +86,7 @@ class InventoryManager:
         components = {}
         repository = ""
 
-        for component_type in self.COMPONENT_TYPES:
+        for component_type in COMPONENT_TYPES:
             file_path = version_dir / f"{component_type}.yaml"
 
             if file_path.exists():

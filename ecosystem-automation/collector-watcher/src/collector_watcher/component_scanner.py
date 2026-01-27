@@ -8,12 +8,11 @@ from pathlib import Path
 from typing import Any
 
 from .metadata_parser import MetadataParser
+from .type_defs import COMPONENT_TYPES
 
 
 class ComponentScanner:
     """Scans collector repositories for components."""
-
-    COMPONENT_TYPES = ["connector", "exporter", "extension", "processor", "receiver"]
 
     # These directories are handled separately as nested component directories
     # or are utility packages that aren't actual components
@@ -44,7 +43,7 @@ class ComponentScanner:
             Dictionary mapping component types to lists of component info
         """
         components = {}
-        for component_type in self.COMPONENT_TYPES:
+        for component_type in COMPONENT_TYPES:
             components[component_type] = self.scan_component_type(component_type)
         return components
 

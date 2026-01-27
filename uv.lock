@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 2
 requires-python = ">=3.11"
 
 [manifest]
@@ -440,6 +440,9 @@ wheels = [
 name = "opentelemetry-ecosystem-explorer"
 version = "0.1.0"
 source = { virtual = "." }
+dependencies = [
+    { name = "collector-watcher" },
+]
 
 [package.dev-dependencies]
 dev = [
@@ -450,6 +453,7 @@ dev = [
 ]
 
 [package.metadata]
+requires-dist = [{ name = "collector-watcher", editable = "ecosystem-automation/collector-watcher" }]
 
 [package.metadata.requires-dev]
 dev = [

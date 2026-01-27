@@ -40,6 +40,20 @@ populate and update the registry
 This will be the website for exploring the data. See [instrumentation-explorer](https://github.com/jaydeluca/instrumentation-explorer)
 for a POC/reference.
 
+## Getting Started
+
+Install dependencies and sync the workspace:
+
+```bash
+uv sync
+```
+
+Run the collector-watcher from the root directory:
+
+```bash
+uv run collector-watcher
+```
+
 ## Contributing
 
 This project welcomes contributions from the community.
