@@ -1,5 +1,6 @@
 """Main entry point for collector watcher."""
 
+import argparse
 import logging
 import sys
 
@@ -22,15 +23,19 @@ def main():
     """Synchronize collector component metadata to the registry."""
     configure_logging()
 
-    inventory_dir = "ecosystem-registry/collector"
-
-    # Parse optional inventory directory argument
-    for arg in sys.argv[1:]:
-        if arg.startswith("--inventory-dir="):
-            inventory_dir = arg.split("=", 1)[1]
+    parser = argparse.ArgumentParser(
+        description="Synchronize collector component metadata to the registry",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument(
+        "--inventory-dir",
+        default="ecosystem-registry/collector",
+        help="Directory path for the inventory",
+    )
+    args = parser.parse_args()
 
     logger.info("Collector Watcher")
-    logger.info("Inventory directory: %s", inventory_dir)
+    logger.info("Inventory directory: %s", args.inventory_dir)
     logger.info("")
 
     try:
@@ -48,7 +53,7 @@ def main():
         }
 
         # Create inventory manager and collector sync
-        inventory_manager = InventoryManager(inventory_dir)
+        inventory_manager = InventoryManager(args.inventory_dir)
         collector_sync = CollectorSync(
             repos=dist_config,
             inventory_manager=inventory_manager,
