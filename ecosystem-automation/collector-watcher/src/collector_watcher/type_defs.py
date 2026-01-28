@@ -6,3 +6,5 @@ This module contains common type aliases used across the codebase.
 from typing import Literal
 
 DistributionName = Literal["core", "contrib"]
+
+COMPONENT_TYPES = ["connector", "exporter", "extension", "processor", "receiver"]
