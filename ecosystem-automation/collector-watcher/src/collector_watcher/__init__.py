@@ -1,6 +1,8 @@
 """Collector Watcher - OpenTelemetry Collector component metadata automation."""
 
+from .collector_sync import CollectorSync
 from .component_scanner import ComponentScanner
+from .inventory_manager import InventoryManager
 from .metadata_parser import MetadataParser
 from .repository_manager import RepositoryManager
 from .type_defs import DistributionName
@@ -10,7 +12,9 @@ from .version_detector import VersionDetector
 __version__ = "0.1.0"
 
 __all__ = [
+    "CollectorSync",
     "ComponentScanner",
+    "InventoryManager",
     "MetadataParser",
     "RepositoryManager",
     "DistributionName",

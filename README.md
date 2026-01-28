@@ -42,6 +42,20 @@ for a POC/reference.
 
 See the [ecosystem-explorer README](./ecosystem-explorer/README.md) for setup and development instructions.
 
+## Getting Started
+
+Install dependencies and sync the workspace:
+
+```bash
+uv sync
+```
+
+Run the collector-watcher from the root directory:
+
+```bash
+uv run collector-watcher
+```
+
 ## Contributing
 
 This project welcomes contributions from the community.

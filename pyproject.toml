@@ -5,11 +5,17 @@ description = "Project for exploring the OpenTelemetry ecosystem"
 requires-python = ">=3.11"
 readme = "README.md"
 license = { text = "Apache-2.0" }
+dependencies = [
+    "collector-watcher",
+]
 
 [tool.uv.workspace]
 members = [
     "ecosystem-automation/*",
 ]
+
+[tool.uv.sources]
+collector-watcher = { workspace = true }
 
 [dependency-groups]
 dev = [
