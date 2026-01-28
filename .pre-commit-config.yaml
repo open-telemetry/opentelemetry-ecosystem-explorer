@@ -23,3 +23,19 @@ repos:
         pass_filenames: false
         always_run: true
         stages: [pre-commit]
+
+      - id: eslint-ecosystem-explorer
+        name: eslint (ecosystem-explorer)
+        entry: bash -c 'cd ecosystem-explorer && npm run lint'
+        language: system
+        pass_filenames: false
+        files: ^ecosystem-explorer/
+        stages: [pre-commit]
+
+      - id: test-ecosystem-explorer
+        name: test (ecosystem-explorer)
+        entry: bash -c 'cd ecosystem-explorer && npm test'
+        language: system
+        pass_filenames: false
+        files: ^ecosystem-explorer/
+        stages: [pre-commit]

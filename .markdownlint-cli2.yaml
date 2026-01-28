@@ -1,9 +1,9 @@
 globs:
   - "**/*.md"
 ignores:
-  - node_modules
   - CLAUDE.md
   - "**/tmp_repos/**"
+  - "**/node_modules/**"
 
 config:
   default: true

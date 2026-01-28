@@ -11,7 +11,7 @@ There are three components in this repository:
 
 ### ecosystem-registry
 
-This will act as our data pipeline and raw data registry of the metadata from various projects. See the
+This will act as our raw data registry of the metadata from various projects. See the
 `collector-metadata` directory in the [collector-watcher](https://github.com/jaydeluca/collector-watcher/tree/main/collector-metadata)
 as a POC/reference.
 
@@ -37,8 +37,10 @@ populate and update the registry
 
 ### ecosystem-explorer
 
-This will be the website for exploring the data. See [instrumentation-explorer](https://github.com/jaydeluca/instrumentation-explorer)
+React/Vite web application for exploring the data. See [instrumentation-explorer](https://github.com/jaydeluca/instrumentation-explorer)
 for a POC/reference.
+
+See the [ecosystem-explorer README](./ecosystem-explorer/README.md) for setup and development instructions.
 
 ## Contributing
 

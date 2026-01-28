@@ -5,15 +5,17 @@ on:
     branches: [main]
     paths:
       - 'ecosystem-automation/collector-watcher/**'
+      - 'ecosystem-explorer/**'
       - 'build-and-test.yml'
   pull_request:
     branches: [main]
     paths:
       - 'ecosystem-automation/collector-watcher/**'
+      - 'ecosystem-explorer/**'
       - 'build-and-test.yml'
 
 jobs:
-  test:
+  test-collector-watcher:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
@@ -33,3 +35,30 @@ jobs:
         run: |
           cd ecosystem-automation/collector-watcher
           uv run pytest tests/ --cov=collector_watcher --cov-report=term-missing --cov-report=json
+
+  test-ecosystem-explorer:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ecosystem-explorer
+    steps:
+      - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
+
+      - name: Setup Node.js
+        uses: actions/setup-node@6213dc7c4f2b50c102e66f5dc0b9c1c1e1535665 # v6.2.0
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: ecosystem-explorer/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint
+        run: npm run lint
+
+      - name: Run tests
+        run: npm test
+
+      - name: Run build
+        run: npm run build
