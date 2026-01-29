@@ -8,7 +8,6 @@ on:
 
 permissions:
   contents: write
-  issues: write
   pull-requests: write
 
 jobs:
@@ -18,7 +17,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
         with:
-          token: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Detect repository type (if on a fork we use different git config)
         id: repo_check
@@ -33,6 +32,13 @@ jobs:
         if: steps.repo_check.outputs.is_primary == 'true'
         run: |
           .github/scripts/use-cla-approved-bot.sh
+
+      - uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        if: steps.repo_check.outputs.is_primary == 'true'
+        id: otelbot-token
+        with:
+          app-id: ${{ vars.OTELBOT_APP_ID }}
+          private-key: ${{ secrets.OTELBOT_PRIVATE_KEY }}
 
       - name: Configure git (fork)
         if: steps.repo_check.outputs.is_primary == 'false'
@@ -76,9 +82,10 @@ jobs:
       - name: Commit and push changes
         if: steps.check_changes.outputs.has_changes == 'true'
         env:
-          GH_TOKEN: ${{ secrets.PAT_TOKEN || secrets.GITHUB_TOKEN }}
+          # not using secrets.GITHUB_TOKEN since pull requests from that token do not run workflows
+          GH_TOKEN: ${{ steps.repo_check.outputs.is_primary == 'true' && steps.otelbot-token.outputs.token || secrets.GITHUB_TOKEN }}
         run: |
-          BRANCH="automated-inventory-update"
+          BRANCH="otelbot/automated-inventory-update"
 
           git add ecosystem-registry/
 
