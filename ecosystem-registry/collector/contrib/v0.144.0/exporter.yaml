@@ -1,0 +1,870 @@
+distribution: contrib
+version: v0.144.0
+repository: opentelemetry-collector-contrib
+component_type: exporter
+components:
+- name: alertmanagerexporter
+  metadata:
+    type: alertmanager
+    status:
+      class: exporter
+      stability:
+        development:
+        - traces
+      distributions: []
+      codeowners:
+        active:
+        - sokoide
+        - mcube8
+- name: alibabacloudlogserviceexporter
+  metadata:
+    type: alibabacloud_logservice
+    status:
+      class: exporter
+      stability:
+        beta:
+        - logs
+        - metrics
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - shabicheng
+        - kongluoxing
+        - qiansheng91
+- name: awscloudwatchlogsexporter
+  metadata:
+    type: awscloudwatchlogs
+    status:
+      class: exporter
+      stability:
+        alpha:
+        - logs
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - yaten2302
+        emeritus:
+        - bryan-aguilar
+        - boostchicken
+        - rapphil
+        seeking_new: true
+- name: awsemfexporter
+  metadata:
+    type: awsemf
+    status:
+      class: exporter
+      stability:
+        beta:
+        - metrics
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - Aneurysm9
+        - mxiamxia
+        emeritus:
+        - shaochengwang
+        - bryan-aguilar
+- name: awskinesisexporter
+  metadata:
+    type: awskinesis
+    status:
+      class: exporter
+      stability:
+        beta:
+        - logs
+        - metrics
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - Aneurysm9
+        - MovieStoreGuy
+- name: awss3exporter
+  metadata:
+    type: awss3
+    status:
+      class: exporter
+      stability:
+        alpha:
+        - logs
+        - metrics
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - atoulme
+        - pdelewski
+        - Erog38
+- name: awsxrayexporter
+  metadata:
+    type: awsxray
+    status:
+      class: exporter
+      stability:
+        beta:
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - wangzlei
+        - srprash
+- name: azureblobexporter
+  metadata:
+    type: azureblob
+    status:
+      class: exporter
+      stability:
+        alpha:
+        - logs
+        - metrics
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - hgaol
+        - MovieStoreGuy
+- name: azuredataexplorerexporter
+  metadata:
+    type: azuredataexplorer
+    status:
+      class: exporter
+      stability:
+        beta:
+        - logs
+        - metrics
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - ag-ramachandran
+        emeritus:
+        - asaharn
+- name: azuremonitorexporter
+  metadata:
+    type: azuremonitor
+    status:
+      class: exporter
+      stability:
+        beta:
+        - logs
+        - metrics
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - pcwiese
+        - hgaol
+- name: bmchelixexporter
+  metadata:
+    type: bmchelix
+    status:
+      class: exporter
+      stability:
+        alpha:
+        - metrics
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - bertysentry
+        - NassimBtk
+        - MovieStoreGuy
+- name: cassandraexporter
+  metadata:
+    type: cassandra
+    status:
+      class: exporter
+      stability:
+        alpha:
+        - logs
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - atoulme
+        - emreyalvac
+- name: clickhouseexporter
+  metadata:
+    type: clickhouse
+    status:
+      class: exporter
+      stability:
+        alpha:
+        - metrics
+        beta:
+        - logs
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - hanjm
+        - Frapschen
+        - SpencerTorres
+        emeritus:
+        - dmitryax
+- name: coralogixexporter
+  metadata:
+    type: coralogix
+    status:
+      class: exporter
+      stability:
+        alpha:
+        - profiles
+        beta:
+        - logs
+        - metrics
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - povilasv
+        - iblancasa
+        - douglascamata
+- name: datadogexporter
+  metadata:
+    type: datadog
+    status:
+      class: exporter
+      stability:
+        beta:
+        - logs
+        - metrics
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - mx-psi
+        - dineshg13
+        - liustanley
+        - songy23
+        - mackjmr
+        - ankitpatel96
+        - jade-guiton-dd
+        - IbraheemA
+        emeritus:
+        - gbbr
+        - jackgopack4
+- name: datasetexporter
+  metadata:
+    type: dataset
+    status:
+      class: exporter
+      stability:
+        alpha:
+        - logs
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - atoulme
+        - martin-majlis-s1
+        - zdaratom-s1
+        - tomaz-s1
+- name: dorisexporter
+  metadata:
+    type: doris
+    status:
+      class: exporter
+      stability:
+        alpha:
+        - logs
+        - metrics
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - atoulme
+        - joker-star-l
+- name: elasticsearchexporter
+  metadata:
+    type: elasticsearch
+    status:
+      class: exporter
+      stability:
+        beta:
+        - logs
+        - traces
+        development:
+        - metrics
+        - profiles
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - JaredTan95
+        - carsonip
+        - lahsivjar
+    attributes:
+      error.type:
+        description: The type of error that occurred when processing the documents.
+        type: string
+      failure_store:
+        description: The status of the failure store.
+        type: string
+        enum:
+        - failed
+        - not_enabled
+        - unknown
+        - used
+      http.response.status_code:
+        description: HTTP status code.
+        type: int
+      outcome:
+        description: The operation outcome.
+        type: string
+        enum:
+        - failed_client
+        - failed_server
+        - failure_store
+        - internal_server_error
+        - success
+        - timeout
+        - too_many
+- name: faroexporter
+  metadata:
+    type: faro
+    status:
+      class: exporter
+      stability:
+        alpha:
+        - logs
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - dehaansa
+        - rlankfo
+        - mar4uk
+- name: fileexporter
+  metadata:
+    type: file
+    status:
+      class: exporter
+      stability:
+        alpha:
+        - logs
+        - metrics
+        - traces
+        development:
+        - profiles
+      distributions:
+      - contrib
+      - core
+      - k8s
+      codeowners:
+        active:
+        - atingchen
+- name: googlecloudexporter
+  metadata:
+    type: googlecloud
+    status:
+      class: exporter
+      stability:
+        beta:
+        - logs
+        - metrics
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - aabmass
+        - dashpole
+        - braydonk
+        - jsuereth
+        - psx95
+        - ridwanmsharif
+- name: googlecloudpubsubexporter
+  metadata:
+    type: googlecloudpubsub
+    status:
+      class: exporter
+      stability:
+        beta:
+        - logs
+        - metrics
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - alexvanboxel
+- name: googlecloudstorageexporter
+  metadata:
+    type: googlecloudstorage
+    status:
+      class: exporter
+      stability:
+        alpha:
+        - logs
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - constanca-m
+        - braydonk
+        seeking_new: true
+- name: googlemanagedprometheusexporter
+  metadata:
+    type: googlemanagedprometheus
+    status:
+      class: exporter
+      stability:
+        beta:
+        - metrics
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - aabmass
+        - dashpole
+        - braydonk
+        - jsuereth
+        - psx95
+        - ridwanmsharif
+- name: honeycombmarkerexporter
+  metadata:
+    type: honeycombmarker
+    status:
+      class: exporter
+      stability:
+        alpha:
+        - logs
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - TylerHelmuth
+        - fchikwekwe
+- name: influxdbexporter
+  metadata:
+    type: influxdb
+    status:
+      class: exporter
+      stability:
+        beta:
+        - logs
+        - metrics
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - jacobmarble
+- name: kafkaexporter
+  metadata:
+    type: kafka
+    status:
+      class: exporter
+      stability:
+        beta:
+        - logs
+        - metrics
+        - traces
+        development:
+        - profiles
+      distributions:
+      - contrib
+      - core
+      codeowners:
+        active:
+        - pavolloffay
+        - MovieStoreGuy
+        - axw
+        - paulojmdias
+    attributes:
+      node_id:
+        description: The Kafka node ID.
+        type: int
+      outcome:
+        description: The operation outcome.
+        type: string
+        enum:
+        - failure
+        - success
+      partition:
+        description: The Kafka topic partition.
+        type: int
+      server.address:
+        description: The Kafka node address.
+        type: string
+      topic:
+        description: The Kafka topic.
+        type: string
+- name: loadbalancingexporter
+  metadata:
+    type: loadbalancing
+    status:
+      class: exporter
+      stability:
+        beta:
+        - logs
+        - traces
+        development:
+        - metrics
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - rlankfo
+        emeritus:
+        - jpkrohling
+        seeking_new: true
+    attributes:
+      endpoint:
+        description: The endpoint of the backend
+        type: string
+      resolver:
+        description: Resolver used
+        type: string
+        enum:
+        - aws
+        - dns
+        - k8s
+        - static
+      success:
+        description: Whether an outcome was successful
+        type: bool
+- name: logicmonitorexporter
+  metadata:
+    type: logicmonitor
+    status:
+      class: exporter
+      stability:
+        alpha:
+        - logs
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - bogdandrutu
+        - khyatigandhi6
+        - avadhut123pisal
+- name: logzioexporter
+  metadata:
+    type: logzio
+    status:
+      class: exporter
+      stability:
+        beta:
+        - logs
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - yotamloe
+- name: mezmoexporter
+  metadata:
+    type: mezmo
+    status:
+      class: exporter
+      stability:
+        beta:
+        - logs
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - dashpole
+        - billmeyer
+        - gjanco
+- name: opensearchexporter
+  metadata:
+    type: opensearch
+    status:
+      class: exporter
+      stability:
+        alpha:
+        - logs
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - ps48
+        emeritus:
+        - Aneurysm9
+        - MitchellGale
+        - MaxKsyunz
+        - YANG-DB
+        seeking_new: true
+- name: otelarrowexporter
+  metadata:
+    type: otelarrow
+    status:
+      class: exporter
+      stability:
+        beta:
+        - logs
+        - metrics
+        - traces
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - jmacd
+        - moh-osman3
+        - lquerel
+- name: prometheusexporter
+  metadata:
+    type: prometheus
+    status:
+      class: exporter
+      stability:
+        beta:
+        - metrics
+      distributions:
+      - contrib
+      - core
+      codeowners:
+        active:
+        - Aneurysm9
+        - dashpole
+        - ArthurSens
+- name: prometheusremotewriteexporter
+  metadata:
+    type: prometheusremotewrite
+    status:
+      class: exporter
+      stability:
+        beta:
+        - metrics
+      distributions:
+      - contrib
+      - core
+      codeowners:
+        active:
+        - Aneurysm9
+        - rapphil
+        - dashpole
+        - ArthurSens
+        - ywwg
+- name: pulsarexporter
+  metadata:
+    type: pulsar
+    status:
+      class: exporter
+      stability:
+        alpha:
+        - logs
+        - metrics
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - dao-jun
+        emeritus:
+        - dmitryax
+- name: rabbitmqexporter
+  metadata:
+    type: rabbitmq
+    status:
+      class: exporter
+      stability:
+        alpha:
+        - logs
+        - metrics
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - atoulme
+        emeritus:
+        - swar8080
+- name: sapmexporter
+  metadata:
+    type: sapm
+    status:
+      class: exporter
+      stability:
+        deprecated:
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - dmitryax
+        - atoulme
+- name: sematextexporter
+  metadata:
+    type: sematext
+    status:
+      class: exporter
+      stability:
+        development:
+        - logs
+        - metrics
+      distributions: []
+      codeowners:
+        active:
+        - AkhigbeEromo
+- name: sentryexporter
+  metadata:
+    type: sentry
+    status:
+      class: exporter
+      stability:
+        beta:
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - AbhiPrasad
+- name: signalfxexporter
+  metadata:
+    type: signalfx
+    status:
+      class: exporter
+      stability:
+        beta:
+        - logs
+        - metrics
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - dmitryax
+        - crobert-1
+- name: splunkhecexporter
+  metadata:
+    type: splunk_hec
+    status:
+      class: exporter
+      stability:
+        beta:
+        - logs
+        - metrics
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - atoulme
+        - dmitryax
+- name: stefexporter
+  metadata:
+    type: stef
+    status:
+      class: exporter
+      stability:
+        alpha:
+        - metrics
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - tigrannajaryan
+        - dmitryax
+- name: sumologicexporter
+  metadata:
+    type: sumologic
+    status:
+      class: exporter
+      stability:
+        beta:
+        - logs
+        - metrics
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - rnishtala-sumo
+        - pankaj101A
+        - jagan2221
+        emeritus:
+        - aboguszewski-sumo
+        - kasia-kujawa
+        - mat-rumian
+        - sumo-drosiek
+        - chan-tim-sumo
+        - echlebek
+        - amdprophet
+- name: syslogexporter
+  metadata:
+    type: syslog
+    status:
+      class: exporter
+      stability:
+        alpha:
+        - logs
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - kasia-kujawa
+        - rnishtala-sumo
+        - andrzej-stencel
+- name: tencentcloudlogserviceexporter
+  metadata:
+    type: tencentcloud_logservice
+    status:
+      class: exporter
+      stability:
+        beta:
+        - logs
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - wgliang
+        emeritus:
+        - yiyang5055
+- name: tinybirdexporter
+  metadata:
+    type: tinybird
+    status:
+      class: exporter
+      stability:
+        alpha:
+        - logs
+        - metrics
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - mx-psi
+        - jordivilaseca
+        - MoreraAlejandro
+- name: zipkinexporter
+  metadata:
+    type: zipkin
+    status:
+      class: exporter
+      stability:
+        beta:
+        - traces
+      distributions:
+      - contrib
+      - core
+      codeowners:
+        active:
+        - MovieStoreGuy
+        - andrzej-stencel
+        - crobert-1
