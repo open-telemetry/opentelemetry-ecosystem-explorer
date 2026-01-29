@@ -1,0 +1,243 @@
+distribution: contrib
+version: v0.144.0
+repository: opentelemetry-collector-contrib
+component_type: connector
+components:
+- name: countconnector
+  metadata:
+    type: count
+    status:
+      class: connector
+      stability:
+        alpha:
+        - logs_to_metrics
+        - metrics_to_metrics
+        - profiles_to_metrics
+        - traces_to_metrics
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - akats7
+        emeritus:
+        - djaglowski
+        - jpkrohling
+        seeking_new: true
+- name: datadogconnector
+  metadata:
+    type: datadog
+    status:
+      class: connector
+      stability:
+        beta:
+        - traces_to_metrics
+        - traces_to_traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - mx-psi
+        - dineshg13
+        - ankitpatel96
+        - jade-guiton-dd
+        - IbraheemA
+        emeritus:
+        - gbbr
+- name: exceptionsconnector
+  metadata:
+    type: exceptions
+    status:
+      class: connector
+      stability:
+        alpha:
+        - traces_to_logs
+        - traces_to_metrics
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - marctc
+- name: failoverconnector
+  metadata:
+    type: failover
+    status:
+      class: connector
+      stability:
+        alpha:
+        - logs_to_logs
+        - metrics_to_metrics
+        - traces_to_traces
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - akats7
+        - fatsheep9146
+- name: grafanacloudconnector
+  metadata:
+    type: grafanacloud
+    status:
+      class: connector
+      stability:
+        alpha:
+        - traces_to_metrics
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - rlankfo
+        - jcreixell
+        emeritus: []
+        seeking_new: false
+- name: metricsaslogsconnector
+  metadata:
+    type: metricsaslogs
+    status:
+      class: connector
+      stability:
+        development:
+        - metrics_to_logs
+      distributions: []
+      codeowners:
+        active:
+        - atoulme
+- name: otlpjsonconnector
+  metadata:
+    type: otlpjson
+    status:
+      class: connector
+      stability:
+        alpha:
+        - logs_to_logs
+        - logs_to_metrics
+        - logs_to_traces
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - ChrsMark
+        emeritus:
+        - djaglowski
+- name: roundrobinconnector
+  metadata:
+    type: roundrobin
+    status:
+      class: connector
+      stability:
+        beta:
+        - logs_to_logs
+        - metrics_to_metrics
+        - traces_to_traces
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - bogdandrutu
+- name: routingconnector
+  metadata:
+    type: routing
+    status:
+      class: connector
+      stability:
+        alpha:
+        - logs_to_logs
+        - metrics_to_metrics
+        - traces_to_traces
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - mwear
+        - TylerHelmuth
+        - evan-bradley
+        - edmocosta
+        - bogdandrutu
+        emeritus:
+        - jpkrohling
+        seeking_new: true
+- name: servicegraphconnector
+  metadata:
+    type: servicegraph
+    status:
+      class: connector
+      stability:
+        alpha:
+        - traces_to_metrics
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - mapno
+        - JaredTan95
+- name: signaltometricsconnector
+  metadata:
+    type: signaltometrics
+    status:
+      class: connector
+      stability:
+        alpha:
+        - logs_to_metrics
+        - metrics_to_metrics
+        - profiles_to_metrics
+        - traces_to_metrics
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - ChrsMark
+        - lahsivjar
+- name: slowsqlconnector
+  metadata:
+    type: slowsql
+    status:
+      class: connector
+      stability:
+        development:
+        - traces_to_logs
+      codeowners:
+        active:
+        - JaredTan95
+        - Frapschen
+        - atoulme
+- name: spanmetricsconnector
+  metadata:
+    type: spanmetrics
+    status:
+      class: connector
+      stability:
+        alpha:
+        - traces_to_metrics
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - portertech
+        - Frapschen
+        - iblancasa
+        emeritus:
+        - albertteoh
+        seeking_new: true
+- name: sumconnector
+  metadata:
+    type: sum
+    status:
+      class: connector
+      stability:
+        alpha:
+        - logs_to_metrics
+        - metrics_to_metrics
+        - traces_to_metrics
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - greatestusername
+        - shalper2
+        - crobert-1
