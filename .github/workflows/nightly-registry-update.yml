@@ -96,8 +96,9 @@ jobs:
           EOF
           )"
 
-          if gh pr view ${BRANCH} &>/dev/null; then
-            echo "PR already exists, updating..."
+          # Check if an open PR exists for this branch
+          if gh pr list --head ${BRANCH} --state open --json number --jq '.[0].number' | grep -q .; then
+            echo "Open PR already exists, updating..."
             gh pr edit ${BRANCH} --title "${PR_TITLE}" --body "${PR_BODY}"
           else
             echo "Creating new PR..."
