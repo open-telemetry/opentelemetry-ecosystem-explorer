@@ -44,7 +44,7 @@ jobs:
         uses: actions/cache@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
         with:
           path: tmp_repos
-          key: tmp-repos-${{ github.run_id }}
+          key: tmp-repos
           restore-keys: |
             tmp-repos-
 
