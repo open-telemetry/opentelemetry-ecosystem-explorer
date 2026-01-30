@@ -1,15 +1,15 @@
-import { Compass } from "lucide-react";
+import { OtelLogo } from "@/components/otel-logo";
 import {HeroSection} from "@/components/hero-section.tsx";
 import {ExploreSection} from "@/components/explore-section.tsx";
 
 export default function App() {
     return (
-        <div className="min-h-screen bg-background">
+        <div className="min-h-screen bg-background flex flex-col">
             {/* Header */}
-            <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/30 bg-background/95 backdrop-blur-xl">
-                <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <header className="fixed top-0 left-0 right-0 z-50 border-b border-border/30 bg-background/95 backdrop-blur-xl h-16">
+                <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <Compass className="h-5 w-5 text-primary" />
+                        <OtelLogo className="h-6 w-6 text-primary" />
                         <span className="font-semibold text-foreground">
                             OTel Explorer
                         </span>
@@ -32,19 +32,19 @@ export default function App() {
             </header>
 
             {/* Main content */}
-            <main className="pt-16">
+            <main className="flex-1 pt-16">
                 <HeroSection />
                 <ExploreSection />
             </main>
 
             {/* Footer */}
-            <footer className="border-t border-border/30 py-6 px-6 bg-background">
-                <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <footer className="border-t border-border/30 h-16 px-6 bg-background flex-shrink-0">
+                <div className="max-w-6xl mx-auto h-full flex items-center justify-between">
                     <div className="flex items-center gap-2 text-muted-foreground">
-                        <Compass className="h-4 w-4 text-primary" />
+                        <OtelLogo className="h-5 w-5 text-primary" />
                         <span className="text-sm">OpenTelemetry Ecosystem Explorer</span>
                     </div>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm text-muted-foreground hidden md:block">
                         Charting the observability landscape
                     </p>
                 </div>

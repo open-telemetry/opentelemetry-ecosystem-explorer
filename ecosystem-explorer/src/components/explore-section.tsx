@@ -1,4 +1,5 @@
-import { Coffee, Server } from "lucide-react";
+import { JavaIcon } from "./java-icon";
+import { PipelineIcon } from "./pipeline-icon";
 import { NavigationCard } from "./navigation-card";
 
 export function ExploreSection() {
@@ -13,13 +14,13 @@ export function ExploreSection() {
                         title="OpenTelemetry Java Agent"
                         description="Explore auto-instrumentation for Java applications. Discover supported libraries, configuration options, and emitted telemetry."
                         href="/java-agent"
-                        icon={<Coffee className="h-6 w-6" />}
+                        icon={<JavaIcon className="h-12 w-12" />}
                     />
                     <NavigationCard
                         title="OpenTelemetry Collector"
                         description="Navigate Collector components like receivers, processors, and exporters."
                         href="/collector"
-                        icon={<Server className="h-6 w-6" />}
+                        icon={<PipelineIcon className="h-12 w-12" />}
                     />
                 </div>
             </div>
