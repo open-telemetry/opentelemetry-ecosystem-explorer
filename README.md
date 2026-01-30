@@ -11,56 +11,28 @@ There are three components in this repository:
 
 ### ecosystem-registry
 
-This will act as our raw data registry of the metadata from various projects. See the
-`collector-metadata` directory in the [collector-watcher](https://github.com/jaydeluca/collector-watcher/tree/main/collector-metadata)
-as a POC/reference.
-
-Scope:
-
-* Stores versioned history of metadata for each project
+This will act as our raw data registry of the metadata from various projects. It is updated nightly by the
+automation tools in ecosystem-automation (`collector-watcher`, `documentation-sync`).
 
 ### ecosystem-automation
 
-This will act as our data pipeline and tools for synchronizing documentation, the v1 registry, and anything else.
-
-See the [collector-watcher](https://github.com/jaydeluca/collector-watcher/tree/main/src/collector_watcher) for the
-POC/reference.
-
-Scope:
-
-* Pipelines and automation that runs on a schedule and collects and aggregates metadata from various projects to
-populate and update the registry
-* Automatically synchronizes documentation and other targets with registry data opentelemetry.io integration
-  * Collector components
-  * Java Agent instrumentations
-  * Java Agent configuration options
+Automation pipelines and tools to populate and maintain the ecosystem-registry, and to synchronize documentation and other
+targets with the registry data.
 
 ### ecosystem-explorer
 
 React/Vite web application for exploring the data. See [instrumentation-explorer](https://github.com/jaydeluca/instrumentation-explorer)
 for a POC/reference.
 
-See the [ecosystem-explorer README](./ecosystem-explorer/README.md) for setup and development instructions.
-
-## Getting Started
-
-Install dependencies and sync the workspace:
-
-```bash
-uv sync
-```
-
-Run the collector-watcher from the root directory:
-
-```bash
-uv run collector-watcher
-```
-
 ## Contributing
 
 This project welcomes contributions from the community.
 
 Please refer to the [CONTRIBUTING.md](CONTRIBUTING.md) file for guidelines on how to contribute to this project.
+
+See the [ecosystem-explorer README](./ecosystem-explorer/README.md) for setup and development instructions.
+
+See the [ecosystem-automation README](./ecosystem-automation/README.md) for setup and development instructions.
 
 ## Maintainers
 

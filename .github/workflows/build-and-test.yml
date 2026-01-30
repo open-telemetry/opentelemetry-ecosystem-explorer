@@ -4,18 +4,18 @@ on:
   push:
     branches: [main]
     paths:
-      - 'ecosystem-automation/collector-watcher/**'
+      - 'ecosystem-automation/**'
       - 'ecosystem-explorer/**'
       - 'build-and-test.yml'
   pull_request:
     branches: [main]
     paths:
-      - 'ecosystem-automation/collector-watcher/**'
+      - 'ecosystem-automation/**'
       - 'ecosystem-explorer/**'
       - 'build-and-test.yml'
 
 jobs:
-  test-collector-watcher:
+  test-ecosystem-automation:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
@@ -31,10 +31,15 @@ jobs:
       - name: Install dependencies
         run: uv sync --all-extras --dev
 
-      - name: Run tests with coverage
+      - name: Run collector-watcher tests
         run: |
           cd ecosystem-automation/collector-watcher
           uv run pytest tests/ --cov=collector_watcher --cov-report=term-missing --cov-report=json
+
+      - name: Run documentation-sync tests
+        run: |
+          cd ecosystem-automation/documentation-sync
+          uv run pytest tests/ --cov=documentation_sync --cov-report=term-missing --cov-report=json
 
   test-ecosystem-explorer:
     runs-on: ubuntu-latest
