@@ -3,6 +3,8 @@ export function PipelineIcon({ className }: { className?: string }) {
         <svg
             viewBox="0 0 200 200"
             className={className}
+            aria-label="Pipeline Icon"
+            role="img"
         >
             {/* Input node (circle) */}
             <circle

@@ -1,11 +1,43 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
+/** Animated Compass SVG Component, hidden when not visible in viewport. */
 export function Compass({ className }: { className?: string }) {
     const needleGroupRef = useRef<SVGGElement | null>(null);
+    const containerRef = useRef<HTMLDivElement | null>(null);
+    const [isVisible, setIsVisible] = useState(true);
+    const [isPageVisible, setIsPageVisible] = useState(true);
 
+    // Handle page visibility changes (e.g., tab switching)
     useEffect(() => {
-        let rafId = 0;
+        const handleVisibilityChange = () => {
+            setIsPageVisible(!document.hidden);
+        };
 
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+    }, []);
+
+    // Handle intersection observer
+    useEffect(() => {
+        const container = containerRef.current;
+        if (!container || typeof IntersectionObserver === 'undefined') return;
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                setIsVisible(entry.isIntersecting);
+            },
+            { threshold: 0 }
+        );
+
+        observer.observe(container);
+        return () => observer.disconnect();
+    }, []);
+
+    // Animation loop - only runs when visible
+    useEffect(() => {
+        if (!isVisible || !isPageVisible) return;
+
+        let rafId = 0;
         const degreesPerSecond = 5;
         const start = performance.now();
 
@@ -23,12 +55,14 @@ export function Compass({ className }: { className?: string }) {
 
         rafId = requestAnimationFrame(tick);
         return () => cancelAnimationFrame(rafId);
-    }, []);
+    }, [isVisible, isPageVisible]);
 
     return (
-        <div className={className}>
+        <div ref={containerRef} className={className}>
             <svg
                 viewBox="0 0 200 200"
+                aria-label="Animated Compass"
+                role="img"
                 className="w-full h-full"
                 style={{
                     filter:

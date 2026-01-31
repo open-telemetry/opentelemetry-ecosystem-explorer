@@ -19,5 +19,9 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    rules: {
+      // Enforce consistent spacing inside braces (import statements, objects, etc.)
+      'object-curly-spacing': ['error', 'always'],
+    },
   },
 ])

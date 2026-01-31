@@ -1,6 +1,10 @@
 export function JavaIcon({ className }: { className?: string }) {
     return (
-        <svg viewBox="0 0 200 200" className={className}>
+        <svg
+            viewBox="0 0 200 200"
+            aria-label="Java Icon with Coffee Cup and Bar Chart"
+            role="img"
+            className={className}>
             {/* Coffee cup outline */}
             <path
                 d="M 60 80 L 50 160 Q 50 170 60 170 L 140 170 Q 150 170 150 160 L 140 80 Z"

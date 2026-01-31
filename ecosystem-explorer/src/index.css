@@ -1,8 +1,17 @@
 @import "tailwindcss";
 
+/**
+ * Theme System
+ *
+ * 1. Default HSL triplet values (fallback before ThemeProvider loads)
+ * 2. ThemeProvider dynamically overwrites these from themes.ts
+ * 3. @theme block wraps triplets in hsl() for Tailwind v4
+ *
+ * Source of truth: src/themes.ts
+ */
+
 @layer theme {
   :root {
-    /* Default theme - will be overridden by ThemeProvider */
     --color-primary: 185 85% 70%;
     --color-secondary: 185 85% 50%;
     --color-background: 0 0% 4%;

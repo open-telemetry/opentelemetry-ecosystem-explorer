@@ -52,7 +52,7 @@ export function NavigationCard({
                     {/* Content on the right */}
                     <div className="flex-1 min-w-0">
                         <div className="mb-2 flex items-center justify-between gap-2">
-                            <h3 className="text-xl font-semibold text-foreground transition-colors group-hover:text-primary" style={{ color: 'hsl(var(--color-secondary))' }}>
+                            <h3 className="text-xl font-semibold text-[hsl(var(--color-secondary))] transition-colors group-hover:text-primary">
                                 {title}
                             </h3>
                             <ArrowRight className="h-5 w-5 flex-shrink-0 text-muted-foreground transition-all duration-300 group-hover:translate-x-1 group-hover:text-primary" />

@@ -3,6 +3,8 @@ export function OtelLogo({ className }: { className?: string }) {
         <svg
             viewBox="0 0 128 128"
             className={className}
+            aria-label="OpenTelemetry Logo"
+            role="img"
             fill="none"
         >
             {/* Top-right circle with inner circle */}

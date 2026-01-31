@@ -7,6 +7,6 @@ describe('App', () => {
     render(<App />)
     const heading = screen.getByRole('heading', { level: 1 })
     expect(heading).toHaveTextContent('OpenTelemetry')
-    expect(heading).toHaveTextContent('OpenTelemetryEcosystem Explorer')
+    expect(heading).toHaveTextContent('Ecosystem Explorer')
   })
 })
