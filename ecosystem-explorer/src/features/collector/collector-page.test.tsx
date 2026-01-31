@@ -1,12 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
-import App from "./App";
+import { CollectorPage } from "@/features/collector/collector-page.tsx";
 
-describe("App", () => {
+describe("CollectorPage", () => {
   it("renders the page title", () => {
-    render(<App />);
+    render(<CollectorPage />);
     const heading = screen.getByRole("heading", { level: 1 });
-    expect(heading).toHaveTextContent("OpenTelemetry");
-    expect(heading).toHaveTextContent("Ecosystem Explorer");
+    expect(heading).toHaveTextContent("OpenTelemetry Collector");
   });
 });
