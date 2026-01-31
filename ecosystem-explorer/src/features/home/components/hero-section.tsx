@@ -1,4 +1,4 @@
-import { Compass } from "./compass";
+import { Compass } from "@/components/icons/compass";
 
 export function HeroSection() {
     return (

@@ -1,4 +1,5 @@
 import React from "react"
+import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 
 interface NavigationCardProps {
@@ -15,7 +16,7 @@ export function NavigationCard({
                                    icon,
                                }: NavigationCardProps) {
     return (
-        <a href={href} className="group block h-full">
+        <Link to={href} className="group block h-full">
             <div className="relative overflow-hidden rounded-lg border border-border/50 bg-card/50 p-6 h-full transition-all duration-300 hover:border-primary/40 hover:bg-card hover:shadow-lg hover:shadow-primary/5">
                 {/* Grid lines background */}
                 <div className="absolute inset-0 opacity-5">
@@ -67,11 +68,11 @@ export function NavigationCard({
                     <svg viewBox="0 0 64 64" className="h-full w-full">
                         <path
                             d="M64 64 L64 32 L48 32 L48 48 L32 48 L32 64 Z"
-                            className="fill-primary/20"
+                            style={{ fill: 'hsl(var(--color-secondary) / 0.5)' }}
                         />
                     </svg>
                 </div>
             </div>
-        </a>
+        </Link>
     );
 }

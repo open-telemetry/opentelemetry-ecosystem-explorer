@@ -1,6 +1,6 @@
-import { JavaIcon } from "./java-icon";
-import { PipelineIcon } from "./pipeline-icon";
-import { NavigationCard } from "./navigation-card";
+import { JavaIcon } from "@/components/icons/java-icon";
+import { PipelineIcon } from "@/components/icons/pipeline-icon";
+import { NavigationCard } from "@/components/ui/navigation-card";
 
 export function ExploreSection() {
     return (
