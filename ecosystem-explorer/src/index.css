@@ -2,11 +2,13 @@
 
 @layer theme {
   :root {
+    /* Default theme - will be overridden by ThemeProvider */
     --color-primary: 185 85% 70%;
+    --color-secondary: 185 85% 50%;
     --color-background: 0 0% 4%;
     --color-foreground: 0 0% 98%;
     --color-card: 0 0% 8%;
-    --color-secondary: 0 0% 12%;
+    --color-card-secondary: 0 0% 12%;
     --color-muted-foreground: 0 0% 55%;
     --color-border: 0 0% 20%;
   }
@@ -14,10 +16,11 @@
 
 @theme {
   --color-primary: hsl(var(--color-primary));
+  --color-secondary: hsl(var(--color-secondary));
   --color-background: hsl(var(--color-background));
   --color-foreground: hsl(var(--color-foreground));
   --color-card: hsl(var(--color-card));
-  --color-secondary: hsl(var(--color-secondary));
+  --color-card-secondary: hsl(var(--color-card-secondary));
   --color-muted-foreground: hsl(var(--color-muted-foreground));
   --color-border: hsl(var(--color-border));
 }

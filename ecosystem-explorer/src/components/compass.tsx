@@ -1,15 +1,28 @@
-import { useEffect, useState } from "react";
-
-const CYAN = "hsl(185 85% 70%)";
+import { useEffect, useRef } from "react";
 
 export function Compass({ className }: { className?: string }) {
-    const [rotation, setRotation] = useState(0);
+    const needleGroupRef = useRef<SVGGElement | null>(null);
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            setRotation((prev) => (prev + 0.5) % 360);
-        }, 50);
-        return () => clearInterval(interval);
+        let rafId = 0;
+
+        const degreesPerSecond = 5;
+        const start = performance.now();
+
+        const tick = (now: number) => {
+            const elapsedSec = (now - start) / 1000;
+            const rotation = (elapsedSec * degreesPerSecond) % 360;
+
+            const g = needleGroupRef.current;
+            if (g) {
+                g.setAttribute("transform", `rotate(${rotation} 100 100)`);
+            }
+
+            rafId = requestAnimationFrame(tick);
+        };
+
+        rafId = requestAnimationFrame(tick);
+        return () => cancelAnimationFrame(rafId);
     }, []);
 
     return (
@@ -17,8 +30,10 @@ export function Compass({ className }: { className?: string }) {
             <svg
                 viewBox="0 0 200 200"
                 className="w-full h-full"
-                style={{ filter: "drop-shadow(0 0 25px rgba(109, 216, 229, 0.9)) drop-shadow(0 0 50px rgba(109," +
-                        " 216, 229, 0.6)) drop-shadow(0 0 80px rgba(109, 216, 229, 0.4))" }}
+                style={{
+                    filter:
+                        "drop-shadow(0 0 8px hsl(var(--color-primary) / 0.4)) drop-shadow(0 0 16px hsl(var(--color-primary) / 0.2))",
+                }}
             >
                 {/* Outer ring */}
                 <circle
@@ -26,7 +41,7 @@ export function Compass({ className }: { className?: string }) {
                     cy="100"
                     r="95"
                     fill="none"
-                    stroke={CYAN}
+                    stroke="hsl(var(--color-primary))"
                     strokeWidth="1.5"
                     opacity="0.4"
                 />
@@ -35,7 +50,7 @@ export function Compass({ className }: { className?: string }) {
                     cy="100"
                     r="90"
                     fill="none"
-                    stroke={CYAN}
+                    stroke="hsl(var(--color-primary))"
                     strokeWidth="0.5"
                     opacity="0.2"
                 />
@@ -53,7 +68,7 @@ export function Compass({ className }: { className?: string }) {
                             y1={100 - innerR * Math.cos(angle)}
                             x2={100 + outerR * Math.sin(angle)}
                             y2={100 - outerR * Math.cos(angle)}
-                            stroke={CYAN}
+                            stroke="hsl(var(--color-primary))"
                             strokeWidth={isMajor ? 1.5 : 0.5}
                             opacity={isMajor ? 0.7 : 0.3}
                         />
@@ -71,9 +86,8 @@ export function Compass({ className }: { className?: string }) {
                             y={100 - r * Math.cos(angle)}
                             textAnchor="middle"
                             dominantBaseline="middle"
-                            fill={CYAN}
+                            fill="hsl(var(--color-primary))"
                             className="font-mono text-sm font-bold"
-                            style={{ filter: "drop-shadow(0 0 4px rgba(109, 216, 229, 0.8))" }}
                         >
                             {dir}
                         </text>
@@ -81,36 +95,23 @@ export function Compass({ className }: { className?: string }) {
                 })}
 
                 {/* Rotating needle group */}
-                <g
-                    style={{
-                        transform: `rotate(${rotation}deg)`,
-                        transformOrigin: "100px 100px",
-                        transition: "transform 0.05s linear",
-                    }}
-                >
+                <g ref={needleGroupRef}>
                     {/* North needle */}
                     <polygon
                         points="100,25 95,100 100,90 105,100"
-                        fill={CYAN}
-                        style={{ filter: "drop-shadow(0 0 6px rgba(109, 216, 229, 0.9))" }}
+                        fill="hsl(var(--color-primary))"
                     />
                     {/* South needle */}
                     <polygon
                         points="100,175 95,100 100,110 105,100"
-                        fill={CYAN}
+                        fill="hsl(var(--color-primary))"
                         opacity="0.4"
                     />
                 </g>
 
                 {/* Center circle */}
-                <circle cx="100" cy="100" r="8" className="fill-secondary" opacity="0.6" />
-                <circle
-                    cx="100"
-                    cy="100"
-                    r="4"
-                    fill={CYAN}
-                    style={{ filter: "drop-shadow(0 0 10px rgba(109, 216, 229, 1)) drop-shadow(0 0 20px rgba(109, 216, 229, 0.8))" }}
-                />
+                <circle cx="100" cy="100" r="8" fill="hsl(var(--color-secondary))" opacity="0.6" />
+                <circle cx="100" cy="100" r="4" fill="hsl(var(--color-primary))" />
 
                 {/* Inner decorative circles */}
                 <circle
@@ -118,7 +119,7 @@ export function Compass({ className }: { className?: string }) {
                     cy="100"
                     r="50"
                     fill="none"
-                    stroke={CYAN}
+                    stroke="hsl(var(--color-primary))"
                     strokeWidth="0.5"
                     opacity="0.2"
                     strokeDasharray="4 4"

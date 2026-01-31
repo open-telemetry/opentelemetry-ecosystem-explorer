@@ -14,13 +14,13 @@ export function ExploreSection() {
                         title="OpenTelemetry Java Agent"
                         description="Explore auto-instrumentation for Java applications. Discover supported libraries, configuration options, and emitted telemetry."
                         href="/java-agent"
-                        icon={<JavaIcon className="h-12 w-12" />}
+                        icon={<JavaIcon className="h-20 w-20" />}
                     />
                     <NavigationCard
                         title="OpenTelemetry Collector"
                         description="Navigate Collector components like receivers, processors, and exporters."
                         href="/collector"
-                        icon={<PipelineIcon className="h-12 w-12" />}
+                        icon={<PipelineIcon className="h-20 w-20" />}
                     />
                 </div>
             </div>

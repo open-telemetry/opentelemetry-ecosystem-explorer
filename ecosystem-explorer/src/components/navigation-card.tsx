@@ -43,7 +43,7 @@ export function NavigationCard({
                 <div className="relative z-10 flex gap-4">
                     {/* Icon on the left */}
                     <div className="flex-shrink-0">
-                        <div className="flex h-16 w-16 items-center justify-center rounded-lg border border-border/50 bg-background/50 text-primary transition-colors group-hover:border-primary/40 group-hover:bg-primary/10">
+                        <div className="flex h-24 w-24 items-center justify-center rounded-lg border border-border/50 bg-background/50 text-primary transition-colors group-hover:border-primary/40 group-hover:bg-primary/10">
                             {icon}
                         </div>
                     </div>
@@ -51,7 +51,7 @@ export function NavigationCard({
                     {/* Content on the right */}
                     <div className="flex-1 min-w-0">
                         <div className="mb-2 flex items-center justify-between gap-2">
-                            <h3 className="text-xl font-semibold text-foreground transition-colors group-hover:text-primary">
+                            <h3 className="text-xl font-semibold text-foreground transition-colors group-hover:text-primary" style={{ color: 'hsl(var(--color-secondary))' }}>
                                 {title}
                             </h3>
                             <ArrowRight className="h-5 w-5 flex-shrink-0 text-muted-foreground transition-all duration-300 group-hover:translate-x-1 group-hover:text-primary" />

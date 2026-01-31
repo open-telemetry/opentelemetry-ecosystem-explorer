@@ -10,7 +10,7 @@ export function HeroSection() {
                     <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-balance leading-tight">
                         <span className="text-foreground">OpenTelemetry</span>
                         <br />
-                        <span className="text-primary" style={{ color: 'hsl(185 85% 70%)' }}>Ecosystem Explorer</span>
+                        <span style={{ color: 'hsl(var(--color-secondary))' }}>Ecosystem Explorer</span>
                     </h1>
 
                     <p className="max-w-2xl mx-auto text-sm md:text-base text-muted-foreground leading-relaxed text-balance">
