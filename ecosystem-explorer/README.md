@@ -34,6 +34,18 @@ Run linter:
 npm run lint
 ```
 
+Format code:
+
+```bash
+npm run format
+```
+
+Check formatting:
+
+```bash
+npm run format:check
+```
+
 Run tests:
 
 ```bash

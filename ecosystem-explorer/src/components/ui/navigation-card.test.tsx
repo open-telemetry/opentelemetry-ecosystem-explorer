@@ -1,12 +1,12 @@
-import { render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
-import { describe, it, expect } from 'vitest';
-import { NavigationCard } from './navigation-card';
+import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import { describe, it, expect } from "vitest";
+import { NavigationCard } from "./navigation-card";
 
-describe('NavigationCard', () => {
+describe("NavigationCard", () => {
   const mockIcon = <svg data-testid="test-icon" />;
 
-  it('renders title and description', () => {
+  it("renders title and description", () => {
     render(
       <MemoryRouter>
         <NavigationCard
@@ -18,11 +18,11 @@ describe('NavigationCard', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText('Test Title')).toBeInTheDocument();
-    expect(screen.getByText('Test description text')).toBeInTheDocument();
+    expect(screen.getByText("Test Title")).toBeInTheDocument();
+    expect(screen.getByText("Test description text")).toBeInTheDocument();
   });
 
-  it('renders the provided icon', () => {
+  it("renders the provided icon", () => {
     render(
       <MemoryRouter>
         <NavigationCard
@@ -34,10 +34,10 @@ describe('NavigationCard', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByTestId('test-icon')).toBeInTheDocument();
+    expect(screen.getByTestId("test-icon")).toBeInTheDocument();
   });
 
-  it('links to the correct href', () => {
+  it("links to the correct href", () => {
     render(
       <MemoryRouter>
         <NavigationCard
@@ -49,7 +49,7 @@ describe('NavigationCard', () => {
       </MemoryRouter>
     );
 
-    const link = screen.getByRole('link');
-    expect(link).toHaveAttribute('href', '/test-path');
+    const link = screen.getByRole("link");
+    expect(link).toHaveAttribute("href", "/test-path");
   });
 });

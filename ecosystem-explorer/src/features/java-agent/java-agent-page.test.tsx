@@ -1,12 +1,11 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
-import App from "./App";
+import { JavaAgentPage } from "@/features/java-agent/java-agent-page.tsx";
 
-describe("App", () => {
+describe("JavaAgentPage", () => {
   it("renders the page title", () => {
-    render(<App />);
+    render(<JavaAgentPage />);
     const heading = screen.getByRole("heading", { level: 1 });
-    expect(heading).toHaveTextContent("OpenTelemetry");
-    expect(heading).toHaveTextContent("Ecosystem Explorer");
+    expect(heading).toHaveTextContent("OpenTelemetry Java Agent");
   });
 });
