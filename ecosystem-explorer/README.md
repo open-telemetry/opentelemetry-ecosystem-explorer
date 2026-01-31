@@ -48,14 +48,11 @@ src/
 │   ├── layout/         # Header, Footer
 │   ├── ui/             # Reusable UI components (buttons, cards, etc.)
 │   └── icons/          # SVG icon components
-├── features/           # Feature-based modules
-│   ├── home/           # Home page
-│   ├── java-agent/     # Java Agent explorer
-│   └── collector/      # Collector explorer
-├── lib/                # Utilities and helpers
-│   └── api/            # API client code
-├── hooks/              # Custom React hooks
-└── types/              # Global TypeScript types
+└──features/           # Feature-based modules
+    ├── home/           # Home page
+    ├── java-agent/     # Java Agent explorer
+    ├── collector/      # Collector explorer
+    └── not-found/      # 404 page
 ```
 
 ## Theme System
@@ -86,5 +83,6 @@ Theme colors are defined in `src/themes.ts` and applied via CSS custom propertie
 - `background` - Main background
 - `foreground` - Main text
 - `card` - Card backgrounds
+- `card-secondary` - Secondary card backgrounds
 - `muted-foreground` - Secondary text
 - `border` - Border colors

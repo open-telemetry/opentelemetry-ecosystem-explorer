@@ -6,6 +6,7 @@ export function Compass({ className }: { className?: string }) {
     const containerRef = useRef<HTMLDivElement | null>(null);
     const [isVisible, setIsVisible] = useState(true);
     const [isPageVisible, setIsPageVisible] = useState(true);
+    const currentRotationRef = useRef(0);
 
     // Handle page visibility changes (e.g., tab switching)
     useEffect(() => {
@@ -39,11 +40,15 @@ export function Compass({ className }: { className?: string }) {
 
         let rafId = 0;
         const degreesPerSecond = 5;
-        const start = performance.now();
+        // Adjust start time based on current rotation to ensure smooth resume
+        const start = performance.now() - (currentRotationRef.current / degreesPerSecond) * 1000;
 
         const tick = (now: number) => {
             const elapsedSec = (now - start) / 1000;
             const rotation = (elapsedSec * degreesPerSecond) % 360;
+
+            // Store current rotation for smooth resume after visibility changes
+            currentRotationRef.current = rotation;
 
             const g = needleGroupRef.current;
             if (g) {

@@ -24,7 +24,9 @@ describe('ThemeProvider', () => {
     expect(root.style.getPropertyValue('--color-background')).toBe(theme.colors.background);
     expect(root.style.getPropertyValue('--color-foreground')).toBe(theme.colors.foreground);
     expect(root.style.getPropertyValue('--color-card')).toBe(theme.colors.card);
+    expect(root.style.getPropertyValue('--color-card-secondary')).toBe(theme.colors.cardSecondary);
     expect(root.style.getPropertyValue('--color-border')).toBe(theme.colors.border);
+    expect(root.style.getPropertyValue('--color-muted-foreground')).toBe(theme.colors.mutedForeground);
   });
 
   it('sets data-theme attribute on document root', () => {

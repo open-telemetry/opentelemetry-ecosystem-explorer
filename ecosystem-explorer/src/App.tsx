@@ -4,6 +4,7 @@ import { Footer } from "@/components/layout/footer";
 import { HomePage } from "@/features/home/home-page";
 import { JavaAgentPage } from "@/features/java-agent/java-agent-page";
 import { CollectorPage } from "@/features/collector/collector-page";
+import { NotFoundPage } from "@/features/not-found/not-found-page";
 
 export default function App() {
     return (
@@ -15,6 +16,7 @@ export default function App() {
                         <Route path="/" element={<HomePage />} />
                         <Route path="/java-agent" element={<JavaAgentPage />} />
                         <Route path="/collector" element={<CollectorPage />} />
+                        <Route path="*" element={<NotFoundPage />} />
                     </Routes>
                 </main>
                 <Footer />
