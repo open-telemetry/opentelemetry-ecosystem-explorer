@@ -4,7 +4,7 @@
  * To change the active theme update DEFAULT_THEME to the desired theme id.
  */
 
-export type ThemeId = 'otel-vibrant';
+export type ThemeId = 'dark-blue';
 
 export interface Theme {
   id: ThemeId;
@@ -23,10 +23,10 @@ export interface Theme {
 }
 
 export const themes: Record<ThemeId, Theme> = {
-  'otel-vibrant': {
-    id: 'otel-vibrant',
+  'dark-blue': {
+    id: 'dark-blue',
     name: 'OTel Vibrant',
-    description: 'Energetic and punchy while maintaining accessibility',
+    description: 'Dark blue theme',
     colors: {
       primary: '38 95% 52%',            // Vibrant orange
       secondary: '228 60% 55%',         // Brighter blue
@@ -40,4 +40,4 @@ export const themes: Record<ThemeId, Theme> = {
   },
 };
 
-export const DEFAULT_THEME: ThemeId = 'otel-vibrant';
+export const DEFAULT_THEME: ThemeId = 'dark-blue';
