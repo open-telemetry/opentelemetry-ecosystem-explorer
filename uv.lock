@@ -1,10 +1,11 @@
 version = 1
-revision = 2
+revision = 3
 requires-python = ">=3.11"
 
 [manifest]
 members = [
     "collector-watcher",
+    "java-instrumentation-watcher",
     "opentelemetry-ecosystem-explorer",
 ]
 
@@ -428,6 +429,32 @@ wheels = [
 ]
 
 [[package]]
+name = "java-instrumentation-watcher"
+version = "0.1.0"
+source = { editable = "ecosystem-automation/java-instrumentation-watcher" }
+dependencies = [
+    { name = "pyyaml" },
+    { name = "requests" },
+    { name = "semantic-version" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "pytest" },
+    { name = "pytest-cov" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
+    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.1.0" },
+    { name = "pyyaml", specifier = ">=6.0.1" },
+    { name = "requests", specifier = ">=2.31.0" },
+    { name = "semantic-version", specifier = ">=2.10.0" },
+]
+provides-extras = ["dev"]
+
+[[package]]
 name = "nodeenv"
 version = "1.10.0"
 source = { registry = "https://pypi.org/simple" }
@@ -442,6 +469,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "collector-watcher" },
+    { name = "java-instrumentation-watcher" },
 ]
 
 [package.dev-dependencies]
@@ -453,7 +481,10 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "collector-watcher", editable = "ecosystem-automation/collector-watcher" }]
+requires-dist = [
+    { name = "collector-watcher", editable = "ecosystem-automation/collector-watcher" },
+    { name = "java-instrumentation-watcher", editable = "ecosystem-automation/java-instrumentation-watcher" },
+]
 
 [package.metadata.requires-dev]
 dev = [
@@ -713,6 +744,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/6a/c5/abd840d4132fd51a12f594934af5eba1d5d27298a6f5b5d6c3be45301caf/ruff-0.14.13-py3-none-win32.whl", hash = "sha256:ef720f529aec113968b45dfdb838ac8934e519711da53a0456038a0efecbd680", size = 12919024, upload-time = "2026-01-15T20:14:43.647Z" },
     { url = "https://files.pythonhosted.org/packages/c2/55/6384b0b8ce731b6e2ade2b5449bf07c0e4c31e8a2e68ea65b3bafadcecc5/ruff-0.14.13-py3-none-win_amd64.whl", hash = "sha256:6070bd026e409734b9257e03e3ef18c6e1a216f0435c6751d7a8ec69cb59abef", size = 14097887, upload-time = "2026-01-15T20:15:01.48Z" },
     { url = "https://files.pythonhosted.org/packages/4d/e1/7348090988095e4e39560cfc2f7555b1b2a7357deba19167b600fdf5215d/ruff-0.14.13-py3-none-win_arm64.whl", hash = "sha256:7ab819e14f1ad9fe39f246cfcc435880ef7a9390d81a2b6ac7e01039083dd247", size = 13080224, upload-time = "2026-01-15T20:14:45.853Z" },
+]
+
+[[package]]
+name = "semantic-version"
+version = "2.10.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/7d/31/f2289ce78b9b473d582568c234e104d2a342fd658cc288a7553d83bb8595/semantic_version-2.10.0.tar.gz", hash = "sha256:bdabb6d336998cbb378d4b9db3a4b56a1e3235701dc05ea2690d9a997ed5041c", size = 52289, upload-time = "2022-05-26T13:35:23.454Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/6a/23/8146aad7d88f4fcb3a6218f41a60f6c2d4e3a72de72da1825dc7c8f7877c/semantic_version-2.10.0-py2.py3-none-any.whl", hash = "sha256:de78a3b8e0feda74cabc54aab2da702113e33ac9d9eb9d2389bcf1f58b7d9177", size = 15552, upload-time = "2022-05-26T13:35:21.206Z" },
 ]
 
 [[package]]
