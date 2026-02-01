@@ -769,7 +769,8 @@ components:
     status:
       class: exporter
       stability:
-        beta:
+        alpha:
+        - logs
         - traces
       distributions:
       - contrib
