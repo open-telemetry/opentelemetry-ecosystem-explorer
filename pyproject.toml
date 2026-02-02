@@ -7,6 +7,7 @@ readme = "README.md"
 license = { text = "Apache-2.0" }
 dependencies = [
     "collector-watcher",
+    "java-instrumentation-watcher",
     "documentation-sync",
 ]
 
@@ -18,6 +19,7 @@ members = [
 [tool.uv.sources]
 collector-watcher = { workspace = true }
 documentation-sync = { workspace = true }
+java-instrumentation-watcher = { workspace = true }
 
 [dependency-groups]
 dev = [

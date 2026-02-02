@@ -36,6 +36,11 @@ jobs:
           cd ecosystem-automation/collector-watcher
           uv run pytest tests/ --cov=collector_watcher --cov-report=term-missing --cov-report=json
 
+      - name: Run java-instrumentation-watcher tests
+        run: |
+          cd ecosystem-automation/java-instrumentation-watcher
+          uv run pytest tests/ --cov=java_instrumentation_watcher --cov-report=term-missing --cov-report=json
+
       - name: Run documentation-sync tests
         run: |
           cd ecosystem-automation/documentation-sync

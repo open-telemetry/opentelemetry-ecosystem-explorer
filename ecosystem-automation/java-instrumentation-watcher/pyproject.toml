@@ -1,0 +1,26 @@
+[project]
+name = "java-instrumentation-watcher"
+version = "0.1.0"
+description = "Automation tool for watching and collecting OpenTelemetry Java Agent instrumentation metadata"
+requires-python = ">=3.11"
+dependencies = [
+    "PyYAML>=6.0.1",
+    "requests>=2.31.0",
+    "semantic-version>=2.10.0",
+]
+
+[project.scripts]
+java-instrumentation-watcher = "java_instrumentation_watcher.main:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.1.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/java_instrumentation_watcher"]
