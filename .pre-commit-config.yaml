@@ -24,6 +24,14 @@ repos:
         always_run: true
         stages: [pre-commit]
 
+      - id: prettier-ecosystem-explorer
+        name: prettier (ecosystem-explorer)
+        entry: bash -c 'cd ecosystem-explorer && npm run format'
+        language: system
+        pass_filenames: false
+        files: ^ecosystem-explorer/src/.*\.(ts|tsx|css|json)$
+        stages: [pre-commit]
+
       - id: eslint-ecosystem-explorer
         name: eslint (ecosystem-explorer)
         entry: bash -c 'cd ecosystem-explorer && npm run lint'
