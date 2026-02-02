@@ -50,7 +50,7 @@ instrumentations:
         version = Version("2.10.0")
         inventory_manager.save_versioned_inventory(
             version=version,
-            instrumentations=[],
+            instrumentations={"file_format": 0.1, "libraries": {}},
         )
 
         mock_client.get_latest_release_tag.return_value = "v2.10.0"
@@ -80,7 +80,7 @@ instrumentations:
         old_snapshot = Version("2.9.0-SNAPSHOT")
         inventory_manager.save_versioned_inventory(
             version=old_snapshot,
-            instrumentations=[],
+            instrumentations={"file_format": 0.1, "libraries": {}},
         )
 
         mock_client.get_latest_release_tag.return_value = "v2.10.0"
@@ -124,7 +124,7 @@ instrumentations:
     def test_sync_no_new_release(self, sync, mock_client, inventory_manager):
         inventory_manager.save_versioned_inventory(
             version=Version("2.10.0"),
-            instrumentations=[],
+            instrumentations={"file_format": 0.1, "libraries": {}},
         )
 
         mock_client.get_latest_release_tag.return_value = "v2.10.0"
@@ -140,40 +140,6 @@ instrumentations:
         # But snapshot should still be updated
         assert summary["snapshot_updated"] == "2.10.1-SNAPSHOT"
 
-    def test_parse_instrumentation_yaml(self, sync):
-        yaml_content = """
-file_format: 0.1
-libraries:
-  akka:
-  - id: akka-actor
-    name: Akka Actor
-    stability: stable
-  apache:
-  - id: apache-camel
-    name: Apache Camel
-    stability: experimental
-"""
-
-        data = sync._parse_instrumentation_yaml(yaml_content)
-
-        assert isinstance(data, dict)
-        assert data["file_format"] == 0.1
-        assert "libraries" in data
-        assert "akka" in data["libraries"]
-        assert "apache" in data["libraries"]
-
-    def test_parse_instrumentation_yaml_empty(self, sync):
-        yaml_content = ""
-        data = sync._parse_instrumentation_yaml(yaml_content)
-        assert data == {}
-
-    def test_parse_instrumentation_yaml_no_instrumentations_key(self, sync):
-        yaml_content = """
-some_other_key: value
-"""
-        data = sync._parse_instrumentation_yaml(yaml_content)
-        assert data == {"some_other_key": "value"}
-
     def test_version_with_v_prefix_handling(self, sync, mock_client):
         mock_client.get_latest_release_tag.return_value = "v2.10.0"
         mock_client.fetch_instrumentation_list.return_value = """
@@ -187,22 +153,35 @@ instrumentations:
         assert str(version) == "2.10.0"
         assert version == Version("2.10.0")
 
-    def test_parse_instrumentation_yaml_malformed(self, sync):
-        yaml_content = """
-file_format: 0.1
-libraries:
-  akka:
-  - id: akka-actor
-    name: Akka Actor
-  invalid yaml here: [unclosed
-"""
-
-        with pytest.raises(ValueError, match="Error parsing instrumentation YAML"):
-            sync._parse_instrumentation_yaml(yaml_content)
-
     def test_update_snapshot_with_yaml_error(self, sync, mock_client):
         mock_client.get_latest_release_tag.return_value = "v2.10.0"
         mock_client.fetch_instrumentation_list.return_value = "malformed: [yaml"
 
         with pytest.raises(ValueError, match="Error parsing instrumentation YAML"):
             sync.update_snapshot()
+
+    def test_parse_cleans_whitespace(self, sync, mock_client):
+        """Test that parser cleans trailing whitespace from descriptions."""
+        mock_client.get_latest_release_tag.return_value = "v2.10.0"
+        mock_client.fetch_instrumentation_list.return_value = """
+file_format: 0.1
+libraries:
+  test:
+  - name: '  Test Name  '
+    description: 'Description with trailing spaces.
+
+        '
+"""
+
+        version = sync.process_latest_release()
+
+        # Verify version was created
+        assert version == Version("2.10.0")
+
+        # Load and check that strings were cleaned and library structure flattened
+        loaded = sync.inventory_manager.load_versioned_inventory(version)
+        assert isinstance(loaded["libraries"], list)
+        test_lib = loaded["libraries"][0]
+        assert test_lib["name"] == "Test Name"
+        assert test_lib["description"] == "Description with trailing spaces."
+        assert test_lib["tags"] == ["test"]

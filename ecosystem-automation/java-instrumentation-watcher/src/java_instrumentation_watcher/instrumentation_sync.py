@@ -3,9 +3,9 @@
 import logging
 from typing import Any
 
-import yaml
 from semantic_version import Version
 
+from .instrumentation_parser import parse_instrumentation_yaml
 from .inventory_manager import InventoryManager
 from .java_instrumentation_client import JavaInstrumentationClient
 
@@ -76,7 +76,7 @@ class InstrumentationSync:
 
         logger.info(f"  Fetching instrumentation list for {tag_string}...")
         yaml_content = self.client.fetch_instrumentation_list(ref=tag_string)
-        instrumentations = self._parse_instrumentation_yaml(yaml_content)
+        instrumentations = parse_instrumentation_yaml(yaml_content)
 
         self.inventory_manager.save_versioned_inventory(
             version=version,
@@ -115,7 +115,7 @@ class InstrumentationSync:
 
         logger.info("  Fetching instrumentation list from main branch...")
         yaml_content = self.client.fetch_instrumentation_list(ref="main")
-        instrumentations = self._parse_instrumentation_yaml(yaml_content)
+        instrumentations = parse_instrumentation_yaml(yaml_content)
 
         self.inventory_manager.save_versioned_inventory(
             version=snapshot_version,
@@ -123,19 +123,3 @@ class InstrumentationSync:
         )
 
         return snapshot_version
-
-    def _parse_instrumentation_yaml(self, yaml_content: str) -> dict[str, Any]:
-        """
-        Parse instrumentation YAML content.
-
-        Args:
-            yaml_content: Raw YAML string
-
-        Returns:
-            Raw data dictionary (will contain file_format, libraries, etc.)
-        """
-        try:
-            data = yaml.safe_load(yaml_content) or {}
-            return data
-        except yaml.YAMLError as e:
-            raise ValueError(f"Error parsing instrumentation YAML: {e}") from e

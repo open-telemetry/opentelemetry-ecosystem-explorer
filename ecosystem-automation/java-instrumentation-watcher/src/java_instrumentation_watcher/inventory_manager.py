@@ -32,39 +32,22 @@ class InventoryManager:
         """
         return self.inventory_dir / f"v{version}"
 
-    def save_versioned_inventory(
-        self,
-        version: Version,
-        instrumentations: dict[str, Any] | list[dict[str, Any]],
-        repository: str = "opentelemetry-java-instrumentation",
-    ) -> None:
+    def save_versioned_inventory(self, version: Version, instrumentations: dict[str, Any]) -> None:
         """
         Save inventory for a specific version.
 
         Args:
             version: Version object
-            instrumentations: Instrumentation data
-            repository: Name of the repository being scanned
+            instrumentations: Instrumentation data dict
         """
         version_dir = self.get_version_dir(version)
         version_dir.mkdir(parents=True, exist_ok=True)
 
         file_path = version_dir / self.FILE_NAME
 
-        # If instrumentations is already a dict with the full structure, use it
-        # Otherwise wrap it for backwards compatibility
-        if isinstance(instrumentations, dict):
-            inventory_data = {
-                "version": str(version),
-                "repository": repository,
-                **instrumentations,  # Merge in the full structure (file_format, libraries, etc.)
-            }
-        else:
-            inventory_data = {
-                "version": str(version),
-                "repository": repository,
-                "instrumentations": instrumentations,
-            }
+        inventory_data = {
+            **instrumentations,
+        }
 
         with open(file_path, "w") as f:
             yaml.dump(inventory_data, f, default_flow_style=False, sort_keys=False, allow_unicode=True)
@@ -84,14 +67,12 @@ class InventoryManager:
 
         if not file_path.exists():
             return {
-                "version": str(version),
-                "repository": "opentelemetry-java-instrumentation",
-                "instrumentations": [],
+                "file_format": 0.1,
+                "libraries": [],
             }
 
         with open(file_path) as f:
             data = yaml.safe_load(f) or {}
-            # Return the full structure as-is
             return data
 
     def list_versions(self) -> list[Version]:

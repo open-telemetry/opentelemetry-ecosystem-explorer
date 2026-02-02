@@ -22,7 +22,7 @@ def test_get_latest_release_tag_success(mock_session_class):
 
     assert tag == "v2.24.0"
     mock_session.get.assert_called_once_with(
-        "https://api.github.com/repos/open-telemetry/opentelemetry-java-instrumentation/releases/latest", timeout=10
+        "https://api.github.com/repos/open-telemetry/opentelemetry-java-instrumentation/releases/latest", timeout=30
     )
 
 
@@ -40,7 +40,7 @@ def test_fetch_instrumentation_file(mock_session_class):
     assert "instrumentations:" in content
     mock_session.get.assert_called_once_with(
         "https://raw.githubusercontent.com/open-telemetry/opentelemetry-java-instrumentation/2.24.0/docs/instrumentation-list.yaml",
-        timeout=10,
+        timeout=30,
     )
 
 

@@ -35,15 +35,17 @@ class TestInventoryManager:
 
     def test_save_versioned_inventory(self, inventory_manager):
         version = Version("2.10.0")
-        instrumentations = [
-            {"id": "akka-actor", "name": "Akka Actor", "stability": "stable"},
-            {"id": "apache-camel", "name": "Apache Camel", "stability": "stable"},
-        ]
+        instrumentations = {
+            "file_format": 0.1,
+            "libraries": [
+                {"id": "akka-actor", "name": "Akka Actor", "stability": "stable", "tags": ["akka"]},
+                {"id": "apache-camel", "name": "Apache Camel", "stability": "stable", "tags": ["apache"]},
+            ],
+        }
 
         inventory_manager.save_versioned_inventory(
             version=version,
             instrumentations=instrumentations,
-            repository="opentelemetry-java-instrumentation",
         )
 
         version_dir = inventory_manager.get_version_dir(version)
@@ -52,16 +54,21 @@ class TestInventoryManager:
 
         with open(file_path) as f:
             data = yaml.safe_load(f)
-            assert data["version"] == "2.10.0"
-            assert data["repository"] == "opentelemetry-java-instrumentation"
-            assert len(data["instrumentations"]) == 2
-            assert data["instrumentations"][0]["id"] == "akka-actor"
+            assert "version" not in data  # version is not in output
+            assert data["file_format"] == 0.1
+            assert isinstance(data["libraries"], list)
+            assert len(data["libraries"]) == 2
+            assert data["libraries"][0]["id"] == "akka-actor"
+            assert data["libraries"][0]["tags"] == ["akka"]
 
     def test_load_versioned_inventory(self, inventory_manager):
         version = Version("2.10.0")
-        instrumentations = [
-            {"id": "akka-actor", "name": "Akka Actor"},
-        ]
+        instrumentations = {
+            "file_format": 0.1,
+            "libraries": [
+                {"id": "akka-actor", "name": "Akka Actor", "tags": ["akka"]},
+            ],
+        }
 
         # Save first
         inventory_manager.save_versioned_inventory(
@@ -72,18 +79,19 @@ class TestInventoryManager:
         # Load
         loaded = inventory_manager.load_versioned_inventory(version)
 
-        assert loaded["version"] == "2.10.0"
-        assert loaded["repository"] == "opentelemetry-java-instrumentation"
-        assert len(loaded["instrumentations"]) == 1
-        assert loaded["instrumentations"][0]["id"] == "akka-actor"
+        assert "version" not in loaded  # version is not in output
+        assert loaded["file_format"] == 0.1
+        assert isinstance(loaded["libraries"], list)
+        assert loaded["libraries"][0]["id"] == "akka-actor"
+        assert loaded["libraries"][0]["tags"] == ["akka"]
 
     def test_load_nonexistent_inventory(self, inventory_manager):
         version = Version("2.10.0")
         loaded = inventory_manager.load_versioned_inventory(version)
 
-        assert loaded["version"] == "2.10.0"
-        assert loaded["repository"] == "opentelemetry-java-instrumentation"
-        assert loaded["instrumentations"] == []
+        assert "version" not in loaded  # version is not in output
+        assert loaded["file_format"] == 0.1
+        assert loaded["libraries"] == []
 
     def test_list_versions(self, inventory_manager):
         versions = [
@@ -95,7 +103,7 @@ class TestInventoryManager:
         for version in versions:
             inventory_manager.save_versioned_inventory(
                 version=version,
-                instrumentations=[],
+                instrumentations={"file_format": 0.1, "libraries": []},
             )
 
         listed_versions = inventory_manager.list_versions()
@@ -120,7 +128,7 @@ class TestInventoryManager:
         for version in versions:
             inventory_manager.save_versioned_inventory(
                 version=version,
-                instrumentations=[],
+                instrumentations={"file_format": 0.1, "libraries": []},
             )
 
         snapshots = inventory_manager.list_snapshot_versions()
@@ -139,7 +147,7 @@ class TestInventoryManager:
         for version in versions:
             inventory_manager.save_versioned_inventory(
                 version=version,
-                instrumentations=[],
+                instrumentations={"file_format": 0.1, "libraries": []},
             )
 
         removed_count = inventory_manager.cleanup_snapshots()
@@ -158,7 +166,7 @@ class TestInventoryManager:
 
         inventory_manager.save_versioned_inventory(
             version=version,
-            instrumentations=[],
+            instrumentations={"file_format": 0.1, "libraries": []},
         )
 
         assert inventory_manager.version_exists(version)
@@ -173,7 +181,10 @@ class TestInventoryManager:
 
     def test_save_with_snapshot_version(self, inventory_manager):
         version = Version("2.11.0-SNAPSHOT")
-        instrumentations = [{"id": "test"}]
+        instrumentations = {
+            "file_format": 0.1,
+            "libraries": [{"id": "test", "tags": ["test"]}],
+        }
 
         inventory_manager.save_versioned_inventory(
             version=version,
@@ -184,7 +195,7 @@ class TestInventoryManager:
         assert version_dir.name == "v2.11.0-SNAPSHOT"
 
         loaded = inventory_manager.load_versioned_inventory(version)
-        assert loaded["version"] == "2.11.0-SNAPSHOT"
+        assert "version" not in loaded  # version is not in output
 
     def test_version_comparison_in_list(self, inventory_manager):
         versions = [
@@ -198,7 +209,7 @@ class TestInventoryManager:
         for version in versions:
             inventory_manager.save_versioned_inventory(
                 version=version,
-                instrumentations=[],
+                instrumentations={"file_format": 0.1, "libraries": []},
             )
 
         listed_versions = inventory_manager.list_versions()
@@ -214,7 +225,7 @@ class TestInventoryManager:
         valid_version = Version("2.10.0")
         inventory_manager.save_versioned_inventory(
             version=valid_version,
-            instrumentations=[],
+            instrumentations={"file_format": 0.1, "libraries": []},
         )
 
         # Create an invalid directory
@@ -228,22 +239,27 @@ class TestInventoryManager:
 
     def test_save_and_load_complex_instrumentations(self, inventory_manager):
         version = Version("2.10.0")
-        instrumentations = [
-            {
-                "id": "akka-actor",
-                "name": "Akka Actor",
-                "stability": "stable",
-                "support": {"class": "community"},
-                "categories": ["library"],
-            },
-            {
-                "id": "apache-camel",
-                "name": "Apache Camel",
-                "stability": "experimental",
-                "support": {"class": "community"},
-                "categories": ["library", "integration"],
-            },
-        ]
+        instrumentations = {
+            "file_format": 0.1,
+            "libraries": [
+                {
+                    "id": "akka-actor",
+                    "name": "Akka Actor",
+                    "tags": ["akka"],
+                    "stability": "stable",
+                    "support": {"class": "community"},
+                    "categories": ["library"],
+                },
+                {
+                    "id": "apache-camel",
+                    "name": "Apache Camel",
+                    "tags": ["apache"],
+                    "stability": "experimental",
+                    "support": {"class": "community"},
+                    "categories": ["library", "integration"],
+                },
+            ],
+        }
 
         inventory_manager.save_versioned_inventory(
             version=version,
@@ -252,6 +268,5 @@ class TestInventoryManager:
 
         loaded = inventory_manager.load_versioned_inventory(version)
 
-        assert len(loaded["instrumentations"]) == 2
-        assert loaded["instrumentations"][0]["support"]["class"] == "community"
-        assert loaded["instrumentations"][1]["categories"] == ["library", "integration"]
+        assert loaded["libraries"][0]["support"]["class"] == "community"
+        assert loaded["libraries"][1]["categories"] == ["library", "integration"]
