@@ -55,7 +55,6 @@ class ParserV01(InstrumentationParser):
     """Parser for file_format 0.1."""
 
     def get_file_format(self) -> float:
-        """Returns 0.1."""
         return 0.1
 
     def parse(self, yaml_content: str) -> dict[str, Any]:
@@ -75,7 +74,8 @@ class ParserV01(InstrumentationParser):
         except yaml.YAMLError as e:
             raise ValueError(f"Error parsing instrumentation YAML: {e}") from e
 
-    def _flatten_libraries(self, data: dict[str, Any]) -> dict[str, Any]:
+    @staticmethod
+    def _flatten_libraries(data: dict[str, Any]) -> dict[str, Any]:
         """
         Flatten library structure from {group: [libs]} to [libs with tags].
 
