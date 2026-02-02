@@ -10,8 +10,6 @@ from semantic_version import Version
 
 
 class TestInstrumentationSync:
-    """Test InstrumentationSync class."""
-
     @pytest.fixture
     def temp_inventory_dir(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -30,7 +28,6 @@ class TestInstrumentationSync:
         return InstrumentationSync(mock_client, inventory_manager)
 
     def test_process_latest_release_new_version(self, sync, mock_client):
-        # Setup mock
         mock_client.get_latest_release_tag.return_value = "v2.10.0"
         mock_client.fetch_instrumentation_list.return_value = """
 instrumentations:
@@ -161,7 +158,6 @@ instrumentations:
             sync.update_snapshot()
 
     def test_parse_cleans_whitespace(self, sync, mock_client):
-        """Test that parser cleans trailing whitespace from descriptions."""
         mock_client.get_latest_release_tag.return_value = "v2.10.0"
         mock_client.fetch_instrumentation_list.return_value = """
 file_format: 0.1
@@ -175,7 +171,6 @@ libraries:
 
         version = sync.process_latest_release()
 
-        # Verify version was created
         assert version == Version("2.10.0")
 
         # Load and check that strings were cleaned and library structure flattened

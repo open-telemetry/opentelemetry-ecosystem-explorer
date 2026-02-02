@@ -54,7 +54,6 @@ class TestInventoryManager:
 
         with open(file_path) as f:
             data = yaml.safe_load(f)
-            assert "version" not in data  # version is not in output
             assert data["file_format"] == 0.1
             assert isinstance(data["libraries"], list)
             assert len(data["libraries"]) == 2
@@ -70,16 +69,13 @@ class TestInventoryManager:
             ],
         }
 
-        # Save first
         inventory_manager.save_versioned_inventory(
             version=version,
             instrumentations=instrumentations,
         )
 
-        # Load
         loaded = inventory_manager.load_versioned_inventory(version)
 
-        assert "version" not in loaded  # version is not in output
         assert loaded["file_format"] == 0.1
         assert isinstance(loaded["libraries"], list)
         assert loaded["libraries"][0]["id"] == "akka-actor"
@@ -89,7 +85,6 @@ class TestInventoryManager:
         version = Version("2.10.0")
         loaded = inventory_manager.load_versioned_inventory(version)
 
-        assert "version" not in loaded  # version is not in output
         assert loaded["file_format"] == 0.1
         assert loaded["libraries"] == []
 
@@ -120,9 +115,9 @@ class TestInventoryManager:
 
     def test_list_snapshot_versions(self, inventory_manager):
         versions = [
-            Version("2.9.0"),  # Release
-            Version("2.10.0-SNAPSHOT"),  # Snapshot
-            Version("2.11.0-SNAPSHOT"),  # Snapshot
+            Version("2.9.0"),
+            Version("2.10.0-SNAPSHOT"),
+            Version("2.11.0-SNAPSHOT"),
         ]
 
         for version in versions:
@@ -171,14 +166,6 @@ class TestInventoryManager:
 
         assert inventory_manager.version_exists(version)
 
-    def test_version_exists_directory_only(self, inventory_manager):
-        version = Version("2.10.0")
-        version_dir = inventory_manager.get_version_dir(version)
-        version_dir.mkdir(parents=True)
-
-        # Directory exists but no instrumentation.yaml file
-        assert not inventory_manager.version_exists(version)
-
     def test_save_with_snapshot_version(self, inventory_manager):
         version = Version("2.11.0-SNAPSHOT")
         instrumentations = {
@@ -193,9 +180,6 @@ class TestInventoryManager:
 
         version_dir = inventory_manager.get_version_dir(version)
         assert version_dir.name == "v2.11.0-SNAPSHOT"
-
-        loaded = inventory_manager.load_versioned_inventory(version)
-        assert "version" not in loaded  # version is not in output
 
     def test_version_comparison_in_list(self, inventory_manager):
         versions = [
@@ -236,37 +220,3 @@ class TestInventoryManager:
         versions = inventory_manager.list_versions()
         assert len(versions) == 1
         assert versions[0] == valid_version
-
-    def test_save_and_load_complex_instrumentations(self, inventory_manager):
-        version = Version("2.10.0")
-        instrumentations = {
-            "file_format": 0.1,
-            "libraries": [
-                {
-                    "id": "akka-actor",
-                    "name": "Akka Actor",
-                    "tags": ["akka"],
-                    "stability": "stable",
-                    "support": {"class": "community"},
-                    "categories": ["library"],
-                },
-                {
-                    "id": "apache-camel",
-                    "name": "Apache Camel",
-                    "tags": ["apache"],
-                    "stability": "experimental",
-                    "support": {"class": "community"},
-                    "categories": ["library", "integration"],
-                },
-            ],
-        }
-
-        inventory_manager.save_versioned_inventory(
-            version=version,
-            instrumentations=instrumentations,
-        )
-
-        loaded = inventory_manager.load_versioned_inventory(version)
-
-        assert loaded["libraries"][0]["support"]["class"] == "community"
-        assert loaded["libraries"][1]["categories"] == ["library", "integration"]

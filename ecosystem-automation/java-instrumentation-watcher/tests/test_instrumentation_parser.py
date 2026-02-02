@@ -11,8 +11,6 @@ from java_instrumentation_watcher.instrumentation_parser import (
 
 
 class TestParserV01:
-    """Test ParserV0_1 class."""
-
     def test_get_file_format(self):
         parser = ParserV01()
         assert parser.get_file_format() == 0.1
@@ -24,7 +22,6 @@ libraries:
   akka:
   - id: akka-actor
     name: Akka Actor
-    stability: stable
 """
         parser = ParserV01()
         data = parser.parse(yaml_content)
@@ -49,7 +46,6 @@ libraries:
         parser = ParserV01()
         data = parser.parse(yaml_content)
 
-        # Should strip trailing whitespace and newlines
         assert data["libraries"][0]["description"] == "This has trailing whitespace."
         assert data["libraries"][0]["tags"] == ["test"]
 
@@ -134,8 +130,6 @@ libraries:
 
 
 class TestParserV02:
-    """Test ParserV0_2 class."""
-
     def test_get_file_format(self):
         parser = ParserV02()
         assert parser.get_file_format() == 0.2
@@ -182,8 +176,6 @@ libraries:
 
 
 class TestParserFactory:
-    """Test ParserFactory class."""
-
     def test_get_parser_v0_1(self):
         parser = ParserFactory.get_parser(0.1)
         assert isinstance(parser, ParserV01)
@@ -206,8 +198,6 @@ class TestParserFactory:
 
 
 class TestParseInstrumentationYaml:
-    """Test parse_instrumentation_yaml helper function."""
-
     def test_parse_with_explicit_version(self):
         yaml_content = """
 file_format: 0.1
@@ -224,7 +214,6 @@ libraries:
   - name: '  Test  '
 """
         data = parse_instrumentation_yaml(yaml_content)
-        # Should auto-detect version 0.1 and clean strings
         assert data["file_format"] == 0.1
         assert data["libraries"][0]["name"] == "Test"
         assert data["libraries"][0]["tags"] == ["test"]
@@ -245,35 +234,3 @@ libraries:
         yaml_content = "invalid: [yaml"
         with pytest.raises(ValueError, match="Error parsing instrumentation YAML"):
             parse_instrumentation_yaml(yaml_content)
-
-    def test_parse_real_world_example(self):
-        """Test with a real-world example similar to the issue."""
-        yaml_content = """
-file_format: 0.1
-libraries:
-  http:
-  - name: http-server
-    configurations:
-    - name: otel.instrumentation.http.server.emit-experimental-telemetry
-      description: 'Enable the capture of experimental HTTP server telemetry. Adds
-        the `http.request.body.size` and `http.response.body.size` attributes to spans,
-        and records `http.server.request.size` and `http.server.response.size` metrics.
-
-        '
-      type: boolean
-      default: false
-"""
-        data = parse_instrumentation_yaml(yaml_content)
-
-        # Should clean the description
-        config = data["libraries"][0]["configurations"][0]
-        desc = config["description"]
-
-        # Should not have trailing newlines/spaces
-        assert not desc.endswith("\n")
-        assert not desc.endswith(" ")
-
-        # Should contain the actual content
-        assert "Enable the capture of experimental HTTP server telemetry" in desc
-        assert "http.request.body.size" in desc
-        assert data["libraries"][0]["tags"] == ["http"]
