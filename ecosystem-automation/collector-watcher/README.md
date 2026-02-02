@@ -39,24 +39,11 @@ uv run collector-watcher
 
 ## Development
 
-From the repository root:
+See the parent [ecosystem-automation README](../README.md) for setup and testing instructions.
+
+### Running Tests
 
 ```bash
-# Install dependencies
-uv sync
-
-# Run tests
-uv run pytest ecosystem-automation/collector-watcher/tests
-
-# Run tests with coverage
+# From repository root
 uv run pytest ecosystem-automation/collector-watcher/tests --cov=collector_watcher
-
-# Run the module
-uv run python -m collector_watcher
-```
-
-## Adding Dependencies
-
-```bash
-uv add --package collector-watcher <package-name>
 ```
