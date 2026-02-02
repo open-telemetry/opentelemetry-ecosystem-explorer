@@ -192,7 +192,8 @@ def parse_instrumentation_yaml(yaml_content: str, file_format: float | None = No
             data = yaml.safe_load(yaml_content)
             file_format = data.get("file_format") if data else None
         except yaml.YAMLError:
-            pass
+            # If auto-detection fails due to invalid YAML, fall back to the default parser below.
+            file_format = None
 
     if file_format is not None:
         parser = ParserFactory.get_parser(file_format)
