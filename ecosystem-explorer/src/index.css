@@ -1,34 +1,54 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@import "tailwindcss";
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+/**
+ * Theme System
+ *
+ * 1. Default HSL triplet values (fallback before ThemeProvider loads)
+ * 2. ThemeProvider dynamically overwrites these from themes.ts
+ * 3. @theme block wraps triplets in hsl() for Tailwind v4
+ *
+ * Source of truth: src/themes.ts
+ */
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@layer theme {
+  :root {
+    --color-primary: 185 85% 70%;
+    --color-secondary: 185 85% 50%;
+    --color-background: 0 0% 4%;
+    --color-foreground: 0 0% 98%;
+    --color-card: 0 0% 8%;
+    --color-card-secondary: 0 0% 12%;
+    --color-muted-foreground: 0 0% 55%;
+    --color-border: 0 0% 20%;
+  }
+}
+
+@theme {
+  --color-primary: hsl(var(--color-primary));
+  --color-secondary: hsl(var(--color-secondary));
+  --color-background: hsl(var(--color-background));
+  --color-foreground: hsl(var(--color-foreground));
+  --color-card: hsl(var(--color-card));
+  --color-card-secondary: hsl(var(--color-card-secondary));
+  --color-muted-foreground: hsl(var(--color-muted-foreground));
+  --color-border: hsl(var(--color-border));
+}
+
+* {
+  border-color: hsl(var(--color-border));
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
+  padding: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  background-color: hsl(var(--color-background));
+  color: hsl(var(--color-foreground));
+}
+
+#root {
   min-height: 100vh;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
 }
