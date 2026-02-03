@@ -244,6 +244,24 @@ components:
         - odubajDT
         emeritus:
         - rmfitzpatrick
+    attributes:
+      otelcol.signal:
+        description: The signal type the telemetry metric is associated with
+        type: string
+        enum:
+        - logs
+        - metrics
+        - profiles
+        - traces
+      pod_identifier:
+        description: The pod identifier value(s) used for the association attempt
+        type: string
+      status:
+        description: The status of the pod association operation
+        type: string
+        enum:
+        - error
+        - success
     resource_attributes:
       container.id:
         description: Container ID. Usually a UUID, as for example used to identify

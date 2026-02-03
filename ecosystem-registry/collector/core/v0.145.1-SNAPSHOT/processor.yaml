@@ -1,0 +1,49 @@
+distribution: core
+version: v0.145.1-SNAPSHOT
+repository: opentelemetry-collector
+component_type: processor
+components:
+- name: batchprocessor
+  metadata:
+    type: batch
+    display_name: Batch Processor
+    status:
+      class: processor
+      stability:
+        beta:
+        - logs
+        - metrics
+        - traces
+      distributions:
+      - contrib
+      - core
+      - k8s
+- name: memorylimiterprocessor
+  metadata:
+    type: memory_limiter
+    display_name: Memory Limiter Processor
+    status:
+      class: processor
+      stability:
+        alpha:
+        - profiles
+        beta:
+        - logs
+        - metrics
+        - traces
+      distributions:
+      - contrib
+      - core
+      - k8s
+- name: xprocessor
+  metadata:
+    type: xprocessor
+    status:
+      class: pkg
+      stability:
+        development:
+        - profiles
+      codeowners:
+        active:
+        - mx-psi
+        - dmathieu
