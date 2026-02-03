@@ -3,7 +3,9 @@ name = "documentation-sync"
 version = "0.1.0"
 description = "Automation tool for synchronizing documentation with the OpenTelemetry ecosystem registry"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "semantic-version>=2.10.0",
+]
 
 [project.scripts]
 documentation-sync = "documentation_sync.main:main"

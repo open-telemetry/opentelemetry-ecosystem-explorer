@@ -370,6 +370,9 @@ wheels = [
 name = "documentation-sync"
 version = "0.1.0"
 source = { editable = "ecosystem-automation/documentation-sync" }
+dependencies = [
+    { name = "semantic-version" },
+]
 
 [package.optional-dependencies]
 dev = [
@@ -381,6 +384,7 @@ dev = [
 requires-dist = [
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.1.0" },
+    { name = "semantic-version", specifier = ">=2.10.0" },
 ]
 provides-extras = ["dev"]
 
