@@ -7,7 +7,7 @@ from pathlib import Path
 import pytest
 import yaml
 from collector_watcher.inventory_manager import InventoryManager
-from collector_watcher.version import Version
+from semantic_version import Version
 
 
 @pytest.fixture
@@ -37,12 +37,12 @@ def sample_components():
 
 @pytest.fixture
 def sample_version():
-    return Version(0, 112, 0)
+    return Version("0.112.0")
 
 
 @pytest.fixture
 def sample_snapshot_version():
-    return Version(0, 113, 0, is_snapshot=True)
+    return Version(major=0, minor=113, patch=0, prerelease=("SNAPSHOT",))
 
 
 def test_save_versioned_inventory(temp_inventory_dir, sample_components, sample_version):
@@ -64,7 +64,7 @@ def test_save_versioned_inventory(temp_inventory_dir, sample_components, sample_
         loaded = yaml.safe_load(f)
 
     assert loaded["distribution"] == "contrib"
-    assert loaded["version"] == "v0.112.0"
+    assert loaded["version"] == "0.112.0"
     assert loaded["repository"] == "opentelemetry-collector-contrib"
     assert loaded["component_type"] == "receiver"
     assert len(loaded["components"]) == 2
@@ -83,7 +83,7 @@ def test_load_versioned_inventory(temp_inventory_dir, sample_components, sample_
     loaded = manager.load_versioned_inventory("contrib", sample_version)
 
     assert loaded["distribution"] == "contrib"
-    assert loaded["version"] == "v0.112.0"
+    assert loaded["version"] == "0.112.0"
     assert loaded["repository"] == "opentelemetry-collector-contrib"
     assert loaded["components"] == sample_components
 
@@ -94,16 +94,16 @@ def test_load_nonexistent_versioned_inventory(temp_inventory_dir, sample_version
     loaded = manager.load_versioned_inventory("contrib", sample_version)
 
     assert loaded["distribution"] == "contrib"
-    assert loaded["version"] == "v0.112.0"
+    assert loaded["version"] == "0.112.0"
     assert loaded["components"] == {}
 
 
 def test_list_versions(temp_inventory_dir, sample_components):
     manager = InventoryManager(str(temp_inventory_dir))
 
-    v1 = Version(0, 110, 0)
-    v2 = Version(0, 111, 0)
-    v3 = Version(0, 112, 0)
+    v1 = Version("0.110.0")
+    v2 = Version("0.111.0")
+    v3 = Version("0.112.0")
 
     for version in [v1, v2, v3]:
         manager.save_versioned_inventory(
@@ -117,18 +117,18 @@ def test_list_versions(temp_inventory_dir, sample_components):
 
     assert len(versions) == 3
     # Should be sorted newest to oldest
-    assert str(versions[0]) == "v0.112.0"
-    assert str(versions[1]) == "v0.111.0"
-    assert str(versions[2]) == "v0.110.0"
+    assert str(versions[0]) == "0.112.0"
+    assert str(versions[1]) == "0.111.0"
+    assert str(versions[2]) == "0.110.0"
 
 
 def test_list_snapshot_versions(temp_inventory_dir, sample_components):
     manager = InventoryManager(str(temp_inventory_dir))
 
     # Create mix of release and snapshot versions
-    v1 = Version(0, 112, 0)
-    v2 = Version(0, 113, 0, is_snapshot=True)
-    v3 = Version(0, 114, 0, is_snapshot=True)
+    v1 = Version("0.112.0")
+    v2 = Version(major=0, minor=113, patch=0, prerelease=("SNAPSHOT",))
+    v3 = Version(major=0, minor=114, patch=0, prerelease=("SNAPSHOT",))
 
     for version in [v1, v2, v3]:
         manager.save_versioned_inventory(
@@ -142,15 +142,15 @@ def test_list_snapshot_versions(temp_inventory_dir, sample_components):
     snapshots = manager.list_snapshot_versions("contrib")
 
     assert len(snapshots) == 2
-    assert all(v.is_snapshot for v in snapshots)
+    assert all(v.prerelease for v in snapshots)
 
 
 def test_cleanup_snapshots(temp_inventory_dir, sample_components):
     manager = InventoryManager(str(temp_inventory_dir))
 
-    v1 = Version(0, 112, 0)
-    v2 = Version(0, 113, 0, is_snapshot=True)
-    v3 = Version(0, 114, 0, is_snapshot=True)
+    v1 = Version("0.112.0")
+    v2 = Version(major=0, minor=113, patch=0, prerelease=("SNAPSHOT",))
+    v3 = Version(major=0, minor=114, patch=0, prerelease=("SNAPSHOT",))
 
     for version in [v1, v2, v3]:
         manager.save_versioned_inventory(

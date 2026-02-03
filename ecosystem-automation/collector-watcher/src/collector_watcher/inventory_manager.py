@@ -5,9 +5,9 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+from semantic_version import Version
 
 from .type_defs import COMPONENT_TYPES, DistributionName
-from .version import Version
 
 
 class InventoryManager:
@@ -29,9 +29,9 @@ class InventoryManager:
             version: Version object
 
         Returns:
-            Path to version directory
+            Path to version directory (with 'v' prefix)
         """
-        return self.inventory_dir / distribution / str(version)
+        return self.inventory_dir / distribution / f"v{version}"
 
     def save_versioned_inventory(
         self,
@@ -123,9 +123,12 @@ class InventoryManager:
         for item in dist_dir.iterdir():
             if item.is_dir():
                 try:
-                    version = Version.from_string(item.name)
+                    # Parse version string, stripping 'v' prefix
+                    # Handles "v0.112.0", "v0.113.0-SNAPSHOT"
+                    version = Version(item.name.lstrip("v"))
                     versions.append(version)
                 except ValueError:
+                    # Skip directories that don't match version format
                     continue
 
         return sorted(versions, reverse=True)
@@ -141,7 +144,7 @@ class InventoryManager:
             List of snapshot versions
         """
         all_versions = self.list_versions(distribution)
-        return [v for v in all_versions if v.is_snapshot]
+        return [v for v in all_versions if v.prerelease]
 
     def cleanup_snapshots(self, distribution: DistributionName) -> int:
         """

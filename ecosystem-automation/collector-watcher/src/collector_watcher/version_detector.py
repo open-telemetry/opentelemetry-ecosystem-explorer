@@ -3,8 +3,7 @@
 from pathlib import Path
 
 import git
-
-from .version import Version
+from semantic_version import Version
 
 
 class VersionDetector:
@@ -34,8 +33,9 @@ class VersionDetector:
 
         for tag in tags:
             try:
-                version = Version.from_string(tag.name)
-                if not version.is_snapshot:
+                # Strip 'v' prefix from tag name (e.g., "v0.112.0" -> "0.112.0")
+                version = Version(tag.name.lstrip("v"))
+                if not version.prerelease:
                     version_tags.append(version)
             except ValueError:
                 continue
@@ -56,8 +56,9 @@ class VersionDetector:
 
         for tag in tags:
             try:
-                version = Version.from_string(tag.name)
-                if not version.is_snapshot:
+                # Strip 'v' prefix from tag name (e.g., "v0.112.0" -> "0.112.0")
+                version = Version(tag.name.lstrip("v"))
+                if not version.prerelease:
                     version_tags.append(version)
             except ValueError:
                 continue
@@ -73,7 +74,8 @@ class VersionDetector:
         Raises:
             ValueError: If version tag doesn't exist
         """
-        tag_name = str(version)
+        # Git tags have 'v' prefix (e.g., "v0.112.0")
+        tag_name = f"v{version}"
         try:
             self.repo.git.checkout(tag_name)
         except git.exc.GitCommandError as e:
@@ -101,8 +103,13 @@ class VersionDetector:
         """
         latest = self.get_latest_release_tag()
         if latest is None:
-            return Version(0, 0, 1, is_snapshot=True)
+            return Version(major=0, minor=0, patch=1, prerelease=("SNAPSHOT",))
 
-        next_version = latest.next_patch()
-        next_version.is_snapshot = True
-        return next_version
+        # Create snapshot version (increment patch)
+        snapshot_version = Version(
+            major=latest.major,
+            minor=latest.minor,
+            patch=latest.patch + 1,
+            prerelease=("SNAPSHOT",),
+        )
+        return snapshot_version

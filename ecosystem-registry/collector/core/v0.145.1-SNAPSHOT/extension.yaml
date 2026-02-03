@@ -1,0 +1,37 @@
+distribution: core
+version: v0.145.1-SNAPSHOT
+repository: opentelemetry-collector
+component_type: extension
+components:
+- name: memorylimiterextension
+  metadata:
+    type: memory_limiter
+    display_name: Memory Limiter Extension
+    status:
+      class: extension
+      stability:
+        development:
+        - extension
+      distributions: []
+- name: xextension
+  metadata:
+    type: xextension
+    status:
+      class: extension
+      stability:
+        development:
+        - profiles
+      codeowners: null
+- name: zpagesextension
+  metadata:
+    type: zpages
+    display_name: zPages Extension
+    status:
+      class: extension
+      stability:
+        beta:
+        - extension
+      distributions:
+      - contrib
+      - core
+      - k8s

@@ -4,8 +4,8 @@ from pathlib import Path
 
 import git
 import pytest
-from collector_watcher.version import Version
 from collector_watcher.version_detector import VersionDetector
+from semantic_version import Version
 
 
 @pytest.fixture
@@ -91,7 +91,7 @@ class TestVersionDetector:
         latest = detector.get_latest_release_tag()
 
         assert latest is not None
-        assert latest == Version(0, 112, 0)
+        assert latest == Version("0.112.0")
 
     def test_get_latest_release_tag_empty_repo(self, empty_git_repo):
         """Test getting latest tag from a repo with no tags."""
@@ -105,8 +105,8 @@ class TestVersionDetector:
         latest = detector.get_latest_release_tag()
 
         # Should be v0.112.0, not v0.113.0-SNAPSHOT
-        assert latest == Version(0, 112, 0)
-        assert not latest.is_snapshot
+        assert latest == Version("0.112.0")
+        assert not latest.prerelease
 
     def test_get_all_release_tags(self, temp_git_repo):
         """Test getting all release tags sorted newest to oldest."""
@@ -114,9 +114,9 @@ class TestVersionDetector:
         tags = detector.get_all_release_tags()
 
         assert len(tags) == 3
-        assert tags[0] == Version(0, 112, 0)
-        assert tags[1] == Version(0, 111, 0)
-        assert tags[2] == Version(0, 110, 0)
+        assert tags[0] == Version("0.112.0")
+        assert tags[1] == Version("0.111.0")
+        assert tags[2] == Version("0.110.0")
 
     def test_get_all_release_tags_ignores_snapshots_and_invalid(self, temp_git_repo):
         """Test that snapshot and invalid tags are excluded."""
@@ -126,11 +126,11 @@ class TestVersionDetector:
         # Should have 3 tags (v0.110.0, v0.111.0, v0.112.0)
         # Should not include v0.113.0-SNAPSHOT or "not-a-version"
         assert len(tags) == 3
-        assert all(not tag.is_snapshot for tag in tags)
+        assert all(not tag.prerelease for tag in tags)
 
     def test_checkout_version(self, temp_git_repo):
         detector = VersionDetector(temp_git_repo)
-        version = Version(0, 111, 0)
+        version = Version("0.111.0")
 
         detector.checkout_version(version)
 
@@ -139,7 +139,7 @@ class TestVersionDetector:
 
     def test_checkout_version_invalid(self, temp_git_repo):
         detector = VersionDetector(temp_git_repo)
-        version = Version(1, 0, 0)  # This tag doesn't exist
+        version = Version("1.0.0")  # This tag doesn't exist
 
         with pytest.raises(ValueError, match="Failed to checkout"):
             detector.checkout_version(version)
@@ -148,7 +148,7 @@ class TestVersionDetector:
         detector = VersionDetector(temp_git_repo)
 
         # First checkout a tag
-        detector.checkout_version(Version(0, 111, 0))
+        detector.checkout_version(Version("0.111.0"))
 
         # Then checkout main
         detector.checkout_main()
@@ -164,7 +164,7 @@ class TestVersionDetector:
         assert next_version.major == 0
         assert next_version.minor == 112
         assert next_version.patch == 1
-        assert next_version.is_snapshot
+        assert next_version.prerelease
 
     def test_determine_next_snapshot_version_empty_repo(self, empty_git_repo):
         """Test determining next snapshot version with no existing releases."""
@@ -172,4 +172,4 @@ class TestVersionDetector:
         next_version = detector.determine_next_snapshot_version()
 
         # Should default to v0.0.1-SNAPSHOT
-        assert next_version == Version(0, 0, 1, is_snapshot=True)
+        assert next_version == Version(major=0, minor=0, patch=1, prerelease=("SNAPSHOT",))

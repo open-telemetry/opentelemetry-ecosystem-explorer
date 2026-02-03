@@ -10,8 +10,9 @@ import subprocess
 from pathlib import Path
 from typing import Optional
 
+from semantic_version import Version
+
 from .type_defs import DistributionName
-from .version import Version
 
 logger = logging.getLogger(__name__)
 
@@ -199,7 +200,8 @@ class RepositoryManager:
         Raises:
             RuntimeError: If checkout fails
         """
-        tag = str(version)
+        # Git tags have 'v' prefix (e.g., "v0.112.0")
+        tag = f"v{version}"
         try:
             subprocess.run(
                 ["git", "fetch", "--tags"],

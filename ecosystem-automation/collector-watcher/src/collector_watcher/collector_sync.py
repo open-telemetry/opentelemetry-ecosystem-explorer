@@ -3,10 +3,11 @@
 import logging
 from typing import Any
 
+from semantic_version import Version
+
 from .component_scanner import ComponentScanner
 from .inventory_manager import InventoryManager
 from .type_defs import DistributionName
-from .version import Version
 from .version_detector import VersionDetector
 
 logger = logging.getLogger(__name__)
@@ -42,7 +43,8 @@ class CollectorSync:
         self.inventory_manager = inventory_manager
         self.version_detectors = {dist: VersionDetector(path) for dist, path in repos.items()}
 
-    def get_repository_name(self, distribution: DistributionName) -> str:
+    @staticmethod
+    def get_repository_name(distribution: DistributionName) -> str:
         """
         Get the canonical repository name for a distribution.
 
@@ -79,10 +81,10 @@ class CollectorSync:
         repo_path = self.repos[distribution]
         detector = self.version_detectors[distribution]
 
-        if checkout and not version.is_snapshot:
+        if checkout and not version.prerelease:
             logger.info("  Checking out %s %s...", distribution, version)
             detector.checkout_version(version)
-        elif checkout and version.is_snapshot:
+        elif checkout and version.prerelease:
             logger.info("  Checking out %s main branch...", distribution)
             detector.checkout_main()
 

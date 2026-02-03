@@ -2490,6 +2490,8 @@ libraries:
       attributes:
       - name: db.namespace
         type: STRING
+      - name: db.query.summary
+        type: STRING
       - name: db.query.text
         type: STRING
       - name: db.system.name
@@ -5411,7 +5413,7 @@ libraries:
       attributes:
       - name: db.namespace
         type: STRING
-      - name: db.operation.name
+      - name: db.query.summary
         type: STRING
       - name: db.system.name
         type: STRING
@@ -5425,6 +5427,8 @@ libraries:
       - name: db.namespace
         type: STRING
       - name: db.operation.name
+        type: STRING
+      - name: db.query.summary
         type: STRING
       - name: db.query.text
         type: STRING

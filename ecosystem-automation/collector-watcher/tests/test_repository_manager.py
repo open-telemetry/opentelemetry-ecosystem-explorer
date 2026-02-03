@@ -12,7 +12,7 @@ from collector_watcher.repository_manager import (
     REPO_URLS,
     RepositoryManager,
 )
-from collector_watcher.version import Version
+from semantic_version import Version
 
 
 @pytest.fixture
@@ -148,7 +148,7 @@ class TestRepositoryManager:
     @patch("collector_watcher.repository_manager.subprocess.run")
     def test_checkout_specified_version(self, mock_run, temp_dir):
         manager = RepositoryManager(str(temp_dir))
-        version = Version.from_string("v1.0.0")
+        version = Version("1.0.0")
         mock_run.return_value = MagicMock(returncode=0)
 
         manager._checkout_version(temp_dir, version)
@@ -160,7 +160,7 @@ class TestRepositoryManager:
     @patch("collector_watcher.repository_manager.subprocess.run")
     def test_checkout_version_failure_raises_runtime_error(self, mock_run, temp_dir):
         manager = RepositoryManager(str(temp_dir))
-        version = Version.from_string("v1.0.0")
+        version = Version("1.0.0")
         mock_run.side_effect = subprocess.CalledProcessError(1, "git checkout", stderr="Checkout failed")
 
         with pytest.raises(RuntimeError, match="Failed to checkout"):
@@ -177,7 +177,7 @@ class TestRepositoryManager:
     @patch("collector_watcher.repository_manager.subprocess.run")
     def test_setup_repository_with_env_var_and_version(self, mock_run, mock_repo, monkeypatch):
         monkeypatch.setenv(ENV_VAR_NAMES["core"], str(mock_repo))
-        version = Version.from_string("v1.0.0")
+        version = Version("1.0.0")
         mock_run.return_value = MagicMock(returncode=0)
 
         manager = RepositoryManager()
@@ -233,7 +233,7 @@ class TestRepositoryManager:
     @patch("collector_watcher.repository_manager.subprocess.run")
     def test_setup_repository_with_version(self, mock_run, temp_dir):
         manager = RepositoryManager(str(temp_dir))
-        version = Version.from_string("v1.2.3")
+        version = Version("1.2.3")
         mock_run.return_value = MagicMock(returncode=0)
 
         path = manager.setup_repository("core", version=version)
@@ -260,7 +260,7 @@ class TestRepositoryManager:
     @patch("collector_watcher.repository_manager.subprocess.run")
     def test_setup_all_repositories_with_version(self, mock_run, temp_dir):
         manager = RepositoryManager(str(temp_dir))
-        version = Version.from_string("v1.0.0")
+        version = Version("1.0.0")
         mock_run.return_value = MagicMock(returncode=0)
 
         paths = manager.setup_all_repositories(version=version)
