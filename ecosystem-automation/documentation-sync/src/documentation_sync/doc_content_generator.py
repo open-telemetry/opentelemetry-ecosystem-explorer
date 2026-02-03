@@ -51,14 +51,13 @@ class DocContentGenerator:
             List of distribution names (e.g., ["core", "contrib"])
         """
         metadata = component.get("metadata", {})
-        if not metadata:
-            return ["contrib"]
-
         status = metadata.get("status", {})
         distributions = status.get("distributions", [])
 
         if not distributions:
-            return ["contrib"]
+            # Use source_repo as fallback when distributions are empty
+            source_repo = component.get("source_repo", "contrib")
+            return [source_repo]
 
         return sorted(distributions)
 

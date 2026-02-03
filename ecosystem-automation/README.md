@@ -17,7 +17,7 @@ This project uses [uv](https://github.com/astral-sh/uv) for dependency managemen
 
 ### Prerequisites
 
-- Python
+- Python 3.11+
 - uv package manager
 
 Install uv if you don't have it:
