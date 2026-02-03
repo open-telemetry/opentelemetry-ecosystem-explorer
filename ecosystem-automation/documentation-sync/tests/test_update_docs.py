@@ -38,7 +38,8 @@ class TestGetLatestVersion:
 
         result = get_latest_version(inv_mgr, "contrib")
 
-        # Should skip any snapshot versions and return latest release
+        # Should skip v0.141.0-snapshot and return v0.140.1
+        assert result == Version("0.140.1")
         assert not result.prerelease
 
 

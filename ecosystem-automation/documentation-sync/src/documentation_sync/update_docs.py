@@ -37,11 +37,6 @@ def _is_experimental_component(name: str, component_type: str) -> bool:
     return name == f"x{component_type}"
 
 
-def _filter_experimental_components(components: list[dict], component_type: str) -> list[dict]:
-    """Remove experimental 'x' components from list."""
-    return [c for c in components if not _is_experimental_component(c.get("name"), component_type)]
-
-
 def _get_distributions(component: dict) -> list[str]:
     """Extract distributions list from component metadata."""
     return component.get("metadata", {}).get("status", {}).get("distributions", [])
