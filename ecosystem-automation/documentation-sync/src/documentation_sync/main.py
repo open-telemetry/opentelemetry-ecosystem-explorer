@@ -10,6 +10,7 @@ from collector_watcher.inventory_manager import InventoryManager
 from documentation_sync.doc_content_generator import DocContentGenerator
 from documentation_sync.doc_marker_updater import DocMarkerUpdater
 from documentation_sync.docs_repository_manager import DocsRepositoryManager
+from documentation_sync.metadata_diagnostics import MetadataDiagnostics
 from documentation_sync.update_docs import get_latest_version, merge_inventories
 
 logger = logging.getLogger(__name__)
@@ -102,7 +103,8 @@ def main():
     total_components = sum(len(comps) for comps in merged_inventory["components"].values())
     logger.info(f"Loaded {total_components} total components")
 
-    generator = DocContentGenerator()
+    diagnostics = MetadataDiagnostics()
+    generator = DocContentGenerator(diagnostics)
     tables = generator.generate_all_component_tables(merged_inventory)
 
     logger.info(f"Generated {len(tables)} component tables")
@@ -142,6 +144,21 @@ def main():
         logger.error(
             "  <!-- END GENERATED: {component-type}-table SOURCE: open-telemetry/opentelemetry-ecosystem-explorer -->"
         )
+
+    logger.info("\n" + "=" * 60)
+    logger.info("Metadata Quality Report")
+    logger.info("=" * 60 + "\n")
+
+    if diagnostics.has_issues():
+        logger.warning(diagnostics.generate_summary())
+
+        # Save GitHub issue body to file for automatic issue creation
+        issue_body = diagnostics.generate_github_issue_body()
+        issue_file = Path("metadata-issues.md")
+        issue_file.write_text(issue_body)
+        logger.info(f"\n Detailed report saved to: {issue_file.absolute()}")
+    else:
+        logger.info("✅ No metadata issues found - all components have complete metadata")
 
 
 if __name__ == "__main__":

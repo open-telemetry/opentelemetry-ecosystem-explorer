@@ -4,11 +4,12 @@ from typing import Any, cast
 
 import pytest
 from documentation_sync.doc_content_generator import DocContentGenerator
+from documentation_sync.metadata_diagnostics import MetadataDiagnostics
 
 
 @pytest.fixture
 def doc_generator():
-    return DocContentGenerator()
+    return DocContentGenerator(MetadataDiagnostics())
 
 
 class TestGetStabilityBySignal:

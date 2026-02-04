@@ -2,6 +2,8 @@
 
 from typing import Any
 
+from documentation_sync.metadata_diagnostics import MetadataDiagnostics
+
 
 class DocContentGenerator:
     """Generates component tables for marker-based documentation updates."""
@@ -9,13 +11,25 @@ class DocContentGenerator:
     # Subtypes that should be rendered as separate tables
     EXTENSION_SUBTYPES = ["encoding", "observer", "storage"]
 
-    @staticmethod
-    def get_stability_by_signal(metadata: dict[str, Any]) -> dict[str, str]:
+    def __init__(self, diagnostics: MetadataDiagnostics):
+        """
+        Initialize the content generator.
+
+        Args:
+            diagnostics: Diagnostics tracker to record metadata issues
+        """
+        self.diagnostics = diagnostics
+
+    def get_stability_by_signal(
+        self, metadata: dict[str, Any], component: dict[str, Any] | None = None, component_type: str | None = None
+    ) -> dict[str, str]:
         """
         Get stability information by signal type.
 
         Args:
             metadata: Component metadata containing status.stability
+            component: Full component data (for diagnostics)
+            component_type: Type of component (for diagnostics)
 
         Returns:
             Dictionary mapping signal type to stability level
@@ -23,12 +37,20 @@ class DocContentGenerator:
             For others: {"traces": "beta", "metrics": "alpha", "logs": "-"}
         """
         if not metadata or "status" not in metadata:
+            if component and component_type:
+                # Check if component is missing metadata field entirely
+                if "metadata" not in component:
+                    self.diagnostics.record_missing_metadata(component, component_type)
+                else:
+                    self.diagnostics.record_missing_status(component, component_type)
             return {}
 
         status = metadata.get("status", {})
         stability = status.get("stability", {})
 
         if not stability:
+            if component and component_type:
+                self.diagnostics.record_missing_stability(component, component_type)
             return {}
 
         signal_stability = {}
@@ -39,13 +61,13 @@ class DocContentGenerator:
 
         return signal_stability
 
-    @staticmethod
-    def _get_distributions(component: dict[str, Any]) -> list[str]:
+    def _get_distributions(self, component: dict[str, Any], component_type: str | None = None) -> list[str]:
         """
         Get the list of distributions for a component.
 
         Args:
             component: Component data
+            component_type: Type of component (for diagnostics)
 
         Returns:
             List of distribution names (e.g., ["core", "contrib"])
@@ -159,9 +181,9 @@ class DocContentGenerator:
         metadata = component.get("metadata", {})
         source_repo = component.get("source_repo", "contrib")
 
-        distributions = self._get_distributions(component)
+        distributions = self._get_distributions(component, component_type)
         distributions_str = self._format_distributions(distributions)
-        stability_map = self.get_stability_by_signal(metadata)
+        stability_map = self.get_stability_by_signal(metadata, component, component_type)
 
         readme_link = self._build_component_url(component_type, name, source_repo, subtype)
         name_link = f"[{name}]({readme_link})"

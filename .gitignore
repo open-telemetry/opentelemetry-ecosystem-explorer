@@ -8,3 +8,5 @@ node_modules/
 
 # Collector Watcher temporary repositories
 tmp_repos/
+
+metadata-issues.md
