@@ -30,6 +30,34 @@ class DocMarkerUpdater:
         end = f"<!-- END {self.marker_prefix}: {marker_id} SOURCE: {self.source} -->"
         return begin, end
 
+    def _build_marker_regex(self, marker_id: str) -> re.Pattern:
+        """
+        Build regex pattern to match marker section.
+
+        Matches patterns like:
+            <!-- BEGIN GENERATED: marker-id -->
+            <!-- BEGIN GENERATED: marker-id SOURCE: open-telemetry/repo -->
+
+        Args:
+            marker_id: Marker identifier
+
+        Returns:
+            Compiled regex pattern
+        """
+        begin_pattern = (
+            re.escape(f"<!-- BEGIN {self.marker_prefix}: {marker_id}")
+            + r"(?:\s+SOURCE:\s+[\w\-/.]+)?"
+            + re.escape(" -->")
+        )
+        end_pattern = (
+            re.escape(f"<!-- END {self.marker_prefix}: {marker_id}")
+            + r"(?:\s+SOURCE:\s+[\w\-/.]+)?"
+            + re.escape(" -->")
+        )
+
+        pattern = begin_pattern + r".*?" + end_pattern
+        return re.compile(pattern, re.DOTALL)
+
     def update_section(self, content: str, marker_id: str, new_content: str) -> tuple[str, bool]:
         """
         Update a section of content between markers.
@@ -44,21 +72,7 @@ class DocMarkerUpdater:
             was_updated is False if markers weren't found
         """
         begin_marker, end_marker = self.get_marker_pattern(marker_id)
-
-        # Ex: <!-- BEGIN GENERATED: marker-id SOURCE: open-telemetry/opentelemetry-ecosystem-explorer -->
-        begin_pattern = (
-            re.escape(f"<!-- BEGIN {self.marker_prefix}: {marker_id}")
-            + r"(?:\s+SOURCE:\s+[\w\-/.]+)?"
-            + re.escape(" -->")
-        )
-        end_pattern = (
-            re.escape(f"<!-- END {self.marker_prefix}: {marker_id}")
-            + r"(?:\s+SOURCE:\s+[\w\-/.]+)?"
-            + re.escape(" -->")
-        )
-
-        pattern = begin_pattern + r".*?" + end_pattern
-        regex = re.compile(pattern, re.DOTALL)
+        regex = self._build_marker_regex(marker_id)
 
         if not regex.search(content):
             return content, False
