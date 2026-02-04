@@ -1,5 +1,5 @@
 distribution: contrib
-version: v0.144.1-SNAPSHOT
+version: 0.145.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: receiver
 components:
@@ -16894,6 +16894,12 @@ components:
       sqlserver.percent_complete:
         description: Percentage of work completed.
         type: double
+      sqlserver.procedure_id:
+        description: The SQL Server ID of the stored procedure, if any
+        type: string
+      sqlserver.procedure_name:
+        description: The name of the stored procedure, if any
+        type: string
       sqlserver.query_hash:
         description: Binary hash value calculated on the query and used to identify
           queries with similar logic, reported in the HEX format.
