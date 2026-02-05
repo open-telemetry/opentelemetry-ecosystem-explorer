@@ -1,0 +1,254 @@
+name: Update OpenTelemetry.io Documentation
+
+on:
+  schedule:
+    # Run nightly at 3 AM UTC
+    - cron: '0 3 * * *'
+  workflow_dispatch: # Allow manual triggers
+    inputs:
+      target_repo_owner:
+        description: 'Repository owner to create PR against (for testing against a fork)'
+        required: false
+        type: string
+        default: 'open-telemetry'
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  update-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Detect repository type (if on a fork we use different git config)
+        id: repo_check
+        run: |
+          if [ "${{ github.repository }}" == "open-telemetry/opentelemetry-ecosystem-explorer" ]; then
+            echo "is_primary=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_primary=false" >> $GITHUB_OUTPUT
+          fi
+
+      - uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+        if: steps.repo_check.outputs.is_primary == 'true'
+        id: otelbot-token
+        with:
+          app-id: ${{ vars.OTELBOT_APP_ID }}
+          private-key: ${{ secrets.OTELBOT_PRIVATE_KEY }}
+
+      - name: Determine target repository
+        id: target_repo
+        run: |
+          # Determine which opentelemetry.io repo to use
+          TARGET_OWNER="${{ inputs.target_repo_owner }}"
+          FORK_OWNER="${{ secrets.DOCS_REPO_OWNER || github.repository_owner }}"
+
+          # Check if targeting a fork (not open-telemetry)
+          if [ "$TARGET_OWNER" != "open-telemetry" ]; then
+            echo "is_fork=true" >> $GITHUB_OUTPUT
+            echo "repo_owner=$FORK_OWNER" >> $GITHUB_OUTPUT
+            echo "Using fork: $FORK_OWNER/opentelemetry.io"
+          else
+            echo "is_fork=false" >> $GITHUB_OUTPUT
+            echo "repo_owner=open-telemetry" >> $GITHUB_OUTPUT
+            echo "Using upstream: open-telemetry/opentelemetry.io"
+          fi
+
+      - name: Checkout opentelemetry.io
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: ${{ steps.target_repo.outputs.repo_owner }}/opentelemetry.io
+          path: opentelemetry.io
+          token: ${{ secrets.PAT_TOKEN || github.token }}
+          persist-credentials: false
+
+      - name: Sync fork with upstream
+        if: steps.target_repo.outputs.is_fork == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.PAT_TOKEN }}
+          FORK_OWNER: ${{ secrets.DOCS_REPO_OWNER || github.repository_owner }}
+        run: |
+          cd opentelemetry.io
+
+          # Configure git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Add upstream remote
+          git remote add upstream https://github.com/open-telemetry/opentelemetry.io.git || true
+
+          # Fetch upstream changes
+          git fetch upstream
+
+          # Sync main branch with upstream
+          git checkout main
+          git merge upstream/main --no-edit || echo "Already up to date"
+
+          # Add authenticated origin remote for pushing
+          git remote set-url origin https://x-access-token:${GH_TOKEN}@github.com/${FORK_OWNER}/opentelemetry.io.git
+
+          # Push synced changes back to fork
+          git push origin main || echo "Nothing to push"
+        continue-on-error: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@803947b9bd8e9f986429fa0c5a41c367cd732b41 # v7.2.1
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+
+      - name: Install dependencies
+        run: uv sync
+
+      # Node.js is required for the documentation generator (runs cSpell for spelling fixes)
+      - name: Set up Node.js
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version-file: opentelemetry.io/.nvmrc
+
+      - name: Install Node.js dependencies
+        run: npm install --omit=optional
+        working-directory: opentelemetry.io
+
+      - name: Generate documentation and fix spelling
+        env:
+          OTEL_DOCS_REPO_PATH: opentelemetry.io
+        run: uv run documentation-sync
+        continue-on-error: false
+
+      - name: Format and fix documentation
+        run: npm run test-and-fix
+        working-directory: opentelemetry.io
+        continue-on-error: true
+
+      - name: Report metadata issues
+        if: always()
+        env:
+          # Use otelbot token for primary repo, GITHUB_TOKEN for forks
+          GH_TOKEN: ${{ steps.repo_check.outputs.is_primary == 'true' && steps.otelbot-token.outputs.token || secrets.GITHUB_TOKEN }}
+        run: |
+          if [ ! -f "metadata-issues.md" ]; then
+            echo "No metadata issues file found, skipping"
+            exit 0
+          fi
+
+          echo "Metadata issues detected, checking for existing issue..."
+
+          # Search for existing open issue with the label
+          ISSUE_NUMBER=$(gh issue list \
+            --repo ${{ github.repository }} \
+            --label "metadata-quality" \
+            --state open \
+            --json number \
+            --jq '.[0].number')
+
+          if [ -n "$ISSUE_NUMBER" ]; then
+            echo "Found existing issue #${ISSUE_NUMBER}, adding comment..."
+            COMMENT_BODY="## Updated Metadata Quality Report
+
+          $(cat metadata-issues.md)
+
+          ---
+          _Report generated on $(date -u +"%Y-%m-%d %H:%M:%S UTC") by [documentation-sync workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})_"
+
+            gh issue comment "$ISSUE_NUMBER" --body "$COMMENT_BODY"
+          else
+            echo "No existing issue found, creating new issue..."
+            gh issue create \
+              --title "Collector Metadata Quality Issues" \
+              --label "metadata-quality" \
+              --body "$(cat metadata-issues.md)"
+          fi
+
+      - name: Check for documentation changes
+        id: check_changes
+        run: |
+          cd opentelemetry.io
+          if git diff --quiet content/en/docs/collector/components/; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No documentation changes detected"
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "Documentation changes detected:"
+            git --no-pager diff --name-only content/en/docs/collector/components/
+          fi
+
+      - name: Get version info
+        if: steps.check_changes.outputs.has_changes == 'true'
+        id: version_info
+        run: |
+          # Get the latest version from inventory
+          VERSION=$(ls -1 ecosystem-registry/collector/core | sort -V | tail -1)
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          # Create a sanitized branch name (replace dots with dashes)
+          BRANCH_NAME="collector-docs-${VERSION//\./-}"
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+
+      - name: Configure git
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          cd opentelemetry.io
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create branch and commit changes
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          cd opentelemetry.io
+          git checkout main
+
+          # Create or reset branch from current main
+          git checkout -B ${{ steps.version_info.outputs.branch_name }}
+
+          git add .
+          git commit -m "Update Collector component tables" || echo "No changes to commit"
+
+      - name: Push and create PR
+        if: steps.check_changes.outputs.has_changes == 'true'
+        env:
+          # Use otelbot token for primary repo, PAT_TOKEN for forks
+          GH_TOKEN: ${{ steps.repo_check.outputs.is_primary == 'true' && steps.otelbot-token.outputs.token || secrets.PAT_TOKEN }}
+          FORK_OWNER: ${{ secrets.DOCS_REPO_OWNER || github.repository_owner }}
+          TARGET_OWNER: ${{ inputs.target_repo_owner || 'open-telemetry' }}
+        run: |
+          cd opentelemetry.io
+
+          # Verify token is set
+          if [ -z "${GH_TOKEN}" ]; then
+            echo "ERROR: GH_TOKEN is not set. Please configure PAT_TOKEN secret."
+            exit 1
+          fi
+
+          git remote remove fork 2>/dev/null || true
+          git remote add fork https://x-access-token:${GH_TOKEN}@github.com/${FORK_OWNER}/opentelemetry.io.git
+
+          BRANCH="${{ steps.version_info.outputs.branch_name }}"
+          git push -f fork "$BRANCH"
+
+          # Determine PR head format (cross-repo PRs need "owner:branch" format)
+          if [ "${TARGET_OWNER}" = "${FORK_OWNER}" ]; then
+            PR_HEAD="$BRANCH"
+          else
+            PR_HEAD="${FORK_OWNER}:${BRANCH}"
+          fi
+
+          # Build PR body
+          PR_BODY="## Update Collector Component Documentation
+
+          This PR updates the OpenTelemetry Collector component tables for version **${{ steps.version_info.outputs.version }}**.
+
+          ---
+
+          🤖 _This PR was automatically generated by the [ecosystem-explorer](https://github.com/${{ github.repository }})_"
+
+          # Create PR (or update if already exists by pushing to same branch)
+          gh pr create \
+            --repo "${TARGET_OWNER}/opentelemetry.io" \
+            --head "${PR_HEAD}" \
+            --title "Update Collector component tables for ${{ steps.version_info.outputs.version }}" \
+            --body "$PR_BODY"
