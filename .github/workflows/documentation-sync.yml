@@ -112,6 +112,8 @@ jobs:
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
         with:
           node-version-file: opentelemetry.io/.nvmrc
+          cache: 'npm'
+          cache-dependency-path: opentelemetry.io/package.json
 
       - name: Install Node.js dependencies
         run: npm install --omit=optional
@@ -125,7 +127,6 @@ jobs:
 
       - name: Format and fix documentation
         run: |
-          npm install
           npm run check:links
           npm run fix:format
         working-directory: opentelemetry.io
