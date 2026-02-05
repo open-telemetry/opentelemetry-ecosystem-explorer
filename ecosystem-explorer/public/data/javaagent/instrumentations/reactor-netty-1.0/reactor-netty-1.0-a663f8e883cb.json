@@ -1,0 +1,115 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enable the creation of Connect and DNS spans.",
+      "name": "otel.instrumentation.reactor-netty.connection-telemetry.enabled",
+      "type": "boolean"
+    }
+  ],
+  "name": "reactor-netty-1.0",
+  "scope": {
+    "name": "io.opentelemetry.reactor-netty-1.0",
+    "schema_url": "https://opentelemetry.io/schemas/1.37.0"
+  },
+  "source_path": "instrumentation/reactor/reactor-netty/reactor-netty-1.0",
+  "tags": [
+    "reactor"
+  ],
+  "target_versions": {
+    "javaagent": [
+      "io.projectreactor.netty:reactor-netty-http:[1.0.0,)",
+      "io.projectreactor.netty:reactor-netty:[1.0.0,)"
+    ]
+  },
+  "telemetry": [
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "http.request.method",
+              "type": "STRING"
+            },
+            {
+              "name": "http.response.status_code",
+              "type": "LONG"
+            },
+            {
+              "name": "network.protocol.version",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "description": "Duration of HTTP client requests.",
+          "name": "http.client.request.duration",
+          "type": "HISTOGRAM",
+          "unit": "s"
+        }
+      ],
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "error.type",
+              "type": "STRING"
+            },
+            {
+              "name": "http.request.method",
+              "type": "STRING"
+            },
+            {
+              "name": "http.request.method_original",
+              "type": "STRING"
+            },
+            {
+              "name": "http.request.resend_count",
+              "type": "LONG"
+            },
+            {
+              "name": "http.response.status_code",
+              "type": "LONG"
+            },
+            {
+              "name": "network.peer.address",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.port",
+              "type": "LONG"
+            },
+            {
+              "name": "network.protocol.version",
+              "type": "STRING"
+            },
+            {
+              "name": "peer.service",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            },
+            {
+              "name": "url.full",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CLIENT"
+        }
+      ],
+      "when": "default"
+    }
+  ]
+}

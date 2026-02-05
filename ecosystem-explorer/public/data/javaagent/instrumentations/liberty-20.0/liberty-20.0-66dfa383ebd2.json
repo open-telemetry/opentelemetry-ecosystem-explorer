@@ -1,0 +1,10 @@
+{
+  "name": "liberty-20.0",
+  "scope": {
+    "name": "io.opentelemetry.liberty-20.0"
+  },
+  "source_path": "instrumentation/liberty/liberty-20.0",
+  "tags": [
+    "liberty"
+  ]
+}

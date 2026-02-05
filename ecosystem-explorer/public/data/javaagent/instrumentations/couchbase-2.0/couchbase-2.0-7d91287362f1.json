@@ -1,0 +1,101 @@
+{
+  "configurations": [
+    {
+      "default": true,
+      "description": "Enables statement sanitization for database queries.",
+      "name": "otel.instrumentation.common.db-statement-sanitizer.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enables database client spans and database client metrics for Couchbase 2.0 operations. It automatically traces key-value operations (get, upsert, replace, remove), view queries, N1QL queries, and cluster management operations.",
+  "library_link": "https://github.com/couchbase/couchbase-java-client",
+  "name": "couchbase-2.0",
+  "scope": {
+    "name": "io.opentelemetry.couchbase-2.0"
+  },
+  "semantic_conventions": [
+    "DATABASE_CLIENT_SPANS",
+    "DATABASE_CLIENT_METRICS"
+  ],
+  "source_path": "instrumentation/couchbase/couchbase-2.0",
+  "tags": [
+    "couchbase"
+  ],
+  "target_versions": {
+    "javaagent": [
+      "com.couchbase.client:java-client:[2,3)"
+    ]
+  },
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "db.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "db.statement",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CLIENT"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "db.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system.name",
+              "type": "STRING"
+            }
+          ],
+          "description": "Duration of database client operations.",
+          "name": "db.client.operation.duration",
+          "type": "HISTOGRAM",
+          "unit": "s"
+        }
+      ],
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "db.namespace",
+              "type": "STRING"
+            },
+            {
+              "name": "db.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.query.text",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system.name",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CLIENT"
+        }
+      ],
+      "when": "otel.semconv-stability.opt-in=database"
+    }
+  ]
+}

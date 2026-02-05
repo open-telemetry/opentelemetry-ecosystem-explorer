@@ -1,0 +1,175 @@
+{
+  "configurations": [
+    {
+      "default": true,
+      "description": "Enables statement sanitization for database queries. Takes precedence over otel.instrumentation.common.db-statement-sanitizer.enabled.",
+      "name": "otel.instrumentation.r2dbc.statement-sanitizer.enabled",
+      "type": "boolean"
+    },
+    {
+      "default": true,
+      "description": "Enables statement sanitization for database queries.",
+      "name": "otel.instrumentation.common.db-statement-sanitizer.enabled",
+      "type": "boolean"
+    },
+    {
+      "default": false,
+      "description": "Enables augmenting queries with a comment containing the tracing information. See [sqlcommenter](https://google.github.io/sqlcommenter/) for more info. WARNING: augmenting queries with tracing context will make query texts unique, which may have adverse impact on database performance.",
+      "name": "otel.instrumentation.r2dbc.experimental.sqlcommenter.enabled",
+      "type": "boolean"
+    },
+    {
+      "default": "",
+      "description": "Used to specify a mapping from host names or IP addresses to peer services.",
+      "name": "otel.instrumentation.common.peer-service-mapping",
+      "type": "map"
+    }
+  ],
+  "description": "This instrumentation enables database client spans and database client metrics for R2DBC (Reactive Relational Database Connectivity).",
+  "display_name": "R2DBC",
+  "library_link": "https://r2dbc.io/",
+  "name": "r2dbc-1.0",
+  "scope": {
+    "name": "io.opentelemetry.r2dbc-1.0"
+  },
+  "semantic_conventions": [
+    "DATABASE_CLIENT_SPANS",
+    "DATABASE_CLIENT_METRICS"
+  ],
+  "source_path": "instrumentation/r2dbc-1.0",
+  "tags": [
+    "r2dbc"
+  ],
+  "target_versions": {
+    "javaagent": [
+      "io.r2dbc:r2dbc-spi:[1.0.0.RELEASE,)"
+    ],
+    "library": [
+      "io.r2dbc:r2dbc-spi:1.0.0.RELEASE"
+    ]
+  },
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "db.connection_string",
+              "type": "STRING"
+            },
+            {
+              "name": "db.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "db.sql.table",
+              "type": "STRING"
+            },
+            {
+              "name": "db.statement",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system",
+              "type": "STRING"
+            },
+            {
+              "name": "db.user",
+              "type": "STRING"
+            },
+            {
+              "name": "peer.service",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "span_kind": "CLIENT"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "db.namespace",
+              "type": "STRING"
+            },
+            {
+              "name": "db.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system.name",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "description": "Duration of database client operations.",
+          "name": "db.client.operation.duration",
+          "type": "HISTOGRAM",
+          "unit": "s"
+        }
+      ],
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "db.collection.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.namespace",
+              "type": "STRING"
+            },
+            {
+              "name": "db.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.query.text",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system.name",
+              "type": "STRING"
+            },
+            {
+              "name": "peer.service",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "span_kind": "CLIENT"
+        }
+      ],
+      "when": "otel.semconv-stability.opt-in=database"
+    }
+  ]
+}

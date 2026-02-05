@@ -1,0 +1,18 @@
+{
+  "name": "rxjava-3.1.1",
+  "scope": {
+    "name": "io.opentelemetry.rxjava-3.1.1"
+  },
+  "source_path": "instrumentation/rxjava/rxjava-3.1.1",
+  "tags": [
+    "rxjava"
+  ],
+  "target_versions": {
+    "javaagent": [
+      "io.reactivex.rxjava3:rxjava:[3.1.1,)"
+    ],
+    "library": [
+      "io.reactivex.rxjava3:rxjava:3.1.1"
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "jboss-logmanager-mdc-1.1",
+  "scope": {
+    "name": "io.opentelemetry.jboss-logmanager-mdc-1.1"
+  },
+  "source_path": "instrumentation/jboss-logmanager/jboss-logmanager-mdc-1.1",
+  "tags": [
+    "jboss"
+  ],
+  "target_versions": {
+    "javaagent": [
+      "org.jboss.logmanager:jboss-logmanager:[1.1.0.GA,)"
+    ]
+  }
+}

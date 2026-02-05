@@ -9,6 +9,7 @@ dependencies = [
     "collector-watcher",
     "java-instrumentation-watcher",
     "documentation-sync",
+    "explorer-db-builder",
 ]
 
 [tool.uv.workspace]
@@ -20,6 +21,7 @@ members = [
 collector-watcher = { workspace = true }
 documentation-sync = { workspace = true }
 java-instrumentation-watcher = { workspace = true }
+explorer-db-builder = { workspace = true }
 
 [dependency-groups]
 dev = [

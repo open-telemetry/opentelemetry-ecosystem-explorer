@@ -1,0 +1,91 @@
+{
+  "description": "The c3p0 instrumentation provides connection pool metrics for c3p0 data sources.",
+  "library_link": "https://github.com/swaldman/c3p0",
+  "name": "c3p0-0.9",
+  "scope": {
+    "name": "io.opentelemetry.c3p0-0.9"
+  },
+  "semantic_conventions": [
+    "DATABASE_POOL_METRICS"
+  ],
+  "source_path": "instrumentation/c3p0-0.9",
+  "tags": [
+    "c3p0"
+  ],
+  "target_versions": {
+    "javaagent": [
+      "com.mchange:c3p0:(,)"
+    ],
+    "library": [
+      "com.mchange:c3p0:0.9.2"
+    ]
+  },
+  "telemetry": [
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "pool.name",
+              "type": "STRING"
+            }
+          ],
+          "description": "The number of pending requests for an open connection, cumulative for the entire pool.",
+          "name": "db.client.connections.pending_requests",
+          "type": "LONG_SUM",
+          "unit": "requests"
+        },
+        {
+          "attributes": [
+            {
+              "name": "pool.name",
+              "type": "STRING"
+            },
+            {
+              "name": "state",
+              "type": "STRING"
+            }
+          ],
+          "description": "The number of connections that are currently in state described by the state attribute.",
+          "name": "db.client.connections.usage",
+          "type": "LONG_SUM",
+          "unit": "connections"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "db.client.connection.pool.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.client.connection.state",
+              "type": "STRING"
+            }
+          ],
+          "description": "The number of connections that are currently in state described by the state attribute.",
+          "name": "db.client.connection.count",
+          "type": "LONG_SUM",
+          "unit": "connection"
+        },
+        {
+          "attributes": [
+            {
+              "name": "db.client.connection.pool.name",
+              "type": "STRING"
+            }
+          ],
+          "description": "The number of current pending requests for an open connection.",
+          "name": "db.client.connection.pending_requests",
+          "type": "LONG_SUM",
+          "unit": "request"
+        }
+      ],
+      "when": "otel.semconv-stability.opt-in=database"
+    }
+  ]
+}

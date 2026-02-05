@@ -1,0 +1,15 @@
+{
+  "name": "log4j-context-data-2.7",
+  "scope": {
+    "name": "io.opentelemetry.log4j-context-data-2.7"
+  },
+  "source_path": "instrumentation/log4j/log4j-context-data/log4j-context-data-2.7",
+  "tags": [
+    "log4j"
+  ],
+  "target_versions": {
+    "javaagent": [
+      "org.apache.logging.log4j:log4j-core:[2.7,2.17.0)"
+    ]
+  }
+}

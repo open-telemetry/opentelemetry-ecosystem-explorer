@@ -1,0 +1,15 @@
+{
+  "name": "reactor-3.1",
+  "scope": {
+    "name": "io.opentelemetry.reactor-3.1"
+  },
+  "source_path": "instrumentation/reactor/reactor-3.1",
+  "tags": [
+    "reactor"
+  ],
+  "target_versions": {
+    "javaagent": [
+      "io.projectreactor:reactor-core:[3.1.0.RELEASE,)"
+    ]
+  }
+}

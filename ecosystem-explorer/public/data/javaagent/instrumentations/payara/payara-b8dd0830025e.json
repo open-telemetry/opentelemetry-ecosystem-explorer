@@ -1,0 +1,10 @@
+{
+  "name": "payara",
+  "scope": {
+    "name": "io.opentelemetry.payara"
+  },
+  "source_path": "instrumentation/payara",
+  "tags": [
+    "payara"
+  ]
+}

@@ -10,3 +10,5 @@ node_modules/
 tmp_repos/
 
 metadata-issues.md
+
+*.DS_Store

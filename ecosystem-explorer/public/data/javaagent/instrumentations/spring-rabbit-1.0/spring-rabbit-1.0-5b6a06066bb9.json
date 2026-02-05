@@ -1,0 +1,53 @@
+{
+  "configurations": [
+    {
+      "default": "",
+      "description": "A comma-separated list of header names to capture as span attributes.",
+      "name": "otel.instrumentation.messaging.experimental.capture-headers",
+      "type": "list"
+    }
+  ],
+  "description": "This instrumentation enables consumer messaging spans for Spring RabbitMQ listeners.",
+  "library_link": "https://spring.io/projects/spring-amqp",
+  "name": "spring-rabbit-1.0",
+  "scope": {
+    "name": "io.opentelemetry.spring-rabbit-1.0"
+  },
+  "source_path": "instrumentation/spring/spring-rabbit-1.0",
+  "tags": [
+    "spring"
+  ],
+  "target_versions": {
+    "javaagent": [
+      "org.springframework.amqp:spring-rabbit:(,)"
+    ]
+  },
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.message.body.size",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CONSUMER"
+        }
+      ],
+      "when": "default"
+    }
+  ]
+}

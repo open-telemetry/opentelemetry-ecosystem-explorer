@@ -1,0 +1,49 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables the creation of experimental controller spans.",
+      "name": "otel.instrumentation.common.experimental.controller-telemetry.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enriches HTTP server spans with route information, and enables controller spans for Grails applications (controller spans are disabled by default).",
+  "features": [
+    "HTTP_ROUTE",
+    "CONTROLLER_SPANS"
+  ],
+  "library_link": "https://grails.apache.org/",
+  "name": "grails-3.0",
+  "scope": {
+    "name": "io.opentelemetry.grails-3.0"
+  },
+  "source_path": "instrumentation/grails-3.0",
+  "tags": [
+    "grails"
+  ],
+  "target_versions": {
+    "javaagent": [
+      "org.grails:grails-web-url-mappings:[3.0,)"
+    ]
+  },
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "code.function",
+              "type": "STRING"
+            },
+            {
+              "name": "code.namespace",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "otel.instrumentation.common.experimental.controller-telemetry.enabled=true"
+    }
+  ]
+}

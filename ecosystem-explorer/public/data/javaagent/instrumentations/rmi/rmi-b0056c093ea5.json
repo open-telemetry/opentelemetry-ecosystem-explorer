@@ -1,0 +1,15 @@
+{
+  "name": "rmi",
+  "scope": {
+    "name": "io.opentelemetry.rmi"
+  },
+  "source_path": "instrumentation/rmi",
+  "tags": [
+    "rmi"
+  ],
+  "target_versions": {
+    "javaagent": [
+      "Java 8+"
+    ]
+  }
+}

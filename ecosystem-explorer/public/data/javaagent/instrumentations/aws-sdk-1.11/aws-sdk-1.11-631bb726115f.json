@@ -1,0 +1,444 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables the experimental span attributes `aws.agent`, `aws.queue.name`, `aws.lambda.function.arn` and `aws.lambda.function.name` for AWS SDK instrumentation.",
+      "name": "otel.instrumentation.aws-sdk.experimental-span-attributes",
+      "type": "boolean"
+    },
+    {
+      "default": false,
+      "description": "Enables experimental receive telemetry, which will cause consumers to start a new trace, with only a span link connecting it to the producer trace.",
+      "name": "otel.instrumentation.messaging.experimental.receive-telemetry.enabled",
+      "type": "boolean"
+    },
+    {
+      "default": "",
+      "description": "Allows configuring headers to capture as span attributes.",
+      "name": "otel.instrumentation.messaging.experimental.capture-headers",
+      "type": "list"
+    }
+  ],
+  "description": "This instrumentation covers the AWS SDK 1.11+ client library, enabling messaging and client spans and metrics for calls to AWS services including DynamoDB, EC2, Kinesis, Lambda, RDS, S3, secrets manager, SNS/SQS and step functions.",
+  "library_link": "https://aws.amazon.com/sdk-for-java/",
+  "name": "aws-sdk-1.11",
+  "scope": {
+    "name": "io.opentelemetry.aws-sdk-1.11"
+  },
+  "semantic_conventions": [
+    "HTTP_CLIENT_SPANS",
+    "DATABASE_CLIENT_SPANS",
+    "DATABASE_CLIENT_METRICS",
+    "MESSAGING_SPANS",
+    "GENAI_CLIENT_SPANS",
+    "GENAI_CLIENT_METRICS"
+  ],
+  "source_path": "instrumentation/aws-sdk/aws-sdk-1.11",
+  "tags": [
+    "aws"
+  ],
+  "target_versions": {
+    "javaagent": [
+      "com.amazonaws:aws-java-sdk-sqs:[1.10.33,)",
+      "com.amazonaws:aws-java-sdk-core:[1.10.33,)"
+    ],
+    "library": [
+      "com.amazonaws:aws-java-sdk-sqs:[1.11.106,1.12.583)",
+      "com.amazonaws:aws-java-sdk-core:1.11.0"
+    ]
+  },
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "aws.agent",
+              "type": "STRING"
+            },
+            {
+              "name": "aws.dynamodb.table_names",
+              "type": "STRING_ARRAY"
+            },
+            {
+              "name": "aws.kinesis.stream_name",
+              "type": "STRING"
+            },
+            {
+              "name": "aws.lambda.function.arn",
+              "type": "STRING"
+            },
+            {
+              "name": "aws.lambda.function.name",
+              "type": "STRING"
+            },
+            {
+              "name": "aws.lambda.resource_mapping.id",
+              "type": "STRING"
+            },
+            {
+              "name": "aws.queue.name",
+              "type": "STRING"
+            },
+            {
+              "name": "aws.request_id",
+              "type": "STRING"
+            },
+            {
+              "name": "aws.s3.bucket",
+              "type": "STRING"
+            },
+            {
+              "name": "aws.sns.topic.arn",
+              "type": "STRING"
+            },
+            {
+              "name": "aws.sqs.queue.url",
+              "type": "STRING"
+            },
+            {
+              "name": "aws.step_functions.activity.arn",
+              "type": "STRING"
+            },
+            {
+              "name": "aws.step_functions.state_machine.arn",
+              "type": "STRING"
+            },
+            {
+              "name": "db.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system",
+              "type": "STRING"
+            },
+            {
+              "name": "error.type",
+              "type": "STRING"
+            },
+            {
+              "name": "http.request.method",
+              "type": "STRING"
+            },
+            {
+              "name": "http.response.status_code",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "network.protocol.version",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.method",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.service",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.system",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            },
+            {
+              "name": "url.full",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CLIENT"
+        },
+        {
+          "attributes": [
+            {
+              "name": "aws.agent",
+              "type": "STRING"
+            },
+            {
+              "name": "aws.request_id",
+              "type": "STRING"
+            },
+            {
+              "name": "aws.sqs.queue.url",
+              "type": "STRING"
+            },
+            {
+              "name": "http.request.method",
+              "type": "STRING"
+            },
+            {
+              "name": "http.response.status_code",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.message.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            },
+            {
+              "name": "network.protocol.version",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.method",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.service",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.system",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            },
+            {
+              "name": "url.full",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CONSUMER"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "db.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system.name",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "description": "Duration of database client operations.",
+          "name": "db.client.operation.duration",
+          "type": "HISTOGRAM",
+          "unit": "s"
+        }
+      ],
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "aws.agent",
+              "type": "STRING"
+            },
+            {
+              "name": "aws.dynamodb.table_names",
+              "type": "STRING_ARRAY"
+            },
+            {
+              "name": "aws.kinesis.stream_name",
+              "type": "STRING"
+            },
+            {
+              "name": "aws.lambda.function.arn",
+              "type": "STRING"
+            },
+            {
+              "name": "aws.lambda.function.name",
+              "type": "STRING"
+            },
+            {
+              "name": "aws.lambda.resource_mapping.id",
+              "type": "STRING"
+            },
+            {
+              "name": "aws.queue.name",
+              "type": "STRING"
+            },
+            {
+              "name": "aws.request_id",
+              "type": "STRING"
+            },
+            {
+              "name": "aws.s3.bucket",
+              "type": "STRING"
+            },
+            {
+              "name": "aws.sns.topic.arn",
+              "type": "STRING"
+            },
+            {
+              "name": "aws.sqs.queue.url",
+              "type": "STRING"
+            },
+            {
+              "name": "aws.step_functions.activity.arn",
+              "type": "STRING"
+            },
+            {
+              "name": "aws.step_functions.state_machine.arn",
+              "type": "STRING"
+            },
+            {
+              "name": "db.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system.name",
+              "type": "STRING"
+            },
+            {
+              "name": "error.type",
+              "type": "STRING"
+            },
+            {
+              "name": "http.request.method",
+              "type": "STRING"
+            },
+            {
+              "name": "http.response.status_code",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "network.protocol.version",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.method",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.service",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.system",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            },
+            {
+              "name": "url.full",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CLIENT"
+        },
+        {
+          "attributes": [
+            {
+              "name": "aws.agent",
+              "type": "STRING"
+            },
+            {
+              "name": "aws.request_id",
+              "type": "STRING"
+            },
+            {
+              "name": "aws.sqs.queue.url",
+              "type": "STRING"
+            },
+            {
+              "name": "http.request.method",
+              "type": "STRING"
+            },
+            {
+              "name": "http.response.status_code",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.message.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            },
+            {
+              "name": "network.protocol.version",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.method",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.service",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.system",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            },
+            {
+              "name": "url.full",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CONSUMER"
+        }
+      ],
+      "when": "otel.semconv-stability.opt-in=database"
+    }
+  ]
+}

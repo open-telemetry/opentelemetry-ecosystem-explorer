@@ -1,0 +1,155 @@
+{
+  "name": "tomcat-jdbc",
+  "scope": {
+    "name": "io.opentelemetry.tomcat-jdbc"
+  },
+  "source_path": "instrumentation/tomcat/tomcat-jdbc",
+  "tags": [
+    "tomcat"
+  ],
+  "target_versions": {
+    "javaagent": [
+      "org.apache.tomcat:tomcat-jdbc:[8.5.0,)"
+    ]
+  },
+  "telemetry": [
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "pool.name",
+              "type": "STRING"
+            }
+          ],
+          "description": "The maximum number of idle open connections allowed.",
+          "name": "db.client.connections.idle.max",
+          "type": "LONG_SUM",
+          "unit": "connections"
+        },
+        {
+          "attributes": [
+            {
+              "name": "pool.name",
+              "type": "STRING"
+            }
+          ],
+          "description": "The minimum number of idle open connections allowed.",
+          "name": "db.client.connections.idle.min",
+          "type": "LONG_SUM",
+          "unit": "connections"
+        },
+        {
+          "attributes": [
+            {
+              "name": "pool.name",
+              "type": "STRING"
+            }
+          ],
+          "description": "The maximum number of open connections allowed.",
+          "name": "db.client.connections.max",
+          "type": "LONG_SUM",
+          "unit": "connections"
+        },
+        {
+          "attributes": [
+            {
+              "name": "pool.name",
+              "type": "STRING"
+            }
+          ],
+          "description": "The number of pending requests for an open connection, cumulative for the entire pool.",
+          "name": "db.client.connections.pending_requests",
+          "type": "LONG_SUM",
+          "unit": "requests"
+        },
+        {
+          "attributes": [
+            {
+              "name": "pool.name",
+              "type": "STRING"
+            },
+            {
+              "name": "state",
+              "type": "STRING"
+            }
+          ],
+          "description": "The number of connections that are currently in state described by the state attribute.",
+          "name": "db.client.connections.usage",
+          "type": "LONG_SUM",
+          "unit": "connections"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "db.client.connection.pool.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.client.connection.state",
+              "type": "STRING"
+            }
+          ],
+          "description": "The number of connections that are currently in state described by the state attribute.",
+          "name": "db.client.connection.count",
+          "type": "LONG_SUM",
+          "unit": "connection"
+        },
+        {
+          "attributes": [
+            {
+              "name": "db.client.connection.pool.name",
+              "type": "STRING"
+            }
+          ],
+          "description": "The maximum number of idle open connections allowed.",
+          "name": "db.client.connection.idle.max",
+          "type": "LONG_SUM",
+          "unit": "connection"
+        },
+        {
+          "attributes": [
+            {
+              "name": "db.client.connection.pool.name",
+              "type": "STRING"
+            }
+          ],
+          "description": "The minimum number of idle open connections allowed.",
+          "name": "db.client.connection.idle.min",
+          "type": "LONG_SUM",
+          "unit": "connection"
+        },
+        {
+          "attributes": [
+            {
+              "name": "db.client.connection.pool.name",
+              "type": "STRING"
+            }
+          ],
+          "description": "The maximum number of open connections allowed.",
+          "name": "db.client.connection.max",
+          "type": "LONG_SUM",
+          "unit": "connection"
+        },
+        {
+          "attributes": [
+            {
+              "name": "db.client.connection.pool.name",
+              "type": "STRING"
+            }
+          ],
+          "description": "The number of current pending requests for an open connection.",
+          "name": "db.client.connection.pending_requests",
+          "type": "LONG_SUM",
+          "unit": "request"
+        }
+      ],
+      "when": "otel.semconv-stability.opt-in=database"
+    }
+  ]
+}

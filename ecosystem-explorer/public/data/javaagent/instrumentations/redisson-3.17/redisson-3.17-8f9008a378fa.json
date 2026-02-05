@@ -1,0 +1,117 @@
+{
+  "description": "This instrumentation enables database client spans and database client metrics for Redisson Redis client operations.",
+  "library_link": "https://github.com/redisson/redisson",
+  "name": "redisson-3.17",
+  "scope": {
+    "name": "io.opentelemetry.redisson-3.17"
+  },
+  "semantic_conventions": [
+    "DATABASE_CLIENT_SPANS",
+    "DATABASE_CLIENT_METRICS"
+  ],
+  "source_path": "instrumentation/redisson/redisson-3.17",
+  "tags": [
+    "redisson"
+  ],
+  "target_versions": {
+    "javaagent": [
+      "org.redisson:redisson:[3.17.0,)"
+    ]
+  },
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "db.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "db.statement",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.address",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.port",
+              "type": "LONG"
+            },
+            {
+              "name": "network.type",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CLIENT"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "db.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system.name",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.address",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.port",
+              "type": "LONG"
+            }
+          ],
+          "description": "Duration of database client operations.",
+          "name": "db.client.operation.duration",
+          "type": "HISTOGRAM",
+          "unit": "s"
+        }
+      ],
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "db.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.query.text",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system.name",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.address",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.port",
+              "type": "LONG"
+            },
+            {
+              "name": "network.type",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CLIENT"
+        }
+      ],
+      "when": "otel.semconv-stability.opt-in=database"
+    }
+  ]
+}

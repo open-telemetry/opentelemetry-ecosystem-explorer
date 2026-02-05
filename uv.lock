@@ -6,6 +6,7 @@ requires-python = ">=3.11"
 members = [
     "collector-watcher",
     "documentation-sync",
+    "explorer-db-builder",
     "java-instrumentation-watcher",
     "opentelemetry-ecosystem-explorer",
 ]
@@ -393,6 +394,30 @@ requires-dist = [
 provides-extras = ["dev"]
 
 [[package]]
+name = "explorer-db-builder"
+version = "0.1.0"
+source = { editable = "ecosystem-automation/explorer-db-builder" }
+dependencies = [
+    { name = "pyyaml" },
+    { name = "semantic-version" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "pytest" },
+    { name = "pytest-cov" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
+    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.1.0" },
+    { name = "pyyaml", specifier = ">=6.0.1" },
+    { name = "semantic-version", specifier = ">=2.10.0" },
+]
+provides-extras = ["dev"]
+
+[[package]]
 name = "filelock"
 version = "3.20.3"
 source = { registry = "https://pypi.org/simple" }
@@ -494,6 +519,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "collector-watcher" },
     { name = "documentation-sync" },
+    { name = "explorer-db-builder" },
     { name = "java-instrumentation-watcher" },
 ]
 
@@ -509,6 +535,7 @@ dev = [
 requires-dist = [
     { name = "collector-watcher", editable = "ecosystem-automation/collector-watcher" },
     { name = "documentation-sync", editable = "ecosystem-automation/documentation-sync" },
+    { name = "explorer-db-builder", editable = "ecosystem-automation/explorer-db-builder" },
     { name = "java-instrumentation-watcher", editable = "ecosystem-automation/java-instrumentation-watcher" },
 ]
 

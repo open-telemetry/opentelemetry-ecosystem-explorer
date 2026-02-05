@@ -1,0 +1,107 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables the creation of experimental controller spans.",
+      "name": "otel.instrumentation.common.experimental.controller-telemetry.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enables HTTP client spans and metrics for Spring WebFlux 5.0. It also optionally enables experimental controller spans.",
+  "library_link": "https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/reactive/package-summary.html",
+  "name": "spring-webflux-5.0",
+  "scope": {
+    "name": "io.opentelemetry.spring-webflux-5.0",
+    "schema_url": "https://opentelemetry.io/schemas/1.37.0"
+  },
+  "source_path": "instrumentation/spring/spring-webflux/spring-webflux-5.0",
+  "tags": [
+    "spring"
+  ],
+  "target_versions": {
+    "javaagent": [
+      "io.projectreactor.ipc:reactor-netty:[0.7.0.RELEASE,)",
+      "org.springframework:spring-webflux:[5.0.0.RELEASE,)",
+      "io.projectreactor.netty:reactor-netty:[0.8.0.RELEASE,)"
+    ]
+  },
+  "telemetry": [
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "http.request.method",
+              "type": "STRING"
+            },
+            {
+              "name": "http.response.status_code",
+              "type": "LONG"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "description": "Duration of HTTP client requests.",
+          "name": "http.client.request.duration",
+          "type": "HISTOGRAM",
+          "unit": "s"
+        }
+      ],
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "error.type",
+              "type": "STRING"
+            },
+            {
+              "name": "http.request.method",
+              "type": "STRING"
+            },
+            {
+              "name": "http.response.status_code",
+              "type": "LONG"
+            },
+            {
+              "name": "peer.service",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            },
+            {
+              "name": "url.full",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CLIENT"
+        },
+        {
+          "attributes": [
+            {
+              "name": "code.function",
+              "type": "STRING"
+            },
+            {
+              "name": "code.namespace",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "otel.instrumentation.common.experimental.controller-telemetry.enabled"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables the creation of experimental controller spans.",
+      "name": "otel.instrumentation.common.experimental.controller-telemetry.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enriches HTTP server spans with route information, and enables controller spans for the Finatra web framework (controller spans are disabled by default).",
+  "features": [
+    "HTTP_ROUTE",
+    "CONTROLLER_SPANS"
+  ],
+  "library_link": "https://github.com/twitter/finatra",
+  "name": "finatra-2.9",
+  "scope": {
+    "name": "io.opentelemetry.finatra-2.9"
+  },
+  "source_path": "instrumentation/finatra-2.9",
+  "tags": [
+    "finatra"
+  ],
+  "target_versions": {
+    "javaagent": [
+      "com.twitter:finatra-http_2.11:[2.9.0,]",
+      "com.twitter:finatra-http_2.12:[2.9.0,]"
+    ]
+  },
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "code.function",
+              "type": "STRING"
+            },
+            {
+              "name": "code.namespace",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "otel.instrumentation.common.experimental.controller-telemetry.enabled=true"
+    }
+  ]
+}

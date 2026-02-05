@@ -1,0 +1,147 @@
+{
+  "configurations": [
+    {
+      "default": "CONNECT,DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT,TRACE",
+      "description": "Configures the instrumentation to recognize an alternative set of HTTP request methods. All other methods will be treated as `_OTHER`.",
+      "name": "otel.instrumentation.http.known-methods",
+      "type": "list"
+    },
+    {
+      "default": "",
+      "description": "List of HTTP request headers to capture in HTTP client telemetry.",
+      "name": "otel.instrumentation.http.client.capture-request-headers",
+      "type": "list"
+    },
+    {
+      "default": "",
+      "description": "List of HTTP response headers to capture in HTTP client telemetry.",
+      "name": "otel.instrumentation.http.client.capture-response-headers",
+      "type": "list"
+    },
+    {
+      "default": "",
+      "description": "Used to specify a mapping from host names or IP addresses to peer services.",
+      "name": "otel.instrumentation.common.peer-service-mapping",
+      "type": "map"
+    },
+    {
+      "default": false,
+      "description": "Enable the capture of experimental HTTP client telemetry. Adds the `http.request.body.size` and `http.response.body.size` attributes to spans, and records `http.client.request.size` and `http.client.response.size` metrics.",
+      "name": "otel.instrumentation.http.client.emit-experimental-telemetry",
+      "type": "boolean"
+    },
+    {
+      "default": true,
+      "description": "Redact sensitive URL parameters. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
+      "name": "otel.instrumentation.http.client.experimental.redact-query-parameters",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enables HTTP client spans and HTTP client metrics for the AsyncHttpClient HTTP client.",
+  "display_name": "AsyncHttpClient",
+  "library_link": "https://github.com/AsyncHttpClient/async-http-client",
+  "name": "async-http-client-2.0",
+  "scope": {
+    "name": "io.opentelemetry.async-http-client-2.0",
+    "schema_url": "https://opentelemetry.io/schemas/1.37.0"
+  },
+  "semantic_conventions": [
+    "HTTP_CLIENT_SPANS",
+    "HTTP_CLIENT_METRICS"
+  ],
+  "source_path": "instrumentation/async-http-client/async-http-client-2.0",
+  "tags": [
+    "async"
+  ],
+  "target_versions": {
+    "javaagent": [
+      "org.asynchttpclient:async-http-client:[2.0.0,)"
+    ]
+  },
+  "telemetry": [
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "http.request.method",
+              "type": "STRING"
+            },
+            {
+              "name": "http.response.status_code",
+              "type": "LONG"
+            },
+            {
+              "name": "network.protocol.version",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "description": "Duration of HTTP client requests.",
+          "name": "http.client.request.duration",
+          "type": "HISTOGRAM",
+          "unit": "s"
+        }
+      ],
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "error.type",
+              "type": "STRING"
+            },
+            {
+              "name": "http.request.method",
+              "type": "STRING"
+            },
+            {
+              "name": "http.request.method_original",
+              "type": "STRING"
+            },
+            {
+              "name": "http.response.status_code",
+              "type": "LONG"
+            },
+            {
+              "name": "network.peer.address",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.port",
+              "type": "LONG"
+            },
+            {
+              "name": "network.protocol.version",
+              "type": "STRING"
+            },
+            {
+              "name": "peer.service",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            },
+            {
+              "name": "url.full",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CLIENT"
+        }
+      ],
+      "when": "default"
+    }
+  ]
+}

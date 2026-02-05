@@ -1,0 +1,58 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables capturing the experimental `hystrix.command`, `hystrix.circuit_open` and `hystrix.group` span attributes.",
+      "name": "otel.instrumentation.hystrix.experimental-span-attributes",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enables spans for Hystrix command executions and fallbacks.",
+  "library_link": "https://github.com/Netflix/Hystrix",
+  "name": "hystrix-1.4",
+  "scope": {
+    "name": "io.opentelemetry.hystrix-1.4"
+  },
+  "source_path": "instrumentation/hystrix-1.4",
+  "tags": [
+    "hystrix"
+  ],
+  "target_versions": {
+    "javaagent": [
+      "com.netflix.hystrix:hystrix-core:[1.4.0,)"
+    ]
+  },
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "hystrix.circuit_open",
+              "type": "BOOLEAN"
+            },
+            {
+              "name": "hystrix.command",
+              "type": "STRING"
+            },
+            {
+              "name": "hystrix.group",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "otel.instrumentation.hystrix.experimental-span-attributes=true"
+    }
+  ]
+}

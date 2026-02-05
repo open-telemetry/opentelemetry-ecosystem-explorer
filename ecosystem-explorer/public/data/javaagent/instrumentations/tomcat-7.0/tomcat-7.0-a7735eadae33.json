@@ -1,0 +1,15 @@
+{
+  "name": "tomcat-7.0",
+  "scope": {
+    "name": "io.opentelemetry.tomcat-7.0"
+  },
+  "source_path": "instrumentation/tomcat/tomcat-7.0",
+  "tags": [
+    "tomcat"
+  ],
+  "target_versions": {
+    "javaagent": [
+      "org.apache.tomcat.embed:tomcat-embed-core:[7.0.4, 10)"
+    ]
+  }
+}

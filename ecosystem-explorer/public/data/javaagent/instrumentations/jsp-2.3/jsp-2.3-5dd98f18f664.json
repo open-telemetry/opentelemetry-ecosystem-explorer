@@ -1,0 +1,72 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables the creation of experimental view spans.",
+      "name": "otel.instrumentation.common.experimental.view-telemetry.enabled",
+      "type": "boolean"
+    },
+    {
+      "default": false,
+      "description": "Enables experimental span attributes `jsp.forwardOrigin`, `jsp.requestURL`, `jsp.compiler`, and `jsp.classFQCN`.",
+      "name": "otel.instrumentation.jsp.experimental-span-attributes",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enables view spans for JSP page rendering and compilation (view spans are disabled by default).",
+  "display_name": "JSP (JavaServer Pages)",
+  "features": [
+    "VIEW_SPANS"
+  ],
+  "library_link": "https://jakarta.ee/specifications/pages/",
+  "name": "jsp-2.3",
+  "scope": {
+    "name": "io.opentelemetry.jsp-2.3"
+  },
+  "source_path": "instrumentation/jsp-2.3",
+  "tags": [
+    "jsp"
+  ],
+  "target_versions": {
+    "javaagent": [
+      "org.apache.tomcat:tomcat-jasper:[7.0.19,10)"
+    ]
+  },
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "otel.instrumentation.common.experimental.view-telemetry.enabled=true"
+    },
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "jsp.classFQCN",
+              "type": "STRING"
+            },
+            {
+              "name": "jsp.compiler",
+              "type": "STRING"
+            },
+            {
+              "name": "jsp.forwardOrigin",
+              "type": "STRING"
+            },
+            {
+              "name": "jsp.requestURL",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "otel.instrumentation.common.experimental.view-telemetry.enabled=true,otel.instrumentation.jsp.experimental-span-attributes=true"
+    }
+  ]
+}
