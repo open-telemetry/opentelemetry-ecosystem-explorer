@@ -513,6 +513,7 @@ components:
   subtype: observer
   metadata:
     type: cfgarden_observer
+    display_name: Cloud Foundry Garden Observer Extension
     status:
       class: extension
       stability:
@@ -529,6 +530,7 @@ components:
   subtype: observer
   metadata:
     type: docker_observer
+    display_name: Docker Observer Extension
     status:
       class: extension
       stability:
@@ -543,6 +545,7 @@ components:
   subtype: observer
   metadata:
     type: ecs_observer
+    display_name: Amazon Elastic Container Service Observer
     status:
       class: extension
       stability:
@@ -562,6 +565,7 @@ components:
   subtype: observer
   metadata:
     type: host_observer
+    display_name: Host Observer Extension
     status:
       class: extension
       stability:
@@ -577,6 +581,7 @@ components:
   subtype: observer
   metadata:
     type: k8s_observer
+    display_name: Kubernetes Observer Extension
     status:
       class: extension
       stability:
@@ -595,6 +600,7 @@ components:
   subtype: observer
   metadata:
     type: kafkatopics_observer
+    display_name: Kafka Topics Observer Extension
     status:
       class: extension
       stability:
