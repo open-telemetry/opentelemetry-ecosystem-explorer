@@ -199,7 +199,7 @@ jobs:
         id: version_info
         run: |
           # Get the latest version from inventory
-          VERSION=$(ls -1 ecosystem-registry/collector/core | sort -V | tail -1)
+          VERSION=$(ls -1 ecosystem-registry/collector/core | grep -v -i 'SNAPSHOT' | sort -V | tail -n 1)
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           # Create a sanitized branch name (replace dots with dashes)
           BRANCH_NAME="collector-docs-${VERSION//\./-}"
