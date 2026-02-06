@@ -10,6 +10,7 @@ from collector_watcher.inventory_manager import InventoryManager
 from documentation_sync.doc_content_generator import DocContentGenerator
 from documentation_sync.doc_marker_updater import DocMarkerUpdater
 from documentation_sync.docs_repository_manager import DocsRepositoryManager
+from documentation_sync.fix_spelling import fix_component_spelling
 from documentation_sync.metadata_diagnostics import MetadataDiagnostics
 from documentation_sync.update_docs import get_latest_version, merge_inventories
 
@@ -144,6 +145,13 @@ def main():
         logger.error(
             "  <!-- END GENERATED: {component-type}-table SOURCE: open-telemetry/opentelemetry-ecosystem-explorer -->"
         )
+
+    # Fix spelling errors
+    logger.info("\n" + "=" * 60)
+    logger.info("Fixing Spelling Errors")
+    logger.info("=" * 60 + "\n")
+
+    fix_component_spelling(docs_repo)
 
     logger.info("\n" + "=" * 60)
     logger.info("Metadata Quality Report")
