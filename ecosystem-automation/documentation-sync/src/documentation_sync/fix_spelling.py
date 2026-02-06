@@ -25,15 +25,13 @@ def run_cspell(docs_repo_path: Path) -> dict[str, list[str]]:
     Returns:
         Dictionary mapping file paths to lists of misspelled words
     """
-    component_docs = docs_repo_path / "content/en/docs/collector/components"
-
     cmd = [
         "npx",
         "cspell",
         "--no-progress",
         "-c",
-        str(docs_repo_path / ".cspell.yml"),
-        str(component_docs / "*.md"),
+        ".cspell.yml",
+        "content/en/docs/collector/components/*.md",
     ]
 
     try:
@@ -74,6 +72,8 @@ def run_cspell(docs_repo_path: Path) -> dict[str, list[str]]:
 
     except FileNotFoundError as e:
         raise RuntimeError("npx not found. Make sure Node.js is installed.") from e
+    except RuntimeError:
+        raise
     except Exception as e:
         raise RuntimeError(f"Error running cspell: {e}") from e
 

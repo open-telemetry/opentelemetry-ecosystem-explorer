@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+set -o pipefail
 
 # ============================================================================
 # OpenTelemetry.io Documentation Sync Script
@@ -80,7 +81,7 @@ if [ -f "metadata-issues.md" ]; then
     --state open \
     --search "Collector ${VERSION} Metadata Quality Issues in:title" \
     --json number \
-    --jq '.[0].number')
+    --jq '.[0].number // empty')
 
   ISSUE_TITLE="Collector ${VERSION} Metadata Quality Issues"
 
@@ -197,7 +198,7 @@ gh pr create \
         --head "${PR_HEAD}" \
         --state open \
         --json number \
-        --jq '.[0].number')"
+        --jq '.[0].number // empty')"
       if [ -z "$PR_NUMBER" ]; then
         echo "Failed to find existing PR for head ${PR_HEAD}"
         cat pr-output.txt
