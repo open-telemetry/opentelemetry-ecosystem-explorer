@@ -44,6 +44,32 @@ Some test content here.
     assert "Some test content here." in updated_content
 
 
+def test_update_frontmatter_words_already_exist(tmp_path):
+    """Test updating frontmatter when all words already exist."""
+    test_file = tmp_path / "test.md"
+    original_content = """---
+title: Test Page
+description: Test description
+weight: 100
+cSpell:ignore: existingword anotherword
+---
+
+# Test Content
+
+Some test content here.
+"""
+    test_file.write_text(original_content)
+
+    # Try to add words that already exist
+    new_words = {"existingword", "anotherword"}
+    result = update_cspell_list(test_file, new_words)
+
+    # Should return 0 (no new words added)
+    assert result == 0
+
+    assert test_file.read_text() == original_content
+
+
 def test_update_frontmatter_without_cspell_line(tmp_path):
     """Test adding cSpell:ignore line when it doesn't exist."""
     # Create a test markdown file without cSpell:ignore
@@ -122,3 +148,57 @@ CSpell: Files checked: 5, Issues found: 3 in 2 files.
 
     exporter_words = result["content/en/docs/collector/components/exporter.md"]
     assert "kafkaexporter" in exporter_words
+
+
+@patch("documentation_sync.fix_spelling.subprocess.run")
+def test_run_cspell_returns_empty_on_success(mock_run):
+    """Test that cspell returns empty dict when no errors found (exit code 0)."""
+    from documentation_sync.fix_spelling import run_cspell
+
+    mock_run.return_value = MagicMock(
+        stdout="CSpell: Files checked: 5, Issues found: 0 in 0 files.\n",
+        stderr="",
+        returncode=0,
+    )
+
+    docs_repo = Path("/fake/path")
+    result = run_cspell(docs_repo)
+
+    assert result == {}
+
+
+@patch("documentation_sync.fix_spelling.subprocess.run")
+def test_run_cspell_raises_on_config_error(mock_run):
+    """Test that cspell raises RuntimeError for configuration errors (exit code 2+)."""
+    import pytest
+    from documentation_sync.fix_spelling import run_cspell
+
+    mock_run.return_value = MagicMock(
+        stdout="",
+        stderr="Error: Configuration file not found: .cspell.yml",
+        returncode=2,
+    )
+
+    docs_repo = Path("/fake/path")
+
+    with pytest.raises(RuntimeError, match="cspell failed with exit code 2"):
+        run_cspell(docs_repo)
+
+
+@patch("documentation_sync.fix_spelling.subprocess.run")
+def test_run_cspell_includes_stderr_in_error(mock_run):
+    """Test that stderr is included in the error message."""
+    import pytest
+    from documentation_sync.fix_spelling import run_cspell
+
+    error_message = "Error: Invalid configuration file"
+    mock_run.return_value = MagicMock(
+        stdout="",
+        stderr=error_message,
+        returncode=2,
+    )
+
+    docs_repo = Path("/fake/path")
+
+    with pytest.raises(RuntimeError, match=error_message):
+        run_cspell(docs_repo)

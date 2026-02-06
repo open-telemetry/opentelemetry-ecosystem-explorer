@@ -45,6 +45,16 @@ def run_cspell(docs_repo_path: Path) -> dict[str, list[str]]:
             check=False,  # Don't raise on non-zero exit (spelling errors)
         )
 
+        # cspell exit codes:
+        # 0 = no spelling errors
+        # 1 = spelling errors found
+        # 2+ = configuration or execution error
+        if result.returncode not in (0, 1):
+            error_msg = f"cspell failed with exit code {result.returncode}"
+            if result.stderr:
+                error_msg += f"\nstderr: {result.stderr}"
+            raise RuntimeError(error_msg)
+
         # Parse cspell output to extract misspelled words
         # cspell output format: "filename:line:col - Unknown word (word)"
         misspellings: dict[str, list[str]] = {}
@@ -101,6 +111,10 @@ def update_cspell_list(file_path: Path, new_words: set[str]) -> int:
         existing_words = set(existing_words_str.split())
 
         newly_added = new_words - existing_words
+
+        # No new words to add, skip writing
+        if not newly_added:
+            return 0
 
         # Combine and sort
         all_words = existing_words | new_words
@@ -171,11 +185,13 @@ def fix_component_spelling(docs_repo_path: Path) -> dict[str, int]:
         logger.info(f"  Processing {len(component_words)} words: {', '.join(sorted(component_words))}")
 
         newly_added = update_cspell_list(file_path, component_words)
-        if newly_added >= 0:
+        if newly_added > 0:
             files_updated += 1
             total_words_added += newly_added
             if newly_added < len(component_words):
                 logger.info(f"  ({len(component_words) - newly_added} already in ignore list)")
+        elif newly_added == 0:
+            logger.info(f"  (all {len(component_words)} words already in ignore list)")
 
     if files_updated > 0:
         logger.info(f"\n✓ Updated {files_updated} file(s), added {total_words_added} words total")
