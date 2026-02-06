@@ -425,10 +425,10 @@ components:
       distributions: []
       codeowners:
         active:
-        - mwear
         - evan-bradley
         emeritus:
         - jpkrohling
+        - mwear
         seeking_new: true
 - name: httpforwarderextension
   metadata:
@@ -715,6 +715,9 @@ components:
   subtype: storage
   metadata:
     type: db_storage
+    display_name: Database Storage Extension
+    description: The Database Storage Extension can persist state to a relational
+      database.
     status:
       class: extension
       stability:
@@ -730,6 +733,8 @@ components:
   subtype: storage
   metadata:
     type: file_storage
+    display_name: File Storage Extension
+    description: The File Storage Extension can persist state to the local file system.
     status:
       class: extension
       stability:
@@ -749,6 +754,8 @@ components:
   subtype: storage
   metadata:
     type: redis_storage
+    display_name: Redis Storage Extension
+    description: The Redis Storage Extension can persist state to a Redis cluster.
     status:
       class: extension
       stability:
