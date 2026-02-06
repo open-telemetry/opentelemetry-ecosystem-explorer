@@ -132,10 +132,11 @@ components:
       codeowners:
         active:
         - TylerHelmuth
-        - boostchicken
         - evan-bradley
         - edmocosta
         - bogdandrutu
+        emeritus:
+        - boostchicken
 - name: geoipprocessor
   metadata:
     type: geoip
@@ -222,7 +223,7 @@ components:
         - atoulme
 - name: k8sattributesprocessor
   metadata:
-    type: k8sattributes
+    type: k8s_attributes
     status:
       class: processor
       stability:

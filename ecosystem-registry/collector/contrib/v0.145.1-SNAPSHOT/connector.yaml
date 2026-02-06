@@ -162,13 +162,13 @@ components:
       - k8s
       codeowners:
         active:
-        - mwear
         - TylerHelmuth
         - evan-bradley
         - edmocosta
         - bogdandrutu
         emeritus:
         - jpkrohling
+        - mwear
         seeking_new: true
 - name: servicegraphconnector
   metadata:
