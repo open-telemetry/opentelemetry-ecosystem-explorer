@@ -28,7 +28,7 @@ Some test content here.
     new_words = {"newword", "zebra"}
     result = update_cspell_list(test_file, new_words)
 
-    assert result is True
+    assert result == 2  # Both words are new
 
     updated_content = test_file.read_text()
 
@@ -63,7 +63,7 @@ Some test content here.
     new_words = {"newword", "zebra"}
     result = update_cspell_list(test_file, new_words)
 
-    assert result is True
+    assert result == 2  # All words are new (no existing cSpell line)
 
     updated_content = test_file.read_text()
 
@@ -90,8 +90,8 @@ Some test content without frontmatter.
     new_words = {"newword"}
     result = update_cspell_list(test_file, new_words)
 
-    # Should return False since there's no frontmatter
-    assert result is False
+    # Should return -1 since there's no frontmatter
+    assert result == -1
 
     # Content should be unchanged
     assert test_file.read_text() == original_content

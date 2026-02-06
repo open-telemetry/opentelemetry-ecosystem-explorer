@@ -48,22 +48,26 @@ echo "Installing Python dependencies..."
 uv sync
 
 echo "Installing Node.js dependencies..."
-cd "$OTEL_DOCS_REPO_PATH"
+cd "$OTEL_DOCS_REPO_PATH" || { echo "Error: Failed to change to directory $OTEL_DOCS_REPO_PATH"; exit 1; }
 npm install --omit=optional
-cd ..
+cd .. || { echo "Error: Failed to change to parent directory"; exit 1; }
 
 echo "Generating documentation..."
 export OTEL_DOCS_REPO_PATH
 uv run documentation-sync
 
 echo "Formatting documentation..."
-cd "$OTEL_DOCS_REPO_PATH"
+cd "$OTEL_DOCS_REPO_PATH" || { echo "Error: Failed to change to directory $OTEL_DOCS_REPO_PATH"; exit 1; }
 npm run check:links || echo "Warning: Link check failed"
 npm run fix:format
-cd ..
+cd .. || { echo "Error: Failed to change to parent directory"; exit 1; }
 
 # Get version info
 VERSION=$(ls -1 ecosystem-registry/collector/core | grep -v -i 'SNAPSHOT' | sort -V | tail -n 1)
+if [ -z "$VERSION" ]; then
+  echo "Error: No collector versions found in ecosystem-registry/collector/core"
+  exit 1
+fi
 echo "Version: $VERSION"
 echo ""
 
@@ -105,7 +109,7 @@ else
 fi
 
 echo "Checking for documentation changes..."
-cd "$OTEL_DOCS_REPO_PATH"
+cd "$OTEL_DOCS_REPO_PATH" || { echo "Error: Failed to change to directory $OTEL_DOCS_REPO_PATH"; exit 1; }
 CHANGED_FILES=$(git diff --name-only content/en/docs/collector/components/)
 
 if [ -z "$CHANGED_FILES" ]; then
@@ -122,7 +126,7 @@ echo "Branch: $BRANCH_NAME"
 echo ""
 
 echo "Creating branch and committing changes..."
-cd "$OTEL_DOCS_REPO_PATH"
+cd "$OTEL_DOCS_REPO_PATH" || { echo "Error: Failed to change to directory $OTEL_DOCS_REPO_PATH"; exit 1; }
 git checkout main
 git checkout -B "$BRANCH_NAME"
 git add .

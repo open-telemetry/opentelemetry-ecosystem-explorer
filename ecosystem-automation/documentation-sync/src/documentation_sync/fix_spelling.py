@@ -68,7 +68,7 @@ def run_cspell(docs_repo_path: Path) -> dict[str, list[str]]:
         raise RuntimeError(f"Error running cspell: {e}") from e
 
 
-def update_cspell_list(file_path: Path, new_words: set[str]) -> bool:
+def update_cspell_list(file_path: Path, new_words: set[str]) -> int:
     """
     Update the cSpell:ignore line.
 
@@ -77,28 +77,30 @@ def update_cspell_list(file_path: Path, new_words: set[str]) -> bool:
         new_words: Words to add to ignore list
 
     Returns:
-        True if file was modified
+        Number of words actually added (not already present), or -1 if file wasn't modified
     """
     with open(file_path, encoding="utf-8") as f:
         content = f.read()
 
-    # Match heading section (between --- delimiters)
+    # Match front matter (between --- delimiters)
     frontmatter_pattern = r"^---\n(.*?)\n---\n"
     match = re.match(frontmatter_pattern, content, re.DOTALL)
 
     if not match:
-        logger.warning(f"  ⚠️  No heading section found in {file_path.name}")
-        return False
+        logger.warning(f"  ⚠️  No front matter found in {file_path.name}")
+        return -1
 
     existing_section = match.group(1)
     existing_section_end = match.end()
 
-    cspell_pattern = r"cSpell:ignore:\s*(.+)"
+    cspell_pattern = r"cSpell:ignore:\s*([^\n]+)"
     cspell_match = re.search(cspell_pattern, existing_section)
 
     if cspell_match:
         existing_words_str = cspell_match.group(1).strip()
         existing_words = set(existing_words_str.split())
+
+        newly_added = new_words - existing_words
 
         # Combine and sort
         all_words = existing_words | new_words
@@ -108,6 +110,7 @@ def update_cspell_list(file_path: Path, new_words: set[str]) -> bool:
         updated_frontmatter = existing_section.replace(cspell_match.group(0), new_cspell_line)
     else:
         # Add new cSpell:ignore line before the closing ---
+        newly_added = new_words
         sorted_words = sorted(new_words, key=str.lower)
         new_cspell_line = f"cSpell:ignore: {' '.join(sorted_words)}"
 
@@ -120,7 +123,7 @@ def update_cspell_list(file_path: Path, new_words: set[str]) -> bool:
     with open(file_path, "w", encoding="utf-8") as f:
         f.write(new_content)
 
-    return True
+    return len(newly_added)
 
 
 def fix_component_spelling(docs_repo_path: Path) -> dict[str, int]:
@@ -165,11 +168,14 @@ def fix_component_spelling(docs_repo_path: Path) -> dict[str, int]:
         component_words = set(words)
 
         logger.info(f"\n{file_path.name}:")
-        logger.info(f"  Adding {len(component_words)} words: {', '.join(sorted(component_words))}")
+        logger.info(f"  Processing {len(component_words)} words: {', '.join(sorted(component_words))}")
 
-        if update_cspell_list(file_path, component_words):
+        newly_added = update_cspell_list(file_path, component_words)
+        if newly_added >= 0:
             files_updated += 1
-            total_words_added += len(component_words)
+            total_words_added += newly_added
+            if newly_added < len(component_words):
+                logger.info(f"  ({len(component_words) - newly_added} already in ignore list)")
 
     if files_updated > 0:
         logger.info(f"\n✓ Updated {files_updated} file(s), added {total_words_added} words total")
