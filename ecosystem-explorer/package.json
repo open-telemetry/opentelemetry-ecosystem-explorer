@@ -14,6 +14,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "idb": "^8.0.3",
     "lucide-react": "^0.454.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
@@ -33,6 +34,7 @@
     "eslint-config-prettier": "10.1.8",
     "eslint-plugin-react-hooks": "7.0.1",
     "eslint-plugin-react-refresh": "0.4.26",
+    "fake-indexeddb": "^6.2.5",
     "globals": "17.2.0",
     "jsdom": "27.4.0",
     "postcss": "8.5.6",
