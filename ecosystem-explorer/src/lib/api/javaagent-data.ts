@@ -1,5 +1,5 @@
 import type { InstrumentationData, VersionManifest, VersionsIndex } from "@/types/javaagent";
-import { getCached, setCached, STORES, isIDBAvailable } from "./idb-cache";
+import { getCached, setCached, STORES, isIDBAvailable, type StoreName } from "./idb-cache";
 
 const BASE_PATH = "/data/javaagent";
 
@@ -7,11 +7,7 @@ const inflightRequests = new Map<string, Promise<unknown>>();
 
 const idbEnabled = isIDBAvailable();
 
-async function fetchWithCache<T>(
-  cacheKey: string,
-  url: string,
-  storeType: "metadata" | "instrumentations" = STORES.INSTRUMENTATIONS
-): Promise<T> {
+async function fetchWithCache<T>(cacheKey: string, url: string, storeType: StoreName): Promise<T> {
   // Check if request is already in flight
   if (inflightRequests.has(cacheKey)) {
     return inflightRequests.get(cacheKey) as Promise<T>;

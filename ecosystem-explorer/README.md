@@ -54,25 +54,27 @@ npm test
 
 ## Project Structure
 
+<!-- markdownlint-disable MD010 -->
 ```markdown
 src/
-├── components/ # Shared components
-│ ├── layout/ # Header, Footer
-│ ├── ui/ # Reusable UI components (buttons, cards, etc.)
-│ └── icons/ # SVG icon components
-├── features/ # Feature-based modules
-│ ├── home/ # Home page
-│ ├── java-agent/ # Java Agent explorer
-│ ├── collector/ # Collector explorer
-│ └── not-found/ # 404 page
-├── lib/api/ # Data layer
-│ ├── idb-cache.ts # IndexedDB persistence
-│ └── javaagent-data.ts # Data fetching with cache
-├── hooks/ # React hooks
-│ └── use-javaagent-data.ts # Data hooks for components
-└── types/ # TypeScript type definitions
-└── javaagent.ts # Java Agent data types
+├── components/                   # Shared components
+│   ├── layout/                   # Header, Footer
+│   ├── ui/                       # Reusable UI components (buttons, cards, etc.)
+│   └── icons/                    # SVG icon components
+├── features/                     # Feature-based modules
+│   ├── home/                     # Home page
+│   ├── java-agent/               # Java Agent explorer
+│   ├── collector/                # Collector explorer
+│   └── not-found/                # 404 page
+├── lib/api/                      # Data layer
+│   ├── idb-cache.ts              # IndexedDB persistence
+│   └── javaagent-data.ts         # Data fetching with cache
+├── hooks/                        # React hooks
+│   └── use-javaagent-data.ts     # Data hooks for components
+└── types/                        # TypeScript type definitions
+    └── javaagent.ts              # Java Agent data types
 ```
+<!-- markdownlint-enable MD010 -->
 
 ## Data Layer
 
@@ -92,9 +94,6 @@ The data layer uses a two-tier caching strategy to minimize network requests:
 const versions = useVersions();
 const instrumentations = useInstrumentations(version);
 ```
-
-Data persists across page reloads. Check DevTools -> Application-> IndexedDB → `otel-javaagent-cache` to inspect
-cached data.
 
 ## Theme System
 

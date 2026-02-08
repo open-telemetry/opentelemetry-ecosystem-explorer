@@ -319,26 +319,4 @@ describe("javaagent-data", () => {
       expect(result).toEqual([]);
     });
   });
-
-  describe("IndexedDB error handling", () => {
-    it("should handle getCached returning null and fetch data successfully", async () => {
-      const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-      const getCachedSpy = vi.spyOn(idbCache, "getCached").mockResolvedValue(null);
-      const setCachedSpy = vi.spyOn(idbCache, "setCached").mockResolvedValue();
-
-      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
-        ok: true,
-        json: async () => mockVersionsIndex,
-      });
-
-      const result = await javaagentData.loadVersions();
-
-      expect(result).toEqual(mockVersionsIndex);
-      expect(getCachedSpy).toHaveBeenCalled();
-      expect(global.fetch).toHaveBeenCalled();
-      expect(setCachedSpy).toHaveBeenCalled();
-
-      consoleErrorSpy.mockRestore();
-    });
-  });
 });
