@@ -121,7 +121,7 @@ fi
 echo "Documentation changes detected:"
 echo "$CHANGED_FILES"
 echo ""
-BRANCH_NAME="collector-docs-${VERSION//\./-}"
+BRANCH_NAME="otelbot/collector-docs-${VERSION//\./-}"
 
 echo "Branch: $BRANCH_NAME"
 echo ""
