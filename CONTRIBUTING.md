@@ -1,11 +1,10 @@
 # Contributing to OpenTelemetry Ecosystem Explorer
 
-Welcome to the OpenTelemetry Ecosystem Explorer project! We're thrilled that you're interested in contributing to this
-initiative. Whether you're fixing a typo, reporting a bug, or proposing a new feature, every contribution helps.
+Welcome to the OpenTelemetry Ecosystem Explorer! Whether you're fixing a typo, reporting a bug, or proposing a new
+feature, every contribution helps.
 
-This project is part of the broader [OpenTelemetry](https://opentelemetry.io/) ecosystem, which aims to provide a
-unified standard for observability. The Ecosystem Explorer helps users discover and explore the various projects,
-instrumentations, and components available in the OpenTelemetry community.
+This project helps users discover and explore OpenTelemetry projects, instrumentations, and components across the
+[OpenTelemetry](https://opentelemetry.io/) ecosystem.
 
 **No contribution is too small!** We value all forms of participation, from documentation improvements to code
 contributions. If you're new to open source or OpenTelemetry, don't hesitate to ask questions.
@@ -119,16 +118,15 @@ git checkout -b your-feature-branch
 
 ### Project Structure
 
-This repository contains three main components:
+This repository contains three components:
 
-- **ecosystem-registry**: Data pipeline and raw data registry
-- **ecosystem-automation**: Automation tools and data collection pipelines
-- **ecosystem-explorer**: Web application for exploring the registry
+- **ecosystem-registry**: Raw data registry
+- **ecosystem-automation**: Automation pipelines
+- **ecosystem-explorer**: Web application
 
-For reference implementations, see:
-
-- [collector-watcher](https://github.com/jaydeluca/collector-watcher) (POC for registry and automation)
-- [instrumentation-explorer](https://github.com/jaydeluca/instrumentation-explorer) (POC for explorer web app)
+Reference
+implementations: [collector-watcher](https://github.com/jaydeluca/collector-watcher),
+[instrumentation-explorer](https://github.com/jaydeluca/instrumentation-explorer)
 
 ### Running Code Quality Checks
 
@@ -190,14 +188,11 @@ uv run pytest -k "test_pattern"
 
 ### Code Standards
 
-- **Follow the style guide**: Install the pre-commit hook to automatically format code and catch linting issues
-- **Write tests**: Include tests for new features and bug fixes, include testing notes in your PR description
-  (screenshots are nice too!)
-- **Document your code**: Add docstrings and comments where logic isn't self-evident
-- **Keep changes focused**: Make PRs focused on a single concern
-- **Add Detailed Descriptions to PRs**: Explain the motivation, approach, and any relevant context in your pull request
-  description
-- **Avoid breaking changes**: Discuss breaking changes in an issue first
+- **Follow the style guide**: Install pre-commit hooks to catch issues before committing
+- **Write tests**: Include tests and testing notes in PR descriptions (screenshots appreciated)
+- **Document your code**: Add docstrings and comments for non-obvious logic
+- **Keep changes focused**: One concern per PR
+- **Write detailed PR descriptions**: Explain motivation, approach, and context
 
 ### Community Standards
 

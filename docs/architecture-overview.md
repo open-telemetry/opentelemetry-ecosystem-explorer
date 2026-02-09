@@ -8,62 +8,45 @@ collecting, storing, and presenting metadata about OpenTelemetry ecosystem compo
 
 ### ecosystem-automation
 
-**Purpose**: Automated data collection and transformation pipeline
+Automated data collection and transformation pipelines,
+run via github actions and scheduled workflows.
 
-**Key Functions**:
+**Scope**:
 
-- Watch upstream projects for new releases and changes
-- Extract metadata from source repositories
-- Transform and normalize data to registry schema
+- Watch upstream projects for releases and changes
+- Extract and normalize metadata to registry schema
 - Generate content-addressed storage files
 - Synchronize with opentelemetry.io documentation
 
-**Technology**: Python (for GitHub API integration and data processing)
-
-**Execution**: Scheduled GitHub Actions workflows
-
 ### ecosystem-registry
 
-**Purpose**: Versioned, normalized metadata storage
+Versioned, normalized metadata storage
 
-**Key Functions**:
+**Scope**:
 
 - Store historical metadata for all versions
-- Enable content-addressed deduplication
-- Provide stable, immutable data files
-- Support multiple OpenTelemetry ecosystems (Java Agent, Collector, etc.)
-
-**Technology**: File-based storage with content addressing
-
-**Hosting**: Static files served via CDN
+- Support multiple ecosystems (Java Agent, Collector, etc.)
 
 ### ecosystem-explorer
 
-**Purpose**: User-facing web application for browsing and exploring metadata
+User-facing web application (React + TypeScript + Vite) for browsing and exploring metadata
 
-**Key Functions**:
+**Scope**:
 
-- Browse instrumentations and collector components
-- Search and filter by various criteria
+- Browse, search, and filter instrumentations and collector components
 - View detailed telemetry information
-- Compare versions and see what changed
-- Offline-capable with persistent caching
-
-**Technology**: React + TypeScript + Vite
-
-**Hosting**: Static site deployment
+- Compare versions
 
 ## Data Flow
 
-1. **Upstream Changes**: New release tagged in opentelemetry-java-instrumentation or
-   collector-contrib
-2. **Detection**: Watcher detects new version via GitHub API or scheduled check
-3. **Extraction**: Watcher checks out specific tag and extracts metadata files
-4. **Transformation**: Data normalized to registry schema and content-addressed files generated
-5. **Storage**: Transformed data written to ecosystem-registry with version manifest
+1. **Upstream Changes**: New release tagged in source repository
+2. **Detection**: Watcher detects new version via GitHub API
+3. **Extraction**: Watcher extracts metadata from specific tag
+4. **Transformation**: Data normalized and content-addressed files generated
+5. **Storage**: Data written to ecosystem-registry with version manifest
 6. **Distribution**: Static files deployed to CDN
-7. **Access**: Web application fetches data on-demand with aggressive caching
-8. **Persistence**: Browser caches data in IndexedDB for offline access
+7. **Access**: Web app fetches data on-demand with caching
+8. **Persistence**: Browser caches data in IndexedDB for offline use
 
 ## Key Design Decisions
 
@@ -73,16 +56,15 @@ collecting, storing, and presenting metadata about OpenTelemetry ecosystem compo
 
 **Benefits**:
 
-- Low maintenance burden
-- High reliability (no servers to fail)
-- Excellent performance via CDN
-- Low cost (static hosting is cheap/free)
+- Low maintenance and operational overhead
+- High reliability and performance via CDN
+- Low cost
 
 **Tradeoffs**:
 
 - Updates require rebuild/redeploy
-- No server-side processing or APIs
-- All computation happens client-side
+- No server-side processing
+- Client-side computation only
 
 ### Content-Addressed Storage
 
@@ -90,9 +72,8 @@ collecting, storing, and presenting metadata about OpenTelemetry ecosystem compo
 
 **Benefits**:
 
-- Automatic deduplication
+- Automatic deduplication across versions
 - Immutable files enable aggressive caching
-- Easy to identify what changed between versions
-- Supports version comparison naturally
+- Easy version comparison and change identification
 
-**How**: See [Content-Addressed Storage](./content-addressed-storage.md) for details
+See [Content-Addressed Storage](./content-addressed-storage.md) for implementation details.

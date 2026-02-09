@@ -8,16 +8,15 @@ additional information.
 
 ## Architecture Overview
 
-- **[System Architecture](./architecture-overview.md)**: High-level overview of the three-component
-  system and how they work together
-- **[Watchers and Synchronizers](./watchers-synchronizers.md)**: Understanding the automation
-  pipeline that keeps metadata up-to-date
-- **[Registry Structure](./registry-structure.md)**: How metadata is organized and versioned in
-  the ecosystem-registry
-- **[Content-Addressed Storage](./content-addressed-storage.md)**: The storage pattern that
-  enables efficient multi-version support
-- **[Frontend Architecture](./frontend-architecture.md)**: Web application design, data access,
-  and caching strategy
+<!-- markdownlint-disable MD033 -->
+<img src="./media/component-overview.png" width="800" alt="Component Overview Diagram">
+<!-- markdownlint-enable MD033 -->
+
+- **[System Architecture](./architecture-overview.md)**: Three-component system overview
+- **[Watchers and Synchronizers](./watchers-synchronizers.md)**: Automation pipeline for metadata updates
+- **[Registry Structure](./registry-structure.md)**: Metadata organization and versioning
+- **[Content-Addressed Storage](./content-addressed-storage.md)**: Storage pattern for multi-version support
+- **[Frontend Architecture](./frontend-architecture.md)**: Web app design and caching
 
 ### Additional Resources
 

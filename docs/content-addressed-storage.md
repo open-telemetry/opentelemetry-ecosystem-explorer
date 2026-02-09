@@ -1,14 +1,7 @@
 # Content-Addressed Storage
 
-How raw registry data is transformed into an optimized, deduplicated format for the web
-application.
-
-## Overview
-
-Content-addressed storage is a transformation of the raw ecosystem-registry data into a
-web-optimized format. Instead of aggregated YAML files, components are stored in individual
-JSON files named by their content hash, enabling automatic deduplication and efficient
-caching.
+Raw registry data is transformed into individual JSON files named by content hash, enabling
+automatic deduplication and efficient caching.
 
 ## Purpose
 
@@ -51,12 +44,11 @@ ecosystem-explorer/public/data/
 
 ### Immutability Guarantee
 
-Content-addressed files are **immutable**:
+Hash in filename guarantees immutable content:
 
-- Hash in filename means content will never change
-- Can set aggressive CDN caching: `Cache-Control: public, max-age=31536000, immutable`
+- Enables aggressive CDN caching: `Cache-Control: public, max-age=31536000, immutable`
 - No cache invalidation needed
-- Same hash = identical content guaranteed
+- Same hash = identical content
 
 ## Key Files
 
@@ -148,18 +140,14 @@ Caching: Immutable (cache forever)
 
 ## Data Loading Patterns
 
-### Web Application Access
-
 **Initial Load**:
 
-1. Fetch `versions-index.json`
-2. Determine latest version
-3. Fetch `versions/2.24.0-index.json`
-4. Display list of components
+1. Fetch `versions-index.json` and determine latest version
+2. Fetch `versions/{version}-index.json`
+3. Display component list
 
 **Component Detail**:
 
-1. User clicks "AWS SDK 2.2"
-2. Look up hash in manifest: `"aws-sdk-2.2": "cc07cd659de1"`
-3. Fetch `instrumentations/aws-sdk-2.2/aws-sdk-2.2-cc07cd659de1.json`
-4. Display component details
+1. Look up hash in manifest: `"aws-sdk-2.2": "cc07cd659de1"`
+2. Fetch `instrumentations/aws-sdk-2.2/aws-sdk-2.2-cc07cd659de1.json`
+3. Display component details

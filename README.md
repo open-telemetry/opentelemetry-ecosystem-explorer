@@ -9,11 +9,11 @@ See [project proposal](https://github.com/open-telemetry/community/blob/main/pro
 
 There are three components in this repository:
 
-| Component                | Description                                                                                                                                                |
-|--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **ecosystem-registry**   | Raw data registry of metadata from various projects. Updated nightly by automation tools in ecosystem-automation.                                          |
-| **ecosystem-automation** | Automation pipelines and tools to populate and maintain the ecosystem-registry, and to synchronize documentation and other targets with the registry data. |
-| **ecosystem-explorer**   | React/Vite web application for exploring the data.                                                                                                         |
+| Component                | Description                                                                    |
+|--------------------------|--------------------------------------------------------------------------------|
+| **ecosystem-registry**   | Raw data registry storing metadata from various projects. Updated nightly.     |
+| **ecosystem-automation** | Automation pipelines that populate the registry and synchronize documentation. |
+| **ecosystem-explorer**   | React/Vite web application for exploring the data.                             |
 
 ## Contributing
 
@@ -21,11 +21,10 @@ This project welcomes contributions from the community.
 
 Please refer to the [CONTRIBUTING.md](CONTRIBUTING.md) file for guidelines on how to contribute to this project.
 
-See the [ecosystem-explorer README](./ecosystem-explorer/README.md) for setup and development instructions for
-automation components.
+See component READMEs for setup and development:
 
-See the [ecosystem-automation README](./ecosystem-automation/README.md) for setup and development instructions for
-the explorer web application.
+- [ecosystem-explorer](./ecosystem-explorer/README.md)
+- [ecosystem-automation](./ecosystem-automation/README.md)
 
 ## Community
 
@@ -41,17 +40,17 @@ channels on [Slack][].
 
 ## Maintainers
 
-* [Jay DeLuca](https://github.com/jaydeluca), Grafana Labs
-* [Severin Neumann](https://github.com/svrnm), Causely
-* [Pablo Baeyans](https://github.com/mx-psi), Datadog
+- [Jay DeLuca](https://github.com/jaydeluca), Grafana Labs
+- [Severin Neumann](https://github.com/svrnm), Causely
+- [Pablo Baeyans](https://github.com/mx-psi), Datadog
 
 For more information about the maintainer role, see
 the [community repository](https://github.com/open-telemetry/community/blob/main/guides/contributor/membership.md#maintainer).
 
 ## Approvers
 
-* [Vitor Vasconcellos](https://github.com/vitorvasc), Mercado Libre
-* [Marylia Gutierrez](https://github.com/maryliag), Grafana Labs
+- [Vitor Vasconcellos](https://github.com/vitorvasc), Mercado Libre
+- [Marylia Gutierrez](https://github.com/maryliag), Grafana Labs
 
 For more information about the approver role, see
 the [community repository](https://github.com/open-telemetry/community/blob/main/guides/contributor/membership.md#approver).

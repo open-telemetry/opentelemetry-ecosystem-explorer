@@ -1,13 +1,8 @@
 # Registry Structure
 
-How raw metadata is organized and versioned in the ecosystem-registry.
-
-## Overview
-
-The ecosystem-registry is the source of truth for OpenTelemetry component metadata. It stores
-raw, normalized metadata in aggregated YAML files, maintaining a complete historical record
-across versions. This raw data is later transformed into the content-addressed JSON format
-used by the web application.
+The ecosystem-registry stores raw, normalized metadata in aggregated YAML files, maintaining
+complete historical records across versions. This data is later transformed into
+content-addressed JSON for the web application.
 
 ## Directory Structure
 
@@ -42,22 +37,8 @@ ecosystem-registry/
 
 ## Key Principles
 
-### Aggregated YAML Files
-
-The registry stores metadata in **aggregated YAML files**:
-
-- One file contains all components of a type for a version
-- Human-readable and git-friendly
-- Easy to review in pull requests
-
-### Version-Scoped Organization
-
-Each version gets its own directory:
-
-- Complete snapshot of metadata at that version
-- Self-contained (everything needed for that version)
-- Independent (changes don't affect other versions)
-- Reproducible (can regenerate from upstream sources)
+- **Aggregated YAML files**: One file per component type per version (human-readable, git-friendly)
+- **Version-scoped**: Each version has a complete, independent snapshot that can be regenerated from source
 
 ## Java Agent Structure
 
@@ -211,25 +192,13 @@ components:
 
 ### Release Versions
 
-**Format**: Semantic version (e.g., `v2.24.0`, `v0.145.0`)
-
-**Characteristics**:
-
-- Immutable after creation
-- Represents official release
-- Complete metadata snapshot at that point in time
-**Directory**: `{ecosystem}/{version}/` (no SNAPSHOT suffix)
+**Format**: `v2.24.0`, `v0.145.0`
+**Directory**: `{ecosystem}/{version}/`
+**Characteristics**: Immutable, represents official release
 
 ### Snapshot Versions
 
-**Format**: Semantic version with `-SNAPSHOT` suffix (e.g., `v2.24.1-SNAPSHOT`)
-
-**Characteristics**:
-
-- Extracted from default branch (`main`)
-- Represents work-in-progress
-- Shows upcoming changes before next release
-
+**Format**: `v2.24.1-SNAPSHOT`
 **Directory**: `{ecosystem}/{version}-SNAPSHOT/`
-
-**Update Frequency**: Typically nightly via scheduled GitHub Actions
+**Characteristics**: Extracted from `main` branch, shows work-in-progress
+**Updates**: Nightly via GitHub Actions
