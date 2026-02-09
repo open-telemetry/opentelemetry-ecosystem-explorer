@@ -47,3 +47,11 @@ repos:
         pass_filenames: false
         files: ^ecosystem-explorer/
         stages: [pre-commit]
+
+      - id: typecheck-ecosystem-explorer
+        name: typecheck (ecosystem-explorer)
+        entry: bash -c 'cd ecosystem-explorer && npm run typecheck'
+        language: system
+        pass_filenames: false
+        files: ^ecosystem-explorer/.*\.(ts|tsx)$
+        stages: [pre-commit]
