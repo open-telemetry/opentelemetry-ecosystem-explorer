@@ -1,0 +1,75 @@
+name: Update OpenTelemetry.io Documentation (Fork)
+
+on:
+  workflow_dispatch:
+    inputs:
+      target_repo_owner:
+        description: 'Repository owner to create PR against (for testing)'
+        required: false
+        type: string
+        default: 'open-telemetry'
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  update-docs:
+    runs-on: ubuntu-latest
+    if: github.repository != 'open-telemetry/opentelemetry-ecosystem-explorer'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Validate FORK_SYNC_TOKEN
+        run: |
+          if [ -z "${{ secrets.FORK_SYNC_TOKEN }}" ]; then
+            echo "Error: FORK_SYNC_TOKEN secret must be configured"
+            echo ""
+            echo "To use this workflow, you need to:"
+            echo "1. Fork opentelemetry.io to your account: ${{ github.repository_owner }}/opentelemetry.io"
+            echo "2. Create a Personal Access Token (classic) with 'repo' scope"
+            echo "3. Add it as a secret named FORK_SYNC_TOKEN in this repository"
+            echo ""
+            echo "See: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token"
+            exit 1
+          fi
+
+      - name: Checkout opentelemetry.io
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: ${{ inputs.target_repo_owner || 'open-telemetry' }}/opentelemetry.io
+          path: opentelemetry.io
+          token: ${{ github.token }}
+          persist-credentials: false
+
+      - name: Configure git
+        run: |
+          cd opentelemetry.io
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@803947b9bd8e9f986429fa0c5a41c367cd732b41 # v7.2.1
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version-file: opentelemetry.io/.nvmrc
+          cache: 'npm'
+          cache-dependency-path: opentelemetry.io/package.json
+
+      - name: Run documentation sync
+        env:
+          GH_TOKEN: ${{ secrets.FORK_SYNC_TOKEN }}
+          SOURCE_FORK: ${{ github.repository_owner }}
+          DESTINATION_REPO: ${{ inputs.target_repo_owner || 'open-telemetry' }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: bash .github/scripts/sync-documentation.sh
