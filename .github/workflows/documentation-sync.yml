@@ -58,7 +58,7 @@ jobs:
       - name: Run documentation sync
         env:
           GH_TOKEN: ${{ steps.otelbot-token.outputs.token }}
-          SOURCE_FORK: otelbot
+          SOURCE_FORK: open-telemetry
           DESTINATION_REPO: open-telemetry
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: bash .github/scripts/sync-documentation.sh
