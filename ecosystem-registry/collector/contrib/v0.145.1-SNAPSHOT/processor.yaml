@@ -64,10 +64,10 @@ components:
         - IbraheemA
         - mx-psi
         - dineshg13
-        - ankitpatel96
         - jade-guiton-dd
         emeritus:
         - jackgopack4
+        - ankitpatel96
 - name: deltatocumulativeprocessor
   metadata:
     type: deltatocumulative
@@ -591,14 +591,16 @@ components:
       codeowners:
         active:
         - rnishtala-sumo
-        - chan-tim-sumo
-        - amdprophet
+        - pankaj101A
+        - jagan2221
         emeritus:
         - aboguszewski-sumo
         - kasia-kujawa
         - mat-rumian
         - sumo-drosiek
         - echlebek
+        - chan-tim-sumo
+        - amdprophet
 - name: tailsamplingprocessor
   metadata:
     type: tail_sampling

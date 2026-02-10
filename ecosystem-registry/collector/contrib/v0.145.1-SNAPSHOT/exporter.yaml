@@ -267,12 +267,12 @@ components:
         - liustanley
         - songy23
         - mackjmr
-        - ankitpatel96
         - jade-guiton-dd
         - IbraheemA
         emeritus:
         - gbbr
         - jackgopack4
+        - ankitpatel96
 - name: datasetexporter
   metadata:
     type: dataset

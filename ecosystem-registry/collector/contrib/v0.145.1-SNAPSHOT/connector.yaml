@@ -41,11 +41,11 @@ components:
         active:
         - mx-psi
         - dineshg13
-        - ankitpatel96
         - jade-guiton-dd
         - IbraheemA
         emeritus:
         - gbbr
+        - ankitpatel96
 - name: exceptionsconnector
   metadata:
     type: exceptions
@@ -188,7 +188,7 @@ components:
         - JaredTan95
 - name: signaltometricsconnector
   metadata:
-    type: signaltometrics
+    type: signal_to_metrics
     display_name: Signal to Metrics Connector
     description: Signal to metrics connector produces metrics from all signal types
       (traces, logs, or metrics).

@@ -8139,22 +8139,22 @@ components:
           level: development
     resource_attributes:
       aws.volume.id:
-        description: The id of the AWS Volume
+        description: '[DEPRECATED] The id of the AWS Volume'
         type: string
       container.id:
         description: Container id used to identify container
         type: string
       fs.type:
-        description: The filesystem type of the Volume
+        description: '[DEPRECATED] The filesystem type of the Volume'
         type: string
       gce.pd.name:
-        description: The name of the persistent disk in GCE
+        description: '[DEPRECATED] The name of the persistent disk in GCE'
         type: string
       glusterfs.endpoints.name:
-        description: The endpoint name that details Glusterfs topology
+        description: '[DEPRECATED] The endpoint name that details Glusterfs topology'
         type: string
       glusterfs.path:
-        description: Glusterfs volume path
+        description: '[DEPRECATED] Glusterfs volume path'
         type: string
       k8s.container.name:
         description: Container name used by container runtime
@@ -8181,7 +8181,7 @@ components:
         description: The type of the Volume
         type: string
       partition:
-        description: The partition in the Volume
+        description: '[DEPRECATED] The partition in the Volume'
         type: string
 - name: libhoneyreceiver
   metadata:
@@ -13550,9 +13550,6 @@ components:
         active:
         - steven-freed
     attributes:
-      base_url:
-        description: base url.
-        type: string
       chassis.asset_tag:
         description: Chassis asset tag.
         type: string
@@ -13589,9 +13586,6 @@ components:
       system.bios_version:
         description: System bios version.
         type: string
-      system.host_name:
-        description: System host name.
-        type: string
       system.id:
         description: System id.
         type: string
@@ -13624,7 +13618,6 @@ components:
         gauge:
           value_type: int
         attributes:
-        - base_url
         - chassis.asset_tag
         - chassis.chassis_type
         - chassis.id
@@ -13633,7 +13626,6 @@ components:
         - chassis.name
         - chassis.serial_number
         - chassis.sku
-        - system.host_name
         stability:
           level: development
       chassis.status.health:
@@ -13644,7 +13636,6 @@ components:
         gauge:
           value_type: int
         attributes:
-        - base_url
         - chassis.asset_tag
         - chassis.chassis_type
         - chassis.id
@@ -13653,7 +13644,6 @@ components:
         - chassis.name
         - chassis.serial_number
         - chassis.sku
-        - system.host_name
         stability:
           level: development
       chassis.status.state:
@@ -13663,7 +13653,6 @@ components:
         gauge:
           value_type: int
         attributes:
-        - base_url
         - chassis.asset_tag
         - chassis.chassis_type
         - chassis.id
@@ -13672,7 +13661,6 @@ components:
         - chassis.name
         - chassis.serial_number
         - chassis.sku
-        - system.host_name
         stability:
           level: development
       fan.reading:
@@ -13682,11 +13670,9 @@ components:
         gauge:
           value_type: int
         attributes:
-        - base_url
         - chassis.id
         - fan.name
         - fan.reading_units
-        - system.host_name
         stability:
           level: development
       fan.status.health:
@@ -13697,10 +13683,8 @@ components:
         gauge:
           value_type: int
         attributes:
-        - base_url
         - chassis.id
         - fan.name
-        - system.host_name
         stability:
           level: development
       fan.status.state:
@@ -13711,10 +13695,8 @@ components:
         gauge:
           value_type: int
         attributes:
-        - base_url
         - chassis.id
         - fan.name
-        - system.host_name
         stability:
           level: development
       system.powerstate:
@@ -13724,10 +13706,8 @@ components:
         gauge:
           value_type: int
         attributes:
-        - base_url
         - system.asset_tag
         - system.bios_version
-        - system.host_name
         - system.id
         - system.manufacturer
         - system.model
@@ -13745,10 +13725,8 @@ components:
         gauge:
           value_type: int
         attributes:
-        - base_url
         - system.asset_tag
         - system.bios_version
-        - system.host_name
         - system.id
         - system.manufacturer
         - system.model
@@ -13765,10 +13743,8 @@ components:
         gauge:
           value_type: int
         attributes:
-        - base_url
         - system.asset_tag
         - system.bios_version
-        - system.host_name
         - system.id
         - system.manufacturer
         - system.model
@@ -13785,9 +13761,7 @@ components:
         gauge:
           value_type: int
         attributes:
-        - base_url
         - chassis.id
-        - system.host_name
         - temperature.name
         stability:
           level: development
@@ -13799,9 +13773,7 @@ components:
         gauge:
           value_type: int
         attributes:
-        - base_url
         - chassis.id
-        - system.host_name
         - temperature.name
         stability:
           level: development
@@ -13813,13 +13785,17 @@ components:
         gauge:
           value_type: int
         attributes:
-        - base_url
         - chassis.id
-        - system.host_name
         - temperature.name
         stability:
           level: development
-    resource_attributes: {}
+    resource_attributes:
+      base_url:
+        description: base url.
+        type: string
+      system.host_name:
+        description: System host name.
+        type: string
 - name: redisreceiver
   metadata:
     type: redis
@@ -18826,6 +18802,22 @@ components:
       vcenter.vm_template.name:
         description: The name of the virtual machine template.
         type: string
+- name: vcrreceiver
+  metadata:
+    type: vcr
+    status:
+      class: receiver
+      stability:
+        development:
+        - logs
+        - metrics
+        - profiles
+        - traces
+      codeowners:
+        active:
+        - atoulme
+        - robertgustafsonsplunk
+        - garrett-splunk
 - name: wavefrontreceiver
   metadata:
     type: wavefront

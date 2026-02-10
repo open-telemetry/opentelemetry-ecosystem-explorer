@@ -153,7 +153,6 @@ components:
       - contrib
       codeowners:
         active:
-        - ankitpatel96
         - dineshg13
         - IbraheemA
         - jade-guiton-dd
@@ -161,6 +160,7 @@ components:
         - songy23
         emeritus:
         - jackgopack4
+        - ankitpatel96
 - name: avrologencodingextension
   subtype: encoding
   metadata:
