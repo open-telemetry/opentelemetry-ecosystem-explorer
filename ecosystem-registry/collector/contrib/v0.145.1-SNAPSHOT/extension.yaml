@@ -313,6 +313,11 @@ components:
   subtype: encoding
   metadata:
     type: skywalking_encoding
+    display_name: Skywalking Encoding Extension
+    description: 'The `Skywalking` encoding extension is used to unmarshal Apache
+      Skywalking segment traces. Marshalling is not supported.
+
+      '
     status:
       class: extension
       stability:

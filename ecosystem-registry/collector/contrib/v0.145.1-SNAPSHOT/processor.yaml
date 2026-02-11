@@ -6,6 +6,7 @@ components:
 - name: attributesprocessor
   metadata:
     type: attributes
+    display_name: Attributes Processor
     status:
       class: processor
       stability:
@@ -23,6 +24,9 @@ components:
 - name: coralogixprocessor
   metadata:
     type: coralogix
+    display_name: Coralogix Processor
+    description: The Coralogix processor adds attributes to spans that enable features
+      in Coralogix.
     status:
       class: processor
       stability:
@@ -37,6 +41,16 @@ components:
 - name: cumulativetodeltaprocessor
   metadata:
     type: cumulativetodelta
+    display_name: Cumulative to Delta Processor
+    description: 'The cumulative to delta processor (`cumulativetodeltaprocessor`)
+      converts monotonic sum, histogram, and exponential
+
+      histogram metrics from cumulative to delta aggregation temporality. Non-monotonic
+      sums are excluded. Delta metrics are
+
+      excluded from any conversion and forwarded without changes.
+
+      '
     status:
       class: processor
       stability:
@@ -51,6 +65,7 @@ components:
 - name: datadogsemanticsprocessor
   metadata:
     type: datadogsemantics
+    display_name: Datadog Semantics Processor
     status:
       class: processor
       stability:
@@ -71,6 +86,13 @@ components:
 - name: deltatocumulativeprocessor
   metadata:
     type: deltatocumulative
+    display_name: Delta to Cumulative Processor
+    description: 'The Delta to Cumulative Processor (`deltatocumulativeprocessor`)
+      converts metrics from delta temporality to
+
+      cumulative, by accumulating samples in memory.
+
+      '
     status:
       class: processor
       stability:
@@ -87,6 +109,9 @@ components:
 - name: deltatorateprocessor
   metadata:
     type: deltatorate
+    display_name: Delta to Rate Processor
+    description: "The Delta to Rate Processor (`deltatorateprocessor`) converts delta\
+      \ sum metrics to rate metrics. This rate is a gauge. \n"
     status:
       class: processor
       stability:
@@ -116,6 +141,9 @@ components:
 - name: filterprocessor
   metadata:
     type: filter
+    display_name: Filter Processor
+    description: The Filter Processor allows dropping spans, span events, metrics,
+      datapoints, and logs from the collector.
     status:
       class: processor
       stability:
@@ -140,6 +168,13 @@ components:
 - name: geoipprocessor
   metadata:
     type: geoip
+    display_name: GeoIP Processor
+    description: 'The geoIP processor `geoipprocessor` enhances the attributes of
+      a span, log, or metric by appending information about
+
+      the geographical location of an IP address.
+
+      '
     status:
       class: processor
       stability:
@@ -157,6 +192,16 @@ components:
 - name: groupbyattrsprocessor
   metadata:
     type: groupbyattrs
+    display_name: Group by Attributes Processor
+    description: 'This processor re-associates spans, log records and metric datapoints
+      to a *Resource* that matches with the specified
+
+      attributes. As a result, all spans, log records or metric datapoints with the
+      same values for the specified attributes
+
+      are "grouped" under the same *Resource*.
+
+      '
     status:
       class: processor
       stability:
@@ -176,6 +221,7 @@ components:
 - name: groupbytraceprocessor
   metadata:
     type: groupbytrace
+    display_name: Group by Trace Processor
     status:
       class: processor
       stability:
@@ -193,6 +239,7 @@ components:
 - name: intervalprocessor
   metadata:
     type: interval
+    display_name: Interval Processor
     status:
       class: processor
       stability:
@@ -209,6 +256,19 @@ components:
 - name: isolationforestprocessor
   metadata:
     type: isolationforest
+    display_name: Isolation Forest Processor
+    description: 'The **Isolation Forest processor** adds inline, unsupervised anomaly
+      detection to any OpenTelemetry Collector pipeline
+
+      (traces, metrics, or logs). It embeds a lightweight implementation of the Isolation
+      Forest algorithm that automatically
+
+      learns normal behaviour from recent telemetry and tags, scores, or optionally
+      drops anomalies *in‑flight* – no
+
+      external ML service required.
+
+      '
     status:
       class: processor
       stability:

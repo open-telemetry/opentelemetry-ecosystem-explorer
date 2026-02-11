@@ -6126,6 +6126,7 @@ components:
         active:
         - dmitryax
         - braydonk
+        - rogercoll
 - name: httpcheckreceiver
   metadata:
     type: httpcheck
@@ -8418,6 +8419,7 @@ components:
         active:
         - justinianvoss22
         - dyl10s
+        - ishleenk17
         seeking_new: true
     attributes:
       assert_type:
@@ -9289,6 +9291,7 @@ components:
         active:
         - justinianvoss22
         - dyl10s
+        - ishleenk17
         seeking_new: true
     attributes:
       collection:
