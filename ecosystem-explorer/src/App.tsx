@@ -5,6 +5,8 @@ import { HomePage } from "@/features/home/home-page";
 import { JavaAgentPage } from "@/features/java-agent/java-agent-page";
 import { CollectorPage } from "@/features/collector/collector-page";
 import { NotFoundPage } from "@/features/not-found/not-found-page";
+import { JavaInstrumentationListPage } from "@/features/java-agent/java-instrumentation-list-page";
+import { JavaConfigurationListPage } from "@/features/java-agent/java-configuration-list-page";
 
 export default function App() {
   return (
@@ -15,6 +17,8 @@ export default function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/java-agent" element={<JavaAgentPage />} />
+            <Route path="/java-agent/instrumentation" element={<JavaInstrumentationListPage />} />
+            <Route path="/java-agent/configuration" element={<JavaConfigurationListPage />} />
             <Route path="/collector" element={<CollectorPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
