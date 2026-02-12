@@ -23,6 +23,10 @@ class ComponentScanner:
         "opampcustommessages",  # OpAMP utilities
     ]
 
+    EXCLUDED_COMPONENTS = [
+        "endpointswatcher",  # Utility component for watching endpoints, not a component
+    ]
+
     # Directories that contain nested components (subtypes)
     NESTED_COMPONENT_DIRS = {"encoding", "observer", "storage"}
 
@@ -111,6 +115,9 @@ class ComponentScanner:
             return False
         if path.name.endswith("test") or path.name.endswith("helper"):
             return False
+        for excluded in self.EXCLUDED_COMPONENTS:
+            if path.name == excluded:
+                return False
         return True
 
     def _has_go_code(self, path: Path) -> bool:

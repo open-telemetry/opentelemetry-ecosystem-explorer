@@ -228,3 +228,93 @@ class CollectorSync:
             logger.info("  - %s: %s", item["distribution"], item["version"])
 
         return summary
+
+    def backfill_versions(
+        self,
+        distribution: DistributionName,
+        versions: list[Version] | None = None,
+    ) -> dict[str, Any]:
+        """
+        Backfill (regenerate) specific versions for a distribution.
+
+        This deletes existing version data and re-scans from the repository.
+        Useful when scanner logic changes (e.g., new exclusions) and you want to
+        apply changes to historical versions.
+
+        Args:
+            distribution: Distribution name
+            versions: List of versions to backfill, or None to backfill all existing versions
+
+        Returns:
+            Summary of versions that were backfilled
+        """
+        if versions is None:
+            versions = self.inventory_manager.list_versions(distribution)
+
+        if not versions:
+            logger.info("No versions to backfill for %s", distribution)
+            return {"distribution": distribution, "versions_processed": []}
+
+        logger.info("")
+        logger.info("=" * 60)
+        logger.info("BACKFILL MODE: %s", distribution.upper())
+        logger.info("=" * 60)
+        logger.info("Versions to backfill: %d", len(versions))
+        for v in versions:
+            logger.info("  - %s", v)
+
+        processed = []
+        for version in versions:
+            logger.info("")
+            logger.info("Backfilling %s %s...", distribution, version)
+
+            deleted = self.inventory_manager.delete_version(distribution, version)
+            if deleted:
+                logger.info("  Deleted existing data")
+
+            components = self.scan_version(distribution, version, checkout=True)
+            self.save_version(distribution, version, components)
+            processed.append(str(version))
+
+        logger.info("")
+        logger.info("Backfill complete for %s: %d versions processed", distribution, len(processed))
+
+        return {
+            "distribution": distribution,
+            "versions_processed": processed,
+        }
+
+    def backfill(self, versions_by_dist: dict[DistributionName, list[Version] | None] | None = None) -> dict[str, Any]:
+        """
+        Backfill versions across all distributions.
+
+        Args:
+            versions_by_dist: Dictionary mapping distribution to list of versions to backfill,
+                            or None to auto-detect all existing versions for all distributions
+
+        Returns:
+            Summary of backfill operation
+        """
+        if versions_by_dist is None:
+            versions_by_dist = {dist: None for dist in self.repos.keys()}
+
+        summary = {"backfilled": []}
+
+        logger.info("=" * 60)
+        logger.info("BACKFILL MODE")
+        logger.info("=" * 60)
+
+        for distribution in versions_by_dist.keys():
+            result = self.backfill_versions(distribution, versions_by_dist[distribution])
+            summary["backfilled"].append(result)
+
+        logger.info("")
+        logger.info("=" * 60)
+        logger.info("BACKFILL COMPLETE")
+        logger.info("=" * 60)
+        total_versions = sum(len(item["versions_processed"]) for item in summary["backfilled"])
+        logger.info("Total versions backfilled: %d", total_versions)
+        for item in summary["backfilled"]:
+            logger.info("  %s: %d versions", item["distribution"], len(item["versions_processed"]))
+
+        return summary

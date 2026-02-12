@@ -555,9 +555,6 @@ components:
         - dmitryax
         emeritus:
         - rmfitzpatrick
-- name: endpointswatcher
-  subtype: observer
-  has_metadata: false
 - name: hostobserver
   subtype: observer
   metadata:

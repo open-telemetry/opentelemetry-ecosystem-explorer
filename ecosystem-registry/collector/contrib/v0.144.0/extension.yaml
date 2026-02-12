@@ -1,5 +1,5 @@
 distribution: contrib
-version: v0.144.0
+version: 0.144.0
 repository: opentelemetry-collector-contrib
 component_type: extension
 components:
@@ -468,9 +468,6 @@ components:
         - dmitryax
         emeritus:
         - rmfitzpatrick
-- name: endpointswatcher
-  subtype: observer
-  has_metadata: false
 - name: hostobserver
   subtype: observer
   metadata:

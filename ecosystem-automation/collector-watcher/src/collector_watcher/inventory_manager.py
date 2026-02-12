@@ -180,3 +180,20 @@ class InventoryManager:
         """
         version_dir = self.get_version_dir(distribution, version)
         return version_dir.exists()
+
+    def delete_version(self, distribution: DistributionName, version: Version) -> bool:
+        """
+        Delete a specific version directory for a distribution.
+
+        Args:
+            distribution: Distribution name
+            version: Version to delete
+
+        Returns:
+            True if version was deleted, False if it didn't exist
+        """
+        version_dir = self.get_version_dir(distribution, version)
+        if version_dir.exists():
+            shutil.rmtree(version_dir)
+            return True
+        return False
