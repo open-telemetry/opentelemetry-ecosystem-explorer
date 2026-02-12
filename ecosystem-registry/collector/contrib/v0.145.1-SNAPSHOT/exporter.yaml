@@ -24,7 +24,7 @@ components:
     status:
       class: exporter
       stability:
-        beta:
+        unmaintained:
         - logs
         - metrics
         - traces

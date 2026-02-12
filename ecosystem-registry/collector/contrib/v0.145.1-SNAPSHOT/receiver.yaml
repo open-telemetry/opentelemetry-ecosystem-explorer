@@ -6140,8 +6140,10 @@ components:
       - k8s
       codeowners:
         active:
-        - codeboten
         - VenuEmmadi
+        emeritus:
+        - codeboten
+        seeking_new: true
     attributes:
       error.message:
         description: Error message recorded during check
