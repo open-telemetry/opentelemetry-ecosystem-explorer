@@ -69,10 +69,9 @@ components:
     status:
       class: processor
       stability:
-        development:
+        deprecated:
         - traces
-      distributions:
-      - contrib
+      distributions: []
       codeowners:
         active:
         - songy23
@@ -126,6 +125,7 @@ components:
 - name: dnslookupprocessor
   metadata:
     type: dnslookup
+    display_name: DNS Lookup Processor
     status:
       class: processor
       stability:
