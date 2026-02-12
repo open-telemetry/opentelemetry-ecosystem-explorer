@@ -2509,7 +2509,7 @@ components:
           aggregation_temporality: cumulative
         stability: development
       container.cpu.usage.kernelmode:
-        description: Time spent by tasks of the cgroup in kernel mode (Linux).  Time
+        description: Time spent by tasks of the cgroup in kernel mode (Linux). Time
           spent by all container processes in kernel mode (Windows).
         unit: ns
         enabled: true
@@ -2549,7 +2549,7 @@ components:
           aggregation_temporality: cumulative
         stability: development
       container.cpu.usage.usermode:
-        description: Time spent by tasks of the cgroup in user mode (Linux).  Time
+        description: Time spent by tasks of the cgroup in user mode (Linux). Time
           spent by all container processes in user mode (Windows).
         unit: ns
         enabled: true
@@ -17063,7 +17063,7 @@ components:
         - object_name
         stability: development
       vcenter.host.memory.capacity:
-        description: Total memory  capacity of the host system.
+        description: Total memory capacity of the host system.
         unit: MiBy
         enabled: false
         sum:
