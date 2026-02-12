@@ -5,6 +5,7 @@ See full schema:
 """
 
 import logging
+import re
 from pathlib import Path
 from typing import Any
 
@@ -30,6 +31,29 @@ class MetadataParser:
             True if metadata.yaml exists
         """
         return self.metadata_path.exists()
+
+    @staticmethod
+    def _sanitize_description(description: str) -> str:
+        """
+        Sanitize description text by removing extra whitespace and normalizing line breaks.
+
+        YAML multi-line strings can contain awkward line breaks and extra whitespace
+        when parsed. This method normalizes them to single-line strings with clean spacing.
+
+        Args:
+            description: Raw description string from YAML
+
+        Returns:
+            Cleaned description string with normalized whitespace
+        """
+        if not description:
+            return description
+
+        cleaned = description.strip()
+        cleaned = cleaned.replace("\n", " ")
+        cleaned = re.sub(r"\s+", " ", cleaned)
+
+        return cleaned
 
     def parse(self) -> dict[str, Any] | None:
         """
@@ -57,7 +81,7 @@ class MetadataParser:
                 parsed["display_name"] = raw_metadata["display_name"]
 
             if "description" in raw_metadata:
-                parsed["description"] = raw_metadata["description"]
+                parsed["description"] = self._sanitize_description(raw_metadata["description"])
 
             # Status field (with nested structure)
             if "status" in raw_metadata:
@@ -142,7 +166,7 @@ class MetadataParser:
                 parsed_attr = {}
 
                 if "description" in attr:
-                    parsed_attr["description"] = attr["description"]
+                    parsed_attr["description"] = self._sanitize_description(attr["description"])
                 if "type" in attr:
                     parsed_attr["type"] = attr["type"]
                 if "name_override" in attr:
@@ -177,7 +201,7 @@ class MetadataParser:
                 parsed_metric = {}
 
                 if "description" in metric:
-                    parsed_metric["description"] = metric["description"]
+                    parsed_metric["description"] = self._sanitize_description(metric["description"])
                 if "unit" in metric:
                     parsed_metric["unit"] = metric["unit"]
                 if "enabled" in metric:

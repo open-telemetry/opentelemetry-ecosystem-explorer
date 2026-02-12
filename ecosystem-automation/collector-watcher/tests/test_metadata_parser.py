@@ -282,3 +282,64 @@ status:
     assert metadata is None
     assert len(caplog.records) == 1
     assert "Failed to parse" in caplog.text
+
+
+def test_sanitize_description_whitespace_normalization(temp_component_dir):
+    """Test line breaks, extra spaces, and tabs."""
+    content = """
+type: test
+description: |
+  The Delta to Cumulative Processor (`deltatocumulativeprocessor`) converts metrics from delta temporality to
+
+  cumulative, by accumulating samples in memory.
+"""
+    create_metadata_file(temp_component_dir, content)
+    parser = MetadataParser(temp_component_dir)
+    metadata = parser.parse()
+
+    assert metadata is not None
+    expected = (
+        "The Delta to Cumulative Processor (`deltatocumulativeprocessor`) converts metrics "
+        "from delta temporality to cumulative, by accumulating samples in memory."
+    )
+    assert metadata["description"] == expected
+    assert "\n" not in metadata["description"]
+
+
+def test_sanitize_descriptions_in_attributes_and_metrics(temp_component_dir):
+    """Test sanitization applies to attribute, metric, and resource attribute descriptions."""
+    content = """
+type: test
+attributes:
+  test_attr:
+    description: |
+      Multi-line attribute description
+      with line breaks.
+    type: string
+metrics:
+  test.metric:
+    description: |
+      total number of datapoints processed. may have 'error' attribute,
+      if processing failed
+    unit: "{datapoint}"
+    enabled: true
+resource_attributes:
+  service.name:
+    description: |
+      The name of the service
+      running the collector.
+    type: string
+"""
+    create_metadata_file(temp_component_dir, content)
+    parser = MetadataParser(temp_component_dir)
+    metadata = parser.parse()
+
+    assert metadata["attributes"]["test_attr"]["description"] == "Multi-line attribute description with line breaks."
+    assert (
+        metadata["metrics"]["test.metric"]["description"]
+        == "total number of datapoints processed. may have 'error' attribute, if processing failed"
+    )
+    assert (
+        metadata["resource_attributes"]["service.name"]["description"]
+        == "The name of the service running the collector."
+    )

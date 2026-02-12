@@ -7,12 +7,8 @@ components:
   metadata:
     type: ack
     display_name: ACK Extension
-    description: 'This extension allows acking of data upon successful processing.
-      The upstream agent can choose to send event again
-
-      if ack fails.
-
-      '
+    description: This extension allows acking of data upon successful processing.
+      The upstream agent can choose to send event again if ack fails.
     status:
       class: extension
       stability:
@@ -30,8 +26,8 @@ components:
   metadata:
     type: asapclient
     display_name: ASAP Client Authentication Extension
-    description: "This extension provides [Atlassian Service Authentication Protocol](https://s2sauth.bitbucket.io/)\
-      \ (ASAP) client \ncredentials for HTTP or gRPC based exporters.\n"
+    description: This extension provides [Atlassian Service Authentication Protocol](https://s2sauth.bitbucket.io/)
+      (ASAP) client credentials for HTTP or gRPC based exporters.
     status:
       class: extension
       stability:
@@ -47,18 +43,11 @@ components:
   metadata:
     type: awsproxy
     display_name: AWS Proxy Extension
-    description: 'The AWS proxy accepts requests without any authentication of AWS
-      signatures applied and forwards them to the
-
-      AWS API, applying authentication and signing. This allows applications to avoid
-      needing AWS credentials to access
-
+    description: The AWS proxy accepts requests without any authentication of AWS
+      signatures applied and forwards them to the AWS API, applying authentication
+      and signing. This allows applications to avoid needing AWS credentials to access
       a service, instead configuring the AWS exporter and/or proxy in the OpenTelemetry
-      collector and only providing the
-
-      collector with credentials.
-
-      '
+      collector and only providing the collector with credentials.
     status:
       class: extension
       stability:
@@ -166,10 +155,8 @@ components:
   metadata:
     type: avro_log_encoding
     display_name: AVRO Log Encoding Extension
-    description: 'The `avrolog` encoding extension is used to unmarshal AVRO and insert
+    description: The `avrolog` encoding extension is used to unmarshal AVRO and insert
       it into the body of a log record. Marshalling is not supported.
-
-      '
     status:
       class: extension
       stability:
@@ -184,10 +171,8 @@ components:
   metadata:
     type: awscloudwatchmetricstreams_encoding
     display_name: AWS CloudWatch Metric Streams Encoding Extension
-    description: 'This extension unmarshalls metrics encoded in formats produced by
+    description: This extension unmarshalls metrics encoded in formats produced by
       [Amazon CloudWatch Metric Streams](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Metric-Streams.html).
-
-      '
     status:
       class: extension
       stability:
@@ -222,11 +207,9 @@ components:
   metadata:
     type: azure_encoding
     display_name: Azure Logs/Traces/Metrics Encoding Extension
-    description: 'This extension is designed for unmarshaling logs/traces/metrics
-      encoded in specific format produced by [Azure Diagnostic Settings Export](https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/diagnostic-settings)
+    description: This extension is designed for unmarshaling logs/traces/metrics encoded
+      in specific format produced by [Azure Diagnostic Settings Export](https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/diagnostic-settings)
       or [Azure Data Collection Rules (DCRs)](https://learn.microsoft.com/en-us/azure/azure-monitor/data-collection/data-collection-rule-overview)
-
-      '
     status:
       class: extension
       stability:
@@ -241,10 +224,8 @@ components:
   metadata:
     type: googlecloudlogentry_encoding
     display_name: Google Cloud LogEntry Encoding Extension
-    description: 'This extension can be used to unmarshall a [Cloud Logging LogEntry](https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry)
+    description: This extension can be used to unmarshall a [Cloud Logging LogEntry](https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry)
       message type.
-
-      '
     status:
       class: extension
       stability:
@@ -294,10 +275,8 @@ components:
   metadata:
     type: otlp_encoding
     display_name: OTLP Encoding Extension
-    description: 'This extension unmarshals and marshals data encoded according to
+    description: This extension unmarshals and marshals data encoded according to
       the [OTLP specification](https://opentelemetry.io/docs/specs/otlp/).
-
-      '
     status:
       class: extension
       stability:
@@ -314,10 +293,8 @@ components:
   metadata:
     type: skywalking_encoding
     display_name: Skywalking Encoding Extension
-    description: 'The `Skywalking` encoding extension is used to unmarshal Apache
-      Skywalking segment traces. Marshalling is not supported.
-
-      '
+    description: The `Skywalking` encoding extension is used to unmarshal Apache Skywalking
+      segment traces. Marshalling is not supported.
     status:
       class: extension
       stability:
@@ -439,12 +416,9 @@ components:
   metadata:
     type: http_forwarder
     display_name: HTTP Forwarder Extension
-    description: 'This extension accepts HTTP requests, optionally adds headers to
-      them and forwards them.
-
-      The RequestURIs of the original requests are preserved by the extension.
-
-      '
+    description: This extension accepts HTTP requests, optionally adds headers to
+      them and forwards them. The RequestURIs of the original requests are preserved
+      by the extension.
     status:
       class: extension
       stability:
@@ -478,12 +452,9 @@ components:
   metadata:
     type: k8s_leader_elector
     display_name: Kubernetes Leader Elector Extension
-    description: 'This extension enables OpenTelemetry components to run in HA mode
-      across a Kubernetes cluster. The component that owns
-
-      the lease becomes the leader and becomes the active instance.
-
-      '
+    description: This extension enables OpenTelemetry components to run in HA mode
+      across a Kubernetes cluster. The component that owns the lease becomes the leader
+      and becomes the active instance.
     status:
       class: extension
       stability:
@@ -682,12 +653,8 @@ components:
   metadata:
     type: sigv4auth
     display_name: SigV4 Authenticator Extension
-    description: 'This extension provides Sigv4 authentication for making requests
-      to AWS services. You can read about the
-
-      [Sigv4 process](https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html).
-
-      '
+    description: This extension provides Sigv4 authentication for making requests
+      to AWS services. You can read about the [Sigv4 process](https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html).
     status:
       class: extension
       stability:

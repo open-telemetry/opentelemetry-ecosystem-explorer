@@ -42,15 +42,10 @@ components:
   metadata:
     type: cumulativetodelta
     display_name: Cumulative to Delta Processor
-    description: 'The cumulative to delta processor (`cumulativetodeltaprocessor`)
-      converts monotonic sum, histogram, and exponential
-
-      histogram metrics from cumulative to delta aggregation temporality. Non-monotonic
-      sums are excluded. Delta metrics are
-
-      excluded from any conversion and forwarded without changes.
-
-      '
+    description: The cumulative to delta processor (`cumulativetodeltaprocessor`)
+      converts monotonic sum, histogram, and exponential histogram metrics from cumulative
+      to delta aggregation temporality. Non-monotonic sums are excluded. Delta metrics
+      are excluded from any conversion and forwarded without changes.
     status:
       class: processor
       stability:
@@ -69,10 +64,9 @@ components:
     status:
       class: processor
       stability:
-        development:
+        deprecated:
         - traces
-      distributions:
-      - contrib
+      distributions: []
       codeowners:
         active:
         - songy23
@@ -87,12 +81,9 @@ components:
   metadata:
     type: deltatocumulative
     display_name: Delta to Cumulative Processor
-    description: 'The Delta to Cumulative Processor (`deltatocumulativeprocessor`)
-      converts metrics from delta temporality to
-
-      cumulative, by accumulating samples in memory.
-
-      '
+    description: The Delta to Cumulative Processor (`deltatocumulativeprocessor`)
+      converts metrics from delta temporality to cumulative, by accumulating samples
+      in memory.
     status:
       class: processor
       stability:
@@ -110,8 +101,8 @@ components:
   metadata:
     type: deltatorate
     display_name: Delta to Rate Processor
-    description: "The Delta to Rate Processor (`deltatorateprocessor`) converts delta\
-      \ sum metrics to rate metrics. This rate is a gauge. \n"
+    description: The Delta to Rate Processor (`deltatorateprocessor`) converts delta
+      sum metrics to rate metrics. This rate is a gauge.
     status:
       class: processor
       stability:
@@ -126,6 +117,7 @@ components:
 - name: dnslookupprocessor
   metadata:
     type: dnslookup
+    display_name: DNS Lookup Processor
     status:
       class: processor
       stability:
@@ -169,12 +161,9 @@ components:
   metadata:
     type: geoip
     display_name: GeoIP Processor
-    description: 'The geoIP processor `geoipprocessor` enhances the attributes of
-      a span, log, or metric by appending information about
-
-      the geographical location of an IP address.
-
-      '
+    description: The geoIP processor `geoipprocessor` enhances the attributes of a
+      span, log, or metric by appending information about the geographical location
+      of an IP address.
     status:
       class: processor
       stability:
@@ -193,15 +182,10 @@ components:
   metadata:
     type: groupbyattrs
     display_name: Group by Attributes Processor
-    description: 'This processor re-associates spans, log records and metric datapoints
-      to a *Resource* that matches with the specified
-
-      attributes. As a result, all spans, log records or metric datapoints with the
-      same values for the specified attributes
-
-      are "grouped" under the same *Resource*.
-
-      '
+    description: This processor re-associates spans, log records and metric datapoints
+      to a *Resource* that matches with the specified attributes. As a result, all
+      spans, log records or metric datapoints with the same values for the specified
+      attributes are "grouped" under the same *Resource*.
     status:
       class: processor
       stability:
@@ -257,18 +241,11 @@ components:
   metadata:
     type: isolationforest
     display_name: Isolation Forest Processor
-    description: 'The **Isolation Forest processor** adds inline, unsupervised anomaly
-      detection to any OpenTelemetry Collector pipeline
-
-      (traces, metrics, or logs). It embeds a lightweight implementation of the Isolation
-      Forest algorithm that automatically
-
-      learns normal behaviour from recent telemetry and tags, scores, or optionally
-      drops anomalies *in‑flight* – no
-
-      external ML service required.
-
-      '
+    description: The **Isolation Forest processor** adds inline, unsupervised anomaly
+      detection to any OpenTelemetry Collector pipeline (traces, metrics, or logs).
+      It embeds a lightweight implementation of the Isolation Forest algorithm that
+      automatically learns normal behaviour from recent telemetry and tags, scores,
+      or optionally drops anomalies *in‑flight* – no external ML service required.
     status:
       class: processor
       stability:
@@ -285,10 +262,8 @@ components:
   metadata:
     type: k8s_attributes
     display_name: Kubernetes Attributes Processor
-    description: 'The Kubernetes Attributes Processor allows adding k8s metadata to
+    description: The Kubernetes Attributes Processor allows adding k8s metadata to
       resource attributes for spans, metrics and logs.
-
-      '
     status:
       class: processor
       stability:
@@ -431,12 +406,9 @@ components:
   metadata:
     type: logdedup
     display_name: Log DeDuplication Processor
-    description: 'The Log DeDuplication Processor is used to deduplicate logs by detecting
-      identical logs over a range of time and
-
-      emitting a single log with the count of logs that were deduplicated.
-
-      '
+    description: The Log DeDuplication Processor is used to deduplicate logs by detecting
+      identical logs over a range of time and emitting a single log with the count
+      of logs that were deduplicated.
     status:
       class: processor
       stability:
@@ -467,12 +439,9 @@ components:
   metadata:
     type: lookup
     display_name: Lookup Processor
-    description: 'The lookup processor enriches telemetry signals by performing external
-      lookups to retrieve additional data. Currently
-
-      supports logs, with metrics and traces support planned.
-
-      '
+    description: The lookup processor enriches telemetry signals by performing external
+      lookups to retrieve additional data. Currently supports logs, with metrics and
+      traces support planned.
     status:
       class: processor
       stability:
@@ -503,16 +472,10 @@ components:
   metadata:
     type: metricstarttime
     display_name: Metric Start Time Processor
-    description: 'The Metric Start Time Processor (`metricstarttime`) is used to set
-      the start
-
-      time for metric points with a cumulative aggregation temporality. It is
-
-      commonly used with the `prometheus` receiver, which usually produces metric
-
+    description: The Metric Start Time Processor (`metricstarttime`) is used to set
+      the start time for metric points with a cumulative aggregation temporality.
+      It is commonly used with the `prometheus` receiver, which usually produces metric
       points without a start time.
-
-      '
     status:
       class: processor
       stability:
@@ -564,16 +527,10 @@ components:
   metadata:
     type: redaction
     display_name: Redaction Processor
-    description: 'This processor deletes span, log, and metric datapoint attributes
-      that don''t match a list of allowed
-
-      attributes. It also masks attribute values that match a blocked value
-
-      list. Attributes that aren''t on the allowed list are removed before any
-
-      value checks are done.
-
-      '
+    description: This processor deletes span, log, and metric datapoint attributes
+      that don't match a list of allowed attributes. It also masks attribute values
+      that match a blocked value list. Attributes that aren't on the allowed list
+      are removed before any value checks are done.
     status:
       class: processor
       stability:
@@ -777,13 +734,9 @@ components:
   metadata:
     type: unroll
     display_name: Unroll Processor
-    description: 'The Unroll Processor takes log records with slice bodies and expands
-      each element of the slice into its own log
-
-      record. This allows for better processing and analysis of structured log data
-      that contains arrays or lists.
-
-      '
+    description: The Unroll Processor takes log records with slice bodies and expands
+      each element of the slice into its own log record. This allows for better processing
+      and analysis of structured log data that contains arrays or lists.
     status:
       class: processor
       stability:
