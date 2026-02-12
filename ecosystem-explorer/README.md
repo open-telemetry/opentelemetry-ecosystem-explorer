@@ -119,11 +119,11 @@ Theme colors are defined in `src/themes.ts` and applied via CSS custom propertie
 
 **Available colors:**
 
-- `primary` - Vibrant orange accent
-- `secondary` - Bright blue accent
-- `background` - Main background
-- `foreground` - Main text
-- `card` - Card backgrounds
-- `card-secondary` - Secondary card backgrounds
-- `muted-foreground` - Secondary text
-- `border` - Border colors
+* `primary` - Vibrant orange accent
+* `secondary` - Bright blue accent
+* `background` - Main background
+* `foreground` - Main text
+* `card` - Card backgrounds
+* `card-secondary` - Secondary card backgrounds
+* `muted-foreground` - Secondary text
+* `border` - Border colors

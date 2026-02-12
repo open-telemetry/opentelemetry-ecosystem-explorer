@@ -9,20 +9,11 @@ See [project proposal](https://github.com/open-telemetry/community/blob/main/pro
 
 There are three components in this repository:
 
-### ecosystem-registry
-
-This will act as our raw data registry of the metadata from various projects. It is updated nightly by the
-automation tools in ecosystem-automation (`collector-watcher`, `documentation-sync`).
-
-### ecosystem-automation
-
-Automation pipelines and tools to populate and maintain the ecosystem-registry, and to synchronize documentation and other
-targets with the registry data.
-
-### ecosystem-explorer
-
-React/Vite web application for exploring the data. See [instrumentation-explorer](https://github.com/jaydeluca/instrumentation-explorer)
-for a POC/reference.
+| Component                | Description                                                                    |
+|--------------------------|--------------------------------------------------------------------------------|
+| **ecosystem-registry**   | Raw data registry storing metadata from various projects. Updated nightly.     |
+| **ecosystem-automation** | Automation pipelines that populate the registry and synchronize documentation. |
+| **ecosystem-explorer**   | React/Vite web application for exploring the data.                             |
 
 ## Contributing
 
@@ -30,9 +21,22 @@ This project welcomes contributions from the community.
 
 Please refer to the [CONTRIBUTING.md](CONTRIBUTING.md) file for guidelines on how to contribute to this project.
 
-See the [ecosystem-explorer README](./ecosystem-explorer/README.md) for setup and development instructions.
+See component READMEs for setup and development:
 
-See the [ecosystem-automation README](./ecosystem-automation/README.md) for setup and development instructions.
+* [ecosystem-explorer](./ecosystem-explorer/README.md)
+* [ecosystem-automation](./ecosystem-automation/README.md)
+
+## Community
+
+This project is run under the umbrella of the OpenTelemetry Communications SIG.
+The Communications SIG meets every two weeks on Tuesday at 9:00 AM PT.
+Check out the [OpenTelemetry community calendar][] for the Zoom link and any
+updates to this schedule.
+
+Meeting notes are available as a public [Google doc][].
+
+You can also reach out in either `#otel-ecosystem-explorer` or `#otel-comms`
+channels on [Slack][].
 
 ## Maintainers
 
@@ -40,11 +44,21 @@ See the [ecosystem-automation README](./ecosystem-automation/README.md) for setu
 * [Severin Neumann](https://github.com/svrnm), Causely
 * [Pablo Baeyans](https://github.com/mx-psi), Datadog
 
-For more information about the maintainer role, see the [community repository](https://github.com/open-telemetry/community/blob/main/guides/contributor/membership.md#maintainer).
+For more information about the maintainer role, see
+the [community repository](https://github.com/open-telemetry/community/blob/main/guides/contributor/membership.md#maintainer).
 
 ## Approvers
 
 * [Vitor Vasconcellos](https://github.com/vitorvasc), Mercado Libre
 * [Marylia Gutierrez](https://github.com/maryliag), Grafana Labs
 
-For more information about the approver role, see the [community repository](https://github.com/open-telemetry/community/blob/main/guides/contributor/membership.md#approver).
+For more information about the approver role, see
+the [community repository](https://github.com/open-telemetry/community/blob/main/guides/contributor/membership.md#approver).
+
+[opentelemetry community calendar]:
+https://calendar.google.com/calendar/u/0/embed?src=c_2bf73e3b6b530da4babd444e72b76a6ad893a5c3f43cf40467abc7a9a897f977@group.calendar.google.com
+
+[google doc]:
+https://docs.google.com/document/d/1wW0jLldwXN8Nptq2xmgETGbGn9eWP8fitvD5njM-xZY/edit?usp=sharing
+
+[slack]: https://slack.cncf.io/

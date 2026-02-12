@@ -7,10 +7,10 @@ Automation tools for the OpenTelemetry Ecosystem Explorer project.
 
 ## Components
 
-- **collector-watcher**: Collects and aggregates metadata from OpenTelemetry Collector components
-- **java-instrumentation-watcher**: Collects and aggregates metadata from the OpenTelemetry Java Instrumentation project
-- **documentation-sync**: Synchronizes documentation with the ecosystem registry
-- **explorer-db-builder**: Builds the database for the ecosystem explorer web application
+* **collector-watcher**: Collects and aggregates metadata from OpenTelemetry Collector components
+* **java-instrumentation-watcher**: Collects and aggregates metadata from the OpenTelemetry Java Instrumentation project
+* **documentation-sync**: Synchronizes documentation with the ecosystem registry
+* **explorer-db-builder**: Builds the database for the ecosystem explorer web application
 
 ## Setup
 
@@ -18,8 +18,8 @@ This project uses [uv](https://github.com/astral-sh/uv) for dependency managemen
 
 ### Prerequisites
 
-- Python 3.11+
-- uv package manager
+* Python 3.11+
+* uv package manager
 
 Install uv if you don't have it:
 
