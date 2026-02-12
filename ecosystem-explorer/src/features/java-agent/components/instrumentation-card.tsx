@@ -1,5 +1,4 @@
 import type { InstrumentationData } from "@/types/javaagent";
-import { getSemanticConventionDisplayNames } from "@/lib/utils/semantic-conventions";
 import type { FilterState } from "./instrumentation-filter-bar";
 import { FILTER_STYLES } from "../styles/filter-styles";
 
@@ -19,10 +18,6 @@ export function InstrumentationCard({ instrumentation, activeFilters }: Instrume
     instrumentation.target_versions.javaagent.length > 0;
   const hasLibraryTarget =
     instrumentation.target_versions?.library && instrumentation.target_versions.library.length > 0;
-
-  const semanticConventions = getSemanticConventionDisplayNames(
-    instrumentation.semantic_conventions
-  );
 
   const isJavaAgentFilterActive = activeFilters?.target.has("javaagent");
   const isLibraryFilterActive = activeFilters?.target.has("library");
@@ -94,19 +89,6 @@ export function InstrumentationCard({ instrumentation, activeFilters }: Instrume
           )}
         </div>
       </div>
-
-      {semanticConventions.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-border/50">
-          {semanticConventions.map((convention) => (
-            <span
-              key={convention}
-              className="text-xs px-2 py-0.5 bg-purple-500/10 text-purple-600 dark:text-purple-400 rounded border border-purple-500/20"
-            >
-              {convention}
-            </span>
-          ))}
-        </div>
-      )}
     </div>
   );
 }

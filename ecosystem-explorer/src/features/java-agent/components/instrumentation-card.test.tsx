@@ -133,7 +133,6 @@ describe("InstrumentationCard", () => {
       search: "",
       telemetry: new Set(),
       target: new Set(["javaagent"]),
-      semanticConventions: new Set(),
     };
 
     render(<InstrumentationCard instrumentation={instrumentation} activeFilters={activeFilters} />);
@@ -151,7 +150,6 @@ describe("InstrumentationCard", () => {
       search: "",
       telemetry: new Set(),
       target: new Set(["library"]),
-      semanticConventions: new Set(),
     };
 
     render(<InstrumentationCard instrumentation={instrumentation} activeFilters={activeFilters} />);
@@ -169,7 +167,6 @@ describe("InstrumentationCard", () => {
       search: "",
       telemetry: new Set(["spans"]),
       target: new Set(),
-      semanticConventions: new Set(),
     };
 
     render(<InstrumentationCard instrumentation={instrumentation} activeFilters={activeFilters} />);
@@ -199,35 +196,11 @@ describe("InstrumentationCard", () => {
       search: "",
       telemetry: new Set(["metrics"]),
       target: new Set(),
-      semanticConventions: new Set(),
     };
 
     render(<InstrumentationCard instrumentation={instrumentation} activeFilters={activeFilters} />);
 
     const metricsBadge = screen.getByText("Metrics");
     expect(metricsBadge.className).toContain(FILTER_STYLES.telemetry.metrics.active);
-  });
-
-  it("displays semantic convention tags when provided", () => {
-    const instrumentation: InstrumentationData = {
-      ...baseInstrumentation,
-      semantic_conventions: ["HTTP_CLIENT_SPANS", "DATABASE_CLIENT_SPANS"],
-    };
-
-    render(<InstrumentationCard instrumentation={instrumentation} />);
-
-    expect(screen.getByText("HTTP")).toBeInTheDocument();
-    expect(screen.getByText("Database")).toBeInTheDocument();
-  });
-
-  it("does not display semantic conventions section when none provided", () => {
-    const instrumentation: InstrumentationData = {
-      ...baseInstrumentation,
-      semantic_conventions: undefined,
-    };
-
-    const { container } = render(<InstrumentationCard instrumentation={instrumentation} />);
-
-    expect(container.querySelector(".border-t")).not.toBeInTheDocument();
   });
 });

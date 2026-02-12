@@ -4,7 +4,6 @@ export interface FilterState {
   search: string;
   telemetry: Set<"spans" | "metrics">;
   target: Set<"javaagent" | "library">;
-  semanticConventions: Set<string>;
 }
 
 interface InstrumentationFilterBarProps {

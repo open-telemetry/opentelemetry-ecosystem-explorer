@@ -9,10 +9,6 @@ vi.mock("@/hooks/use-javaagent-data", () => ({
   useInstrumentations: vi.fn(),
 }));
 
-vi.mock("@/lib/utils/semantic-conventions", () => ({
-  getSemanticConventionDisplayNames: vi.fn(() => []),
-}));
-
 vi.mock("@/components/ui/back-button", () => ({
   BackButton: () => <button>Back</button>,
 }));

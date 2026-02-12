@@ -9,7 +9,6 @@ describe("InstrumentationFilterBar", () => {
     search: "",
     telemetry: new Set(),
     target: new Set(),
-    semanticConventions: new Set(),
   };
 
   it("renders search input with correct placeholder", () => {
@@ -112,7 +111,6 @@ describe("InstrumentationFilterBar", () => {
       search: "",
       telemetry: new Set(["spans", "metrics"]),
       target: new Set(["javaagent"]),
-      semanticConventions: new Set(),
     };
 
     render(<InstrumentationFilterBar filters={activeFilters} onFiltersChange={vi.fn()} />);

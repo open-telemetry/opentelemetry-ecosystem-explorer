@@ -22,7 +22,6 @@ export function JavaInstrumentationListPage() {
     search: "",
     telemetry: new Set(),
     target: new Set(),
-    semanticConventions: new Set(),
   });
 
   const filteredInstrumentations = useMemo(() => {
