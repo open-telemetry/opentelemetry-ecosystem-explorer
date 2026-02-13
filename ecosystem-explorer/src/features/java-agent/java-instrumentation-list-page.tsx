@@ -52,9 +52,8 @@ export function JavaInstrumentationListPage() {
 
       if (filters.target.size > 0) {
         const hasJavaAgent =
-          instr.target_versions?.javaagent && instr.target_versions.javaagent.length > 0;
-        const hasLibrary =
-          instr.target_versions?.library && instr.target_versions.library.length > 0;
+          instr.javaagent_target_versions && instr.javaagent_target_versions.length > 0;
+        const hasLibrary = instr.has_standalone_library === true;
 
         if (filters.target.has("javaagent") && !hasJavaAgent) {
           return false;

@@ -398,6 +398,7 @@ name = "explorer-db-builder"
 version = "0.1.0"
 source = { editable = "ecosystem-automation/explorer-db-builder" }
 dependencies = [
+    { name = "java-instrumentation-watcher" },
     { name = "pyyaml" },
     { name = "semantic-version" },
 ]
@@ -410,6 +411,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "java-instrumentation-watcher", editable = "ecosystem-automation/java-instrumentation-watcher" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.1.0" },
     { name = "pyyaml", specifier = ">=6.0.1" },

@@ -23,7 +23,8 @@ export interface InstrumentationData {
   semantic_conventions?: string[];
   features?: string[];
   scope: InstrumentationScope;
-  target_versions?: TargetVersions;
+  has_standalone_library?: boolean;
+  javaagent_target_versions?: string[];
   configurations?: Configuration[];
   telemetry?: Telemetry[];
 }
@@ -31,11 +32,6 @@ export interface InstrumentationData {
 export interface InstrumentationScope {
   name: string;
   schema_url?: string;
-}
-
-export interface TargetVersions {
-  javaagent?: string[];
-  library?: string[];
 }
 
 export interface Configuration {

@@ -22,7 +22,7 @@ describe("JavaInstrumentationListPage - Filtering", () => {
       display_name: "HTTP Client",
       description: "Instrumentation for HTTP clients",
       scope: { name: "http" },
-      target_versions: { javaagent: ["1.0.0"] },
+      javaagent_target_versions: ["1.0.0"],
       telemetry: [{ when: "always", spans: [{ span_kind: "CLIENT" }] }],
     },
     {
@@ -30,7 +30,7 @@ describe("JavaInstrumentationListPage - Filtering", () => {
       display_name: "JDBC",
       description: "Database instrumentation for JDBC",
       scope: { name: "jdbc" },
-      target_versions: { library: ["1.0.0"] },
+      has_standalone_library: true,
       telemetry: [
         {
           when: "always",
@@ -50,7 +50,8 @@ describe("JavaInstrumentationListPage - Filtering", () => {
       display_name: "Kafka Client",
       description: "Messaging instrumentation for Kafka",
       scope: { name: "kafka" },
-      target_versions: { javaagent: ["1.0.0"], library: ["1.0.0"] },
+      javaagent_target_versions: ["1.0.0"],
+      has_standalone_library: true,
       telemetry: [
         {
           when: "always",
@@ -71,7 +72,7 @@ describe("JavaInstrumentationListPage - Filtering", () => {
       display_name: "Spring Web",
       description: "Instrumentation for Spring Web applications",
       scope: { name: "spring" },
-      target_versions: { javaagent: ["1.0.0"] },
+      javaagent_target_versions: ["1.0.0"],
     },
   ];
 

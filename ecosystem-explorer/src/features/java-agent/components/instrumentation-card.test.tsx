@@ -34,9 +34,7 @@ describe("InstrumentationCard", () => {
   it("displays Agent badge when javaagent target versions exist", () => {
     const instrumentation: InstrumentationData = {
       ...baseInstrumentation,
-      target_versions: {
-        javaagent: ["1.0.0", "2.0.0"],
-      },
+      javaagent_target_versions: ["1.0.0", "2.0.0"],
     };
     render(<InstrumentationCard instrumentation={instrumentation} />);
     expect(screen.getByText("Agent")).toBeInTheDocument();
@@ -45,9 +43,7 @@ describe("InstrumentationCard", () => {
   it("displays Library badge when library target versions exist", () => {
     const instrumentation: InstrumentationData = {
       ...baseInstrumentation,
-      target_versions: {
-        library: ["1.0.0"],
-      },
+      has_standalone_library: true,
     };
     render(<InstrumentationCard instrumentation={instrumentation} />);
     expect(screen.getByText("Library")).toBeInTheDocument();
@@ -56,10 +52,8 @@ describe("InstrumentationCard", () => {
   it("displays both Agent and Library badges when both exist", () => {
     const instrumentation: InstrumentationData = {
       ...baseInstrumentation,
-      target_versions: {
-        javaagent: ["1.0.0"],
-        library: ["1.0.0"],
-      },
+      javaagent_target_versions: ["1.0.0"],
+      has_standalone_library: true,
     };
     render(<InstrumentationCard instrumentation={instrumentation} />);
     expect(screen.getByText("Agent")).toBeInTheDocument();
@@ -127,7 +121,7 @@ describe("InstrumentationCard", () => {
   it("highlights Agent badge when javaagent filter is active", () => {
     const instrumentation: InstrumentationData = {
       ...baseInstrumentation,
-      target_versions: { javaagent: ["1.0.0"] },
+      javaagent_target_versions: ["1.0.0"],
     };
     const activeFilters: FilterState = {
       search: "",
@@ -144,7 +138,7 @@ describe("InstrumentationCard", () => {
   it("highlights Library badge when library filter is active", () => {
     const instrumentation: InstrumentationData = {
       ...baseInstrumentation,
-      target_versions: { library: ["1.0.0"] },
+      has_standalone_library: true,
     };
     const activeFilters: FilterState = {
       search: "",

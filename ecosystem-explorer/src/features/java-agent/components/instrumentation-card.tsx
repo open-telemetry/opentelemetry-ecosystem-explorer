@@ -14,10 +14,9 @@ export function InstrumentationCard({ instrumentation, activeFilters }: Instrume
   const displayName = instrumentation.display_name || instrumentation.name;
 
   const hasJavaAgentTarget =
-    instrumentation.target_versions?.javaagent &&
-    instrumentation.target_versions.javaagent.length > 0;
-  const hasLibraryTarget =
-    instrumentation.target_versions?.library && instrumentation.target_versions.library.length > 0;
+    instrumentation.javaagent_target_versions &&
+    instrumentation.javaagent_target_versions.length > 0;
+  const hasLibraryTarget = instrumentation.has_standalone_library === true;
 
   const isJavaAgentFilterActive = activeFilters?.target.has("javaagent");
   const isLibraryFilterActive = activeFilters?.target.has("library");

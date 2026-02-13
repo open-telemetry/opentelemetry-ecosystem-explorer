@@ -9,6 +9,7 @@ from java_instrumentation_watcher.inventory_manager import InventoryManager
 from semantic_version import Version
 
 from explorer_db_builder.database_writer import DatabaseWriter
+from explorer_db_builder.instrumentation_transformer import transform_instrumentation_format
 
 logger = logging.getLogger(__name__)
 
@@ -58,23 +59,28 @@ def process_version(
 ) -> None:
     """Process a single version and write its data to the database.
 
+    Handles both old (0.1) and new (0.2) file formats by transforming
+    to the latest schema before writing.
+
     Args:
         version: The version to process
         inventory_manager: Manager for accessing inventory data
         db_writer: Writer for database operations
 
     Raises:
-        ValueError: If no libraries found for the version
+        ValueError: If no libraries found for the version or unsupported format
         KeyError: If inventory data is malformed
     """
     logger.info(f"Processing Java Agent version: {version}")
 
     inventory = inventory_manager.load_versioned_inventory(version)
 
-    if "libraries" not in inventory:
+    transformed_inventory = transform_instrumentation_format(inventory)
+
+    if "libraries" not in transformed_inventory:
         raise KeyError(f"Inventory for version {version} missing 'libraries' key")
 
-    libraries = inventory["libraries"]
+    libraries = transformed_inventory["libraries"]
     if not libraries:
         raise ValueError(f"No libraries found in inventory for version {version}")
 

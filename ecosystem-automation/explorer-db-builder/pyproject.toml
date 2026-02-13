@@ -6,7 +6,11 @@ requires-python = ">=3.11"
 dependencies = [
     "PyYAML>=6.0.1",
     "semantic-version>=2.10.0",
+    "java-instrumentation-watcher",
 ]
+
+[tool.uv.sources]
+java-instrumentation-watcher = { workspace = true }
 
 [project.scripts]
 explorer-db-builder = "explorer_db_builder.main:main"

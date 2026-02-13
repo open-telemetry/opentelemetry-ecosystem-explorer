@@ -82,10 +82,11 @@ class TestProcessVersion:
         """Successfully processes a version with valid data."""
         version = Version("2.0.0")
         inventory_data = {
+            "file_format": 0.2,
             "libraries": [
                 {"name": "lib1", "version": "1.0"},
                 {"name": "lib2", "version": "2.0"},
-            ]
+            ],
         }
         library_map = {"lib1": "hash1", "lib2": "hash2"}
 
@@ -101,7 +102,7 @@ class TestProcessVersion:
     def test_process_version_missing_libraries_key(self, mock_inventory_manager, mock_db_writer):
         """Raises KeyError when inventory missing libraries key."""
         version = Version("2.0.0")
-        inventory_data = {"other_key": "value"}
+        inventory_data = {"file_format": 0.2, "other_key": "value"}
 
         mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
 
@@ -111,7 +112,7 @@ class TestProcessVersion:
     def test_process_version_empty_libraries(self, mock_inventory_manager, mock_db_writer):
         """Raises ValueError when libraries list is empty."""
         version = Version("2.0.0")
-        inventory_data = {"libraries": []}
+        inventory_data = {"file_format": 0.2, "libraries": []}
 
         mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
 
@@ -121,7 +122,7 @@ class TestProcessVersion:
     def test_process_version_none_libraries(self, mock_inventory_manager, mock_db_writer):
         """Raises ValueError when libraries is None."""
         version = Version("2.0.0")
-        inventory_data = {"libraries": None}
+        inventory_data = {"file_format": 0.2, "libraries": None}
 
         mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
 
@@ -133,7 +134,7 @@ class TestRunBuilder:
     def test_run_builder_success(self, mock_inventory_manager, mock_db_writer):
         """Returns 0 on successful execution."""
         versions = [Version("2.0.0"), Version("1.0.0")]
-        inventory_data = {"libraries": [{"name": "lib1", "version": "1.0"}]}
+        inventory_data = {"file_format": 0.2, "libraries": [{"name": "lib1", "version": "1.0"}]}
         library_map = {"lib1": "hash1"}
 
         mock_inventory_manager.list_versions.return_value = versions
@@ -158,7 +159,7 @@ class TestRunBuilder:
         """Returns 1 on KeyError."""
         versions = [Version("2.0.0")]
         mock_inventory_manager.list_versions.return_value = versions
-        mock_inventory_manager.load_versioned_inventory.return_value = {"wrong_key": []}
+        mock_inventory_manager.load_versioned_inventory.return_value = {"file_format": 0.2, "wrong_key": []}
 
         exit_code = run_builder(mock_inventory_manager, mock_db_writer)
 
@@ -167,7 +168,7 @@ class TestRunBuilder:
     def test_run_builder_os_error(self, mock_inventory_manager, mock_db_writer):
         """Returns 1 on OSError."""
         versions = [Version("2.0.0")]
-        inventory_data = {"libraries": [{"name": "lib1"}]}
+        inventory_data = {"file_format": 0.2, "libraries": [{"name": "lib1"}]}
 
         mock_inventory_manager.list_versions.return_value = versions
         mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
@@ -188,7 +189,7 @@ class TestRunBuilder:
     def test_run_builder_processes_all_versions(self, mock_inventory_manager, mock_db_writer):
         """All versions are processed."""
         versions = [Version("3.0.0"), Version("2.0.0"), Version("1.0.0")]
-        inventory_data = {"libraries": [{"name": "lib1"}]}
+        inventory_data = {"file_format": 0.2, "libraries": [{"name": "lib1"}]}
         library_map = {"lib1": "hash1"}
 
         mock_inventory_manager.list_versions.return_value = versions
@@ -205,7 +206,7 @@ class TestRunBuilder:
     def test_run_builder_with_clean_false(self, mock_inventory_manager, mock_db_writer):
         """Clean is not called when clean=False."""
         versions = [Version("1.0.0")]
-        inventory_data = {"libraries": [{"name": "lib1"}]}
+        inventory_data = {"file_format": 0.2, "libraries": [{"name": "lib1"}]}
 
         mock_inventory_manager.list_versions.return_value = versions
         mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
@@ -219,7 +220,7 @@ class TestRunBuilder:
     def test_run_builder_with_clean_true(self, mock_inventory_manager, mock_db_writer):
         """Clean is called when clean=True."""
         versions = [Version("1.0.0")]
-        inventory_data = {"libraries": [{"name": "lib1"}]}
+        inventory_data = {"file_format": 0.2, "libraries": [{"name": "lib1"}]}
 
         mock_inventory_manager.list_versions.return_value = versions
         mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
@@ -233,7 +234,7 @@ class TestRunBuilder:
     def test_run_builder_clean_before_processing(self, mock_inventory_manager, mock_db_writer):
         """Clean is called before processing versions."""
         versions = [Version("1.0.0")]
-        inventory_data = {"libraries": [{"name": "lib1"}]}
+        inventory_data = {"file_format": 0.2, "libraries": [{"name": "lib1"}]}
 
         mock_inventory_manager.list_versions.return_value = versions
         mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
