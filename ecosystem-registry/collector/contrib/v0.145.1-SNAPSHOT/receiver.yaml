@@ -17623,7 +17623,7 @@ components:
     status:
       class: receiver
       stability:
-        beta:
+        deprecated:
         - metrics
       distributions:
       - contrib
