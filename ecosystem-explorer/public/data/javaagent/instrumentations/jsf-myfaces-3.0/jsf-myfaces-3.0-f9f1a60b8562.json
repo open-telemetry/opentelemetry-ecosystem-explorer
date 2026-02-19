@@ -1,0 +1,40 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables the creation of experimental controller spans.",
+      "name": "otel.instrumentation.common.experimental.controller-telemetry.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enables controller spans for Apache MyFaces action listeners (controller spans are disabled by default).",
+  "display_name": "JSF",
+  "features": [
+    "CONTROLLER_SPANS"
+  ],
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "org.apache.myfaces.core:myfaces-impl:[3,)"
+  ],
+  "library_link": "https://myfaces.apache.org/",
+  "minimum_java_version": 11,
+  "name": "jsf-myfaces-3.0",
+  "scope": {
+    "name": "io.opentelemetry.jsf-myfaces-3.0"
+  },
+  "source_path": "instrumentation/jsf/jsf-myfaces-3.0",
+  "tags": [
+    "jsf"
+  ],
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "otel.instrumentation.common.experimental.controller-telemetry.enabled=true"
+    }
+  ]
+}

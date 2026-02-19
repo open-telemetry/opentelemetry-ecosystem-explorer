@@ -1,0 +1,15 @@
+{
+  "disabled_by_default": true,
+  "javaagent_target_versions": [
+    "org.springframework.ws:spring-ws-core:[2.0.0.RELEASE,]"
+  ],
+  "library_link": "https://spring.io/projects/spring-ws",
+  "name": "spring-ws-2.0",
+  "scope": {
+    "name": "io.opentelemetry.spring-ws-2.0"
+  },
+  "source_path": "instrumentation/spring/spring-ws-2.0",
+  "tags": [
+    "spring"
+  ]
+}

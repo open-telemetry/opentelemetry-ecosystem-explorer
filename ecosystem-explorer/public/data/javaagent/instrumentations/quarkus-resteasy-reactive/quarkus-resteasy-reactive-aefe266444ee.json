@@ -1,0 +1,20 @@
+{
+  "description": "This instrumentation enriches HTTP server spans with route information for Quarkus RESTEasy Reactive, it does not emit any telemetry on its own.",
+  "display_name": "Quarkus RESTEasy Reactive",
+  "features": [
+    "HTTP_ROUTE"
+  ],
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "io.quarkus:quarkus-resteasy-reactive:(,3.9.0)"
+  ],
+  "library_link": "https://quarkus.io/guides/resteasy-reactive/",
+  "name": "quarkus-resteasy-reactive",
+  "scope": {
+    "name": "io.opentelemetry.quarkus-resteasy-reactive"
+  },
+  "source_path": "instrumentation/quarkus-resteasy-reactive",
+  "tags": [
+    "quarkus"
+  ]
+}

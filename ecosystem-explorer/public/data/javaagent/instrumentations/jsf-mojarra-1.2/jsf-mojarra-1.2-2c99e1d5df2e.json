@@ -1,0 +1,43 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables the creation of experimental controller spans.",
+      "name": "otel.instrumentation.common.experimental.controller-telemetry.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enables controller spans for Mojarra JSF action listeners (controller spans are disabled by default).",
+  "display_name": "JSF",
+  "features": [
+    "CONTROLLER_SPANS"
+  ],
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "com.sun.faces:jsf-impl:[2.1,2.2)",
+    "org.glassfish:jakarta.faces:[2.3.9,3)",
+    "com.sun.faces:jsf-impl:[2.0,2.1)",
+    "org.glassfish:javax.faces:[2.0.7,3)",
+    "javax.faces:jsf-impl:[1.2,2)"
+  ],
+  "library_link": "https://github.com/eclipse-ee4j/mojarra",
+  "name": "jsf-mojarra-1.2",
+  "scope": {
+    "name": "io.opentelemetry.jsf-mojarra-1.2"
+  },
+  "source_path": "instrumentation/jsf/jsf-mojarra-1.2",
+  "tags": [
+    "jsf"
+  ],
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "otel.instrumentation.common.experimental.controller-telemetry.enabled=true"
+    }
+  ]
+}

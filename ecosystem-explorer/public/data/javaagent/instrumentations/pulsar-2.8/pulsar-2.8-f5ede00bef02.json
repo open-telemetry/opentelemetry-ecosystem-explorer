@@ -1,0 +1,384 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables experimental receive telemetry, which will cause consumers to start a new trace, with only a span link connecting it to the producer trace.",
+      "name": "otel.instrumentation.messaging.experimental.receive-telemetry.enabled",
+      "type": "boolean"
+    },
+    {
+      "default": "",
+      "description": "Enables capturing messaging headers as span attributes. Provide a comma-separated list of header names to capture.",
+      "name": "otel.instrumentation.messaging.experimental.capture-headers",
+      "type": "list"
+    },
+    {
+      "default": false,
+      "description": "Enables the experimental span attribute `messaging.pulsar.message.type` for producer spans.",
+      "name": "otel.instrumentation.pulsar.experimental-span-attributes",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enables messaging spans for Apache Pulsar message producers and consumers.",
+  "display_name": "Apache Pulsar Client",
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "org.apache.pulsar:pulsar-client:[2.8.0,)"
+  ],
+  "library_link": "https://pulsar.apache.org/",
+  "name": "pulsar-2.8",
+  "scope": {
+    "name": "io.opentelemetry.pulsar-2.8"
+  },
+  "semantic_conventions": [
+    "MESSAGING_SPANS"
+  ],
+  "source_path": "instrumentation/pulsar/pulsar-2.8",
+  "tags": [
+    "pulsar"
+  ],
+  "telemetry": [
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "description": "Measures the duration of publish operation.",
+          "name": "messaging.publish.duration",
+          "type": "HISTOGRAM",
+          "unit": "s"
+        },
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "description": "Measures the duration of receive operation.",
+          "name": "messaging.receive.duration",
+          "type": "HISTOGRAM",
+          "unit": "s"
+        },
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "description": "Measures the number of received messages.",
+          "name": "messaging.receive.messages",
+          "type": "LONG_SUM",
+          "unit": "message"
+        }
+      ],
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "messaging.batch.message_count",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.partition.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.message.body.size",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.message.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "span_kind": "CONSUMER"
+        },
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.partition.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.message.body.size",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.message.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "span_kind": "PRODUCER"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "description": "Measures the duration of publish operation.",
+          "name": "messaging.publish.duration",
+          "type": "HISTOGRAM",
+          "unit": "s"
+        },
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "description": "Measures the duration of receive operation.",
+          "name": "messaging.receive.duration",
+          "type": "HISTOGRAM",
+          "unit": "s"
+        },
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "description": "Measures the number of received messages.",
+          "name": "messaging.receive.messages",
+          "type": "LONG_SUM",
+          "unit": "message"
+        }
+      ],
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "messaging.batch.message_count",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.partition.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.message.body.size",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.message.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "span_kind": "CONSUMER"
+        },
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.partition.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.message.body.size",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.message.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.pulsar.message.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "span_kind": "PRODUCER"
+        }
+      ],
+      "when": "otel.instrumentation.pulsar.experimental-span-attributes=true"
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "description": "This instrumentation enables database client spans and database client metrics for Rediscala.",
+  "display_name": "Rediscala",
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "com.github.Ma27:rediscala_2.11:[1.8.1,)",
+    "com.github.etaty:rediscala_2.11:[1.5.0,)",
+    "com.github.etaty:rediscala_2.12:[1.8.0,)",
+    "com.github.Ma27:rediscala_2.13:[1.9.0,)",
+    "io.github.rediscala:rediscala_2.13:[1.10.0,)",
+    "com.github.etaty:rediscala_2.13:[1.9.0,)",
+    "com.github.Ma27:rediscala_2.12:[1.8.1,)"
+  ],
+  "library_link": "https://github.com/rediscala/rediscala",
+  "name": "rediscala-1.8",
+  "scope": {
+    "name": "io.opentelemetry.rediscala-1.8"
+  },
+  "semantic_conventions": [
+    "DATABASE_CLIENT_SPANS",
+    "DATABASE_CLIENT_METRICS"
+  ],
+  "source_path": "instrumentation/rediscala-1.8",
+  "tags": [
+    "rediscala"
+  ],
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "db.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CLIENT"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "db.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system.name",
+              "type": "STRING"
+            }
+          ],
+          "description": "Duration of database client operations.",
+          "name": "db.client.operation.duration",
+          "type": "HISTOGRAM",
+          "unit": "s"
+        }
+      ],
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "db.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system.name",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CLIENT"
+        }
+      ],
+      "when": "otel.semconv-stability.opt-in=database"
+    }
+  ]
+}

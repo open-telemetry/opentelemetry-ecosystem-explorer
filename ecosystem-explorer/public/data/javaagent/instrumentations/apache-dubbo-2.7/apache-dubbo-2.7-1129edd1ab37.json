@@ -1,0 +1,141 @@
+{
+  "configurations": [
+    {
+      "default": "",
+      "description": "Used to specify a mapping from host names or IP addresses to peer services.",
+      "name": "otel.instrumentation.common.peer-service-mapping",
+      "type": "map"
+    }
+  ],
+  "description": "The Apache Dubbo instrumentation provides RPC client spans and metrics, and RPC server spans and metrics for Apache Dubbo RPC calls.",
+  "display_name": "Apache Dubbo",
+  "javaagent_target_versions": [
+    "org.apache.dubbo:dubbo:[2.7,)"
+  ],
+  "library_link": "https://github.com/apache/dubbo/",
+  "name": "apache-dubbo-2.7",
+  "scope": {
+    "name": "io.opentelemetry.apache-dubbo-2.7"
+  },
+  "semantic_conventions": [
+    "RPC_CLIENT_SPANS",
+    "RPC_CLIENT_METRICS",
+    "RPC_SERVER_SPANS",
+    "RPC_SERVER_METRICS"
+  ],
+  "source_path": "instrumentation/apache-dubbo-2.7",
+  "tags": [
+    "apache"
+  ],
+  "telemetry": [
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "rpc.method",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.service",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.system",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "description": "The duration of an outbound RPC invocation.",
+          "name": "rpc.client.duration",
+          "type": "HISTOGRAM",
+          "unit": "ms"
+        },
+        {
+          "attributes": [
+            {
+              "name": "rpc.method",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.service",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.system",
+              "type": "STRING"
+            }
+          ],
+          "description": "The duration of an inbound RPC invocation.",
+          "name": "rpc.server.duration",
+          "type": "HISTOGRAM",
+          "unit": "ms"
+        }
+      ],
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "peer.service",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.method",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.service",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.system",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "span_kind": "CLIENT"
+        },
+        {
+          "attributes": [
+            {
+              "name": "network.peer.address",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.port",
+              "type": "LONG"
+            },
+            {
+              "name": "rpc.method",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.service",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.system",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "SERVER"
+        }
+      ],
+      "when": "default"
+    }
+  ]
+}

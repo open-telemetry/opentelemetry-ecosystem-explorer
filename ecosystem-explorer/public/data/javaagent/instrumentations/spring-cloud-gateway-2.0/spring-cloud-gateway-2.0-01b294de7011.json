@@ -1,0 +1,25 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables experimental `spring-cloud-gateway.route` attributes (e.g., `spring-cloud-gateway.route.id`, `spring-cloud-gateway.route.uri`, etc.) on spans.",
+      "name": "otel.instrumentation.spring-cloud-gateway.experimental-span-attributes",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enhances tracing for Spring Cloud Gateway. It does not generate new telemetry on its own, but rather enriches existing traces produced by other instrumentations like Netty and Spring WebFlux with Spring Cloud Gateway-specific attributes.",
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "org.springframework.cloud:spring-cloud-starter-gateway:[2.0.0.RELEASE,)",
+    "org.springframework.cloud:spring-cloud-starter-gateway-server-webflux:[4.3.0,]"
+  ],
+  "library_link": "https://github.com/spring-cloud/spring-cloud-gateway",
+  "name": "spring-cloud-gateway-2.0",
+  "scope": {
+    "name": "io.opentelemetry.spring-cloud-gateway-2.0"
+  },
+  "source_path": "instrumentation/spring/spring-cloud-gateway/spring-cloud-gateway-2.0",
+  "tags": [
+    "spring"
+  ]
+}

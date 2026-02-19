@@ -1,0 +1,151 @@
+{
+  "configurations": [
+    {
+      "default": true,
+      "description": "Enables statement sanitization for MongoDB queries. Takes precedence over otel.instrumentation.common.db-statement-sanitizer.enabled.",
+      "name": "otel.instrumentation.mongo.statement-sanitizer.enabled",
+      "type": "boolean"
+    },
+    {
+      "default": true,
+      "description": "Enables statement sanitization for database queries.",
+      "name": "otel.instrumentation.common.db-statement-sanitizer.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enables database client spans and database client metrics for the MongoDB Java driver.",
+  "display_name": "MongoDB Driver",
+  "has_standalone_library": true,
+  "javaagent_target_versions": [
+    "org.mongodb:mongo-java-driver:[3.1,)"
+  ],
+  "library_link": "https://www.mongodb.com/docs/drivers/java-drivers/",
+  "name": "mongo-3.1",
+  "scope": {
+    "name": "io.opentelemetry.mongo-3.1"
+  },
+  "semantic_conventions": [
+    "DATABASE_CLIENT_SPANS",
+    "DATABASE_CLIENT_METRICS"
+  ],
+  "source_path": "instrumentation/mongo/mongo-3.1",
+  "tags": [
+    "mongo"
+  ],
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "db.connection_string",
+              "type": "STRING"
+            },
+            {
+              "name": "db.mongodb.collection",
+              "type": "STRING"
+            },
+            {
+              "name": "db.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "db.statement",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "span_kind": "CLIENT"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "db.collection.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.namespace",
+              "type": "STRING"
+            },
+            {
+              "name": "db.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system.name",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "description": "Duration of database client operations.",
+          "name": "db.client.operation.duration",
+          "type": "HISTOGRAM",
+          "unit": "s"
+        }
+      ],
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "db.collection.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.namespace",
+              "type": "STRING"
+            },
+            {
+              "name": "db.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.query.text",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system.name",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "span_kind": "CLIENT"
+        }
+      ],
+      "when": "otel.semconv-stability.opt-in=database"
+    }
+  ]
+}

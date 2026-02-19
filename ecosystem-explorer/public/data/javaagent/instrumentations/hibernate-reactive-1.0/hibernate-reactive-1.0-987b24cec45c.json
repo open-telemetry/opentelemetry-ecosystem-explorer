@@ -1,0 +1,18 @@
+{
+  "description": "This instrumentation enables context propagation for Hibernate Reactive, it does not emit any telemetry on its own.",
+  "features": [
+    "CONTEXT_PROPAGATION"
+  ],
+  "javaagent_target_versions": [
+    "org.hibernate.reactive:hibernate-reactive-core:(,)"
+  ],
+  "library_link": "https://hibernate.org/reactive/",
+  "name": "hibernate-reactive-1.0",
+  "scope": {
+    "name": "io.opentelemetry.hibernate-reactive-1.0"
+  },
+  "source_path": "instrumentation/hibernate/hibernate-reactive-1.0",
+  "tags": [
+    "hibernate"
+  ]
+}

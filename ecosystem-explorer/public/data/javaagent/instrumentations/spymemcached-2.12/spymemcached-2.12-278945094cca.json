@@ -1,0 +1,114 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables experimental span attributes `spymemcached.result` and `spymemcached.command.cancelled`.",
+      "name": "otel.instrumentation.spymemcached.experimental-span-attributes",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enables database client spans and database client metrics for Memcached operations using the Spymemcached client.",
+  "display_name": "Spymemcached",
+  "javaagent_target_versions": [
+    "net.spy:spymemcached:[2.12.0,)"
+  ],
+  "library_link": "https://github.com/couchbase/spymemcached",
+  "name": "spymemcached-2.12",
+  "scope": {
+    "name": "io.opentelemetry.spymemcached-2.12"
+  },
+  "semantic_conventions": [
+    "DATABASE_CLIENT_SPANS",
+    "DATABASE_CLIENT_METRICS"
+  ],
+  "source_path": "instrumentation/spymemcached-2.12",
+  "tags": [
+    "spymemcached"
+  ],
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "db.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CLIENT"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "db.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system",
+              "type": "STRING"
+            },
+            {
+              "name": "spymemcached.command.cancelled",
+              "type": "BOOLEAN"
+            },
+            {
+              "name": "spymemcached.result",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CLIENT"
+        }
+      ],
+      "when": "otel.instrumentation.spymemcached.experimental-span-attributes=true"
+    },
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "db.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system.name",
+              "type": "STRING"
+            }
+          ],
+          "description": "Duration of database client operations.",
+          "name": "db.client.operation.duration",
+          "type": "HISTOGRAM",
+          "unit": "s"
+        }
+      ],
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "db.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system.name",
+              "type": "STRING"
+            },
+            {
+              "name": "error.type",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CLIENT"
+        }
+      ],
+      "when": "otel.semconv-stability.opt-in=database"
+    }
+  ]
+}

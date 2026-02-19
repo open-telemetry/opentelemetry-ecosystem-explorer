@@ -1,0 +1,14 @@
+{
+  "has_standalone_library": true,
+  "javaagent_target_versions": [
+    "io.reactivex.rxjava2:rxjava:[2.0.6,)"
+  ],
+  "name": "rxjava-2.0",
+  "scope": {
+    "name": "io.opentelemetry.rxjava-2.0"
+  },
+  "source_path": "instrumentation/rxjava/rxjava-2.0",
+  "tags": [
+    "rxjava"
+  ]
+}

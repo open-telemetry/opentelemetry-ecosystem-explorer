@@ -1,0 +1,14 @@
+{
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "org.apache.wicket:wicket:[8.0.0,]"
+  ],
+  "name": "wicket-8.0",
+  "scope": {
+    "name": "io.opentelemetry.wicket-8.0"
+  },
+  "source_path": "instrumentation/wicket-8.0",
+  "tags": [
+    "wicket"
+  ]
+}

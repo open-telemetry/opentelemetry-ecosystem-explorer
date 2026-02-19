@@ -1,0 +1,61 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables experimental receive telemetry, which will cause consumers to start a new trace, with only a span link connecting it to the producer trace.",
+      "name": "otel.instrumentation.messaging.experimental.receive-telemetry.enabled",
+      "type": "boolean"
+    },
+    {
+      "default": "",
+      "description": "A comma-separated list of header names to capture as span attributes.",
+      "name": "otel.instrumentation.messaging.experimental.capture-headers",
+      "type": "list"
+    }
+  ],
+  "description": "This instrumentation enables messaging spans for Spring JMS message consumers.",
+  "display_name": "Spring JMS",
+  "javaagent_target_versions": [
+    "org.springframework:spring-jms:[2.0,6)"
+  ],
+  "library_link": "https://docs.spring.io/spring-framework/reference/integration/jms.html",
+  "name": "spring-jms-2.0",
+  "scope": {
+    "name": "io.opentelemetry.spring-jms-2.0"
+  },
+  "semantic_conventions": [
+    "MESSAGING_SPANS"
+  ],
+  "source_path": "instrumentation/spring/spring-jms/spring-jms-2.0",
+  "tags": [
+    "spring"
+  ],
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.message.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CONSUMER"
+        }
+      ],
+      "when": "default"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "javaagent_target_versions": [
+    "dev.zio:zio_2.13:[2.0.0,)",
+    "dev.zio:zio_3:[2.0.0,)",
+    "dev.zio:zio_2.12:[2.0.0,)"
+  ],
+  "name": "zio-2.0",
+  "scope": {
+    "name": "io.opentelemetry.zio-2.0"
+  },
+  "source_path": "instrumentation/zio/zio-2.0",
+  "tags": [
+    "zio"
+  ]
+}

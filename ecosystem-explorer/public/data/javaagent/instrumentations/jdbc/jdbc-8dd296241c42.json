@@ -1,0 +1,60 @@
+{
+  "configurations": [
+    {
+      "default": true,
+      "description": "Enables statement sanitization for database queries. Takes precedent to otel.instrumentation.common.db-statement-sanitizer.enabled.",
+      "name": "otel.instrumentation.jdbc.statement-sanitizer.enabled",
+      "type": "boolean"
+    },
+    {
+      "default": true,
+      "description": "Enables statement sanitization for database queries.",
+      "name": "otel.instrumentation.common.db-statement-sanitizer.enabled",
+      "type": "boolean"
+    },
+    {
+      "default": false,
+      "description": "Enables experimental instrumentation to create spans for COMMIT and ROLLBACK operations.",
+      "name": "otel.instrumentation.jdbc.experimental.transaction.enabled",
+      "type": "boolean"
+    },
+    {
+      "default": false,
+      "description": "Enables augmenting queries with a comment containing the tracing information. See [sqlcommenter](https://google.github.io/sqlcommenter/) for more info. WARNING: augmenting queries with tracing context will make query texts unique, which may have adverse impact on database performance. Consult with database experts before enabling.",
+      "name": "otel.instrumentation.jdbc.experimental.sqlcommenter.enabled",
+      "type": "boolean"
+    },
+    {
+      "default": "",
+      "description": "Used to specify a mapping from host names or IP addresses to peer services.",
+      "name": "otel.instrumentation.common.peer-service-mapping",
+      "type": "map"
+    },
+    {
+      "default": false,
+      "description": "Sets whether the query parameters should be captured as span attributes named <code>db.query.parameter.&lt;key&gt;</code>. Enabling this option disables the statement sanitization.<p>WARNING: captured query parameters may contain sensitive information such as passwords, personally identifiable information or protected health info.",
+      "name": "otel.instrumentation.jdbc.experimental.capture-query-parameters",
+      "type": "boolean"
+    },
+    {
+      "default": false,
+      "description": "Enables instrumentation of JDBC datasource connections.",
+      "name": "otel.instrumentation.jdbc-datasource.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "The JDBC instrumentation provides database client spans and metrics. Each call produces a span named after the SQL verb, enriched with standard DB client attributes (system, database, operation, sanitized statement, peer address) and error details if an exception occurs.\nThe instrumentation unwraps pooled connections (via java.sql.Wrapper) to cache database metadata against the underlying physical connection. Without proper unwrapping support, caching is limited to the wrapper instance, which typically changes each time a connection is retrieved from the pool. This can result in repeated metadata extraction, potentially causing performance degradation.\nThere is also a \"jdbc-datasource\" instrumentation that creates spans for datasource connections, but is disabled by default due to the volume of telemetry produced.",
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "Java 8+"
+  ],
+  "library_link": "https://docs.oracle.com/javase/8/docs/api/java/sql/package-summary.html",
+  "name": "jdbc",
+  "scope": {
+    "name": "io.opentelemetry.jdbc"
+  },
+  "source_path": "instrumentation/jdbc",
+  "tags": [
+    "jdbc"
+  ]
+}

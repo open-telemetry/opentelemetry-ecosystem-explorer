@@ -1,0 +1,14 @@
+{
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "org.apache.tomcat.embed:tomcat-embed-core:[7.0.4, 10)"
+  ],
+  "name": "tomcat-7.0",
+  "scope": {
+    "name": "io.opentelemetry.tomcat-7.0"
+  },
+  "source_path": "instrumentation/tomcat/tomcat-7.0",
+  "tags": [
+    "tomcat"
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables the experimental `hibernate.session_id` span attribute.",
+      "name": "otel.instrumentation.hibernate.experimental-span-attributes",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enables spans for Hibernate stored procedure calls.",
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "org.hibernate:hibernate-core:[4.3.0.Final,)"
+  ],
+  "library_link": "https://hibernate.org/",
+  "name": "hibernate-procedure-call-4.3",
+  "scope": {
+    "name": "io.opentelemetry.hibernate-procedure-call-4.3"
+  },
+  "source_path": "instrumentation/hibernate/hibernate-procedure-call-4.3",
+  "tags": [
+    "hibernate"
+  ],
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "hibernate.session_id",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "otel.instrumentation.hibernate.experimental-span-attributes=true"
+    }
+  ]
+}

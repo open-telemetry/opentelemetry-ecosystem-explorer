@@ -1,0 +1,48 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables adding baggage entries to the Log4j ThreadContext, prefixed with \"baggage.\".",
+      "name": "otel.instrumentation.log4j-context-data.add-baggage",
+      "type": "boolean"
+    },
+    {
+      "default": "trace_id",
+      "description": "Specifies the key name used to store the trace ID in the logging context.",
+      "name": "otel.instrumentation.common.logging.trace-id",
+      "type": "string"
+    },
+    {
+      "default": "span_id",
+      "description": "Specifies the key name used to store the span ID in the logging context.",
+      "name": "otel.instrumentation.common.logging.span-id",
+      "type": "string"
+    },
+    {
+      "default": "trace_flags",
+      "description": "Specifies the key name used to store the trace flags in the logging context.",
+      "name": "otel.instrumentation.common.logging.trace-flags",
+      "type": "string"
+    },
+    {
+      "default": "",
+      "description": "Specifies which resource attributes to add to the logging context as a comma-separated list of attribute keys.",
+      "name": "otel.instrumentation.common.mdc.resource-attributes",
+      "type": "list"
+    }
+  ],
+  "description": "This instrumentation adds trace context (trace ID, span ID, and trace flags) to Log4j's ThreadContext, it does not emit any telemetry on its own.",
+  "display_name": "Log4j",
+  "javaagent_target_versions": [
+    "org.apache.logging.log4j:log4j-core:[2.7,2.17.0)"
+  ],
+  "library_link": "https://logging.apache.org/log4j/2.x/",
+  "name": "log4j-context-data-2.7",
+  "scope": {
+    "name": "io.opentelemetry.log4j-context-data-2.7"
+  },
+  "source_path": "instrumentation/log4j/log4j-context-data/log4j-context-data-2.7",
+  "tags": [
+    "log4j"
+  ]
+}

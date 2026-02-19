@@ -1,0 +1,27 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables experimental `apache-shenyu.meta.` prefixed span attributes `app-name`, `service-name`, `context-path`, `param-types`, `id`, `method-name`, `rpc-type`, `path` and `rpc-ext`.",
+      "name": "otel.instrumentation.apache-shenyu.experimental-span-attributes",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation does not emit telemetry on its own. Instead, it augments existing HTTP server spans and HTTP server metrics with the HTTP route and Shenyu specific attributes.",
+  "features": [
+    "HTTP_ROUTE"
+  ],
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "org.apache.shenyu:shenyu-web:[2.4.0,)"
+  ],
+  "library_link": "https://shenyu.apache.org/",
+  "name": "apache-shenyu-2.4",
+  "scope": {
+    "name": "io.opentelemetry.apache-shenyu-2.4"
+  },
+  "source_path": "instrumentation/apache-shenyu-2.4",
+  "tags": [
+    "apache"
+  ]
+}

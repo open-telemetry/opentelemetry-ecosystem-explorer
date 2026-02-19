@@ -1,0 +1,14 @@
+{
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "Java 8+"
+  ],
+  "name": "rmi",
+  "scope": {
+    "name": "io.opentelemetry.rmi"
+  },
+  "source_path": "instrumentation/rmi",
+  "tags": [
+    "rmi"
+  ]
+}

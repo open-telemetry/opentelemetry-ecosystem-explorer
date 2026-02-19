@@ -1,0 +1,69 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables experimental receive telemetry, which will cause consumers to start a new trace, with only a span link connecting it to the producer trace.",
+      "name": "otel.instrumentation.messaging.experimental.receive-telemetry.enabled",
+      "type": "boolean"
+    },
+    {
+      "default": "",
+      "description": "A comma-separated list of header names to capture as span attributes.",
+      "name": "otel.instrumentation.messaging.experimental.capture-headers",
+      "type": "list"
+    },
+    {
+      "default": false,
+      "description": "Enables capturing experimental span attribute `messaging.pulsar.message.type` on PRODUCER spans.",
+      "name": "otel.instrumentation.pulsar.experimental-span-attributes",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enables consumer messaging spans for Spring Pulsar listeners.",
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "org.springframework.pulsar:spring-pulsar:[1.0.0,)"
+  ],
+  "library_link": "https://spring.io/projects/spring-pulsar",
+  "minimum_java_version": 17,
+  "name": "spring-pulsar-1.0",
+  "scope": {
+    "name": "io.opentelemetry.spring-pulsar-1.0"
+  },
+  "source_path": "instrumentation/spring/spring-pulsar-1.0",
+  "tags": [
+    "spring"
+  ],
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.message.body.size",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.message.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CONSUMER"
+        }
+      ],
+      "when": "default"
+    }
+  ]
+}

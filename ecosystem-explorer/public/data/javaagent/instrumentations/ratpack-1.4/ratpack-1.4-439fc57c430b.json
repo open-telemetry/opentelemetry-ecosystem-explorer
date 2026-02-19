@@ -1,0 +1,38 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables the creation of experimental controller spans.",
+      "name": "otel.instrumentation.common.experimental.controller-telemetry.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enriches HTTP server spans with route information, and enables controller spans for Ratpack handlers (controller spans are disabled by default).",
+  "features": [
+    "HTTP_ROUTE",
+    "CONTROLLER_SPANS"
+  ],
+  "javaagent_target_versions": [
+    "io.ratpack:ratpack-core:[1.4.0,)"
+  ],
+  "library_link": "https://ratpack.io/",
+  "name": "ratpack-1.4",
+  "scope": {
+    "name": "io.opentelemetry.ratpack-1.4"
+  },
+  "source_path": "instrumentation/ratpack/ratpack-1.4",
+  "tags": [
+    "ratpack"
+  ],
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "default"
+    }
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables experimental span attributes `job.system`, `scheduling.apache-elasticjob.job.name`, `scheduling.apache-elasticjob.task.id`, `scheduling.apache-elasticjob.sharding.item.index`, `scheduling.apache-elasticjob.sharding.total.count`, `scheduling.apache-elasticjob.sharding.item.parameter`, and `scheduling.apache-elasticjob.job.type`.",
+      "name": "otel.instrumentation.apache-elasticjob.experimental-span-attributes",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enables spans for Apache ElasticJob job executions.",
+  "display_name": "Apache ElasticJob",
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "org.apache.shardingsphere.elasticjob:elasticjob-lite-core:[3.0.0,)"
+  ],
+  "library_link": "https://shardingsphere.apache.org/elasticjob/",
+  "name": "apache-elasticjob-3.0",
+  "scope": {
+    "name": "io.opentelemetry.apache-elasticjob-3.0"
+  },
+  "source_path": "instrumentation/apache-elasticjob-3.0",
+  "tags": [
+    "apache"
+  ],
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "code.function",
+              "type": "STRING"
+            },
+            {
+              "name": "code.namespace",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "code.function",
+              "type": "STRING"
+            },
+            {
+              "name": "code.namespace",
+              "type": "STRING"
+            },
+            {
+              "name": "job.system",
+              "type": "STRING"
+            },
+            {
+              "name": "scheduling.apache-elasticjob.job.name",
+              "type": "STRING"
+            },
+            {
+              "name": "scheduling.apache-elasticjob.job.type",
+              "type": "STRING"
+            },
+            {
+              "name": "scheduling.apache-elasticjob.sharding.item.index",
+              "type": "LONG"
+            },
+            {
+              "name": "scheduling.apache-elasticjob.sharding.item.parameter",
+              "type": "STRING"
+            },
+            {
+              "name": "scheduling.apache-elasticjob.sharding.total.count",
+              "type": "LONG"
+            },
+            {
+              "name": "scheduling.apache-elasticjob.task.id",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "otel.instrumentation.apache-elasticjob.experimental-span-attributes=true"
+    }
+  ]
+}

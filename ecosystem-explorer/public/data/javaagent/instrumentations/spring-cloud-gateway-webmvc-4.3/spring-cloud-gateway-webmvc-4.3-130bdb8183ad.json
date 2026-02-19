@@ -1,0 +1,15 @@
+{
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "org.springframework.cloud:spring-cloud-starter-gateway-server-webmvc:[4.3.0,)"
+  ],
+  "minimum_java_version": 17,
+  "name": "spring-cloud-gateway-webmvc-4.3",
+  "scope": {
+    "name": "io.opentelemetry.spring-cloud-gateway-webmvc-4.3"
+  },
+  "source_path": "instrumentation/spring/spring-cloud-gateway/spring-cloud-gateway-webmvc-4.3",
+  "tags": [
+    "spring"
+  ]
+}

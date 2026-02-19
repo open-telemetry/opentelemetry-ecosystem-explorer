@@ -1,0 +1,14 @@
+{
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "javax.servlet:servlet-api:[2.2, 3.0)"
+  ],
+  "name": "servlet-2.2",
+  "scope": {
+    "name": "io.opentelemetry.servlet-2.2"
+  },
+  "source_path": "instrumentation/servlet/servlet-2.2",
+  "tags": [
+    "servlet"
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "io.vertx:vertx-core:[3.0.0,4.0.0)"
+  ],
+  "name": "vertx-http-client-3.0",
+  "scope": {
+    "name": "io.opentelemetry.vertx-http-client-3.0",
+    "schema_url": "https://opentelemetry.io/schemas/1.37.0"
+  },
+  "source_path": "instrumentation/vertx/vertx-http-client/vertx-http-client-3.0",
+  "tags": [
+    "vertx"
+  ],
+  "telemetry": [
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "http.request.method",
+              "type": "STRING"
+            },
+            {
+              "name": "http.response.status_code",
+              "type": "LONG"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "description": "Duration of HTTP client requests.",
+          "name": "http.client.request.duration",
+          "type": "HISTOGRAM",
+          "unit": "s"
+        }
+      ],
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "error.type",
+              "type": "STRING"
+            },
+            {
+              "name": "http.request.method",
+              "type": "STRING"
+            },
+            {
+              "name": "http.response.status_code",
+              "type": "LONG"
+            },
+            {
+              "name": "peer.service",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            },
+            {
+              "name": "url.full",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CLIENT"
+        }
+      ],
+      "when": "default"
+    }
+  ]
+}

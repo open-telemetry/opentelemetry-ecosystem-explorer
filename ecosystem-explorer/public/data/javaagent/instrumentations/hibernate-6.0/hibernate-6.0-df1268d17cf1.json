@@ -1,0 +1,50 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables the experimental `hibernate.session_id` span attribute.",
+      "name": "otel.instrumentation.hibernate.experimental-span-attributes",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enables spans for Hibernate ORM operations.",
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "org.hibernate:hibernate-core:[6.0.0.Final,)"
+  ],
+  "library_link": "https://hibernate.org/",
+  "minimum_java_version": 11,
+  "name": "hibernate-6.0",
+  "scope": {
+    "name": "io.opentelemetry.hibernate-6.0"
+  },
+  "source_path": "instrumentation/hibernate/hibernate-6.0",
+  "tags": [
+    "hibernate"
+  ],
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "hibernate.session_id",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "otel.instrumentation.hibernate.experimental-span-attributes=true"
+    }
+  ]
+}

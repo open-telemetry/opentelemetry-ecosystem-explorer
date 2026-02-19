@@ -1,0 +1,14 @@
+{
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "io.vertx:vertx-kafka-client:[3.5.1,)"
+  ],
+  "name": "vertx-kafka-client-3.6",
+  "scope": {
+    "name": "io.opentelemetry.vertx-kafka-client-3.6"
+  },
+  "source_path": "instrumentation/vertx/vertx-kafka-client-3.6",
+  "tags": [
+    "vertx"
+  ]
+}

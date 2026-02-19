@@ -1,0 +1,117 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enable the capture of search query bodies. It is important to note that Elasticsearch queries may contain personal or sensitive information.",
+      "name": "otel.instrumentation.elasticsearch.capture-search-query",
+      "type": "boolean"
+    },
+    {
+      "default": "CONNECT,DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT,TRACE",
+      "description": "Configures the instrumentation to recognize an alternative set of HTTP request methods. All other methods will be treated as `_OTHER`.",
+      "name": "otel.instrumentation.http.known-methods",
+      "type": "list"
+    }
+  ],
+  "description": "This instrumentation enables database client spans and database client metrics for Elasticsearch REST clients.",
+  "javaagent_target_versions": [
+    "org.elasticsearch.client:elasticsearch-rest-client:[6.4,7.0)"
+  ],
+  "library_link": "https://www.elastic.co/guide/en/elasticsearch/client/java-rest",
+  "name": "elasticsearch-rest-6.4",
+  "scope": {
+    "name": "io.opentelemetry.elasticsearch-rest-6.4"
+  },
+  "semantic_conventions": [
+    "DATABASE_CLIENT_SPANS",
+    "DATABASE_CLIENT_METRICS"
+  ],
+  "source_path": "instrumentation/elasticsearch/elasticsearch-rest-6.4",
+  "tags": [
+    "elasticsearch"
+  ],
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "db.system",
+              "type": "STRING"
+            },
+            {
+              "name": "http.request.method",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            },
+            {
+              "name": "url.full",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CLIENT"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "db.system.name",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "description": "Duration of database client operations.",
+          "name": "db.client.operation.duration",
+          "type": "HISTOGRAM",
+          "unit": "s"
+        }
+      ],
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "db.system.name",
+              "type": "STRING"
+            },
+            {
+              "name": "http.request.method",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            },
+            {
+              "name": "url.full",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CLIENT"
+        }
+      ],
+      "when": "otel.semconv-stability.opt-in=database,service.peer"
+    }
+  ]
+}

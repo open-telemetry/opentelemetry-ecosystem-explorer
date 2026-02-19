@@ -1,0 +1,20 @@
+{
+  "description": "This instrumentation does not emit telemetry on its own. Instead, it hooks into the Avaje Jex Context to extract the HTTP route and attach it to existing HTTP server spans and HTTP server metrics.",
+  "features": [
+    "HTTP_ROUTE"
+  ],
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "io.avaje:avaje-jex:[3.0,)"
+  ],
+  "library_link": "https://avaje.io/jex/",
+  "minimum_java_version": 21,
+  "name": "avaje-jex-3.0",
+  "scope": {
+    "name": "io.opentelemetry.avaje-jex-3.0"
+  },
+  "source_path": "instrumentation/avaje-jex-3.0",
+  "tags": [
+    "avaje"
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables the creation of experimental controller spans.",
+      "name": "otel.instrumentation.common.experimental.controller-telemetry.enabled",
+      "type": "boolean"
+    },
+    {
+      "default": false,
+      "description": "Enables the experimental `jaxrs.canceled` span attribute.",
+      "name": "otel.instrumentation.jaxrs.experimental-span-attributes",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enriches HTTP server spans with route information, and enables controller spans for JAX-RS methods when using Apache CXF (controller spans are disabled by default).",
+  "display_name": "Apache CXF JAX-RS 2.x",
+  "features": [
+    "HTTP_ROUTE",
+    "CONTROLLER_SPANS"
+  ],
+  "javaagent_target_versions": [
+    "org.apache.tomee:openejb-cxf-rs:(8,)",
+    "org.apache.cxf:cxf-rt-frontend-jaxrs:[3.2,4)"
+  ],
+  "library_link": "https://cxf.apache.org/",
+  "name": "jaxrs-2.0-cxf-3.2",
+  "scope": {
+    "name": "io.opentelemetry.jaxrs-2.0-cxf-3.2"
+  },
+  "source_path": "instrumentation/jaxrs/jaxrs-2.0/jaxrs-2.0-cxf-3.2",
+  "tags": [
+    "jaxrs"
+  ],
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "code.function",
+              "type": "STRING"
+            },
+            {
+              "name": "code.namespace",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "code.function",
+              "type": "STRING"
+            },
+            {
+              "name": "code.namespace",
+              "type": "STRING"
+            },
+            {
+              "name": "jaxrs.canceled",
+              "type": "BOOLEAN"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "otel.instrumentation.jaxrs.experimental-span-attributes=true"
+    }
+  ]
+}

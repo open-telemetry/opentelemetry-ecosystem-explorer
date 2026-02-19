@@ -1,0 +1,39 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables the creation of experimental controller spans.",
+      "name": "otel.instrumentation.common.experimental.controller-telemetry.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enriches HTTP server spans with route information, and enables controller spans for Apache Tapestry component events (controller spans are disabled by default).",
+  "display_name": "Apache Tapestry",
+  "features": [
+    "HTTP_ROUTE",
+    "CONTROLLER_SPANS"
+  ],
+  "javaagent_target_versions": [
+    "org.apache.tapestry:tapestry-core:[5.4.0,)"
+  ],
+  "library_link": "https://tapestry.apache.org/",
+  "name": "tapestry-5.4",
+  "scope": {
+    "name": "io.opentelemetry.tapestry-5.4"
+  },
+  "source_path": "instrumentation/tapestry-5.4",
+  "tags": [
+    "tapestry"
+  ],
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "otel.instrumentation.common.experimental.controller-telemetry.enabled=true"
+    }
+  ]
+}

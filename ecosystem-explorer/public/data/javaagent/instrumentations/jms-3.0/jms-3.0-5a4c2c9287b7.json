@@ -1,0 +1,88 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables experimental receive telemetry, which will cause consumers to start a new trace, with only a span link connecting it to the producer trace.",
+      "name": "otel.instrumentation.messaging.experimental.receive-telemetry.enabled",
+      "type": "boolean"
+    },
+    {
+      "default": "",
+      "description": "Enables capturing messaging headers as span attributes. Provide a comma-separated list of header names to capture.",
+      "name": "otel.instrumentation.messaging.experimental.capture-headers",
+      "type": "list"
+    }
+  ],
+  "description": "This instrumentation enables messaging spans for Jakarta JMS (Java Message Service) message producers and consumers.",
+  "display_name": "JMS (Java Message Service)",
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "jakarta.jms:jakarta.jms-api:[3.0.0,)"
+  ],
+  "library_link": "https://jakarta.ee/specifications/messaging/3.0/",
+  "minimum_java_version": 11,
+  "name": "jms-3.0",
+  "scope": {
+    "name": "io.opentelemetry.jms-3.0"
+  },
+  "semantic_conventions": [
+    "MESSAGING_SPANS"
+  ],
+  "source_path": "instrumentation/jms/jms-3.0",
+  "tags": [
+    "jms"
+  ],
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.message.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CONSUMER"
+        },
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.temporary",
+              "type": "BOOLEAN"
+            },
+            {
+              "name": "messaging.message.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "PRODUCER"
+        }
+      ],
+      "when": "default"
+    }
+  ]
+}

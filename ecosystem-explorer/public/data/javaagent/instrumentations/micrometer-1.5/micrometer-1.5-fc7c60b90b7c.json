@@ -1,0 +1,15 @@
+{
+  "disabled_by_default": true,
+  "has_standalone_library": true,
+  "javaagent_target_versions": [
+    "io.micrometer:micrometer-core:[1.5.0,)"
+  ],
+  "name": "micrometer-1.5",
+  "scope": {
+    "name": "io.opentelemetry.micrometer-1.5"
+  },
+  "source_path": "instrumentation/micrometer/micrometer-1.5",
+  "tags": [
+    "micrometer"
+  ]
+}

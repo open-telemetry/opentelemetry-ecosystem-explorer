@@ -1,0 +1,78 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables experimental span attributes `job.system`, `scheduling.powerjob.job.id`, `scheduling.powerjob.job.param`, `scheduling.powerjob.job.instance.param`, and `scheduling.powerjob.job.type`.",
+      "name": "otel.instrumentation.powerjob.experimental-span-attributes",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enables spans for PowerJob job processor executions.",
+  "display_name": "PowerJob",
+  "javaagent_target_versions": [
+    "tech.powerjob:powerjob-worker:[4.0.0,)"
+  ],
+  "library_link": "https://github.com/PowerJob/PowerJob",
+  "name": "powerjob-4.0",
+  "scope": {
+    "name": "io.opentelemetry.powerjob-4.0"
+  },
+  "source_path": "instrumentation/powerjob-4.0",
+  "tags": [
+    "powerjob"
+  ],
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "code.function",
+              "type": "STRING"
+            },
+            {
+              "name": "code.namespace",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "code.function",
+              "type": "STRING"
+            },
+            {
+              "name": "code.namespace",
+              "type": "STRING"
+            },
+            {
+              "name": "job.system",
+              "type": "STRING"
+            },
+            {
+              "name": "scheduling.powerjob.job.id",
+              "type": "LONG"
+            },
+            {
+              "name": "scheduling.powerjob.job.param",
+              "type": "STRING"
+            },
+            {
+              "name": "scheduling.powerjob.job.type",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "otel.instrumentation.powerjob.experimental-span-attributes=true"
+    }
+  ]
+}

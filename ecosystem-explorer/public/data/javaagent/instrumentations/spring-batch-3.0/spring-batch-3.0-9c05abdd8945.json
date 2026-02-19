@@ -1,0 +1,53 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Adds the experimental attribute `job.system` to spans.",
+      "name": "otel.instrumentation.spring-batch.experimental-span-attributes",
+      "type": "boolean"
+    },
+    {
+      "default": false,
+      "description": "When enabled, a new root span will be created for each chunk processing. Please note that this may lead to a high number of spans being created.",
+      "name": "otel.instrumentation.spring-batch.experimental.chunk.new-trace",
+      "type": "boolean"
+    },
+    {
+      "default": false,
+      "description": "When enabled, spans will be created for each item processed. Please note that this may lead to a high number of spans being created.",
+      "name": "otel.instrumentation.spring-batch.item.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enables spans for Spring Batch job execution, including job, step, and chunk processing.",
+  "disabled_by_default": true,
+  "display_name": "Spring Batch",
+  "javaagent_target_versions": [
+    "org.springframework.batch:spring-batch-core:[3.0.0.RELEASE,5)"
+  ],
+  "library_link": "https://spring.io/projects/spring-batch",
+  "name": "spring-batch-3.0",
+  "scope": {
+    "name": "io.opentelemetry.spring-batch-3.0"
+  },
+  "source_path": "instrumentation/spring/spring-batch-3.0",
+  "tags": [
+    "spring"
+  ],
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "job.system",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "otel.instrumentation.spring-batch.experimental-span-attributes=true"
+    }
+  ]
+}

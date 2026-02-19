@@ -1,0 +1,49 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables the creation of experimental controller spans.",
+      "name": "otel.instrumentation.common.experimental.controller-telemetry.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enriches HTTP server spans with route information, and enables controller spans for JFinal controller methods (controller spans are disabled by default).",
+  "display_name": "JFinal",
+  "features": [
+    "HTTP_ROUTE",
+    "CONTROLLER_SPANS"
+  ],
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "com.jfinal:jfinal:[3.2,)"
+  ],
+  "library_link": "https://github.com/jfinal/jfinal",
+  "name": "jfinal-3.2",
+  "scope": {
+    "name": "io.opentelemetry.jfinal-3.2"
+  },
+  "source_path": "instrumentation/jfinal-3.2",
+  "tags": [
+    "jfinal"
+  ],
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "code.function",
+              "type": "STRING"
+            },
+            {
+              "name": "code.namespace",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "default"
+    }
+  ]
+}

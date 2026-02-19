@@ -1,0 +1,17 @@
+{
+  "description": "This instrumentation enhances tracing for Spring Cloud AWS. It augments the existing AWS SDK instrumentation by providing higher-level tracing for SQS operations, capturing details specific to Spring Cloud AWS SQS usage and linking them to the underlying AWS SDK traces.",
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "io.awspring.cloud:spring-cloud-aws-sqs:[3.0.0,)"
+  ],
+  "library_link": "https://spring.io/projects/spring-cloud-aws",
+  "minimum_java_version": 17,
+  "name": "spring-cloud-aws-3.0",
+  "scope": {
+    "name": "io.opentelemetry.spring-cloud-aws-3.0"
+  },
+  "source_path": "instrumentation/spring/spring-cloud-aws-3.0",
+  "tags": [
+    "spring"
+  ]
+}

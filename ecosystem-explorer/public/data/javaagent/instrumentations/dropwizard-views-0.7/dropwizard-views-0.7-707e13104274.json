@@ -1,0 +1,37 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables the creation of experimental view spans.",
+      "name": "otel.instrumentation.common.experimental.view-telemetry.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enables view spans for Dropwizard view template rendering (view spans are disabled by default).",
+  "features": [
+    "VIEW_SPANS"
+  ],
+  "javaagent_target_versions": [
+    "io.dropwizard:dropwizard-views:(,3.0.0)"
+  ],
+  "library_link": "https://www.dropwizard.io/en/latest/manual/views.html",
+  "name": "dropwizard-views-0.7",
+  "scope": {
+    "name": "io.opentelemetry.dropwizard-views-0.7"
+  },
+  "source_path": "instrumentation/dropwizard/dropwizard-views-0.7",
+  "tags": [
+    "dropwizard"
+  ],
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "otel.instrumentation.common.experimental.view-telemetry.enabled=true"
+    }
+  ]
+}

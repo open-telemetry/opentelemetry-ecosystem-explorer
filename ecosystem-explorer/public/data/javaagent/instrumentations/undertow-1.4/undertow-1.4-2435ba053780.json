@@ -1,0 +1,13 @@
+{
+  "javaagent_target_versions": [
+    "io.undertow:undertow-core:[1.4.0.Final,)"
+  ],
+  "name": "undertow-1.4",
+  "scope": {
+    "name": "io.opentelemetry.undertow-1.4"
+  },
+  "source_path": "instrumentation/undertow-1.4",
+  "tags": [
+    "undertow"
+  ]
+}

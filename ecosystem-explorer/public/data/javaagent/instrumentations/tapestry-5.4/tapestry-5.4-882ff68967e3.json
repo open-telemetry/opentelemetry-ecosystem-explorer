@@ -1,0 +1,14 @@
+{
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "org.apache.tapestry:tapestry-core:[5.4.0,)"
+  ],
+  "name": "tapestry-5.4",
+  "scope": {
+    "name": "io.opentelemetry.tapestry-5.4"
+  },
+  "source_path": "instrumentation/tapestry-5.4",
+  "tags": [
+    "tapestry"
+  ]
+}

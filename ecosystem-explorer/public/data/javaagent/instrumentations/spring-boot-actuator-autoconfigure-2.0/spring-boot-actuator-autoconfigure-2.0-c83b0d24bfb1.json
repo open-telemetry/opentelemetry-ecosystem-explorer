@@ -1,0 +1,17 @@
+{
+  "description": "This instrumentation configures the OpenTelemetry Micrometer bridge to receive metrics from Spring Boot Actuator. It does not produce telemetry on its own.",
+  "disabled_by_default": true,
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "org.springframework.boot:spring-boot-actuator-autoconfigure:[2.0.0.RELEASE,)"
+  ],
+  "library_link": "https://spring.io/projects/spring-boot",
+  "name": "spring-boot-actuator-autoconfigure-2.0",
+  "scope": {
+    "name": "io.opentelemetry.spring-boot-actuator-autoconfigure-2.0"
+  },
+  "source_path": "instrumentation/spring/spring-boot-actuator-autoconfigure-2.0",
+  "tags": [
+    "spring"
+  ]
+}

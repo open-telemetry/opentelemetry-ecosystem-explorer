@@ -1,0 +1,14 @@
+{
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "io.projectreactor.kafka:reactor-kafka:[1.0.0,)"
+  ],
+  "name": "reactor-kafka-1.0",
+  "scope": {
+    "name": "io.opentelemetry.reactor-kafka-1.0"
+  },
+  "source_path": "instrumentation/reactor/reactor-kafka-1.0",
+  "tags": [
+    "reactor"
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "has_standalone_library": true,
+  "name": "runtime-telemetry-java8",
+  "scope": {
+    "name": "io.opentelemetry.runtime-telemetry-java8"
+  },
+  "source_path": "instrumentation/runtime-telemetry/runtime-telemetry-java8",
+  "tags": [
+    "runtime"
+  ]
+}

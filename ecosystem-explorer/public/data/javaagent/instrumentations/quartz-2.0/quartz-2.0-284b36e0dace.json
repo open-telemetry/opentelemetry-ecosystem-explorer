@@ -1,0 +1,14 @@
+{
+  "has_standalone_library": true,
+  "javaagent_target_versions": [
+    "org.quartz-scheduler:quartz:[2.0.0,)"
+  ],
+  "name": "quartz-2.0",
+  "scope": {
+    "name": "io.opentelemetry.quartz-2.0"
+  },
+  "source_path": "instrumentation/quartz-2.0",
+  "tags": [
+    "quartz"
+  ]
+}

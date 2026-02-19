@@ -1,0 +1,14 @@
+{
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "io.vertx:vertx-rx-java2:[3.5.0,)"
+  ],
+  "name": "vertx-rx-java-3.5",
+  "scope": {
+    "name": "io.opentelemetry.vertx-rx-java-3.5"
+  },
+  "source_path": "instrumentation/vertx/vertx-rx-java-3.5",
+  "tags": [
+    "vertx"
+  ]
+}

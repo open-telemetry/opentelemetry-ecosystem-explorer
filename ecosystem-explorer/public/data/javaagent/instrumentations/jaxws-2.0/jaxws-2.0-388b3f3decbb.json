@@ -1,0 +1,47 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables the creation of experimental controller spans.",
+      "name": "otel.instrumentation.common.experimental.controller-telemetry.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enables controller spans for JAX-WS Provider implementations (controller spans are disabled by default).",
+  "display_name": "JAX-WS",
+  "features": [
+    "CONTROLLER_SPANS"
+  ],
+  "javaagent_target_versions": [
+    "javax.xml.ws:jaxws-api:[2.0,]"
+  ],
+  "library_link": "https://github.com/jakartaee/jax-ws-api",
+  "name": "jaxws-2.0",
+  "scope": {
+    "name": "io.opentelemetry.jaxws-2.0"
+  },
+  "source_path": "instrumentation/jaxws/jaxws-2.0",
+  "tags": [
+    "jaxws"
+  ],
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "code.function",
+              "type": "STRING"
+            },
+            {
+              "name": "code.namespace",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "otel.instrumentation.common.experimental.controller-telemetry.enabled=true"
+    }
+  ]
+}

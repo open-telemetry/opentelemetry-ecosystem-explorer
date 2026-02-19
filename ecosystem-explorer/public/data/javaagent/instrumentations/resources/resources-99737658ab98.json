@@ -1,0 +1,11 @@
+{
+  "has_standalone_library": true,
+  "name": "resources",
+  "scope": {
+    "name": "io.opentelemetry.resources"
+  },
+  "source_path": "instrumentation/resources",
+  "tags": [
+    "resources"
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "io.vertx:vertx-web:[3.0.0,)"
+  ],
+  "name": "vertx-web-3.0",
+  "scope": {
+    "name": "io.opentelemetry.vertx-web-3.0"
+  },
+  "source_path": "instrumentation/vertx/vertx-web-3.0",
+  "tags": [
+    "vertx"
+  ]
+}

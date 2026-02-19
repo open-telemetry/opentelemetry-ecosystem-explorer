@@ -1,0 +1,159 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables capturing the experimental `servlet.timeout` span attribute.",
+      "name": "otel.instrumentation.servlet.experimental-span-attributes",
+      "type": "boolean"
+    },
+    {
+      "default": "",
+      "description": "List of request parameter names to capture as span attributes.",
+      "name": "otel.instrumentation.servlet.capture-request-parameters",
+      "type": "list"
+    },
+    {
+      "default": true,
+      "description": "Adds the trace ID and span ID as a request attributes for downstream servlet access.",
+      "name": "otel.instrumentation.servlet.add-trace-id-request-attribute",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enables HTTP server spans and metrics for Java Servlet API.",
+  "display_name": "Servlet",
+  "features": [
+    "HTTP_ROUTE"
+  ],
+  "has_standalone_library": true,
+  "javaagent_target_versions": [
+    "javax.servlet:javax.servlet-api:[3.0,)"
+  ],
+  "library_link": "https://javaee.github.io/servlet-spec/",
+  "name": "servlet-3.0",
+  "scope": {
+    "name": "io.opentelemetry.servlet-3.0"
+  },
+  "semantic_conventions": [
+    "HTTP_SERVER_SPANS",
+    "HTTP_SERVER_METRICS"
+  ],
+  "source_path": "instrumentation/servlet/servlet-3.0",
+  "tags": [
+    "servlet"
+  ],
+  "telemetry": [
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "http.request.method",
+              "type": "STRING"
+            },
+            {
+              "name": "http.response.status_code",
+              "type": "LONG"
+            },
+            {
+              "name": "http.route",
+              "type": "STRING"
+            },
+            {
+              "name": "network.protocol.version",
+              "type": "STRING"
+            },
+            {
+              "name": "url.scheme",
+              "type": "STRING"
+            }
+          ],
+          "description": "Duration of HTTP server requests.",
+          "name": "http.server.request.duration",
+          "type": "HISTOGRAM",
+          "unit": "s"
+        }
+      ],
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "code.function",
+              "type": "STRING"
+            },
+            {
+              "name": "code.namespace",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        },
+        {
+          "attributes": [
+            {
+              "name": "client.address",
+              "type": "STRING"
+            },
+            {
+              "name": "error.type",
+              "type": "STRING"
+            },
+            {
+              "name": "http.request.method",
+              "type": "STRING"
+            },
+            {
+              "name": "http.request.method_original",
+              "type": "STRING"
+            },
+            {
+              "name": "http.response.status_code",
+              "type": "LONG"
+            },
+            {
+              "name": "http.route",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.address",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.port",
+              "type": "LONG"
+            },
+            {
+              "name": "network.protocol.version",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            },
+            {
+              "name": "url.path",
+              "type": "STRING"
+            },
+            {
+              "name": "url.query",
+              "type": "STRING"
+            },
+            {
+              "name": "url.scheme",
+              "type": "STRING"
+            },
+            {
+              "name": "user_agent.original",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "SERVER"
+        }
+      ],
+      "when": "default"
+    }
+  ]
+}

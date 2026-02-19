@@ -1,0 +1,13 @@
+{
+  "javaagent_target_versions": [
+    "com.xuxueli:xxl-job-core:[2.1.2,2.3.0)"
+  ],
+  "name": "xxl-job-2.1.2",
+  "scope": {
+    "name": "io.opentelemetry.xxl-job-2.1.2"
+  },
+  "source_path": "instrumentation/xxl-job/xxl-job-2.1.2",
+  "tags": [
+    "xxl"
+  ]
+}

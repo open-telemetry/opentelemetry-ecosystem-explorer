@@ -1,0 +1,14 @@
+{
+  "javaagent_target_versions": [
+    "org.apache.tomcat.embed:tomcat-embed-core:[10,)"
+  ],
+  "minimum_java_version": 11,
+  "name": "tomcat-10.0",
+  "scope": {
+    "name": "io.opentelemetry.tomcat-10.0"
+  },
+  "source_path": "instrumentation/tomcat/tomcat-10.0",
+  "tags": [
+    "tomcat"
+  ]
+}

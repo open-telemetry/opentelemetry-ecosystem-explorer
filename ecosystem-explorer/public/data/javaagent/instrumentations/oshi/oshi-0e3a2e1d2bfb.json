@@ -1,0 +1,272 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enable the experimental `runtime.java.memory` and `runtime.java.cpu_time` metrics.",
+      "name": "otel.instrumentation.oshi.experimental-metrics.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "When the OSHI library is detected on the classpath, this instrumentation enables system metrics for memory, disk, and network operations.",
+  "display_name": "OSHI",
+  "has_standalone_library": true,
+  "javaagent_target_versions": [
+    "com.github.oshi:oshi-core:[5.3.1,)"
+  ],
+  "library_link": "https://github.com/oshi/oshi/",
+  "name": "oshi",
+  "scope": {
+    "name": "io.opentelemetry.oshi"
+  },
+  "semantic_conventions": [
+    "SYSTEM_METRICS"
+  ],
+  "source_path": "instrumentation/oshi",
+  "tags": [
+    "oshi"
+  ],
+  "telemetry": [
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "device",
+              "type": "STRING"
+            },
+            {
+              "name": "direction",
+              "type": "STRING"
+            }
+          ],
+          "description": "System disk IO",
+          "name": "system.disk.io",
+          "type": "LONG_SUM",
+          "unit": "By"
+        },
+        {
+          "attributes": [
+            {
+              "name": "device",
+              "type": "STRING"
+            },
+            {
+              "name": "direction",
+              "type": "STRING"
+            }
+          ],
+          "description": "System disk operations",
+          "name": "system.disk.operations",
+          "type": "LONG_SUM",
+          "unit": "operations"
+        },
+        {
+          "attributes": [
+            {
+              "name": "state",
+              "type": "STRING"
+            }
+          ],
+          "description": "System memory usage",
+          "name": "system.memory.usage",
+          "type": "LONG_SUM",
+          "unit": "By"
+        },
+        {
+          "attributes": [
+            {
+              "name": "state",
+              "type": "STRING"
+            }
+          ],
+          "description": "System memory utilization",
+          "name": "system.memory.utilization",
+          "type": "DOUBLE_GAUGE",
+          "unit": "1"
+        },
+        {
+          "attributes": [
+            {
+              "name": "device",
+              "type": "STRING"
+            },
+            {
+              "name": "direction",
+              "type": "STRING"
+            }
+          ],
+          "description": "System network errors",
+          "name": "system.network.errors",
+          "type": "LONG_SUM",
+          "unit": "errors"
+        },
+        {
+          "attributes": [
+            {
+              "name": "device",
+              "type": "STRING"
+            },
+            {
+              "name": "direction",
+              "type": "STRING"
+            }
+          ],
+          "description": "System network IO",
+          "name": "system.network.io",
+          "type": "LONG_SUM",
+          "unit": "By"
+        },
+        {
+          "attributes": [
+            {
+              "name": "device",
+              "type": "STRING"
+            },
+            {
+              "name": "direction",
+              "type": "STRING"
+            }
+          ],
+          "description": "System network packets",
+          "name": "system.network.packets",
+          "type": "LONG_SUM",
+          "unit": "packets"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "type",
+              "type": "STRING"
+            }
+          ],
+          "description": "Runtime Java CPU time",
+          "name": "runtime.java.cpu_time",
+          "type": "LONG_GAUGE",
+          "unit": "ms"
+        },
+        {
+          "attributes": [
+            {
+              "name": "type",
+              "type": "STRING"
+            }
+          ],
+          "description": "Runtime Java memory",
+          "name": "runtime.java.memory",
+          "type": "LONG_SUM",
+          "unit": "By"
+        },
+        {
+          "attributes": [
+            {
+              "name": "device",
+              "type": "STRING"
+            },
+            {
+              "name": "direction",
+              "type": "STRING"
+            }
+          ],
+          "description": "System disk IO",
+          "name": "system.disk.io",
+          "type": "LONG_SUM",
+          "unit": "By"
+        },
+        {
+          "attributes": [
+            {
+              "name": "device",
+              "type": "STRING"
+            },
+            {
+              "name": "direction",
+              "type": "STRING"
+            }
+          ],
+          "description": "System disk operations",
+          "name": "system.disk.operations",
+          "type": "LONG_SUM",
+          "unit": "operations"
+        },
+        {
+          "attributes": [
+            {
+              "name": "state",
+              "type": "STRING"
+            }
+          ],
+          "description": "System memory usage",
+          "name": "system.memory.usage",
+          "type": "LONG_SUM",
+          "unit": "By"
+        },
+        {
+          "attributes": [
+            {
+              "name": "state",
+              "type": "STRING"
+            }
+          ],
+          "description": "System memory utilization",
+          "name": "system.memory.utilization",
+          "type": "DOUBLE_GAUGE",
+          "unit": "1"
+        },
+        {
+          "attributes": [
+            {
+              "name": "device",
+              "type": "STRING"
+            },
+            {
+              "name": "direction",
+              "type": "STRING"
+            }
+          ],
+          "description": "System network errors",
+          "name": "system.network.errors",
+          "type": "LONG_SUM",
+          "unit": "errors"
+        },
+        {
+          "attributes": [
+            {
+              "name": "device",
+              "type": "STRING"
+            },
+            {
+              "name": "direction",
+              "type": "STRING"
+            }
+          ],
+          "description": "System network IO",
+          "name": "system.network.io",
+          "type": "LONG_SUM",
+          "unit": "By"
+        },
+        {
+          "attributes": [
+            {
+              "name": "device",
+              "type": "STRING"
+            },
+            {
+              "name": "direction",
+              "type": "STRING"
+            }
+          ],
+          "description": "System network packets",
+          "name": "system.network.packets",
+          "type": "LONG_SUM",
+          "unit": "packets"
+        }
+      ],
+      "when": "otel.instrumentation.oshi.experimental-metrics.enabled=true"
+    }
+  ]
+}

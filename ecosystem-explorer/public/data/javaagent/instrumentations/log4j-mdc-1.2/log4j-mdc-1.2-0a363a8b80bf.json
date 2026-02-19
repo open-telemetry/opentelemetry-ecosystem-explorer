@@ -1,0 +1,14 @@
+{
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "log4j:log4j:[1.2,)"
+  ],
+  "name": "log4j-mdc-1.2",
+  "scope": {
+    "name": "io.opentelemetry.log4j-mdc-1.2"
+  },
+  "source_path": "instrumentation/log4j/log4j-mdc-1.2",
+  "tags": [
+    "log4j"
+  ]
+}

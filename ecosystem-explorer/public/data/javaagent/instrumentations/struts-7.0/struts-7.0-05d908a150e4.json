@@ -1,0 +1,49 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables the creation of experimental controller spans.",
+      "name": "otel.instrumentation.common.experimental.controller-telemetry.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enriches HTTP server spans with route information, and enables controller spans for Apache Struts 2 actions (controller spans are disabled by default).",
+  "display_name": "Apache Struts 2",
+  "features": [
+    "HTTP_ROUTE",
+    "CONTROLLER_SPANS"
+  ],
+  "javaagent_target_versions": [
+    "org.apache.struts:struts2-core:[7.0.0,)"
+  ],
+  "library_link": "https://struts.apache.org/",
+  "minimum_java_version": 17,
+  "name": "struts-7.0",
+  "scope": {
+    "name": "io.opentelemetry.struts-7.0"
+  },
+  "source_path": "instrumentation/struts/struts-7.0",
+  "tags": [
+    "struts"
+  ],
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "code.function",
+              "type": "STRING"
+            },
+            {
+              "name": "code.namespace",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "otel.instrumentation.common.experimental.controller-telemetry.enabled=true"
+    }
+  ]
+}

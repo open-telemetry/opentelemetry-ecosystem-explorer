@@ -1,0 +1,57 @@
+{
+  "configurations": [
+    {
+      "default": true,
+      "description": "Enables sanitization of sensitive information from queries so they aren't added as span attributes.",
+      "name": "otel.instrumentation.graphql.query-sanitizer.enabled",
+      "type": "boolean"
+    },
+    {
+      "default": false,
+      "description": "Whether GraphQL operation name is added to the span name. WARNING: The GraphQL operation name is provided by the client and can have high cardinality. Use only when the server is not exposed to malicious clients.",
+      "name": "otel.instrumentation.graphql.add-operation-name-to-span-name.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enables spans for GraphQL operations.",
+  "has_standalone_library": true,
+  "javaagent_target_versions": [
+    "com.graphql-java:graphql-java:[12,20)"
+  ],
+  "library_link": "https://www.graphql-java.com/",
+  "name": "graphql-java-12.0",
+  "scope": {
+    "name": "io.opentelemetry.graphql-java-12.0"
+  },
+  "semantic_conventions": [
+    "GRAPHQL_SERVER_SPANS"
+  ],
+  "source_path": "instrumentation/graphql-java/graphql-java-12.0",
+  "tags": [
+    "graphql"
+  ],
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "graphql.document",
+              "type": "STRING"
+            },
+            {
+              "name": "graphql.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "graphql.operation.type",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "default"
+    }
+  ]
+}

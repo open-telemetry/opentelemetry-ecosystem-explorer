@@ -1,0 +1,14 @@
+{
+  "has_standalone_library": true,
+  "javaagent_target_versions": [
+    "org.apache.logging.log4j:log4j-core:[2.0,)"
+  ],
+  "name": "log4j-appender-2.17",
+  "scope": {
+    "name": "io.opentelemetry.log4j-appender-2.17"
+  },
+  "source_path": "instrumentation/log4j/log4j-appender-2.17",
+  "tags": [
+    "log4j"
+  ]
+}
