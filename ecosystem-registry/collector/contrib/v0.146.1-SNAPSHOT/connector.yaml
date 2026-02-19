@@ -1,0 +1,259 @@
+distribution: contrib
+version: 0.146.1-SNAPSHOT
+repository: opentelemetry-collector-contrib
+component_type: connector
+components:
+- name: countconnector
+  metadata:
+    type: count
+    display_name: Count Connector
+    status:
+      class: connector
+      stability:
+        alpha:
+        - logs_to_metrics
+        - metrics_to_metrics
+        - profiles_to_metrics
+        - traces_to_metrics
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - akats7
+        emeritus:
+        - djaglowski
+        - jpkrohling
+        seeking_new: true
+- name: datadogconnector
+  metadata:
+    type: datadog
+    display_name: Datadog Connector
+    status:
+      class: connector
+      stability:
+        beta:
+        - traces_to_metrics
+        - traces_to_traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - mx-psi
+        - dineshg13
+        - jade-guiton-dd
+        - IbraheemA
+        emeritus:
+        - gbbr
+        - ankitpatel96
+- name: exceptionsconnector
+  metadata:
+    type: exceptions
+    display_name: Exceptions Connector
+    status:
+      class: connector
+      stability:
+        alpha:
+        - traces_to_logs
+        - traces_to_metrics
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - marctc
+- name: failoverconnector
+  metadata:
+    type: failover
+    display_name: Failover Connector
+    status:
+      class: connector
+      stability:
+        alpha:
+        - logs_to_logs
+        - metrics_to_metrics
+        - traces_to_traces
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - akats7
+        - fatsheep9146
+- name: grafanacloudconnector
+  metadata:
+    type: grafanacloud
+    display_name: Grafana Cloud Connector
+    status:
+      class: connector
+      stability:
+        alpha:
+        - traces_to_metrics
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - rlankfo
+        - jcreixell
+        emeritus: []
+        seeking_new: false
+- name: metricsaslogsconnector
+  metadata:
+    type: metricsaslogs
+    display_name: Metrics as Logs Connector
+    status:
+      class: connector
+      stability:
+        development:
+        - metrics_to_logs
+      distributions: []
+      codeowners:
+        active:
+        - atoulme
+- name: otlpjsonconnector
+  metadata:
+    type: otlpjson
+    display_name: OTLP JSON Connector
+    status:
+      class: connector
+      stability:
+        alpha:
+        - logs_to_logs
+        - logs_to_metrics
+        - logs_to_traces
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - ChrsMark
+        emeritus:
+        - djaglowski
+- name: roundrobinconnector
+  metadata:
+    type: roundrobin
+    display_name: Round-Robin Connector
+    status:
+      class: connector
+      stability:
+        beta:
+        - logs_to_logs
+        - metrics_to_metrics
+        - traces_to_traces
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - bogdandrutu
+- name: routingconnector
+  metadata:
+    type: routing
+    display_name: Routing Connector
+    status:
+      class: connector
+      stability:
+        alpha:
+        - logs_to_logs
+        - metrics_to_metrics
+        - traces_to_traces
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - TylerHelmuth
+        - evan-bradley
+        - edmocosta
+        - bogdandrutu
+        emeritus:
+        - jpkrohling
+        - mwear
+        seeking_new: true
+- name: servicegraphconnector
+  metadata:
+    type: servicegraph
+    display_name: Service Graph Connector
+    status:
+      class: connector
+      stability:
+        alpha:
+        - traces_to_metrics
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - mapno
+        - JaredTan95
+- name: signaltometricsconnector
+  metadata:
+    type: signal_to_metrics
+    display_name: Signal to Metrics Connector
+    description: Signal to metrics connector produces metrics from all signal types
+      (traces, logs, or metrics).
+    status:
+      class: connector
+      stability:
+        alpha:
+        - logs_to_metrics
+        - metrics_to_metrics
+        - profiles_to_metrics
+        - traces_to_metrics
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - ChrsMark
+        - lahsivjar
+- name: slowsqlconnector
+  metadata:
+    type: slowsql
+    display_name: Slow SQL Connector
+    status:
+      class: connector
+      stability:
+        development:
+        - traces_to_logs
+      codeowners:
+        active:
+        - JaredTan95
+        - Frapschen
+        - atoulme
+- name: spanmetricsconnector
+  metadata:
+    type: spanmetrics
+    display_name: Span Metrics Connector
+    status:
+      class: connector
+      stability:
+        alpha:
+        - traces_to_metrics
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - portertech
+        - Frapschen
+        - iblancasa
+        emeritus:
+        - albertteoh
+        seeking_new: true
+- name: sumconnector
+  metadata:
+    type: sum
+    display_name: Sum Connector
+    status:
+      class: connector
+      stability:
+        alpha:
+        - logs_to_metrics
+        - metrics_to_metrics
+        - traces_to_metrics
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - greatestusername
+        - shalper2
+        - crobert-1

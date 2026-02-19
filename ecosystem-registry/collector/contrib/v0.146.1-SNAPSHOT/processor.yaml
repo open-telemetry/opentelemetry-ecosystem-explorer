@@ -1,0 +1,753 @@
+distribution: contrib
+version: 0.146.1-SNAPSHOT
+repository: opentelemetry-collector-contrib
+component_type: processor
+components:
+- name: attributesprocessor
+  metadata:
+    type: attributes
+    display_name: Attributes Processor
+    status:
+      class: processor
+      stability:
+        beta:
+        - logs
+        - metrics
+        - traces
+      distributions:
+      - contrib
+      - core
+      - k8s
+      codeowners:
+        active:
+        - boostchicken
+- name: coralogixprocessor
+  metadata:
+    type: coralogix
+    display_name: Coralogix Processor
+    description: The Coralogix processor adds attributes to spans that enable features
+      in Coralogix.
+    status:
+      class: processor
+      stability:
+        alpha:
+        - traces
+      distributions: []
+      codeowners:
+        active:
+        - crobert-1
+        - povilasv
+        - iblancasa
+- name: cumulativetodeltaprocessor
+  metadata:
+    type: cumulativetodelta
+    display_name: Cumulative to Delta Processor
+    description: The cumulative to delta processor (`cumulativetodeltaprocessor`)
+      converts monotonic sum, histogram, and exponential histogram metrics from cumulative
+      to delta aggregation temporality. Non-monotonic sums are excluded. Delta metrics
+      are excluded from any conversion and forwarded without changes.
+    status:
+      class: processor
+      stability:
+        beta:
+        - metrics
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - TylerHelmuth
+- name: datadogsemanticsprocessor
+  metadata:
+    type: datadogsemantics
+    display_name: Datadog Semantics Processor
+    status:
+      class: processor
+      stability:
+        deprecated:
+        - traces
+      distributions: []
+      codeowners:
+        active:
+        - songy23
+        - IbraheemA
+        - mx-psi
+        - dineshg13
+        - jade-guiton-dd
+        emeritus:
+        - jackgopack4
+        - ankitpatel96
+- name: deltatocumulativeprocessor
+  metadata:
+    type: deltatocumulative
+    display_name: Delta to Cumulative Processor
+    description: The Delta to Cumulative Processor (`deltatocumulativeprocessor`)
+      converts metrics from delta temporality to cumulative, by accumulating samples
+      in memory.
+    status:
+      class: processor
+      stability:
+        alpha:
+        - metrics
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - RichieSams
+        emeritus:
+        - tombrk
+- name: deltatorateprocessor
+  metadata:
+    type: deltatorate
+    display_name: Delta to Rate Processor
+    description: The Delta to Rate Processor (`deltatorateprocessor`) converts delta
+      sum metrics to rate metrics. This rate is a gauge.
+    status:
+      class: processor
+      stability:
+        alpha:
+        - metrics
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - Aneurysm9
+- name: dnslookupprocessor
+  metadata:
+    type: dnslookup
+    display_name: DNS Lookup Processor
+    status:
+      class: processor
+      stability:
+        development:
+        - logs
+        - metrics
+        - traces
+      codeowners:
+        active:
+        - andrzej-stencel
+        - kaisecheng
+        - edmocosta
+- name: filterprocessor
+  metadata:
+    type: filter
+    display_name: Filter Processor
+    description: The Filter Processor allows dropping spans, span events, metrics,
+      datapoints, and logs from the collector.
+    status:
+      class: processor
+      stability:
+        alpha:
+        - logs
+        - metrics
+        - traces
+        development:
+        - profiles
+      distributions:
+      - contrib
+      - core
+      - k8s
+      codeowners:
+        active:
+        - TylerHelmuth
+        - evan-bradley
+        - edmocosta
+        - bogdandrutu
+        emeritus:
+        - boostchicken
+- name: geoipprocessor
+  metadata:
+    type: geoip
+    display_name: GeoIP Processor
+    description: The geoIP processor `geoipprocessor` enhances the attributes of a
+      span, log, or metric by appending information about the geographical location
+      of an IP address.
+    status:
+      class: processor
+      stability:
+        alpha:
+        - logs
+        - metrics
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - andrzej-stencel
+        - michalpristas
+        - rogercoll
+- name: groupbyattrsprocessor
+  metadata:
+    type: groupbyattrs
+    display_name: Group by Attributes Processor
+    description: This processor re-associates spans, log records and metric datapoints
+      to a *Resource* that matches with the specified attributes. As a result, all
+      spans, log records or metric datapoints with the same values for the specified
+      attributes are "grouped" under the same *Resource*.
+    status:
+      class: processor
+      stability:
+        beta:
+        - logs
+        - metrics
+        - traces
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - rnishtala-sumo
+        - amdprophet
+        emeritus:
+        - echlebek
+- name: groupbytraceprocessor
+  metadata:
+    type: groupbytrace
+    display_name: Group by Trace Processor
+    status:
+      class: processor
+      stability:
+        beta:
+        - traces
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - iblancasa
+        emeritus:
+        - jpkrohling
+        seeking_new: true
+- name: intervalprocessor
+  metadata:
+    type: interval
+    display_name: Interval Processor
+    status:
+      class: processor
+      stability:
+        alpha:
+        - metrics
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - RichieSams
+        emeritus:
+        - tombrk
+- name: isolationforestprocessor
+  metadata:
+    type: isolationforest
+    display_name: Isolation Forest Processor
+    description: The **Isolation Forest processor** adds inline, unsupervised anomaly
+      detection to any OpenTelemetry Collector pipeline (traces, metrics, or logs).
+      It embeds a lightweight implementation of the Isolation Forest algorithm that
+      automatically learns normal behaviour from recent telemetry and tags, scores,
+      or optionally drops anomalies *in‑flight* – no external ML service required.
+    status:
+      class: processor
+      stability:
+        alpha:
+        - logs
+        - metrics
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - atoulme
+- name: k8sattributesprocessor
+  metadata:
+    type: k8s_attributes
+    display_name: Kubernetes Attributes Processor
+    description: The Kubernetes Attributes Processor allows adding k8s metadata to
+      resource attributes for spans, metrics and logs.
+    status:
+      class: processor
+      stability:
+        beta:
+        - logs
+        - metrics
+        - traces
+        development:
+        - profiles
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - dmitryax
+        - fatsheep9146
+        - TylerHelmuth
+        - ChrsMark
+        - odubajDT
+        emeritus:
+        - rmfitzpatrick
+    attributes:
+      otelcol.signal:
+        description: The signal type the telemetry metric is associated with
+        type: string
+        enum:
+        - logs
+        - metrics
+        - profiles
+        - traces
+      pod_identifier:
+        description: The pod identifier value(s) used for the association attempt
+        type: string
+      status:
+        description: The status of the pod association operation
+        type: string
+        enum:
+        - error
+        - success
+    resource_attributes:
+      container.id:
+        description: Container ID. Usually a UUID, as for example used to identify
+          Docker containers. The UUID might be abbreviated. Requires k8s.container.restart_count.
+        type: string
+      container.image.name:
+        description: Name of the image the container was built on. Requires container.id
+          or k8s.container.name.
+        type: string
+      container.image.repo_digests:
+        description: Repo digests of the container image as provided by the container
+          runtime.
+        type: slice
+      container.image.tag:
+        description: Container image tag. Defaults to "latest" if not provided (unless
+          digest also in image path) Requires container.id or k8s.container.name.
+          Deprecated, use container.image.tags instead.
+        type: string
+      container.image.tags:
+        description: Container image tags. Requires container.id or k8s.container.name.
+        type: slice
+      k8s.cluster.uid:
+        description: Gives cluster uid identified with kube-system namespace
+        type: string
+      k8s.container.name:
+        description: The name of the Container in a Pod template. Requires container.id.
+        type: string
+      k8s.cronjob.name:
+        description: The name of the CronJob.
+        type: string
+      k8s.cronjob.uid:
+        description: The uid of the CronJob.
+        type: string
+      k8s.daemonset.name:
+        description: The name of the DaemonSet.
+        type: string
+      k8s.daemonset.uid:
+        description: The UID of the DaemonSet.
+        type: string
+      k8s.deployment.name:
+        description: The name of the Deployment.
+        type: string
+      k8s.deployment.uid:
+        description: The UID of the Deployment.
+        type: string
+      k8s.job.name:
+        description: The name of the Job.
+        type: string
+      k8s.job.uid:
+        description: The UID of the Job.
+        type: string
+      k8s.namespace.name:
+        description: The name of the namespace that the pod is running in.
+        type: string
+      k8s.node.name:
+        description: The name of the Node.
+        type: string
+      k8s.node.uid:
+        description: The UID of the Node.
+        type: string
+      k8s.pod.hostname:
+        description: The hostname of the Pod.
+        type: string
+      k8s.pod.ip:
+        description: The IP address of the Pod.
+        type: string
+      k8s.pod.name:
+        description: The name of the Pod.
+        type: string
+      k8s.pod.start_time:
+        description: The start time of the Pod.
+        type: string
+      k8s.pod.uid:
+        description: The UID of the Pod.
+        type: string
+      k8s.replicaset.name:
+        description: The name of the ReplicaSet.
+        type: string
+      k8s.replicaset.uid:
+        description: The UID of the ReplicaSet.
+        type: string
+      k8s.statefulset.name:
+        description: The name of the StatefulSet.
+        type: string
+      k8s.statefulset.uid:
+        description: The UID of the StatefulSet.
+        type: string
+      service.instance.id:
+        description: The instance ID of the service.
+        type: string
+      service.name:
+        description: The name of the service.
+        type: string
+      service.namespace:
+        description: The namespace of the service.
+        type: string
+      service.version:
+        description: The version of the service.
+        type: string
+- name: logdedupprocessor
+  metadata:
+    type: logdedup
+    display_name: Log DeDuplication Processor
+    description: The Log DeDuplication Processor is used to deduplicate logs by detecting
+      identical logs over a range of time and emitting a single log with the count
+      of logs that were deduplicated.
+    status:
+      class: processor
+      stability:
+        alpha:
+        - logs
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - MikeGoldsmith
+        emeritus:
+        - djaglowski
+- name: logstransformprocessor
+  metadata:
+    type: logstransform
+    display_name: Logs Transform Processor
+    status:
+      class: processor
+      stability:
+        development:
+        - logs
+      distributions: []
+      codeowners:
+        active:
+        - dehaansa
+- name: lookupprocessor
+  metadata:
+    type: lookup
+    display_name: Lookup Processor
+    description: The lookup processor enriches telemetry signals by performing external
+      lookups to retrieve additional data. It evaluates an [OTTL](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/pkg/ottl/README.md)
+      value expression to extract a lookup key, queries a lookup source, and writes
+      the results as new attributes. Currently supports logs, with metrics and traces
+      support planned.
+    status:
+      class: processor
+      stability:
+        development:
+        - logs
+      distributions: []
+      codeowners:
+        active:
+        - jsvd
+        - dehaansa
+        - VihasMakwana
+- name: metricsgenerationprocessor
+  metadata:
+    type: metricsgeneration
+    display_name: Metrics Generation Processor
+    status:
+      class: processor
+      stability:
+        alpha:
+        - metrics
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - Aneurysm9
+        - crobert-1
+- name: metricstarttimeprocessor
+  metadata:
+    type: metricstarttime
+    display_name: Metric Start Time Processor
+    description: The Metric Start Time Processor (`metricstarttime`) is used to set
+      the start time for metric points with a cumulative aggregation temporality.
+      It is commonly used with the `prometheus` receiver, which usually produces metric
+      points without a start time.
+    status:
+      class: processor
+      stability:
+        beta:
+        - metrics
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - dashpole
+        - ridwanmsharif
+- name: metricstransformprocessor
+  metadata:
+    type: metricstransform
+    display_name: Metrics Transform Processor
+    status:
+      class: processor
+      stability:
+        beta:
+        - metrics
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - dmitryax
+- name: probabilisticsamplerprocessor
+  metadata:
+    type: probabilistic_sampler
+    display_name: Probabilistic Sampling Processor
+    status:
+      class: processor
+      stability:
+        alpha:
+        - logs
+        beta:
+        - traces
+      distributions:
+      - contrib
+      - core
+      - k8s
+      codeowners:
+        active:
+        - jmacd
+        emeritus:
+        - jpkrohling
+        seeking_new: true
+- name: redactionprocessor
+  metadata:
+    type: redaction
+    display_name: Redaction Processor
+    description: This processor deletes span, log, and metric datapoint attributes
+      that don't match a list of allowed attributes. It also masks attribute values
+      that match a blocked value list. Attributes that aren't on the allowed list
+      are removed before any value checks are done.
+    status:
+      class: processor
+      stability:
+        alpha:
+        - logs
+        - metrics
+        beta:
+        - traces
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - dmitryax
+        - mx-psi
+        - TylerHelmuth
+        - iblancasa
+        emeritus:
+        - leonsp-ai
+- name: remotetapprocessor
+  metadata:
+    type: remotetap
+    display_name: Remote Tap Processor
+    status:
+      class: processor
+      stability:
+        alpha:
+        - logs
+        - metrics
+        - traces
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - atoulme
+        - jaronoff97
+        emeritus:
+        - pmcollins
+- name: resourcedetectionprocessor
+  metadata:
+    type: resourcedetection
+    display_name: Resource Detection Processor
+    status:
+      class: processor
+      stability:
+        beta:
+        - logs
+        - metrics
+        - traces
+        development:
+        - profiles
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - Aneurysm9
+        - dashpole
+        seeking_new: true
+- name: resourceprocessor
+  metadata:
+    type: resource
+    display_name: Resource Processor
+    status:
+      class: processor
+      stability:
+        beta:
+        - logs
+        - metrics
+        - traces
+        development:
+        - profiles
+      distributions:
+      - contrib
+      - core
+      - k8s
+      codeowners:
+        active:
+        - dmitryax
+- name: schemaprocessor
+  metadata:
+    type: schema
+    display_name: Schema Processor
+    status:
+      class: processor
+      stability:
+        development:
+        - logs
+        - metrics
+        - traces
+      distributions: []
+      codeowners:
+        active:
+        - MovieStoreGuy
+        - ankitpatel96
+        - dineshg13
+- name: spanprocessor
+  metadata:
+    type: span
+    display_name: Span Processor
+    status:
+      class: processor
+      stability:
+        alpha:
+        - traces
+      distributions:
+      - contrib
+      - core
+      codeowners:
+        active:
+        - boostchicken
+- name: sumologicprocessor
+  metadata:
+    type: sumologic
+    display_name: Sumo Logic Processor
+    status:
+      class: processor
+      stability:
+        beta:
+        - logs
+        - metrics
+        - traces
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - rnishtala-sumo
+        - pankaj101A
+        - jagan2221
+        emeritus:
+        - aboguszewski-sumo
+        - kasia-kujawa
+        - mat-rumian
+        - sumo-drosiek
+        - echlebek
+        - chan-tim-sumo
+        - amdprophet
+- name: tailsamplingprocessor
+  metadata:
+    type: tail_sampling
+    display_name: Tail Sampling Processor
+    status:
+      class: processor
+      stability:
+        beta:
+        - traces
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - portertech
+        - Logiraptor
+        - jmacd
+        emeritus:
+        - jpkrohling
+        seeking_new: true
+    attributes:
+      decision:
+        description: The sampling decision
+        type: string
+        enum:
+        - dropped
+        - not_sampled
+        - sampled
+      policy:
+        description: Name of the policy
+        type: string
+      sampled:
+        description: Whether the sampling decision was sampled or not, false can mean
+          either not sampled or dropped
+        type: bool
+- name: transformprocessor
+  metadata:
+    type: transform
+    display_name: Transform Processor
+    status:
+      class: processor
+      stability:
+        beta:
+        - logs
+        - metrics
+        - traces
+        development:
+        - profiles
+      distributions:
+      - contrib
+      - k8s
+      codeowners:
+        active:
+        - TylerHelmuth
+        - evan-bradley
+        - edmocosta
+        - bogdandrutu
+        emeritus:
+        - anuraaga
+        - kentquirk
+        seeking_new: true
+- name: unrollprocessor
+  metadata:
+    type: unroll
+    display_name: Unroll Processor
+    description: The Unroll Processor takes log records with slice bodies and expands
+      each element of the slice into its own log record. This allows for better processing
+      and analysis of structured log data that contains arrays or lists.
+    status:
+      class: processor
+      stability:
+        alpha:
+        - logs
+      distributions:
+      - contrib
+      codeowners:
+        active:
+        - axw
+        - schmikei
+        - rnishtala-sumo
