@@ -1,11 +1,14 @@
 distribution: contrib
-version: 0.145.1-SNAPSHOT
+version: 0.146.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: receiver
 components:
 - name: activedirectorydsreceiver
   metadata:
     type: active_directory_ds
+    display_name: Active Directory Domain Services Receiver
+    description: The Active Directory Domain Services Receiver scrapes metrics relating
+      to an Active Directory domain controller using the Windows Performance Counters.
     status:
       class: receiver
       stability:
@@ -261,6 +264,9 @@ components:
 - name: aerospikereceiver
   metadata:
     type: aerospike
+    display_name: Aerospike Receiver
+    description: The Aerospike receiver is designed to collect performance metrics
+      from one or more Aerospike nodes.
     status:
       class: receiver
       stability:
@@ -525,6 +531,9 @@ components:
 - name: apachereceiver
   metadata:
     type: apache
+    display_name: Apache Web Server Receiver
+    description: The Apache Web Server Receiver fetches stats from an Apache Web Server
+      instance using the `server-status?auto` endpoint.
     status:
       class: receiver
       stability:
@@ -733,6 +742,11 @@ components:
 - name: apachesparkreceiver
   metadata:
     type: apachespark
+    display_name: Apache Spark Receiver
+    description: The Apache Spark Receiver fetches metrics for an Apache Spark cluster
+      through the Apache Spark REST API - specifically, the `/metrics/json`, `/api/v1/applications/[app-id]/stages`,
+      `/api/v1/applications/[app-id]/executors`, and `/api/v1/applications/[app-id]/jobs`
+      endpoints.
     status:
       class: receiver
       stability:
@@ -1518,6 +1532,10 @@ components:
 - name: awscloudwatchreceiver
   metadata:
     type: awscloudwatch
+    display_name: AWS CloudWatch Receiver
+    description: The AWS CloudWatch Receiver receives Cloudwatch events from [AWS
+      CloudWatch](https://aws.amazon.com/cloudwatch/) via the [AWS SDK for Cloudwatch
+      Logs](https://docs.aws.amazon.com/sdk-for-go/api/service/cloudwatchlogs/)
     status:
       class: receiver
       stability:
@@ -1534,6 +1552,7 @@ components:
 - name: awscontainerinsightreceiver
   metadata:
     type: awscontainerinsightreceiver
+    display_name: AWS Container Insights Receiver
     status:
       class: receiver
       stability:
@@ -1548,6 +1567,7 @@ components:
 - name: awsecscontainermetricsreceiver
   metadata:
     type: awsecscontainermetrics
+    display_name: AWS ECS Container Metrics Receiver
     status:
       class: receiver
       stability:
@@ -1561,6 +1581,10 @@ components:
 - name: awsfirehosereceiver
   metadata:
     type: awsfirehose
+    display_name: AWS Kinesis Data Firehose Receiver
+    description: The AWS Kinesis Data Firehose Receiver is for ingesting delivery
+      stream messages and parsing the records received based on the configured record
+      type.
     status:
       class: receiver
       stability:
@@ -1576,6 +1600,7 @@ components:
 - name: awslambdareceiver
   metadata:
     type: awslambda
+    display_name: AWS Lambda Receiver
     status:
       class: receiver
       stability:
@@ -1592,6 +1617,7 @@ components:
 - name: awss3receiver
   metadata:
     type: awss3
+    display_name: AWS S3 Receiver
     status:
       class: receiver
       stability:
@@ -1608,6 +1634,7 @@ components:
 - name: awsxrayreceiver
   metadata:
     type: awsxray
+    display_name: AWS X-Ray Receiver
     status:
       class: receiver
       stability:
@@ -1622,6 +1649,7 @@ components:
 - name: azureblobreceiver
   metadata:
     type: azureblob
+    display_name: Azure Blob Receiver
     status:
       class: receiver
       stability:
@@ -1637,6 +1665,7 @@ components:
 - name: azureeventhubreceiver
   metadata:
     type: azure_event_hub
+    display_name: Azure Event Hub Receiver
     status:
       class: receiver
       stability:
@@ -1657,6 +1686,9 @@ components:
 - name: azuremonitorreceiver
   metadata:
     type: azuremonitor
+    display_name: Azure Monitor Receiver
+    description: The Azure Monitor Receiver scrapes the Azure Monitor API for resource
+      metrics.
     status:
       class: receiver
       stability:
@@ -14338,7 +14370,7 @@ components:
     status:
       class: receiver
       stability:
-        beta:
+        deprecated:
         - logs
         - metrics
       distributions:
