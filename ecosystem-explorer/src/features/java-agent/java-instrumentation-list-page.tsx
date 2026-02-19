@@ -131,6 +131,7 @@ export function JavaInstrumentationListPage() {
                 key={instr.name}
                 instrumentation={instr}
                 activeFilters={filters}
+                version={latestVersion}
               />
             ))}
           </div>

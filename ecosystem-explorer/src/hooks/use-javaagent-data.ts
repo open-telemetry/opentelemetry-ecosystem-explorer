@@ -88,3 +88,47 @@ export function useInstrumentations(version: string): DataState<InstrumentationD
 
   return state;
 }
+
+export function useInstrumentation(name: string, version: string): DataState<InstrumentationData> {
+  const [state, setState] = useState<DataState<InstrumentationData>>({
+    data: null,
+    loading: true,
+    error: null,
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadData() {
+      if (!name || !version) {
+        setState({ data: null, loading: false, error: null });
+        return;
+      }
+
+      setState({ data: null, loading: true, error: null });
+
+      try {
+        const data = await javaagentData.loadInstrumentation(name, version);
+        if (!cancelled) {
+          setState({ data, loading: false, error: null });
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setState({
+            data: null,
+            loading: false,
+            error: error instanceof Error ? error : new Error(String(error)),
+          });
+        }
+      }
+    }
+
+    loadData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [name, version]);
+
+  return state;
+}

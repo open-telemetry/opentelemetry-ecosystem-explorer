@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import type { InstrumentationData } from "@/types/javaagent";
 import type { FilterState } from "./instrumentation-filter-bar";
 import { FILTER_STYLES } from "../styles/filter-styles";
@@ -5,9 +6,14 @@ import { FILTER_STYLES } from "../styles/filter-styles";
 interface InstrumentationCardProps {
   instrumentation: InstrumentationData;
   activeFilters?: FilterState;
+  version: string;
 }
 
-export function InstrumentationCard({ instrumentation, activeFilters }: InstrumentationCardProps) {
+export function InstrumentationCard({
+  instrumentation,
+  activeFilters,
+  version,
+}: InstrumentationCardProps) {
   const hasSpans = instrumentation.telemetry?.some((t) => t.spans && t.spans.length > 0);
   const hasMetrics = instrumentation.telemetry?.some((t) => t.metrics && t.metrics.length > 0);
 
@@ -23,8 +29,14 @@ export function InstrumentationCard({ instrumentation, activeFilters }: Instrume
   const isSpansFilterActive = activeFilters?.telemetry.has("spans");
   const isMetricsFilterActive = activeFilters?.telemetry.has("metrics");
 
+  const detailUrl = `/java-agent/instrumentation/${version}/${instrumentation.name}`;
+
   return (
-    <div className="p-4 border border-border rounded-lg hover:border-primary/50 transition-colors bg-card flex flex-col h-full">
+    <Link
+      to={detailUrl}
+      className="block p-4 border border-border rounded-lg hover:border-primary/50 transition-colors bg-card flex flex-col h-full"
+      aria-label={`View details for ${displayName}`}
+    >
       <div className="flex-1 space-y-3">
         <div className="flex items-start justify-between gap-2">
           <h3 className="font-semibold text-lg leading-tight">{displayName}</h3>
@@ -88,6 +100,6 @@ export function InstrumentationCard({ instrumentation, activeFilters }: Instrume
           )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

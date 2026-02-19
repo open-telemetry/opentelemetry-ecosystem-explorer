@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import { JavaInstrumentationListPage } from "./java-instrumentation-list-page";
 import type { InstrumentationData } from "@/types/javaagent";
@@ -14,6 +15,14 @@ vi.mock("@/components/ui/back-button", () => ({
 }));
 
 import { useVersions, useInstrumentations } from "@/hooks/use-javaagent-data";
+
+function renderPage() {
+  return render(
+    <BrowserRouter>
+      <JavaInstrumentationListPage />
+    </BrowserRouter>
+  );
+}
 
 describe("JavaInstrumentationListPage - Filtering", () => {
   const mockInstrumentations: InstrumentationData[] = [
@@ -93,7 +102,7 @@ describe("JavaInstrumentationListPage - Filtering", () => {
   });
 
   it("displays all instrumentations initially", async () => {
-    render(<JavaInstrumentationListPage />);
+    renderPage();
 
     await waitFor(() => {
       expect(screen.getByText("HTTP Client")).toBeInTheDocument();
@@ -107,7 +116,7 @@ describe("JavaInstrumentationListPage - Filtering", () => {
 
   it("filters instrumentations by search term in name", async () => {
     const user = userEvent.setup();
-    render(<JavaInstrumentationListPage />);
+    renderPage();
 
     const searchInput = await screen.findByPlaceholderText("Search instrumentations...");
     await user.type(searchInput, "kafka");
@@ -120,7 +129,7 @@ describe("JavaInstrumentationListPage - Filtering", () => {
 
   it("filters instrumentations by search term in description", async () => {
     const user = userEvent.setup();
-    render(<JavaInstrumentationListPage />);
+    renderPage();
 
     const searchInput = await screen.findByPlaceholderText("Search instrumentations...");
     await user.type(searchInput, "database");
@@ -132,7 +141,7 @@ describe("JavaInstrumentationListPage - Filtering", () => {
 
   it("search is case insensitive", async () => {
     const user = userEvent.setup();
-    render(<JavaInstrumentationListPage />);
+    renderPage();
 
     const searchInput = await screen.findByPlaceholderText("Search instrumentations...");
     await user.type(searchInput, "KAFKA");
@@ -143,7 +152,7 @@ describe("JavaInstrumentationListPage - Filtering", () => {
 
   it("filters by spans telemetry", async () => {
     const user = userEvent.setup();
-    render(<JavaInstrumentationListPage />);
+    renderPage();
 
     const spansButton = await screen.findByRole("button", { name: "Spans" });
     await user.click(spansButton);
@@ -157,7 +166,7 @@ describe("JavaInstrumentationListPage - Filtering", () => {
 
   it("filters by metrics telemetry", async () => {
     const user = userEvent.setup();
-    render(<JavaInstrumentationListPage />);
+    renderPage();
 
     const metricsButton = await screen.findByRole("button", { name: "Metrics" });
     await user.click(metricsButton);
@@ -171,7 +180,7 @@ describe("JavaInstrumentationListPage - Filtering", () => {
 
   it("filters by both spans and metrics (AND logic)", async () => {
     const user = userEvent.setup();
-    render(<JavaInstrumentationListPage />);
+    renderPage();
 
     const spansButton = await screen.findByRole("button", { name: "Spans" });
     const metricsButton = await screen.findByRole("button", { name: "Metrics" });
@@ -187,7 +196,7 @@ describe("JavaInstrumentationListPage - Filtering", () => {
 
   it("filters by javaagent target type", async () => {
     const user = userEvent.setup();
-    render(<JavaInstrumentationListPage />);
+    renderPage();
 
     const javaAgentButton = await screen.findByRole("button", { name: "Java Agent" });
     await user.click(javaAgentButton);
@@ -201,7 +210,7 @@ describe("JavaInstrumentationListPage - Filtering", () => {
 
   it("filters by library target type", async () => {
     const user = userEvent.setup();
-    render(<JavaInstrumentationListPage />);
+    renderPage();
 
     const libraryButton = await screen.findByRole("button", { name: "Standalone" });
     await user.click(libraryButton);
@@ -215,7 +224,7 @@ describe("JavaInstrumentationListPage - Filtering", () => {
 
   it("combines multiple filters (search + telemetry + target)", async () => {
     const user = userEvent.setup();
-    render(<JavaInstrumentationListPage />);
+    renderPage();
 
     const searchInput = await screen.findByPlaceholderText("Search instrumentations...");
     await user.type(searchInput, "client");
@@ -235,7 +244,7 @@ describe("JavaInstrumentationListPage - Filtering", () => {
 
   it("shows empty state when no instrumentations match filters", async () => {
     const user = userEvent.setup();
-    render(<JavaInstrumentationListPage />);
+    renderPage();
 
     const searchInput = await screen.findByPlaceholderText("Search instrumentations...");
     await user.type(searchInput, "nonexistent");
@@ -253,7 +262,7 @@ describe("JavaInstrumentationListPage - Filtering", () => {
       error: null,
     });
 
-    render(<JavaInstrumentationListPage />);
+    renderPage();
 
     expect(screen.getByText("Loading instrumentations...")).toBeInTheDocument();
   });
@@ -265,7 +274,7 @@ describe("JavaInstrumentationListPage - Filtering", () => {
       error: new Error("Failed to load instrumentations"),
     });
 
-    render(<JavaInstrumentationListPage />);
+    renderPage();
 
     expect(screen.getByText("Error loading instrumentations")).toBeInTheDocument();
     expect(screen.getByText("Failed to load instrumentations")).toBeInTheDocument();
