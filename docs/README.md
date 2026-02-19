@@ -9,7 +9,7 @@ additional information.
 ## Architecture Overview
 
 <!-- markdownlint-disable MD033 -->
-<img src="./media/component-overview.png" width="800" alt="Component Overview Diagram">
+<img src="./media/component-overview.svg" width="800" alt="Component Overview Diagram">
 <!-- markdownlint-enable MD033 -->
 
 * **[System Architecture](./architecture-overview.md)**: Three-component system overview

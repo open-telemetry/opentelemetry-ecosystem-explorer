@@ -50,22 +50,6 @@ User-facing web application (React + TypeScript + Vite) for browsing and explori
 
 ## Key Design Decisions
 
-### Static Site Approach
-
-**Why**: Eliminates operational overhead of running servers and databases
-
-**Benefits**:
-
-* Low maintenance and operational overhead
-* High reliability and performance via CDN
-* Low cost
-
-**Tradeoffs**:
-
-* Updates require rebuild/redeploy
-* No server-side processing
-* Client-side computation only
-
 ### Content-Addressed Storage
 
 **Why**: Efficiently handle multi-version data with minimal duplication
