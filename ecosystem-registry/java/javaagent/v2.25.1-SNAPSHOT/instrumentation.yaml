@@ -74,6 +74,8 @@ libraries:
         type: STRING
       - name: url.query
         type: STRING
+      - name: url.query
+        type: VALUE
       - name: url.scheme
         type: STRING
       - name: user_agent.original
@@ -3423,7 +3425,7 @@ libraries:
         type: LONG
       - name: url.full
         type: STRING
-  - when: otel.semconv-stability.opt-in=database,service.peer
+  - when: otel.semconv-stability.opt-in=database
     metrics:
     - name: db.client.operation.duration
       description: Duration of database client operations.
@@ -3498,7 +3500,7 @@ libraries:
         type: LONG
       - name: url.full
         type: STRING
-  - when: otel.semconv-stability.opt-in=database,service.peer
+  - when: otel.semconv-stability.opt-in=database
     metrics:
     - name: db.client.operation.duration
       description: Duration of database client operations.
@@ -3564,7 +3566,7 @@ libraries:
         type: LONG
       - name: url.full
         type: STRING
-  - when: otel.semconv-stability.opt-in=database,service.peer
+  - when: otel.semconv-stability.opt-in=database
     metrics:
     - name: db.client.operation.duration
       description: Duration of database client operations.
@@ -3631,7 +3633,7 @@ libraries:
         type: LONG
       - name: url.full
         type: STRING
-  - when: otel.semconv-stability.opt-in=database,service.peer
+  - when: otel.semconv-stability.opt-in=database
     metrics:
     - name: db.client.operation.duration
       description: Duration of database client operations.
@@ -4902,6 +4904,8 @@ libraries:
         type: STRING
       - name: url.query
         type: STRING
+      - name: url.query
+        type: VALUE
       - name: url.scheme
         type: STRING
       - name: user_agent.original
@@ -10019,7 +10023,7 @@ libraries:
         type: STRING
       - name: db.system
         type: STRING
-  - when: otel.semconv-stability.opt-in=database,service.peer
+  - when: otel.semconv-stability.opt-in=database
     metrics:
     - name: db.client.operation.duration
       description: Duration of database client operations.
@@ -10065,7 +10069,7 @@ libraries:
         type: STRING
       - name: db.system
         type: STRING
-  - when: otel.semconv-stability.opt-in=database,service.peer
+  - when: otel.semconv-stability.opt-in=database
     metrics:
     - name: db.client.operation.duration
       description: Duration of database client operations.
@@ -10111,7 +10115,7 @@ libraries:
         type: STRING
       - name: db.system
         type: STRING
-  - when: otel.semconv-stability.opt-in=database,service.peer
+  - when: otel.semconv-stability.opt-in=database
     metrics:
     - name: db.client.operation.duration
       description: Duration of database client operations.
@@ -13420,6 +13424,10 @@ libraries:
         type: STRING
       - name: db.system
         type: STRING
+      - name: server.address
+        type: STRING
+      - name: server.port
+        type: LONG
   - when: otel.instrumentation.spymemcached.experimental-span-attributes=true
     spans:
     - span_kind: CLIENT
@@ -13428,6 +13436,10 @@ libraries:
         type: STRING
       - name: db.system
         type: STRING
+      - name: server.address
+        type: STRING
+      - name: server.port
+        type: LONG
       - name: spymemcached.command.cancelled
         type: BOOLEAN
       - name: spymemcached.result
@@ -13443,6 +13455,10 @@ libraries:
         type: STRING
       - name: db.system.name
         type: STRING
+      - name: server.address
+        type: STRING
+      - name: server.port
+        type: LONG
     spans:
     - span_kind: CLIENT
       attributes:
@@ -13452,6 +13468,10 @@ libraries:
         type: STRING
       - name: error.type
         type: STRING
+      - name: server.address
+        type: STRING
+      - name: server.port
+        type: LONG
   tags:
   - spymemcached
 - name: struts-2.3
@@ -14143,6 +14163,22 @@ libraries:
   - dev.zio:zio_2.12:[2.0.0,)
   tags:
   - zio
+- name: zio-http-3.0
+  description: This instrumentation does not emit telemetry on its own. Instead, it
+    extracts the HTTP route and attaches it to HTTP server spans and HTTP server metrics.
+  library_link: https://ziohttp.com/
+  features:
+  - HTTP_ROUTE
+  source_path: instrumentation/zio/zio-http-3.0
+  minimum_java_version: 11
+  scope:
+    name: io.opentelemetry.zio-http-3.0
+  javaagent_target_versions:
+  - dev.zio:zio-http_2.12:[3.0.0,)
+  - dev.zio:zio-http_3:[3.0.0,)
+  - dev.zio:zio-http_2.13:[3.0.0,)
+  tags:
+  - zio
 internal:
 - name: internal-application-logger
   source_path: instrumentation/internal/internal-application-logger
@@ -14237,6 +14273,10 @@ internal:
   source_path: instrumentation/opentelemetry-api/opentelemetry-api-1.57
   scope:
     name: io.opentelemetry.opentelemetry-api-1.57
+- name: opentelemetry-api-1.59
+  source_path: instrumentation/opentelemetry-api/opentelemetry-api-1.59
+  scope:
+    name: io.opentelemetry.opentelemetry-api-1.59
 - name: opentelemetry-extension-kotlin-1.0
   description: Our Kotlin coroutine instrumentation relies on a shaded copy of the
     opentelemetry-extension-kotlin library. This can cause conflicts when the application
