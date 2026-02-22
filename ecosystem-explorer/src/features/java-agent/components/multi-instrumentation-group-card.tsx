@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import type { InstrumentationGroup } from "../utils/group-instrumentations";
 import type { FilterState } from "./instrumentation-filter-bar";
@@ -19,7 +19,10 @@ export function MultiInstrumentationGroupCard({
 }: MultiInstrumentationGroupCardProps) {
   const [expanded, setExpanded] = useState(false);
 
-  const badges = getAggregatedBadgeInfo(group.instrumentations);
+  const badges = useMemo(
+    () => getAggregatedBadgeInfo(group.instrumentations),
+    [group.instrumentations]
+  );
 
   // Use the first instrumentation's description as the group description
   const description = group.instrumentations.find((i) => i.description)?.description;
@@ -36,6 +39,7 @@ export function MultiInstrumentationGroupCard({
           <div className="flex items-start justify-between gap-2">
             <div className="flex items-center gap-2 min-w-0">
               <ChevronDown
+                aria-hidden="true"
                 className={`h-4 w-4 text-muted-foreground flex-shrink-0 transition-transform duration-200 ${
                   expanded ? "rotate-0" : "-rotate-90"
                 }`}

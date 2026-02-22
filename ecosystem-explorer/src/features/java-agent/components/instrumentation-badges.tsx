@@ -34,6 +34,7 @@ export function TargetBadges({
               : FILTER_STYLES.target.javaagent.inactive
           }`}
           title="Java Agent"
+          aria-label="Has Java Agent target"
         >
           Agent
         </span>
@@ -46,6 +47,7 @@ export function TargetBadges({
               : FILTER_STYLES.target.library.inactive
           }`}
           title="Standalone Library"
+          aria-label="Has standalone library target"
         >
           Library
         </span>
@@ -72,6 +74,8 @@ export function TelemetryBadges({
               ? FILTER_STYLES.telemetry.spans.active
               : FILTER_STYLES.telemetry.spans.inactive
           }`}
+          title="Span telemetry"
+          aria-label="Has span telemetry"
         >
           Spans
         </span>
@@ -83,6 +87,8 @@ export function TelemetryBadges({
               ? FILTER_STYLES.telemetry.metrics.active
               : FILTER_STYLES.telemetry.metrics.inactive
           }`}
+          title="Metric telemetry"
+          aria-label="Has metric telemetry"
         >
           Metrics
         </span>
