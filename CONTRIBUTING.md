@@ -142,6 +142,12 @@ npm run lint:md
 
 # Fix markdown issues automatically
 npm run lint:md:fix
+
+# Add copyright headers to new files
+uv run python scripts/add_copyright.py
+
+# Check copyright headers
+uv run python scripts/check_copyright.py
 ```
 
 If you installed pre-commit hooks, these checks will run automatically when you commit.

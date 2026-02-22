@@ -55,3 +55,19 @@ repos:
         pass_filenames: false
         files: ^ecosystem-explorer/.*\.(ts|tsx)$
         stages: [pre-commit]
+
+      - id: add-copyright-headers
+        name: add copyright headers
+        entry: uv run python scripts/add_copyright.py
+        language: system
+        pass_filenames: false
+        files: \.(py|js)$
+        stages: [pre-commit]
+
+      - id: check-copyright-headers
+        name: check copyright headers
+        entry: uv run python scripts/check_copyright.py
+        language: system
+        pass_filenames: false
+        files: \.(py|js)$
+        stages: [pre-commit]
