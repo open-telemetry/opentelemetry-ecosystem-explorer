@@ -1,7 +1,8 @@
 import { Link } from "react-router-dom";
 import type { InstrumentationData } from "@/types/javaagent";
 import type { FilterState } from "./instrumentation-filter-bar";
-import { FILTER_STYLES } from "../styles/filter-styles";
+import { getBadgeInfo } from "../utils/badge-info";
+import { TargetBadges, TelemetryBadges } from "./instrumentation-badges";
 import { getInstrumentationDisplayName } from "../utils/format";
 
 interface InstrumentationCardProps {
@@ -15,21 +16,8 @@ export function InstrumentationCard({
   activeFilters,
   version,
 }: InstrumentationCardProps) {
-  const hasSpans = instrumentation.telemetry?.some((t) => t.spans && t.spans.length > 0);
-  const hasMetrics = instrumentation.telemetry?.some((t) => t.metrics && t.metrics.length > 0);
-
   const displayName = getInstrumentationDisplayName(instrumentation);
-
-  const hasJavaAgentTarget =
-    instrumentation.javaagent_target_versions &&
-    instrumentation.javaagent_target_versions.length > 0;
-  const hasLibraryTarget = instrumentation.has_standalone_library === true;
-
-  const isJavaAgentFilterActive = activeFilters?.target.has("javaagent");
-  const isLibraryFilterActive = activeFilters?.target.has("library");
-  const isSpansFilterActive = activeFilters?.telemetry.has("spans");
-  const isMetricsFilterActive = activeFilters?.telemetry.has("metrics");
-
+  const badgeInfo = getBadgeInfo(instrumentation);
   const detailUrl = `/java-agent/instrumentation/${version}/${instrumentation.name}`;
 
   return (
@@ -41,32 +29,8 @@ export function InstrumentationCard({
       <div className="flex-1 space-y-3">
         <div className="flex items-start justify-between gap-2">
           <h3 className="font-semibold text-lg leading-tight">{displayName}</h3>
-
           <div className="flex gap-1 flex-shrink-0">
-            {hasJavaAgentTarget && (
-              <span
-                className={`text-xs px-2 py-1 rounded border-2 transition-all ${
-                  isJavaAgentFilterActive
-                    ? FILTER_STYLES.target.javaagent.active
-                    : FILTER_STYLES.target.javaagent.inactive
-                }`}
-                title="Java Agent"
-              >
-                Agent
-              </span>
-            )}
-            {hasLibraryTarget && (
-              <span
-                className={`text-xs px-2 py-1 rounded border-2 transition-all ${
-                  isLibraryFilterActive
-                    ? FILTER_STYLES.target.library.active
-                    : FILTER_STYLES.target.library.inactive
-                }`}
-                title="Standalone Library"
-              >
-                Library
-              </span>
-            )}
+            <TargetBadges badges={badgeInfo} activeFilters={activeFilters} />
           </div>
         </div>
 
@@ -77,28 +41,7 @@ export function InstrumentationCard({
         )}
 
         <div className="flex flex-wrap gap-2 items-center">
-          {hasSpans && (
-            <span
-              className={`text-xs px-2 py-1 rounded border-2 transition-all ${
-                isSpansFilterActive
-                  ? FILTER_STYLES.telemetry.spans.active
-                  : FILTER_STYLES.telemetry.spans.inactive
-              }`}
-            >
-              Spans
-            </span>
-          )}
-          {hasMetrics && (
-            <span
-              className={`text-xs px-2 py-1 rounded border-2 transition-all ${
-                isMetricsFilterActive
-                  ? FILTER_STYLES.telemetry.metrics.active
-                  : FILTER_STYLES.telemetry.metrics.inactive
-              }`}
-            >
-              Metrics
-            </span>
-          )}
+          <TelemetryBadges badges={badgeInfo} activeFilters={activeFilters} />
         </div>
       </div>
     </Link>
