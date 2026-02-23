@@ -1669,7 +1669,7 @@ components:
     status:
       class: receiver
       stability:
-        alpha:
+        beta:
         - logs
         - metrics
         - traces
@@ -1715,6 +1715,9 @@ components:
 - name: carbonreceiver
   metadata:
     type: carbon
+    display_name: Carbon Receiver
+    description: The [Carbon](https://github.com/graphite-project/carbon) Receiver
+      supports Carbon's [plaintext protocol](https://graphite.readthedocs.io/en/stable/feeding-carbon.html#the-plaintext-protocol).
     status:
       class: receiver
       stability:
@@ -1730,6 +1733,7 @@ components:
 - name: chronyreceiver
   metadata:
     type: chrony
+    display_name: Chrony Receiver
     status:
       class: receiver
       stability:
@@ -1817,6 +1821,11 @@ components:
 - name: ciscoosreceiver
   metadata:
     type: ciscoos
+    display_name: Cisco OS Receiver
+    description: The Cisco OS Receiver is a modular receiver that collects metrics
+      from Cisco network devices via SSH connections. It supports multiple scrapers
+      for comprehensive network monitoring and provides native OpenTelemetry OTLP
+      metrics generation.
     status:
       class: receiver
       stability:
@@ -1829,6 +1838,10 @@ components:
 - name: cloudflarereceiver
   metadata:
     type: cloudflare
+    display_name: Cloudflare Receiver
+    description: The Cloudflare Receiver allows Cloudflare's [LogPush Jobs](https://developers.cloudflare.com/logs/logpush/)
+      to send logs over HTTPS from the Cloudflare logs aggregation system to an OpenTelemetry
+      collector.
     status:
       class: receiver
       stability:
@@ -1843,6 +1856,9 @@ components:
 - name: cloudfoundryreceiver
   metadata:
     type: cloudfoundry
+    display_name: Cloud Foundry Receiver
+    description: The Cloud Foundry Receiver connects to the RLP (Reverse Log Proxy)
+      Gateway of the Cloud Foundry installation, typically available at the URL `https://log-stream.<cf-system-domain>`.
     status:
       class: receiver
       stability:
@@ -1862,6 +1878,10 @@ components:
 - name: collectdreceiver
   metadata:
     type: collectd
+    display_name: CollectD `write_http` plugin JSON receiver
+    description: This receiver can receive data exported by the CollectD's `write_http`
+      plugin. Only JSON format is supported. Authentication is not supported at this
+      time.
     status:
       class: receiver
       stability:
@@ -1876,6 +1896,9 @@ components:
 - name: couchdbreceiver
   metadata:
     type: couchdb
+    display_name: CouchDB Receiver
+    description: This receiver fetches stats from a couchdb server using the `/_node/{node-name}/_stats/couchdb`
+      [endpoint](https://docs.couchdb.org/en/latest/api/server/common.html#node-node-name-stats).
     status:
       class: receiver
       stability:
@@ -2002,6 +2025,9 @@ components:
 - name: datadogreceiver
   metadata:
     type: datadog
+    display_name: Datadog Receiver
+    description: The Datadog receiver enables translation between Datadog and OpenTelemetry-compatible
+      backends. It currently has support for Datadog's APM traces, metrics, and logs.
     status:
       class: receiver
       stability:
@@ -2019,6 +2045,11 @@ components:
 - name: dockerstatsreceiver
   metadata:
     type: docker_stats
+    display_name: Docker Stats Receiver
+    description: The Docker Stats receiver queries the local Docker daemon's container
+      stats API for all desired running containers on a configured interval. These
+      stats are for container resource usage of cpu, memory, network, and the [blkio
+      controller](https://www.kernel.org/doc/Documentation/cgroup-v1/blkio-controller.txt).
     status:
       class: receiver
       stability:
@@ -2807,6 +2838,11 @@ components:
 - name: elasticsearchreceiver
   metadata:
     type: elasticsearch
+    display_name: Elasticsearch Receiver
+    description: This receiver queries the Elasticsearch [node stats](https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-nodes-stats.html),
+      [cluster health](https://www.elastic.co/guide/en/elasticsearch/reference/current/cluster-health.html)
+      and [index stats](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-stats.html)
+      endpoints in order to scrape metrics from a running Elasticsearch cluster.
     status:
       class: receiver
       stability:
@@ -3966,6 +4002,9 @@ components:
 - name: envoyalsreceiver
   metadata:
     type: envoyals
+    display_name: Envoy ALS (Access Log Service) Receiver
+    description: This is a receiver for the [Envoy gRPC ALS](https://www.envoyproxy.io/docs/envoy/latest/api-v3/extensions/access_loggers/grpc/v3/als.proto#envoy-v3-api-msg-extensions-access-loggers-grpc-v3-httpgrpcaccesslogconfig)
+      sink.
     status:
       class: receiver
       stability:
@@ -3980,6 +4019,11 @@ components:
 - name: expvarreceiver
   metadata:
     type: expvar
+    display_name: Expvar Receiver
+    description: An Expvar Receiver scrapes metrics from [expvar](https://pkg.go.dev/expvar),
+      which exposes data in JSON format from an HTTP endpoint. The metrics are extracted
+      from the `expvar` variable [memstats](https://pkg.go.dev/runtime#MemStats),
+      which exposes various information about the Go runtime.
     status:
       class: receiver
       stability:
@@ -4228,6 +4272,9 @@ components:
 - name: faroreceiver
   metadata:
     type: faro
+    display_name: Faro Receiver
+    description: This receiver can receive telemetry data in [Faro format](https://github.com/grafana/faro)
+      that adheres to the [Faro OpenAPI schema](https://github.com/grafana/faro/blob/main/spec/gen/faro.gen.yaml).
     status:
       class: receiver
       stability:
@@ -4244,6 +4291,8 @@ components:
 - name: filelogreceiver
   metadata:
     type: filelog
+    display_name: File Log Receiver
+    description: This receiver tails and parses logs from files.
     status:
       class: receiver
       stability:
@@ -4261,6 +4310,9 @@ components:
 - name: filestatsreceiver
   metadata:
     type: filestats
+    display_name: File Stats Receiver
+    description: The File Stats receiver collects metrics from files specified with
+      a glob pattern.
     status:
       class: receiver
       stability:
