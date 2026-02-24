@@ -1721,12 +1721,13 @@ components:
     status:
       class: receiver
       stability:
-        unmaintained:
+        beta:
         - metrics
       distributions:
       - contrib
       codeowners:
-        active: []
+        active:
+        - atoulme
         emeritus:
         - aboguszewski-sumo
         seeking_new: true
@@ -8475,6 +8476,9 @@ components:
         - active
         - available
         - current
+      db.namespace:
+        description: The name of a database.
+        type: string
       lock_mode:
         description: The mode of Lock which denotes the degree of access
         type: string
@@ -8566,7 +8570,8 @@ components:
           aggregation_temporality: cumulative
           value_type: int
           monotonic: false
-        attributes: []
+        attributes:
+        - db.namespace
         stability: development
       mongodb.commands.rate:
         description: The number of commands executed per second.
@@ -8587,6 +8592,7 @@ components:
           monotonic: false
         attributes:
         - connection_type
+        - db.namespace
         stability: development
       mongodb.cursor.count:
         description: The number of open cursors maintained for clients.
@@ -8617,7 +8623,8 @@ components:
           aggregation_temporality: cumulative
           value_type: int
           monotonic: false
-        attributes: []
+        attributes:
+        - db.namespace
         stability: development
       mongodb.database.count:
         description: The number of existing databases.
@@ -8647,6 +8654,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
         attributes:
+        - db.namespace
         - operation
         stability: development
       mongodb.extent.count:
@@ -8657,7 +8665,8 @@ components:
           aggregation_temporality: cumulative
           value_type: int
           monotonic: false
-        attributes: []
+        attributes:
+        - db.namespace
         stability: development
       mongodb.flushes.rate:
         description: The number of flushes executed per second.
@@ -8705,6 +8714,7 @@ components:
           monotonic: false
         attributes:
         - collection
+        - db.namespace
         stability: development
       mongodb.index.count:
         description: The number of indexes.
@@ -8714,7 +8724,8 @@ components:
           aggregation_temporality: cumulative
           value_type: int
           monotonic: false
-        attributes: []
+        attributes:
+        - db.namespace
         stability: development
       mongodb.index.size:
         description: Sum of the space allocated to all indexes in the database, including
@@ -8725,7 +8736,8 @@ components:
           aggregation_temporality: cumulative
           value_type: int
           monotonic: false
-        attributes: []
+        attributes:
+        - db.namespace
         stability: development
       mongodb.inserts.rate:
         description: The number of insertions executed per second.
@@ -8745,6 +8757,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: true
         attributes:
+        - db.namespace
         - lock_mode
         - lock_type
         stability: development
@@ -8757,6 +8770,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: true
         attributes:
+        - db.namespace
         - lock_mode
         - lock_type
         stability: development
@@ -8770,6 +8784,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: true
         attributes:
+        - db.namespace
         - lock_mode
         - lock_type
         stability: development
@@ -8782,6 +8797,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: true
         attributes:
+        - db.namespace
         - lock_mode
         - lock_type
         stability: development
@@ -8794,6 +8810,7 @@ components:
           value_type: int
           monotonic: false
         attributes:
+        - db.namespace
         - memory_type
         stability: development
       mongodb.network.io.receive:
@@ -8834,7 +8851,8 @@ components:
           aggregation_temporality: cumulative
           value_type: int
           monotonic: false
-        attributes: []
+        attributes:
+        - db.namespace
         stability: development
       mongodb.operation.count:
         description: The number of operations executed.
@@ -8969,7 +8987,8 @@ components:
           aggregation_temporality: cumulative
           value_type: int
           monotonic: true
-        attributes: []
+        attributes:
+        - db.namespace
         stability: development
       mongodb.updates.rate:
         description: The number of updates executed per second.
@@ -9001,15 +9020,16 @@ components:
         attributes: []
         stability: development
     resource_attributes:
-      database:
-        description: The name of a database.
-        type: string
       server.address:
         description: The address of the MongoDB host.
         type: string
       server.port:
         description: The port of the MongoDB host.
         type: int
+      service.instance.id:
+        description: A unique identifier of the MongoDB resource as a UUID v5, derived
+          from server address and port.
+        type: string
 - name: mysqlreceiver
   metadata:
     type: mysql
