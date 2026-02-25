@@ -4387,6 +4387,9 @@ components:
 - name: flinkmetricsreceiver
   metadata:
     type: flinkmetrics
+    display_name: FlinkMetrics Receiver
+    description: This receiver uses Flink's [REST API](https://nightlies.apache.org/flink/flink-docs-release-1.14/docs/ops/metrics/#rest-api-integration)
+      to collect Jobmanager, Taskmanager, Job, Task and Operator metrics.
     status:
       class: receiver
       stability:
@@ -4781,6 +4784,9 @@ components:
 - name: fluentforwardreceiver
   metadata:
     type: fluentforward
+    display_name: Fluent Forward Receiver
+    description: This receiver runs a TCP server that accepts events via the [Fluent
+      Forward protocol](https://github.com/fluent/fluentd/wiki/Forward-Protocol-Specification-v1).
     status:
       class: receiver
       stability:
@@ -4795,6 +4801,7 @@ components:
 - name: githubreceiver
   metadata:
     type: github
+    display_name: GitHub Receiver
     status:
       class: receiver
       stability:
@@ -4993,6 +5000,7 @@ components:
 - name: gitlabreceiver
   metadata:
     type: gitlab
+    display_name: GitLab Receiver
     status:
       class: receiver
       stability:
@@ -5008,6 +5016,10 @@ components:
 - name: googlecloudmonitoringreceiver
   metadata:
     type: googlecloudmonitoring
+    display_name: Google Cloud Monitoring Receiver
+    description: The primary objective of the Google Cloud Monitoring Receiver is
+      to gather time series metrics data from all Google services and convert this
+      data into a pipeline format that facilitates further use.
     status:
       class: receiver
       stability:
@@ -5024,6 +5036,7 @@ components:
 - name: googlecloudpubsubpushreceiver
   metadata:
     type: googlecloudpubsubpush
+    display_name: Google Pub/Sub Push Receiver
     status:
       class: receiver
       stability:
@@ -5043,6 +5056,9 @@ components:
 - name: googlecloudpubsubreceiver
   metadata:
     type: googlecloudpubsub
+    display_name: Google Pub/Sub Receiver
+    description: This receiver gets OTLP messages from a Google Cloud [Pubsub](https://cloud.google.com/pubsub)
+      subscription.
     status:
       class: receiver
       stability:
@@ -5058,6 +5074,7 @@ components:
 - name: googlecloudspannerreceiver
   metadata:
     type: googlecloudspanner
+    display_name: Google Cloud Spanner Receiver
     status:
       class: receiver
       stability:
@@ -5078,6 +5095,9 @@ components:
 - name: haproxyreceiver
   metadata:
     type: haproxy
+    display_name: HAProxy Receiver
+    description: The HAProxy receiver generates metrics by polling periodically the
+      HAProxy process through a dedicated socket or HTTP URL.
     status:
       class: receiver
       stability:
@@ -5454,6 +5474,10 @@ components:
 - name: hostmetricsreceiver
   metadata:
     type: hostmetrics
+    display_name: Host Metrics Receiver
+    description: The Host Metrics receiver generates metrics about the host system
+      scraped from various sources and host entity event as log. This is intended
+      to be used when the collector is deployed as an agent.
     status:
       class: receiver
       stability:
@@ -5473,6 +5497,9 @@ components:
 - name: httpcheckreceiver
   metadata:
     type: httpcheck
+    display_name: HTTP Check Receiver
+    description: The HTTP Check Receiver can be used for synthetic checks against
+      HTTP endpoints.
     status:
       class: receiver
       stability:
@@ -5652,6 +5679,12 @@ components:
 - name: huaweicloudcesreceiver
   metadata:
     type: huaweicloudcesreceiver
+    display_name: Huawei Cloud CES Receiver
+    description: This receiver contains the implementation of the Huawei Cloud [Cloud
+      Eye Service](https://www.huaweicloud.com/intl/en-us/product/ces.html) (CES)
+      receiver for the OpenTelemetry Collector. The receiver collects metrics from
+      Huawei Cloud's CES service and sends them to the OpenTelemetry Collector for
+      processing and exporting.
     status:
       class: receiver
       stability:

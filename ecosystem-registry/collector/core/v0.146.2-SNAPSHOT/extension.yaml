@@ -17,7 +17,7 @@ components:
   metadata:
     type: xextension
     status:
-      class: extension
+      class: pkg
       stability:
         development:
         - profiles
