@@ -61,7 +61,7 @@ repos:
         entry: uv run python scripts/add_copyright.py
         language: system
         pass_filenames: false
-        files: \.(py|js)$
+        files: \.(py|js|ts|tsx)$
         stages: [pre-commit]
 
       - id: check-copyright-headers
@@ -69,5 +69,5 @@ repos:
         entry: uv run python scripts/check_copyright.py
         language: system
         pass_filenames: false
-        files: \.(py|js)$
+        files: \.(py|js|ts|tsx)$
         stages: [pre-commit]

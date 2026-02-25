@@ -12,13 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-"""Script to check that all Python and JS files have the copyright header."""
+"""Script to check that all Python and JS/TS files have the copyright header."""
 
+import logging
 import os
 import sys
 
+logging.basicConfig(level=logging.INFO, format="%(message)s")
+logger = logging.getLogger(__name__)
+
 PY_HEADER = "# Copyright The OpenTelemetry Authors"
-JS_HEADER = "// Copyright The OpenTelemetry Authors"
+JS_HEADER = "/*\n * Copyright The OpenTelemetry Authors"
 
 EXCLUDE_DIRS = {".git", "node_modules", "__pycache__", ".venv", "dist", "build"}
 
@@ -27,7 +31,7 @@ def get_expected_header(filename: str) -> str | None:
     """Return the expected copyright header for the given file."""
     if filename.endswith(".py"):
         return PY_HEADER
-    if filename.endswith(".js") or filename.endswith(".ts") or filename.endswith(".tsx"):
+    if filename.endswith((".js", ".ts", ".tsx")):
         return JS_HEADER
     return None
 
@@ -35,10 +39,10 @@ def get_expected_header(filename: str) -> str | None:
 def has_copyright_header(filepath: str, expected: str) -> bool:
     """Check if the file starts with the expected copyright header."""
     with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
-        first_line = f.readline().strip()
-        if first_line.startswith("#!"):  # skipping shebang
-            first_line = f.readline().strip()
-        return first_line == expected
+        content = f.read()
+    if content.startswith("#!"):  # skip shebang files
+        return True
+    return content.startswith(expected)
 
 
 def find_missing_headers(root_dir: str) -> list[str]:
@@ -59,11 +63,11 @@ def find_missing_headers(root_dir: str) -> list[str]:
 def main() -> None:
     missing = find_missing_headers(".")
     if missing:
-        print("❌ Missing copyright header in:")
+        logger.error("Missing copyright header in:")
         for f in missing:
-            print(f"  {f}")
+            logger.error("  %s", f)
         sys.exit(1)
-    print("✅ All files have copyright header!")
+    logger.info("All files have copyright header!")
 
 
 if __name__ == "__main__":
