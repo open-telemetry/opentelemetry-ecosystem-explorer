@@ -1662,6 +1662,7 @@ components:
         active:
         - eedorenko
         - mx-psi
+        - dyl10s
 - name: azureeventhubreceiver
   metadata:
     type: azure_event_hub
@@ -5695,6 +5696,7 @@ components:
         active:
         - heitorganzeli
         - narcis96
+        emeritus:
         - mwear
 - name: icmpcheckreceiver
   metadata:
