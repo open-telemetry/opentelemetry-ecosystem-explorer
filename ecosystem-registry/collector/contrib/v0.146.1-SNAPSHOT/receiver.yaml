@@ -5701,6 +5701,11 @@ components:
 - name: icmpcheckreceiver
   metadata:
     type: icmpcheckreceiver
+    display_name: ICMP Check Receiver
+    description: The ICMP Check Receiver can be used for synthetic checks against
+      network endpoints. This receiver will send ICMP Echo Requests (pings) to the
+      specified `targets`. It provides device availability monitoring and interface
+      statistics with native OpenTelemetry OTLP metrics generation.
     status:
       class: receiver
       stability:
@@ -5757,6 +5762,9 @@ components:
 - name: iisreceiver
   metadata:
     type: iis
+    display_name: Microsoft IIS Receiver
+    description: The Microsoft IIS Receiver grabs metrics about an IIS instance using
+      the Windows Performance Counters. Because of this, it is a Windows only receiver.
     status:
       class: receiver
       stability:
@@ -5930,6 +5938,8 @@ components:
 - name: influxdbreceiver
   metadata:
     type: influxdb
+    display_name: InfluxDB Receiver
+    description: This receiver accepts metrics data as [InfluxDB Line Protocol](https://docs.influxdata.com/influxdb/v2.0/reference/syntax/line-protocol/).
     status:
       class: receiver
       stability:
@@ -5943,6 +5953,9 @@ components:
 - name: jaegerreceiver
   metadata:
     type: jaeger
+    display_name: Jaeger Receiver
+    description: The Jaeger Receiver receives trace data in the [Jaeger](https://www.jaegertracing.io/)
+      format.
     status:
       class: receiver
       stability:
@@ -5958,6 +5971,7 @@ components:
 - name: jmxreceiver
   metadata:
     type: jmx
+    display_name: JMX Receiver
     status:
       class: receiver
       stability:
@@ -5974,6 +5988,8 @@ components:
 - name: journaldreceiver
   metadata:
     type: journald
+    display_name: Journald Receiver
+    description: The Journald Receiver parses Journald events from systemd journal.
     status:
       class: receiver
       stability:
@@ -5995,6 +6011,11 @@ components:
 - name: k8sclusterreceiver
   metadata:
     type: k8s_cluster
+    display_name: Kubernetes Cluster Receiver
+    description: The Kubernetes Cluster receiver collects cluster-level metrics and
+      entity events from the Kubernetes API server. It uses the K8s API to listen
+      for updates. A single instance of this receiver should be used to monitor a
+      cluster.
     status:
       class: receiver
       stability:
@@ -6612,6 +6633,9 @@ components:
 - name: k8seventsreceiver
   metadata:
     type: k8s_events
+    display_name: Kubernetes Events Receiver
+    description: The Kubernetes Events Receiver collects events from the Kubernetes
+      API server. It collects all the new or updated events that come in.
     status:
       class: receiver
       stability:
@@ -6628,6 +6652,8 @@ components:
 - name: k8slogreceiver
   metadata:
     type: k8slog
+    display_name: Kubernetes Log Receiver
+    description: The Kubernetes Log Receiver tails and parses logs in k8s environment.
     status:
       class: receiver
       stability:
@@ -6641,6 +6667,9 @@ components:
 - name: k8sobjectsreceiver
   metadata:
     type: k8sobjects
+    display_name: Kubernetes Objects Receiver
+    description: The Kubernetes Objects Receiver collects (pull/watch) objects from
+      the Kubernetes API server.
     status:
       class: receiver
       stability:
