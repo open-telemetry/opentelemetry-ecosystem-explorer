@@ -143,8 +143,9 @@ class CollectorSync:
         """
         Initialize previous version tracking for deprecation detection.
 
-        Loads the latest existing version as the "previous" version
-        for tracking what components existed before.
+        Loads the latest existing release version as the "previous" version
+        for tracking what components existed before. Excludes prerelease/SNAPSHOT
+        versions to ensure deprecations are tracked between stable releases.
 
         Args:
             distribution: Distribution name
@@ -152,7 +153,7 @@ class CollectorSync:
         if distribution in self.previous_versions:
             return
 
-        existing_versions = self.inventory_manager.list_versions(distribution)
+        existing_versions = self.inventory_manager.list_release_versions(distribution)
         if existing_versions:
             latest = existing_versions[0]
             logger.debug("Initializing previous version for %s: %s", distribution, latest)
@@ -174,6 +175,8 @@ class CollectorSync:
         Detect deprecations for the current version and update the index.
 
         Only tracks deprecations for official releases, not snapshots.
+        The baseline (previous_versions/previous_components) is only updated
+        for releases to ensure release-to-release comparison.
 
         Args:
             distribution: Distribution name
@@ -200,9 +203,8 @@ class CollectorSync:
                 )
         else:
             self.inventory_manager.add_deprecated_components(self.deprecations, distribution, deprecated)
-
-        self.previous_versions[distribution] = current_version
-        self.previous_components[distribution] = current_components
+            self.previous_versions[distribution] = current_version
+            self.previous_components[distribution] = current_components
 
     def process_latest_release(self, distribution: DistributionName) -> Version | None:
         """

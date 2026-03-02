@@ -163,6 +163,19 @@ class InventoryManager:
         all_versions = self.list_versions(distribution)
         return [v for v in all_versions if v.prerelease]
 
+    def list_release_versions(self, distribution: DistributionName) -> list[Version]:
+        """
+        List all release (non-prerelease) versions for a distribution.
+
+        Args:
+            distribution: Distribution name
+
+        Returns:
+            List of release versions, sorted newest to oldest
+        """
+        all_versions = self.list_versions(distribution)
+        return [v for v in all_versions if not v.prerelease]
+
     def cleanup_snapshots(self, distribution: DistributionName) -> int:
         """
         Remove all snapshot versions for a distribution.

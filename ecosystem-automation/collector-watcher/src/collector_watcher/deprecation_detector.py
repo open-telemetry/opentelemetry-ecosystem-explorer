@@ -26,7 +26,7 @@ class DeprecationDetector:
 
     def detect_deprecated(
         self,
-        previous_version: Version,
+        previous_version: Version | None,
         previous_components: dict[str, list[dict[str, Any]]],
         current_version: Version,
         current_components: dict[str, list[dict[str, Any]]],

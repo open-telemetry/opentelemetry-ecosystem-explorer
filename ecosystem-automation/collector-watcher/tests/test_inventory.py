@@ -159,6 +159,33 @@ def test_list_snapshot_versions(temp_inventory_dir, sample_components):
     assert all(v.prerelease for v in snapshots)
 
 
+def test_list_release_versions(temp_inventory_dir, sample_components):
+    manager = InventoryManager(str(temp_inventory_dir))
+
+    # Create mix of release and snapshot versions
+    v1 = Version("0.112.0")
+    v2 = Version(major=0, minor=113, patch=0, prerelease=("SNAPSHOT",))
+    v3 = Version("0.113.0")
+    v4 = Version(major=0, minor=114, patch=0, prerelease=("SNAPSHOT",))
+
+    for version in [v1, v2, v3, v4]:
+        manager.save_versioned_inventory(
+            distribution="contrib",
+            version=version,
+            components=sample_components,
+            repository="opentelemetry-collector-contrib",
+        )
+
+    # List release versions only
+    releases = manager.list_release_versions("contrib")
+
+    assert len(releases) == 2
+    assert all(not v.prerelease for v in releases)
+    # Should be sorted newest to oldest
+    assert str(releases[0]) == "0.113.0"
+    assert str(releases[1]) == "0.112.0"
+
+
 def test_cleanup_snapshots(temp_inventory_dir, sample_components):
     manager = InventoryManager(str(temp_inventory_dir))
 

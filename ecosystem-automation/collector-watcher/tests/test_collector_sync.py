@@ -300,3 +300,67 @@ def test_deprecations_not_tracked_for_snapshots(collector_sync):
 
     assert len(collector_sync.deprecations["core"]["receiver"]) == 1
     assert collector_sync.deprecations["core"]["receiver"][0]["name"] == "receiver2"
+
+
+def test_initialize_previous_version_filters_snapshots(collector_sync, sample_components):
+    release_version = Version("0.112.0")
+    collector_sync.save_version("core", release_version, sample_components)
+
+    # Save a snapshot version (newer than the release)
+    snapshot_version = Version(major=0, minor=113, patch=0, prerelease=("SNAPSHOT",))
+    collector_sync.save_version("core", snapshot_version, sample_components)
+
+    # Initialize previous version should use the release, not the snapshot
+    collector_sync.initialize_previous_version("core")
+
+    assert collector_sync.previous_versions["core"] == release_version
+    assert collector_sync.previous_versions["core"] != snapshot_version
+    assert not collector_sync.previous_versions["core"].prerelease
+
+
+def test_baseline_not_updated_for_prereleases(collector_sync):
+    v1_components = {
+        "receiver": [
+            {"name": "receiver1", "source_repo": "core", "distributions": ["core"], "subtype": None},
+            {"name": "receiver2", "source_repo": "core", "distributions": ["core"], "subtype": None},
+        ],
+        "processor": [],
+        "exporter": [],
+        "connector": [],
+        "extension": [],
+    }
+
+    v2_components = {
+        "receiver": [
+            {"name": "receiver1", "source_repo": "core", "distributions": ["core"], "subtype": None},
+        ],
+        "processor": [],
+        "exporter": [],
+        "connector": [],
+        "extension": [],
+    }
+
+    v1 = Version("0.112.0")
+    snapshot = Version(major=0, minor=113, patch=0, prerelease=("SNAPSHOT",))
+    v2 = Version("0.113.0")
+
+    # Process first release
+    collector_sync.detect_and_track_deprecations("core", v1, v1_components)
+    assert collector_sync.previous_versions["core"] == v1
+    baseline_after_v1 = collector_sync.previous_versions["core"]
+
+    # Process snapshot - baseline should NOT update
+    collector_sync.detect_and_track_deprecations("core", snapshot, v2_components)
+    assert collector_sync.previous_versions["core"] == baseline_after_v1
+    assert collector_sync.previous_versions["core"] == v1
+    assert collector_sync.previous_versions["core"] != snapshot
+
+    # Process next release - should compare against v1, not snapshot
+    collector_sync.detect_and_track_deprecations("core", v2, v2_components)
+    assert collector_sync.previous_versions["core"] == v2
+
+    # Verify deprecation was detected between v1 and v2 (not snapshot)
+    assert len(collector_sync.deprecations["core"]["receiver"]) == 1
+    assert collector_sync.deprecations["core"]["receiver"][0]["name"] == "receiver2"
+    assert collector_sync.deprecations["core"]["receiver"][0]["last_version"] == f"v{v1}"
+    assert collector_sync.deprecations["core"]["receiver"][0]["deprecated_in_version"] == f"v{v2}"
