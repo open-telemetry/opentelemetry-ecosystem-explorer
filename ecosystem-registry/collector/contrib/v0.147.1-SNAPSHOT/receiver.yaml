@@ -1,5 +1,5 @@
 distribution: contrib
-version: 0.146.1-SNAPSHOT
+version: 0.147.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: receiver
 components:
@@ -6688,6 +6688,9 @@ components:
 - name: kafkametricsreceiver
   metadata:
     type: kafkametrics
+    display_name: Kafka Metrics Receiver
+    description: The Kafka Metrics Receiver collects kafka metrics (brokers, topics,
+      partitions, consumer groups) from a kafka server, and converts them into otlp.
     status:
       class: receiver
       stability:
@@ -6883,6 +6886,12 @@ components:
 - name: kafkareceiver
   metadata:
     type: kafka
+    display_name: Kafka Receiver
+    description: The Kafka Receiver receives telemetry data from Kafka, with configurable
+      topics and encodings. If used in conjunction with the `kafkaexporter` configured
+      with `include_metadata_keys`, The Kafka Receiver will also propagate the Kafka
+      headers to the downstream pipeline, giving access to the rest of the pipeline
+      to arbitrary metadata keys and values.
     status:
       class: receiver
       stability:
@@ -6920,6 +6929,10 @@ components:
 - name: kubeletstatsreceiver
   metadata:
     type: kubeletstats
+    display_name: Kubelet Stats Receiver
+    description: The Kubelet Stats Receiver pulls node, pod, container, and volume
+      metrics from the API server on a kubelet and sends it down the metric pipeline
+      for further processing.
     status:
       class: receiver
       stability:
@@ -7498,6 +7511,10 @@ components:
 - name: libhoneyreceiver
   metadata:
     type: libhoney
+    display_name: Libhoney Receiver
+    description: The Libhoney Receiver will accept Trace and Logs signals that are
+      emitted from applications that are instrumented using [Libhoney](https://docs.honeycomb.io/send-data/logs/structured/libhoney/)
+      libraries.
     status:
       class: receiver
       stability:
@@ -7513,6 +7530,12 @@ components:
 - name: lokireceiver
   metadata:
     type: loki
+    display_name: Loki Receiver
+    description: 'The Loki receiver implements the [Loki push api](https://grafana.com/docs/loki/latest/clients/promtail/#loki-push-api)
+      as specified in [Loki HTTP API: Ingest logs](https://grafana.com/docs/loki/latest/reference/loki-http-api/#ingest-logs).
+      It allows Promtail instances to specify the open telemetry collector as their
+      lokiAddress. This receiver runs HTTP and GRPC servers to ingest log entries
+      in Loki format.'
     status:
       class: receiver
       stability:
@@ -7526,6 +7549,10 @@ components:
 - name: macosunifiedloggingreceiver
   metadata:
     type: macosunifiedlogging
+    display_name: macOS Unified Logging Receiver
+    description: The macOS Unified Logging Receiver collects logs from macOS systems
+      using the native `log` command. This receiver supports both live system logs
+      and archived log files (`.logarchive`).
     status:
       class: receiver
       stability:
@@ -7543,6 +7570,10 @@ components:
 - name: memcachedreceiver
   metadata:
     type: memcached
+    display_name: Memcached Receiver
+    description: This receiver can fetch stats from a Memcached instance using the
+      [stats command](https://github.com/memcached/memcached/wiki/Commands#statistics).
+      A detailed description of all the stats available is at https://github.com/memcached/memcached/blob/master/doc/protocol.txt#L1159.
     status:
       class: receiver
       stability:
@@ -7707,6 +7738,11 @@ components:
 - name: mongodbatlasreceiver
   metadata:
     type: mongodb_atlas
+    display_name: MongoDB Atlas Receiver
+    description: The MongoDB Atlas Receiver receives metrics from [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+      via their [monitoring APIs](https://docs.atlas.mongodb.com/reference/api/monitoring-and-logs/),
+      as well as alerts via a configured [webhook](https://www.mongodb.com/docs/atlas/tutorial/third-party-service-integrations/)
+      and events from [events APIs](https://www.mongodb.com/docs/atlas/reference/api/events/).
     status:
       class: receiver
       stability:
@@ -8515,6 +8551,10 @@ components:
 - name: mongodbreceiver
   metadata:
     type: mongodb
+    display_name: MongoDB Receiver
+    description: This receiver fetches stats from a MongoDB instance using the [golang
+      mongo driver](https://github.com/mongodb/mongo-go-driver). Stats are collected
+      via MongoDB's `dbStats` and `serverStatus` commands.
     status:
       class: receiver
       stability:
@@ -9097,6 +9137,7 @@ components:
 - name: mysqlreceiver
   metadata:
     type: mysql
+    display_name: MySQL Receiver
     status:
       class: receiver
       stability:
