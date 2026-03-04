@@ -1,5 +1,5 @@
 distribution: contrib
-version: 0.146.1-SNAPSHOT
+version: 0.147.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: exporter
 components:
@@ -733,21 +733,6 @@ components:
         - atoulme
         emeritus:
         - swar8080
-- name: sapmexporter
-  metadata:
-    type: sapm
-    display_name: SAPM Exporter
-    status:
-      class: exporter
-      stability:
-        deprecated:
-        - traces
-      distributions:
-      - contrib
-      codeowners:
-        active:
-        - dmitryax
-        - atoulme
 - name: sematextexporter
   metadata:
     type: sematext

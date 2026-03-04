@@ -1,5 +1,5 @@
 distribution: contrib
-version: 0.146.1-SNAPSHOT
+version: 0.147.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: receiver
 components:
@@ -6649,21 +6649,6 @@ components:
         - dmitryax
         - TylerHelmuth
         - ChrsMark
-- name: k8slogreceiver
-  metadata:
-    type: k8slog
-    display_name: Kubernetes Log Receiver
-    description: The Kubernetes Log Receiver tails and parses logs in k8s environment.
-    status:
-      class: receiver
-      stability:
-        unmaintained:
-        - logs
-      codeowners:
-        emeritus:
-        - h0cheung
-        - TylerHelmuth
-        seeking_new: true
 - name: k8sobjectsreceiver
   metadata:
     type: k8sobjects
@@ -6688,6 +6673,9 @@ components:
 - name: kafkametricsreceiver
   metadata:
     type: kafkametrics
+    display_name: Kafka Metrics Receiver
+    description: The Kafka Metrics Receiver collects kafka metrics (brokers, topics,
+      partitions, consumer groups) from a kafka server, and converts them into otlp.
     status:
       class: receiver
       stability:
@@ -6883,6 +6871,12 @@ components:
 - name: kafkareceiver
   metadata:
     type: kafka
+    display_name: Kafka Receiver
+    description: The Kafka Receiver receives telemetry data from Kafka, with configurable
+      topics and encodings. If used in conjunction with the `kafkaexporter` configured
+      with `include_metadata_keys`, The Kafka Receiver will also propagate the Kafka
+      headers to the downstream pipeline, giving access to the rest of the pipeline
+      to arbitrary metadata keys and values.
     status:
       class: receiver
       stability:
@@ -6920,6 +6914,10 @@ components:
 - name: kubeletstatsreceiver
   metadata:
     type: kubeletstats
+    display_name: Kubelet Stats Receiver
+    description: The Kubelet Stats Receiver pulls node, pod, container, and volume
+      metrics from the API server on a kubelet and sends it down the metric pipeline
+      for further processing.
     status:
       class: receiver
       stability:
@@ -7498,6 +7496,10 @@ components:
 - name: libhoneyreceiver
   metadata:
     type: libhoney
+    display_name: Libhoney Receiver
+    description: The Libhoney Receiver will accept Trace and Logs signals that are
+      emitted from applications that are instrumented using [Libhoney](https://docs.honeycomb.io/send-data/logs/structured/libhoney/)
+      libraries.
     status:
       class: receiver
       stability:
@@ -7513,6 +7515,12 @@ components:
 - name: lokireceiver
   metadata:
     type: loki
+    display_name: Loki Receiver
+    description: 'The Loki receiver implements the [Loki push api](https://grafana.com/docs/loki/latest/clients/promtail/#loki-push-api)
+      as specified in [Loki HTTP API: Ingest logs](https://grafana.com/docs/loki/latest/reference/loki-http-api/#ingest-logs).
+      It allows Promtail instances to specify the open telemetry collector as their
+      lokiAddress. This receiver runs HTTP and GRPC servers to ingest log entries
+      in Loki format.'
     status:
       class: receiver
       stability:
@@ -7526,6 +7534,10 @@ components:
 - name: macosunifiedloggingreceiver
   metadata:
     type: macosunifiedlogging
+    display_name: macOS Unified Logging Receiver
+    description: The macOS Unified Logging Receiver collects logs from macOS systems
+      using the native `log` command. This receiver supports both live system logs
+      and archived log files (`.logarchive`).
     status:
       class: receiver
       stability:
@@ -7543,6 +7555,10 @@ components:
 - name: memcachedreceiver
   metadata:
     type: memcached
+    display_name: Memcached Receiver
+    description: This receiver can fetch stats from a Memcached instance using the
+      [stats command](https://github.com/memcached/memcached/wiki/Commands#statistics).
+      A detailed description of all the stats available is at https://github.com/memcached/memcached/blob/master/doc/protocol.txt#L1159.
     status:
       class: receiver
       stability:
@@ -7707,6 +7723,11 @@ components:
 - name: mongodbatlasreceiver
   metadata:
     type: mongodb_atlas
+    display_name: MongoDB Atlas Receiver
+    description: The MongoDB Atlas Receiver receives metrics from [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
+      via their [monitoring APIs](https://docs.atlas.mongodb.com/reference/api/monitoring-and-logs/),
+      as well as alerts via a configured [webhook](https://www.mongodb.com/docs/atlas/tutorial/third-party-service-integrations/)
+      and events from [events APIs](https://www.mongodb.com/docs/atlas/reference/api/events/).
     status:
       class: receiver
       stability:
@@ -8515,6 +8536,10 @@ components:
 - name: mongodbreceiver
   metadata:
     type: mongodb
+    display_name: MongoDB Receiver
+    description: This receiver fetches stats from a MongoDB instance using the [golang
+      mongo driver](https://github.com/mongodb/mongo-go-driver). Stats are collected
+      via MongoDB's `dbStats` and `serverStatus` commands.
     status:
       class: receiver
       stability:
@@ -9097,6 +9122,7 @@ components:
 - name: mysqlreceiver
   metadata:
     type: mysql
+    display_name: MySQL Receiver
     status:
       class: receiver
       stability:
@@ -10047,6 +10073,9 @@ components:
 - name: namedpipereceiver
   metadata:
     type: namedpipe
+    display_name: Named Pipe Receiver
+    description: This receiver supports opening a Unix Named Pipe (aka FIFO), and
+      reading logs from it.
     status:
       class: receiver
       stability:
@@ -10065,6 +10094,11 @@ components:
 - name: netflowreceiver
   metadata:
     type: netflow
+    display_name: Netflow Receiver
+    description: The Netflow Receiver can listen for [netflow](https://en.wikipedia.org/wiki/NetFlow),
+      [sflow](https://en.wikipedia.org/wiki/SFlow), and [ipfix](https://en.wikipedia.org/wiki/IP_Flow_Information_Export)
+      data and convert it to OpenTelemetry logs. The receiver is based on the [goflow2](https://github.com/netsampler/goflow2)
+      project.
     status:
       class: receiver
       stability:
@@ -10079,6 +10113,9 @@ components:
 - name: nginxreceiver
   metadata:
     type: nginx
+    display_name: NGINX Receiver
+    description: This receiver can fetch stats from a NGINX instance using the `ngx_http_stub_status_module`
+      module's `status` endpoint.
     status:
       class: receiver
       stability:
@@ -10148,6 +10185,9 @@ components:
 - name: nsxtreceiver
   metadata:
     type: nsxt
+    display_name: NSX-T Receiver
+    description: This receiver fetches metrics important to run virtual networking
+      using NSX-T. The receiver ingests metrics via the [NSX Rest API](https://docs.vmware.com/en/VMware-NSX-Data-Center-for-vSphere/6.4/nsx_64_api.pdf).
     status:
       class: receiver
       stability:
@@ -10274,6 +10314,9 @@ components:
 - name: ntpreceiver
   metadata:
     type: ntp
+    display_name: NTP Receiver
+    description: This receiver periodically retrieves the clock offset from a NTP
+      server.
     status:
       class: receiver
       stability:
@@ -10301,6 +10344,9 @@ components:
 - name: oracledbreceiver
   metadata:
     type: oracledb
+    display_name: Oracle DB Receiver
+    description: This receiver periodically queries an Oracle Database host to collect
+      metrics.
     status:
       class: receiver
       stability:
@@ -10918,6 +10964,9 @@ components:
 - name: osqueryreceiver
   metadata:
     type: osquery
+    display_name: osquery Receiver
+    description: The osquery Receiver runs queries run on an [osquery](https://osquery.io/)'s
+      daemon on a schedule and converts the output to logs.
     status:
       class: receiver
       stability:
@@ -10931,6 +10980,10 @@ components:
 - name: otelarrowreceiver
   metadata:
     type: otelarrow
+    display_name: Apache Arrow OTLP Receiver
+    description: Receives telemetry data using [OpenTelemetry Protocol with Apache
+      Arrow](https://github.com/open-telemetry/otel-arrow) and standard [OTLP]( https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/protocol/otlp.md)
+      protocol via gRPC.
     status:
       class: receiver
       stability:
@@ -10948,6 +11001,10 @@ components:
 - name: otlpjsonfilereceiver
   metadata:
     type: otlpjsonfile
+    display_name: OTLP JSON File Receiver
+    description: This receiver will read pipeline data from JSON files. The data is
+      written in [Protobuf JSON encoding](https://developers.google.com/protocol-buffers/docs/proto3#json)
+      using [OpenTelemetry protocol](https://github.com/open-telemetry/opentelemetry-proto).
     status:
       class: receiver
       stability:
@@ -10966,6 +11023,10 @@ components:
 - name: podmanreceiver
   metadata:
     type: podman_stats
+    display_name: Podman Stats Receiver
+    description: The Podman Stats Receiver queries the Podman service API to fetch
+      stats for all running containers on a configured interval. These stats are for
+      container resource usage of cpu, memory, network, and the [blkio controller](https://www.kernel.org/doc/Documentation/cgroup-v1/blkio-controller.txt).
     status:
       class: receiver
       stability:
