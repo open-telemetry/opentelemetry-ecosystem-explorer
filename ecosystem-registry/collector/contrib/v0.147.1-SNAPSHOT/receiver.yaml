@@ -6649,21 +6649,6 @@ components:
         - dmitryax
         - TylerHelmuth
         - ChrsMark
-- name: k8slogreceiver
-  metadata:
-    type: k8slog
-    display_name: Kubernetes Log Receiver
-    description: The Kubernetes Log Receiver tails and parses logs in k8s environment.
-    status:
-      class: receiver
-      stability:
-        unmaintained:
-        - logs
-      codeowners:
-        emeritus:
-        - h0cheung
-        - TylerHelmuth
-        seeking_new: true
 - name: k8sobjectsreceiver
   metadata:
     type: k8sobjects
@@ -10088,6 +10073,9 @@ components:
 - name: namedpipereceiver
   metadata:
     type: namedpipe
+    display_name: Named Pipe Receiver
+    description: This receiver supports opening a Unix Named Pipe (aka FIFO), and
+      reading logs from it.
     status:
       class: receiver
       stability:
@@ -10106,6 +10094,11 @@ components:
 - name: netflowreceiver
   metadata:
     type: netflow
+    display_name: Netflow Receiver
+    description: The Netflow Receiver can listen for [netflow](https://en.wikipedia.org/wiki/NetFlow),
+      [sflow](https://en.wikipedia.org/wiki/SFlow), and [ipfix](https://en.wikipedia.org/wiki/IP_Flow_Information_Export)
+      data and convert it to OpenTelemetry logs. The receiver is based on the [goflow2](https://github.com/netsampler/goflow2)
+      project.
     status:
       class: receiver
       stability:
@@ -10120,6 +10113,9 @@ components:
 - name: nginxreceiver
   metadata:
     type: nginx
+    display_name: NGINX Receiver
+    description: This receiver can fetch stats from a NGINX instance using the `ngx_http_stub_status_module`
+      module's `status` endpoint.
     status:
       class: receiver
       stability:
@@ -10189,6 +10185,9 @@ components:
 - name: nsxtreceiver
   metadata:
     type: nsxt
+    display_name: NSX-T Receiver
+    description: This receiver fetches metrics important to run virtual networking
+      using NSX-T. The receiver ingests metrics via the [NSX Rest API](https://docs.vmware.com/en/VMware-NSX-Data-Center-for-vSphere/6.4/nsx_64_api.pdf).
     status:
       class: receiver
       stability:
@@ -10315,6 +10314,9 @@ components:
 - name: ntpreceiver
   metadata:
     type: ntp
+    display_name: NTP Receiver
+    description: This receiver periodically retrieves the clock offset from a NTP
+      server.
     status:
       class: receiver
       stability:
@@ -10342,6 +10344,9 @@ components:
 - name: oracledbreceiver
   metadata:
     type: oracledb
+    display_name: Oracle DB Receiver
+    description: This receiver periodically queries an Oracle Database host to collect
+      metrics.
     status:
       class: receiver
       stability:
@@ -10959,6 +10964,9 @@ components:
 - name: osqueryreceiver
   metadata:
     type: osquery
+    display_name: osquery Receiver
+    description: The osquery Receiver runs queries run on an [osquery](https://osquery.io/)'s
+      daemon on a schedule and converts the output to logs.
     status:
       class: receiver
       stability:
@@ -10972,6 +10980,10 @@ components:
 - name: otelarrowreceiver
   metadata:
     type: otelarrow
+    display_name: Apache Arrow OTLP Receiver
+    description: Receives telemetry data using [OpenTelemetry Protocol with Apache
+      Arrow](https://github.com/open-telemetry/otel-arrow) and standard [OTLP]( https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/protocol/otlp.md)
+      protocol via gRPC.
     status:
       class: receiver
       stability:
@@ -10989,6 +11001,10 @@ components:
 - name: otlpjsonfilereceiver
   metadata:
     type: otlpjsonfile
+    display_name: OTLP JSON File Receiver
+    description: This receiver will read pipeline data from JSON files. The data is
+      written in [Protobuf JSON encoding](https://developers.google.com/protocol-buffers/docs/proto3#json)
+      using [OpenTelemetry protocol](https://github.com/open-telemetry/opentelemetry-proto).
     status:
       class: receiver
       stability:
@@ -11007,6 +11023,10 @@ components:
 - name: podmanreceiver
   metadata:
     type: podman_stats
+    display_name: Podman Stats Receiver
+    description: The Podman Stats Receiver queries the Podman service API to fetch
+      stats for all running containers on a configured interval. These stats are for
+      container resource usage of cpu, memory, network, and the [blkio controller](https://www.kernel.org/doc/Documentation/cgroup-v1/blkio-controller.txt).
     status:
       class: receiver
       stability:
