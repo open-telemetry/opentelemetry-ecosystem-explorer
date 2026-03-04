@@ -9,4 +9,10 @@ contrib:
   exporter: []
   extension: []
   processor: []
-  receiver: []
+  receiver:
+  - name: bigipreceiver
+    last_version: v0.146.0
+    deprecated_in_version: v0.147.0
+    source_repo: null
+    distributions: []
+    subtype: null
