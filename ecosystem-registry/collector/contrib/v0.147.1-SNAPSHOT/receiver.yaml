@@ -11158,6 +11158,8 @@ components:
 - name: postgresqlreceiver
   metadata:
     type: postgresql
+    display_name: PostgreSQL Receiver
+    description: This receiver queries the PostgreSQL [statistics collector](https://www.postgresql.org/docs/13/monitoring-stats.html).
     status:
       class: receiver
       stability:
@@ -11712,6 +11714,9 @@ components:
 - name: pprofreceiver
   metadata:
     type: pprof
+    display_name: Pprof Receiver
+    description: The Pprof Receiver collects profiles from files specified with a
+      glob pattern.
     status:
       class: receiver
       stability:
@@ -11725,6 +11730,9 @@ components:
 - name: prometheusreceiver
   metadata:
     type: prometheus
+    display_name: Prometheus Receiver
+    description: The Prometheus Receiver receives metric data in [Prometheus](https://prometheus.io/)
+      format.
     status:
       class: receiver
       stability:
@@ -11743,6 +11751,8 @@ components:
 - name: prometheusremotewritereceiver
   metadata:
     type: prometheusremotewrite
+    display_name: Prometheus Remote Write Receiver
+    description: This receiver implements the [Prometheus Remote Write 2.0 protocol](https://prometheus.io/docs/specs/prw/remote_write_spec_2_0/).
     status:
       class: receiver
       stability:
@@ -11758,6 +11768,9 @@ components:
 - name: pulsarreceiver
   metadata:
     type: pulsar
+    display_name: Pulsar Receiver
+    description: The Pulsar Receiver receives logs, metrics, and traces from [Apache
+      Pulsar](https://pulsar.apache.org/).
     status:
       class: receiver
       stability:
@@ -11775,6 +11788,9 @@ components:
 - name: purefareceiver
   metadata:
     type: purefa
+    display_name: Pure Storage FlashArray Receiver
+    description: The Pure Storage FlashArray Receiver receives metrics from the Pure
+      Storage FlashArray.
     status:
       class: receiver
       stability:
@@ -11791,6 +11807,9 @@ components:
 - name: purefbreceiver
   metadata:
     type: purefb
+    display_name: Pure Storage FlashBlade Receiver
+    description: The Pure Storage FlashBlade receiver, receives metrics from Pure
+      Storage FlashBlade via the [Pure Storage FlashBlade OpenMetrics Exporter](https://github.com/PureStorage-OpenConnect/pure-fb-openmetrics-exporter)
     status:
       class: receiver
       stability:
@@ -11807,6 +11826,9 @@ components:
 - name: rabbitmqreceiver
   metadata:
     type: rabbitmq
+    display_name: RabbitMQ Receiver
+    description: This receiver fetches stats from a RabbitMQ node using the [RabbitMQ
+      Management Plugin](https://www.rabbitmq.com/management.html).
     status:
       class: receiver
       stability:
@@ -12563,6 +12585,9 @@ components:
 - name: receivercreator
   metadata:
     type: receiver_creator
+    display_name: Receiver Creator
+    description: This receiver can instantiate other receivers at runtime based on
+      whether observed endpoints match a configured rule.
     status:
       class: receiver
       stability:
@@ -12583,6 +12608,9 @@ components:
 - name: redfishreceiver
   metadata:
     type: redfish
+    display_name: Redfish Receiver
+    description: This receiver fetches metrics for a server running a [Redfish](https://en.wikipedia.org/wiki/Redfish_(specification))
+      API.
     status:
       class: receiver
       stability:
@@ -12830,6 +12858,10 @@ components:
 - name: redisreceiver
   metadata:
     type: redis
+    display_name: Redis Receiver
+    description: The Redis Receiver is designed to retrieve Redis INFO data from a
+      single Redis instance, build metrics from that data, and send them to the next
+      consumer at a configurable interval.
     status:
       class: receiver
       stability:
@@ -13379,6 +13411,7 @@ components:
 - name: riakreceiver
   metadata:
     type: riak
+    display_name: Riak Receiver
     status:
       class: receiver
       stability:
