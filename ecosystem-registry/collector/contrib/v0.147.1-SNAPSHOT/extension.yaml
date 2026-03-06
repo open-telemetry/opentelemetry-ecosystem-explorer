@@ -184,6 +184,7 @@ components:
         active:
         - axw
         - constanca-m
+        - Kavindu-Dodan
 - name: awslogsencodingextension
   subtype: encoding
   metadata:
@@ -202,6 +203,7 @@ components:
         active:
         - axw
         - constanca-m
+        - Kavindu-Dodan
 - name: azureencodingextension
   subtype: encoding
   metadata:
