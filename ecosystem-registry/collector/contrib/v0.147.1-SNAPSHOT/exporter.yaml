@@ -124,7 +124,7 @@ components:
         - srprash
 - name: azureblobexporter
   metadata:
-    type: azureblob
+    type: azure_blob
     display_name: Azure Blob Storage Exporter
     status:
       class: exporter
