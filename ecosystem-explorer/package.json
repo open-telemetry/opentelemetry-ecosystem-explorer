@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "netlify-build:preview": "tsc -b && vite build",
+    "netlify-build:production": "tsc -b && vite build",
     "typecheck": "tsc -b",
     "lint": "eslint .",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,json}\"",

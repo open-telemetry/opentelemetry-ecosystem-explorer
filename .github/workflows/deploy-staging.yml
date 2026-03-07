@@ -1,0 +1,66 @@
+name: Deploy Staging
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-staging:
+    runs-on: ubuntu-latest
+
+    concurrency:
+      group: staging-deploy
+      cancel-in-progress: true
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          fetch-depth: 0
+
+      - name: Check ecosystem-explorer changes
+        id: changes
+        run: |
+          if git log --since="35 minutes ago" --name-only --pretty=format: | grep "^ecosystem-explorer/"; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup Node
+        if: steps.changes.outputs.changed == 'true'
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 
+        with:
+          node-version-file: ecosystem-explorer/.nvmrc
+          cache: npm
+          cache-dependency-path: ecosystem-explorer/package-lock.json
+
+      - name: Install dependencies
+        if: steps.changes.outputs.changed == 'true'
+        working-directory: ecosystem-explorer
+        run: npm ci
+
+      - name: Build
+        if: steps.changes.outputs.changed == 'true'
+        working-directory: ecosystem-explorer
+        run: npm run netlify-build:preview
+
+      - name: Install Netlify CLI
+        if: steps.changes.outputs.changed == 'true'
+        run: npm install -g netlify-cli@24.0.1 
+
+      - name: Deploy staging
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          netlify deploy \
+            --dir=ecosystem-explorer/dist \
+            --alias=staging \
+            --site=$NETLIFY_SITE_ID \
+            --auth=$NETLIFY_AUTH_TOKEN
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}

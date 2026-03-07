@@ -1,0 +1,15 @@
+[build]
+  base    = "ecosystem-explorer"
+  publish = "dist"
+  command = "npm run netlify-build:preview"
+
+[context.production]
+  command = "npm run netlify-build:production"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "frame-ancestors 'self';"

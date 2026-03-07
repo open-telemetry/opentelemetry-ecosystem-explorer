@@ -1,0 +1,49 @@
+name: Deploy Production
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-production:
+    runs-on: ubuntu-latest
+    environment: production
+
+    concurrency:
+      group: production-deploy
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 
+        with:
+          node-version-file: ecosystem-explorer/.nvmrc
+          cache: npm
+          cache-dependency-path: ecosystem-explorer/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ecosystem-explorer
+        run: npm ci
+
+      - name: Build production
+        working-directory: ecosystem-explorer
+        run: npm run netlify-build:production
+
+      - name: Install Netlify CLI
+        run: npm install -g netlify-cli@24.0.1
+
+      - name: Deploy production
+        run: |
+          netlify deploy \
+            --dir=ecosystem-explorer/dist \
+            --prod \
+            --site=$NETLIFY_SITE_ID \
+            --auth=$NETLIFY_AUTH_TOKEN
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
