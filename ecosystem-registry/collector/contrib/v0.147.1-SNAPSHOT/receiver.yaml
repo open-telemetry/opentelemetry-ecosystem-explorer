@@ -1686,7 +1686,7 @@ components:
         seeking_new: true
 - name: azuremonitorreceiver
   metadata:
-    type: azuremonitor
+    type: azure_monitor
     display_name: Azure Monitor Receiver
     description: The Azure Monitor Receiver scrapes the Azure Monitor API for resource
       metrics.
@@ -7533,7 +7533,7 @@ components:
         - mar4uk
 - name: macosunifiedloggingreceiver
   metadata:
-    type: macosunifiedlogging
+    type: macos_unified_logging
     display_name: macOS Unified Logging Receiver
     description: The macOS Unified Logging Receiver collects logs from macOS systems
       using the native `log` command. This receiver supports both live system logs
@@ -11755,7 +11755,7 @@ components:
         - krajorama
 - name: prometheusremotewritereceiver
   metadata:
-    type: prometheusremotewrite
+    type: prometheus_remote_write
     display_name: Prometheus Remote Write Receiver
     description: This receiver implements the [Prometheus Remote Write 2.0 protocol](https://prometheus.io/docs/specs/prw/remote_write_spec_2_0/).
     status:
@@ -17665,13 +17665,14 @@ components:
         stability: development
 - name: yanggrpcreceiver
   metadata:
-    type: yanggrpc
+    type: yang_grpc
     status:
       class: receiver
       stability:
         alpha:
         - metrics
-      distributions: []
+      distributions:
+      - contrib
       codeowners:
         active:
         - atoulme
