@@ -1,0 +1,17 @@
+{
+  "description": "This instrumentation enables spans for Quartz job execution.",
+  "display_name": "Quartz",
+  "has_standalone_library": true,
+  "javaagent_target_versions": [
+    "org.quartz-scheduler:quartz:[2.0.0,)"
+  ],
+  "library_link": "https://www.quartz-scheduler.org/",
+  "name": "quartz-2.0",
+  "scope": {
+    "name": "io.opentelemetry.quartz-2.0"
+  },
+  "source_path": "instrumentation/quartz-2.0",
+  "tags": [
+    "quartz"
+  ]
+}

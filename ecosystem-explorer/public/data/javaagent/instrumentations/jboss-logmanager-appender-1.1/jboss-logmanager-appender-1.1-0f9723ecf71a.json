@@ -1,0 +1,17 @@
+{
+  "description": "This instrumentation bridges JBoss LogManager log events to OpenTelemetry logs.",
+  "display_name": "JBoss Log Manager",
+  "has_standalone_library": false,
+  "javaagent_target_versions": [
+    "org.jboss.logmanager:jboss-logmanager:[1.1.0.GA,)"
+  ],
+  "library_link": "https://github.com/jboss-logging/jboss-logmanager",
+  "name": "jboss-logmanager-appender-1.1",
+  "scope": {
+    "name": "io.opentelemetry.jboss-logmanager-appender-1.1"
+  },
+  "source_path": "instrumentation/jboss-logmanager/jboss-logmanager-appender-1.1",
+  "tags": [
+    "jboss"
+  ]
+}

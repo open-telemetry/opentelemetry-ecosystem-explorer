@@ -213,9 +213,37 @@ class TestRunBuilder:
         exit_code = run_builder(mock_inventory_manager, mock_db_writer)
 
         assert exit_code == 0
+        # load_versioned_inventory called once per version during backfill
         assert mock_inventory_manager.load_versioned_inventory.call_count == 3
         assert mock_db_writer.write_libraries.call_count == 3
         assert mock_db_writer.write_version_index.call_count == 3
+
+    def test_run_builder_uses_backfilled_inventories(self, mock_inventory_manager, mock_db_writer):
+        """Backfill is applied and used during processing."""
+        versions = [Version("1.0.0"), Version("2.0.0")]
+        inventory_1_0 = {
+            "file_format": 0.2,
+            "libraries": [{"name": "lib1"}],
+        }
+        inventory_2_0 = {
+            "file_format": 0.2,
+            "libraries": [{"name": "lib1", "display_name": "Library 1"}],
+        }
+        library_map = {"lib1": "hash1"}
+
+        mock_inventory_manager.list_versions.return_value = versions
+        # Backfill will load both versions
+        mock_inventory_manager.load_versioned_inventory.side_effect = [
+            inventory_1_0,
+            inventory_2_0,
+        ]
+        mock_db_writer.write_libraries.return_value = library_map
+
+        exit_code = run_builder(mock_inventory_manager, mock_db_writer)
+
+        assert exit_code == 0
+        # Verify backfill loaded inventories for both versions
+        assert mock_inventory_manager.load_versioned_inventory.call_count == 2
 
     def test_run_builder_with_clean_false(self, mock_inventory_manager, mock_db_writer):
         """Clean is not called when clean=False."""

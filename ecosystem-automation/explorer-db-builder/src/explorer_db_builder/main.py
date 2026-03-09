@@ -24,6 +24,7 @@ from semantic_version import Version
 
 from explorer_db_builder.database_writer import DatabaseWriter
 from explorer_db_builder.instrumentation_transformer import transform_instrumentation_format
+from explorer_db_builder.metadata_backfiller import backfill_metadata
 
 logger = logging.getLogger(__name__)
 
@@ -70,6 +71,7 @@ def process_version(
     version: Version,
     inventory_manager: InventoryManager,
     db_writer: DatabaseWriter,
+    inventory: Optional[dict] = None,
 ) -> None:
     """Process a single version and write its data to the database.
 
@@ -80,6 +82,7 @@ def process_version(
         version: The version to process
         inventory_manager: Manager for accessing inventory data
         db_writer: Writer for database operations
+        inventory: Optional pre-loaded inventory (e.g., backfilled data)
 
     Raises:
         ValueError: If no libraries found for the version or unsupported format
@@ -87,7 +90,8 @@ def process_version(
     """
     logger.info(f"Processing Java Agent version: {version}")
 
-    inventory = inventory_manager.load_versioned_inventory(version)
+    if inventory is None:
+        inventory = inventory_manager.load_versioned_inventory(version)
 
     transformed_inventory = transform_instrumentation_format(inventory)
 
@@ -129,8 +133,15 @@ def run_builder(
         versions = get_release_versions(inventory_manager)
         logger.info(f"Processing {len(versions)} release versions")
 
+        backfilled_inventories = backfill_metadata(
+            versions,
+            inventory_manager.load_versioned_inventory,
+            item_key="libraries",
+        )
+
         for version in versions:
-            process_version(version, inventory_manager, db_writer)
+            inventory = backfilled_inventories.get(version)
+            process_version(version, inventory_manager, db_writer, inventory=inventory)
 
         db_writer.write_version_list(versions)
 
