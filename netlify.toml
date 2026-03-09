@@ -6,6 +6,11 @@
 [context.production]
   command = "npm run netlify-build:production"
 
+[[redirects]]
+  from = "/*"
+  to   = "/index.html"
+  status = 200
+
 [[headers]]
   for = "/*"
   [headers.values]
