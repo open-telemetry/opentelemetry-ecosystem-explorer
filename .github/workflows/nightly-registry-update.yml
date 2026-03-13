@@ -114,3 +114,14 @@ jobs:
             echo "Creating new PR..."
             gh pr create --title "${PR_TITLE}" --body "${PR_BODY}" --base main --head ${BRANCH}
           fi
+
+  workflow-notification:
+    permissions:
+      contents: read
+      issues: write
+    needs:
+      - synchronize-inventory
+    if: always()
+    uses: ./.github/workflows/reusable-workflow-notification.yml
+    with:
+      success: ${{ needs.synchronize-inventory.result == 'success' }}
