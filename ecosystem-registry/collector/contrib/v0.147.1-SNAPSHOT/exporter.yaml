@@ -430,7 +430,7 @@ components:
         - alexvanboxel
 - name: googlecloudstorageexporter
   metadata:
-    type: googlecloudstorage
+    type: google_cloud_storage
     display_name: Google Cloud Storage Exporter
     status:
       class: exporter

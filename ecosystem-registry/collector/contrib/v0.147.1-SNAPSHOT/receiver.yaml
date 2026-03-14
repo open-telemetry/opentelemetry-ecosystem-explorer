@@ -1604,10 +1604,11 @@ components:
     status:
       class: receiver
       stability:
-        development:
+        alpha:
         - logs
         - metrics
-      distributions: []
+      distributions:
+      - contrib
       codeowners:
         active:
         - MichaelKatsoulis
@@ -1648,7 +1649,7 @@ components:
         - srprash
 - name: azureblobreceiver
   metadata:
-    type: azureblob
+    type: azure_blob
     display_name: Azure Blob Receiver
     status:
       class: receiver
@@ -5467,6 +5468,10 @@ components:
         type: string
       haproxy.proxy_name:
         description: Proxy name
+        type: string
+      haproxy.server.state:
+        description: Server status (UP, DOWN, NOLB, MAINT, no check, etc.). Corresponds
+          to HAProxy's `status` field.
         type: string
       haproxy.service_name:
         description: Service name (FRONTEND for frontend, BACKEND for backend, any
@@ -10405,6 +10410,9 @@ components:
         description: Total time (in seconds) that a query waited due to Oracle Real
           Application Clusters (RAC) coordination (reporting delta).
         type: double
+      oracledb.command_type:
+        description: Command type of the query.
+        type: int
       oracledb.concurrency_wait_time:
         description: Total time (in seconds) a query spent waiting on concurrency-related
           events (reporting delta).
@@ -10471,8 +10479,9 @@ components:
         type: string
       oracledb.procedure_execution_count:
         description: The number of times the stored procedure has been executed, derived
-          from the maximum statement execution count across all statements in the
-          procedure (reporting delta).
+          from the minimum statement execution count across all statements in the
+          procedure (reporting delta). Please note, this is best effort and may not
+          be accurate in some scenarios. Use with caution.
         type: int
       oracledb.procedure_id:
         description: The identifier of the stored procedure or function being executed
@@ -11721,7 +11730,7 @@ components:
     type: pprof
     display_name: Pprof Receiver
     description: The Pprof Receiver collects profiles from files specified with a
-      glob pattern.
+      glob pattern, from a remote endpoint or the running collector.
     status:
       class: receiver
       stability:
@@ -12854,11 +12863,11 @@ components:
         - temperature.name
         stability: development
     resource_attributes:
-      base_url:
-        description: base url.
-        type: string
-      system.host_name:
+      host.name:
         description: System host name.
+        type: string
+      url.full:
+        description: Full URL of Redfish API endpoint.
         type: string
 - name: redisreceiver
   metadata:
@@ -13511,6 +13520,10 @@ components:
 - name: saphanareceiver
   metadata:
     type: saphana
+    display_name: SAP HANA Receiver
+    description: This receiver can fetch stats from a SAP HANA instance. It leverages
+      the [driver](https://github.com/SAP/go-hdb) written by SAP for connecting to
+      SAP HANA with the golang sql module to execute several monitoring queries.
     status:
       class: receiver
       stability:
@@ -14276,6 +14289,7 @@ components:
 - name: signalfxreceiver
   metadata:
     type: signalfx
+    display_name: SignalFx Receiver
     status:
       class: receiver
       stability:
@@ -14291,6 +14305,9 @@ components:
 - name: simpleprometheusreceiver
   metadata:
     type: prometheus_simple
+    display_name: Simple Prometheus Receiver
+    description: This receiver provides a simple configuration interface to configure
+      the prometheus receiver to scrape metrics from a single target.
     status:
       class: receiver
       stability:
@@ -14304,6 +14321,9 @@ components:
 - name: skywalkingreceiver
   metadata:
     type: skywalking
+    display_name: SkyWalking Receiver
+    description: Receives trace data and metric data in [SkyWalking](https://skywalking.apache.org/)
+      format.
     status:
       class: receiver
       stability:
@@ -14319,6 +14339,10 @@ components:
 - name: snmpreceiver
   metadata:
     type: snmp
+    display_name: SNMP Receiver
+    description: This receiver fetches stats from an SNMP enabled host using a [golang
+      snmp client](https://github.com/gosnmp/gosnmp). Metrics are collected based
+      upon different configurations in the config file.
     status:
       class: receiver
       stability:
@@ -14334,6 +14358,9 @@ components:
 - name: snowflakereceiver
   metadata:
     type: snowflake
+    display_name: Snowflake Receiver
+    description: This receiver collects metrics from a Snowflake account by connecting
+      to and querying a Snowflake deployment.
     status:
       class: receiver
       stability:
@@ -14838,6 +14865,9 @@ components:
 - name: solacereceiver
   metadata:
     type: solace
+    display_name: Solace Receiver
+    description: The Solace Receiver receives trace data from a [Solace PubSub+ Event
+      Broker](https://solace.com/products/event-broker/).
     status:
       class: receiver
       stability:
@@ -14851,6 +14881,18 @@ components:
 - name: splunkenterprisereceiver
   metadata:
     type: splunkenterprise
+    display_name: Splunk Enterprise Receiver
+    description: The Splunk Enterprise Receiver is a pull based tool which enables
+      the ingestion of performance metrics describing the operational status of a
+      user's Splunk Enterprise deployment to an appropriate observability tool. It
+      is designed to leverage several different data sources to gather these metrics
+      including the [introspection api endpoint](https://help.splunk.com/en/splunk-enterprise/leverage-rest-apis/rest-api-reference/9.1/introspection-endpoints/introspection-endpoint-descriptions)
+      and serializing results from ad-hoc searches. Because of this, care must be
+      taken by users when enabling metrics as running searches can effect your Splunk
+      Enterprise Deployment and introspection may fail to report for Splunk Cloud
+      deployments. The primary purpose of this receiver is to empower those tasked
+      with the maintenance and care of a Splunk Enterprise deployment to leverage
+      opentelemetry and their observability toolset in their jobs.
     status:
       class: receiver
       stability:
@@ -15590,6 +15632,12 @@ components:
 - name: splunkhecreceiver
   metadata:
     type: splunk_hec
+    display_name: Splunk HEC Receiver
+    description: The Splunk HEC receiver accepts events in the [Splunk HEC format](https://help.splunk.com/en/splunk-enterprise/get-data-in/get-started-with-getting-data-in/10.0/get-data-with-http-event-collector/format-events-for-http-event-collector).
+      This allows the collector to receive logs and metrics. The collector accepts
+      data formatted as JSON [HEC events](https://help.splunk.com/en/splunk-enterprise/get-data-in/get-started-with-getting-data-in/10.0/get-data-with-http-event-collector/format-events-for-http-event-collector#ariaid-title5)
+      under any path or as EOL separated log [raw data](https://help.splunk.com/en/splunk-enterprise/get-data-in/get-started-with-getting-data-in/10.0/get-data-with-http-event-collector/format-events-for-http-event-collector#raw-event-parsing-0)
+      if sent to the `raw_path` path.
     status:
       class: receiver
       stability:
@@ -15605,6 +15653,9 @@ components:
 - name: sqlqueryreceiver
   metadata:
     type: sqlquery
+    display_name: SQL Query Receiver
+    description: The SQL Query Receiver uses custom SQL queries to generate logs and/or
+      metrics from a database connection.
     status:
       class: receiver
       stability:
@@ -15623,6 +15674,11 @@ components:
 - name: sqlserverreceiver
   metadata:
     type: sqlserver
+    display_name: Microsoft SQL Server Receiver
+    description: The `sqlserver` receiver grabs metrics/logs about a Microsoft SQL
+      Server instance. The receiver works by either using the Windows Performance
+      Counters, or by directly connecting to the instance and querying it. Windows
+      Performance Counters are only available when running on Windows.
     status:
       class: receiver
       stability:
@@ -15744,6 +15800,10 @@ components:
       sqlserver.percent_complete:
         description: Percentage of work completed.
         type: double
+      sqlserver.procedure_execution_count:
+        description: Number of times that the procedure has been executed since it
+          was last compiled, reported in delta value.
+        type: int
       sqlserver.procedure_id:
         description: The SQL Server ID of the stored procedure, if any
         type: string
@@ -16319,6 +16379,9 @@ components:
 - name: sshcheckreceiver
   metadata:
     type: sshcheck
+    display_name: SSH Check Receiver
+    description: This receiver creates stats by connecting to an SSH server which
+      may be an SFTP server.
     status:
       class: receiver
       stability:
@@ -16397,6 +16460,11 @@ components:
 - name: statsdreceiver
   metadata:
     type: statsd
+    display_name: StatsD Receiver
+    description: 'StatsD receiver for ingesting StatsD messages(https://github.com/statsd/statsd/blob/master/docs/metric_types.md)
+      into the OpenTelemetry Collector. Note: This receiver does not support horizontally
+      scaled collector deployments. It is intended to run in agent mode, where a single
+      collector instance receives StatsD input.'
     status:
       class: receiver
       stability:
@@ -16411,6 +16479,8 @@ components:
 - name: stefreceiver
   metadata:
     type: stef
+    display_name: STEF Receiver
+    description: Receives data via gRPC in OTel/STEF format.
     status:
       class: receiver
       stability:
@@ -16429,6 +16499,8 @@ components:
 - name: syslogreceiver
   metadata:
     type: syslog
+    display_name: Syslog Receiver
+    description: Parses Syslogs received over TCP or UDP.
     status:
       class: receiver
       stability:
@@ -16445,6 +16517,9 @@ components:
 - name: systemdreceiver
   metadata:
     type: systemd
+    display_name: Systemd Receiver
+    description: The Systemd Receiver gathers metrics for locally running systemd
+      units.
     status:
       class: receiver
       stability:
@@ -16519,6 +16594,8 @@ components:
 - name: tcpcheckreceiver
   metadata:
     type: tcpcheck
+    display_name: TCP Check Receiver
+    description: This receiver creates stats by connecting to a TCP server.
     status:
       class: receiver
       stability:
@@ -16580,6 +16657,8 @@ components:
 - name: tcplogreceiver
   metadata:
     type: tcplog
+    display_name: TCP Receiver
+    description: The TCP Receiver receives logs over TCP.
     status:
       class: receiver
       stability:
@@ -16596,6 +16675,8 @@ components:
 - name: tlscheckreceiver
   metadata:
     type: tlscheck
+    display_name: TLS Check Receiver
+    description: This receiver emits metrics about x.509 certificates.
     status:
       class: receiver
       stability:
@@ -16638,6 +16719,8 @@ components:
 - name: udplogreceiver
   metadata:
     type: udplog
+    display_name: UDP Receiver
+    description: The UDP Receiver receives logs over UDP.
     status:
       class: receiver
       stability:
@@ -16654,6 +16737,9 @@ components:
 - name: vcenterreceiver
   metadata:
     type: vcenter
+    display_name: vCenter Receiver
+    description: This receiver fetches metrics from a vCenter or ESXi host running
+      VMware vSphere APIs.
     status:
       class: receiver
       stability:
@@ -17545,6 +17631,12 @@ components:
 - name: vcrreceiver
   metadata:
     type: vcr
+    display_name: VCR Receiver
+    description: The OpenTelemetry **Verbatim Capture & Replay (VCR) toolset** enables
+      full-fidelity capture and replay of all telemetry data stored on disk. It replays
+      previously captured telemetry while **preserving original event timestamps**,
+      allowing you to simulate realistic traffic timing independent of when the data
+      was captured.
     status:
       class: receiver
       stability:
@@ -17561,6 +17653,7 @@ components:
 - name: wavefrontreceiver
   metadata:
     type: wavefront
+    display_name: Wavefront Receiver
     status:
       class: receiver
       stability:
@@ -17574,6 +17667,12 @@ components:
 - name: webhookeventreceiver
   metadata:
     type: webhookevent
+    display_name: Webhook Event Receiver
+    description: The Webhook Event Receiver is a push based event collector component
+      meant to act as a generally available receiver for any webhook style data source.
+      It is designed to work alongside other pipeline components like the [transform
+      processor](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/processor/transformprocessor)
+      to allow the ingestion of generic events as logs into the opentelemetry collector.
     status:
       class: receiver
       stability:
@@ -17589,6 +17688,10 @@ components:
 - name: windowseventlogreceiver
   metadata:
     type: windowseventlog
+    display_name: Windows Event Log Receiver
+    description: This receiver tails and parses logs from windows event log API using
+      the [opentelemetry-log-collection](https://github.com/open-telemetry/opentelemetry-log-collection)
+      library.
     status:
       class: receiver
       stability:
@@ -17606,6 +17709,10 @@ components:
 - name: windowsperfcountersreceiver
   metadata:
     type: windowsperfcounters
+    display_name: Windows Performance Counters Receiver
+    description: This receiver, for Windows only, captures the configured system,
+      application, or custom performance counter data from the Windows registry using
+      the [PDH interface](https://docs.microsoft.com/en-us/windows/win32/perfctrs/using-the-pdh-functions-to-consume-counter-data).
     status:
       class: receiver
       stability:
@@ -17625,6 +17732,9 @@ components:
 - name: windowsservicereceiver
   metadata:
     type: windowsservice
+    display_name: Windows Service Receiver
+    description: The Windows Service Receiver is a receiver for scraping information
+      about the state of services running on a Windows machine.
     status:
       class: receiver
       stability:
@@ -17666,6 +17776,10 @@ components:
 - name: yanggrpcreceiver
   metadata:
     type: yang_grpc
+    display_name: YANG gRPC Receiver
+    description: The YANG/gRPC receiver receives metrics offered using the [YANG (Yet
+      Another New Generation) data model](https://en.wikipedia.org/wiki/YANG), expressed
+      over [gRPC](https://ciscolearning.github.io/cisco-learning-codelabs/posts/yangsuite-restconf/#0).
     status:
       class: receiver
       stability:
@@ -17679,6 +17793,9 @@ components:
 - name: zipkinreceiver
   metadata:
     type: zipkin
+    display_name: Zipkin Receiver
+    description: This receiver receives spans from [Zipkin](https://zipkin.io/) (V1
+      and V2).
     status:
       class: receiver
       stability:
@@ -17696,6 +17813,10 @@ components:
 - name: zookeeperreceiver
   metadata:
     type: zookeeper
+    display_name: Zookeeper Receiver
+    description: The Zookeeper Receiver collects metrics from a Zookeeper instance,
+      using the `mntr` command. The `mntr` 4 letter word command needs to be enabled
+      for the receiver to be able to collect metrics.
     status:
       class: receiver
       stability:

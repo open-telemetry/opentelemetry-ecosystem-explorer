@@ -61,7 +61,7 @@ components:
         - mxiamxia
 - name: azureauthextension
   metadata:
-    type: azureauth
+    type: azure_auth
     display_name: Azure Authenticator Extension
     status:
       class: extension
@@ -113,7 +113,7 @@ components:
         seeking_new: true
 - name: cgroupruntimeextension
   metadata:
-    type: cgroupruntime
+    type: cgroup_runtime
     display_name: Cgroup Go Runtime Extension
     status:
       class: extension
@@ -188,7 +188,7 @@ components:
 - name: awslogsencodingextension
   subtype: encoding
   metadata:
-    type: awslogs_encoding
+    type: aws_logs_encoding
     display_name: AWS Logs Encoding Extension
     description: This extension unmarshalls logs encoded in formats produced by AWS
       services.
@@ -215,8 +215,10 @@ components:
     status:
       class: extension
       stability:
-        development:
+        alpha:
         - extension
+      distributions:
+      - contrib
       codeowners:
         active:
         - axw
@@ -224,7 +226,7 @@ components:
 - name: googlecloudlogentryencodingextension
   subtype: encoding
   metadata:
-    type: googlecloudlogentry_encoding
+    type: google_cloud_logentry_encoding
     display_name: Google Cloud LogEntry Encoding Extension
     description: This extension can be used to unmarshall a [Cloud Logging LogEntry](https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry)
       message type.

@@ -57,26 +57,6 @@ components:
       codeowners:
         active:
         - TylerHelmuth
-- name: datadogsemanticsprocessor
-  metadata:
-    type: datadogsemantics
-    display_name: Datadog Semantics Processor
-    status:
-      class: processor
-      stability:
-        deprecated:
-        - traces
-      distributions: []
-      codeowners:
-        active:
-        - songy23
-        - IbraheemA
-        - mx-psi
-        - dineshg13
-        - jade-guiton-dd
-        emeritus:
-        - jackgopack4
-        - ankitpatel96
 - name: deltatocumulativeprocessor
   metadata:
     type: deltatocumulative
@@ -472,10 +452,10 @@ components:
         - crobert-1
 - name: metricstarttimeprocessor
   metadata:
-    type: metricstarttime
+    type: metric_start_time
     display_name: Metric Start Time Processor
-    description: The Metric Start Time Processor (`metricstarttime`) is used to set
-      the start time for metric points with a cumulative aggregation temporality.
+    description: The Metric Start Time Processor (`metric_start_time`) is used to
+      set the start time for metric points with a cumulative aggregation temporality.
       It is commonly used with the `prometheus` receiver, which usually produces metric
       points without a start time.
     status:
