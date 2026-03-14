@@ -20,6 +20,7 @@ from java_instrumentation_watcher.instrumentation_parser import (
     ParserFactory,
     ParserV01,
     ParserV02,
+    ParserV03,
     parse_instrumentation_yaml,
 )
 
@@ -189,6 +190,31 @@ libraries:
         assert data["libraries"][1]["tags"] == ["akka"]
 
 
+class TestParserV03:
+    def test_get_file_format(self):
+        parser = ParserV03()
+        assert parser.get_file_format() == 0.3
+
+    def test_parse_renames_type_to_data_type(self):
+        yaml_content = """
+file_format: 0.3
+libraries:
+  test:
+  - name: test-lib
+    metrics:
+    - name: test.metric
+      type: LONG_SUM
+      instrument: counter
+"""
+        parser = ParserV03()
+        data = parser.parse(yaml_content)
+
+        metric = data["libraries"][0]["metrics"][0]
+        assert "data_type" in metric
+        assert "type" not in metric
+        assert metric["data_type"] == "LONG_SUM"
+
+
 class TestParserFactory:
     def test_get_parser_v0_1(self):
         parser = ParserFactory.get_parser(0.1)
@@ -200,6 +226,11 @@ class TestParserFactory:
         assert isinstance(parser, ParserV02)
         assert parser.get_file_format() == 0.2
 
+    def test_get_parser_v0_3(self):
+        parser = ParserFactory.get_parser(0.3)
+        assert isinstance(parser, ParserV03)
+        assert parser.get_file_format() == 0.3
+
     def test_get_parser_unsupported_version(self):
         with pytest.raises(ValueError, match="Unsupported file_format: 999.0"):
             ParserFactory.get_parser(999.0)
@@ -207,8 +238,8 @@ class TestParserFactory:
     def test_get_default_parser(self):
         parser = ParserFactory.get_default_parser()
         assert isinstance(parser, InstrumentationParser)
-        # Should return the latest version (0.2 currently)
-        assert parser.get_file_format() == 0.2
+        # Should return the latest version (0.3 currently)
+        assert parser.get_file_format() == 0.3
 
 
 class TestParseInstrumentationYaml:
