@@ -1685,6 +1685,20 @@ components:
         emeritus:
         - djaglowski
         seeking_new: true
+- name: azurefunctionsreceiver
+  metadata:
+    type: azure_functions
+    display_name: Azure Functions Receiver
+    status:
+      class: receiver
+      stability:
+        development:
+        - logs
+      codeowners:
+        active:
+        - jmacd
+        - MichaelKatsoulis
+        - constanca-m
 - name: azuremonitorreceiver
   metadata:
     type: azure_monitor
@@ -11734,9 +11748,10 @@ components:
     status:
       class: receiver
       stability:
-        development:
+        alpha:
         - profiles
-      distributions: []
+      distributions:
+      - contrib
       codeowners:
         active:
         - MovieStoreGuy
