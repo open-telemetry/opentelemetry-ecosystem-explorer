@@ -29,8 +29,8 @@ jobs:
       - name: Open issue or add comment if issue already open
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          WATCHER_NAME: ${{ inputs.watcher-name }}
-          FAILURE_DETAILS: ${{ inputs.failure-details }}
+          WATCHER_NAME: ${{ inputs['watcher-name']}}
+          FAILURE_DETAILS: ${{ inputs['failure-details'] }}
           IS_SUCCESS: ${{ inputs.success }}
         run: |
           # Use watcher-specific title if provided, otherwise fall back to generic workflow title

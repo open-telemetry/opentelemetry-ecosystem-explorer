@@ -11,91 +11,11 @@ permissions:
   pull-requests: write
 
 jobs:
-  # Watcher 1: Collector
-  run-collector-watcher:
+  synchronize-inventory:
     runs-on: ubuntu-latest
     outputs:
-      result: ${{ steps.run.outcome }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - name: Cache repository clones
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
-        with:
-          path: tmp_repos
-          key: tmp-repos-collector
-          restore-keys: |
-            tmp-repos-
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@5a095e7a2014a4212f075830d4f7277575a9d098 # v7.3.1
-        with:
-          enable-cache: true
-
-      - name: Set up Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-
-      - name: Install dependencies
-        run: uv sync
-
-      - name: Run collector-watcher
-        id: run
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: uv run collector-watcher
-
-      - name: Upload registry changes
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: collector-registry
-          path: ecosystem-registry/
-          if-no-files-found: ignore
-
-  # Watcher 2: Java
-  run-java-watcher:
-    runs-on: ubuntu-latest
-    outputs:
-      result: ${{ steps.run.outcome }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@5a095e7a2014a4212f075830d4f7277575a9d098 # v7.3.1
-        with:
-          enable-cache: true
-
-      - name: Set up Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-
-      - name: Install dependencies
-        run: uv sync
-
-      - name: Run java-instrumentation-watcher
-        id: run
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: uv run java-instrumentation-watcher
-
-      - name: Upload registry changes
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: java-registry
-          path: ecosystem-registry/
-          if-no-files-found: ignore
-
-  # Merge changes + Create PR
-  create-pr:
-    runs-on: ubuntu-latest
-    needs: [run-collector-watcher, run-java-watcher]
-    # Run as long as at least one watcher succeeded
-    if: |
-      always() &&
-      (needs.run-collector-watcher.result == 'success' ||
-       needs.run-java-watcher.result == 'success')
+      collector_result: ${{ steps.collector_watcher.outcome }}
+      java_result: ${{ steps.java_instrumentation_watcher.outcome }}
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -111,7 +31,7 @@ jobs:
             echo "is_primary=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Configure git (primary repository)
+      - name: Configure git 
         if: steps.repo_check.outputs.is_primary == 'true'
         run: |
           .github/scripts/use-cla-approved-bot.sh
@@ -123,29 +43,49 @@ jobs:
           app-id: ${{ vars.OTELBOT_APP_ID }}
           private-key: ${{ secrets.OTELBOT_PRIVATE_KEY }}
 
-      - name: Configure git (fork)
+      - name: Configure git 
         if: steps.repo_check.outputs.is_primary == 'false'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      # Download artifacts from whichever watchers succeeded
-      - name: Download collector registry changes
-        if: needs.run-collector-watcher.result == 'success'
-        uses: actions/download-artifact@v4
+      - name: Cache repository clones
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
-          name: collector-registry
-          path: ecosystem-registry/
+          path: tmp_repos
+          key: tmp-repos
+          restore-keys: |
+            tmp-repos-
 
-      - name: Download java registry changes
-        if: needs.run-java-watcher.result == 'success'
-        uses: actions/download-artifact@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@5a095e7a2014a4212f075830d4f7277575a9d098 # v7.3.1
         with:
-          name: java-registry
-          path: ecosystem-registry/
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Run collector-watcher
+        id: collector_watcher
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: uv run collector-watcher
+        continue-on-error: true
+
+      - name: Run java-instrumentation-watcher
+        id: java_instrumentation_watcher
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: uv run java-instrumentation-watcher
+        continue-on-error: true
 
       - name: Check for inventory changes
         id: check_changes
+        if: always()
         run: |
           git add -N ecosystem-registry/ 2>/dev/null || true
           if git diff --quiet ecosystem-registry/ && [ -z "$(git ls-files --others --exclude-standard ecosystem-registry/)" ]; then
@@ -176,7 +116,6 @@ jobs:
           EOF
           )"
 
-          # Check if an open PR exists for this branch
           if gh pr list --head ${BRANCH} --state open --json number --jq '.[0].number' | grep -q .; then
             echo "Open PR already exists, updating..."
             gh pr edit ${BRANCH} --title "${PR_TITLE}" --body "${PR_BODY}"
@@ -185,25 +124,24 @@ jobs:
             gh pr create --title "${PR_TITLE}" --body "${PR_BODY}" --base main --head ${BRANCH}
           fi
 
-  # Notifications
   notify-collector:
     permissions:
       contents: read
       issues: write
-    needs: [run-collector-watcher]
+    needs: [synchronize-inventory]
     if: always()
     uses: ./.github/workflows/reusable-workflow-notification.yml
     with:
-      success: ${{ needs.run-collector-watcher.result == 'success' }}
+      success: ${{ needs.synchronize-inventory.outputs.collector_result == 'success' }}
       watcher-name: "collector-watcher"
 
   notify-java:
     permissions:
       contents: read
       issues: write
-    needs: [run-java-watcher]
+    needs: [synchronize-inventory]
     if: always()
     uses: ./.github/workflows/reusable-workflow-notification.yml
     with:
-      success: ${{ needs.run-java-watcher.result == 'success' }}
+      success: ${{ needs.synchronize-inventory.outputs.java_result == 'success' }}
       watcher-name: "java-instrumentation-watcher"
