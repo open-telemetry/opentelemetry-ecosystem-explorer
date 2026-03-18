@@ -68,6 +68,7 @@ function serializeYaml(obj: NestedConfig, indent = 0): string {
   for (const key of sortedKeys) {
     const value = obj[key];
     if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+      if (Object.keys(value as NestedConfig).length === 0) continue;
       lines.push(`${indentStr}${key}:`);
       lines.push(serializeYaml(value as NestedConfig, indent + 1));
     } else {

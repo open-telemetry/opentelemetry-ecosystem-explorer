@@ -29,7 +29,7 @@ export function generateSdkYaml(sdk: SdkConfig): string {
   const { exporterType, exporterEndpoint, exporterProtocol } = sdk.tracerProvider;
 
   if (exporterType === "console") {
-    lines.push("          console: {}");
+    lines.push("          console:");
   } else {
     lines.push(`          ${exporterType}:`);
     if (exporterEndpoint) {
@@ -51,13 +51,13 @@ export function generateSdkYaml(sdk: SdkConfig): string {
       lines.push("        trace_id_ratio_based:");
       lines.push(`          ratio: ${samplerRatio}`);
     } else {
-      lines.push(`        ${samplerRoot}: {}`);
+      lines.push(`        ${samplerRoot}:`);
     }
   } else if (samplerType === "trace_id_ratio_based") {
     lines.push("    trace_id_ratio_based:");
     lines.push(`      ratio: ${samplerRatio}`);
   } else {
-    lines.push(`    ${samplerType}: {}`);
+    lines.push(`    ${samplerType}:`);
   }
 
   // propagator
@@ -65,7 +65,7 @@ export function generateSdkYaml(sdk: SdkConfig): string {
     lines.push("propagator:");
     lines.push("  composite:");
     for (const propagator of sdk.propagators) {
-      lines.push(`    - ${propagator}: {}`);
+      lines.push(`    - ${propagator}:`);
     }
   }
 

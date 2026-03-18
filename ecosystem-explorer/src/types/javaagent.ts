@@ -138,6 +138,7 @@ export type ConfigurationBuilderAction =
       state: Partial<ConfigurationBuilderState>;
     }
   | { type: "ADD_ALL_INSTRUMENTATIONS"; instrumentations: InstrumentationData[] }
+  | { type: "REMOVE_ALL_INSTRUMENTATIONS" }
   | { type: "LOAD_SDK_DEFAULTS"; sdkConfig: import("@/types/sdk").SdkConfig }
   | { type: "TOGGLE_SDK_PROPAGATOR"; propagatorId: string }
   | { type: "SET_SDK_EXPORTER_TYPE"; exporterType: string }

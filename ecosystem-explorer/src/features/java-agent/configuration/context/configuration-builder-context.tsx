@@ -100,6 +100,12 @@ function configurationBuilderReducer(
       };
     }
 
+    case "REMOVE_ALL_INSTRUMENTATIONS":
+      return {
+        ...state,
+        selectedInstrumentations: new Map(),
+      };
+
     case "REMOVE_INSTRUMENTATION": {
       const newInstrumentations = new Map(state.selectedInstrumentations);
       newInstrumentations.delete(action.name);

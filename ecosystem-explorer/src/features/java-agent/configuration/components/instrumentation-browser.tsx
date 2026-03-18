@@ -95,9 +95,17 @@ export function InstrumentationBrowser() {
 
       {selectedInstrumentations.length > 0 && (
         <div className="space-y-2">
-          <h3 className="text-sm font-semibold text-foreground">
-            Selected ({selectedInstrumentations.length})
-          </h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-semibold text-foreground">
+              Selected ({selectedInstrumentations.length})
+            </h3>
+            <button
+              onClick={() => dispatch({ type: "REMOVE_ALL_INSTRUMENTATIONS" })}
+              className="text-xs text-muted-foreground hover:text-destructive"
+            >
+              Remove All
+            </button>
+          </div>
           <div className="space-y-1 max-h-[200px] overflow-y-auto">
             {selectedInstrumentations.map((config) => (
               <div
