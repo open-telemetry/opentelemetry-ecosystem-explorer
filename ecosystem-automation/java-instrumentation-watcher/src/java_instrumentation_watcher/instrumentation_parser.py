@@ -147,40 +147,43 @@ class ParserV02(ParserV01):
 class ParserV03(ParserV02):
     """Parser for file_format 0.3."""
 
-    def get_file_format(self) -> float:
-        return 0.3
+    def parse(self, data):
+        raise Exception("Simulated failure for testing")
 
-    def parse(self, yaml_content: str) -> dict[str, Any]:
-        """
-        Parse and normalize file_format 0.3 YAML content.
+    # def get_file_format(self) -> float:
+    #     return 0.3
 
-        Changes from 0.2:
-        - 'type' field renamed to 'data_type'
-        """
-        try:
-            data = yaml.safe_load(yaml_content) or {}
-            cleaned_data = self._clean_strings(data)
-            flattened_data = self._flatten_libraries(cleaned_data)
-            return self._normalize_metrics(flattened_data)
-        except yaml.YAMLError as e:
-            raise ValueError(f"Error parsing instrumentation YAML: {e}") from e
+    # def parse(self, yaml_content: str) -> dict[str, Any]:
+    #     """
+    #     Parse and normalize file_format 0.3 YAML content.
 
-    @staticmethod
-    def _normalize_metrics(data: dict[str, Any]) -> dict[str, Any]:
-        """
-        Normalize metrics: handle 'data_type' and 'instrument' fields.
-        """
-        if "libraries" not in data:
-            return data
-        for library in data["libraries"]:
-            if not isinstance(library, dict):
-                continue
-            for metric in library.get("metrics", []):
-                if not isinstance(metric, dict):
-                    continue
-                if "type" in metric and "data_type" not in metric:
-                    metric["data_type"] = metric.pop("type")
-        return data
+    #     Changes from 0.2:
+    #     - 'type' field renamed to 'data_type'
+    #     """
+    #     try:
+    #         data = yaml.safe_load(yaml_content) or {}
+    #         cleaned_data = self._clean_strings(data)
+    #         flattened_data = self._flatten_libraries(cleaned_data)
+    #         return self._normalize_metrics(flattened_data)
+    #     except yaml.YAMLError as e:
+    #         raise ValueError(f"Error parsing instrumentation YAML: {e}") from e
+
+    # @staticmethod
+    # def _normalize_metrics(data: dict[str, Any]) -> dict[str, Any]:
+    #     """
+    #     Normalize metrics: handle 'data_type' and 'instrument' fields.
+    #     """
+    #     if "libraries" not in data:
+    #         return data
+    #     for library in data["libraries"]:
+    #         if not isinstance(library, dict):
+    #             continue
+    #         for metric in library.get("metrics", []):
+    #             if not isinstance(metric, dict):
+    #                 continue
+    #             if "type" in metric and "data_type" not in metric:
+    #                 metric["data_type"] = metric.pop("type")
+    #     return data
 
 
 class ParserFactory:
@@ -189,7 +192,7 @@ class ParserFactory:
     _parsers: dict[float, type[InstrumentationParser]] = {
         0.1: ParserV01,
         0.2: ParserV02,
-        0.3: ParserV03,
+        # 0.3: ParserV03,
     }
 
     @classmethod
