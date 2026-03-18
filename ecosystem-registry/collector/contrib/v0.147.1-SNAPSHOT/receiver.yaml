@@ -1837,7 +1837,7 @@ components:
         stability: development
 - name: ciscoosreceiver
   metadata:
-    type: ciscoos
+    type: cisco_os
     display_name: Cisco OS Receiver
     description: The Cisco OS Receiver is a modular receiver that collects metrics
       from Cisco network devices via SSH connections. It supports multiple scrapers
@@ -1848,7 +1848,8 @@ components:
       stability:
         alpha:
         - metrics
-      distributions: []
+      distributions:
+      - contrib
       codeowners:
         active:
         - dmitryax
