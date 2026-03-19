@@ -7,6 +7,7 @@ readme = "README.md"
 license = { text = "Apache-2.0" }
 dependencies = [
     "collector-watcher",
+    "configuration-watcher",
     "java-instrumentation-watcher",
     "explorer-db-builder",
 ]
@@ -18,6 +19,7 @@ members = [
 
 [tool.uv.sources]
 collector-watcher = { workspace = true }
+configuration-watcher = { workspace = true }
 java-instrumentation-watcher = { workspace = true }
 explorer-db-builder = { workspace = true }
 
