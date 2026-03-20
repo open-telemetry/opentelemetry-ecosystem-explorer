@@ -87,7 +87,6 @@ export function InstrumentationDetailPage() {
               <h1 className="text-3xl font-bold text-foreground">{displayName}</h1>
               {showRawName && (
                 <p className="mt-2 text-sm text-muted-foreground">
-                  <span className="font-medium">Scope Name:</span>{" "}
                   <code className="px-2 py-1 bg-muted rounded text-foreground">
                     {instrumentation.name}
                   </code>
@@ -175,12 +174,12 @@ export function InstrumentationDetailPage() {
                         Target Versions
                       </h3>
                       <div className="flex flex-wrap gap-2">
-                        {instrumentation.javaagent_target_versions.map((version) => (
+                        {instrumentation.javaagent_target_versions.map((targetVersion) => (
                           <span
-                            key={version}
+                            key={targetVersion}
                             className="px-2 py-1 bg-muted text-foreground rounded text-xs"
                           >
-                            {version}
+                            {targetVersion}
                           </span>
                         ))}
                       </div>
@@ -378,9 +377,9 @@ export function InstrumentationDetailPage() {
               <h2 className="text-xl font-semibold mb-4">Configuration</h2>
               {instrumentation.configurations && instrumentation.configurations.length > 0 ? (
                 <div className="space-y-4">
-                  {instrumentation.configurations.map((config, index) => (
+                  {instrumentation.configurations.map((config) => (
                     <div
-                      key={index}
+                      key={config.name}
                       className="bg-background/50 rounded-lg p-4 border border-border/30"
                     >
                       <div className="flex items-start justify-between gap-4 mb-2">
