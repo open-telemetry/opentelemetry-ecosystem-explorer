@@ -715,6 +715,8 @@ components:
         - dao-jun
         emeritus:
         - dmitryax
+      unsupported_platforms:
+      - aix
 - name: rabbitmqexporter
   metadata:
     type: rabbitmq

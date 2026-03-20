@@ -1546,6 +1546,7 @@ components:
       codeowners:
         active:
         - schmikei
+        - dyl10s
         emeritus:
         - djaglowski
         seeking_new: true
@@ -11815,6 +11816,8 @@ components:
         - dao-jun
         emeritus:
         - dmitryax
+      unsupported_platforms:
+      - aix
 - name: purefareceiver
   metadata:
     type: purefa
