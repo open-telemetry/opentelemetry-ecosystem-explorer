@@ -58,25 +58,6 @@ class VersionDetector:
 
         return max(version_tags)
 
-    def get_all_release_tags(self) -> list[Version]:
-        """Get all release tags from the repository, sorted newest to oldest.
-
-        Returns:
-            List of version tags
-        """
-        tags = self.repo.tags
-        version_tags = []
-
-        for tag in tags:
-            try:
-                version = Version(tag.name.lstrip("v"))
-                if not version.prerelease:
-                    version_tags.append(version)
-            except ValueError:
-                continue
-
-        return sorted(version_tags, reverse=True)
-
     def checkout_version(self, version: Version) -> None:
         """Checkout a specific version tag.
 

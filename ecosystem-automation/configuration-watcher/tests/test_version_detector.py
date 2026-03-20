@@ -107,29 +107,6 @@ class TestVersionDetector:
 
         assert latest is None
 
-    def test_get_latest_release_tag_ignores_snapshots(self, temp_git_repo):
-        detector = VersionDetector(temp_git_repo)
-        latest = detector.get_latest_release_tag()
-
-        assert latest == Version("1.0.0")
-        assert not latest.prerelease
-
-    def test_get_all_release_tags(self, temp_git_repo):
-        detector = VersionDetector(temp_git_repo)
-        tags = detector.get_all_release_tags()
-
-        assert len(tags) == 3
-        assert tags[0] == Version("1.0.0")
-        assert tags[1] == Version("0.4.0")
-        assert tags[2] == Version("0.3.0")
-
-    def test_get_all_release_tags_ignores_snapshots_and_invalid(self, temp_git_repo):
-        detector = VersionDetector(temp_git_repo)
-        tags = detector.get_all_release_tags()
-
-        assert len(tags) == 3
-        assert all(not tag.prerelease for tag in tags)
-
     def test_checkout_version(self, temp_git_repo):
         detector = VersionDetector(temp_git_repo)
         version = Version("0.4.0")

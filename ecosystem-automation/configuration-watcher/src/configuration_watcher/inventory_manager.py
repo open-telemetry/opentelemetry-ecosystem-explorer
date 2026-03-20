@@ -89,15 +89,6 @@ class InventoryManager:
         """
         return [v for v in self.list_versions() if v.prerelease]
 
-    def list_release_versions(self) -> list[Version]:
-        """
-        List all release (non-prerelease) versions.
-
-        Returns:
-            List of release versions, sorted newest to oldest
-        """
-        return [v for v in self.list_versions() if not v.prerelease]
-
     def cleanup_snapshots(self) -> int:
         """
         Remove all snapshot versions.

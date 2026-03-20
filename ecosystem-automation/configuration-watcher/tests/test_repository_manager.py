@@ -22,7 +22,6 @@ from configuration_watcher.repository_manager import (
     ENV_VAR_NAME,
     RepositoryManager,
 )
-from semantic_version import Version
 
 
 @pytest.fixture
@@ -74,10 +73,11 @@ class TestRepositoryManager:
             patch.dict("os.environ", {ENV_VAR_NAME: str(repo_path)}),
             patch("configuration_watcher.repository_manager.subprocess.run") as mock_run,
         ):
-            result = manager.setup_repository(update=False)
+            result = manager.setup_repository()
 
         assert result == repo_path
-        mock_run.assert_not_called()
+        # Should call: git checkout . + git checkout main + git pull
+        assert mock_run.call_count == 3
 
     def test_setup_repository_pulls_when_exists(self, manager, tmp_path):
         repo_path = tmp_path / DEFAULT_REPO_NAME
@@ -90,23 +90,5 @@ class TestRepositoryManager:
             result = manager.setup_repository()
 
         assert result == repo_path
-        # Should call checkout main + pull
-        assert mock_run.call_count == 2
-
-    def test_setup_repository_checkout_version(self, manager, tmp_path):
-        repo_path = tmp_path / DEFAULT_REPO_NAME
-        repo_path.mkdir()
-
-        version = Version("1.0.0")
-
-        with (
-            patch.dict("os.environ", {}, clear=True),
-            patch("configuration_watcher.repository_manager.subprocess.run") as mock_run,
-        ):
-            result = manager.setup_repository(version=version)
-
-        assert result == repo_path
-        # Should call fetch --tags + checkout v1.0.0
-        assert mock_run.call_count == 2
-        last_call_args = mock_run.call_args_list[-1][0][0]
-        assert "v1.0.0" in last_call_args
+        # Should call: git checkout . + git checkout main + git pull
+        assert mock_run.call_count == 3

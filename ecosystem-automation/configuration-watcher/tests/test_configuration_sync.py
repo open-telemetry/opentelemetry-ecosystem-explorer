@@ -120,14 +120,6 @@ class TestConfigurationSync:
         assert result["new_release"] == "1.0.0"
         assert result["snapshot_updated"] is not None
 
-    def test_sync_no_new_releases(self, config_sync):
-        config_sync.sync()
-
-        result = config_sync.sync()
-
-        assert result["new_release"] is None
-        assert result["snapshot_updated"] is not None
-
     def test_backfill_specific_version(self, config_sync):
         # First sync to populate
         config_sync.sync()

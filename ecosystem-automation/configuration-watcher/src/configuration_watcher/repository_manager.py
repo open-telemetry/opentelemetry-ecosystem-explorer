@@ -18,9 +18,6 @@ import logging
 import os
 import subprocess
 from pathlib import Path
-from typing import Optional
-
-from semantic_version import Version
 
 logger = logging.getLogger(__name__)
 
@@ -33,14 +30,14 @@ DEFAULT_REPO_NAME = "opentelemetry-configuration"
 class RepositoryManager:
     """Manages OpenTelemetry configuration repository location and setup."""
 
-    def __init__(self, base_dir: Optional[str] = None):
+    def __init__(self, base_dir: str | None = None):
         """
         Args:
             base_dir: Base directory for cloning repos. Defaults to tmp_repos/
         """
         self.base_dir = Path(base_dir) if base_dir else Path(DEFAULT_REPOS_DIR)
 
-    def get_repository_path(self) -> Optional[Path]:
+    def get_repository_path(self) -> Path | None:
         """
         Get the path to a repository from environment variable.
 
@@ -63,20 +60,12 @@ class RepositoryManager:
 
         return None
 
-    def setup_repository(
-        self,
-        version: Optional[Version] = None,
-        update: bool = True,
-    ) -> Path:
+    def setup_repository(self) -> Path:
         """
         Set up the repository by cloning or using existing location.
 
-        If an environment variable is set, use that path.
-        Otherwise, clone to base_dir if needed.
-
-        Args:
-            version: Optional version to checkout. If None, uses main branch
-            update: Whether to pull latest changes for existing repos
+        If an environment variable is set, use that path (and pull latest).
+        Otherwise, clone to base_dir if needed, or pull if already cloned.
 
         Returns:
             Path to the repository
@@ -86,10 +75,7 @@ class RepositoryManager:
         """
         env_path = self.get_repository_path()
         if env_path:
-            if version:
-                self._checkout_version(env_path, version)
-            elif update:
-                self._pull_latest(env_path)
+            self._pull_latest(env_path)
             return env_path
 
         repo_path = self.base_dir / DEFAULT_REPO_NAME
@@ -97,12 +83,9 @@ class RepositoryManager:
         if not repo_path.exists():
             logger.info("Cloning configuration repository to %s", repo_path)
             self._clone_repository(repo_path)
-        elif update and version is None:
+        else:
             logger.info("Updating configuration repository at %s", repo_path)
             self._pull_latest(repo_path)
-
-        if version:
-            self._checkout_version(repo_path, version)
 
         return repo_path
 
@@ -140,6 +123,14 @@ class RepositoryManager:
             RuntimeError: If pull fails
         """
         try:
+            # Discard any local changes left from previous tag checkouts
+            subprocess.run(
+                ["git", "checkout", "."],
+                cwd=repo_path,
+                check=True,
+                capture_output=True,
+                text=True,
+            )
             subprocess.run(
                 ["git", "checkout", "main"],
                 cwd=repo_path,
@@ -157,34 +148,3 @@ class RepositoryManager:
             logger.info("Successfully pulled latest changes at %s", repo_path)
         except subprocess.CalledProcessError as e:
             raise RuntimeError(f"Failed to pull latest changes: {e.stderr}") from e
-
-    def _checkout_version(self, repo_path: Path, version: Version) -> None:
-        """
-        Checkout a specific version tag.
-
-        Args:
-            repo_path: Path to the repository
-            version: Version to checkout
-
-        Raises:
-            RuntimeError: If checkout fails
-        """
-        tag = f"v{version}"
-        try:
-            subprocess.run(
-                ["git", "fetch", "--tags"],
-                cwd=repo_path,
-                check=True,
-                capture_output=True,
-                text=True,
-            )
-            subprocess.run(
-                ["git", "checkout", tag],
-                cwd=repo_path,
-                check=True,
-                capture_output=True,
-                text=True,
-            )
-            logger.info("Successfully checked out %s at %s", tag, repo_path)
-        except subprocess.CalledProcessError as e:
-            raise RuntimeError(f"Failed to checkout version {tag}: {e.stderr}") from e
