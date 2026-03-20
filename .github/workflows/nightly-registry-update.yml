@@ -16,6 +16,7 @@ jobs:
     outputs:
       collector_result: ${{ steps.collector_watcher.outcome }}
       java_result: ${{ steps.java_instrumentation_watcher.outcome }}
+      configuration_result: ${{ steps.configuration_watcher.outcome }}
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -83,6 +84,14 @@ jobs:
         run: uv run java-instrumentation-watcher
         continue-on-error: true
 
+      - name: Run configuration-watcher
+        id: configuration_watcher
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: uv run configuration-watcher
+        continue-on-error: true
+
       - name: Check for inventory changes
         id: check_changes
         if: always()
@@ -145,3 +154,14 @@ jobs:
     with:
       success: ${{ needs.synchronize-inventory.outputs.java_result == 'success' }}
       watcher-name: "java-instrumentation-watcher"
+
+  notify-configuration:
+    permissions:
+      contents: read
+      issues: write
+    needs: [synchronize-inventory]
+    if: always()
+    uses: ./.github/workflows/reusable-workflow-notification.yml
+    with:
+      success: ${{ needs.synchronize-inventory.outputs.configuration_result == 'success' }}
+      watcher-name: "configuration-watcher"
