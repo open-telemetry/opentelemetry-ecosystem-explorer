@@ -56,6 +56,11 @@ jobs:
           cd ecosystem-automation/java-instrumentation-watcher
           uv run pytest tests/ --cov=java_instrumentation_watcher --cov-report=term-missing --cov-report=json
 
+      - name: Run configuration-watcher tests
+        run: |
+          cd ecosystem-automation/configuration-watcher
+          uv run pytest tests/ --cov=configuration_watcher --cov-report=term-missing --cov-report=json
+
   test-ecosystem-explorer:
     runs-on: ubuntu-latest
     defaults:

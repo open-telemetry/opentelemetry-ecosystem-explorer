@@ -68,3 +68,19 @@ class TestSchemaCopier:
 
         with pytest.raises(FileNotFoundError, match="Schema directory not found"):
             copier.copy_schemas(repo_path, target)
+
+    def test_copy_schemas_ignores_subdirectories(self, copier, tmp_path):
+        repo_path = tmp_path / "repo"
+        schema_dir = repo_path / "schema"
+        schema_dir.mkdir(parents=True)
+
+        (schema_dir / "main.yaml").write_text("main: true")
+        subdir = schema_dir / "subdir"
+        subdir.mkdir()
+        (subdir / "nested.yaml").write_text("nested: true")
+
+        target = tmp_path / "output"
+        result = copier.copy_schemas(repo_path, target)
+
+        assert result == ["main.yaml"]
+        assert not (target / "subdir").exists()
