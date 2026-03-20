@@ -76,8 +76,8 @@ class TestRepositoryManager:
             result = manager.setup_repository()
 
         assert result == repo_path
-        # Should call: git checkout . + git checkout main + git pull
-        assert mock_run.call_count == 3
+        # Should call: git checkout . + git checkout main + git pull --ff-only + git fetch --tags
+        assert mock_run.call_count == 4
 
     def test_setup_repository_pulls_when_exists(self, manager, tmp_path):
         repo_path = tmp_path / DEFAULT_REPO_NAME
@@ -90,5 +90,5 @@ class TestRepositoryManager:
             result = manager.setup_repository()
 
         assert result == repo_path
-        # Should call: git checkout . + git checkout main + git pull
-        assert mock_run.call_count == 3
+        # Should call: git checkout . + git checkout main + git pull --ff-only + git fetch --tags
+        assert mock_run.call_count == 4

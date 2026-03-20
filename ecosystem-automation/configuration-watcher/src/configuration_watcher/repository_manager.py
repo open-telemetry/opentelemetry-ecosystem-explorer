@@ -139,7 +139,14 @@ class RepositoryManager:
                 text=True,
             )
             subprocess.run(
-                ["git", "pull"],
+                ["git", "pull", "--ff-only"],
+                cwd=repo_path,
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            subprocess.run(
+                ["git", "fetch", "--tags"],
                 cwd=repo_path,
                 check=True,
                 capture_output=True,
