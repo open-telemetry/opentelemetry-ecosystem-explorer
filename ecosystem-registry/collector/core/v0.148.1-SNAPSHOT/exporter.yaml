@@ -13,9 +13,8 @@ components:
         alpha:
         - logs
         - metrics
-        - traces
-        development:
         - profiles
+        - traces
       distributions:
       - contrib
       - core
@@ -30,12 +29,12 @@ components:
     status:
       class: exporter
       stability:
+        alpha:
+        - profiles
         beta:
         - logs
         - metrics
         - traces
-        development:
-        - profiles
       distributions:
       - contrib
       - core
@@ -50,7 +49,7 @@ components:
     status:
       class: exporter
       stability:
-        development:
+        alpha:
         - profiles
         stable:
         - logs
@@ -68,7 +67,7 @@ components:
     status:
       class: exporter
       stability:
-        development:
+        alpha:
         - profiles
         stable:
         - logs
@@ -85,7 +84,7 @@ components:
     status:
       class: pkg
       stability:
-        development:
+        alpha:
         - profiles
       codeowners:
         active:

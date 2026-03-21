@@ -1,0 +1,358 @@
+latestSupportedFileFormat: 1.0.0-rc.2
+typeSupportStatuses:
+  - type: Aggregation
+    status: unknown
+    propertyOverrides: []
+  - type: AlwaysOffSampler
+    status: supported
+    propertyOverrides: []
+  - type: AlwaysOnSampler
+    status: supported
+    propertyOverrides: []
+  - type: AttributeLimits
+    status: unknown
+    propertyOverrides: []
+  - type: AttributeNameValue
+    status: supported
+    propertyOverrides: []
+  - type: AttributeType
+    status: supported
+    enumOverrides: []
+  - type: B3MultiPropagator
+    status: supported
+    propertyOverrides: []
+  - type: B3Propagator
+    status: supported
+    propertyOverrides: []
+  - type: BaggagePropagator
+    status: supported
+    propertyOverrides: []
+  - type: Base2ExponentialBucketHistogramAggregation
+    status: unknown
+    propertyOverrides: []
+  - type: BatchLogRecordProcessor
+    status: supported
+    propertyOverrides: []
+  - type: BatchSpanProcessor
+    status: supported
+    propertyOverrides: []
+  - type: CardinalityLimits
+    status: unknown
+    propertyOverrides: []
+  - type: ConsoleExporter
+    status: supported
+    propertyOverrides: []
+  - type: ConsoleMetricExporter
+    status: supported
+    propertyOverrides:
+      - property: default_histogram_aggregation
+        status: not_implemented
+      - property: temporality_preference
+        status: not_implemented
+  - type: DefaultAggregation
+    status: unknown
+    propertyOverrides: []
+  - type: Distribution
+    status: unknown
+    propertyOverrides: []
+  - type: DropAggregation
+    status: unknown
+    propertyOverrides: []
+  - type: ExemplarFilter
+    status: unknown
+    enumOverrides: []
+  - type: ExplicitBucketHistogramAggregation
+    status: unknown
+    propertyOverrides: []
+  - type: ExporterDefaultHistogramAggregation
+    status: unknown
+    enumOverrides: []
+  - type: ExporterTemporalityPreference
+    status: unknown
+    enumOverrides: []
+  - type: GrpcTls
+    status: unknown
+    propertyOverrides: []
+  - type: HttpTls
+    status: unknown
+    propertyOverrides: []
+  - type: IncludeExclude
+    status: unknown
+    propertyOverrides: []
+  - type: InstrumentType
+    status: unknown
+    enumOverrides: []
+  - type: LastValueAggregation
+    status: unknown
+    propertyOverrides: []
+  - type: LoggerProvider
+    status: unknown
+    propertyOverrides: []
+  - type: LogRecordExporter
+    status: supported
+    propertyOverrides:
+      - property: otlp_file/development
+        status: not_implemented
+  - type: LogRecordLimits
+    status: unknown
+    propertyOverrides: []
+  - type: LogRecordProcessor
+    status: unknown
+    propertyOverrides: []
+  - type: MeterProvider
+    status: unknown
+    propertyOverrides: []
+  - type: MetricProducer
+    status: unknown
+    propertyOverrides: []
+  - type: MetricReader
+    status: unknown
+    propertyOverrides: []
+  - type: NameStringValuePair
+    status: unknown
+    propertyOverrides: []
+  - type: OpenCensusMetricProducer
+    status: unknown
+    propertyOverrides: []
+  - type: OpenTelemetryConfiguration
+    status: unknown
+    propertyOverrides: []
+  - type: OtlpGrpcExporter
+    status: supported
+    propertyOverrides: []
+  - type: OtlpGrpcMetricExporter
+    status: supported
+    propertyOverrides:
+      - property: default_histogram_aggregation
+        status: not_implemented
+  - type: OtlpHttpEncoding
+    status: not_implemented
+    enumOverrides: []
+  - type: OtlpHttpExporter
+    status: supported
+    propertyOverrides:
+      - property: encoding
+        status: not_implemented
+  - type: OtlpHttpMetricExporter
+    status: supported
+    propertyOverrides:
+      - property: default_histogram_aggregation
+        status: not_implemented
+      - property: encoding
+        status: not_implemented
+  - type: ParentBasedSampler
+    status: supported
+    propertyOverrides: []
+  - type: PeriodicMetricReader
+    status: supported
+    propertyOverrides:
+      - property: cardinality_limits
+        status: not_implemented
+      - property: producers
+        status: not_implemented
+  - type: Propagator
+    status: supported
+    propertyOverrides: []
+  - type: PullMetricExporter
+    status: unknown
+    propertyOverrides: []
+  - type: PullMetricReader
+    status: unknown
+    propertyOverrides: []
+  - type: PushMetricExporter
+    status: unknown
+    propertyOverrides: []
+  - type: Resource
+    status: unknown
+    propertyOverrides: []
+  - type: Sampler
+    status: supported
+    propertyOverrides:
+      - property: composite/development
+        status: not_implemented
+      - property: jaeger_remote/development
+        status: not_implemented
+      - property: probability/development
+        status: not_implemented
+  - type: SeverityNumber
+    status: unknown
+    enumOverrides: []
+  - type: SimpleLogRecordProcessor
+    status: unknown
+    propertyOverrides: []
+  - type: SimpleSpanProcessor
+    status: supported
+    propertyOverrides: []
+  - type: SpanExporter
+    status: supported
+    propertyOverrides:
+      - property: otlp_file/development
+        status: not_implemented
+  - type: SpanKind
+    status: unknown
+    enumOverrides: []
+  - type: SpanLimits
+    status: unknown
+    propertyOverrides: []
+  - type: SpanProcessor
+    status: supported
+    propertyOverrides: []
+  - type: SumAggregation
+    status: unknown
+    propertyOverrides: []
+  - type: TextMapPropagator
+    status: supported
+    propertyOverrides: []
+  - type: TraceContextPropagator
+    status: supported
+    propertyOverrides: []
+  - type: TraceIdRatioBasedSampler
+    status: supported
+    propertyOverrides: []
+  - type: TracerProvider
+    status: unknown
+    propertyOverrides: []
+  - type: View
+    status: unknown
+    propertyOverrides: []
+  - type: ViewSelector
+    status: unknown
+    propertyOverrides: []
+  - type: ViewStream
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalCodeInstrumentation
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalComposableAlwaysOffSampler
+    status: not_implemented
+    propertyOverrides: []
+  - type: ExperimentalComposableAlwaysOnSampler
+    status: not_implemented
+    propertyOverrides: []
+  - type: ExperimentalComposableParentThresholdSampler
+    status: not_implemented
+    propertyOverrides: []
+  - type: ExperimentalComposableProbabilitySampler
+    status: not_implemented
+    propertyOverrides: []
+  - type: ExperimentalComposableRuleBasedSampler
+    status: not_implemented
+    propertyOverrides: []
+  - type: ExperimentalComposableRuleBasedSamplerRule
+    status: not_implemented
+    propertyOverrides: []
+  - type: ExperimentalComposableRuleBasedSamplerRuleAttributePatterns
+    status: not_implemented
+    propertyOverrides: []
+  - type: ExperimentalComposableRuleBasedSamplerRuleAttributeValues
+    status: not_implemented
+    propertyOverrides: []
+  - type: ExperimentalComposableSampler
+    status: not_implemented
+    propertyOverrides: []
+  - type: ExperimentalContainerResourceDetector
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalDbInstrumentation
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalGenAiInstrumentation
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalGeneralInstrumentation
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalHostResourceDetector
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalHttpClientInstrumentation
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalHttpInstrumentation
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalHttpServerInstrumentation
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalInstrumentation
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalJaegerRemoteSampler
+    status: not_implemented
+    propertyOverrides: []
+  - type: ExperimentalLanguageSpecificInstrumentation
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalLoggerConfig
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalLoggerConfigurator
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalLoggerMatcherAndConfig
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalMessagingInstrumentation
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalMeterConfig
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalMeterConfigurator
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalMeterMatcherAndConfig
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalOtlpFileExporter
+    status: not_implemented
+    propertyOverrides: []
+  - type: ExperimentalOtlpFileMetricExporter
+    status: not_implemented
+    propertyOverrides: []
+  - type: ExperimentalProbabilitySampler
+    status: not_implemented
+    propertyOverrides: []
+  - type: ExperimentalProcessResourceDetector
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalPrometheusMetricExporter
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalPrometheusTranslationStrategy
+    status: unknown
+    enumOverrides: []
+  - type: ExperimentalResourceDetection
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalResourceDetector
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalRpcInstrumentation
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalSanitization
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalSemconvConfig
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalServiceResourceDetector
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalSpanParent
+    status: unknown
+    enumOverrides: []
+  - type: ExperimentalTracerConfig
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalTracerConfigurator
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalTracerMatcherAndConfig
+    status: unknown
+    propertyOverrides: []
+  - type: ExperimentalUrlSanitization
+    status: unknown
+    propertyOverrides: []

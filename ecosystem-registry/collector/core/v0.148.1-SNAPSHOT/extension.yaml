@@ -19,7 +19,7 @@ components:
     status:
       class: pkg
       stability:
-        development:
+        alpha:
         - profiles
       codeowners: null
 - name: zpagesextension

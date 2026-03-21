@@ -46,6 +46,8 @@ components:
         emeritus:
         - gbbr
         - ankitpatel96
+      unsupported_platforms:
+      - aix
 - name: exceptionsconnector
   metadata:
     type: exceptions

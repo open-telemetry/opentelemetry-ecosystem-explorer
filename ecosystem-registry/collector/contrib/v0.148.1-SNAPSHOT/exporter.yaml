@@ -273,6 +273,8 @@ components:
         - gbbr
         - jackgopack4
         - ankitpatel96
+      unsupported_platforms:
+      - aix
 - name: datasetexporter
   metadata:
     type: dataset

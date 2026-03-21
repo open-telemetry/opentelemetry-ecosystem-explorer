@@ -10,12 +10,12 @@ components:
     status:
       class: receiver
       stability:
+        alpha:
+        - profiles
         beta:
         - logs
         - metrics
         - traces
-        development:
-        - profiles
       distributions:
       - contrib
       - core
@@ -29,7 +29,7 @@ components:
     status:
       class: receiver
       stability:
-        development:
+        alpha:
         - profiles
         stable:
         - logs
@@ -46,7 +46,7 @@ components:
     status:
       class: pkg
       stability:
-        development:
+        alpha:
         - profiles
       codeowners:
         active:

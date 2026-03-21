@@ -10,12 +10,12 @@ components:
     status:
       class: connector
       stability:
+        alpha:
+        - profiles_to_profiles
         beta:
         - logs_to_logs
         - metrics_to_metrics
         - traces_to_traces
-        development:
-        - profiles_to_profiles
       distributions:
       - contrib
       - core
@@ -26,7 +26,7 @@ components:
     status:
       class: pkg
       stability:
-        development:
+        alpha:
         - profiles
       codeowners:
         active:

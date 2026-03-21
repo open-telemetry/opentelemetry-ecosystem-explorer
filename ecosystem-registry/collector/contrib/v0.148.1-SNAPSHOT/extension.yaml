@@ -150,6 +150,8 @@ components:
         emeritus:
         - jackgopack4
         - ankitpatel96
+      unsupported_platforms:
+      - aix
 - name: avrologencodingextension
   subtype: encoding
   metadata:
