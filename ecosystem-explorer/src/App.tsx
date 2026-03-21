@@ -21,7 +21,7 @@ import { JavaAgentPage } from "@/features/java-agent/java-agent-page";
 import { CollectorPage } from "@/features/collector/collector-page";
 import { NotFoundPage } from "@/features/not-found/not-found-page";
 import { JavaInstrumentationListPage } from "@/features/java-agent/java-instrumentation-list-page";
-import { JavaConfigurationListPage } from "@/features/java-agent/java-configuration-list-page";
+import { JavaConfigurationBuilderPage } from "@/features/java-agent/configuration/java-configuration-builder-page";
 import { InstrumentationDetailPage } from "@/features/java-agent/instrumentation-detail-page";
 
 export default function App() {
@@ -38,7 +38,7 @@ export default function App() {
               path="/java-agent/instrumentation/:version/:name"
               element={<InstrumentationDetailPage />}
             />
-            <Route path="/java-agent/configuration" element={<JavaConfigurationListPage />} />
+            <Route path="/java-agent/configuration" element={<JavaConfigurationBuilderPage />} />
             <Route path="/collector" element={<CollectorPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
