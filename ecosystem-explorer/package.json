@@ -17,6 +17,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@radix-ui/react-tabs": "^1.1.13",
     "idb": "^8.0.3",
     "lucide-react": "^0.577.0",
     "react": "^19.2.0",
