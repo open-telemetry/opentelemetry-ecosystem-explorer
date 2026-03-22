@@ -11,38 +11,9 @@ Automation tools for the OpenTelemetry Ecosystem Explorer project.
 * **java-instrumentation-watcher**: Collects and aggregates metadata from the OpenTelemetry Java Instrumentation project
 * **explorer-db-builder**: Builds the database for the ecosystem explorer web application
 
-## Setup
+**Setup**: See [Contributing Guide](../CONTRIBUTING.md#getting-started) for project setup.
 
-This project uses [uv](https://github.com/astral-sh/uv) for dependency management.
-
-### Prerequisites
-
-* Python 3.11+
-* uv package manager
-
-Install uv if you don't have it:
-
-```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
-```
-
-### Installation
-
-From the repository root:
-
-```bash
-# Install all dependencies
-uv sync
-
-# Run tests
-uv run pytest
-
-# Run linting
-uv run ruff check .
-uv run ruff format .
-```
-
-### Running Tests
+## Running Tests
 
 ```bash
 # Run all tests

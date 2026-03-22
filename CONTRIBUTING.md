@@ -9,6 +9,21 @@ This project helps users discover and explore OpenTelemetry projects, instrument
 **No contribution is too small!** We value all forms of participation, from documentation improvements to code
 contributions. If you're new to open source or OpenTelemetry, don't hesitate to ask questions.
 
+## Quick Start
+
+Get running in 5 minutes:
+
+```bash
+git clone https://github.com/YOUR_USERNAME/opentelemetry-ecosystem-explorer.git
+cd opentelemetry-ecosystem-explorer
+uv sync --all-groups && npm install
+cd ecosystem-explorer && npm run dev
+# Visit http://localhost:5173
+```
+
+Now you can browse Java Agent instrumentations and Collector components locally. Continue reading for detailed setup
+and contribution guidelines.
+
 ## Finding Issues to Work On
 
 Look for issues tagged with:

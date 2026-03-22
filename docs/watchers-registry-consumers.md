@@ -1,4 +1,4 @@
-# Watchers and Synchronizers
+# Watchers and Registry Consumers
 
 Automation components in `ecosystem-automation` that handle the pipeline between source
 projects and the registry. Run as scheduled GitHub Actions or event-triggered workflows.
@@ -41,14 +41,17 @@ Every watcher must fulfill five critical functions:
 * **Consistent ordering**: Sort arrays deterministically, use stable JSON serialization
 * **Reproducible transformations**: Avoid random elements, use deterministic hashing, no timestamps in content
 
-## Synchronizers
+## Registry Consumers
 
-### opentelemetry.io Documentation Sync
+### explorer-db-builder
 
-Keeps opentelemetry.io documentation in sync with registry data:
+Converts raw registry data into content-addressed database for the web application.
 
-1. Read latest registry data
-2. Generate pages using marker-based content replacement
-3. Create pull request to opentelemetry.io
+**Process**:
 
-**Use cases**: Instrumentation reference pages, configuration options, component listings
+1. Reads latest registry data (YAML metadata files)
+2. Generates content-addressed JSON files (named by SHA-256 hash)
+3. Creates version manifests mapping component IDs to content hashes
+4. Outputs to `ecosystem-explorer/public/data/`
+
+Runs nightly via GitHub Actions to rebuild database when registry updates.
