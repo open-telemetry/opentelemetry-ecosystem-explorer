@@ -14,15 +14,14 @@
 #
 """Inventory management for Java instrumentation tracking."""
 
-import shutil
-from pathlib import Path
 from typing import Any
 
 import yaml
 from semantic_version import Version
+from watcher_common.inventory_manager import BaseInventoryManager
 
 
-class InventoryManager:
+class InventoryManager(BaseInventoryManager):
     """Manages Java instrumentation inventory storage and retrieval."""
 
     FILE_NAME = "instrumentation.yaml"
@@ -32,19 +31,20 @@ class InventoryManager:
         Args:
             inventory_dir: Base directory for versioned metadata
         """
-        self.inventory_dir = Path(inventory_dir)
+        super().__init__(inventory_dir)
 
-    def get_version_dir(self, version: Version) -> Path:
+    def version_exists(self, version: Version) -> bool:
         """
-        Get the directory path for a specific version.
+        Check if a specific version exists.
 
         Args:
-            version: Version object
+            version: Version to check
 
         Returns:
-            Path to version directory (with 'v' prefix)
+            True if version directory and instrumentation file exist
         """
-        return self.inventory_dir / f"v{version}"
+        version_dir = self.get_version_dir(version)
+        return version_dir.exists() and (version_dir / self.FILE_NAME).exists()
 
     def save_versioned_inventory(self, version: Version, instrumentations: dict[str, Any]) -> None:
         """
@@ -88,68 +88,3 @@ class InventoryManager:
         with open(file_path) as f:
             data = yaml.safe_load(f) or {}
             return data
-
-    def list_versions(self) -> list[Version]:
-        """
-        List all available versions.
-
-        Returns:
-            List of versions, sorted newest to oldest
-        """
-        if not self.inventory_dir.exists():
-            return []
-
-        versions = []
-        for item in self.inventory_dir.iterdir():
-            if item.is_dir():
-                try:
-                    # Parse version string, stripping 'v' prefix
-                    # Handles "v2.10.0", "v2.11.0-SNAPSHOT"
-                    version = Version(item.name.lstrip("v"))
-                    versions.append(version)
-                except ValueError:
-                    # Skip directories that don't match version format
-                    continue
-
-        return sorted(versions, reverse=True)
-
-    def list_snapshot_versions(self) -> list[Version]:
-        """
-        List all snapshot versions.
-
-        Returns:
-            List of snapshot versions
-        """
-        all_versions = self.list_versions()
-        return [v for v in all_versions if v.prerelease]
-
-    def cleanup_snapshots(self) -> int:
-        """
-        Remove all snapshot versions.
-
-        Returns:
-            Number of snapshot versions removed
-        """
-        snapshots = self.list_snapshot_versions()
-        count = 0
-
-        for snapshot in snapshots:
-            snapshot_dir = self.get_version_dir(snapshot)
-            if snapshot_dir.exists():
-                shutil.rmtree(snapshot_dir)
-                count += 1
-
-        return count
-
-    def version_exists(self, version: Version) -> bool:
-        """
-        Check if a specific version exists.
-
-        Args:
-            version: Version to check
-
-        Returns:
-            True if version directory exists
-        """
-        version_dir = self.get_version_dir(version)
-        return version_dir.exists() and (version_dir / self.FILE_NAME).exists()

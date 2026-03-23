@@ -78,7 +78,7 @@ def mock_repo():
         pass
 
     yield repo_path
-    shutil.rmtree(temp_path)
+    shutil.rmtree(temp_path, ignore_errors=True)
 
 
 class TestRepositoryManager:
@@ -114,14 +114,14 @@ class TestRepositoryManager:
 
         assert path is None
 
-    @patch("collector_watcher.repository_manager.subprocess.run")
+    @patch("watcher_common.repository_manager.subprocess.run")
     def test_clone_repository(self, mock_run, temp_dir):
         manager = RepositoryManager(str(temp_dir))
         target_path = temp_dir / "opentelemetry-collector-core"
 
         mock_run.return_value = MagicMock(returncode=0)
 
-        manager._clone_repository("core", target_path)
+        manager._clone_repository(REPO_URLS["core"], target_path)
 
         mock_run.assert_called_once_with(
             ["git", "clone", REPO_URLS["core"], str(target_path)],
@@ -130,7 +130,7 @@ class TestRepositoryManager:
             text=True,
         )
 
-    @patch("collector_watcher.repository_manager.subprocess.run")
+    @patch("watcher_common.repository_manager.subprocess.run")
     def test_clone_repository_failure_raises_runtime_error(self, mock_run, temp_dir):
         manager = RepositoryManager(str(temp_dir))
         target_path = temp_dir / "opentelemetry-collector-core"
@@ -138,9 +138,9 @@ class TestRepositoryManager:
         mock_run.side_effect = subprocess.CalledProcessError(1, "git clone", stderr="Clone failed")
 
         with pytest.raises(RuntimeError, match="Failed to clone"):
-            manager._clone_repository("core", target_path)
+            manager._clone_repository(REPO_URLS["core"], target_path)
 
-    @patch("collector_watcher.repository_manager.subprocess.run")
+    @patch("watcher_common.repository_manager.subprocess.run")
     def test_pull_latest(self, mock_run, temp_dir):
         manager = RepositoryManager(str(temp_dir))
         mock_run.return_value = MagicMock(returncode=0)
@@ -151,7 +151,7 @@ class TestRepositoryManager:
         assert mock_run.call_args_list[0][0][0] == ["git", "checkout", "main"]
         assert mock_run.call_args_list[1][0][0] == ["git", "pull"]
 
-    @patch("collector_watcher.repository_manager.subprocess.run")
+    @patch("watcher_common.repository_manager.subprocess.run")
     def test_pull_latest_failure_raises_runtime_error(self, mock_run, temp_dir):
         manager = RepositoryManager(str(temp_dir))
         mock_run.side_effect = subprocess.CalledProcessError(1, "git pull", stderr="Pull failed")
@@ -159,7 +159,7 @@ class TestRepositoryManager:
         with pytest.raises(RuntimeError, match="Failed to pull"):
             manager._pull_latest(temp_dir)
 
-    @patch("collector_watcher.repository_manager.subprocess.run")
+    @patch("watcher_common.repository_manager.subprocess.run")
     def test_checkout_specified_version(self, mock_run, temp_dir):
         manager = RepositoryManager(str(temp_dir))
         version = Version("1.0.0")
@@ -171,7 +171,7 @@ class TestRepositoryManager:
         assert mock_run.call_args_list[0][0][0] == ["git", "fetch", "--tags"]
         assert mock_run.call_args_list[1][0][0] == ["git", "checkout", "v1.0.0"]
 
-    @patch("collector_watcher.repository_manager.subprocess.run")
+    @patch("watcher_common.repository_manager.subprocess.run")
     def test_checkout_version_failure_raises_runtime_error(self, mock_run, temp_dir):
         manager = RepositoryManager(str(temp_dir))
         version = Version("1.0.0")
@@ -188,7 +188,7 @@ class TestRepositoryManager:
 
         assert path == mock_repo
 
-    @patch("collector_watcher.repository_manager.subprocess.run")
+    @patch("watcher_common.repository_manager.subprocess.run")
     def test_setup_repository_with_env_var_and_version(self, mock_run, mock_repo, monkeypatch):
         monkeypatch.setenv(ENV_VAR_NAMES["core"], str(mock_repo))
         version = Version("1.0.0")
@@ -201,7 +201,7 @@ class TestRepositoryManager:
         # Should have called git fetch and git checkout
         assert mock_run.call_count == 2
 
-    @patch("collector_watcher.repository_manager.subprocess.run")
+    @patch("watcher_common.repository_manager.subprocess.run")
     def test_setup_repository_clones_when_not_exists(self, mock_run, temp_dir):
         manager = RepositoryManager(str(temp_dir))
         mock_run.return_value = MagicMock(returncode=0)
@@ -215,7 +215,7 @@ class TestRepositoryManager:
         assert mock_run.call_args[0][0][0] == "git"
         assert mock_run.call_args[0][0][1] == "clone"
 
-    @patch("collector_watcher.repository_manager.subprocess.run")
+    @patch("watcher_common.repository_manager.subprocess.run")
     def test_setup_repository_pulls_when_exists(self, mock_run, temp_dir):
         manager = RepositoryManager(str(temp_dir))
         repo_path = temp_dir / "opentelemetry-collector-core"
@@ -230,7 +230,7 @@ class TestRepositoryManager:
         # Should have called git checkout and git pull
         assert mock_run.call_count == 2
 
-    @patch("collector_watcher.repository_manager.subprocess.run")
+    @patch("watcher_common.repository_manager.subprocess.run")
     def test_setup_repository_no_update_when_exists(self, mock_run, temp_dir):
         """Test setup skips pull when update=False."""
         manager = RepositoryManager(str(temp_dir))
@@ -244,7 +244,7 @@ class TestRepositoryManager:
         # Should not have called git commands
         mock_run.assert_not_called()
 
-    @patch("collector_watcher.repository_manager.subprocess.run")
+    @patch("watcher_common.repository_manager.subprocess.run")
     def test_setup_repository_with_version(self, mock_run, temp_dir):
         manager = RepositoryManager(str(temp_dir))
         version = Version("1.2.3")
@@ -257,7 +257,7 @@ class TestRepositoryManager:
         # Should have called git clone, fetch, and checkout
         assert mock_run.call_count == 3
 
-    @patch("collector_watcher.repository_manager.subprocess.run")
+    @patch("watcher_common.repository_manager.subprocess.run")
     def test_setup_all_repositories(self, mock_run, temp_dir):
         manager = RepositoryManager(str(temp_dir))
         mock_run.return_value = MagicMock(returncode=0)
@@ -271,7 +271,7 @@ class TestRepositoryManager:
         # Should have cloned both repos
         assert mock_run.call_count == 2
 
-    @patch("collector_watcher.repository_manager.subprocess.run")
+    @patch("watcher_common.repository_manager.subprocess.run")
     def test_setup_all_repositories_with_version(self, mock_run, temp_dir):
         manager = RepositoryManager(str(temp_dir))
         version = Version("1.0.0")
@@ -290,7 +290,7 @@ class TestRepositoryManager:
         base_dir = temp_dir / "nested" / "repos"
         manager = RepositoryManager(str(base_dir))
 
-        with patch("collector_watcher.repository_manager.subprocess.run") as mock_run:
+        with patch("watcher_common.repository_manager.subprocess.run") as mock_run:
             mock_run.return_value = MagicMock(returncode=0)
             manager.setup_repository("core", update=False)
 

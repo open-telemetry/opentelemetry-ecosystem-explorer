@@ -12,6 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-from watcher_common.version_detector import VersionDetector
-
-__all__ = ["VersionDetector"]
+"""Shared utilities for OpenTelemetry ecosystem watchers."""

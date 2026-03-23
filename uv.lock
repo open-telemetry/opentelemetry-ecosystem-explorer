@@ -9,6 +9,7 @@ members = [
     "explorer-db-builder",
     "java-instrumentation-watcher",
     "opentelemetry-ecosystem-explorer",
+    "watcher-common",
 ]
 
 [[package]]
@@ -197,6 +198,7 @@ dependencies = [
     { name = "pygithub" },
     { name = "pyyaml" },
     { name = "semantic-version" },
+    { name = "watcher-common" },
 ]
 
 [package.optional-dependencies]
@@ -213,6 +215,7 @@ requires-dist = [
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.1.0" },
     { name = "pyyaml", specifier = ">=6.0.1" },
     { name = "semantic-version", specifier = ">=2.10.0" },
+    { name = "watcher-common", editable = "ecosystem-automation/watcher-common" },
 ]
 provides-extras = ["dev"]
 
@@ -233,6 +236,7 @@ dependencies = [
     { name = "gitpython" },
     { name = "pyyaml" },
     { name = "semantic-version" },
+    { name = "watcher-common" },
 ]
 
 [package.optional-dependencies]
@@ -248,6 +252,7 @@ requires-dist = [
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.1.0" },
     { name = "pyyaml", specifier = ">=6.0.1" },
     { name = "semantic-version", specifier = ">=2.10.0" },
+    { name = "watcher-common", editable = "ecosystem-automation/watcher-common" },
 ]
 provides-extras = ["dev"]
 
@@ -517,6 +522,7 @@ dependencies = [
     { name = "pyyaml" },
     { name = "requests" },
     { name = "semantic-version" },
+    { name = "watcher-common" },
 ]
 
 [package.optional-dependencies]
@@ -532,6 +538,7 @@ requires-dist = [
     { name = "pyyaml", specifier = ">=6.0.1" },
     { name = "requests", specifier = ">=2.31.0" },
     { name = "semantic-version", specifier = ">=2.10.0" },
+    { name = "watcher-common", editable = "ecosystem-automation/watcher-common" },
 ]
 provides-extras = ["dev"]
 
@@ -947,3 +954,29 @@ sdist = { url = "https://files.pythonhosted.org/packages/aa/92/58199fe10049f9703
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c6/59/7d02447a55b2e55755011a647479041bc92a82e143f96a8195cb33bd0a1c/virtualenv-21.2.0-py3-none-any.whl", hash = "sha256:1bd755b504931164a5a496d217c014d098426cddc79363ad66ac78125f9d908f", size = 5825084, upload-time = "2026-03-09T17:24:35.378Z" },
 ]
+
+[[package]]
+name = "watcher-common"
+version = "0.1.0"
+source = { editable = "ecosystem-automation/watcher-common" }
+dependencies = [
+    { name = "gitpython" },
+    { name = "pyyaml" },
+    { name = "semantic-version" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "pytest" },
+    { name = "pytest-cov" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "gitpython", specifier = ">=3.1.40" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
+    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.1.0" },
+    { name = "pyyaml", specifier = ">=6.0.1" },
+    { name = "semantic-version", specifier = ">=2.10.0" },
+]
+provides-extras = ["dev"]

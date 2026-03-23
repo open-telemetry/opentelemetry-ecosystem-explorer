@@ -1,18 +1,13 @@
 [project]
-name = "collector-watcher"
+name = "watcher-common"
 version = "0.1.0"
-description = "Automation tool for watching and collecting OpenTelemetry Collector component metadata"
+description = "Shared utilities for OpenTelemetry ecosystem watchers"
 requires-python = ">=3.11"
 dependencies = [
     "PyYAML>=6.0.1",
     "GitPython>=3.1.40",
-    "PyGithub>=2.1.1",
     "semantic-version>=2.10.0",
-    "watcher-common",
 ]
-
-[project.scripts]
-collector-watcher = "collector_watcher.main:main"
 
 [project.optional-dependencies]
 dev = [
@@ -24,8 +19,5 @@ dev = [
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.uv.sources]
-watcher-common = { workspace = true }
-
 [tool.hatch.build.targets.wheel]
-packages = ["src/collector_watcher"]
+packages = ["src/watcher_common"]
