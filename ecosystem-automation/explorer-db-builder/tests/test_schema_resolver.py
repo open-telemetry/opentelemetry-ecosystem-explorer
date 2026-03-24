@@ -340,3 +340,71 @@ class TestCircularRefDetection:
         root_sampler = result["properties"]["sampler"]["properties"]["parent_based"]["properties"]["root"]
         assert root_sampler["$circular_ref"] == "#/$defs/Sampler"
         assert root_sampler["description"] == "Sampler for root spans"
+
+
+class TestDefsStripping:
+    def test_top_level_defs_stripped(self):
+        registry = {
+            "root.yaml": {
+                "type": "object",
+                "properties": {
+                    "x": {"$ref": "#/$defs/X"},
+                },
+                "$defs": {
+                    "X": {"type": "string"},
+                },
+            },
+        }
+        resolver = SchemaResolver(registry)
+        result = resolver.resolve("root.yaml")
+
+        assert "$defs" not in result
+
+    def test_nested_defs_stripped(self):
+        registry = {
+            "root.yaml": {
+                "$defs": {
+                    "Other": {"$ref": "other.yaml"},
+                },
+                "properties": {
+                    "x": {"$ref": "#/$defs/Other"},
+                },
+            },
+            "other.yaml": {
+                "type": "object",
+                "properties": {
+                    "y": {"$ref": "#/$defs/Inner"},
+                },
+                "$defs": {
+                    "Inner": {"type": "number"},
+                },
+            },
+        }
+        resolver = SchemaResolver(registry)
+        result = resolver.resolve("root.yaml")
+
+        assert "$defs" not in result
+        assert "$defs" not in result["properties"]["x"]
+
+    def test_non_defs_keys_preserved(self):
+        registry = {
+            "root.yaml": {
+                "type": "object",
+                "additionalProperties": True,
+                "description": "Root",
+                "properties": {
+                    "a": {"type": "string"},
+                },
+                "$defs": {
+                    "Unused": {"type": "integer"},
+                },
+            },
+        }
+        resolver = SchemaResolver(registry)
+        result = resolver.resolve("root.yaml")
+
+        assert result["type"] == "object"
+        assert result["additionalProperties"] is True
+        assert result["description"] == "Root"
+        assert result["properties"]["a"] == {"type": "string"}
+        assert "$defs" not in result
