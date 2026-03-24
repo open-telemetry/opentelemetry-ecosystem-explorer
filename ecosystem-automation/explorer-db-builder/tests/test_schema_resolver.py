@@ -14,7 +14,11 @@
 #
 """Tests for schema resolver."""
 
+import json
+from pathlib import Path
+
 import pytest
+import yaml
 from explorer_db_builder.schema_resolver import SchemaResolver
 
 
@@ -408,3 +412,56 @@ class TestDefsStripping:
         assert result["description"] == "Root"
         assert result["properties"]["a"] == {"type": "string"}
         assert "$defs" not in result
+
+
+class TestIntegrationWithRealSchemas:
+    SCHEMA_DIR = Path(__file__).parent.parent.parent.parent / "ecosystem-registry" / "configuration" / "v1.0.0"
+
+    @pytest.mark.skipif(
+        not (Path(__file__).parent.parent.parent.parent / "ecosystem-registry" / "configuration" / "v1.0.0").exists(),
+        reason="Real schema files not available",
+    )
+    def test_resolve_real_v1_schema(self):
+        registry = {}
+        for yaml_file in sorted(self.SCHEMA_DIR.glob("*.yaml")):
+            with open(yaml_file) as f:
+                registry[yaml_file.name] = yaml.safe_load(f)
+
+        resolver = SchemaResolver(registry)
+        result = resolver.resolve("opentelemetry_configuration.yaml")
+
+        assert result["type"] == "object"
+        assert "properties" in result
+        assert "$defs" not in result
+        assert "file_format" in result["properties"]
+        assert "tracer_provider" in result["properties"]
+        assert "meter_provider" in result["properties"]
+        assert "propagator" in result["properties"]
+
+        # Refs resolved, not left as $ref strings
+        propagator = result["properties"]["propagator"]
+        assert "$ref" not in propagator
+        assert "properties" in propagator or "type" in propagator
+
+        # Sampler has known cycles
+        tracer = result["properties"]["tracer_provider"]
+        sampler = tracer["properties"]["sampler"]
+        parent_based = sampler["properties"]["parent_based"]
+        root_sampler = parent_based["properties"]["root"]
+        assert "$circular_ref" in root_sampler
+
+    @pytest.mark.skipif(
+        not (Path(__file__).parent.parent.parent.parent / "ecosystem-registry" / "configuration" / "v1.0.0").exists(),
+        reason="Real schema files not available",
+    )
+    def test_resolved_schema_serializes_to_json(self):
+        registry = {}
+        for yaml_file in sorted(self.SCHEMA_DIR.glob("*.yaml")):
+            with open(yaml_file) as f:
+                registry[yaml_file.name] = yaml.safe_load(f)
+
+        resolver = SchemaResolver(registry)
+        result = resolver.resolve("opentelemetry_configuration.yaml")
+
+        json_str = json.dumps(result, indent=2, sort_keys=True)
+        assert len(json_str) > 1000
