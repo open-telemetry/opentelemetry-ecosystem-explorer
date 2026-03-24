@@ -4,7 +4,6 @@ version = "0.1.0"
 description = "Shared utilities for OpenTelemetry ecosystem watchers"
 requires-python = ">=3.11"
 dependencies = [
-    "PyYAML>=6.0.1",
     "GitPython>=3.1.40",
     "semantic-version>=2.10.0",
 ]

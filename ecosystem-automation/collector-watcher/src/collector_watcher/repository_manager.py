@@ -43,7 +43,7 @@ ENV_VAR_NAMES = {
 class RepositoryManager(BaseRepositoryManager):
     """Manages OpenTelemetry Collector repository locations and setup."""
 
-    def get_repository_path(self, distribution: DistributionName) -> Optional[Path]:  # type: ignore[override]
+    def get_repository_path(self, distribution: DistributionName) -> Optional[Path]:
         """
         Get the path to a repository from environment variable.
 
@@ -53,7 +53,7 @@ class RepositoryManager(BaseRepositoryManager):
         Returns:
             Path if environment variable is set and path exists, None otherwise
         """
-        return super().get_repository_path(ENV_VAR_NAMES[distribution])
+        return super()._get_repository_path(ENV_VAR_NAMES[distribution])
 
     def setup_repository(
         self,

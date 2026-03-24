@@ -18,8 +18,8 @@ from pathlib import Path
 
 import git
 import pytest
-from collector_watcher.version_detector import VersionDetector
 from semantic_version import Version
+from watcher_common.version_detector import VersionDetector
 
 
 @pytest.fixture

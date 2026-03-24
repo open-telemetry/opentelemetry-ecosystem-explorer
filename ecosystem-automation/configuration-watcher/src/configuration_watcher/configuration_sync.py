@@ -20,10 +20,10 @@ from pathlib import Path
 from typing import Any
 
 from semantic_version import Version
+from watcher_common.version_detector import VersionDetector
 
 from .inventory_manager import InventoryManager
 from .schema_copier import SchemaCopier
-from .version_detector import VersionDetector
 
 logger = logging.getLogger(__name__)
 

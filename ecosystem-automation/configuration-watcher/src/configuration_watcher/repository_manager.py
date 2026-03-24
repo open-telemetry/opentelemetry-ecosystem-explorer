@@ -30,14 +30,14 @@ DEFAULT_REPO_NAME = "opentelemetry-configuration"
 class RepositoryManager(BaseRepositoryManager):
     """Manages OpenTelemetry configuration repository location and setup."""
 
-    def get_repository_path(self) -> Path | None:  # type: ignore[override]
+    def get_repository_path(self) -> Path | None:
         """
         Get the path to a repository from environment variable.
 
         Returns:
             Path if environment variable is set and path exists, None otherwise
         """
-        return super().get_repository_path(ENV_VAR_NAME)
+        return super()._get_repository_path(ENV_VAR_NAME)
 
     def setup_repository(self) -> Path:
         """

@@ -45,7 +45,7 @@ class BaseRepositoryManager:
         """
         self.base_dir = Path(base_dir) if base_dir else Path(DEFAULT_REPOS_DIR)
 
-    def get_repository_path(self, env_var_name: str) -> Path | None:
+    def _get_repository_path(self, env_var_name: str) -> Path | None:
         """
         Get the path to a repository from an environment variable.
 

@@ -961,7 +961,6 @@ version = "0.1.0"
 source = { editable = "ecosystem-automation/watcher-common" }
 dependencies = [
     { name = "gitpython" },
-    { name = "pyyaml" },
     { name = "semantic-version" },
 ]
 
@@ -976,7 +975,6 @@ requires-dist = [
     { name = "gitpython", specifier = ">=3.1.40" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.1.0" },
-    { name = "pyyaml", specifier = ">=6.0.1" },
     { name = "semantic-version", specifier = ">=2.10.0" },
 ]
 provides-extras = ["dev"]
