@@ -60,7 +60,15 @@ class SchemaResolver:
                 target = target[part]
             return copy.deepcopy(target)
 
-        raise ValueError(f"Unsupported $ref format: {ref}")
+        if "#" in ref:
+            file_name, fragment = ref.split("#", 1)
+            target = self._registry[file_name]
+            path_parts = fragment.lstrip("/").split("/")
+            for part in path_parts:
+                target = target[part]
+            return copy.deepcopy(target)
+
+        return copy.deepcopy(self._registry[ref])
 
     def _ref_file(self, ref: str, current_file: str) -> str:
         if ref.startswith("#/"):

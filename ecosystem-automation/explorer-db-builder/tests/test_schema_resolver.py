@@ -72,3 +72,96 @@ class TestResolveInternalRefs:
 
         with pytest.raises(KeyError, match="Missing"):
             resolver.resolve("root.yaml")
+
+
+class TestResolveCrossFileRefs:
+    def test_resolve_cross_file_whole(self):
+        registry = {
+            "root.yaml": {
+                "$defs": {
+                    "Other": {"$ref": "other.yaml"},
+                },
+                "properties": {
+                    "x": {"$ref": "#/$defs/Other"},
+                },
+            },
+            "other.yaml": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string"},
+                },
+            },
+        }
+        resolver = SchemaResolver(registry)
+        result = resolver.resolve("root.yaml")
+
+        assert result["properties"]["x"] == {
+            "type": "object",
+            "properties": {
+                "name": {"type": "string"},
+            },
+        }
+
+    def test_resolve_cross_file_with_path(self):
+        registry = {
+            "root.yaml": {
+                "properties": {
+                    "encoding": {"$ref": "common.yaml#/$defs/Encoding"},
+                },
+            },
+            "common.yaml": {
+                "$defs": {
+                    "Encoding": {
+                        "type": "string",
+                        "enum": ["json", "protobuf"],
+                    },
+                },
+            },
+        }
+        resolver = SchemaResolver(registry)
+        result = resolver.resolve("root.yaml")
+
+        assert result["properties"]["encoding"] == {
+            "type": "string",
+            "enum": ["json", "protobuf"],
+        }
+
+    def test_resolve_cross_file_not_found(self):
+        registry = {
+            "root.yaml": {
+                "properties": {
+                    "x": {"$ref": "missing.yaml"},
+                },
+            },
+        }
+        resolver = SchemaResolver(registry)
+
+        with pytest.raises(KeyError, match="missing.yaml"):
+            resolver.resolve("root.yaml")
+
+    def test_resolve_cross_file_chain(self):
+        registry = {
+            "root.yaml": {
+                "properties": {
+                    "exporter": {"$ref": "exporter.yaml"},
+                },
+            },
+            "exporter.yaml": {
+                "type": "object",
+                "properties": {
+                    "endpoint": {"$ref": "common.yaml#/$defs/Endpoint"},
+                },
+            },
+            "common.yaml": {
+                "$defs": {
+                    "Endpoint": {"type": "string", "description": "URL"},
+                },
+            },
+        }
+        resolver = SchemaResolver(registry)
+        result = resolver.resolve("root.yaml")
+
+        assert result["properties"]["exporter"]["properties"]["endpoint"] == {
+            "type": "string",
+            "description": "URL",
+        }
