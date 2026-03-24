@@ -232,3 +232,111 @@ class TestSiblingMerging:
         result = resolver.resolve("root.yaml")
 
         assert result["properties"]["foo"] == {"type": "integer", "minimum": 0}
+
+
+class TestCircularRefDetection:
+    def test_direct_self_reference(self):
+        registry = {
+            "root.yaml": {
+                "properties": {
+                    "self": {"$ref": "#/$defs/A"},
+                },
+                "$defs": {
+                    "A": {
+                        "type": "object",
+                        "properties": {
+                            "nested": {"$ref": "#/$defs/A"},
+                        },
+                    },
+                },
+            },
+        }
+        resolver = SchemaResolver(registry)
+        result = resolver.resolve("root.yaml")
+
+        assert result["properties"]["self"]["properties"]["nested"] == {"$circular_ref": "#/$defs/A"}
+
+    def test_indirect_cycle(self):
+        registry = {
+            "root.yaml": {
+                "properties": {
+                    "start": {"$ref": "#/$defs/A"},
+                },
+                "$defs": {
+                    "A": {
+                        "type": "object",
+                        "properties": {
+                            "b": {"$ref": "#/$defs/B"},
+                        },
+                    },
+                    "B": {
+                        "type": "object",
+                        "properties": {
+                            "a": {"$ref": "#/$defs/A"},
+                        },
+                    },
+                },
+            },
+        }
+        resolver = SchemaResolver(registry)
+        result = resolver.resolve("root.yaml")
+
+        assert result["properties"]["start"]["properties"]["b"]["properties"]["a"] == {"$circular_ref": "#/$defs/A"}
+
+    def test_cross_file_circular_ref(self):
+        registry = {
+            "root.yaml": {
+                "properties": {
+                    "x": {"$ref": "a.yaml"},
+                },
+            },
+            "a.yaml": {
+                "type": "object",
+                "properties": {
+                    "y": {"$ref": "b.yaml"},
+                },
+            },
+            "b.yaml": {
+                "type": "object",
+                "properties": {
+                    "z": {"$ref": "a.yaml"},
+                },
+            },
+        }
+        resolver = SchemaResolver(registry)
+        result = resolver.resolve("root.yaml")
+
+        assert result["properties"]["x"]["properties"]["y"]["properties"]["z"] == {"$circular_ref": "a.yaml"}
+
+    def test_sampler_like_cycle(self):
+        """Simulates the real Sampler -> ParentBased -> root -> Sampler cycle."""
+        registry = {
+            "root.yaml": {
+                "properties": {
+                    "sampler": {"$ref": "#/$defs/Sampler"},
+                },
+                "$defs": {
+                    "Sampler": {
+                        "type": "object",
+                        "properties": {
+                            "parent_based": {"$ref": "#/$defs/ParentBasedSampler"},
+                        },
+                    },
+                    "ParentBasedSampler": {
+                        "type": "object",
+                        "properties": {
+                            "root": {
+                                "$ref": "#/$defs/Sampler",
+                                "description": "Sampler for root spans",
+                            },
+                        },
+                    },
+                },
+            },
+        }
+        resolver = SchemaResolver(registry)
+        result = resolver.resolve("root.yaml")
+
+        root_sampler = result["properties"]["sampler"]["properties"]["parent_based"]["properties"]["root"]
+        assert root_sampler["$circular_ref"] == "#/$defs/Sampler"
+        assert root_sampler["description"] == "Sampler for root spans"

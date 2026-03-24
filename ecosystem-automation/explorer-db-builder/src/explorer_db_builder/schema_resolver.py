@@ -43,14 +43,24 @@ class SchemaResolver:
         ref_value = node["$ref"]
         siblings = {k: self._resolve_node(v, current_file) for k, v in node.items() if k != "$ref"}
 
-        resolved = self._lookup_ref(ref_value, current_file)
-
-        if isinstance(resolved, dict):
-            resolved = self._resolve_node(resolved, self._ref_file(ref_value, current_file))
+        if ref_value in self._resolution_stack:
+            marker = {"$circular_ref": ref_value}
             if siblings:
-                return {**resolved, **siblings}
+                marker.update(siblings)
+            return marker
+
+        self._resolution_stack.append(ref_value)
+        try:
+            resolved = self._lookup_ref(ref_value, current_file)
+
+            if isinstance(resolved, dict):
+                resolved = self._resolve_node(resolved, self._ref_file(ref_value, current_file))
+                if siblings:
+                    return {**resolved, **siblings}
+                return resolved
             return resolved
-        return resolved
+        finally:
+            self._resolution_stack.pop()
 
     def _lookup_ref(self, ref: str, current_file: str) -> Any:
         if ref.startswith("#/"):
