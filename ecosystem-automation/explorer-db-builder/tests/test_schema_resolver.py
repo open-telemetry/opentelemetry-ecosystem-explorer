@@ -165,3 +165,70 @@ class TestResolveCrossFileRefs:
             "type": "string",
             "description": "URL",
         }
+
+
+class TestSiblingMerging:
+    def test_sibling_properties_override_ref(self):
+        registry = {
+            "root.yaml": {
+                "properties": {
+                    "log_level": {
+                        "$ref": "common.yaml#/$defs/Severity",
+                        "description": "Override description",
+                        "defaultBehavior": "INFO is used",
+                    },
+                },
+            },
+            "common.yaml": {
+                "$defs": {
+                    "Severity": {
+                        "type": "string",
+                        "description": "Original description",
+                        "enum": ["debug", "info", "warn", "error"],
+                    },
+                },
+            },
+        }
+        resolver = SchemaResolver(registry)
+        result = resolver.resolve("root.yaml")
+
+        log_level = result["properties"]["log_level"]
+        assert log_level["description"] == "Override description"
+        assert log_level["defaultBehavior"] == "INFO is used"
+        assert log_level["type"] == "string"
+        assert log_level["enum"] == ["debug", "info", "warn", "error"]
+
+    def test_non_dict_ref_ignores_siblings(self):
+        registry = {
+            "root.yaml": {
+                "properties": {
+                    "x": {
+                        "$ref": "#/$defs/Val",
+                        "description": "ignored",
+                    },
+                },
+                "$defs": {
+                    "Val": "plain_string_value",
+                },
+            },
+        }
+        resolver = SchemaResolver(registry)
+        result = resolver.resolve("root.yaml")
+
+        assert result["properties"]["x"] == "plain_string_value"
+
+    def test_ref_only_no_siblings(self):
+        registry = {
+            "root.yaml": {
+                "properties": {
+                    "foo": {"$ref": "#/$defs/Foo"},
+                },
+                "$defs": {
+                    "Foo": {"type": "integer", "minimum": 0},
+                },
+            },
+        }
+        resolver = SchemaResolver(registry)
+        result = resolver.resolve("root.yaml")
+
+        assert result["properties"]["foo"] == {"type": "integer", "minimum": 0}
