@@ -108,7 +108,7 @@ def _map_node(
     """Recursively map a schema node to a UI node."""
     control_type = _classify_node(node)
     path = f"{parent_path}.{key}" if parent_path else key
-    if key == "root":
+    if key == "root" and parent_path == "":
         path = ""
 
     effective_type, nullable = _extract_type_info(node)

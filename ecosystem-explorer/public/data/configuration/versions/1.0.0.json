@@ -3537,7 +3537,7 @@
                       "description": "Sampler to use when there is no parent.",
                       "key": "root",
                       "label": "Root",
-                      "path": "",
+                      "path": "tracer_provider.sampler.composite/development.parent_threshold.root",
                       "refType": "ExperimentalComposableSampler",
                       "required": true
                     }
@@ -3757,7 +3757,7 @@
                   "description": "Configure root sampler.\n",
                   "key": "root",
                   "label": "Root",
-                  "path": "",
+                  "path": "tracer_provider.sampler.parent_based.root",
                   "refType": "Sampler"
                 },
                 {

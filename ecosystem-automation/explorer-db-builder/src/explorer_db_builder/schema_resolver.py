@@ -43,13 +43,15 @@ class SchemaResolver:
         ref_value = node["$ref"]
         siblings = {k: self._resolve_node(v, current_file) for k, v in node.items() if k != "$ref"}
 
-        if ref_value in self._resolution_stack:
+        stack_key = f"{current_file}{ref_value}" if ref_value.startswith("#/") else ref_value
+
+        if stack_key in self._resolution_stack:
             marker = {"$circular_ref": ref_value}
             if siblings:
                 marker.update(siblings)
             return marker
 
-        self._resolution_stack.append(ref_value)
+        self._resolution_stack.append(stack_key)
         try:
             resolved = self._lookup_ref(ref_value, current_file)
 
