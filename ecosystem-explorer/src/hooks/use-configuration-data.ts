@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 import { useState, useEffect } from "react";
-import type { VersionsIndex, InstrumentationData } from "@/types/javaagent";
+import type { ConfigVersionsIndex, ConfigNode } from "@/types/configuration";
 import type { DataState } from "./data-state";
-import * as javaagentData from "@/lib/api/javaagent-data";
+import * as configData from "@/lib/api/configuration-data";
 
-export function useVersions(): DataState<VersionsIndex> {
-  const [state, setState] = useState<DataState<VersionsIndex>>({
+export function useConfigVersions(): DataState<ConfigVersionsIndex> {
+  const [state, setState] = useState<DataState<ConfigVersionsIndex>>({
     data: null,
     loading: true,
     error: null,
@@ -30,7 +30,7 @@ export function useVersions(): DataState<VersionsIndex> {
 
     async function loadData() {
       try {
-        const data = await javaagentData.loadVersions();
+        const data = await configData.loadConfigVersions();
         if (!cancelled) {
           setState({ data, loading: false, error: null });
         }
@@ -55,8 +55,8 @@ export function useVersions(): DataState<VersionsIndex> {
   return state;
 }
 
-export function useInstrumentations(version: string): DataState<InstrumentationData[]> {
-  const [state, setState] = useState<DataState<InstrumentationData[]>>({
+export function useConfigSchema(version: string): DataState<ConfigNode> {
+  const [state, setState] = useState<DataState<ConfigNode>>({
     data: null,
     loading: true,
     error: null,
@@ -74,7 +74,7 @@ export function useInstrumentations(version: string): DataState<InstrumentationD
       setState({ data: null, loading: true, error: null });
 
       try {
-        const data = await javaagentData.loadAllInstrumentations(version);
+        const data = await configData.loadConfigSchema(version);
         if (!cancelled) {
           setState({ data, loading: false, error: null });
         }
@@ -95,50 +95,6 @@ export function useInstrumentations(version: string): DataState<InstrumentationD
       cancelled = true;
     };
   }, [version]);
-
-  return state;
-}
-
-export function useInstrumentation(name: string, version: string): DataState<InstrumentationData> {
-  const [state, setState] = useState<DataState<InstrumentationData>>({
-    data: null,
-    loading: true,
-    error: null,
-  });
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadData() {
-      if (!name || !version) {
-        setState({ data: null, loading: false, error: null });
-        return;
-      }
-
-      setState({ data: null, loading: true, error: null });
-
-      try {
-        const data = await javaagentData.loadInstrumentation(name, version);
-        if (!cancelled) {
-          setState({ data, loading: false, error: null });
-        }
-      } catch (error) {
-        if (!cancelled) {
-          setState({
-            data: null,
-            loading: false,
-            error: error instanceof Error ? error : new Error(String(error)),
-          });
-        }
-      }
-    }
-
-    loadData();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [name, version]);
 
   return state;
 }

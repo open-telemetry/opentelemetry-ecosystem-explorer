@@ -22,7 +22,7 @@ describe("idb-cache", () => {
     closeDB();
 
     await new Promise<void>((resolve) => {
-      const deleteRequest = indexedDB.deleteDatabase("otel-javaagent-cache");
+      const deleteRequest = indexedDB.deleteDatabase("otel-explorer-cache");
       deleteRequest.onsuccess = () => resolve();
       deleteRequest.onerror = () => resolve();
     });
@@ -36,12 +36,13 @@ describe("idb-cache", () => {
     it("should create database with correct name and version and stores", async () => {
       const db = await initDB();
 
-      expect(db.name).toBe("otel-javaagent-cache");
-      expect(db.version).toBe(1);
+      expect(db.name).toBe("otel-explorer-cache");
+      expect(db.version).toBe(2);
 
       const storeNames = Array.from(db.objectStoreNames);
       expect(storeNames).toContain("metadata");
       expect(storeNames).toContain("instrumentations");
+      expect(storeNames).toContain("configuration");
     });
 
     it("should reinitialize after closeDB is called", async () => {
@@ -51,7 +52,7 @@ describe("idb-cache", () => {
       const db2 = await initDB();
 
       expect(db1).not.toBe(db2);
-      expect(db2.name).toBe("otel-javaagent-cache");
+      expect(db2.name).toBe("otel-explorer-cache");
     });
   });
 
@@ -72,6 +73,16 @@ describe("idb-cache", () => {
 
       await setCached(key, data, STORES.METADATA);
       const result = await getCached<typeof data>(key, STORES.METADATA);
+
+      expect(result).toEqual(data);
+    });
+
+    it("should store and retrieve data from configuration store", async () => {
+      const key = "config-1.0.0";
+      const data = { controlType: "group", key: "root", label: "Root", path: "", children: [] };
+
+      await setCached(key, data, STORES.CONFIGURATION);
+      const result = await getCached<typeof data>(key, STORES.CONFIGURATION);
 
       expect(result).toEqual(data);
     });
@@ -97,16 +108,19 @@ describe("idb-cache", () => {
   });
 
   describe("clearAllCached", () => {
-    it("should clear all data from both stores", async () => {
+    it("should clear all data from all stores", async () => {
       await setCached("meta-key", { data: "meta" }, STORES.METADATA);
       await setCached("inst-key", { data: "inst" }, STORES.INSTRUMENTATIONS);
+      await setCached("config-key", { data: "config" }, STORES.CONFIGURATION);
 
       await clearAllCached();
 
       const metaResult = await getCached("meta-key", STORES.METADATA);
       const instResult = await getCached("inst-key", STORES.INSTRUMENTATIONS);
+      const configResult = await getCached("config-key", STORES.CONFIGURATION);
       expect(metaResult).toBeNull();
       expect(instResult).toBeNull();
+      expect(configResult).toBeNull();
     });
 
     it("should handle clearing empty stores", async () => {

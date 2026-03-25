@@ -15,12 +15,13 @@
  */
 import { openDB, type IDBPDatabase } from "idb";
 
-const DB_NAME = "otel-javaagent-cache";
-const DB_VERSION = 1;
+const DB_NAME = "otel-explorer-cache";
+const DB_VERSION = 2;
 
 export const STORES = {
   METADATA: "metadata",
   INSTRUMENTATIONS: "instrumentations",
+  CONFIGURATION: "configuration",
 } as const;
 
 export type StoreName = (typeof STORES)[keyof typeof STORES];
@@ -62,6 +63,10 @@ export async function initDB(): Promise<IDBPDatabase> {
 
           if (!db.objectStoreNames.contains(STORES.INSTRUMENTATIONS)) {
             db.createObjectStore(STORES.INSTRUMENTATIONS, { keyPath: "key" });
+          }
+
+          if (!db.objectStoreNames.contains(STORES.CONFIGURATION)) {
+            db.createObjectStore(STORES.CONFIGURATION, { keyPath: "key" });
           }
         },
       });
@@ -115,7 +120,11 @@ export async function setCached<T>(key: string, data: T, store: StoreName): Prom
 export async function clearAllCached(): Promise<void> {
   try {
     const db = await initDB();
-    await Promise.all([db.clear(STORES.METADATA), db.clear(STORES.INSTRUMENTATIONS)]);
+    await Promise.all([
+      db.clear(STORES.METADATA),
+      db.clear(STORES.INSTRUMENTATIONS),
+      db.clear(STORES.CONFIGURATION),
+    ]);
   } catch (error) {
     console.error("Failed to clear cache:", error);
   }
