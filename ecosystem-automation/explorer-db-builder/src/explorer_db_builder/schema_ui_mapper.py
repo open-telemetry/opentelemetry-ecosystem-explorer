@@ -33,3 +33,58 @@ def _generate_label(key: str) -> str:
     """Convert a schema key to a human-readable label."""
     base = key.removesuffix("/development")
     return base.replace("_", " ").replace("/", " ").strip().title()
+
+
+def _classify_node(node: dict[str, Any]) -> str:
+    """Classify a schema node into a UI control type."""
+    if "$circular_ref" in node:
+        return "circular_ref"
+
+    if "oneOf" in node:
+        return "union"
+
+    if node.get("isSdkExtensionPlugin"):
+        return "plugin_select"
+
+    if node.get("minProperties") == 1 and node.get("maxProperties") == 1 and node.get("properties"):
+        return "plugin_select"
+
+    if "enum" in node:
+        return "select"
+
+    effective_type, nullable = _extract_type_info(node)
+
+    if effective_type == "array":
+        items = node.get("items", {})
+        items_type, _ = _extract_type_info(items) if isinstance(items, dict) else (None, False)
+        if items_type == "string":
+            return "string_list"
+        if items_type in ("number", "integer"):
+            return "number_list"
+        return "list"
+
+    if effective_type == "object":
+        has_properties = bool(node.get("properties"))
+        additional = node.get("additionalProperties")
+
+        if not has_properties and isinstance(additional, dict):
+            return "key_value_map"
+
+        if has_properties:
+            return "group"
+
+        if additional is False:
+            return "flag"
+
+        return "group"
+
+    if effective_type == "boolean":
+        return "toggle"
+
+    if effective_type in ("integer", "number"):
+        return "number_input"
+
+    if effective_type == "string":
+        return "text_input"
+
+    return "group"

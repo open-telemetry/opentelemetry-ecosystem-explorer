@@ -14,7 +14,7 @@
 #
 """Tests for schema UI mapper."""
 
-from explorer_db_builder.schema_ui_mapper import _extract_type_info, _generate_label
+from explorer_db_builder.schema_ui_mapper import _classify_node, _extract_type_info, _generate_label
 
 
 class TestExtractTypeInfo:
@@ -55,3 +55,110 @@ class TestGenerateLabel:
 
     def test_no_development_suffix(self):
         assert _generate_label("file_format") == "File Format"
+
+
+class TestClassifyNode:
+    def test_circular_ref(self):
+        node = {"$circular_ref": "#/$defs/Sampler", "description": "root sampler"}
+        assert _classify_node(node) == "circular_ref"
+
+    def test_union(self):
+        node = {"oneOf": [{"type": "string"}, {"type": "integer"}]}
+        assert _classify_node(node) == "union"
+
+    def test_plugin_select_with_extension(self):
+        node = {
+            "type": "object",
+            "isSdkExtensionPlugin": True,
+            "minProperties": 1,
+            "maxProperties": 1,
+            "properties": {"always_on": {}},
+        }
+        assert _classify_node(node) == "plugin_select"
+
+    def test_plugin_select_without_extension(self):
+        node = {
+            "type": "object",
+            "minProperties": 1,
+            "maxProperties": 1,
+            "properties": {"explicit_bucket_histogram": {}},
+        }
+        assert _classify_node(node) == "plugin_select"
+
+    def test_enum(self):
+        node = {"type": ["string", "null"], "enum": ["debug", "info", "warn"]}
+        assert _classify_node(node) == "select"
+
+    def test_array_of_objects(self):
+        node = {"type": "array", "items": {"type": "object", "properties": {"name": {}}}}
+        assert _classify_node(node) == "list"
+
+    def test_array_of_strings(self):
+        node = {"type": "array", "items": {"type": "string"}}
+        assert _classify_node(node) == "string_list"
+
+    def test_array_of_numbers(self):
+        node = {"type": "array", "items": {"type": "number"}}
+        assert _classify_node(node) == "number_list"
+
+    def test_key_value_map(self):
+        node = {"type": "object", "additionalProperties": {"type": "object"}}
+        assert _classify_node(node) == "key_value_map"
+
+    def test_group(self):
+        node = {
+            "type": "object",
+            "additionalProperties": False,
+            "properties": {"endpoint": {"type": "string"}},
+        }
+        assert _classify_node(node) == "group"
+
+    def test_flag(self):
+        node = {"type": ["object", "null"], "additionalProperties": False}
+        assert _classify_node(node) == "flag"
+
+    def test_toggle(self):
+        node = {"type": ["boolean", "null"]}
+        assert _classify_node(node) == "toggle"
+
+    def test_number_input_integer(self):
+        node = {"type": ["integer", "null"], "minimum": 0}
+        assert _classify_node(node) == "number_input"
+
+    def test_number_input_number(self):
+        node = {"type": ["number", "null"], "minimum": 0, "maximum": 1}
+        assert _classify_node(node) == "number_input"
+
+    def test_text_input(self):
+        node = {"type": ["string", "null"]}
+        assert _classify_node(node) == "text_input"
+
+    def test_text_input_plain(self):
+        node = {"type": "string"}
+        assert _classify_node(node) == "text_input"
+
+
+class TestClassifyNodePriority:
+    def test_extension_plugin_beats_min_max_properties(self):
+        """isSdkExtensionPlugin takes priority over min/maxProperties."""
+        node = {
+            "type": "object",
+            "isSdkExtensionPlugin": True,
+            "minProperties": 1,
+            "maxProperties": 1,
+            "properties": {"a": {}},
+        }
+        assert _classify_node(node) == "plugin_select"
+
+    def test_distribution_is_key_value_map(self):
+        """minProperties without maxProperties is not plugin_select."""
+        node = {
+            "type": "object",
+            "additionalProperties": {"type": "object"},
+            "minProperties": 1,
+        }
+        assert _classify_node(node) == "key_value_map"
+
+    def test_enum_beats_text_input(self):
+        node = {"type": ["string", "null"], "enum": ["a", "b"]}
+        assert _classify_node(node) == "select"
