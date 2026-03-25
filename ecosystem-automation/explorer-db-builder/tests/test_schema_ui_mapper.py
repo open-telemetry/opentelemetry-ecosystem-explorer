@@ -14,6 +14,11 @@
 #
 """Tests for schema UI mapper."""
 
+import json
+from pathlib import Path
+
+import pytest
+import yaml
 from explorer_db_builder.schema_ui_mapper import (
     _classify_node,
     _extract_type_info,
@@ -407,3 +412,81 @@ class TestMapSchemaToUiTree:
         result = map_schema_to_ui_tree(schema)
         node = result["children"][0]
         assert node["nullBehavior"] == "dependent on usage context"
+
+
+class TestIntegrationWithRealSchemas:
+    SCHEMA_DIR = Path(__file__).parent.parent.parent.parent / "ecosystem-registry" / "configuration" / "v1.0.0"
+
+    @pytest.mark.skipif(
+        not (Path(__file__).parent.parent.parent.parent / "ecosystem-registry" / "configuration" / "v1.0.0").exists(),
+        reason="Real schema files not available",
+    )
+    def test_map_real_v1_schema(self):
+        from explorer_db_builder.schema_resolver import SchemaResolver
+
+        registry = {}
+        for yaml_file in sorted(self.SCHEMA_DIR.glob("*.yaml")):
+            with open(yaml_file) as f:
+                registry[yaml_file.name] = yaml.safe_load(f)
+
+        resolver = SchemaResolver(registry)
+        resolved = resolver.resolve("opentelemetry_configuration.yaml")
+        result = map_schema_to_ui_tree(resolved)
+
+        # Root structure
+        assert result["controlType"] == "group"
+        assert result["key"] == "root"
+        assert result["path"] == ""
+
+        children_keys = [c["key"] for c in result["children"]]
+        assert "file_format" in children_keys
+        assert "tracer_provider" in children_keys
+        assert "meter_provider" in children_keys
+        assert "propagator" in children_keys
+        assert "resource" in children_keys
+
+        # tracer_provider is a group with children
+        tracer = next(c for c in result["children"] if c["key"] == "tracer_provider")
+        assert tracer["controlType"] == "group"
+        tracer_child_keys = [c["key"] for c in tracer["children"]]
+        assert "sampler" in tracer_child_keys
+        assert "processors" in tracer_child_keys
+
+        # sampler is a plugin_select
+        sampler = next(c for c in tracer["children"] if c["key"] == "sampler")
+        assert sampler["controlType"] == "plugin_select"
+        assert sampler["allowCustom"] is True
+        option_keys = [o["key"] for o in sampler["options"]]
+        assert "always_on" in option_keys
+        assert "parent_based" in option_keys
+
+        # parent_based has circular ref for root
+        parent_based = next(o for o in sampler["options"] if o["key"] == "parent_based")
+        pb_child_keys = [c["key"] for c in parent_based.get("children", [])]
+        assert "root" in pb_child_keys
+        root_sampler = next(c for c in parent_based["children"] if c["key"] == "root")
+        assert root_sampler["controlType"] == "circular_ref"
+        assert root_sampler["refType"] == "Sampler"
+
+        # processors is a list
+        processors = next(c for c in tracer["children"] if c["key"] == "processors")
+        assert processors["controlType"] == "list"
+
+    @pytest.mark.skipif(
+        not (Path(__file__).parent.parent.parent.parent / "ecosystem-registry" / "configuration" / "v1.0.0").exists(),
+        reason="Real schema files not available",
+    )
+    def test_mapped_schema_serializes_to_json(self):
+        from explorer_db_builder.schema_resolver import SchemaResolver
+
+        registry = {}
+        for yaml_file in sorted(self.SCHEMA_DIR.glob("*.yaml")):
+            with open(yaml_file) as f:
+                registry[yaml_file.name] = yaml.safe_load(f)
+
+        resolver = SchemaResolver(registry)
+        resolved = resolver.resolve("opentelemetry_configuration.yaml")
+        result = map_schema_to_ui_tree(resolved)
+
+        json_str = json.dumps(result, indent=2, sort_keys=True)
+        assert len(json_str) > 1000
