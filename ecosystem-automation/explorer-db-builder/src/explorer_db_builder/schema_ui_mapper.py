@@ -88,3 +88,92 @@ def _classify_node(node: dict[str, Any]) -> str:
         return "text_input"
 
     return "group"
+
+
+CONSTRAINT_KEYS = ("minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum", "minItems", "maxItems")
+PASSTHROUGH_KEYS = ("description", "defaultBehavior", "nullBehavior")
+
+
+def map_schema_to_ui_tree(resolved_schema: dict[str, Any]) -> dict[str, Any]:
+    """Transform a resolved JSON Schema into a UI-friendly tree."""
+    return _map_node(resolved_schema, key="root", parent_path="", parent_required_keys=set())
+
+
+def _map_node(
+    node: dict[str, Any],
+    key: str,
+    parent_path: str,
+    parent_required_keys: set[str],
+) -> dict[str, Any]:
+    """Recursively map a schema node to a UI node."""
+    control_type = _classify_node(node)
+    path = f"{parent_path}.{key}" if parent_path else key
+    if key == "root":
+        path = ""
+
+    effective_type, nullable = _extract_type_info(node)
+
+    result: dict[str, Any] = {
+        "controlType": control_type,
+        "key": key,
+        "path": path,
+        "label": _generate_label(key),
+    }
+
+    if key in parent_required_keys:
+        result["required"] = True
+
+    if nullable:
+        result["nullable"] = True
+
+    if key.endswith("/development"):
+        result["stability"] = "development"
+
+    for passthrough in PASSTHROUGH_KEYS:
+        if passthrough in node:
+            result[passthrough] = node[passthrough]
+
+    constraints = {k: node[k] for k in CONSTRAINT_KEYS if k in node}
+    if constraints:
+        result["constraints"] = constraints
+
+    required_keys = set(node.get("required", []))
+
+    if control_type == "group":
+        additional = node.get("additionalProperties")
+        if isinstance(additional, dict):
+            result["allowAdditional"] = True
+        result["children"] = [
+            _map_node(prop_schema, prop_key, path, required_keys)
+            for prop_key, prop_schema in node.get("properties", {}).items()
+        ]
+
+    elif control_type == "plugin_select":
+        result["allowCustom"] = bool(node.get("isSdkExtensionPlugin"))
+        result["options"] = [
+            _map_node(prop_schema, prop_key, path, set())
+            for prop_key, prop_schema in node.get("properties", {}).items()
+        ]
+
+    elif control_type == "select":
+        enum_descs = node.get("enumDescriptions", {})
+        result["enumOptions"] = [
+            {"value": v, "description": enum_descs.get(v, "")} for v in node.get("enum", []) if v is not None
+        ]
+
+    elif control_type == "list":
+        items = node.get("items", {})
+        if isinstance(items, dict):
+            result["itemSchema"] = _map_node(items, "item", path, set())
+
+    elif control_type == "circular_ref":
+        ref_value = node.get("$circular_ref", "")
+        ref_parts = ref_value.rsplit("/", 1)
+        result["refType"] = ref_parts[-1] if ref_parts else ref_value
+
+    elif control_type == "union":
+        result["variants"] = [
+            _map_node(variant, f"variant_{i}", path, set()) for i, variant in enumerate(node.get("oneOf", []))
+        ]
+
+    return result

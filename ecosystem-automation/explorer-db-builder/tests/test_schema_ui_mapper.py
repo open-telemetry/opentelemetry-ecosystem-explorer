@@ -14,7 +14,12 @@
 #
 """Tests for schema UI mapper."""
 
-from explorer_db_builder.schema_ui_mapper import _classify_node, _extract_type_info, _generate_label
+from explorer_db_builder.schema_ui_mapper import (
+    _classify_node,
+    _extract_type_info,
+    _generate_label,
+    map_schema_to_ui_tree,
+)
 
 
 class TestExtractTypeInfo:
@@ -162,3 +167,243 @@ class TestClassifyNodePriority:
     def test_enum_beats_text_input(self):
         node = {"type": ["string", "null"], "enum": ["a", "b"]}
         assert _classify_node(node) == "select"
+
+
+class TestMapSchemaToUiTree:
+    def test_root_is_group(self):
+        schema = {
+            "type": "object",
+            "properties": {
+                "disabled": {"type": ["boolean", "null"], "description": "Disable SDK."},
+            },
+        }
+        result = map_schema_to_ui_tree(schema)
+        assert result["controlType"] == "group"
+        assert result["key"] == "root"
+        assert result["path"] == ""
+        assert len(result["children"]) == 1
+
+    def test_leaf_node_fields(self):
+        schema = {
+            "type": "object",
+            "properties": {
+                "timeout": {
+                    "type": ["integer", "null"],
+                    "minimum": 0,
+                    "description": "Max wait time.",
+                    "defaultBehavior": "10000 is used",
+                },
+            },
+        }
+        result = map_schema_to_ui_tree(schema)
+        timeout = result["children"][0]
+        assert timeout["controlType"] == "number_input"
+        assert timeout["key"] == "timeout"
+        assert timeout["path"] == "timeout"
+        assert timeout["label"] == "Timeout"
+        assert timeout["description"] == "Max wait time."
+        assert timeout["defaultBehavior"] == "10000 is used"
+        assert timeout["nullable"] is True
+        assert "required" not in timeout
+        assert timeout["constraints"] == {"minimum": 0}
+
+    def test_required_field(self):
+        schema = {
+            "type": "object",
+            "required": ["file_format"],
+            "properties": {
+                "file_format": {"type": "string"},
+                "disabled": {"type": ["boolean", "null"]},
+            },
+        }
+        result = map_schema_to_ui_tree(schema)
+        children = {c["key"]: c for c in result["children"]}
+        assert children["file_format"]["required"] is True
+        assert "required" not in children["disabled"]
+
+    def test_nullable_absent_when_not_nullable(self):
+        schema = {
+            "type": "object",
+            "properties": {
+                "name": {"type": "string"},
+            },
+        }
+        result = map_schema_to_ui_tree(schema)
+        assert "nullable" not in result["children"][0]
+
+    def test_group_with_additional_properties(self):
+        schema = {
+            "type": "object",
+            "properties": {
+                "resource": {
+                    "type": "object",
+                    "properties": {
+                        "schema_url": {"type": ["string", "null"]},
+                    },
+                    "additionalProperties": {"type": "string"},
+                },
+            },
+        }
+        result = map_schema_to_ui_tree(schema)
+        resource = result["children"][0]
+        assert resource["controlType"] == "group"
+        assert resource["allowAdditional"] is True
+
+    def test_nested_group(self):
+        schema = {
+            "type": "object",
+            "properties": {
+                "limits": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {
+                        "count": {"type": ["integer", "null"], "minimum": 0},
+                    },
+                },
+            },
+        }
+        result = map_schema_to_ui_tree(schema)
+        limits = result["children"][0]
+        assert limits["controlType"] == "group"
+        assert limits["path"] == "limits"
+        count = limits["children"][0]
+        assert count["path"] == "limits.count"
+        assert count["controlType"] == "number_input"
+
+    def test_plugin_select_with_options(self):
+        schema = {
+            "type": "object",
+            "properties": {
+                "sampler": {
+                    "type": "object",
+                    "isSdkExtensionPlugin": True,
+                    "minProperties": 1,
+                    "maxProperties": 1,
+                    "additionalProperties": {"type": ["object", "null"]},
+                    "properties": {
+                        "always_on": {"type": ["object", "null"], "additionalProperties": False},
+                        "trace_id_ratio_based": {
+                            "type": ["object", "null"],
+                            "additionalProperties": False,
+                            "properties": {
+                                "ratio": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+                            },
+                        },
+                    },
+                },
+            },
+        }
+        result = map_schema_to_ui_tree(schema)
+        sampler = result["children"][0]
+        assert sampler["controlType"] == "plugin_select"
+        assert sampler["allowCustom"] is True
+        assert len(sampler["options"]) == 2
+        options = {o["key"]: o for o in sampler["options"]}
+        assert options["always_on"]["controlType"] == "flag"
+        assert options["trace_id_ratio_based"]["controlType"] == "group"
+
+    def test_select_with_enum_descriptions(self):
+        schema = {
+            "type": "object",
+            "properties": {
+                "encoding": {
+                    "type": ["string", "null"],
+                    "enum": ["protobuf", "json"],
+                    "enumDescriptions": {
+                        "protobuf": "Binary encoding.",
+                        "json": "JSON encoding.",
+                    },
+                },
+            },
+        }
+        result = map_schema_to_ui_tree(schema)
+        encoding = result["children"][0]
+        assert encoding["controlType"] == "select"
+        assert encoding["enumOptions"] == [
+            {"value": "protobuf", "description": "Binary encoding."},
+            {"value": "json", "description": "JSON encoding."},
+        ]
+
+    def test_circular_ref(self):
+        schema = {
+            "type": "object",
+            "properties": {
+                "root_sampler": {
+                    "$circular_ref": "#/$defs/Sampler",
+                    "description": "Root sampler.",
+                    "defaultBehavior": "always_on is used",
+                },
+            },
+        }
+        result = map_schema_to_ui_tree(schema)
+        node = result["children"][0]
+        assert node["controlType"] == "circular_ref"
+        assert node["refType"] == "Sampler"
+        assert node["description"] == "Root sampler."
+
+    def test_development_stability(self):
+        schema = {
+            "type": "object",
+            "properties": {
+                "instrumentation/development": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "properties": {"general": {"type": "object", "properties": {}}},
+                },
+            },
+        }
+        result = map_schema_to_ui_tree(schema)
+        node = result["children"][0]
+        assert node["key"] == "instrumentation/development"
+        assert node["label"] == "Instrumentation"
+        assert node["stability"] == "development"
+
+    def test_array_list_with_item_schema(self):
+        schema = {
+            "type": "object",
+            "properties": {
+                "processors": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "isSdkExtensionPlugin": True,
+                        "minProperties": 1,
+                        "maxProperties": 1,
+                        "properties": {"batch": {"type": ["object", "null"]}},
+                    },
+                },
+            },
+        }
+        result = map_schema_to_ui_tree(schema)
+        processors = result["children"][0]
+        assert processors["controlType"] == "list"
+        assert processors["itemSchema"]["controlType"] == "plugin_select"
+
+    def test_constraints_exclusive(self):
+        schema = {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": ["number", "null"],
+                    "exclusiveMinimum": 0,
+                    "maximum": 100,
+                },
+            },
+        }
+        result = map_schema_to_ui_tree(schema)
+        node = result["children"][0]
+        assert node["constraints"] == {"exclusiveMinimum": 0, "maximum": 100}
+
+    def test_null_behavior_passed_through(self):
+        schema = {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": ["string", "null"],
+                    "nullBehavior": "dependent on usage context",
+                },
+            },
+        }
+        result = map_schema_to_ui_tree(schema)
+        node = result["children"][0]
+        assert node["nullBehavior"] == "dependent on usage context"
