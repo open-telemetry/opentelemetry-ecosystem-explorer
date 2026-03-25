@@ -27,3 +27,9 @@ def _extract_type_info(node: dict[str, Any]) -> tuple[str | None, bool]:
         nullable = "null" in type_val
         return non_null[0] if non_null else None, nullable
     return type_val, False
+
+
+def _generate_label(key: str) -> str:
+    """Convert a schema key to a human-readable label."""
+    base = key.removesuffix("/development")
+    return base.replace("_", " ").replace("/", " ").strip().title()

@@ -14,7 +14,7 @@
 #
 """Tests for schema UI mapper."""
 
-from explorer_db_builder.schema_ui_mapper import _extract_type_info
+from explorer_db_builder.schema_ui_mapper import _extract_type_info, _generate_label
 
 
 class TestExtractTypeInfo:
@@ -38,3 +38,20 @@ class TestExtractTypeInfo:
 
     def test_no_type(self):
         assert _extract_type_info({}) == (None, False)
+
+
+class TestGenerateLabel:
+    def test_snake_case(self):
+        assert _generate_label("attribute_count_limit") == "Attribute Count Limit"
+
+    def test_single_word(self):
+        assert _generate_label("disabled") == "Disabled"
+
+    def test_development_suffix(self):
+        assert _generate_label("instrumentation/development") == "Instrumentation"
+
+    def test_development_suffix_multi_word(self):
+        assert _generate_label("tracer_configurator/development") == "Tracer Configurator"
+
+    def test_no_development_suffix(self):
+        assert _generate_label("file_format") == "File Format"
