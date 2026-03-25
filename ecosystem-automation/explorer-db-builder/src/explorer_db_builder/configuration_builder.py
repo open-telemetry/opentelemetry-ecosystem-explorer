@@ -24,6 +24,7 @@ import yaml
 from watcher_common.inventory_manager import BaseInventoryManager
 
 from explorer_db_builder.schema_resolver import SchemaResolver
+from explorer_db_builder.schema_ui_mapper import map_schema_to_ui_tree
 
 logger = logging.getLogger(__name__)
 
@@ -73,9 +74,10 @@ def run_configuration_builder(
             registry = _load_yaml_registry(version_dir)
             resolver = SchemaResolver(registry)
             resolved = resolver.resolve(ROOT_SCHEMA_FILE)
+            ui_tree = map_schema_to_ui_tree(resolved)
 
             version_file = versions_dir / f"{version}.json"
-            content = json.dumps(resolved, indent=2, sort_keys=True)
+            content = json.dumps(ui_tree, indent=2, sort_keys=True)
             version_file.write_text(content, encoding="utf-8")
             logger.info(f"Wrote {version_file}")
 

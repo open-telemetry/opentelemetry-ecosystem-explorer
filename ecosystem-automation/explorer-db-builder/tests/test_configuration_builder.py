@@ -76,10 +76,11 @@ class TestRunConfigurationBuilder:
         assert version_file.exists()
 
         data = json.loads(version_file.read_text())
-        assert data["type"] == "object"
-        assert "$defs" not in data
-        assert data["properties"]["propagator"]["description"] == "Configure propagators."
-        assert data["properties"]["propagator"]["type"] == "object"
+        assert data["controlType"] == "group"
+        assert data["key"] == "root"
+        children_keys = [c["key"] for c in data["children"]]
+        assert "file_format" in children_keys
+        assert "propagator" in children_keys
 
     def test_produces_versions_index(self, config_registry, output_dir):
         run_configuration_builder(
