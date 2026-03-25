@@ -436,6 +436,7 @@ dependencies = [
     { name = "java-instrumentation-watcher" },
     { name = "pyyaml" },
     { name = "semantic-version" },
+    { name = "watcher-common" },
 ]
 
 [package.optional-dependencies]
@@ -451,6 +452,7 @@ requires-dist = [
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.1.0" },
     { name = "pyyaml", specifier = ">=6.0.1" },
     { name = "semantic-version", specifier = ">=2.10.0" },
+    { name = "watcher-common", editable = "ecosystem-automation/watcher-common" },
 ]
 provides-extras = ["dev"]
 
