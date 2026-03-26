@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { defineConfig } from 'vitest/config'
-import react from '@vitejs/plugin-react-swc'
-import path from 'path'
 
-export default defineConfig({
-  plugins: [react()],
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
-  },
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: './src/test/setup.ts',
-    exclude: ['**/node_modules/**', '**/*.integration.test.{ts,tsx}'],
-  },
-})
+// Must be imported before any module that calls isIDBAvailable(), since
+// javaagent-data.ts evaluates `const idbEnabled = isIDBAvailable()` at
+// module load time.
+import "fake-indexeddb/auto";
+import "@testing-library/jest-dom";
+import { beforeEach } from "vitest";
+import { clearAllCached, closeDB } from "@/lib/api/idb-cache";
+
+beforeEach(async () => {
+  // Clear stored entries so each test starts with a cold cache.
+  await clearAllCached();
+  // Reset the IDB singleton (dbInstance, dbInitPromise, dbInitFailed) so
+  // the next initDB() call opens a fresh connection.
+  closeDB();
+});

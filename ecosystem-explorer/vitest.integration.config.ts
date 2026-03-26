@@ -27,7 +27,12 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: './src/test/setup.ts',
-    exclude: ['**/node_modules/**', '**/*.integration.test.{ts,tsx}'],
+    setupFiles: './src/test/integration/setup.ts',
+    include: ['src/**/*.integration.test.{ts,tsx}'],
+    testTimeout: 30_000,
+    pool: 'forks',
+    forks: {
+      singleFork: true,
+    },
   },
 })

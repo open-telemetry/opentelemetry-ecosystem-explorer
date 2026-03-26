@@ -14,7 +14,9 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css,json}\"",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test:integration:watch": "vitest --config vitest.integration.config.ts"
   },
   "dependencies": {
     "idb": "^8.0.3",
