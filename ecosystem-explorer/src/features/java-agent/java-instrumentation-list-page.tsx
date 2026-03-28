@@ -136,8 +136,7 @@ export function JavaInstrumentationListPage() {
             </span>
           </h1>
           <p className="text-base text-muted-foreground">
-            Explore {instrumentations?.length ?? 0} available instrumentations for automatic
-            observability
+            Explore {instrumentations?.length ?? 0} available instrumentations.
           </p>
         </div>
 
