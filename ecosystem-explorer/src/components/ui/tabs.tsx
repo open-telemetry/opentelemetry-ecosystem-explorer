@@ -25,7 +25,7 @@ const TabsList = forwardRef<
 >(({ className = "", ...props }, ref) => (
   <RadixTabs.List
     ref={ref}
-    className={`inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground ${className}`}
+    className={`inline-flex h-12 items-center justify-center rounded-lg border border-border/50 bg-card/80 p-1 backdrop-blur-sm ${className}`}
     {...props}
   />
 ));
@@ -37,7 +37,7 @@ const TabsTrigger = forwardRef<
 >(({ className = "", ...props }, ref) => (
   <RadixTabs.Trigger
     ref={ref}
-    className={`inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm ${className}`}
+    className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md px-4 py-2 text-sm font-medium text-muted-foreground ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-primary/15 data-[state=active]:text-primary data-[state=active]:shadow-sm data-[state=active]:shadow-primary/20 data-[state=active]:font-semibold data-[state=active]:border-t-2 data-[state=active]:border-t-primary ${className}`}
     {...props}
   />
 ));
