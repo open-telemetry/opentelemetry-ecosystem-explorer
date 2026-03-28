@@ -15,12 +15,12 @@
  */
 import * as RadixTabs from "@radix-ui/react-tabs";
 import { forwardRef } from "react";
-import type { ComponentPropsWithoutRef, ElementRef } from "react";
+import type { ComponentPropsWithoutRef, ComponentRef } from "react";
 
 const Tabs = RadixTabs.Root;
 
 const TabsList = forwardRef<
-  ElementRef<typeof RadixTabs.List>,
+  ComponentRef<typeof RadixTabs.List>,
   ComponentPropsWithoutRef<typeof RadixTabs.List>
 >(({ className = "", ...props }, ref) => (
   <RadixTabs.List
@@ -32,7 +32,7 @@ const TabsList = forwardRef<
 TabsList.displayName = RadixTabs.List.displayName;
 
 const TabsTrigger = forwardRef<
-  ElementRef<typeof RadixTabs.Trigger>,
+  ComponentRef<typeof RadixTabs.Trigger>,
   ComponentPropsWithoutRef<typeof RadixTabs.Trigger>
 >(({ className = "", ...props }, ref) => (
   <RadixTabs.Trigger
@@ -44,7 +44,7 @@ const TabsTrigger = forwardRef<
 TabsTrigger.displayName = RadixTabs.Trigger.displayName;
 
 const TabsContent = forwardRef<
-  ElementRef<typeof RadixTabs.Content>,
+  ComponentRef<typeof RadixTabs.Content>,
   ComponentPropsWithoutRef<typeof RadixTabs.Content>
 >(({ className = "", ...props }, ref) => (
   <RadixTabs.Content
