@@ -98,7 +98,7 @@ Before you begin contributing, ensure you have the following tools installed:
 
 ## Getting Started
 
-### 1. Fork and Clone the Repository
+### Fork and Clone the Repository
 
 ```bash
 # Fork the repository on GitHub first, then clone your fork
@@ -106,7 +106,7 @@ git clone https://github.com/YOUR_USERNAME/opentelemetry-ecosystem-explorer.git
 cd opentelemetry-ecosystem-explorer
 ```
 
-### 2. Install Dependencies
+### Install Dependencies
 
 ```bash
 # Install Python dependencies using uv
@@ -119,7 +119,7 @@ npm install
 pre-commit install
 ```
 
-### 3. Create a Branch
+### Create a Branch
 
 Before making changes, create a new branch:
 
