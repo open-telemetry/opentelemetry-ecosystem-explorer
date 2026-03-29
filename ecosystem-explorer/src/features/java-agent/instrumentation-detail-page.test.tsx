@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { MemoryRouter, Route, Routes, useNavigate } from "react-router-dom";
 import { InstrumentationDetailPage } from "./instrumentation-detail-page";
 import type { InstrumentationData } from "@/types/javaagent";
@@ -129,13 +129,22 @@ describe("InstrumentationDetailPage", () => {
 
     renderWithRouter("/java-agent/instrumentation/2.0.0/jdbc");
 
+    const header = screen.getByRole("banner");
+
     expect(screen.getByRole("heading", { name: "JDBC", level: 1 })).toBeInTheDocument();
     expect(screen.getByText("Instrumentation for JDBC database connections")).toBeInTheDocument();
-    expect(screen.getByText("Instrumentation Name:")).toBeInTheDocument();
-    expect(screen.getByText("jdbc")).toBeInTheDocument();
-    expect(screen.getByText("Version:")).toBeInTheDocument();
-    expect(screen.getByText("2.0.0")).toBeInTheDocument();
+
+    const scopeNameCode = within(header).getByText("jdbc");
+    expect(scopeNameCode.tagName).toBe("CODE");
+
+    expect(within(header).getByText("Agent Version:")).toBeInTheDocument();
+    expect(within(header).getByText("2.0.0")).toBeInTheDocument();
+
+    expect(within(header).getByText("Enabled by Default")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Back" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Details" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Telemetry" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Configuration" })).toBeInTheDocument();
   });
 
   it("does not fetch instrumentation when version is 'latest'", () => {

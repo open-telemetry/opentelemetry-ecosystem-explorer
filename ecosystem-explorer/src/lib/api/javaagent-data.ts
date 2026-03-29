@@ -14,52 +14,10 @@
  * limitations under the License.
  */
 import type { InstrumentationData, VersionManifest, VersionsIndex } from "@/types/javaagent";
-import { getCached, setCached, STORES, isIDBAvailable, type StoreName } from "./idb-cache";
+import { STORES } from "./idb-cache";
+import { fetchWithCache } from "./fetch-with-cache";
 
 const BASE_PATH = "/data/javaagent";
-
-const inflightRequests = new Map<string, Promise<unknown>>();
-
-const idbEnabled = isIDBAvailable();
-
-async function fetchWithCache<T>(cacheKey: string, url: string, storeType: StoreName): Promise<T> {
-  // Check if request is already in flight
-  if (inflightRequests.has(cacheKey)) {
-    return inflightRequests.get(cacheKey) as Promise<T>;
-  }
-
-  const request = (async () => {
-    try {
-      if (idbEnabled) {
-        const cachedData = await getCached<T>(cacheKey, storeType);
-        if (cachedData !== null) {
-          inflightRequests.delete(cacheKey);
-          return cachedData;
-        }
-      }
-
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Failed to load ${cacheKey}: ${response.status} ${response.statusText}`);
-      }
-
-      const data = await response.json();
-
-      if (idbEnabled) {
-        await setCached(cacheKey, data, storeType);
-      }
-
-      inflightRequests.delete(cacheKey);
-      return data;
-    } catch (error) {
-      inflightRequests.delete(cacheKey);
-      throw error;
-    }
-  })();
-
-  inflightRequests.set(cacheKey, request);
-  return request;
-}
 
 export async function loadVersions(): Promise<VersionsIndex> {
   return fetchWithCache<VersionsIndex>(

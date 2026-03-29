@@ -4323,6 +4323,9 @@ components:
       codeowners:
         active:
         - andrzej-stencel
+        - paulojmdias
+        - VihasMakwana
+        - braydonk
         emeritus:
         - djaglowski
         seeking_new: true
@@ -9371,6 +9374,12 @@ components:
         type: double
       mysql.query_plan:
         description: The query plan for the statement, if available.
+        type: string
+      mysql.session.id:
+        description: The unique identifier for the session associated with the event.
+        type: int
+      mysql.session.status:
+        description: Simplified session status, either 'waiting', 'running' or 'other'.
         type: string
       mysql.threads.processlist_command:
         description: The type of command the thread is executing on behalf of the

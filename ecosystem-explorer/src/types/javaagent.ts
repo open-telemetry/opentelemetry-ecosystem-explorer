@@ -30,6 +30,7 @@ export interface VersionManifest {
 export interface InstrumentationData {
   name: string;
   display_name?: string;
+  disabled_by_default?: boolean;
   description?: string;
   library_link?: string;
   source_path?: string;

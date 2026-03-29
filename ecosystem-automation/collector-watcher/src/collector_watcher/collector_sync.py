@@ -18,12 +18,12 @@ import logging
 from typing import Any
 
 from semantic_version import Version
+from watcher_common.version_detector import VersionDetector
 
 from .component_scanner import ComponentScanner
 from .deprecation_detector import DeprecationDetector
 from .inventory_manager import InventoryManager
 from .type_defs import DistributionName
-from .version_detector import VersionDetector
 
 logger = logging.getLogger(__name__)
 

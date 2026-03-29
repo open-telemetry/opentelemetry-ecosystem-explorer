@@ -54,7 +54,7 @@ class TestRepositoryManager:
     def test_setup_repository_clones_when_not_exists(self, manager, tmp_path):
         with (
             patch.dict("os.environ", {}, clear=True),
-            patch("configuration_watcher.repository_manager.subprocess.run") as mock_run,
+            patch("watcher_common.repository_manager.subprocess.run") as mock_run,
         ):
             result = manager.setup_repository()
 

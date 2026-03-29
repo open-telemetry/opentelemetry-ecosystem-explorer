@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-"""Version detection for OpenTelemetry Collector repositories."""
+"""Version detection for OpenTelemetry git repositories."""
 
 from pathlib import Path
 
@@ -21,7 +21,7 @@ from semantic_version import Version
 
 
 class VersionDetector:
-    """Detects versions in OpenTelemetry Collector repositories."""
+    """Detects versions in OpenTelemetry git repositories."""
 
     def __init__(self, repo_path: str | Path):
         """Args:

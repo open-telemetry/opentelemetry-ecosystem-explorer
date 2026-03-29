@@ -15,13 +15,8 @@
  */
 import { useState, useEffect } from "react";
 import type { VersionsIndex, InstrumentationData } from "@/types/javaagent";
+import type { DataState } from "./data-state";
 import * as javaagentData from "@/lib/api/javaagent-data";
-
-interface DataState<T> {
-  data: T | null;
-  loading: boolean;
-  error: Error | null;
-}
 
 export function useVersions(): DataState<VersionsIndex> {
   const [state, setState] = useState<DataState<VersionsIndex>>({

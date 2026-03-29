@@ -15,27 +15,20 @@
 """Manages OpenTelemetry configuration repository setup and access."""
 
 import logging
-import os
 import subprocess
 from pathlib import Path
+
+from watcher_common.repository_manager import BaseRepositoryManager
 
 logger = logging.getLogger(__name__)
 
 REPO_URL = "https://github.com/open-telemetry/opentelemetry-configuration.git"
 ENV_VAR_NAME = "OTEL_CONFIGURATION_PATH"
-DEFAULT_REPOS_DIR = "tmp_repos"
 DEFAULT_REPO_NAME = "opentelemetry-configuration"
 
 
-class RepositoryManager:
+class RepositoryManager(BaseRepositoryManager):
     """Manages OpenTelemetry configuration repository location and setup."""
-
-    def __init__(self, base_dir: str | None = None):
-        """
-        Args:
-            base_dir: Base directory for cloning repos. Defaults to tmp_repos/
-        """
-        self.base_dir = Path(base_dir) if base_dir else Path(DEFAULT_REPOS_DIR)
 
     def get_repository_path(self) -> Path | None:
         """
@@ -44,21 +37,7 @@ class RepositoryManager:
         Returns:
             Path if environment variable is set and path exists, None otherwise
         """
-        env_path = os.environ.get(ENV_VAR_NAME)
-
-        if env_path:
-            path = Path(env_path)
-            if path.exists():
-                logger.info("Using repository from %s: %s", ENV_VAR_NAME, path)
-                return path
-            else:
-                logger.warning(
-                    "Environment variable %s points to non-existent path: %s",
-                    ENV_VAR_NAME,
-                    env_path,
-                )
-
-        return None
+        return super()._get_repository_path(ENV_VAR_NAME)
 
     def setup_repository(self) -> Path:
         """
@@ -82,39 +61,19 @@ class RepositoryManager:
 
         if not repo_path.exists():
             logger.info("Cloning configuration repository to %s", repo_path)
-            self._clone_repository(repo_path)
+            self._clone_repository(REPO_URL, repo_path)
         else:
             logger.info("Updating configuration repository at %s", repo_path)
             self._pull_latest(repo_path)
 
         return repo_path
 
-    def _clone_repository(self, target_path: Path) -> None:
-        """
-        Clone the repository.
-
-        Args:
-            target_path: Where to clone the repository
-
-        Raises:
-            RuntimeError: If cloning fails
-        """
-        target_path.parent.mkdir(parents=True, exist_ok=True)
-
-        try:
-            subprocess.run(
-                ["git", "clone", REPO_URL, str(target_path)],
-                check=True,
-                capture_output=True,
-                text=True,
-            )
-            logger.info("Successfully cloned configuration repository")
-        except subprocess.CalledProcessError as e:
-            raise RuntimeError(f"Failed to clone configuration repository: {e.stderr}") from e
-
     def _pull_latest(self, repo_path: Path) -> None:
         """
         Pull latest changes from remote.
+
+        Discards any local changes left from previous tag checkouts before
+        pulling, and uses --ff-only to avoid unintended merges.
 
         Args:
             repo_path: Path to the repository

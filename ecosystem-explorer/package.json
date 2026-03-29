@@ -14,9 +14,12 @@
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css,json}\"",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test:integration:watch": "vitest --config vitest.integration.config.ts"
   },
   "dependencies": {
+    "@radix-ui/react-tabs": "^1.1.13",
     "idb": "^8.0.3",
     "lucide-react": "^0.577.0",
     "react": "^19.2.0",
@@ -25,7 +28,7 @@
   },
   "devDependencies": {
     "@eslint/js": "9.39.4",
-    "@tailwindcss/postcss": "4.2.1",
+    "@tailwindcss/postcss": "4.2.2",
     "@testing-library/jest-dom": "6.9.1",
     "@testing-library/react": "16.3.2",
     "@testing-library/user-event": "14.6.1",
@@ -43,9 +46,9 @@
     "jsdom": "28.1.0",
     "postcss": "8.5.8",
     "prettier": "3.8.1",
-    "tailwindcss": "4.2.1",
+    "tailwindcss": "4.2.2",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.57.0",
+    "typescript-eslint": "8.57.1",
     "vite": "7.3.1",
     "vitest": "4.1.0"
   }

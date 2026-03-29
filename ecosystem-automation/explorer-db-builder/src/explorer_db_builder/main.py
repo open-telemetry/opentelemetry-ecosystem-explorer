@@ -22,6 +22,7 @@ from typing import Optional
 from java_instrumentation_watcher.inventory_manager import InventoryManager
 from semantic_version import Version
 
+from explorer_db_builder.configuration_builder import run_configuration_builder
 from explorer_db_builder.database_writer import DatabaseWriter
 from explorer_db_builder.instrumentation_transformer import transform_instrumentation_format
 from explorer_db_builder.metadata_backfiller import backfill_metadata
@@ -108,12 +109,12 @@ def process_version(
     db_writer.write_version_index(version, library_map)
 
 
-def run_builder(
+def run_javaagent_builder(
     inventory_manager: Optional[InventoryManager] = None,
     db_writer: Optional[DatabaseWriter] = None,
     clean: bool = False,
 ) -> int:
-    """Run the database builder process.
+    """Run the javaagent database builder process.
 
     Args:
         inventory_manager: Optional inventory manager (for testing)
@@ -168,6 +169,20 @@ def run_builder(
     except Exception as e:
         logger.error(f"❌ Unexpected error: {e}", exc_info=True)
         return 1
+
+
+def run_builder(clean: bool = False) -> int:
+    """Run all database builder pipelines. Returns 0 if both succeed, 1 if either fails."""
+    logger.info("--- Java Agent ---")
+    javaagent_result = run_javaagent_builder(clean=clean)
+
+    logger.info("")
+    logger.info("--- Configuration Schema ---")
+    config_result = run_configuration_builder(clean=clean)
+
+    if javaagent_result != 0 or config_result != 0:
+        return 1
+    return 0
 
 
 def main() -> None:

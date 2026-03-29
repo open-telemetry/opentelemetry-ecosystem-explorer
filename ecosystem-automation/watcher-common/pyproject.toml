@@ -1,0 +1,22 @@
+[project]
+name = "watcher-common"
+version = "0.1.0"
+description = "Shared utilities for OpenTelemetry ecosystem watchers"
+requires-python = ">=3.11"
+dependencies = [
+    "GitPython>=3.1.40",
+    "semantic-version>=2.10.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.1.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/watcher_common"]

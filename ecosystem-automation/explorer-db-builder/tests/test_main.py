@@ -21,6 +21,7 @@ from explorer_db_builder.main import (
     get_release_versions,
     process_version,
     run_builder,
+    run_javaagent_builder,
 )
 from semantic_version import Version
 
@@ -144,7 +145,7 @@ class TestProcessVersion:
             process_version(version, mock_inventory_manager, mock_db_writer)
 
 
-class TestRunBuilder:
+class TestRunJavaagentBuilder:
     def test_run_builder_success(self, mock_inventory_manager, mock_db_writer):
         """Returns 0 on successful execution."""
         versions = [Version("2.0.0"), Version("1.0.0")]
@@ -155,7 +156,7 @@ class TestRunBuilder:
         mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
         mock_db_writer.write_libraries.return_value = library_map
 
-        exit_code = run_builder(mock_inventory_manager, mock_db_writer)
+        exit_code = run_javaagent_builder(mock_inventory_manager, mock_db_writer)
 
         assert exit_code == 0
         assert mock_db_writer.write_version_list.called
@@ -165,7 +166,7 @@ class TestRunBuilder:
         """Returns 1 on ValueError."""
         mock_inventory_manager.list_versions.return_value = []
 
-        exit_code = run_builder(mock_inventory_manager, mock_db_writer)
+        exit_code = run_javaagent_builder(mock_inventory_manager, mock_db_writer)
 
         assert exit_code == 1
 
@@ -175,7 +176,7 @@ class TestRunBuilder:
         mock_inventory_manager.list_versions.return_value = versions
         mock_inventory_manager.load_versioned_inventory.return_value = {"file_format": 0.2, "wrong_key": []}
 
-        exit_code = run_builder(mock_inventory_manager, mock_db_writer)
+        exit_code = run_javaagent_builder(mock_inventory_manager, mock_db_writer)
 
         assert exit_code == 1
 
@@ -188,7 +189,7 @@ class TestRunBuilder:
         mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
         mock_db_writer.write_libraries.side_effect = OSError("Disk error")
 
-        exit_code = run_builder(mock_inventory_manager, mock_db_writer)
+        exit_code = run_javaagent_builder(mock_inventory_manager, mock_db_writer)
 
         assert exit_code == 1
 
@@ -196,7 +197,7 @@ class TestRunBuilder:
         """Returns 1 on unexpected exceptions."""
         mock_inventory_manager.list_versions.side_effect = RuntimeError("Unexpected")
 
-        exit_code = run_builder(mock_inventory_manager, mock_db_writer)
+        exit_code = run_javaagent_builder(mock_inventory_manager, mock_db_writer)
 
         assert exit_code == 1
 
@@ -210,7 +211,7 @@ class TestRunBuilder:
         mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
         mock_db_writer.write_libraries.return_value = library_map
 
-        exit_code = run_builder(mock_inventory_manager, mock_db_writer)
+        exit_code = run_javaagent_builder(mock_inventory_manager, mock_db_writer)
 
         assert exit_code == 0
         # load_versioned_inventory called once per version during backfill
@@ -238,7 +239,7 @@ class TestRunBuilder:
         ]
         mock_db_writer.write_libraries.return_value = library_map
 
-        exit_code = run_builder(mock_inventory_manager, mock_db_writer)
+        exit_code = run_javaagent_builder(mock_inventory_manager, mock_db_writer)
 
         assert exit_code == 0
         assert mock_inventory_manager.load_versioned_inventory.call_count == 2
@@ -268,7 +269,7 @@ class TestRunBuilder:
         mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
         mock_db_writer.write_libraries.return_value = {"lib1": "hash1"}
 
-        exit_code = run_builder(mock_inventory_manager, mock_db_writer, clean=False)
+        exit_code = run_javaagent_builder(mock_inventory_manager, mock_db_writer, clean=False)
 
         assert exit_code == 0
         mock_db_writer.clean.assert_not_called()
@@ -282,7 +283,7 @@ class TestRunBuilder:
         mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
         mock_db_writer.write_libraries.return_value = {"lib1": "hash1"}
 
-        exit_code = run_builder(mock_inventory_manager, mock_db_writer, clean=True)
+        exit_code = run_javaagent_builder(mock_inventory_manager, mock_db_writer, clean=True)
 
         assert exit_code == 0
         mock_db_writer.clean.assert_called_once()
@@ -300,7 +301,7 @@ class TestRunBuilder:
         mock_db_writer.clean.side_effect = lambda: call_order.append("clean")
         mock_inventory_manager.list_versions.side_effect = lambda: (call_order.append("list_versions"), versions)[1]
 
-        run_builder(mock_inventory_manager, mock_db_writer, clean=True)
+        run_javaagent_builder(mock_inventory_manager, mock_db_writer, clean=True)
 
         assert call_order[0] == "clean"
         assert call_order[1] == "list_versions"
@@ -357,3 +358,60 @@ class TestMain:
 
         mock_run_builder.assert_called_once_with(clean=True)
         mock_exit.assert_called_once_with(0)
+
+
+class TestRunBuilderOrchestrator:
+    @patch("explorer_db_builder.main.run_configuration_builder")
+    @patch("explorer_db_builder.main.run_javaagent_builder")
+    def test_both_succeed(self, mock_java, mock_config):
+        mock_java.return_value = 0
+        mock_config.return_value = 0
+
+        result = run_builder(clean=False)
+
+        assert result == 0
+        mock_java.assert_called_once()
+        mock_config.assert_called_once()
+
+    @patch("explorer_db_builder.main.run_configuration_builder")
+    @patch("explorer_db_builder.main.run_javaagent_builder")
+    def test_javaagent_fails_config_still_runs(self, mock_java, mock_config):
+        mock_java.return_value = 1
+        mock_config.return_value = 0
+
+        result = run_builder(clean=False)
+
+        assert result == 1
+        mock_java.assert_called_once()
+        mock_config.assert_called_once()
+
+    @patch("explorer_db_builder.main.run_configuration_builder")
+    @patch("explorer_db_builder.main.run_javaagent_builder")
+    def test_config_fails_returns_1(self, mock_java, mock_config):
+        mock_java.return_value = 0
+        mock_config.return_value = 1
+
+        result = run_builder(clean=False)
+
+        assert result == 1
+
+    @patch("explorer_db_builder.main.run_configuration_builder")
+    @patch("explorer_db_builder.main.run_javaagent_builder")
+    def test_both_fail_returns_1(self, mock_java, mock_config):
+        mock_java.return_value = 1
+        mock_config.return_value = 1
+
+        result = run_builder(clean=False)
+
+        assert result == 1
+
+    @patch("explorer_db_builder.main.run_configuration_builder")
+    @patch("explorer_db_builder.main.run_javaagent_builder")
+    def test_clean_passed_to_both(self, mock_java, mock_config):
+        mock_java.return_value = 0
+        mock_config.return_value = 0
+
+        run_builder(clean=True)
+
+        mock_java.assert_called_once_with(clean=True)
+        mock_config.assert_called_once_with(clean=True)
