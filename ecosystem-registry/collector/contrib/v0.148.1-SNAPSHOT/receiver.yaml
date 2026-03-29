@@ -9375,6 +9375,10 @@ components:
       mysql.query_plan:
         description: The query plan for the statement, if available.
         type: string
+      mysql.query_plan.hash:
+        description: This attribute is set to the same value as mysql.events_statements_summary_by_digest.digest
+          (query digest) by design.
+        type: string
       mysql.session.id:
         description: The unique identifier for the session associated with the event.
         type: int
@@ -11036,6 +11040,8 @@ components:
       codeowners:
         active:
         - jmacd
+        - JakeDern
+        emeritus:
         - moh-osman3
 - name: otlpjsonfilereceiver
   metadata:
