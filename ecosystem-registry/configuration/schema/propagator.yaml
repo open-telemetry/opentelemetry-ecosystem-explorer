@@ -1,0 +1,62 @@
+type: object
+additionalProperties: false
+properties:
+  composite:
+    type: array
+    minItems: 1
+    items:
+      $ref: "#/$defs/TextMapPropagator"
+    description: |
+      Configure the propagators in the composite text map propagator.
+      Built-in propagator keys include: tracecontext, baggage, b3, b3multi.
+    defaultBehavior: a noop propagator is used
+  composite_list:
+    type:
+      - string
+      - "null"
+    description: |
+      Configure the propagators as a comma-separated string (matches OTEL_PROPAGATORS format).
+      Entries are appended to .composite with duplicates filtered out.
+    defaultBehavior: a noop propagator is used
+$defs:
+  TextMapPropagator:
+    type: object
+    additionalProperties:
+      type:
+        - object
+        - "null"
+    minProperties: 1
+    maxProperties: 1
+    properties:
+      tracecontext:
+        $ref: "#/$defs/TraceContextPropagator"
+        description: Include the W3C trace context propagator.
+      baggage:
+        $ref: "#/$defs/BaggagePropagator"
+        description: Include the W3C baggage propagator.
+      b3:
+        $ref: "#/$defs/B3Propagator"
+        description: Include the Zipkin B3 single-header propagator.
+      b3multi:
+        $ref: "#/$defs/B3MultiPropagator"
+        description: Include the Zipkin B3 multi-header propagator.
+  TraceContextPropagator:
+    type:
+      - object
+      - "null"
+    additionalProperties: false
+  BaggagePropagator:
+    type:
+      - object
+      - "null"
+    additionalProperties: false
+  B3Propagator:
+    type:
+      - object
+      - "null"
+    additionalProperties: false
+  B3MultiPropagator:
+    type:
+      - object
+      - "null"
+    additionalProperties: false

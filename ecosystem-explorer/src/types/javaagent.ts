@@ -88,3 +88,87 @@ export interface Attribute {
     | "DOUBLE_ARRAY"
     | "BOOLEAN_ARRAY";
 }
+
+export interface ConfigurationBuilderState {
+  version: string;
+  activeArea: "instrumentation" | "sdk";
+  selectedInstrumentations: Map<string, InstrumentationConfig>;
+  configOverrides: Map<string, ConfigValue>;
+  outputFormat: "properties" | "env";
+  isInitialized: boolean;
+  sdkConfig: import("@/types/sdk").SdkConfig;
+}
+
+export interface InstrumentationConfig {
+  name: string;
+  data: InstrumentationData;
+  enabledConfigs: Set<string>;
+}
+
+export interface ConfigValue {
+  name: string;
+  value: string | boolean | number;
+  isModified: boolean;
+  default: string | boolean | number;
+}
+
+export interface CommonConfig {
+  name: string;
+  config: Configuration;
+  usedBy: string[];
+}
+
+export type ConfigurationBuilderAction =
+  | { type: "SET_VERSION"; version: string }
+  | { type: "SET_ACTIVE_AREA"; area: "instrumentation" | "sdk" }
+  | {
+      type: "ADD_INSTRUMENTATION";
+      name: string;
+      data: InstrumentationData;
+    }
+  | { type: "REMOVE_INSTRUMENTATION"; name: string }
+  | {
+      type: "UPDATE_CONFIG";
+      configName: string;
+      value: string | boolean | number;
+    }
+  | { type: "TOGGLE_CONFIG"; instrumentationName: string; configName: string }
+  | { type: "SET_OUTPUT_FORMAT"; format: "properties" | "env" }
+  | {
+      type: "LOAD_STATE";
+      state: Partial<ConfigurationBuilderState>;
+    }
+  | { type: "ADD_ALL_INSTRUMENTATIONS"; instrumentations: InstrumentationData[] }
+  | { type: "REMOVE_ALL_INSTRUMENTATIONS" }
+  | { type: "LOAD_SDK_DEFAULTS"; sdkConfig: import("@/types/sdk").SdkConfig }
+  | { type: "TOGGLE_SDK_PROPAGATOR"; propagatorId: string }
+  | { type: "SET_SDK_EXPORTER_TYPE"; exporterType: string }
+  | { type: "SET_SDK_EXPORTER_ENDPOINT"; endpoint: string }
+  | { type: "SET_SDK_EXPORTER_PROTOCOL"; protocol: string }
+  | { type: "SET_SDK_SAMPLER_TYPE"; samplerType: string }
+  | { type: "SET_SDK_SAMPLER_ROOT"; root: string }
+  | { type: "SET_SDK_SAMPLER_RATIO"; ratio: number }
+  | { type: "UPDATE_SDK_BATCH_SETTING"; key: string; value: number }
+  | { type: "RESET" }
+  | { type: "MARK_INITIALIZED" };
+
+export interface Template {
+  id: string;
+  name: string;
+  description: string;
+  category: "framework" | "experimental" | "semconv" | "custom";
+  instrumentations: string[];
+  configOverrides?: Record<string, string | boolean | number>;
+}
+
+export interface ShareConfig {
+  v: string;
+  i: string[];
+  c: Record<string, string | boolean | number>;
+  f?: "properties" | "env";
+}
+
+export interface ImportConfig {
+  v: string;
+  i: string[];
+}

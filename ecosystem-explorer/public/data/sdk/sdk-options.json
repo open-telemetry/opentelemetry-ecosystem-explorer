@@ -1,0 +1,171 @@
+{
+  "schema_version": "1.0",
+  "defaults": {
+    "file_format": "1.0",
+    "propagators": ["tracecontext", "baggage"],
+    "tracer_provider": {
+      "exporter_type": "otlp_http",
+      "exporters": {
+        "otlp_http": {
+          "endpoint": "http://localhost:4318",
+          "protocol": "http/protobuf"
+        },
+        "otlp_grpc": {
+          "endpoint": "http://localhost:4317"
+        },
+        "console": {}
+      },
+      "sampler": {
+        "type": "parent_based",
+        "root": "always_on",
+        "ratio": 1.0
+      },
+      "batch_processor": {
+        "schedule_delay": 5000,
+        "export_timeout": 30000,
+        "max_queue_size": 2048,
+        "max_export_batch_size": 512
+      }
+    }
+  },
+  "sections": {
+    "propagators": {
+      "name": "Propagators",
+      "description": "Configure context propagation formats for distributed tracing",
+      "options": [
+        {
+          "id": "tracecontext",
+          "name": "W3C TraceContext",
+          "description": "W3C Trace Context propagator. Required for interoperability with W3C-compatible systems."
+        },
+        {
+          "id": "baggage",
+          "name": "W3C Baggage",
+          "description": "W3C Baggage propagator for passing key-value pairs across service boundaries."
+        },
+        {
+          "id": "b3",
+          "name": "B3 (single header)",
+          "description": "Zipkin B3 single-header propagator for compatibility with Zipkin and older systems."
+        },
+        {
+          "id": "b3multi",
+          "name": "B3 Multi-header",
+          "description": "Zipkin B3 multi-header propagator."
+        }
+      ]
+    },
+    "tracer_provider": {
+      "name": "Traces",
+      "description": "Configure the OpenTelemetry tracer provider",
+      "exporter": {
+        "name": "Span Exporter",
+        "description": "Where to export trace data",
+        "options": [
+          {
+            "id": "otlp_http",
+            "name": "OTLP HTTP",
+            "description": "Export spans via OTLP over HTTP. Recommended for most setups.",
+            "settings": [
+              {
+                "name": "endpoint",
+                "label": "Endpoint URL",
+                "description": "OTLP HTTP endpoint",
+                "type": "string"
+              },
+              {
+                "name": "protocol",
+                "label": "Protocol",
+                "description": "OTLP transport protocol",
+                "type": "enum",
+                "options": ["http/protobuf", "http/json"]
+              }
+            ]
+          },
+          {
+            "id": "otlp_grpc",
+            "name": "OTLP gRPC",
+            "description": "Export spans via OTLP over gRPC.",
+            "settings": [
+              {
+                "name": "endpoint",
+                "label": "Endpoint URL",
+                "description": "OTLP gRPC endpoint",
+                "type": "string"
+              }
+            ]
+          },
+          {
+            "id": "console",
+            "name": "Console",
+            "description": "Print spans to stdout. Useful for debugging.",
+            "settings": []
+          }
+        ]
+      },
+      "sampler": {
+        "name": "Sampler",
+        "description": "How to make sampling decisions for new traces",
+        "options": [
+          {
+            "id": "parent_based",
+            "name": "Parent Based",
+            "description": "Use the parent span's sampling decision. Root spans use the configured root sampler.",
+            "has_root": true,
+            "root_options": ["always_on", "always_off", "trace_id_ratio_based"]
+          },
+          {
+            "id": "always_on",
+            "name": "Always On",
+            "description": "Sample 100% of traces."
+          },
+          {
+            "id": "always_off",
+            "name": "Always Off",
+            "description": "Sample 0% of traces. Useful for disabling tracing."
+          },
+          {
+            "id": "trace_id_ratio_based",
+            "name": "Trace ID Ratio",
+            "description": "Sample a fixed percentage of traces based on trace ID.",
+            "has_ratio": true
+          }
+        ]
+      },
+      "batch_processor": {
+        "name": "Batch Processor",
+        "description": "Configure the batch span processor that buffers and exports spans",
+        "settings": [
+          {
+            "name": "schedule_delay",
+            "label": "Schedule Delay (ms)",
+            "description": "Delay between consecutive exports",
+            "type": "integer",
+            "min": 0
+          },
+          {
+            "name": "export_timeout",
+            "label": "Export Timeout (ms)",
+            "description": "Maximum time allowed to export data. 0 = no limit.",
+            "type": "integer",
+            "min": 0
+          },
+          {
+            "name": "max_queue_size",
+            "label": "Max Queue Size",
+            "description": "Maximum spans to queue before dropping",
+            "type": "integer",
+            "min": 1
+          },
+          {
+            "name": "max_export_batch_size",
+            "label": "Max Batch Size",
+            "description": "Maximum spans per export batch",
+            "type": "integer",
+            "min": 1
+          }
+        ]
+      }
+    }
+  }
+}
