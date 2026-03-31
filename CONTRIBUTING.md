@@ -66,12 +66,9 @@ Before you begin contributing, ensure you have the following tools installed:
 * **uv**: Fast Python package installer and resolver
   * Install with: `pip install uv` or follow [uv installation guide](https://github.com/astral-sh/uv)
 
-* **Node.js 18.0.0 or higher**: Required for markdown linting
-  * Check your version: `node --version`
-  * Download from [nodejs.org](https://nodejs.org/)
-
-* **npm**: Comes with Node.js, used for managing development dependencies
-  * Check your version: `npm --version`
+* **Bun**: JavaScript runtime and package manager (used for ecosystem-explorer and markdown linting)
+  * Check your version: `bun --version`
+  * Install from [bun.sh](https://bun.sh/)
 
 * **Git**: Version control system (used in some of the automation scripts)
   * Check your version: `git --version`
@@ -99,8 +96,11 @@ cd opentelemetry-ecosystem-explorer
 # Install Python dependencies using uv
 uv sync --all-groups
 
-# Install Node.js dependencies for markdown linting
-npm install
+# Install JavaScript dependencies for markdown linting (from repo root)
+bun install
+
+# Install ecosystem-explorer dependencies
+cd ecosystem-explorer && bun install && cd ..
 
 # Set up pre-commit hooks (recommended)
 pre-commit install
@@ -138,10 +138,10 @@ uv run ruff check .
 uv run ruff format .
 
 # Run markdown linting
-npm run lint:md
+bun run lint:md
 
 # Fix markdown issues automatically
-npm run lint:md:fix
+bun run lint:md:fix
 
 # Add copyright headers to new files
 uv run python scripts/add_copyright.py

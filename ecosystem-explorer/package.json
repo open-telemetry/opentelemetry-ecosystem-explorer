@@ -3,6 +3,10 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "trustedDependencies": [
+    "@swc/core",
+    "esbuild"
+  ],
   "scripts": {
     "serve": "vite",
     "build": "tsc -b && vite build",

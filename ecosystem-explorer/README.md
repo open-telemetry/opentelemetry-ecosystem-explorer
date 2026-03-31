@@ -7,49 +7,49 @@ React/Vite web application for exploring the OpenTelemetry ecosystem registry da
 Install dependencies:
 
 ```bash
-npm install
+bun install
 ```
 
 Run development server:
 
 ```bash
-npm run serve
+bun run serve
 ```
 
 Build for production:
 
 ```bash
-npm run build
+bun run build
 ```
 
 Preview production build:
 
 ```bash
-npm run preview
+bun run preview
 ```
 
 Run linter:
 
 ```bash
-npm run lint
+bun run lint
 ```
 
 Format code:
 
 ```bash
-npm run format
+bun run format
 ```
 
 Check formatting:
 
 ```bash
-npm run format:check
+bun run format:check
 ```
 
 Run tests:
 
 ```bash
-npm test
+bun run test
 ```
 
 ## Project Structure
