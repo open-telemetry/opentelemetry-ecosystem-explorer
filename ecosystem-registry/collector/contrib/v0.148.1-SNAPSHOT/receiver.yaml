@@ -4309,7 +4309,7 @@ components:
         - mar4uk
 - name: filelogreceiver
   metadata:
-    type: filelog
+    type: file_log
     display_name: File Log Receiver
     description: This receiver tails and parses logs from files.
     status:

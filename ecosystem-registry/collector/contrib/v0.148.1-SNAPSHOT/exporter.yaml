@@ -767,6 +767,7 @@ components:
       codeowners:
         active:
         - AbhiPrasad
+        - giortzisg
 - name: signalfxexporter
   metadata:
     type: signalfx
