@@ -16,6 +16,9 @@ on:
       - 'build-and-test.yml'
       - 'scripts/**'
 
+permissions:
+  contents: read
+
 jobs:
   check-copyright-headers:
     runs-on: ubuntu-latest

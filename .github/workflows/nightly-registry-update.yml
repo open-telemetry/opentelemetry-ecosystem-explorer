@@ -7,11 +7,13 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
   synchronize-inventory:
+    permissions:
+      contents: write
+      pull-requests: write
     runs-on: ubuntu-latest
     outputs:
       collector_result: ${{ steps.collector_watcher.outcome }}

@@ -13,11 +13,13 @@ on:
         default: 'incremental'
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
   build-database:
+    permissions:
+      contents: write
+      pull-requests: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
