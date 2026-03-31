@@ -14,8 +14,8 @@ contributions. If you're new to open source or OpenTelemetry, don't hesitate to 
 ```bash
 git clone https://github.com/YOUR_USERNAME/opentelemetry-ecosystem-explorer.git
 cd opentelemetry-ecosystem-explorer
-uv sync --all-groups && npm install
-cd ecosystem-explorer && npm run serve
+uv sync --all-groups && bun install
+cd ecosystem-explorer && bun install && bun run serve
 # Visit http://localhost:5173
 ```
 
