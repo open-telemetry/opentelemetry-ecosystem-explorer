@@ -1,5 +1,9 @@
 # System Architecture Overview
 
+This system collects metadata about OpenTelemetry components (Java Agent instrumentations, Collector components)
+and makes it searchable through a web app. Data flows from source repositories → automation scripts → versioned
+registry → web application.
+
 The OpenTelemetry Ecosystem Explorer is built as a three-component system comprising the
 `ecosystem-automation`, `ecosystem-registry`, and `ecosystem-explorer` components. Each component has a distinct role in
 collecting, storing, and presenting metadata about OpenTelemetry ecosystem components.
@@ -8,34 +12,38 @@ collecting, storing, and presenting metadata about OpenTelemetry ecosystem compo
 
 ### ecosystem-automation
 
-Automated data collection and transformation pipelines,
-run via Github Actions and scheduled workflows.
+Automated pipelines that extract metadata from upstream OpenTelemetry projects.
 
-**Scope**:
+**What it does**:
 
-* Watch upstream projects for releases and changes
-* Extract and normalize metadata to registry schema
-* Generate content-addressed storage files
-* Synchronize with opentelemetry.io documentation
+* Watches upstream projects for new releases
+* Extracts and normalizes metadata to registry schema
+* Generates content-addressed storage files for the web app
+
+**Tools**: collector-watcher, java-instrumentation-watcher, configuration-watcher, explorer-db-builder
 
 ### ecosystem-registry
 
-Versioned, normalized metadata storage
+Versioned storage of normalized metadata.
 
-**Scope**:
+**What it does**:
 
-* Store historical metadata for all versions
-* Support multiple ecosystems (Java Agent, Collector, etc.)
+* Stores historical metadata for all versions
+* Organized by ecosystem (Java Agent, Collector, etc.)
+
+**Format**: YAML files organized by version
 
 ### ecosystem-explorer
 
-User-facing web application (React + TypeScript + Vite) for browsing and exploring metadata
+React web app for browsing and exploring the registry.
 
-**Scope**:
+**What it does**:
 
-* Browse, search, and filter instrumentations and collector components
-* View detailed telemetry information
+* Search, filter, and browse instrumentations and collector components
+* View detailed metadata (supported signals, library versions, etc.)
 * Compare versions
+
+**Tech**: React 19, TypeScript, Vite, Tailwind CSS
 
 ## Data Flow
 

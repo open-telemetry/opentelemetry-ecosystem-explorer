@@ -52,3 +52,12 @@ body {
 #root {
   min-height: 100vh;
 }
+
+/* Tab trigger border color override */
+[role="tab"] {
+  border-top-color: transparent !important;
+}
+
+[role="tab"][data-state="active"] {
+  border-top-color: hsl(var(--color-primary)) !important;
+}

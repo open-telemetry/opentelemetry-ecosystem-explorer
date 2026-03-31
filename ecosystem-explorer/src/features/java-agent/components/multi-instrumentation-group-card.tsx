@@ -43,38 +43,52 @@ export function MultiInstrumentationGroupCard({
   const description = group.instrumentations.find((i) => i.description)?.description;
 
   return (
-    <div className="border border-border rounded-lg bg-card flex flex-col h-full overflow-hidden">
+    <div className="group relative flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card transition-all duration-300 hover:border-primary/40 hover:shadow-[0_0_30px_hsl(var(--color-primary)/0.12)]">
+      {/* Grid pattern background */}
+      <div className="absolute inset-0 opacity-[0.15]">
+        <div
+          className="h-full w-full"
+          style={{
+            backgroundImage:
+              "linear-gradient(hsl(var(--color-border)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--color-border)) 1px, transparent 1px)",
+            backgroundSize: "20px 20px",
+          }}
+        />
+      </div>
+
       <button
         onClick={() => setExpanded(!expanded)}
-        className="p-4 w-full text-left hover:bg-card-secondary/50 transition-colors cursor-pointer"
+        className="relative z-10 w-full cursor-pointer p-6 text-left transition-colors hover:bg-card-secondary/50"
         aria-expanded={expanded}
         aria-label={`${group.displayName} group with ${group.instrumentations.length} instrumentations`}
       >
-        <div className="space-y-3">
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex items-center gap-2 min-w-0">
+        <div className="space-y-4">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-3">
               <ChevronDown
                 aria-hidden="true"
-                className={`h-4 w-4 text-muted-foreground flex-shrink-0 transition-transform duration-200 ${
+                className={`h-5 w-5 flex-shrink-0 text-muted-foreground transition-transform duration-200 ${
                   expanded ? "rotate-0" : "-rotate-90"
                 }`}
               />
-              <h3 className="font-semibold text-lg leading-tight truncate">{group.displayName}</h3>
-              <span className="text-xs px-2 py-0.5 rounded-full bg-primary/15 text-primary font-medium flex-shrink-0">
+              <h3 className="truncate text-lg font-semibold leading-tight">{group.displayName}</h3>
+              <span className="flex-shrink-0 rounded-full bg-primary/15 px-2.5 py-1 text-xs font-medium text-primary">
                 {group.instrumentations.length} versions
               </span>
             </div>
 
-            <div className="flex gap-1 flex-shrink-0">
+            <div className="flex flex-shrink-0 gap-1">
               <TargetBadges badges={badges} activeFilters={activeFilters} />
             </div>
           </div>
 
           {description && (
-            <p className="text-sm text-muted-foreground line-clamp-2 pl-6">{description}</p>
+            <p className="line-clamp-2 pl-8 text-sm leading-relaxed text-muted-foreground">
+              {description}
+            </p>
           )}
 
-          <div className="flex flex-wrap gap-2 items-center pl-6">
+          <div className="flex flex-wrap items-center gap-2 pl-8">
             <TelemetryBadges badges={badges} activeFilters={activeFilters} />
           </div>
         </div>
@@ -87,7 +101,7 @@ export function MultiInstrumentationGroupCard({
       >
         <div className="overflow-hidden">
           {expanded && (
-            <div className="border-t border-border/50 px-4 pb-4 pt-2 space-y-2">
+            <div className="relative z-10 space-y-2 border-t border-border/50 px-6 pb-6 pt-4">
               {group.instrumentations.map((instr) => (
                 <SubInstrumentationItem
                   key={instr.name}
@@ -100,6 +114,9 @@ export function MultiInstrumentationGroupCard({
           )}
         </div>
       </div>
+
+      {/* Corner accent */}
+      <div className="pointer-events-none absolute right-0 top-0 h-16 w-16 bg-gradient-to-br from-primary/10 to-transparent transition-all duration-300 group-hover:from-primary/20" />
     </div>
   );
 }

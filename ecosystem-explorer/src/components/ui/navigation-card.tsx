@@ -30,9 +30,9 @@ export function NavigationCard({ title, description, href, icon }: NavigationCar
 
   return (
     <Link to={href} className="group block h-full">
-      <div className="relative overflow-hidden rounded-lg border border-border/50 bg-card/50 p-6 h-full transition-all duration-300 hover:border-primary/40 hover:bg-card hover:shadow-lg hover:shadow-primary/5">
+      <div className="relative overflow-hidden rounded-lg border border-border/60 bg-card/80 p-8 h-full transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:bg-card hover:shadow-xl hover:shadow-primary/15">
         {/* Grid lines background */}
-        <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0 opacity-10">
           <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
             <defs>
               <pattern id={patternId} width="20" height="20" patternUnits="userSpaceOnUse">
@@ -52,7 +52,7 @@ export function NavigationCard({ title, description, href, icon }: NavigationCar
         <div className="relative z-10 flex gap-4">
           {/* Icon on the left */}
           <div className="flex-shrink-0">
-            <div className="flex h-24 w-24 items-center justify-center rounded-lg border border-border/50 bg-background/50 text-primary transition-colors group-hover:border-primary/40 group-hover:bg-primary/10">
+            <div className="flex h-32 w-32 items-center justify-center rounded-lg border border-border/50 bg-background/50 text-primary transition-colors group-hover:border-primary/50 group-hover:bg-primary/10">
               {icon}
             </div>
           </div>
@@ -60,17 +60,17 @@ export function NavigationCard({ title, description, href, icon }: NavigationCar
           {/* Content on the right */}
           <div className="flex-1 min-w-0">
             <div className="mb-2 flex items-center justify-between gap-2">
-              <h3 className="text-xl font-semibold text-[hsl(var(--color-secondary))] transition-colors group-hover:text-primary">
+              <h3 className="text-2xl font-semibold text-[hsl(var(--color-secondary))] transition-colors group-hover:text-primary">
                 {title}
               </h3>
               <ArrowRight className="h-5 w-5 flex-shrink-0 text-muted-foreground transition-all duration-300 group-hover:translate-x-1 group-hover:text-primary" />
             </div>
-            <p className="text-sm leading-relaxed text-muted-foreground">{description}</p>
+            <p className="text-base leading-relaxed text-muted-foreground">{description}</p>
           </div>
         </div>
 
         {/* Corner accent */}
-        <div className="absolute -bottom-1 -right-1 h-16 w-16 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+        <div className="absolute -bottom-1 -right-1 h-20 w-20 opacity-0 transition-all duration-300 group-hover:scale-110 group-hover:opacity-100">
           <svg viewBox="0 0 64 64" className="h-full w-full">
             <path
               d="M64 64 L64 32 L48 32 L48 48 L32 48 L32 64 Z"

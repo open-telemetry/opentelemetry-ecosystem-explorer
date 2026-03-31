@@ -9,6 +9,19 @@ This project helps users discover and explore OpenTelemetry projects, instrument
 **No contribution is too small!** We value all forms of participation, from documentation improvements to code
 contributions. If you're new to open source or OpenTelemetry, don't hesitate to ask questions.
 
+## Quick Start
+
+```bash
+git clone https://github.com/YOUR_USERNAME/opentelemetry-ecosystem-explorer.git
+cd opentelemetry-ecosystem-explorer
+uv sync --all-groups && npm install
+cd ecosystem-explorer && npm run serve
+# Visit http://localhost:5173
+```
+
+Now you can browse Java Agent instrumentations and Collector components locally. Continue reading for detailed setup
+and contribution guidelines.
+
 ## Finding Issues to Work On
 
 Look for issues tagged with:
@@ -82,7 +95,7 @@ Before you begin contributing, ensure you have the following tools installed:
 
 ## Getting Started
 
-### 1. Fork and Clone the Repository
+### Fork and Clone the Repository
 
 ```bash
 # Fork the repository on GitHub first, then clone your fork
@@ -90,7 +103,7 @@ git clone https://github.com/YOUR_USERNAME/opentelemetry-ecosystem-explorer.git
 cd opentelemetry-ecosystem-explorer
 ```
 
-### 2. Install Dependencies
+### Install Dependencies
 
 ```bash
 # Install Python dependencies using uv
@@ -106,7 +119,7 @@ cd ecosystem-explorer && bun install && cd ..
 pre-commit install
 ```
 
-### 3. Create a Branch
+### Create a Branch
 
 Before making changes, create a new branch:
 

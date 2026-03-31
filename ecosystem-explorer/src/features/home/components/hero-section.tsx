@@ -17,22 +17,63 @@ import { Compass } from "@/components/icons/compass";
 
 export function HeroSection() {
   return (
-    <section className="relative flex items-center justify-center overflow-hidden bg-background py-8">
+    <section className="relative flex items-center justify-center overflow-hidden bg-background py-12">
+      {/* Ambient radial gradient background */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(circle at center, hsl(var(--color-primary) / 0.08) 0%, hsl(var(--color-secondary) / 0.04) 30%, transparent 70%)",
+        }}
+      />
+
+      {/* Grid pattern overlay */}
+      <div className="absolute inset-0 opacity-10">
+        <div
+          className="h-full w-full"
+          style={{
+            backgroundImage:
+              "linear-gradient(hsl(var(--color-border)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--color-border)) 1px, transparent 1px)",
+            backgroundSize: "40px 40px",
+          }}
+        />
+      </div>
+
+      {/* Content */}
       <div className="relative z-10 flex flex-col items-center gap-6 px-6 text-center">
-        <Compass className="w-24 h-24 md:w-32 md:h-32 text-foreground" />
+        {/* Compass with glow ring */}
+        <div
+          className="inline-flex rounded-full p-4"
+          style={{
+            boxShadow: "0 0 60px hsl(var(--color-primary) / 0.2)",
+          }}
+        >
+          <Compass className="h-24 w-24 text-foreground md:h-32 md:w-32" />
+        </div>
 
         <div className="space-y-2">
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-balance leading-tight">
+          <h1 className="text-balance text-3xl font-bold leading-tight tracking-tight md:text-4xl">
             <span className="text-foreground">OpenTelemetry</span>
             <br />
-            <span className="text-[hsl(var(--color-secondary))]">Ecosystem Explorer</span>
+            <span className="bg-gradient-to-r from-[hsl(var(--color-secondary))] to-[hsl(var(--color-primary))] bg-clip-text text-transparent">
+              Ecosystem Explorer
+            </span>
           </h1>
 
-          <p className="max-w-2xl mx-auto text-sm md:text-base text-muted-foreground leading-relaxed text-balance">
+          <p className="mx-auto max-w-2xl text-balance text-sm leading-relaxed text-muted-foreground md:text-base">
             Navigate the vast landscape of OpenTelemetry.
           </p>
         </div>
       </div>
+
+      {/* Bottom fade transition */}
+      <div
+        className="pointer-events-none absolute bottom-0 left-0 right-0 h-64"
+        style={{
+          background:
+            "linear-gradient(to top, hsl(var(--color-background)) 0%, hsl(var(--color-background) / 0.6) 30%, transparent 100%)",
+        }}
+      />
     </section>
   );
 }

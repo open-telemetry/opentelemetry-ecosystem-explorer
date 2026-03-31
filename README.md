@@ -3,25 +3,29 @@
 This repository contains the components related to the OpenTelemetry Ecosystem Explorer, a web application that helps
 users discover and explore the various projects available in the OpenTelemetry ecosystem.
 
+The website can be viewed at <https://explorer.opentelemetry.io/>
+
 See [project proposal](https://github.com/open-telemetry/community/blob/main/projects/ecosystem-explorer.md).
 
 ## Project Structure
 
 There are three components in this repository:
 
-| Component                | Description                                                                    |
-|--------------------------|--------------------------------------------------------------------------------|
-| **ecosystem-registry**   | Raw data registry storing metadata from various projects. Updated nightly.     |
-| **ecosystem-automation** | Automation pipelines that populate the registry and synchronize documentation. |
-| **ecosystem-explorer**   | React/Vite web application for exploring the data.                             |
+| Component                | Description                                                                |
+|--------------------------|----------------------------------------------------------------------------|
+| **ecosystem-registry**   | Raw data registry storing metadata from various projects. Updated nightly. |
+| **ecosystem-automation** | Automation pipelines that extract metadata and build the database.         |
+| **ecosystem-explorer**   | React/Vite web application for exploring the data.                         |
 
 ## Contributing
 
-This project welcomes contributions from the community.
+**New contributor?** See the [Quick Start](CONTRIBUTING.md#quick-start) in CONTRIBUTING.md.
 
-Please refer to the [CONTRIBUTING.md](CONTRIBUTING.md) file for guidelines on how to contribute to this project.
+For detailed guidelines, refer to [CONTRIBUTING.md](CONTRIBUTING.md).
 
-See component READMEs for setup and development:
+For general documentation on the project, see the [docs](docs/README.md).
+
+For component-specific documentation:
 
 * [ecosystem-explorer](./ecosystem-explorer/README.md)
 * [ecosystem-automation](./ecosystem-automation/README.md)

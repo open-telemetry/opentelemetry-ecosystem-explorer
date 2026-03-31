@@ -88,8 +88,8 @@ describe("InstrumentationDetailPage — integration", () => {
       { timeout: 20_000 }
     );
 
-    // The version appears in the version badge/selector area.
-    expect(screen.getByText(latestVersion)).toBeInTheDocument();
+    // The version appears in the version badge/selector area with a "v" prefix.
+    expect(screen.getByText(`v${latestVersion}`)).toBeInTheDocument();
   });
 
   it("shows the instrumentation description on the page when present", async () => {

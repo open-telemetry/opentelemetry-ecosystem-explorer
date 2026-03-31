@@ -37,7 +37,7 @@ jobs:
         run: |
           .github/scripts/use-cla-approved-bot.sh
 
-      - uses: actions/create-github-app-token@29824e69f54612133e76f7eaac726eef6c875baf # v2.2.1
+      - uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2.2.2
         if: steps.repo_check.outputs.is_primary == 'true'
         id: otelbot-token
         with:
@@ -59,7 +59,7 @@ jobs:
             tmp-repos-
 
       - name: Install uv
-        uses: astral-sh/setup-uv@5a095e7a2014a4212f075830d4f7277575a9d098 # v7.3.1
+        uses: astral-sh/setup-uv@e06108dd0aef18192324c70427afc47652e63a82 # v7.5.0
         with:
           enable-cache: true
 

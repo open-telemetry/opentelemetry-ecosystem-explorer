@@ -137,14 +137,13 @@ describe("InstrumentationDetailPage", () => {
     const scopeNameCode = within(header).getByText("jdbc");
     expect(scopeNameCode.tagName).toBe("CODE");
 
-    expect(within(header).getByText("Agent Version:")).toBeInTheDocument();
-    expect(within(header).getByText("2.0.0")).toBeInTheDocument();
+    expect(within(header).getByText("v2.0.0")).toBeInTheDocument();
 
     expect(within(header).getByText("Enabled by Default")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Back" })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Details" })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Telemetry" })).toBeInTheDocument();
-    expect(screen.getByRole("tab", { name: "Configuration" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /Details/i })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /Telemetry/i })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /Configuration/i })).toBeInTheDocument();
   });
 
   it("does not fetch instrumentation when version is 'latest'", () => {

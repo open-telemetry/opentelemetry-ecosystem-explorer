@@ -12052,6 +12052,7 @@ libraries:
   scope:
     name: io.opentelemetry.quarkus-resteasy-reactive
   javaagent_target_versions:
+  - io.quarkus:quarkus-rest:[3.9.0,)
   - io.quarkus:quarkus-resteasy-reactive:(,3.9.0)
   tags:
   - quarkus
@@ -16175,6 +16176,8 @@ libraries:
         type: STRING
       - name: db.query.summary
         type: STRING
+      - name: db.system.name
+        type: STRING
       - name: server.address
         type: STRING
       - name: server.port
@@ -16187,6 +16190,8 @@ libraries:
       - name: db.query.summary
         type: STRING
       - name: db.query.text
+        type: STRING
+      - name: db.system.name
         type: STRING
       - name: error.type
         type: STRING
@@ -16250,6 +16255,8 @@ libraries:
         type: STRING
       - name: db.query.summary
         type: STRING
+      - name: db.system.name
+        type: STRING
       - name: server.address
         type: STRING
       - name: server.port
@@ -16262,6 +16269,8 @@ libraries:
       - name: db.query.summary
         type: STRING
       - name: db.query.text
+        type: STRING
+      - name: db.system.name
         type: STRING
       - name: error.type
         type: STRING

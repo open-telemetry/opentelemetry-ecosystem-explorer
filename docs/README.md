@@ -6,23 +6,24 @@ and resources to help users understand and contribute to the project.
 Also reference the [project wiki](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/wiki) for
 additional information.
 
-## Architecture Overview
-
 <!-- markdownlint-disable MD033 -->
 <img src="./media/component-overview.svg" width="800" alt="Component Overview Diagram">
 <!-- markdownlint-enable MD033 -->
 
-* **[System Architecture](./architecture-overview.md)**: Three-component system overview
-* **[Watchers and Synchronizers](./watchers-synchronizers.md)**: Automation pipeline for metadata updates
-* **[Registry Structure](./registry-structure.md)**: Metadata organization and versioning
-* **[Content-Addressed Storage](./content-addressed-storage.md)**: Storage pattern for multi-version support
-* **[Frontend Architecture](./frontend-architecture.md)**: Web app design and caching
+## Documentation
 
-### Additional Resources
+**New contributors**: Start with [CONTRIBUTING.md](../CONTRIBUTING.md) for quick setup.
 
-* [Project Wiki](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/wiki)
-* [Project Proposal](https://github.com/open-telemetry/community/blob/main/projects/ecosystem-explorer.md)
-* [CONTRIBUTING.md](../CONTRIBUTING.md)
+**Understanding the system**:
+
+* [Architecture Overview](./architecture-overview.md) - Three-component system design and data flow
+* [Watchers and Registry Consumers](./watchers-registry-consumers.md) - Automation pipeline
+* [Registry Structure](./registry-structure.md) - Metadata organization and versioning
+* [Content-Addressed Storage](./content-addressed-storage.md) - Storage pattern for multi-version support
+* [Frontend Architecture](./frontend-architecture.md) - Web app caching and data loading
+
+**Deployment**: The web app deploys automatically to production when changes merge to `main`. Registry updates run
+nightly via GitHub Actions.
 
 ## Project Guiding Principles
 

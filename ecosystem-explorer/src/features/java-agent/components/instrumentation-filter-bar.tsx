@@ -51,73 +51,109 @@ export function InstrumentationFilterBar({
   };
 
   return (
-    <div className="space-y-4 p-4 bg-muted/30 rounded-lg border border-border">
-      <div className="space-y-2">
-        <label htmlFor="search" className="text-sm font-medium">
-          Search
-        </label>
-        <input
-          id="search"
-          type="text"
-          placeholder="Search instrumentations..."
-          value={filters.search}
-          onChange={(e) => onFiltersChange({ ...filters, search: e.target.value })}
-          className="w-full px-3 py-2 border border-border rounded-md bg-background focus:outline-none focus:ring-2 focus:ring-primary/50"
+    <div className="relative overflow-hidden rounded-lg border border-border/60 bg-card/80 p-6">
+      {/* Ambient radial gradient background */}
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(circle at top left, hsl(var(--color-secondary) / 0.08) 0%, hsl(var(--color-primary) / 0.04) 40%, transparent 70%)",
+        }}
+      />
+
+      {/* Grid pattern overlay */}
+      <div className="absolute inset-0 opacity-5">
+        <div
+          className="h-full w-full"
+          style={{
+            backgroundImage:
+              "linear-gradient(hsl(var(--color-border)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--color-border)) 1px, transparent 1px)",
+            backgroundSize: "24px 24px",
+          }}
         />
       </div>
 
-      <div className="grid md:grid-cols-2 gap-4">
+      {/* Content */}
+      <div className="relative z-10 space-y-6">
         <div className="space-y-2">
-          <div className="text-sm font-medium">Telemetry</div>
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => toggleTelemetry("spans")}
-              aria-pressed={filters.telemetry.has("spans")}
-              className={`px-3 py-1.5 text-sm rounded-md border-2 transition-all font-medium ${getTelemetryFilterClasses(
-                "spans",
-                filters.telemetry.has("spans")
-              )}`}
-            >
-              Spans
-            </button>
-            <button
-              onClick={() => toggleTelemetry("metrics")}
-              aria-pressed={filters.telemetry.has("metrics")}
-              className={`px-3 py-1.5 text-sm rounded-md border-2 transition-all font-medium ${getTelemetryFilterClasses(
-                "metrics",
-                filters.telemetry.has("metrics")
-              )}`}
-            >
-              Metrics
-            </button>
+          <label htmlFor="search" className="text-sm font-medium text-muted-foreground">
+            Search
+          </label>
+          <div className="relative">
+            <input
+              id="search"
+              type="text"
+              placeholder="Search instrumentations..."
+              value={filters.search}
+              onChange={(e) => onFiltersChange({ ...filters, search: e.target.value })}
+              className="w-full rounded-lg border border-border/60 bg-background/80 px-4 py-2.5 text-sm backdrop-blur-sm transition-all duration-200 placeholder:text-muted-foreground/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
+            />
           </div>
         </div>
 
-        <div className="space-y-2">
-          <div className="text-sm font-medium">Type</div>
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => toggleTarget("javaagent")}
-              aria-pressed={filters.target.has("javaagent")}
-              className={`px-3 py-1.5 text-sm rounded-md border-2 transition-all font-medium ${getTargetFilterClasses(
-                "javaagent",
-                filters.target.has("javaagent")
-              )}`}
-            >
-              Java Agent
-            </button>
-            <button
-              onClick={() => toggleTarget("library")}
-              aria-pressed={filters.target.has("library")}
-              className={`px-3 py-1.5 text-sm rounded-md border-2 transition-all font-medium ${getTargetFilterClasses(
-                "library",
-                filters.target.has("library")
-              )}`}
-            >
-              Standalone
-            </button>
+        <div className="grid gap-6 md:grid-cols-2">
+          <div className="space-y-3">
+            <div className="text-sm font-medium text-muted-foreground">Telemetry</div>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => toggleTelemetry("spans")}
+                aria-pressed={filters.telemetry.has("spans")}
+                className={`rounded-lg border-2 px-4 py-2 text-sm font-medium transition-all duration-200 ${getTelemetryFilterClasses(
+                  "spans",
+                  filters.telemetry.has("spans")
+                )}`}
+              >
+                Spans
+              </button>
+              <button
+                onClick={() => toggleTelemetry("metrics")}
+                aria-pressed={filters.telemetry.has("metrics")}
+                className={`rounded-lg border-2 px-4 py-2 text-sm font-medium transition-all duration-200 ${getTelemetryFilterClasses(
+                  "metrics",
+                  filters.telemetry.has("metrics")
+                )}`}
+              >
+                Metrics
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-3">
+            <div className="text-sm font-medium text-muted-foreground">Type</div>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => toggleTarget("javaagent")}
+                aria-pressed={filters.target.has("javaagent")}
+                className={`rounded-lg border-2 px-4 py-2 text-sm font-medium transition-all duration-200 ${getTargetFilterClasses(
+                  "javaagent",
+                  filters.target.has("javaagent")
+                )}`}
+              >
+                Java Agent
+              </button>
+              <button
+                onClick={() => toggleTarget("library")}
+                aria-pressed={filters.target.has("library")}
+                className={`rounded-lg border-2 px-4 py-2 text-sm font-medium transition-all duration-200 ${getTargetFilterClasses(
+                  "library",
+                  filters.target.has("library")
+                )}`}
+              >
+                Standalone
+              </button>
+            </div>
           </div>
         </div>
+      </div>
+
+      {/* Corner accent */}
+      <div className="pointer-events-none absolute -bottom-1 -right-1 h-20 w-20 opacity-60">
+        <svg viewBox="0 0 64 64" className="h-full w-full">
+          <path
+            d="M64 64 L64 40 L52 40 L52 52 L40 52 L40 64 Z"
+            style={{ fill: "hsl(var(--color-primary) / 0.4)" }}
+          />
+        </svg>
       </div>
     </div>
   );

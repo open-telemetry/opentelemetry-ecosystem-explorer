@@ -19,12 +19,19 @@ import { NavigationCard } from "@/components/ui/navigation-card";
 
 export function ExploreSection() {
   return (
-    <section className="relative py-8 px-6 bg-background">
-      {/* Section divider */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-12 bg-gradient-to-b from-transparent via-primary/30 to-transparent" />
+    <section className="relative bg-background px-6">
+      {/* Subtle ambient glow at top */}
+      <div
+        className="pointer-events-none absolute left-1/2 top-0 h-64 w-full max-w-3xl -translate-x-1/2 -translate-y-16"
+        style={{
+          background:
+            "radial-gradient(ellipse at center, hsl(var(--color-primary) / 0.04) 0%, transparent 80%)",
+        }}
+      />
 
-      <div className="max-w-6xl mx-auto">
-        <div className="grid md:grid-cols-2 gap-4">
+      <div className="relative mx-auto max-w-6xl">
+        {/* Navigation cards */}
+        <div className="grid gap-6 md:grid-cols-2">
           <NavigationCard
             title="OpenTelemetry Java Agent"
             description="Explore auto-instrumentation for Java applications. Discover supported libraries, configuration options, and emitted telemetry."

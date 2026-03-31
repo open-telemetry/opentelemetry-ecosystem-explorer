@@ -60,7 +60,7 @@ java/
 ```yaml
 file_format: 0.1
 libraries:
-  * name: activej-http-6.0
+  - name: activej-http-6.0
     display_name: ActiveJ
     description: This instrumentation enables HTTP server spans and metrics...
     semantic_conventions:

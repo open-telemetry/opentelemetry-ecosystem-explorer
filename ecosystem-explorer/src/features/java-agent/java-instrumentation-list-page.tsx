@@ -124,18 +124,25 @@ export function JavaInstrumentationListPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-12">
-      <div className="space-y-6">
+    <div className="mx-auto max-w-7xl px-6 py-12">
+      <div className="space-y-8">
         <BackButton />
-        <div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            OpenTelemetry Java Agent Instrumentation
+
+        {/* Header Section */}
+        <div className="space-y-3">
+          <h1 className="text-3xl font-bold md:text-4xl">
+            <span className="bg-gradient-to-r from-[hsl(var(--color-secondary))] to-[hsl(var(--color-primary))] bg-clip-text text-transparent">
+              OpenTelemetry Java Agent
+            </span>
           </h1>
+          <p className="text-base text-muted-foreground">
+            Explore {instrumentations?.length ?? 0} available instrumentations.
+          </p>
         </div>
 
         <InstrumentationFilterBar filters={filters} onFiltersChange={setFilters} />
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between border-b border-border/50 pb-4">
           <div className="text-sm text-muted-foreground">
             Showing {filteredInstrumentations.length} of {instrumentations?.length ?? 0}{" "}
             instrumentations
@@ -143,11 +150,18 @@ export function JavaInstrumentationListPage() {
         </div>
 
         {filteredInstrumentations.length === 0 ? (
-          <div className="text-center py-12 text-muted-foreground">
-            No instrumentations found matching your filters.
+          <div className="flex min-h-[300px] items-center justify-center rounded-lg border border-border/50 bg-card/30">
+            <div className="text-center">
+              <p className="text-base text-muted-foreground">
+                No instrumentations found matching your filters.
+              </p>
+              <p className="mt-2 text-sm text-muted-foreground/70">
+                Try adjusting your search or filter criteria
+              </p>
+            </div>
           </div>
         ) : (
-          <div className="grid md:grid-cols-2 gap-4">
+          <div className="grid gap-6 md:grid-cols-2">
             {groupedInstrumentations.map((group) => (
               <InstrumentationGroupCard
                 key={group.displayName}

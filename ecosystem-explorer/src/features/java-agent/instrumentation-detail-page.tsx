@@ -15,10 +15,34 @@
  */
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import {
+  Info,
+  Activity,
+  Settings,
+  ExternalLink,
+  Code,
+  Check,
+  AlertCircle,
+  Loader2,
+} from "lucide-react";
 import { BackButton } from "@/components/ui/back-button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { GlowBadge } from "@/components/ui/glow-badge";
+import { DetailCard } from "@/components/ui/detail-card";
+import { SectionHeader } from "@/components/ui/section-header";
 import { useVersions, useInstrumentation } from "@/hooks/use-javaagent-data";
 import { getInstrumentationDisplayName } from "./utils/format";
+
+function buildSourceUrl(sourcePath: string): string {
+  try {
+    new URL(sourcePath);
+    return sourcePath;
+  } catch {
+    const baseUrl =
+      "https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/";
+    return new URL(sourcePath, baseUrl).toString();
+  }
+}
 
 export function InstrumentationDetailPage() {
   const { version, name } = useParams<{ version: string; name: string }>();
@@ -49,11 +73,21 @@ export function InstrumentationDetailPage() {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center space-y-2">
-            <div className="text-lg font-medium">Loading instrumentation...</div>
-            <div className="text-sm text-muted-foreground">This may take a moment</div>
+      <div className="mx-auto max-w-7xl px-6 py-12">
+        <div className="flex min-h-[400px] items-center justify-center">
+          <div className="text-center">
+            <div
+              className="inline-flex rounded-full p-4 animate-pulse"
+              style={{
+                boxShadow: "0 0 60px hsl(var(--color-primary) / 0.2)",
+              }}
+            >
+              <Loader2 className="h-12 w-12 animate-spin text-primary" aria-hidden="true" />
+            </div>
+            <div className="mt-6 space-y-2">
+              <div className="text-lg font-medium">Loading instrumentation...</div>
+              <div className="text-sm text-muted-foreground">This may take a moment</div>
+            </div>
           </div>
         </div>
       </div>
@@ -62,11 +96,25 @@ export function InstrumentationDetailPage() {
 
   if (error || !instrumentation) {
     return (
-      <div className="max-w-7xl mx-auto px-6 py-12">
+      <div className="mx-auto max-w-7xl px-6 py-12">
         <BackButton />
-        <div className="mt-6 p-6 border border-red-500/50 rounded-lg bg-red-500/10 text-red-600 dark:text-red-400">
-          <h3 className="font-semibold mb-2">Error loading instrumentation</h3>
-          <p className="text-sm">{error?.message || "Instrumentation not found"}</p>
+        <div className="mt-6">
+          <DetailCard className="border-red-500/50 bg-red-500/5">
+            <div className="flex gap-4">
+              <AlertCircle
+                className="h-6 w-6 flex-shrink-0 text-red-600 dark:text-red-400"
+                aria-hidden="true"
+              />
+              <div className="flex-1 space-y-2">
+                <h3 className="font-semibold text-red-600 dark:text-red-400">
+                  Error loading instrumentation
+                </h3>
+                <p className="text-sm text-red-600/90 dark:text-red-400/90">
+                  {error?.message || "Instrumentation not found"}
+                </p>
+              </div>
+            </div>
+          </DetailCard>
         </div>
       </div>
     );
@@ -81,329 +129,451 @@ export function InstrumentationDetailPage() {
       <BackButton />
 
       <div className="mt-6 space-y-6">
-        <header className="space-y-3">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1">
-              <h1 className="text-3xl font-bold text-foreground">{displayName}</h1>
-              {showRawName && (
-                <p className="mt-2 text-sm text-muted-foreground">
-                  <code className="px-2 py-1 bg-muted rounded text-foreground">
-                    {instrumentation.name}
-                  </code>
-                </p>
-              )}
-            </div>
+        <header className="relative overflow-hidden rounded-lg border border-border/60 bg-card/80 p-8">
+          {/* Ambient radial gradient background */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(circle at top right, hsl(var(--color-primary) / 0.06) 0%, hsl(var(--color-secondary) / 0.03) 40%, transparent 70%)",
+            }}
+          />
 
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <span className="text-sm text-muted-foreground font-medium">Agent Version:</span>
-              <span className="px-3 py-1 bg-primary/10 text-primary rounded-md text-sm font-medium">
-                {version}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <span className="px-3 py-1 bg-primary/10 text-primary rounded-md text-sm font-medium">
-                {instrumentation.disabled_by_default ? "Disabled by Default" : "Enabled by Default"}
-              </span>
-            </div>
+          {/* Grid pattern overlay */}
+          <div className="absolute inset-0 opacity-5">
+            <div
+              className="h-full w-full"
+              style={{
+                backgroundImage:
+                  "linear-gradient(hsl(var(--color-border)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--color-border)) 1px, transparent 1px)",
+                backgroundSize: "32px 32px",
+              }}
+            />
           </div>
 
-          {instrumentation.description && (
-            <p className="text-base text-muted-foreground">{instrumentation.description}</p>
-          )}
+          {/* Content */}
+          <div className="relative z-10 space-y-4">
+            <div className="flex items-start justify-between gap-4">
+              <div className="flex-1 space-y-3">
+                <h1 className="text-3xl font-bold leading-tight md:text-4xl">
+                  <span className="bg-gradient-to-r from-[hsl(var(--color-secondary))] to-[hsl(var(--color-primary))] bg-clip-text text-transparent">
+                    {displayName}
+                  </span>
+                </h1>
+                {showRawName && (
+                  <p className="text-sm">
+                    <code className="rounded bg-muted px-2 py-1 text-foreground">
+                      {instrumentation.name}
+                    </code>
+                  </p>
+                )}
+              </div>
+
+              <div className="flex flex-shrink-0 items-center gap-3">
+                <GlowBadge variant="primary" withGlow>
+                  v{version}
+                </GlowBadge>
+                <GlowBadge
+                  variant={instrumentation.disabled_by_default ? "warning" : "success"}
+                  withGlow
+                >
+                  {instrumentation.disabled_by_default
+                    ? "Disabled by Default"
+                    : "Enabled by Default"}
+                </GlowBadge>
+              </div>
+            </div>
+
+            {instrumentation.description && (
+              <p className="max-w-4xl text-base leading-relaxed text-muted-foreground">
+                {instrumentation.description}
+              </p>
+            )}
+          </div>
+
+          {/* Corner accent */}
+          <div className="pointer-events-none absolute -bottom-1 -right-1 h-24 w-24 opacity-80">
+            <svg viewBox="0 0 64 64" className="h-full w-full">
+              <path
+                d="M64 64 L64 32 L48 32 L48 48 L32 48 L32 64 Z"
+                style={{ fill: "hsl(var(--color-secondary) / 0.5)" }}
+              />
+            </svg>
+          </div>
         </header>
 
         <Tabs defaultValue="details" className="w-full">
           <TabsList>
-            <TabsTrigger value="details">Details</TabsTrigger>
-            <TabsTrigger value="telemetry">Telemetry</TabsTrigger>
-            <TabsTrigger value="configuration">Configuration</TabsTrigger>
+            <TabsTrigger value="details">
+              <Info className="h-4 w-4" aria-hidden="true" />
+              Details
+            </TabsTrigger>
+            <TabsTrigger value="telemetry">
+              <Activity className="h-4 w-4" aria-hidden="true" />
+              Telemetry
+            </TabsTrigger>
+            <TabsTrigger value="configuration">
+              <Settings className="h-4 w-4" aria-hidden="true" />
+              Configuration
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="details">
-            <div className="rounded-lg border border-border/50 bg-card/50 p-6">
-              <h2 className="text-xl font-semibold mb-4">Details</h2>
-              <div className="space-y-4">
-                {instrumentation.library_link && (
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Library Link</h3>
-                    <a
-                      href={instrumentation.library_link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-primary hover:underline"
-                    >
-                      {instrumentation.library_link}
-                    </a>
-                  </div>
-                )}
+            <div className="space-y-8">
+              {/* Links & Resources Section */}
+              {(instrumentation.library_link || instrumentation.source_path) && (
+                <div>
+                  <SectionHeader>Links & Resources</SectionHeader>
+                  <div className="grid gap-4 md:grid-cols-2">
+                    {instrumentation.library_link && (
+                      <DetailCard withHoverEffect>
+                        <div className="flex items-start gap-3">
+                          <ExternalLink
+                            className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary"
+                            aria-hidden="true"
+                          />
+                          <div className="flex-1 space-y-1">
+                            <h3 className="text-sm font-medium text-muted-foreground">
+                              Library Link
+                            </h3>
+                            <a
+                              href={instrumentation.library_link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="break-all text-sm text-primary hover:underline"
+                            >
+                              {instrumentation.library_link}
+                            </a>
+                          </div>
+                        </div>
+                      </DetailCard>
+                    )}
 
-                {instrumentation.source_path && (
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Source Path</h3>
-                    <code className="text-sm bg-muted px-2 py-1 rounded">
-                      {instrumentation.source_path}
-                    </code>
+                    {instrumentation.source_path && (
+                      <DetailCard withHoverEffect>
+                        <div className="flex items-start gap-3">
+                          <Code
+                            className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary"
+                            aria-hidden="true"
+                          />
+                          <div className="flex-1 space-y-1">
+                            <h3 className="text-sm font-medium text-muted-foreground">
+                              Source Path
+                            </h3>
+                            <a
+                              href={buildSourceUrl(instrumentation.source_path)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="break-all text-sm text-primary hover:underline"
+                            >
+                              {instrumentation.source_path}
+                            </a>
+                          </div>
+                        </div>
+                      </DetailCard>
+                    )}
                   </div>
-                )}
+                </div>
+              )}
 
-                {instrumentation.minimum_java_version && (
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-1">
-                      Minimum Java Version
-                    </h3>
-                    <p className="text-sm">{instrumentation.minimum_java_version}</p>
+              {/* Requirements Section */}
+              {(instrumentation.minimum_java_version ||
+                (instrumentation.javaagent_target_versions &&
+                  instrumentation.javaagent_target_versions.length > 0)) && (
+                <div>
+                  <SectionHeader>Requirements</SectionHeader>
+                  <div className="space-y-4">
+                    {instrumentation.minimum_java_version && (
+                      <DetailCard withGrid withHoverEffect>
+                        <div className="space-y-2">
+                          <h3 className="text-sm font-medium text-muted-foreground">
+                            Minimum Java Version
+                          </h3>
+                          <p className="text-lg font-semibold text-foreground">
+                            {instrumentation.minimum_java_version}
+                          </p>
+                        </div>
+                      </DetailCard>
+                    )}
+
+                    {instrumentation.javaagent_target_versions &&
+                      instrumentation.javaagent_target_versions.length > 0 && (
+                        <DetailCard>
+                          <div className="space-y-3">
+                            <h3 className="text-sm font-medium text-muted-foreground">
+                              Target Versions
+                            </h3>
+                            <div className="flex flex-wrap gap-2">
+                              {instrumentation.javaagent_target_versions.map((targetVersion) => (
+                                <GlowBadge key={targetVersion} variant="muted">
+                                  {targetVersion}
+                                </GlowBadge>
+                              ))}
+                            </div>
+                          </div>
+                        </DetailCard>
+                      )}
                   </div>
-                )}
+                </div>
+              )}
 
-                {instrumentation.has_standalone_library !== undefined && (
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-1">
-                      Standalone Library
-                    </h3>
-                    <p className="text-sm">
-                      {instrumentation.has_standalone_library ? "Yes" : "No"}
-                    </p>
-                  </div>
-                )}
-
-                {instrumentation.javaagent_target_versions &&
-                  instrumentation.javaagent_target_versions.length > 0 && (
-                    <div>
-                      <h3 className="text-sm font-medium text-muted-foreground mb-1">
-                        Target Versions
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
-                        {instrumentation.javaagent_target_versions.map((targetVersion) => (
-                          <span
-                            key={targetVersion}
-                            className="px-2 py-1 bg-muted text-foreground rounded text-xs"
-                          >
-                            {targetVersion}
-                          </span>
-                        ))}
+              {/* Instrumentation Scope Section */}
+              {instrumentation.scope && (
+                <div>
+                  <SectionHeader>Instrumentation Scope</SectionHeader>
+                  <DetailCard withGrid>
+                    <div className="space-y-3">
+                      <div>
+                        <h3 className="text-sm font-medium text-muted-foreground">Scope Name</h3>
+                        <p className="mt-1 text-sm font-medium text-foreground">
+                          {instrumentation.scope.name}
+                        </p>
                       </div>
-                    </div>
-                  )}
-
-                {instrumentation.tags && instrumentation.tags.length > 0 && (
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Tags</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {instrumentation.tags.map((tag) => (
-                        <span
-                          key={tag}
-                          className="px-2 py-1 bg-primary/10 text-primary rounded text-xs"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {instrumentation.features && instrumentation.features.length > 0 && (
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Features</h3>
-                    <ul className="list-disc list-inside space-y-1">
-                      {instrumentation.features.map((feature, index) => (
-                        <li key={index} className="text-sm">
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
-                {instrumentation.semantic_conventions &&
-                  instrumentation.semantic_conventions.length > 0 && (
-                    <div>
-                      <h3 className="text-sm font-medium text-muted-foreground mb-1">
-                        Semantic Conventions
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
-                        {instrumentation.semantic_conventions.map((convention) => (
-                          <span
-                            key={convention}
-                            className="px-2 py-1 bg-muted text-foreground rounded text-xs"
-                          >
-                            {convention}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                {instrumentation.scope && (
-                  <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Scope</h3>
-                    <div className="space-y-1">
-                      <p className="text-sm">
-                        <span className="font-medium">Name:</span> {instrumentation.scope.name}
-                      </p>
                       {instrumentation.scope.schema_url && (
-                        <p className="text-sm">
-                          <span className="font-medium">Schema URL:</span>{" "}
-                          <code className="text-xs bg-muted px-1 py-0.5 rounded">
+                        <div>
+                          <h3 className="text-sm font-medium text-muted-foreground">Schema URL</h3>
+                          <code className="mt-1 block break-all rounded bg-muted px-2 py-1 text-xs">
                             {instrumentation.scope.schema_url}
                           </code>
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </TabsContent>
-
-          <TabsContent value="telemetry">
-            <div className="rounded-lg border border-border/50 bg-card/50 p-6">
-              <h2 className="text-xl font-semibold mb-4">Telemetry</h2>
-              {instrumentation.telemetry && instrumentation.telemetry.length > 0 ? (
-                <div className="space-y-6">
-                  {instrumentation.telemetry.map((telemetry, index) => (
-                    <div
-                      key={index}
-                      className="border-b border-border/50 pb-6 last:border-b-0 last:pb-0"
-                    >
-                      <div className="mb-4">
-                        <h3 className="text-sm font-medium text-muted-foreground mb-1">When</h3>
-                        <p className="text-sm">{telemetry.when}</p>
-                      </div>
-
-                      {telemetry.metrics && telemetry.metrics.length > 0 && (
-                        <div className="mb-4">
-                          <h3 className="text-base font-semibold mb-3">Metrics</h3>
-                          <div className="space-y-4">
-                            {telemetry.metrics.map((metric, metricIndex) => (
-                              <div
-                                key={metricIndex}
-                                className="bg-background/50 rounded-lg p-4 border border-border/30"
-                              >
-                                <div className="flex items-start justify-between gap-4 mb-2">
-                                  <code className="text-sm font-mono text-primary">
-                                    {metric.name}
-                                  </code>
-                                  <span className="px-2 py-1 bg-primary/10 text-primary rounded text-xs font-medium">
-                                    {metric.type}
-                                  </span>
-                                </div>
-                                <p className="text-sm text-muted-foreground mb-2">
-                                  {metric.description}
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                  <span className="font-medium">Unit:</span> {metric.unit}
-                                </p>
-                                {metric.attributes && metric.attributes.length > 0 && (
-                                  <div className="mt-3">
-                                    <h4 className="text-xs font-medium text-muted-foreground mb-2">
-                                      Attributes
-                                    </h4>
-                                    <div className="space-y-1">
-                                      {metric.attributes.map((attr, attrIndex) => (
-                                        <div
-                                          key={attrIndex}
-                                          className="flex items-center gap-2 text-xs"
-                                        >
-                                          <code className="text-xs bg-muted px-1.5 py-0.5 rounded">
-                                            {attr.name}
-                                          </code>
-                                          <span className="text-muted-foreground">
-                                            ({attr.type})
-                                          </span>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {telemetry.spans && telemetry.spans.length > 0 && (
-                        <div>
-                          <h3 className="text-base font-semibold mb-3">Spans</h3>
-                          <div className="space-y-4">
-                            {telemetry.spans.map((span, spanIndex) => (
-                              <div
-                                key={spanIndex}
-                                className="bg-background/50 rounded-lg p-4 border border-border/30"
-                              >
-                                <div className="mb-2">
-                                  <span className="px-2 py-1 bg-primary/10 text-primary rounded text-xs font-medium">
-                                    {span.span_kind}
-                                  </span>
-                                </div>
-                                {span.attributes && span.attributes.length > 0 && (
-                                  <div>
-                                    <h4 className="text-xs font-medium text-muted-foreground mb-2">
-                                      Attributes
-                                    </h4>
-                                    <div className="space-y-1">
-                                      {span.attributes.map((attr, attrIndex) => (
-                                        <div
-                                          key={attrIndex}
-                                          className="flex items-center gap-2 text-xs"
-                                        >
-                                          <code className="text-xs bg-muted px-1.5 py-0.5 rounded">
-                                            {attr.name}
-                                          </code>
-                                          <span className="text-muted-foreground">
-                                            ({attr.type})
-                                          </span>
-                                        </div>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            ))}
-                          </div>
                         </div>
                       )}
                     </div>
-                  ))}
+                  </DetailCard>
                 </div>
-              ) : (
-                <p className="text-sm text-muted-foreground">No telemetry information available.</p>
+              )}
+
+              {/* Capabilities Section */}
+              {((instrumentation.features && instrumentation.features.length > 0) ||
+                (instrumentation.semantic_conventions &&
+                  instrumentation.semantic_conventions.length > 0)) && (
+                <div>
+                  <SectionHeader>Capabilities</SectionHeader>
+                  <div className="space-y-4">
+                    {instrumentation.features && instrumentation.features.length > 0 && (
+                      <DetailCard>
+                        <div className="space-y-3">
+                          <h3 className="text-sm font-medium text-muted-foreground">Features</h3>
+                          <ul className="space-y-2">
+                            {instrumentation.features.map((feature, index) => (
+                              <li key={index} className="flex items-start gap-2 text-sm">
+                                <Check
+                                  className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary"
+                                  aria-hidden="true"
+                                />
+                                <span>{feature}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </DetailCard>
+                    )}
+
+                    {instrumentation.semantic_conventions &&
+                      instrumentation.semantic_conventions.length > 0 && (
+                        <DetailCard>
+                          <div className="space-y-3">
+                            <h3 className="text-sm font-medium text-muted-foreground">
+                              Semantic Conventions
+                            </h3>
+                            <div className="flex flex-wrap gap-2">
+                              {instrumentation.semantic_conventions.map((convention) => (
+                                <GlowBadge key={convention} variant="muted">
+                                  {convention}
+                                </GlowBadge>
+                              ))}
+                            </div>
+                          </div>
+                        </DetailCard>
+                      )}
+                  </div>
+                </div>
               )}
             </div>
           </TabsContent>
 
-          <TabsContent value="configuration">
-            <div className="rounded-lg border border-border/50 bg-card/50 p-6">
-              <h2 className="text-xl font-semibold mb-4">Configuration</h2>
-              {instrumentation.configurations && instrumentation.configurations.length > 0 ? (
-                <div className="space-y-4">
-                  {instrumentation.configurations.map((config) => (
-                    <div
-                      key={config.name}
-                      className="bg-background/50 rounded-lg p-4 border border-border/30"
-                    >
-                      <div className="flex items-start justify-between gap-4 mb-2">
-                        <code className="text-sm font-mono text-primary">{config.name}</code>
-                        <span className="px-2 py-1 bg-primary/10 text-primary rounded text-xs font-medium">
-                          {config.type}
-                        </span>
+          <TabsContent value="telemetry">
+            {instrumentation.telemetry && instrumentation.telemetry.length > 0 ? (
+              <div className="space-y-8">
+                {instrumentation.telemetry.map((telemetry, index) => (
+                  <div key={index} className="space-y-6">
+                    {/* When indicator */}
+                    <div className="relative rounded-lg border-l-4 border-l-primary bg-card/50 p-4">
+                      <div
+                        className="absolute inset-y-0 left-0 w-1"
+                        style={{
+                          background:
+                            "linear-gradient(to bottom, hsl(var(--color-primary)), hsl(var(--color-secondary)))",
+                        }}
+                      />
+                      <div className="pl-2">
+                        <h3 className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                          When
+                        </h3>
+                        <p className="mt-1 text-sm font-medium text-foreground">{telemetry.when}</p>
                       </div>
-                      <p className="text-sm text-muted-foreground mb-2">{config.description}</p>
-                      <div className="flex items-center gap-2 text-xs">
-                        <span className="font-medium text-muted-foreground">Default:</span>
-                        <code className="bg-muted px-1.5 py-0.5 rounded">
+                    </div>
+
+                    {/* Metrics */}
+                    {telemetry.metrics && telemetry.metrics.length > 0 && (
+                      <div>
+                        <SectionHeader>Metrics</SectionHeader>
+                        <div className="grid gap-4 md:grid-cols-2">
+                          {telemetry.metrics.map((metric, metricIndex) => (
+                            <DetailCard key={metricIndex} withHoverEffect>
+                              <div className="space-y-3">
+                                <div className="flex items-start justify-between gap-3">
+                                  <code className="flex-1 break-all text-sm font-mono text-primary">
+                                    {metric.name}
+                                  </code>
+                                  <GlowBadge variant="success" withGlow>
+                                    {metric.type}
+                                  </GlowBadge>
+                                </div>
+
+                                <p className="text-sm leading-relaxed text-muted-foreground">
+                                  {metric.description}
+                                </p>
+
+                                <div className="flex items-center gap-2 text-xs">
+                                  <span className="font-medium text-muted-foreground">Unit:</span>
+                                  <code className="rounded bg-muted px-1.5 py-0.5">
+                                    {metric.unit}
+                                  </code>
+                                </div>
+
+                                {metric.attributes && metric.attributes.length > 0 && (
+                                  <div className="space-y-2 border-t border-border/30 pt-3">
+                                    <h4 className="text-xs font-medium text-muted-foreground">
+                                      Attributes
+                                    </h4>
+                                    <div className="flex flex-wrap gap-2">
+                                      {metric.attributes.map((attr, attrIndex) => (
+                                        <div
+                                          key={attrIndex}
+                                          className="inline-flex items-center gap-1.5 text-xs"
+                                        >
+                                          <code className="rounded bg-muted px-1.5 py-0.5">
+                                            {attr.name}
+                                          </code>
+                                          <span className="text-muted-foreground">
+                                            ({attr.type})
+                                          </span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </DetailCard>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Spans */}
+                    {telemetry.spans && telemetry.spans.length > 0 && (
+                      <div>
+                        <SectionHeader>Spans</SectionHeader>
+                        <div className="grid gap-4 md:grid-cols-2">
+                          {telemetry.spans.map((span, spanIndex) => (
+                            <DetailCard key={spanIndex} withHoverEffect>
+                              <div className="space-y-3">
+                                <div>
+                                  <GlowBadge variant="info" withGlow>
+                                    {span.span_kind}
+                                  </GlowBadge>
+                                </div>
+
+                                {span.attributes && span.attributes.length > 0 && (
+                                  <div className="space-y-2">
+                                    <h4 className="text-xs font-medium text-muted-foreground">
+                                      Attributes
+                                    </h4>
+                                    <div className="flex flex-wrap gap-2">
+                                      {span.attributes.map((attr, attrIndex) => (
+                                        <div
+                                          key={attrIndex}
+                                          className="inline-flex items-center gap-1.5 text-xs"
+                                        >
+                                          <code className="rounded bg-muted px-1.5 py-0.5">
+                                            {attr.name}
+                                          </code>
+                                          <span className="text-muted-foreground">
+                                            ({attr.type})
+                                          </span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            </DetailCard>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="flex min-h-[300px] items-center justify-center">
+                <div className="text-center">
+                  <Activity
+                    className="mx-auto h-12 w-12 text-muted-foreground/50"
+                    aria-hidden="true"
+                  />
+                  <p className="mt-4 text-sm text-muted-foreground">
+                    No telemetry information available.
+                  </p>
+                </div>
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="configuration">
+            {instrumentation.configurations && instrumentation.configurations.length > 0 ? (
+              <div className="grid gap-4 md:grid-cols-2">
+                {instrumentation.configurations.map((config) => (
+                  <DetailCard key={config.name} withHoverEffect>
+                    <div className="space-y-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <code className="flex-1 break-all text-sm font-mono text-primary">
+                          {config.name}
+                        </code>
+                        <GlowBadge variant="info" withGlow>
+                          {config.type}
+                        </GlowBadge>
+                      </div>
+
+                      <p className="text-sm leading-relaxed text-muted-foreground">
+                        {config.description}
+                      </p>
+
+                      <div className="flex items-start gap-2 rounded-lg border border-border/30 bg-muted/30 p-3">
+                        <span className="text-xs font-medium text-muted-foreground">Default:</span>
+                        <code className="flex-1 break-all text-xs">
                           {typeof config.default === "boolean"
                             ? config.default.toString()
                             : config.default}
                         </code>
                       </div>
                     </div>
-                  ))}
+                  </DetailCard>
+                ))}
+              </div>
+            ) : (
+              <div className="flex min-h-[300px] items-center justify-center">
+                <div className="text-center">
+                  <Settings
+                    className="mx-auto h-12 w-12 text-muted-foreground/50"
+                    aria-hidden="true"
+                  />
+                  <p className="mt-4 text-sm text-muted-foreground">
+                    No configuration options available.
+                  </p>
                 </div>
-              ) : (
-                <p className="text-sm text-muted-foreground">No configuration options available.</p>
-              )}
-            </div>
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </div>

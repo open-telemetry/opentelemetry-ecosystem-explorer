@@ -661,8 +661,9 @@ components:
       codeowners:
         active:
         - jmacd
+        - JakeDern
+        emeritus:
         - moh-osman3
-        - lquerel
 - name: prometheusexporter
   metadata:
     type: prometheus

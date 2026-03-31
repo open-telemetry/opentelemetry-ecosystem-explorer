@@ -38,27 +38,43 @@ export function InstrumentationCard({
   return (
     <Link
       to={detailUrl}
-      className="p-4 border border-border rounded-lg hover:border-primary/50 transition-colors bg-card flex flex-col h-full"
+      className="group relative flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card p-6 transition-all duration-300 hover:scale-[1.02] hover:border-primary/40 hover:bg-card-secondary hover:shadow-[0_0_30px_hsl(var(--color-primary)/0.12)]"
       aria-label={`View details for ${displayName}`}
     >
-      <div className="flex-1 space-y-3">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="font-semibold text-lg leading-tight">{displayName}</h3>
-          <div className="flex gap-1 flex-shrink-0">
+      {/* Grid pattern background */}
+      <div className="absolute inset-0 opacity-[0.15]">
+        <div
+          className="h-full w-full"
+          style={{
+            backgroundImage:
+              "linear-gradient(hsl(var(--color-border)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--color-border)) 1px, transparent 1px)",
+            backgroundSize: "20px 20px",
+          }}
+        />
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 flex-1 space-y-4">
+        <div className="flex items-start justify-between gap-3">
+          <h3 className="flex-1 text-lg font-semibold leading-tight">{displayName}</h3>
+          <div className="flex flex-shrink-0 gap-1">
             <TargetBadges badges={badgeInfo} activeFilters={activeFilters} />
           </div>
         </div>
 
         {instrumentation.description && (
-          <p className="text-sm text-muted-foreground line-clamp-3">
+          <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">
             {instrumentation.description}
           </p>
         )}
 
-        <div className="flex flex-wrap gap-2 items-center">
+        <div className="flex flex-wrap items-center gap-2">
           <TelemetryBadges badges={badgeInfo} activeFilters={activeFilters} />
         </div>
       </div>
+
+      {/* Corner accent */}
+      <div className="pointer-events-none absolute right-0 top-0 h-16 w-16 bg-gradient-to-br from-primary/10 to-transparent transition-all duration-300 group-hover:from-primary/20" />
     </Link>
   );
 }
