@@ -1,5 +1,5 @@
 distribution: contrib
-version: 0.148.1-SNAPSHOT
+version: 0.149.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: exporter
 components:
@@ -467,6 +467,20 @@ components:
         - jsuereth
         - psx95
         - ridwanmsharif
+- name: googlesecopsexporter
+  metadata:
+    type: google_secops
+    status:
+      class: exporter
+      stability:
+        development:
+        - logs
+      codeowners:
+        active:
+        - braydonk
+        - colelaven
+        - dpaasman00
+        - mrsillydog
 - name: honeycombmarkerexporter
   metadata:
     type: honeycombmarker
