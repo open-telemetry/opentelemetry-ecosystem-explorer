@@ -70,6 +70,20 @@ describe("NumberInputControl", () => {
     expect(onChange).toHaveBeenCalledWith("exporter.timeout", 0);
   });
 
+  it("emits 0 when clearing nullable field instead of flipping to null state", () => {
+    const onChange = vi.fn();
+    const nullableNode = { ...node, nullable: true };
+    render(<NumberInputControl node={nullableNode} value={5000} onChange={onChange} />);
+    fireEvent.change(screen.getByRole("spinbutton"), { target: { value: "" } });
+    expect(onChange).toHaveBeenCalledWith("exporter.timeout", 0);
+  });
+
+  it("shows exclusive minimum hint as 'Greater than'", () => {
+    const constrainedNode = { ...node, constraints: { exclusiveMinimum: 0 } };
+    render(<NumberInputControl node={constrainedNode} value={5} onChange={vi.fn()} />);
+    expect(screen.getByText("Greater than 0")).toBeInTheDocument();
+  });
+
   it("links description to input via aria-describedby", () => {
     const nodeWithDesc = { ...node, description: "Max wait time" };
     render(<NumberInputControl node={nodeWithDesc} value={5000} onChange={vi.fn()} />);

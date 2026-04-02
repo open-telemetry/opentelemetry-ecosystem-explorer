@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { ReactNode } from "react";
 import type { ConfigNodeBase } from "@/types/configuration";
 
 interface ControlWrapperProps {
@@ -22,7 +23,7 @@ interface ControlWrapperProps {
   isNull?: boolean;
   onClear?: () => void;
   onActivate?: () => void;
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export function ControlWrapper({

@@ -102,7 +102,7 @@ export function KeyValueMapControl({ node, value, onChange }: KeyValueMapControl
         ) : (
           <ul ref={listRef} className="space-y-2" aria-label={`${node.label} entries`}>
             {entries.map((entry, index) => (
-              <li key={entry.key || String(index)} className="flex items-center gap-2">
+              <li key={index} className="flex items-center gap-2">
                 <input
                   type="text"
                   aria-label={`Key ${index + 1}`}

@@ -40,9 +40,11 @@ export function SelectControl({ node, value, onChange }: SelectControlProps) {
         onChange={(e) => onChange(node.path, e.target.value === "" ? null : e.target.value)}
         className={SELECT_CLASS}
       >
-        {node.nullable && (
+        {node.nullable ? (
           <option value="">{node.nullBehavior ?? node.defaultBehavior ?? "Default"}</option>
-        )}
+        ) : value === null ? (
+          <option value="" disabled hidden />
+        ) : null}
         {node.enumOptions.map((opt) => (
           <option key={opt.value} value={opt.value}>
             {opt.value}

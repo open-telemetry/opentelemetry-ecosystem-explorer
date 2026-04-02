@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import type { ChangeEvent } from "react";
 import { useId } from "react";
 import type { NumberInputNode } from "@/types/configuration";
 import { ControlWrapper } from "./control-wrapper";
@@ -31,13 +32,17 @@ export function NumberInputControl({ node, value, onChange }: NumberInputControl
   const descId = useId();
   const isNull = node.nullable === true && value === null;
   const { constraints } = node;
+  const hasExclusiveMin =
+    constraints?.exclusiveMinimum !== undefined && constraints?.minimum === undefined;
+  const hasExclusiveMax =
+    constraints?.exclusiveMaximum !== undefined && constraints?.maximum === undefined;
   const min = constraints?.minimum ?? constraints?.exclusiveMinimum;
   const max = constraints?.maximum ?? constraints?.exclusiveMaximum;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value;
     if (raw === "") {
-      onChange(node.path, node.nullable ? null : 0);
+      onChange(node.path, 0);
       return;
     }
     const num = parseFloat(raw);
@@ -71,10 +76,14 @@ export function NumberInputControl({ node, value, onChange }: NumberInputControl
         {(min !== undefined || max !== undefined) && (
           <p className="text-xs text-muted-foreground/70">
             {min !== undefined && max !== undefined
-              ? `Range: ${min}–${max}`
+              ? `Range: ${hasExclusiveMin ? ">" : ""}${min}–${hasExclusiveMax ? "<" : ""}${max}`
               : min !== undefined
-                ? `Minimum: ${min}`
-                : `Maximum: ${max}`}
+                ? hasExclusiveMin
+                  ? `Greater than ${min}`
+                  : `Minimum: ${min}`
+                : hasExclusiveMax
+                  ? `Less than ${max}`
+                  : `Maximum: ${max}`}
           </p>
         )}
       </div>
