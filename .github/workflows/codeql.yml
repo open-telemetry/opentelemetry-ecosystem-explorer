@@ -1,0 +1,63 @@
+name: CodeQL
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: "25 12 * * 2"  # weekly at 12:25 UTC on Tuesday
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    permissions:
+      contents: read
+      actions: read  # for github/codeql-action/init to get workflow details
+      security-events: write  # for github/codeql-action/analyze to upload SARIF results
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: actions
+          - language: python
+          - language: javascript-typescript
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      # Setup bun for JavaScript/TypeScript analysis
+      - name: Setup bun
+        if: matrix.language == 'javascript-typescript'
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        if: matrix.language == 'javascript-typescript'
+        run: bun install --frozen-lockfile
+        working-directory: ecosystem-explorer
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@38697555549f1db7851b81482ff19f1fa5c4fedc # v4.34.1
+        with:
+          languages: ${{ matrix.language }}
+
+      - name: Build TypeScript
+        if: matrix.language == 'javascript-typescript'
+        run: bun run typecheck
+        working-directory: ecosystem-explorer
+
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@38697555549f1db7851b81482ff19f1fa5c4fedc # v4.34.1
+        with:
+          category: "/language:${{matrix.language}}"
