@@ -10106,7 +10106,7 @@ components:
         type: string
 - name: namedpipereceiver
   metadata:
-    type: namedpipe
+    type: named_pipe
     display_name: Named Pipe Receiver
     description: This receiver supports opening a Unix Named Pipe (aka FIFO), and
       reading logs from it.
@@ -12641,6 +12641,7 @@ components:
       stability:
         alpha:
         - logs
+        - profiles
         - traces
         beta:
         - metrics
