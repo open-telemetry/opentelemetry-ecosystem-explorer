@@ -47,11 +47,11 @@ export function AttributeTable({ attributes }: AttributeTableProps) {
           {attributes.map((attr, index) => (
             <tr
               key={attr.name}
-              className={`attribute-row ${index % 2 === 1 ? "bg-white/[0.02]" : ""}`}
+              className={`attribute-row ${index % 2 === 1 ? "bg-white/[0.03]" : ""}`}
             >
               <td className="p-4 font-mono text-sm md:text-[12px]">{attr.name}</td>
               <td className="p-4">
-                <span className="inline-block w-fit rounded bg-slate-800/50 px-2 py-1 text-xs font-bold text-slate-300">
+                <span className="inline-block w-fit rounded border border-border/30 bg-card/80 px-2 py-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
                   {attr.type}
                 </span>
               </td>

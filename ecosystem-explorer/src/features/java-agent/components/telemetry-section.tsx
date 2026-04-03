@@ -57,9 +57,9 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
             <SectionDivider>Metrics</SectionDivider>
             <div className={hasBothMetricsAndSpans ? "space-y-8" : "mx-auto max-w-3xl space-y-8"}>
               {currentTelemetry.metrics &&
-                currentTelemetry.metrics.map((metric, index) => (
+                currentTelemetry.metrics.map((metric) => (
                   <div
-                    key={index}
+                    key={metric.name}
                     className="rounded-2xl border border-border/30 bg-card/30 p-6 md:p-10"
                   >
                     <div className="space-y-6">
@@ -83,7 +83,7 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                         <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                           Unit
                         </span>
-                        <code className="rounded bg-muted px-2 py-1 text-sm text-slate-200 bg-slate-800">
+                        <code className="rounded border border-border/30 bg-white/[0.03] px-2 py-1 text-sm text-foreground/80 ">
                           {metric.unit}
                         </code>
                       </div>
@@ -110,9 +110,9 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
             <SectionDivider>Spans</SectionDivider>
             <div className={hasBothMetricsAndSpans ? "space-y-8" : "mx-auto max-w-3xl space-y-8"}>
               {currentTelemetry.spans &&
-                currentTelemetry.spans.map((span, index) => (
+                currentTelemetry.spans.map((span) => (
                   <div
-                    key={index}
+                    key={`${span.span_kind}-${JSON.stringify(span.attributes ?? [])}`}
                     className="rounded-2xl border border-border/30 bg-card/30 p-6 md:p-10"
                   >
                     <div className="space-y-6">

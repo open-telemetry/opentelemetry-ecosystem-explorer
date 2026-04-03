@@ -66,7 +66,7 @@ export function DetailCard({
           <svg viewBox="0 0 64 64" className="h-full w-full">
             <path
               d="M64 64 L64 32 L48 32 L48 48 L32 48 L32 64 Z"
-              style={{ fill: "hsl(var(--color-secondary) / 0.5)" }}
+              style={{ fill: "hsl(var(--secondary-hsl) / 0.5)" }}
             />
           </svg>
         </div>

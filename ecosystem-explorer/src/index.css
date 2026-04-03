@@ -3,39 +3,41 @@
 /**
  * Theme System
  *
- * 1. Default HSL triplet values (fallback before ThemeProvider loads)
+ * 1. HSL triplet values stored with -hsl suffix (e.g., --primary-hsl)
  * 2. ThemeProvider dynamically overwrites these from themes.ts
- * 3. @theme block wraps triplets in hsl() for Tailwind v4
+ * 3. @theme block wraps triplets in hsl() to create Tailwind utility classes
  *
  * Source of truth: src/themes.ts
  */
 
 @layer theme {
   :root {
-    --color-primary: 185 85% 70%;
-    --color-secondary: 185 85% 50%;
-    --color-background: 0 0% 4%;
-    --color-foreground: 0 0% 98%;
-    --color-card: 0 0% 8%;
-    --color-card-secondary: 0 0% 12%;
-    --color-muted-foreground: 0 0% 55%;
-    --color-border: 0 0% 20%;
+    --primary-hsl: 185 85% 70%;
+    --secondary-hsl: 185 85% 50%;
+    --background-hsl: 0 0% 4%;
+    --foreground-hsl: 0 0% 98%;
+    --card-hsl: 0 0% 8%;
+    --card-secondary-hsl: 0 0% 12%;
+    --muted-hsl: 0 0% 6%;
+    --muted-foreground-hsl: 0 0% 55%;
+    --border-hsl: 0 0% 20%;
   }
 }
 
 @theme {
-  --color-primary: hsl(var(--color-primary));
-  --color-secondary: hsl(var(--color-secondary));
-  --color-background: hsl(var(--color-background));
-  --color-foreground: hsl(var(--color-foreground));
-  --color-card: hsl(var(--color-card));
-  --color-card-secondary: hsl(var(--color-card-secondary));
-  --color-muted-foreground: hsl(var(--color-muted-foreground));
-  --color-border: hsl(var(--color-border));
+  --color-primary: hsl(var(--primary-hsl));
+  --color-secondary: hsl(var(--secondary-hsl));
+  --color-background: hsl(var(--background-hsl));
+  --color-foreground: hsl(var(--foreground-hsl));
+  --color-card: hsl(var(--card-hsl));
+  --color-card-secondary: hsl(var(--card-secondary-hsl));
+  --color-muted: hsl(var(--muted-hsl));
+  --color-muted-foreground: hsl(var(--muted-foreground-hsl));
+  --color-border: hsl(var(--border-hsl));
 }
 
 * {
-  border-color: hsl(var(--color-border));
+  border-color: hsl(var(--border-hsl));
 }
 
 body {
@@ -45,8 +47,8 @@ body {
     system-ui,
     -apple-system,
     sans-serif;
-  background-color: hsl(var(--color-background));
-  color: hsl(var(--color-foreground));
+  background-color: hsl(var(--background-hsl));
+  color: hsl(var(--foreground-hsl));
 }
 
 #root {
@@ -59,5 +61,5 @@ body {
 }
 
 [role="tab"][data-state="active"] {
-  border-top-color: hsl(var(--color-primary)) !important;
+  border-top-color: hsl(var(--primary-hsl)) !important;
 }

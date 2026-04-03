@@ -60,7 +60,7 @@ export function NavigationCard({ title, description, href, icon }: NavigationCar
           {/* Content on the right */}
           <div className="flex-1 min-w-0">
             <div className="mb-2 flex items-center justify-between gap-2">
-              <h3 className="text-2xl font-semibold text-[hsl(var(--color-secondary))] transition-colors group-hover:text-primary">
+              <h3 className="text-2xl font-semibold text-[hsl(var(--secondary-hsl))] transition-colors group-hover:text-primary">
                 {title}
               </h3>
               <ArrowRight className="h-5 w-5 flex-shrink-0 text-muted-foreground transition-all duration-300 group-hover:translate-x-1 group-hover:text-primary" />
@@ -74,7 +74,7 @@ export function NavigationCard({ title, description, href, icon }: NavigationCar
           <svg viewBox="0 0 64 64" className="h-full w-full">
             <path
               d="M64 64 L64 32 L48 32 L48 48 L32 48 L32 64 Z"
-              style={{ fill: "hsl(var(--color-secondary) / 0.5)" }}
+              style={{ fill: "hsl(var(--secondary-hsl) / 0.5)" }}
             />
           </svg>
         </div>

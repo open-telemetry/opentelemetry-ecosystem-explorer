@@ -26,7 +26,7 @@ export function SectionHeader({ children, className = "" }: SectionHeaderProps) 
       <div
         className="h-px w-16"
         style={{
-          background: "linear-gradient(to right, transparent, hsl(var(--color-border)))",
+          background: "linear-gradient(to right, transparent, hsl(var(--border-hsl)))",
         }}
       />
       <h2 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
@@ -35,7 +35,7 @@ export function SectionHeader({ children, className = "" }: SectionHeaderProps) 
       <div
         className="h-px w-16"
         style={{
-          background: "linear-gradient(to left, transparent, hsl(var(--color-border)))",
+          background: "linear-gradient(to left, transparent, hsl(var(--border-hsl)))",
         }}
       />
     </div>

@@ -80,7 +80,7 @@ export function InstrumentationDetailPage() {
             <div
               className="inline-flex rounded-full p-4 animate-pulse"
               style={{
-                boxShadow: "0 0 60px hsl(var(--color-primary) / 0.2)",
+                boxShadow: "0 0 60px hsl(var(--primary-hsl) / 0.2)",
               }}
             >
               <Loader2 className="h-12 w-12 animate-spin text-primary" aria-hidden="true" />
@@ -136,7 +136,7 @@ export function InstrumentationDetailPage() {
             className="absolute inset-0"
             style={{
               background:
-                "radial-gradient(circle at top right, hsl(var(--color-primary) / 0.06) 0%, hsl(var(--color-secondary) / 0.03) 40%, transparent 70%)",
+                "radial-gradient(circle at top right, hsl(var(--primary-hsl) / 0.06) 0%, hsl(var(--secondary-hsl) / 0.03) 40%, transparent 70%)",
             }}
           />
 
@@ -146,7 +146,7 @@ export function InstrumentationDetailPage() {
               className="h-full w-full"
               style={{
                 backgroundImage:
-                  "linear-gradient(hsl(var(--color-border)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--color-border)) 1px, transparent 1px)",
+                  "linear-gradient(hsl(var(--border-hsl)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--border-hsl)) 1px, transparent 1px)",
                 backgroundSize: "32px 32px",
               }}
             />
@@ -157,7 +157,7 @@ export function InstrumentationDetailPage() {
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 space-y-3">
                 <h1 className="text-3xl font-bold leading-tight md:text-4xl">
-                  <span className="bg-gradient-to-r from-[hsl(var(--color-secondary))] to-[hsl(var(--color-primary))] bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-[hsl(var(--secondary-hsl))] to-[hsl(var(--primary-hsl))] bg-clip-text text-transparent">
                     {displayName}
                   </span>
                 </h1>
@@ -197,7 +197,7 @@ export function InstrumentationDetailPage() {
             <svg viewBox="0 0 64 64" className="h-full w-full">
               <path
                 d="M64 64 L64 32 L48 32 L48 48 L32 48 L32 64 Z"
-                style={{ fill: "hsl(var(--color-secondary) / 0.5)" }}
+                style={{ fill: "hsl(var(--secondary-hsl) / 0.5)" }}
               />
             </svg>
           </div>
@@ -210,7 +210,7 @@ export function InstrumentationDetailPage() {
               className="h-full w-full"
               style={{
                 backgroundImage:
-                  "linear-gradient(hsl(var(--color-border)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--color-border)) 1px, transparent 1px)",
+                  "linear-gradient(hsl(var(--border-hsl)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--border-hsl)) 1px, transparent 1px)",
                 backgroundSize: "32px 32px",
               }}
             />

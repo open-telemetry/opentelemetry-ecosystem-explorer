@@ -131,7 +131,7 @@ export function JavaInstrumentationListPage() {
         {/* Header Section */}
         <div className="space-y-3">
           <h1 className="text-3xl font-bold md:text-4xl">
-            <span className="bg-gradient-to-r from-[hsl(var(--color-secondary))] to-[hsl(var(--color-primary))] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[hsl(var(--secondary-hsl))] to-[hsl(var(--primary-hsl))] bg-clip-text text-transparent">
               OpenTelemetry Java Agent
             </span>
           </h1>
