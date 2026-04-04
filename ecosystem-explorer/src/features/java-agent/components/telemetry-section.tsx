@@ -110,9 +110,9 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
             <SectionDivider>Spans</SectionDivider>
             <div className={hasBothMetricsAndSpans ? "space-y-8" : "mx-auto max-w-3xl space-y-8"}>
               {currentTelemetry.spans &&
-                currentTelemetry.spans.map((span) => (
+                currentTelemetry.spans.map((span, index) => (
                   <div
-                    key={`${span.span_kind}-${JSON.stringify(span.attributes ?? [])}`}
+                    key={`${span.span_kind}-${index}`}
                     className="rounded-2xl border border-border/30 bg-card/30 p-6 md:p-10"
                   >
                     <div className="space-y-6">

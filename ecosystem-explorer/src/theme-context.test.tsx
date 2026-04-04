@@ -41,6 +41,7 @@ describe("ThemeProvider", () => {
     expect(root.style.getPropertyValue("--card-hsl")).toBe(theme.colors.card);
     expect(root.style.getPropertyValue("--card-secondary-hsl")).toBe(theme.colors.cardSecondary);
     expect(root.style.getPropertyValue("--border-hsl")).toBe(theme.colors.border);
+    expect(root.style.getPropertyValue("--muted-hsl")).toBe(theme.colors.muted);
     expect(root.style.getPropertyValue("--muted-foreground-hsl")).toBe(
       theme.colors.mutedForeground
     );

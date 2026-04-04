@@ -71,7 +71,7 @@ export function HeroSection() {
         className="pointer-events-none absolute bottom-0 left-0 right-0 h-64"
         style={{
           background:
-            "linear-gradient(to top, hsl(var(--color-background)) 0%, hsl(var(--color-background) / 0.6) 30%, transparent 100%)",
+            "linear-gradient(to top, hsl(var(--background-hsl)) 0%, hsl(var(--background-hsl) / 0.6) 30%, transparent 100%)",
         }}
       />
     </section>
