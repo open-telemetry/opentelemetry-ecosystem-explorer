@@ -3038,8 +3038,8 @@ libraries:
   javaagent_target_versions:
   - com.datastax.cassandra:cassandra-driver-core:[3.0,4.0)
   configurations:
-  - name: otel.instrumentation.common.db-statement-sanitizer.enabled
-    description: Enables statement sanitization for database queries.
+  - name: otel.instrumentation.common.db.query-sanitization.enabled
+    description: Enables query sanitization for database queries.
     type: boolean
     default: true
   telemetry:
@@ -3123,8 +3123,8 @@ libraries:
   javaagent_target_versions:
   - com.datastax.oss:java-driver-core:[4.0,4.4)
   configurations:
-  - name: otel.instrumentation.common.db-statement-sanitizer.enabled
-    description: Enables statement sanitization for database queries.
+  - name: otel.instrumentation.common.db.query-sanitization.enabled
+    description: Enables query sanitization for database queries.
     type: boolean
     default: true
   telemetry:
@@ -3234,8 +3234,8 @@ libraries:
   - org.apache.cassandra:java-driver-core:(,)
   - com.datastax.oss:java-driver-core:[4.4,]
   configurations:
-  - name: otel.instrumentation.common.db-statement-sanitizer.enabled
-    description: Enables statement sanitization for database queries.
+  - name: otel.instrumentation.common.db.query-sanitization.enabled
+    description: Enables query sanitization for database queries.
     type: boolean
     default: true
   telemetry:
@@ -3343,8 +3343,8 @@ libraries:
   javaagent_target_versions:
   - com.clickhouse:clickhouse-client:[0.5.0,)
   configurations:
-  - name: otel.instrumentation.common.db-statement-sanitizer.enabled
-    description: Enables statement sanitization for database queries.
+  - name: otel.instrumentation.common.db.query-sanitization.enabled
+    description: Enables query sanitization for database queries.
     type: boolean
     default: true
   telemetry:
@@ -3414,8 +3414,8 @@ libraries:
   javaagent_target_versions:
   - com.clickhouse:client-v2:[0.6.4,)
   configurations:
-  - name: otel.instrumentation.common.db-statement-sanitizer.enabled
-    description: Enables statement sanitization for database queries.
+  - name: otel.instrumentation.common.db.query-sanitization.enabled
+    description: Enables query sanitization for database queries.
     type: boolean
     default: true
   telemetry:
@@ -3487,8 +3487,8 @@ libraries:
   javaagent_target_versions:
   - com.couchbase.client:java-client:[2,3)
   configurations:
-  - name: otel.instrumentation.common.db-statement-sanitizer.enabled
-    description: Enables statement sanitization for database queries.
+  - name: otel.instrumentation.common.db.query-sanitization.enabled
+    description: Enables query sanitization for database queries.
     type: boolean
     default: true
   telemetry:
@@ -3552,8 +3552,8 @@ libraries:
       attributes.
     type: boolean
     default: false
-  - name: otel.instrumentation.common.db-statement-sanitizer.enabled
-    description: Enables statement sanitization for database queries.
+  - name: otel.instrumentation.common.db.query-sanitization.enabled
+    description: Enables query sanitization for database queries.
     type: boolean
     default: true
   telemetry:
@@ -4611,8 +4611,8 @@ libraries:
   javaagent_target_versions:
   - org.apache.geode:geode-core:[1.4.0,)
   configurations:
-  - name: otel.instrumentation.common.db-statement-sanitizer.enabled
-    description: Enables statement sanitization for database queries.
+  - name: otel.instrumentation.common.db.query-sanitization.enabled
+    description: Enables query sanitization for database queries.
     type: boolean
     default: true
   telemetry:
@@ -4774,7 +4774,7 @@ libraries:
   javaagent_target_versions:
   - com.graphql-java:graphql-java:[12,20)
   configurations:
-  - name: otel.instrumentation.graphql.query-sanitizer.enabled
+  - name: otel.instrumentation.graphql.query-sanitization.enabled
     description: Enables sanitization of sensitive information from queries so they
       aren't added as span attributes.
     type: boolean
@@ -4811,7 +4811,7 @@ libraries:
   javaagent_target_versions:
   - com.graphql-java:graphql-java:[20,)
   configurations:
-  - name: otel.instrumentation.graphql.query-sanitizer.enabled
+  - name: otel.instrumentation.graphql.query-sanitization.enabled
     description: Enables sanitization of sensitive information from queries so they
       aren't added as span attributes.
     type: boolean
@@ -5995,8 +5995,8 @@ libraries:
   javaagent_target_versions:
   - org.influxdb:influxdb-java:[2.4,)
   configurations:
-  - name: otel.instrumentation.common.db-statement-sanitizer.enabled
-    description: Enables or disables statement sanitization for database queries.
+  - name: otel.instrumentation.common.db.query-sanitization.enabled
+    description: Enables or disables query sanitization for database queries.
     type: boolean
     default: true
   telemetry:
@@ -6845,13 +6845,13 @@ libraries:
   javaagent_target_versions:
   - Java 8+
   configurations:
-  - name: otel.instrumentation.jdbc.statement-sanitizer.enabled
-    description: Enables statement sanitization for database queries. Takes precedent
-      to otel.instrumentation.common.db-statement-sanitizer.enabled.
+  - name: otel.instrumentation.jdbc.query-sanitization.enabled
+    description: Enables query sanitization for database queries. Takes precedence
+      over otel.instrumentation.common.db.query-sanitization.enabled.
     type: boolean
     default: true
-  - name: otel.instrumentation.common.db-statement-sanitizer.enabled
-    description: Enables statement sanitization for database queries.
+  - name: otel.instrumentation.common.db.query-sanitization.enabled
+    description: Enables query sanitization for database queries.
     type: boolean
     default: true
   - name: otel.instrumentation.jdbc.experimental.transaction.enabled
@@ -6875,9 +6875,9 @@ libraries:
   - name: otel.instrumentation.jdbc.experimental.capture-query-parameters
     description: 'Sets whether the query parameters should be captured as span attributes
       named <code>db.query.parameter.&lt;key&gt;</code>. Enabling this option disables
-      the statement sanitization.<p>WARNING: captured query parameters may contain
-      sensitive information such as passwords, personally identifiable information
-      or protected health info.'
+      query sanitization.<p>WARNING: captured query parameters may contain sensitive
+      information such as passwords, personally identifiable information or protected
+      health info.'
     type: boolean
     default: false
   - name: otel.instrumentation.jdbc-datasource.enabled
@@ -6981,8 +6981,8 @@ libraries:
   javaagent_target_versions:
   - redis.clients:jedis:[1.4.0,3.0.0)
   configurations:
-  - name: otel.instrumentation.common.db-statement-sanitizer.enabled
-    description: Enables statement sanitization for database queries.
+  - name: otel.instrumentation.common.db.query-sanitization.enabled
+    description: Enables query sanitization for database queries.
     type: boolean
     default: true
   - name: otel.instrumentation.common.peer-service-mapping
@@ -7053,8 +7053,8 @@ libraries:
   javaagent_target_versions:
   - redis.clients:jedis:[3.0.0,4)
   configurations:
-  - name: otel.instrumentation.common.db-statement-sanitizer.enabled
-    description: Enables statement sanitization for database queries.
+  - name: otel.instrumentation.common.db.query-sanitization.enabled
+    description: Enables query sanitization for database queries.
     type: boolean
     default: true
   - name: otel.instrumentation.common.peer-service-mapping
@@ -7139,8 +7139,8 @@ libraries:
   javaagent_target_versions:
   - redis.clients:jedis:[4.0.0-beta1,)
   configurations:
-  - name: otel.instrumentation.common.db-statement-sanitizer.enabled
-    description: Enables statement sanitization for database queries.
+  - name: otel.instrumentation.common.db.query-sanitization.enabled
+    description: Enables query sanitization for database queries.
     type: boolean
     default: true
   telemetry:
@@ -9112,8 +9112,8 @@ libraries:
       and `lettuce.command.results.count`.
     type: boolean
     default: false
-  - name: otel.instrumentation.common.db-statement-sanitizer.enabled
-    description: Enables statement sanitization for database queries.
+  - name: otel.instrumentation.common.db.query-sanitization.enabled
+    description: Enables query sanitization for database queries.
     type: boolean
     default: true
   - name: otel.instrumentation.common.peer-service-mapping
@@ -9208,8 +9208,8 @@ libraries:
       events.
     type: boolean
     default: false
-  - name: otel.instrumentation.common.db-statement-sanitizer.enabled
-    description: Enables statement sanitization for database queries.
+  - name: otel.instrumentation.common.db.query-sanitization.enabled
+    description: Enables query sanitization for database queries.
     type: boolean
     default: true
   telemetry:
@@ -9683,13 +9683,13 @@ libraries:
   javaagent_target_versions:
   - org.mongodb:mongo-java-driver:[3.1,)
   configurations:
-  - name: otel.instrumentation.mongo.statement-sanitizer.enabled
-    description: Enables statement sanitization for MongoDB queries. Takes precedence
-      over otel.instrumentation.common.db-statement-sanitizer.enabled.
+  - name: otel.instrumentation.mongo.query-sanitization.enabled
+    description: Enables query sanitization for MongoDB queries. Takes precedence
+      over otel.instrumentation.common.db.query-sanitization.enabled.
     type: boolean
     default: true
-  - name: otel.instrumentation.common.db-statement-sanitizer.enabled
-    description: Enables statement sanitization for database queries.
+  - name: otel.instrumentation.common.db.query-sanitization.enabled
+    description: Enables query sanitization for database queries.
     type: boolean
     default: true
   telemetry:
@@ -9767,13 +9767,13 @@ libraries:
   - org.mongodb:mongodb-driver-core:[3.7, 4.0)
   - org.mongodb:mongo-java-driver:[3.7, 4.0)
   configurations:
-  - name: otel.instrumentation.mongo.statement-sanitizer.enabled
-    description: Enables statement sanitization for MongoDB queries. Takes precedence
-      over otel.instrumentation.common.db-statement-sanitizer.enabled.
+  - name: otel.instrumentation.mongo.query-sanitization.enabled
+    description: Enables query sanitization for MongoDB queries. Takes precedence
+      over otel.instrumentation.common.db.query-sanitization.enabled.
     type: boolean
     default: true
-  - name: otel.instrumentation.common.db-statement-sanitizer.enabled
-    description: Enables statement sanitization for database queries.
+  - name: otel.instrumentation.common.db.query-sanitization.enabled
+    description: Enables query sanitization for database queries.
     type: boolean
     default: true
   telemetry:
@@ -9850,13 +9850,13 @@ libraries:
   javaagent_target_versions:
   - org.mongodb:mongodb-driver-core:[4.0,)
   configurations:
-  - name: otel.instrumentation.mongo.statement-sanitizer.enabled
-    description: Enables statement sanitization for MongoDB queries. Takes precedence
-      over otel.instrumentation.common.db-statement-sanitizer.enabled.
+  - name: otel.instrumentation.mongo.query-sanitization.enabled
+    description: Enables query sanitization for MongoDB queries. Takes precedence
+      over otel.instrumentation.common.db.query-sanitization.enabled.
     type: boolean
     default: true
-  - name: otel.instrumentation.common.db-statement-sanitizer.enabled
-    description: Enables statement sanitization for database queries.
+  - name: otel.instrumentation.common.db.query-sanitization.enabled
+    description: Enables query sanitization for database queries.
     type: boolean
     default: true
   telemetry:
@@ -9933,13 +9933,13 @@ libraries:
   javaagent_target_versions:
   - org.mongodb:mongodb-driver-async:[3.3,)
   configurations:
-  - name: otel.instrumentation.mongo.statement-sanitizer.enabled
-    description: Enables statement sanitization for MongoDB queries. Takes precedence
-      over otel.instrumentation.common.db-statement-sanitizer.enabled.
+  - name: otel.instrumentation.mongo.query-sanitization.enabled
+    description: Enables query sanitization for MongoDB queries. Takes precedence
+      over otel.instrumentation.common.db.query-sanitization.enabled.
     type: boolean
     default: true
-  - name: otel.instrumentation.common.db-statement-sanitizer.enabled
-    description: Enables statement sanitization for database queries.
+  - name: otel.instrumentation.common.db.query-sanitization.enabled
+    description: Enables query sanitization for database queries.
     type: boolean
     default: true
   telemetry:
@@ -12107,13 +12107,13 @@ libraries:
   javaagent_target_versions:
   - io.r2dbc:r2dbc-spi:[1.0.0.RELEASE,)
   configurations:
-  - name: otel.instrumentation.r2dbc.statement-sanitizer.enabled
-    description: Enables statement sanitization for database queries. Takes precedence
-      over otel.instrumentation.common.db-statement-sanitizer.enabled.
+  - name: otel.instrumentation.r2dbc.query-sanitization.enabled
+    description: Enables query sanitization for database queries. Takes precedence
+      over otel.instrumentation.common.db.query-sanitization.enabled.
     type: boolean
     default: true
-  - name: otel.instrumentation.common.db-statement-sanitizer.enabled
-    description: Enables statement sanitization for database queries.
+  - name: otel.instrumentation.common.db.query-sanitization.enabled
+    description: Enables query sanitization for database queries.
     type: boolean
     default: true
   - name: otel.instrumentation.r2dbc.experimental.sqlcommenter.enabled
@@ -16034,8 +16034,8 @@ libraries:
   javaagent_target_versions:
   - io.vertx:vertx-redis-client:[4.0.0,)
   configurations:
-  - name: otel.instrumentation.common.db-statement-sanitizer.enabled
-    description: Enables statement sanitization for database queries.
+  - name: otel.instrumentation.common.db.query-sanitization.enabled
+    description: Enables query sanitization for database queries.
     type: boolean
     default: true
   - name: otel.instrumentation.common.peer-service-mapping
@@ -16139,8 +16139,8 @@ libraries:
   javaagent_target_versions:
   - io.vertx:vertx-sql-client:[4.0.0,5)
   configurations:
-  - name: otel.instrumentation.common.db-statement-sanitizer.enabled
-    description: Enables statement sanitization for database queries.
+  - name: otel.instrumentation.common.db.query-sanitization.enabled
+    description: Enables query sanitization for database queries.
     type: boolean
     default: true
   telemetry:
@@ -16218,8 +16218,8 @@ libraries:
   javaagent_target_versions:
   - io.vertx:vertx-sql-client:[5.0.0,)
   configurations:
-  - name: otel.instrumentation.common.db-statement-sanitizer.enabled
-    description: Enables statement sanitization for database queries.
+  - name: otel.instrumentation.common.db.query-sanitization.enabled
+    description: Enables query sanitization for database queries.
     type: boolean
     default: true
   telemetry:
