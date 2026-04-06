@@ -25,7 +25,7 @@ export function JavaIcon({ className }: { className?: string }) {
       <path
         d="M 60 80 L 50 160 Q 50 170 60 170 L 140 170 Q 150 170 150 160 L 140 80 Z"
         fill="none"
-        stroke="hsl(var(--color-primary))"
+        stroke="hsl(var(--primary-hsl))"
         strokeWidth="4"
       />
 
@@ -39,7 +39,7 @@ export function JavaIcon({ className }: { className?: string }) {
       {/* faint liquid tint behind the bars */}
       <path
         d="M 65 90 L 57 155 Q 57 162 63 162 L 137 162 Q 143 162 143 155 L 135 90 Z"
-        fill="hsl(var(--color-primary))"
+        fill="hsl(var(--primary-hsl))"
         opacity="0.10"
       />
 
@@ -51,7 +51,7 @@ export function JavaIcon({ className }: { className?: string }) {
           y1="158"
           x2="138"
           y2="158"
-          stroke="hsl(var(--color-primary))"
+          stroke="hsl(var(--primary-hsl))"
           strokeWidth="2"
           opacity="0.25"
         />
@@ -67,7 +67,7 @@ export function JavaIcon({ className }: { className?: string }) {
           y="132"
           width="10"
           height="26"
-          fill="hsl(var(--color-primary))"
+          fill="hsl(var(--primary-hsl))"
           opacity="0.35"
           rx="2"
         />
@@ -76,7 +76,7 @@ export function JavaIcon({ className }: { className?: string }) {
           y="120"
           width="10"
           height="38"
-          fill="hsl(var(--color-primary))"
+          fill="hsl(var(--primary-hsl))"
           opacity="0.45"
           rx="2"
         />
@@ -85,7 +85,7 @@ export function JavaIcon({ className }: { className?: string }) {
           y="140"
           width="10"
           height="18"
-          fill="hsl(var(--color-primary))"
+          fill="hsl(var(--primary-hsl))"
           opacity="0.30"
           rx="2"
         />
@@ -94,7 +94,7 @@ export function JavaIcon({ className }: { className?: string }) {
           y="112"
           width="10"
           height="46"
-          fill="hsl(var(--color-primary))"
+          fill="hsl(var(--primary-hsl))"
           opacity="0.55"
           rx="2"
         />
@@ -103,7 +103,7 @@ export function JavaIcon({ className }: { className?: string }) {
           y="126"
           width="10"
           height="32"
-          fill="hsl(var(--color-primary))"
+          fill="hsl(var(--primary-hsl))"
           opacity="0.40"
           rx="2"
         />
@@ -116,7 +116,7 @@ export function JavaIcon({ className }: { className?: string }) {
       <path
         d="M 150 100 Q 170 100 170 120 Q 170 140 150 140"
         fill="none"
-        stroke="hsl(var(--color-primary))"
+        stroke="hsl(var(--primary-hsl))"
         strokeWidth="4"
       />
 
@@ -124,7 +124,7 @@ export function JavaIcon({ className }: { className?: string }) {
       <path
         d="M 70 70 Q 65 50 70 30"
         fill="none"
-        stroke="hsl(var(--color-primary))"
+        stroke="hsl(var(--primary-hsl))"
         strokeWidth="4"
         strokeLinecap="round"
         opacity="0.7"
@@ -132,7 +132,7 @@ export function JavaIcon({ className }: { className?: string }) {
       <path
         d="M 100 75 Q 95 55 100 35"
         fill="none"
-        stroke="hsl(var(--color-primary))"
+        stroke="hsl(var(--primary-hsl))"
         strokeWidth="4"
         strokeLinecap="round"
         opacity="0.7"
@@ -140,7 +140,7 @@ export function JavaIcon({ className }: { className?: string }) {
       <path
         d="M 130 70 Q 125 50 130 30"
         fill="none"
-        stroke="hsl(var(--color-primary))"
+        stroke="hsl(var(--primary-hsl))"
         strokeWidth="4"
         strokeLinecap="round"
         opacity="0.7"

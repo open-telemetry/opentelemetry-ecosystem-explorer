@@ -38,7 +38,7 @@ export function InstrumentationCard({
   return (
     <Link
       to={detailUrl}
-      className="group relative flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card p-6 transition-all duration-300 hover:scale-[1.02] hover:border-primary/40 hover:bg-card-secondary hover:shadow-[0_0_30px_hsl(var(--color-primary)/0.12)]"
+      className="group relative flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card p-6 transition-all duration-300 hover:scale-[1.02] hover:border-primary/40 hover:bg-card-secondary hover:shadow-[0_0_30px_hsl(var(--primary-hsl)/0.12)]"
       aria-label={`View details for ${displayName}`}
     >
       {/* Grid pattern background */}
@@ -47,7 +47,7 @@ export function InstrumentationCard({
           className="h-full w-full"
           style={{
             backgroundImage:
-              "linear-gradient(hsl(var(--color-border)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--color-border)) 1px, transparent 1px)",
+              "linear-gradient(hsl(var(--border-hsl)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--border-hsl)) 1px, transparent 1px)",
             backgroundSize: "20px 20px",
           }}
         />
@@ -72,9 +72,6 @@ export function InstrumentationCard({
           <TelemetryBadges badges={badgeInfo} activeFilters={activeFilters} />
         </div>
       </div>
-
-      {/* Corner accent */}
-      <div className="pointer-events-none absolute right-0 top-0 h-16 w-16 bg-gradient-to-br from-primary/10 to-transparent transition-all duration-300 group-hover:from-primary/20" />
     </Link>
   );
 }

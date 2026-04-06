@@ -20,9 +20,6 @@ import { NavigationCard } from "@/components/ui/navigation-card";
 export function AgentExploreLanding() {
   return (
     <section className="relative py-8 px-6 bg-background">
-      {/* Section divider */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-12 bg-gradient-to-b from-transparent via-primary/30 to-transparent" />
-
       <div className="max-w-6xl mx-auto">
         <div className="grid md:grid-cols-2 gap-4">
           <NavigationCard

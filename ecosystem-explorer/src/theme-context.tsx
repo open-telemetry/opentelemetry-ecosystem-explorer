@@ -30,15 +30,16 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const theme = themes[themeId];
     const root = document.documentElement;
 
-    // Apply theme colors to CSS variables
-    root.style.setProperty("--color-primary", theme.colors.primary);
-    root.style.setProperty("--color-secondary", theme.colors.secondary);
-    root.style.setProperty("--color-background", theme.colors.background);
-    root.style.setProperty("--color-foreground", theme.colors.foreground);
-    root.style.setProperty("--color-card", theme.colors.card);
-    root.style.setProperty("--color-card-secondary", theme.colors.cardSecondary);
-    root.style.setProperty("--color-muted-foreground", theme.colors.mutedForeground);
-    root.style.setProperty("--color-border", theme.colors.border);
+    // Apply theme colors to CSS variables (HSL triplets)
+    root.style.setProperty("--primary-hsl", theme.colors.primary);
+    root.style.setProperty("--secondary-hsl", theme.colors.secondary);
+    root.style.setProperty("--background-hsl", theme.colors.background);
+    root.style.setProperty("--foreground-hsl", theme.colors.foreground);
+    root.style.setProperty("--card-hsl", theme.colors.card);
+    root.style.setProperty("--card-secondary-hsl", theme.colors.cardSecondary);
+    root.style.setProperty("--muted-hsl", theme.colors.muted);
+    root.style.setProperty("--muted-foreground-hsl", theme.colors.mutedForeground);
+    root.style.setProperty("--border-hsl", theme.colors.border);
 
     root.setAttribute("data-theme", themeId);
   }, [themeId]);

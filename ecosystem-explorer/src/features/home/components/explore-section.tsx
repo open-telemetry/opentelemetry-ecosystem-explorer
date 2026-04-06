@@ -25,7 +25,7 @@ export function ExploreSection() {
         className="pointer-events-none absolute left-1/2 top-0 h-64 w-full max-w-3xl -translate-x-1/2 -translate-y-16"
         style={{
           background:
-            "radial-gradient(ellipse at center, hsl(var(--color-primary) / 0.04) 0%, transparent 80%)",
+            "radial-gradient(ellipse at center, hsl(var(--primary-hsl) / 0.04) 0%, transparent 80%)",
         }}
       />
 

@@ -27,6 +27,7 @@ export interface Theme {
     foreground: string;
     card: string;
     cardSecondary: string;
+    muted: string;
     mutedForeground: string;
     border: string;
   };
@@ -44,6 +45,7 @@ export const themes: Record<ThemeId, Theme> = {
       foreground: "210 45% 99%", // Bright white with blue hint
       card: "232 35% 19%", // Card background
       cardSecondary: "232 32% 23%", // Hover state
+      muted: "232 30% 17%", // Darker background for code/badges
       mutedForeground: "220 22% 65%", // Muted text
       border: "232 28% 26%", // Borders
     },

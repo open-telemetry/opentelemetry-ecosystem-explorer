@@ -22,38 +22,31 @@ export function PipelineIcon({ className }: { className?: string }) {
         cy="100"
         r="15"
         fill="none"
-        stroke="hsl(var(--color-primary))"
+        stroke="hsl(var(--primary-hsl))"
         strokeWidth="3"
       />
-      <circle cx="30" cy="100" r="8" fill="hsl(var(--color-primary))" opacity="0.6" />
+      <circle cx="30" cy="100" r="8" fill="hsl(var(--primary-hsl))" opacity="0.6" />
 
       {/* Pipeline from input to processor */}
-      <line x1="45" y1="100" x2="70" y2="100" stroke="hsl(var(--color-primary))" strokeWidth="3" />
+      <line x1="45" y1="100" x2="70" y2="100" stroke="hsl(var(--primary-hsl))" strokeWidth="3" />
 
       {/* Arrow 1 */}
-      <polygon points="70,100 65,95 65,105" fill="hsl(var(--color-primary))" />
+      <polygon points="70,100 65,95 65,105" fill="hsl(var(--primary-hsl))" />
 
       {/* Processor node (hexagon) */}
       <polygon
         points="85,85 115,85 125,100 115,115 85,115 75,100"
         fill="none"
-        stroke="hsl(var(--color-primary))"
+        stroke="hsl(var(--primary-hsl))"
         strokeWidth="3"
       />
-      <circle cx="100" cy="100" r="5" fill="hsl(var(--color-primary))" opacity="0.8" />
+      <circle cx="100" cy="100" r="5" fill="hsl(var(--primary-hsl))" opacity="0.8" />
 
       {/* Pipeline from processor to output */}
-      <line
-        x1="125"
-        y1="100"
-        x2="150"
-        y2="100"
-        stroke="hsl(var(--color-primary))"
-        strokeWidth="3"
-      />
+      <line x1="125" y1="100" x2="150" y2="100" stroke="hsl(var(--primary-hsl))" strokeWidth="3" />
 
       {/* Arrow 2 */}
-      <polygon points="150,100 145,95 145,105" fill="hsl(var(--color-primary))" />
+      <polygon points="150,100 145,95 145,105" fill="hsl(var(--primary-hsl))" />
 
       {/* Output node (square) */}
       <rect
@@ -62,10 +55,10 @@ export function PipelineIcon({ className }: { className?: string }) {
         width="30"
         height="30"
         fill="none"
-        stroke="hsl(var(--color-primary))"
+        stroke="hsl(var(--primary-hsl))"
         strokeWidth="3"
       />
-      <rect x="162" y="92" width="16" height="16" fill="hsl(var(--color-primary))" opacity="0.6" />
+      <rect x="162" y="92" width="16" height="16" fill="hsl(var(--primary-hsl))" opacity="0.6" />
     </svg>
   );
 }

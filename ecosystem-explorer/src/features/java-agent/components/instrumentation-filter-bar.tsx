@@ -57,7 +57,7 @@ export function InstrumentationFilterBar({
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(circle at top left, hsl(var(--color-secondary) / 0.08) 0%, hsl(var(--color-primary) / 0.04) 40%, transparent 70%)",
+            "radial-gradient(circle at top left, hsl(var(--secondary-hsl) / 0.08) 0%, hsl(var(--primary-hsl) / 0.04) 40%, transparent 70%)",
         }}
       />
 
@@ -67,7 +67,7 @@ export function InstrumentationFilterBar({
           className="h-full w-full"
           style={{
             backgroundImage:
-              "linear-gradient(hsl(var(--color-border)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--color-border)) 1px, transparent 1px)",
+              "linear-gradient(hsl(var(--border-hsl)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--border-hsl)) 1px, transparent 1px)",
             backgroundSize: "24px 24px",
           }}
         />
@@ -151,7 +151,7 @@ export function InstrumentationFilterBar({
         <svg viewBox="0 0 64 64" className="h-full w-full">
           <path
             d="M64 64 L64 40 L52 40 L52 52 L40 52 L40 64 Z"
-            style={{ fill: "hsl(var(--color-primary) / 0.4)" }}
+            style={{ fill: "hsl(var(--primary-hsl) / 0.4)" }}
           />
         </svg>
       </div>

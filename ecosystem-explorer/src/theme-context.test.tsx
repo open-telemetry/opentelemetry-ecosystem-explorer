@@ -34,14 +34,15 @@ describe("ThemeProvider", () => {
     const theme = themes[DEFAULT_THEME];
     const root = document.documentElement;
 
-    expect(root.style.getPropertyValue("--color-primary")).toBe(theme.colors.primary);
-    expect(root.style.getPropertyValue("--color-secondary")).toBe(theme.colors.secondary);
-    expect(root.style.getPropertyValue("--color-background")).toBe(theme.colors.background);
-    expect(root.style.getPropertyValue("--color-foreground")).toBe(theme.colors.foreground);
-    expect(root.style.getPropertyValue("--color-card")).toBe(theme.colors.card);
-    expect(root.style.getPropertyValue("--color-card-secondary")).toBe(theme.colors.cardSecondary);
-    expect(root.style.getPropertyValue("--color-border")).toBe(theme.colors.border);
-    expect(root.style.getPropertyValue("--color-muted-foreground")).toBe(
+    expect(root.style.getPropertyValue("--primary-hsl")).toBe(theme.colors.primary);
+    expect(root.style.getPropertyValue("--secondary-hsl")).toBe(theme.colors.secondary);
+    expect(root.style.getPropertyValue("--background-hsl")).toBe(theme.colors.background);
+    expect(root.style.getPropertyValue("--foreground-hsl")).toBe(theme.colors.foreground);
+    expect(root.style.getPropertyValue("--card-hsl")).toBe(theme.colors.card);
+    expect(root.style.getPropertyValue("--card-secondary-hsl")).toBe(theme.colors.cardSecondary);
+    expect(root.style.getPropertyValue("--border-hsl")).toBe(theme.colors.border);
+    expect(root.style.getPropertyValue("--muted-hsl")).toBe(theme.colors.muted);
+    expect(root.style.getPropertyValue("--muted-foreground-hsl")).toBe(
       theme.colors.mutedForeground
     );
   });

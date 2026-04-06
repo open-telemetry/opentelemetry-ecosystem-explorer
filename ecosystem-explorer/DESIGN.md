@@ -68,6 +68,7 @@ All colors are defined using HSL values in `src/themes.ts`. They are applied via
 --color-foreground: 210 45% 99%; /* Bright white with blue hint */
 --color-card: 232 35% 19%; /* Card background */
 --color-card-secondary: 232 32% 23%; /* Card hover state */
+--color-muted: 232 30% 17%; /* Darker background for code/badges */
 --color-muted-foreground: 220 22% 65%; /* Muted text */
 --color-border: 232 28% 26%; /* Borders */
 ```
@@ -93,6 +94,7 @@ All colors are defined using HSL values in `src/themes.ts`. They are applied via
 * `background` - Page base
 * `card` - Elevated surfaces (cards, panels)
 * `card-secondary` - Hover states and nested cards
+* `muted` - Darker backgrounds for inline code, type badges, and subtle UI elements
 * `border` - Dividers and outlines
 
 #### Text Hierarchy
@@ -120,8 +122,8 @@ Shadows establish elevation and focus:
 Glows create ambient lighting and highlight interactive elements:
 
 ```css
---glow-primary: 0 0 40px hsl(var(--color-primary) / 0.15);
---glow-secondary: 0 0 40px hsl(var(--color-secondary) / 0.15);
+--glow-primary: 0 0 40px hsl(var(--primary-hsl) / 0.15);
+--glow-secondary: 0 0 40px hsl(var(--secondary-hsl) / 0.15);
 ```
 
 **Usage patterns:**
@@ -170,7 +172,7 @@ Standard card pattern for elevated content:
 **Hover states:**
 
 * Transition to `bg-card-secondary`
-* Add `shadow-[0_0_20px_hsl(var(--color-primary)/0.1)]`
+* Add `shadow-[0_0_20px_hsl(var(--primary-hsl)/0.1)]`
 * Slight scale animation: `hover:scale-[1.02]`
 
 ### Buttons
@@ -200,6 +202,110 @@ Three button variants:
 <button className="rounded-lg px-4 py-2 font-medium transition-all hover:bg-card">
     Action
 </button>
+```
+
+### Type Badges
+
+Small badges used to display types, categories, or status indicators:
+
+```tsx
+<span className="inline-block w-fit rounded bg-muted/50 px-2 py-1 text-xs font-bold text-foreground/70">
+  {type}
+</span>
+```
+
+**Usage:**
+* Attribute types in tables (string, int, boolean, etc.)
+* Metric types
+* Span kinds
+* Other categorical indicators
+
+**Styling:**
+* `bg-muted/50` - Semi-transparent dark background for subtle contrast
+* `text-foreground/70` - Slightly dimmed text for readability on dark background
+* `text-xs font-bold` - Small, bold text for compact display
+* `rounded px-2 py-1` - Consistent padding and border radius
+
+**Color variants:**
+For semantic meaning with glowing effects, use GlowBadge component:
+* `variant="success"` - Green for metrics
+* `variant="info"` - Blue for spans
+* `variant="warning"` - Yellow for warnings
+* `variant="error"` - Red for errors
+
+### Inline Code Elements
+
+Code snippets and technical values displayed inline:
+
+```tsx
+<code className="rounded bg-muted px-2 py-1 text-sm text-foreground/80">
+  {value}
+</code>
+```
+
+**Usage:**
+* Unit values (ms, bytes, etc.)
+* Configuration keys
+* API endpoints
+* Version numbers
+* Short code snippets
+
+**Styling:**
+* `bg-muted` - Full opacity dark background for strong contrast
+* `text-foreground/80` - Slightly dimmed bright text for comfortable reading
+* `text-sm` - Readable size for technical content
+* `rounded px-2 py-1` - Consistent padding matching type badges
+
+**Guidelines:**
+* Add `font-mono` class for actual code readability when needed
+* Use `break-all` for long technical strings that need to wrap
+* Maintain consistent padding (`px-2 py-1`) across all inline code elements
+
+### Striped Tables
+
+Alternating row backgrounds for improved readability in data tables:
+
+```tsx
+<table className="w-full border-collapse">
+  <tbody>
+    {items.map((item, index) => (
+      <tr
+        key={item.id}
+        className={index % 2 === 1 ? "bg-muted/40" : ""}
+      >
+        <td>{item.content}</td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+```
+
+**Pattern:**
+* Apply `bg-muted/40` to odd rows (index % 2 === 1)
+* Keep even rows with default transparent background
+* Use 40% opacity for visible striping that improves readability
+* Combine with borders for clear table structure
+
+**Complete table example:**
+```tsx
+<div className="overflow-hidden rounded-lg border border-border/30">
+  <table className="w-full border-collapse">
+    <thead>
+      <tr className="bg-white/5">
+        <th className="p-3 text-left text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+          Column
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      {items.map((item, index) => (
+        <tr key={item.id} className={index % 2 === 1 ? "bg-muted/40" : ""}>
+          <td className="p-4">{item.content}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
 ```
 
 ### Sections
@@ -324,8 +430,8 @@ Decorative grid patterns for visual texture:
 
 ```css
 background-image:
-  linear-gradient(hsl(var(--color-border)) 1px, transparent 1px),
-  linear-gradient(90deg, hsl(var(--color-border)) 1px, transparent 1px);
+  linear-gradient(hsl(var(--border-hsl)) 1px, transparent 1px),
+  linear-gradient(90deg, hsl(var(--border-hsl)) 1px, transparent 1px);
 background-size: 20px 20px;
 ```
 
@@ -333,8 +439,8 @@ background-size: 20px 20px;
 
 ```css
 background-image:
-  linear-gradient(hsl(var(--color-border)) 1px, transparent 1px),
-  linear-gradient(90deg, hsl(var(--color-border)) 1px, transparent 1px);
+  linear-gradient(hsl(var(--border-hsl)) 1px, transparent 1px),
+  linear-gradient(90deg, hsl(var(--border-hsl)) 1px, transparent 1px);
 background-size: 40px 40px;
 ```
 

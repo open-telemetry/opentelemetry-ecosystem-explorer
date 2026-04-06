@@ -86,7 +86,7 @@ export function Compass({ className }: { className?: string }) {
         className="w-full h-full"
         style={{
           filter:
-            "drop-shadow(0 0 8px hsl(var(--color-primary) / 0.4)) drop-shadow(0 0 16px hsl(var(--color-primary) / 0.2))",
+            "drop-shadow(0 0 8px hsl(var(--primary-hsl) / 0.4)) drop-shadow(0 0 16px hsl(var(--primary-hsl) / 0.2))",
         }}
       >
         {/* Outer ring */}
@@ -95,7 +95,7 @@ export function Compass({ className }: { className?: string }) {
           cy="100"
           r="95"
           fill="none"
-          stroke="hsl(var(--color-primary))"
+          stroke="hsl(var(--primary-hsl))"
           strokeWidth="1.5"
           opacity="0.4"
         />
@@ -104,7 +104,7 @@ export function Compass({ className }: { className?: string }) {
           cy="100"
           r="90"
           fill="none"
-          stroke="hsl(var(--color-primary))"
+          stroke="hsl(var(--primary-hsl))"
           strokeWidth="0.5"
           opacity="0.2"
         />
@@ -122,7 +122,7 @@ export function Compass({ className }: { className?: string }) {
               y1={100 - innerR * Math.cos(angle)}
               x2={100 + outerR * Math.sin(angle)}
               y2={100 - outerR * Math.cos(angle)}
-              stroke="hsl(var(--color-primary))"
+              stroke="hsl(var(--primary-hsl))"
               strokeWidth={isMajor ? 1.5 : 0.5}
               opacity={isMajor ? 0.7 : 0.3}
             />
@@ -140,7 +140,7 @@ export function Compass({ className }: { className?: string }) {
               y={100 - r * Math.cos(angle)}
               textAnchor="middle"
               dominantBaseline="middle"
-              fill="hsl(var(--color-primary))"
+              fill="hsl(var(--primary-hsl))"
               className="font-mono text-sm font-bold"
             >
               {dir}
@@ -151,18 +151,18 @@ export function Compass({ className }: { className?: string }) {
         {/* Rotating needle group */}
         <g ref={needleGroupRef}>
           {/* North needle */}
-          <polygon points="100,25 95,100 100,90 105,100" fill="hsl(var(--color-primary))" />
+          <polygon points="100,25 95,100 100,90 105,100" fill="hsl(var(--primary-hsl))" />
           {/* South needle */}
           <polygon
             points="100,175 95,100 100,110 105,100"
-            fill="hsl(var(--color-primary))"
+            fill="hsl(var(--primary-hsl))"
             opacity="0.4"
           />
         </g>
 
         {/* Center circle */}
-        <circle cx="100" cy="100" r="8" fill="hsl(var(--color-secondary))" opacity="0.6" />
-        <circle cx="100" cy="100" r="4" fill="hsl(var(--color-primary))" />
+        <circle cx="100" cy="100" r="8" fill="hsl(var(--secondary-hsl))" opacity="0.6" />
+        <circle cx="100" cy="100" r="4" fill="hsl(var(--primary-hsl))" />
 
         {/* Inner decorative circles */}
         <circle
@@ -170,7 +170,7 @@ export function Compass({ className }: { className?: string }) {
           cy="100"
           r="50"
           fill="none"
-          stroke="hsl(var(--color-primary))"
+          stroke="hsl(var(--primary-hsl))"
           strokeWidth="0.5"
           opacity="0.2"
           strokeDasharray="4 4"

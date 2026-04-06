@@ -15,29 +15,18 @@
  */
 import type { ReactNode } from "react";
 
-interface SectionHeaderProps {
+interface SectionDividerProps {
   children: ReactNode;
-  className?: string;
 }
 
-export function SectionHeader({ children, className = "" }: SectionHeaderProps) {
+export function SectionDivider({ children }: SectionDividerProps) {
   return (
-    <div className={`mb-6 flex items-center justify-center gap-4 ${className}`}>
-      <div
-        className="h-px w-16"
-        style={{
-          background: "linear-gradient(to right, transparent, hsl(var(--border-hsl)))",
-        }}
-      />
-      <h2 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
+    <div className="my-12 flex items-center">
+      <div className="flex-1 border-b-2 border-border/30" />
+      <span className="px-8 text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
         {children}
-      </h2>
-      <div
-        className="h-px w-16"
-        style={{
-          background: "linear-gradient(to left, transparent, hsl(var(--border-hsl)))",
-        }}
-      />
+      </span>
+      <div className="flex-1 border-b-2 border-border/30" />
     </div>
   );
 }

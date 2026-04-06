@@ -25,7 +25,7 @@ const TabsList = forwardRef<
 >(({ className = "", ...props }, ref) => (
   <RadixTabs.List
     ref={ref}
-    className={`inline-flex h-12 items-center justify-center rounded-lg border border-border/50 bg-card/80 p-1 backdrop-blur-sm ${className}`}
+    className={`inline-flex h-12 items-center justify-center rounded-lg border border-border/50 bg-card/80 p-1 ${className}`}
     {...props}
   />
 ));
@@ -37,7 +37,7 @@ const TabsTrigger = forwardRef<
 >(({ className = "", ...props }, ref) => (
   <RadixTabs.Trigger
     ref={ref}
-    className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md border-t-2 [border-top-color:transparent] px-4 py-2 text-sm font-medium text-muted-foreground ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-primary/15 data-[state=active]:text-primary data-[state=active]:shadow-sm data-[state=active]:shadow-primary/20 data-[state=active]:font-semibold data-[state=active]:[border-top-color:hsl(var(--color-primary))] ${className}`}
+    className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-t-md border-t border-transparent px-6 py-3 text-sm font-medium text-muted-foreground ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:text-foreground hover:bg-card-secondary/60 data-[state=active]:border-primary data-[state=active]:bg-card-secondary data-[state=active]:text-primary data-[state=active]:font-semibold data-[state=active]:shadow-[0_2px_12px_-2px_hsl(var(--primary-hsl)/0.4)] ${className}`}
     {...props}
   />
 ));
