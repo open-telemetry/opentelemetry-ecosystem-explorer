@@ -40,8 +40,37 @@ class TestTransformInstrumentationFormat:
         assert result == data
         assert result["file_format"] == 0.3
 
-    def test_format_0_1_transforms_to_0_2(self):
-        """Format 0.1 data is transformed to 0.2."""
+    def test_format_0_2_transforms_to_0_3(self):
+        """Format 0.2 data is transformed to 0.3."""
+        data = {
+            "file_format": 0.2,
+            "libraries": [
+                {
+                    "name": "activej-http-6.0",
+                    "display_name": "ActiveJ",
+                    "description": "HTTP server instrumentation",
+                    "semantic_conventions": ["HTTP_SERVER_SPANS"],
+                    "library_link": "https://activej.io/",
+                    "source_path": "instrumentation/activej-http-6.0",
+                    "javaagent_target_versions": ["io.activej:activej-http:[6.0,)"],
+                    "configurations": [],
+                    "telemetry": [{"when": "default", "spans": [{"span_kind": "SERVER"}]}],
+                }
+            ],
+        }
+
+        result = transform_instrumentation_format(data)
+
+        assert result["file_format"] == 0.3
+        assert result["libraries"][0]["data_type"] == "traces"
+        assert "type" not in result["libraries"][0]
+        # Verify other fields are preserved
+        assert result["libraries"][0]["name"] == "activej-http-6.0"
+        assert result["libraries"][0]["display_name"] == "ActiveJ"
+        assert result["libraries"][0]["javaagent_target_versions"] == ["io.activej:activej-http:[6.0,)"]
+
+    def test_format_0_1_transforms_to_0_3(self):
+        """Format 0.1 data is transformed through 0.2 to 0.3."""
         data = {
             "file_format": 0.1,
             "libraries": [
@@ -57,7 +86,7 @@ class TestTransformInstrumentationFormat:
 
         result = transform_instrumentation_format(data)
 
-        assert result["file_format"] == 0.2
+        assert result["file_format"] == 0.3
         assert result["libraries"][0]["javaagent_target_versions"] == ["com.test:lib:[1.0,)"]
         assert result["libraries"][0]["has_standalone_library"] is True
         assert "target_versions" not in result["libraries"][0]
@@ -71,9 +100,9 @@ class TestTransformInstrumentationFormat:
 
     def test_unsupported_file_format_raises_error(self):
         """Unsupported file format raises ValueError."""
-        data = {"file_format": 0.3, "libraries": []}
+        data = {"file_format": 0.4, "libraries": []}
 
-        with pytest.raises(ValueError, match="Unsupported file format: 0.3"):
+        with pytest.raises(ValueError, match="Unsupported file format: 0.4"):
             transform_instrumentation_format(data)
 
 

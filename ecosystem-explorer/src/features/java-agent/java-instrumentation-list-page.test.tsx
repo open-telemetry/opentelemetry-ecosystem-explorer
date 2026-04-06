@@ -87,7 +87,6 @@ describe("JavaInstrumentationListPage - Filtering", () => {
               description: "Messages sent",
               data_type: "COUNTER",
               instrument: "counter",
-
               unit: "1",
             },
           ],
