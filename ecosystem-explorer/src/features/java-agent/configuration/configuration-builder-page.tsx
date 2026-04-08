@@ -24,9 +24,17 @@ export function ConfigurationBuilderPage() {
         <div className="flex items-center justify-between">
           <BackButton />
           {/* Version Dropdown - not hooked up yet */}
-          <select className="rounded-md border border-border/50 bg-card/80 px-3 py-2 text-sm text-foreground">
-            <option>2.25.0 (latest)</option>
-          </select>
+          <div className="flex items-center gap-2">
+            <label htmlFor="java-agent-version" className="text-sm text-foreground">
+              Version
+            </label>
+            <select
+              id="java-agent-version"
+              className="rounded-md border border-border/50 bg-card/80 px-3 py-2 text-sm text-foreground"
+            >
+              <option>2.25.0 (latest)</option>
+            </select>
+          </div>
         </div>
 
         <div>
@@ -55,10 +63,16 @@ export function ConfigurationBuilderPage() {
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-sm font-medium text-foreground">Output Preview</h3>
                   <div className="flex gap-2">
-                    <button className="rounded-md border border-border/50 bg-card px-3 py-1 text-sm text-foreground hover:bg-card/80">
+                    <button
+                      type="button"
+                      className="rounded-md border border-border/50 bg-card px-3 py-1 text-sm text-foreground hover:bg-card/80"
+                    >
                       Copy
                     </button>
-                    <button className="rounded-md border border-border/50 bg-card px-3 py-1 text-sm text-foreground hover:bg-card/80">
+                    <button
+                      type="button"
+                      className="rounded-md border border-border/50 bg-card px-3 py-1 text-sm text-foreground hover:bg-card/80"
+                    >
                       Download
                     </button>
                   </div>

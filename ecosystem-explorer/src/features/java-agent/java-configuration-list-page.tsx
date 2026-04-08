@@ -27,15 +27,12 @@ export function JavaConfigurationListPage() {
             OpenTelemetry Java Agent Configuration
           </h1>
         </div>
-
-        <div className="rounded-lg border border-border/50 bg-card/50 p-8 text-center">
-          <NavigationCard
-            title="Configuration Builder"
-            description="Build and customize your OpenTelemetry Java Agent configuration"
-            href="/java-agent/configuration/builder"
-            icon={<ConfigurationIcon className="h-16 w-16" />}
-          />
-        </div>
+        <NavigationCard
+          title="Configuration Builder"
+          description="Build and customize your OpenTelemetry Java Agent configuration"
+          href="/java-agent/configuration/builder"
+          icon={<ConfigurationIcon className="h-16 w-16" />}
+        />
       </div>
     </div>
   );
