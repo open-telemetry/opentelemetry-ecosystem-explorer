@@ -625,6 +625,19 @@ components:
       codeowners:
         active:
         - boostchicken
+- name: spanpruningprocessor
+  metadata:
+    type: spanpruning
+    display_name: Span Pruning Processor
+    status:
+      class: processor
+      stability:
+        development:
+        - traces
+      distributions: []
+      codeowners:
+        active:
+        - portertech
 - name: sumologicprocessor
   metadata:
     type: sumologic

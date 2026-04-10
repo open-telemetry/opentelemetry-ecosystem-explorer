@@ -5521,7 +5521,7 @@ components:
         - rogercoll
 - name: httpcheckreceiver
   metadata:
-    type: httpcheck
+    type: http_check
     display_name: HTTP Check Receiver
     description: The HTTP Check Receiver can be used for synthetic checks against
       HTTP endpoints.
