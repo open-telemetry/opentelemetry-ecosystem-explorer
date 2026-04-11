@@ -192,7 +192,7 @@ describe("InstrumentationDetailPage", () => {
     expect(httpLink).toBeInTheDocument();
     expect(httpLink).toHaveAttribute(
       "href",
-      "https://opentelemetry.io/docs/specs/semconv/http/http-spans/#http-client"
+      "https://opentelemetry.io/docs/specs/semconv/http/http-spans/#http-client-span"
     );
     expect(httpLink).toHaveAttribute("target", "_blank");
 

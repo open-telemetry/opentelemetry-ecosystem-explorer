@@ -23,11 +23,11 @@ export interface SemanticConventionInfo {
 const SEMANTIC_CONVENTION_MAP: Record<string, SemanticConventionInfo> = {
   HTTP_CLIENT_SPANS: {
     label: "HTTP Client Spans",
-    url: "https://opentelemetry.io/docs/specs/semconv/http/http-spans/#http-client",
+    url: "https://opentelemetry.io/docs/specs/semconv/http/http-spans/#http-client-span",
   },
   HTTP_SERVER_SPANS: {
     label: "HTTP Server Spans",
-    url: "https://opentelemetry.io/docs/specs/semconv/http/http-spans/#http-server",
+    url: "https://opentelemetry.io/docs/specs/semconv/http/http-spans/#http-server-span",
   },
   HTTP_CLIENT_METRICS: {
     label: "HTTP Client Metrics",
@@ -36,10 +36,6 @@ const SEMANTIC_CONVENTION_MAP: Record<string, SemanticConventionInfo> = {
   HTTP_SERVER_METRICS: {
     label: "HTTP Server Metrics",
     url: "https://opentelemetry.io/docs/specs/semconv/http/http-metrics/#http-server",
-  },
-  HTTP_ROUTE: {
-    label: "HTTP Route",
-    url: "https://opentelemetry.io/docs/specs/semconv/http/http-spans/",
   },
   DATABASE_CLIENT_SPANS: {
     label: "Database Client Spans",
@@ -88,14 +84,6 @@ const SEMANTIC_CONVENTION_MAP: Record<string, SemanticConventionInfo> = {
   GENAI_CLIENT_METRICS: {
     label: "GenAI Client Metrics",
     url: "https://opentelemetry.io/docs/specs/semconv/gen-ai/gen-ai-metrics/",
-  },
-  CONTEXT_PROPAGATION: {
-    label: "Context Propagation",
-    url: "https://opentelemetry.io/docs/specs/otel/context/api-propagators/",
-  },
-  AUTO_INSTRUMENTATION_SHIM: {
-    label: "Auto Instrumentation Shim",
-    url: "https://opentelemetry.io/docs/specs/otel/trace/api/",
   },
 };
 

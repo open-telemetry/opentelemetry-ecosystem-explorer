@@ -88,7 +88,7 @@ describe("getSemanticConventionInfo", () => {
     const info = getSemanticConventionInfo("HTTP_CLIENT_SPANS");
     expect(info).toEqual({
       label: "HTTP Client Spans",
-      url: "https://opentelemetry.io/docs/specs/semconv/http/http-spans/#http-client",
+      url: "https://opentelemetry.io/docs/specs/semconv/http/http-spans/#http-client-span",
     });
   });
 
