@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, it, expect } from "vitest";
-import { getInstrumentationDisplayName, getSemanticConventionInfo } from "./format";
+import { getInstrumentationDisplayName, getSemanticConventionInfo, getFeatureInfo } from "./format";
 import type { InstrumentationData } from "@/types/javaagent";
 
 describe("getInstrumentationDisplayName", () => {
@@ -122,5 +122,40 @@ describe("getSemanticConventionInfo", () => {
 
   it("returns null for an empty string", () => {
     expect(getSemanticConventionInfo("")).toBeNull();
+  });
+});
+
+describe("getFeatureInfo", () => {
+  it("returns label and description for a known value", () => {
+    const info = getFeatureInfo("LOGGING_BRIDGE");
+    expect(info).toEqual({
+      label: "Logging Bridge",
+      description:
+        "Bridges logging framework events to the OpenTelemetry Logs API, emitting log records from standard logging frameworks.",
+    });
+  });
+
+  it("returns label and description for HTTP_ROUTE", () => {
+    const info = getFeatureInfo("HTTP_ROUTE");
+    expect(info).toEqual({
+      label: "HTTP Route",
+      description: "Enriches HTTP spans with route information.",
+    });
+  });
+
+  it("returns label and description for RESOURCE_DETECTOR", () => {
+    const info = getFeatureInfo("RESOURCE_DETECTOR");
+    expect(info).toEqual({
+      label: "Resource Detector",
+      description: "Sets resource attributes based on certain conditions.",
+    });
+  });
+
+  it("returns null for an unknown value", () => {
+    expect(getFeatureInfo("UNKNOWN_FEATURE")).toBeNull();
+  });
+
+  it("returns null for an empty string", () => {
+    expect(getFeatureInfo("")).toBeNull();
   });
 });

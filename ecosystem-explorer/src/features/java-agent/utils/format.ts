@@ -91,6 +91,50 @@ export function getSemanticConventionInfo(value: string): SemanticConventionInfo
   return SEMANTIC_CONVENTION_MAP[value] ?? null;
 }
 
+export interface FeatureInfo {
+  label: string;
+  description: string;
+}
+
+const FEATURE_MAP: Record<string, FeatureInfo> = {
+  HTTP_ROUTE: {
+    label: "HTTP Route",
+    description: "Enriches HTTP spans with route information.",
+  },
+  CONTEXT_PROPAGATION: {
+    label: "Context Propagation",
+    description:
+      "Propagates context inter-process (via headers in HTTP, gRPC, and messaging) and inter-thread (executors, actors, and reactive streams).",
+  },
+  AUTO_INSTRUMENTATION_SHIM: {
+    label: "Auto Instrumentation Shim",
+    description: "Adapts or bridges instrumentation from upstream libraries or frameworks.",
+  },
+  CONTROLLER_SPANS: {
+    label: "Controller Spans",
+    description:
+      "Generates spans for controller/handler methods in web frameworks. Disabled by default and experimental.",
+  },
+  VIEW_SPANS: {
+    label: "View Spans",
+    description:
+      "Generates spans for view rendering such as templates or JSP. Disabled by default and experimental.",
+  },
+  LOGGING_BRIDGE: {
+    label: "Logging Bridge",
+    description:
+      "Bridges logging framework events to the OpenTelemetry Logs API, emitting log records from standard logging frameworks.",
+  },
+  RESOURCE_DETECTOR: {
+    label: "Resource Detector",
+    description: "Sets resource attributes based on certain conditions.",
+  },
+};
+
+export function getFeatureInfo(value: string): FeatureInfo | null {
+  return FEATURE_MAP[value] ?? null;
+}
+
 export function getInstrumentationDisplayName(instrumentation: InstrumentationData): string {
   if (instrumentation.display_name) {
     return instrumentation.display_name;

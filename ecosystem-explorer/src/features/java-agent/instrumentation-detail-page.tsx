@@ -31,7 +31,7 @@ import { GlowBadge } from "@/components/ui/glow-badge";
 import { DetailCard } from "@/components/ui/detail-card";
 import { SectionHeader } from "@/components/ui/section-header";
 import { useVersions, useInstrumentation } from "@/hooks/use-javaagent-data";
-import { getInstrumentationDisplayName, getSemanticConventionInfo } from "./utils/format";
+import { getInstrumentationDisplayName, getSemanticConventionInfo, getFeatureInfo } from "./utils/format";
 import { TelemetrySection } from "./components/telemetry-section";
 
 function buildSourceUrl(sourcePath: string): string {
@@ -372,15 +372,27 @@ export function InstrumentationDetailPage() {
                           <div className="space-y-3">
                             <h3 className="text-sm font-medium text-muted-foreground">Features</h3>
                             <ul className="space-y-2">
-                              {instrumentation.features.map((feature, index) => (
-                                <li key={index} className="flex items-start gap-2 text-sm">
-                                  <Check
-                                    className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary"
-                                    aria-hidden="true"
-                                  />
-                                  <span>{feature}</span>
-                                </li>
-                              ))}
+                              {instrumentation.features.map((feature, index) => {
+                                const info = getFeatureInfo(feature);
+                                return (
+                                  <li key={index} className="flex items-start gap-2 text-sm">
+                                    <Check
+                                      className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary"
+                                      aria-hidden="true"
+                                    />
+                                    <div>
+                                      <span className="font-medium">
+                                        {info ? info.label : feature}
+                                      </span>
+                                      {info && (
+                                        <p className="mt-0.5 text-xs text-muted-foreground">
+                                          {info.description}
+                                        </p>
+                                      )}
+                                    </div>
+                                  </li>
+                                );
+                              })}
                             </ul>
                           </div>
                         </DetailCard>
