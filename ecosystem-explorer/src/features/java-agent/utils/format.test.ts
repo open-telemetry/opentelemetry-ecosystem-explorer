@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, it, expect } from "vitest";
-import { getInstrumentationDisplayName } from "./format";
+import { getInstrumentationDisplayName, getSemanticConventionInfo } from "./format";
 import type { InstrumentationData } from "@/types/javaagent";
 
 describe("getInstrumentationDisplayName", () => {
@@ -80,5 +80,47 @@ describe("getInstrumentationDisplayName", () => {
     };
 
     expect(getInstrumentationDisplayName(instrumentation)).toBe("Jdbc");
+  });
+});
+
+describe("getSemanticConventionInfo", () => {
+  it("returns label and url for a known value", () => {
+    const info = getSemanticConventionInfo("HTTP_CLIENT_SPANS");
+    expect(info).toEqual({
+      label: "HTTP Client Spans",
+      url: "https://opentelemetry.io/docs/specs/semconv/http/http-spans/#http-client",
+    });
+  });
+
+  it("returns label and url for DATABASE_CLIENT_SPANS", () => {
+    const info = getSemanticConventionInfo("DATABASE_CLIENT_SPANS");
+    expect(info).toEqual({
+      label: "Database Client Spans",
+      url: "https://opentelemetry.io/docs/specs/semconv/database/database-spans/",
+    });
+  });
+
+  it("returns label and url for MESSAGING_SPANS", () => {
+    const info = getSemanticConventionInfo("MESSAGING_SPANS");
+    expect(info).toEqual({
+      label: "Messaging Spans",
+      url: "https://opentelemetry.io/docs/specs/semconv/messaging/messaging-spans/",
+    });
+  });
+
+  it("returns label and url for GENAI_CLIENT_SPANS", () => {
+    const info = getSemanticConventionInfo("GENAI_CLIENT_SPANS");
+    expect(info).toEqual({
+      label: "GenAI Client Spans",
+      url: "https://opentelemetry.io/docs/specs/semconv/gen-ai/gen-ai-spans/",
+    });
+  });
+
+  it("returns null for an unknown value", () => {
+    expect(getSemanticConventionInfo("UNKNOWN_CONVENTION")).toBeNull();
+  });
+
+  it("returns null for an empty string", () => {
+    expect(getSemanticConventionInfo("")).toBeNull();
   });
 });

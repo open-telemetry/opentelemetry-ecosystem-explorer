@@ -31,7 +31,7 @@ import { GlowBadge } from "@/components/ui/glow-badge";
 import { DetailCard } from "@/components/ui/detail-card";
 import { SectionHeader } from "@/components/ui/section-header";
 import { useVersions, useInstrumentation } from "@/hooks/use-javaagent-data";
-import { getInstrumentationDisplayName } from "./utils/format";
+import { getInstrumentationDisplayName, getSemanticConventionInfo } from "./utils/format";
 import { TelemetrySection } from "./components/telemetry-section";
 
 function buildSourceUrl(sourcePath: string): string {
@@ -394,11 +394,27 @@ export function InstrumentationDetailPage() {
                                 Semantic Conventions
                               </h3>
                               <div className="flex flex-wrap gap-2">
-                                {instrumentation.semantic_conventions.map((convention) => (
-                                  <GlowBadge key={convention} variant="muted">
-                                    {convention}
-                                  </GlowBadge>
-                                ))}
+                                {instrumentation.semantic_conventions.map((convention) => {
+                                  const info = getSemanticConventionInfo(convention);
+                                  if (info) {
+                                    return (
+                                      <a
+                                        key={convention}
+                                        href={info.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="px-3 py-1 text-sm rounded-md border border-primary/40 bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                                      >
+                                        {info.label}
+                                      </a>
+                                    );
+                                  }
+                                  return (
+                                    <GlowBadge key={convention} variant="muted">
+                                      {convention}
+                                    </GlowBadge>
+                                  );
+                                })}
                               </div>
                             </div>
                           </DetailCard>

@@ -56,6 +56,11 @@ const mockInstrumentation: InstrumentationData = {
   has_standalone_library: true,
 };
 
+const mockInstrumentationWithSemconv: InstrumentationData = {
+  ...mockInstrumentation,
+  semantic_conventions: ["HTTP_CLIENT_SPANS", "DATABASE_CLIENT_SPANS", "UNKNOWN_CONVENTION"],
+};
+
 function renderWithRouter(initialPath: string) {
   return render(
     <MemoryRouter initialEntries={[initialPath]}>
@@ -170,5 +175,56 @@ describe("InstrumentationDetailPage", () => {
     expect(mockNavigate).toHaveBeenCalledWith("/java-agent/instrumentation/2.0.0/jdbc", {
       replace: true,
     });
+  });
+
+  it("renders semantic conventions as linked badges for known values", () => {
+    vi.mocked(useInstrumentation).mockReturnValue({
+      data: mockInstrumentationWithSemconv,
+      loading: false,
+      error: null,
+    });
+
+    renderWithRouter("/java-agent/instrumentation/2.0.0/jdbc");
+
+    expect(screen.getByRole("heading", { name: "Semantic Conventions" })).toBeInTheDocument();
+
+    const httpLink = screen.getByRole("link", { name: "HTTP Client Spans" });
+    expect(httpLink).toBeInTheDocument();
+    expect(httpLink).toHaveAttribute(
+      "href",
+      "https://opentelemetry.io/docs/specs/semconv/http/http-spans/#http-client"
+    );
+    expect(httpLink).toHaveAttribute("target", "_blank");
+
+    const dbLink = screen.getByRole("link", { name: "Database Client Spans" });
+    expect(dbLink).toBeInTheDocument();
+    expect(dbLink).toHaveAttribute(
+      "href",
+      "https://opentelemetry.io/docs/specs/semconv/database/database-spans/"
+    );
+  });
+
+  it("renders unknown semantic conventions as plain text", () => {
+    vi.mocked(useInstrumentation).mockReturnValue({
+      data: mockInstrumentationWithSemconv,
+      loading: false,
+      error: null,
+    });
+
+    renderWithRouter("/java-agent/instrumentation/2.0.0/jdbc");
+
+    expect(screen.getByText("UNKNOWN_CONVENTION")).toBeInTheDocument();
+  });
+
+  it("does not render semantic conventions section when none are present", () => {
+    vi.mocked(useInstrumentation).mockReturnValue({
+      data: mockInstrumentation,
+      loading: false,
+      error: null,
+    });
+
+    renderWithRouter("/java-agent/instrumentation/2.0.0/jdbc");
+
+    expect(screen.queryByRole("heading", { name: "Semantic Conventions" })).not.toBeInTheDocument();
   });
 });
