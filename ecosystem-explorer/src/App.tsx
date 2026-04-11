@@ -24,6 +24,7 @@ import { JavaInstrumentationListPage } from "@/features/java-agent/java-instrume
 import { JavaConfigurationListPage } from "@/features/java-agent/java-configuration-list-page";
 import { InstrumentationDetailPage } from "@/features/java-agent/instrumentation-detail-page";
 import { ConfigurationBuilderPage } from "@/features/java-agent/configuration/configuration-builder-page";
+import { AboutPage } from "@/features/about/about-page";
 
 export default function App() {
   return (
@@ -45,6 +46,7 @@ export default function App() {
               element={<ConfigurationBuilderPage />}
             />
             <Route path="/collector" element={<CollectorPage />} />
+            <Route path="/about" element={<AboutPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </main>
