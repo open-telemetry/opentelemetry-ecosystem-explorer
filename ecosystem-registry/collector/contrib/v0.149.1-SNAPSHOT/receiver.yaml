@@ -16709,7 +16709,7 @@ components:
         seeking_new: true
 - name: tlscheckreceiver
   metadata:
-    type: tlscheck
+    type: tls_check
     display_name: TLS Check Receiver
     description: This receiver emits metrics about x.509 certificates.
     status:

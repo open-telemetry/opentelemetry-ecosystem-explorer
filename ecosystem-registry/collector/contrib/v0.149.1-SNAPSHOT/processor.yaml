@@ -628,13 +628,13 @@ components:
 - name: spanpruningprocessor
   metadata:
     type: spanpruning
-    display_name: Span Pruning Processor
     status:
       class: processor
       stability:
-        development:
+        alpha:
         - traces
-      distributions: []
+      distributions:
+      - contrib
       codeowners:
         active:
         - portertech
