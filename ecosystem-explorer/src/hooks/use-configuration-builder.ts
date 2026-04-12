@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useReducer, useEffect, useCallback, useRef, createContext } from "react";
+import { useReducer, useEffect, useCallback, useRef, createContext, useContext } from "react";
 import type { ConfigNode, ListNode, PluginSelectNode } from "@/types/configuration";
 import type {
   ConfigValue,
@@ -243,4 +243,33 @@ export function useConfigurationBuilderState(schema: ConfigNode, version: string
     validateField: validateFieldAction,
     validateAll: validateAllAction,
   };
+}
+
+export function useConfigurationBuilder() {
+  const stateValue = useContext(ConfigStateContext);
+  const actionsValue = useContext(ConfigDispatchContext);
+  if (!stateValue || !actionsValue) {
+    throw new Error("useConfigurationBuilder must be used within ConfigurationBuilderProvider");
+  }
+  return { ...stateValue, ...actionsValue };
+}
+
+export function useConfigurationBuilderActions() {
+  const actionsValue = useContext(ConfigDispatchContext);
+  if (!actionsValue) {
+    throw new Error(
+      "useConfigurationBuilderActions must be used within ConfigurationBuilderProvider"
+    );
+  }
+  return actionsValue;
+}
+
+export function useConfigurationBuilderStateOnly() {
+  const stateValue = useContext(ConfigStateContext);
+  if (!stateValue) {
+    throw new Error(
+      "useConfigurationBuilderStateOnly must be used within ConfigurationBuilderProvider"
+    );
+  }
+  return stateValue;
 }
