@@ -85,6 +85,6 @@ describe("Footer", () => {
       </MemoryRouter>
     );
 
-    expect(screen.getByText("© 2026–present OpenTelemetry Authors")).toBeInTheDocument();
+    expect(screen.getByText("© 2026–Present OpenTelemetry Authors")).toBeInTheDocument();
   });
 });
