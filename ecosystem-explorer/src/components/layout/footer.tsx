@@ -56,9 +56,7 @@ export function Footer() {
             </a>
           </nav>
         </div>
-        <p className="text-xs text-muted-foreground">
-          &copy; 2026–Present OpenTelemetry Authors
-        </p>
+        <p className="text-xs text-muted-foreground">&copy; 2026–Present OpenTelemetry Authors</p>
       </div>
     </footer>
   );

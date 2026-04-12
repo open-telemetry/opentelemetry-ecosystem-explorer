@@ -31,7 +31,11 @@ import { GlowBadge } from "@/components/ui/glow-badge";
 import { DetailCard } from "@/components/ui/detail-card";
 import { SectionHeader } from "@/components/ui/section-header";
 import { useVersions, useInstrumentation } from "@/hooks/use-javaagent-data";
-import { getInstrumentationDisplayName, getSemanticConventionInfo, getFeatureInfo } from "./utils/format";
+import {
+  getInstrumentationDisplayName,
+  getSemanticConventionInfo,
+  getFeatureInfo,
+} from "./utils/format";
 import { TelemetrySection } from "./components/telemetry-section";
 
 function buildSourceUrl(sourcePath: string): string {
