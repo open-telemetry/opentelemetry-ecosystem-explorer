@@ -25,6 +25,7 @@
   "dependencies": {
     "@radix-ui/react-tabs": "^1.1.13",
     "idb": "^8.0.3",
+    "js-yaml": "^4.1.1",
     "lucide-react": "^0.577.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
@@ -36,6 +37,7 @@
     "@testing-library/jest-dom": "6.9.1",
     "@testing-library/react": "16.3.2",
     "@testing-library/user-event": "14.6.1",
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "25.6.0",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
