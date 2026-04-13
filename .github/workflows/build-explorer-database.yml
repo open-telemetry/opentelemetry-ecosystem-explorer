@@ -41,7 +41,7 @@ jobs:
         run: |
           .github/scripts/use-cla-approved-bot.sh
 
-      - uses: actions/create-github-app-token@fee1f7d63c2ff003460e3d139729b119787bc349 # v2.2.2
+      - uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3.0.0
         if: steps.repo_check.outputs.is_primary == 'true'
         id: otelbot-token
         with:
