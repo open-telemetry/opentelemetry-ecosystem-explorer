@@ -1,5 +1,5 @@
 distribution: contrib
-version: 0.149.1-SNAPSHOT
+version: 0.150.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: processor
 components:
@@ -628,6 +628,7 @@ components:
 - name: spanpruningprocessor
   metadata:
     type: spanpruning
+    display_name: Span Pruning Processor
     status:
       class: processor
       stability:

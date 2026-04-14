@@ -1,14 +1,29 @@
 distribution: core
-version: 0.149.1-SNAPSHOT
+version: 0.150.1-SNAPSHOT
 repository: opentelemetry-collector
-component_type: receiver
+component_type: processor
 components:
-- name: nopreceiver
+- name: batchprocessor
   metadata:
-    type: nop
-    display_name: No-op Receiver
+    type: batch
+    display_name: Batch Processor
     status:
-      class: receiver
+      class: processor
+      stability:
+        beta:
+        - logs
+        - metrics
+        - traces
+      distributions:
+      - contrib
+      - core
+      - k8s
+- name: memorylimiterprocessor
+  metadata:
+    type: memory_limiter
+    display_name: Memory Limiter Processor
+    status:
+      class: processor
       stability:
         alpha:
         - profiles
@@ -19,30 +34,10 @@ components:
       distributions:
       - contrib
       - core
-      codeowners:
-        active:
-        - evan-bradley
-- name: otlpreceiver
-  metadata:
-    type: otlp
-    display_name: OTLP Receiver
-    status:
-      class: receiver
-      stability:
-        alpha:
-        - profiles
-        stable:
-        - logs
-        - metrics
-        - traces
-      distributions:
-      - contrib
-      - core
       - k8s
-      - otlp
-- name: xreceiver
+- name: xprocessor
   metadata:
-    type: xreceiver
+    type: xprocessor
     status:
       class: pkg
       stability:

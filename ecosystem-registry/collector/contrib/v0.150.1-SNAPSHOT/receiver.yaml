@@ -1,5 +1,5 @@
 distribution: contrib
-version: 0.149.1-SNAPSHOT
+version: 0.150.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: receiver
 components:
@@ -17722,7 +17722,7 @@ components:
         emeritus: null
 - name: windowseventlogreceiver
   metadata:
-    type: windowseventlog
+    type: windows_event_log
     display_name: Windows Event Log Receiver
     description: This receiver tails and parses logs from windows event log API using
       the [opentelemetry-log-collection](https://github.com/open-telemetry/opentelemetry-log-collection)

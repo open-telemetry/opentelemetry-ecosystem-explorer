@@ -1,5 +1,5 @@
 distribution: core
-version: 0.149.1-SNAPSHOT
+version: 0.150.1-SNAPSHOT
 repository: opentelemetry-collector
 component_type: connector
 components:
