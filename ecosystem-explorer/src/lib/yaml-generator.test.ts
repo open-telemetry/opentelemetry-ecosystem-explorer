@@ -47,4 +47,290 @@ describe("generateYaml", () => {
     expect(overridden.startsWith("# custom\n")).toBe(true);
     expect(overridden).not.toContain("# OpenTelemetry SDK Configuration");
   });
+
+  const fixtureSchema: ConfigNode = {
+    controlType: "group",
+    key: "root",
+    label: "Root",
+    path: "",
+    children: [
+      {
+        controlType: "text_input",
+        key: "file_format",
+        label: "File Format",
+        path: "file_format",
+        description: "The file format version.",
+        required: true,
+      },
+      {
+        controlType: "group",
+        key: "tracer_provider",
+        label: "Tracer Provider",
+        path: "tracer_provider",
+        description: "Configure tracer provider.",
+        children: [],
+      },
+      {
+        controlType: "group",
+        key: "resource",
+        label: "Resource",
+        path: "resource",
+        description: "Configure resource for all signals.",
+        children: [],
+      },
+      {
+        controlType: "group",
+        key: "logger_provider",
+        label: "Logger Provider",
+        path: "logger_provider",
+        description: "Configure logger provider.",
+        children: [],
+      },
+    ],
+  };
+
+  it("pins file_format first with major.minor version, alphabetizes sections, includes banner comments, ignores keys not in schema", () => {
+    const state: ConfigurationBuilderState = {
+      version: "1.0.1-SNAPSHOT",
+      values: {
+        tracer_provider: { sampler: "always_on" },
+        resource: { service_name: "demo" },
+        logger_provider: { level: "info" },
+        legacy_thing: { foo: "bar" },
+      },
+      enabledSections: {
+        tracer_provider: true,
+        resource: true,
+        logger_provider: true,
+        legacy_thing: true,
+      },
+      validationErrors: {},
+      isDirty: false,
+    };
+
+    const output = generateYaml(state, fixtureSchema, { header: "" });
+
+    expect(output).toContain('file_format: "1.0"');
+
+    const fileFormatIdx = output.indexOf("file_format:");
+    const loggerIdx = output.indexOf("logger_provider:");
+    const resourceIdx = output.indexOf("resource:");
+    const tracerIdx = output.indexOf("tracer_provider:");
+
+    expect(fileFormatIdx).toBeGreaterThan(-1);
+    expect(loggerIdx).toBeGreaterThan(fileFormatIdx);
+    expect(resourceIdx).toBeGreaterThan(loggerIdx);
+    expect(tracerIdx).toBeGreaterThan(resourceIdx);
+
+    expect(output).toContain("# Logger Provider — Configure logger provider.");
+    expect(output).toContain("# Resource — Configure resource for all signals.");
+    expect(output).toContain("# Tracer Provider — Configure tracer provider.");
+
+    expect(output).not.toContain("legacy_thing");
+  });
+
+  it("emits enabled groups with values, omits enabled groups that strip to empty", () => {
+    const schema: ConfigNode = {
+      controlType: "group",
+      key: "root",
+      label: "Root",
+      path: "",
+      children: [
+        {
+          controlType: "group",
+          key: "filled_section",
+          label: "Filled",
+          path: "filled_section",
+          children: [],
+        },
+        {
+          controlType: "group",
+          key: "empty_section",
+          label: "Empty",
+          path: "empty_section",
+          children: [],
+        },
+      ],
+    };
+
+    const state: ConfigurationBuilderState = {
+      version: "1.0.0",
+      values: {
+        filled_section: { setting: "value" },
+        empty_section: { a: null, b: "", c: { d: null } },
+      },
+      enabledSections: {
+        filled_section: true,
+        empty_section: true,
+      },
+      validationErrors: {},
+      isDirty: false,
+    };
+
+    const output = generateYaml(state, schema, { header: "" });
+
+    expect(output).toContain("filled_section:");
+    expect(output).toContain("setting: value");
+    expect(output).not.toContain("empty_section:");
+  });
+
+  it("omits groups with enabledSections[key] !== true", () => {
+    const schema: ConfigNode = {
+      controlType: "group",
+      key: "root",
+      label: "Root",
+      path: "",
+      children: [
+        {
+          controlType: "group",
+          key: "tracer_provider",
+          label: "Tracer Provider",
+          path: "tracer_provider",
+          children: [],
+        },
+      ],
+    };
+
+    const state: ConfigurationBuilderState = {
+      version: "1.0.0",
+      values: { tracer_provider: { sampler: "always_on" } },
+      enabledSections: { tracer_provider: false },
+      validationErrors: {},
+      isDirty: false,
+    };
+
+    const output = generateYaml(state, schema, { header: "" });
+
+    expect(output).not.toContain("tracer_provider:");
+    expect(output).not.toContain("sampler: always_on");
+  });
+
+  it("emits top-level non-group values when present, omits when null", () => {
+    const schema: ConfigNode = {
+      controlType: "group",
+      key: "root",
+      label: "Root",
+      path: "",
+      children: [
+        {
+          controlType: "toggle",
+          key: "disabled",
+          label: "Disabled",
+          path: "disabled",
+          description: "Configure if the SDK is disabled or not.",
+        },
+      ],
+    };
+
+    const present: ConfigurationBuilderState = {
+      version: "1.0.0",
+      values: { disabled: false },
+      enabledSections: {},
+      validationErrors: {},
+      isDirty: false,
+    };
+    const presentOutput = generateYaml(present, schema, { header: "" });
+    expect(presentOutput).toContain("disabled: false");
+
+    const absent: ConfigurationBuilderState = {
+      version: "1.0.0",
+      values: { disabled: null },
+      enabledSections: {},
+      validationErrors: {},
+      isDirty: false,
+    };
+    const absentOutput = generateYaml(absent, schema, { header: "" });
+    expect(absentOutput).not.toContain("disabled:");
+  });
+
+  it("preserves false and 0, strips null and empty string", () => {
+    const schema: ConfigNode = {
+      controlType: "group",
+      key: "root",
+      label: "Root",
+      path: "",
+      children: [
+        {
+          controlType: "group",
+          key: "section",
+          label: "Section",
+          path: "section",
+          children: [],
+        },
+      ],
+    };
+
+    const state: ConfigurationBuilderState = {
+      version: "1.0.0",
+      values: {
+        section: {
+          a: false,
+          b: 0,
+          c: null,
+          d: "",
+          e: "x",
+        },
+      },
+      enabledSections: { section: true },
+      validationErrors: {},
+      isDirty: false,
+    };
+
+    const output = generateYaml(state, schema, { header: "" });
+
+    expect(output).toContain("a: false");
+    expect(output).toContain("b: 0");
+    expect(output).toContain("e: x");
+    expect(output).not.toMatch(/\bc:/);
+    expect(output).not.toMatch(/\bd:/);
+  });
+
+  it("preserves plugin_select discriminator inside list, omits empty group at top level", () => {
+    const schema: ConfigNode = {
+      controlType: "group",
+      key: "root",
+      label: "Root",
+      path: "",
+      children: [
+        {
+          controlType: "group",
+          key: "tracer_provider",
+          label: "Tracer Provider",
+          path: "tracer_provider",
+          children: [],
+        },
+        {
+          controlType: "group",
+          key: "empty_provider",
+          label: "Empty Provider",
+          path: "empty_provider",
+          children: [],
+        },
+      ],
+    };
+
+    const state: ConfigurationBuilderState = {
+      version: "1.0.0",
+      values: {
+        tracer_provider: {
+          processors: [{ batch: {} }],
+        },
+        empty_provider: { something: null },
+      },
+      enabledSections: {
+        tracer_provider: true,
+        empty_provider: true,
+      },
+      validationErrors: {},
+      isDirty: false,
+    };
+
+    const output = generateYaml(state, schema, { header: "" });
+
+    expect(output).toContain("tracer_provider:");
+    expect(output).toContain("processors:");
+    expect(output).toMatch(/- batch:\s*\{\s*\}/);
+
+    expect(output).not.toContain("empty_provider:");
+  });
 });

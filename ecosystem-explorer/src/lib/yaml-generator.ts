@@ -13,8 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { dump } from "js-yaml";
 import type { ConfigNode } from "@/types/configuration";
-import type { ConfigurationBuilderState } from "@/types/configuration-builder";
+import type {
+  ConfigValue,
+  ConfigValues,
+  ConfigurationBuilderState,
+} from "@/types/configuration-builder";
+
+const EMPTY = Symbol("EMPTY");
+type StrippedResult = ConfigValue | typeof EMPTY;
 
 export interface GenerateYamlOptions {
   header?: string;
@@ -31,13 +39,108 @@ function defaultHeader(version: string): string {
   ].join("\n");
 }
 
+function toFileFormatVersion(version: string): string {
+  const match = version.match(/^(\d+\.\d+)/);
+  return match ? match[1] : version;
+}
+
+function dumpYaml(obj: unknown): string {
+  return dump(obj, {
+    sortKeys: true,
+    lineWidth: -1,
+    noRefs: true,
+    quotingType: '"',
+  });
+}
+
+function sectionComment(node: ConfigNode | undefined, fallbackKey: string): string {
+  if (!node) return `# ${fallbackKey}\n`;
+  const label = node.label ?? node.key;
+  const desc = node.description?.trim();
+  if (!desc) return `# ${label}\n`;
+  if (desc.includes("\n")) {
+    const lines = desc
+      .split("\n")
+      .map((l) => `# ${l.trim()}`)
+      .filter((l) => l !== "# ");
+    return `# ${label}\n${lines.join("\n")}\n`;
+  }
+  return `# ${label} — ${desc}\n`;
+}
+
+function isPlainObject(value: unknown): value is ConfigValues {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function stripEmpties(value: ConfigValue, insideList: boolean): StrippedResult {
+  if (value === null || value === "") return EMPTY;
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    const kept: ConfigValue[] = [];
+    for (const item of value) {
+      const stripped = stripEmpties(item, true);
+      if (stripped !== EMPTY) kept.push(stripped as ConfigValue);
+    }
+    return kept.length === 0 ? EMPTY : kept;
+  }
+
+  if (isPlainObject(value)) {
+    const out: ConfigValues = {};
+    for (const [k, v] of Object.entries(value)) {
+      const stripped = stripEmpties(v, insideList);
+      if (stripped !== EMPTY) out[k] = stripped as ConfigValue;
+    }
+    if (Object.keys(out).length === 0) {
+      return insideList ? out : EMPTY;
+    }
+    return out;
+  }
+
+  return EMPTY;
+}
+
 export function generateYaml(
   state: ConfigurationBuilderState,
   schema: ConfigNode,
   options?: GenerateYamlOptions
 ): string {
-  void schema;
   const header = options?.header ?? defaultHeader(state.version);
-  const parts = [header].filter((p) => p !== "");
+
+  if (schema.controlType !== "group") {
+    const parts = [header, "# Schema is not a group; cannot generate sections.", ""].filter(
+      (p) => p !== ""
+    );
+    return parts.join("\n") + "\n";
+  }
+
+  const children = schema.children;
+
+  const fileFormatNode = children.find((c) => c.key === "file_format");
+  const fileFormatBlock =
+    sectionComment(fileFormatNode, "file_format") +
+    dumpYaml({ file_format: toFileFormatVersion(state.version) });
+
+  const others = children
+    .filter((c) => c.key !== "file_format")
+    .sort((a, b) => a.key.localeCompare(b.key));
+
+  const sectionBlocks: string[] = [];
+  for (const child of others) {
+    if (child.controlType === "group") {
+      if (state.enabledSections[child.key] !== true) continue;
+    }
+    const raw = state.values[child.key];
+    if (raw === undefined) continue;
+    const stripped = stripEmpties(raw, false);
+    if (stripped === EMPTY) continue;
+    const block =
+      sectionComment(child, child.key) + dumpYaml({ [child.key]: stripped as ConfigValue });
+    sectionBlocks.push(block);
+  }
+
+  const parts = [header, fileFormatBlock, ...sectionBlocks].filter((p) => p !== "");
   return parts.join("\n") + "\n";
 }
