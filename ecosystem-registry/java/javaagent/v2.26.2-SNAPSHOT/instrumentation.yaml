@@ -8271,6 +8271,8 @@ libraries:
         type: STRING
       - name: messaging.destination.partition.id
         type: STRING
+      - name: messaging.kafka.message.key
+        type: STRING
       - name: messaging.kafka.message.offset
         type: LONG
       - name: messaging.operation
