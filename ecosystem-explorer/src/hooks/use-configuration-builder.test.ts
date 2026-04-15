@@ -121,6 +121,111 @@ describe("useConfigurationBuilderState", () => {
     expect(result.current.state.validationErrors.file_format).toBeUndefined();
   });
 
+  it("should clear validation error explicitly", () => {
+    const { result } = renderHook(() => useConfigurationBuilderState(mockSchema, "1.0.0"));
+    act(() => {
+      result.current.validateAll();
+    });
+    expect(result.current.state.validationErrors.file_format).toBe("Required");
+    act(() => {
+      result.current.clearValidationError("file_format");
+    });
+    expect(result.current.state.validationErrors.file_format).toBeUndefined();
+  });
+
+  it("should leave other errors untouched when clearing one", () => {
+    const { result } = renderHook(() => useConfigurationBuilderState(mockSchema, "1.0.0"));
+    act(() => {
+      result.current.setEnabled("attribute_limits", true);
+    });
+    act(() => {
+      result.current.setValue("attribute_limits.attribute_count_limit", -1);
+    });
+    act(() => {
+      result.current.validateAll();
+    });
+    expect(result.current.state.validationErrors["file_format"]).toBe("Required");
+    expect(result.current.state.validationErrors["attribute_limits.attribute_count_limit"]).toBe(
+      "Must be at least 0"
+    );
+    act(() => {
+      result.current.clearValidationError("attribute_limits.attribute_count_limit");
+    });
+    expect(result.current.state.validationErrors["file_format"]).toBe("Required");
+    expect(
+      result.current.state.validationErrors["attribute_limits.attribute_count_limit"]
+    ).toBeUndefined();
+  });
+
+  it("should reset state when version changes", () => {
+    const { result, rerender } = renderHook(
+      ({ version }) => useConfigurationBuilderState(mockSchema, version),
+      { initialProps: { version: "1.0.0" } }
+    );
+
+    act(() => {
+      result.current.setValue("file_format", "1.0");
+    });
+    expect(result.current.state.values.file_format).toBe("1.0");
+
+    rerender({ version: "2.0.0" });
+
+    expect(result.current.state.values).toEqual({});
+    expect(result.current.state.version).toBe("2.0.0");
+  });
+
+  it("should not persist stale state under new version key after switch", () => {
+    const { result, rerender } = renderHook(
+      ({ version }) => useConfigurationBuilderState(mockSchema, version),
+      { initialProps: { version: "1.0.0" } }
+    );
+
+    act(() => {
+      result.current.setValue("file_format", "1.0");
+    });
+    rerender({ version: "2.0.0" });
+    act(() => {
+      vi.advanceTimersByTime(500);
+    });
+
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const saved = JSON.parse(raw);
+      expect(saved.state.values).toEqual({});
+    }
+  });
+
+  describe("loadFromYaml", () => {
+    it("should populate state from valid YAML", async () => {
+      const { result } = renderHook(() => useConfigurationBuilderState(mockSchema, "1.0.0"));
+      vi.useRealTimers();
+      await act(async () => {
+        await result.current.loadFromYaml(
+          "file_format: '1.0'\nattribute_limits:\n  attribute_count_limit: 256\n"
+        );
+      });
+      expect(result.current.state.values.file_format).toBe("1.0");
+      expect(result.current.state.enabledSections.attribute_limits).toBe(true);
+    });
+
+    it("should throw a controlled error on invalid YAML", async () => {
+      const { result } = renderHook(() => useConfigurationBuilderState(mockSchema, "1.0.0"));
+      vi.useRealTimers();
+      await expect(result.current.loadFromYaml("key: value\n  bad indent: x")).rejects.toThrow(
+        /Failed to parse YAML/
+      );
+    });
+
+    it("should ignore non-object YAML", async () => {
+      const { result } = renderHook(() => useConfigurationBuilderState(mockSchema, "1.0.0"));
+      vi.useRealTimers();
+      await act(async () => {
+        await result.current.loadFromYaml("just a string");
+      });
+      expect(result.current.state.values).toEqual({});
+    });
+  });
+
   describe("localStorage persistence", () => {
     it("should save to localStorage after debounce", () => {
       const { result } = renderHook(() => useConfigurationBuilderState(mockSchema, "1.0.0"));
@@ -129,7 +234,7 @@ describe("useConfigurationBuilderState", () => {
       });
       expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
       act(() => {
-        vi.advanceTimersByTime(300);
+        vi.advanceTimersByTime(500);
       });
       const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
       expect(saved.state.values.file_format).toBe("1.0");

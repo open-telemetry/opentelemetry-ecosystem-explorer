@@ -119,4 +119,45 @@ describe("validateAll", () => {
     expect(result.valid).toBe(true);
     expect(result.errors).toEqual({});
   });
+
+  it("should report correct paths for deeply nested errors", () => {
+    const deepSchema: GroupNode = {
+      controlType: "group",
+      key: "root",
+      label: "Root",
+      path: "",
+      children: [
+        {
+          controlType: "group",
+          key: "tracer_provider",
+          label: "Tracer Provider",
+          path: "tracer_provider",
+          children: [
+            {
+              controlType: "group",
+              key: "sampler",
+              label: "Sampler",
+              path: "tracer_provider.sampler",
+              children: [
+                {
+                  controlType: "number_input",
+                  key: "ratio",
+                  label: "Ratio",
+                  path: "tracer_provider.sampler.ratio",
+                  constraints: { minimum: 0 },
+                } as NumberInputNode,
+              ],
+            } as GroupNode,
+          ],
+        } as GroupNode,
+      ],
+    };
+
+    const result = validateAll(
+      deepSchema,
+      { tracer_provider: { sampler: { ratio: -1 } } },
+      { tracer_provider: true }
+    );
+    expect(result.errors["tracer_provider.sampler.ratio"]).toBe("Must be at least 0");
+  });
 });

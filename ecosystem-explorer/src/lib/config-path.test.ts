@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, it, expect } from "vitest";
-import { parsePath, serializePath, getByPath, setByPath, deleteByPath } from "./config-path";
+import { parsePath, serializePath, getByPath, setByPath } from "./config-path";
 
 describe("parsePath", () => {
   it("should parse simple dotted path", () => {
@@ -102,22 +102,5 @@ describe("setByPath", () => {
     const obj = {};
     const result = setByPath(obj, ["a", "b"], "value");
     expect(result).toEqual({ a: { b: "value" } });
-  });
-});
-
-describe("deleteByPath", () => {
-  it("should delete a key", () => {
-    const obj = { a: 1, b: 2 };
-    expect(deleteByPath(obj, ["a"])).toEqual({ b: 2 });
-  });
-
-  it("should delete nested key", () => {
-    const obj = { a: { b: 1, c: 2 } };
-    expect(deleteByPath(obj, ["a", "b"])).toEqual({ a: { c: 2 } });
-  });
-
-  it("should remove array item by index", () => {
-    const obj = { items: ["a", "b", "c"] };
-    expect(deleteByPath(obj, ["items", 1])).toEqual({ items: ["a", "c"] });
   });
 });

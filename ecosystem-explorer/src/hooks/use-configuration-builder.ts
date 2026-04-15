@@ -52,6 +52,7 @@ export interface ConfigurationBuilderActionsContextValue {
   loadFromYaml: (yaml: string) => Promise<void>;
   validateField: (path: string) => string | null;
   validateAll: () => ValidationResult;
+  clearValidationError: (path: string) => void;
 }
 
 export const ConfigStateContext = createContext<ConfigurationBuilderStateContextValue | null>(null);
@@ -97,13 +98,26 @@ export function useConfigurationBuilderState(schema: ConfigNode, version: string
   schemaRef.current = schema;
   const versionRef = useRef(version);
   versionRef.current = version;
+  const loadedVersionRef = useRef(version);
+
+  // Reload state when version changes
+  useEffect(() => {
+    if (loadedVersionRef.current === version) return;
+    loadedVersionRef.current = version;
+    const saved = loadFromStorage(version);
+    dispatch({
+      type: "LOAD_STATE",
+      state: saved ?? { ...INITIAL_STATE, version },
+    });
+  }, [version]);
 
   // Debounced localStorage save
   useEffect(() => {
     if (!state.isDirty) return;
+    if (state.version !== version) return;
     const timer = setTimeout(() => {
       saveToStorage(version, state);
-    }, 300);
+    }, 500);
     return () => clearTimeout(timer);
   }, [state, version]);
 
@@ -181,8 +195,14 @@ export function useConfigurationBuilderState(schema: ConfigNode, version: string
   }, []);
 
   const loadFromYaml = useCallback(async (yaml: string) => {
-    const jsYaml = await import("js-yaml");
-    const parsed = jsYaml.load(yaml);
+    let parsed: unknown;
+    try {
+      const jsYaml = await import("js-yaml");
+      parsed = jsYaml.load(yaml);
+    } catch (error) {
+      throw new Error("Failed to parse YAML configuration", { cause: error });
+    }
+
     if (typeof parsed !== "object" || parsed === null || Array.isArray(parsed)) return;
 
     const values = parsed as ConfigValues;
@@ -229,6 +249,11 @@ export function useConfigurationBuilderState(schema: ConfigNode, version: string
     return result;
   }, []);
 
+  const clearValidationError = useCallback((path: string) => {
+    const pathKey = serializePath(parsePath(path));
+    dispatch({ type: "SET_FIELD_ERROR", path: pathKey, error: null });
+  }, []);
+
   return {
     state,
     setValue,
@@ -242,6 +267,7 @@ export function useConfigurationBuilderState(schema: ConfigNode, version: string
     loadFromYaml,
     validateField: validateFieldAction,
     validateAll: validateAllAction,
+    clearValidationError,
   };
 }
 

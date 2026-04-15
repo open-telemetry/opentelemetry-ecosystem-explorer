@@ -97,32 +97,3 @@ function setByPathRecursive(
   );
   return obj;
 }
-
-export function deleteByPath(obj: ConfigValues, path: Path): ConfigValues {
-  if (path.length === 0) return obj;
-  if (path.length === 1) {
-    const key = path[0] as string;
-    const result = { ...obj };
-    delete result[key];
-    return result;
-  }
-
-  const [first, ...remaining] = path;
-  const child = obj[first as string];
-  if (child === null || child === undefined || typeof child !== "object") return obj;
-
-  if (Array.isArray(child)) {
-    const nextSegment = remaining[0];
-    if (typeof nextSegment === "number" && remaining.length === 1) {
-      const newArr = [...child];
-      newArr.splice(nextSegment, 1);
-      return { ...obj, [first as string]: newArr };
-    }
-    return obj;
-  }
-
-  return {
-    ...obj,
-    [first as string]: deleteByPath(child as ConfigValues, remaining),
-  };
-}

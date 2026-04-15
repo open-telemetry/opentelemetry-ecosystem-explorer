@@ -79,31 +79,27 @@ export function validateAll(
 ): ValidationResult {
   const errors: Record<string, string> = {};
 
-  function walk(node: ConfigNode, currentValues: ConfigValues | undefined, pathPrefix: string) {
+  function walk(node: ConfigNode, nodeValues: ConfigValues | undefined, currentPath: string) {
     if (node.controlType === "circular_ref" || node.controlType === "union") return;
 
     if (node.controlType === "group") {
       const group = node as GroupNode;
-      const groupValues = pathPrefix
-        ? (currentValues?.[node.key] as ConfigValues | undefined)
-        : currentValues;
-
       for (const child of group.children) {
-        const childPath = pathPrefix ? `${pathPrefix}.${child.key}` : child.key;
+        const childPath = currentPath === "" ? child.key : `${currentPath}.${child.key}`;
 
-        if (!pathPrefix && child.controlType === "group") {
+        if (currentPath === "" && child.controlType === "group") {
           if (enabledSections[child.key] === true) {
-            walk(child, currentValues, child.key);
+            walk(child, nodeValues?.[child.key] as ConfigValues | undefined, childPath);
           }
           continue;
         }
 
         if (child.controlType === "group" || child.controlType === "list") {
-          walk(child, groupValues ?? {}, pathPrefix ? pathPrefix : node.key);
+          walk(child, nodeValues?.[child.key] as ConfigValues | undefined, childPath);
           continue;
         }
 
-        const value = groupValues?.[child.key];
+        const value = nodeValues?.[child.key];
         const error = validateField(child, value as ConfigValue | undefined);
         if (error) {
           errors[childPath] = error;
@@ -112,11 +108,9 @@ export function validateAll(
       return;
     }
 
-    const fullPath = pathPrefix ? `${pathPrefix}.${node.key}` : node.key;
-    const value = currentValues?.[node.key];
-    const error = validateField(node, value as ConfigValue | undefined);
+    const error = validateField(node, nodeValues as ConfigValue | undefined);
     if (error) {
-      errors[fullPath] = error;
+      errors[currentPath] = error;
     }
   }
 
