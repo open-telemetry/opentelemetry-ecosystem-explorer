@@ -157,7 +157,7 @@ describe("generateYaml", () => {
       version: "1.0.0",
       values: {
         filled_section: { setting: "value" },
-        empty_section: { a: null, b: "", c: { d: null } },
+        empty_section: { a: null, b: "", c: { d: null, e: "" } },
       },
       enabledSections: {
         filled_section: true,
@@ -315,7 +315,7 @@ describe("generateYaml", () => {
         tracer_provider: {
           processors: [{ batch: {} }],
         },
-        empty_provider: { something: null },
+        empty_provider: { something: null, another: "" },
       },
       enabledSections: {
         tracer_provider: true,
@@ -332,5 +332,115 @@ describe("generateYaml", () => {
     expect(output).toMatch(/- batch:\s*\{\s*\}/);
 
     expect(output).not.toContain("empty_provider:");
+  });
+
+  it("preserves standalone plugin_select discriminator with null value", () => {
+    const schema: ConfigNode = {
+      controlType: "group",
+      key: "root",
+      label: "Root",
+      path: "",
+      children: [
+        {
+          controlType: "group",
+          key: "tracer_provider",
+          label: "Tracer Provider",
+          path: "tracer_provider",
+          children: [],
+        },
+      ],
+    };
+
+    const state: ConfigurationBuilderState = {
+      version: "1.0.0",
+      values: { tracer_provider: { sampler: { always_on: null } } },
+      enabledSections: { tracer_provider: true },
+      validationErrors: {},
+      isDirty: false,
+    };
+
+    const output = generateYaml(state, schema, { header: "" });
+
+    expect(output).toContain("sampler:");
+    expect(output).toMatch(/always_on:\s*(null|~)?/);
+  });
+
+  it("preserves standalone plugin_select discriminator with empty object", () => {
+    const schema: ConfigNode = {
+      controlType: "group",
+      key: "root",
+      label: "Root",
+      path: "",
+      children: [
+        {
+          controlType: "group",
+          key: "tracer_provider",
+          label: "Tracer Provider",
+          path: "tracer_provider",
+          children: [],
+        },
+      ],
+    };
+
+    const state: ConfigurationBuilderState = {
+      version: "1.0.0",
+      values: { tracer_provider: { sampler: { always_on: {} } } },
+      enabledSections: { tracer_provider: true },
+      validationErrors: {},
+      isDirty: false,
+    };
+
+    const output = generateYaml(state, schema, { header: "" });
+
+    expect(output).toContain("sampler:");
+    expect(output).toContain("always_on:");
+  });
+
+  it("preserves nested plugin_select chain with bare discriminators", () => {
+    const schema: ConfigNode = {
+      controlType: "group",
+      key: "root",
+      label: "Root",
+      path: "",
+      children: [
+        {
+          controlType: "group",
+          key: "tracer_provider",
+          label: "Tracer Provider",
+          path: "tracer_provider",
+          children: [],
+        },
+        {
+          controlType: "group",
+          key: "propagator",
+          label: "Propagator",
+          path: "propagator",
+          children: [],
+        },
+      ],
+    };
+
+    const state: ConfigurationBuilderState = {
+      version: "1.0.0",
+      values: {
+        tracer_provider: {
+          sampler: { parent_based: { root: { always_on: null } } },
+        },
+        propagator: {
+          composite: [{ tracecontext: null }, { baggage: null }],
+        },
+      },
+      enabledSections: { tracer_provider: true, propagator: true },
+      validationErrors: {},
+      isDirty: false,
+    };
+
+    const output = generateYaml(state, schema, { header: "" });
+
+    expect(output).toContain("parent_based:");
+    expect(output).toContain("root:");
+    expect(output).toMatch(/always_on:\s*(null|~)?/);
+    expect(output).toMatch(/- tracecontext:\s*(null|~)?/);
+    expect(output).toMatch(/- baggage:\s*(null|~)?/);
   });
 });

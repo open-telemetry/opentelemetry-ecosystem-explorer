@@ -88,8 +88,18 @@ function stripEmpties(value: ConfigValue, insideList: boolean): StrippedResult {
   }
 
   if (isPlainObject(value)) {
+    const entries = Object.entries(value);
+    if (entries.length === 1) {
+      const childValue = entries[0][1];
+      if (
+        childValue === null ||
+        (isPlainObject(childValue) && Object.keys(childValue).length === 0)
+      ) {
+        return value;
+      }
+    }
     const out: ConfigValues = {};
-    for (const [k, v] of Object.entries(value)) {
+    for (const [k, v] of entries) {
       const stripped = stripEmpties(v, insideList);
       if (stripped !== EMPTY) out[k] = stripped as ConfigValue;
     }
