@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen, within, fireEvent } from "@testing-library/react";
 import { MemoryRouter, Route, Routes, useNavigate } from "react-router-dom";
 import { InstrumentationDetailPage } from "./instrumentation-detail-page";
 import type { InstrumentationData } from "@/types/javaagent";
@@ -142,13 +142,41 @@ describe("InstrumentationDetailPage", () => {
     const scopeNameCode = within(header).getByText("jdbc");
     expect(scopeNameCode.tagName).toBe("CODE");
 
-    expect(within(header).getByText("v2.0.0")).toBeInTheDocument();
-
     expect(within(header).getByText("Enabled by Default")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Back" })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: /Details/i })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: /Telemetry/i })).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: /Configuration/i })).toBeInTheDocument();
+  });
+
+  it("renders version selector with available versions", () => {
+    vi.mocked(useInstrumentation).mockReturnValue({
+      data: mockInstrumentation,
+      loading: false,
+      error: null,
+    });
+
+    renderWithRouter("/java-agent/instrumentation/2.0.0/jdbc");
+
+    const select = screen.getByRole("combobox", { name: /version/i });
+    expect(select).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: /2\.0\.0/ })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: /1\.9\.0/ })).toBeInTheDocument();
+  });
+
+  it("navigates to new version when version selector changes", () => {
+    vi.mocked(useInstrumentation).mockReturnValue({
+      data: mockInstrumentation,
+      loading: false,
+      error: null,
+    });
+
+    renderWithRouter("/java-agent/instrumentation/2.0.0/jdbc");
+
+    const select = screen.getByRole("combobox", { name: /version/i });
+    fireEvent.change(select, { target: { value: "1.9.0" } });
+
+    expect(mockNavigate).toHaveBeenCalledWith("/java-agent/instrumentation/1.9.0/jdbc");
   });
 
   it("does not fetch instrumentation when version is 'latest'", () => {

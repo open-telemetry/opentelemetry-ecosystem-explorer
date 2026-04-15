@@ -15,7 +15,7 @@
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import { BrowserRouter } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import { JavaInstrumentationListPage } from "./java-instrumentation-list-page";
 import type { InstrumentationData } from "@/types/javaagent";
@@ -31,11 +31,14 @@ vi.mock("@/components/ui/back-button", () => ({
 
 import { useVersions, useInstrumentations } from "@/hooks/use-javaagent-data";
 
-function renderPage() {
+function renderPage(initialPath = "/java-agent/instrumentation/2.0.0") {
   return render(
-    <BrowserRouter>
-      <JavaInstrumentationListPage />
-    </BrowserRouter>
+    <MemoryRouter initialEntries={[initialPath]}>
+      <Routes>
+        <Route path="/java-agent/instrumentation" element={<JavaInstrumentationListPage />} />
+        <Route path="/java-agent/instrumentation/:version" element={<JavaInstrumentationListPage />} />
+      </Routes>
+    </MemoryRouter>
   );
 }
 
@@ -103,7 +106,10 @@ describe("JavaInstrumentationListPage - Filtering", () => {
   beforeEach(() => {
     vi.mocked(useVersions).mockReturnValue({
       data: {
-        versions: [{ version: "2.0.0", is_latest: true }],
+        versions: [
+          { version: "2.0.0", is_latest: true },
+          { version: "1.9.0", is_latest: false },
+        ],
       },
       loading: false,
       error: null,
@@ -127,6 +133,19 @@ describe("JavaInstrumentationListPage - Filtering", () => {
     });
 
     expect(screen.getByText("Showing 4 of 4 instrumentations")).toBeInTheDocument();
+  });
+
+  it("renders the version selector with available versions", async () => {
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByText("HTTP Client")).toBeInTheDocument();
+    });
+
+    const select = screen.getByRole("combobox", { name: /version/i });
+    expect(select).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: /2\.0\.0/ })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: /1\.9\.0/ })).toBeInTheDocument();
   });
 
   it("filters instrumentations by search term in name", async () => {

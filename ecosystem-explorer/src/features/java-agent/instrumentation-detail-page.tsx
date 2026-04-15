@@ -33,6 +33,7 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { useVersions, useInstrumentation } from "@/hooks/use-javaagent-data";
 import { getInstrumentationDisplayName, getSemanticConventionInfo, getFeatureInfo } from "./utils/format";
 import { TelemetrySection } from "./components/telemetry-section";
+import { VersionSelector } from "./components/version-selector";
 
 function buildSourceUrl(sourcePath: string): string {
   try {
@@ -71,6 +72,10 @@ export function InstrumentationDetailPage() {
       }
     }
   }, [version, name, versionsData, navigate]);
+
+  const handleVersionChange = (newVersion: string) => {
+    navigate(`/java-agent/instrumentation/${newVersion}/${name}`);
+  };
 
   if (loading) {
     return (
@@ -171,9 +176,13 @@ export function InstrumentationDetailPage() {
               </div>
 
               <div className="flex flex-shrink-0 items-center gap-3">
-                <GlowBadge variant="primary" withGlow>
-                  v{version}
-                </GlowBadge>
+                {versionsData && versionsData.versions.length > 0 && version && (
+                  <VersionSelector
+                    versions={versionsData.versions}
+                    currentVersion={version}
+                    onVersionChange={handleVersionChange}
+                  />
+                )}
                 <GlowBadge
                   variant={instrumentation.disabled_by_default ? "warning" : "success"}
                   withGlow

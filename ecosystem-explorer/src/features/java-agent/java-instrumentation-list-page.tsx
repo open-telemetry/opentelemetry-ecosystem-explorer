@@ -19,21 +19,37 @@ import {
   type FilterState,
   InstrumentationFilterBar,
 } from "@/features/java-agent/components/instrumentation-filter-bar.tsx";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { InstrumentationGroupCard } from "@/features/java-agent/components/instrumentation-group-card.tsx";
+import { VersionSelector } from "@/features/java-agent/components/version-selector";
 import { getInstrumentationDisplayName } from "./utils/format";
 import { groupInstrumentationsByDisplayName } from "./utils/group-instrumentations";
 
 export function JavaInstrumentationListPage() {
+  const { version: versionParam } = useParams<{ version?: string }>();
+  const navigate = useNavigate();
+
   const { data: versionsData, loading: versionsLoading } = useVersions();
 
   const latestVersion = versionsData?.versions.find((v) => v.is_latest)?.version ?? "";
+
+  // Redirect /java-agent/instrumentation (no version) or /latest to the actual latest version
+  useEffect(() => {
+    if (versionsData && latestVersion) {
+      if (!versionParam || versionParam === "latest") {
+        navigate(`/java-agent/instrumentation/${latestVersion}`, { replace: true });
+      }
+    }
+  }, [versionParam, versionsData, latestVersion, navigate]);
+
+  const resolvedVersion = versionParam && versionParam !== "latest" ? versionParam : "";
 
   const {
     data: instrumentations,
     loading: instrumentationsLoading,
     error,
-  } = useInstrumentations(latestVersion);
+  } = useInstrumentations(resolvedVersion);
 
   const [filters, setFilters] = useState<FilterState>({
     search: "",
@@ -89,6 +105,10 @@ export function JavaInstrumentationListPage() {
     [filteredInstrumentations]
   );
 
+  const handleVersionChange = (newVersion: string) => {
+    navigate(`/java-agent/instrumentation/${newVersion}`);
+  };
+
   if (versionsLoading || instrumentationsLoading) {
     return (
       <div className="max-w-7xl mx-auto px-6 py-12">
@@ -113,7 +133,7 @@ export function JavaInstrumentationListPage() {
     );
   }
 
-  if (!latestVersion) {
+  if (!resolvedVersion) {
     return (
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="p-6 border border-yellow-500/50 rounded-lg bg-yellow-500/10 text-yellow-600 dark:text-yellow-400">
@@ -129,15 +149,25 @@ export function JavaInstrumentationListPage() {
         <BackButton />
 
         {/* Header Section */}
-        <div className="space-y-3">
-          <h1 className="text-3xl font-bold md:text-4xl">
-            <span className="bg-gradient-to-r from-[hsl(var(--secondary-hsl))] to-[hsl(var(--primary-hsl))] bg-clip-text text-transparent">
-              OpenTelemetry Java Agent
-            </span>
-          </h1>
-          <p className="text-base text-muted-foreground">
-            Explore {instrumentations?.length ?? 0} available instrumentations.
-          </p>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="space-y-3">
+            <h1 className="text-3xl font-bold md:text-4xl">
+              <span className="bg-gradient-to-r from-[hsl(var(--secondary-hsl))] to-[hsl(var(--primary-hsl))] bg-clip-text text-transparent">
+                OpenTelemetry Java Agent
+              </span>
+            </h1>
+            <p className="text-base text-muted-foreground">
+              Explore {instrumentations?.length ?? 0} available instrumentations.
+            </p>
+          </div>
+
+          {versionsData && versionsData.versions.length > 0 && (
+            <VersionSelector
+              versions={versionsData.versions}
+              currentVersion={resolvedVersion}
+              onVersionChange={handleVersionChange}
+            />
+          )}
         </div>
 
         <InstrumentationFilterBar filters={filters} onFiltersChange={setFilters} />
@@ -167,7 +197,7 @@ export function JavaInstrumentationListPage() {
                 key={group.displayName}
                 group={group}
                 activeFilters={filters}
-                version={latestVersion}
+                version={resolvedVersion}
               />
             ))}
           </div>
