@@ -171,6 +171,21 @@ instrumentations:
         with pytest.raises(ValueError, match="Error parsing instrumentation YAML"):
             sync.update_snapshot()
 
+    def test_update_snapshot_parse_failure_preserves_existing_snapshot(self, sync, mock_client, inventory_manager):
+        existing = Version("2.9.1-SNAPSHOT")
+        inventory_manager.save_versioned_inventory(
+            version=existing,
+            instrumentations={"file_format": 0.1, "libraries": []},
+        )
+
+        mock_client.get_latest_release_tag.return_value = "v2.10.0"
+        mock_client.fetch_instrumentation_list.return_value = "malformed: [yaml"
+
+        with pytest.raises(ValueError):
+            sync.update_snapshot()
+
+        assert inventory_manager.version_exists(existing)
+
     def test_parse_cleans_whitespace(self, sync, mock_client):
         mock_client.get_latest_release_tag.return_value = "v2.10.0"
         mock_client.fetch_instrumentation_list.return_value = """

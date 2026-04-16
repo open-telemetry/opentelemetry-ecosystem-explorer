@@ -285,9 +285,9 @@ class CollectorSync:
         Update or create the SNAPSHOT version for a distribution.
 
         This:
-        1. Cleans up old snapshots
-        2. Determines next snapshot version
-        3. Scans main branch
+        1. Determines next snapshot version
+        2. Scans main branch
+        3. Cleans up old snapshots
         4. Saves as new snapshot
 
         Args:
@@ -298,18 +298,19 @@ class CollectorSync:
         """
         detector = self.version_detectors[distribution]
 
-        logger.info("")
-        logger.info("Cleaning up old %s snapshots...", distribution)
-        removed = self.inventory_manager.cleanup_snapshots(distribution)
-        if removed > 0:
-            logger.info("  Removed %d old snapshot(s)", removed)
-
         snapshot_version = detector.determine_next_snapshot_version()
         logger.info("")
         logger.info("Updating %s %s...", distribution, snapshot_version)
 
         self.initialize_previous_version(distribution)
         components = self.scan_version(distribution, snapshot_version, checkout=True)
+
+        logger.info("")
+        logger.info("Cleaning up old %s snapshots...", distribution)
+        removed = self.inventory_manager.cleanup_snapshots(distribution)
+        if removed > 0:
+            logger.info("  Removed %d old snapshot(s)", removed)
+
         self.save_version(distribution, snapshot_version, components)
         self.detect_and_track_deprecations(distribution, snapshot_version, components)
 

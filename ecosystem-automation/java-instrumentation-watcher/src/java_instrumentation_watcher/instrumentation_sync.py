@@ -104,18 +104,14 @@ class InstrumentationSync:
         Update snapshot version from main branch.
 
         This will:
-        1. Clean up old snapshots
-        2. Determine next snapshot version
-        3. Fetch from main branch
+        1. Determine next snapshot version
+        2. Fetch from main branch
+        3. Clean up old snapshots
         4. Save new snapshot
 
         Returns:
             The snapshot version
         """
-        removed = self.inventory_manager.cleanup_snapshots()
-        if removed > 0:
-            logger.info(f"  Removed {removed} old snapshot(s)")
-
         latest_release_tag = self.client.get_latest_release_tag()
         latest_release = Version(latest_release_tag.lstrip("v"))
 
@@ -130,6 +126,10 @@ class InstrumentationSync:
         logger.info("  Fetching instrumentation list from main branch...")
         yaml_content = self.client.fetch_instrumentation_list(ref="main")
         instrumentations = parse_instrumentation_yaml(yaml_content)
+
+        removed = self.inventory_manager.cleanup_snapshots()
+        if removed > 0:
+            logger.info(f"  Removed {removed} old snapshot(s)")
 
         self.inventory_manager.save_versioned_inventory(
             version=snapshot_version,
