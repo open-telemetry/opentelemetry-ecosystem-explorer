@@ -176,13 +176,16 @@ export function InstrumentationDetailPage() {
               </div>
 
               <div className="flex flex-shrink-0 items-center gap-3">
-                {versionsData && versionsData.versions.length > 0 && version && (
-                  <VersionSelector
-                    versions={versionsData.versions}
-                    currentVersion={version}
-                    onVersionChange={handleVersionChange}
-                  />
-                )}
+                {versionsData &&
+                  versionsData.versions.length > 0 &&
+                  version &&
+                  version !== "latest" && (
+                    <VersionSelector
+                      versions={versionsData.versions}
+                      currentVersion={version}
+                      onVersionChange={handleVersionChange}
+                    />
+                  )}
                 <GlowBadge
                   variant={instrumentation.disabled_by_default ? "warning" : "success"}
                   withGlow
