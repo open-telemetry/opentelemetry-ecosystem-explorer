@@ -5498,7 +5498,7 @@ components:
         type: string
 - name: hostmetricsreceiver
   metadata:
-    type: hostmetrics
+    type: host_metrics
     display_name: Host Metrics Receiver
     description: The Host Metrics receiver generates metrics about the host system
       scraped from various sources and host entity event as log. This is intended
@@ -15800,6 +15800,9 @@ components:
       server.port:
         description: The port number on which the server is listening.
         type: int
+      sqlserver.blocking.start_time:
+        description: Timestamp of when the current blocking wait began (ISO 8601 format).
+        type: string
       sqlserver.blocking_session_id:
         description: Session ID that is blocking the current session. 0 if none.
         type: int
@@ -15909,6 +15912,13 @@ components:
         description: Transaction isolation level used in the session. Represented
           as numeric constant.
         type: int
+      sqlserver.wait.resource.id:
+        description: SQL Server identifier for the locked or waited-on resource, if
+          available.
+        type: string
+      sqlserver.wait.resource.type:
+        description: SQL Server type of the locked or waited-on resource, if available.
+        type: string
       sqlserver.wait_resource:
         description: The resource for which the session is waiting.
         type: string
