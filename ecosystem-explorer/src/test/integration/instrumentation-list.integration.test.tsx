@@ -16,17 +16,26 @@
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { installFetchInterceptor, uninstallFetchInterceptor } from "./helpers/fetch-interceptor";
 import { JavaInstrumentationListPage } from "@/features/java-agent/java-instrumentation-list-page";
+import { loadVersions } from "@/lib/api/javaagent-data";
 
-beforeAll(() => installFetchInterceptor());
+let latestVersion: string;
+
+beforeAll(async () => {
+  installFetchInterceptor();
+  const { versions } = await loadVersions();
+  latestVersion = versions.find((v) => v.is_latest)!.version;
+});
 afterAll(() => uninstallFetchInterceptor());
 
 function renderPage() {
   return render(
-    <MemoryRouter>
-      <JavaInstrumentationListPage />
+    <MemoryRouter initialEntries={[`/java-agent/instrumentation/${latestVersion}`]}>
+      <Routes>
+        <Route path="/java-agent/instrumentation/:version" element={<JavaInstrumentationListPage />} />
+      </Routes>
     </MemoryRouter>
   );
 }
