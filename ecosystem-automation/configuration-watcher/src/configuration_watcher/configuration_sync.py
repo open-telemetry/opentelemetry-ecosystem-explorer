@@ -103,8 +103,8 @@ class ConfigurationSync:
         This:
         1. Determines next snapshot version
         2. Checks out main branch
-        3. Copies schema files
-        4. Cleans up old snapshots
+        3. Cleans up old snapshots
+        4. Copies schema files
 
         Returns:
             Snapshot version that was created
@@ -114,14 +114,15 @@ class ConfigurationSync:
         logger.info("Updating %s...", snapshot_version)
 
         self.version_detector.checkout_main()
-        copied = self.copy_schemas_to_inventory(snapshot_version)
-        logger.info("  Copied %d schema files", len(copied))
 
         logger.info("")
         logger.info("Cleaning up old snapshots...")
         removed = self.inventory_manager.cleanup_snapshots()
         if removed > 0:
             logger.info("  Removed %d old snapshot(s)", removed)
+
+        copied = self.copy_schemas_to_inventory(snapshot_version)
+        logger.info("  Copied %d schema files", len(copied))
 
         return snapshot_version
 
