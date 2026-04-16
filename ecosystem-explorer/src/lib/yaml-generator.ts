@@ -39,11 +39,6 @@ function defaultHeader(version: string): string {
   ].join("\n");
 }
 
-function toFileFormatVersion(version: string): string {
-  const match = version.match(/^(\d+\.\d+)/);
-  return match ? match[1] : version;
-}
-
 function dumpYaml(obj: unknown): string {
   return dump(obj, {
     sortKeys: true,
@@ -72,7 +67,7 @@ function isPlainObject(value: unknown): value is ConfigValues {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function stripEmpties(value: ConfigValue, insideList: boolean): StrippedResult {
+function stripEmpties(value: ConfigValue): StrippedResult {
   if (value === null || value === "") return EMPTY;
   if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
     return value;
@@ -81,7 +76,7 @@ function stripEmpties(value: ConfigValue, insideList: boolean): StrippedResult {
   if (Array.isArray(value)) {
     const kept: ConfigValue[] = [];
     for (const item of value) {
-      const stripped = stripEmpties(item, true);
+      const stripped = stripEmpties(item);
       if (stripped !== EMPTY) kept.push(stripped as ConfigValue);
     }
     return kept.length === 0 ? EMPTY : kept;
@@ -100,11 +95,11 @@ function stripEmpties(value: ConfigValue, insideList: boolean): StrippedResult {
     }
     const out: ConfigValues = {};
     for (const [k, v] of entries) {
-      const stripped = stripEmpties(v, insideList);
+      const stripped = stripEmpties(v);
       if (stripped !== EMPTY) out[k] = stripped as ConfigValue;
     }
     if (Object.keys(out).length === 0) {
-      return insideList ? out : EMPTY;
+      return EMPTY;
     }
     return out;
   }
@@ -130,8 +125,7 @@ export function generateYaml(
 
   const fileFormatNode = children.find((c) => c.key === "file_format");
   const fileFormatBlock =
-    sectionComment(fileFormatNode, "file_format") +
-    dumpYaml({ file_format: toFileFormatVersion(state.version) });
+    sectionComment(fileFormatNode, "file_format") + dumpYaml({ file_format: state.version });
 
   const others = children
     .filter((c) => c.key !== "file_format")
@@ -144,7 +138,7 @@ export function generateYaml(
     }
     const raw = state.values[child.key];
     if (raw === undefined) continue;
-    const stripped = stripEmpties(raw, false);
+    const stripped = stripEmpties(raw);
     if (stripped === EMPTY) continue;
     const block =
       sectionComment(child, child.key) + dumpYaml({ [child.key]: stripped as ConfigValue });
