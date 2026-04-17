@@ -22,10 +22,10 @@ from explorer_db_builder.instrumentation_transformer import (
 
 
 class TestTransformInstrumentationFormat:
-    def test_format_0_2_no_transformation(self):
-        """Format 0.2 data is returned unchanged."""
+    def test_format_0_3_no_transformation(self):
+        """Format 0.3 data is returned unchanged."""
         data = {
-            "file_format": 0.2,
+            "file_format": 0.3,
             "libraries": [
                 {
                     "name": "test-lib",
@@ -38,10 +38,56 @@ class TestTransformInstrumentationFormat:
         result = transform_instrumentation_format(data)
 
         assert result == data
-        assert result["file_format"] == 0.2
+        assert result["file_format"] == 0.3
 
-    def test_format_0_1_transforms_to_0_2(self):
-        """Format 0.1 data is transformed to 0.2."""
+    def test_format_0_2_transforms_to_0_3(self):
+        """Format 0.2 data is transformed to 0.3."""
+        data = {
+            "file_format": 0.2,
+            "libraries": [
+                {
+                    "name": "activej-http-6.0",
+                    "display_name": "ActiveJ",
+                    "description": "HTTP server instrumentation",
+                    "semantic_conventions": ["HTTP_SERVER_SPANS"],
+                    "library_link": "https://activej.io/",
+                    "source_path": "instrumentation/activej-http-6.0",
+                    "javaagent_target_versions": ["io.activej:activej-http:[6.0,)"],
+                    "configurations": [],
+                    "telemetry": [
+                        {
+                            "when": "default",
+                            "metrics": [
+                                {
+                                    "name": "http.server.request.duration",
+                                    "description": "Duration of HTTP server requests.",
+                                    "type": "HISTOGRAM",
+                                    "instrument": "histogram",
+                                    "unit": "s",
+                                }
+                            ],
+                            "spans": [{"span_kind": "SERVER"}],
+                        }
+                    ],
+                }
+            ],
+        }
+
+        result = transform_instrumentation_format(data)
+
+        assert result["file_format"] == 0.3
+        # Verify the type field was renamed to data_type in the metric
+        metric = result["libraries"][0]["telemetry"][0]["metrics"][0]
+        assert metric["data_type"] == "HISTOGRAM"
+        assert metric["instrument"] == "histogram"
+        assert "type" not in metric
+        # Verify other fields are preserved
+        assert result["libraries"][0]["name"] == "activej-http-6.0"
+        assert result["libraries"][0]["display_name"] == "ActiveJ"
+        assert result["libraries"][0]["javaagent_target_versions"] == ["io.activej:activej-http:[6.0,)"]
+
+    def test_format_0_1_transforms_to_0_3(self):
+        """Format 0.1 data is transformed through 0.2 to 0.3."""
         data = {
             "file_format": 0.1,
             "libraries": [
@@ -57,7 +103,7 @@ class TestTransformInstrumentationFormat:
 
         result = transform_instrumentation_format(data)
 
-        assert result["file_format"] == 0.2
+        assert result["file_format"] == 0.3
         assert result["libraries"][0]["javaagent_target_versions"] == ["com.test:lib:[1.0,)"]
         assert result["libraries"][0]["has_standalone_library"] is True
         assert "target_versions" not in result["libraries"][0]
@@ -71,9 +117,9 @@ class TestTransformInstrumentationFormat:
 
     def test_unsupported_file_format_raises_error(self):
         """Unsupported file format raises ValueError."""
-        data = {"file_format": 0.3, "libraries": []}
+        data = {"file_format": 0.4, "libraries": []}
 
-        with pytest.raises(ValueError, match="Unsupported file format: 0.3"):
+        with pytest.raises(ValueError, match="Unsupported file format: 0.4"):
             transform_instrumentation_format(data)
 
 

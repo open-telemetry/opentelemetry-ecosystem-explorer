@@ -27,7 +27,8 @@ describe("ConfigurationSelector", () => {
         {
           name: "test.metric",
           description: "Test metric",
-          type: "COUNTER",
+          instrument: "counter",
+          data_type: "COUNTER",
           unit: "1",
         },
       ],
@@ -38,7 +39,8 @@ describe("ConfigurationSelector", () => {
         {
           name: "http.metric",
           description: "HTTP metric",
-          type: "GAUGE",
+          instrument: "counter",
+          data_type: "LONG_SUM",
           unit: "ms",
         },
       ],

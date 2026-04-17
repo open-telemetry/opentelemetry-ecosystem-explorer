@@ -52,7 +52,15 @@ describe("getBadgeInfo", () => {
         telemetry: [
           {
             when: "always",
-            metrics: [{ name: "m", description: "d", type: "COUNTER", unit: "1" }],
+            metrics: [
+              {
+                name: "m",
+                description: "d",
+                data_type: "COUNTER",
+                instrument: "counter",
+                unit: "1",
+              },
+            ],
           },
         ],
       })
@@ -94,7 +102,9 @@ describe("getAggregatedBadgeInfo", () => {
         telemetry: [
           {
             when: "always",
-            metrics: [{ name: "m", description: "d", type: "GAUGE", unit: "1" }],
+            metrics: [
+              { name: "m", description: "d", data_type: "COUNTER", instrument: "gauge", unit: "1" },
+            ],
           },
         ],
       }),

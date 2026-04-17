@@ -54,7 +54,13 @@ describe("InstrumentationGroupCard", () => {
             {
               when: "always",
               metrics: [
-                { name: "db.connections", description: "DB connections", type: "GAUGE", unit: "1" },
+                {
+                  name: "db.connections",
+                  description: "DB connections",
+                  data_type: "COUNTER",
+                  instrument: "gauge",
+                  unit: "1",
+                },
               ],
             },
           ],
@@ -109,7 +115,8 @@ describe("InstrumentationGroupCard", () => {
                 {
                   name: "http.client.request.duration",
                   description: "Duration of HTTP client requests",
-                  type: "HISTOGRAM",
+                  data_type: "HISTOGRAM",
+                  instrument: "histogram",
                   unit: "s",
                 },
               ],
@@ -234,7 +241,7 @@ describe("InstrumentationGroupCard", () => {
 
     it("sub-items link to correct detail URLs", async () => {
       const user = userEvent.setup();
-      renderGroupCard(multiGroup, defaultFilters, "2.25.0");
+      renderGroupCard(multiGroup, defaultFilters, "2.26.1");
 
       const button = screen.getByRole("button", {
         name: /Apache HttpClient group with 2 instrumentations/,
@@ -246,7 +253,7 @@ describe("InstrumentationGroupCard", () => {
       });
       expect(link40).toHaveAttribute(
         "href",
-        "/java-agent/instrumentation/2.25.0/apache-httpclient-4.0"
+        "/java-agent/instrumentation/2.26.1/apache-httpclient-4.0"
       );
 
       const link50 = screen.getByRole("link", {
@@ -254,7 +261,7 @@ describe("InstrumentationGroupCard", () => {
       });
       expect(link50).toHaveAttribute(
         "href",
-        "/java-agent/instrumentation/2.25.0/apache-httpclient-5.0"
+        "/java-agent/instrumentation/2.26.1/apache-httpclient-5.0"
       );
     });
 

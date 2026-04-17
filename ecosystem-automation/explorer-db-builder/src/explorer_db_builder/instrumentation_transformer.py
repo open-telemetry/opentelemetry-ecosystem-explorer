@@ -40,12 +40,17 @@ def transform_instrumentation_format(inventory_data: dict[str, Any]) -> dict[str
 
     file_format = inventory_data["file_format"]
 
-    if file_format == 0.2:
-        logger.debug("File format 0.2 detected, no transformation needed")
+    if file_format == 0.3:
+        logger.debug("File format 0.3 detected, no transformation needed")
         return inventory_data
+    if file_format == 0.2:
+        logger.debug("File format 0.2 detected, transforming to 0.3")
+        return _transform_0_2_to_0_3(inventory_data)
     elif file_format == 0.1:
         logger.debug("File format 0.1 detected, transforming to 0.2")
-        return _transform_0_1_to_0_2(inventory_data)
+        bump_to_0_2 = _transform_0_1_to_0_2(inventory_data)
+        logger.debug("Now transforming from 0.2 to 0.3")
+        return _transform_0_2_to_0_3(bump_to_0_2)
     else:
         raise ValueError(f"Unsupported file format: {file_format}")
 
@@ -92,5 +97,54 @@ def _transform_0_1_to_0_2(inventory_data: dict[str, Any]) -> dict[str, Any]:
     transformed_data["file_format"] = 0.2
 
     logger.info(f"Transformed {len(transformed_libraries)} libraries from format 0.1 to 0.2")
+
+    return transformed_data
+
+
+def _transform_0_2_to_0_3(inventory_data: dict[str, Any]) -> dict[str, Any]:
+    """Transform file_format 0.2 to 0.3.
+
+    Changes from 0.2:
+        - 'type' field renamed to 'data_type' in telemetry metrics
+
+    Args:
+        inventory_data: Inventory data in format 0.2
+
+    Returns:
+        Transformed inventory data in format 0.3
+    """
+    transformed_libraries = []
+
+    for library in inventory_data["libraries"]:
+        transformed_lib = library.copy()
+
+        if "telemetry" in transformed_lib:
+            transformed_telemetry = []
+            for telemetry_entry in transformed_lib["telemetry"]:
+                transformed_entry = telemetry_entry.copy()
+
+                if "metrics" in transformed_entry:
+                    transformed_metrics = []
+                    for metric in transformed_entry["metrics"]:
+                        transformed_metric = metric.copy()
+
+                        if "type" in transformed_metric:
+                            transformed_metric["data_type"] = transformed_metric["type"]
+                            del transformed_metric["type"]
+
+                        transformed_metrics.append(transformed_metric)
+
+                    transformed_entry["metrics"] = transformed_metrics
+
+                transformed_telemetry.append(transformed_entry)
+
+            transformed_lib["telemetry"] = transformed_telemetry
+
+        transformed_libraries.append(transformed_lib)
+
+    transformed_data = inventory_data.copy()
+    transformed_data["libraries"] = transformed_libraries
+    transformed_data["file_format"] = 0.3
+    logger.info("Transformed inventory from format 0.2 to 0.3")
 
     return transformed_data

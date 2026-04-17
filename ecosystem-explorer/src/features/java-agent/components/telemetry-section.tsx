@@ -69,7 +69,7 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                           {metric.name}
                         </code>
                         <GlowBadge variant="success" withGlow className="text-[10px]">
-                          {metric.type}
+                          {metric.instrument}
                         </GlowBadge>
                       </div>
 

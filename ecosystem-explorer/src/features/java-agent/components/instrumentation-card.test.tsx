@@ -116,7 +116,8 @@ describe("InstrumentationCard", () => {
             {
               name: "test.metric",
               description: "Test metric",
-              type: "COUNTER",
+              data_type: "COUNTER",
+              instrument: "counter",
               unit: "1",
             },
           ],
@@ -138,7 +139,8 @@ describe("InstrumentationCard", () => {
             {
               name: "test.metric",
               description: "Test metric",
-              type: "COUNTER",
+              data_type: "COUNTER",
+              instrument: "counter",
               unit: "1",
             },
           ],
@@ -211,7 +213,8 @@ describe("InstrumentationCard", () => {
             {
               name: "test.metric",
               description: "Test",
-              type: "COUNTER",
+              data_type: "COUNTER",
+              instrument: "counter",
               unit: "1",
             },
           ],

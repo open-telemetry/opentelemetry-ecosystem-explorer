@@ -72,7 +72,8 @@ describe("TelemetrySection", () => {
   const mockMetric: Metric = {
     name: "http.server.duration",
     description: "Duration of HTTP server requests",
-    type: "HISTOGRAM",
+    data_type: "HISTOGRAM",
+    instrument: "histogram",
     unit: "ms",
     attributes: [
       { name: "http.method", type: "STRING" },
@@ -142,14 +143,16 @@ describe("TelemetrySection", () => {
       const defaultMetric: Metric = {
         name: "default.metric",
         description: "Default metric",
-        type: "COUNTER",
+        data_type: "COUNTER",
+        instrument: "counter",
         unit: "1",
       };
 
       const customMetric: Metric = {
         name: "custom.metric",
         description: "Custom metric",
-        type: "GAUGE",
+        data_type: "COUNTER",
+        instrument: "counter",
         unit: "ms",
       };
 
@@ -214,7 +217,8 @@ describe("TelemetrySection", () => {
       const metricWithoutAttrs: Metric = {
         name: "simple.metric",
         description: "Simple metric",
-        type: "COUNTER",
+        data_type: "COUNTER",
+        instrument: "counter",
         unit: "1",
       };
 

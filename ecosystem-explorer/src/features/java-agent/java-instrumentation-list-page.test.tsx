@@ -65,7 +65,8 @@ describe("JavaInstrumentationListPage - Filtering", () => {
             {
               name: "db.connections",
               description: "DB connections",
-              type: "GAUGE",
+              instrument: "counter",
+              data_type: "LONG_SUM",
               unit: "1",
             },
           ],
@@ -87,7 +88,8 @@ describe("JavaInstrumentationListPage - Filtering", () => {
             {
               name: "kafka.messages",
               description: "Messages sent",
-              type: "COUNTER",
+              data_type: "COUNTER",
+              instrument: "counter",
               unit: "1",
             },
           ],
