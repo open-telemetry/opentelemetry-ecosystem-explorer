@@ -21,7 +21,7 @@ import { JavaAgentPage } from "@/features/java-agent/java-agent-page";
 import { CollectorPage } from "@/features/collector/collector-page";
 import { NotFoundPage } from "@/features/not-found/not-found-page";
 import { JavaInstrumentationListPage } from "@/features/java-agent/java-instrumentation-list-page";
-import { JavaConfigurationBuilderPage } from "@/features/java-agent/configuration/java-configuration-builder-page";
+import { JavaConfigurationListPage } from "@/features/java-agent/java-configuration-list-page";
 import { InstrumentationDetailPage } from "@/features/java-agent/instrumentation-detail-page";
 import { ConfigurationBuilderPage } from "@/features/java-agent/configuration/configuration-builder-page";
 import { AboutPage } from "@/features/about/about-page";
