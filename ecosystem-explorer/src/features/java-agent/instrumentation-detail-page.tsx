@@ -26,7 +26,8 @@ import {
   Loader2,
 } from "lucide-react";
 import { BackButton } from "@/components/ui/back-button";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { SegmentedTabList } from "./components/segmented-tabs";
 import { GlowBadge } from "@/components/ui/glow-badge";
 import { DetailCard } from "@/components/ui/detail-card";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -233,21 +234,27 @@ export function InstrumentationDetailPage() {
           </div>
 
           <Tabs defaultValue="details" className="relative z-10">
-            <div className="bg-card/60 px-6 pt-4 border-b border-border/30">
-              <TabsList className="bg-transparent border-0 h-auto p-0 -mb-px">
-                <TabsTrigger value="details">
-                  <Info className="h-4 w-4" aria-hidden="true" />
-                  Details
-                </TabsTrigger>
-                <TabsTrigger value="telemetry">
-                  <Activity className="h-4 w-4" aria-hidden="true" />
-                  Telemetry
-                </TabsTrigger>
-                <TabsTrigger value="configuration">
-                  <Settings className="h-4 w-4" aria-hidden="true" />
-                  Configuration
-                </TabsTrigger>
-              </TabsList>
+            <div className="px-6 pt-4 pb-0">
+              <SegmentedTabList
+                defaultValue="details"
+                tabs={[
+                  {
+                    value: "details",
+                    label: "Details",
+                    icon: <Info className="h-4 w-4" aria-hidden="true" />,
+                  },
+                  {
+                    value: "telemetry",
+                    label: "Telemetry",
+                    icon: <Activity className="h-4 w-4" aria-hidden="true" />,
+                  },
+                  {
+                    value: "configuration",
+                    label: "Configuration",
+                    icon: <Settings className="h-4 w-4" aria-hidden="true" />,
+                  },
+                ]}
+              />
             </div>
 
             <TabsContent value="details" className="p-6">
