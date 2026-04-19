@@ -42,7 +42,7 @@ export function MetricDiffCard({ diff }: MetricDiffCardProps) {
               {statusLabel}
             </GlowBadge>
             <GlowBadge variant="success" withGlow className="text-[10px]">
-              {metric.type}
+              {metric.data_type}
             </GlowBadge>
           </div>
         </div>
@@ -67,19 +67,19 @@ export function MetricDiffCard({ diff }: MetricDiffCardProps) {
           </div>
         )}
 
-        {/* Type change indicator */}
-        {status === "changed" && changes?.type && (
+        {/* Data type change indicator */}
+        {status === "changed" && changes?.data_type && (
           <div className="flex items-center gap-3">
             <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
               Type Changed
             </span>
             <div className="flex items-center gap-2">
               <code className="rounded border border-red-400/30 bg-red-400/10 px-2 py-1 text-sm text-red-400 line-through">
-                {changes.type.before}
+                {changes.data_type.before}
               </code>
               <span className="text-muted-foreground">→</span>
               <code className="rounded border border-green-400/30 bg-green-400/10 px-2 py-1 text-sm text-green-400">
-                {changes.type.after}
+                {changes.data_type.after}
               </code>
             </div>
           </div>

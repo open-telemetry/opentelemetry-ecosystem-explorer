@@ -99,17 +99,17 @@ function compareMetrics(
     } else if (baseMetric && comparisonMetric) {
       // Check if metric changed
       const attributeChanges = compareAttributes(
-        baseMetric.attributes,
-        comparisonMetric.attributes
+        baseMetric.attributes ?? [],
+        comparisonMetric.attributes ?? []
       );
 
       const descriptionChanged = baseMetric.description !== comparisonMetric.description;
-      const typeChanged = baseMetric.type !== comparisonMetric.type;
+      const dataTypeChanged = baseMetric.data_type !== comparisonMetric.data_type;
       const unitChanged = baseMetric.unit !== comparisonMetric.unit;
       const attributesChanged =
         attributeChanges.added.length > 0 || attributeChanges.removed.length > 0;
 
-      if (descriptionChanged || typeChanged || unitChanged || attributesChanged) {
+      if (descriptionChanged || dataTypeChanged || unitChanged || attributesChanged) {
         const changes: MetricChanges = {
           attributes: attributeChanges,
         };
@@ -121,10 +121,10 @@ function compareMetrics(
           };
         }
 
-        if (typeChanged) {
-          changes.type = {
-            before: baseMetric.type,
-            after: comparisonMetric.type,
+        if (dataTypeChanged) {
+          changes.data_type = {
+            before: baseMetric.data_type,
+            after: comparisonMetric.data_type,
           };
         }
 
@@ -199,7 +199,10 @@ function compareSpans(baseSpans: Span[] = [], comparisonSpans: Span[] = []): Spa
         });
       } else if (baseSpan && comparisonSpan) {
         // Check if span changed
-        const attributeChanges = compareAttributes(baseSpan.attributes, comparisonSpan.attributes);
+        const attributeChanges = compareAttributes(
+          baseSpan.attributes ?? [],
+          comparisonSpan.attributes ?? []
+        );
 
         const attributesChanged =
           attributeChanges.added.length > 0 || attributeChanges.removed.length > 0;
@@ -237,8 +240,11 @@ export function compareTelemetry(
   const baseTelemetry = getDefaultTelemetry(baseInstrumentation);
   const comparisonTelemetry = getDefaultTelemetry(comparisonInstrumentation);
 
-  const metrics = compareMetrics(baseTelemetry?.metrics, comparisonTelemetry?.metrics);
-  const spans = compareSpans(baseTelemetry?.spans, comparisonTelemetry?.spans);
+  const metrics = compareMetrics(
+    baseTelemetry?.metrics ?? [],
+    comparisonTelemetry?.metrics ?? []
+  );
+  const spans = compareSpans(baseTelemetry?.spans ?? [], comparisonTelemetry?.spans ?? []);
 
   return { metrics, spans };
 }

@@ -45,10 +45,24 @@ export function useTelemetryComparison(
   const [comparisonNotFound, setComparisonNotFound] = useState(false);
 
   useEffect(() => {
+    setBaseVersion(initialBaseVersion);
+    setComparisonVersion(initialComparisonVersion);
+  }, [initialBaseVersion, initialComparisonVersion]);
+
+  useEffect(() => {
     let cancelled = false;
 
     async function loadComparison() {
       if (!instrumentationName || !baseVersion || !comparisonVersion) {
+        setDiffResult(null);
+        setLoading(false);
+        setError(null);
+        setBaseNotFound(false);
+        setComparisonNotFound(false);
+        return;
+      }
+
+      if (baseVersion === comparisonVersion) {
         setDiffResult(null);
         setLoading(false);
         setError(null);

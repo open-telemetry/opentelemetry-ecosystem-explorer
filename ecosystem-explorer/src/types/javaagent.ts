@@ -107,7 +107,7 @@ export interface AttributeChanges {
 
 export interface MetricChanges {
   description?: { before: string; after: string };
-  type?: { before: string; after: string };
+  data_type?: { before: string; after: string };
   unit?: { before: string; after: string };
   attributes: AttributeChanges;
 }
