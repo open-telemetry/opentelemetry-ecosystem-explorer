@@ -102,7 +102,7 @@ export function useConfigurationBuilderState(schema: ConfigNode, version: string
     stateRef.current = state;
     schemaRef.current = schema;
     versionRef.current = version;
-  });
+  }, [state, schema, version]);
 
   // Reload state when version changes
   useEffect(() => {
