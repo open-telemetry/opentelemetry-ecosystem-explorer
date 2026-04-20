@@ -93,12 +93,16 @@ export function useConfigurationBuilderState(schema: ConfigNode, version: string
     (v) => loadFromStorage(v) ?? { ...INITIAL_STATE, version: v }
   );
   const stateRef = useRef(state);
-  stateRef.current = state;
   const schemaRef = useRef(schema);
-  schemaRef.current = schema;
   const versionRef = useRef(version);
-  versionRef.current = version;
   const loadedVersionRef = useRef(version);
+
+  // Keep refs in sync so callbacks always have access to the latest values
+  useEffect(() => {
+    stateRef.current = state;
+    schemaRef.current = schema;
+    versionRef.current = version;
+  });
 
   // Reload state when version changes
   useEffect(() => {
