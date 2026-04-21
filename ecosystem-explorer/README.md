@@ -66,15 +66,38 @@ src/
 │   ├── java-agent/               # Java Agent explorer
 │   ├── collector/                # Collector explorer
 │   └── not-found/                # 404 page
-├── lib/api/                      # Data layer
-│   ├── idb-cache.ts              # IndexedDB persistence
-│   └── javaagent-data.ts         # Data fetching with cache
+├── lib/                          # Utilities and data layer
+│   ├── api/                      # Data layer
+│   │   ├── idb-cache.ts          # IndexedDB persistence
+│   │   └── javaagent-data.ts     # Data fetching with cache
+│   └── feature-flags.ts          # Feature flag utility
 ├── hooks/                        # React hooks
 │   └── use-javaagent-data.ts     # Data hooks for components
 └── types/                        # TypeScript type definitions
     └── javaagent.ts              # Java Agent data types
 ```
 <!-- markdownlint-enable MD010 -->
+
+## Feature Flags
+
+Feature flags are controlled via [Vite environment variables](https://vite.dev/guide/env-and-mode) prefixed with
+`VITE_FEATURE_FLAG_`. They are evaluated at build time.
+
+**Enabling a flag:**
+
+Create a `.env` file (or `.env.local` for local-only overrides) and set the flag to `true`, `1`, or `yes`:
+
+```bash
+VITE_FEATURE_FLAG_MY_FEATURE=true
+```
+
+**Using a flag in code:**
+
+```tsx
+import { isEnabled } from "@/lib/feature-flags";
+
+{isEnabled("MY_FEATURE") && <MyComponent />}
+```
 
 ## Data Fetching and Caching
 
