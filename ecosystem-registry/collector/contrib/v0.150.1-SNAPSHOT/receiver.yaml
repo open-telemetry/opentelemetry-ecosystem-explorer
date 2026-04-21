@@ -2059,8 +2059,9 @@ components:
       codeowners:
         active:
         - boostchicken
-        - gouthamve
         - MovieStoreGuy
+        emeritus:
+        - gouthamve
 - name: dockerstatsreceiver
   metadata:
     type: docker_stats
