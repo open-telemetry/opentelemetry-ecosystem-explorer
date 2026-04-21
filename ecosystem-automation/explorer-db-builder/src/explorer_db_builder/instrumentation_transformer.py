@@ -53,7 +53,9 @@ def transform_instrumentation_format(inventory_data: dict[str, Any]) -> dict[str
         logger.debug("File format 0.1 detected, transforming to 0.2")
         bump_to_0_2 = _transform_0_1_to_0_2(inventory_data)
         logger.debug("Now transforming from 0.2 to 0.3")
-        return _transform_0_3_to_0_5(_transform_0_2_to_0_3(bump_to_0_2))
+        bump_to_0_3 = _transform_0_2_to_0_3(bump_to_0_2)
+        logger.debug("Now transforming from 0.3 to 0.5")
+        return _transform_0_3_to_0_5(bump_to_0_3)
     else:
         raise ValueError(f"Unsupported file format: {file_format}")
 

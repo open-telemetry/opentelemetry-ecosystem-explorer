@@ -223,7 +223,7 @@ def _needs_backfill(item: dict[str, Any], field: str) -> bool:
     return not _has_value(item, field)
 
 
-def _find_backfill_value(item_name: str, field: str, current_version: Version, timeline: dict) -> Any:
+def _find_backfill_value(item_name: str, field: str, current_version: Version, timeline: dict) -> Any | None:
     """Find the appropriate backfill value for a field.
 
     Searches forward in time to find the next available value for the field.
