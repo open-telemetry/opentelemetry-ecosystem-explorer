@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Info,
   Activity,
@@ -26,7 +26,8 @@ import {
   Loader2,
 } from "lucide-react";
 import { BackButton } from "@/components/ui/back-button";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { SegmentedTabList } from "@/components/ui/segmented-tabs";
 import { GlowBadge } from "@/components/ui/glow-badge";
 import { DetailCard } from "@/components/ui/detail-card";
 import { SectionHeader } from "@/components/ui/section-header";
@@ -53,6 +54,7 @@ function buildSourceUrl(sourcePath: string): string {
 export function InstrumentationDetailPage() {
   const { version, name } = useParams<{ version: string; name: string }>();
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState("details");
 
   const { data: versionsData, loading: versionsLoading } = useVersions();
 
@@ -232,25 +234,31 @@ export function InstrumentationDetailPage() {
             />
           </div>
 
-          <Tabs defaultValue="details" className="relative z-10">
-            <div className="bg-card/60 px-6 pt-4 border-b border-border/30">
-              <TabsList className="bg-transparent border-0 h-auto p-0 -mb-px">
-                <TabsTrigger value="details">
-                  <Info className="h-4 w-4" aria-hidden="true" />
-                  Details
-                </TabsTrigger>
-                <TabsTrigger value="telemetry">
-                  <Activity className="h-4 w-4" aria-hidden="true" />
-                  Telemetry
-                </TabsTrigger>
-                <TabsTrigger value="configuration">
-                  <Settings className="h-4 w-4" aria-hidden="true" />
-                  Configuration
-                </TabsTrigger>
-              </TabsList>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="relative z-10">
+            <div className="px-6 pt-4 pb-0">
+              <SegmentedTabList
+                value={activeTab}
+                tabs={[
+                  {
+                    value: "details",
+                    label: "Details",
+                    icon: <Info className="h-4 w-4" aria-hidden="true" />,
+                  },
+                  {
+                    value: "telemetry",
+                    label: "Telemetry",
+                    icon: <Activity className="h-4 w-4" aria-hidden="true" />,
+                  },
+                  {
+                    value: "configuration",
+                    label: "Configuration",
+                    icon: <Settings className="h-4 w-4" aria-hidden="true" />,
+                  },
+                ]}
+              />
             </div>
 
-            <TabsContent value="details" className="p-6">
+            <TabsContent value="details" className="mt-0 p-6">
               <div className="space-y-8">
                 {/* Links & Resources Section */}
                 {(instrumentation.library_link || instrumentation.source_path) && (
@@ -453,7 +461,7 @@ export function InstrumentationDetailPage() {
               </div>
             </TabsContent>
 
-            <TabsContent value="telemetry" className="p-6">
+            <TabsContent value="telemetry" className="mt-0 p-6">
               {instrumentation.telemetry && instrumentation.telemetry.length > 0 ? (
                 <TelemetrySection telemetry={instrumentation.telemetry} />
               ) : (
@@ -471,7 +479,7 @@ export function InstrumentationDetailPage() {
               )}
             </TabsContent>
 
-            <TabsContent value="configuration" className="p-6">
+            <TabsContent value="configuration" className="mt-0 p-6">
               {instrumentation.configurations && instrumentation.configurations.length > 0 ? (
                 <div className="grid gap-4 md:grid-cols-2">
                   {instrumentation.configurations.map((config) => (

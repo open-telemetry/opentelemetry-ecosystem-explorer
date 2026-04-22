@@ -19,30 +19,6 @@ import type { ComponentPropsWithoutRef, ComponentRef } from "react";
 
 const Tabs = RadixTabs.Root;
 
-const TabsList = forwardRef<
-  ComponentRef<typeof RadixTabs.List>,
-  ComponentPropsWithoutRef<typeof RadixTabs.List>
->(({ className = "", ...props }, ref) => (
-  <RadixTabs.List
-    ref={ref}
-    className={`inline-flex h-12 items-center justify-center rounded-lg border border-border/50 bg-card/80 p-1 ${className}`}
-    {...props}
-  />
-));
-TabsList.displayName = RadixTabs.List.displayName;
-
-const TabsTrigger = forwardRef<
-  ComponentRef<typeof RadixTabs.Trigger>,
-  ComponentPropsWithoutRef<typeof RadixTabs.Trigger>
->(({ className = "", ...props }, ref) => (
-  <RadixTabs.Trigger
-    ref={ref}
-    className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-t-md border-t border-transparent px-6 py-3 text-sm font-medium text-muted-foreground ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:text-foreground hover:bg-card-secondary/60 data-[state=active]:border-primary data-[state=active]:bg-card-secondary data-[state=active]:text-primary data-[state=active]:font-semibold data-[state=active]:shadow-[0_2px_12px_-2px_hsl(var(--primary-hsl)/0.4)] ${className}`}
-    {...props}
-  />
-));
-TabsTrigger.displayName = RadixTabs.Trigger.displayName;
-
 const TabsContent = forwardRef<
   ComponentRef<typeof RadixTabs.Content>,
   ComponentPropsWithoutRef<typeof RadixTabs.Content>
@@ -55,4 +31,4 @@ const TabsContent = forwardRef<
 ));
 TabsContent.displayName = RadixTabs.Content.displayName;
 
-export { Tabs, TabsList, TabsTrigger, TabsContent };
+export { Tabs, TabsContent };

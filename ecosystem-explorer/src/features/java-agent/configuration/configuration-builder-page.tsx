@@ -15,7 +15,8 @@
  */
 import { useMemo, useState } from "react";
 import { BackButton } from "@/components/ui/back-button";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { SegmentedTabList } from "@/components/ui/segmented-tabs";
 import { VersionSelector } from "@/features/java-agent/components/version-selector";
 import {
   useConfigVersions,
@@ -84,6 +85,7 @@ export function ConfigurationBuilderPage() {
   );
   const [currentVersion, setCurrentVersion] = useState<string>("");
   const version = currentVersion || latest;
+  const [activeTab, setActiveTab] = useState("sdk");
 
   return (
     <div className="max-w-7xl mx-auto px-6 py-12">
@@ -97,11 +99,14 @@ export function ConfigurationBuilderPage() {
             Build and customize your OpenTelemetry Java Agent configuration
           </p>
         </div>
-        <Tabs defaultValue="sdk">
-          <TabsList>
-            <TabsTrigger value="sdk">SDK</TabsTrigger>
-            <TabsTrigger value="instrumentation">Instrumentation</TabsTrigger>
-          </TabsList>
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
+          <SegmentedTabList
+            value={activeTab}
+            tabs={[
+              { value: "sdk", label: "SDK" },
+              { value: "instrumentation", label: "Instrumentation" },
+            ]}
+          />
           <TabsContent value="sdk">
             <div className="mt-4 flex items-center justify-end">
               {versions.data && version ? (
