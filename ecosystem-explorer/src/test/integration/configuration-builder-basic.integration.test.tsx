@@ -60,4 +60,13 @@ describe("ConfigurationBuilderPage — basic", () => {
     const pre = screen.getByText(/OpenTelemetry SDK Configuration/).closest("pre");
     expect(pre?.textContent).not.toMatch(/^resource:/m);
   });
+
+  it("does not render the instrumentation/development section in the SDK tab", async () => {
+    renderPage();
+
+    await screen.findByRole("switch", { name: /Enable Resource/i }, { timeout: 10_000 });
+
+    expect(screen.queryByRole("switch", { name: /Enable Instrumentation/i })).toBeNull();
+    expect(screen.queryByRole("heading", { name: /^Instrumentation$/i, level: 3 })).toBeNull();
+  });
 });

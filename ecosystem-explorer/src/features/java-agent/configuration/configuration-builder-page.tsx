@@ -27,6 +27,8 @@ import type { GroupNode } from "@/types/configuration";
 import { SchemaRenderer } from "./components/schema-renderer";
 import { PreviewCard } from "./components/preview-card";
 
+const HIDDEN_SDK_KEYS = new Set(["file_format", "instrumentation/development"]);
+
 function SdkTab({ version }: { version: string }) {
   const schema = useConfigSchema(version);
   const starter = useConfigStarter(version);
@@ -42,7 +44,7 @@ function SdkTab({ version }: { version: string }) {
   }
 
   const root = schema.data as GroupNode;
-  const visibleChildren = root.children.filter((c) => c.key !== "file_format");
+  const visibleChildren = root.children.filter((c) => !HIDDEN_SDK_KEYS.has(c.key));
   const groupChildren = visibleChildren.filter((c) => c.controlType === "group");
   const leafChildren = visibleChildren.filter((c) => c.controlType !== "group");
 
