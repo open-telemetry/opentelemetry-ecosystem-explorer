@@ -120,9 +120,10 @@ components:
     status:
       class: processor
       stability:
-        development:
+        alpha:
         - logs
-      distributions: []
+      distributions:
+      - contrib
       codeowners:
         active:
         - MikeGoldsmith

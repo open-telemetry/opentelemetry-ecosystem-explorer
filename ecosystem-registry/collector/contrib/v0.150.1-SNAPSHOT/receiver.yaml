@@ -4332,7 +4332,7 @@ components:
         seeking_new: true
 - name: filestatsreceiver
   metadata:
-    type: filestats
+    type: file_stats
     display_name: File Stats Receiver
     description: The File Stats receiver collects metrics from files specified with
       a glob pattern.
@@ -6087,6 +6087,22 @@ components:
       k8s.namespace.name:
         description: The k8s namespace name.
         type: string
+      k8s.persistentvolume.status.phase:
+        description: The phase of the PersistentVolume.
+        type: string
+        enum:
+        - Available
+        - Bound
+        - Failed
+        - Pending
+        - Released
+      k8s.persistentvolumeclaim.status.phase:
+        description: The phase of the PersistentVolumeClaim.
+        type: string
+        enum:
+        - Bound
+        - Lost
+        - Pending
       k8s.service.endpoint.address_type:
         description: The address type of the endpoint.
         type: string
@@ -6361,6 +6377,58 @@ components:
         attributes:
         - condition
         stability: development
+      k8s.persistentvolume.status.phase:
+        description: The current phase of the PersistentVolume (1 for the current
+          phase, 0 for others).
+        unit: '{persistentvolume}'
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: false
+          value_type: int
+        attributes:
+        - k8s.persistentvolume.status.phase
+        stability: development
+      k8s.persistentvolume.storage.capacity:
+        description: The storage capacity of the PersistentVolume.
+        unit: By
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: false
+          value_type: int
+        stability: development
+      k8s.persistentvolumeclaim.status.phase:
+        description: The current phase of the PersistentVolumeClaim (1 for the current
+          phase, 0 for others).
+        unit: '{persistentvolumeclaim}'
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: false
+          value_type: int
+        attributes:
+        - k8s.persistentvolumeclaim.status.phase
+        stability: development
+      k8s.persistentvolumeclaim.storage.capacity:
+        description: The actual storage capacity provisioned for the PersistentVolumeClaim.
+          Only available when bound.
+        unit: By
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: false
+          value_type: int
+        stability: development
+      k8s.persistentvolumeclaim.storage.request:
+        description: The storage requested by the PersistentVolumeClaim.
+        unit: By
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: false
+          value_type: int
+        stability: development
       k8s.pod.phase:
         description: Current phase of the pod (1 - Pending, 2 - Running, 3 - Succeeded,
           4 - Failed, 5 - Unknown)
@@ -6595,6 +6663,25 @@ components:
       k8s.node.uid:
         description: The k8s node uid.
         type: string
+      k8s.persistentvolume.name:
+        description: The name of the PersistentVolume.
+        type: string
+      k8s.persistentvolume.reclaim_policy:
+        description: The reclaim policy of the PersistentVolume.
+        type: string
+        enum:
+        - Delete
+        - Recycle
+        - Retain
+      k8s.persistentvolume.uid:
+        description: The UID of the PersistentVolume.
+        type: string
+      k8s.persistentvolumeclaim.name:
+        description: The name of the PersistentVolumeClaim.
+        type: string
+      k8s.persistentvolumeclaim.uid:
+        description: The UID of the PersistentVolumeClaim.
+        type: string
       k8s.pod.name:
         description: The k8s pod name.
         type: string
@@ -6642,6 +6729,9 @@ components:
         type: string
       k8s.statefulset.uid:
         description: The k8s statefulset uid.
+        type: string
+      k8s.storageclass.name:
+        description: The name of the StorageClass.
         type: string
       openshift.clusterquota.name:
         description: The k8s ClusterResourceQuota name.
