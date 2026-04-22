@@ -1,0 +1,59 @@
+{
+  "configurations": [
+    {
+      "declarative_name": "java.common.http.known_methods",
+      "default": "CONNECT,DELETE,GET,HEAD,OPTIONS,PATCH,POST,PUT,TRACE",
+      "description": "Configures the instrumentation to recognize an alternative set of HTTP request methods. All other methods will be treated as `_OTHER`.",
+      "name": "otel.instrumentation.http.known-methods",
+      "type": "list"
+    },
+    {
+      "declarative_name": "general.http.server.request_captured_headers",
+      "default": "",
+      "description": "List of HTTP request headers to capture in HTTP server telemetry.",
+      "name": "otel.instrumentation.http.server.capture-request-headers",
+      "type": "list"
+    },
+    {
+      "declarative_name": "general.http.server.response_captured_headers",
+      "default": "",
+      "description": "List of HTTP response headers to capture in HTTP server telemetry.",
+      "name": "otel.instrumentation.http.server.capture-response-headers",
+      "type": "list"
+    },
+    {
+      "declarative_name": "java.common.http.server.emit_experimental_telemetry/development",
+      "default": false,
+      "description": "Enable the capture of experimental HTTP server telemetry. Adds the `http.request.body.size` and `http.response.body.size` attributes to spans, and records `http.server.request.size` and `http.server.response.size` metrics.",
+      "name": "otel.instrumentation.http.server.emit-experimental-telemetry",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.servlet.experimental_span_attributes/development",
+      "default": false,
+      "description": "Enables capturing the experimental `servlet.timeout` span attribute.",
+      "name": "otel.instrumentation.servlet.experimental-span-attributes",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.servlet.capture_request_parameters/development",
+      "default": "",
+      "description": "List of request parameter names to capture as span attributes.",
+      "name": "otel.instrumentation.servlet.experimental.capture-request-parameters",
+      "type": "list"
+    }
+  ],
+  "description": "This instrumentation enables HTTP server spans and metrics for IBM WebSphere Liberty application server.",
+  "display_name": "Liberty",
+  "has_javaagent": true,
+  "library_link": "https://openliberty.io/",
+  "name": "liberty-20.0",
+  "scope": {
+    "name": "io.opentelemetry.liberty-20.0"
+  },
+  "semantic_conventions": [
+    "HTTP_SERVER_SPANS",
+    "HTTP_SERVER_METRICS"
+  ],
+  "source_path": "instrumentation/liberty/liberty-20.0"
+}

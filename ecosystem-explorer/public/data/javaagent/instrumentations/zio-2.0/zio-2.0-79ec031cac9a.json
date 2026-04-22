@@ -1,0 +1,19 @@
+{
+  "description": "This instrumentation provides context propagation for ZIO fibers, it does not emit any telemetry on its own.",
+  "display_name": "ZIO",
+  "features": [
+    "CONTEXT_PROPAGATION"
+  ],
+  "has_javaagent": true,
+  "javaagent_target_versions": [
+    "dev.zio:zio_2.13:[2.0.0,)",
+    "dev.zio:zio_3:[2.0.0,)",
+    "dev.zio:zio_2.12:[2.0.0,)"
+  ],
+  "library_link": "https://zio.dev/",
+  "name": "zio-2.0",
+  "scope": {
+    "name": "io.opentelemetry.zio-2.0"
+  },
+  "source_path": "instrumentation/zio/zio-2.0"
+}

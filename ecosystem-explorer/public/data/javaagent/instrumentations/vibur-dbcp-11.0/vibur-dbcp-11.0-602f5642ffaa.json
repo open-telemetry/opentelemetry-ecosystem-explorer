@@ -1,0 +1,90 @@
+{
+  "description": "Instrumentation for the vibur-dbcp library, which provides connection pool metrics.",
+  "display_name": "Vibur DBCP",
+  "has_javaagent": true,
+  "has_standalone_library": true,
+  "javaagent_target_versions": [
+    "org.vibur:vibur-dbcp:[11.0,)"
+  ],
+  "library_link": "https://www.vibur.org/",
+  "name": "vibur-dbcp-11.0",
+  "scope": {
+    "name": "io.opentelemetry.vibur-dbcp-11.0"
+  },
+  "source_path": "instrumentation/vibur-dbcp-11.0",
+  "tags": [
+    "vibur"
+  ],
+  "telemetry": [
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "pool.name",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The maximum number of open connections allowed.",
+          "instrument": "updowncounter",
+          "name": "db.client.connections.max",
+          "unit": "{connections}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "pool.name",
+              "type": "STRING"
+            },
+            {
+              "name": "state",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The number of connections that are currently in state described by the state attribute.",
+          "instrument": "updowncounter",
+          "name": "db.client.connections.usage",
+          "unit": "{connections}"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "db.client.connection.pool.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.client.connection.state",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The number of connections that are currently in state described by the state attribute.",
+          "instrument": "updowncounter",
+          "name": "db.client.connection.count",
+          "unit": "{connection}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "db.client.connection.pool.name",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The maximum number of open connections allowed.",
+          "instrument": "updowncounter",
+          "name": "db.client.connection.max",
+          "unit": "{connection}"
+        }
+      ],
+      "when": "otel.semconv-stability.opt-in=database"
+    }
+  ]
+}
