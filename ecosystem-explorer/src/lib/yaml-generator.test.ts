@@ -168,7 +168,7 @@ describe("generateYaml", () => {
 
     expect(output).toContain("filled_section:");
     expect(output).toContain("setting: value");
-    expect(output).toMatch(/^empty_section: \{\}$/m);
+    expect(output).toMatch(/^empty_section:$/m);
   });
 
   it("omits groups with enabledSections[key] !== true", () => {
@@ -326,9 +326,9 @@ describe("generateYaml", () => {
 
     expect(output).toContain("tracer_provider:");
     expect(output).toContain("processors:");
-    expect(output).toMatch(/- batch:\s*\{\s*\}/);
+    expect(output).toMatch(/^ {4}- batch:$/m);
 
-    expect(output).toMatch(/^empty_provider: \{\}$/m);
+    expect(output).toMatch(/^empty_provider:$/m);
   });
 
   it("preserves standalone plugin_select discriminator with null value", () => {
@@ -359,7 +359,7 @@ describe("generateYaml", () => {
     const output = generateYaml(state, schema, { header: "" });
 
     expect(output).toContain("sampler:");
-    expect(output).toMatch(/always_on:\s*(null|~)?/);
+    expect(output).toMatch(/^ {4}always_on:$/m);
   });
 
   it("preserves standalone plugin_select discriminator with empty object", () => {
@@ -436,9 +436,9 @@ describe("generateYaml", () => {
 
     expect(output).toContain("parent_based:");
     expect(output).toContain("root:");
-    expect(output).toMatch(/always_on:\s*(null|~)?/);
-    expect(output).toMatch(/- tracecontext:\s*(null|~)?/);
-    expect(output).toMatch(/- baggage:\s*(null|~)?/);
+    expect(output).toMatch(/^ {8}always_on:$/m);
+    expect(output).toMatch(/^ {4}- tracecontext:$/m);
+    expect(output).toMatch(/^ {4}- baggage:$/m);
   });
 
   it("emits empty object for enabled top-level group with stripped body", () => {
@@ -480,7 +480,7 @@ describe("generateYaml", () => {
       isDirty: false,
     };
     const out = generateYaml(state, schema);
-    expect(out).toMatch(/^resource: \{\}$/m);
+    expect(out).toMatch(/^resource:$/m);
   });
 
   it("skips disabled top-level group even if it has values", () => {
@@ -510,5 +510,95 @@ describe("generateYaml", () => {
     };
     const out = generateYaml(state, schema);
     expect(out).not.toMatch(/resource:/);
+  });
+
+  it("collapses empty object values at list-item position", () => {
+    const schema: ConfigNode = {
+      controlType: "group",
+      key: "root",
+      label: "Root",
+      path: "",
+      children: [
+        {
+          controlType: "group",
+          key: "tracer_provider",
+          label: "Tracer Provider",
+          path: "tracer_provider",
+          children: [],
+        },
+      ],
+    };
+
+    const state: ConfigurationBuilderState = {
+      version: "1.0.0",
+      values: { tracer_provider: { processors: [{ batch: {} }] } },
+      enabledSections: { tracer_provider: true },
+      validationErrors: {},
+      isDirty: false,
+    };
+
+    const output = generateYaml(state, schema, { header: "" });
+    expect(output).toMatch(/^ {4}- batch:$/m);
+    expect(output).not.toMatch(/- batch: \{\}/);
+  });
+
+  it("collapses null values at nested discriminator position", () => {
+    const schema: ConfigNode = {
+      controlType: "group",
+      key: "root",
+      label: "Root",
+      path: "",
+      children: [
+        {
+          controlType: "group",
+          key: "tracer_provider",
+          label: "Tracer Provider",
+          path: "tracer_provider",
+          children: [],
+        },
+      ],
+    };
+
+    const state: ConfigurationBuilderState = {
+      version: "1.0.0",
+      values: { tracer_provider: { sampler: { always_on: null } } },
+      enabledSections: { tracer_provider: true },
+      validationErrors: {},
+      isDirty: false,
+    };
+
+    const output = generateYaml(state, schema, { header: "" });
+    expect(output).toMatch(/^ {4}always_on:$/m);
+    expect(output).not.toMatch(/always_on: null/);
+  });
+
+  it("does not collapse non-empty scalar values on the same line", () => {
+    const schema: ConfigNode = {
+      controlType: "group",
+      key: "root",
+      label: "Root",
+      path: "",
+      children: [
+        {
+          controlType: "group",
+          key: "resource",
+          label: "Resource",
+          path: "resource",
+          children: [],
+        },
+      ],
+    };
+
+    const state: ConfigurationBuilderState = {
+      version: "1.0.0",
+      values: { resource: { service_name: "demo", endpoint: "http://localhost:4318" } },
+      enabledSections: { resource: true },
+      validationErrors: {},
+      isDirty: false,
+    };
+
+    const output = generateYaml(state, schema, { header: "" });
+    expect(output).toContain("service_name: demo");
+    expect(output).toContain("endpoint: http://localhost:4318");
   });
 });

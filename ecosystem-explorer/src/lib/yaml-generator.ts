@@ -39,13 +39,26 @@ function defaultHeader(version: string): string {
   ].join("\n");
 }
 
+function emptiesToNull(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(emptiesToNull);
+  if (value !== null && typeof value === "object") {
+    const entries = Object.entries(value as Record<string, unknown>);
+    if (entries.length === 0) return null;
+    return Object.fromEntries(entries.map(([k, v]) => [k, emptiesToNull(v)]));
+  }
+  return value;
+}
+
 function dumpYaml(obj: unknown): string {
-  return dump(obj, {
+  const yaml = dump(emptiesToNull(obj), {
     sortKeys: true,
     lineWidth: -1,
     noRefs: true,
     quotingType: '"',
+    styles: { "!!null": "empty" },
   });
+  // js-yaml leaves a trailing space after the empty-style null representation.
+  return yaml.replace(/: $/gm, ":");
 }
 
 function sectionComment(node: ConfigNode | undefined, fallbackKey: string): string {
