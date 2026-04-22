@@ -22,46 +22,42 @@ describe("isEnabled", () => {
   });
 
   it("should return true for 'true'", () => {
-    vi.stubEnv("VITE_FEATURE_FLAG_MY_FLAG", "true");
-    expect(isEnabled("MY_FLAG")).toBe(true);
+    vi.stubEnv("VITE_FEATURE_FLAG_JAVA_CONFIG_BUILDER", "true");
+    expect(isEnabled("JAVA_CONFIG_BUILDER")).toBe(true);
   });
 
   it("should return true for '1'", () => {
-    vi.stubEnv("VITE_FEATURE_FLAG_MY_FLAG", "1");
-    expect(isEnabled("MY_FLAG")).toBe(true);
+    vi.stubEnv("VITE_FEATURE_FLAG_JAVA_CONFIG_BUILDER", "1");
+    expect(isEnabled("JAVA_CONFIG_BUILDER")).toBe(true);
   });
 
   it("should return true for 'yes'", () => {
-    vi.stubEnv("VITE_FEATURE_FLAG_MY_FLAG", "yes");
-    expect(isEnabled("MY_FLAG")).toBe(true);
+    vi.stubEnv("VITE_FEATURE_FLAG_JAVA_CONFIG_BUILDER", "yes");
+    expect(isEnabled("JAVA_CONFIG_BUILDER")).toBe(true);
   });
 
   it("should return true for uppercase truthy values", () => {
-    vi.stubEnv("VITE_FEATURE_FLAG_MY_FLAG", "TRUE");
-    expect(isEnabled("MY_FLAG")).toBe(true);
+    vi.stubEnv("VITE_FEATURE_FLAG_JAVA_CONFIG_BUILDER", "TRUE");
+    expect(isEnabled("JAVA_CONFIG_BUILDER")).toBe(true);
   });
 
   it("should return false for 'false'", () => {
-    vi.stubEnv("VITE_FEATURE_FLAG_MY_FLAG", "false");
-    expect(isEnabled("MY_FLAG")).toBe(false);
+    vi.stubEnv("VITE_FEATURE_FLAG_JAVA_CONFIG_BUILDER", "false");
+    expect(isEnabled("JAVA_CONFIG_BUILDER")).toBe(false);
   });
 
   it("should return false for '0'", () => {
-    vi.stubEnv("VITE_FEATURE_FLAG_MY_FLAG", "0");
-    expect(isEnabled("MY_FLAG")).toBe(false);
+    vi.stubEnv("VITE_FEATURE_FLAG_JAVA_CONFIG_BUILDER", "0");
+    expect(isEnabled("JAVA_CONFIG_BUILDER")).toBe(false);
   });
 
   it("should return false for 'no'", () => {
-    vi.stubEnv("VITE_FEATURE_FLAG_MY_FLAG", "no");
-    expect(isEnabled("MY_FLAG")).toBe(false);
+    vi.stubEnv("VITE_FEATURE_FLAG_JAVA_CONFIG_BUILDER", "no");
+    expect(isEnabled("JAVA_CONFIG_BUILDER")).toBe(false);
   });
 
   it("should return false for an empty string", () => {
-    vi.stubEnv("VITE_FEATURE_FLAG_MY_FLAG", "");
-    expect(isEnabled("MY_FLAG")).toBe(false);
-  });
-
-  it("should return false for a missing flag", () => {
-    expect(isEnabled("MY_MISSING_FLAG")).toBe(false);
+    vi.stubEnv("VITE_FEATURE_FLAG_JAVA_CONFIG_BUILDER", "");
+    expect(isEnabled("JAVA_CONFIG_BUILDER")).toBe(false);
   });
 });

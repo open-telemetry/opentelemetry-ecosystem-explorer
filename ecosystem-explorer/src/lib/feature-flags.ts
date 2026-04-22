@@ -13,13 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-function normalizeFlagValue(value: string): boolean {
+
+// Add/remove your Feature Flags to the FEATURE_FLAGS array.
+// There is no need to edit anything else in this file.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const FEATURE_FLAGS = [
+  // Declarative Configuration Builder for Java - Still in development
+  "JAVA_CONFIG_BUILDER",
+
+  // Collector Page - Still in development
+  "COLLECTOR_PAGE",
+] as const;
+
+const FEATURE_FLAG_PREFIX = "VITE_FEATURE_FLAG_";
+
+function flagNameWithPrefix(flagName: string): string {
+  return flagName.startsWith(FEATURE_FLAG_PREFIX) ? flagName : `${FEATURE_FLAG_PREFIX}${flagName}`;
+}
+
+function normalizedFlagValue(value: string): boolean {
   return ["true", "1", "yes"].includes((value ?? "").toLowerCase());
 }
 
-export function isEnabled(flagName: string): boolean {
-  const flag = `VITE_FEATURE_FLAG_${flagName}`;
-  const value = normalizeFlagValue(import.meta.env[flag]);
+export function isEnabled(flagName: (typeof FEATURE_FLAGS)[number]): boolean {
+  const name = flagNameWithPrefix(flagName);
 
-  return value;
+  return normalizedFlagValue(import.meta.env[name]);
 }
