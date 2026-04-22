@@ -83,21 +83,31 @@ src/
 Feature flags are controlled via [Vite environment variables](https://vite.dev/guide/env-and-mode) prefixed with
 `VITE_FEATURE_FLAG_`. They are evaluated at build time.
 
-**Enabling a flag:**
+**Enabling a flag locally:**
 
-Create a `.env` file (or `.env.local` for local-only overrides) and set the flag to `true`, `1`, or `yes`:
+Update `.env.development` file and set the flag to `true`, `1`, or `yes`:
 
 ```bash
-VITE_FEATURE_FLAG_MY_FEATURE=true
+VITE_FEATURE_FLAG_JAVA_CONFIG_BUILDER=true
 ```
+
+For example, setting `VITE_FEATURE_FLAG_JAVA_CONFIG_BUILDER` to `true` makes the Java Config Builder visible, while
+setting it to `false` hides it.
 
 **Using a flag in code:**
 
 ```tsx
 import { isEnabled } from "@/lib/feature-flags";
 
-{isEnabled("MY_FEATURE") && <MyComponent />}
+{isEnabled("JAVA_CONFIG_BUILDER") && <MyComponent />}
 ```
+
+The available feature flags are defined in `src/lib/feature-flags.ts`.
+
+**Deployment behavior:**
+
+Branch deploys and deploy previews enable both current feature flags through `netlify.toml`. Production does not enable
+them by default.
 
 ## Data Fetching and Caching
 
