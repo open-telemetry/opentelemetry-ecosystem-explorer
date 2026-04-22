@@ -16,6 +16,7 @@
 import { JavaIcon } from "@/components/icons/java-icon";
 import { PipelineIcon } from "@/components/icons/pipeline-icon";
 import { NavigationCard } from "@/components/ui/navigation-card";
+import { isEnabled } from "@/lib/feature-flags";
 
 export function ExploreSection() {
   return (
@@ -38,12 +39,14 @@ export function ExploreSection() {
             href="/java-agent"
             icon={<JavaIcon className="h-20 w-20" />}
           />
-          <NavigationCard
-            title="OpenTelemetry Collector"
-            description="Navigate Collector components like receivers, processors, and exporters."
-            href="/collector"
-            icon={<PipelineIcon className="h-20 w-20" />}
-          />
+          {isEnabled("COLLECTOR_PAGE") && (
+            <NavigationCard
+              title="OpenTelemetry Collector"
+              description="Navigate Collector components like receivers, processors, and exporters."
+              href="/collector"
+              icon={<PipelineIcon className="h-20 w-20" />}
+            />
+          )}
         </div>
       </div>
     </section>
