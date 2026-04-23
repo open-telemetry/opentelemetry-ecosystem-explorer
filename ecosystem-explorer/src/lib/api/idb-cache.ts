@@ -16,7 +16,8 @@
 import { openDB, type IDBPDatabase } from "idb";
 
 const DB_NAME = "otel-explorer-cache";
-const DB_VERSION = 2;
+const DB_VERSION = 4;
+const CACHE_EXPIRATION_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 export const STORES = {
   METADATA: "metadata",
@@ -29,12 +30,16 @@ export type StoreName = (typeof STORES)[keyof typeof STORES];
 interface CacheEntry<T> {
   key: string;
   data: T;
-  cachedAt: number; // unused for now, will use in future for cache eviction policies
+  cachedAt: number;
 }
 
 let dbInstance: IDBPDatabase | null = null;
 let dbInitPromise: Promise<IDBPDatabase> | null = null;
 let dbInitFailed = false;
+
+function isExpired(cachedAt: number): boolean {
+  return Date.now() - cachedAt > CACHE_EXPIRATION_MS;
+}
 
 export async function initDB(): Promise<IDBPDatabase> {
   if (!isIDBAvailable()) {
@@ -57,17 +62,19 @@ export async function initDB(): Promise<IDBPDatabase> {
     try {
       const db = await openDB(DB_NAME, DB_VERSION, {
         upgrade(db) {
-          if (!db.objectStoreNames.contains(STORES.METADATA)) {
-            db.createObjectStore(STORES.METADATA, { keyPath: "key" });
+          if (db.objectStoreNames.contains(STORES.METADATA)) {
+            db.deleteObjectStore(STORES.METADATA);
+          }
+          if (db.objectStoreNames.contains(STORES.INSTRUMENTATIONS)) {
+            db.deleteObjectStore(STORES.INSTRUMENTATIONS);
+          }
+          if (db.objectStoreNames.contains(STORES.CONFIGURATION)) {
+            db.deleteObjectStore(STORES.CONFIGURATION);
           }
 
-          if (!db.objectStoreNames.contains(STORES.INSTRUMENTATIONS)) {
-            db.createObjectStore(STORES.INSTRUMENTATIONS, { keyPath: "key" });
-          }
-
-          if (!db.objectStoreNames.contains(STORES.CONFIGURATION)) {
-            db.createObjectStore(STORES.CONFIGURATION, { keyPath: "key" });
-          }
+          db.createObjectStore(STORES.METADATA, { keyPath: "key" });
+          db.createObjectStore(STORES.INSTRUMENTATIONS, { keyPath: "key" });
+          db.createObjectStore(STORES.CONFIGURATION, { keyPath: "key" });
         },
       });
 
@@ -94,7 +101,13 @@ export async function getCached<T>(key: string, store: StoreName): Promise<T | n
       return null;
     }
 
-    return (entry as CacheEntry<T>).data;
+    const cacheEntry = entry as CacheEntry<T>;
+    if (isExpired(cacheEntry.cachedAt)) {
+      await db.delete(store, key);
+      return null;
+    }
+
+    return cacheEntry.data;
   } catch (error) {
     console.error(`Failed to get cached data for %s:`, key, error);
     return null;
