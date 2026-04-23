@@ -15,7 +15,6 @@
  */
 import { Link } from "react-router-dom";
 import { OtelLogo } from "@/components/icons/otel-logo";
-import { isEnabled } from "@/lib/feature-flags";
 
 export function Header() {
   return (
@@ -32,15 +31,12 @@ export function Header() {
           >
             Java Agent
           </Link>
-
-          {isEnabled("COLLECTOR_PAGE") && (
-            <Link
-              to="/collector"
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Collector
-            </Link>
-          )}
+          <Link
+            to="/collector"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Collector
+          </Link>
         </nav>
       </div>
     </header>

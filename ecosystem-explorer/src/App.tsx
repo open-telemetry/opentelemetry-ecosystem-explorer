@@ -52,7 +52,7 @@ export default function App() {
                 element={<ConfigurationBuilderPage />}
               />
             )}
-            {isEnabled("COLLECTOR_PAGE") && <Route path="/collector" element={<CollectorPage />} />}
+            <Route path="/collector" element={<CollectorPage />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
