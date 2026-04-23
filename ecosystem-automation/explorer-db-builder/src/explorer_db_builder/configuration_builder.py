@@ -53,8 +53,25 @@ def run_configuration_builder(
         output_path = Path(output_dir)
 
         if clean and output_path.exists():
+            # Preserve hand-crafted starter files before wiping generated output
+            starter_files: dict[Path, str] = {}
+            for f in output_path.rglob("*.starter.json"):
+                try:
+                    starter_files[f.relative_to(output_path)] = f.read_text(encoding="utf-8")
+                except OSError as e:
+                    logger.warning(f"Could not back up starter file {f}: {e}")
+
             shutil.rmtree(output_path)
             logger.info(f"Cleaned {output_path}")
+
+            for relative_path, content in starter_files.items():
+                try:
+                    restored = output_path / relative_path
+                    restored.parent.mkdir(parents=True, exist_ok=True)
+                    restored.write_text(content, encoding="utf-8")
+                    logger.info(f"Restored starter file: {relative_path}")
+                except OSError as e:
+                    logger.warning(f"Could not restore starter file {relative_path}: {e}")
 
         inventory = BaseInventoryManager(registry_dir)
         versions = inventory.list_release_versions()
