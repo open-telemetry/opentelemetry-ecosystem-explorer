@@ -63,3 +63,8 @@ body {
 [role="tab"][data-state="active"] {
   border-top-color: hsl(var(--primary-hsl)) !important;
 }
+
+html {
+  /* Root font size affects overall rem calculations for all components. */
+  font-size: 14px;
+}
