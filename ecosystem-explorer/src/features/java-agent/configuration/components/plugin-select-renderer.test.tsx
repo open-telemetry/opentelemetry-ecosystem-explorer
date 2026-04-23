@@ -116,13 +116,13 @@ describe("PluginSelectRenderer", () => {
     expect(selectedOption.textContent).toBe("Custom: my-exporter");
   });
 
-  it("auto-focuses the custom-key input when the picker opens", () => {
+  it("auto-focuses the custom-name input when the picker opens", () => {
     mockConfigState.values = { exporter: {} };
     render(<PluginSelectRenderer node={pluginNodeWithCustom} depth={1} path="exporter" />);
     fireEvent.change(screen.getByRole("combobox", { name: "Exporter variant" }), {
       target: { value: "__custom__" },
     });
-    const input = screen.getByRole("textbox", { name: "Custom plugin key" });
+    const input = screen.getByRole("textbox", { name: "Custom plugin name" });
     expect(document.activeElement).toBe(input);
   });
 });

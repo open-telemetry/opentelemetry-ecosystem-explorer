@@ -87,8 +87,8 @@ export function PluginSelectRenderer({
           <input
             type="text"
             autoFocus
-            aria-label="Custom plugin key"
-            placeholder="custom-plugin-key"
+            aria-label="Custom plugin name"
+            placeholder="custom-plugin-name"
             value={customDraft}
             onChange={(e) => setCustomDraft(e.target.value)}
             className="flex-1 rounded-md border border-border/60 bg-background/80 px-3 py-1.5 text-sm"
