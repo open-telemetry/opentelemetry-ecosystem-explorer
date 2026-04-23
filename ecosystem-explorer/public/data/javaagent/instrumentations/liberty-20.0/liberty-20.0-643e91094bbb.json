@@ -1,0 +1,14 @@
+{
+  "description": "This instrumentation enables HTTP server spans and metrics for IBM WebSphere Liberty application server.",
+  "display_name": "Liberty",
+  "has_javaagent": true,
+  "library_link": "https://openliberty.io/",
+  "name": "liberty-20.0",
+  "scope": {
+    "name": "io.opentelemetry.liberty-20.0"
+  },
+  "source_path": "instrumentation/liberty/liberty-20.0",
+  "tags": [
+    "liberty"
+  ]
+}

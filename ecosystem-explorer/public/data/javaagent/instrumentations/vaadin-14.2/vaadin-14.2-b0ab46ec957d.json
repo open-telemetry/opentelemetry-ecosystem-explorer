@@ -1,0 +1,27 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables the creation of experimental controller spans.",
+      "name": "otel.instrumentation.common.experimental.controller-telemetry.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enriches HTTP server spans with route information, and enables controller spans for Vaadin applications (controller spans are disabled by default).",
+  "display_name": "Vaadin",
+  "features": [
+    "HTTP_ROUTE",
+    "CONTROLLER_SPANS"
+  ],
+  "has_javaagent": true,
+  "javaagent_target_versions": [
+    "com.vaadin:flow-server:[2.2.0,3)",
+    "com.vaadin:flow-server:[3.1.0,25.0.0)"
+  ],
+  "library_link": "https://vaadin.com/",
+  "name": "vaadin-14.2",
+  "scope": {
+    "name": "io.opentelemetry.vaadin-14.2"
+  },
+  "source_path": "instrumentation/vaadin-14.2"
+}

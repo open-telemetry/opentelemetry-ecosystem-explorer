@@ -1,0 +1,14 @@
+{
+  "description": "This instrumentation enables HTTP server spans and metrics for the IBM WebSphere Liberty HTTP dispatcher layer.",
+  "display_name": "Liberty",
+  "has_javaagent": true,
+  "library_link": "https://openliberty.io/",
+  "name": "liberty-dispatcher-20.0",
+  "scope": {
+    "name": "io.opentelemetry.liberty-dispatcher-20.0"
+  },
+  "source_path": "instrumentation/liberty/liberty-dispatcher-20.0",
+  "tags": [
+    "liberty"
+  ]
+}

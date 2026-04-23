@@ -1,0 +1,18 @@
+{
+  "description": "This instrumentation enriches existing HTTP server spans with route information, it does not emit any telemetry on its own.",
+  "display_name": "Javalin",
+  "features": [
+    "HTTP_ROUTE"
+  ],
+  "has_javaagent": true,
+  "javaagent_target_versions": [
+    "io.javalin:javalin:[7.0.0,)"
+  ],
+  "library_link": "https://javalin.io/",
+  "minimum_java_version": 17,
+  "name": "javalin-7.0",
+  "scope": {
+    "name": "io.opentelemetry.javalin-7.0"
+  },
+  "source_path": "instrumentation/javalin/javalin-7.0"
+}

@@ -2,11 +2,11 @@
   "versions": [
     {
       "is_latest": true,
-      "version": "2.25.0"
+      "version": "2.27.0"
     },
     {
       "is_latest": false,
-      "version": "2.24.0"
+      "version": "2.26.1"
     }
   ]
 }
