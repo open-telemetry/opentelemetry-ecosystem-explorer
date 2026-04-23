@@ -42,7 +42,7 @@ export async function loadConfigSchema(version: string): Promise<ConfigNode> {
 export async function loadConfigStarter(version: string): Promise<ConfigStarter | null> {
   return fetchWithCache<ConfigStarter>(
     `config-starter-${version}`,
-    `${BASE_PATH}/versions/${version}.starter.json`,
+    `${BASE_PATH}/defaults/sdk-configuration-defaults-${version}.json`,
     STORES.CONFIGURATION,
     { allow404: true }
   );

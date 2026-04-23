@@ -195,6 +195,7 @@ describe("useConfigStarter", () => {
       values: { resource: {} },
     });
     expect(result.current.error).toBeNull();
+    expect(configData.loadConfigStarter).toHaveBeenCalledWith("1.0.0");
   });
 
   it("resolves to null when the loader resolves null (404)", async () => {
@@ -203,5 +204,34 @@ describe("useConfigStarter", () => {
     await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.data).toBeNull();
     expect(result.current.error).toBeNull();
+  });
+
+  it("skips loading when version is empty", async () => {
+    const { result } = renderHook(() => useConfigStarter(""));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.data).toBeNull();
+    expect(configData.loadConfigStarter).not.toHaveBeenCalled();
+  });
+
+  it("reloads when version changes", async () => {
+    const starter1 = { enabledSections: { resource: true }, values: { resource: {} } };
+    const starter2 = { enabledSections: { propagator: true }, values: { propagator: {} } };
+
+    vi.mocked(configData.loadConfigStarter)
+      .mockResolvedValueOnce(starter1)
+      .mockResolvedValueOnce(starter2);
+
+    const { result, rerender } = renderHook(({ version }) => useConfigStarter(version), {
+      initialProps: { version: "1.0.0" },
+    });
+
+    await waitFor(() => expect(result.current.data).toEqual(starter1));
+
+    rerender({ version: "2.0.0" });
+
+    await waitFor(() => expect(result.current.data).toEqual(starter2));
+
+    expect(configData.loadConfigStarter).toHaveBeenCalledWith("1.0.0");
+    expect(configData.loadConfigStarter).toHaveBeenCalledWith("2.0.0");
   });
 });

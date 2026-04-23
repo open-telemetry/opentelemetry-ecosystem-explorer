@@ -144,7 +144,26 @@ class TestRunConfigurationBuilder:
             else:
                 assert entry["is_latest"] is False
 
-    def test_clean_removes_output_dir(self, config_registry, output_dir):
+    def test_clean_preserves_defaults_folder(self, config_registry, output_dir):
+        defaults_dir = output_dir / "defaults"
+        defaults_dir.mkdir(parents=True)
+        defaults_file = defaults_dir / "sdk-configuration-defaults.json"
+        defaults_file.write_text('{"enabledSections": {"resource": true}, "values": {}}')
+
+        run_configuration_builder(
+            registry_dir=str(config_registry),
+            output_dir=str(output_dir),
+        )
+
+        run_configuration_builder(
+            registry_dir=str(config_registry),
+            output_dir=str(output_dir),
+            clean=True,
+        )
+
+        assert defaults_file.exists()
+
+    def test_clean_removes_stale_generated_files(self, config_registry, output_dir):
         run_configuration_builder(
             registry_dir=str(config_registry),
             output_dir=str(output_dir),

@@ -157,6 +157,9 @@ describe("configuration-data", () => {
         ) as unknown as typeof fetch;
       const result = await loadConfigStarter("1.0.0");
       expect(result).toEqual(body);
+      expect(global.fetch).toHaveBeenCalledWith(
+        "/data/configuration/defaults/sdk-configuration-defaults-1.0.0.json"
+      );
     });
 
     it("returns null on 404", async () => {
@@ -165,7 +168,7 @@ describe("configuration-data", () => {
         .mockResolvedValue(
           new Response("nope", { status: 404, statusText: "Not Found" })
         ) as unknown as typeof fetch;
-      const result = await loadConfigStarter("9.9.9");
+      const result = await loadConfigStarter("1.0.0");
       expect(result).toBeNull();
     });
 
