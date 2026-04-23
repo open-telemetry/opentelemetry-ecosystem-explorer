@@ -188,7 +188,7 @@ describe("useConfigStarter", () => {
       enabledSections: { resource: true },
       values: { resource: {} },
     });
-    const { result } = renderHook(() => useConfigStarter("1.0.0"));
+    const { result } = renderHook(() => useConfigStarter());
     await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.data).toEqual({
       enabledSections: { resource: true },
@@ -199,7 +199,7 @@ describe("useConfigStarter", () => {
 
   it("resolves to null when the loader resolves null (404)", async () => {
     vi.mocked(configData.loadConfigStarter).mockResolvedValue(null);
-    const { result } = renderHook(() => useConfigStarter("1.0.0"));
+    const { result } = renderHook(() => useConfigStarter());
     await waitFor(() => expect(result.current.loading).toBe(false));
     expect(result.current.data).toBeNull();
     expect(result.current.error).toBeNull();

@@ -39,10 +39,10 @@ export async function loadConfigSchema(version: string): Promise<ConfigNode> {
   return data;
 }
 
-export async function loadConfigStarter(version: string): Promise<ConfigStarter | null> {
+export async function loadConfigStarter(): Promise<ConfigStarter | null> {
   return fetchWithCache<ConfigStarter>(
-    `config-starter-${version}`,
-    `${BASE_PATH}/versions/${version}.starter.json`,
+    "config-starter",
+    `${BASE_PATH}/defaults/sdk-configuration-defaults.json`,
     STORES.CONFIGURATION,
     { allow404: true }
   );

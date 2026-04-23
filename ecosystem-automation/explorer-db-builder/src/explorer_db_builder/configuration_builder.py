@@ -30,7 +30,6 @@ logger = logging.getLogger(__name__)
 
 ROOT_SCHEMA_FILE = "opentelemetry_configuration.yaml"
 DEFAULTS_DIR_NAME = "defaults"
-SDK_CONFIGURATION_DEFAULTS_FILE = "sdk-configuration-defaults.json"
 
 REGISTRY_DIR = "ecosystem-registry/configuration"
 OUTPUT_DIR = "ecosystem-explorer/public/data/configuration"
@@ -62,26 +61,6 @@ def _clean_output(output_path: Path) -> None:
         else:
             child.unlink()
     logger.info(f"Cleaned {output_path} (preserved {DEFAULTS_DIR_NAME}/)")
-
-
-def _copy_defaults(output_path: Path, versions_dir: Path, version: str) -> None:
-    """
-    Copy the sdk-configuration-defaults.json file from the output defaults/ folder
-    to the output versions directory as {version}.starter.json.
-
-    The defaults/ folder is hand-maintained and preserved across clean builds.
-    Additional defaults files can be added to the defaults/ folder in the future
-    to expand this pattern.
-    """
-    defaults_dir = output_path / DEFAULTS_DIR_NAME
-    if not defaults_dir.exists():
-        return
-
-    sdk_defaults = defaults_dir / SDK_CONFIGURATION_DEFAULTS_FILE
-    if sdk_defaults.exists():
-        dest = versions_dir / f"{version}.starter.json"
-        shutil.copy2(sdk_defaults, dest)
-        logger.info(f"Wrote {dest}")
 
 
 def run_configuration_builder(
@@ -120,8 +99,6 @@ def run_configuration_builder(
             content = json.dumps(ui_tree, indent=2, sort_keys=True)
             version_file.write_text(content, encoding="utf-8")
             logger.info(f"Wrote {version_file}")
-
-            _copy_defaults(output_path, versions_dir, str(version))
 
         version_list = [{"version": str(v), "is_latest": v == versions[0]} for v in versions]
         index_file = output_path / "versions-index.json"
