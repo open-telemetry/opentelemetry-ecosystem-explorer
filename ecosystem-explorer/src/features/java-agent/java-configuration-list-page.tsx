@@ -17,10 +17,11 @@ import { ConfigurationIcon } from "@/components/icons/configuration-icon";
 import { BackButton } from "@/components/ui/back-button";
 import { NavigationCard } from "@/components/ui/navigation-card";
 import { isEnabled } from "@/lib/feature-flags";
+import { PageContainer } from "@/components/layout/page-container";
 
 export function JavaConfigurationListPage() {
   return (
-    <div className="max-w-7xl mx-auto px-6 py-12">
+    <PageContainer>
       <div className="space-y-6">
         <BackButton />
         <div>
@@ -41,6 +42,6 @@ export function JavaConfigurationListPage() {
           </div>
         )}
       </div>
-    </div>
+    </PageContainer>
   );
 }

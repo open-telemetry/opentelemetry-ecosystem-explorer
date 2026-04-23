@@ -40,6 +40,7 @@ import {
 import { TelemetrySection } from "./components/telemetry-section";
 import { TelemetryComparisonSection } from "./components/telemetry-comparison/telemetry-comparison-section";
 import { VersionSelector } from "./components/version-selector";
+import { PageContainer } from "@/components/layout/page-container";
 
 function buildSourceUrl(sourcePath: string): string {
   try {
@@ -87,7 +88,7 @@ export function InstrumentationDetailPage() {
 
   if (loading) {
     return (
-      <div className="mx-auto max-w-7xl px-6 py-12">
+      <PageContainer>
         <div className="flex min-h-[400px] items-center justify-center">
           <div className="text-center">
             <div
@@ -104,15 +105,15 @@ export function InstrumentationDetailPage() {
             </div>
           </div>
         </div>
-      </div>
+      </PageContainer>
     );
   }
 
   if (error || !instrumentation) {
     return (
-      <div className="mx-auto max-w-7xl px-6 py-12">
+      <PageContainer>
         <BackButton />
-        <div className="mt-6">
+        <div className="mt-3">
           <DetailCard className="border-red-500/50 bg-red-500/5">
             <div className="flex gap-4">
               <AlertCircle
@@ -130,7 +131,7 @@ export function InstrumentationDetailPage() {
             </div>
           </DetailCard>
         </div>
-      </div>
+      </PageContainer>
     );
   }
 
@@ -139,10 +140,10 @@ export function InstrumentationDetailPage() {
     instrumentation.display_name && instrumentation.display_name !== instrumentation.name;
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-12">
+    <PageContainer>
       <BackButton />
 
-      <div className="mt-6 space-y-6">
+      <div className="mt-3 space-y-6">
         <header className="relative overflow-hidden rounded-lg border border-border/60 bg-card/80 p-8">
           {/* Ambient radial gradient background */}
           <div
@@ -577,6 +578,6 @@ export function InstrumentationDetailPage() {
           </Tabs>
         </div>
       </div>
-    </div>
+    </PageContainer>
   );
 }

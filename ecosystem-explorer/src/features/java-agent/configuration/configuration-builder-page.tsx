@@ -15,6 +15,7 @@
  */
 import { useMemo, useState } from "react";
 import { BackButton } from "@/components/ui/back-button";
+import { PageContainer } from "@/components/layout/page-container";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { SegmentedTabList } from "@/components/ui/segmented-tabs";
 import { VersionSelector } from "@/features/java-agent/components/version-selector";
@@ -90,7 +91,7 @@ export function ConfigurationBuilderPage() {
   const [activeTab, setActiveTab] = useState("sdk");
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-12">
+    <PageContainer>
       <div className="space-y-6">
         <div className="flex items-center">
           <BackButton />
@@ -130,6 +131,6 @@ export function ConfigurationBuilderPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </PageContainer>
   );
 }

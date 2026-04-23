@@ -15,10 +15,11 @@
  */
 import { Link } from "react-router-dom";
 import { Compass } from "@/components/icons/compass";
+import { PageContainer } from "@/components/layout/page-container";
 
 export function NotFoundPage() {
   return (
-    <div className="max-w-7xl mx-auto px-6 py-12 flex flex-col items-center justify-center min-h-[60vh]">
+    <PageContainer className="flex flex-col items-center justify-center min-h-[60vh]">
       <Compass className="w-32 h-32 mb-8 opacity-50" />
 
       <h1 className="text-4xl font-bold text-foreground mb-4">404 - Page Not Found</h1>
@@ -34,6 +35,6 @@ export function NotFoundPage() {
       >
         Return to Home
       </Link>
-    </div>
+    </PageContainer>
   );
 }

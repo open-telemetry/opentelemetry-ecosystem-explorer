@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 import { AgentExploreLanding } from "@/features/java-agent/components/agent-explore-landing.tsx";
+import { PageContainer } from "@/components/layout/page-container";
 
 export function JavaAgentPage() {
   return (
-    <div className="max-w-7xl mx-auto px-6 py-12">
+    <PageContainer>
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-foreground mb-2">OpenTelemetry Java Agent</h1>
@@ -28,6 +29,6 @@ export function JavaAgentPage() {
         </div>
         <AgentExploreLanding />
       </div>
-    </div>
+    </PageContainer>
   );
 }

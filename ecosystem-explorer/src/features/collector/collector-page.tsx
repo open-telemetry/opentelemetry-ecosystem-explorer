@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 import { isEnabled } from "@/lib/feature-flags";
+import { PageContainer } from "@/components/layout/page-container";
 
 export function CollectorPage() {
   return (
-    <div className="max-w-7xl mx-auto px-6 py-12">
+    <PageContainer>
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold text-foreground mb-2">OpenTelemetry Collector</h1>
@@ -36,6 +37,6 @@ export function CollectorPage() {
           </div>
         )}
       </div>
-    </div>
+    </PageContainer>
   );
 }

@@ -25,6 +25,7 @@ import { InstrumentationGroupCard } from "@/features/java-agent/components/instr
 import { VersionSelector } from "@/features/java-agent/components/version-selector";
 import { getInstrumentationDisplayName } from "./utils/format";
 import { groupInstrumentationsByDisplayName } from "./utils/group-instrumentations";
+import { PageContainer } from "@/components/layout/page-container";
 
 export function JavaInstrumentationListPage() {
   const { version: versionParam } = useParams<{ version?: string }>();
@@ -111,41 +112,41 @@ export function JavaInstrumentationListPage() {
 
   if (versionsLoading || instrumentationsLoading) {
     return (
-      <div className="max-w-7xl mx-auto px-6 py-12">
+      <PageContainer>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center space-y-2">
             <div className="text-lg font-medium">Loading instrumentations...</div>
             <div className="text-sm text-muted-foreground">This may take a moment</div>
           </div>
         </div>
-      </div>
+      </PageContainer>
     );
   }
 
   if (error) {
     return (
-      <div className="max-w-7xl mx-auto px-6 py-12">
+      <PageContainer>
         <div className="p-6 border border-red-500/50 rounded-lg bg-red-500/10 text-red-600 dark:text-red-400">
           <h3 className="font-semibold mb-2">Error loading instrumentations</h3>
           <p className="text-sm">{error.message}</p>
         </div>
-      </div>
+      </PageContainer>
     );
   }
 
   if (!resolvedVersion) {
     return (
-      <div className="max-w-7xl mx-auto px-6 py-12">
+      <PageContainer>
         <div className="p-6 border border-yellow-500/50 rounded-lg bg-yellow-500/10 text-yellow-600 dark:text-yellow-400">
           <h3 className="font-semibold mb-2">No version available</h3>
         </div>
-      </div>
+      </PageContainer>
     );
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-12">
-      <div className="space-y-8">
+    <PageContainer>
+      <div className="space-y-4">
         <BackButton />
 
         {/* Header Section */}
@@ -203,6 +204,6 @@ export function JavaInstrumentationListPage() {
           </div>
         )}
       </div>
-    </div>
+    </PageContainer>
   );
 }
