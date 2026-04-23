@@ -16514,7 +16514,7 @@ components:
         type: string
 - name: sshcheckreceiver
   metadata:
-    type: sshcheck
+    type: ssh_check
     display_name: SSH Check Receiver
     description: This receiver creates stats by connecting to an SSH server which
       may be an SFTP server.

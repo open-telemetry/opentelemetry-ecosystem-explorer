@@ -29,6 +29,7 @@ from explorer_db_builder.schema_ui_mapper import map_schema_to_ui_tree
 logger = logging.getLogger(__name__)
 
 ROOT_SCHEMA_FILE = "opentelemetry_configuration.yaml"
+DEFAULTS_DIR_NAME = "defaults"
 
 REGISTRY_DIR = "ecosystem-registry/configuration"
 OUTPUT_DIR = "ecosystem-explorer/public/data/configuration"
@@ -43,6 +44,25 @@ def _load_yaml_registry(version_dir: Path) -> dict[str, Any]:
     return registry
 
 
+def _clean_output(output_path: Path) -> None:
+    """
+    Remove all generated content from the output directory while preserving the
+    handcrafted defaults/ folder.
+
+    The defaults/ folder contains hand-maintained template files (e.g.
+    sdk-configuration-defaults.json) that are committed alongside the generated
+    output and must survive a clean rebuild.
+    """
+    for child in output_path.iterdir():
+        if child.name == DEFAULTS_DIR_NAME:
+            continue
+        if child.is_dir():
+            shutil.rmtree(child)
+        else:
+            child.unlink()
+    logger.info(f"Cleaned {output_path} (preserved {DEFAULTS_DIR_NAME}/)")
+
+
 def run_configuration_builder(
     registry_dir: str = REGISTRY_DIR,
     output_dir: str = OUTPUT_DIR,
@@ -53,8 +73,7 @@ def run_configuration_builder(
         output_path = Path(output_dir)
 
         if clean and output_path.exists():
-            shutil.rmtree(output_path)
-            logger.info(f"Cleaned {output_path}")
+            _clean_output(output_path)
 
         inventory = BaseInventoryManager(registry_dir)
         versions = inventory.list_release_versions()
