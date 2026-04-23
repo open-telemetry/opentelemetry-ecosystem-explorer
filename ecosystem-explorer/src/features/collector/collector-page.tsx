@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { isEnabled } from "@/lib/feature-flags";
+
 export function CollectorPage() {
   return (
     <div className="max-w-7xl mx-auto px-6 py-12">
@@ -24,9 +26,15 @@ export function CollectorPage() {
           </p>
         </div>
 
-        <div className="rounded-lg border border-border/50 bg-card/50 p-8 text-center">
-          <p className="text-muted-foreground">Collector explorer coming soon...</p>
-        </div>
+        {isEnabled("COLLECTOR_PAGE") ? (
+          <div className="rounded-lg border border-border/50 bg-card/50 p-8 text-center">
+            <p className="text-muted-foreground">Insert Collector explorer here ...</p>
+          </div>
+        ) : (
+          <div className="rounded-lg border border-border/50 bg-card/50 p-8 text-center">
+            <p className="text-muted-foreground">Collector explorer coming soon...</p>
+          </div>
+        )}
       </div>
     </div>
   );
