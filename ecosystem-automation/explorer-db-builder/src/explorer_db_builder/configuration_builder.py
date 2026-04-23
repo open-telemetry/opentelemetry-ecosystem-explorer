@@ -29,6 +29,7 @@ from explorer_db_builder.schema_ui_mapper import map_schema_to_ui_tree
 logger = logging.getLogger(__name__)
 
 ROOT_SCHEMA_FILE = "opentelemetry_configuration.yaml"
+SDK_CONFIGURATION_DEFAULTS_FILE = "sdk-configuration-defaults.json"
 
 REGISTRY_DIR = "ecosystem-registry/configuration"
 OUTPUT_DIR = "ecosystem-explorer/public/data/configuration"
@@ -43,6 +44,27 @@ def _load_yaml_registry(version_dir: Path) -> dict[str, Any]:
     return registry
 
 
+def _copy_defaults(version_dir: Path, versions_dir: Path, version: str) -> None:
+    """
+    Copy files from the registry defaults/ folder to the output versions directory.
+
+    Currently handles sdk-configuration-defaults.json → {version}.starter.json.
+    Additional defaults files can be added to the defaults/ folder in the future.
+    """
+    defaults_dir = version_dir / "defaults"
+    if not defaults_dir.exists():
+        logger.warning(f"No defaults/ folder found for version {version}, skipping defaults copy")
+        return
+
+    sdk_defaults = defaults_dir / SDK_CONFIGURATION_DEFAULTS_FILE
+    if sdk_defaults.exists():
+        dest = versions_dir / f"{version}.starter.json"
+        shutil.copy2(sdk_defaults, dest)
+        logger.info(f"Wrote {dest}")
+    else:
+        logger.warning(f"{SDK_CONFIGURATION_DEFAULTS_FILE} not found in defaults/ for version {version}")
+
+
 def run_configuration_builder(
     registry_dir: str = REGISTRY_DIR,
     output_dir: str = OUTPUT_DIR,
@@ -53,25 +75,8 @@ def run_configuration_builder(
         output_path = Path(output_dir)
 
         if clean and output_path.exists():
-            # Preserve hand-crafted starter files before wiping generated output
-            starter_files: dict[Path, str] = {}
-            for f in output_path.rglob("*.starter.json"):
-                try:
-                    starter_files[f.relative_to(output_path)] = f.read_text(encoding="utf-8")
-                except OSError as e:
-                    logger.warning(f"Could not back up starter file {f}: {e}")
-
             shutil.rmtree(output_path)
             logger.info(f"Cleaned {output_path}")
-
-            for relative_path, content in starter_files.items():
-                try:
-                    restored = output_path / relative_path
-                    restored.parent.mkdir(parents=True, exist_ok=True)
-                    restored.write_text(content, encoding="utf-8")
-                    logger.info(f"Restored starter file: {relative_path}")
-                except OSError as e:
-                    logger.warning(f"Could not restore starter file {relative_path}: {e}")
 
         inventory = BaseInventoryManager(registry_dir)
         versions = inventory.list_release_versions()
@@ -97,6 +102,8 @@ def run_configuration_builder(
             content = json.dumps(ui_tree, indent=2, sort_keys=True)
             version_file.write_text(content, encoding="utf-8")
             logger.info(f"Wrote {version_file}")
+
+            _copy_defaults(version_dir, versions_dir, str(version))
 
         version_list = [{"version": str(v), "is_latest": v == versions[0]} for v in versions]
         index_file = output_path / "versions-index.json"

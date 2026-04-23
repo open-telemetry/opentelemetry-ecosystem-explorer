@@ -144,14 +144,31 @@ class TestRunConfigurationBuilder:
             else:
                 assert entry["is_latest"] is False
 
-    def test_clean_preserves_starter_files(self, config_registry, output_dir):
+    def test_copies_starter_from_defaults(self, config_registry, output_dir):
+        defaults_dir = config_registry / "v1.0.0" / "defaults"
+        defaults_dir.mkdir()
+        starter_content = '{"enabledSections": {"resource": true}, "values": {}}'
+        (defaults_dir / "sdk-configuration-defaults.json").write_text(starter_content)
+
         run_configuration_builder(
             registry_dir=str(config_registry),
             output_dir=str(output_dir),
         )
+
         starter_file = output_dir / "versions" / "1.0.0.starter.json"
-        starter_content = '{"enabledSections": {}, "values": {}}'
-        starter_file.write_text(starter_content)
+        assert starter_file.exists()
+        assert starter_file.read_text() == starter_content
+
+    def test_clean_regenerates_starter_from_defaults(self, config_registry, output_dir):
+        defaults_dir = config_registry / "v1.0.0" / "defaults"
+        defaults_dir.mkdir()
+        starter_content = '{"enabledSections": {"resource": true}, "values": {}}'
+        (defaults_dir / "sdk-configuration-defaults.json").write_text(starter_content)
+
+        run_configuration_builder(
+            registry_dir=str(config_registry),
+            output_dir=str(output_dir),
+        )
 
         run_configuration_builder(
             registry_dir=str(config_registry),
@@ -159,8 +176,18 @@ class TestRunConfigurationBuilder:
             clean=True,
         )
 
+        starter_file = output_dir / "versions" / "1.0.0.starter.json"
         assert starter_file.exists()
         assert starter_file.read_text() == starter_content
+
+    def test_missing_defaults_does_not_fail(self, config_registry, output_dir):
+        result = run_configuration_builder(
+            registry_dir=str(config_registry),
+            output_dir=str(output_dir),
+        )
+
+        assert result == 0
+        assert not (output_dir / "versions" / "1.0.0.starter.json").exists()
 
     def test_clean_removes_output_dir(self, config_registry, output_dir):
         run_configuration_builder(
