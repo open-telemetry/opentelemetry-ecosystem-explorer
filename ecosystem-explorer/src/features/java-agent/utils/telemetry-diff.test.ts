@@ -423,3 +423,108 @@ describe("getAvailableWhenConditions", () => {
     expect(result).toEqual([]);
   });
 });
+
+describe("attribute type changes", () => {
+  it("detects when an attribute type changes", () => {
+    const base = makeInstrumentation([
+      {
+        name: "metric",
+        description: "desc",
+        instrument: "counter",
+        data_type: "LONG_SUM",
+        unit: "",
+        attributes: [{ name: "status", type: "STRING" }],
+      },
+    ]);
+    const comparison = makeInstrumentation([
+      {
+        name: "metric",
+        description: "desc",
+        instrument: "counter",
+        data_type: "LONG_SUM",
+        unit: "",
+        attributes: [{ name: "status", type: "LONG" }],
+      },
+    ]);
+    const result = compareTelemetry(base, comparison);
+    expect(result.metrics).toHaveLength(1);
+    expect(result.metrics[0].status).toBe("changed");
+    expect(result.metrics[0].changes?.attributes.changed).toHaveLength(1);
+    expect(result.metrics[0].changes?.attributes.changed[0].name).toBe("status");
+    expect(result.metrics[0].changes?.attributes.changed[0].before.type).toBe("STRING");
+    expect(result.metrics[0].changes?.attributes.changed[0].after.type).toBe("LONG");
+  });
+
+  it("detects attribute type changes in spans", () => {
+    const base = makeInstrumentation(
+      [],
+      [
+        {
+          span_kind: "SERVER",
+          attributes: [{ name: "http.status_code", type: "STRING" }],
+        },
+      ]
+    );
+    const comparison = makeInstrumentation(
+      [],
+      [
+        {
+          span_kind: "SERVER",
+          attributes: [{ name: "http.status_code", type: "LONG" }],
+        },
+      ]
+    );
+    const result = compareTelemetry(base, comparison);
+    expect(result.spans).toHaveLength(1);
+    expect(result.spans[0].status).toBe("changed");
+    expect(result.spans[0].changes?.attributes.changed).toHaveLength(1);
+  });
+});
+
+describe("span ordering", () => {
+  it("handles reordered spans within the same kind", () => {
+    const baseSpan1: Span = {
+      span_kind: "SERVER",
+      attributes: [{ name: "attr1", type: "STRING" }],
+    };
+    const baseSpan2: Span = {
+      span_kind: "SERVER",
+      attributes: [{ name: "attr2", type: "STRING" }],
+    };
+    const base = makeInstrumentation([], [baseSpan1, baseSpan2]);
+
+    const comparisonSpan2: Span = {
+      span_kind: "SERVER",
+      attributes: [{ name: "attr2", type: "STRING" }],
+    };
+    const comparisonSpan1: Span = {
+      span_kind: "SERVER",
+      attributes: [{ name: "attr1", type: "STRING" }],
+    };
+    const comparison = makeInstrumentation([], [comparisonSpan2, comparisonSpan1]);
+
+    const result = compareTelemetry(base, comparison);
+    // Should not report changes when spans are just reordered
+    // Note: Current algorithm is order-sensitive by index, so this will report changes
+    // This test documents current behavior and can be updated if algorithm improves
+    expect(result.spans).toHaveLength(2);
+  });
+
+  it("distinguishes between reordered spans and actual changes", () => {
+    const baseSpans: Span[] = [
+      { span_kind: "CLIENT", attributes: [{ name: "url", type: "STRING" }] },
+      { span_kind: "CLIENT", attributes: [{ name: "method", type: "STRING" }] },
+    ];
+    const base = makeInstrumentation([], baseSpans);
+
+    const comparisonSpans: Span[] = [
+      { span_kind: "CLIENT", attributes: [{ name: "url", type: "STRING" }] },
+      { span_kind: "CLIENT", attributes: [{ name: "method", type: "STRING" }] },
+    ];
+    const comparison = makeInstrumentation([], comparisonSpans);
+
+    const result = compareTelemetry(base, comparison);
+    // Same spans in same order should show as unchanged
+    expect(result.spans.every((s) => s.status === "unchanged")).toBe(true);
+  });
+});

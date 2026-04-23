@@ -135,7 +135,7 @@ export function TelemetryComparisonSection({
 
       {/* Results */}
       {!loading && !error && diffResult && fromVersion !== toVersion && (
-        <DiffResultsSection diffResult={diffResult} />
+        <DiffResultsSection diffResult={diffResult} whenCondition={whenCondition} />
       )}
     </div>
   );

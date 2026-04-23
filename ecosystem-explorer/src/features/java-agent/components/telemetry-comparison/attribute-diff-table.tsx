@@ -22,7 +22,8 @@ interface AttributeDiffTableProps {
 }
 
 export function AttributeDiffTable({ changes }: AttributeDiffTableProps) {
-  const hasChanges = changes.added.length > 0 || changes.removed.length > 0;
+  const hasChanges =
+    changes.added.length > 0 || changes.removed.length > 0 || changes.changed.length > 0;
 
   if (!hasChanges) {
     return null;
@@ -91,6 +92,36 @@ export function AttributeDiffTable({ changes }: AttributeDiffTableProps) {
                 <span className="inline-block w-fit rounded bg-muted/50 px-2 py-1 text-xs font-bold text-foreground/70 opacity-60">
                   {attr.type}
                 </span>
+              </td>
+            </tr>
+          ))}
+
+          {/* Changed attributes (type changes) */}
+          {changes.changed.map((change, index) => (
+            <tr
+              key={`changed-${change.name}`}
+              className={
+                (index + changes.added.length + changes.removed.length) % 2 === 1
+                  ? "bg-muted/40"
+                  : ""
+              }
+            >
+              <td className="p-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-medium text-amber-400">Modified</span>
+                </div>
+              </td>
+              <td className="p-4 font-mono text-sm md:text-[12px]">{change.name}</td>
+              <td className="p-4">
+                <div className="flex items-center gap-2">
+                  <span className="inline-block w-fit rounded bg-muted/50 px-2 py-1 text-xs font-bold text-foreground/70 line-through opacity-60">
+                    {change.before.type}
+                  </span>
+                  <span className="text-xs text-muted-foreground">→</span>
+                  <span className="inline-block w-fit rounded bg-muted/50 px-2 py-1 text-xs font-bold text-foreground/70">
+                    {change.after.type}
+                  </span>
+                </div>
               </td>
             </tr>
           ))}

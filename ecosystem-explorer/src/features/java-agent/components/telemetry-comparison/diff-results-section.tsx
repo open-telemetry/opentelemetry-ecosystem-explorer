@@ -21,6 +21,7 @@ import { SpanDiffCard } from "./span-diff-card";
 
 interface DiffResultsSectionProps {
   diffResult: TelemetryDiffResult;
+  whenCondition?: string;
 }
 
 function SectionDivider({ children }: { children: ReactNode }) {
@@ -35,7 +36,10 @@ function SectionDivider({ children }: { children: ReactNode }) {
   );
 }
 
-export function DiffResultsSection({ diffResult }: DiffResultsSectionProps) {
+export function DiffResultsSection({
+  diffResult,
+  whenCondition = "default",
+}: DiffResultsSectionProps) {
   const { metrics, spans } = diffResult;
 
   // Separate diffs by status
@@ -59,7 +63,8 @@ export function DiffResultsSection({ diffResult }: DiffResultsSectionProps) {
         <div className="text-center space-y-2">
           <p className="text-lg font-medium text-muted-foreground">No differences found</p>
           <p className="text-sm text-muted-foreground/70">
-            Default telemetry is identical between the selected versions.
+            Telemetry is identical for <span className="font-mono">{whenCondition}</span> between
+            the selected versions.
           </p>
         </div>
       </div>

@@ -23,6 +23,7 @@ import type {
   TelemetryDiffResult,
   MetricDiff,
   SpanDiff,
+  AttributeChange,
   AttributeChanges,
   MetricChanges,
   SpanChanges,
@@ -66,7 +67,7 @@ function compareAttributes(
 
   const added: Attribute[] = [];
   const removed: Attribute[] = [];
-  const changed: import("@/types/javaagent").AttributeChange[] = [];
+  const changed: AttributeChange[] = [];
 
   // Find added attributes
   for (const attr of comparisonAttrs) {
