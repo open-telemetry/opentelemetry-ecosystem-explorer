@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from "react";
+import type { SVGProps } from "react";
 
-export function GitHubIcon({ className, ...props }: React.SVGProps<SVGSVGElement>) {
+export function GitHubIcon({ className, ...props }: SVGProps<SVGSVGElement>) {
   return (
     <svg
       viewBox="0 0 24 24"
