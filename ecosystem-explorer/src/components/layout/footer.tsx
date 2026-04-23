@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Github, Map } from "lucide-react";
+import { Map } from "lucide-react";
 import { Link } from "react-router-dom";
+import { GitHubIcon } from "@/components/icons/github-icon";
 import { OtelLogo } from "@/components/icons/otel-logo";
 
 export function Footer() {
@@ -41,7 +42,7 @@ export function Footer() {
               className="hover:text-foreground transition-colors flex items-center gap-1"
               aria-label="GitHub repository"
             >
-              <Github className="h-4 w-4" aria-hidden="true" />
+              <GitHubIcon className="h-4 w-4" aria-hidden="true" />
               GitHub
             </a>
             <a
