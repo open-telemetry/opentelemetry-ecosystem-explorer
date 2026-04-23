@@ -99,7 +99,7 @@ export function useConfigSchema(version: string): DataState<ConfigNode> {
   return state;
 }
 
-export function useConfigStarter(): DataState<ConfigStarter | null> {
+export function useConfigStarter(version: string): DataState<ConfigStarter | null> {
   const [state, setState] = useState<DataState<ConfigStarter | null>>({
     data: null,
     loading: true,
@@ -109,9 +109,13 @@ export function useConfigStarter(): DataState<ConfigStarter | null> {
   useEffect(() => {
     let cancelled = false;
     async function loadData() {
+      if (!version) {
+        setState({ data: null, loading: false, error: null });
+        return;
+      }
       setState({ data: null, loading: true, error: null });
       try {
-        const data = await configData.loadConfigStarter();
+        const data = await configData.loadConfigStarter(version);
         if (!cancelled) setState({ data, loading: false, error: null });
       } catch (error) {
         if (!cancelled) {
@@ -127,7 +131,7 @@ export function useConfigStarter(): DataState<ConfigStarter | null> {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [version]);
 
   return state;
 }

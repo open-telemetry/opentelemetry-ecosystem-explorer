@@ -155,10 +155,10 @@ describe("configuration-data", () => {
         .mockResolvedValue(
           new Response(JSON.stringify(body), { status: 200 })
         ) as unknown as typeof fetch;
-      const result = await loadConfigStarter();
+      const result = await loadConfigStarter("1.0.0");
       expect(result).toEqual(body);
       expect(global.fetch).toHaveBeenCalledWith(
-        "/data/configuration/defaults/sdk-configuration-defaults.json"
+        "/data/configuration/defaults/sdk-configuration-defaults-1.0.0.json"
       );
     });
 
@@ -168,7 +168,7 @@ describe("configuration-data", () => {
         .mockResolvedValue(
           new Response("nope", { status: 404, statusText: "Not Found" })
         ) as unknown as typeof fetch;
-      const result = await loadConfigStarter();
+      const result = await loadConfigStarter("1.0.0");
       expect(result).toBeNull();
     });
 
@@ -176,7 +176,7 @@ describe("configuration-data", () => {
       globalThis.fetch = vi
         .fn()
         .mockResolvedValue(new Response("boom", { status: 500 })) as unknown as typeof fetch;
-      await expect(loadConfigStarter()).rejects.toThrow(/500/);
+      await expect(loadConfigStarter("1.0.0")).rejects.toThrow(/500/);
     });
   });
 });

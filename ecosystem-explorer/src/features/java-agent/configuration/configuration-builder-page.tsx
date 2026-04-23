@@ -32,7 +32,7 @@ const HIDDEN_SDK_KEYS = new Set(["file_format", "instrumentation/development"]);
 
 function SdkTab({ version }: { version: string }) {
   const schema = useConfigSchema(version);
-  const starter = useConfigStarter();
+  const starter = useConfigStarter(version);
 
   if (schema.loading || starter.loading) {
     return <p className="mt-4 text-sm text-muted-foreground">Loading schema…</p>;
