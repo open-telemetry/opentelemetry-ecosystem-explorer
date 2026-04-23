@@ -29,6 +29,7 @@ from explorer_db_builder.schema_ui_mapper import map_schema_to_ui_tree
 logger = logging.getLogger(__name__)
 
 ROOT_SCHEMA_FILE = "opentelemetry_configuration.yaml"
+DEFAULTS_DIR_NAME = "defaults"
 SDK_CONFIGURATION_DEFAULTS_FILE = "sdk-configuration-defaults.json"
 
 REGISTRY_DIR = "ecosystem-registry/configuration"
@@ -44,16 +45,35 @@ def _load_yaml_registry(version_dir: Path) -> dict[str, Any]:
     return registry
 
 
-def _copy_defaults(version_dir: Path, versions_dir: Path, version: str) -> None:
+def _clean_output(output_path: Path) -> None:
     """
-    Copy files from the registry defaults/ folder to the output versions directory.
+    Remove all generated content from the output directory while preserving the
+    handcrafted defaults/ folder.
 
+    The defaults/ folder contains hand-maintained template files (e.g.
+    sdk-configuration-defaults.json) that are committed alongside the generated
+    output and must survive a clean rebuild.
+    """
+    for child in output_path.iterdir():
+        if child.name == DEFAULTS_DIR_NAME:
+            continue
+        if child.is_dir():
+            shutil.rmtree(child)
+        else:
+            child.unlink()
+    logger.info(f"Cleaned {output_path} (preserved {DEFAULTS_DIR_NAME}/)")
+
+
+def _copy_defaults(output_path: Path, versions_dir: Path, version: str) -> None:
+    """
+    Copy files from the output defaults/ folder to the output versions directory.
+
+    The defaults/ folder is hand-maintained and preserved across clean builds.
     Currently handles sdk-configuration-defaults.json → {version}.starter.json.
     Additional defaults files can be added to the defaults/ folder in the future.
     """
-    defaults_dir = version_dir / "defaults"
+    defaults_dir = output_path / DEFAULTS_DIR_NAME
     if not defaults_dir.exists():
-        logger.warning(f"No defaults/ folder found for version {version}, skipping defaults copy")
         return
 
     sdk_defaults = defaults_dir / SDK_CONFIGURATION_DEFAULTS_FILE
@@ -61,8 +81,6 @@ def _copy_defaults(version_dir: Path, versions_dir: Path, version: str) -> None:
         dest = versions_dir / f"{version}.starter.json"
         shutil.copy2(sdk_defaults, dest)
         logger.info(f"Wrote {dest}")
-    else:
-        logger.warning(f"{SDK_CONFIGURATION_DEFAULTS_FILE} not found in defaults/ for version {version}")
 
 
 def run_configuration_builder(
@@ -75,8 +93,7 @@ def run_configuration_builder(
         output_path = Path(output_dir)
 
         if clean and output_path.exists():
-            shutil.rmtree(output_path)
-            logger.info(f"Cleaned {output_path}")
+            _clean_output(output_path)
 
         inventory = BaseInventoryManager(registry_dir)
         versions = inventory.list_release_versions()
@@ -103,7 +120,7 @@ def run_configuration_builder(
             version_file.write_text(content, encoding="utf-8")
             logger.info(f"Wrote {version_file}")
 
-            _copy_defaults(version_dir, versions_dir, str(version))
+            _copy_defaults(output_path, versions_dir, str(version))
 
         version_list = [{"version": str(v), "is_latest": v == versions[0]} for v in versions]
         index_file = output_path / "versions-index.json"
