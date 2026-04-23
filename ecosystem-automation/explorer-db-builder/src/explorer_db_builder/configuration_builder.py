@@ -66,11 +66,12 @@ def _clean_output(output_path: Path) -> None:
 
 def _copy_defaults(output_path: Path, versions_dir: Path, version: str) -> None:
     """
-    Copy files from the output defaults/ folder to the output versions directory.
+    Copy the sdk-configuration-defaults.json file from the output defaults/ folder
+    to the output versions directory as {version}.starter.json.
 
     The defaults/ folder is hand-maintained and preserved across clean builds.
-    Currently handles sdk-configuration-defaults.json → {version}.starter.json.
-    Additional defaults files can be added to the defaults/ folder in the future.
+    Additional defaults files can be added to the defaults/ folder in the future
+    to expand this pattern.
     """
     defaults_dir = output_path / DEFAULTS_DIR_NAME
     if not defaults_dir.exists():
