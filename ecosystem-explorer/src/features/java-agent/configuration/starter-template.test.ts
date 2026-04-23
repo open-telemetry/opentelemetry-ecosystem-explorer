@@ -85,9 +85,9 @@ function walk(
   }
 }
 
-describe("1.0.0.starter.json shape", () => {
+describe("sdk-configuration-defaults-1.0.0.json shape", () => {
   const schema = loadJson<ConfigNode>("versions/1.0.0.json");
-  const starter = loadJson<ConfigStarter>("versions/1.0.0.starter.json");
+  const starter = loadJson<ConfigStarter>("defaults/sdk-configuration-defaults-1.0.0.json");
 
   it("every enabledSections key is a top-level group in the schema", () => {
     expect(schema.controlType).toBe("group");
