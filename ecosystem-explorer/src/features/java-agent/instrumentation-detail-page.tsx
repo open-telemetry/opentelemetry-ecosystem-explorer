@@ -145,7 +145,6 @@ export function InstrumentationDetailPage() {
 
       <div className="mt-3 space-y-6">
         <header className="relative overflow-hidden rounded-lg border border-border/60 bg-card/80 p-8">
-          {/* Ambient radial gradient background */}
           <div
             className="absolute inset-0"
             style={{
@@ -154,7 +153,6 @@ export function InstrumentationDetailPage() {
             }}
           />
 
-          {/* Grid pattern overlay */}
           <div className="absolute inset-0 opacity-5">
             <div
               className="h-full w-full"
@@ -166,7 +164,6 @@ export function InstrumentationDetailPage() {
             />
           </div>
 
-          {/* Content */}
           <div className="relative z-10 space-y-4">
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 space-y-3">
@@ -213,7 +210,6 @@ export function InstrumentationDetailPage() {
             )}
           </div>
 
-          {/* Corner accent */}
           <div className="pointer-events-none absolute -bottom-1 -right-1 h-24 w-24 opacity-80">
             <svg viewBox="0 0 64 64" className="h-full w-full">
               <path
@@ -225,7 +221,6 @@ export function InstrumentationDetailPage() {
         </header>
 
         <div className="relative overflow-hidden rounded-lg border border-border/60 bg-card/80">
-          {/* Grid pattern background */}
           <div className="absolute inset-0 opacity-5">
             <div
               className="h-full w-full"
@@ -263,131 +258,6 @@ export function InstrumentationDetailPage() {
 
             <TabsContent value="details" className="mt-0 p-6">
               <div className="space-y-8">
-                {/* Links & Resources Section */}
-                {(instrumentation.library_link || instrumentation.source_path) && (
-                  <div>
-                    <SectionHeader>Links & Resources</SectionHeader>
-                    <div className="grid gap-4 md:grid-cols-2">
-                      {instrumentation.library_link && (
-                        <DetailCard withHoverEffect>
-                          <div className="flex items-start gap-3">
-                            <ExternalLink
-                              className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary"
-                              aria-hidden="true"
-                            />
-                            <div className="flex-1 space-y-1">
-                              <h3 className="text-sm font-medium text-muted-foreground">
-                                Library Link
-                              </h3>
-                              <a
-                                href={instrumentation.library_link}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="break-all text-sm text-primary hover:underline"
-                              >
-                                {instrumentation.library_link}
-                              </a>
-                            </div>
-                          </div>
-                        </DetailCard>
-                      )}
-
-                      {instrumentation.source_path && (
-                        <DetailCard withHoverEffect>
-                          <div className="flex items-start gap-3">
-                            <Code
-                              className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary"
-                              aria-hidden="true"
-                            />
-                            <div className="flex-1 space-y-1">
-                              <h3 className="text-sm font-medium text-muted-foreground">
-                                Source Path
-                              </h3>
-                              <a
-                                href={buildSourceUrl(instrumentation.source_path)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="break-all text-sm text-primary hover:underline"
-                              >
-                                {instrumentation.source_path}
-                              </a>
-                            </div>
-                          </div>
-                        </DetailCard>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Requirements Section */}
-                {(instrumentation.minimum_java_version ||
-                  (instrumentation.javaagent_target_versions &&
-                    instrumentation.javaagent_target_versions.length > 0)) && (
-                  <div>
-                    <SectionHeader>Requirements</SectionHeader>
-                    <div className="space-y-4">
-                      {instrumentation.minimum_java_version && (
-                        <DetailCard withGrid withHoverEffect>
-                          <div className="space-y-2">
-                            <h3 className="text-sm font-medium text-muted-foreground">
-                              Minimum Java Version
-                            </h3>
-                            <p className="text-lg font-semibold text-foreground">
-                              {instrumentation.minimum_java_version}
-                            </p>
-                          </div>
-                        </DetailCard>
-                      )}
-
-                      {instrumentation.javaagent_target_versions &&
-                        instrumentation.javaagent_target_versions.length > 0 && (
-                          <DetailCard>
-                            <div className="space-y-3">
-                              <h3 className="text-sm font-medium text-muted-foreground">
-                                Target Versions
-                              </h3>
-                              <div className="flex flex-wrap gap-2">
-                                {instrumentation.javaagent_target_versions.map((targetVersion) => (
-                                  <GlowBadge key={targetVersion} variant="muted">
-                                    {targetVersion}
-                                  </GlowBadge>
-                                ))}
-                              </div>
-                            </div>
-                          </DetailCard>
-                        )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Instrumentation Scope Section */}
-                {instrumentation.scope && (
-                  <div>
-                    <SectionHeader>Instrumentation Scope</SectionHeader>
-                    <DetailCard withGrid>
-                      <div className="space-y-3">
-                        <div>
-                          <h3 className="text-sm font-medium text-muted-foreground">Scope Name</h3>
-                          <p className="mt-1 text-sm font-medium text-foreground">
-                            {instrumentation.scope.name}
-                          </p>
-                        </div>
-                        {instrumentation.scope.schema_url && (
-                          <div>
-                            <h3 className="text-sm font-medium text-muted-foreground">
-                              Schema URL
-                            </h3>
-                            <code className="mt-1 block break-all rounded bg-muted px-2 py-1 text-xs">
-                              {instrumentation.scope.schema_url}
-                            </code>
-                          </div>
-                        )}
-                      </div>
-                    </DetailCard>
-                  </div>
-                )}
-
-                {/* Capabilities Section */}
                 {((instrumentation.features && instrumentation.features.length > 0) ||
                   (instrumentation.semantic_conventions &&
                     instrumentation.semantic_conventions.length > 0)) && (
@@ -461,13 +331,133 @@ export function InstrumentationDetailPage() {
                     </div>
                   </div>
                 )}
+
+                {(instrumentation.minimum_java_version ||
+                  (instrumentation.javaagent_target_versions &&
+                    instrumentation.javaagent_target_versions.length > 0)) && (
+                  <div>
+                    <SectionHeader>Requirements</SectionHeader>
+                    <div className="space-y-4">
+                      {instrumentation.minimum_java_version && (
+                        <DetailCard withGrid withHoverEffect>
+                          <div className="space-y-2">
+                            <h3 className="text-sm font-medium text-muted-foreground">
+                              Minimum Java Version
+                            </h3>
+                            <p className="text-lg font-semibold text-foreground">
+                              {instrumentation.minimum_java_version}
+                            </p>
+                          </div>
+                        </DetailCard>
+                      )}
+
+                      {instrumentation.javaagent_target_versions &&
+                        instrumentation.javaagent_target_versions.length > 0 && (
+                          <DetailCard>
+                            <div className="space-y-3">
+                              <h3 className="text-sm font-medium text-muted-foreground">
+                                Target Versions
+                              </h3>
+                              <div className="flex flex-wrap gap-2">
+                                {instrumentation.javaagent_target_versions.map((targetVersion) => (
+                                  <GlowBadge key={targetVersion} variant="muted">
+                                    {targetVersion}
+                                  </GlowBadge>
+                                ))}
+                              </div>
+                            </div>
+                          </DetailCard>
+                        )}
+                    </div>
+                  </div>
+                )}
+
+                {instrumentation.scope && (
+                  <div>
+                    <SectionHeader>Instrumentation Scope</SectionHeader>
+                    <DetailCard withGrid>
+                      <div className="space-y-3">
+                        <div>
+                          <h3 className="text-sm font-medium text-muted-foreground">Scope Name</h3>
+                          <p className="mt-1 text-sm font-medium text-foreground">
+                            {instrumentation.scope.name}
+                          </p>
+                        </div>
+                        {instrumentation.scope.schema_url && (
+                          <div>
+                            <h3 className="text-sm font-medium text-muted-foreground">
+                              Schema URL
+                            </h3>
+                            <code className="mt-1 block break-all rounded bg-muted px-2 py-1 text-xs">
+                              {instrumentation.scope.schema_url}
+                            </code>
+                          </div>
+                        )}
+                      </div>
+                    </DetailCard>
+                  </div>
+                )}
+
+                {(instrumentation.library_link || instrumentation.source_path) && (
+                  <div>
+                    <SectionHeader>Links & Resources</SectionHeader>
+                    <div className="grid gap-4 md:grid-cols-2">
+                      {instrumentation.library_link && (
+                        <DetailCard withHoverEffect>
+                          <div className="flex items-start gap-3">
+                            <ExternalLink
+                              className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary"
+                              aria-hidden="true"
+                            />
+                            <div className="flex-1 space-y-1">
+                              <h3 className="text-sm font-medium text-muted-foreground">
+                                Library Link
+                              </h3>
+                              <a
+                                href={instrumentation.library_link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="break-all text-sm text-primary hover:underline"
+                              >
+                                {instrumentation.library_link}
+                              </a>
+                            </div>
+                          </div>
+                        </DetailCard>
+                      )}
+
+                      {instrumentation.source_path && (
+                        <DetailCard withHoverEffect>
+                          <div className="flex items-start gap-3">
+                            <Code
+                              className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary"
+                              aria-hidden="true"
+                            />
+                            <div className="flex-1 space-y-1">
+                              <h3 className="text-sm font-medium text-muted-foreground">
+                                Source Path
+                              </h3>
+                              <a
+                                href={buildSourceUrl(instrumentation.source_path)}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="break-all text-sm text-primary hover:underline"
+                              >
+                                {instrumentation.source_path}
+                              </a>
+                            </div>
+                          </div>
+                        </DetailCard>
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             </TabsContent>
 
             <TabsContent value="telemetry" className="mt-0 p-6">
               {instrumentation.telemetry && instrumentation.telemetry.length > 0 ? (
                 <div className="space-y-8">
-                  {/* View toggle */}
                   <div className="flex justify-center">
                     <div
                       className="inline-flex rounded-lg border border-border bg-transparent p-1"
@@ -500,7 +490,6 @@ export function InstrumentationDetailPage() {
                     </div>
                   </div>
 
-                  {/* Content */}
                   {!showComparison ? (
                     <TelemetrySection telemetry={instrumentation.telemetry} />
                   ) : (
