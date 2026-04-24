@@ -53,6 +53,10 @@ function buildSourceUrl(sourcePath: string): string {
   }
 }
 
+/**
+ * Returns true only when the URL uses http: or https: protocol.
+ * Prevents link-based XSS from non-http(s) schemes such as javascript: or data:.
+ */
 function isSafeUrl(url: string): boolean {
   try {
     const parsed = new URL(url);
@@ -435,9 +439,8 @@ export function InstrumentationDetailPage() {
                         </DetailCard>
                       )}
 
-                      {instrumentation.source_path && (() => {
-                        const sourceUrl = buildSourceUrl(instrumentation.source_path);
-                        return isSafeUrl(sourceUrl) ? (
+                      {instrumentation.source_path &&
+                        isSafeUrl(buildSourceUrl(instrumentation.source_path)) && (
                           <DetailCard withHoverEffect>
                             <div className="flex items-start gap-3">
                               <Code
@@ -449,7 +452,7 @@ export function InstrumentationDetailPage() {
                                   Source Path
                                 </h3>
                                 <a
-                                  href={sourceUrl}
+                                  href={buildSourceUrl(instrumentation.source_path)}
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="break-all text-sm text-primary hover:underline"
@@ -459,8 +462,7 @@ export function InstrumentationDetailPage() {
                               </div>
                             </div>
                           </DetailCard>
-                        ) : null;
-                      })()}
+                        )}
                     </div>
                   </div>
                 )}
