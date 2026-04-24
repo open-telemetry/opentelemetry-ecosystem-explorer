@@ -6766,7 +6766,7 @@ components:
         - ChrsMark
 - name: k8sobjectsreceiver
   metadata:
-    type: k8sobjects
+    type: k8s_objects
     display_name: Kubernetes Objects Receiver
     description: The Kubernetes Objects Receiver collects (pull/watch) objects from
       the Kubernetes API server.
@@ -11104,7 +11104,7 @@ components:
     status:
       class: receiver
       stability:
-        development:
+        alpha:
         - logs
       codeowners:
         active:

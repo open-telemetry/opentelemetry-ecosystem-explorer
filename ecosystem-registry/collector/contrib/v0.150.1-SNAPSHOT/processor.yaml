@@ -94,22 +94,6 @@ components:
       codeowners:
         active:
         - Aneurysm9
-- name: dnslookupprocessor
-  metadata:
-    type: dnslookup
-    display_name: DNS Lookup Processor
-    status:
-      class: processor
-      stability:
-        development:
-        - logs
-        - metrics
-        - traces
-      codeowners:
-        active:
-        - andrzej-stencel
-        - kaisecheng
-        - edmocosta
 - name: drainprocessor
   metadata:
     type: drain
@@ -658,6 +642,7 @@ components:
       codeowners:
         active:
         - portertech
+        - csmarchbanks
 - name: sumologicprocessor
   metadata:
     type: sumologic
@@ -699,10 +684,12 @@ components:
       codeowners:
         active:
         - portertech
-        - Logiraptor
         - jmacd
+        - csmarchbanks
+        - carsonip
         emeritus:
         - jpkrohling
+        - Logiraptor
         seeking_new: true
     attributes:
       decision:
