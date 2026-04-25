@@ -123,7 +123,9 @@ class DatabaseWriter:
 
         return library_map
 
-    def write_version_index(self, version: Version, library_map: dict[str, str]) -> None:
+    def write_version_index(
+        self, version: Version, library_map: dict[str, str], custom_map: dict[str, str] | None = None
+    ) -> None:
         """Write version index mapping library names to content hashes.
 
         Creates an index file for a specific version that maps library names
@@ -132,19 +134,22 @@ class DatabaseWriter:
         Args:
             version: The semantic version to write the index for
             library_map: Dictionary mapping library names to content hashes
+            custom_map: Optional dictionary mapping custom instrumentation names to content hashes
 
         Raises:
             ValueError: If library_map is empty
             OSError: If file writing fails
         """
-        if not library_map:
-            raise ValueError("Library map cannot be empty")
+        if not library_map and not custom_map:
+            raise ValueError("Library map and custom map cannot both be empty")
 
         versions_dir = self.database_dir / "versions"
         versions_dir.mkdir(parents=True, exist_ok=True)
 
         version_file = versions_dir / f"{version}-index.json"
-        version_data = {"version": str(version), "instrumentations": library_map}
+        version_data = {"version": str(version), "instrumentations": library_map or {}}
+        if custom_map:
+            version_data["custom_instrumentations"] = custom_map
 
         try:
             content = json.dumps(version_data, indent=2, sort_keys=True)
@@ -153,7 +158,8 @@ class DatabaseWriter:
             file_size = len(content.encode("utf-8"))
             self.files_written += 1
             self.total_bytes += file_size
-            logger.info(f"Wrote version index for {version} with {len(library_map)} instrumentations")
+            total_items = len(library_map or {}) + len(custom_map or {})
+            logger.info(f"Wrote version index for {version} with {total_items} instrumentations")
         except OSError as e:
             logger.error(f"Failed to write version index for {version}: {e}")
             raise

@@ -41,7 +41,6 @@ def mock_db_writer():
 
 class TestGetReleaseVersions:
     def test_get_release_versions_success(self, mock_inventory_manager):
-        """Returns release versions when available."""
         versions = [
             Version("2.0.0"),
             Version("1.5.0"),
@@ -57,14 +56,12 @@ class TestGetReleaseVersions:
         assert Version("1.0.0-beta") not in result
 
     def test_get_release_versions_no_versions(self, mock_inventory_manager):
-        """Raises ValueError when no versions found."""
         mock_inventory_manager.list_versions.return_value = []
 
         with pytest.raises(ValueError, match="No versions found in inventory"):
             get_release_versions(mock_inventory_manager)
 
     def test_get_release_versions_only_prereleases(self, mock_inventory_manager):
-        """Raises ValueError when only prereleases exist."""
         versions = [
             Version("2.0.0-beta"),
             Version("1.0.0-alpha"),
@@ -75,7 +72,6 @@ class TestGetReleaseVersions:
             get_release_versions(mock_inventory_manager)
 
     def test_get_release_versions_filters_prereleases(self, mock_inventory_manager):
-        """Filters out all prerelease versions."""
         versions = [
             Version("3.0.0"),
             Version("2.5.0-rc1"),
@@ -94,7 +90,6 @@ class TestGetReleaseVersions:
 
 class TestProcessVersion:
     def test_process_version_success(self, mock_inventory_manager, mock_db_writer):
-        """Successfully processes a version with valid data."""
         version = Version("2.0.0")
         inventory_data = {
             "file_format": 0.2,
@@ -102,46 +97,46 @@ class TestProcessVersion:
                 {"name": "lib1", "version": "1.0"},
                 {"name": "lib2", "version": "2.0"},
             ],
+            "custom": [{"name": "custom1"}],
         }
         library_map = {"lib1": "hash1", "lib2": "hash2"}
+        custom_map = {"custom1": "hash3"}
 
         mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
-        mock_db_writer.write_libraries.return_value = library_map
+        # write_libraries will be called twice (libraries, custom)
+        mock_db_writer.write_libraries.side_effect = [library_map, custom_map]
 
         process_version(version, mock_inventory_manager, mock_db_writer)
 
         mock_inventory_manager.load_versioned_inventory.assert_called_once_with(version)
-        mock_db_writer.write_libraries.assert_called_once_with(inventory_data["libraries"])
-        mock_db_writer.write_version_index.assert_called_once_with(version, library_map)
+        assert mock_db_writer.write_libraries.call_count == 2
+        mock_db_writer.write_version_index.assert_called_once_with(version, library_map, custom_map)
 
     def test_process_version_missing_libraries_key(self, mock_inventory_manager, mock_db_writer):
-        """Raises KeyError when inventory missing libraries key."""
         version = Version("2.0.0")
         inventory_data = {"file_format": 0.2, "other_key": "value"}
 
         mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
 
-        with pytest.raises(KeyError, match="missing 'libraries' key"):
+        with pytest.raises(KeyError, match="missing 'libraries' and 'custom' keys"):
             process_version(version, mock_inventory_manager, mock_db_writer)
 
     def test_process_version_empty_libraries(self, mock_inventory_manager, mock_db_writer):
-        """Raises ValueError when libraries list is empty."""
         version = Version("2.0.0")
-        inventory_data = {"file_format": 0.2, "libraries": []}
+        inventory_data = {"file_format": 0.2, "libraries": [], "custom": []}
 
         mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
 
-        with pytest.raises(ValueError, match="No libraries found"):
+        with pytest.raises(ValueError, match="No instrumentations found"):
             process_version(version, mock_inventory_manager, mock_db_writer)
 
     def test_process_version_none_libraries(self, mock_inventory_manager, mock_db_writer):
-        """Raises ValueError when libraries is None."""
         version = Version("2.0.0")
         inventory_data = {"file_format": 0.2, "libraries": None}
 
         mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
 
-        with pytest.raises(ValueError, match="No libraries found"):
+        with pytest.raises(ValueError, match="No instrumentations found"):
             process_version(version, mock_inventory_manager, mock_db_writer)
 
 
@@ -163,7 +158,6 @@ class TestRunJavaagentBuilder:
         mock_db_writer.write_version_list.assert_called_once_with(versions)
 
     def test_run_builder_value_error(self, mock_inventory_manager, mock_db_writer):
-        """Returns 1 on ValueError."""
         mock_inventory_manager.list_versions.return_value = []
 
         exit_code = run_javaagent_builder(mock_inventory_manager, mock_db_writer)
@@ -171,7 +165,6 @@ class TestRunJavaagentBuilder:
         assert exit_code == 1
 
     def test_run_builder_key_error(self, mock_inventory_manager, mock_db_writer):
-        """Returns 1 on KeyError."""
         versions = [Version("2.0.0")]
         mock_inventory_manager.list_versions.return_value = versions
         mock_inventory_manager.load_versioned_inventory.return_value = {"file_format": 0.2, "wrong_key": []}
@@ -181,7 +174,6 @@ class TestRunJavaagentBuilder:
         assert exit_code == 1
 
     def test_run_builder_os_error(self, mock_inventory_manager, mock_db_writer):
-        """Returns 1 on OSError."""
         versions = [Version("2.0.0")]
         inventory_data = {"file_format": 0.2, "libraries": [{"name": "lib1"}]}
 
@@ -194,7 +186,6 @@ class TestRunJavaagentBuilder:
         assert exit_code == 1
 
     def test_run_builder_unexpected_error(self, mock_inventory_manager, mock_db_writer):
-        """Returns 1 on unexpected exceptions."""
         mock_inventory_manager.list_versions.side_effect = RuntimeError("Unexpected")
 
         exit_code = run_javaagent_builder(mock_inventory_manager, mock_db_writer)
@@ -202,7 +193,6 @@ class TestRunJavaagentBuilder:
         assert exit_code == 1
 
     def test_run_builder_processes_all_versions(self, mock_inventory_manager, mock_db_writer):
-        """All versions are processed."""
         versions = [Version("3.0.0"), Version("2.0.0"), Version("1.0.0")]
         inventory_data = {"file_format": 0.2, "libraries": [{"name": "lib1"}]}
         library_map = {"lib1": "hash1"}
@@ -220,7 +210,6 @@ class TestRunJavaagentBuilder:
         assert mock_db_writer.write_version_index.call_count == 3
 
     def test_run_builder_uses_backfilled_inventories(self, mock_inventory_manager, mock_db_writer):
-        """Backfill is applied and used during processing."""
         versions = [Version("1.0.0"), Version("2.0.0")]
         inventory_1_0 = {
             "file_format": 0.2,
@@ -261,7 +250,6 @@ class TestRunJavaagentBuilder:
         assert libraries_v2[0]["display_name"] == "Library 1"
 
     def test_run_builder_with_clean_false(self, mock_inventory_manager, mock_db_writer):
-        """Clean is not called when clean=False."""
         versions = [Version("1.0.0")]
         inventory_data = {"file_format": 0.2, "libraries": [{"name": "lib1"}]}
 
@@ -275,7 +263,6 @@ class TestRunJavaagentBuilder:
         mock_db_writer.clean.assert_not_called()
 
     def test_run_builder_with_clean_true(self, mock_inventory_manager, mock_db_writer):
-        """Clean is called when clean=True."""
         versions = [Version("1.0.0")]
         inventory_data = {"file_format": 0.2, "libraries": [{"name": "lib1"}]}
 
@@ -289,7 +276,6 @@ class TestRunJavaagentBuilder:
         mock_db_writer.clean.assert_called_once()
 
     def test_run_builder_clean_before_processing(self, mock_inventory_manager, mock_db_writer):
-        """Clean is called before processing versions."""
         versions = [Version("1.0.0")]
         inventory_data = {"file_format": 0.2, "libraries": [{"name": "lib1"}]}
 
@@ -312,7 +298,6 @@ class TestMain:
     @patch("explorer_db_builder.main.sys.exit")
     @patch("explorer_db_builder.main.argparse.ArgumentParser.parse_args")
     def test_main_success(self, mock_parse_args, mock_exit, mock_run_builder):
-        """Main exits with code from run_builder."""
         from explorer_db_builder.main import main
 
         mock_args = MagicMock()
@@ -329,7 +314,6 @@ class TestMain:
     @patch("explorer_db_builder.main.sys.exit")
     @patch("explorer_db_builder.main.argparse.ArgumentParser.parse_args")
     def test_main_failure(self, mock_parse_args, mock_exit, mock_run_builder):
-        """Main exits with error code on failure."""
         from explorer_db_builder.main import main
 
         mock_args = MagicMock()
@@ -346,7 +330,6 @@ class TestMain:
     @patch("explorer_db_builder.main.sys.exit")
     @patch("explorer_db_builder.main.argparse.ArgumentParser.parse_args")
     def test_main_with_clean_flag(self, mock_parse_args, mock_exit, mock_run_builder):
-        """Main passes clean flag to run_builder."""
         from explorer_db_builder.main import main
 
         mock_args = MagicMock()

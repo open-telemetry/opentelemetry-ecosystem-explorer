@@ -101,9 +101,21 @@ export function JavaInstrumentationListPage() {
     });
   }, [instrumentations, filters]);
 
-  const groupedInstrumentations = useMemo(
-    () => groupInstrumentationsByDisplayName(filteredInstrumentations),
-    [filteredInstrumentations]
+  const { libraryInstrumentations, customInstrumentations } = useMemo(() => {
+    return {
+      libraryInstrumentations: filteredInstrumentations.filter((i) => !i._isCustom),
+      customInstrumentations: filteredInstrumentations.filter((i) => i._isCustom),
+    };
+  }, [filteredInstrumentations]);
+
+  const libraryGroups = useMemo(
+    () => groupInstrumentationsByDisplayName(libraryInstrumentations),
+    [libraryInstrumentations]
+  );
+
+  const customGroups = useMemo(
+    () => groupInstrumentationsByDisplayName(customInstrumentations),
+    [customInstrumentations]
   );
 
   const handleVersionChange = (newVersion: string) => {
@@ -113,8 +125,8 @@ export function JavaInstrumentationListPage() {
   if (versionsLoading || instrumentationsLoading) {
     return (
       <PageContainer>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center space-y-2">
+        <div className="flex min-h-[400px] items-center justify-center">
+          <div className="space-y-2 text-center">
             <div className="text-lg font-medium">Loading instrumentations...</div>
             <div className="text-sm text-muted-foreground">This may take a moment</div>
           </div>
@@ -126,8 +138,8 @@ export function JavaInstrumentationListPage() {
   if (error) {
     return (
       <PageContainer>
-        <div className="p-6 border border-red-500/50 rounded-lg bg-red-500/10 text-red-600 dark:text-red-400">
-          <h3 className="font-semibold mb-2">Error loading instrumentations</h3>
+        <div className="rounded-lg border border-red-500/50 bg-red-500/10 p-6 text-red-600 dark:text-red-400">
+          <h3 className="mb-2 font-semibold">Error loading instrumentations</h3>
           <p className="text-sm">{error.message}</p>
         </div>
       </PageContainer>
@@ -137,8 +149,8 @@ export function JavaInstrumentationListPage() {
   if (!resolvedVersion) {
     return (
       <PageContainer>
-        <div className="p-6 border border-yellow-500/50 rounded-lg bg-yellow-500/10 text-yellow-600 dark:text-yellow-400">
-          <h3 className="font-semibold mb-2">No version available</h3>
+        <div className="rounded-lg border border-yellow-500/50 bg-yellow-500/10 p-6 text-yellow-600 dark:text-yellow-400">
+          <h3 className="mb-2 font-semibold">No version available</h3>
         </div>
       </PageContainer>
     );
@@ -149,7 +161,6 @@ export function JavaInstrumentationListPage() {
       <div className="space-y-4">
         <BackButton />
 
-        {/* Header Section */}
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-3">
             <h1 className="text-3xl font-bold md:text-4xl">
@@ -192,15 +203,44 @@ export function JavaInstrumentationListPage() {
             </div>
           </div>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2">
-            {groupedInstrumentations.map((group) => (
-              <InstrumentationGroupCard
-                key={group.displayName}
-                group={group}
-                activeFilters={filters}
-                version={resolvedVersion}
-              />
-            ))}
+          <div className="space-y-12">
+            {libraryGroups.length > 0 && (
+              <div className="space-y-6">
+                <div className="grid gap-6 md:grid-cols-2">
+                  {libraryGroups.map((group) => (
+                    <InstrumentationGroupCard
+                      key={group.displayName}
+                      group={group}
+                      activeFilters={filters}
+                      version={resolvedVersion}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {customGroups.length > 0 && (
+              <div className="space-y-6">
+                <div className="border-b border-border/50 pb-2">
+                  <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+                    Custom Instrumentations
+                  </h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Non-library instrumentations such as methods, JMX metrics, and external annotations.
+                  </p>
+                </div>
+                <div className="grid gap-6 md:grid-cols-2">
+                  {customGroups.map((group) => (
+                    <InstrumentationGroupCard
+                      key={group.displayName}
+                      group={group}
+                      activeFilters={filters}
+                      version={resolvedVersion}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>
