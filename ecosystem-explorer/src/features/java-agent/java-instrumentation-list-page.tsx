@@ -205,17 +205,15 @@ export function JavaInstrumentationListPage() {
         ) : (
           <div className="space-y-12">
             {libraryGroups.length > 0 && (
-              <div className="space-y-6">
-                <div className="grid gap-6 md:grid-cols-2">
-                  {libraryGroups.map((group) => (
-                    <InstrumentationGroupCard
-                      key={group.displayName}
-                      group={group}
-                      activeFilters={filters}
-                      version={resolvedVersion}
-                    />
-                  ))}
-                </div>
+              <div className="grid gap-6 md:grid-cols-2">
+                {libraryGroups.map((group) => (
+                  <InstrumentationGroupCard
+                    key={group.displayName}
+                    group={group}
+                    activeFilters={filters}
+                    version={resolvedVersion}
+                  />
+                ))}
               </div>
             )}
 
