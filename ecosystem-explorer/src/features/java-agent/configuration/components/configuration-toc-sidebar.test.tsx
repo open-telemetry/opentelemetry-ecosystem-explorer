@@ -49,12 +49,12 @@ describe("ConfigurationTocSidebar", () => {
     expect(screen.getByRole("tab", { name: /Instrumentation/i })).toBeInTheDocument();
   });
 
-  it("renders one TOC link per section when the SDK tab is active", () => {
+  it("renders one TOC button per section when the SDK tab is active", () => {
     renderSidebar();
     const nav = screen.getByRole("navigation", { name: "Configuration sections" });
-    expect(within(nav).getByRole("link", { name: "Resource" })).toBeInTheDocument();
-    expect(within(nav).getByRole("link", { name: "Tracer Provider" })).toBeInTheDocument();
-    expect(within(nav).getByRole("link", { name: "Attribute Limits" })).toBeInTheDocument();
+    expect(within(nav).getByRole("button", { name: "Resource" })).toBeInTheDocument();
+    expect(within(nav).getByRole("button", { name: "Tracer Provider" })).toBeInTheDocument();
+    expect(within(nav).getByRole("button", { name: "Attribute Limits" })).toBeInTheDocument();
   });
 
   it("does not render the TOC nav when Instrumentation is the active tab", () => {
@@ -62,19 +62,19 @@ describe("ConfigurationTocSidebar", () => {
     expect(screen.queryByRole("navigation", { name: "Configuration sections" })).toBeNull();
   });
 
-  it("marks the link matching activeKey with aria-current='location'", () => {
+  it("marks the button matching activeKey with aria-current='location'", () => {
     renderSidebar({ activeKey: "tracer_provider" });
-    const tracer = screen.getByRole("link", { name: "Tracer Provider" });
+    const tracer = screen.getByRole("button", { name: "Tracer Provider" });
     expect(tracer).toHaveAttribute("aria-current", "location");
-    const resource = screen.getByRole("link", { name: "Resource" });
+    const resource = screen.getByRole("button", { name: "Resource" });
     expect(resource).not.toHaveAttribute("aria-current", "location");
   });
 
-  it("fires onSectionClick with the section key when a link is clicked", async () => {
+  it("fires onSectionClick with the section key when a button is clicked", async () => {
     const onSectionClick = vi.fn();
     const user = userEvent.setup();
     renderSidebar({ onSectionClick });
-    await user.click(screen.getByRole("link", { name: "Tracer Provider" }));
+    await user.click(screen.getByRole("button", { name: "Tracer Provider" }));
     expect(onSectionClick).toHaveBeenCalledWith("tracer_provider");
   });
 });

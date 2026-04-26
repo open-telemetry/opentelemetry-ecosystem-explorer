@@ -88,11 +88,11 @@ describe("ConfigurationBuilderPage — basic", () => {
     expect(instrumentationTab).toBeInTheDocument();
   });
 
-  it("renders the TOC nav with one link per visible section, with General first for the root leaves", async () => {
+  it("renders the TOC nav with one button per visible section, with General first for the root leaves", async () => {
     renderPage();
     await screen.findByRole("switch", { name: /Enable Resource/i }, { timeout: 10_000 });
     const nav = screen.getByRole("navigation", { name: "Configuration sections" });
-    const links = within(nav).getAllByRole("link");
+    const links = within(nav).getAllByRole("button");
     expect(links.map((l) => l.textContent)).toEqual([
       "General",
       "Attribute Limits",

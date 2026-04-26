@@ -33,7 +33,7 @@ const TABS = [
   { value: "instrumentation", label: "Instrumentation" },
 ];
 
-const LINK_BASE = "block rounded-md px-3 py-1.5 text-sm transition-colors";
+const LINK_BASE = "block w-full rounded-md px-3 py-1.5 text-left text-sm transition-colors";
 const LINK_ACTIVE = "bg-card/80 font-medium text-foreground";
 const LINK_INACTIVE = "text-muted-foreground hover:bg-card/40 hover:text-foreground";
 
@@ -51,18 +51,15 @@ export function ConfigurationTocSidebar({
           {sections.map((section) => {
             const isActive = section.key === activeKey;
             return (
-              <a
+              <button
                 key={section.key}
-                href={`#${section.key}`}
+                type="button"
                 aria-current={isActive ? "location" : undefined}
-                onClick={(e) => {
-                  e.preventDefault();
-                  onSectionClick(section.key);
-                }}
+                onClick={() => onSectionClick(section.key)}
                 className={`${LINK_BASE} ${isActive ? LINK_ACTIVE : LINK_INACTIVE}`}
               >
                 {section.label}
-              </a>
+              </button>
             );
           })}
         </nav>
