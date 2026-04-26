@@ -1,0 +1,24 @@
+{
+  "description": null,
+  "display_name": null,
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-extension-azureencodingextension",
+  "name": "azureencodingextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "axw",
+        "constanca-m"
+      ]
+    },
+    "stability": {
+      "development": [
+        "extension"
+      ]
+    }
+  },
+  "type": "extension"
+}

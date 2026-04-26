@@ -1,0 +1,52 @@
+{
+  "attributes": {
+    "decision": {
+      "description": "The sampling decision",
+      "enum": [
+        "dropped",
+        "not_sampled",
+        "sampled"
+      ],
+      "type": "string"
+    },
+    "policy": {
+      "description": "Name of the policy",
+      "type": "string"
+    },
+    "sampled": {
+      "description": "Whether the sampling decision was sampled or not, false can mean either not sampled or dropped",
+      "type": "bool"
+    }
+  },
+  "description": null,
+  "display_name": null,
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-processor-tailsamplingprocessor",
+  "name": "tailsamplingprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "portertech",
+        "Logiraptor",
+        "jmacd"
+      ],
+      "emeritus": [
+        "jpkrohling"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "traces"
+      ]
+    }
+  },
+  "type": "processor"
+}

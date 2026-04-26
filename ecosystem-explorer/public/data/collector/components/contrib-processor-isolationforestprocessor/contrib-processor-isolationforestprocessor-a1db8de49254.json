@@ -1,0 +1,28 @@
+{
+  "description": "The **Isolation Forest processor** adds inline, unsupervised anomaly detection to any OpenTelemetry Collector pipeline (traces, metrics, or logs). It embeds a lightweight implementation of the Isolation Forest algorithm that automatically learns normal behaviour from recent telemetry and tags, scores, or optionally drops anomalies *in\u2011flight* \u2013 no external ML service required.",
+  "display_name": "Isolation Forest Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-processor-isolationforestprocessor",
+  "name": "isolationforestprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "atoulme"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "processor"
+}

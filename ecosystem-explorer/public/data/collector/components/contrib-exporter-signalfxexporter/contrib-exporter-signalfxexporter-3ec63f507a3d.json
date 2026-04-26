@@ -1,0 +1,29 @@
+{
+  "description": null,
+  "display_name": "SignalFx Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-exporter-signalfxexporter",
+  "name": "signalfxexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "dmitryax",
+        "crobert-1"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "exporter"
+}

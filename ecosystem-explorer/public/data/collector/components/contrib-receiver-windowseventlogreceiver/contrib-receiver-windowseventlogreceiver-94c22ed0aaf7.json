@@ -1,0 +1,31 @@
+{
+  "description": "This receiver tails and parses logs from windows event log API using the [opentelemetry-log-collection](https://github.com/open-telemetry/opentelemetry-log-collection) library.",
+  "display_name": "Windows Event Log Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-receiver-windowseventlogreceiver",
+  "name": "windowseventlogreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "armstrmi",
+        "pjanotti"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs"
+      ]
+    },
+    "unsupported_platforms": [
+      "darwin",
+      "linux"
+    ]
+  },
+  "type": "receiver"
+}

@@ -1,0 +1,28 @@
+{
+  "description": null,
+  "display_name": null,
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-receiver-carbonreceiver",
+  "name": "carbonreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [],
+      "emeritus": [
+        "aboguszewski-sumo"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "unmaintained": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver"
+}

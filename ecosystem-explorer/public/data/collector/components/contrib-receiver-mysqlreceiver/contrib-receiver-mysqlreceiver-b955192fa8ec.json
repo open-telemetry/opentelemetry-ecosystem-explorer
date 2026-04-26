@@ -1,0 +1,1256 @@
+{
+  "attributes": {
+    "buffer_pool_data": {
+      "description": "The status of buffer pool data.",
+      "enum": [
+        "clean",
+        "dirty"
+      ],
+      "name_override": "status",
+      "type": "string"
+    },
+    "buffer_pool_operations": {
+      "description": "The buffer pool operations types.",
+      "enum": [
+        "read_ahead",
+        "read_ahead_evicted",
+        "read_ahead_rnd",
+        "read_requests",
+        "reads",
+        "wait_free",
+        "write_requests"
+      ],
+      "name_override": "operation",
+      "type": "string"
+    },
+    "buffer_pool_pages": {
+      "description": "The buffer pool pages types.",
+      "enum": [
+        "data",
+        "free",
+        "misc",
+        "total"
+      ],
+      "name_override": "kind",
+      "type": "string"
+    },
+    "cache_status": {
+      "description": "The status of cache access.",
+      "enum": [
+        "hit",
+        "miss",
+        "overflow"
+      ],
+      "name_override": "status",
+      "type": "string"
+    },
+    "client.address": {
+      "description": "Hostname or address of the client.",
+      "type": "string"
+    },
+    "client.port": {
+      "description": "TCP port used by the client.",
+      "type": "int"
+    },
+    "command": {
+      "description": "The command types.",
+      "enum": [
+        "delete",
+        "delete_multi",
+        "insert",
+        "select",
+        "update",
+        "update_multi"
+      ],
+      "type": "string"
+    },
+    "connection_error": {
+      "description": "The connection error type.",
+      "enum": [
+        "aborted",
+        "aborted_clients",
+        "accept",
+        "internal",
+        "locked",
+        "max_connections",
+        "peer_address",
+        "select",
+        "tcpwrap"
+      ],
+      "name_override": "error",
+      "type": "string"
+    },
+    "connection_status": {
+      "description": "The connection status.",
+      "enum": [
+        "accepted",
+        "closed",
+        "rejected"
+      ],
+      "name_override": "status",
+      "type": "string"
+    },
+    "db.namespace": {
+      "description": "The default database for the thread, or empty if none has been selected (originally processlist_db).",
+      "type": "string"
+    },
+    "db.query.text": {
+      "description": "The SQL statement text for the event.",
+      "type": "string"
+    },
+    "db.system.name": {
+      "description": "The name of the database system.",
+      "enum": [
+        "mysql"
+      ],
+      "type": "string"
+    },
+    "digest": {
+      "description": "Digest.",
+      "type": "string"
+    },
+    "digest_text": {
+      "description": "Text before digestion.",
+      "type": "string"
+    },
+    "direction": {
+      "description": "The name of the transmission direction.",
+      "enum": [
+        "received",
+        "sent"
+      ],
+      "name_override": "kind",
+      "type": "string"
+    },
+    "double_writes": {
+      "description": "The doublewrite types.",
+      "enum": [
+        "pages_written",
+        "writes"
+      ],
+      "name_override": "kind",
+      "type": "string"
+    },
+    "event_state": {
+      "description": "Possible event states.",
+      "enum": [
+        "created_tmp_disk_tables",
+        "created_tmp_tables",
+        "errors",
+        "no_index_used",
+        "rows_affected",
+        "rows_examined",
+        "rows_sent",
+        "sort_merge_passes",
+        "sort_rows",
+        "warnings"
+      ],
+      "name_override": "kind",
+      "type": "string"
+    },
+    "handler": {
+      "description": "The handler types.",
+      "enum": [
+        "commit",
+        "delete",
+        "discover",
+        "external_lock",
+        "mrr_init",
+        "prepare",
+        "read_first",
+        "read_key",
+        "read_last",
+        "read_next",
+        "read_prev",
+        "read_rnd",
+        "read_rnd_next",
+        "rollback",
+        "savepoint",
+        "savepoint_rollback",
+        "update",
+        "write"
+      ],
+      "name_override": "kind",
+      "type": "string"
+    },
+    "index_name": {
+      "description": "The name of the index.",
+      "name_override": "index",
+      "type": "string"
+    },
+    "io_waits_operations": {
+      "description": "The io_waits operation type.",
+      "enum": [
+        "delete",
+        "fetch",
+        "insert",
+        "update"
+      ],
+      "name_override": "operation",
+      "type": "string"
+    },
+    "join_kind": {
+      "description": "The kind of join.",
+      "enum": [
+        "full",
+        "full_range",
+        "range",
+        "range_check",
+        "scan"
+      ],
+      "name_override": "kind",
+      "type": "string"
+    },
+    "locks": {
+      "description": "The table locks type.",
+      "enum": [
+        "immediate",
+        "waited"
+      ],
+      "name_override": "kind",
+      "type": "string"
+    },
+    "log_operations": {
+      "description": "The log operation types. 'fsyncs' aren't available in MariaDB 10.8 or later.",
+      "enum": [
+        "fsyncs",
+        "waits",
+        "write_requests",
+        "writes"
+      ],
+      "name_override": "operation",
+      "type": "string"
+    },
+    "mysql.event_id": {
+      "description": "The thread associated with the event and the thread current event number when the event starts.",
+      "type": "int"
+    },
+    "mysql.events_statements_current.digest": {
+      "description": "The statement digest SHA-256 value as a string of 64 hexadecimal characters, or empty if the statements_digest consumer is no.",
+      "type": "string"
+    },
+    "mysql.events_statements_summary_by_digest.count_star": {
+      "description": "The number of times the statement was executed, report in delta value.",
+      "type": "int"
+    },
+    "mysql.events_statements_summary_by_digest.digest": {
+      "description": "The statement digest SHA-256 value as a string of 64 hexadecimal characters, or empty if the statements_digest consumer is no.",
+      "type": "string"
+    },
+    "mysql.events_statements_summary_by_digest.sum_timer_wait": {
+      "description": "The total time spent executing the statement, report in delta seconds.",
+      "type": "double"
+    },
+    "mysql.events_waits_current.timer_wait": {
+      "description": "Timing information for the event, indicating elapsed time the event waited in seconds.",
+      "type": "double"
+    },
+    "mysql.query_plan": {
+      "description": "The query plan for the statement, if available.",
+      "type": "string"
+    },
+    "mysql.threads.processlist_command": {
+      "description": "The type of command the thread is executing on behalf of the client for foreground threads, or `Sleep` if the session is idle.",
+      "type": "string"
+    },
+    "mysql.threads.processlist_state": {
+      "description": "An action, event, or state that indicates what the thread is doing.",
+      "type": "string"
+    },
+    "mysql.threads.thread_id": {
+      "description": "The unique identifier for the thread executing the statement.",
+      "type": "int"
+    },
+    "mysql.wait_type": {
+      "description": "The name of the instrument that produced the event.",
+      "type": "string"
+    },
+    "mysqlx_threads": {
+      "description": "The worker thread count kind.",
+      "enum": [
+        "active",
+        "available"
+      ],
+      "name_override": "kind",
+      "type": "string"
+    },
+    "network.peer.address": {
+      "description": "IP address of the peer client.",
+      "type": "string"
+    },
+    "network.peer.port": {
+      "description": "TCP port used by the peer client.",
+      "type": "int"
+    },
+    "opened_resources": {
+      "description": "The kind of the resource.",
+      "enum": [
+        "file",
+        "table",
+        "table_definition"
+      ],
+      "name_override": "kind",
+      "type": "string"
+    },
+    "operations": {
+      "description": "The operation types.",
+      "enum": [
+        "fsyncs",
+        "reads",
+        "writes"
+      ],
+      "name_override": "operation",
+      "type": "string"
+    },
+    "page_operations": {
+      "description": "The page operation types.",
+      "enum": [
+        "created",
+        "read",
+        "written"
+      ],
+      "name_override": "operation",
+      "type": "string"
+    },
+    "prepared_statements_command": {
+      "description": "The prepare statement command types.",
+      "enum": [
+        "close",
+        "execute",
+        "fetch",
+        "prepare",
+        "reset",
+        "send_long_data"
+      ],
+      "name_override": "command",
+      "type": "string"
+    },
+    "read_lock_type": {
+      "description": "Read operation types.",
+      "enum": [
+        "external",
+        "high_priority",
+        "no_insert",
+        "normal",
+        "with_shared_locks"
+      ],
+      "name_override": "kind",
+      "type": "string"
+    },
+    "row_locks": {
+      "description": "The row lock type.",
+      "enum": [
+        "time",
+        "waits"
+      ],
+      "name_override": "kind",
+      "type": "string"
+    },
+    "row_operations": {
+      "description": "The row operation type.",
+      "enum": [
+        "deleted",
+        "inserted",
+        "read",
+        "updated"
+      ],
+      "name_override": "operation",
+      "type": "string"
+    },
+    "schema": {
+      "description": "The schema of the object.",
+      "type": "string"
+    },
+    "sorts": {
+      "description": "The sort count type.",
+      "enum": [
+        "merge_passes",
+        "range",
+        "rows",
+        "scan"
+      ],
+      "name_override": "kind",
+      "type": "string"
+    },
+    "table_name": {
+      "description": "Table name for event or process.",
+      "name_override": "table",
+      "type": "string"
+    },
+    "table_size_type": {
+      "description": "The table size types.",
+      "enum": [
+        "data",
+        "index"
+      ],
+      "name_override": "kind",
+      "type": "string"
+    },
+    "threads": {
+      "description": "The thread count type.",
+      "enum": [
+        "cached",
+        "connected",
+        "created",
+        "running"
+      ],
+      "name_override": "kind",
+      "type": "string"
+    },
+    "tmp_resource": {
+      "description": "The kind of temporary resources.",
+      "enum": [
+        "disk_tables",
+        "files",
+        "tables"
+      ],
+      "name_override": "resource",
+      "type": "string"
+    },
+    "user.name": {
+      "description": "The user associated with a foreground thread, empty for a background thread (originally processlist_user).",
+      "type": "string"
+    },
+    "write_lock_type": {
+      "description": "Write operation types.",
+      "enum": [
+        "allow_write",
+        "concurrent_insert",
+        "external",
+        "low_priority",
+        "normal"
+      ],
+      "name_override": "kind",
+      "type": "string"
+    }
+  },
+  "description": null,
+  "display_name": null,
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-receiver-mysqlreceiver",
+  "metrics": {
+    "mysql.buffer_pool.data_pages": {
+      "attributes": [
+        "buffer_pool_data"
+      ],
+      "description": "The number of data pages in the InnoDB buffer pool.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.buffer_pool.limit": {
+      "description": "The configured size of the InnoDB buffer pool.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "mysql.buffer_pool.operations": {
+      "attributes": [
+        "buffer_pool_operations"
+      ],
+      "description": "The number of operations on the InnoDB buffer pool.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.buffer_pool.page_flushes": {
+      "description": "The number of requests to flush pages from the InnoDB buffer pool.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.buffer_pool.pages": {
+      "attributes": [
+        "buffer_pool_pages"
+      ],
+      "description": "The number of pages in the InnoDB buffer pool.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.buffer_pool.usage": {
+      "attributes": [
+        "buffer_pool_data"
+      ],
+      "description": "The number of bytes in the InnoDB buffer pool.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "mysql.client.network.io": {
+      "attributes": [
+        "direction"
+      ],
+      "description": "The number of transmitted bytes between server and clients.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "mysql.commands": {
+      "attributes": [
+        "command"
+      ],
+      "description": "The number of times each type of command has been executed.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.connection.count": {
+      "description": "The number of connection attempts (successful or not) to the MySQL server.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.connection.errors": {
+      "attributes": [
+        "connection_error"
+      ],
+      "description": "Errors that occur during the client connection process.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.double_writes": {
+      "attributes": [
+        "double_writes"
+      ],
+      "description": "The number of writes to the InnoDB doublewrite buffer.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.handlers": {
+      "attributes": [
+        "handler"
+      ],
+      "description": "The number of requests to various MySQL handlers.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.index.io.wait.count": {
+      "attributes": [
+        "index_name",
+        "io_waits_operations",
+        "schema",
+        "table_name"
+      ],
+      "description": "The total count of I/O wait events for an index.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.index.io.wait.time": {
+      "attributes": [
+        "index_name",
+        "io_waits_operations",
+        "schema",
+        "table_name"
+      ],
+      "description": "The total time of I/O wait events for an index.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "ns"
+    },
+    "mysql.joins": {
+      "attributes": [
+        "join_kind"
+      ],
+      "description": "The number of joins that perform table scans.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.locks": {
+      "attributes": [
+        "locks"
+      ],
+      "description": "The number of MySQL locks.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.log_operations": {
+      "attributes": [
+        "log_operations"
+      ],
+      "description": "The number of InnoDB log operations.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.max_used_connections": {
+      "description": "Maximum number of connections used simultaneously since the server started.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.mysqlx_connections": {
+      "attributes": [
+        "connection_status"
+      ],
+      "description": "The number of mysqlx connections.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.mysqlx_worker_threads": {
+      "attributes": [
+        "mysqlx_threads"
+      ],
+      "description": "The number of worker threads available.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.opened_resources": {
+      "attributes": [
+        "opened_resources"
+      ],
+      "description": "The number of opened resources.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.operations": {
+      "attributes": [
+        "operations"
+      ],
+      "description": "The number of InnoDB operations.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.page_operations": {
+      "attributes": [
+        "page_operations"
+      ],
+      "description": "The number of InnoDB page operations.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.page_size": {
+      "description": "InnoDB page size.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "mysql.prepared_statements": {
+      "attributes": [
+        "prepared_statements_command"
+      ],
+      "description": "The number of times each type of prepared statement command has been issued.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.query.client.count": {
+      "description": "The number of statements executed by the server. This includes only statements sent to the server by clients.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.query.count": {
+      "description": "The number of statements executed by the server.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.query.slow.count": {
+      "description": "The number of slow queries.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.replica.sql_delay": {
+      "attributes": [],
+      "description": "The number of seconds that the replica must lag the source.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "s"
+    },
+    "mysql.replica.time_behind_source": {
+      "attributes": [],
+      "description": "This field is an indication of how \u201clate\u201d the replica is.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "s"
+    },
+    "mysql.row_locks": {
+      "attributes": [
+        "row_locks"
+      ],
+      "description": "The number of InnoDB row locks.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.row_operations": {
+      "attributes": [
+        "row_operations"
+      ],
+      "description": "The number of InnoDB row operations.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.sorts": {
+      "attributes": [
+        "sorts"
+      ],
+      "description": "The number of MySQL sorts.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.statement_event.count": {
+      "attributes": [
+        "digest",
+        "digest_text",
+        "event_state",
+        "schema"
+      ],
+      "description": "Summary of current and recent statement events.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.statement_event.wait.time": {
+      "attributes": [
+        "digest",
+        "digest_text",
+        "schema"
+      ],
+      "description": "The total wait time of the summarized timed events.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "ns"
+    },
+    "mysql.table.average_row_length": {
+      "attributes": [
+        "schema",
+        "table_name"
+      ],
+      "description": "The average row length in bytes for a given table.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "mysql.table.io.wait.count": {
+      "attributes": [
+        "io_waits_operations",
+        "schema",
+        "table_name"
+      ],
+      "description": "The total count of I/O wait events for a table.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.table.io.wait.time": {
+      "attributes": [
+        "io_waits_operations",
+        "schema",
+        "table_name"
+      ],
+      "description": "The total time of I/O wait events for a table.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "ns"
+    },
+    "mysql.table.lock_wait.read.count": {
+      "attributes": [
+        "read_lock_type",
+        "schema",
+        "table_name"
+      ],
+      "description": "The total table lock wait read events.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.table.lock_wait.read.time": {
+      "attributes": [
+        "read_lock_type",
+        "schema",
+        "table_name"
+      ],
+      "description": "The total table lock wait read events times.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "ns"
+    },
+    "mysql.table.lock_wait.write.count": {
+      "attributes": [
+        "schema",
+        "table_name",
+        "write_lock_type"
+      ],
+      "description": "The total table lock wait write events.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.table.lock_wait.write.time": {
+      "attributes": [
+        "schema",
+        "table_name",
+        "write_lock_type"
+      ],
+      "description": "The total table lock wait write events times.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "ns"
+    },
+    "mysql.table.rows": {
+      "attributes": [
+        "schema",
+        "table_name"
+      ],
+      "description": "The number of rows for a given table.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.table.size": {
+      "attributes": [
+        "schema",
+        "table_name",
+        "table_size_type"
+      ],
+      "description": "The table size in bytes for a given table.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "mysql.table_open_cache": {
+      "attributes": [
+        "cache_status"
+      ],
+      "description": "The number of hits, misses or overflows for open tables cache lookups.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.threads": {
+      "attributes": [
+        "threads"
+      ],
+      "description": "The state of MySQL threads.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.tmp_resources": {
+      "attributes": [
+        "tmp_resource"
+      ],
+      "description": "The number of created temporary resources.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "mysql.uptime": {
+      "description": "The number of seconds that the server has been up.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "s"
+    }
+  },
+  "name": "mysqlreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "antonblock",
+        "ishleenk17"
+      ],
+      "emeritus": [
+        "djaglowski"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ],
+      "development": [
+        "logs"
+      ]
+    }
+  },
+  "type": "receiver"
+}

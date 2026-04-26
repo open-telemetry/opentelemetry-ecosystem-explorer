@@ -1,0 +1,28 @@
+{
+  "description": null,
+  "display_name": "Memory Limiter Processor",
+  "distribution": "core",
+  "ecosystem": "collector",
+  "id": "core-processor-memorylimiterprocessor",
+  "name": "memorylimiterprocessor",
+  "repository": "opentelemetry-collector",
+  "status": {
+    "class": "processor",
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "profiles"
+      ],
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "processor"
+}

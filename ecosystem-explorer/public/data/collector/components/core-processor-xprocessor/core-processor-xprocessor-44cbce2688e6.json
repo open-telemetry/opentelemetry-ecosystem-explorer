@@ -1,0 +1,24 @@
+{
+  "description": null,
+  "display_name": null,
+  "distribution": "core",
+  "ecosystem": "collector",
+  "id": "core-processor-xprocessor",
+  "name": "xprocessor",
+  "repository": "opentelemetry-collector",
+  "status": {
+    "class": "pkg",
+    "codeowners": {
+      "active": [
+        "mx-psi",
+        "dmathieu"
+      ]
+    },
+    "stability": {
+      "development": [
+        "profiles"
+      ]
+    }
+  },
+  "type": "processor"
+}

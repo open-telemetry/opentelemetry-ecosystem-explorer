@@ -1,0 +1,82 @@
+{
+  "description": null,
+  "display_name": null,
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-receiver-icmpcheckreceiver",
+  "metrics": {
+    "ping.loss.ratio": {
+      "description": "The percentage of lost packets.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "%"
+    },
+    "ping.rtt.avg": {
+      "description": "Average round-trip time in milliseconds.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "ms"
+    },
+    "ping.rtt.max": {
+      "description": "Maximum round-trip time in milliseconds.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "ms"
+    },
+    "ping.rtt.min": {
+      "description": "Minimum round-trip time in milliseconds.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "ms"
+    },
+    "ping.rtt.stddev": {
+      "description": "Standard deviation of round-trip time in milliseconds.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "ms"
+    }
+  },
+  "name": "icmpcheckreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "atoulme",
+        "jkoronaAtCisco"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver"
+}

@@ -1,0 +1,33 @@
+{
+  "description": null,
+  "display_name": null,
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-receiver-windowsperfcountersreceiver",
+  "name": "windowsperfcountersreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "dashpole",
+        "alxbl",
+        "pjanotti"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    },
+    "unsupported_platforms": [
+      "darwin",
+      "linux"
+    ]
+  },
+  "type": "receiver"
+}

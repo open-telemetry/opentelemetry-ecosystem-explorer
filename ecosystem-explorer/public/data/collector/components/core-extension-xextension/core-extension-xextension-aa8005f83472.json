@@ -1,0 +1,19 @@
+{
+  "description": null,
+  "display_name": null,
+  "distribution": "core",
+  "ecosystem": "collector",
+  "id": "core-extension-xextension",
+  "name": "xextension",
+  "repository": "opentelemetry-collector",
+  "status": {
+    "class": "pkg",
+    "codeowners": null,
+    "stability": {
+      "development": [
+        "profiles"
+      ]
+    }
+  },
+  "type": "extension"
+}

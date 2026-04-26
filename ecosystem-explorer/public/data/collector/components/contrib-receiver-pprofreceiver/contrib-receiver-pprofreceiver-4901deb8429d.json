@@ -1,0 +1,25 @@
+{
+  "description": null,
+  "display_name": null,
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-receiver-pprofreceiver",
+  "name": "pprofreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "MovieStoreGuy",
+        "atoulme"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "profiles"
+      ]
+    }
+  },
+  "type": "receiver"
+}

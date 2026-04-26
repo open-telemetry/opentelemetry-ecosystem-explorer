@@ -1,0 +1,30 @@
+{
+  "description": null,
+  "display_name": null,
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-connector-signaltometricsconnector",
+  "name": "signaltometricsconnector",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "connector",
+    "codeowners": {
+      "active": [
+        "ChrsMark",
+        "lahsivjar"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs_to_metrics",
+        "metrics_to_metrics",
+        "profiles_to_metrics",
+        "traces_to_metrics"
+      ]
+    }
+  },
+  "type": "connector"
+}

@@ -1,0 +1,165 @@
+{
+  "attributes": {
+    "http.method": {
+      "description": "An HTTP request method.",
+      "enum": [
+        "COPY",
+        "DELETE",
+        "GET",
+        "HEAD",
+        "OPTIONS",
+        "POST",
+        "PUT"
+      ],
+      "type": "string"
+    },
+    "http.status_code": {
+      "description": "An HTTP status code.",
+      "type": "string"
+    },
+    "operation": {
+      "description": "The operation type.",
+      "enum": [
+        "reads",
+        "writes"
+      ],
+      "type": "string"
+    },
+    "view": {
+      "description": "The view type.",
+      "enum": [
+        "temporary_view_reads",
+        "view_reads"
+      ],
+      "type": "string"
+    }
+  },
+  "description": "This receiver fetches stats from a CouchDB server using the `/_node/{node-name}/_stats/couchdb` [endpoint](https://docs.couchdb.org/en/latest/api/server/common.html#node-node-name-stats).",
+  "display_name": "CouchDB Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-receiver-couchdbreceiver",
+  "metrics": {
+    "couchdb.average_request_time": {
+      "description": "The average duration of a served request.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "ms"
+    },
+    "couchdb.database.open": {
+      "description": "The number of open databases.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{databases}"
+    },
+    "couchdb.database.operations": {
+      "attributes": [
+        "operation"
+      ],
+      "description": "The number of database operations.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{operations}"
+    },
+    "couchdb.file_descriptor.open": {
+      "description": "The number of open file descriptors.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{files}"
+    },
+    "couchdb.httpd.bulk_requests": {
+      "description": "The number of bulk requests.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{requests}"
+    },
+    "couchdb.httpd.requests": {
+      "attributes": [
+        "http.method"
+      ],
+      "description": "The number of HTTP requests by method.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{requests}"
+    },
+    "couchdb.httpd.responses": {
+      "attributes": [
+        "http.status_code"
+      ],
+      "description": "The number of each HTTP status code.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{responses}"
+    },
+    "couchdb.httpd.views": {
+      "attributes": [
+        "view"
+      ],
+      "description": "The number of views read.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{views}"
+    }
+  },
+  "name": "couchdbreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "antonblock"
+      ],
+      "emeritus": [
+        "djaglowski"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver"
+}

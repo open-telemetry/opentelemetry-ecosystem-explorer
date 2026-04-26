@@ -1,0 +1,28 @@
+{
+  "description": null,
+  "display_name": "Forward Connector",
+  "distribution": "core",
+  "ecosystem": "collector",
+  "id": "core-connector-forwardconnector",
+  "name": "forwardconnector",
+  "repository": "opentelemetry-collector",
+  "status": {
+    "class": "connector",
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "profiles_to_profiles"
+      ],
+      "beta": [
+        "logs_to_logs",
+        "metrics_to_metrics",
+        "traces_to_traces"
+      ]
+    }
+  },
+  "type": "connector"
+}

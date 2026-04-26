@@ -1,0 +1,98 @@
+{
+  "attributes": {
+    "cpu.mode": {
+      "description": "Breakdown of CPU usage by type.",
+      "enum": [
+        "system",
+        "user"
+      ],
+      "type": "string"
+    },
+    "systemd.unit.active_state": {
+      "description": "The active state of the unit (https://www.freedesktop.org/software/systemd/man/latest/systemd.html#Units)",
+      "enum": [
+        "activating",
+        "active",
+        "deactivating",
+        "failed",
+        "inactive",
+        "maintenance",
+        "refreshing",
+        "reloading"
+      ],
+      "type": "string"
+    }
+  },
+  "description": null,
+  "display_name": null,
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-receiver-systemdreceiver",
+  "metrics": {
+    "systemd.service.cpu.time": {
+      "attributes": [
+        "cpu.mode"
+      ],
+      "description": "Total CPU time spent by this service.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "us"
+    },
+    "systemd.service.restarts": {
+      "description": "Number of automatic restarts for the service.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{restarts}"
+    },
+    "systemd.unit.state": {
+      "attributes": [
+        "systemd.unit.active_state"
+      ],
+      "description": "1 if the check resulted in active_state matching the current state, otherwise 0.",
+      "enabled": true,
+      "stability": "alpha",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "1"
+    }
+  },
+  "name": "systemdreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "atoulme"
+      ],
+      "emeritus": [
+        "Hemansh31"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    },
+    "unsupported_platforms": [
+      "darwin",
+      "windows"
+    ]
+  },
+  "type": "receiver"
+}

@@ -1,0 +1,32 @@
+{
+  "description": null,
+  "display_name": null,
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-connector-otlpjsonconnector",
+  "name": "otlpjsonconnector",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "connector",
+    "codeowners": {
+      "active": [
+        "ChrsMark"
+      ],
+      "emeritus": [
+        "djaglowski"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "logs_to_logs",
+        "logs_to_metrics",
+        "logs_to_traces"
+      ]
+    }
+  },
+  "type": "connector"
+}

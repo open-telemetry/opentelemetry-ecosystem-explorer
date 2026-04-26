@@ -1,0 +1,29 @@
+{
+  "description": null,
+  "display_name": "Faro Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-exporter-faroexporter",
+  "name": "faroexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "dehaansa",
+        "rlankfo",
+        "mar4uk"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "traces"
+      ]
+    }
+  },
+  "type": "exporter"
+}

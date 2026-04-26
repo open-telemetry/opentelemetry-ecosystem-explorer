@@ -317,12 +317,13 @@ class TestMain:
 
         mock_args = MagicMock()
         mock_args.clean = False
+        mock_args.ecosystem = "all"
         mock_parse_args.return_value = mock_args
         mock_run_builder.return_value = 0
 
         main()
 
-        mock_run_builder.assert_called_once_with(clean=False)
+        mock_run_builder.assert_called_once_with(clean=False, ecosystem="all")
         mock_exit.assert_called_once_with(0)
 
     @patch("explorer_db_builder.main.run_builder")
@@ -334,12 +335,13 @@ class TestMain:
 
         mock_args = MagicMock()
         mock_args.clean = False
+        mock_args.ecosystem = "all"
         mock_parse_args.return_value = mock_args
         mock_run_builder.return_value = 1
 
         main()
 
-        mock_run_builder.assert_called_once_with(clean=False)
+        mock_run_builder.assert_called_once_with(clean=False, ecosystem="all")
         mock_exit.assert_called_once_with(1)
 
     @patch("explorer_db_builder.main.run_builder")
@@ -351,67 +353,138 @@ class TestMain:
 
         mock_args = MagicMock()
         mock_args.clean = True
+        mock_args.ecosystem = "all"
         mock_parse_args.return_value = mock_args
         mock_run_builder.return_value = 0
 
         main()
 
-        mock_run_builder.assert_called_once_with(clean=True)
+        mock_run_builder.assert_called_once_with(clean=True, ecosystem="all")
+        mock_exit.assert_called_once_with(0)
+
+    @patch("explorer_db_builder.main.run_builder")
+    @patch("explorer_db_builder.main.sys.exit")
+    @patch("explorer_db_builder.main.argparse.ArgumentParser.parse_args")
+    def test_main_with_ecosystem_flag(self, mock_parse_args, mock_exit, mock_run_builder):
+        """Main passes ecosystem flag to run_builder."""
+        from explorer_db_builder.main import main
+
+        mock_args = MagicMock()
+        mock_args.clean = False
+        mock_args.ecosystem = "collector"
+        mock_parse_args.return_value = mock_args
+        mock_run_builder.return_value = 0
+
+        main()
+
+        mock_run_builder.assert_called_once_with(clean=False, ecosystem="collector")
         mock_exit.assert_called_once_with(0)
 
 
 class TestRunBuilderOrchestrator:
+    @patch("explorer_db_builder.main.run_collector_builder")
     @patch("explorer_db_builder.main.run_configuration_builder")
     @patch("explorer_db_builder.main.run_javaagent_builder")
-    def test_both_succeed(self, mock_java, mock_config):
+    def test_all_succeed(self, mock_java, mock_config, mock_collector):
         mock_java.return_value = 0
         mock_config.return_value = 0
+        mock_collector.return_value = 0
 
         result = run_builder(clean=False)
 
         assert result == 0
         mock_java.assert_called_once()
         mock_config.assert_called_once()
+        mock_collector.assert_called_once()
 
+    @patch("explorer_db_builder.main.run_collector_builder")
     @patch("explorer_db_builder.main.run_configuration_builder")
     @patch("explorer_db_builder.main.run_javaagent_builder")
-    def test_javaagent_fails_config_still_runs(self, mock_java, mock_config):
+    def test_javaagent_fails_others_still_run(self, mock_java, mock_config, mock_collector):
         mock_java.return_value = 1
         mock_config.return_value = 0
+        mock_collector.return_value = 0
 
         result = run_builder(clean=False)
 
         assert result == 1
         mock_java.assert_called_once()
         mock_config.assert_called_once()
+        mock_collector.assert_called_once()
 
+    @patch("explorer_db_builder.main.run_collector_builder")
     @patch("explorer_db_builder.main.run_configuration_builder")
     @patch("explorer_db_builder.main.run_javaagent_builder")
-    def test_config_fails_returns_1(self, mock_java, mock_config):
+    def test_config_fails_returns_1(self, mock_java, mock_config, mock_collector):
         mock_java.return_value = 0
         mock_config.return_value = 1
+        mock_collector.return_value = 0
 
         result = run_builder(clean=False)
 
         assert result == 1
 
+    @patch("explorer_db_builder.main.run_collector_builder")
     @patch("explorer_db_builder.main.run_configuration_builder")
     @patch("explorer_db_builder.main.run_javaagent_builder")
-    def test_both_fail_returns_1(self, mock_java, mock_config):
+    def test_all_fail_returns_1(self, mock_java, mock_config, mock_collector):
         mock_java.return_value = 1
         mock_config.return_value = 1
+        mock_collector.return_value = 1
 
         result = run_builder(clean=False)
 
         assert result == 1
 
+    @patch("explorer_db_builder.main.run_collector_builder")
     @patch("explorer_db_builder.main.run_configuration_builder")
     @patch("explorer_db_builder.main.run_javaagent_builder")
-    def test_clean_passed_to_both(self, mock_java, mock_config):
+    def test_clean_passed_to_all(self, mock_java, mock_config, mock_collector):
         mock_java.return_value = 0
         mock_config.return_value = 0
+        mock_collector.return_value = 0
 
         run_builder(clean=True)
 
         mock_java.assert_called_once_with(clean=True)
         mock_config.assert_called_once_with(clean=True)
+        mock_collector.assert_called_once_with(clean=True)
+
+    @patch("explorer_db_builder.main.run_collector_builder")
+    @patch("explorer_db_builder.main.run_configuration_builder")
+    @patch("explorer_db_builder.main.run_javaagent_builder")
+    def test_ecosystem_javaagent_only(self, mock_java, mock_config, mock_collector):
+        mock_java.return_value = 0
+
+        result = run_builder(clean=False, ecosystem="javaagent")
+
+        assert result == 0
+        mock_java.assert_called_once()
+        mock_config.assert_not_called()
+        mock_collector.assert_not_called()
+
+    @patch("explorer_db_builder.main.run_collector_builder")
+    @patch("explorer_db_builder.main.run_configuration_builder")
+    @patch("explorer_db_builder.main.run_javaagent_builder")
+    def test_ecosystem_configuration_only(self, mock_java, mock_config, mock_collector):
+        mock_config.return_value = 0
+
+        result = run_builder(clean=False, ecosystem="configuration")
+
+        assert result == 0
+        mock_java.assert_not_called()
+        mock_config.assert_called_once()
+        mock_collector.assert_not_called()
+
+    @patch("explorer_db_builder.main.run_collector_builder")
+    @patch("explorer_db_builder.main.run_configuration_builder")
+    @patch("explorer_db_builder.main.run_javaagent_builder")
+    def test_ecosystem_collector_only(self, mock_java, mock_config, mock_collector):
+        mock_collector.return_value = 0
+
+        result = run_builder(clean=False, ecosystem="collector")
+
+        assert result == 0
+        mock_java.assert_not_called()
+        mock_config.assert_not_called()
+        mock_collector.assert_called_once()

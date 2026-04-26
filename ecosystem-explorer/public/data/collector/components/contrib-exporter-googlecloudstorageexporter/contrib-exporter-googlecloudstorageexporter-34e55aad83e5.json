@@ -1,0 +1,31 @@
+{
+  "description": null,
+  "display_name": "Google Cloud Storage Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-exporter-googlecloudstorageexporter",
+  "name": "googlecloudstorageexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "constanca-m",
+        "braydonk"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs"
+      ],
+      "development": [
+        "traces"
+      ]
+    }
+  },
+  "type": "exporter"
+}

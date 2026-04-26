@@ -1,0 +1,36 @@
+{
+  "description": null,
+  "display_name": null,
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-receiver-journaldreceiver",
+  "name": "journaldreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "belimawr",
+        "namco1992"
+      ],
+      "emeritus": [
+        "djaglowski",
+        "sumo-drosiek"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "logs"
+      ]
+    },
+    "unsupported_platforms": [
+      "darwin",
+      "windows"
+    ]
+  },
+  "type": "receiver"
+}

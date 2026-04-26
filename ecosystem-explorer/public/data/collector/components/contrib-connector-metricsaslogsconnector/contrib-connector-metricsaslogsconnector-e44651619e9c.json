@@ -1,0 +1,24 @@
+{
+  "description": null,
+  "display_name": null,
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-connector-metricsaslogsconnector",
+  "name": "metricsaslogsconnector",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "connector",
+    "codeowners": {
+      "active": [
+        "atoulme"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "metrics_to_logs"
+      ]
+    }
+  },
+  "type": "connector"
+}

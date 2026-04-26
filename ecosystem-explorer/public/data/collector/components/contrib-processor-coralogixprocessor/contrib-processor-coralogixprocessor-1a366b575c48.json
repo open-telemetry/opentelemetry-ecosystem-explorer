@@ -1,0 +1,26 @@
+{
+  "description": null,
+  "display_name": null,
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-processor-coralogixprocessor",
+  "name": "coralogixprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "crobert-1",
+        "povilasv",
+        "iblancasa"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "alpha": [
+        "traces"
+      ]
+    }
+  },
+  "type": "processor"
+}

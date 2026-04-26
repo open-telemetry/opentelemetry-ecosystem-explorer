@@ -1,0 +1,25 @@
+{
+  "description": null,
+  "display_name": null,
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-extension-solarwindsapmsettingsextension",
+  "name": "solarwindsapmsettingsextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "jerrytfleung",
+        "cheempz"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "extension"
+      ]
+    }
+  },
+  "type": "extension"
+}

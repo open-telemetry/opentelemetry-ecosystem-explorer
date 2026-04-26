@@ -1,0 +1,32 @@
+{
+  "description": null,
+  "display_name": null,
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-receiver-hostmetricsreceiver",
+  "name": "hostmetricsreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "dmitryax",
+        "braydonk"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ],
+      "development": [
+        "logs"
+      ]
+    }
+  },
+  "type": "receiver"
+}

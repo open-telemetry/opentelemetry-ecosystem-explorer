@@ -1,0 +1,28 @@
+{
+  "description": null,
+  "display_name": null,
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-receiver-vcrreceiver",
+  "name": "vcrreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "atoulme",
+        "robertgustafsonsplunk",
+        "garrett-splunk"
+      ]
+    },
+    "stability": {
+      "development": [
+        "logs",
+        "metrics",
+        "profiles",
+        "traces"
+      ]
+    }
+  },
+  "type": "receiver"
+}

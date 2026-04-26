@@ -1,0 +1,31 @@
+{
+  "description": null,
+  "display_name": null,
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-receiver-windowseventlogreceiver",
+  "name": "windowseventlogreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "armstrmi",
+        "pjanotti"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs"
+      ]
+    },
+    "unsupported_platforms": [
+      "darwin",
+      "linux"
+    ]
+  },
+  "type": "receiver"
+}

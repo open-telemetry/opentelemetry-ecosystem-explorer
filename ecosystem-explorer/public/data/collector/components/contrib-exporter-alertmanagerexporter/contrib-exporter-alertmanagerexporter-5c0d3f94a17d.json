@@ -1,0 +1,25 @@
+{
+  "description": null,
+  "display_name": null,
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-exporter-alertmanagerexporter",
+  "name": "alertmanagerexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "sokoide",
+        "mcube8"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "traces"
+      ]
+    }
+  },
+  "type": "exporter"
+}

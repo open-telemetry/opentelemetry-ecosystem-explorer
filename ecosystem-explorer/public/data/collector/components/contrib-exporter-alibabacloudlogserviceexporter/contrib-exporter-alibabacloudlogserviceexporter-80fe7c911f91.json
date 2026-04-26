@@ -1,0 +1,30 @@
+{
+  "description": null,
+  "display_name": "AlibabaCloud LogService Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-exporter-alibabacloudlogserviceexporter",
+  "name": "alibabacloudlogserviceexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "shabicheng",
+        "kongluoxing",
+        "qiansheng91"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "exporter"
+}
