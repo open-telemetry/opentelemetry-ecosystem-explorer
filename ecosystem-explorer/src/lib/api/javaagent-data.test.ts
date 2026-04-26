@@ -191,7 +191,7 @@ describe("javaagent-data", () => {
 
       const result = await javaagentData.loadInstrumentation("akka-actor", "2.10.0");
 
-      expect(result).toEqual({ ...mockInstrumentationData, _isCustom: false });
+      expect(result).toEqual({ ...mockInstrumentationData, _is_custom: false });
       expect(getCachedSpy).toHaveBeenCalledWith("manifest-2.10.0", idbCache.STORES.METADATA);
       expect(getCachedSpy).toHaveBeenCalledWith(
         "instrumentation-abc123",
@@ -213,7 +213,7 @@ describe("javaagent-data", () => {
 
       const result = await javaagentData.loadInstrumentation("akka-actor", "2.10.0");
 
-      expect(result).toEqual({ ...mockInstrumentationData, _isCustom: false });
+      expect(result).toEqual({ ...mockInstrumentationData, _is_custom: false });
       expect(global.fetch).toHaveBeenCalledWith(
         "/data/javaagent/instrumentations/akka-actor/akka-actor-abc123.json"
       );
@@ -257,8 +257,8 @@ describe("javaagent-data", () => {
       const result = await javaagentData.loadAllInstrumentations("2.10.0");
 
       expect(result).toHaveLength(2);
-      expect(result).toContainEqual({ ...akkaData, _isCustom: false });
-      expect(result).toContainEqual({ ...springData, _isCustom: false });
+      expect(result).toContainEqual({ ...akkaData, _is_custom: false });
+      expect(result).toContainEqual({ ...springData, _is_custom: false });
     });
 
     it("should only load manifest once for all instrumentations", async () => {

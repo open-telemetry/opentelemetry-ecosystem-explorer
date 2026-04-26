@@ -143,15 +143,14 @@ def run_javaagent_builder(
             inventory_manager.load_versioned_inventory,
             item_key="libraries",
         )
-        backfilled_customs = backfill_metadata(
+        backfilled_inventories = backfill_metadata(
             versions,
-            inventory_manager.load_versioned_inventory,
+            lambda v: backfilled_libraries[v],
             item_key="custom",
         )
 
         for version in versions:
-            inventory = backfilled_libraries[version].copy()
-            inventory["custom"] = backfilled_customs[version].get("custom", [])
+            inventory = backfilled_inventories.get(version)
             process_version(version, inventory_manager, db_writer, inventory=inventory)
 
         db_writer.write_version_list(versions)

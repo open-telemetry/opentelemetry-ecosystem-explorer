@@ -103,8 +103,8 @@ export function JavaInstrumentationListPage() {
 
   const { libraryInstrumentations, customInstrumentations } = useMemo(() => {
     return {
-      libraryInstrumentations: filteredInstrumentations.filter((i) => !i._isCustom),
-      customInstrumentations: filteredInstrumentations.filter((i) => i._isCustom),
+      libraryInstrumentations: filteredInstrumentations.filter((i) => !i._is_custom),
+      customInstrumentations: filteredInstrumentations.filter((i) => i._is_custom),
     };
   }, [filteredInstrumentations]);
 

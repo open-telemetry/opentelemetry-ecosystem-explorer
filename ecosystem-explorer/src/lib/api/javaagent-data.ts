@@ -63,7 +63,7 @@ export async function loadInstrumentation(
   );
   if (!data) throw new Error(`Instrumentation "${id}" returned null unexpectedly`);
   
-  return { ...data, _isCustom: isCustom };
+  return { ...data, _is_custom: isCustom };
 }
 
 export async function loadAllInstrumentations(version: string): Promise<InstrumentationData[]> {
