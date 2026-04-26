@@ -44,7 +44,7 @@ export interface InstrumentationData {
   javaagent_target_versions?: string[];
   configurations?: Configuration[];
   telemetry?: Telemetry[];
-  _isCustom?: boolean;
+  _is_custom?: boolean;
 }
 
 export interface InstrumentationScope {
