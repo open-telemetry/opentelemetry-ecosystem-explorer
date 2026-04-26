@@ -45,6 +45,8 @@ describe("ThemeProvider", () => {
     expect(root.style.getPropertyValue("--muted-foreground-hsl")).toBe(
       theme.colors.mutedForeground
     );
+    expect(root.style.getPropertyValue("--syntax-key-hsl")).toBe(theme.colors.syntax.key);
+    expect(root.style.getPropertyValue("--syntax-string-hsl")).toBe(theme.colors.syntax.string);
   });
 
   it("sets data-theme attribute on document root", () => {

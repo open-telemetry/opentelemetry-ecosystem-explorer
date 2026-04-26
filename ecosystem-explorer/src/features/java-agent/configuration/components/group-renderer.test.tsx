@@ -18,7 +18,13 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { GroupRenderer } from "./group-renderer";
 import type { GroupNode } from "@/types/configuration";
 
-const mockState = {
+const mockState: {
+  values: Record<string, unknown>;
+  enabledSections: Record<string, boolean>;
+  validationErrors: Record<string, string>;
+  version: string;
+  isDirty: boolean;
+} = {
   values: {},
   enabledSections: { resource: false },
   validationErrors: {},
@@ -60,10 +66,11 @@ describe("GroupRenderer", () => {
     expect(setEnabled).toHaveBeenCalledWith("resource", true);
   });
 
-  it("at depth >= 3 renders a plain header without a collapse chevron", () => {
+  it("at depth >= 3 still renders a chevron button so the user can collapse the group", () => {
     render(<GroupRenderer node={groupNode} depth={3} path="resource" />);
     expect(screen.getByText("Resource")).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /collapse/i })).not.toBeInTheDocument();
+    // Collapsed by default at depth >= 1, so the chevron is in the "Expand" state.
+    expect(screen.getByRole("button", { name: /Expand Resource/ })).toBeInTheDocument();
   });
 
   it("hides the chevron button at depth 0 when the section is disabled", () => {
@@ -104,5 +111,104 @@ describe("GroupRenderer", () => {
     // Child label should now appear (auto-expanded).
     expect(screen.getByText("Schema URL")).toBeInTheDocument();
     mockState.enabledSections.resource = false; // restore
+  });
+
+  it("at depth >= 1 always starts collapsed regardless of the value at the path", () => {
+    // The starter populates processors[0].batch.schedule_delay, but the rule is "always
+    // collapsed at depth >= 1" so the user sees the structure first instead of a wall
+    // of pre-filled fields.
+    const batchNode: GroupNode = {
+      controlType: "group",
+      key: "batch",
+      label: "Batch",
+      path: "tracer_provider.processors[0].batch",
+      children: [
+        {
+          controlType: "text_input",
+          key: "schedule_delay",
+          label: "Schedule Delay",
+          path: "tracer_provider.processors[0].batch.schedule_delay",
+        } as unknown as GroupNode,
+      ],
+    };
+    mockState.values = {
+      tracer_provider: {
+        processors: [{ batch: { exporter: { otlp_http: {} }, schedule_delay: 1000 } }],
+      },
+    };
+    render(<GroupRenderer node={batchNode} depth={3} path="tracer_provider.processors[0].batch" />);
+    expect(screen.queryByText("Schedule Delay")).toBeNull();
+    // The chevron is there to expand on demand.
+    expect(screen.getByRole("button", { name: /Expand Batch/ })).toBeInTheDocument();
+  });
+
+  it("at depth >= 1, expands when the chevron is clicked", () => {
+    const samplerNode: GroupNode = {
+      controlType: "group",
+      key: "sampler",
+      label: "Sampler",
+      path: "tracer_provider.sampler",
+      children: [
+        {
+          controlType: "text_input",
+          key: "ratio",
+          label: "Ratio",
+          path: "tracer_provider.sampler.ratio",
+        } as unknown as GroupNode,
+      ],
+    };
+    mockState.values = {
+      tracer_provider: { processors: [{ batch: { exporter: { otlp_http: {} } } }] },
+    };
+    render(<GroupRenderer node={samplerNode} depth={1} path="tracer_provider.sampler" />);
+    expect(screen.queryByText("Ratio")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: /Expand Sampler/ }));
+    expect(screen.getByText("Ratio")).toBeInTheDocument();
+  });
+
+  it("at depth 0, exposes data-section-key and tabIndex for scroll-spy targeting", () => {
+    mockState.enabledSections = { resource: true };
+    const resourceNode: GroupNode = {
+      controlType: "group",
+      key: "resource",
+      label: "Resource",
+      path: "resource",
+      children: [],
+    };
+    const { container } = render(<GroupRenderer node={resourceNode} depth={0} path="resource" />);
+    const section = container.querySelector<HTMLElement>('[data-section-key="resource"]');
+    expect(section).not.toBeNull();
+    expect(section?.getAttribute("tabindex")).toBe("-1");
+  });
+
+  it("renders a TruncatedDescription on top-level cards (depth 0)", () => {
+    mockState.enabledSections = { tracer: true };
+    const node: GroupNode = {
+      controlType: "group",
+      key: "tracer",
+      label: "Tracer Provider",
+      path: "tracer",
+      description: "Configure spans, samplers, and processors. Multiple processors are supported.",
+      children: [],
+    };
+    render(<GroupRenderer node={node} depth={0} path="tracer" />);
+    expect(screen.getByText("Configure spans, samplers, and processors.")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Show more" })).toBeInTheDocument();
+  });
+
+  it("renders a tooltip for nested groups (depth >= 1) instead of an inline paragraph", () => {
+    const node: GroupNode = {
+      controlType: "group",
+      key: "batch",
+      label: "Batch",
+      path: "tracer.processors[0].batch",
+      description: "Batch span processor.",
+      children: [],
+    };
+    render(<GroupRenderer node={node} depth={1} path="tracer.processors[0].batch" />);
+    const tooltip = screen.getByRole("tooltip");
+    expect(tooltip).toHaveTextContent("Batch span processor.");
+    const allMatches = screen.getAllByText("Batch span processor.");
+    expect(allMatches).toHaveLength(1);
   });
 });

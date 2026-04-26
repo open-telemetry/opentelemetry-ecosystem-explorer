@@ -181,6 +181,24 @@ describe("UnionRenderer", () => {
     expect(variantSpan.getAttribute("data-hide-label")).toBe("true");
   });
 
+  it("renders the description in a tooltip, not as an inline paragraph", () => {
+    const n: UnionNode = {
+      controlType: "union",
+      key: "sampler",
+      label: "Sampler",
+      path: "tracer_provider.sampler",
+      description: "Choose a sampling strategy.",
+      variants: [
+        { controlType: "text_input", key: "a", label: "Var 0", path: "tracer_provider.sampler" },
+        { controlType: "toggle", key: "b", label: "Var 1", path: "tracer_provider.sampler" },
+      ],
+    };
+    render(<UnionRenderer node={n} depth={1} path="tracer_provider.sampler" />);
+    const tooltip = screen.getByRole("tooltip");
+    expect(tooltip).toHaveTextContent("Choose a sampling strategy.");
+    expect(screen.getAllByText("Choose a sampling strategy.")).toHaveLength(1);
+  });
+
   it("lets unambiguous inference override a stale manualPick when the value type changes", () => {
     const n: UnionNode = {
       controlType: "union",

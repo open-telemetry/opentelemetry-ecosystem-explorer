@@ -115,7 +115,7 @@ describe("KeyValueMapControl", () => {
     expect(onChange).toHaveBeenCalledWith("resource.attributes", {});
   });
 
-  it("shows null state when nullable and value is null", () => {
+  it("shows the 'default' badge for nullable null value (no Set value interstitial)", () => {
     const nullableNode = { ...node, nullable: true };
     render(
       <KeyValueMapControl
@@ -125,7 +125,8 @@ describe("KeyValueMapControl", () => {
         onChange={vi.fn()}
       />
     );
-    expect(screen.getByRole("button", { name: "Set value" })).toBeInTheDocument();
+    expect(screen.getByText(/^default$/i)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /set value/i })).toBeNull();
   });
 
   it("shows empty state text when value is empty object", () => {

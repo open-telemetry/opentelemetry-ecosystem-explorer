@@ -65,7 +65,7 @@ describe("NumberInputControl", () => {
     expect(onChange).toHaveBeenCalledWith("exporter.timeout", 3000);
   });
 
-  it("shows null state for nullable null value", () => {
+  it("renders an empty input + 'default' badge for nullable null value", () => {
     const nullableNode = { ...node, nullable: true };
     render(
       <NumberInputControl
@@ -75,23 +75,10 @@ describe("NumberInputControl", () => {
         onChange={vi.fn()}
       />
     );
-    expect(screen.getByRole("button", { name: "Set value" })).toBeInTheDocument();
-    expect(screen.queryByRole("spinbutton")).not.toBeInTheDocument();
-  });
-
-  it("activates with 0 when Set value clicked", () => {
-    const onChange = vi.fn();
-    const nullableNode = { ...node, nullable: true };
-    render(
-      <NumberInputControl
-        node={nullableNode}
-        path={nullableNode.path}
-        value={null}
-        onChange={onChange}
-      />
-    );
-    fireEvent.click(screen.getByRole("button", { name: "Set value" }));
-    expect(onChange).toHaveBeenCalledWith("exporter.timeout", 0);
+    const input = screen.getByRole("spinbutton") as HTMLInputElement;
+    expect(input.value).toBe("");
+    expect(screen.getByText(/^default$/i)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /set value/i })).toBeNull();
   });
 
   it("does not commit 0 when the user clears a non-empty field", () => {
@@ -150,41 +137,5 @@ describe("NumberInputControl", () => {
     expect(screen.getByRole("spinbutton")).toHaveValue(1);
     rerender(<NumberInputControl node={node} path={node.path} value={99} onChange={vi.fn()} />);
     expect(screen.getByRole("spinbutton")).toHaveValue(99);
-  });
-
-  it("focuses and selects the input after Set value is clicked so next keystroke replaces the 0", async () => {
-    const onChange = vi.fn();
-    const nullableNode = { ...node, nullable: true };
-    // jsdom does not support selectionStart/selectionEnd on type=number, so spy on select().
-    const selectSpy = vi.spyOn(HTMLInputElement.prototype, "select");
-    const { rerender } = render(
-      <NumberInputControl
-        node={nullableNode}
-        path={nullableNode.path}
-        value={null}
-        onChange={onChange}
-      />
-    );
-    fireEvent.click(screen.getByRole("button", { name: "Set value" }));
-    expect(onChange).toHaveBeenCalledWith("exporter.timeout", 0);
-
-    // Simulate the parent re-render after onChange commits.
-    rerender(
-      <NumberInputControl
-        node={nullableNode}
-        path={nullableNode.path}
-        value={0}
-        onChange={onChange}
-      />
-    );
-
-    // Wait for the requestAnimationFrame callback to run.
-    await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
-    await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
-
-    const input = screen.getByRole("spinbutton") as HTMLInputElement;
-    expect(document.activeElement).toBe(input);
-    expect(selectSpy).toHaveBeenCalled();
-    selectSpy.mockRestore();
   });
 });

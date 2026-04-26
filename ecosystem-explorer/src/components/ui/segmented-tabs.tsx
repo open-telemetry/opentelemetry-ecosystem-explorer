@@ -25,9 +25,10 @@ interface TabItem {
 interface SegmentedTabListProps {
   tabs: TabItem[];
   value: string;
+  fullWidth?: boolean;
 }
 
-export function SegmentedTabList({ tabs, value }: SegmentedTabListProps) {
+export function SegmentedTabList({ tabs, value, fullWidth = false }: SegmentedTabListProps) {
   const [pillStyle, setPillStyle] = useState<{ left: number; width: number }>({
     left: 0,
     width: 0,
@@ -57,7 +58,12 @@ export function SegmentedTabList({ tabs, value }: SegmentedTabListProps) {
   return (
     <RadixTabs.List
       ref={listRef}
-      className="relative inline-flex items-center rounded-xl border border-border/50 bg-muted/80 p-1"
+      className={`relative items-center rounded-xl border border-border/50 bg-muted/80 p-1 ${
+        fullWidth ? "grid w-full" : "inline-flex"
+      }`}
+      style={
+        fullWidth ? { gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` } : undefined
+      }
     >
       {/* Sliding pill */}
       <span
@@ -78,7 +84,9 @@ export function SegmentedTabList({ tabs, value }: SegmentedTabListProps) {
           ref={(el) => {
             buttonRefs.current[tab.value] = el;
           }}
-          className="relative z-10 inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-200 data-[state=active]:text-primary data-[state=inactive]:text-muted-foreground"
+          className={`relative z-10 inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-200 data-[state=active]:text-primary data-[state=inactive]:text-muted-foreground ${
+            fullWidth ? "w-full" : ""
+          }`}
         >
           {tab.icon}
           {tab.label}

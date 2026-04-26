@@ -43,6 +43,9 @@ export function validateField(node: ConfigNode, value: ConfigValue | undefined):
       if (constraints.exclusiveMinimum !== undefined && value <= constraints.exclusiveMinimum) {
         return `Must be greater than ${constraints.exclusiveMinimum}`;
       }
+      if (constraints.exclusiveMaximum !== undefined && value >= constraints.exclusiveMaximum) {
+        return `Must be less than ${constraints.exclusiveMaximum}`;
+      }
     }
   }
 
@@ -65,6 +68,9 @@ export function validateField(node: ConfigNode, value: ConfigValue | undefined):
       const constraints = (node as ListNode).constraints;
       if (constraints?.minItems !== undefined && value.length < constraints.minItems) {
         return `Must have at least ${constraints.minItems} items`;
+      }
+      if (constraints?.maxItems !== undefined && value.length > constraints.maxItems) {
+        return `Must have at most ${constraints.maxItems} items`;
       }
     }
   }

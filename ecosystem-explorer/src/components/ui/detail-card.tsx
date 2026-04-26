@@ -19,7 +19,6 @@ interface DetailCardProps {
   children: React.ReactNode;
   className?: string;
   withGrid?: boolean;
-  withCornerAccent?: boolean;
   withHoverEffect?: boolean;
 }
 
@@ -27,7 +26,6 @@ export function DetailCard({
   children,
   className = "",
   withGrid = false,
-  withCornerAccent = false,
   withHoverEffect = false,
 }: DetailCardProps) {
   const patternId = React.useId().replace(/:/g, "-");
@@ -60,17 +58,6 @@ export function DetailCard({
       )}
 
       <div className="relative z-10">{children}</div>
-
-      {withCornerAccent && (
-        <div className="pointer-events-none absolute -bottom-1 -right-1 h-16 w-16 opacity-0 transition-all duration-300 group-hover:scale-110 group-hover:opacity-100">
-          <svg viewBox="0 0 64 64" className="h-full w-full">
-            <path
-              d="M64 64 L64 32 L48 32 L48 48 L32 48 L32 64 Z"
-              style={{ fill: "hsl(var(--secondary-hsl) / 0.5)" }}
-            />
-          </svg>
-        </div>
-      )}
     </div>
   );
 }

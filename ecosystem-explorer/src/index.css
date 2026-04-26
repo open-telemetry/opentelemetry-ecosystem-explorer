@@ -21,6 +21,12 @@
     --muted-hsl: 0 0% 6%;
     --muted-foreground-hsl: 0 0% 55%;
     --border-hsl: 0 0% 20%;
+    --syntax-comment-hsl: 220 18% 58%;
+    --syntax-key-hsl: 28 95% 65%;
+    --syntax-string-hsl: 95 60% 65%;
+    --syntax-number-hsl: 330 80% 72%;
+    --syntax-keyword-hsl: 265 70% 78%;
+    --syntax-punct-hsl: 220 22% 55%;
   }
 }
 
@@ -67,4 +73,31 @@ body {
 html {
   /* Root font size affects overall rem calculations for all components. */
   font-size: 14px;
+  /* Reserve space for the fixed header so anchor / scrollIntoView lands below it. */
+  scroll-padding-top: 5rem;
+}
+
+/* YAML syntax highlighting tokens */
+.y-comment {
+  color: hsl(var(--syntax-comment-hsl));
+  font-style: italic;
+}
+.y-key {
+  color: hsl(var(--syntax-key-hsl));
+}
+.y-string {
+  color: hsl(var(--syntax-string-hsl));
+}
+.y-number {
+  color: hsl(var(--syntax-number-hsl));
+}
+.y-keyword {
+  color: hsl(var(--syntax-keyword-hsl));
+  font-style: italic;
+}
+.y-punct {
+  color: hsl(var(--syntax-punct-hsl));
+}
+.y-plain {
+  color: hsl(var(--foreground-hsl));
 }

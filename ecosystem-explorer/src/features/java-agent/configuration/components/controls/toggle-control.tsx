@@ -15,6 +15,8 @@
  */
 import type { ToggleNode } from "@/types/configuration";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
+import { SwitchPill } from "@/components/ui/switch-pill";
+import { parseBooleanDefault } from "@/lib/parse-default-behavior";
 import { ControlWrapper } from "./control-wrapper";
 
 interface ToggleControlProps {
@@ -26,7 +28,11 @@ interface ToggleControlProps {
 
 export function ToggleControl({ node, path, value, onChange }: ToggleControlProps) {
   const isNull = node.nullable === true && value === null;
-  const isEnabled = value ?? false;
+  const defaultBool = parseBooleanDefault(node.defaultBehavior);
+  // The switch position is always the *resolved* value: the user's explicit
+  // choice when set, the schema's inferred default when null, or `false` as a
+  // last-resort fallback when the default text is unparseable.
+  const resolved = value ?? defaultBool ?? false;
   const { state } = useConfigurationBuilder();
   const error = state.validationErrors[path] ?? null;
 
@@ -36,25 +42,19 @@ export function ToggleControl({ node, path, value, onChange }: ToggleControlProp
       isNull={isNull}
       error={error}
       onClear={() => onChange(path, null)}
-      onActivate={() => onChange(path, false)}
+      inlineControl
+      defaultPreview={{
+        value: defaultBool,
+        description: node.defaultBehavior ?? "Using default",
+      }}
     >
-      <button
-        type="button"
-        role="switch"
-        aria-checked={isEnabled}
-        aria-label={node.label}
-        aria-required={node.required || undefined}
-        onClick={() => onChange(path, !isEnabled)}
-        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2 focus:ring-offset-background ${
-          isEnabled ? "bg-primary" : "bg-border"
-        }`}
-      >
-        <span
-          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${
-            isEnabled ? "translate-x-6" : "translate-x-1"
-          }`}
-        />
-      </button>
+      <SwitchPill
+        checked={resolved}
+        ariaLabel={node.label}
+        ariaRequired={node.required}
+        variant={isNull ? "dashed" : "solid"}
+        onClick={() => onChange(path, !resolved)}
+      />
     </ControlWrapper>
   );
 }

@@ -22,6 +22,12 @@ import "@testing-library/jest-dom";
 import { beforeEach } from "vitest";
 import { clearAllCached, closeDB } from "@/lib/api/idb-cache";
 
+// JSDOM does not implement Element.scrollIntoView; provide a stub so that
+// click handlers wired to scrollToSection don't throw during tests.
+if (typeof Element !== "undefined" && !Element.prototype.scrollIntoView) {
+  Element.prototype.scrollIntoView = function () {};
+}
+
 beforeEach(async () => {
   // Clear stored entries so each test starts with a cold cache.
   await clearAllCached();

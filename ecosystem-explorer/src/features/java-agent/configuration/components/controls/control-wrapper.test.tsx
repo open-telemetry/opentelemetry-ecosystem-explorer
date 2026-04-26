@@ -28,27 +28,17 @@ const baseNode: ConfigNodeBase = {
 describe("ControlWrapper", () => {
   it("renders label", () => {
     render(
-      <ControlWrapper node={baseNode} onClear={vi.fn()} onActivate={vi.fn()}>
+      <ControlWrapper node={baseNode} onClear={vi.fn()}>
         <input />
       </ControlWrapper>
     );
     expect(screen.getByText("Endpoint")).toBeInTheDocument();
   });
 
-  it("renders description when provided", () => {
-    const node = { ...baseNode, description: "The collector URL" };
-    render(
-      <ControlWrapper node={node} onClear={vi.fn()} onActivate={vi.fn()}>
-        <input />
-      </ControlWrapper>
-    );
-    expect(screen.getByText("The collector URL")).toBeInTheDocument();
-  });
-
   it("renders required asterisk when required", () => {
     const node = { ...baseNode, required: true };
     render(
-      <ControlWrapper node={node} onClear={vi.fn()} onActivate={vi.fn()}>
+      <ControlWrapper node={node} onClear={vi.fn()}>
         <input />
       </ControlWrapper>
     );
@@ -58,103 +48,63 @@ describe("ControlWrapper", () => {
   it("renders stability badge when development", () => {
     const node = { ...baseNode, stability: "development" as const };
     render(
-      <ControlWrapper node={node} onClear={vi.fn()} onActivate={vi.fn()}>
+      <ControlWrapper node={node} onClear={vi.fn()}>
         <input />
       </ControlWrapper>
     );
     expect(screen.getByText("dev")).toBeInTheDocument();
   });
 
-  it("renders description with provided id when descriptionId given", () => {
-    const node = { ...baseNode, description: "The collector URL" };
+  it("renders a 'default' badge when nullable + isNull", () => {
+    const node = { ...baseNode, nullable: true } as const;
     render(
-      <ControlWrapper node={node} descriptionId="my-desc" onClear={vi.fn()} onActivate={vi.fn()}>
-        <input aria-describedby="my-desc" />
+      <ControlWrapper
+        node={node}
+        isNull={true}
+        defaultPreview={{ value: true, description: "true is used" }}
+      >
+        <span>switch</span>
       </ControlWrapper>
     );
-    const desc = screen.getByText("The collector URL");
-    expect(desc).toHaveAttribute("id", "my-desc");
+    expect(screen.getByText(/^default$/i)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /set value/i })).toBeNull();
   });
 
-  it("shows null placeholder and Set value button when nullable and isNull", () => {
-    const node = { ...baseNode, nullable: true, nullBehavior: "Uses gRPC default" };
-    render(
-      <ControlWrapper node={node} isNull={true} onClear={vi.fn()} onActivate={vi.fn()}>
-        <input role="textbox" />
-      </ControlWrapper>
-    );
-    expect(screen.getByText("Uses gRPC default")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Set value" })).toBeInTheDocument();
-    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
-  });
-
-  it("renders the null placeholder in italic so it reads as an annotation", () => {
-    const node = { ...baseNode, nullable: true, defaultBehavior: "512 is used" };
-    render(
-      <ControlWrapper node={node} isNull={true} onClear={vi.fn()} onActivate={vi.fn()}>
-        <input />
-      </ControlWrapper>
-    );
-    expect(screen.getByText("512 is used")).toHaveClass("italic");
-  });
-
-  it("falls back to defaultBehavior for null placeholder when nullBehavior absent", () => {
-    const node = { ...baseNode, nullable: true, defaultBehavior: "30 seconds" };
-    render(
-      <ControlWrapper node={node} isNull={true} onClear={vi.fn()} onActivate={vi.fn()}>
-        <input />
-      </ControlWrapper>
-    );
-    expect(screen.getByText("30 seconds")).toBeInTheDocument();
-  });
-
-  it("shows children and Clear button when nullable and not null", () => {
-    const node = { ...baseNode, nullable: true };
-    render(
-      <ControlWrapper node={node} isNull={false} onClear={vi.fn()} onActivate={vi.fn()}>
-        <input role="textbox" />
-      </ControlWrapper>
-    );
-    expect(screen.getByRole("textbox")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Clear value" })).toBeInTheDocument();
-  });
-
-  it("calls onClear when Clear button clicked", () => {
+  it("renders a 'Reset' link when nullable + value is set, and clicking calls onClear", () => {
     const onClear = vi.fn();
-    const node = { ...baseNode, nullable: true };
+    const node = { ...baseNode, nullable: true } as const;
     render(
-      <ControlWrapper node={node} isNull={false} onClear={onClear} onActivate={vi.fn()}>
-        <input />
+      <ControlWrapper node={node} isNull={false} onClear={onClear}>
+        <span>switch</span>
       </ControlWrapper>
     );
-    fireEvent.click(screen.getByRole("button", { name: "Clear value" }));
+    const reset = screen.getByRole("button", { name: /reset/i });
+    fireEvent.click(reset);
     expect(onClear).toHaveBeenCalledTimes(1);
   });
 
-  it("calls onActivate when Set value button clicked", () => {
-    const onActivate = vi.fn();
-    const node = { ...baseNode, nullable: true };
+  it("does not render any 'Set value' affordance regardless of input shape", () => {
+    const node = { ...baseNode, nullable: true } as const;
     render(
-      <ControlWrapper node={node} isNull={true} onClear={vi.fn()} onActivate={onActivate}>
-        <input />
+      <ControlWrapper node={node} isNull={true}>
+        <input data-testid="x" />
       </ControlWrapper>
     );
-    fireEvent.click(screen.getByRole("button", { name: "Set value" }));
-    expect(onActivate).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole("button", { name: /set value/i })).toBeNull();
   });
 
-  it("shows no Clear button for non-nullable fields", () => {
+  it("does not render a Reset link for non-nullable fields", () => {
     render(
-      <ControlWrapper node={baseNode} onClear={vi.fn()} onActivate={vi.fn()}>
+      <ControlWrapper node={baseNode} onClear={vi.fn()}>
         <input />
       </ControlWrapper>
     );
-    expect(screen.queryByRole("button", { name: "Clear value" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /reset/i })).toBeNull();
   });
 
   it("links label to input via htmlFor when inputId provided", () => {
     render(
-      <ControlWrapper node={baseNode} inputId="my-input" onClear={vi.fn()} onActivate={vi.fn()}>
+      <ControlWrapper node={baseNode} inputId="my-input" onClear={vi.fn()}>
         <input id="my-input" />
       </ControlWrapper>
     );
@@ -162,51 +112,33 @@ describe("ControlWrapper", () => {
     expect(label).toHaveAttribute("for", "my-input");
   });
 
-  it("renders defaultBehavior via FieldMeta (no 'Default:' prefix) when not in null state", () => {
+  it("renders defaultBehavior via FieldMeta when not in null state", () => {
     const node = { ...baseNode, defaultBehavior: "30 seconds" };
     render(
-      <ControlWrapper node={node} onClear={vi.fn()} onActivate={vi.fn()}>
+      <ControlWrapper node={node} onClear={vi.fn()}>
         <input />
       </ControlWrapper>
     );
     expect(screen.getByText("30 seconds")).toBeInTheDocument();
-    expect(screen.queryByText(/Default:/)).not.toBeInTheDocument();
   });
 
-  it("hides FieldMeta when in null state (null-state sentence communicates default)", () => {
-    const node = { ...baseNode, nullable: true, defaultBehavior: "30 seconds" };
+  it("uses defaultPreview.description in the meta line when isNull and defaultPreview is given", () => {
+    const node = { ...baseNode, nullable: true, defaultBehavior: "raw schema text" } as const;
     render(
-      <ControlWrapper node={node} isNull={true} onClear={vi.fn()} onActivate={vi.fn()}>
+      <ControlWrapper
+        node={node}
+        isNull={true}
+        defaultPreview={{ value: null, description: "human readable fallback" }}
+      >
         <input />
       </ControlWrapper>
     );
-    // "30 seconds" appears exactly once — as the null-state sentence, not as FieldMeta.
-    expect(screen.getAllByText("30 seconds")).toHaveLength(1);
-  });
-
-  it("renders nothing from FieldMeta when no constraints and no defaultBehavior", () => {
-    render(
-      <ControlWrapper node={baseNode} onClear={vi.fn()} onActivate={vi.fn()}>
-        <input />
-      </ControlWrapper>
-    );
-    // Sanity: no default-hint text leaks in.
-    expect(screen.queryByText(/Default:/)).not.toBeInTheDocument();
-  });
-
-  it('shows "Using default" when both nullBehavior and defaultBehavior are absent', () => {
-    const node = { ...baseNode, nullable: true };
-    render(
-      <ControlWrapper node={node} isNull={true} onClear={vi.fn()} onActivate={vi.fn()}>
-        <input />
-      </ControlWrapper>
-    );
-    expect(screen.getByText("Using default")).toBeInTheDocument();
+    expect(screen.getByText("human readable fallback")).toBeInTheDocument();
   });
 
   it("renders the error message when error prop is set", () => {
     render(
-      <ControlWrapper node={baseNode} error="Required" onClear={vi.fn()} onActivate={vi.fn()}>
+      <ControlWrapper node={baseNode} error="Required" onClear={vi.fn()}>
         <input />
       </ControlWrapper>
     );
@@ -220,22 +152,58 @@ describe("ControlWrapper", () => {
         <input aria-label="test-input" />
       </ControlWrapper>
     );
-    // Label text must not appear in the document.
     expect(screen.queryByText(hiddenLabelNode.label)).not.toBeInTheDocument();
+  });
+
+  it("renders an ⓘ tooltip for the description and links it via aria-describedby", () => {
+    const node = { ...baseNode, description: "URL to send telemetry to." };
+    render(
+      <ControlWrapper node={node} inputId="my-input" descriptionId="my-desc">
+        <input id="my-input" aria-describedby="my-desc" />
+      </ControlWrapper>
+    );
+    const tooltip = screen.getByRole("tooltip");
+    expect(tooltip.id).toBe("my-desc");
+    expect(tooltip).toHaveTextContent("URL to send telemetry to.");
+    expect(screen.queryAllByText("URL to send telemetry to.")).toHaveLength(1);
   });
 
   it("omits the error region when error is null or undefined", () => {
     const { rerender } = render(
-      <ControlWrapper node={baseNode} error={null} onClear={vi.fn()} onActivate={vi.fn()}>
+      <ControlWrapper node={baseNode} error={null} onClear={vi.fn()}>
         <input />
       </ControlWrapper>
     );
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     rerender(
-      <ControlWrapper node={baseNode} onClear={vi.fn()} onActivate={vi.fn()}>
+      <ControlWrapper node={baseNode} onClear={vi.fn()}>
         <input />
       </ControlWrapper>
     );
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+  });
+
+  it("places children inline with the label when inlineControl is true", () => {
+    const node = { ...baseNode, label: "Enabled" };
+    render(
+      <ControlWrapper node={node} inlineControl>
+        <button data-testid="ctl">switch</button>
+      </ControlWrapper>
+    );
+    const label = screen.getByText("Enabled");
+    const ctl = screen.getByTestId("ctl");
+    // Inline mode: label and ctl share the flex label row as their nearest <div>.
+    expect(label.closest("div")).toBe(ctl.closest("div"));
+  });
+
+  it("stacks label above children by default (inlineControl undefined)", () => {
+    render(
+      <ControlWrapper node={baseNode}>
+        <input data-testid="ctl" />
+      </ControlWrapper>
+    );
+    const label = screen.getByText("Endpoint");
+    const ctl = screen.getByTestId("ctl");
+    expect(label.parentElement).not.toBe(ctl.parentElement);
   });
 });
