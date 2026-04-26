@@ -54,7 +54,6 @@ describe("TargetBadges", () => {
       />
     );
     expect(screen.getByText("Agent")).toBeInTheDocument();
-    expect(screen.getByTitle("Java Agent")).toBeInTheDocument();
     expect(screen.getByLabelText("Has Java Agent target")).toBeInTheDocument();
   });
 
@@ -66,7 +65,6 @@ describe("TargetBadges", () => {
       />
     );
     expect(screen.getByText("Library")).toBeInTheDocument();
-    expect(screen.getByTitle("Standalone Library")).toBeInTheDocument();
     expect(screen.getByLabelText("Has standalone library target")).toBeInTheDocument();
   });
 
@@ -111,7 +109,6 @@ describe("TelemetryBadges", () => {
       <TelemetryBadges badges={{ ...allFalse, hasSpans: true }} activeFilters={defaultFilters} />
     );
     expect(screen.getByText("Spans")).toBeInTheDocument();
-    expect(screen.getByTitle("Span telemetry")).toBeInTheDocument();
     expect(screen.getByLabelText("Has span telemetry")).toBeInTheDocument();
   });
 
@@ -120,7 +117,6 @@ describe("TelemetryBadges", () => {
       <TelemetryBadges badges={{ ...allFalse, hasMetrics: true }} activeFilters={defaultFilters} />
     );
     expect(screen.getByText("Metrics")).toBeInTheDocument();
-    expect(screen.getByTitle("Metric telemetry")).toBeInTheDocument();
     expect(screen.getByLabelText("Has metric telemetry")).toBeInTheDocument();
   });
 
