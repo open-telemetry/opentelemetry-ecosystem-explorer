@@ -27,26 +27,32 @@ logger = logging.getLogger(__name__)
 
 DISTRIBUTIONS = ["core", "contrib"]
 
+# Only build the database for versions >= this. Keeps the output bounded and
+# avoids including very old registry data that pre-dates reliable metadata.
+MINIMUM_VERSION = Version("0.150.0")
+
 
 def _get_merged_release_versions(inventory_manager: InventoryManager) -> list[Version]:
     """Collect the union of release versions from all distributions, sorted latest-first.
+
+    Only versions >= MINIMUM_VERSION are included.
 
     Args:
         inventory_manager: Collector inventory manager.
 
     Returns:
-        Deduplicated, sorted (newest-first) list of release versions.
+        Deduplicated, sorted (newest-first) list of release versions >= MINIMUM_VERSION.
 
     Raises:
-        ValueError: If no release versions exist across any distribution.
+        ValueError: If no qualifying release versions exist across any distribution.
     """
     version_set: set[Version] = set()
     for distribution in DISTRIBUTIONS:
         versions = inventory_manager.list_release_versions(distribution)
-        version_set.update(versions)
+        version_set.update(v for v in versions if v >= MINIMUM_VERSION)
 
     if not version_set:
-        raise ValueError("No release versions found in collector inventory")
+        raise ValueError(f"No release versions >= {MINIMUM_VERSION} found in collector inventory")
 
     return sorted(version_set, reverse=True)
 
@@ -55,7 +61,7 @@ def _process_version(
     version: Version,
     inventory_manager: InventoryManager,
     db_writer: CollectorDatabaseWriter,
-) -> dict[str, str]:
+) -> tuple[dict[str, str], list[dict]]:
     """Load, transform, and write all components for a single version.
 
     Loads data from every distribution and merges into one flat component list.
@@ -66,7 +72,9 @@ def _process_version(
         db_writer: Destination writer.
 
     Returns:
-        Merged component map {component_id: hash} for this version.
+        Tuple of (component_map, components) where component_map is
+        {component_id: hash} and components is the flat list of canonical dicts.
+        Both are empty if no components were found.
     """
     logger.info("Processing collector version: %s", version)
     all_components = []
@@ -81,11 +89,11 @@ def _process_version(
 
     if not all_components:
         logger.warning("No components found for version %s, skipping", version)
-        return {}
+        return {}, []
 
     component_map = db_writer.write_components(all_components)
     db_writer.write_version_index(version, component_map)
-    return component_map
+    return component_map, all_components
 
 
 def run_collector_builder(
@@ -113,23 +121,23 @@ def run_collector_builder(
         versions = _get_merged_release_versions(inventory_manager)
         logger.info("Processing %d collector release version(s)", len(versions))
 
+        processed_versions: list[Version] = []
         latest_components: list[dict] = []
 
         for version in versions:
-            component_map = _process_version(version, inventory_manager, db_writer)
+            component_map, components = _process_version(version, inventory_manager, db_writer)
             if not component_map:
                 continue
 
-            # Capture components for the latest version to build the index
-            if not latest_components and version == versions[0]:
-                for distribution in DISTRIBUTIONS:
-                    inventory = inventory_manager.load_versioned_inventory(distribution, version)
-                    latest_components.extend(transform_collector_components(inventory, distribution))
+            processed_versions.append(version)
+            if not latest_components:
+                latest_components = components
 
-        db_writer.write_version_list(versions)
+        if not processed_versions:
+            raise ValueError("No collector versions were successfully processed")
 
-        if latest_components:
-            db_writer.write_index(latest_components)
+        db_writer.write_version_list(processed_versions)
+        db_writer.write_index(latest_components)
 
         stats = db_writer.get_stats()
         total_mb = stats["total_bytes"] / (1024 * 1024)
