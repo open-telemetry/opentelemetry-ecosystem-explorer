@@ -166,6 +166,33 @@ describe("configurationBuilderReducer", () => {
       });
       expect(result.values.items).toEqual(["a", "c"]);
     });
+
+    it("appends a stable id on ADD and drops the matching id on REMOVE", () => {
+      const afterAdd = configurationBuilderReducer(baseState, {
+        type: "ADD_LIST_ITEM",
+        path: ["items"],
+        defaultItem: "a",
+      });
+      const addIds = afterAdd.listItemIds!.items;
+      expect(addIds).toHaveLength(1);
+      const idA = addIds[0];
+
+      const afterTwo = configurationBuilderReducer(afterAdd, {
+        type: "ADD_LIST_ITEM",
+        path: ["items"],
+        defaultItem: "b",
+      });
+      const twoIds = afterTwo.listItemIds!.items;
+      expect(twoIds).toEqual([idA, expect.any(String)]);
+
+      const afterRemove = configurationBuilderReducer(afterTwo, {
+        type: "REMOVE_LIST_ITEM",
+        path: ["items"],
+        index: 0,
+      });
+      // Removing index 0 should drop idA, not the second id.
+      expect(afterRemove.listItemIds!.items).toEqual([twoIds[1]]);
+    });
   });
 
   describe("SET_MAP_ENTRY / REMOVE_MAP_ENTRY", () => {
@@ -195,37 +222,25 @@ describe("configurationBuilderReducer", () => {
     });
   });
 
-  describe("RESET_TO_DEFAULTS", () => {
-    it("should reset to initial state", () => {
-      const state: ConfigurationBuilderState = {
-        ...baseState,
-        values: { file_format: "1.0" },
-        enabledSections: { tracer_provider: true },
-        validationErrors: { file_format: "error" },
-        isDirty: true,
-      };
-      const result = configurationBuilderReducer(state, { type: "RESET_TO_DEFAULTS" });
-      expect(result.values).toEqual({});
-      expect(result.enabledSections).toEqual({});
-      expect(result.validationErrors).toEqual({});
-      expect(result.isDirty).toBe(false);
-    });
-  });
-
   describe("LOAD_STATE", () => {
-    it("should replace entire state", () => {
+    it("should replace entire state and seed list ids from the loaded values", () => {
       const newState: ConfigurationBuilderState = {
         version: "2.0.0",
-        values: { file_format: "2.0" },
+        values: { file_format: "2.0", items: ["a", "b"] },
         enabledSections: { tracer_provider: true },
         validationErrors: {},
         isDirty: true,
+        listItemIds: {},
       };
       const result = configurationBuilderReducer(baseState, {
         type: "LOAD_STATE",
         state: newState,
       });
-      expect(result).toEqual(newState);
+      expect(result.values).toEqual(newState.values);
+      expect(result.enabledSections).toEqual(newState.enabledSections);
+      const ids = result.listItemIds!.items;
+      expect(ids).toHaveLength(2);
+      expect(ids[0]).not.toBe(ids[1]);
     });
   });
 

@@ -93,36 +93,85 @@ describe("PluginSelectRenderer", () => {
     mockConfigState.values = { exporter: { otlp_http: {} } };
   });
 
-  it("renders a select with variant labels and the body for the selected variant", () => {
+  it("renders one tab per variant, marks the selected one, and shows its body", () => {
     render(<PluginSelectRenderer node={pluginNode} depth={1} path="exporter" />);
-    expect(screen.getByRole("combobox")).toBeInTheDocument();
-    expect(screen.getByText("OTLP HTTP")).toBeInTheDocument();
-    expect(screen.getByText("Console")).toBeInTheDocument();
+    const tabs = screen.getAllByRole("tab");
+    expect(tabs.map((t) => t.textContent)).toEqual(["OTLP HTTP", "Console"]);
+    const otlp = screen.getByRole("tab", { name: "OTLP HTTP" });
+    expect(otlp).toHaveAttribute("aria-selected", "true");
+    const console = screen.getByRole("tab", { name: "Console" });
+    expect(console).toHaveAttribute("aria-selected", "false");
     expect(screen.getByTestId("body-path")).toHaveTextContent("exporter.otlp_http");
   });
 
-  it("dispatches selectPlugin on change", () => {
+  it("dispatches selectPlugin when a tab is clicked", () => {
     render(<PluginSelectRenderer node={pluginNode} depth={1} path="exporter" />);
-    fireEvent.change(screen.getByRole("combobox"), { target: { value: "console" } });
+    fireEvent.click(screen.getByRole("tab", { name: "Console" }));
     expect(selectPlugin).toHaveBeenCalledWith("exporter", "console");
   });
 
-  it("shows 'Custom: <key>' in the select when a custom plugin is committed", () => {
+  it("renders a 'Custom: <key>' tab when a custom plugin is committed", () => {
     mockConfigState.values = { exporter: { "my-exporter": {} } };
     render(<PluginSelectRenderer node={pluginNodeWithCustom} depth={1} path="exporter" />);
-    const select = screen.getByRole("combobox", { name: "Exporter variant" }) as HTMLSelectElement;
-    expect(select.value).toBe("__custom__");
-    const selectedOption = select.options[select.selectedIndex];
-    expect(selectedOption.textContent).toBe("Custom: my-exporter");
+    const customTab = screen.getByRole("tab", { name: "Custom: my-exporter" });
+    expect(customTab).toHaveAttribute("aria-selected", "true");
   });
 
-  it("auto-focuses the custom-name input when the picker opens", () => {
+  it("auto-focuses the custom-name input when the Custom… tab is clicked", () => {
     mockConfigState.values = { exporter: {} };
     render(<PluginSelectRenderer node={pluginNodeWithCustom} depth={1} path="exporter" />);
-    fireEvent.change(screen.getByRole("combobox", { name: "Exporter variant" }), {
-      target: { value: "__custom__" },
-    });
+    fireEvent.click(screen.getByRole("tab", { name: "Custom…" }));
     const input = screen.getByRole("textbox", { name: "Custom plugin name" });
     expect(document.activeElement).toBe(input);
+  });
+
+  it("highlights the Custom… tab when the picker is open and deactivates other tabs", () => {
+    mockConfigState.values = { exporter: { otlp_http: {} } };
+    render(<PluginSelectRenderer node={pluginNodeWithCustom} depth={1} path="exporter" />);
+    expect(screen.getByRole("tab", { name: "OTLP HTTP" })).toHaveAttribute("aria-selected", "true");
+
+    fireEvent.click(screen.getByRole("tab", { name: "Custom…" }));
+
+    expect(screen.getByRole("tab", { name: "Custom…" })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByRole("tab", { name: "OTLP HTTP" })).toHaveAttribute(
+      "aria-selected",
+      "false"
+    );
+    expect(screen.getByRole("tab", { name: "Console" })).toHaveAttribute("aria-selected", "false");
+  });
+
+  it("closes the Custom picker and clears the draft when a sibling tab is clicked", () => {
+    mockConfigState.values = { exporter: {} };
+    render(<PluginSelectRenderer node={pluginNodeWithCustom} depth={1} path="exporter" />);
+    fireEvent.click(screen.getByRole("tab", { name: "Custom…" }));
+    expect(screen.getByRole("textbox", { name: "Custom plugin name" })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("tab", { name: "Console" }));
+
+    expect(screen.queryByRole("textbox", { name: "Custom plugin name" })).not.toBeInTheDocument();
+    expect(selectPlugin).toHaveBeenCalledWith("exporter", "console");
+  });
+
+  it("pre-fills the picker with the existing custom value when re-opened", () => {
+    mockConfigState.values = { exporter: { "my-exporter": {} } };
+    render(<PluginSelectRenderer node={pluginNodeWithCustom} depth={1} path="exporter" />);
+    fireEvent.click(screen.getByRole("tab", { name: "Custom: my-exporter" }));
+    const input = screen.getByRole("textbox", {
+      name: "Custom plugin name",
+    }) as HTMLInputElement;
+    expect(input.value).toBe("my-exporter");
+  });
+
+  it("renders the plugin-select description in a tooltip inside the tablist", () => {
+    const nodeWithDesc: PluginSelectNode = {
+      ...pluginNode,
+      description: "Choose the exporter variant.",
+    };
+    mockConfigState.values = { exporter: { otlp_http: {} } };
+    render(<PluginSelectRenderer node={nodeWithDesc} depth={1} path="exporter" />);
+    const tooltip = screen.getByRole("tooltip");
+    expect(tooltip).toHaveTextContent("Choose the exporter variant.");
+    expect(screen.getAllByRole("tab")).toHaveLength(2);
+    expect(screen.getAllByText("Choose the exporter variant.")).toHaveLength(1);
   });
 });

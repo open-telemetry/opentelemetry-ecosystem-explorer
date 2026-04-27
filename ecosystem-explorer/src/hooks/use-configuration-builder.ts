@@ -44,6 +44,8 @@ import {
   findNodeByPath,
 } from "@/lib/schema-defaults";
 import { hydrateStarterState } from "@/lib/state-hydrate";
+import { buildListItemIds } from "@/lib/build-list-item-ids";
+import { isPlainObject } from "@/lib/value-guards";
 import {
   validateField as validateFieldNode,
   validateAll as validateAllNodes,
@@ -88,7 +90,12 @@ function loadFromStorage(version: string): ConfigurationBuilderState | null {
       localStorage.removeItem(STORAGE_KEY);
       return null;
     }
-    return parsed.state;
+    const restored = parsed.state as ConfigurationBuilderState;
+    // Forward-compat: older saved states predate listItemIds; rebuild on load.
+    if (!restored.listItemIds) {
+      restored.listItemIds = buildListItemIds(restored.values);
+    }
+    return restored;
   } catch {
     return null;
   }
@@ -154,9 +161,7 @@ export function useConfigurationBuilderState(
       const sectionNode = findNodeByPath(schemaRef.current, [section]);
       if (sectionNode && sectionNode.controlType === "group") {
         const built = buildDefaults(sectionNode);
-        if (typeof built === "object" && built !== null && !Array.isArray(built)) {
-          defaults = built as ConfigValues;
-        }
+        if (isPlainObject(built)) defaults = built;
       }
     }
     dispatch({ type: "SET_ENABLED", section, enabled, defaults });
@@ -212,9 +217,7 @@ export function useConfigurationBuilderState(
     for (const child of (schema as GroupNode).children) {
       if (child.controlType !== "group") continue;
       const built = buildDefaults(child);
-      if (typeof built === "object" && built !== null && !Array.isArray(built)) {
-        defaultsBySection[child.key] = built as ConfigValues;
-      }
+      if (isPlainObject(built)) defaultsBySection[child.key] = built;
     }
     dispatch({ type: "ENABLE_ALL_SECTIONS", defaultsBySection });
   }, []);
@@ -246,6 +249,7 @@ export function useConfigurationBuilderState(
         enabledSections,
         validationErrors: {},
         isDirty: true,
+        listItemIds: {},
       },
     });
   }, []);
@@ -307,24 +311,4 @@ export function useConfigurationBuilder() {
     throw new Error("useConfigurationBuilder must be used within ConfigurationBuilderProvider");
   }
   return { ...stateValue, ...actionsValue };
-}
-
-export function useConfigurationBuilderActions() {
-  const actionsValue = useContext(ConfigDispatchContext);
-  if (!actionsValue) {
-    throw new Error(
-      "useConfigurationBuilderActions must be used within ConfigurationBuilderProvider"
-    );
-  }
-  return actionsValue;
-}
-
-export function useConfigurationBuilderStateOnly() {
-  const stateValue = useContext(ConfigStateContext);
-  if (!stateValue) {
-    throw new Error(
-      "useConfigurationBuilderStateOnly must be used within ConfigurationBuilderProvider"
-    );
-  }
-  return stateValue;
 }

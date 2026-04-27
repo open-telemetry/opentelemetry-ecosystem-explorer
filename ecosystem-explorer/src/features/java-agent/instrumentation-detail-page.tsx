@@ -56,6 +56,19 @@ function buildSourceUrl(sourcePath: string): string {
   }
 }
 
+/**
+ * Returns true only when the URL uses http: or https: protocol.
+ * Prevents link-based XSS from non-http(s) schemes such as javascript: or data:.
+ */
+function isSafeUrl(url: string): boolean {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "https:" || parsed.protocol === "http:";
+  } catch {
+    return false;
+  }
+}
+
 export function InstrumentationDetailPage() {
   const { version, name } = useParams<{ version: string; name: string }>();
   const navigate = useNavigate();
@@ -272,10 +285,10 @@ export function InstrumentationDetailPage() {
                           <div className="space-y-3">
                             <h3 className="text-sm font-medium text-muted-foreground">Features</h3>
                             <ul className="space-y-2">
-                              {instrumentation.features.map((feature, index) => {
+                              {instrumentation.features.map((feature) => {
                                 const info = getFeatureInfo(feature);
                                 return (
-                                  <li key={index} className="flex items-start gap-2 text-sm">
+                                  <li key={feature} className="flex items-start gap-2 text-sm">
                                     <Check
                                       className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary"
                                       aria-hidden="true"
@@ -369,7 +382,6 @@ export function InstrumentationDetailPage() {
                                   />
                                 </Tooltip>
                               </h3>
-
                               <div className="flex flex-wrap gap-2">
                                 {instrumentation.javaagent_target_versions.map((targetVersion) => (
                                   <GlowBadge key={targetVersion} variant="muted">
@@ -399,7 +411,6 @@ export function InstrumentationDetailPage() {
                         </Tooltip>
                       </div>
                     </SectionHeader>
-
                     <DetailCard withGrid>
                       <div className="space-y-3">
                         <div>
@@ -427,7 +438,7 @@ export function InstrumentationDetailPage() {
                   <div>
                     <SectionHeader>Links & Resources</SectionHeader>
                     <div className="grid gap-4 md:grid-cols-2">
-                      {instrumentation.library_link && (
+                      {instrumentation.library_link && isSafeUrl(instrumentation.library_link) && (
                         <DetailCard withHoverEffect>
                           <div className="flex items-start gap-3">
                             <ExternalLink
@@ -451,29 +462,30 @@ export function InstrumentationDetailPage() {
                         </DetailCard>
                       )}
 
-                      {instrumentation.source_path && (
-                        <DetailCard withHoverEffect>
-                          <div className="flex items-start gap-3">
-                            <Code
-                              className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary"
-                              aria-hidden="true"
-                            />
-                            <div className="flex-1 space-y-1">
-                              <h3 className="text-sm font-medium text-muted-foreground">
-                                Source Path
-                              </h3>
-                              <a
-                                href={buildSourceUrl(instrumentation.source_path)}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="break-all text-sm text-primary hover:underline"
-                              >
-                                {instrumentation.source_path}
-                              </a>
+                      {instrumentation.source_path &&
+                        isSafeUrl(buildSourceUrl(instrumentation.source_path)) && (
+                          <DetailCard withHoverEffect>
+                            <div className="flex items-start gap-3">
+                              <Code
+                                className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary"
+                                aria-hidden="true"
+                              />
+                              <div className="flex-1 space-y-1">
+                                <h3 className="text-sm font-medium text-muted-foreground">
+                                  Source Path
+                                </h3>
+                                <a
+                                  href={buildSourceUrl(instrumentation.source_path)}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="break-all text-sm text-primary hover:underline"
+                                >
+                                  {instrumentation.source_path}
+                                </a>
+                              </div>
                             </div>
-                          </div>
-                        </DetailCard>
-                      )}
+                          </DetailCard>
+                        )}
                     </div>
                   </div>
                 )}

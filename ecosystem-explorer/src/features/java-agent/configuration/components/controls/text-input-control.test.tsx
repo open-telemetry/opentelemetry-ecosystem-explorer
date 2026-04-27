@@ -94,7 +94,7 @@ describe("TextInputControl", () => {
     expect(onChange).toHaveBeenCalledWith("exporter.endpoint", "");
   });
 
-  it("shows null state for nullable null value", () => {
+  it("renders an empty input + 'default' badge for nullable null value", () => {
     const nullableNode = { ...node, nullable: true };
     render(
       <TextInputControl
@@ -104,11 +104,13 @@ describe("TextInputControl", () => {
         onChange={vi.fn()}
       />
     );
-    expect(screen.getByRole("button", { name: "Set value" })).toBeInTheDocument();
-    expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+    const input = screen.getByRole("textbox") as HTMLInputElement;
+    expect(input.value).toBe("");
+    expect(screen.getByText(/^default$/i)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /set value/i })).toBeNull();
   });
 
-  it("activates with empty string when Set value clicked", () => {
+  it("commits typed input directly without an activate step", () => {
     const onChange = vi.fn();
     const nullableNode = { ...node, nullable: true };
     render(
@@ -119,8 +121,9 @@ describe("TextInputControl", () => {
         onChange={onChange}
       />
     );
-    fireEvent.click(screen.getByRole("button", { name: "Set value" }));
-    expect(onChange).toHaveBeenCalledWith("exporter.endpoint", "");
+    const input = screen.getByRole("textbox");
+    fireEvent.change(input, { target: { value: "x" } });
+    expect(onChange).toHaveBeenCalledWith("exporter.endpoint", "x");
   });
 
   it("links description to input via aria-describedby", () => {

@@ -66,10 +66,7 @@ export function useConfigSchema(version: string): DataState<ConfigNode> {
     let cancelled = false;
 
     async function loadData() {
-      if (!version) {
-        setState({ data: null, loading: false, error: null });
-        return;
-      }
+      if (!version) return;
 
       setState({ data: null, loading: true, error: null });
 
@@ -109,10 +106,7 @@ export function useConfigStarter(version: string): DataState<ConfigStarter | nul
   useEffect(() => {
     let cancelled = false;
     async function loadData() {
-      if (!version) {
-        setState({ data: null, loading: false, error: null });
-        return;
-      }
+      if (!version) return;
       setState({ data: null, loading: true, error: null });
       try {
         const data = await configData.loadConfigStarter(version);

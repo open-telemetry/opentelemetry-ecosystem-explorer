@@ -18,6 +18,7 @@ import type { JSX } from "react";
 import type { ConfigNode, UnionNode } from "@/types/configuration";
 import type { ConfigValue } from "@/types/configuration-builder";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { SchemaRenderer } from "./schema-renderer";
 import { parsePath, getByPath } from "@/lib/config-path";
 
@@ -94,8 +95,13 @@ const CONTROL_TYPE_DISPLAY: Record<ConfigNode["controlType"], string> = {
   circular_ref: "Reference",
 };
 
+// The schema parser names anonymous union members "Variant 1", "Variant 2", …
+// when no explicit label is set. Filter those out so we fall back to the
+// control-type display name instead of leaking parser-generated labels to UI.
+const ANONYMOUS_VARIANT_LABEL_RE = /^Variant \d+$/;
+
 function displayLabel(variant: ConfigNode): string {
-  if (variant.label && !/^Variant \d+$/.test(variant.label)) return variant.label;
+  if (variant.label && !ANONYMOUS_VARIANT_LABEL_RE.test(variant.label)) return variant.label;
   return CONTROL_TYPE_DISPLAY[variant.controlType] ?? variant.controlType;
 }
 
@@ -113,8 +119,9 @@ export function UnionRenderer({ node, depth, path }: UnionRendererProps): JSX.El
 
   const [manualPick, setManualPick] = useState<string | null>(null);
   const inferred = inferVariantKey(current, effectiveVariants);
-  const selectedKey = inferred ?? manualPick ?? effectiveVariants[0]?.key ?? "";
-  const selectedVariant = effectiveVariants.find((v) => v.key === selectedKey);
+  const selectedKey: string | null = inferred ?? manualPick ?? effectiveVariants[0]?.key ?? null;
+  const selectedVariant =
+    selectedKey === null ? undefined : effectiveVariants.find((v) => v.key === selectedKey);
   const showChooser = renderable.length > 0;
 
   const handleChange = (nextKey: string) => {
@@ -127,8 +134,10 @@ export function UnionRenderer({ node, depth, path }: UnionRendererProps): JSX.El
 
   return (
     <div className="space-y-3">
-      <p className="text-sm font-medium text-foreground">{node.label}</p>
-      {node.description && <p className="text-xs text-muted-foreground">{node.description}</p>}
+      <div className="flex items-center gap-2">
+        <p className="text-sm font-medium text-foreground">{node.label}</p>
+        {node.description && <InfoTooltip text={node.description} />}
+      </div>
       {showChooser && (
         <fieldset>
           <legend className="sr-only">{node.label}</legend>

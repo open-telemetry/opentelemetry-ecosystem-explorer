@@ -129,13 +129,10 @@ describe("useConfigSchema", () => {
     expect(configData.loadConfigSchema).toHaveBeenCalledWith("1.0.0");
   });
 
-  it("should skip loading when version is empty", async () => {
+  it("should stay loading when version is empty", () => {
     const { result } = renderHook(() => useConfigSchema(""));
 
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false);
-    });
-
+    expect(result.current.loading).toBe(true);
     expect(result.current.data).toBeNull();
     expect(configData.loadConfigSchema).not.toHaveBeenCalled();
   });
@@ -206,9 +203,9 @@ describe("useConfigStarter", () => {
     expect(result.current.error).toBeNull();
   });
 
-  it("skips loading when version is empty", async () => {
+  it("stays loading when version is empty", () => {
     const { result } = renderHook(() => useConfigStarter(""));
-    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.loading).toBe(true);
     expect(result.current.data).toBeNull();
     expect(configData.loadConfigStarter).not.toHaveBeenCalled();
   });

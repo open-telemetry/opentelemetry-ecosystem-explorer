@@ -30,6 +30,14 @@ export interface Theme {
     muted: string;
     mutedForeground: string;
     border: string;
+    syntax: {
+      comment: string;
+      key: string;
+      string: string;
+      number: string;
+      keyword: string;
+      punct: string;
+    };
   };
 }
 
@@ -48,6 +56,14 @@ export const themes: Record<ThemeId, Theme> = {
       muted: "232 30% 17%", // Darker background for code/badges
       mutedForeground: "220 22% 65%", // Muted text
       border: "232 28% 26%", // Borders
+      syntax: {
+        comment: "220 18% 58%", // Italic gray-blue
+        key: "28 95% 65%", // Peach orange
+        string: "95 60% 65%", // Soft green
+        number: "330 80% 72%", // Pink
+        keyword: "265 70% 78%", // Lavender (true/false/null)
+        punct: "220 22% 55%", // Muted (`-`, `:`, `,`, etc.)
+      },
     },
   },
 };

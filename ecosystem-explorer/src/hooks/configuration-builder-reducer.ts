@@ -21,6 +21,8 @@ import type {
 } from "@/types/configuration-builder";
 import { getByPath, setByPath, serializePath } from "@/lib/config-path";
 import { hasUserValues } from "@/lib/state-hydrate";
+import { isPlainObject } from "@/lib/value-guards";
+import { buildListItemIds, generateListItemId } from "@/lib/build-list-item-ids";
 
 export const INITIAL_STATE: ConfigurationBuilderState = {
   version: "",
@@ -28,6 +30,7 @@ export const INITIAL_STATE: ConfigurationBuilderState = {
   enabledSections: {},
   validationErrors: {},
   isDirty: false,
+  listItemIds: {},
 };
 
 export function configurationBuilderReducer(
@@ -72,9 +75,16 @@ export function configurationBuilderReducer(
       const currentList = getByPath(state.values, action.path);
       const arr = Array.isArray(currentList) ? [...currentList] : [];
       arr.push(action.defaultItem);
+      const pathKey = serializePath(action.path);
+      const currentIds = state.listItemIds ?? {};
+      const existingIds = currentIds[pathKey] ?? [];
       return {
         ...state,
         values: setByPath(state.values, action.path, arr as ConfigValue),
+        listItemIds: {
+          ...currentIds,
+          [pathKey]: [...existingIds, generateListItemId()],
+        },
         isDirty: true,
       };
     }
@@ -84,17 +94,21 @@ export function configurationBuilderReducer(
       if (!Array.isArray(list)) return state;
       const newList = [...list];
       newList.splice(action.index, 1);
+      const pathKey = serializePath(action.path);
+      const currentIds = state.listItemIds ?? {};
+      const existingIds = currentIds[pathKey];
+      const nextIds = existingIds ? existingIds.filter((_, i) => i !== action.index) : existingIds;
       return {
         ...state,
         values: setByPath(state.values, action.path, newList as ConfigValue),
+        listItemIds: nextIds ? { ...currentIds, [pathKey]: nextIds } : currentIds,
         isDirty: true,
       };
     }
 
     case "SET_MAP_ENTRY": {
       const map = getByPath(state.values, action.path);
-      const currentMap =
-        typeof map === "object" && map !== null && !Array.isArray(map) ? (map as ConfigValues) : {};
+      const currentMap: ConfigValues = isPlainObject(map) ? map : {};
       return {
         ...state,
         values: setByPath(state.values, action.path, {
@@ -117,11 +131,12 @@ export function configurationBuilderReducer(
       };
     }
 
-    case "RESET_TO_DEFAULTS":
-      return { ...INITIAL_STATE, version: state.version };
-
-    case "LOAD_STATE":
-      return action.state;
+    case "LOAD_STATE": {
+      const next = action.state;
+      // Re-seed ids whenever the values tree is replaced wholesale so React
+      // keys reflect the new items rather than a stale add/remove history.
+      return { ...next, listItemIds: buildListItemIds(next.values) };
+    }
 
     case "SET_VALIDATION_ERRORS":
       return { ...state, validationErrors: action.errors };

@@ -71,4 +71,13 @@ describe("PreviewCard", () => {
     fireEvent.click(screen.getByRole("button", { name: /reset/i }));
     expect(resetToDefaults).toHaveBeenCalledTimes(1);
   });
+
+  it("renders the YAML output via YamlCodeBlock with token spans", () => {
+    const { container } = render(<PreviewCard schema={schema} />);
+    const pre = container.querySelector("pre");
+    expect(pre).not.toBeNull();
+    expect(pre?.querySelectorAll("span.y-key").length).toBeGreaterThan(0);
+    expect(pre?.querySelectorAll("span.y-comment").length).toBeGreaterThan(0);
+    expect(pre?.querySelectorAll("span.y-punct").length).toBeGreaterThan(0);
+  });
 });

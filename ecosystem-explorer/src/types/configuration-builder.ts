@@ -29,6 +29,14 @@ export interface ConfigurationBuilderState {
   enabledSections: Record<string, boolean>;
   validationErrors: Record<string, string>;
   isDirty: boolean;
+  /**
+   * Stable ids for list items, keyed by serialized list path. Maintained by
+   * the reducer so React keys survive mid-list removals and `loadFromYaml`
+   * replacements without remounting the wrong item cards. Optional so that
+   * test fixtures and older saved payloads can omit it; the renderer falls
+   * back to path+index keys when an entry is missing or out of sync.
+   */
+  listItemIds?: Record<string, string[]>;
 }
 
 export interface ValidationResult {
@@ -44,7 +52,6 @@ export type ConfigurationBuilderAction =
   | { type: "REMOVE_LIST_ITEM"; path: Path; index: number }
   | { type: "SET_MAP_ENTRY"; path: Path; key: string; value: string }
   | { type: "REMOVE_MAP_ENTRY"; path: Path; key: string }
-  | { type: "RESET_TO_DEFAULTS" }
   | { type: "LOAD_STATE"; state: ConfigurationBuilderState }
   | { type: "SET_VALIDATION_ERRORS"; errors: Record<string, string> }
   | { type: "SET_FIELD_ERROR"; path: string; error: string | null }

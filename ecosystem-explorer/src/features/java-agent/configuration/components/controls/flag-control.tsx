@@ -15,6 +15,7 @@
  */
 import type { FlagNode } from "@/types/configuration";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
+import { SwitchPill } from "@/components/ui/switch-pill";
 import { ControlWrapper } from "./control-wrapper";
 
 type FlagValue = Record<string, never> | null;
@@ -32,23 +33,12 @@ export function FlagControl({ node, path, value, onChange }: FlagControlProps) {
   const error = state.validationErrors[path] ?? null;
 
   return (
-    <ControlWrapper node={node} error={error}>
-      <button
-        type="button"
-        role="switch"
-        aria-checked={isOn}
-        aria-label={node.label}
+    <ControlWrapper node={node} error={error} inlineControl>
+      <SwitchPill
+        checked={isOn}
+        ariaLabel={node.label}
         onClick={() => onChange(path, isOn ? null : {})}
-        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2 focus:ring-offset-background ${
-          isOn ? "bg-primary" : "bg-border"
-        }`}
-      >
-        <span
-          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-200 ${
-            isOn ? "translate-x-6" : "translate-x-1"
-          }`}
-        />
-      </button>
+      />
     </ControlWrapper>
   );
 }
