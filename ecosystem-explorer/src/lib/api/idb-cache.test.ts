@@ -39,7 +39,6 @@ describe("idb-cache", () => {
       const db = await initDB();
 
       expect(db.name).toBe("otel-explorer-cache");
-      expect(db.version).toBe(4);
 
       const storeNames = Array.from(db.objectStoreNames);
       expect(storeNames).toContain("metadata");

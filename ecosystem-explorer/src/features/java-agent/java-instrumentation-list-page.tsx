@@ -224,7 +224,8 @@ export function JavaInstrumentationListPage() {
                     Custom Instrumentations
                   </h2>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    Non-library instrumentations such as methods, JMX metrics, and external annotations.
+                    Non-library instrumentations such as methods, JMX metrics, and external
+                    annotations.
                   </p>
                 </div>
                 <div className="grid gap-6 md:grid-cols-2">
