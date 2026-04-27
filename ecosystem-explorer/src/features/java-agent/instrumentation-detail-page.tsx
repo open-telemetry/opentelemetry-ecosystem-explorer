@@ -373,7 +373,7 @@ export function InstrumentationDetailPage() {
                             <div className="space-y-3">
                               <h3 className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
                                 Target Versions
-                                <Tooltip content="The versions of the target library that this instrumentation is tested against.">
+                                <Tooltip content="The versions of the target library that this instrumentation supports.">
                                   <HelpCircle
                                     className="h-3.5 w-3.5 cursor-help opacity-70 hover:opacity-100 transition-opacity focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-full"
                                     aria-label="More information about target versions"
