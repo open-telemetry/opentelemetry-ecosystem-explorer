@@ -36,15 +36,22 @@ export interface SchemaRendererProps {
   node: ConfigNode;
   depth: number;
   path: string;
+  /** Forwarded to GroupRenderer when the node is a group. See GroupRenderer.headless. */
+  headless?: boolean;
 }
 
-export function SchemaRenderer({ node, depth, path }: SchemaRendererProps): JSX.Element | null {
+export function SchemaRenderer({
+  node,
+  depth,
+  path,
+  headless = false,
+}: SchemaRendererProps): JSX.Element | null {
   const { state, setValue } = useConfigurationBuilder();
   const value = getByPath(state.values, parsePath(path));
 
   switch (node.controlType) {
     case "group":
-      return <GroupRenderer node={node} depth={depth} path={path} />;
+      return <GroupRenderer node={node} depth={depth} path={path} headless={headless} />;
     case "list": {
       const itemType = node.itemSchema.controlType;
       if (itemType === "group" || itemType === "plugin_select") {

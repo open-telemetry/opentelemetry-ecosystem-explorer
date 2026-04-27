@@ -72,42 +72,60 @@ describe("ToggleControl", () => {
     expect(onChange).toHaveBeenCalledWith("exporter.enabled", false);
   });
 
-  it("shows null state when nullable and value is null", () => {
-    const nullableNode = { ...node, nullable: true };
-    render(
-      <ToggleControl node={nullableNode} path={nullableNode.path} value={null} onChange={vi.fn()} />
-    );
-    expect(screen.getByRole("button", { name: "Set value" })).toBeInTheDocument();
-    expect(screen.queryByRole("switch")).not.toBeInTheDocument();
+  it("renders the switch in the inferred default position when value is null and default is true", () => {
+    const nullable: ToggleNode = { ...node, nullable: true, defaultBehavior: "true is used" };
+    render(<ToggleControl node={nullable} path={nullable.path} value={null} onChange={vi.fn()} />);
+    expect(screen.getByRole("switch")).toHaveAttribute("aria-checked", "true");
+    expect(screen.getByRole("switch")).toHaveAttribute("data-variant", "dashed");
+    expect(screen.getByText(/^default$/i)).toBeInTheDocument();
   });
 
-  it("activates with false when Set value clicked from null state", () => {
+  it("clicking the default-on switch commits explicit false", () => {
     const onChange = vi.fn();
-    const nullableNode = { ...node, nullable: true };
-    render(
-      <ToggleControl
-        node={nullableNode}
-        path={nullableNode.path}
-        value={null}
-        onChange={onChange}
-      />
-    );
-    fireEvent.click(screen.getByRole("button", { name: "Set value" }));
+    const nullable: ToggleNode = { ...node, nullable: true, defaultBehavior: "true is used" };
+    render(<ToggleControl node={nullable} path={nullable.path} value={null} onChange={onChange} />);
+    fireEvent.click(screen.getByRole("switch"));
     expect(onChange).toHaveBeenCalledWith("exporter.enabled", false);
   });
 
-  it("clears to null when Clear clicked", () => {
+  it("clicking the default-off switch commits explicit true", () => {
     const onChange = vi.fn();
-    const nullableNode = { ...node, nullable: true };
+    const nullable: ToggleNode = {
+      ...node,
+      key: "insecure",
+      label: "Insecure",
+      path: "exporter.insecure",
+      nullable: true,
+      defaultBehavior: "false is used",
+    };
+    render(<ToggleControl node={nullable} path={nullable.path} value={null} onChange={onChange} />);
+    fireEvent.click(screen.getByRole("switch"));
+    expect(onChange).toHaveBeenCalledWith("exporter.insecure", true);
+  });
+
+  it("falls back to OFF when default is unparseable, still showing the default badge", () => {
+    const nullable: ToggleNode = {
+      ...node,
+      key: "trace_based",
+      label: "Trace based",
+      path: "p.trace_based",
+      nullable: true,
+      defaultBehavior: "trace based filtering is not applied",
+    };
+    render(<ToggleControl node={nullable} path={nullable.path} value={null} onChange={vi.fn()} />);
+    expect(screen.getByRole("switch")).toHaveAttribute("aria-checked", "false");
+    expect(screen.getByRole("switch")).toHaveAttribute("data-variant", "dashed");
+    expect(screen.getByText(/^default$/i)).toBeInTheDocument();
+  });
+
+  it("renders a Reset link when value is set, clicking returns to null", () => {
+    const onChange = vi.fn();
+    const nullable: ToggleNode = { ...node, nullable: true, defaultBehavior: "true is used" };
     render(
-      <ToggleControl
-        node={nullableNode}
-        path={nullableNode.path}
-        value={false}
-        onChange={onChange}
-      />
+      <ToggleControl node={nullable} path={nullable.path} value={false} onChange={onChange} />
     );
-    fireEvent.click(screen.getByRole("button", { name: "Clear value" }));
+    expect(screen.getByRole("button", { name: /reset/i })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /reset/i }));
     expect(onChange).toHaveBeenCalledWith("exporter.enabled", null);
   });
 
@@ -115,5 +133,12 @@ describe("ToggleControl", () => {
     mockValidationErrors = { [node.path]: "Required" };
     render(<ToggleControl node={node} path={node.path} value={false} onChange={vi.fn()} />);
     expect(screen.getByRole("alert")).toHaveTextContent("Required");
+  });
+
+  it("renders the switch on the same row as the label", () => {
+    render(<ToggleControl node={node} path={node.path} value={true} onChange={vi.fn()} />);
+    const label = screen.getByText("Enabled");
+    const sw = screen.getByRole("switch");
+    expect(label.closest("div")).toBe(sw.closest("div"));
   });
 });

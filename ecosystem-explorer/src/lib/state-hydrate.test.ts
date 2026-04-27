@@ -41,18 +41,20 @@ describe("hydrateStarterState", () => {
       enabledSections: {},
       validationErrors: {},
       isDirty: false,
+      listItemIds: {},
     });
   });
   it("copies starter values and enabledSections into the state", () => {
     const starter: ConfigStarter = {
       enabledSections: { resource: true },
-      values: { resource: { attributes: [] } },
+      values: { resource: { attributes: [{ name: "service.name" }] } },
     };
     const s = hydrateStarterState("1.0.0", starter);
     expect(s.version).toBe("1.0.0");
     expect(s.enabledSections).toEqual({ resource: true });
-    expect(s.values).toEqual({ resource: { attributes: [] } });
+    expect(s.values).toEqual({ resource: { attributes: [{ name: "service.name" }] } });
     expect(s.isDirty).toBe(false);
     expect(s.validationErrors).toEqual({});
+    expect(s.listItemIds!["resource.attributes"]).toHaveLength(1);
   });
 });

@@ -25,8 +25,10 @@ export function JavaConfigurationListPage() {
       <div className="space-y-6">
         <BackButton />
         <div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            OpenTelemetry Java Agent Configuration
+          <h1 className="text-3xl font-bold md:text-4xl mb-2">
+            <span className="bg-gradient-to-r from-[hsl(var(--secondary-hsl))] to-[hsl(var(--primary-hsl))] bg-clip-text text-transparent">
+              OpenTelemetry Java Agent Configuration
+            </span>
           </h1>
         </div>
         {isEnabled("JAVA_CONFIG_BUILDER") ? (

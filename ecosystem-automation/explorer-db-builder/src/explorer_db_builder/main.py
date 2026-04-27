@@ -97,17 +97,21 @@ def process_version(
 
     transformed_inventory = transform_instrumentation_format(inventory)
 
-    if "libraries" not in transformed_inventory:
-        raise KeyError(f"Inventory for version {version} missing 'libraries' key")
+    if "libraries" not in transformed_inventory and "custom" not in transformed_inventory:
+        raise KeyError(f"Inventory for version {version} missing 'libraries' and 'custom' keys")
 
-    libraries = transformed_inventory["libraries"]
-    if not libraries:
-        raise ValueError(f"No libraries found in inventory for version {version}")
+    libraries = transformed_inventory.get("libraries", [])
+    custom = transformed_inventory.get("custom", [])
 
-    logger.info(f"Found {len(libraries)} libraries")
+    if not libraries and not custom:
+        raise ValueError(f"No instrumentations found in inventory for version {version}")
 
-    library_map = db_writer.write_libraries(libraries)
-    db_writer.write_version_index(version, library_map)
+    logger.info(f"Found {len(libraries)} libraries and {len(custom)} custom instrumentations")
+
+    library_map = db_writer.write_libraries(libraries) if libraries else {}
+    custom_map = db_writer.write_libraries(custom) if custom else {}
+
+    db_writer.write_version_index(version, library_map, custom_map)
 
 
 def run_javaagent_builder(
@@ -135,10 +139,15 @@ def run_javaagent_builder(
         versions = get_release_versions(inventory_manager)
         logger.info(f"Processing {len(versions)} release versions")
 
-        backfilled_inventories = backfill_metadata(
+        backfilled_libraries = backfill_metadata(
             versions,
             inventory_manager.load_versioned_inventory,
             item_key="libraries",
+        )
+        backfilled_inventories = backfill_metadata(
+            versions,
+            lambda v: backfilled_libraries[v],
+            item_key="custom",
         )
 
         for version in versions:

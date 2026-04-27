@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 import type { ChangeEvent } from "react";
-import { useId, useRef, useState } from "react";
+import { useId, useState } from "react";
 import type { NumberInputNode } from "@/types/configuration";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
 import { ControlWrapper } from "./control-wrapper";
+import { INPUT_CLASS } from "./control-styles";
 
 interface NumberInputControlProps {
   node: NumberInputNode;
@@ -26,8 +27,22 @@ interface NumberInputControlProps {
   onChange: (path: string, value: number | null) => void;
 }
 
-const INPUT_CLASS =
-  "w-full rounded-lg border border-border/60 bg-background/80 px-4 py-2.5 text-sm backdrop-blur-sm transition-all duration-200 placeholder:text-muted-foreground/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20";
+function formatValue(value: number | null): string {
+  return value === null ? "" : String(value);
+}
+
+/**
+ * True when `draft` is a valid alternative spelling of `value` that we
+ * shouldn't clobber on a self-induced re-render — e.g. draft `"1.2e3"`
+ * after we just emitted `1200`. Partial / invalid inputs (NaN) were never
+ * emitted in the first place, so `value` cannot have come from us; falling
+ * through to a resync on external value change is the desired behavior.
+ */
+function draftRepresentsValue(draft: string, value: number | null): boolean {
+  if (value === null) return draft === "";
+  if (draft === "") return false;
+  return parseFloat(draft) === value;
+}
 
 export function NumberInputControl({ node, path, value, onChange }: NumberInputControlProps) {
   const id = useId();
@@ -39,14 +54,18 @@ export function NumberInputControl({ node, path, value, onChange }: NumberInputC
   const min = constraints?.minimum ?? constraints?.exclusiveMinimum;
   const max = constraints?.maximum ?? constraints?.exclusiveMaximum;
 
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [draft, setDraft] = useState<string>(() => (value === null ? "" : String(value)));
+  const [draft, setDraft] = useState<string>(() => formatValue(value));
   const [prevValue, setPrevValue] = useState<number | null>(value);
 
+  // Sync the draft when the external value actually changes (Reset,
+  // loadFromYaml, sibling control), but leave the in-flight draft alone if
+  // it already parses back to the same number — preserves notations like
+  // "1.2e3" after we emitted 1200.
   if (prevValue !== value) {
     setPrevValue(value);
-    const next = value === null ? "" : String(value);
-    if (draft === "" || parseFloat(draft) !== value) setDraft(next);
+    if (!draftRepresentsValue(draft, value)) {
+      setDraft(formatValue(value));
+    }
   }
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -70,16 +89,6 @@ export function NumberInputControl({ node, path, value, onChange }: NumberInputC
       isNull={isNull}
       error={error}
       onClear={() => onChange(path, null)}
-      onActivate={() => {
-        onChange(path, 0);
-        requestAnimationFrame(() => {
-          const el = inputRef.current;
-          if (el) {
-            el.focus();
-            el.select();
-          }
-        });
-      }}
     >
       <input
         id={id}
@@ -88,7 +97,6 @@ export function NumberInputControl({ node, path, value, onChange }: NumberInputC
         min={min}
         max={max}
         placeholder={node.defaultBehavior ?? ""}
-        ref={inputRef}
         aria-describedby={node.description ? descId : undefined}
         aria-required={node.required || undefined}
         onChange={handleChange}

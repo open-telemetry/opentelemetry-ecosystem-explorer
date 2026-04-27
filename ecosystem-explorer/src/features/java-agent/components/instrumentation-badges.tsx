@@ -16,6 +16,7 @@
 import type { BadgeInfo } from "../utils/badge-info";
 import type { FilterState } from "./instrumentation-filter-bar";
 import { FILTER_STYLES } from "../styles/filter-styles";
+import { Tooltip } from "@/components/ui/tooltip";
 
 type BadgeSize = "default" | "compact";
 
@@ -42,30 +43,34 @@ export function TargetBadges({
   return (
     <>
       {badges.hasJavaAgentTarget && (
-        <span
-          className={`${cls} transition-all ${
-            isJavaAgentFilterActive
-              ? FILTER_STYLES.target.javaagent.active
-              : FILTER_STYLES.target.javaagent.inactive
-          }`}
-          title="Java Agent"
-          aria-label="Has Java Agent target"
-        >
-          Agent
-        </span>
+        <Tooltip content="Standard instrumentation that runs alongside the application using a Java agent.">
+          <span
+            className={`${cls} cursor-help transition-all focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 ${
+              isJavaAgentFilterActive
+                ? FILTER_STYLES.target.javaagent.active
+                : FILTER_STYLES.target.javaagent.inactive
+            }`}
+            aria-label="Has Java Agent target"
+            tabIndex={0}
+          >
+            Agent
+          </span>
+        </Tooltip>
       )}
       {badges.hasLibraryTarget && (
-        <span
-          className={`${cls} transition-all ${
-            isLibraryFilterActive
-              ? FILTER_STYLES.target.library.active
-              : FILTER_STYLES.target.library.inactive
-          }`}
-          title="Standalone Library"
-          aria-label="Has standalone library target"
-        >
-          Library
-        </span>
+        <Tooltip content="Standalone libraries are installed manually and for use without the agent.">
+          <span
+            className={`${cls} cursor-help transition-all focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 ${
+              isLibraryFilterActive
+                ? FILTER_STYLES.target.library.active
+                : FILTER_STYLES.target.library.inactive
+            }`}
+            aria-label="Has standalone library target"
+            tabIndex={0}
+          >
+            Library
+          </span>
+        </Tooltip>
       )}
     </>
   );
@@ -83,30 +88,34 @@ export function TelemetryBadges({
   return (
     <>
       {badges.hasSpans && (
-        <span
-          className={`${cls} transition-all ${
-            isSpansFilterActive
-              ? FILTER_STYLES.telemetry.spans.active
-              : FILTER_STYLES.telemetry.spans.inactive
-          }`}
-          title="Span telemetry"
-          aria-label="Has span telemetry"
-        >
-          Spans
-        </span>
+        <Tooltip content="Produces span telemetry for distributed tracing.">
+          <span
+            className={`${cls} cursor-help transition-all focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 ${
+              isSpansFilterActive
+                ? FILTER_STYLES.telemetry.spans.active
+                : FILTER_STYLES.telemetry.spans.inactive
+            }`}
+            aria-label="Has span telemetry"
+            tabIndex={0}
+          >
+            Spans
+          </span>
+        </Tooltip>
       )}
       {badges.hasMetrics && (
-        <span
-          className={`${cls} transition-all ${
-            isMetricsFilterActive
-              ? FILTER_STYLES.telemetry.metrics.active
-              : FILTER_STYLES.telemetry.metrics.inactive
-          }`}
-          title="Metric telemetry"
-          aria-label="Has metric telemetry"
-        >
-          Metrics
-        </span>
+        <Tooltip content="Produces metric telemetry for monitoring.">
+          <span
+            className={`${cls} cursor-help transition-all focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 ${
+              isMetricsFilterActive
+                ? FILTER_STYLES.telemetry.metrics.active
+                : FILTER_STYLES.telemetry.metrics.inactive
+            }`}
+            aria-label="Has metric telemetry"
+            tabIndex={0}
+          >
+            Metrics
+          </span>
+        </Tooltip>
       )}
     </>
   );

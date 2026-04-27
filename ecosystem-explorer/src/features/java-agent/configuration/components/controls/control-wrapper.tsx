@@ -15,6 +15,9 @@
  */
 import type { ReactNode } from "react";
 import type { ConfigNodeBase, Constraints } from "@/types/configuration";
+import type { ConfigValue } from "@/types/configuration-builder";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
+import { StabilityBadge } from "@/components/ui/stability-badge";
 import { FieldMeta } from "./field-meta";
 
 interface ControlWrapperProps {
@@ -23,9 +26,42 @@ interface ControlWrapperProps {
   descriptionId?: string;
   isNull?: boolean;
   error?: string | null;
+  /** Clears the field (sets value to null). Triggered by the Reset link. */
   onClear?: () => void;
-  onActivate?: () => void;
+  /**
+   * When true, render the children inline with the label (right-aligned)
+   * instead of stacking the input below. Used by boolean leaf controls
+   * (ToggleControl, FlagControl) so the switch sits on the label row.
+   */
+  inlineControl?: boolean;
+  /**
+   * Describes the schema's default for this field. When `isNull` is true,
+   * the wrapper renders a "default" badge alongside the children. The leaf
+   * control is responsible for using `value` to position itself in the
+   * inferred-default state.
+   */
+  defaultPreview?: { value: ConfigValue | null; description: string };
   children: ReactNode;
+}
+
+function DefaultBadge() {
+  return (
+    <span className="rounded border border-dashed border-border/60 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+      default
+    </span>
+  );
+}
+
+function ResetLink({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="text-xs font-medium text-primary hover:underline"
+    >
+      Reset
+    </button>
+  );
 }
 
 export function ControlWrapper({
@@ -35,11 +71,20 @@ export function ControlWrapper({
   isNull = false,
   error,
   onClear,
-  onActivate,
+  inlineControl = false,
+  defaultPreview,
   children,
 }: ControlWrapperProps) {
-  const showNullState = node.nullable && isNull && !!onActivate;
-  const showClearButton = node.nullable && !isNull && !!onClear;
+  const isUnset = node.nullable === true && isNull;
+  const showReset = node.nullable === true && !isNull && !!onClear;
+  const trailing: ReactNode = isUnset ? (
+    <DefaultBadge />
+  ) : showReset ? (
+    <ResetLink onClick={onClear!} />
+  ) : null;
+
+  const fieldMetaDefault =
+    isUnset && defaultPreview ? defaultPreview.description : node.defaultBehavior;
 
   return (
     <div className="space-y-2">
@@ -57,54 +102,30 @@ export function ControlWrapper({
               *
             </span>
           )}
-          {node.stability === "development" && (
-            <span className="rounded-full bg-yellow-500/15 px-2 py-0.5 text-xs text-yellow-500">
-              dev
+          <StabilityBadge stability={node.stability} />
+          {node.description && (
+            <InfoTooltip text={node.description} describedById={descriptionId} />
+          )}
+          {inlineControl && (
+            <span className="ml-auto inline-flex items-center gap-2">
+              {children}
+              {trailing}
             </span>
           )}
         </div>
       )}
-      {node.description && (
-        <p id={descriptionId} className="text-xs text-muted-foreground">
-          {node.description}
-        </p>
-      )}
-      {showNullState ? (
-        <div className="flex items-center gap-3">
-          <span className="text-sm italic text-muted-foreground">
-            {node.nullBehavior ?? node.defaultBehavior ?? "Using default"}
-          </span>
-          <button
-            type="button"
-            onClick={onActivate}
-            className="rounded-md border border-border/60 bg-background/80 px-3 py-1.5 text-xs text-foreground transition-all hover:border-primary/40"
-          >
-            Set value
-          </button>
-        </div>
-      ) : (
+      {!inlineControl && (
         <div className="flex items-start gap-2">
           <div className="flex-1">{children}</div>
-          {showClearButton && (
-            <button
-              type="button"
-              onClick={onClear}
-              aria-label="Clear value"
-              className="mt-0.5 shrink-0 rounded-md border border-border/60 bg-background/80 px-3 py-2 text-xs text-foreground transition-all hover:border-primary/40"
-            >
-              Clear
-            </button>
-          )}
+          {trailing && <span className="mt-0.5 shrink-0 py-1">{trailing}</span>}
         </div>
       )}
-      {!showNullState && (
-        <FieldMeta
-          node={{
-            defaultBehavior: node.defaultBehavior,
-            constraints: (node as ConfigNodeBase & { constraints?: Constraints }).constraints,
-          }}
-        />
-      )}
+      <FieldMeta
+        node={{
+          defaultBehavior: fieldMetaDefault,
+          constraints: (node as ConfigNodeBase & { constraints?: Constraints }).constraints,
+        }}
+      />
       {error ? (
         <p role="alert" className="text-xs text-red-400">
           {error}

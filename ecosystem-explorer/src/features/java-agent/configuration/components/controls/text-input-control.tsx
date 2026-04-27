@@ -17,6 +17,7 @@ import { useId } from "react";
 import type { TextInputNode } from "@/types/configuration";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
 import { ControlWrapper } from "./control-wrapper";
+import { INPUT_CLASS } from "./control-styles";
 
 interface TextInputControlProps {
   node: TextInputNode;
@@ -24,9 +25,6 @@ interface TextInputControlProps {
   value: string | null;
   onChange: (path: string, value: string | null) => void;
 }
-
-const INPUT_CLASS =
-  "w-full rounded-lg border border-border/60 bg-background/80 px-4 py-2.5 text-sm backdrop-blur-sm transition-all duration-200 placeholder:text-muted-foreground/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20";
 
 export function TextInputControl({ node, path, value, onChange }: TextInputControlProps) {
   const id = useId();
@@ -43,7 +41,6 @@ export function TextInputControl({ node, path, value, onChange }: TextInputContr
       isNull={isNull}
       error={error}
       onClear={() => onChange(path, null)}
-      onActivate={() => onChange(path, "")}
     >
       <input
         id={id}

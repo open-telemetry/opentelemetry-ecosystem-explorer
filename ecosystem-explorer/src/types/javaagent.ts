@@ -24,6 +24,7 @@ export interface VersionInfo {
 
 export interface VersionManifest {
   instrumentations: Record<string, string>;
+  custom_instrumentations?: Record<string, string>;
   version: string;
 }
 
@@ -43,6 +44,7 @@ export interface InstrumentationData {
   javaagent_target_versions?: string[];
   configurations?: Configuration[];
   telemetry?: Telemetry[];
+  _is_custom?: boolean;
 }
 
 export interface InstrumentationScope {

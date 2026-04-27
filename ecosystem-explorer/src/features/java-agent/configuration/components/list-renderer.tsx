@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 import { useState, type JSX } from "react";
-import { Plus, X } from "lucide-react";
+import { ChevronDown, ChevronRight, Plus, X } from "lucide-react";
 import type { ListNode } from "@/types/configuration";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
 import { SchemaRenderer } from "./schema-renderer";
 import { parsePath, getByPath } from "@/lib/config-path";
-
-let listItemIdCounter = 0;
-function nextListItemId(): string {
-  listItemIdCounter += 1;
-  return `li-${listItemIdCounter}`;
-}
+import { deriveListItemLabel } from "@/lib/derive-list-item-label";
+import { SummaryBadge } from "@/components/ui/summary-badge";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 
 export interface ListRendererProps {
   node: ListNode;
@@ -39,68 +36,92 @@ export function ListRenderer({ node, depth, path }: ListRendererProps): JSX.Elem
   const { constraints } = node;
   const canAdd = !constraints?.maxItems || items.length < constraints.maxItems;
   const canRemove = !constraints?.minItems || items.length > constraints.minItems;
+  const storedIds = state.listItemIds?.[path];
+  // Reducer-owned ids are authoritative for ADD / REMOVE / LOAD_STATE flows;
+  // fall back to path+index keys when an entry is absent or out of sync (e.g.
+  // arrays seeded by SET_ENABLED or SELECT_PLUGIN, which don't allocate ids).
+  const itemKeys =
+    storedIds && storedIds.length === items.length
+      ? storedIds
+      : items.map((_, i) => `${path}#${i}`);
+  const [expanded, setExpanded] = useState(false);
 
-  const [ids, setIds] = useState<string[]>(() => items.map(() => nextListItemId()));
-  let renderIds = ids;
-  if (ids.length !== items.length) {
-    if (ids.length < items.length) {
-      const added = Array.from({ length: items.length - ids.length }, () => nextListItemId());
-      renderIds = [...ids, ...added];
-    } else {
-      renderIds = ids.slice(0, items.length);
-    }
-    setIds(renderIds);
-  }
-
-  const handleRemove = (i: number) => {
-    setIds((current) => current.filter((_, idx) => idx !== i));
-    removeListItem(path, i);
-  };
-
-  return (
+  const body = (
     <div className="space-y-3">
-      {node.description && <p className="text-xs text-muted-foreground">{node.description}</p>}
       {items.length === 0 ? (
         <p className="text-xs text-muted-foreground">No items</p>
       ) : (
         <ul className="space-y-3">
-          {items.map((_, i) => {
+          {items.map((itemValue, i) => {
             const itemPath = `${path}[${i}]`;
+            const { label, derived } = deriveListItemLabel(node, itemValue, i);
             return (
               <li
-                key={renderIds[i]}
+                key={itemKeys[i]}
                 className="rounded-lg border border-border/40 bg-background/30 p-4 space-y-3"
               >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-medium text-muted-foreground">Item {i + 1}</span>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="flex items-center gap-2 text-sm font-medium">
+                    <span className="text-muted-foreground tabular-nums">{i + 1}</span>
+                    <span className={derived ? "text-foreground" : "italic text-muted-foreground"}>
+                      {label}
+                    </span>
+                  </span>
                   {canRemove && (
                     <button
                       type="button"
                       aria-label={`Remove item ${i + 1}`}
-                      onClick={() => handleRemove(i)}
+                      onClick={() => removeListItem(path, i)}
                       className="rounded-md border border-border/60 p-1 text-muted-foreground hover:border-red-500/40 hover:text-red-400"
                     >
                       <X className="h-3 w-3" aria-hidden="true" />
                     </button>
                   )}
                 </div>
-                <SchemaRenderer node={node.itemSchema} depth={depth + 1} path={itemPath} />
+                <SchemaRenderer
+                  node={node.itemSchema}
+                  depth={depth + 1}
+                  path={itemPath}
+                  headless={node.itemSchema.controlType === "group"}
+                />
               </li>
             );
           })}
         </ul>
       )}
-      {canAdd && (
+    </div>
+  );
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-2">
         <button
           type="button"
-          aria-label={`Add item to ${node.label}`}
-          onClick={() => addListItem(path)}
-          className="flex items-center gap-1 rounded-md border border-border/60 px-3 py-1.5 text-xs text-foreground hover:border-primary/40"
+          aria-expanded={expanded}
+          aria-label={expanded ? `Collapse ${node.label}` : `Expand ${node.label}`}
+          onClick={() => setExpanded((e) => !e)}
+          className="flex items-center gap-1 text-sm font-medium text-foreground hover:text-primary"
         >
-          <Plus className="h-3 w-3 text-primary" aria-hidden="true" />
-          Add
+          {expanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
+          {node.label}
         </button>
-      )}
+        {items.length > 0 && (
+          <SummaryBadge>{`${items.length} ${items.length === 1 ? "item" : "items"}`}</SummaryBadge>
+        )}
+        {node.description && <InfoTooltip text={node.description} />}
+        {canAdd && (
+          <button
+            type="button"
+            aria-label={`Add item to ${node.label}`}
+            onClick={() => addListItem(path)}
+            className="ml-auto inline-flex items-center gap-1 rounded-md border border-border/60 px-2 py-1 text-xs text-foreground hover:border-primary/40"
+          >
+            <Plus className="h-3 w-3 text-primary" aria-hidden="true" />
+            Add
+          </button>
+        )}
+      </div>
+      {expanded && body}
     </div>
   );
 }
