@@ -20,17 +20,20 @@ import type { ComponentPropsWithoutRef, ComponentRef } from "react";
 const TooltipProvider = RadixTooltip.Provider;
 const TooltipRoot = RadixTooltip.Root;
 const TooltipTrigger = RadixTooltip.Trigger;
+const TooltipPortal = RadixTooltip.Portal;
 
 const TooltipContent = forwardRef<
   ComponentRef<typeof RadixTooltip.Content>,
   ComponentPropsWithoutRef<typeof RadixTooltip.Content>
 >(({ className = "", sideOffset = 4, ...props }, ref) => (
-  <RadixTooltip.Content
-    ref={ref}
-    sideOffset={sideOffset}
-    className={`z-50 overflow-hidden rounded-md border border-border/50 bg-card/95 px-3 py-1.5 text-xs text-foreground shadow-xl backdrop-blur-md animate-in fade-in zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 ${className}`}
-    {...props}
-  />
+  <TooltipPortal>
+    <RadixTooltip.Content
+      ref={ref}
+      sideOffset={sideOffset}
+      className={`z-50 overflow-hidden rounded-md border border-border/50 bg-card/95 px-3 py-1.5 text-xs normal-case text-foreground shadow-xl backdrop-blur-md animate-in fade-in zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 ${className}`}
+      {...props}
+    />
+  </TooltipPortal>
 ));
 TooltipContent.displayName = RadixTooltip.Content.displayName;
 
