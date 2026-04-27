@@ -85,6 +85,18 @@ jobs:
             echo "has_changes=true" >> $GITHUB_OUTPUT
           fi
 
+      - name: Increment DB cache schema version
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          FILE="ecosystem-explorer/src/lib/api/idb-cache.ts"
+          CURRENT=$(grep -oP 'const DB_VERSION = \K[0-9]+' "$FILE")
+          if [ -z "$CURRENT" ]; then
+            echo "Could not find DB_VERSION in $FILE"
+            exit 1
+          fi
+          NEW=$((CURRENT + 1))
+          sed -i "s/const DB_VERSION = ${CURRENT};/const DB_VERSION = ${NEW};/" "$FILE"
+
       - name: Commit and push changes
         if: steps.check_changes.outputs.has_changes == 'true'
         env:
@@ -92,7 +104,7 @@ jobs:
         run: |
           BRANCH="otelbot/automated-explorer-database-update"
 
-          git add ecosystem-explorer/public/data/
+          git add ecosystem-explorer/public/data/ ecosystem-explorer/src/lib/api/idb-cache.ts
 
           git commit -m "Update explorer database"
 
