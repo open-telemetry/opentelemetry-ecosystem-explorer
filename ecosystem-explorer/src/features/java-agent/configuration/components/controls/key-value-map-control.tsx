@@ -81,13 +81,7 @@ export function KeyValueMapControl({ node, path, value, onChange }: KeyValueMapC
   };
 
   return (
-    <ControlWrapper
-      node={node}
-      isNull={isNull}
-      error={error}
-      onClear={() => onChange(path, null)}
-      onActivate={() => onChange(path, {})}
-    >
+    <ControlWrapper node={node} isNull={isNull} error={error} onClear={() => onChange(path, null)}>
       <div className="space-y-2">
         <span ref={statusRef} className="sr-only" aria-live="polite" />
         <div className="flex justify-end">

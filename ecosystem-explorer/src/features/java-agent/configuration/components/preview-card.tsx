@@ -18,22 +18,14 @@ import { Copy, Download, RefreshCcw, ListPlus } from "lucide-react";
 import type { ConfigNode } from "@/types/configuration";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
 import { generateYaml } from "@/lib/yaml-generator";
+import { downloadText } from "@/lib/download-text";
+import { YamlCodeBlock } from "./yaml-code-block";
 
 interface PreviewCardProps {
   schema: ConfigNode;
 }
 
-function downloadYaml(filename: string, content: string): void {
-  const blob = new Blob([content], { type: "text/yaml" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-}
+const COPIED_FLASH_MS = 2000;
 
 export function PreviewCard({ schema }: PreviewCardProps): JSX.Element {
   const { state, enableAllSections, resetToDefaults, validateAll } = useConfigurationBuilder();
@@ -42,21 +34,9 @@ export function PreviewCard({ schema }: PreviewCardProps): JSX.Element {
 
   const handleCopy = async () => {
     validateAll();
-    try {
-      await navigator.clipboard.writeText(yaml);
-    } catch {
-      const textarea = document.createElement("textarea");
-      textarea.value = yaml;
-      textarea.setAttribute("readonly", "");
-      textarea.style.position = "absolute";
-      textarea.style.left = "-9999px";
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand("copy");
-      textarea.remove();
-    }
+    await navigator.clipboard.writeText(yaml);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setTimeout(() => setCopied(false), COPIED_FLASH_MS);
   };
 
   const handleReset = () => {
@@ -87,7 +67,7 @@ export function PreviewCard({ schema }: PreviewCardProps): JSX.Element {
             type="button"
             onClick={() => {
               validateAll();
-              downloadYaml(`otel-config-${state.version}.yaml`, yaml);
+              downloadText(`otel-config-${state.version}.yaml`, yaml, "text/yaml");
             }}
             className="flex items-center gap-1 rounded-md border border-border/60 bg-card px-3 py-1 text-xs text-foreground hover:bg-card/80"
           >
@@ -113,9 +93,10 @@ export function PreviewCard({ schema }: PreviewCardProps): JSX.Element {
           </button>
         </div>
       </header>
-      <pre className="overflow-auto max-h-[calc(100vh-8rem)] rounded-md bg-background/60 p-4 text-xs font-mono text-foreground">
-        {yaml}
-      </pre>
+      <YamlCodeBlock
+        code={yaml}
+        className="overflow-auto max-h-[calc(100vh-8rem)] rounded-md bg-background/60 p-4 text-xs font-mono text-foreground"
+      />
     </section>
   );
 }

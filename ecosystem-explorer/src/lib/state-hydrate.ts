@@ -15,6 +15,7 @@
  */
 import type { ConfigStarter } from "@/types/configuration";
 import type { ConfigValue, ConfigurationBuilderState } from "@/types/configuration-builder";
+import { buildListItemIds } from "./build-list-item-ids";
 
 export function hasUserValues(current: ConfigValue | undefined): boolean {
   return current !== undefined && current !== null;
@@ -24,11 +25,13 @@ export function hydrateStarterState(
   version: string,
   starter: ConfigStarter | null
 ): ConfigurationBuilderState {
+  const values = starter?.values ?? {};
   return {
     version,
-    values: starter?.values ?? {},
+    values,
     enabledSections: starter?.enabledSections ?? {},
     validationErrors: {},
     isDirty: false,
+    listItemIds: buildListItemIds(values),
   };
 }

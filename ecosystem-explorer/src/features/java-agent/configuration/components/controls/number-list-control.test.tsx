@@ -114,7 +114,7 @@ describe("NumberListControl", () => {
     expect(onChange).toHaveBeenCalledWith("receiver.ports", []);
   });
 
-  it("shows null state when nullable and value is null", () => {
+  it("shows the 'default' badge for nullable null value (no Set value interstitial)", () => {
     const nullableNode = { ...node, nullable: true };
     render(
       <NumberListControl
@@ -124,7 +124,8 @@ describe("NumberListControl", () => {
         onChange={vi.fn()}
       />
     );
-    expect(screen.getByRole("button", { name: "Set value" })).toBeInTheDocument();
+    expect(screen.getByText(/^default$/i)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /set value/i })).toBeNull();
   });
 
   it("renders the error from state when validationErrors has this path", () => {

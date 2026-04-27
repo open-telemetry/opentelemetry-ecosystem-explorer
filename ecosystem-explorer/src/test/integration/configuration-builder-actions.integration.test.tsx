@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 import { describe, it, expect, beforeAll, beforeEach, afterAll, vi } from "vitest";
-import { render, screen, waitFor, fireEvent, cleanup } from "@testing-library/react";
+import { screen, waitFor, fireEvent, cleanup } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { installFetchInterceptor, uninstallFetchInterceptor } from "./helpers/fetch-interceptor";
-import { ConfigurationBuilderPage } from "@/features/java-agent/configuration/configuration-builder-page";
+import { renderBuilderPage as renderPage } from "./helpers/render-builder-page";
 
 const clipboardWrite = vi.fn().mockResolvedValue(undefined);
 
@@ -41,16 +40,6 @@ beforeEach(() => {
   cleanup();
   clipboardWrite.mockClear();
 });
-
-function renderPage() {
-  return render(
-    <MemoryRouter initialEntries={["/java-agent/configuration/builder"]}>
-      <Routes>
-        <Route path="/java-agent/configuration/builder" element={<ConfigurationBuilderPage />} />
-      </Routes>
-    </MemoryRouter>
-  );
-}
 
 describe("ConfigurationBuilderPage — actions", () => {
   it("Copy writes current YAML to clipboard", async () => {

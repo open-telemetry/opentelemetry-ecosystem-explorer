@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 import { AgentExploreLanding } from "@/features/java-agent/components/agent-explore-landing.tsx";
+import { BackButton } from "@/components/ui/back-button";
 import { PageContainer } from "@/components/layout/page-container";
 
 export function JavaAgentPage() {
   return (
     <PageContainer>
       <div className="space-y-6">
+        <BackButton />
         <div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">OpenTelemetry Java Agent</h1>
+          <h1 className="text-3xl font-bold md:text-4xl mb-2">
+            <span className="bg-gradient-to-r from-[hsl(var(--secondary-hsl))] to-[hsl(var(--primary-hsl))] bg-clip-text text-transparent">
+              OpenTelemetry Java Agent
+            </span>
+          </h1>
           <p className="text-muted-foreground">
             Explore auto-instrumentation for Java applications. Discover supported libraries,
             configuration options, and emitted telemetry.

@@ -8,7 +8,7 @@
     "lint:md:fix": "markdownlint-cli2 --fix"
   },
   "devDependencies": {
-    "markdownlint-cli2": "0.22.0"
+    "markdownlint-cli2": "0.22.1"
   },
   "engines": {
     "node": ">=18.0.0"

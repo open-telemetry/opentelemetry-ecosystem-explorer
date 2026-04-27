@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { BackButton } from "@/components/ui/back-button";
 import { PageContainer } from "@/components/layout/page-container";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { SegmentedTabList } from "@/components/ui/segmented-tabs";
 import { VersionSelector } from "@/features/java-agent/components/version-selector";
 import {
   useConfigVersions,
@@ -28,52 +27,80 @@ import { ConfigurationBuilderProvider } from "@/hooks/configuration-builder-prov
 import type { GroupNode } from "@/types/configuration";
 import { SchemaRenderer } from "./components/schema-renderer";
 import { PreviewCard } from "./components/preview-card";
+import { ConfigurationTocSidebar, type TocSection } from "./components/configuration-toc-sidebar";
+import {
+  GeneralSectionCard,
+  GENERAL_SECTION_KEY,
+  GENERAL_SECTION_LABEL,
+} from "./components/general-section-card";
+import { useActiveSection } from "./hooks/use-active-section";
 
 const HIDDEN_SDK_KEYS = new Set(["file_format", "instrumentation/development", "distribution"]);
 
-function SdkTab({ version }: { version: string }) {
-  const schema = useConfigSchema(version);
-  const starter = useConfigStarter(version);
+const SDK_GRID = "grid grid-cols-1 gap-6 lg:grid-cols-[256px_1fr_420px] lg:gap-7";
+const INSTRUMENTATION_GRID = "grid grid-cols-1 gap-6 lg:grid-cols-[256px_1fr] lg:gap-7";
 
-  if (schema.loading || starter.loading) {
-    return <p className="mt-4 text-sm text-muted-foreground">Loading schema…</p>;
-  }
-  if (schema.error || !schema.data) {
-    return <p className="mt-4 text-sm text-red-400">Failed to load schema.</p>;
-  }
-  if (starter.error) {
-    return <p className="mt-4 text-sm text-red-400">Failed to load starter template.</p>;
-  }
+interface SdkTabContentProps {
+  schema: GroupNode;
+  starter: ReturnType<typeof useConfigStarter>["data"];
+  version: string;
+  activeTab: string;
+}
 
-  const root = schema.data as GroupNode;
-  const visibleChildren = root.children.filter((c) => !HIDDEN_SDK_KEYS.has(c.key));
-  const groupChildren = visibleChildren.filter((c) => c.controlType === "group");
-  const leafChildren = visibleChildren.filter((c) => c.controlType !== "group");
+function SdkTabContent({ schema, starter, version, activeTab }: SdkTabContentProps) {
+  const { groupChildren, leafChildren } = useMemo(() => {
+    const visible = schema.children.filter((c) => !HIDDEN_SDK_KEYS.has(c.key));
+    return {
+      groupChildren: visible.filter((c) => c.controlType === "group"),
+      leafChildren: visible.filter((c) => c.controlType !== "group"),
+    };
+  }, [schema]);
+  const hasGeneralLeaves = leafChildren.length > 0;
+
+  const tocSections: TocSection[] = useMemo(() => {
+    const groups = groupChildren.map((c) => ({ key: c.key, label: c.label }));
+    return hasGeneralLeaves
+      ? [{ key: GENERAL_SECTION_KEY, label: GENERAL_SECTION_LABEL }, ...groups]
+      : groups;
+  }, [groupChildren, hasGeneralLeaves]);
+  const sectionKeys = useMemo(() => tocSections.map((s) => s.key), [tocSections]);
+  const sectionsContainerRef = useRef<HTMLDivElement>(null);
+  const { activeKey, scrollToSection } = useActiveSection(sectionKeys, sectionsContainerRef);
 
   return (
-    <ConfigurationBuilderProvider
-      key={version}
-      schema={schema.data}
-      version={version}
-      starter={starter.data}
-    >
-      <div className="mt-4 grid gap-6 md:grid-cols-2">
-        <div className="space-y-4">
-          {leafChildren.length > 0 && (
-            <section className="rounded-xl border border-border/50 bg-card/40 p-5 space-y-3">
-              <h3 className="text-base font-semibold text-foreground">General</h3>
-              {leafChildren.map((child) => (
-                <SchemaRenderer key={child.key} node={child} depth={1} path={child.key} />
-              ))}
-            </section>
-          )}
+    <ConfigurationBuilderProvider key={version} schema={schema} version={version} starter={starter}>
+      <div className={SDK_GRID}>
+        <ConfigurationTocSidebar
+          activeTab={activeTab}
+          sections={tocSections}
+          activeKey={activeKey}
+          onSectionClick={scrollToSection}
+        />
+        <div ref={sectionsContainerRef} className="space-y-4">
+          {hasGeneralLeaves && <GeneralSectionCard leafChildren={leafChildren} />}
           {groupChildren.map((child) => (
             <SchemaRenderer key={child.key} node={child} depth={0} path={child.key} />
           ))}
         </div>
-        <PreviewCard schema={schema.data} />
+        <PreviewCard schema={schema} />
       </div>
     </ConfigurationBuilderProvider>
+  );
+}
+
+function InstrumentationTabContent({ activeTab }: { activeTab: string }) {
+  return (
+    <div className={INSTRUMENTATION_GRID}>
+      <ConfigurationTocSidebar
+        activeTab={activeTab}
+        sections={[]}
+        activeKey={null}
+        onSectionClick={() => {}}
+      />
+      <div className="rounded-xl border border-border/40 bg-card/30 p-8 text-center text-sm text-muted-foreground">
+        Instrumentation browser is coming in a follow-up PR (#250).
+      </div>
+    </div>
   );
 }
 
@@ -90,44 +117,52 @@ export function ConfigurationBuilderPage() {
   const version = currentVersion || latest;
   const [activeTab, setActiveTab] = useState("sdk");
 
+  const schema = useConfigSchema(version);
+  const starter = useConfigStarter(version);
+  const root = (schema.data as GroupNode | null) ?? null;
+
   return (
     <PageContainer>
       <div className="space-y-6">
-        <div className="flex items-center">
-          <BackButton />
-        </div>
-        <div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">Configuration Builder</h1>
-          <p className="text-muted-foreground">
-            Build and customize your OpenTelemetry Java Agent configuration
-          </p>
+        <BackButton />
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="space-y-3">
+            <h1 className="text-3xl font-bold md:text-4xl">
+              <span className="bg-gradient-to-r from-[hsl(var(--secondary-hsl))] to-[hsl(var(--primary-hsl))] bg-clip-text text-transparent">
+                Configuration Builder
+              </span>
+            </h1>
+            <p className="text-base text-muted-foreground">
+              Build and customize your OpenTelemetry Java Agent configuration
+            </p>
+          </div>
+          {versions.data && version ? (
+            <VersionSelector
+              versions={versions.data.versions}
+              currentVersion={version}
+              onVersionChange={setCurrentVersion}
+            />
+          ) : null}
         </div>
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <SegmentedTabList
-            value={activeTab}
-            tabs={[
-              { value: "sdk", label: "SDK" },
-              { value: "instrumentation", label: "Instrumentation" },
-            ]}
-          />
           <TabsContent value="sdk">
-            <div className="mt-4 flex items-center justify-end">
-              {versions.data && version ? (
-                <VersionSelector
-                  versions={versions.data.versions}
-                  currentVersion={version}
-                  onVersionChange={setCurrentVersion}
-                  label="Schema version"
-                  id="config-schema-version"
-                />
-              ) : null}
-            </div>
-            {version ? <SdkTab version={version} /> : null}
+            {schema.loading || starter.loading ? (
+              <p className="mt-4 text-sm text-muted-foreground">Loading schema…</p>
+            ) : schema.error || !root ? (
+              <p className="mt-4 text-sm text-red-400">Failed to load schema.</p>
+            ) : starter.error ? (
+              <p className="mt-4 text-sm text-red-400">Failed to load starter template.</p>
+            ) : version ? (
+              <SdkTabContent
+                schema={root}
+                starter={starter.data}
+                version={version}
+                activeTab={activeTab}
+              />
+            ) : null}
           </TabsContent>
           <TabsContent value="instrumentation">
-            <div className="mt-4 rounded-xl border border-border/40 bg-card/30 p-8 text-center text-sm text-muted-foreground">
-              Instrumentation browser is coming in a follow-up PR (#250).
-            </div>
+            <InstrumentationTabContent activeTab={activeTab} />
           </TabsContent>
         </Tabs>
       </div>

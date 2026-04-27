@@ -20,11 +20,12 @@ import type {
   ConfigValues,
   ConfigurationBuilderState,
 } from "@/types/configuration-builder";
+import { isPlainObject } from "./value-guards";
 
 const EMPTY = Symbol("EMPTY");
 type StrippedResult = ConfigValue | typeof EMPTY;
 
-export interface GenerateYamlOptions {
+interface GenerateYamlOptions {
   header?: string;
 }
 
@@ -79,10 +80,6 @@ function sectionComment(node: ConfigNode | undefined, fallbackKey: string): stri
     return `# ${label}\n${lines.join("\n")}\n`;
   }
   return `# ${label} — ${desc}\n`;
-}
-
-function isPlainObject(value: unknown): value is ConfigValues {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 function stripEmpties(value: ConfigValue): StrippedResult {

@@ -30,17 +30,26 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const theme = themes[themeId];
     const root = document.documentElement;
 
-    // Apply theme colors to CSS variables (HSL triplets)
-    root.style.setProperty("--primary-hsl", theme.colors.primary);
-    root.style.setProperty("--secondary-hsl", theme.colors.secondary);
-    root.style.setProperty("--background-hsl", theme.colors.background);
-    root.style.setProperty("--foreground-hsl", theme.colors.foreground);
-    root.style.setProperty("--card-hsl", theme.colors.card);
-    root.style.setProperty("--card-secondary-hsl", theme.colors.cardSecondary);
-    root.style.setProperty("--muted-hsl", theme.colors.muted);
-    root.style.setProperty("--muted-foreground-hsl", theme.colors.mutedForeground);
-    root.style.setProperty("--border-hsl", theme.colors.border);
-
+    const flat: Record<string, string> = {
+      primary: theme.colors.primary,
+      secondary: theme.colors.secondary,
+      background: theme.colors.background,
+      foreground: theme.colors.foreground,
+      card: theme.colors.card,
+      "card-secondary": theme.colors.cardSecondary,
+      muted: theme.colors.muted,
+      "muted-foreground": theme.colors.mutedForeground,
+      border: theme.colors.border,
+      "syntax-comment": theme.colors.syntax.comment,
+      "syntax-key": theme.colors.syntax.key,
+      "syntax-string": theme.colors.syntax.string,
+      "syntax-number": theme.colors.syntax.number,
+      "syntax-keyword": theme.colors.syntax.keyword,
+      "syntax-punct": theme.colors.syntax.punct,
+    };
+    for (const [name, value] of Object.entries(flat)) {
+      root.style.setProperty(`--${name}-hsl`, value);
+    }
     root.setAttribute("data-theme", themeId);
   }, [themeId]);
 

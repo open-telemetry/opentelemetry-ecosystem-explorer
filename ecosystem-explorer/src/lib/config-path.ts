@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { Path, ConfigValue, ConfigValues } from "@/types/configuration-builder";
+import { isPlainObject } from "./value-guards";
 
 export function parsePath(dotted: string): Path {
   const segments: Path = [];
@@ -85,10 +86,7 @@ function setByPathRecursive(
     return arr;
   }
 
-  const obj =
-    typeof current === "object" && current !== null && !Array.isArray(current)
-      ? { ...(current as ConfigValues) }
-      : {};
+  const obj: ConfigValues = isPlainObject(current) ? { ...current } : {};
   obj[segment] = setByPathRecursive(
     (current as ConfigValues)?.[segment] ?? {},
     path,

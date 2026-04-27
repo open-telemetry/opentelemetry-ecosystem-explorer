@@ -16,6 +16,7 @@
 import { useState, type JSX } from "react";
 import type { PluginSelectNode, ConfigNode } from "@/types/configuration";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
+import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { SchemaRenderer } from "./schema-renderer";
 import { parsePath, getByPath } from "@/lib/config-path";
 
@@ -24,8 +25,6 @@ export interface PluginSelectRendererProps {
   depth: number;
   path: string;
 }
-
-const CUSTOM_SENTINEL = "__custom__";
 
 function resolveSelectedKey(value: unknown, options: ConfigNode[]): string | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
@@ -49,38 +48,55 @@ export function PluginSelectRenderer({
 
   const [customDraft, setCustomDraft] = useState("");
   const [customPickerOpen, setCustomPickerOpen] = useState(false);
+  const customActive = isCustom || customPickerOpen;
 
-  const selectValue = isCustom ? CUSTOM_SENTINEL : (selectedKey ?? "");
+  const TAB_BASE =
+    "px-3 py-1.5 text-xs font-medium border-b-2 -mb-px transition-colors focus:outline-none focus-visible:text-foreground";
+  const TAB_ACTIVE = "border-primary text-primary";
+  const TAB_INACTIVE = "border-transparent text-muted-foreground hover:text-foreground";
 
   return (
     <div className="space-y-3">
-      {node.description && <p className="text-xs text-muted-foreground">{node.description}</p>}
-      <select
+      <div
+        role="tablist"
         aria-label={`${node.label} variant`}
-        value={selectValue}
-        onChange={(e) => {
-          const v = e.target.value;
-          if (!v) return;
-          if (v === CUSTOM_SENTINEL) {
-            setCustomPickerOpen(true);
-            return;
-          }
-          selectPlugin(path, v);
-        }}
-        className="w-full rounded-lg border border-border/60 bg-background/80 px-4 py-2.5 text-sm"
+        className="flex flex-wrap items-center gap-x-1 border-b border-border/60"
       >
-        <option value="" disabled hidden>
-          Select a {node.label.toLowerCase()}
-        </option>
-        {node.options.map((opt) => (
-          <option key={opt.key} value={opt.key}>
-            {opt.label}
-          </option>
-        ))}
+        {node.description && <InfoTooltip text={node.description} className="mr-1 self-center" />}
+        {node.options.map((opt) => {
+          const active = selectedKey === opt.key && !isCustom && !customPickerOpen;
+          return (
+            <button
+              key={opt.key}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => {
+                selectPlugin(path, opt.key);
+                setCustomPickerOpen(false);
+                setCustomDraft("");
+              }}
+              className={`${TAB_BASE} ${active ? TAB_ACTIVE : TAB_INACTIVE}`}
+            >
+              {opt.label}
+            </button>
+          );
+        })}
         {node.allowCustom && (
-          <option value={CUSTOM_SENTINEL}>{isCustom ? `Custom: ${selectedKey}` : "Custom…"}</option>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={customActive}
+            onClick={() => {
+              setCustomDraft(isCustom && selectedKey ? selectedKey : "");
+              setCustomPickerOpen(true);
+            }}
+            className={`${TAB_BASE} ${customActive ? TAB_ACTIVE : TAB_INACTIVE}`}
+          >
+            {isCustom && !customPickerOpen ? `Custom: ${selectedKey}` : "Custom…"}
+          </button>
         )}
-      </select>
+      </div>
 
       {customPickerOpen && (
         <div className="flex items-center gap-2">
@@ -125,6 +141,10 @@ export function PluginSelectRenderer({
           node={knownOption}
           depth={depth + 1}
           path={`${path}.${knownOption.key}`}
+          // The discriminator above already names the choice — drop the duplicate
+          // header on the chosen group's body. Primitive options have no header
+          // to drop, so this is a no-op for them.
+          headless={knownOption.controlType === "group"}
         />
       )}
 

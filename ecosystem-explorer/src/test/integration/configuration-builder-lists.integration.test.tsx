@@ -14,24 +14,13 @@
  * limitations under the License.
  */
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { installFetchInterceptor, uninstallFetchInterceptor } from "./helpers/fetch-interceptor";
-import { ConfigurationBuilderPage } from "@/features/java-agent/configuration/configuration-builder-page";
+import { renderBuilderPage as renderPage } from "./helpers/render-builder-page";
 
 beforeAll(() => installFetchInterceptor());
 afterAll(() => uninstallFetchInterceptor());
-
-function renderPage() {
-  return render(
-    <MemoryRouter initialEntries={["/java-agent/configuration/builder"]}>
-      <Routes>
-        <Route path="/java-agent/configuration/builder" element={<ConfigurationBuilderPage />} />
-      </Routes>
-    </MemoryRouter>
-  );
-}
 
 describe("ConfigurationBuilderPage — lists + plugin select", () => {
   it("adds a processor item to logger_provider.processors", async () => {
@@ -41,18 +30,27 @@ describe("ConfigurationBuilderPage — lists + plugin select", () => {
     // Wait for top-level cards to render.
     await screen.findByRole("switch", { name: /Enable Logger Provider/i }, { timeout: 10_000 });
 
-    // The Processors list lives inside the Logger Provider card.
+    // The Processors list lives inside the Logger Provider card and starts
+    // collapsed at depth >= 1. Click the chevron to reveal its items.
+    const expandProcessors = await screen.findAllByRole("button", {
+      name: /Expand Processors/i,
+    });
+    await user.click(expandProcessors[0]);
+
     // Locate its Add button by accessible name.
     const addButtons = await screen.findAllByRole("button", {
       name: /Add item to Processors/i,
     });
     expect(addButtons.length).toBeGreaterThan(0);
 
-    const before = screen.getAllByText(/^Item \d+$/).length;
+    // Each list item renders as a <li>; count those rather than relying on a
+    // specific derived label (existing items may render "Batch" / "Simple"
+    // via Tier 1, new items "Processor N" via Tier 3).
+    const before = screen.getAllByRole("listitem").length;
     await user.click(addButtons[0]);
 
     await waitFor(() => {
-      expect(screen.getAllByText(/^Item \d+$/).length).toBeGreaterThan(before);
+      expect(screen.getAllByRole("listitem").length).toBeGreaterThan(before);
     });
   });
 });
