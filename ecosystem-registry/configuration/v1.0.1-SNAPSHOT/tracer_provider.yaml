@@ -265,7 +265,7 @@ $defs:
   ExperimentalComposableRuleBasedSampler:
     type:
       - object
-      - "null"
+      - 'null'
     additionalProperties: false
     properties:
       rules:

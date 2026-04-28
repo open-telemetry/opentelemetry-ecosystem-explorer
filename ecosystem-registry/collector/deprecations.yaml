@@ -7,32 +7,32 @@ core:
 contrib:
   connector: []
   exporter:
-    - name: sapmexporter
-      last_version: v0.147.0
-      deprecated_in_version: v0.148.0
-      source_repo: opentelemetry-collector-contrib
-      distributions:
-        - contrib
-      subtype: null
+  - name: sapmexporter
+    last_version: v0.147.0
+    deprecated_in_version: v0.148.0
+    source_repo: opentelemetry-collector-contrib
+    distributions:
+    - contrib
+    subtype: null
   extension: []
   processor:
-    - name: datadogsemanticsprocessor
-      last_version: v0.147.0
-      deprecated_in_version: v0.148.0
-      source_repo: opentelemetry-collector-contrib
-      distributions: []
-      subtype: null
+  - name: datadogsemanticsprocessor
+    last_version: v0.147.0
+    deprecated_in_version: v0.148.0
+    source_repo: opentelemetry-collector-contrib
+    distributions: []
+    subtype: null
   receiver:
-    - name: bigipreceiver
-      last_version: v0.146.0
-      deprecated_in_version: v0.147.0
-      source_repo: opentelemetry-collector-contrib
-      distributions:
-        - contrib
-      subtype: null
-    - name: k8slogreceiver
-      last_version: v0.147.0
-      deprecated_in_version: v0.148.0
-      source_repo: opentelemetry-collector-contrib
-      distributions: []
-      subtype: null
+  - name: bigipreceiver
+    last_version: v0.146.0
+    deprecated_in_version: v0.147.0
+    source_repo: opentelemetry-collector-contrib
+    distributions:
+    - contrib
+    subtype: null
+  - name: k8slogreceiver
+    last_version: v0.147.0
+    deprecated_in_version: v0.148.0
+    source_repo: opentelemetry-collector-contrib
+    distributions: []
+    subtype: null

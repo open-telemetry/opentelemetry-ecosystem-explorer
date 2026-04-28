@@ -6,14 +6,14 @@ on:
     paths:
       - "ecosystem-automation/**"
       - "ecosystem-explorer/**"
-      - "build-and-test.yml"
+      - ".github/workflows/build-and-test.yml"
       - "scripts/**"
   pull_request:
     branches: [main]
     paths:
       - "ecosystem-automation/**"
       - "ecosystem-explorer/**"
-      - "build-and-test.yml"
+      - ".github/workflows/build-and-test.yml"
       - "scripts/**"
 
 permissions:
