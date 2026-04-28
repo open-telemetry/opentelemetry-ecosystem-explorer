@@ -1,0 +1,24 @@
+{
+  "description": null,
+  "display_name": null,
+  "distribution": "core",
+  "ecosystem": "collector",
+  "id": "core-receiver-xreceiver",
+  "name": "xreceiver",
+  "repository": "opentelemetry-collector",
+  "status": {
+    "class": "pkg",
+    "codeowners": {
+      "active": [
+        "mx-psi",
+        "dmathieu"
+      ]
+    },
+    "stability": {
+      "alpha": [
+        "profiles"
+      ]
+    }
+  },
+  "type": "receiver"
+}

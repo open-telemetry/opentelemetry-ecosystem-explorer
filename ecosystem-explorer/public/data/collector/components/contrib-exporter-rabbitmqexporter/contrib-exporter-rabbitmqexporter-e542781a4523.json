@@ -1,0 +1,31 @@
+{
+  "description": null,
+  "display_name": "RabbitMQ Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-exporter-rabbitmqexporter",
+  "name": "rabbitmqexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "atoulme"
+      ],
+      "emeritus": [
+        "swar8080"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "exporter"
+}

@@ -1,0 +1,28 @@
+{
+  "description": null,
+  "display_name": "Service Graph Connector",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-connector-servicegraphconnector",
+  "name": "servicegraphconnector",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "connector",
+    "codeowners": {
+      "active": [
+        "mapno",
+        "JaredTan95"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "traces_to_metrics"
+      ]
+    }
+  },
+  "type": "connector"
+}

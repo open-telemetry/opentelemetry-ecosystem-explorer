@@ -1,0 +1,27 @@
+{
+  "description": "The Redis Storage Extension can persist state to a Redis cluster.",
+  "display_name": "Redis Storage Extension",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-extension-redisstorageextension",
+  "name": "redisstorageextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "atoulme"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "extension"
+      ]
+    }
+  },
+  "type": "extension"
+}

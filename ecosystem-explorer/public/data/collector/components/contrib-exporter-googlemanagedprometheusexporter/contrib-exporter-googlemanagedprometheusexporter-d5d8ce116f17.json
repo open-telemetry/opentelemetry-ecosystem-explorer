@@ -1,0 +1,31 @@
+{
+  "description": null,
+  "display_name": "Google Cloud Managed Prometheus Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-exporter-googlemanagedprometheusexporter",
+  "name": "googlemanagedprometheusexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "aabmass",
+        "dashpole",
+        "braydonk",
+        "jsuereth",
+        "psx95",
+        "ridwanmsharif"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "exporter"
+}
