@@ -25,19 +25,19 @@ export function AttributeTable({ attributes }: AttributeTableProps) {
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-border/30">
+    <div className="border-border/30 overflow-hidden rounded-lg border">
       <table aria-label="Attributes" className="w-full border-collapse">
         <thead>
           <tr className="bg-white/5">
             <th
               scope="col"
-              className="p-3 text-left text-[10px] font-bold uppercase tracking-widest text-muted-foreground"
+              className="text-muted-foreground p-3 text-left text-[10px] font-bold tracking-widest uppercase"
             >
               Key
             </th>
             <th
               scope="col"
-              className="p-3 text-left text-[10px] font-bold uppercase tracking-widest text-muted-foreground"
+              className="text-muted-foreground p-3 text-left text-[10px] font-bold tracking-widest uppercase"
             >
               Type
             </th>
@@ -51,7 +51,7 @@ export function AttributeTable({ attributes }: AttributeTableProps) {
             >
               <td className="p-4 font-mono text-sm md:text-[12px]">{attr.name}</td>
               <td className="p-4">
-                <span className="inline-block w-fit rounded border border-border/30 bg-card/80 px-2 py-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                <span className="border-border/30 bg-card/80 text-muted-foreground inline-block w-fit rounded border px-2 py-1 text-xs font-bold tracking-wider uppercase">
                   {attr.type}
                 </span>
               </td>

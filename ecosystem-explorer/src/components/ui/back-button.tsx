@@ -26,7 +26,7 @@ export function BackButton({ label = "Back" }: BackButtonProps) {
   return (
     <button
       onClick={() => navigate(-1)}
-      className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-border bg-background text-foreground text-sm font-medium transition-all hover:bg-card-secondary hover:border-primary/40 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+      className="border-border bg-background text-foreground hover:bg-card-secondary hover:border-primary/40 focus:ring-primary inline-flex items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium transition-all focus:ring-2 focus:ring-offset-2 focus:outline-none"
     >
       <ArrowLeft className="h-4 w-4" aria-hidden="true" />
       <span>{label}</span>

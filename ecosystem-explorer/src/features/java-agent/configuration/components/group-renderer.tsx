@@ -62,7 +62,7 @@ export function GroupRenderer({
   const body = enabled ? (
     <div
       className={
-        depth >= DEEP_NESTING_DEPTH ? "pl-3 border-l border-border/40 space-y-3" : "space-y-3"
+        depth >= DEEP_NESTING_DEPTH ? "border-border/40 space-y-3 border-l pl-3" : "space-y-3"
       }
     >
       {node.children.map((child) => (
@@ -80,7 +80,7 @@ export function GroupRenderer({
     return (
       <SectionCardShell sectionKey={node.key}>
         <header className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 flex-1 min-w-0">
+          <div className="flex min-w-0 flex-1 items-center gap-2">
             {enabled && (
               <button
                 type="button"
@@ -96,7 +96,7 @@ export function GroupRenderer({
                 )}
               </button>
             )}
-            <h3 className="text-base font-semibold text-foreground truncate">{node.label}</h3>
+            <h3 className="text-foreground truncate text-base font-semibold">{node.label}</h3>
             <StabilityBadge stability={node.stability} />
           </div>
           <SwitchPill
@@ -122,7 +122,7 @@ export function GroupRenderer({
             aria-expanded={expanded}
             aria-label={expanded ? `Collapse ${node.label}` : `Expand ${node.label}`}
             onClick={() => setExpanded((e) => !e)}
-            className="flex items-center gap-1 text-sm font-medium text-foreground hover:text-primary"
+            className="text-foreground hover:text-primary flex items-center gap-1 text-sm font-medium"
           >
             {expanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
             {node.label}

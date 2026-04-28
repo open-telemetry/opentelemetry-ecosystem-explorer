@@ -44,7 +44,7 @@ export function ConfigurationTocSidebar({
   onSectionClick,
 }: ConfigurationTocSidebarProps): JSX.Element {
   return (
-    <aside className="lg:sticky lg:top-20 lg:self-start lg:max-h-[calc(100vh-5rem)] lg:overflow-auto">
+    <aside className="lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:self-start lg:overflow-auto">
       <SegmentedTabList tabs={TABS} value={activeTab} fullWidth />
       {activeTab === "sdk" && (
         <nav aria-label="Configuration sections" className="mt-3 space-y-0.5">

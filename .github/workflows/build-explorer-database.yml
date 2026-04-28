@@ -4,13 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       build_mode:
-        description: 'Build mode'
+        description: "Build mode"
         required: true
         type: choice
         options:
-          - 'incremental'
-          - 'clean'
-        default: 'incremental'
+          - "incremental"
+          - "clean"
+        default: "incremental"
 
 permissions:
   contents: read

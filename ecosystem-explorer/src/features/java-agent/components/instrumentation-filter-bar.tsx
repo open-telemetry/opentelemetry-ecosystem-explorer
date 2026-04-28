@@ -51,7 +51,7 @@ export function InstrumentationFilterBar({
   };
 
   return (
-    <div className="relative overflow-hidden rounded-lg border border-border/60 bg-card/80 p-6">
+    <div className="border-border/60 bg-card/80 relative overflow-hidden rounded-lg border p-6">
       {/* Ambient radial gradient background */}
       <div
         className="absolute inset-0"
@@ -76,7 +76,7 @@ export function InstrumentationFilterBar({
       {/* Content */}
       <div className="relative z-10 space-y-6">
         <div className="space-y-2">
-          <label htmlFor="search" className="text-sm font-medium text-muted-foreground">
+          <label htmlFor="search" className="text-muted-foreground text-sm font-medium">
             Search
           </label>
           <div className="relative">
@@ -86,14 +86,14 @@ export function InstrumentationFilterBar({
               placeholder="Search instrumentations..."
               value={filters.search}
               onChange={(e) => onFiltersChange({ ...filters, search: e.target.value })}
-              className="w-full rounded-lg border border-border/60 bg-background/80 px-4 py-2.5 text-sm backdrop-blur-sm transition-all duration-200 placeholder:text-muted-foreground/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="border-border/60 bg-background/80 placeholder:text-muted-foreground/50 focus:border-primary/50 focus:ring-primary/20 w-full rounded-lg border px-4 py-2.5 text-sm backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none"
             />
           </div>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
           <div className="space-y-3">
-            <div className="text-sm font-medium text-muted-foreground">Telemetry</div>
+            <div className="text-muted-foreground text-sm font-medium">Telemetry</div>
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => toggleTelemetry("spans")}
@@ -119,7 +119,7 @@ export function InstrumentationFilterBar({
           </div>
 
           <div className="space-y-3">
-            <div className="text-sm font-medium text-muted-foreground">Type</div>
+            <div className="text-muted-foreground text-sm font-medium">Type</div>
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => toggleTarget("javaagent")}
@@ -147,7 +147,7 @@ export function InstrumentationFilterBar({
       </div>
 
       {/* Corner accent */}
-      <div className="pointer-events-none absolute -bottom-1 -right-1 h-20 w-20 opacity-60">
+      <div className="pointer-events-none absolute -right-1 -bottom-1 h-20 w-20 opacity-60">
         <svg viewBox="0 0 64 64" className="h-full w-full">
           <path
             d="M64 64 L64 40 L52 40 L52 52 L40 52 L40 64 Z"

@@ -19,10 +19,10 @@ import { NavigationCard } from "@/components/ui/navigation-card";
 
 export function ExploreSection() {
   return (
-    <section className="relative bg-background px-6">
+    <section className="bg-background relative px-6">
       {/* Subtle ambient glow at top */}
       <div
-        className="pointer-events-none absolute left-1/2 top-0 h-64 w-full max-w-3xl -translate-x-1/2 -translate-y-16"
+        className="pointer-events-none absolute top-0 left-1/2 h-64 w-full max-w-3xl -translate-x-1/2 -translate-y-16"
         style={{
           background:
             "radial-gradient(ellipse at center, hsl(var(--primary-hsl) / 0.04) 0%, transparent 80%)",

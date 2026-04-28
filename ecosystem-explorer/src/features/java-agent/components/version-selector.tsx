@@ -33,7 +33,7 @@ export function VersionSelector({
 }: VersionSelectorProps) {
   return (
     <div className="flex items-center gap-2">
-      <label htmlFor={id} className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+      <label htmlFor={id} className="text-muted-foreground text-sm font-medium whitespace-nowrap">
         {label}
       </label>
       <div className="relative">
@@ -41,7 +41,7 @@ export function VersionSelector({
           id={id}
           value={currentVersion}
           onChange={(e) => onVersionChange(e.target.value)}
-          className="appearance-none rounded-lg border border-border/60 bg-background/80 pl-3 pr-8 py-1.5 text-sm font-medium backdrop-blur-sm transition-all duration-200 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+          className="border-border/60 bg-background/80 focus:border-primary/50 focus:ring-primary/20 cursor-pointer appearance-none rounded-lg border py-1.5 pr-8 pl-3 text-sm font-medium backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none"
         >
           {versions.map((v) => (
             <option key={v.version} value={v.version}>
@@ -51,7 +51,7 @@ export function VersionSelector({
           ))}
         </select>
         <ChevronDown
-          className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
+          className="text-muted-foreground pointer-events-none absolute top-1/2 right-2 h-4 w-4 -translate-y-1/2"
           aria-hidden="true"
         />
       </div>

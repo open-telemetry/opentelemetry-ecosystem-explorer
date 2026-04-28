@@ -30,11 +30,11 @@ export function SpanDiffCard({ diff }: SpanDiffCardProps) {
   const statusLabel = status === "added" ? "Added" : status === "removed" ? "Removed" : "Changed";
 
   return (
-    <div className="rounded-2xl border border-border/30 bg-card/30 p-6 md:p-10 transition-all duration-300 hover:bg-card-secondary">
+    <div className="border-border/30 bg-card/30 hover:bg-card-secondary rounded-2xl border p-6 transition-all duration-300 md:p-10">
       <div className="space-y-6">
         {/* Span kind and badges */}
-        <div className="flex items-start justify-between gap-4 flex-wrap">
-          <h3 className="text-lg font-bold text-foreground md:text-xl">{span.span_kind} Span</h3>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <h3 className="text-foreground text-lg font-bold md:text-xl">{span.span_kind} Span</h3>
           <div className="flex gap-2">
             <GlowBadge variant={statusVariant} withGlow className="text-[10px]">
               {statusLabel}
@@ -48,7 +48,7 @@ export function SpanDiffCard({ diff }: SpanDiffCardProps) {
         {/* Attributes section */}
         {status === "changed" && changes?.attributes && (
           <div className="space-y-4">
-            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
+            <h4 className="text-muted-foreground text-xs font-black tracking-[0.2em] uppercase">
               Attribute Changes
             </h4>
             <AttributeDiffTable changes={changes.attributes} />

@@ -30,25 +30,25 @@ export function AttributeDiffTable({ changes }: AttributeDiffTableProps) {
   }
 
   return (
-    <div className="overflow-hidden rounded-lg border border-border/30">
+    <div className="border-border/30 overflow-hidden rounded-lg border">
       <table aria-label="Attribute changes" className="w-full border-collapse">
         <thead>
           <tr className="bg-white/5">
             <th
               scope="col"
-              className="p-3 text-left text-[10px] font-bold uppercase tracking-widest text-muted-foreground"
+              className="text-muted-foreground p-3 text-left text-[10px] font-bold tracking-widest uppercase"
             >
               Status
             </th>
             <th
               scope="col"
-              className="p-3 text-left text-[10px] font-bold uppercase tracking-widest text-muted-foreground"
+              className="text-muted-foreground p-3 text-left text-[10px] font-bold tracking-widest uppercase"
             >
               Key
             </th>
             <th
               scope="col"
-              className="p-3 text-left text-[10px] font-bold uppercase tracking-widest text-muted-foreground"
+              className="text-muted-foreground p-3 text-left text-[10px] font-bold tracking-widest uppercase"
             >
               Type
             </th>
@@ -66,7 +66,7 @@ export function AttributeDiffTable({ changes }: AttributeDiffTableProps) {
               </td>
               <td className="p-4 font-mono text-sm md:text-[12px]">{attr.name}</td>
               <td className="p-4">
-                <span className="inline-block w-fit rounded bg-muted/50 px-2 py-1 text-xs font-bold text-foreground/70">
+                <span className="bg-muted/50 text-foreground/70 inline-block w-fit rounded px-2 py-1 text-xs font-bold">
                   {attr.type}
                 </span>
               </td>
@@ -85,11 +85,11 @@ export function AttributeDiffTable({ changes }: AttributeDiffTableProps) {
                   <span className="text-xs font-medium text-red-400">Removed</span>
                 </div>
               </td>
-              <td className="p-4 font-mono text-sm md:text-[12px] line-through opacity-60">
+              <td className="p-4 font-mono text-sm line-through opacity-60 md:text-[12px]">
                 {attr.name}
               </td>
               <td className="p-4">
-                <span className="inline-block w-fit rounded bg-muted/50 px-2 py-1 text-xs font-bold text-foreground/70 opacity-60">
+                <span className="bg-muted/50 text-foreground/70 inline-block w-fit rounded px-2 py-1 text-xs font-bold opacity-60">
                   {attr.type}
                 </span>
               </td>
@@ -114,11 +114,11 @@ export function AttributeDiffTable({ changes }: AttributeDiffTableProps) {
               <td className="p-4 font-mono text-sm md:text-[12px]">{change.name}</td>
               <td className="p-4">
                 <div className="flex items-center gap-2">
-                  <span className="inline-block w-fit rounded bg-muted/50 px-2 py-1 text-xs font-bold text-foreground/70 line-through opacity-60">
+                  <span className="bg-muted/50 text-foreground/70 inline-block w-fit rounded px-2 py-1 text-xs font-bold line-through opacity-60">
                     {change.before.type}
                   </span>
-                  <span className="text-xs text-muted-foreground">→</span>
-                  <span className="inline-block w-fit rounded bg-muted/50 px-2 py-1 text-xs font-bold text-foreground/70">
+                  <span className="text-muted-foreground text-xs">→</span>
+                  <span className="bg-muted/50 text-foreground/70 inline-block w-fit rounded px-2 py-1 text-xs font-bold">
                     {change.after.type}
                   </span>
                 </div>

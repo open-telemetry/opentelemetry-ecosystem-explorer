@@ -55,27 +55,29 @@ bun run test
 ## Project Structure
 
 <!-- markdownlint-disable MD010 -->
+
 ```markdown
 src/
-├── components/                   # Shared components
-│   ├── layout/                   # Header, Footer
-│   ├── ui/                       # Reusable UI components (buttons, cards, etc.)
-│   └── icons/                    # SVG icon components
-├── features/                     # Feature-based modules
-│   ├── home/                     # Home page
-│   ├── java-agent/               # Java Agent explorer
-│   ├── collector/                # Collector explorer
-│   └── not-found/                # 404 page
-├── lib/                          # Utilities and data layer
-│   ├── api/                      # Data layer
-│   │   ├── idb-cache.ts          # IndexedDB persistence
-│   │   └── javaagent-data.ts     # Data fetching with cache
-│   └── feature-flags.ts          # Feature flag utility
-├── hooks/                        # React hooks
-│   └── use-javaagent-data.ts     # Data hooks for components
-└── types/                        # TypeScript type definitions
-    └── javaagent.ts              # Java Agent data types
+├── components/ # Shared components
+│ ├── layout/ # Header, Footer
+│ ├── ui/ # Reusable UI components (buttons, cards, etc.)
+│ └── icons/ # SVG icon components
+├── features/ # Feature-based modules
+│ ├── home/ # Home page
+│ ├── java-agent/ # Java Agent explorer
+│ ├── collector/ # Collector explorer
+│ └── not-found/ # 404 page
+├── lib/ # Utilities and data layer
+│ ├── api/ # Data layer
+│ │ ├── idb-cache.ts # IndexedDB persistence
+│ │ └── javaagent-data.ts # Data fetching with cache
+│ └── feature-flags.ts # Feature flag utility
+├── hooks/ # React hooks
+│ └── use-javaagent-data.ts # Data hooks for components
+└── types/ # TypeScript type definitions
+└── javaagent.ts # Java Agent data types
 ```
+
 <!-- markdownlint-enable MD010 -->
 
 ## Feature Flags
@@ -99,7 +101,9 @@ setting it to `false` hides it.
 ```tsx
 import { isEnabled } from "@/lib/feature-flags";
 
-{isEnabled("JAVA_CONFIG_BUILDER") && <MyComponent />}
+{
+  isEnabled("JAVA_CONFIG_BUILDER") && <MyComponent />;
+}
 ```
 
 The available feature flags are defined in `src/lib/feature-flags.ts`.
@@ -136,27 +140,25 @@ Theme colors are defined in `src/themes.ts` and applied via CSS custom propertie
 **In JSX with Tailwind classes:**
 
 ```tsx
-<div className="bg-background text-foreground border border-border">
-    <span className="text-primary">Primary color</span>
-    <span className="text-secondary">Secondary color</span>
+<div className="bg-background text-foreground border-border border">
+  <span className="text-primary">Primary color</span>
+  <span className="text-secondary">Secondary color</span>
 </div>
 ```
 
 **With inline styles:**
 
 ```tsx
-<div style={{color: 'hsl(var(--color-primary))'}}>
-    Custom styled element
-</div>
+<div style={{ color: "hsl(var(--color-primary))" }}>Custom styled element</div>
 ```
 
 **Available colors:**
 
-* `primary` - Vibrant orange accent
-* `secondary` - Bright blue accent
-* `background` - Main background
-* `foreground` - Main text
-* `card` - Card backgrounds
-* `card-secondary` - Secondary card backgrounds
-* `muted-foreground` - Secondary text
-* `border` - Border colors
+- `primary` - Vibrant orange accent
+- `secondary` - Bright blue accent
+- `background` - Main background
+- `foreground` - Main text
+- `card` - Card backgrounds
+- `card-secondary` - Secondary card backgrounds
+- `muted-foreground` - Secondary text
+- `border` - Border colors

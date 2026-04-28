@@ -128,7 +128,7 @@ export function JavaInstrumentationListPage() {
         <div className="flex min-h-[400px] items-center justify-center">
           <div className="space-y-2 text-center">
             <div className="text-lg font-medium">Loading instrumentations...</div>
-            <div className="text-sm text-muted-foreground">This may take a moment</div>
+            <div className="text-muted-foreground text-sm">This may take a moment</div>
           </div>
         </div>
       </PageContainer>
@@ -168,7 +168,7 @@ export function JavaInstrumentationListPage() {
                 OpenTelemetry Java Agent
               </span>
             </h1>
-            <p className="text-base text-muted-foreground">
+            <p className="text-muted-foreground text-base">
               Explore {instrumentations?.length ?? 0} available instrumentations.
             </p>
           </div>
@@ -184,20 +184,20 @@ export function JavaInstrumentationListPage() {
 
         <InstrumentationFilterBar filters={filters} onFiltersChange={setFilters} />
 
-        <div className="flex items-center justify-between border-b border-border/50 pb-4">
-          <div className="text-sm text-muted-foreground">
+        <div className="border-border/50 flex items-center justify-between border-b pb-4">
+          <div className="text-muted-foreground text-sm">
             Showing {filteredInstrumentations.length} of {instrumentations?.length ?? 0}{" "}
             instrumentations
           </div>
         </div>
 
         {filteredInstrumentations.length === 0 ? (
-          <div className="flex min-h-[300px] items-center justify-center rounded-lg border border-border/50 bg-card/30">
+          <div className="border-border/50 bg-card/30 flex min-h-[300px] items-center justify-center rounded-lg border">
             <div className="text-center">
-              <p className="text-base text-muted-foreground">
+              <p className="text-muted-foreground text-base">
                 No instrumentations found matching your filters.
               </p>
-              <p className="mt-2 text-sm text-muted-foreground/70">
+              <p className="text-muted-foreground/70 mt-2 text-sm">
                 Try adjusting your search or filter criteria
               </p>
             </div>
@@ -219,12 +219,13 @@ export function JavaInstrumentationListPage() {
 
             {customGroups.length > 0 && (
               <div className="space-y-6">
-                <div className="border-b border-border/50 pb-2">
-                  <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+                <div className="border-border/50 border-b pb-2">
+                  <h2 className="text-foreground text-2xl font-semibold tracking-tight">
                     Custom Instrumentations
                   </h2>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    Non-library instrumentations such as methods, JMX metrics, and external annotations.
+                  <p className="text-muted-foreground mt-1 text-sm">
+                    Non-library instrumentations such as methods, JMX metrics, and external
+                    annotations.
                   </p>
                 </div>
                 <div className="grid gap-6 md:grid-cols-2">

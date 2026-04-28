@@ -31,7 +31,7 @@ export function SectionCardShell({ sectionKey, children }: SectionCardShellProps
     <section
       data-section-key={sectionKey}
       tabIndex={-1}
-      className="relative isolate overflow-hidden rounded-lg border border-border bg-card p-6 space-y-3 focus:outline-none"
+      className="border-border bg-card relative isolate space-y-3 overflow-hidden rounded-lg border p-6 focus:outline-none"
     >
       <div
         aria-hidden="true"

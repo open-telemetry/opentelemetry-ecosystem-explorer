@@ -8,7 +8,7 @@ on:
     branches:
       - main
   schedule:
-    - cron: "25 12 * * 2"  # weekly at 12:25 UTC on Tuesday
+    - cron: "25 12 * * 2" # weekly at 12:25 UTC on Tuesday
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -22,8 +22,8 @@ jobs:
     name: Analyze (${{ matrix.language }})
     permissions:
       contents: read
-      actions: read  # for github/codeql-action/init to get workflow details
-      security-events: write  # for github/codeql-action/analyze to upload SARIF results
+      actions: read # for github/codeql-action/init to get workflow details
+      security-events: write # for github/codeql-action/analyze to upload SARIF results
     strategy:
       fail-fast: false
       matrix:

@@ -25,7 +25,7 @@ const TabsContent = forwardRef<
 >(({ className = "", ...props }, ref) => (
   <RadixTabs.Content
     ref={ref}
-    className={`mt-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${className}`}
+    className={`ring-offset-background focus-visible:ring-primary mt-2 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none ${className}`}
     {...props}
   />
 ));

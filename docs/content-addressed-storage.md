@@ -7,10 +7,10 @@ automatic deduplication and efficient caching.
 
 Transform raw registry data to optimize for:
 
-* **Fast Web Access**: Small individual files load faster than large aggregated files
-* **Efficient Caching**: Immutable content-addressed files can be cached indefinitely
-* **Automatic Deduplication**: Identical content across versions shares the same file
-* **Version Comparison**: Easy to identify what changed by comparing content hashes
+- **Fast Web Access**: Small individual files load faster than large aggregated files
+- **Efficient Caching**: Immutable content-addressed files can be cached indefinitely
+- **Automatic Deduplication**: Identical content across versions shares the same file
+- **Version Comparison**: Easy to identify what changed by comparing content hashes
 
 ## Output Structure
 
@@ -46,9 +46,9 @@ ecosystem-explorer/public/data/
 
 Hash in filename guarantees immutable content:
 
-* Enables aggressive CDN caching: `Cache-Control: public, max-age=31536000, immutable`
-* No cache invalidation needed
-* Same hash = identical content
+- Enables aggressive CDN caching: `Cache-Control: public, max-age=31536000, immutable`
+- No cache invalidation needed
+- Same hash = identical content
 
 ## Key Files
 

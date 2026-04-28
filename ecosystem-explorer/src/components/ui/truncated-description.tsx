@@ -33,7 +33,7 @@ export function TruncatedDescription({
   if (summary === "") return null;
 
   return (
-    <p className={className ?? "text-xs text-muted-foreground"}>
+    <p className={className ?? "text-muted-foreground text-xs"}>
       {summary}
       {rest !== null && (
         <>
