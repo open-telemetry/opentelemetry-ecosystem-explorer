@@ -75,7 +75,7 @@ src/
 ├── hooks/ # React hooks
 │ └── use-javaagent-data.ts # Data hooks for components
 └── types/ # TypeScript type definitions
-│   └── javaagent.ts # Java Agent data types
+│ └── javaagent.ts # Java Agent data types
 ```
 
 <!-- markdownlint-enable MD010 -->
@@ -101,7 +101,9 @@ setting it to `false` hides it.
 ```tsx
 import { isEnabled } from "@/lib/feature-flags";
 
-{isEnabled("JAVA_CONFIG_BUILDER") && <MyComponent />}
+{
+  isEnabled("JAVA_CONFIG_BUILDER") && <MyComponent />;
+}
 ```
 
 The available feature flags are defined in `src/lib/feature-flags.ts`.
