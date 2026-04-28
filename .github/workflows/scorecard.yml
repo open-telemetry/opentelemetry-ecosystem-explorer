@@ -12,6 +12,7 @@ permissions: read-all
 
 jobs:
   analysis:
+    if: github.event_name != 'schedule' || github.repository == 'open-telemetry/opentelemetry-ecosystem-explorer'
     runs-on: ubuntu-latest
     permissions:
       # Needed for Code scanning upload
