@@ -75,7 +75,7 @@ src/
 ├── hooks/ # React hooks
 │ └── use-javaagent-data.ts # Data hooks for components
 └── types/ # TypeScript type definitions
-└── javaagent.ts # Java Agent data types
+│   └── javaagent.ts # Java Agent data types
 ```
 
 <!-- markdownlint-enable MD010 -->
