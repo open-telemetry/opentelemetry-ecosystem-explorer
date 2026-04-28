@@ -6,21 +6,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "MovieStoreGuy",
-        "andrzej-stencel",
-        "crobert-1"
-      ]
+      "active": ["MovieStoreGuy", "andrzej-stencel", "crobert-1"]
     },
-    "distributions": [
-      "contrib",
-      "core",
-      "k8s"
-    ],
+    "distributions": ["contrib", "core", "k8s"],
     "stability": {
-      "beta": [
-        "traces"
-      ]
+      "beta": ["traces"]
     }
   },
   "type": "zipkin",

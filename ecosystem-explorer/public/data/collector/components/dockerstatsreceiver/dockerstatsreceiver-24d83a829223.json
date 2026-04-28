@@ -25,11 +25,7 @@
   "distribution": "contrib",
   "metrics": {
     "container.blockio.io_merged_recursive": {
-      "attributes": [
-        "device_major",
-        "device_minor",
-        "operation"
-      ],
+      "attributes": ["device_major", "device_minor", "operation"],
       "description": "Number of bios/requests merged into requests belonging to this cgroup and its descendant cgroups (Only available with cgroups v1).",
       "enabled": false,
       "stability": {
@@ -43,11 +39,7 @@
       "unit": "{operations}"
     },
     "container.blockio.io_queued_recursive": {
-      "attributes": [
-        "device_major",
-        "device_minor",
-        "operation"
-      ],
+      "attributes": ["device_major", "device_minor", "operation"],
       "description": "Number of requests queued up for this cgroup and its descendant cgroups (Only available with cgroups v1).",
       "enabled": false,
       "stability": {
@@ -61,11 +53,7 @@
       "unit": "{operations}"
     },
     "container.blockio.io_service_bytes_recursive": {
-      "attributes": [
-        "device_major",
-        "device_minor",
-        "operation"
-      ],
+      "attributes": ["device_major", "device_minor", "operation"],
       "description": "Number of bytes transferred to/from the disk by the group and descendant groups.",
       "enabled": true,
       "stability": {
@@ -79,11 +67,7 @@
       "unit": "By"
     },
     "container.blockio.io_service_time_recursive": {
-      "attributes": [
-        "device_major",
-        "device_minor",
-        "operation"
-      ],
+      "attributes": ["device_major", "device_minor", "operation"],
       "description": "Total amount of time in nanoseconds between request dispatch and request completion for the IOs done by this cgroup and descendant cgroups (Only available with cgroups v1).",
       "enabled": false,
       "stability": {
@@ -97,11 +81,7 @@
       "unit": "ns"
     },
     "container.blockio.io_serviced_recursive": {
-      "attributes": [
-        "device_major",
-        "device_minor",
-        "operation"
-      ],
+      "attributes": ["device_major", "device_minor", "operation"],
       "description": "Number of IOs (bio) issued to the disk by the group and descendant groups (Only available with cgroups v1).",
       "enabled": false,
       "stability": {
@@ -115,11 +95,7 @@
       "unit": "{operations}"
     },
     "container.blockio.io_time_recursive": {
-      "attributes": [
-        "device_major",
-        "device_minor",
-        "operation"
-      ],
+      "attributes": ["device_major", "device_minor", "operation"],
       "description": "Disk time allocated to cgroup (and descendant cgroups) per device in milliseconds (Only available with cgroups v1).",
       "enabled": false,
       "stability": {
@@ -133,11 +109,7 @@
       "unit": "ms"
     },
     "container.blockio.io_wait_time_recursive": {
-      "attributes": [
-        "device_major",
-        "device_minor",
-        "operation"
-      ],
+      "attributes": ["device_major", "device_minor", "operation"],
       "description": "Total amount of time the IOs for this cgroup (and descendant cgroups) spent waiting in the scheduler queues for service (Only available with cgroups v1).",
       "enabled": false,
       "stability": {
@@ -151,11 +123,7 @@
       "unit": "ns"
     },
     "container.blockio.sectors_recursive": {
-      "attributes": [
-        "device_major",
-        "device_minor",
-        "operation"
-      ],
+      "attributes": ["device_major", "device_minor", "operation"],
       "description": "Number of sectors transferred to/from disk by the group and descendant groups (Only available with cgroups v1).",
       "enabled": false,
       "stability": {
@@ -254,9 +222,7 @@
       "unit": "ns"
     },
     "container.cpu.usage.percpu": {
-      "attributes": [
-        "core"
-      ],
+      "attributes": ["core"],
       "description": "Per-core CPU usage by the container (Only available with cgroups v1).",
       "enabled": false,
       "stability": {
@@ -825,9 +791,7 @@
       "unit": "By"
     },
     "container.network.io.usage.rx_bytes": {
-      "attributes": [
-        "interface"
-      ],
+      "attributes": ["interface"],
       "description": "Bytes received by the container.",
       "enabled": true,
       "stability": {
@@ -841,9 +805,7 @@
       "unit": "By"
     },
     "container.network.io.usage.rx_dropped": {
-      "attributes": [
-        "interface"
-      ],
+      "attributes": ["interface"],
       "description": "Incoming packets dropped.",
       "enabled": true,
       "stability": {
@@ -857,9 +819,7 @@
       "unit": "{packets}"
     },
     "container.network.io.usage.rx_errors": {
-      "attributes": [
-        "interface"
-      ],
+      "attributes": ["interface"],
       "description": "Received errors. Not supported on Windows.",
       "enabled": false,
       "stability": {
@@ -873,9 +833,7 @@
       "unit": "{errors}"
     },
     "container.network.io.usage.rx_packets": {
-      "attributes": [
-        "interface"
-      ],
+      "attributes": ["interface"],
       "description": "Packets received.",
       "enabled": false,
       "stability": {
@@ -889,9 +847,7 @@
       "unit": "{packets}"
     },
     "container.network.io.usage.tx_bytes": {
-      "attributes": [
-        "interface"
-      ],
+      "attributes": ["interface"],
       "description": "Bytes sent.",
       "enabled": true,
       "stability": {
@@ -905,9 +861,7 @@
       "unit": "By"
     },
     "container.network.io.usage.tx_dropped": {
-      "attributes": [
-        "interface"
-      ],
+      "attributes": ["interface"],
       "description": "Outgoing packets dropped.",
       "enabled": true,
       "stability": {
@@ -921,9 +875,7 @@
       "unit": "{packets}"
     },
     "container.network.io.usage.tx_errors": {
-      "attributes": [
-        "interface"
-      ],
+      "attributes": ["interface"],
       "description": "Sent errors. Not supported on Windows.",
       "enabled": false,
       "stability": {
@@ -937,9 +889,7 @@
       "unit": "{errors}"
     },
     "container.network.io.usage.tx_packets": {
-      "attributes": [
-        "interface"
-      ],
+      "attributes": ["interface"],
       "description": "Packets sent.",
       "enabled": false,
       "stability": {
@@ -1038,25 +988,14 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "jamesmoessis"
-      ],
-      "emeritus": [
-        "rmfitzpatrick"
-      ]
+      "active": ["jamesmoessis"],
+      "emeritus": ["rmfitzpatrick"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "metrics"
-      ]
+      "alpha": ["metrics"]
     },
-    "unsupported_platforms": [
-      "darwin",
-      "windows"
-    ]
+    "unsupported_platforms": ["darwin", "windows"]
   },
   "type": "docker_stats",
   "version": "0.145.0"

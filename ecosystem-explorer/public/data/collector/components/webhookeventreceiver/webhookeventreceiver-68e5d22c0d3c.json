@@ -6,19 +6,12 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "atoulme",
-        "shalper2"
-      ],
+      "active": ["atoulme", "shalper2"],
       "emeritus": null
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "logs"
-      ]
+      "beta": ["logs"]
     }
   },
   "type": "webhookevent",

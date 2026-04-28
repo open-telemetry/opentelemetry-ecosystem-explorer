@@ -8,24 +8,12 @@
   "status": {
     "class": "processor",
     "codeowners": {
-      "active": [
-        "rnishtala-sumo",
-        "amdprophet"
-      ],
-      "emeritus": [
-        "echlebek"
-      ]
+      "active": ["rnishtala-sumo", "amdprophet"],
+      "emeritus": ["echlebek"]
     },
-    "distributions": [
-      "contrib",
-      "k8s"
-    ],
+    "distributions": ["contrib", "k8s"],
     "stability": {
-      "beta": [
-        "logs",
-        "metrics",
-        "traces"
-      ]
+      "beta": ["logs", "metrics", "traces"]
     }
   },
   "type": "groupbyattrs",

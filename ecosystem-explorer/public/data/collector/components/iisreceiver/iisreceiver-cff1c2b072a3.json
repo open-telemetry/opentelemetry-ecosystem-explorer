@@ -2,23 +2,12 @@
   "attributes": {
     "direction": {
       "description": "The direction data is moving.",
-      "enum": [
-        "received",
-        "sent"
-      ],
+      "enum": ["received", "sent"],
       "type": "string"
     },
     "request": {
       "description": "The type of request sent by a client.",
-      "enum": [
-        "delete",
-        "get",
-        "head",
-        "options",
-        "post",
-        "put",
-        "trace"
-      ],
+      "enum": ["delete", "get", "head", "options", "post", "put", "trace"],
       "type": "string"
     }
   },
@@ -90,9 +79,7 @@
       "unit": "By"
     },
     "iis.network.file.count": {
-      "attributes": [
-        "direction"
-      ],
+      "attributes": ["direction"],
       "description": "Number of transmitted files.",
       "enabled": true,
       "stability": "development",
@@ -104,9 +91,7 @@
       "unit": "{files}"
     },
     "iis.network.io": {
-      "attributes": [
-        "direction"
-      ],
+      "attributes": ["direction"],
       "description": "Total amount of bytes sent and received.",
       "enabled": true,
       "stability": "development",
@@ -118,9 +103,7 @@
       "unit": "By"
     },
     "iis.request.count": {
-      "attributes": [
-        "request"
-      ],
+      "attributes": ["request"],
       "description": "Total number of requests of a given type.",
       "enabled": true,
       "stability": "development",
@@ -198,26 +181,14 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "ishleenk17",
-        "Mrod1598",
-        "pjanotti"
-      ],
+      "active": ["ishleenk17", "Mrod1598", "pjanotti"],
       "seeking_new": true
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "metrics"
-      ]
+      "beta": ["metrics"]
     },
-    "unsupported_platforms": [
-      "(windows && arm64)",
-      "darwin",
-      "linux"
-    ]
+    "unsupported_platforms": ["(windows && arm64)", "darwin", "linux"]
   },
   "type": "iis",
   "version": "0.149.0"

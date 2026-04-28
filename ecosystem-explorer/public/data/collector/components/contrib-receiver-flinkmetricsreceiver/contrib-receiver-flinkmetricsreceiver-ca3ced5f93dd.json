@@ -2,20 +2,12 @@
   "attributes": {
     "checkpoint": {
       "description": "The number of checkpoints completed or that failed.",
-      "enum": [
-        "completed",
-        "failed"
-      ],
+      "enum": ["completed", "failed"],
       "type": "string"
     },
     "garbage_collector_name": {
       "description": "The names for the parallel scavenge and garbage first garbage collectors.",
-      "enum": [
-        "G1_Old_Generation",
-        "G1_Young_Generation",
-        "PS_MarkSweep",
-        "PS_Scavenge"
-      ],
+      "enum": ["G1_Old_Generation", "G1_Young_Generation", "PS_MarkSweep", "PS_Scavenge"],
       "name_override": "name",
       "type": "string"
     },
@@ -26,11 +18,7 @@
     },
     "record": {
       "description": "The number of records received in, sent out or dropped due to arriving late.",
-      "enum": [
-        "dropped",
-        "in",
-        "out"
-      ],
+      "enum": ["dropped", "in", "out"],
       "type": "string"
     }
   },
@@ -41,9 +29,7 @@
   "id": "contrib-receiver-flinkmetricsreceiver",
   "metrics": {
     "flink.job.checkpoint.count": {
-      "attributes": [
-        "checkpoint"
-      ],
+      "attributes": ["checkpoint"],
       "description": "The number of checkpoints completed or failed.",
       "enabled": true,
       "stability": "development",
@@ -143,9 +129,7 @@
       "unit": "ns"
     },
     "flink.jvm.gc.collections.count": {
-      "attributes": [
-        "garbage_collector_name"
-      ],
+      "attributes": ["garbage_collector_name"],
       "description": "The total number of collections that have occurred.",
       "enabled": true,
       "stability": "development",
@@ -158,9 +142,7 @@
       "unit": "{collections}"
     },
     "flink.jvm.gc.collections.time": {
-      "attributes": [
-        "garbage_collector_name"
-      ],
+      "attributes": ["garbage_collector_name"],
       "description": "The total time spent performing garbage collection.",
       "enabled": true,
       "stability": "development",
@@ -381,10 +363,7 @@
       "unit": "By"
     },
     "flink.operator.record.count": {
-      "attributes": [
-        "operator_name",
-        "record"
-      ],
+      "attributes": ["operator_name", "record"],
       "description": "The number of records an operator has.",
       "enabled": true,
       "stability": "development",
@@ -397,9 +376,7 @@
       "unit": "{records}"
     },
     "flink.operator.watermark.output": {
-      "attributes": [
-        "operator_name"
-      ],
+      "attributes": ["operator_name"],
       "description": "The last watermark this operator has emitted.",
       "enabled": true,
       "stability": "development",
@@ -412,9 +389,7 @@
       "unit": "ms"
     },
     "flink.task.record.count": {
-      "attributes": [
-        "record"
-      ],
+      "attributes": ["record"],
       "description": "The number of records a task has.",
       "enabled": true,
       "stability": "development",
@@ -432,18 +407,12 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "JonathanWamsley"
-      ],
+      "active": ["JonathanWamsley"],
       "seeking_new": true
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "metrics"
-      ]
+      "alpha": ["metrics"]
     }
   },
   "type": "receiver"

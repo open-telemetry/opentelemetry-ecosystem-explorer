@@ -6,20 +6,11 @@
   "status": {
     "class": "extension",
     "codeowners": {
-      "active": [
-        "portertech",
-        "evan-bradley",
-        "tigrannajaryan"
-      ]
+      "active": ["portertech", "evan-bradley", "tigrannajaryan"]
     },
-    "distributions": [
-      "contrib",
-      "k8s"
-    ],
+    "distributions": ["contrib", "k8s"],
     "stability": {
-      "alpha": [
-        "extension"
-      ]
+      "alpha": ["extension"]
     }
   },
   "type": "opamp",

@@ -57,10 +57,7 @@
   ],
   "description": "This instrumentation enables HTTP client spans and metrics for the Akka HTTP client, and HTTP server spans and metrics for the Akka HTTP server.",
   "display_name": "Akka HTTP",
-  "features": [
-    "HTTP_ROUTE",
-    "CONTEXT_PROPAGATION"
-  ],
+  "features": ["HTTP_ROUTE", "CONTEXT_PROPAGATION"],
   "has_javaagent": true,
   "javaagent_target_versions": [
     "com.typesafe.akka:akka-http_2.12:[10,)",
@@ -80,9 +77,7 @@
     "HTTP_SERVER_METRICS"
   ],
   "source_path": "instrumentation/akka/akka-http-10.0",
-  "tags": [
-    "akka"
-  ],
+  "tags": ["akka"],
   "telemetry": [
     {
       "metrics": [

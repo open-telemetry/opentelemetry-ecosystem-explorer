@@ -53,9 +53,7 @@
   "distribution": "contrib",
   "metrics": {
     "snowflake.billing.cloud_service.total": {
-      "attributes": [
-        "service_type"
-      ],
+      "attributes": ["service_type"],
       "description": "Reported total credits used in the cloud service over the last 24 hour window.",
       "enabled": false,
       "gauge": {
@@ -67,9 +65,7 @@
       "unit": "{credits}"
     },
     "snowflake.billing.total_credit.total": {
-      "attributes": [
-        "service_type"
-      ],
+      "attributes": ["service_type"],
       "description": "Reported total credits used across account over the last 24 hour window.",
       "enabled": false,
       "gauge": {
@@ -81,9 +77,7 @@
       "unit": "{credits}"
     },
     "snowflake.billing.virtual_warehouse.total": {
-      "attributes": [
-        "service_type"
-      ],
+      "attributes": ["service_type"],
       "description": "Reported total credits used by virtual warehouse service over the last 24 hour window.",
       "enabled": false,
       "gauge": {
@@ -95,9 +89,7 @@
       "unit": "{credits}"
     },
     "snowflake.billing.warehouse.cloud_service.total": {
-      "attributes": [
-        "warehouse_name"
-      ],
+      "attributes": ["warehouse_name"],
       "description": "Credits used across cloud service for given warehouse over the last 24 hour window.",
       "enabled": false,
       "gauge": {
@@ -109,9 +101,7 @@
       "unit": "{credits}"
     },
     "snowflake.billing.warehouse.total_credit.total": {
-      "attributes": [
-        "warehouse_name"
-      ],
+      "attributes": ["warehouse_name"],
       "description": "Total credits used associated with given warehouse over the last 24 hour window.",
       "enabled": false,
       "gauge": {
@@ -123,9 +113,7 @@
       "unit": "{credits}"
     },
     "snowflake.billing.warehouse.virtual_warehouse.total": {
-      "attributes": [
-        "warehouse_name"
-      ],
+      "attributes": ["warehouse_name"],
       "description": "Total credits used by virtual warehouse service for given warehouse over the last 24 hour window.",
       "enabled": false,
       "gauge": {
@@ -177,11 +165,7 @@
       "unit": "1"
     },
     "snowflake.logins.total": {
-      "attributes": [
-        "error_message",
-        "is_success",
-        "reported_client_type"
-      ],
+      "attributes": ["error_message", "is_success", "reported_client_type"],
       "description": "Total login attempts for account over the last 24 hour window.",
       "enabled": false,
       "gauge": {
@@ -193,9 +177,7 @@
       "unit": "1"
     },
     "snowflake.pipe.credits_used.total": {
-      "attributes": [
-        "pipe_name"
-      ],
+      "attributes": ["pipe_name"],
       "description": "Snow pipe credits contotaled over the last 24 hour window.",
       "enabled": false,
       "gauge": {
@@ -207,9 +189,7 @@
       "unit": "{credits}"
     },
     "snowflake.query.blocked": {
-      "attributes": [
-        "warehouse_name"
-      ],
+      "attributes": ["warehouse_name"],
       "description": "Blocked query count for warehouse over the last 24 hour window.",
       "enabled": true,
       "gauge": {
@@ -341,9 +321,7 @@
       "unit": "1"
     },
     "snowflake.query.executed": {
-      "attributes": [
-        "warehouse_name"
-      ],
+      "attributes": ["warehouse_name"],
       "description": "Executed query count for warehouse over the last 24 hour window.",
       "enabled": true,
       "gauge": {
@@ -395,9 +373,7 @@
       "unit": "1"
     },
     "snowflake.query.queued_overload": {
-      "attributes": [
-        "warehouse_name"
-      ],
+      "attributes": ["warehouse_name"],
       "description": "Overloaded query count for warehouse over the last 24 hour window.",
       "enabled": true,
       "gauge": {
@@ -409,9 +385,7 @@
       "unit": "1"
     },
     "snowflake.query.queued_provision": {
-      "attributes": [
-        "warehouse_name"
-      ],
+      "attributes": ["warehouse_name"],
       "description": "Number of compute resources queued for provisioning over the last 24 hour window.",
       "enabled": true,
       "gauge": {
@@ -583,9 +557,7 @@
       "unit": "{rows}"
     },
     "snowflake.session_id.count": {
-      "attributes": [
-        "user_name"
-      ],
+      "attributes": ["user_name"],
       "description": "Distinct session id's associated with snowflake username over the last 24 hour window.",
       "enabled": false,
       "gauge": {
@@ -661,18 +633,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "dmitryax",
-        "shalper2"
-      ]
+      "active": ["dmitryax", "shalper2"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "metrics"
-      ]
+      "alpha": ["metrics"]
     }
   },
   "type": "snowflake",

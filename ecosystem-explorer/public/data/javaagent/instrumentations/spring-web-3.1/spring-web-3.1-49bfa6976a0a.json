@@ -2,23 +2,16 @@
   "description": "This instrumentation provides a library integration that enables capturing HTTP client spans and metrics for Spring's RestTemplate.",
   "display_name": "Spring Web",
   "has_standalone_library": true,
-  "javaagent_target_versions": [
-    "org.springframework:spring-web:[3.1.0.RELEASE,6)"
-  ],
+  "javaagent_target_versions": ["org.springframework:spring-web:[3.1.0.RELEASE,6)"],
   "library_link": "https://github.com/spring-projects/spring-framework",
   "name": "spring-web-3.1",
   "scope": {
     "name": "io.opentelemetry.spring-web-3.1",
     "schema_url": "https://opentelemetry.io/schemas/1.37.0"
   },
-  "semantic_conventions": [
-    "HTTP_CLIENT_SPANS",
-    "HTTP_CLIENT_METRICS"
-  ],
+  "semantic_conventions": ["HTTP_CLIENT_SPANS", "HTTP_CLIENT_METRICS"],
   "source_path": "instrumentation/spring/spring-web/spring-web-3.1",
-  "tags": [
-    "spring"
-  ],
+  "tags": ["spring"],
   "telemetry": [
     {
       "metrics": [

@@ -43,9 +43,7 @@
       "unit": "1"
     },
     "container.cpu.usage.percpu": {
-      "attributes": [
-        "core"
-      ],
+      "attributes": ["core"],
       "description": "Total CPU time consumed per CPU-core.",
       "enabled": true,
       "stability": "development",
@@ -137,21 +135,13 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "rogercoll"
-      ]
+      "active": ["rogercoll"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "metrics"
-      ]
+      "alpha": ["metrics"]
     },
-    "unsupported_platforms": [
-      "windows"
-    ]
+    "unsupported_platforms": ["windows"]
   },
   "type": "receiver"
 }

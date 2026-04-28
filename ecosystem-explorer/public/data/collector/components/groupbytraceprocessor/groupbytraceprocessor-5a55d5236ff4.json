@@ -6,22 +6,13 @@
   "status": {
     "class": "processor",
     "codeowners": {
-      "active": [
-        "iblancasa"
-      ],
-      "emeritus": [
-        "jpkrohling"
-      ],
+      "active": ["iblancasa"],
+      "emeritus": ["jpkrohling"],
       "seeking_new": true
     },
-    "distributions": [
-      "contrib",
-      "k8s"
-    ],
+    "distributions": ["contrib", "k8s"],
     "stability": {
-      "beta": [
-        "traces"
-      ]
+      "beta": ["traces"]
     }
   },
   "type": "groupbytrace",

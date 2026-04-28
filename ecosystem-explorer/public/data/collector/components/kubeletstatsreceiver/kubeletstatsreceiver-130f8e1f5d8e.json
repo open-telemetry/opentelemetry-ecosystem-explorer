@@ -2,10 +2,7 @@
   "attributes": {
     "direction": {
       "description": "Direction of flow of bytes/operations (receive or transmit).",
-      "enum": [
-        "receive",
-        "transmit"
-      ],
+      "enum": ["receive", "transmit"],
       "type": "string"
     },
     "interface": {
@@ -371,10 +368,7 @@
       "unit": "By"
     },
     "k8s.node.network.errors": {
-      "attributes": [
-        "direction",
-        "interface"
-      ],
+      "attributes": ["direction", "interface"],
       "description": "Node network errors",
       "enabled": true,
       "stability": {
@@ -388,10 +382,7 @@
       "unit": "1"
     },
     "k8s.node.network.io": {
-      "attributes": [
-        "direction",
-        "interface"
-      ],
+      "attributes": ["direction", "interface"],
       "description": "Node network IO",
       "enabled": true,
       "stability": {
@@ -625,10 +616,7 @@
       "unit": "1"
     },
     "k8s.pod.network.errors": {
-      "attributes": [
-        "direction",
-        "interface"
-      ],
+      "attributes": ["direction", "interface"],
       "description": "Pod network errors",
       "enabled": true,
       "stability": {
@@ -642,10 +630,7 @@
       "unit": "1"
     },
     "k8s.pod.network.io": {
-      "attributes": [
-        "direction",
-        "interface"
-      ],
+      "attributes": ["direction", "interface"],
       "description": "Pod network IO",
       "enabled": true,
       "stability": {
@@ -814,20 +799,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "dmitryax",
-        "TylerHelmuth",
-        "ChrsMark"
-      ]
+      "active": ["dmitryax", "TylerHelmuth", "ChrsMark"]
     },
-    "distributions": [
-      "contrib",
-      "k8s"
-    ],
+    "distributions": ["contrib", "k8s"],
     "stability": {
-      "beta": [
-        "metrics"
-      ]
+      "beta": ["metrics"]
     }
   },
   "type": "kubeletstats",

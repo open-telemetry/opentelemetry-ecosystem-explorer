@@ -6,23 +6,12 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "dmitryax",
-        "braydonk"
-      ]
+      "active": ["dmitryax", "braydonk"]
     },
-    "distributions": [
-      "contrib",
-      "core",
-      "k8s"
-    ],
+    "distributions": ["contrib", "core", "k8s"],
     "stability": {
-      "beta": [
-        "metrics"
-      ],
-      "development": [
-        "logs"
-      ]
+      "beta": ["metrics"],
+      "development": ["logs"]
     }
   },
   "type": "hostmetrics",

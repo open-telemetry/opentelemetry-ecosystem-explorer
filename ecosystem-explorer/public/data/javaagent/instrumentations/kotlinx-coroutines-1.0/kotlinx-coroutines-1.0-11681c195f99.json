@@ -1,9 +1,7 @@
 {
   "description": "This instrumentation enables context propagation for Kotlin coroutines and adds support for @WithSpan annotations on Kotlin suspend functions.",
   "display_name": "Kotlin Coroutines",
-  "features": [
-    "CONTEXT_PROPAGATION"
-  ],
+  "features": ["CONTEXT_PROPAGATION"],
   "has_javaagent": true,
   "javaagent_target_versions": [
     "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:[1.3.9,)",

@@ -6,10 +6,7 @@
     },
     "outcome": {
       "description": "The operation outcome.",
-      "enum": [
-        "failure",
-        "success"
-      ],
+      "enum": ["failure", "success"],
       "type": "string"
     },
     "partition": {
@@ -32,26 +29,12 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "pavolloffay",
-        "MovieStoreGuy",
-        "axw",
-        "paulojmdias"
-      ]
+      "active": ["pavolloffay", "MovieStoreGuy", "axw", "paulojmdias"]
     },
-    "distributions": [
-      "contrib",
-      "core"
-    ],
+    "distributions": ["contrib", "core"],
     "stability": {
-      "beta": [
-        "logs",
-        "metrics",
-        "traces"
-      ],
-      "development": [
-        "profiles"
-      ]
+      "beta": ["logs", "metrics", "traces"],
+      "development": ["profiles"]
     }
   },
   "type": "kafka",

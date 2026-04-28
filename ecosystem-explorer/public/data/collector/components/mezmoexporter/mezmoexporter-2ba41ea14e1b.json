@@ -7,19 +7,11 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "dashpole",
-        "billmeyer",
-        "gjanco"
-      ]
+      "active": ["dashpole", "billmeyer", "gjanco"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "logs"
-      ]
+      "beta": ["logs"]
     }
   },
   "type": "mezmo",

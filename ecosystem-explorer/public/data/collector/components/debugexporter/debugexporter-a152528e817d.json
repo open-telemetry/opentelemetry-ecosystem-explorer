@@ -7,24 +7,12 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "andrzej-stencel"
-      ]
+      "active": ["andrzej-stencel"]
     },
-    "distributions": [
-      "contrib",
-      "core",
-      "k8s"
-    ],
+    "distributions": ["contrib", "core", "k8s"],
     "stability": {
-      "alpha": [
-        "logs",
-        "metrics",
-        "traces"
-      ],
-      "development": [
-        "profiles"
-      ]
+      "alpha": ["logs", "metrics", "traces"],
+      "development": ["profiles"]
     }
   },
   "type": "debug",

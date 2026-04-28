@@ -6,18 +6,11 @@
   "status": {
     "class": "extension",
     "codeowners": {
-      "active": [
-        "VihasMakwana",
-        "atoulme"
-      ]
+      "active": ["VihasMakwana", "atoulme"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "extension"
-      ]
+      "alpha": ["extension"]
     }
   },
   "type": "json_log_encoding",

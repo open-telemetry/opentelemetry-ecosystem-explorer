@@ -2,10 +2,7 @@
   "attributes": {
     "active_pending_request_state": {
       "description": "The state of network request.",
-      "enum": [
-        "active",
-        "pending"
-      ],
+      "enum": ["active", "pending"],
       "name_override": "state",
       "type": "string"
     },
@@ -16,21 +13,13 @@
     },
     "column_memory_subtype": {
       "description": "The subtype of column store memory.",
-      "enum": [
-        "data",
-        "dict",
-        "index",
-        "misc"
-      ],
+      "enum": ["data", "dict", "index", "misc"],
       "name_override": "subtype",
       "type": "string"
     },
     "column_memory_type": {
       "description": "The type of column store memory.",
-      "enum": [
-        "delta",
-        "main"
-      ],
+      "enum": ["delta", "main"],
       "name_override": "type",
       "type": "string"
     },
@@ -40,22 +29,13 @@
     },
     "connection_status": {
       "description": "The connection status.",
-      "enum": [
-        "idle",
-        "queueing",
-        "running"
-      ],
+      "enum": ["idle", "queueing", "running"],
       "name_override": "status",
       "type": "string"
     },
     "cpu_type": {
       "description": "The type of cpu.",
-      "enum": [
-        "idle",
-        "io_wait",
-        "system",
-        "user"
-      ],
+      "enum": ["idle", "io_wait", "system", "user"],
       "name_override": "type",
       "type": "string"
     },
@@ -65,10 +45,7 @@
     },
     "disk_state_used_free": {
       "description": "The state of the disk storage.",
-      "enum": [
-        "free",
-        "used"
-      ],
+      "enum": ["free", "used"],
       "name_override": "state",
       "type": "string"
     },
@@ -79,28 +56,19 @@
     },
     "host_swap_state": {
       "description": "The state of swap data.",
-      "enum": [
-        "free",
-        "used"
-      ],
+      "enum": ["free", "used"],
       "name_override": "state",
       "type": "string"
     },
     "internal_external_request_type": {
       "description": "The type of network request.",
-      "enum": [
-        "external",
-        "internal"
-      ],
+      "enum": ["external", "internal"],
       "name_override": "type",
       "type": "string"
     },
     "memory_state_used_free": {
       "description": "The state of memory.",
-      "enum": [
-        "free",
-        "used"
-      ],
+      "enum": ["free", "used"],
       "name_override": "state",
       "type": "string"
     },
@@ -128,10 +96,7 @@
     },
     "row_memory_type": {
       "description": "The type of row store memory.",
-      "enum": [
-        "fixed",
-        "variable"
-      ],
+      "enum": ["fixed", "variable"],
       "name_override": "type",
       "type": "string"
     },
@@ -141,33 +106,19 @@
     },
     "schema_memory_type": {
       "description": "The type of schema memory.",
-      "enum": [
-        "delta",
-        "history_delta",
-        "history_main",
-        "main"
-      ],
+      "enum": ["delta", "history_delta", "history_main", "main"],
       "name_override": "type",
       "type": "string"
     },
     "schema_operation_type": {
       "description": "The type of operation.",
-      "enum": [
-        "merge",
-        "read",
-        "write"
-      ],
+      "enum": ["merge", "read", "write"],
       "name_override": "type",
       "type": "string"
     },
     "schema_record_type": {
       "description": "The type of schema record.",
-      "enum": [
-        "delta",
-        "history_delta",
-        "history_main",
-        "main"
-      ],
+      "enum": ["delta", "history_delta", "history_main", "main"],
       "name_override": "type",
       "type": "string"
     },
@@ -182,19 +133,13 @@
     },
     "service_memory_used_type": {
       "description": "The type of service memory.",
-      "enum": [
-        "logical",
-        "physical"
-      ],
+      "enum": ["logical", "physical"],
       "name_override": "type",
       "type": "string"
     },
     "service_status": {
       "description": "The status of services.",
-      "enum": [
-        "active",
-        "inactive"
-      ],
+      "enum": ["active", "inactive"],
       "name_override": "status",
       "type": "string"
     },
@@ -204,29 +149,19 @@
     },
     "thread_status": {
       "description": "The status of threads.",
-      "enum": [
-        "active",
-        "inactive"
-      ],
+      "enum": ["active", "inactive"],
       "name_override": "status",
       "type": "string"
     },
     "transaction_type": {
       "description": "The transaction type.",
-      "enum": [
-        "commit",
-        "rollback",
-        "update"
-      ],
+      "enum": ["commit", "rollback", "update"],
       "name_override": "type",
       "type": "string"
     },
     "volume_operation_type": {
       "description": "The type of operation.",
-      "enum": [
-        "read",
-        "write"
-      ],
+      "enum": ["read", "write"],
       "name_override": "type",
       "type": "string"
     }
@@ -235,9 +170,7 @@
   "distribution": "contrib",
   "metrics": {
     "saphana.alert.count": {
-      "attributes": [
-        "alert_rating"
-      ],
+      "attributes": ["alert_rating"],
       "description": "Number of current alerts.",
       "enabled": true,
       "stability": {
@@ -265,10 +198,7 @@
       "unit": "s"
     },
     "saphana.column.memory.used": {
-      "attributes": [
-        "column_memory_subtype",
-        "column_memory_type"
-      ],
+      "attributes": ["column_memory_subtype", "column_memory_type"],
       "description": "The memory used in all columns.",
       "enabled": true,
       "stability": {
@@ -283,9 +213,7 @@
       "unit": "By"
     },
     "saphana.component.memory.used": {
-      "attributes": [
-        "component"
-      ],
+      "attributes": ["component"],
       "description": "The memory used in components.",
       "enabled": true,
       "stability": {
@@ -300,9 +228,7 @@
       "unit": "By"
     },
     "saphana.connection.count": {
-      "attributes": [
-        "connection_status"
-      ],
+      "attributes": ["connection_status"],
       "description": "The number of current connections.",
       "enabled": true,
       "stability": {
@@ -317,9 +243,7 @@
       "unit": "{connections}"
     },
     "saphana.cpu.used": {
-      "attributes": [
-        "cpu_type"
-      ],
+      "attributes": ["cpu_type"],
       "description": "Total CPU time spent.",
       "enabled": true,
       "stability": {
@@ -334,11 +258,7 @@
       "unit": "ms"
     },
     "saphana.disk.size.current": {
-      "attributes": [
-        "disk_state_used_free",
-        "disk_usage_type",
-        "path"
-      ],
+      "attributes": ["disk_state_used_free", "disk_usage_type", "path"],
       "description": "The disk size.",
       "enabled": true,
       "stability": {
@@ -353,9 +273,7 @@
       "unit": "By"
     },
     "saphana.host.memory.current": {
-      "attributes": [
-        "memory_state_used_free"
-      ],
+      "attributes": ["memory_state_used_free"],
       "description": "The amount of physical memory on the host.",
       "enabled": true,
       "stability": {
@@ -370,9 +288,7 @@
       "unit": "By"
     },
     "saphana.host.swap.current": {
-      "attributes": [
-        "host_swap_state"
-      ],
+      "attributes": ["host_swap_state"],
       "description": "The amount of swap space on the host.",
       "enabled": true,
       "stability": {
@@ -402,9 +318,7 @@
       "unit": "By"
     },
     "saphana.instance.memory.current": {
-      "attributes": [
-        "memory_state_used_free"
-      ],
+      "attributes": ["memory_state_used_free"],
       "description": "The size of the memory pool for all SAP HANA processes.",
       "enabled": true,
       "stability": {
@@ -449,10 +363,7 @@
       "unit": "By"
     },
     "saphana.license.expiration.time": {
-      "attributes": [
-        "product",
-        "system"
-      ],
+      "attributes": ["product", "system"],
       "description": "The amount of time remaining before license expiration.",
       "enabled": true,
       "gauge": {
@@ -465,10 +376,7 @@
       "unit": "s"
     },
     "saphana.license.limit": {
-      "attributes": [
-        "product",
-        "system"
-      ],
+      "attributes": ["product", "system"],
       "description": "The allowed product usage as specified by the license (for example, main memory).",
       "enabled": true,
       "stability": {
@@ -483,10 +391,7 @@
       "unit": "{licenses}"
     },
     "saphana.license.peak": {
-      "attributes": [
-        "product",
-        "system"
-      ],
+      "attributes": ["product", "system"],
       "description": "The peak product usage value during last 13 months, measured periodically.",
       "enabled": true,
       "stability": {
@@ -514,9 +419,7 @@
       "unit": "ms"
     },
     "saphana.network.request.count": {
-      "attributes": [
-        "active_pending_request_state"
-      ],
+      "attributes": ["active_pending_request_state"],
       "description": "The number of active and pending service requests.",
       "enabled": true,
       "stability": {
@@ -531,9 +434,7 @@
       "unit": "{requests}"
     },
     "saphana.network.request.finished.count": {
-      "attributes": [
-        "internal_external_request_type"
-      ],
+      "attributes": ["internal_external_request_type"],
       "description": "The number of service requests that have completed.",
       "enabled": true,
       "stability": {
@@ -548,12 +449,7 @@
       "unit": "{requests}"
     },
     "saphana.replication.average_time": {
-      "attributes": [
-        "port",
-        "primary_host",
-        "replication_mode",
-        "secondary_host"
-      ],
+      "attributes": ["port", "primary_host", "replication_mode", "secondary_host"],
       "description": "The average amount of time consumed replicating a log.",
       "enabled": true,
       "gauge": {
@@ -566,12 +462,7 @@
       "unit": "us"
     },
     "saphana.replication.backlog.size": {
-      "attributes": [
-        "port",
-        "primary_host",
-        "replication_mode",
-        "secondary_host"
-      ],
+      "attributes": ["port", "primary_host", "replication_mode", "secondary_host"],
       "description": "The current replication backlog size.",
       "enabled": true,
       "stability": {
@@ -586,12 +477,7 @@
       "unit": "By"
     },
     "saphana.replication.backlog.time": {
-      "attributes": [
-        "port",
-        "primary_host",
-        "replication_mode",
-        "secondary_host"
-      ],
+      "attributes": ["port", "primary_host", "replication_mode", "secondary_host"],
       "description": "The current replication backlog.",
       "enabled": true,
       "stability": {
@@ -606,9 +492,7 @@
       "unit": "us"
     },
     "saphana.row_store.memory.used": {
-      "attributes": [
-        "row_memory_type"
-      ],
+      "attributes": ["row_memory_type"],
       "description": "The used memory for all row tables.",
       "enabled": true,
       "stability": {
@@ -623,10 +507,7 @@
       "unit": "By"
     },
     "saphana.schema.memory.used.current": {
-      "attributes": [
-        "schema",
-        "schema_memory_type"
-      ],
+      "attributes": ["schema", "schema_memory_type"],
       "description": "The memory size for all tables in schema.",
       "enabled": true,
       "stability": {
@@ -641,9 +522,7 @@
       "unit": "By"
     },
     "saphana.schema.memory.used.max": {
-      "attributes": [
-        "schema"
-      ],
+      "attributes": ["schema"],
       "description": "The estimated maximum memory consumption for all fully loaded tables in schema (data for open transactions is not included).",
       "enabled": true,
       "stability": {
@@ -658,10 +537,7 @@
       "unit": "By"
     },
     "saphana.schema.operation.count": {
-      "attributes": [
-        "schema",
-        "schema_operation_type"
-      ],
+      "attributes": ["schema", "schema_operation_type"],
       "description": "The number of operations done on all tables in schema.",
       "enabled": true,
       "stability": {
@@ -676,9 +552,7 @@
       "unit": "{operations}"
     },
     "saphana.schema.record.compressed.count": {
-      "attributes": [
-        "schema"
-      ],
+      "attributes": ["schema"],
       "description": "The number of entries in main during the last optimize compression run for all tables in schema.",
       "enabled": true,
       "stability": {
@@ -693,10 +567,7 @@
       "unit": "{records}"
     },
     "saphana.schema.record.count": {
-      "attributes": [
-        "schema",
-        "schema_record_type"
-      ],
+      "attributes": ["schema", "schema_record_type"],
       "description": "The number of records for all tables in schema.",
       "enabled": true,
       "stability": {
@@ -711,9 +582,7 @@
       "unit": "{records}"
     },
     "saphana.service.code_size": {
-      "attributes": [
-        "service"
-      ],
+      "attributes": ["service"],
       "description": "The service code size, including shared libraries.",
       "enabled": true,
       "stability": {
@@ -728,9 +597,7 @@
       "unit": "By"
     },
     "saphana.service.count": {
-      "attributes": [
-        "service_status"
-      ],
+      "attributes": ["service_status"],
       "description": "The number of services in a given status.",
       "enabled": true,
       "stability": {
@@ -745,9 +612,7 @@
       "unit": "{services}"
     },
     "saphana.service.memory.compactors.allocated": {
-      "attributes": [
-        "service"
-      ],
+      "attributes": ["service"],
       "description": "The part of the memory pool that can potentially (if unpinned) be freed during a memory shortage.",
       "enabled": true,
       "stability": {
@@ -762,9 +627,7 @@
       "unit": "By"
     },
     "saphana.service.memory.compactors.freeable": {
-      "attributes": [
-        "service"
-      ],
+      "attributes": ["service"],
       "description": "The memory that can be freed during a memory shortage.",
       "enabled": true,
       "stability": {
@@ -779,9 +642,7 @@
       "unit": "By"
     },
     "saphana.service.memory.effective_limit": {
-      "attributes": [
-        "service"
-      ],
+      "attributes": ["service"],
       "description": "The effective maximum memory pool size, calculated considering the pool sizes of other processes.",
       "enabled": true,
       "stability": {
@@ -796,10 +657,7 @@
       "unit": "By"
     },
     "saphana.service.memory.heap.current": {
-      "attributes": [
-        "memory_state_used_free",
-        "service"
-      ],
+      "attributes": ["memory_state_used_free", "service"],
       "description": "The size of the heap portion of the memory pool.",
       "enabled": true,
       "stability": {
@@ -814,9 +672,7 @@
       "unit": "By"
     },
     "saphana.service.memory.limit": {
-      "attributes": [
-        "service"
-      ],
+      "attributes": ["service"],
       "description": "The configured maximum memory pool size.",
       "enabled": true,
       "stability": {
@@ -831,10 +687,7 @@
       "unit": "By"
     },
     "saphana.service.memory.shared.current": {
-      "attributes": [
-        "memory_state_used_free",
-        "service"
-      ],
+      "attributes": ["memory_state_used_free", "service"],
       "description": "The size of the shared portion of the memory pool.",
       "enabled": true,
       "stability": {
@@ -849,10 +702,7 @@
       "unit": "By"
     },
     "saphana.service.memory.used": {
-      "attributes": [
-        "service",
-        "service_memory_used_type"
-      ],
+      "attributes": ["service", "service_memory_used_type"],
       "description": "The used memory from the operating system perspective.",
       "enabled": true,
       "stability": {
@@ -867,9 +717,7 @@
       "unit": "By"
     },
     "saphana.service.stack_size": {
-      "attributes": [
-        "service"
-      ],
+      "attributes": ["service"],
       "description": "The service stack size.",
       "enabled": true,
       "stability": {
@@ -884,9 +732,7 @@
       "unit": "By"
     },
     "saphana.service.thread.count": {
-      "attributes": [
-        "thread_status"
-      ],
+      "attributes": ["thread_status"],
       "description": "The number of service threads in a given status.",
       "enabled": true,
       "stability": {
@@ -916,9 +762,7 @@
       "unit": "{transactions}"
     },
     "saphana.transaction.count": {
-      "attributes": [
-        "transaction_type"
-      ],
+      "attributes": ["transaction_type"],
       "description": "The number of transactions.",
       "enabled": true,
       "stability": {
@@ -933,10 +777,7 @@
       "unit": "{transactions}"
     },
     "saphana.uptime": {
-      "attributes": [
-        "database",
-        "system"
-      ],
+      "attributes": ["database", "system"],
       "description": "The uptime of the database.",
       "enabled": true,
       "stability": {
@@ -951,11 +792,7 @@
       "unit": "s"
     },
     "saphana.volume.operation.count": {
-      "attributes": [
-        "disk_usage_type",
-        "path",
-        "volume_operation_type"
-      ],
+      "attributes": ["disk_usage_type", "path", "volume_operation_type"],
       "description": "The number of operations executed.",
       "enabled": true,
       "stability": {
@@ -970,11 +807,7 @@
       "unit": "{operations}"
     },
     "saphana.volume.operation.size": {
-      "attributes": [
-        "disk_usage_type",
-        "path",
-        "volume_operation_type"
-      ],
+      "attributes": ["disk_usage_type", "path", "volume_operation_type"],
       "description": "The size of operations executed.",
       "enabled": true,
       "stability": {
@@ -989,11 +822,7 @@
       "unit": "By"
     },
     "saphana.volume.operation.time": {
-      "attributes": [
-        "disk_usage_type",
-        "path",
-        "volume_operation_type"
-      ],
+      "attributes": ["disk_usage_type", "path", "volume_operation_type"],
       "description": "The time spent executing operations.",
       "enabled": true,
       "stability": {
@@ -1023,17 +852,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "dehaansa"
-      ]
+      "active": ["dehaansa"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "metrics"
-      ]
+      "alpha": ["metrics"]
     }
   },
   "type": "saphana",

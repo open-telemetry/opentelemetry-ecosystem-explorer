@@ -34,9 +34,7 @@
   "scope": {
     "name": "io.opentelemetry.runtime-telemetry"
   },
-  "semantic_conventions": [
-    "JVM_RUNTIME_METRICS"
-  ],
+  "semantic_conventions": ["JVM_RUNTIME_METRICS"],
   "source_path": "instrumentation/runtime-telemetry",
   "telemetry": [
     {

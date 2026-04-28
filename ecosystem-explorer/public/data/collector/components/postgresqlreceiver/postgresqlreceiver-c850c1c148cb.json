@@ -2,30 +2,19 @@
   "attributes": {
     "bg_buffer_source": {
       "description": "The source of a buffer write.",
-      "enum": [
-        "backend",
-        "backend_fsync",
-        "bgwriter",
-        "checkpoints"
-      ],
+      "enum": ["backend", "backend_fsync", "bgwriter", "checkpoints"],
       "name_override": "source",
       "type": "string"
     },
     "bg_checkpoint_type": {
       "description": "The type of checkpoint state.",
-      "enum": [
-        "requested",
-        "scheduled"
-      ],
+      "enum": ["requested", "scheduled"],
       "name_override": "type",
       "type": "string"
     },
     "bg_duration_type": {
       "description": "The type of time spent during the checkpoint.",
-      "enum": [
-        "sync",
-        "write"
-      ],
+      "enum": ["sync", "write"],
       "name_override": "type",
       "type": "string"
     },
@@ -39,9 +28,7 @@
     },
     "db.system.name": {
       "description": "The database management system (DBMS) product as identified by the client instrumentation.",
-      "enum": [
-        "postgresql"
-      ],
+      "enum": ["postgresql"],
       "type": "string"
     },
     "function": {
@@ -66,12 +53,7 @@
     },
     "operation": {
       "description": "The database operation.",
-      "enum": [
-        "del",
-        "hot_upd",
-        "ins",
-        "upd"
-      ],
+      "enum": ["del", "hot_upd", "ins", "upd"],
       "type": "string"
     },
     "postgresql.application_name": {
@@ -182,10 +164,7 @@
     },
     "state": {
       "description": "The tuple (row) state.",
-      "enum": [
-        "dead",
-        "live"
-      ],
+      "enum": ["dead", "live"],
       "type": "string"
     },
     "user.name": {
@@ -194,11 +173,7 @@
     },
     "wal_operation_lag": {
       "description": "The operation which is responsible for the lag.",
-      "enum": [
-        "flush",
-        "replay",
-        "write"
-      ],
+      "enum": ["flush", "replay", "write"],
       "name_override": "operation",
       "type": "string"
     }
@@ -231,9 +206,7 @@
       "unit": "{buffers}"
     },
     "postgresql.bgwriter.buffers.writes": {
-      "attributes": [
-        "bg_buffer_source"
-      ],
+      "attributes": ["bg_buffer_source"],
       "description": "Number of buffers written.",
       "enabled": true,
       "stability": "development",
@@ -245,9 +218,7 @@
       "unit": "{buffers}"
     },
     "postgresql.bgwriter.checkpoint.count": {
-      "attributes": [
-        "bg_checkpoint_type"
-      ],
+      "attributes": ["bg_checkpoint_type"],
       "description": "The number of checkpoints performed.",
       "enabled": true,
       "stability": "development",
@@ -259,9 +230,7 @@
       "unit": "{checkpoints}"
     },
     "postgresql.bgwriter.duration": {
-      "attributes": [
-        "bg_duration_type"
-      ],
+      "attributes": ["bg_duration_type"],
       "description": "Total time spent writing and syncing files to disk by checkpoints.",
       "enabled": true,
       "stability": "development",
@@ -306,9 +275,7 @@
       "unit": "{blks_read}"
     },
     "postgresql.blocks_read": {
-      "attributes": [
-        "source"
-      ],
+      "attributes": ["source"],
       "description": "The number of blocks read.",
       "enabled": true,
       "stability": "development",
@@ -351,11 +318,7 @@
       "unit": "{databases}"
     },
     "postgresql.database.locks": {
-      "attributes": [
-        "lock_type",
-        "mode",
-        "relation"
-      ],
+      "attributes": ["lock_type", "mode", "relation"],
       "description": "The number of database locks.",
       "enabled": false,
       "gauge": {
@@ -387,9 +350,7 @@
       "unit": "{deadlock}"
     },
     "postgresql.function.calls": {
-      "attributes": [
-        "function"
-      ],
+      "attributes": ["function"],
       "description": "The number of calls made to a function. Requires `track_functions=pl|all` in Postgres config.",
       "enabled": false,
       "stability": "development",
@@ -421,9 +382,7 @@
       "unit": "By"
     },
     "postgresql.operations": {
-      "attributes": [
-        "operation"
-      ],
+      "attributes": ["operation"],
       "description": "The number of db row operations.",
       "enabled": true,
       "stability": "development",
@@ -435,9 +394,7 @@
       "unit": "1"
     },
     "postgresql.replication.data_delay": {
-      "attributes": [
-        "replication_client"
-      ],
+      "attributes": ["replication_client"],
       "description": "The amount of data delayed in replication.",
       "enabled": true,
       "gauge": {
@@ -458,9 +415,7 @@
       "unit": "1"
     },
     "postgresql.rows": {
-      "attributes": [
-        "state"
-      ],
+      "attributes": ["state"],
       "description": "The number of rows in the database.",
       "enabled": true,
       "stability": "development",
@@ -602,10 +557,7 @@
       "unit": "s"
     },
     "postgresql.wal.delay": {
-      "attributes": [
-        "replication_client",
-        "wal_operation_lag"
-      ],
+      "attributes": ["replication_client", "wal_operation_lag"],
       "description": "Time between flushing recent WAL locally and receiving notification that the standby server has completed an operation with it.",
       "enabled": false,
       "gauge": {
@@ -615,10 +567,7 @@
       "unit": "s"
     },
     "postgresql.wal.lag": {
-      "attributes": [
-        "replication_client",
-        "wal_operation_lag"
-      ],
+      "attributes": ["replication_client", "wal_operation_lag"],
       "description": "Time between flushing recent WAL locally and receiving notification that the standby server has completed an operation with it.",
       "enabled": true,
       "gauge": {
@@ -655,26 +604,14 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "antonblock",
-        "ishleenk17",
-        "Caleb-Hurshman"
-      ],
-      "emeritus": [
-        "djaglowski"
-      ],
+      "active": ["antonblock", "ishleenk17", "Caleb-Hurshman"],
+      "emeritus": ["djaglowski"],
       "seeking_new": true
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "metrics"
-      ],
-      "development": [
-        "logs"
-      ]
+      "beta": ["metrics"],
+      "development": ["logs"]
     }
   },
   "type": "postgresql",

@@ -40,18 +40,13 @@
   "description": "This instrumentation enables HTTP client spans and HTTP client metrics for OkHttp.",
   "display_name": "OkHttp",
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "com.squareup.okhttp:okhttp:[2.2,3)"
-  ],
+  "javaagent_target_versions": ["com.squareup.okhttp:okhttp:[2.2,3)"],
   "name": "okhttp-2.2",
   "scope": {
     "name": "io.opentelemetry.okhttp-2.2",
     "schema_url": "https://opentelemetry.io/schemas/1.37.0"
   },
-  "semantic_conventions": [
-    "HTTP_CLIENT_SPANS",
-    "HTTP_CLIENT_METRICS"
-  ],
+  "semantic_conventions": ["HTTP_CLIENT_SPANS", "HTTP_CLIENT_METRICS"],
   "source_path": "instrumentation/okhttp/okhttp-2.2",
   "telemetry": [
     {

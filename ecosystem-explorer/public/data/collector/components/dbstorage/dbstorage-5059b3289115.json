@@ -8,18 +8,11 @@
   "status": {
     "class": "extension",
     "codeowners": {
-      "active": [
-        "dmitryax",
-        "atoulme"
-      ]
+      "active": ["dmitryax", "atoulme"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "extension"
-      ]
+      "alpha": ["extension"]
     }
   },
   "type": "db_storage",

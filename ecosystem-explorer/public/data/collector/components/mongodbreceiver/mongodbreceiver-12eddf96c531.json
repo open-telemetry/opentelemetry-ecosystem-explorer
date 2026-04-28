@@ -6,22 +6,13 @@
     },
     "connection_type": {
       "description": "The status of the connection.",
-      "enum": [
-        "active",
-        "available",
-        "current"
-      ],
+      "enum": ["active", "available", "current"],
       "name_override": "type",
       "type": "string"
     },
     "lock_mode": {
       "description": "The mode of Lock which denotes the degree of access",
-      "enum": [
-        "exclusive",
-        "intent_exclusive",
-        "intent_shared",
-        "shared"
-      ],
+      "enum": ["exclusive", "intent_exclusive", "intent_shared", "shared"],
       "type": "string"
     },
     "lock_type": {
@@ -40,41 +31,24 @@
     },
     "memory_type": {
       "description": "The type of memory used.",
-      "enum": [
-        "resident",
-        "virtual"
-      ],
+      "enum": ["resident", "virtual"],
       "name_override": "type",
       "type": "string"
     },
     "operation": {
       "description": "The MongoDB operation being counted.",
-      "enum": [
-        "command",
-        "delete",
-        "getmore",
-        "insert",
-        "query",
-        "update"
-      ],
+      "enum": ["command", "delete", "getmore", "insert", "query", "update"],
       "type": "string"
     },
     "operation_latency": {
       "description": "The MongoDB operation with regards to latency",
-      "enum": [
-        "command",
-        "read",
-        "write"
-      ],
+      "enum": ["command", "read", "write"],
       "name_override": "operation",
       "type": "string"
     },
     "type": {
       "description": "The result of a cache request.",
-      "enum": [
-        "hit",
-        "miss"
-      ],
+      "enum": ["hit", "miss"],
       "type": "string"
     }
   },
@@ -110,9 +84,7 @@
       "unit": "{writes}"
     },
     "mongodb.cache.operations": {
-      "attributes": [
-        "type"
-      ],
+      "attributes": ["type"],
       "description": "The number of cache operations of the instance.",
       "enabled": true,
       "stability": {
@@ -153,9 +125,7 @@
       "unit": "{command}/s"
     },
     "mongodb.connection.count": {
-      "attributes": [
-        "connection_type"
-      ],
+      "attributes": ["connection_type"],
       "description": "The number of connections.",
       "enabled": true,
       "stability": {
@@ -238,9 +208,7 @@
       "unit": "{delete}/s"
     },
     "mongodb.document.operation.count": {
-      "attributes": [
-        "operation"
-      ],
+      "attributes": ["operation"],
       "description": "The number of document operations executed.",
       "enabled": true,
       "stability": {
@@ -320,9 +288,7 @@
       "unit": "1"
     },
     "mongodb.index.access.count": {
-      "attributes": [
-        "collection"
-      ],
+      "attributes": ["collection"],
       "description": "The number of times an index has been accessed.",
       "enabled": true,
       "stability": {
@@ -377,10 +343,7 @@
       "unit": "{insert}/s"
     },
     "mongodb.lock.acquire.count": {
-      "attributes": [
-        "lock_mode",
-        "lock_type"
-      ],
+      "attributes": ["lock_mode", "lock_type"],
       "description": "Number of times the lock was acquired in the specified mode.",
       "enabled": false,
       "stability": {
@@ -394,10 +357,7 @@
       "unit": "{count}"
     },
     "mongodb.lock.acquire.time": {
-      "attributes": [
-        "lock_mode",
-        "lock_type"
-      ],
+      "attributes": ["lock_mode", "lock_type"],
       "description": "Cumulative wait time for the lock acquisitions.",
       "enabled": false,
       "stability": {
@@ -411,10 +371,7 @@
       "unit": "microseconds"
     },
     "mongodb.lock.acquire.wait_count": {
-      "attributes": [
-        "lock_mode",
-        "lock_type"
-      ],
+      "attributes": ["lock_mode", "lock_type"],
       "description": "Number of times the lock acquisitions encountered waits because the locks were held in a conflicting mode.",
       "enabled": false,
       "stability": {
@@ -428,10 +385,7 @@
       "unit": "{count}"
     },
     "mongodb.lock.deadlock.count": {
-      "attributes": [
-        "lock_mode",
-        "lock_type"
-      ],
+      "attributes": ["lock_mode", "lock_type"],
       "description": "Number of times the lock acquisitions encountered deadlocks.",
       "enabled": false,
       "stability": {
@@ -445,9 +399,7 @@
       "unit": "{count}"
     },
     "mongodb.memory.usage": {
-      "attributes": [
-        "memory_type"
-      ],
+      "attributes": ["memory_type"],
       "description": "The amount of memory used.",
       "enabled": true,
       "stability": {
@@ -517,9 +469,7 @@
       "unit": "{objects}"
     },
     "mongodb.operation.count": {
-      "attributes": [
-        "operation"
-      ],
+      "attributes": ["operation"],
       "description": "The number of operations executed.",
       "enabled": true,
       "stability": {
@@ -533,9 +483,7 @@
       "unit": "{operations}"
     },
     "mongodb.operation.latency.time": {
-      "attributes": [
-        "operation_latency"
-      ],
+      "attributes": ["operation_latency"],
       "description": "The latency of operations.",
       "enabled": false,
       "gauge": {
@@ -547,9 +495,7 @@
       "unit": "us"
     },
     "mongodb.operation.repl.count": {
-      "attributes": [
-        "operation"
-      ],
+      "attributes": ["operation"],
       "description": "The number of replicated operations executed.",
       "enabled": false,
       "stability": {
@@ -563,9 +509,7 @@
       "unit": "{operations}"
     },
     "mongodb.operation.time": {
-      "attributes": [
-        "operation"
-      ],
+      "attributes": ["operation"],
       "description": "The total time spent performing operations.",
       "enabled": true,
       "stability": {
@@ -772,19 +716,12 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "justinianvoss22",
-        "dyl10s"
-      ],
+      "active": ["justinianvoss22", "dyl10s"],
       "seeking_new": true
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "metrics"
-      ]
+      "beta": ["metrics"]
     }
   },
   "type": "mongodb",

@@ -7,20 +7,11 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "dmitryax",
-        "crobert-1"
-      ]
+      "active": ["dmitryax", "crobert-1"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "logs",
-        "metrics",
-        "traces"
-      ]
+      "beta": ["logs", "metrics", "traces"]
     }
   },
   "type": "signalfx",

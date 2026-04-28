@@ -7,19 +7,11 @@
   "status": {
     "class": "extension",
     "codeowners": {
-      "active": [
-        "MovieStoreGuy"
-      ]
+      "active": ["MovieStoreGuy"]
     },
-    "distributions": [
-      "contrib",
-      "core",
-      "k8s"
-    ],
+    "distributions": ["contrib", "core", "k8s"],
     "stability": {
-      "beta": [
-        "extension"
-      ]
+      "beta": ["extension"]
     }
   },
   "type": "pprof",

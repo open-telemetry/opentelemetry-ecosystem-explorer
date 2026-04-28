@@ -9,20 +9,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "eedorenko",
-        "mx-psi",
-        "dyl10s"
-      ]
+      "active": ["eedorenko", "mx-psi", "dyl10s"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "logs",
-        "traces"
-      ]
+      "alpha": ["logs", "traces"]
     }
   },
   "type": "receiver"

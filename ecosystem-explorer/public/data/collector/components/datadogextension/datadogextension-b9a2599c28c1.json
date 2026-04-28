@@ -7,25 +7,12 @@
   "status": {
     "class": "extension",
     "codeowners": {
-      "active": [
-        "dineshg13",
-        "IbraheemA",
-        "jade-guiton-dd",
-        "mx-psi",
-        "songy23"
-      ],
-      "emeritus": [
-        "jackgopack4",
-        "ankitpatel96"
-      ]
+      "active": ["dineshg13", "IbraheemA", "jade-guiton-dd", "mx-psi", "songy23"],
+      "emeritus": ["jackgopack4", "ankitpatel96"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "extension"
-      ]
+      "alpha": ["extension"]
     }
   },
   "type": "datadog",

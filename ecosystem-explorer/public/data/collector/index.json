@@ -2388,16 +2388,7 @@
   ],
   "ecosystem": "collector",
   "taxonomy": {
-    "distributions": [
-      "contrib",
-      "core"
-    ],
-    "types": [
-      "connector",
-      "exporter",
-      "extension",
-      "processor",
-      "receiver"
-    ]
+    "distributions": ["contrib", "core"],
+    "types": ["connector", "exporter", "extension", "processor", "receiver"]
   }
 }

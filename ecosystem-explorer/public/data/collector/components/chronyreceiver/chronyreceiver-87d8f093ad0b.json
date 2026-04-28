@@ -2,12 +2,7 @@
   "attributes": {
     "leap.status": {
       "description": "how the chrony is handling leap seconds",
-      "enum": [
-        "delete_second",
-        "insert_second",
-        "normal",
-        "unsynchronised"
-      ],
+      "enum": ["delete_second", "insert_second", "normal", "unsynchronised"],
       "type": "string"
     }
   },
@@ -15,9 +10,7 @@
   "distribution": "contrib",
   "metrics": {
     "ntp.frequency.offset": {
-      "attributes": [
-        "leap.status"
-      ],
+      "attributes": ["leap.status"],
       "description": "The frequency is the rate by which the system s clock would be wrong if chronyd was not correcting it.",
       "enabled": false,
       "gauge": {
@@ -51,9 +44,7 @@
       "unit": "{count}"
     },
     "ntp.time.correction": {
-      "attributes": [
-        "leap.status"
-      ],
+      "attributes": ["leap.status"],
       "description": "The number of seconds difference between the system's clock and the reference clock",
       "enabled": true,
       "gauge": {
@@ -65,9 +56,7 @@
       "unit": "seconds"
     },
     "ntp.time.last_offset": {
-      "attributes": [
-        "leap.status"
-      ],
+      "attributes": ["leap.status"],
       "description": "The estimated local offset on the last clock update",
       "enabled": true,
       "gauge": {
@@ -79,9 +68,7 @@
       "unit": "seconds"
     },
     "ntp.time.rms_offset": {
-      "attributes": [
-        "leap.status"
-      ],
+      "attributes": ["leap.status"],
       "description": "the long term average of the offset value",
       "enabled": false,
       "gauge": {
@@ -93,9 +80,7 @@
       "unit": "seconds"
     },
     "ntp.time.root_delay": {
-      "attributes": [
-        "leap.status"
-      ],
+      "attributes": ["leap.status"],
       "description": "This is the total of the network path delays to the stratum-1 system from which the system is ultimately synchronised.",
       "enabled": false,
       "gauge": {
@@ -112,18 +97,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "MovieStoreGuy",
-        "jamesmoessis"
-      ]
+      "active": ["MovieStoreGuy", "jamesmoessis"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "metrics"
-      ]
+      "beta": ["metrics"]
     }
   },
   "type": "chrony",

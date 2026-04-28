@@ -9,21 +9,15 @@
   ],
   "description": "This instrumentation enables context propagation for RxJava 2 reactive streams and adds support for @WithSpan annotations on methods that return RxJava 2 types. It does not emit any telemetry on its own.",
   "display_name": "RxJava",
-  "features": [
-    "CONTEXT_PROPAGATION"
-  ],
+  "features": ["CONTEXT_PROPAGATION"],
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": [
-    "io.reactivex.rxjava2:rxjava:[2.0.6,)"
-  ],
+  "javaagent_target_versions": ["io.reactivex.rxjava2:rxjava:[2.0.6,)"],
   "library_link": "https://github.com/ReactiveX/RxJava/tree/2.x",
   "name": "rxjava-2.0",
   "scope": {
     "name": "io.opentelemetry.rxjava-2.0"
   },
   "source_path": "instrumentation/rxjava/rxjava-2.0",
-  "tags": [
-    "rxjava"
-  ]
+  "tags": ["rxjava"]
 }

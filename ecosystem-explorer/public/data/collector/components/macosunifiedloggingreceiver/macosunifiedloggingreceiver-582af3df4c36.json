@@ -6,23 +6,13 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "Caleb-Hurshman",
-        "atoulme"
-      ]
+      "active": ["Caleb-Hurshman", "atoulme"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "logs"
-      ]
+      "alpha": ["logs"]
     },
-    "unsupported_platforms": [
-      "linux",
-      "windows"
-    ]
+    "unsupported_platforms": ["linux", "windows"]
   },
   "type": "macosunifiedlogging",
   "version": "0.146.0"

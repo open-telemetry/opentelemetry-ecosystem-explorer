@@ -7,22 +7,12 @@
   "status": {
     "class": "extension",
     "codeowners": {
-      "active": [
-        "dmitryax",
-        "ChrsMark"
-      ],
-      "emeritus": [
-        "rmfitzpatrick"
-      ]
+      "active": ["dmitryax", "ChrsMark"],
+      "emeritus": ["rmfitzpatrick"]
     },
-    "distributions": [
-      "contrib",
-      "k8s"
-    ],
+    "distributions": ["contrib", "k8s"],
     "stability": {
-      "alpha": [
-        "extension"
-      ]
+      "alpha": ["extension"]
     }
   },
   "type": "k8s_observer",

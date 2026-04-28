@@ -29,22 +29,15 @@
   "display_name": "R2DBC",
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": [
-    "io.r2dbc:r2dbc-spi:[1.0.0.RELEASE,)"
-  ],
+  "javaagent_target_versions": ["io.r2dbc:r2dbc-spi:[1.0.0.RELEASE,)"],
   "library_link": "https://r2dbc.io/",
   "name": "r2dbc-1.0",
   "scope": {
     "name": "io.opentelemetry.r2dbc-1.0"
   },
-  "semantic_conventions": [
-    "DATABASE_CLIENT_SPANS",
-    "DATABASE_CLIENT_METRICS"
-  ],
+  "semantic_conventions": ["DATABASE_CLIENT_SPANS", "DATABASE_CLIENT_METRICS"],
   "source_path": "instrumentation/r2dbc-1.0",
-  "tags": [
-    "r2dbc"
-  ],
+  "tags": ["r2dbc"],
   "telemetry": [
     {
       "spans": [

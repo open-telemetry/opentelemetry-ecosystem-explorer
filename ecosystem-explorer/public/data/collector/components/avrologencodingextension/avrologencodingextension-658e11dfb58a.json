@@ -8,15 +8,11 @@
   "status": {
     "class": "extension",
     "codeowners": {
-      "active": [
-        "thmshmm"
-      ]
+      "active": ["thmshmm"]
     },
     "distributions": [],
     "stability": {
-      "development": [
-        "extension"
-      ]
+      "development": ["extension"]
     }
   },
   "type": "avro_log_encoding",

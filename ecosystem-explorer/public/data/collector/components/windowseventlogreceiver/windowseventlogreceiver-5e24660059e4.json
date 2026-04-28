@@ -6,23 +6,13 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "armstrmi",
-        "pjanotti"
-      ]
+      "active": ["armstrmi", "pjanotti"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "logs"
-      ]
+      "alpha": ["logs"]
     },
-    "unsupported_platforms": [
-      "darwin",
-      "linux"
-    ]
+    "unsupported_platforms": ["darwin", "linux"]
   },
   "type": "windowseventlog",
   "version": "0.145.0"

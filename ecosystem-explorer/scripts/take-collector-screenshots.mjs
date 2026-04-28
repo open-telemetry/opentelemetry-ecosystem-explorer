@@ -54,7 +54,7 @@ async function startServer() {
 
 async function takeScreenshots() {
   if (!fs.existsSync(SCREENSHOTS_DIR)) fs.mkdirSync(SCREENSHOTS_DIR);
-  
+
   const server = await startServer();
   let browser;
 
@@ -63,12 +63,21 @@ async function takeScreenshots() {
     const page = await browser.newPage();
     await page.setViewportSize({ width: 1400, height: 900 });
 
-    const BLOCKED_HOSTS = new Set(["googletagmanager.com", "google-analytics.com", "fonts.googleapis.com", "fonts.gstatic.com"]);
+    const BLOCKED_HOSTS = new Set([
+      "googletagmanager.com",
+      "google-analytics.com",
+      "fonts.googleapis.com",
+      "fonts.gstatic.com",
+    ]);
     await page.route("**/*", (route) => {
       try {
         const hostname = new URL(route.request().url()).hostname;
-        if (BLOCKED_HOSTS.has(hostname) || [...BLOCKED_HOSTS].some((h) => hostname.endsWith(`.${h}`))) {
-          route.abort(); return;
+        if (
+          BLOCKED_HOSTS.has(hostname) ||
+          [...BLOCKED_HOSTS].some((h) => hostname.endsWith(`.${h}`))
+        ) {
+          route.abort();
+          return;
         }
       } catch {}
       route.continue();
@@ -79,17 +88,22 @@ async function takeScreenshots() {
     // Let's set it in local storage just in case if the app supports it, or it was baked in during `bun run build`.
     // In our .env.development it was true, but `bun run build` uses .env.production where it might be false.
     // If it's false, the page might not load! Let's just try to go to the page directly.
-    
+
     console.log("Taking collector list screenshot...");
-    await page.goto(`${BASE_URL}/collector/components`, { waitUntil: "networkidle", timeout: 15000 });
+    await page.goto(`${BASE_URL}/collector/components`, {
+      waitUntil: "networkidle",
+      timeout: 15000,
+    });
     await page.screenshot({ path: path.join(SCREENSHOTS_DIR, "collector-list.png") });
     console.log("Collector list screenshot done");
 
     console.log("Taking collector detail screenshot...");
-    await page.goto(`${BASE_URL}/collector/components/receiver/otlp`, { waitUntil: "networkidle", timeout: 15000 });
+    await page.goto(`${BASE_URL}/collector/components/receiver/otlp`, {
+      waitUntil: "networkidle",
+      timeout: 15000,
+    });
     await page.screenshot({ path: path.join(SCREENSHOTS_DIR, "collector-detail.png") });
     console.log("Collector detail screenshot done");
-
   } catch (error) {
     console.error("Error:", error);
   } finally {

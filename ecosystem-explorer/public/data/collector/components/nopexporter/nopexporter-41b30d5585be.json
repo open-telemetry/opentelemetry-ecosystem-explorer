@@ -7,24 +7,12 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "evan-bradley"
-      ]
+      "active": ["evan-bradley"]
     },
-    "distributions": [
-      "contrib",
-      "core",
-      "k8s"
-    ],
+    "distributions": ["contrib", "core", "k8s"],
     "stability": {
-      "beta": [
-        "logs",
-        "metrics",
-        "traces"
-      ],
-      "development": [
-        "profiles"
-      ]
+      "beta": ["logs", "metrics", "traces"],
+      "development": ["profiles"]
     }
   },
   "type": "nop",

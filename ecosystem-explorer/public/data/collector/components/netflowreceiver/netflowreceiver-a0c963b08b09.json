@@ -8,18 +8,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "evan-bradley",
-        "dlopes7"
-      ]
+      "active": ["evan-bradley", "dlopes7"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "logs"
-      ]
+      "alpha": ["logs"]
     }
   },
   "type": "netflow",

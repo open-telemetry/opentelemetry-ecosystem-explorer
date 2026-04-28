@@ -8,22 +8,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "Aneurysm9",
-        "dashpole",
-        "ArthurSens",
-        "krajorama"
-      ]
+      "active": ["Aneurysm9", "dashpole", "ArthurSens", "krajorama"]
     },
-    "distributions": [
-      "contrib",
-      "core",
-      "k8s"
-    ],
+    "distributions": ["contrib", "core", "k8s"],
     "stability": {
-      "beta": [
-        "metrics"
-      ]
+      "beta": ["metrics"]
     }
   },
   "type": "prometheus",

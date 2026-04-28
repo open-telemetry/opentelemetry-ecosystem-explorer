@@ -11,21 +11,15 @@
   "display_name": "Apache DBCP",
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": [
-    "org.apache.commons:commons-dbcp2:[2,)"
-  ],
+  "javaagent_target_versions": ["org.apache.commons:commons-dbcp2:[2,)"],
   "library_link": "https://commons.apache.org/proper/commons-dbcp/",
   "name": "apache-dbcp-2.0",
   "scope": {
     "name": "io.opentelemetry.apache-dbcp-2.0"
   },
-  "semantic_conventions": [
-    "DATABASE_POOL_METRICS"
-  ],
+  "semantic_conventions": ["DATABASE_POOL_METRICS"],
   "source_path": "instrumentation/apache-dbcp-2.0",
-  "tags": [
-    "apache"
-  ],
+  "tags": ["apache"],
   "telemetry": [
     {
       "metrics": [

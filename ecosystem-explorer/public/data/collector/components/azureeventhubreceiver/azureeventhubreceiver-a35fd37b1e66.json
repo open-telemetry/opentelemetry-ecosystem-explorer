@@ -6,25 +6,13 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "atoulme",
-        "cparkins",
-        "dyl10s"
-      ],
-      "emeritus": [
-        "djaglowski"
-      ],
+      "active": ["atoulme", "cparkins", "dyl10s"],
+      "emeritus": ["djaglowski"],
       "seeking_new": true
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "logs",
-        "metrics",
-        "traces"
-      ]
+      "alpha": ["logs", "metrics", "traces"]
     }
   },
   "type": "azureeventhub",

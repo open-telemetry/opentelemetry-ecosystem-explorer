@@ -7,9 +7,7 @@
     "class": "extension",
     "codeowners": null,
     "stability": {
-      "development": [
-        "profiles"
-      ]
+      "development": ["profiles"]
     }
   },
   "type": "xextension",

@@ -28,22 +28,15 @@
   "description": "This instrumentation enables database client spans and database client metrics for the Lettuce Redis client.",
   "display_name": "Lettuce",
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "io.lettuce:lettuce-core:[5.0.0.RELEASE,5.1.0.RELEASE)"
-  ],
+  "javaagent_target_versions": ["io.lettuce:lettuce-core:[5.0.0.RELEASE,5.1.0.RELEASE)"],
   "library_link": "https://github.com/redis/lettuce",
   "name": "lettuce-5.0",
   "scope": {
     "name": "io.opentelemetry.lettuce-5.0"
   },
-  "semantic_conventions": [
-    "DATABASE_CLIENT_SPANS",
-    "DATABASE_CLIENT_METRICS"
-  ],
+  "semantic_conventions": ["DATABASE_CLIENT_SPANS", "DATABASE_CLIENT_METRICS"],
   "source_path": "instrumentation/lettuce/lettuce-5.0",
-  "tags": [
-    "lettuce"
-  ],
+  "tags": ["lettuce"],
   "telemetry": [
     {
       "spans": [

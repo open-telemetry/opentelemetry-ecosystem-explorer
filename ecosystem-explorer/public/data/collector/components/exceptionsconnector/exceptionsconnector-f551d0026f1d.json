@@ -7,19 +7,11 @@
   "status": {
     "class": "connector",
     "codeowners": {
-      "active": [
-        "marctc"
-      ]
+      "active": ["marctc"]
     },
-    "distributions": [
-      "contrib",
-      "k8s"
-    ],
+    "distributions": ["contrib", "k8s"],
     "stability": {
-      "alpha": [
-        "traces_to_logs",
-        "traces_to_metrics"
-      ]
+      "alpha": ["traces_to_logs", "traces_to_metrics"]
     }
   },
   "type": "exceptions",

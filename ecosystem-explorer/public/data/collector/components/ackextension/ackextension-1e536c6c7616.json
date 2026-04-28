@@ -8,21 +8,12 @@
   "status": {
     "class": "extension",
     "codeowners": {
-      "active": [
-        "splunkericl"
-      ],
-      "emeritus": [
-        "zpzhuSplunk"
-      ]
+      "active": ["splunkericl"],
+      "emeritus": ["zpzhuSplunk"]
     },
-    "distributions": [
-      "contrib",
-      "k8s"
-    ],
+    "distributions": ["contrib", "k8s"],
     "stability": {
-      "alpha": [
-        "extension"
-      ]
+      "alpha": ["extension"]
     }
   },
   "type": "ack",

@@ -7,18 +7,11 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "AbhiPrasad"
-      ]
+      "active": ["AbhiPrasad"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "logs",
-        "traces"
-      ]
+      "alpha": ["logs", "traces"]
     }
   },
   "type": "sentry",

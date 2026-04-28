@@ -6,17 +6,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "heitorganzeli",
-        "narcis96",
-        "mwear"
-      ]
+      "active": ["heitorganzeli", "narcis96", "mwear"]
     },
     "distributions": [],
     "stability": {
-      "alpha": [
-        "metrics"
-      ]
+      "alpha": ["metrics"]
     }
   },
   "type": "huaweicloudcesreceiver",

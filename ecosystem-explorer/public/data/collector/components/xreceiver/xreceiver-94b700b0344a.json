@@ -6,15 +6,10 @@
   "status": {
     "class": "pkg",
     "codeowners": {
-      "active": [
-        "mx-psi",
-        "dmathieu"
-      ]
+      "active": ["mx-psi", "dmathieu"]
     },
     "stability": {
-      "development": [
-        "profiles"
-      ]
+      "development": ["profiles"]
     }
   },
   "type": "xreceiver",

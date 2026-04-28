@@ -8,15 +8,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "dmitryax"
-      ]
+      "active": ["dmitryax"]
     },
     "distributions": [],
     "stability": {
-      "alpha": [
-        "metrics"
-      ]
+      "alpha": ["metrics"]
     }
   },
   "type": "ciscoos",

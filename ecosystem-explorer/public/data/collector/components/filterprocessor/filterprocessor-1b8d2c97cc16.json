@@ -6,28 +6,12 @@
   "status": {
     "class": "processor",
     "codeowners": {
-      "active": [
-        "TylerHelmuth",
-        "boostchicken",
-        "evan-bradley",
-        "edmocosta",
-        "bogdandrutu"
-      ]
+      "active": ["TylerHelmuth", "boostchicken", "evan-bradley", "edmocosta", "bogdandrutu"]
     },
-    "distributions": [
-      "contrib",
-      "core",
-      "k8s"
-    ],
+    "distributions": ["contrib", "core", "k8s"],
     "stability": {
-      "alpha": [
-        "logs",
-        "metrics",
-        "traces"
-      ],
-      "development": [
-        "profiles"
-      ]
+      "alpha": ["logs", "metrics", "traces"],
+      "development": ["profiles"]
     }
   },
   "type": "filter",

@@ -6,18 +6,11 @@
   "status": {
     "class": "extension",
     "codeowners": {
-      "active": [
-        "yurishkuro",
-        "frzifus"
-      ]
+      "active": ["yurishkuro", "frzifus"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "extension"
-      ]
+      "alpha": ["extension"]
     }
   },
   "type": "jaegerremotesampling",

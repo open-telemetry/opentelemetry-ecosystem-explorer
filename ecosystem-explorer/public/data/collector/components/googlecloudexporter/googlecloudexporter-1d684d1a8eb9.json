@@ -7,24 +7,11 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "aabmass",
-        "dashpole",
-        "braydonk",
-        "jsuereth",
-        "psx95",
-        "ridwanmsharif"
-      ]
+      "active": ["aabmass", "dashpole", "braydonk", "jsuereth", "psx95", "ridwanmsharif"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "logs",
-        "metrics",
-        "traces"
-      ]
+      "beta": ["logs", "metrics", "traces"]
     }
   },
   "type": "googlecloud",

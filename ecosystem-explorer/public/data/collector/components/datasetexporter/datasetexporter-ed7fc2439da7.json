@@ -6,21 +6,11 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "atoulme",
-        "martin-majlis-s1",
-        "zdaratom-s1",
-        "tomaz-s1"
-      ]
+      "active": ["atoulme", "martin-majlis-s1", "zdaratom-s1", "tomaz-s1"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "logs",
-        "traces"
-      ]
+      "alpha": ["logs", "traces"]
     }
   },
   "type": "dataset",

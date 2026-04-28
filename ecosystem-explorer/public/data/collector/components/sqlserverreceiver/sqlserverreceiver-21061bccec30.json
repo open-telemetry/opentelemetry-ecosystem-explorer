@@ -10,14 +10,7 @@
     },
     "database.status": {
       "description": "The current status of a database",
-      "enum": [
-        "offline",
-        "online",
-        "pending_recovery",
-        "recovering",
-        "restoring",
-        "suspect"
-      ],
+      "enum": ["offline", "online", "pending_recovery", "recovering", "restoring", "suspect"],
       "type": "string"
     },
     "db.namespace": {
@@ -34,10 +27,7 @@
     },
     "direction": {
       "description": "The direction of flow of bytes or operations.",
-      "enum": [
-        "read",
-        "write"
-      ],
+      "enum": ["read", "write"],
       "type": "string"
     },
     "file_type": {
@@ -58,10 +48,7 @@
     },
     "page.operations": {
       "description": "The page operation types.",
-      "enum": [
-        "read",
-        "write"
-      ],
+      "enum": ["read", "write"],
       "name_override": "type",
       "type": "string"
     },
@@ -75,10 +62,7 @@
     },
     "replica.direction": {
       "description": "The direction of flow of bytes for replica.",
-      "enum": [
-        "receive",
-        "transmit"
-      ],
+      "enum": ["receive", "transmit"],
       "type": "string"
     },
     "server.address": {
@@ -223,26 +207,17 @@
     },
     "table.state": {
       "description": "The state of the table.",
-      "enum": [
-        "active",
-        "inactive"
-      ],
+      "enum": ["active", "inactive"],
       "type": "string"
     },
     "table.status": {
       "description": "The status of the table.",
-      "enum": [
-        "permanent",
-        "temporary"
-      ],
+      "enum": ["permanent", "temporary"],
       "type": "string"
     },
     "tempdb.state": {
       "description": "The status of the tempdb space usage.",
-      "enum": [
-        "free",
-        "used"
-      ],
+      "enum": ["free", "used"],
       "type": "string"
     },
     "user.name": {
@@ -331,9 +306,7 @@
       "unit": "\u201c{backups_or_restores}/s\u201d"
     },
     "sqlserver.database.count": {
-      "attributes": [
-        "database.status"
-      ],
+      "attributes": ["database.status"],
       "description": "The number of databases",
       "enabled": false,
       "gauge": {
@@ -370,12 +343,7 @@
       "unit": "{scans}/s"
     },
     "sqlserver.database.io": {
-      "attributes": [
-        "direction",
-        "file_type",
-        "logical_filename",
-        "physical_filename"
-      ],
+      "attributes": ["direction", "file_type", "logical_filename", "physical_filename"],
       "description": "The number of bytes of I/O on this file.",
       "enabled": false,
       "stability": {
@@ -390,12 +358,7 @@
       "unit": "By"
     },
     "sqlserver.database.latency": {
-      "attributes": [
-        "direction",
-        "file_type",
-        "logical_filename",
-        "physical_filename"
-      ],
+      "attributes": ["direction", "file_type", "logical_filename", "physical_filename"],
       "description": "Total time that the users waited for I/O issued on this file.",
       "enabled": false,
       "stability": {
@@ -409,12 +372,7 @@
       "unit": "s"
     },
     "sqlserver.database.operations": {
-      "attributes": [
-        "direction",
-        "file_type",
-        "logical_filename",
-        "physical_filename"
-      ],
+      "attributes": ["direction", "file_type", "logical_filename", "physical_filename"],
       "description": "The number of operations issued on the file.",
       "enabled": false,
       "stability": {
@@ -429,9 +387,7 @@
       "unit": "{operations}"
     },
     "sqlserver.database.tempdb.space": {
-      "attributes": [
-        "tempdb.state"
-      ],
+      "attributes": ["tempdb.state"],
       "description": "Total free space in temporary DB.",
       "enabled": false,
       "stability": {
@@ -580,10 +536,7 @@
       "unit": "\u201cKB\u201d"
     },
     "sqlserver.os.wait.duration": {
-      "attributes": [
-        "wait.category",
-        "wait.type"
-      ],
+      "attributes": ["wait.category", "wait.type"],
       "description": "Total wait time for this wait type",
       "enabled": false,
       "stability": {
@@ -642,9 +595,7 @@
       "unit": "{writes}/s"
     },
     "sqlserver.page.life_expectancy": {
-      "attributes": [
-        "performance_counter.object_name"
-      ],
+      "attributes": ["performance_counter.object_name"],
       "description": "Time a page will stay in the buffer pool.",
       "enabled": true,
       "gauge": {
@@ -668,9 +619,7 @@
       "unit": "\u201c{lookups}/s\u201d"
     },
     "sqlserver.page.operation.rate": {
-      "attributes": [
-        "page.operations"
-      ],
+      "attributes": ["page.operations"],
       "description": "Number of physical database page operations issued.",
       "enabled": true,
       "gauge": {
@@ -706,9 +655,7 @@
       "unit": "{processes}"
     },
     "sqlserver.replica.data.rate": {
-      "attributes": [
-        "replica.direction"
-      ],
+      "attributes": ["replica.direction"],
       "description": "Throughput rate of replica data.",
       "enabled": false,
       "gauge": {
@@ -720,9 +667,7 @@
       "unit": "By/s"
     },
     "sqlserver.resource_pool.disk.operations": {
-      "attributes": [
-        "direction"
-      ],
+      "attributes": ["direction"],
       "description": "The rate of operations issued.",
       "enabled": false,
       "gauge": {
@@ -760,10 +705,7 @@
       "unit": "{writes}/s"
     },
     "sqlserver.table.count": {
-      "attributes": [
-        "table.state",
-        "table.status"
-      ],
+      "attributes": ["table.state", "table.status"],
       "description": "The number of tables.",
       "enabled": false,
       "stability": {
@@ -941,25 +883,14 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "sincejune",
-        "crobert-1"
-      ],
-      "emeritus": [
-        "StefanKurek"
-      ],
+      "active": ["sincejune", "crobert-1"],
+      "emeritus": ["StefanKurek"],
       "seeking_new": true
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "metrics"
-      ],
-      "development": [
-        "logs"
-      ]
+      "beta": ["metrics"],
+      "development": ["logs"]
     }
   },
   "type": "sqlserver",

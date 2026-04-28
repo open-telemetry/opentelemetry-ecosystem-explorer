@@ -6,19 +6,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "TylerHelmuth",
-        "mterhar"
-      ]
+      "active": ["TylerHelmuth", "mterhar"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "logs",
-        "traces"
-      ]
+      "alpha": ["logs", "traces"]
     }
   },
   "type": "libhoney",

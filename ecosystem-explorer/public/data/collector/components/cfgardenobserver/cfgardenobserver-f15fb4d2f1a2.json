@@ -6,19 +6,11 @@
   "status": {
     "class": "extension",
     "codeowners": {
-      "active": [
-        "crobert-1",
-        "jriguera"
-      ],
-      "emeritus": [
-        "m1rp",
-        "cemdk"
-      ]
+      "active": ["crobert-1", "jriguera"],
+      "emeritus": ["m1rp", "cemdk"]
     },
     "stability": {
-      "alpha": [
-        "extension"
-      ]
+      "alpha": ["extension"]
     }
   },
   "type": "cfgarden_observer",

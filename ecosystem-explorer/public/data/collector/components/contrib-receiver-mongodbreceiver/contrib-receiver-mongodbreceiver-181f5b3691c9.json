@@ -6,11 +6,7 @@
     },
     "connection_type": {
       "description": "The status of the connection.",
-      "enum": [
-        "active",
-        "available",
-        "current"
-      ],
+      "enum": ["active", "available", "current"],
       "name_override": "type",
       "type": "string"
     },
@@ -20,12 +16,7 @@
     },
     "lock_mode": {
       "description": "The mode of Lock which denotes the degree of access",
-      "enum": [
-        "exclusive",
-        "intent_exclusive",
-        "intent_shared",
-        "shared"
-      ],
+      "enum": ["exclusive", "intent_exclusive", "intent_shared", "shared"],
       "type": "string"
     },
     "lock_type": {
@@ -44,41 +35,24 @@
     },
     "memory_type": {
       "description": "The type of memory used.",
-      "enum": [
-        "resident",
-        "virtual"
-      ],
+      "enum": ["resident", "virtual"],
       "name_override": "type",
       "type": "string"
     },
     "operation": {
       "description": "The MongoDB operation being counted.",
-      "enum": [
-        "command",
-        "delete",
-        "getmore",
-        "insert",
-        "query",
-        "update"
-      ],
+      "enum": ["command", "delete", "getmore", "insert", "query", "update"],
       "type": "string"
     },
     "operation_latency": {
       "description": "The MongoDB operation with regards to latency",
-      "enum": [
-        "command",
-        "read",
-        "write"
-      ],
+      "enum": ["command", "read", "write"],
       "name_override": "operation",
       "type": "string"
     },
     "type": {
       "description": "The result of a cache request.",
-      "enum": [
-        "hit",
-        "miss"
-      ],
+      "enum": ["hit", "miss"],
       "type": "string"
     }
   },
@@ -113,9 +87,7 @@
       "unit": "{writes}"
     },
     "mongodb.cache.operations": {
-      "attributes": [
-        "type"
-      ],
+      "attributes": ["type"],
       "description": "The number of cache operations of the instance.",
       "enabled": true,
       "stability": "development",
@@ -127,9 +99,7 @@
       "unit": "{operations}"
     },
     "mongodb.collection.count": {
-      "attributes": [
-        "db.namespace"
-      ],
+      "attributes": ["db.namespace"],
       "description": "The number of collections.",
       "enabled": true,
       "stability": "development",
@@ -152,10 +122,7 @@
       "unit": "{command}/s"
     },
     "mongodb.connection.count": {
-      "attributes": [
-        "connection_type",
-        "db.namespace"
-      ],
+      "attributes": ["connection_type", "db.namespace"],
       "description": "The number of connections.",
       "enabled": true,
       "stability": "development",
@@ -191,9 +158,7 @@
       "unit": "{cursors}"
     },
     "mongodb.data.size": {
-      "attributes": [
-        "db.namespace"
-      ],
+      "attributes": ["db.namespace"],
       "description": "The size of the collection. Data compression does not affect this value.",
       "enabled": true,
       "stability": "development",
@@ -228,10 +193,7 @@
       "unit": "{delete}/s"
     },
     "mongodb.document.operation.count": {
-      "attributes": [
-        "db.namespace",
-        "operation"
-      ],
+      "attributes": ["db.namespace", "operation"],
       "description": "The number of document operations executed.",
       "enabled": true,
       "stability": "development",
@@ -243,9 +205,7 @@
       "unit": "{documents}"
     },
     "mongodb.extent.count": {
-      "attributes": [
-        "db.namespace"
-      ],
+      "attributes": ["db.namespace"],
       "description": "The number of extents.",
       "enabled": true,
       "stability": "development",
@@ -301,10 +261,7 @@
       "unit": "1"
     },
     "mongodb.index.access.count": {
-      "attributes": [
-        "collection",
-        "db.namespace"
-      ],
+      "attributes": ["collection", "db.namespace"],
       "description": "The number of times an index has been accessed.",
       "enabled": true,
       "stability": "development",
@@ -316,9 +273,7 @@
       "unit": "{accesses}"
     },
     "mongodb.index.count": {
-      "attributes": [
-        "db.namespace"
-      ],
+      "attributes": ["db.namespace"],
       "description": "The number of indexes.",
       "enabled": true,
       "stability": "development",
@@ -330,9 +285,7 @@
       "unit": "{indexes}"
     },
     "mongodb.index.size": {
-      "attributes": [
-        "db.namespace"
-      ],
+      "attributes": ["db.namespace"],
       "description": "Sum of the space allocated to all indexes in the database, including free index space.",
       "enabled": true,
       "stability": "development",
@@ -355,11 +308,7 @@
       "unit": "{insert}/s"
     },
     "mongodb.lock.acquire.count": {
-      "attributes": [
-        "db.namespace",
-        "lock_mode",
-        "lock_type"
-      ],
+      "attributes": ["db.namespace", "lock_mode", "lock_type"],
       "description": "Number of times the lock was acquired in the specified mode.",
       "enabled": false,
       "stability": "development",
@@ -371,11 +320,7 @@
       "unit": "{count}"
     },
     "mongodb.lock.acquire.time": {
-      "attributes": [
-        "db.namespace",
-        "lock_mode",
-        "lock_type"
-      ],
+      "attributes": ["db.namespace", "lock_mode", "lock_type"],
       "description": "Cumulative wait time for the lock acquisitions.",
       "enabled": false,
       "stability": "development",
@@ -387,11 +332,7 @@
       "unit": "microseconds"
     },
     "mongodb.lock.acquire.wait_count": {
-      "attributes": [
-        "db.namespace",
-        "lock_mode",
-        "lock_type"
-      ],
+      "attributes": ["db.namespace", "lock_mode", "lock_type"],
       "description": "Number of times the lock acquisitions encountered waits because the locks were held in a conflicting mode.",
       "enabled": false,
       "stability": "development",
@@ -403,11 +344,7 @@
       "unit": "{count}"
     },
     "mongodb.lock.deadlock.count": {
-      "attributes": [
-        "db.namespace",
-        "lock_mode",
-        "lock_type"
-      ],
+      "attributes": ["db.namespace", "lock_mode", "lock_type"],
       "description": "Number of times the lock acquisitions encountered deadlocks.",
       "enabled": false,
       "stability": "development",
@@ -419,10 +356,7 @@
       "unit": "{count}"
     },
     "mongodb.memory.usage": {
-      "attributes": [
-        "db.namespace",
-        "memory_type"
-      ],
+      "attributes": ["db.namespace", "memory_type"],
       "description": "The amount of memory used.",
       "enabled": true,
       "stability": "development",
@@ -470,9 +404,7 @@
       "unit": "{requests}"
     },
     "mongodb.object.count": {
-      "attributes": [
-        "db.namespace"
-      ],
+      "attributes": ["db.namespace"],
       "description": "The number of objects.",
       "enabled": true,
       "stability": "development",
@@ -484,9 +416,7 @@
       "unit": "{objects}"
     },
     "mongodb.operation.count": {
-      "attributes": [
-        "operation"
-      ],
+      "attributes": ["operation"],
       "description": "The number of operations executed.",
       "enabled": true,
       "stability": "development",
@@ -498,9 +428,7 @@
       "unit": "{operations}"
     },
     "mongodb.operation.latency.time": {
-      "attributes": [
-        "operation_latency"
-      ],
+      "attributes": ["operation_latency"],
       "description": "The latency of operations.",
       "enabled": false,
       "gauge": {
@@ -510,9 +438,7 @@
       "unit": "us"
     },
     "mongodb.operation.repl.count": {
-      "attributes": [
-        "operation"
-      ],
+      "attributes": ["operation"],
       "description": "The number of replicated operations executed.",
       "enabled": false,
       "stability": "development",
@@ -524,9 +450,7 @@
       "unit": "{operations}"
     },
     "mongodb.operation.time": {
-      "attributes": [
-        "operation"
-      ],
+      "attributes": ["operation"],
       "description": "The total time spent performing operations.",
       "enabled": true,
       "stability": "development",
@@ -639,9 +563,7 @@
       "unit": "{sessions}"
     },
     "mongodb.storage.size": {
-      "attributes": [
-        "db.namespace"
-      ],
+      "attributes": ["db.namespace"],
       "description": "The total amount of storage allocated to this collection.",
       "enabled": true,
       "stability": "development",
@@ -693,20 +615,12 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "justinianvoss22",
-        "dyl10s",
-        "ishleenk17"
-      ],
+      "active": ["justinianvoss22", "dyl10s", "ishleenk17"],
       "seeking_new": true
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "metrics"
-      ]
+      "beta": ["metrics"]
     }
   },
   "type": "receiver"

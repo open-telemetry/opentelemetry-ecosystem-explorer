@@ -6,13 +6,7 @@
     },
     "startup_mode": {
       "description": "Startup mode of Windows Service",
-      "enum": [
-        "auto_start",
-        "boot_start",
-        "demand_start",
-        "disabled",
-        "system_start"
-      ],
+      "enum": ["auto_start", "boot_start", "demand_start", "disabled", "system_start"],
       "type": "string"
     }
   },
@@ -20,10 +14,7 @@
   "distribution": "contrib",
   "metrics": {
     "windows.service.status": {
-      "attributes": [
-        "name",
-        "startup_mode"
-      ],
+      "attributes": ["name", "startup_mode"],
       "description": "Gauge value containing service status as an integer value.",
       "enabled": true,
       "gauge": {
@@ -38,23 +29,13 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "pjanotti",
-        "shalper2"
-      ]
+      "active": ["pjanotti", "shalper2"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "development": [
-        "metrics"
-      ]
+      "development": ["metrics"]
     },
-    "unsupported_platforms": [
-      "darwin",
-      "linux"
-    ]
+    "unsupported_platforms": ["darwin", "linux"]
   },
   "type": "windowsservice",
   "version": "0.146.0"

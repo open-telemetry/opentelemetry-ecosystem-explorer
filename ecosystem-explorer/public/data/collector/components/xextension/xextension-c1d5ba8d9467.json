@@ -7,9 +7,7 @@
     "class": "pkg",
     "codeowners": null,
     "stability": {
-      "development": [
-        "profiles"
-      ]
+      "development": ["profiles"]
     }
   },
   "type": "xextension",

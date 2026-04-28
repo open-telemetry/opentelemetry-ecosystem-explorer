@@ -6,20 +6,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "dmitryax",
-        "TylerHelmuth",
-        "ChrsMark"
-      ]
+      "active": ["dmitryax", "TylerHelmuth", "ChrsMark"]
     },
-    "distributions": [
-      "contrib",
-      "k8s"
-    ],
+    "distributions": ["contrib", "k8s"],
     "stability": {
-      "alpha": [
-        "logs"
-      ]
+      "alpha": ["logs"]
     }
   },
   "type": "k8s_events",

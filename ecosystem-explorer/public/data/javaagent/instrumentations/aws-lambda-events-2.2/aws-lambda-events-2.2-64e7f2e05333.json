@@ -17,22 +17,15 @@
   "display_name": "AWS Lambda Events",
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": [
-    "com.amazonaws:aws-lambda-java-core:[1.0.0,)"
-  ],
+  "javaagent_target_versions": ["com.amazonaws:aws-lambda-java-core:[1.0.0,)"],
   "library_link": "https://docs.aws.amazon.com/lambda/latest/dg/java-handler.html",
   "name": "aws-lambda-events-2.2",
   "scope": {
     "name": "io.opentelemetry.aws-lambda-events-2.2"
   },
-  "semantic_conventions": [
-    "FAAS_SERVER_SPANS",
-    "MESSAGING_SPANS"
-  ],
+  "semantic_conventions": ["FAAS_SERVER_SPANS", "MESSAGING_SPANS"],
   "source_path": "instrumentation/aws-lambda/aws-lambda-events-2.2",
-  "tags": [
-    "aws"
-  ],
+  "tags": ["aws"],
   "telemetry": [
     {
       "spans": [

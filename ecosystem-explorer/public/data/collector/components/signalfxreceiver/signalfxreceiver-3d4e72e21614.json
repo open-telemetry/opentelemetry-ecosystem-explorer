@@ -6,19 +6,12 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "dmitryax"
-      ],
+      "active": ["dmitryax"],
       "emeritus": null
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "deprecated": [
-        "logs",
-        "metrics"
-      ]
+      "deprecated": ["logs", "metrics"]
     }
   },
   "type": "signalfx",

@@ -6,23 +6,13 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "yaten2302"
-      ],
-      "emeritus": [
-        "bryan-aguilar",
-        "boostchicken",
-        "rapphil"
-      ],
+      "active": ["yaten2302"],
+      "emeritus": ["bryan-aguilar", "boostchicken", "rapphil"],
       "seeking_new": true
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "logs"
-      ]
+      "alpha": ["logs"]
     }
   },
   "type": "awscloudwatchlogs",

@@ -10,18 +10,14 @@
   "description": "This instrumentation enables client spans for Twilio SDK API calls such as sending messages and making phone calls.",
   "display_name": "Twilio",
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "com.twilio.sdk:twilio:(,8.0.0)"
-  ],
+  "javaagent_target_versions": ["com.twilio.sdk:twilio:(,8.0.0)"],
   "library_link": "https://github.com/twilio/twilio-java",
   "name": "twilio-6.6",
   "scope": {
     "name": "io.opentelemetry.twilio-6.6"
   },
   "source_path": "instrumentation/twilio-6.6",
-  "tags": [
-    "twilio"
-  ],
+  "tags": ["twilio"],
   "telemetry": [
     {
       "spans": [

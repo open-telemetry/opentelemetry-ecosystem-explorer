@@ -6,19 +6,12 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "constanca-m",
-        "braydonk"
-      ],
+      "active": ["constanca-m", "braydonk"],
       "seeking_new": true
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "logs"
-      ]
+      "alpha": ["logs"]
     }
   },
   "type": "googlecloudstorage",

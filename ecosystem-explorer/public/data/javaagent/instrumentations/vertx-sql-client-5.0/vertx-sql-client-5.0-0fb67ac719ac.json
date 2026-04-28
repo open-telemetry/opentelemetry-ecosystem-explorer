@@ -10,19 +10,14 @@
   "description": "This instrumentation enables database client spans and database client metrics for Vert.x SQL Client operations.",
   "display_name": "Vert.x SQL Client",
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "io.vertx:vertx-sql-client:[5.0.0,)"
-  ],
+  "javaagent_target_versions": ["io.vertx:vertx-sql-client:[5.0.0,)"],
   "library_link": "https://github.com/eclipse-vertx/vertx-sql-client",
   "minimum_java_version": 11,
   "name": "vertx-sql-client-5.0",
   "scope": {
     "name": "io.opentelemetry.vertx-sql-client-5.0"
   },
-  "semantic_conventions": [
-    "DATABASE_CLIENT_SPANS",
-    "DATABASE_CLIENT_METRICS"
-  ],
+  "semantic_conventions": ["DATABASE_CLIENT_SPANS", "DATABASE_CLIENT_METRICS"],
   "source_path": "instrumentation/vertx/vertx-sql-client/vertx-sql-client-5.0",
   "telemetry": [
     {

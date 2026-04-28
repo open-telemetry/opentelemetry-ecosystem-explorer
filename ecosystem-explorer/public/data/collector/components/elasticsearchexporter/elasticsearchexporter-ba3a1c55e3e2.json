@@ -6,12 +6,7 @@
     },
     "failure_store": {
       "description": "The status of the failure store.",
-      "enum": [
-        "failed",
-        "not_enabled",
-        "unknown",
-        "used"
-      ],
+      "enum": ["failed", "not_enabled", "unknown", "used"],
       "type": "string"
     },
     "http.response.status_code": {
@@ -40,24 +35,12 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "JaredTan95",
-        "carsonip",
-        "lahsivjar"
-      ]
+      "active": ["JaredTan95", "carsonip", "lahsivjar"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "logs",
-        "traces"
-      ],
-      "development": [
-        "metrics",
-        "profiles"
-      ]
+      "beta": ["logs", "traces"],
+      "development": ["metrics", "profiles"]
     }
   },
   "type": "elasticsearch",

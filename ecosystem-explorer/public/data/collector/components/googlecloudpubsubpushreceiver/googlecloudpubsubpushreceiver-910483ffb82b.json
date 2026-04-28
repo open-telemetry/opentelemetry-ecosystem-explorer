@@ -17,15 +17,10 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "axw",
-        "constanca-m"
-      ]
+      "active": ["axw", "constanca-m"]
     },
     "stability": {
-      "development": [
-        "logs"
-      ]
+      "development": ["logs"]
     }
   },
   "type": "googlecloudpubsubpush",

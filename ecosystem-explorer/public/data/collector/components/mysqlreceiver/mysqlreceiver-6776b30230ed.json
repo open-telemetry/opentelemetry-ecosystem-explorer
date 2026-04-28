@@ -2,10 +2,7 @@
   "attributes": {
     "buffer_pool_data": {
       "description": "The status of buffer pool data.",
-      "enum": [
-        "clean",
-        "dirty"
-      ],
+      "enum": ["clean", "dirty"],
       "name_override": "status",
       "type": "string"
     },
@@ -25,22 +22,13 @@
     },
     "buffer_pool_pages": {
       "description": "The buffer pool pages types.",
-      "enum": [
-        "data",
-        "free",
-        "misc",
-        "total"
-      ],
+      "enum": ["data", "free", "misc", "total"],
       "name_override": "kind",
       "type": "string"
     },
     "cache_status": {
       "description": "The status of cache access.",
-      "enum": [
-        "hit",
-        "miss",
-        "overflow"
-      ],
+      "enum": ["hit", "miss", "overflow"],
       "name_override": "status",
       "type": "string"
     },
@@ -54,14 +42,7 @@
     },
     "command": {
       "description": "The command types.",
-      "enum": [
-        "delete",
-        "delete_multi",
-        "insert",
-        "select",
-        "update",
-        "update_multi"
-      ],
+      "enum": ["delete", "delete_multi", "insert", "select", "update", "update_multi"],
       "type": "string"
     },
     "connection_error": {
@@ -82,11 +63,7 @@
     },
     "connection_status": {
       "description": "The connection status.",
-      "enum": [
-        "accepted",
-        "closed",
-        "rejected"
-      ],
+      "enum": ["accepted", "closed", "rejected"],
       "name_override": "status",
       "type": "string"
     },
@@ -100,9 +77,7 @@
     },
     "db.system.name": {
       "description": "The name of the database system.",
-      "enum": [
-        "mysql"
-      ],
+      "enum": ["mysql"],
       "type": "string"
     },
     "digest": {
@@ -115,19 +90,13 @@
     },
     "direction": {
       "description": "The name of the transmission direction.",
-      "enum": [
-        "received",
-        "sent"
-      ],
+      "enum": ["received", "sent"],
       "name_override": "kind",
       "type": "string"
     },
     "double_writes": {
       "description": "The doublewrite types.",
-      "enum": [
-        "pages_written",
-        "writes"
-      ],
+      "enum": ["pages_written", "writes"],
       "name_override": "kind",
       "type": "string"
     },
@@ -180,44 +149,25 @@
     },
     "io_waits_operations": {
       "description": "The io_waits operation type.",
-      "enum": [
-        "delete",
-        "fetch",
-        "insert",
-        "update"
-      ],
+      "enum": ["delete", "fetch", "insert", "update"],
       "name_override": "operation",
       "type": "string"
     },
     "join_kind": {
       "description": "The kind of join.",
-      "enum": [
-        "full",
-        "full_range",
-        "range",
-        "range_check",
-        "scan"
-      ],
+      "enum": ["full", "full_range", "range", "range_check", "scan"],
       "name_override": "kind",
       "type": "string"
     },
     "locks": {
       "description": "The table locks type.",
-      "enum": [
-        "immediate",
-        "waited"
-      ],
+      "enum": ["immediate", "waited"],
       "name_override": "kind",
       "type": "string"
     },
     "log_operations": {
       "description": "The log operation types. 'fsyncs' aren't available in MariaDB 10.8 or later.",
-      "enum": [
-        "fsyncs",
-        "waits",
-        "write_requests",
-        "writes"
-      ],
+      "enum": ["fsyncs", "waits", "write_requests", "writes"],
       "name_override": "operation",
       "type": "string"
     },
@@ -267,10 +217,7 @@
     },
     "mysqlx_threads": {
       "description": "The worker thread count kind.",
-      "enum": [
-        "active",
-        "available"
-      ],
+      "enum": ["active", "available"],
       "name_override": "kind",
       "type": "string"
     },
@@ -284,76 +231,43 @@
     },
     "opened_resources": {
       "description": "The kind of the resource.",
-      "enum": [
-        "file",
-        "table",
-        "table_definition"
-      ],
+      "enum": ["file", "table", "table_definition"],
       "name_override": "kind",
       "type": "string"
     },
     "operations": {
       "description": "The operation types.",
-      "enum": [
-        "fsyncs",
-        "reads",
-        "writes"
-      ],
+      "enum": ["fsyncs", "reads", "writes"],
       "name_override": "operation",
       "type": "string"
     },
     "page_operations": {
       "description": "The page operation types.",
-      "enum": [
-        "created",
-        "read",
-        "written"
-      ],
+      "enum": ["created", "read", "written"],
       "name_override": "operation",
       "type": "string"
     },
     "prepared_statements_command": {
       "description": "The prepare statement command types.",
-      "enum": [
-        "close",
-        "execute",
-        "fetch",
-        "prepare",
-        "reset",
-        "send_long_data"
-      ],
+      "enum": ["close", "execute", "fetch", "prepare", "reset", "send_long_data"],
       "name_override": "command",
       "type": "string"
     },
     "read_lock_type": {
       "description": "Read operation types.",
-      "enum": [
-        "external",
-        "high_priority",
-        "no_insert",
-        "normal",
-        "with_shared_locks"
-      ],
+      "enum": ["external", "high_priority", "no_insert", "normal", "with_shared_locks"],
       "name_override": "kind",
       "type": "string"
     },
     "row_locks": {
       "description": "The row lock type.",
-      "enum": [
-        "time",
-        "waits"
-      ],
+      "enum": ["time", "waits"],
       "name_override": "kind",
       "type": "string"
     },
     "row_operations": {
       "description": "The row operation type.",
-      "enum": [
-        "deleted",
-        "inserted",
-        "read",
-        "updated"
-      ],
+      "enum": ["deleted", "inserted", "read", "updated"],
       "name_override": "operation",
       "type": "string"
     },
@@ -363,12 +277,7 @@
     },
     "sorts": {
       "description": "The sort count type.",
-      "enum": [
-        "merge_passes",
-        "range",
-        "rows",
-        "scan"
-      ],
+      "enum": ["merge_passes", "range", "rows", "scan"],
       "name_override": "kind",
       "type": "string"
     },
@@ -379,31 +288,19 @@
     },
     "table_size_type": {
       "description": "The table size types.",
-      "enum": [
-        "data",
-        "index"
-      ],
+      "enum": ["data", "index"],
       "name_override": "kind",
       "type": "string"
     },
     "threads": {
       "description": "The thread count type.",
-      "enum": [
-        "cached",
-        "connected",
-        "created",
-        "running"
-      ],
+      "enum": ["cached", "connected", "created", "running"],
       "name_override": "kind",
       "type": "string"
     },
     "tmp_resource": {
       "description": "The kind of temporary resources.",
-      "enum": [
-        "disk_tables",
-        "files",
-        "tables"
-      ],
+      "enum": ["disk_tables", "files", "tables"],
       "name_override": "resource",
       "type": "string"
     },
@@ -413,13 +310,7 @@
     },
     "write_lock_type": {
       "description": "Write operation types.",
-      "enum": [
-        "allow_write",
-        "concurrent_insert",
-        "external",
-        "low_priority",
-        "normal"
-      ],
+      "enum": ["allow_write", "concurrent_insert", "external", "low_priority", "normal"],
       "name_override": "kind",
       "type": "string"
     }
@@ -428,9 +319,7 @@
   "distribution": "contrib",
   "metrics": {
     "mysql.buffer_pool.data_pages": {
-      "attributes": [
-        "buffer_pool_data"
-      ],
+      "attributes": ["buffer_pool_data"],
       "description": "The number of data pages in the InnoDB buffer pool.",
       "enabled": true,
       "stability": "development",
@@ -454,9 +343,7 @@
       "unit": "By"
     },
     "mysql.buffer_pool.operations": {
-      "attributes": [
-        "buffer_pool_operations"
-      ],
+      "attributes": ["buffer_pool_operations"],
       "description": "The number of operations on the InnoDB buffer pool.",
       "enabled": true,
       "stability": "development",
@@ -481,9 +368,7 @@
       "unit": "1"
     },
     "mysql.buffer_pool.pages": {
-      "attributes": [
-        "buffer_pool_pages"
-      ],
+      "attributes": ["buffer_pool_pages"],
       "description": "The number of pages in the InnoDB buffer pool.",
       "enabled": true,
       "stability": "development",
@@ -496,9 +381,7 @@
       "unit": "1"
     },
     "mysql.buffer_pool.usage": {
-      "attributes": [
-        "buffer_pool_data"
-      ],
+      "attributes": ["buffer_pool_data"],
       "description": "The number of bytes in the InnoDB buffer pool.",
       "enabled": true,
       "stability": "development",
@@ -510,9 +393,7 @@
       "unit": "By"
     },
     "mysql.client.network.io": {
-      "attributes": [
-        "direction"
-      ],
+      "attributes": ["direction"],
       "description": "The number of transmitted bytes between server and clients.",
       "enabled": false,
       "stability": "development",
@@ -525,9 +406,7 @@
       "unit": "By"
     },
     "mysql.commands": {
-      "attributes": [
-        "command"
-      ],
+      "attributes": ["command"],
       "description": "The number of times each type of command has been executed.",
       "enabled": false,
       "stability": "development",
@@ -552,9 +431,7 @@
       "unit": "1"
     },
     "mysql.connection.errors": {
-      "attributes": [
-        "connection_error"
-      ],
+      "attributes": ["connection_error"],
       "description": "Errors that occur during the client connection process.",
       "enabled": false,
       "stability": "development",
@@ -567,9 +444,7 @@
       "unit": "1"
     },
     "mysql.double_writes": {
-      "attributes": [
-        "double_writes"
-      ],
+      "attributes": ["double_writes"],
       "description": "The number of writes to the InnoDB doublewrite buffer.",
       "enabled": true,
       "stability": "development",
@@ -582,9 +457,7 @@
       "unit": "1"
     },
     "mysql.handlers": {
-      "attributes": [
-        "handler"
-      ],
+      "attributes": ["handler"],
       "description": "The number of requests to various MySQL handlers.",
       "enabled": true,
       "stability": "development",
@@ -597,12 +470,7 @@
       "unit": "1"
     },
     "mysql.index.io.wait.count": {
-      "attributes": [
-        "index_name",
-        "io_waits_operations",
-        "schema",
-        "table_name"
-      ],
+      "attributes": ["index_name", "io_waits_operations", "schema", "table_name"],
       "description": "The total count of I/O wait events for an index.",
       "enabled": true,
       "stability": "development",
@@ -614,12 +482,7 @@
       "unit": "1"
     },
     "mysql.index.io.wait.time": {
-      "attributes": [
-        "index_name",
-        "io_waits_operations",
-        "schema",
-        "table_name"
-      ],
+      "attributes": ["index_name", "io_waits_operations", "schema", "table_name"],
       "description": "The total time of I/O wait events for an index.",
       "enabled": true,
       "stability": "development",
@@ -631,9 +494,7 @@
       "unit": "ns"
     },
     "mysql.joins": {
-      "attributes": [
-        "join_kind"
-      ],
+      "attributes": ["join_kind"],
       "description": "The number of joins that perform table scans.",
       "enabled": false,
       "stability": "development",
@@ -646,9 +507,7 @@
       "unit": "1"
     },
     "mysql.locks": {
-      "attributes": [
-        "locks"
-      ],
+      "attributes": ["locks"],
       "description": "The number of MySQL locks.",
       "enabled": true,
       "stability": "development",
@@ -661,9 +520,7 @@
       "unit": "1"
     },
     "mysql.log_operations": {
-      "attributes": [
-        "log_operations"
-      ],
+      "attributes": ["log_operations"],
       "description": "The number of InnoDB log operations.",
       "enabled": true,
       "stability": "development",
@@ -688,9 +545,7 @@
       "unit": "1"
     },
     "mysql.mysqlx_connections": {
-      "attributes": [
-        "connection_status"
-      ],
+      "attributes": ["connection_status"],
       "description": "The number of mysqlx connections.",
       "enabled": true,
       "stability": "development",
@@ -703,9 +558,7 @@
       "unit": "1"
     },
     "mysql.mysqlx_worker_threads": {
-      "attributes": [
-        "mysqlx_threads"
-      ],
+      "attributes": ["mysqlx_threads"],
       "description": "The number of worker threads available.",
       "enabled": false,
       "stability": "development",
@@ -718,9 +571,7 @@
       "unit": "1"
     },
     "mysql.opened_resources": {
-      "attributes": [
-        "opened_resources"
-      ],
+      "attributes": ["opened_resources"],
       "description": "The number of opened resources.",
       "enabled": true,
       "stability": "development",
@@ -733,9 +584,7 @@
       "unit": "1"
     },
     "mysql.operations": {
-      "attributes": [
-        "operations"
-      ],
+      "attributes": ["operations"],
       "description": "The number of InnoDB operations.",
       "enabled": true,
       "stability": "development",
@@ -748,9 +597,7 @@
       "unit": "1"
     },
     "mysql.page_operations": {
-      "attributes": [
-        "page_operations"
-      ],
+      "attributes": ["page_operations"],
       "description": "The number of InnoDB page operations.",
       "enabled": true,
       "stability": "development",
@@ -775,9 +622,7 @@
       "unit": "By"
     },
     "mysql.prepared_statements": {
-      "attributes": [
-        "prepared_statements_command"
-      ],
+      "attributes": ["prepared_statements_command"],
       "description": "The number of times each type of prepared statement command has been issued.",
       "enabled": true,
       "stability": "development",
@@ -850,9 +695,7 @@
       "unit": "s"
     },
     "mysql.row_locks": {
-      "attributes": [
-        "row_locks"
-      ],
+      "attributes": ["row_locks"],
       "description": "The number of InnoDB row locks.",
       "enabled": true,
       "stability": "development",
@@ -865,9 +708,7 @@
       "unit": "1"
     },
     "mysql.row_operations": {
-      "attributes": [
-        "row_operations"
-      ],
+      "attributes": ["row_operations"],
       "description": "The number of InnoDB row operations.",
       "enabled": true,
       "stability": "development",
@@ -880,9 +721,7 @@
       "unit": "1"
     },
     "mysql.sorts": {
-      "attributes": [
-        "sorts"
-      ],
+      "attributes": ["sorts"],
       "description": "The number of MySQL sorts.",
       "enabled": true,
       "stability": "development",
@@ -895,12 +734,7 @@
       "unit": "1"
     },
     "mysql.statement_event.count": {
-      "attributes": [
-        "digest",
-        "digest_text",
-        "event_state",
-        "schema"
-      ],
+      "attributes": ["digest", "digest_text", "event_state", "schema"],
       "description": "Summary of current and recent statement events.",
       "enabled": false,
       "stability": "development",
@@ -912,11 +746,7 @@
       "unit": "1"
     },
     "mysql.statement_event.wait.time": {
-      "attributes": [
-        "digest",
-        "digest_text",
-        "schema"
-      ],
+      "attributes": ["digest", "digest_text", "schema"],
       "description": "The total wait time of the summarized timed events.",
       "enabled": false,
       "stability": "development",
@@ -928,10 +758,7 @@
       "unit": "ns"
     },
     "mysql.table.average_row_length": {
-      "attributes": [
-        "schema",
-        "table_name"
-      ],
+      "attributes": ["schema", "table_name"],
       "description": "The average row length in bytes for a given table.",
       "enabled": false,
       "stability": "development",
@@ -943,11 +770,7 @@
       "unit": "By"
     },
     "mysql.table.io.wait.count": {
-      "attributes": [
-        "io_waits_operations",
-        "schema",
-        "table_name"
-      ],
+      "attributes": ["io_waits_operations", "schema", "table_name"],
       "description": "The total count of I/O wait events for a table.",
       "enabled": true,
       "stability": "development",
@@ -959,11 +782,7 @@
       "unit": "1"
     },
     "mysql.table.io.wait.time": {
-      "attributes": [
-        "io_waits_operations",
-        "schema",
-        "table_name"
-      ],
+      "attributes": ["io_waits_operations", "schema", "table_name"],
       "description": "The total time of I/O wait events for a table.",
       "enabled": true,
       "stability": "development",
@@ -975,11 +794,7 @@
       "unit": "ns"
     },
     "mysql.table.lock_wait.read.count": {
-      "attributes": [
-        "read_lock_type",
-        "schema",
-        "table_name"
-      ],
+      "attributes": ["read_lock_type", "schema", "table_name"],
       "description": "The total table lock wait read events.",
       "enabled": false,
       "stability": "development",
@@ -991,11 +806,7 @@
       "unit": "1"
     },
     "mysql.table.lock_wait.read.time": {
-      "attributes": [
-        "read_lock_type",
-        "schema",
-        "table_name"
-      ],
+      "attributes": ["read_lock_type", "schema", "table_name"],
       "description": "The total table lock wait read events times.",
       "enabled": false,
       "stability": "development",
@@ -1007,11 +818,7 @@
       "unit": "ns"
     },
     "mysql.table.lock_wait.write.count": {
-      "attributes": [
-        "schema",
-        "table_name",
-        "write_lock_type"
-      ],
+      "attributes": ["schema", "table_name", "write_lock_type"],
       "description": "The total table lock wait write events.",
       "enabled": false,
       "stability": "development",
@@ -1023,11 +830,7 @@
       "unit": "1"
     },
     "mysql.table.lock_wait.write.time": {
-      "attributes": [
-        "schema",
-        "table_name",
-        "write_lock_type"
-      ],
+      "attributes": ["schema", "table_name", "write_lock_type"],
       "description": "The total table lock wait write events times.",
       "enabled": false,
       "stability": "development",
@@ -1039,10 +842,7 @@
       "unit": "ns"
     },
     "mysql.table.rows": {
-      "attributes": [
-        "schema",
-        "table_name"
-      ],
+      "attributes": ["schema", "table_name"],
       "description": "The number of rows for a given table.",
       "enabled": false,
       "stability": "development",
@@ -1054,11 +854,7 @@
       "unit": "1"
     },
     "mysql.table.size": {
-      "attributes": [
-        "schema",
-        "table_name",
-        "table_size_type"
-      ],
+      "attributes": ["schema", "table_name", "table_size_type"],
       "description": "The table size in bytes for a given table.",
       "enabled": false,
       "stability": "development",
@@ -1070,9 +866,7 @@
       "unit": "By"
     },
     "mysql.table_open_cache": {
-      "attributes": [
-        "cache_status"
-      ],
+      "attributes": ["cache_status"],
       "description": "The number of hits, misses or overflows for open tables cache lookups.",
       "enabled": false,
       "stability": "development",
@@ -1085,9 +879,7 @@
       "unit": "1"
     },
     "mysql.threads": {
-      "attributes": [
-        "threads"
-      ],
+      "attributes": ["threads"],
       "description": "The state of MySQL threads.",
       "enabled": true,
       "stability": "development",
@@ -1100,9 +892,7 @@
       "unit": "1"
     },
     "mysql.tmp_resources": {
-      "attributes": [
-        "tmp_resource"
-      ],
+      "attributes": ["tmp_resource"],
       "description": "The number of created temporary resources.",
       "enabled": true,
       "stability": "development",
@@ -1138,25 +928,14 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "antonblock",
-        "ishleenk17"
-      ],
-      "emeritus": [
-        "djaglowski"
-      ],
+      "active": ["antonblock", "ishleenk17"],
+      "emeritus": ["djaglowski"],
       "seeking_new": true
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "metrics"
-      ],
-      "development": [
-        "logs"
-      ]
+      "beta": ["metrics"],
+      "development": ["logs"]
     }
   },
   "type": "mysql",

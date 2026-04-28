@@ -1,9 +1,7 @@
 {
   "description": "This instrumentation provides context propagation for Pekko actors, it does not emit any telemetry on its own.",
   "display_name": "Pekko Actors",
-  "features": [
-    "CONTEXT_PROPAGATION"
-  ],
+  "features": ["CONTEXT_PROPAGATION"],
   "has_javaagent": true,
   "javaagent_target_versions": [
     "org.apache.pekko:pekko-actor_3:[1.0,)",
@@ -16,7 +14,5 @@
     "name": "io.opentelemetry.pekko-actor-1.0"
   },
   "source_path": "instrumentation/pekko/pekko-actor-1.0",
-  "tags": [
-    "pekko"
-  ]
+  "tags": ["pekko"]
 }

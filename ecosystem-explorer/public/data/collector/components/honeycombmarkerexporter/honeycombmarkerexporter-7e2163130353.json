@@ -6,18 +6,11 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "TylerHelmuth",
-        "fchikwekwe"
-      ]
+      "active": ["TylerHelmuth", "fchikwekwe"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "logs"
-      ]
+      "alpha": ["logs"]
     }
   },
   "type": "honeycombmarker",

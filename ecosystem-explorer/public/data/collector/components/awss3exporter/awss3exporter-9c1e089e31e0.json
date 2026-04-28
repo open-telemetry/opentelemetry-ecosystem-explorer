@@ -6,21 +6,11 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "atoulme",
-        "pdelewski",
-        "Erog38"
-      ]
+      "active": ["atoulme", "pdelewski", "Erog38"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "logs",
-        "metrics",
-        "traces"
-      ]
+      "alpha": ["logs", "metrics", "traces"]
     }
   },
   "type": "awss3",

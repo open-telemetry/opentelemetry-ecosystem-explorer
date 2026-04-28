@@ -9,17 +9,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "fatsheep9146"
-      ]
+      "active": ["fatsheep9146"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "metrics"
-      ]
+      "beta": ["metrics"]
     }
   },
   "type": "receiver"

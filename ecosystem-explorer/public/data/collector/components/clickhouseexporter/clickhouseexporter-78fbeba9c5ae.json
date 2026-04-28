@@ -7,26 +7,13 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "hanjm",
-        "Frapschen",
-        "SpencerTorres"
-      ],
-      "emeritus": [
-        "dmitryax"
-      ]
+      "active": ["hanjm", "Frapschen", "SpencerTorres"],
+      "emeritus": ["dmitryax"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "metrics"
-      ],
-      "beta": [
-        "logs",
-        "traces"
-      ]
+      "alpha": ["metrics"],
+      "beta": ["logs", "traces"]
     }
   },
   "type": "clickhouse",

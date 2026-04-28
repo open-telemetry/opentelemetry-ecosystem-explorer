@@ -11,9 +11,7 @@
   "description": "This instrumentation enables spans for Hibernate ORM operations.",
   "display_name": "Hibernate",
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "org.hibernate:hibernate-core:[3.3.0.GA,4.0.0.Final)"
-  ],
+  "javaagent_target_versions": ["org.hibernate:hibernate-core:[3.3.0.GA,4.0.0.Final)"],
   "library_link": "https://hibernate.org/",
   "name": "hibernate-3.3",
   "scope": {

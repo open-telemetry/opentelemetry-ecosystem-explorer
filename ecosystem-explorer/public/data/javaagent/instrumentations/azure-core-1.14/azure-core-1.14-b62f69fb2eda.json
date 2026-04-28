@@ -1,21 +1,14 @@
 {
   "description": "This instrumentation enables context propagation for the Azure Core library, it does not emit any telemetry on its own.",
   "display_name": "Azure Core",
-  "features": [
-    "CONTEXT_PROPAGATION",
-    "AUTO_INSTRUMENTATION_SHIM"
-  ],
+  "features": ["CONTEXT_PROPAGATION", "AUTO_INSTRUMENTATION_SHIM"],
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "com.azure:azure-core:[1.14.0,1.19.0)"
-  ],
+  "javaagent_target_versions": ["com.azure:azure-core:[1.14.0,1.19.0)"],
   "library_link": "https://learn.microsoft.com/en-us/java/api/overview/azure/core-readme?view=azure-java-stable",
   "name": "azure-core-1.14",
   "scope": {
     "name": "io.opentelemetry.azure-core-1.14"
   },
   "source_path": "instrumentation/azure-core/azure-core-1.14",
-  "tags": [
-    "azure"
-  ]
+  "tags": ["azure"]
 }

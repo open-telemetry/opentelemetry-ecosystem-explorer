@@ -6,16 +6,11 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "sokoide",
-        "mcube8"
-      ]
+      "active": ["sokoide", "mcube8"]
     },
     "distributions": [],
     "stability": {
-      "development": [
-        "traces"
-      ]
+      "development": ["traces"]
     }
   },
   "type": "alertmanager",

@@ -17,22 +17,15 @@
   "display_name": "Lettuce",
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": [
-    "io.lettuce:lettuce-core:[5.1.0.RELEASE,)"
-  ],
+  "javaagent_target_versions": ["io.lettuce:lettuce-core:[5.1.0.RELEASE,)"],
   "library_link": "https://github.com/redis/lettuce",
   "name": "lettuce-5.1",
   "scope": {
     "name": "io.opentelemetry.lettuce-5.1"
   },
-  "semantic_conventions": [
-    "DATABASE_CLIENT_SPANS",
-    "DATABASE_CLIENT_METRICS"
-  ],
+  "semantic_conventions": ["DATABASE_CLIENT_SPANS", "DATABASE_CLIENT_METRICS"],
   "source_path": "instrumentation/lettuce/lettuce-5.1",
-  "tags": [
-    "lettuce"
-  ],
+  "tags": ["lettuce"],
   "telemetry": [
     {
       "spans": [

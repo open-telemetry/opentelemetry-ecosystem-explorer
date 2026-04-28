@@ -36,12 +36,12 @@ export function CollectorDetailPage() {
       <PageContainer>
         <div className="flex min-h-[400px] items-center justify-center">
           <div className="text-center">
-            <div className="inline-flex rounded-full p-4 animate-pulse shadow-[0_0_60px_hsl(var(--primary-hsl)/0.2)]">
-              <Loader2 className="h-12 w-12 animate-spin text-primary" aria-hidden="true" />
+            <div className="inline-flex animate-pulse rounded-full p-4 shadow-[0_0_60px_hsl(var(--primary-hsl)/0.2)]">
+              <Loader2 className="text-primary h-12 w-12 animate-spin" aria-hidden="true" />
             </div>
             <div className="mt-6 space-y-2">
-              <div className="text-lg font-medium text-foreground">Loading component...</div>
-              <div className="text-sm text-muted-foreground">This may take a moment</div>
+              <div className="text-foreground text-lg font-medium">Loading component...</div>
+              <div className="text-muted-foreground text-sm">This may take a moment</div>
             </div>
           </div>
         </div>
@@ -69,7 +69,7 @@ export function CollectorDetailPage() {
                 </p>
                 <button
                   onClick={() => navigate(-1)}
-                  className="text-sm font-medium text-red-600 dark:text-red-400 hover:underline"
+                  className="text-sm font-medium text-red-600 hover:underline dark:text-red-400"
                 >
                   Go back
                 </button>
@@ -90,8 +90,8 @@ export function CollectorDetailPage() {
       <BackButton />
 
       <div className="mt-3 space-y-6">
-        <header className="relative overflow-hidden rounded-lg border border-border/60 bg-card/80 p-8">
-          <div className="absolute inset-0 bg-gradient-radial from-primary/5 via-secondary/2 to-transparent opacity-50" />
+        <header className="border-border/60 bg-card/80 relative overflow-hidden rounded-lg border p-8">
+          <div className="bg-gradient-radial from-primary/5 via-secondary/2 absolute inset-0 to-transparent opacity-50" />
 
           <div className="absolute inset-0 opacity-5">
             <div className="h-full w-full bg-[linear-gradient(hsl(var(--border-hsl))_1px,transparent_1px),linear-gradient(90deg,hsl(var(--border-hsl))_1px,transparent_1px)] bg-[size:32px_32px]" />
@@ -101,20 +101,20 @@ export function CollectorDetailPage() {
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 space-y-3">
                 <div className="flex items-center gap-2">
-                  <GlowBadge variant="info" className="uppercase tracking-wider text-[10px]">
+                  <GlowBadge variant="info" className="text-[10px] tracking-wider uppercase">
                     {component.type}
                   </GlowBadge>
-                  <GlowBadge variant="muted" className="uppercase tracking-wider text-[10px]">
+                  <GlowBadge variant="muted" className="text-[10px] tracking-wider uppercase">
                     {component.distribution}
                   </GlowBadge>
                 </div>
-                <h1 className="text-3xl font-bold leading-tight md:text-4xl">
-                  <span className="bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
+                <h1 className="text-3xl leading-tight font-bold md:text-4xl">
+                  <span className="from-secondary to-primary bg-gradient-to-r bg-clip-text text-transparent">
                     {component.display_name || component.name}
                   </span>
                 </h1>
                 <p className="text-sm">
-                  <code className="rounded bg-muted px-2 py-1 text-foreground/80">
+                  <code className="bg-muted text-foreground/80 rounded px-2 py-1">
                     {component.name}
                   </code>
                 </p>
@@ -122,14 +122,14 @@ export function CollectorDetailPage() {
             </div>
 
             {component.description && (
-              <p className="max-w-4xl text-base leading-relaxed text-muted-foreground">
+              <p className="text-muted-foreground max-w-4xl text-base leading-relaxed">
                 {component.description}
               </p>
             )}
           </div>
         </header>
 
-        <div className="relative overflow-hidden rounded-lg border border-border/60 bg-card/80">
+        <div className="border-border/60 bg-card/80 relative overflow-hidden rounded-lg border">
           <Tabs defaultValue="details" className="relative z-10">
             <div className="px-6 pt-4">
               <SegmentedTabList
@@ -158,23 +158,23 @@ export function CollectorDetailPage() {
               <div className="grid gap-6 md:grid-cols-2">
                 <DetailCard withGrid>
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b border-border/50 pb-2 mb-4">
+                    <h3 className="border-border/50 mb-4 border-b pb-2 text-lg font-semibold">
                       Component Info
                     </h3>
                     <div>
-                      <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      <h4 className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
                         Type
                       </h4>
                       <p className="mt-1 text-sm font-medium">{component.type}</p>
                     </div>
                     <div>
-                      <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      <h4 className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
                         Version
                       </h4>
                       <p className="mt-1 text-sm font-medium">{version}</p>
                     </div>
                     <div>
-                      <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      <h4 className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
                         Distribution
                       </h4>
                       <p className="mt-1 text-sm font-medium capitalize">
@@ -186,35 +186,35 @@ export function CollectorDetailPage() {
 
                 <DetailCard>
                   <div className="space-y-4">
-                    <h3 className="font-semibold text-lg border-b border-border/50 pb-2 mb-4">
+                    <h3 className="border-border/50 mb-4 border-b pb-2 text-lg font-semibold">
                       Links & Resources
                     </h3>
                     <a
                       href={repositoryUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-3 rounded-lg border border-border/50 hover:bg-muted/50 transition-colors group"
+                      className="border-border/50 hover:bg-muted/50 group flex items-center gap-3 rounded-lg border p-3 transition-colors"
                     >
-                      <GitHubIcon className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
+                      <GitHubIcon className="text-primary h-5 w-5 transition-transform group-hover:scale-110" />
                       <div>
                         <p className="text-sm font-medium">Source Code</p>
-                        <p className="text-xs text-muted-foreground">View on GitHub</p>
+                        <p className="text-muted-foreground text-xs">View on GitHub</p>
                       </div>
-                      <ExternalLink className="ml-auto h-4 w-4 text-muted-foreground" />
+                      <ExternalLink className="text-muted-foreground ml-auto h-4 w-4" />
                     </a>
 
                     <a
                       href={`${repositoryUrl}/tree/main/${component.type}/${component.name}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-3 rounded-lg border border-border/50 hover:bg-muted/50 transition-colors group"
+                      className="border-border/50 hover:bg-muted/50 group flex items-center gap-3 rounded-lg border p-3 transition-colors"
                     >
-                      <Code className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
+                      <Code className="text-primary h-5 w-5 transition-transform group-hover:scale-110" />
                       <div>
                         <p className="text-sm font-medium">Component Documentation</p>
-                        <p className="text-xs text-muted-foreground">Read the README</p>
+                        <p className="text-muted-foreground text-xs">Read the README</p>
                       </div>
-                      <ExternalLink className="ml-auto h-4 w-4 text-muted-foreground" />
+                      <ExternalLink className="text-muted-foreground ml-auto h-4 w-4" />
                     </a>
                   </div>
                 </DetailCard>
@@ -241,7 +241,7 @@ export function CollectorDetailPage() {
                             {signals.map((signal) => (
                               <span
                                 key={signal}
-                                className="text-sm px-2 py-1 rounded bg-muted/50 font-medium"
+                                className="bg-muted/50 rounded px-2 py-1 text-sm font-medium"
                               >
                                 {signal}
                               </span>
@@ -262,9 +262,9 @@ export function CollectorDetailPage() {
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-12">
-                  <AlertCircle className="mx-auto h-12 w-12 text-muted-foreground/30" />
-                  <p className="mt-4 text-muted-foreground">
+                <div className="py-12 text-center">
+                  <AlertCircle className="text-muted-foreground/30 mx-auto h-12 w-12" />
+                  <p className="text-muted-foreground mt-4">
                     No stability information available for this version.
                   </p>
                 </div>
@@ -286,9 +286,9 @@ export function CollectorDetailPage() {
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-12">
-                  <Users className="mx-auto h-12 w-12 text-muted-foreground/30" />
-                  <p className="mt-4 text-muted-foreground">
+                <div className="py-12 text-center">
+                  <Users className="text-muted-foreground/30 mx-auto h-12 w-12" />
+                  <p className="text-muted-foreground mt-4">
                     No distribution information found in this registry entry.
                   </p>
                 </div>

@@ -9,19 +9,11 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "jacobmarble"
-      ]
+      "active": ["jacobmarble"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "logs",
-        "metrics",
-        "traces"
-      ]
+      "beta": ["logs", "metrics", "traces"]
     }
   },
   "type": "exporter"

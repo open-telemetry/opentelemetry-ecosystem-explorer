@@ -8,17 +8,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "jacobmarble"
-      ]
+      "active": ["jacobmarble"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "metrics"
-      ]
+      "beta": ["metrics"]
     }
   },
   "type": "influxdb",

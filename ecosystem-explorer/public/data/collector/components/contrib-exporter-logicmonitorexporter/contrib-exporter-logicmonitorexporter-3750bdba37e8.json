@@ -9,20 +9,11 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "bogdandrutu",
-        "khyatigandhi6",
-        "avadhut123pisal"
-      ]
+      "active": ["bogdandrutu", "khyatigandhi6", "avadhut123pisal"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "logs",
-        "traces"
-      ]
+      "alpha": ["logs", "traces"]
     }
   },
   "type": "exporter"

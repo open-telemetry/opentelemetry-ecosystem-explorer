@@ -7,22 +7,12 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "ag-ramachandran"
-      ],
-      "emeritus": [
-        "asaharn"
-      ]
+      "active": ["ag-ramachandran"],
+      "emeritus": ["asaharn"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "logs",
-        "metrics",
-        "traces"
-      ]
+      "beta": ["logs", "metrics", "traces"]
     }
   },
   "type": "azuredataexplorer",

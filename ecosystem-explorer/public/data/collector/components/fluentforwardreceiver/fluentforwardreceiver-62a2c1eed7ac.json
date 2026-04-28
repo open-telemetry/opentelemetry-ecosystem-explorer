@@ -8,18 +8,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "dmitryax"
-      ]
+      "active": ["dmitryax"]
     },
-    "distributions": [
-      "contrib",
-      "k8s"
-    ],
+    "distributions": ["contrib", "k8s"],
     "stability": {
-      "beta": [
-        "logs"
-      ]
+      "beta": ["logs"]
     }
   },
   "type": "fluentforward",

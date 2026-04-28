@@ -9,28 +9,13 @@
   "status": {
     "class": "processor",
     "codeowners": {
-      "active": [
-        "dmitryax",
-        "mx-psi",
-        "TylerHelmuth",
-        "iblancasa"
-      ],
-      "emeritus": [
-        "leonsp-ai"
-      ]
+      "active": ["dmitryax", "mx-psi", "TylerHelmuth", "iblancasa"],
+      "emeritus": ["leonsp-ai"]
     },
-    "distributions": [
-      "contrib",
-      "k8s"
-    ],
+    "distributions": ["contrib", "k8s"],
     "stability": {
-      "alpha": [
-        "logs",
-        "metrics"
-      ],
-      "beta": [
-        "traces"
-      ]
+      "alpha": ["logs", "metrics"],
+      "beta": ["traces"]
     }
   },
   "type": "processor"

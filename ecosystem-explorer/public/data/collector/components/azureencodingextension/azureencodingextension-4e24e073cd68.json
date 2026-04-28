@@ -8,15 +8,10 @@
   "status": {
     "class": "extension",
     "codeowners": {
-      "active": [
-        "axw",
-        "constanca-m"
-      ]
+      "active": ["axw", "constanca-m"]
     },
     "stability": {
-      "development": [
-        "extension"
-      ]
+      "development": ["extension"]
     }
   },
   "type": "azure_encoding",

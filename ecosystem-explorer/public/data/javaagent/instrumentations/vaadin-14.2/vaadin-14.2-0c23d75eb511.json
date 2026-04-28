@@ -12,7 +12,5 @@
     "name": "io.opentelemetry.vaadin-14.2"
   },
   "source_path": "instrumentation/vaadin-14.2",
-  "tags": [
-    "vaadin"
-  ]
+  "tags": ["vaadin"]
 }

@@ -9,17 +9,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "samiura"
-      ]
+      "active": ["samiura"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "deprecated": [
-        "metrics"
-      ]
+      "deprecated": ["metrics"]
     }
   },
   "type": "receiver"

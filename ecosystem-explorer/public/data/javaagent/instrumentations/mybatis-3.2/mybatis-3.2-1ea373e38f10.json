@@ -3,9 +3,7 @@
   "disabled_by_default": true,
   "display_name": "MyBatis",
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "org.mybatis:mybatis:[3.2.0,)"
-  ],
+  "javaagent_target_versions": ["org.mybatis:mybatis:[3.2.0,)"],
   "library_link": "https://mybatis.org/mybatis-3/",
   "name": "mybatis-3.2",
   "scope": {

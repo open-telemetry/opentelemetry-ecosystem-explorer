@@ -7,21 +7,12 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "atoulme",
-        "rogercoll"
-      ],
-      "emeritus": [
-        "rmfitzpatrick"
-      ]
+      "active": ["atoulme", "rogercoll"],
+      "emeritus": ["rmfitzpatrick"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "deprecated": [
-        "metrics"
-      ]
+      "deprecated": ["metrics"]
     }
   },
   "type": "jmx",

@@ -7,25 +7,12 @@
   "status": {
     "class": "connector",
     "codeowners": {
-      "active": [
-        "mx-psi",
-        "dineshg13",
-        "ankitpatel96",
-        "jade-guiton-dd",
-        "IbraheemA"
-      ],
-      "emeritus": [
-        "gbbr"
-      ]
+      "active": ["mx-psi", "dineshg13", "ankitpatel96", "jade-guiton-dd", "IbraheemA"],
+      "emeritus": ["gbbr"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "traces_to_metrics",
-        "traces_to_traces"
-      ]
+      "beta": ["traces_to_metrics", "traces_to_traces"]
     }
   },
   "type": "datadog",

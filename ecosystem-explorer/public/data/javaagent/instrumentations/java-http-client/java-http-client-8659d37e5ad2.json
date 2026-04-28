@@ -46,9 +46,7 @@
   "display_name": "Java HTTP Client",
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": [
-    "Java 11+"
-  ],
+  "javaagent_target_versions": ["Java 11+"],
   "library_link": "https://docs.oracle.com/en/java/javase/11/docs/api/java.net.http/java/net/http/package-summary.html",
   "minimum_java_version": 11,
   "name": "java-http-client",
@@ -56,10 +54,7 @@
     "name": "io.opentelemetry.java-http-client",
     "schema_url": "https://opentelemetry.io/schemas/1.37.0"
   },
-  "semantic_conventions": [
-    "HTTP_CLIENT_SPANS",
-    "HTTP_CLIENT_METRICS"
-  ],
+  "semantic_conventions": ["HTTP_CLIENT_SPANS", "HTTP_CLIENT_METRICS"],
   "source_path": "instrumentation/java-http-client",
   "telemetry": [
     {

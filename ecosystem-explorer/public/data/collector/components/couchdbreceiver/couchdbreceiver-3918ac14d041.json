@@ -2,15 +2,7 @@
   "attributes": {
     "http.method": {
       "description": "An HTTP request method.",
-      "enum": [
-        "COPY",
-        "DELETE",
-        "GET",
-        "HEAD",
-        "OPTIONS",
-        "POST",
-        "PUT"
-      ],
+      "enum": ["COPY", "DELETE", "GET", "HEAD", "OPTIONS", "POST", "PUT"],
       "type": "string"
     },
     "http.status_code": {
@@ -19,18 +11,12 @@
     },
     "operation": {
       "description": "The operation type.",
-      "enum": [
-        "reads",
-        "writes"
-      ],
+      "enum": ["reads", "writes"],
       "type": "string"
     },
     "view": {
       "description": "The view type.",
-      "enum": [
-        "temporary_view_reads",
-        "view_reads"
-      ],
+      "enum": ["temporary_view_reads", "view_reads"],
       "type": "string"
     }
   },
@@ -62,9 +48,7 @@
       "unit": "{databases}"
     },
     "couchdb.database.operations": {
-      "attributes": [
-        "operation"
-      ],
+      "attributes": ["operation"],
       "description": "The number of database operations.",
       "enabled": true,
       "stability": {
@@ -104,9 +88,7 @@
       "unit": "{requests}"
     },
     "couchdb.httpd.requests": {
-      "attributes": [
-        "http.method"
-      ],
+      "attributes": ["http.method"],
       "description": "The number of HTTP requests by method.",
       "enabled": true,
       "stability": {
@@ -120,9 +102,7 @@
       "unit": "{requests}"
     },
     "couchdb.httpd.responses": {
-      "attributes": [
-        "http.status_code"
-      ],
+      "attributes": ["http.status_code"],
       "description": "The number of each HTTP status code.",
       "enabled": true,
       "stability": {
@@ -136,9 +116,7 @@
       "unit": "{responses}"
     },
     "couchdb.httpd.views": {
-      "attributes": [
-        "view"
-      ],
+      "attributes": ["view"],
       "description": "The number of views read.",
       "enabled": true,
       "stability": {
@@ -163,21 +141,13 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "antonblock"
-      ],
-      "emeritus": [
-        "djaglowski"
-      ],
+      "active": ["antonblock"],
+      "emeritus": ["djaglowski"],
       "seeking_new": true
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "metrics"
-      ]
+      "beta": ["metrics"]
     }
   },
   "type": "couchdb",

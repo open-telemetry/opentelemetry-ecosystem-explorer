@@ -7,17 +7,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "Aneurysm9"
-      ]
+      "active": ["Aneurysm9"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "metrics"
-      ]
+      "beta": ["metrics"]
     }
   },
   "type": "awsecscontainermetrics",

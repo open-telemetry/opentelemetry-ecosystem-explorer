@@ -8,19 +8,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "yurishkuro"
-      ]
+      "active": ["yurishkuro"]
     },
-    "distributions": [
-      "contrib",
-      "core",
-      "k8s"
-    ],
+    "distributions": ["contrib", "core", "k8s"],
     "stability": {
-      "beta": [
-        "traces"
-      ]
+      "beta": ["traces"]
     }
   },
   "type": "jaeger",

@@ -6,18 +6,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "adrielp",
-        "atoulme"
-      ]
+      "active": ["adrielp", "atoulme"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "traces"
-      ]
+      "alpha": ["traces"]
     }
   },
   "type": "gitlab",

@@ -45,23 +45,16 @@
   ],
   "description": "This instrumentation enables HTTP server spans and HTTP server metrics for Apache Tomcat.",
   "display_name": "Apache Tomcat",
-  "features": [
-    "HTTP_ROUTE"
-  ],
+  "features": ["HTTP_ROUTE"],
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "org.apache.tomcat.embed:tomcat-embed-core:[7.0.4, 10)"
-  ],
+  "javaagent_target_versions": ["org.apache.tomcat.embed:tomcat-embed-core:[7.0.4, 10)"],
   "library_link": "https://tomcat.apache.org/",
   "name": "tomcat-7.0",
   "scope": {
     "name": "io.opentelemetry.tomcat-7.0",
     "schema_url": "https://opentelemetry.io/schemas/1.37.0"
   },
-  "semantic_conventions": [
-    "HTTP_SERVER_SPANS",
-    "HTTP_SERVER_METRICS"
-  ],
+  "semantic_conventions": ["HTTP_SERVER_SPANS", "HTTP_SERVER_METRICS"],
   "source_path": "instrumentation/tomcat/tomcat-7.0",
   "telemetry": [
     {

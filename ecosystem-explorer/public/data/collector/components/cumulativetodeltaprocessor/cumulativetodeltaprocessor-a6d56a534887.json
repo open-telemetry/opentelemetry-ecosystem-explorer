@@ -6,18 +6,11 @@
   "status": {
     "class": "processor",
     "codeowners": {
-      "active": [
-        "TylerHelmuth"
-      ]
+      "active": ["TylerHelmuth"]
     },
-    "distributions": [
-      "contrib",
-      "k8s"
-    ],
+    "distributions": ["contrib", "k8s"],
     "stability": {
-      "beta": [
-        "metrics"
-      ]
+      "beta": ["metrics"]
     }
   },
   "type": "cumulativetodelta",

@@ -6,16 +6,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "MovieStoreGuy",
-        "atoulme"
-      ]
+      "active": ["MovieStoreGuy", "atoulme"]
     },
     "distributions": [],
     "stability": {
-      "development": [
-        "profiles"
-      ]
+      "development": ["profiles"]
     }
   },
   "type": "pprof",

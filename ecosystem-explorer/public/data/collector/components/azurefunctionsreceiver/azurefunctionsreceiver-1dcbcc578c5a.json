@@ -7,16 +7,10 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "jmacd",
-        "MichaelKatsoulis",
-        "constanca-m"
-      ]
+      "active": ["jmacd", "MichaelKatsoulis", "constanca-m"]
     },
     "stability": {
-      "development": [
-        "logs"
-      ]
+      "development": ["logs"]
     }
   },
   "type": "azure_functions",

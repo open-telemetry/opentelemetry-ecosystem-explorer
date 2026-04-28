@@ -9,19 +9,12 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "atoulme"
-      ],
+      "active": ["atoulme"],
       "emeritus": null
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "logs",
-        "metrics"
-      ]
+      "beta": ["logs", "metrics"]
     }
   },
   "type": "receiver"

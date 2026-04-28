@@ -32,19 +32,14 @@
   "description": "This instrumentation enables HTTP server spans and HTTP server metrics for Grizzly.",
   "display_name": "Eclipse Grizzly",
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "org.glassfish.grizzly:grizzly-http:[2.3,)"
-  ],
+  "javaagent_target_versions": ["org.glassfish.grizzly:grizzly-http:[2.3,)"],
   "library_link": "https://javaee.github.io/grizzly/httpserverframework.html",
   "name": "grizzly-2.3",
   "scope": {
     "name": "io.opentelemetry.grizzly-2.3",
     "schema_url": "https://opentelemetry.io/schemas/1.37.0"
   },
-  "semantic_conventions": [
-    "HTTP_SERVER_SPANS",
-    "HTTP_SERVER_METRICS"
-  ],
+  "semantic_conventions": ["HTTP_SERVER_SPANS", "HTTP_SERVER_METRICS"],
   "source_path": "instrumentation/grizzly-2.3",
   "telemetry": [
     {

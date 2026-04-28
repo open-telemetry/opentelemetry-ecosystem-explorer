@@ -8,20 +8,12 @@
   "status": {
     "class": "extension",
     "codeowners": {
-      "active": [
-        "constanca-m"
-      ],
-      "emeritus": [
-        "alexvanboxel"
-      ]
+      "active": ["constanca-m"],
+      "emeritus": ["alexvanboxel"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "extension"
-      ]
+      "alpha": ["extension"]
     }
   },
   "type": "google_cloud_logentry_encoding",

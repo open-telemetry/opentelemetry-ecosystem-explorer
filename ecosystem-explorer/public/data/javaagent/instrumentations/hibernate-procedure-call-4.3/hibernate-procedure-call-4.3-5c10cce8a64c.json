@@ -11,18 +11,14 @@
   "description": "This instrumentation enables spans for Hibernate stored procedure calls.",
   "display_name": "Hibernate",
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "org.hibernate:hibernate-core:[4.3.0.Final,)"
-  ],
+  "javaagent_target_versions": ["org.hibernate:hibernate-core:[4.3.0.Final,)"],
   "library_link": "https://hibernate.org/",
   "name": "hibernate-procedure-call-4.3",
   "scope": {
     "name": "io.opentelemetry.hibernate-procedure-call-4.3"
   },
   "source_path": "instrumentation/hibernate/hibernate-procedure-call-4.3",
-  "tags": [
-    "hibernate"
-  ],
+  "tags": ["hibernate"],
   "telemetry": [
     {
       "spans": [

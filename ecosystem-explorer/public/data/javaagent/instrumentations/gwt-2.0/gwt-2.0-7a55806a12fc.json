@@ -11,9 +11,7 @@
   "scope": {
     "name": "io.opentelemetry.gwt-2.0"
   },
-  "semantic_conventions": [
-    "RPC_SERVER_SPANS"
-  ],
+  "semantic_conventions": ["RPC_SERVER_SPANS"],
   "source_path": "instrumentation/gwt-2.0",
   "telemetry": [
     {

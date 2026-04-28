@@ -2,19 +2,14 @@
   "description": "This instrumentation enables database client spans and database client metrics for OpenSearch REST clients.",
   "display_name": "OpenSearch REST Client",
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "org.opensearch.client:opensearch-rest-client:[1.0,3.0)"
-  ],
+  "javaagent_target_versions": ["org.opensearch.client:opensearch-rest-client:[1.0,3.0)"],
   "library_link": "https://docs.opensearch.org/latest/clients/",
   "minimum_java_version": 11,
   "name": "opensearch-rest-1.0",
   "scope": {
     "name": "io.opentelemetry.opensearch-rest-1.0"
   },
-  "semantic_conventions": [
-    "DATABASE_CLIENT_SPANS",
-    "DATABASE_CLIENT_METRICS"
-  ],
+  "semantic_conventions": ["DATABASE_CLIENT_SPANS", "DATABASE_CLIENT_METRICS"],
   "source_path": "instrumentation/opensearch/opensearch-rest-1.0",
   "telemetry": [
     {

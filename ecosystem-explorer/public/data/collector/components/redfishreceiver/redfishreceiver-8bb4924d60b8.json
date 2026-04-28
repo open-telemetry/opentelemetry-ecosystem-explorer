@@ -142,11 +142,7 @@
       "unit": "{statusstate}"
     },
     "fan.reading": {
-      "attributes": [
-        "chassis.id",
-        "fan.name",
-        "fan.reading_units"
-      ],
+      "attributes": ["chassis.id", "fan.name", "fan.reading_units"],
       "description": "Measures the reading of a chassis fan.",
       "enabled": true,
       "gauge": {
@@ -156,10 +152,7 @@
       "unit": "{}"
     },
     "fan.status.health": {
-      "attributes": [
-        "chassis.id",
-        "fan.name"
-      ],
+      "attributes": ["chassis.id", "fan.name"],
       "description": "Measures the health of a chassis fan (-1 unknown, 0 critical, 1 ok, 2 warning).",
       "enabled": true,
       "gauge": {
@@ -169,10 +162,7 @@
       "unit": "{statushealth}"
     },
     "fan.status.state": {
-      "attributes": [
-        "chassis.id",
-        "fan.name"
-      ],
+      "attributes": ["chassis.id", "fan.name"],
       "description": "Measures the state of a chassis fan (-1 unknown, 0 disabled, 1 enabled).",
       "enabled": true,
       "gauge": {
@@ -242,10 +232,7 @@
       "unit": "{statusstate}"
     },
     "temperature.reading": {
-      "attributes": [
-        "chassis.id",
-        "temperature.name"
-      ],
+      "attributes": ["chassis.id", "temperature.name"],
       "description": "Measures the reading of a chassis temperature.",
       "enabled": true,
       "gauge": {
@@ -255,10 +242,7 @@
       "unit": "\u00b0C"
     },
     "temperature.status.health": {
-      "attributes": [
-        "chassis.id",
-        "temperature.name"
-      ],
+      "attributes": ["chassis.id", "temperature.name"],
       "description": "Measures the health of a chassis temperature (-1 unknown, 0 critical, 1 ok, 2 warning).",
       "enabled": true,
       "gauge": {
@@ -268,10 +252,7 @@
       "unit": "{statushealth}"
     },
     "temperature.status.state": {
-      "attributes": [
-        "chassis.id",
-        "temperature.name"
-      ],
+      "attributes": ["chassis.id", "temperature.name"],
       "description": "Measures the state of a chassis temperature (-1 unknown, 0 disabled, 1 enabled).",
       "enabled": true,
       "gauge": {
@@ -296,14 +277,10 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "steven-freed"
-      ]
+      "active": ["steven-freed"]
     },
     "stability": {
-      "development": [
-        "metrics"
-      ]
+      "development": ["metrics"]
     }
   },
   "type": "redfish",

@@ -10,9 +10,7 @@
     "class": "pkg",
     "codeowners": null,
     "stability": {
-      "alpha": [
-        "profiles"
-      ]
+      "alpha": ["profiles"]
     }
   },
   "type": "extension"

@@ -27,27 +27,18 @@
   ],
   "description": "This instrumentation enables HTTP server spans and HTTP server metrics for Jetty.",
   "display_name": "Eclipse Jetty",
-  "features": [
-    "CONTEXT_PROPAGATION"
-  ],
+  "features": ["CONTEXT_PROPAGATION"],
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "org.eclipse.jetty:jetty-server:[8.0.0.v20110901,11)"
-  ],
+  "javaagent_target_versions": ["org.eclipse.jetty:jetty-server:[8.0.0.v20110901,11)"],
   "library_link": "https://eclipse.dev/jetty/",
   "name": "jetty-8.0",
   "scope": {
     "name": "io.opentelemetry.jetty-8.0",
     "schema_url": "https://opentelemetry.io/schemas/1.37.0"
   },
-  "semantic_conventions": [
-    "HTTP_SERVER_SPANS",
-    "HTTP_SERVER_METRICS"
-  ],
+  "semantic_conventions": ["HTTP_SERVER_SPANS", "HTTP_SERVER_METRICS"],
   "source_path": "instrumentation/jetty/jetty-8.0",
-  "tags": [
-    "jetty"
-  ],
+  "tags": ["jetty"],
   "telemetry": [
     {
       "metrics": [

@@ -7,18 +7,11 @@
   "status": {
     "class": "processor",
     "codeowners": {
-      "active": [
-        "dmitryax"
-      ]
+      "active": ["dmitryax"]
     },
-    "distributions": [
-      "contrib",
-      "k8s"
-    ],
+    "distributions": ["contrib", "k8s"],
     "stability": {
-      "beta": [
-        "metrics"
-      ]
+      "beta": ["metrics"]
     }
   },
   "type": "metricstransform",

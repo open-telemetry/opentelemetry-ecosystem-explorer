@@ -6,15 +6,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "atoulme"
-      ]
+      "active": ["atoulme"]
     },
     "distributions": [],
     "stability": {
-      "alpha": [
-        "metrics"
-      ]
+      "alpha": ["metrics"]
     }
   },
   "type": "yanggrpc",

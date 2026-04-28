@@ -7,19 +7,11 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "bertysentry",
-        "NassimBtk",
-        "MovieStoreGuy"
-      ]
+      "active": ["bertysentry", "NassimBtk", "MovieStoreGuy"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "metrics"
-      ]
+      "alpha": ["metrics"]
     }
   },
   "type": "bmchelix",

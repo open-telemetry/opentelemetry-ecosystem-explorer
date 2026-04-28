@@ -7,20 +7,13 @@
   "status": {
     "class": "extension",
     "codeowners": {
-      "active": [
-        "evan-bradley"
-      ],
-      "emeritus": [
-        "jpkrohling",
-        "mwear"
-      ],
+      "active": ["evan-bradley"],
+      "emeritus": ["jpkrohling", "mwear"],
       "seeking_new": true
     },
     "distributions": [],
     "stability": {
-      "development": [
-        "extension"
-      ]
+      "development": ["extension"]
     }
   },
   "type": "healthcheckv2",

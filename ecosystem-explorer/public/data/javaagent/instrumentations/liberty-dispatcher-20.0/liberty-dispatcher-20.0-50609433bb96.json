@@ -8,7 +8,5 @@
     "name": "io.opentelemetry.liberty-dispatcher-20.0"
   },
   "source_path": "instrumentation/liberty/liberty-dispatcher-20.0",
-  "tags": [
-    "liberty"
-  ]
+  "tags": ["liberty"]
 }

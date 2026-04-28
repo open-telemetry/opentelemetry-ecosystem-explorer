@@ -7,15 +7,11 @@
   "status": {
     "class": "processor",
     "codeowners": {
-      "active": [
-        "dehaansa"
-      ]
+      "active": ["dehaansa"]
     },
     "distributions": [],
     "stability": {
-      "development": [
-        "logs"
-      ]
+      "development": ["logs"]
     }
   },
   "type": "logstransform",

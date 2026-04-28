@@ -7,23 +7,12 @@
   "status": {
     "class": "processor",
     "codeowners": {
-      "active": [
-        "songy23",
-        "IbraheemA",
-        "mx-psi",
-        "dineshg13",
-        "jade-guiton-dd"
-      ],
-      "emeritus": [
-        "jackgopack4",
-        "ankitpatel96"
-      ]
+      "active": ["songy23", "IbraheemA", "mx-psi", "dineshg13", "jade-guiton-dd"],
+      "emeritus": ["jackgopack4", "ankitpatel96"]
     },
     "distributions": [],
     "stability": {
-      "deprecated": [
-        "traces"
-      ]
+      "deprecated": ["traces"]
     }
   },
   "type": "datadogsemantics",

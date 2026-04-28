@@ -2,37 +2,24 @@
   "attributes": {
     "active.status": {
       "description": "The active status.",
-      "enum": [
-        "active",
-        "inactive"
-      ],
+      "enum": ["active", "inactive"],
       "name_override": "status",
       "type": "string"
     },
     "availability.status": {
       "description": "The availability status.",
-      "enum": [
-        "available",
-        "offline",
-        "unknown"
-      ],
+      "enum": ["available", "offline", "unknown"],
       "name_override": "status",
       "type": "string"
     },
     "direction": {
       "description": "The direction of data.",
-      "enum": [
-        "received",
-        "sent"
-      ],
+      "enum": ["received", "sent"],
       "type": "string"
     },
     "enabled.status": {
       "description": "The enabled status.",
-      "enum": [
-        "disabled",
-        "enabled"
-      ],
+      "enum": ["disabled", "enabled"],
       "name_override": "status",
       "type": "string"
     }
@@ -41,9 +28,7 @@
   "distribution": "contrib",
   "metrics": {
     "bigip.node.availability": {
-      "attributes": [
-        "availability.status"
-      ],
+      "attributes": ["availability.status"],
       "description": "Availability of the node.",
       "enabled": true,
       "gauge": {
@@ -68,9 +53,7 @@
       "unit": "{connections}"
     },
     "bigip.node.data.transmitted": {
-      "attributes": [
-        "direction"
-      ],
+      "attributes": ["direction"],
       "description": "Amount of data transmitted to and from the node.",
       "enabled": true,
       "stability": {
@@ -84,9 +67,7 @@
       "unit": "By"
     },
     "bigip.node.enabled": {
-      "attributes": [
-        "enabled.status"
-      ],
+      "attributes": ["enabled.status"],
       "description": "Enabled state of of the node.",
       "enabled": true,
       "gauge": {
@@ -98,9 +79,7 @@
       "unit": "1"
     },
     "bigip.node.packet.count": {
-      "attributes": [
-        "direction"
-      ],
+      "attributes": ["direction"],
       "description": "Number of packets transmitted to and from the node.",
       "enabled": true,
       "stability": {
@@ -140,9 +119,7 @@
       "unit": "{sessions}"
     },
     "bigip.pool.availability": {
-      "attributes": [
-        "availability.status"
-      ],
+      "attributes": ["availability.status"],
       "description": "Availability of the pool.",
       "enabled": true,
       "gauge": {
@@ -167,9 +144,7 @@
       "unit": "{connections}"
     },
     "bigip.pool.data.transmitted": {
-      "attributes": [
-        "direction"
-      ],
+      "attributes": ["direction"],
       "description": "Amount of data transmitted to and from the pool.",
       "enabled": true,
       "stability": {
@@ -183,9 +158,7 @@
       "unit": "By"
     },
     "bigip.pool.enabled": {
-      "attributes": [
-        "enabled.status"
-      ],
+      "attributes": ["enabled.status"],
       "description": "Enabled state of of the pool.",
       "enabled": true,
       "gauge": {
@@ -197,9 +170,7 @@
       "unit": "1"
     },
     "bigip.pool.member.count": {
-      "attributes": [
-        "active.status"
-      ],
+      "attributes": ["active.status"],
       "description": "Total number of pool members.",
       "enabled": true,
       "stability": {
@@ -213,9 +184,7 @@
       "unit": "{members}"
     },
     "bigip.pool.packet.count": {
-      "attributes": [
-        "direction"
-      ],
+      "attributes": ["direction"],
       "description": "Number of packets transmitted to and from the pool.",
       "enabled": true,
       "stability": {
@@ -242,9 +211,7 @@
       "unit": "{requests}"
     },
     "bigip.pool_member.availability": {
-      "attributes": [
-        "availability.status"
-      ],
+      "attributes": ["availability.status"],
       "description": "Availability of the pool member.",
       "enabled": true,
       "gauge": {
@@ -269,9 +236,7 @@
       "unit": "{connections}"
     },
     "bigip.pool_member.data.transmitted": {
-      "attributes": [
-        "direction"
-      ],
+      "attributes": ["direction"],
       "description": "Amount of data transmitted to and from the pool member.",
       "enabled": true,
       "stability": {
@@ -285,9 +250,7 @@
       "unit": "By"
     },
     "bigip.pool_member.enabled": {
-      "attributes": [
-        "enabled.status"
-      ],
+      "attributes": ["enabled.status"],
       "description": "Enabled state of of the pool member.",
       "enabled": true,
       "gauge": {
@@ -299,9 +262,7 @@
       "unit": "1"
     },
     "bigip.pool_member.packet.count": {
-      "attributes": [
-        "direction"
-      ],
+      "attributes": ["direction"],
       "description": "Number of packets transmitted to and from the pool member.",
       "enabled": true,
       "stability": {
@@ -341,9 +302,7 @@
       "unit": "{sessions}"
     },
     "bigip.virtual_server.availability": {
-      "attributes": [
-        "availability.status"
-      ],
+      "attributes": ["availability.status"],
       "description": "Availability of the virtual server.",
       "enabled": true,
       "gauge": {
@@ -368,9 +327,7 @@
       "unit": "{connections}"
     },
     "bigip.virtual_server.data.transmitted": {
-      "attributes": [
-        "direction"
-      ],
+      "attributes": ["direction"],
       "description": "Amount of data transmitted to and from the virtual server.",
       "enabled": true,
       "stability": {
@@ -384,9 +341,7 @@
       "unit": "By"
     },
     "bigip.virtual_server.enabled": {
-      "attributes": [
-        "enabled.status"
-      ],
+      "attributes": ["enabled.status"],
       "description": "Enabled state of of the virtual server.",
       "enabled": true,
       "gauge": {
@@ -398,9 +353,7 @@
       "unit": "1"
     },
     "bigip.virtual_server.packet.count": {
-      "attributes": [
-        "direction"
-      ],
+      "attributes": ["direction"],
       "description": "Number of packets transmitted to and from the virtual server.",
       "enabled": true,
       "stability": {
@@ -462,18 +415,12 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "emeritus": [
-        "StefanKurek"
-      ],
+      "emeritus": ["StefanKurek"],
       "seeking_new": true
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "unmaintained": [
-        "metrics"
-      ]
+      "unmaintained": ["metrics"]
     }
   },
   "type": "bigip",

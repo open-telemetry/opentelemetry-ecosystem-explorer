@@ -16,25 +16,13 @@
         "jade-guiton-dd",
         "IbraheemA"
       ],
-      "emeritus": [
-        "gbbr",
-        "jackgopack4",
-        "ankitpatel96"
-      ]
+      "emeritus": ["gbbr", "jackgopack4", "ankitpatel96"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "logs",
-        "metrics",
-        "traces"
-      ]
+      "beta": ["logs", "metrics", "traces"]
     },
-    "unsupported_platforms": [
-      "aix"
-    ]
+    "unsupported_platforms": ["aix"]
   },
   "type": "datadog",
   "version": "0.149.0"

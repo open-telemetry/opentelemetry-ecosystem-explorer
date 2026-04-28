@@ -8,17 +8,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "atoulme"
-      ]
+      "active": ["atoulme"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "metrics"
-      ]
+      "alpha": ["metrics"]
     }
   },
   "type": "yang_grpc",

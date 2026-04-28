@@ -6,18 +6,11 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "wangzlei",
-        "srprash"
-      ]
+      "active": ["wangzlei", "srprash"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "traces"
-      ]
+      "beta": ["traces"]
     }
   },
   "type": "awsxray",

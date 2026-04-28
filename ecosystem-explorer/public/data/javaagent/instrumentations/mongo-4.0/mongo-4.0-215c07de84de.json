@@ -16,22 +16,15 @@
   "description": "This instrumentation enables database client spans and database client metrics for the MongoDB Java driver.",
   "display_name": "MongoDB Driver",
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "org.mongodb:mongodb-driver-core:[4.0,)"
-  ],
+  "javaagent_target_versions": ["org.mongodb:mongodb-driver-core:[4.0,)"],
   "library_link": "https://www.mongodb.com/docs/drivers/java-drivers/",
   "name": "mongo-4.0",
   "scope": {
     "name": "io.opentelemetry.mongo-4.0"
   },
-  "semantic_conventions": [
-    "DATABASE_CLIENT_SPANS",
-    "DATABASE_CLIENT_METRICS"
-  ],
+  "semantic_conventions": ["DATABASE_CLIENT_SPANS", "DATABASE_CLIENT_METRICS"],
   "source_path": "instrumentation/mongo/mongo-4.0",
-  "tags": [
-    "mongo"
-  ],
+  "tags": ["mongo"],
   "telemetry": [
     {
       "spans": [

@@ -17,11 +17,7 @@
   "distribution": "contrib",
   "metrics": {
     "tlscheck.time_left": {
-      "attributes": [
-        "tlscheck.x509.cn",
-        "tlscheck.x509.issuer",
-        "tlscheck.x509.san"
-      ],
+      "attributes": ["tlscheck.x509.cn", "tlscheck.x509.issuer", "tlscheck.x509.san"],
       "description": "Time in seconds until certificate expiry, as specified by `NotAfter` field in the x.509 certificate. Negative values represent time in seconds since expiration.",
       "enabled": true,
       "gauge": {
@@ -42,18 +38,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "atoulme",
-        "michael-burt"
-      ]
+      "active": ["atoulme", "michael-burt"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "metrics"
-      ]
+      "alpha": ["metrics"]
     }
   },
   "type": "tlscheck",

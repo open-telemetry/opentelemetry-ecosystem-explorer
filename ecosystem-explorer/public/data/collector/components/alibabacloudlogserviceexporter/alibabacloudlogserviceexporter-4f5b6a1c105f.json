@@ -7,21 +7,11 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "shabicheng",
-        "kongluoxing",
-        "qiansheng91"
-      ]
+      "active": ["shabicheng", "kongluoxing", "qiansheng91"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "logs",
-        "metrics",
-        "traces"
-      ]
+      "beta": ["logs", "metrics", "traces"]
     }
   },
   "type": "alibabacloud_logservice",

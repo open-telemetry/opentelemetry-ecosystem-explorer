@@ -8,18 +8,11 @@
   "status": {
     "class": "extension",
     "codeowners": {
-      "active": [
-        "axw",
-        "constanca-m"
-      ]
+      "active": ["axw", "constanca-m"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "extension"
-      ]
+      "alpha": ["extension"]
     }
   },
   "type": "awscloudwatchmetricstreams_encoding",

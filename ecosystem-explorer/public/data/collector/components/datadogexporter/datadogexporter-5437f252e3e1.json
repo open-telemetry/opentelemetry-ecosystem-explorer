@@ -17,20 +17,11 @@
         "jade-guiton-dd",
         "IbraheemA"
       ],
-      "emeritus": [
-        "gbbr",
-        "jackgopack4"
-      ]
+      "emeritus": ["gbbr", "jackgopack4"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "logs",
-        "metrics",
-        "traces"
-      ]
+      "beta": ["logs", "metrics", "traces"]
     }
   },
   "type": "datadog",

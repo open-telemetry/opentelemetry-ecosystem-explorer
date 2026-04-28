@@ -8,22 +8,13 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "schmikei",
-        "dyl10s"
-      ],
-      "emeritus": [
-        "djaglowski"
-      ],
+      "active": ["schmikei", "dyl10s"],
+      "emeritus": ["djaglowski"],
       "seeking_new": true
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "logs"
-      ]
+      "alpha": ["logs"]
     }
   },
   "type": "awscloudwatch",

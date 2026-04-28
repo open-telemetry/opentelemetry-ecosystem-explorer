@@ -7,18 +7,11 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "tigrannajaryan",
-        "dmitryax"
-      ]
+      "active": ["tigrannajaryan", "dmitryax"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "metrics"
-      ]
+      "alpha": ["metrics"]
     }
   },
   "type": "stef",

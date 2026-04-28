@@ -2,17 +2,13 @@
   "description": "This instrumentation enables messaging spans for Kafka Connect sink tasks.",
   "display_name": "Apache Kafka Connect",
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "org.apache.kafka:connect-api:[2.6.0,)"
-  ],
+  "javaagent_target_versions": ["org.apache.kafka:connect-api:[2.6.0,)"],
   "library_link": "https://kafka.apache.org/documentation/#connect",
   "name": "kafka-connect-2.6",
   "scope": {
     "name": "io.opentelemetry.kafka-connect-2.6"
   },
-  "semantic_conventions": [
-    "MESSAGING_SPANS"
-  ],
+  "semantic_conventions": ["MESSAGING_SPANS"],
   "source_path": "instrumentation/kafka/kafka-connect-2.6",
   "telemetry": [
     {

@@ -2,10 +2,7 @@
   "attributes": {
     "cache_name": {
       "description": "The name of cache.",
-      "enum": [
-        "fielddata",
-        "query"
-      ],
+      "enum": ["fielddata", "query"],
       "type": "string"
     },
     "circuit_breaker_name": {
@@ -15,19 +12,13 @@
     },
     "cluster_published_difference_state": {
       "description": "State of the published differences",
-      "enum": [
-        "compatible",
-        "incompatible"
-      ],
+      "enum": ["compatible", "incompatible"],
       "name_override": "state",
       "type": "string"
     },
     "cluster_state_queue_state": {
       "description": "State of the published differences",
-      "enum": [
-        "committed",
-        "pending"
-      ],
+      "enum": ["committed", "pending"],
       "name_override": "state",
       "type": "string"
     },
@@ -56,56 +47,36 @@
     },
     "direction": {
       "description": "The direction of network data.",
-      "enum": [
-        "received",
-        "sent"
-      ],
+      "enum": ["received", "sent"],
       "type": "string"
     },
     "document_state": {
       "description": "The state of the document.",
-      "enum": [
-        "active",
-        "deleted"
-      ],
+      "enum": ["active", "deleted"],
       "name_override": "state",
       "type": "string"
     },
     "get_result": {
       "description": "Result of get operation",
-      "enum": [
-        "hit",
-        "miss"
-      ],
+      "enum": ["hit", "miss"],
       "name_override": "result",
       "type": "string"
     },
     "health_status": {
       "description": "The health status of the cluster.",
-      "enum": [
-        "green",
-        "red",
-        "yellow"
-      ],
+      "enum": ["green", "red", "yellow"],
       "name_override": "status",
       "type": "string"
     },
     "index_aggregation_type": {
       "description": "Type of shard aggregation for index statistics",
-      "enum": [
-        "primary_shards",
-        "total"
-      ],
+      "enum": ["primary_shards", "total"],
       "name_override": "aggregation",
       "type": "string"
     },
     "indexing_pressure_stage": {
       "description": "Stage of the indexing pressure",
-      "enum": [
-        "coordinating",
-        "primary",
-        "replica"
-      ],
+      "enum": ["coordinating", "primary", "replica"],
       "name_override": "stage",
       "type": "string"
     },
@@ -121,10 +92,7 @@
     },
     "memory_state": {
       "description": "State of the memory",
-      "enum": [
-        "free",
-        "used"
-      ],
+      "enum": ["free", "used"],
       "name_override": "state",
       "type": "string"
     },
@@ -148,21 +116,13 @@
     },
     "query_cache_count_type": {
       "description": "Type of query cache count",
-      "enum": [
-        "hit",
-        "miss"
-      ],
+      "enum": ["hit", "miss"],
       "name_override": "type",
       "type": "string"
     },
     "segments_memory_object_type": {
       "description": "Type of object in segment",
-      "enum": [
-        "doc_value",
-        "fixed_bit_set",
-        "index_writer",
-        "term"
-      ],
+      "enum": ["doc_value", "fixed_bit_set", "index_writer", "term"],
       "name_override": "object",
       "type": "string"
     },
@@ -181,10 +141,7 @@
     },
     "task_state": {
       "description": "The state of the task.",
-      "enum": [
-        "completed",
-        "rejected"
-      ],
+      "enum": ["completed", "rejected"],
       "name_override": "state",
       "type": "string"
     },
@@ -194,10 +151,7 @@
     },
     "thread_state": {
       "description": "The state of the thread.",
-      "enum": [
-        "active",
-        "idle"
-      ],
+      "enum": ["active", "idle"],
       "name_override": "state",
       "type": "string"
     }
@@ -208,9 +162,7 @@
   "distribution": "contrib",
   "metrics": {
     "elasticsearch.breaker.memory.estimated": {
-      "attributes": [
-        "circuit_breaker_name"
-      ],
+      "attributes": ["circuit_breaker_name"],
       "description": "Estimated memory used for the operation.",
       "enabled": true,
       "gauge": {
@@ -220,9 +172,7 @@
       "unit": "By"
     },
     "elasticsearch.breaker.memory.limit": {
-      "attributes": [
-        "circuit_breaker_name"
-      ],
+      "attributes": ["circuit_breaker_name"],
       "description": "Memory limit for the circuit breaker.",
       "enabled": true,
       "stability": "development",
@@ -234,9 +184,7 @@
       "unit": "By"
     },
     "elasticsearch.breaker.tripped": {
-      "attributes": [
-        "circuit_breaker_name"
-      ],
+      "attributes": ["circuit_breaker_name"],
       "description": "Total number of times the circuit breaker has been triggered and prevented an out of memory error.",
       "enabled": true,
       "stability": "development",
@@ -260,9 +208,7 @@
       "unit": "{nodes}"
     },
     "elasticsearch.cluster.health": {
-      "attributes": [
-        "health_status"
-      ],
+      "attributes": ["health_status"],
       "description": "The health status of the cluster.",
       "enabled": true,
       "stability": "development",
@@ -286,9 +232,7 @@
       "unit": "{fetches}"
     },
     "elasticsearch.cluster.indices.cache.evictions": {
-      "attributes": [
-        "cache_name"
-      ],
+      "attributes": ["cache_name"],
       "description": "The number of evictions from the cache for indices in cluster.",
       "enabled": false,
       "stability": "development",
@@ -324,9 +268,7 @@
       "unit": "{tasks}"
     },
     "elasticsearch.cluster.published_states.differences": {
-      "attributes": [
-        "cluster_published_difference_state"
-      ],
+      "attributes": ["cluster_published_difference_state"],
       "description": "Number of differences between published cluster states.",
       "enabled": true,
       "stability": "development",
@@ -350,9 +292,7 @@
       "unit": "1"
     },
     "elasticsearch.cluster.shards": {
-      "attributes": [
-        "shard_state"
-      ],
+      "attributes": ["shard_state"],
       "description": "The number of shards in the cluster.",
       "enabled": true,
       "stability": "development",
@@ -364,9 +304,7 @@
       "unit": "{shards}"
     },
     "elasticsearch.cluster.state_queue": {
-      "attributes": [
-        "cluster_state_queue_state"
-      ],
+      "attributes": ["cluster_state_queue_state"],
       "description": "Number of cluster states in queue.",
       "enabled": true,
       "stability": "development",
@@ -378,9 +316,7 @@
       "unit": "1"
     },
     "elasticsearch.cluster.state_update.count": {
-      "attributes": [
-        "cluster_state_update_state"
-      ],
+      "attributes": ["cluster_state_update_state"],
       "description": "The number of cluster state update attempts that changed the cluster state since the node started.",
       "enabled": true,
       "stability": "development",
@@ -392,10 +328,7 @@
       "unit": "1"
     },
     "elasticsearch.cluster.state_update.time": {
-      "attributes": [
-        "cluster_state_update_state",
-        "cluster_state_update_type"
-      ],
+      "attributes": ["cluster_state_update_state", "cluster_state_update_type"],
       "description": "The cumulative amount of time updating the cluster state since the node started.",
       "enabled": true,
       "stability": "development",
@@ -407,10 +340,7 @@
       "unit": "ms"
     },
     "elasticsearch.index.cache.evictions": {
-      "attributes": [
-        "cache_name",
-        "index_aggregation_type"
-      ],
+      "attributes": ["cache_name", "index_aggregation_type"],
       "description": "The number of evictions from the cache for an index.",
       "enabled": false,
       "stability": "development",
@@ -422,10 +352,7 @@
       "unit": "{evictions}"
     },
     "elasticsearch.index.cache.memory.usage": {
-      "attributes": [
-        "cache_name",
-        "index_aggregation_type"
-      ],
+      "attributes": ["cache_name", "index_aggregation_type"],
       "description": "The size in bytes of the cache for an index.",
       "enabled": false,
       "stability": "development",
@@ -437,9 +364,7 @@
       "unit": "By"
     },
     "elasticsearch.index.cache.size": {
-      "attributes": [
-        "index_aggregation_type"
-      ],
+      "attributes": ["index_aggregation_type"],
       "description": "The number of elements of the query cache for an index.",
       "enabled": false,
       "stability": "development",
@@ -451,10 +376,7 @@
       "unit": "1"
     },
     "elasticsearch.index.documents": {
-      "attributes": [
-        "document_state",
-        "index_aggregation_type"
-      ],
+      "attributes": ["document_state", "index_aggregation_type"],
       "description": "The number of documents for an index.",
       "enabled": true,
       "stability": "development",
@@ -466,10 +388,7 @@
       "unit": "{documents}"
     },
     "elasticsearch.index.operations.completed": {
-      "attributes": [
-        "index_aggregation_type",
-        "operation"
-      ],
+      "attributes": ["index_aggregation_type", "operation"],
       "description": "The number of operations completed for an index.",
       "enabled": true,
       "stability": "development",
@@ -481,9 +400,7 @@
       "unit": "{operations}"
     },
     "elasticsearch.index.operations.merge.current": {
-      "attributes": [
-        "index_aggregation_type"
-      ],
+      "attributes": ["index_aggregation_type"],
       "description": "The number of currently active segment merges",
       "enabled": true,
       "gauge": {
@@ -493,9 +410,7 @@
       "unit": "{merges}"
     },
     "elasticsearch.index.operations.merge.docs_count": {
-      "attributes": [
-        "index_aggregation_type"
-      ],
+      "attributes": ["index_aggregation_type"],
       "description": "The total number of documents in merge operations for an index.",
       "enabled": false,
       "stability": "development",
@@ -507,9 +422,7 @@
       "unit": "{documents}"
     },
     "elasticsearch.index.operations.merge.size": {
-      "attributes": [
-        "index_aggregation_type"
-      ],
+      "attributes": ["index_aggregation_type"],
       "description": "The total size of merged segments for an index.",
       "enabled": false,
       "stability": "development",
@@ -521,10 +434,7 @@
       "unit": "By"
     },
     "elasticsearch.index.operations.time": {
-      "attributes": [
-        "index_aggregation_type",
-        "operation"
-      ],
+      "attributes": ["index_aggregation_type", "operation"],
       "description": "Time spent on operations for an index.",
       "enabled": true,
       "stability": "development",
@@ -536,9 +446,7 @@
       "unit": "ms"
     },
     "elasticsearch.index.segments.count": {
-      "attributes": [
-        "index_aggregation_type"
-      ],
+      "attributes": ["index_aggregation_type"],
       "description": "Number of segments of an index.",
       "enabled": true,
       "stability": "development",
@@ -550,10 +458,7 @@
       "unit": "{segments}"
     },
     "elasticsearch.index.segments.memory": {
-      "attributes": [
-        "index_aggregation_type",
-        "segments_memory_object_type"
-      ],
+      "attributes": ["index_aggregation_type", "segments_memory_object_type"],
       "description": "Size of memory for segment object of an index.",
       "enabled": false,
       "stability": "development",
@@ -565,9 +470,7 @@
       "unit": "By"
     },
     "elasticsearch.index.segments.size": {
-      "attributes": [
-        "index_aggregation_type"
-      ],
+      "attributes": ["index_aggregation_type"],
       "description": "Size of segments of an index.",
       "enabled": false,
       "stability": "development",
@@ -579,9 +482,7 @@
       "unit": "By"
     },
     "elasticsearch.index.shards.size": {
-      "attributes": [
-        "index_aggregation_type"
-      ],
+      "attributes": ["index_aggregation_type"],
       "description": "The size of the shards assigned to this index.",
       "enabled": true,
       "stability": "development",
@@ -593,9 +494,7 @@
       "unit": "By"
     },
     "elasticsearch.index.translog.operations": {
-      "attributes": [
-        "index_aggregation_type"
-      ],
+      "attributes": ["index_aggregation_type"],
       "description": "Number of transaction log operations for an index.",
       "enabled": false,
       "stability": "development",
@@ -607,9 +506,7 @@
       "unit": "{operations}"
     },
     "elasticsearch.index.translog.size": {
-      "attributes": [
-        "index_aggregation_type"
-      ],
+      "attributes": ["index_aggregation_type"],
       "description": "Size of the transaction log for an index.",
       "enabled": false,
       "stability": "development",
@@ -655,9 +552,7 @@
       "unit": "1"
     },
     "elasticsearch.memory.indexing_pressure": {
-      "attributes": [
-        "indexing_pressure_stage"
-      ],
+      "attributes": ["indexing_pressure_stage"],
       "description": "Memory consumed, in bytes, by indexing requests in the specified stage.",
       "enabled": true,
       "stability": "development",
@@ -669,9 +564,7 @@
       "unit": "By"
     },
     "elasticsearch.node.cache.count": {
-      "attributes": [
-        "query_cache_count_type"
-      ],
+      "attributes": ["query_cache_count_type"],
       "description": "Total count of query cache misses across all shards assigned to selected nodes.",
       "enabled": true,
       "stability": "development",
@@ -683,9 +576,7 @@
       "unit": "{count}"
     },
     "elasticsearch.node.cache.evictions": {
-      "attributes": [
-        "cache_name"
-      ],
+      "attributes": ["cache_name"],
       "description": "The number of evictions from the cache on a node.",
       "enabled": true,
       "stability": "development",
@@ -697,9 +588,7 @@
       "unit": "{evictions}"
     },
     "elasticsearch.node.cache.memory.usage": {
-      "attributes": [
-        "cache_name"
-      ],
+      "attributes": ["cache_name"],
       "description": "The size in bytes of the cache on a node.",
       "enabled": true,
       "stability": "development",
@@ -735,9 +624,7 @@
       "unit": "{connections}"
     },
     "elasticsearch.node.cluster.io": {
-      "attributes": [
-        "direction"
-      ],
+      "attributes": ["direction"],
       "description": "The number of bytes sent and received on the network for internal cluster communication.",
       "enabled": true,
       "stability": "development",
@@ -773,9 +660,7 @@
       "unit": "KiBy"
     },
     "elasticsearch.node.documents": {
-      "attributes": [
-        "document_state"
-      ],
+      "attributes": ["document_state"],
       "description": "The number of documents on the node.",
       "enabled": true,
       "stability": "development",
@@ -883,9 +768,7 @@
       "unit": "{files}"
     },
     "elasticsearch.node.operations.completed": {
-      "attributes": [
-        "operation"
-      ],
+      "attributes": ["operation"],
       "description": "The number of operations completed by a node.",
       "enabled": true,
       "stability": "development",
@@ -897,9 +780,7 @@
       "unit": "{operations}"
     },
     "elasticsearch.node.operations.current": {
-      "attributes": [
-        "operation"
-      ],
+      "attributes": ["operation"],
       "description": "Number of query operations currently running.",
       "enabled": false,
       "gauge": {
@@ -909,9 +790,7 @@
       "unit": "{operations}"
     },
     "elasticsearch.node.operations.get.completed": {
-      "attributes": [
-        "get_result"
-      ],
+      "attributes": ["get_result"],
       "description": "The number of hits and misses resulting from GET operations.",
       "enabled": false,
       "stability": "development",
@@ -923,9 +802,7 @@
       "unit": "{operations}"
     },
     "elasticsearch.node.operations.get.time": {
-      "attributes": [
-        "get_result"
-      ],
+      "attributes": ["get_result"],
       "description": "The time spent on hits and misses resulting from GET operations.",
       "enabled": false,
       "stability": "development",
@@ -937,9 +814,7 @@
       "unit": "ms"
     },
     "elasticsearch.node.operations.time": {
-      "attributes": [
-        "operation"
-      ],
+      "attributes": ["operation"],
       "description": "Time spent on operations by a node.",
       "enabled": true,
       "stability": "development",
@@ -951,9 +826,7 @@
       "unit": "ms"
     },
     "elasticsearch.node.pipeline.ingest.documents.current": {
-      "attributes": [
-        "ingest_pipeline_name"
-      ],
+      "attributes": ["ingest_pipeline_name"],
       "description": "Total number of documents currently being ingested by a pipeline.",
       "enabled": true,
       "stability": "development",
@@ -965,9 +838,7 @@
       "unit": "{documents}"
     },
     "elasticsearch.node.pipeline.ingest.documents.preprocessed": {
-      "attributes": [
-        "ingest_pipeline_name"
-      ],
+      "attributes": ["ingest_pipeline_name"],
       "description": "Number of documents preprocessed by the ingest pipeline.",
       "enabled": true,
       "stability": "development",
@@ -979,9 +850,7 @@
       "unit": "{documents}"
     },
     "elasticsearch.node.pipeline.ingest.operations.failed": {
-      "attributes": [
-        "ingest_pipeline_name"
-      ],
+      "attributes": ["ingest_pipeline_name"],
       "description": "Total number of failed operations for the ingest pipeline.",
       "enabled": true,
       "stability": "development",
@@ -1029,9 +898,7 @@
       "unit": "{compilations}"
     },
     "elasticsearch.node.segments.memory": {
-      "attributes": [
-        "segments_memory_object_type"
-      ],
+      "attributes": ["segments_memory_object_type"],
       "description": "Size of memory for segment object of a node.",
       "enabled": false,
       "stability": "development",
@@ -1079,10 +946,7 @@
       "unit": "By"
     },
     "elasticsearch.node.thread_pool.tasks.finished": {
-      "attributes": [
-        "task_state",
-        "thread_pool_name"
-      ],
+      "attributes": ["task_state", "thread_pool_name"],
       "description": "The number of tasks finished by the thread pool.",
       "enabled": true,
       "stability": "development",
@@ -1094,9 +958,7 @@
       "unit": "{tasks}"
     },
     "elasticsearch.node.thread_pool.tasks.queued": {
-      "attributes": [
-        "thread_pool_name"
-      ],
+      "attributes": ["thread_pool_name"],
       "description": "The number of queued tasks in the thread pool.",
       "enabled": true,
       "stability": "development",
@@ -1108,10 +970,7 @@
       "unit": "{tasks}"
     },
     "elasticsearch.node.thread_pool.threads": {
-      "attributes": [
-        "thread_pool_name",
-        "thread_state"
-      ],
+      "attributes": ["thread_pool_name", "thread_state"],
       "description": "The number of threads in the thread pool.",
       "enabled": true,
       "stability": "development",
@@ -1199,9 +1058,7 @@
       "unit": "%"
     },
     "elasticsearch.os.memory": {
-      "attributes": [
-        "memory_state"
-      ],
+      "attributes": ["memory_state"],
       "description": "Amount of physical memory.",
       "enabled": true,
       "gauge": {
@@ -1255,9 +1112,7 @@
       "unit": "1"
     },
     "jvm.gc.collections.count": {
-      "attributes": [
-        "collector_name"
-      ],
+      "attributes": ["collector_name"],
       "description": "The total number of garbage collections that have occurred",
       "enabled": true,
       "stability": "development",
@@ -1269,9 +1124,7 @@
       "unit": "1"
     },
     "jvm.gc.collections.elapsed": {
-      "attributes": [
-        "collector_name"
-      ],
+      "attributes": ["collector_name"],
       "description": "The approximate accumulated collection elapsed time",
       "enabled": true,
       "stability": "development",
@@ -1343,9 +1196,7 @@
       "unit": "By"
     },
     "jvm.memory.pool.max": {
-      "attributes": [
-        "memory_pool_name"
-      ],
+      "attributes": ["memory_pool_name"],
       "description": "The maximum amount of memory can be used for the memory pool",
       "enabled": true,
       "gauge": {
@@ -1355,9 +1206,7 @@
       "unit": "By"
     },
     "jvm.memory.pool.used": {
-      "attributes": [
-        "memory_pool_name"
-      ],
+      "attributes": ["memory_pool_name"],
       "description": "The current memory pool memory usage",
       "enabled": true,
       "gauge": {
@@ -1400,23 +1249,13 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "jsirianni",
-        "VihasMakwana",
-        "rogercoll"
-      ],
-      "emeritus": [
-        "djaglowski"
-      ],
+      "active": ["jsirianni", "VihasMakwana", "rogercoll"],
+      "emeritus": ["djaglowski"],
       "seeking_new": true
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "metrics"
-      ]
+      "beta": ["metrics"]
     }
   },
   "type": "elasticsearch",

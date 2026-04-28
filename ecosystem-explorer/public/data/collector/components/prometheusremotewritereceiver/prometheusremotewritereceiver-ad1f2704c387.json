@@ -8,19 +8,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "dashpole",
-        "ArthurSens",
-        "perebaj"
-      ]
+      "active": ["dashpole", "ArthurSens", "perebaj"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "metrics"
-      ]
+      "alpha": ["metrics"]
     }
   },
   "type": "prometheus_remote_write",

@@ -6,20 +6,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "atoulme",
-        "adcharre"
-      ]
+      "active": ["atoulme", "adcharre"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "logs",
-        "metrics",
-        "traces"
-      ]
+      "alpha": ["logs", "metrics", "traces"]
     }
   },
   "type": "awss3",

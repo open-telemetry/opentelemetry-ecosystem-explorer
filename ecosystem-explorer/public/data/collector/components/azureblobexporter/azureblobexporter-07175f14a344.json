@@ -7,20 +7,11 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "hgaol",
-        "MovieStoreGuy"
-      ]
+      "active": ["hgaol", "MovieStoreGuy"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "logs",
-        "metrics",
-        "traces"
-      ]
+      "alpha": ["logs", "metrics", "traces"]
     }
   },
   "type": "azure_blob",

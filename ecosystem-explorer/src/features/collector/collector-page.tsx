@@ -85,36 +85,36 @@ export function CollectorPage() {
     <PageContainer>
       <div className="space-y-8">
         <header className="space-y-4">
-          <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+          <h1 className="text-foreground text-4xl font-bold tracking-tight sm:text-5xl">
             Collector{" "}
-            <span className="bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">
+            <span className="from-secondary to-primary bg-gradient-to-r bg-clip-text text-transparent">
               Components
             </span>
           </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed">
+          <p className="text-muted-foreground max-w-2xl text-lg leading-relaxed">
             Navigate the OpenTelemetry Collector ecosystem. Discover receivers, processors,
             exporters, and extensions across different distributions.
           </p>
         </header>
 
-        <div className="relative overflow-hidden rounded-xl border border-border/60 bg-card/80 p-6">
-          <div className="absolute inset-0 bg-gradient-radial from-secondary/5 via-primary/2 to-transparent opacity-50" />
+        <div className="border-border/60 bg-card/80 relative overflow-hidden rounded-xl border p-6">
+          <div className="bg-gradient-radial from-secondary/5 via-primary/2 absolute inset-0 to-transparent opacity-50" />
 
           <div className="relative z-10 flex flex-col gap-6 md:flex-row md:items-end">
             <div className="flex-1 space-y-2">
-              <label htmlFor="search" className="text-sm font-medium text-muted-foreground">
+              <label htmlFor="search" className="text-muted-foreground text-sm font-medium">
                 Search
               </label>
               <div className="relative">
                 <Search
-                  className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60"
+                  className="text-muted-foreground/60 absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2"
                   aria-hidden="true"
                 />
                 <input
                   id="search"
                   type="text"
                   placeholder="Filter by name or description..."
-                  className="w-full rounded-lg border border-border/60 bg-background/80 pl-10 pr-4 py-2.5 text-sm backdrop-blur-sm transition-all duration-200 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20"
+                  className="border-border/60 bg-background/80 focus:border-primary/50 focus:ring-primary/20 w-full rounded-lg border py-2.5 pr-4 pl-10 text-sm backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -123,7 +123,7 @@ export function CollectorPage() {
 
             <div className="flex flex-wrap gap-4">
               <div className="space-y-2">
-                <label htmlFor="type-filter" className="text-sm font-medium text-muted-foreground">
+                <label htmlFor="type-filter" className="text-muted-foreground text-sm font-medium">
                   Type
                 </label>
                 <div className="relative">
@@ -131,7 +131,7 @@ export function CollectorPage() {
                     id="type-filter"
                     value={typeFilter}
                     onChange={(e) => setTypeFilter(e.target.value)}
-                    className="appearance-none w-[160px] rounded-lg border border-border/60 bg-background/80 pl-3 pr-10 py-2.5 text-sm font-medium backdrop-blur-sm transition-all duration-200 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer"
+                    className="border-border/60 bg-background/80 focus:border-primary/50 focus:ring-primary/20 w-[160px] cursor-pointer appearance-none rounded-lg border py-2.5 pr-10 pl-3 text-sm font-medium backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none"
                   >
                     <option value="all">All Types</option>
                     <option value="receiver">Receivers</option>
@@ -141,7 +141,7 @@ export function CollectorPage() {
                     <option value="connector">Connectors</option>
                   </select>
                   <ChevronDown
-                    className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
+                    className="text-muted-foreground pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2"
                     aria-hidden="true"
                   />
                 </div>
@@ -150,7 +150,7 @@ export function CollectorPage() {
               <div className="space-y-2">
                 <label
                   htmlFor="version-select"
-                  className="text-sm font-medium text-muted-foreground"
+                  className="text-muted-foreground text-sm font-medium"
                 >
                   Version
                 </label>
@@ -160,7 +160,7 @@ export function CollectorPage() {
                     value={currentVersion}
                     onChange={(e) => handleVersionChange(e.target.value)}
                     disabled={versionsLoading}
-                    className="appearance-none w-[160px] rounded-lg border border-border/60 bg-background/80 pl-3 pr-10 py-2.5 text-sm font-medium backdrop-blur-sm transition-all duration-200 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer disabled:opacity-50"
+                    className="border-border/60 bg-background/80 focus:border-primary/50 focus:ring-primary/20 w-[160px] cursor-pointer appearance-none rounded-lg border py-2.5 pr-10 pl-3 text-sm font-medium backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none disabled:opacity-50"
                   >
                     {versionData?.versions.map((v) => (
                       <option key={v.version} value={v.version}>
@@ -169,7 +169,7 @@ export function CollectorPage() {
                     ))}
                   </select>
                   <ChevronDown
-                    className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
+                    className="text-muted-foreground pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2"
                     aria-hidden="true"
                   />
                 </div>
@@ -178,18 +178,17 @@ export function CollectorPage() {
           </div>
         </div>
 
-
         {componentsLoading ? (
-          <div className="flex flex-col items-center justify-center py-32 space-y-4">
-            <div className="inline-flex rounded-full p-4 animate-pulse shadow-[0_0_60px_hsl(var(--primary-hsl)/0.2)]">
-              <Loader2 className="h-10 w-10 animate-spin text-primary" aria-hidden="true" />
+          <div className="flex flex-col items-center justify-center space-y-4 py-32">
+            <div className="inline-flex animate-pulse rounded-full p-4 shadow-[0_0_60px_hsl(var(--primary-hsl)/0.2)]">
+              <Loader2 className="text-primary h-10 w-10 animate-spin" aria-hidden="true" />
             </div>
-            <p className="text-sm font-medium text-muted-foreground">Loading components...</p>
+            <p className="text-muted-foreground text-sm font-medium">Loading components...</p>
           </div>
         ) : (
           <div className="space-y-6">
-            <div className="flex items-center justify-between border-b border-border/40 pb-4">
-              <div className="text-sm text-muted-foreground font-medium">
+            <div className="border-border/40 flex items-center justify-between border-b pb-4">
+              <div className="text-muted-foreground text-sm font-medium">
                 Showing <span className="text-foreground">{filteredComponents.length}</span>{" "}
                 components
               </div>
@@ -201,53 +200,53 @@ export function CollectorPage() {
                   <Link
                     key={comp.id}
                     to={`/collector/components/${currentVersion}/${comp.id}`}
-                    className="group block outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl"
+                    className="group focus-visible:ring-primary block rounded-xl outline-none focus-visible:ring-2"
                   >
                     <DetailCard
                       withHoverEffect
-                      className="h-full border-border/50 group-hover:border-primary/30 transition-colors"
+                      className="border-border/50 group-hover:border-primary/30 h-full transition-colors"
                     >
-                      <div className="flex flex-col h-full space-y-4">
+                      <div className="flex h-full flex-col space-y-4">
                         <div className="flex items-start justify-between">
                           <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:scale-110 transition-transform duration-300">
+                            <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110">
                               {getIcon(comp.type)}
                             </div>
                             <div className="space-y-1">
                               <GlowBadge
                                 variant="muted"
-                                className="text-[10px] uppercase tracking-widest font-bold"
+                                className="text-[10px] font-bold tracking-widest uppercase"
                               >
                                 {comp.type}
                               </GlowBadge>
                             </div>
                           </div>
                           <ChevronRight
-                            className="h-5 w-5 text-muted-foreground/40 opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:translate-x-1"
+                            className="text-muted-foreground/40 h-5 w-5 opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100"
                             aria-hidden="true"
                           />
                         </div>
 
                         <div className="space-y-1.5">
-                          <h3 className="font-bold text-lg leading-tight group-hover:text-primary transition-colors">
+                          <h3 className="group-hover:text-primary text-lg leading-tight font-bold transition-colors">
                             {comp.display_name || comp.name}
                           </h3>
                           <div className="flex items-center gap-2">
-                            <code className="text-[11px] font-mono text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded">
+                            <code className="text-muted-foreground bg-muted/50 rounded px-1.5 py-0.5 font-mono text-[11px]">
                               {comp.name}
                             </code>
-                            <span className="text-[10px] text-muted-foreground/60 font-medium uppercase tracking-tighter">
+                            <span className="text-muted-foreground/60 text-[10px] font-medium tracking-tighter uppercase">
                               {comp.distribution}
                             </span>
                           </div>
                         </div>
 
-                        <p className="text-sm text-muted-foreground/80 line-clamp-3 leading-relaxed flex-1">
+                        <p className="text-muted-foreground/80 line-clamp-3 flex-1 text-sm leading-relaxed">
                           {comp.description ||
                             "Browse technical details and configuration options for this component."}
                         </p>
 
-                        <div className="flex items-center gap-2 pt-2 border-t border-border/10">
+                        <div className="border-border/10 flex items-center gap-2 border-t pt-2">
                           {comp.status?.stability &&
                             Object.keys(comp.status.stability).length > 0 && (
                               <GlowBadge
@@ -256,7 +255,7 @@ export function CollectorPage() {
                                     ? "success"
                                     : "info"
                                 }
-                                className="text-[9px] px-2 py-0"
+                                className="px-2 py-0 text-[9px]"
                               >
                                 {Object.keys(comp.status.stability)[0]}
                               </GlowBadge>
@@ -267,12 +266,12 @@ export function CollectorPage() {
                   </Link>
                 ))
               ) : (
-                <div className="col-span-full py-32 text-center border-2 border-dashed border-border/40 rounded-2xl">
-                  <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-muted/10 mb-4">
-                    <Search className="h-8 w-8 text-muted-foreground/30" aria-hidden="true" />
+                <div className="border-border/40 col-span-full rounded-2xl border-2 border-dashed py-32 text-center">
+                  <div className="bg-muted/10 mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full">
+                    <Search className="text-muted-foreground/30 h-8 w-8" aria-hidden="true" />
                   </div>
-                  <h3 className="text-xl font-semibold text-foreground">No components found</h3>
-                  <p className="mt-2 text-muted-foreground max-w-xs mx-auto">
+                  <h3 className="text-foreground text-xl font-semibold">No components found</h3>
+                  <p className="text-muted-foreground mx-auto mt-2 max-w-xs">
                     We couldn't find any components matching your search criteria.
                   </p>
                   <button
@@ -280,7 +279,7 @@ export function CollectorPage() {
                       setSearchQuery("");
                       setTypeFilter("all");
                     }}
-                    className="mt-6 text-sm font-semibold text-primary hover:underline"
+                    className="text-primary mt-6 text-sm font-semibold hover:underline"
                   >
                     Clear all filters
                   </button>

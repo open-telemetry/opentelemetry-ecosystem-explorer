@@ -10,13 +10,9 @@
   ],
   "description": "This instrumentation enables tracing for Apache Camel 2.x applications by generating spans for each route execution. For Camel versions 3.5 and newer, users should instead use the native 'camel-opentelemetry' component provided directly by the Camel project.",
   "display_name": "Apache Camel",
-  "features": [
-    "HTTP_ROUTE"
-  ],
+  "features": ["HTTP_ROUTE"],
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "org.apache.camel:camel-core:[2.19,3)"
-  ],
+  "javaagent_target_versions": ["org.apache.camel:camel-core:[2.19,3)"],
   "library_link": "https://camel.apache.org/",
   "name": "camel-2.20",
   "scope": {
@@ -29,9 +25,7 @@
     "MESSAGING_SPANS"
   ],
   "source_path": "instrumentation/camel-2.20",
-  "tags": [
-    "camel"
-  ],
+  "tags": ["camel"],
   "telemetry": [
     {
       "spans": [

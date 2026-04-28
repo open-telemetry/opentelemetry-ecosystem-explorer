@@ -29,17 +29,13 @@
   "disabled_by_default": true,
   "display_name": "Vert.x Kafka Client",
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "io.vertx:vertx-kafka-client:[3.5.1,)"
-  ],
+  "javaagent_target_versions": ["io.vertx:vertx-kafka-client:[3.5.1,)"],
   "library_link": "https://vertx.io/docs/vertx-kafka-client/java/",
   "name": "vertx-kafka-client-3.6",
   "scope": {
     "name": "io.opentelemetry.vertx-kafka-client-3.6"
   },
-  "semantic_conventions": [
-    "MESSAGING_SPANS"
-  ],
+  "semantic_conventions": ["MESSAGING_SPANS"],
   "source_path": "instrumentation/vertx/vertx-kafka-client-3.6",
   "telemetry": [
     {

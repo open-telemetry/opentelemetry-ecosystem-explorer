@@ -2,11 +2,7 @@
   "attributes": {
     "decision": {
       "description": "The sampling decision",
-      "enum": [
-        "dropped",
-        "not_sampled",
-        "sampled"
-      ],
+      "enum": ["dropped", "not_sampled", "sampled"],
       "type": "string"
     },
     "policy": {
@@ -28,24 +24,13 @@
   "status": {
     "class": "processor",
     "codeowners": {
-      "active": [
-        "portertech",
-        "Logiraptor",
-        "jmacd"
-      ],
-      "emeritus": [
-        "jpkrohling"
-      ],
+      "active": ["portertech", "Logiraptor", "jmacd"],
+      "emeritus": ["jpkrohling"],
       "seeking_new": true
     },
-    "distributions": [
-      "contrib",
-      "k8s"
-    ],
+    "distributions": ["contrib", "k8s"],
     "stability": {
-      "beta": [
-        "traces"
-      ]
+      "beta": ["traces"]
     }
   },
   "type": "processor"

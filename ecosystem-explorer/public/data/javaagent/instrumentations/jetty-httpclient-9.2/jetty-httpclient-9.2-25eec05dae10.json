@@ -41,19 +41,14 @@
   "display_name": "Eclipse Jetty HTTP Client",
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": [
-    "org.eclipse.jetty:jetty-client:[9.2,10)"
-  ],
+  "javaagent_target_versions": ["org.eclipse.jetty:jetty-client:[9.2,10)"],
   "library_link": "https://eclipse.dev/jetty/",
   "name": "jetty-httpclient-9.2",
   "scope": {
     "name": "io.opentelemetry.jetty-httpclient-9.2",
     "schema_url": "https://opentelemetry.io/schemas/1.37.0"
   },
-  "semantic_conventions": [
-    "HTTP_CLIENT_SPANS",
-    "HTTP_CLIENT_METRICS"
-  ],
+  "semantic_conventions": ["HTTP_CLIENT_SPANS", "HTTP_CLIENT_METRICS"],
   "source_path": "instrumentation/jetty-httpclient/jetty-httpclient-9.2",
   "telemetry": [
     {

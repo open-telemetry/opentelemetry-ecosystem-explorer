@@ -128,30 +128,13 @@
   "status": {
     "class": "processor",
     "codeowners": {
-      "active": [
-        "dmitryax",
-        "fatsheep9146",
-        "TylerHelmuth",
-        "ChrsMark",
-        "odubajDT"
-      ],
-      "emeritus": [
-        "rmfitzpatrick"
-      ]
+      "active": ["dmitryax", "fatsheep9146", "TylerHelmuth", "ChrsMark", "odubajDT"],
+      "emeritus": ["rmfitzpatrick"]
     },
-    "distributions": [
-      "contrib",
-      "k8s"
-    ],
+    "distributions": ["contrib", "k8s"],
     "stability": {
-      "beta": [
-        "logs",
-        "metrics",
-        "traces"
-      ],
-      "development": [
-        "profiles"
-      ]
+      "beta": ["logs", "metrics", "traces"],
+      "development": ["profiles"]
     }
   },
   "type": "k8sattributes",

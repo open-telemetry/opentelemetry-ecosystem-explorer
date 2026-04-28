@@ -6,19 +6,11 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "kasia-kujawa",
-        "rnishtala-sumo",
-        "andrzej-stencel"
-      ]
+      "active": ["kasia-kujawa", "rnishtala-sumo", "andrzej-stencel"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "logs"
-      ]
+      "alpha": ["logs"]
     }
   },
   "type": "syslog",

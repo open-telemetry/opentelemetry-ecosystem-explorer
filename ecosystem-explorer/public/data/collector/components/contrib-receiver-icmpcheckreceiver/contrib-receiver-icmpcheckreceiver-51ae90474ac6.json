@@ -56,16 +56,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "atoulme",
-        "jkoronaAtCisco"
-      ]
+      "active": ["atoulme", "jkoronaAtCisco"]
     },
     "distributions": [],
     "stability": {
-      "development": [
-        "metrics"
-      ]
+      "development": ["metrics"]
     }
   },
   "type": "receiver"

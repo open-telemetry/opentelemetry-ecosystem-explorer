@@ -2,12 +2,7 @@
   "attributes": {
     "state": {
       "description": "The state of a connection",
-      "enum": [
-        "active",
-        "reading",
-        "waiting",
-        "writing"
-      ],
+      "enum": ["active", "reading", "waiting", "writing"],
       "type": "string"
     }
   },
@@ -27,9 +22,7 @@
       "unit": "connections"
     },
     "nginx.connections_current": {
-      "attributes": [
-        "state"
-      ],
+      "attributes": ["state"],
       "description": "The current number of nginx connections by state",
       "enabled": true,
       "stability": "development",
@@ -70,21 +63,12 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "colelaven",
-        "ishleenk17"
-      ],
-      "emeritus": [
-        "djaglowski"
-      ]
+      "active": ["colelaven", "ishleenk17"],
+      "emeritus": ["djaglowski"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "metrics"
-      ]
+      "beta": ["metrics"]
     }
   },
   "type": "nginx",

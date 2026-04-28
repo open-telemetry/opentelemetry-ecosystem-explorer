@@ -6,25 +6,14 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "crobert-1"
-      ],
-      "emeritus": [
-        "agoallikmaa",
-        "pellared"
-      ],
+      "active": ["crobert-1"],
+      "emeritus": ["agoallikmaa", "pellared"],
       "seeking_new": true
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "metrics"
-      ],
-      "development": [
-        "logs"
-      ]
+      "beta": ["metrics"],
+      "development": ["logs"]
     }
   },
   "type": "cloudfoundry",

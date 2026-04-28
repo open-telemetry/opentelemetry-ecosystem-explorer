@@ -21,9 +21,7 @@
       "unit": "ms"
     },
     "sshcheck.error": {
-      "attributes": [
-        "error.message"
-      ],
+      "attributes": ["error.message"],
       "description": "Records errors occurring during SSH check.",
       "enabled": true,
       "stability": "development",
@@ -44,9 +42,7 @@
       "unit": "ms"
     },
     "sshcheck.sftp_error": {
-      "attributes": [
-        "error.message"
-      ],
+      "attributes": ["error.message"],
       "description": "Records errors occurring during SFTP check.",
       "enabled": false,
       "stability": "development",
@@ -85,20 +81,12 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "ishaish103"
-      ],
-      "emeritus": [
-        "nslaughter"
-      ]
+      "active": ["ishaish103"],
+      "emeritus": ["nslaughter"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "metrics"
-      ]
+      "beta": ["metrics"]
     }
   },
   "type": "receiver"

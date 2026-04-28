@@ -10,21 +10,15 @@
   "description": "This instrumentation enables consumer messaging spans for Spring RabbitMQ listeners.",
   "display_name": "Spring Rabbit",
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "org.springframework.amqp:spring-rabbit:(,)"
-  ],
+  "javaagent_target_versions": ["org.springframework.amqp:spring-rabbit:(,)"],
   "library_link": "https://spring.io/projects/spring-amqp",
   "name": "spring-rabbit-1.0",
   "scope": {
     "name": "io.opentelemetry.spring-rabbit-1.0"
   },
-  "semantic_conventions": [
-    "MESSAGING_SPANS"
-  ],
+  "semantic_conventions": ["MESSAGING_SPANS"],
   "source_path": "instrumentation/spring/spring-rabbit-1.0",
-  "tags": [
-    "spring"
-  ],
+  "tags": ["spring"],
   "telemetry": [
     {
       "spans": [

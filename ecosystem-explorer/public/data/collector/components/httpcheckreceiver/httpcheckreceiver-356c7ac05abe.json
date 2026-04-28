@@ -45,10 +45,7 @@
   "distribution": "contrib",
   "metrics": {
     "httpcheck.client.connection.duration": {
-      "attributes": [
-        "http.url",
-        "network.transport"
-      ],
+      "attributes": ["http.url", "network.transport"],
       "description": "Time spent establishing TCP connection to the endpoint.",
       "enabled": false,
       "gauge": {
@@ -58,9 +55,7 @@
       "unit": "ms"
     },
     "httpcheck.client.request.duration": {
-      "attributes": [
-        "http.url"
-      ],
+      "attributes": ["http.url"],
       "description": "Time spent sending the HTTP request to the endpoint.",
       "enabled": false,
       "gauge": {
@@ -70,9 +65,7 @@
       "unit": "ms"
     },
     "httpcheck.dns.lookup.duration": {
-      "attributes": [
-        "http.url"
-      ],
+      "attributes": ["http.url"],
       "description": "Time spent performing DNS lookup for the endpoint.",
       "enabled": false,
       "gauge": {
@@ -82,9 +75,7 @@
       "unit": "ms"
     },
     "httpcheck.duration": {
-      "attributes": [
-        "http.url"
-      ],
+      "attributes": ["http.url"],
       "description": "Measures the duration of the HTTP check.",
       "enabled": true,
       "gauge": {
@@ -94,10 +85,7 @@
       "unit": "ms"
     },
     "httpcheck.error": {
-      "attributes": [
-        "error.message",
-        "http.url"
-      ],
+      "attributes": ["error.message", "http.url"],
       "description": "Records errors occurring during HTTP check.",
       "enabled": true,
       "stability": "development",
@@ -109,9 +97,7 @@
       "unit": "{error}"
     },
     "httpcheck.response.duration": {
-      "attributes": [
-        "http.url"
-      ],
+      "attributes": ["http.url"],
       "description": "Time spent receiving the HTTP response from the endpoint.",
       "enabled": false,
       "gauge": {
@@ -121,9 +107,7 @@
       "unit": "ms"
     },
     "httpcheck.response.size": {
-      "attributes": [
-        "http.url"
-      ],
+      "attributes": ["http.url"],
       "description": "Size of response body in bytes.",
       "enabled": false,
       "gauge": {
@@ -133,12 +117,7 @@
       "unit": "By"
     },
     "httpcheck.status": {
-      "attributes": [
-        "http.method",
-        "http.status_class",
-        "http.status_code",
-        "http.url"
-      ],
+      "attributes": ["http.method", "http.status_class", "http.status_code", "http.url"],
       "description": "1 if the check resulted in status_code matching the status_class, otherwise 0.",
       "enabled": true,
       "stability": "development",
@@ -150,12 +129,7 @@
       "unit": "1"
     },
     "httpcheck.tls.cert_remaining": {
-      "attributes": [
-        "http.tls.cn",
-        "http.tls.issuer",
-        "http.tls.san",
-        "http.url"
-      ],
+      "attributes": ["http.tls.cn", "http.tls.issuer", "http.tls.san", "http.url"],
       "description": "Time in seconds until certificate expiry, as specified by `NotAfter` field in the x.509 certificate. Negative values represent time in seconds since expiration.",
       "enabled": false,
       "gauge": {
@@ -165,9 +139,7 @@
       "unit": "s"
     },
     "httpcheck.tls.handshake.duration": {
-      "attributes": [
-        "http.url"
-      ],
+      "attributes": ["http.url"],
       "description": "Time spent performing TLS handshake with the endpoint.",
       "enabled": false,
       "gauge": {
@@ -177,10 +149,7 @@
       "unit": "ms"
     },
     "httpcheck.validation.failed": {
-      "attributes": [
-        "http.url",
-        "validation.type"
-      ],
+      "attributes": ["http.url", "validation.type"],
       "description": "Number of response validations that failed.",
       "enabled": false,
       "stability": "development",
@@ -192,10 +161,7 @@
       "unit": "{validation}"
     },
     "httpcheck.validation.passed": {
-      "attributes": [
-        "http.url",
-        "validation.type"
-      ],
+      "attributes": ["http.url", "validation.type"],
       "description": "Number of response validations that passed.",
       "enabled": false,
       "stability": "development",
@@ -213,22 +179,13 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "VenuEmmadi"
-      ],
-      "emeritus": [
-        "codeboten"
-      ],
+      "active": ["VenuEmmadi"],
+      "emeritus": ["codeboten"],
       "seeking_new": true
     },
-    "distributions": [
-      "contrib",
-      "k8s"
-    ],
+    "distributions": ["contrib", "k8s"],
     "stability": {
-      "alpha": [
-        "metrics"
-      ]
+      "alpha": ["metrics"]
     }
   },
   "type": "httpcheck",

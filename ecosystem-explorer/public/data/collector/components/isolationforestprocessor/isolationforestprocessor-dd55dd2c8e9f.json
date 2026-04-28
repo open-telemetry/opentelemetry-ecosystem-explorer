@@ -8,19 +8,11 @@
   "status": {
     "class": "processor",
     "codeowners": {
-      "active": [
-        "atoulme"
-      ]
+      "active": ["atoulme"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "logs",
-        "metrics",
-        "traces"
-      ]
+      "alpha": ["logs", "metrics", "traces"]
     }
   },
   "type": "isolationforest",

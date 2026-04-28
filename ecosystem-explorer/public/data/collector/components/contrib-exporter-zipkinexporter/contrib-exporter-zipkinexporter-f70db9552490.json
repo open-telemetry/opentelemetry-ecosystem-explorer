@@ -9,20 +9,11 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "MovieStoreGuy",
-        "andrzej-stencel",
-        "crobert-1"
-      ]
+      "active": ["MovieStoreGuy", "andrzej-stencel", "crobert-1"]
     },
-    "distributions": [
-      "contrib",
-      "core"
-    ],
+    "distributions": ["contrib", "core"],
     "stability": {
-      "beta": [
-        "traces"
-      ]
+      "beta": ["traces"]
     }
   },
   "type": "exporter"

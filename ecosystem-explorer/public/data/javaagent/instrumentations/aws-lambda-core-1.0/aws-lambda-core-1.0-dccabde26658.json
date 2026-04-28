@@ -11,17 +11,13 @@
   "display_name": "AWS Lambda Core",
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": [
-    "com.amazonaws:aws-lambda-java-core:[1.0.0,)"
-  ],
+  "javaagent_target_versions": ["com.amazonaws:aws-lambda-java-core:[1.0.0,)"],
   "library_link": "https://docs.aws.amazon.com/lambda/latest/dg/java-handler.html",
   "name": "aws-lambda-core-1.0",
   "scope": {
     "name": "io.opentelemetry.aws-lambda-core-1.0"
   },
-  "semantic_conventions": [
-    "FAAS_SERVER_SPANS"
-  ],
+  "semantic_conventions": ["FAAS_SERVER_SPANS"],
   "source_path": "instrumentation/aws-lambda/aws-lambda-core-1.0",
   "telemetry": [
     {

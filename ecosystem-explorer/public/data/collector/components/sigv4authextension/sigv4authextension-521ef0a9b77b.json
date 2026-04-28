@@ -6,18 +6,11 @@
   "status": {
     "class": "extension",
     "codeowners": {
-      "active": [
-        "Aneurysm9",
-        "erichsueh3"
-      ]
+      "active": ["Aneurysm9", "erichsueh3"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "extension"
-      ]
+      "beta": ["extension"]
     }
   },
   "type": "sigv4auth",

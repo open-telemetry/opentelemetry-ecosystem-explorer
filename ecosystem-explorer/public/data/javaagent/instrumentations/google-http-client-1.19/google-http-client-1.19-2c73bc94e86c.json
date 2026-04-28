@@ -40,19 +40,14 @@
   "description": "This instrumentation enables HTTP client spans and HTTP client metrics for the Google HTTP Client.",
   "display_name": "Google HTTP Client",
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "com.google.http-client:google-http-client:[1.19.0,)"
-  ],
+  "javaagent_target_versions": ["com.google.http-client:google-http-client:[1.19.0,)"],
   "library_link": "https://github.com/googleapis/google-http-java-client",
   "name": "google-http-client-1.19",
   "scope": {
     "name": "io.opentelemetry.google-http-client-1.19",
     "schema_url": "https://opentelemetry.io/schemas/1.37.0"
   },
-  "semantic_conventions": [
-    "HTTP_CLIENT_SPANS",
-    "HTTP_CLIENT_METRICS"
-  ],
+  "semantic_conventions": ["HTTP_CLIENT_SPANS", "HTTP_CLIENT_METRICS"],
   "source_path": "instrumentation/google-http-client-1.19",
   "telemetry": [
     {

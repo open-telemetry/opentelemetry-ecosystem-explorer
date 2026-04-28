@@ -2,18 +2,12 @@
   "attributes": {
     "vcs.change.state": {
       "description": "The state of a change (pull request)",
-      "enum": [
-        "merged",
-        "open"
-      ],
+      "enum": ["merged", "open"],
       "type": "string"
     },
     "vcs.line_change.type": {
       "description": "The type of line change being measured on a ref (branch).",
-      "enum": [
-        "added",
-        "removed"
-      ],
+      "enum": ["added", "removed"],
       "type": "string"
     },
     "vcs.ref.base.name": {
@@ -22,10 +16,7 @@
     },
     "vcs.ref.base.type": {
       "description": "The type of the base reference (branch, tag).",
-      "enum": [
-        "branch",
-        "tag"
-      ],
+      "enum": ["branch", "tag"],
       "type": "string"
     },
     "vcs.ref.head.name": {
@@ -34,18 +25,12 @@
     },
     "vcs.ref.head.type": {
       "description": "The type of the head reference (branch, tag).",
-      "enum": [
-        "branch",
-        "tag"
-      ],
+      "enum": ["branch", "tag"],
       "type": "string"
     },
     "vcs.ref.type": {
       "description": "The type of the reference in the repository.",
-      "enum": [
-        "branch",
-        "tag"
-      ],
+      "enum": ["branch", "tag"],
       "type": "string"
     },
     "vcs.repository.name": {
@@ -58,10 +43,7 @@
     },
     "vcs.revision_delta.direction": {
       "description": "The type of revision comparison.",
-      "enum": [
-        "ahead",
-        "behind"
-      ],
+      "enum": ["ahead", "behind"],
       "type": "string"
     }
   },
@@ -69,11 +51,7 @@
   "distribution": "contrib",
   "metrics": {
     "vcs.change.count": {
-      "attributes": [
-        "vcs.change.state",
-        "vcs.repository.name",
-        "vcs.repository.url.full"
-      ],
+      "attributes": ["vcs.change.state", "vcs.repository.name", "vcs.repository.url.full"],
       "description": "The number of changes (pull requests) in a repository, categorized by their state (either open or merged).",
       "enabled": true,
       "gauge": {
@@ -102,11 +80,7 @@
       "unit": "s"
     },
     "vcs.change.time_to_approval": {
-      "attributes": [
-        "vcs.ref.head.name",
-        "vcs.repository.name",
-        "vcs.repository.url.full"
-      ],
+      "attributes": ["vcs.ref.head.name", "vcs.repository.name", "vcs.repository.url.full"],
       "description": "The amount of time it took a change (pull request) to go from open to approved.",
       "enabled": true,
       "gauge": {
@@ -118,11 +92,7 @@
       "unit": "s"
     },
     "vcs.change.time_to_merge": {
-      "attributes": [
-        "vcs.ref.head.name",
-        "vcs.repository.name",
-        "vcs.repository.url.full"
-      ],
+      "attributes": ["vcs.ref.head.name", "vcs.repository.name", "vcs.repository.url.full"],
       "description": "The amount of time it took a change (pull request) to go from open to merged.",
       "enabled": true,
       "gauge": {
@@ -134,10 +104,7 @@
       "unit": "s"
     },
     "vcs.contributor.count": {
-      "attributes": [
-        "vcs.repository.name",
-        "vcs.repository.url.full"
-      ],
+      "attributes": ["vcs.repository.name", "vcs.repository.url.full"],
       "description": "The number of unique contributors to a repository.",
       "enabled": false,
       "gauge": {
@@ -149,11 +116,7 @@
       "unit": "{contributor}"
     },
     "vcs.ref.count": {
-      "attributes": [
-        "vcs.ref.type",
-        "vcs.repository.name",
-        "vcs.repository.url.full"
-      ],
+      "attributes": ["vcs.ref.type", "vcs.repository.name", "vcs.repository.url.full"],
       "description": "The number of refs of type branch in a repository.",
       "enabled": true,
       "gauge": {
@@ -249,22 +212,12 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "adrielp",
-        "crobert-1",
-        "TylerHelmuth"
-      ]
+      "active": ["adrielp", "crobert-1", "TylerHelmuth"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "metrics"
-      ],
-      "development": [
-        "traces"
-      ]
+      "alpha": ["metrics"],
+      "development": ["traces"]
     }
   },
   "type": "github",

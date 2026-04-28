@@ -22,9 +22,7 @@
   "distribution": "contrib",
   "metrics": {
     "tcpcheck.duration": {
-      "attributes": [
-        "tcpcheck.endpoint"
-      ],
+      "attributes": ["tcpcheck.endpoint"],
       "description": "Measures the duration of TCP connection.",
       "enabled": true,
       "gauge": {
@@ -34,10 +32,7 @@
       "unit": "ms"
     },
     "tcpcheck.error": {
-      "attributes": [
-        "error.code",
-        "tcpcheck.endpoint"
-      ],
+      "attributes": ["error.code", "tcpcheck.endpoint"],
       "description": "Records errors occurring during TCP check.",
       "enabled": true,
       "stability": "development",
@@ -49,9 +44,7 @@
       "unit": "{errors}"
     },
     "tcpcheck.status": {
-      "attributes": [
-        "tcpcheck.endpoint"
-      ],
+      "attributes": ["tcpcheck.endpoint"],
       "description": "1 if the TCP client successfully connected, otherwise 0.",
       "enabled": true,
       "gauge": {
@@ -67,20 +60,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "atoulme",
-        "michael-burt",
-        "chengchuanpeng",
-        "yanfeng1992"
-      ]
+      "active": ["atoulme", "michael-burt", "chengchuanpeng", "yanfeng1992"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "metrics"
-      ]
+      "alpha": ["metrics"]
     }
   },
   "type": "tcpcheck",

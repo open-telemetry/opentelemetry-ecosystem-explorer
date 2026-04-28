@@ -6,16 +6,12 @@
   "status": {
     "class": "extension",
     "codeowners": {
-      "active": [
-        "atoulme"
-      ],
+      "active": ["atoulme"],
       "seeking_new": true
     },
     "distributions": [],
     "stability": {
-      "development": [
-        "extension"
-      ]
+      "development": ["extension"]
     }
   },
   "type": "remotetap",

@@ -6,24 +6,12 @@
   "status": {
     "class": "processor",
     "codeowners": {
-      "active": [
-        "atoulme",
-        "jaronoff97"
-      ],
-      "emeritus": [
-        "pmcollins"
-      ]
+      "active": ["atoulme", "jaronoff97"],
+      "emeritus": ["pmcollins"]
     },
-    "distributions": [
-      "contrib",
-      "k8s"
-    ],
+    "distributions": ["contrib", "k8s"],
     "stability": {
-      "alpha": [
-        "logs",
-        "metrics",
-        "traces"
-      ]
+      "alpha": ["logs", "metrics", "traces"]
     }
   },
   "type": "remotetap",

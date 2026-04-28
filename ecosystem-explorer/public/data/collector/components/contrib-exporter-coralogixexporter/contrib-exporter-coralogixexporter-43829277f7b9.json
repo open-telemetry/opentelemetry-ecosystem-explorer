@@ -9,24 +9,12 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "povilasv",
-        "iblancasa",
-        "douglascamata"
-      ]
+      "active": ["povilasv", "iblancasa", "douglascamata"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "profiles"
-      ],
-      "beta": [
-        "logs",
-        "metrics",
-        "traces"
-      ]
+      "alpha": ["profiles"],
+      "beta": ["logs", "metrics", "traces"]
     }
   },
   "type": "exporter"

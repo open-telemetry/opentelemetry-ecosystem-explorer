@@ -6,18 +6,11 @@
   "status": {
     "class": "processor",
     "codeowners": {
-      "active": [
-        "dashpole",
-        "ridwanmsharif"
-      ]
+      "active": ["dashpole", "ridwanmsharif"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "metrics"
-      ]
+      "beta": ["metrics"]
     }
   },
   "type": "metricstarttime",

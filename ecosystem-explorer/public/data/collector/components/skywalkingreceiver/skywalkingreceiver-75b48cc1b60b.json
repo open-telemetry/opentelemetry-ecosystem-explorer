@@ -8,20 +8,12 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "JaredTan95"
-      ]
+      "active": ["JaredTan95"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "traces"
-      ],
-      "development": [
-        "metrics"
-      ]
+      "beta": ["traces"],
+      "development": ["metrics"]
     }
   },
   "type": "skywalking",

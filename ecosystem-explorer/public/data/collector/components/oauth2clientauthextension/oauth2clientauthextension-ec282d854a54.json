@@ -6,22 +6,13 @@
   "status": {
     "class": "extension",
     "codeowners": {
-      "active": [
-        "pavankrish123"
-      ],
-      "emeritus": [
-        "jpkrohling"
-      ],
+      "active": ["pavankrish123"],
+      "emeritus": ["jpkrohling"],
       "seeking_new": true
     },
-    "distributions": [
-      "contrib",
-      "k8s"
-    ],
+    "distributions": ["contrib", "k8s"],
     "stability": {
-      "beta": [
-        "extension"
-      ]
+      "beta": ["extension"]
     }
   },
   "type": "oauth2client",

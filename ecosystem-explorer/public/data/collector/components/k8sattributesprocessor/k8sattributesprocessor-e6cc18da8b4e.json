@@ -2,12 +2,7 @@
   "attributes": {
     "otelcol.signal": {
       "description": "The signal type the telemetry metric is associated with",
-      "enum": [
-        "logs",
-        "metrics",
-        "profiles",
-        "traces"
-      ],
+      "enum": ["logs", "metrics", "profiles", "traces"],
       "type": "string"
     },
     "pod_identifier": {
@@ -16,10 +11,7 @@
     },
     "status": {
       "description": "The status of the pod association operation",
-      "enum": [
-        "error",
-        "success"
-      ],
+      "enum": ["error", "success"],
       "type": "string"
     }
   },
@@ -158,30 +150,13 @@
   "status": {
     "class": "processor",
     "codeowners": {
-      "active": [
-        "dmitryax",
-        "fatsheep9146",
-        "TylerHelmuth",
-        "ChrsMark",
-        "odubajDT"
-      ],
-      "emeritus": [
-        "rmfitzpatrick"
-      ]
+      "active": ["dmitryax", "fatsheep9146", "TylerHelmuth", "ChrsMark", "odubajDT"],
+      "emeritus": ["rmfitzpatrick"]
     },
-    "distributions": [
-      "contrib",
-      "k8s"
-    ],
+    "distributions": ["contrib", "k8s"],
     "stability": {
-      "beta": [
-        "logs",
-        "metrics",
-        "traces"
-      ],
-      "development": [
-        "profiles"
-      ]
+      "beta": ["logs", "metrics", "traces"],
+      "development": ["profiles"]
     }
   },
   "type": "k8s_attributes",

@@ -11,17 +11,13 @@
   "display_name": "OSHI",
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": [
-    "com.github.oshi:oshi-core:[5.0.0,)"
-  ],
+  "javaagent_target_versions": ["com.github.oshi:oshi-core:[5.0.0,)"],
   "library_link": "https://github.com/oshi/oshi/",
   "name": "oshi",
   "scope": {
     "name": "io.opentelemetry.oshi"
   },
-  "semantic_conventions": [
-    "SYSTEM_METRICS"
-  ],
+  "semantic_conventions": ["SYSTEM_METRICS"],
   "source_path": "instrumentation/oshi",
   "telemetry": [
     {

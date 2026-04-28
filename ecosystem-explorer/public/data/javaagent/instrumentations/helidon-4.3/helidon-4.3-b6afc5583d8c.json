@@ -31,14 +31,10 @@
   ],
   "description": "This instrumentation enables HTTP server spans and HTTP server metrics for the Helidon HTTP server.",
   "display_name": "Helidon",
-  "features": [
-    "HTTP_ROUTE"
-  ],
+  "features": ["HTTP_ROUTE"],
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": [
-    "io.helidon.webserver:helidon-webserver:[4.3.0,)"
-  ],
+  "javaagent_target_versions": ["io.helidon.webserver:helidon-webserver:[4.3.0,)"],
   "library_link": "https://helidon.io/",
   "minimum_java_version": 21,
   "name": "helidon-4.3",
@@ -46,14 +42,9 @@
     "name": "io.opentelemetry.helidon-4.3",
     "schema_url": "https://opentelemetry.io/schemas/1.37.0"
   },
-  "semantic_conventions": [
-    "HTTP_SERVER_SPANS",
-    "HTTP_SERVER_METRICS"
-  ],
+  "semantic_conventions": ["HTTP_SERVER_SPANS", "HTTP_SERVER_METRICS"],
   "source_path": "instrumentation/helidon-4.3",
-  "tags": [
-    "helidon"
-  ],
+  "tags": ["helidon"],
   "telemetry": [
     {
       "metrics": [

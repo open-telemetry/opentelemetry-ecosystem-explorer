@@ -6,22 +6,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "dmitryax",
-        "hvaghani221",
-        "TylerHelmuth",
-        "ChrsMark",
-        "krisztianfekete"
-      ]
+      "active": ["dmitryax", "hvaghani221", "TylerHelmuth", "ChrsMark", "krisztianfekete"]
     },
-    "distributions": [
-      "contrib",
-      "k8s"
-    ],
+    "distributions": ["contrib", "k8s"],
     "stability": {
-      "beta": [
-        "logs"
-      ]
+      "beta": ["logs"]
     }
   },
   "type": "k8sobjects",

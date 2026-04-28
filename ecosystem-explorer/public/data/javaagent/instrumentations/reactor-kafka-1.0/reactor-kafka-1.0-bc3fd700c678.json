@@ -22,21 +22,15 @@
   "description": "This instrumentation enables messaging spans for Reactor Kafka message consumers.",
   "display_name": "Reactor Kafka",
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "io.projectreactor.kafka:reactor-kafka:[1.0.0,)"
-  ],
+  "javaagent_target_versions": ["io.projectreactor.kafka:reactor-kafka:[1.0.0,)"],
   "library_link": "https://projectreactor.io/docs/kafka/release/reference/",
   "name": "reactor-kafka-1.0",
   "scope": {
     "name": "io.opentelemetry.reactor-kafka-1.0"
   },
-  "semantic_conventions": [
-    "MESSAGING_SPANS"
-  ],
+  "semantic_conventions": ["MESSAGING_SPANS"],
   "source_path": "instrumentation/reactor/reactor-kafka-1.0",
-  "tags": [
-    "reactor"
-  ],
+  "tags": ["reactor"],
   "telemetry": [
     {
       "spans": [

@@ -6,19 +6,11 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "atoulme",
-        "emreyalvac"
-      ]
+      "active": ["atoulme", "emreyalvac"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "logs",
-        "traces"
-      ]
+      "alpha": ["logs", "traces"]
     }
   },
   "type": "cassandra",

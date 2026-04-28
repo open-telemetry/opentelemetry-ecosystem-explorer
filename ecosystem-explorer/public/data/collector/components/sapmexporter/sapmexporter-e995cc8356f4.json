@@ -7,18 +7,11 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "dmitryax",
-        "atoulme"
-      ]
+      "active": ["dmitryax", "atoulme"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "deprecated": [
-        "traces"
-      ]
+      "deprecated": ["traces"]
     }
   },
   "type": "sapm",

@@ -668,10 +668,7 @@
       "unit": "{sessions}"
     },
     "oracledb.sessions.usage": {
-      "attributes": [
-        "session_status",
-        "session_type"
-      ],
+      "attributes": ["session_status", "session_type"],
       "description": "Count of active sessions.",
       "enabled": true,
       "gauge": {
@@ -684,9 +681,7 @@
       "unit": "{sessions}"
     },
     "oracledb.tablespace_size.limit": {
-      "attributes": [
-        "tablespace_name"
-      ],
+      "attributes": ["tablespace_name"],
       "description": "Maximum size of tablespace in bytes, -1 if unlimited.",
       "enabled": true,
       "gauge": {
@@ -698,9 +693,7 @@
       "unit": "By"
     },
     "oracledb.tablespace_size.usage": {
-      "attributes": [
-        "tablespace_name"
-      ],
+      "attributes": ["tablespace_name"],
       "description": "Used tablespace in bytes.",
       "enabled": true,
       "gauge": {
@@ -783,22 +776,12 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "dmitryax",
-        "crobert-1",
-        "atoulme"
-      ]
+      "active": ["dmitryax", "crobert-1", "atoulme"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "metrics"
-      ],
-      "development": [
-        "logs"
-      ]
+      "alpha": ["metrics"],
+      "development": ["logs"]
     }
   },
   "type": "oracledb",

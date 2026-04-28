@@ -18,23 +18,16 @@
   "description": "This instrumentation enriches HTTP server spans with route information, and enables controller spans for JAX-RS annotated methods (controller spans are disabled by default).",
   "disabled_by_default": true,
   "display_name": "JAX-RS 3.x",
-  "features": [
-    "HTTP_ROUTE",
-    "CONTROLLER_SPANS"
-  ],
+  "features": ["HTTP_ROUTE", "CONTROLLER_SPANS"],
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "jakarta.ws.rs:jakarta.ws.rs-api:[3.0.0,)"
-  ],
+  "javaagent_target_versions": ["jakarta.ws.rs:jakarta.ws.rs-api:[3.0.0,)"],
   "library_link": "https://jakarta.ee/specifications/restful-ws/3.0/",
   "name": "jaxrs-3.0-annotations",
   "scope": {
     "name": "io.opentelemetry.jaxrs-3.0-annotations"
   },
   "source_path": "instrumentation/jaxrs/jaxrs-3.0/jaxrs-3.0-annotations",
-  "tags": [
-    "jaxrs"
-  ],
+  "tags": ["jaxrs"],
   "telemetry": [
     {
       "spans": [

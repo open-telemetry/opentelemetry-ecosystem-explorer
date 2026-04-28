@@ -8,17 +8,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "mar4uk"
-      ]
+      "active": ["mar4uk"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "logs"
-      ]
+      "alpha": ["logs"]
     }
   },
   "type": "loki",

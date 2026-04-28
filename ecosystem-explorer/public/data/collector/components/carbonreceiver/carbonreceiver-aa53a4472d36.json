@@ -7,18 +7,12 @@
     "class": "receiver",
     "codeowners": {
       "active": [],
-      "emeritus": [
-        "aboguszewski-sumo"
-      ],
+      "emeritus": ["aboguszewski-sumo"],
       "seeking_new": true
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "unmaintained": [
-        "metrics"
-      ]
+      "unmaintained": ["metrics"]
     }
   },
   "type": "carbon",

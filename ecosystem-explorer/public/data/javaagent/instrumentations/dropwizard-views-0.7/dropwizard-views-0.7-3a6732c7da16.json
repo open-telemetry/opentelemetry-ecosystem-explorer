@@ -10,13 +10,9 @@
   ],
   "description": "This instrumentation enables view spans for Dropwizard view template rendering (view spans are disabled by default).",
   "display_name": "Dropwizard Views",
-  "features": [
-    "VIEW_SPANS"
-  ],
+  "features": ["VIEW_SPANS"],
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "io.dropwizard:dropwizard-views:(,3.0.0)"
-  ],
+  "javaagent_target_versions": ["io.dropwizard:dropwizard-views:(,3.0.0)"],
   "library_link": "https://www.dropwizard.io/en/latest/manual/views.html",
   "name": "dropwizard-views-0.7",
   "scope": {

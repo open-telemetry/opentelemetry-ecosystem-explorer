@@ -6,17 +6,11 @@
   "status": {
     "class": "processor",
     "codeowners": {
-      "active": [
-        "portertech"
-      ]
+      "active": ["portertech"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "traces"
-      ]
+      "alpha": ["traces"]
     }
   },
   "type": "spanpruning",

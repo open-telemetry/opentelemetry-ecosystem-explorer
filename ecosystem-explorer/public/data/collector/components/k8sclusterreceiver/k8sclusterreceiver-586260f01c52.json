@@ -21,11 +21,7 @@
     },
     "k8s.container.status.state": {
       "description": "The state of the container (terminated, running, waiting). See https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.30/#containerstate-v1-core for details.",
-      "enum": [
-        "running",
-        "terminated",
-        "waiting"
-      ],
+      "enum": ["running", "terminated", "waiting"],
       "type": "string"
     },
     "k8s.namespace.name": {
@@ -129,9 +125,7 @@
       "unit": "{restart}"
     },
     "k8s.container.status.reason": {
-      "attributes": [
-        "k8s.container.status.reason"
-      ],
+      "attributes": ["k8s.container.status.reason"],
       "description": "Experimental metric, may experience breaking changes. Describes the number of K8s containers that are currently in a state for a given reason. All possible container state reasons will be reported at each time interval to avoid missing metrics. Only the value corresponding to the current state reason will be non-zero.",
       "enabled": false,
       "stability": {
@@ -145,9 +139,7 @@
       "unit": "{container}"
     },
     "k8s.container.status.state": {
-      "attributes": [
-        "k8s.container.status.state"
-      ],
+      "attributes": ["k8s.container.status.state"],
       "description": "Experimental metric, may experience breaking changes. Describes the number of K8s containers that are currently in a given state. All possible container states will be reported at each time interval to avoid missing metrics. Only the value corresponding to the current state will be non-zero.",
       "enabled": false,
       "stability": {
@@ -370,9 +362,7 @@
       "unit": ""
     },
     "k8s.node.condition": {
-      "attributes": [
-        "condition"
-      ],
+      "attributes": ["condition"],
       "description": "The condition of a particular Node.",
       "enabled": false,
       "gauge": {
@@ -450,9 +440,7 @@
       "unit": "{pod}"
     },
     "k8s.resource_quota.hard_limit": {
-      "attributes": [
-        "resource"
-      ],
+      "attributes": ["resource"],
       "description": "The upper limit for a particular resource in a specific namespace. Will only be sent if a quota is specified. CPU requests/limits will be sent as millicores",
       "enabled": true,
       "gauge": {
@@ -464,9 +452,7 @@
       "unit": "{resource}"
     },
     "k8s.resource_quota.used": {
-      "attributes": [
-        "resource"
-      ],
+      "attributes": ["resource"],
       "description": "The usage for a particular resource in a specific namespace. Will only be sent if a quota is specified. CPU requests/limits will be sent as millicores",
       "enabled": true,
       "gauge": {
@@ -522,10 +508,7 @@
       "unit": "{pod}"
     },
     "openshift.appliedclusterquota.limit": {
-      "attributes": [
-        "k8s.namespace.name",
-        "resource"
-      ],
+      "attributes": ["k8s.namespace.name", "resource"],
       "description": "The upper limit for a particular resource in a specific namespace.",
       "enabled": true,
       "gauge": {
@@ -537,10 +520,7 @@
       "unit": "{resource}"
     },
     "openshift.appliedclusterquota.used": {
-      "attributes": [
-        "k8s.namespace.name",
-        "resource"
-      ],
+      "attributes": ["k8s.namespace.name", "resource"],
       "description": "The usage for a particular resource in a specific namespace.",
       "enabled": true,
       "gauge": {
@@ -552,9 +532,7 @@
       "unit": "{resource}"
     },
     "openshift.clusterquota.limit": {
-      "attributes": [
-        "resource"
-      ],
+      "attributes": ["resource"],
       "description": "The configured upper limit for a particular resource.",
       "enabled": true,
       "gauge": {
@@ -566,9 +544,7 @@
       "unit": "{resource}"
     },
     "openshift.clusterquota.used": {
-      "attributes": [
-        "resource"
-      ],
+      "attributes": ["resource"],
       "description": "The usage for a particular resource with a configured limit.",
       "enabled": true,
       "gauge": {
@@ -747,24 +723,12 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "dmitryax",
-        "TylerHelmuth",
-        "povilasv",
-        "ChrsMark"
-      ]
+      "active": ["dmitryax", "TylerHelmuth", "povilasv", "ChrsMark"]
     },
-    "distributions": [
-      "contrib",
-      "k8s"
-    ],
+    "distributions": ["contrib", "k8s"],
     "stability": {
-      "beta": [
-        "metrics"
-      ],
-      "development": [
-        "logs"
-      ]
+      "beta": ["metrics"],
+      "development": ["logs"]
     }
   },
   "type": "k8s_cluster",
