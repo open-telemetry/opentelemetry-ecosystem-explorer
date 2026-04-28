@@ -50,15 +50,15 @@ export function PreviewCard({ schema }: PreviewCardProps): JSX.Element {
   return (
     <section
       aria-label="Output Preview"
-      className="rounded-xl border border-border/50 bg-card/40 p-5 space-y-3 lg:sticky lg:top-24"
+      className="border-border/50 bg-card/40 space-y-3 rounded-xl border p-5 lg:sticky lg:top-24"
     >
       <header className="flex flex-wrap items-center justify-between gap-3">
-        <h3 className="text-sm font-medium text-foreground">Output Preview</h3>
+        <h3 className="text-foreground text-sm font-medium">Output Preview</h3>
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={handleCopy}
-            className="flex items-center gap-1 rounded-md border border-border/60 bg-card px-3 py-1 text-xs text-foreground hover:bg-card/80"
+            className="border-border/60 bg-card text-foreground hover:bg-card/80 flex items-center gap-1 rounded-md border px-3 py-1 text-xs"
           >
             <Copy className="h-3 w-3" aria-hidden="true" />
             {copied ? "Copied" : "Copy"}
@@ -69,16 +69,16 @@ export function PreviewCard({ schema }: PreviewCardProps): JSX.Element {
               validateAll();
               downloadText(`otel-config-${state.version}.yaml`, yaml, "text/yaml");
             }}
-            className="flex items-center gap-1 rounded-md border border-border/60 bg-card px-3 py-1 text-xs text-foreground hover:bg-card/80"
+            className="border-border/60 bg-card text-foreground hover:bg-card/80 flex items-center gap-1 rounded-md border px-3 py-1 text-xs"
           >
             <Download className="h-3 w-3" aria-hidden="true" />
             Download
           </button>
-          <span className="mx-1 h-4 w-px bg-border/60" aria-hidden="true" />
+          <span className="bg-border/60 mx-1 h-4 w-px" aria-hidden="true" />
           <button
             type="button"
             onClick={enableAllSections}
-            className="flex items-center gap-1 rounded-md border border-border/60 bg-card px-3 py-1 text-xs text-foreground hover:bg-card/80"
+            className="border-border/60 bg-card text-foreground hover:bg-card/80 flex items-center gap-1 rounded-md border px-3 py-1 text-xs"
           >
             <ListPlus className="h-3 w-3" aria-hidden="true" />
             Add all
@@ -86,7 +86,7 @@ export function PreviewCard({ schema }: PreviewCardProps): JSX.Element {
           <button
             type="button"
             onClick={handleReset}
-            className="flex items-center gap-1 rounded-md border border-border/60 bg-card px-3 py-1 text-xs text-foreground hover:bg-card/80"
+            className="border-border/60 bg-card text-foreground hover:bg-card/80 flex items-center gap-1 rounded-md border px-3 py-1 text-xs"
           >
             <RefreshCcw className="h-3 w-3" aria-hidden="true" />
             Reset
@@ -95,7 +95,7 @@ export function PreviewCard({ schema }: PreviewCardProps): JSX.Element {
       </header>
       <YamlCodeBlock
         code={yaml}
-        className="overflow-auto max-h-[calc(100vh-8rem)] rounded-md bg-background/60 p-4 text-xs font-mono text-foreground"
+        className="bg-background/60 text-foreground max-h-[calc(100vh-8rem)] overflow-auto rounded-md p-4 font-mono text-xs"
       />
     </section>
   );

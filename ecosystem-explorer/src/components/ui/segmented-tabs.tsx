@@ -58,7 +58,7 @@ export function SegmentedTabList({ tabs, value, fullWidth = false }: SegmentedTa
   return (
     <RadixTabs.List
       ref={listRef}
-      className={`relative items-center rounded-xl border border-border/50 bg-muted/80 p-1 ${
+      className={`border-border/50 bg-muted/80 relative items-center rounded-xl border p-1 ${
         fullWidth ? "grid w-full" : "inline-flex"
       }`}
       style={
@@ -67,7 +67,7 @@ export function SegmentedTabList({ tabs, value, fullWidth = false }: SegmentedTa
     >
       {/* Sliding pill */}
       <span
-        className="absolute top-1 bottom-1 rounded-lg border border-primary/40 bg-primary/12"
+        className="border-primary/40 bg-primary/12 absolute top-1 bottom-1 rounded-lg border"
         aria-hidden="true"
         style={{
           left: pillStyle.left,
@@ -84,7 +84,7 @@ export function SegmentedTabList({ tabs, value, fullWidth = false }: SegmentedTa
           ref={(el) => {
             buttonRefs.current[tab.value] = el;
           }}
-          className={`relative z-10 inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-200 data-[state=active]:text-primary data-[state=inactive]:text-muted-foreground ${
+          className={`data-[state=active]:text-primary data-[state=inactive]:text-muted-foreground relative z-10 inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-200 ${
             fullWidth ? "w-full" : ""
           }`}
         >

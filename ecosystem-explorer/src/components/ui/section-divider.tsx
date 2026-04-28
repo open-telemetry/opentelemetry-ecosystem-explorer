@@ -22,11 +22,11 @@ interface SectionDividerProps {
 export function SectionDivider({ children }: SectionDividerProps) {
   return (
     <div className="my-12 flex items-center">
-      <div className="flex-1 border-b-2 border-border/30" />
-      <span className="px-8 text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
+      <div className="border-border/30 flex-1 border-b-2" />
+      <span className="text-muted-foreground px-8 text-xs font-bold tracking-[0.2em] uppercase">
         {children}
       </span>
-      <div className="flex-1 border-b-2 border-border/30" />
+      <div className="border-border/30 flex-1 border-b-2" />
     </div>
   );
 }

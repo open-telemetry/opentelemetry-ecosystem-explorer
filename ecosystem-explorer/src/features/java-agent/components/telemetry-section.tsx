@@ -50,7 +50,7 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
         />
       )}
 
-      <div className={hasBothMetricsAndSpans ? "grid grid-cols-1 lg:grid-cols-2 gap-8" : ""}>
+      <div className={hasBothMetricsAndSpans ? "grid grid-cols-1 gap-8 lg:grid-cols-2" : ""}>
         {/* Metrics Section */}
         {hasMetrics && (
           <div>
@@ -60,12 +60,12 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                 currentTelemetry.metrics.map((metric) => (
                   <div
                     key={metric.name}
-                    className="rounded-2xl border border-border/30 bg-card/30 p-6 md:p-10"
+                    className="border-border/30 bg-card/30 rounded-2xl border p-6 md:p-10"
                   >
                     <div className="space-y-6">
                       {/* Metric name and type badge */}
                       <div className="flex items-start justify-between gap-4">
-                        <code className="flex-1 break-all font-mono text-lg font-semibold text-foreground">
+                        <code className="text-foreground flex-1 font-mono text-lg font-semibold break-all">
                           {metric.name}
                         </code>
                         <GlowBadge variant="success" withGlow className="text-[10px]">
@@ -74,16 +74,16 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                       </div>
 
                       {/* Description */}
-                      <p className="text-base leading-relaxed text-foreground/80 md:text-base">
+                      <p className="text-foreground/80 text-base leading-relaxed md:text-base">
                         {metric.description}
                       </p>
 
                       {/* Unit section with border */}
-                      <div className="flex items-center gap-3 border-b border-border/30 pb-6">
-                        <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                      <div className="border-border/30 flex items-center gap-3 border-b pb-6">
+                        <span className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
                           Unit
                         </span>
-                        <code className="rounded border border-border/30 bg-white/[0.03] px-2 py-1 text-sm text-foreground/80 ">
+                        <code className="border-border/30 text-foreground/80 rounded border bg-white/[0.03] px-2 py-1 text-sm">
                           {metric.unit}
                         </code>
                       </div>
@@ -91,7 +91,7 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                       {/* Attributes section */}
                       {metric.attributes && metric.attributes.length > 0 && (
                         <div className="space-y-4">
-                          <h4 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
+                          <h4 className="text-muted-foreground text-xs font-black tracking-[0.2em] uppercase">
                             Attributes
                           </h4>
                           <AttributeTable attributes={metric.attributes} />
@@ -113,12 +113,12 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                 currentTelemetry.spans.map((span, index) => (
                   <div
                     key={`${span.span_kind}-${index}`}
-                    className="rounded-2xl border border-border/30 bg-card/30 p-6 md:p-10"
+                    className="border-border/30 bg-card/30 rounded-2xl border p-6 md:p-10"
                   >
                     <div className="space-y-6">
                       {/* Span kind badge */}
                       <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-bold text-foreground md:text-xl">
+                        <h3 className="text-foreground text-lg font-bold md:text-xl">
                           {span.span_kind} Span
                         </h3>
                         <GlowBadge variant="info" withGlow className="text-xs">
@@ -129,7 +129,7 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                       {/* Attributes section */}
                       {span.attributes && span.attributes.length > 0 && (
                         <div className="space-y-4">
-                          <h4 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
+                          <h4 className="text-muted-foreground text-xs font-black tracking-[0.2em] uppercase">
                             Attributes
                           </h4>
                           <AttributeTable attributes={span.attributes} />
@@ -146,7 +146,7 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
       {/* Empty state */}
       {!hasMetrics && !hasSpans && (
         <div className="flex min-h-[200px] items-center justify-center">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             No metrics or spans defined for this configuration.
           </p>
         </div>

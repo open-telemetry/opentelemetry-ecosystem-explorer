@@ -1,5 +1,3 @@
-# See https://pre-commit.com for more information
-
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.9.1
@@ -16,28 +14,29 @@ repos:
 
   - repo: local
     hooks:
-      - id: pytest-collector-watcher
-        name: pytest (collector-watcher)
-        entry: bash -c 'cd ecosystem-automation/collector-watcher && uv run pytest tests/ -v'
+      - id: prettier
+        name: prettier
+        entry: bunx prettier --write
         language: system
-        pass_filenames: false
-        always_run: true
-        stages: [pre-commit]
+        files: \.(js|ts|tsx|css|json|yaml|yml|md)$
+        exclude: ^ecosystem-explorer/public/data/
 
-      - id: prettier-ecosystem-explorer
-        name: prettier (ecosystem-explorer)
-        entry: bash -c 'cd ecosystem-explorer && bun run format'
-        language: system
-        pass_filenames: false
-        files: ^ecosystem-explorer/src/.*\.(ts|tsx|css|json)$
-        stages: [pre-commit]
-
+  - repo: local
+    hooks:
       - id: eslint-ecosystem-explorer
         name: eslint (ecosystem-explorer)
         entry: bash -c 'cd ecosystem-explorer && bun run lint'
         language: system
         pass_filenames: false
         files: ^ecosystem-explorer/
+        stages: [pre-commit]
+
+      - id: pytest-collector-watcher
+        name: pytest (collector-watcher)
+        entry: bash -c 'cd ecosystem-automation/collector-watcher && uv run pytest tests/ -v'
+        language: system
+        pass_filenames: false
+        files: ^ecosystem-automation/collector-watcher/
         stages: [pre-commit]
 
       - id: test-ecosystem-explorer

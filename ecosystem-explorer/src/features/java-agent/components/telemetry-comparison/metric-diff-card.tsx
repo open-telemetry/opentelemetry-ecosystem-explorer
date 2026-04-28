@@ -30,11 +30,11 @@ export function MetricDiffCard({ diff }: MetricDiffCardProps) {
   const statusLabel = status === "added" ? "Added" : status === "removed" ? "Removed" : "Changed";
 
   return (
-    <div className="rounded-2xl border border-border/30 bg-card/30 p-6 md:p-10 transition-all duration-300 hover:bg-card-secondary">
+    <div className="border-border/30 bg-card/30 hover:bg-card-secondary rounded-2xl border p-6 transition-all duration-300 md:p-10">
       <div className="space-y-6">
         {/* Metric name and badges */}
-        <div className="flex items-start justify-between gap-4 flex-wrap">
-          <code className="flex-1 break-all font-mono text-lg font-semibold text-foreground">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <code className="text-foreground flex-1 font-mono text-lg font-semibold break-all">
             {metric.name}
           </code>
           <div className="flex gap-2">
@@ -49,16 +49,16 @@ export function MetricDiffCard({ diff }: MetricDiffCardProps) {
 
         {/* Description */}
         {status !== "removed" && (
-          <p className="text-base leading-relaxed text-foreground/80">{metric.description}</p>
+          <p className="text-foreground/80 text-base leading-relaxed">{metric.description}</p>
         )}
 
         {/* Description change indicator */}
         {status === "changed" && changes?.description && (
           <div className="space-y-2">
-            <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+            <span className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
               Description Changed
             </span>
-            <div className="space-y-1 rounded-lg border border-border/30 bg-white/[0.03] p-3">
+            <div className="border-border/30 space-y-1 rounded-lg border bg-white/[0.03] p-3">
               <p className="text-sm text-red-400 line-through opacity-60">
                 {changes.description.before}
               </p>
@@ -70,7 +70,7 @@ export function MetricDiffCard({ diff }: MetricDiffCardProps) {
         {/* Data type change indicator */}
         {status === "changed" && changes?.data_type && (
           <div className="flex items-center gap-3">
-            <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+            <span className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
               Type Changed
             </span>
             <div className="flex items-center gap-2">
@@ -87,20 +87,20 @@ export function MetricDiffCard({ diff }: MetricDiffCardProps) {
 
         {/* Unit section */}
         {status !== "removed" && (
-          <div className="flex items-center gap-3 border-b border-border/30 pb-6">
-            <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+          <div className="border-border/30 flex items-center gap-3 border-b pb-6">
+            <span className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
               Unit
             </span>
-            <code className="rounded border border-border/30 bg-white/[0.03] px-2 py-1 text-sm text-foreground/80">
+            <code className="border-border/30 text-foreground/80 rounded border bg-white/[0.03] px-2 py-1 text-sm">
               {metric.unit}
             </code>
             {status === "changed" && changes?.unit && (
               <div className="flex items-center gap-2">
-                <span className="text-xs text-muted-foreground">(was:</span>
+                <span className="text-muted-foreground text-xs">(was:</span>
                 <code className="rounded border border-red-400/30 bg-red-400/10 px-2 py-1 text-sm text-red-400 line-through">
                   {changes.unit.before}
                 </code>
-                <span className="text-xs text-muted-foreground">)</span>
+                <span className="text-muted-foreground text-xs">)</span>
               </div>
             )}
           </div>
@@ -109,7 +109,7 @@ export function MetricDiffCard({ diff }: MetricDiffCardProps) {
         {/* Attributes section */}
         {status === "changed" && changes?.attributes && (
           <div className="space-y-4">
-            <h4 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
+            <h4 className="text-muted-foreground text-xs font-black tracking-[0.2em] uppercase">
               Attribute Changes
             </h4>
             <AttributeDiffTable changes={changes.attributes} />

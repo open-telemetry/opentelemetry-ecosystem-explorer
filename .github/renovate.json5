@@ -1,66 +1,63 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:best-practices",
-    "helpers:pinGitHubActionDigestsToSemver"
-  ],
-  "minimumReleaseAge": "7 days",
-  "internalChecksFilter": "strict",
-  "labels": ["dependencies"],
-  "schedule": ["before 8am on Monday"],
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: ["config:best-practices", "helpers:pinGitHubActionDigestsToSemver"],
+  minimumReleaseAge: "7 days",
+  internalChecksFilter: "strict",
+  labels: ["dependencies"],
+  schedule: ["before 8am on Monday"],
 
-  "lockFileMaintenance": {
-    "enabled": true,
-    "schedule": ["before 4am on Monday"]
+  lockFileMaintenance: {
+    enabled: true,
+    schedule: ["before 4am on Monday"],
   },
 
-  "packageRules": [
+  packageRules: [
     // Dev dependencies (patch/minor)
     {
-      "matchDepTypes": ["devDependencies"],
-      "matchUpdateTypes": ["patch", "minor"],
-      "groupName": "dev dependencies (non-major)",
+      matchDepTypes: ["devDependencies"],
+      matchUpdateTypes: ["patch", "minor"],
+      groupName: "dev dependencies (non-major)",
     },
 
     // Dev dependencies (major)
     {
-      "matchDepTypes": ["devDependencies"],
-      "matchUpdateTypes": ["major"]
+      matchDepTypes: ["devDependencies"],
+      matchUpdateTypes: ["major"],
     },
 
     // Production dependencies (patch)
     {
-      "matchDepTypes": ["dependencies"],
-      "matchUpdateTypes": ["patch"],
-      "groupName": "production patches",
+      matchDepTypes: ["dependencies"],
+      matchUpdateTypes: ["patch"],
+      groupName: "production patches",
     },
 
     // Production dependencies (minor)
     {
-      "matchDepTypes": ["dependencies"],
-      "matchUpdateTypes": ["minor"],
-      "groupName": "production minor updates"
+      matchDepTypes: ["dependencies"],
+      matchUpdateTypes: ["minor"],
+      groupName: "production minor updates",
     },
 
     // Production dependencies (major)
     {
-      "matchDepTypes": ["dependencies"],
-      "matchUpdateTypes": ["major"]
+      matchDepTypes: ["dependencies"],
+      matchUpdateTypes: ["major"],
     },
 
     // GitHub Actions (patch/minor)
     {
-      "matchManagers": ["github-actions"],
-      "matchUpdateTypes": ["patch", "minor"],
-      "minimumReleaseAge": "7 days",
-      "groupName": "GitHub Actions",
+      matchManagers: ["github-actions"],
+      matchUpdateTypes: ["patch", "minor"],
+      minimumReleaseAge: "7 days",
+      groupName: "GitHub Actions",
     },
 
     // GitHub Actions (major)
     {
-      "matchManagers": ["github-actions"],
-      "matchUpdateTypes": ["major"],
-      "minimumReleaseAge": "7 days"
-    }
-  ]
+      matchManagers: ["github-actions"],
+      matchUpdateTypes: ["major"],
+      minimumReleaseAge: "7 days",
+    },
+  ],
 }

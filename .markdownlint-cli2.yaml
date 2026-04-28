@@ -6,6 +6,7 @@ ignores:
   - "ecosystem-explorer/DESIGN.md"
   - "**/tmp_repos/**"
   - "**/node_modules/**"
+  - ".claude/**"
 
 config:
   default: true

@@ -178,6 +178,7 @@ export function CollectorPage() {
           </div>
         </div>
 
+
         {componentsLoading ? (
           <div className="flex flex-col items-center justify-center py-32 space-y-4">
             <div className="inline-flex rounded-full p-4 animate-pulse shadow-[0_0_60px_hsl(var(--primary-hsl)/0.2)]">

@@ -11,11 +11,11 @@ On a scheduled basis, the tool fetches the OpenTelemetry Java Agent instrumentat
 
 Process:
 
-* Fetch the latest release tag from GitHub
-* Download the `instrumentation-list.yaml` file for the release
-* Parse and normalize the data using version-specific parsers
-* Create or update versioned snapshots of instrumentation metadata in YAML format
-* Update snapshot from the `main` branch
+- Fetch the latest release tag from GitHub
+- Download the `instrumentation-list.yaml` file for the release
+- Parse and normalize the data using version-specific parsers
+- Create or update versioned snapshots of instrumentation metadata in YAML format
+- Update snapshot from the `main` branch
 
 It maintains a versioned inventory of instrumentation snapshots in YAML format in the
 `ecosystem-registry/java/javaagent` directory.
@@ -24,11 +24,11 @@ It maintains a versioned inventory of instrumentation snapshots in YAML format i
 
 The tool uses a version-aware parser system to handle different `file_format` versions:
 
-* **String cleaning**: All string values are automatically stripped of leading/trailing whitespace
-* **Library flattening**: Nested library structures are converted to a flat list with tags
-  * Input: `libraries: { groupName: [lib1, lib2] }`
-  * Output: `libraries: [lib1{tags: ["groupName"]}, lib2{tags: ["groupName"]}]`
-* **Version detection**: Automatically detects `file_format` from YAML and applies the appropriate parser
+- **String cleaning**: All string values are automatically stripped of leading/trailing whitespace
+- **Library flattening**: Nested library structures are converted to a flat list with tags
+  - Input: `libraries: { groupName: [lib1, lib2] }`
+  - Output: `libraries: [lib1{tags: ["groupName"]}, lib2{tags: ["groupName"]}]`
+- **Version detection**: Automatically detects `file_format` from YAML and applies the appropriate parser
 
 ### Adding New Version Parsers
 

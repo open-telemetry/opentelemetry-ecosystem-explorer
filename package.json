@@ -4,11 +4,16 @@
   "private": true,
   "description": "OpenTelemetry Ecosystem Explorer - discover and explore OpenTelemetry ecosystem projects",
   "scripts": {
+    "lint": "bun run lint:md && cd ecosystem-explorer && bun run lint",
     "lint:md": "markdownlint-cli2",
-    "lint:md:fix": "markdownlint-cli2 --fix"
+    "lint:md:fix": "markdownlint-cli2 --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
-    "markdownlint-cli2": "0.22.1"
+    "markdownlint-cli2": "0.22.1",
+    "prettier": "^3.8.3",
+    "prettier-plugin-tailwindcss": "^0.8.0"
   },
   "engines": {
     "node": ">=18.0.0"

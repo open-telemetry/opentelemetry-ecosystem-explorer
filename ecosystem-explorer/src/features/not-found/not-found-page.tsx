@@ -19,19 +19,19 @@ import { PageContainer } from "@/components/layout/page-container";
 
 export function NotFoundPage() {
   return (
-    <PageContainer className="flex flex-col items-center justify-center min-h-[60vh]">
-      <Compass className="w-32 h-32 mb-8 opacity-50" />
+    <PageContainer className="flex min-h-[60vh] flex-col items-center justify-center">
+      <Compass className="mb-8 h-32 w-32 opacity-50" />
 
-      <h1 className="text-4xl font-bold text-foreground mb-4">404 - Page Not Found</h1>
+      <h1 className="text-foreground mb-4 text-4xl font-bold">404 - Page Not Found</h1>
 
-      <p className="text-muted-foreground mb-8 text-center max-w-md">
+      <p className="text-muted-foreground mb-8 max-w-md text-center">
         The page you're looking for doesn't exist. You may have mistyped the address or the page may
         have moved.
       </p>
 
       <Link
         to="/"
-        className="px-6 py-3 rounded-lg bg-primary/10 border border-primary/40 text-foreground hover:bg-primary/20 transition-colors"
+        className="bg-primary/10 border-primary/40 text-foreground hover:bg-primary/20 rounded-lg border px-6 py-3 transition-colors"
       >
         Return to Home
       </Link>

@@ -25,7 +25,7 @@ export function JavaConfigurationListPage() {
       <div className="space-y-6">
         <BackButton />
         <div>
-          <h1 className="text-3xl font-bold md:text-4xl mb-2">
+          <h1 className="mb-2 text-3xl font-bold md:text-4xl">
             <span className="bg-gradient-to-r from-[hsl(var(--secondary-hsl))] to-[hsl(var(--primary-hsl))] bg-clip-text text-transparent">
               OpenTelemetry Java Agent Configuration
             </span>
@@ -39,7 +39,7 @@ export function JavaConfigurationListPage() {
             icon={<ConfigurationIcon className="h-16 w-16" />}
           />
         ) : (
-          <div className="rounded-lg border border-border/50 bg-card/50 p-8 text-center">
+          <div className="border-border/50 bg-card/50 rounded-lg border p-8 text-center">
             <p className="text-muted-foreground">Configuration Builder coming soon...</p>
           </div>
         )}

@@ -38,7 +38,7 @@ export function InstrumentationCard({
   return (
     <Link
       to={detailUrl}
-      className="group relative flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card p-6 transition-all duration-300 hover:scale-[1.02] hover:border-primary/40 hover:bg-card-secondary hover:shadow-[0_0_30px_hsl(var(--primary-hsl)/0.12)]"
+      className="group border-border bg-card hover:border-primary/40 hover:bg-card-secondary relative flex h-full flex-col overflow-hidden rounded-lg border p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_30px_hsl(var(--primary-hsl)/0.12)]"
       aria-label={`View details for ${displayName}`}
     >
       {/* Grid pattern background */}
@@ -56,14 +56,14 @@ export function InstrumentationCard({
       {/* Content */}
       <div className="relative z-10 flex-1 space-y-4">
         <div className="flex items-start justify-between gap-3">
-          <h3 className="flex-1 text-lg font-semibold leading-tight">{displayName}</h3>
+          <h3 className="flex-1 text-lg leading-tight font-semibold">{displayName}</h3>
           <div className="flex flex-shrink-0 gap-1">
             <TargetBadges badges={badgeInfo} activeFilters={activeFilters} />
           </div>
         </div>
 
         {instrumentation.description && (
-          <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+          <p className="text-muted-foreground line-clamp-3 text-sm leading-relaxed">
             {instrumentation.description}
           </p>
         )}

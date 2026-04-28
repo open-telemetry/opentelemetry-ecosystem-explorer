@@ -6,9 +6,9 @@ on:
       - main
   pull_request:
     paths:
-      - '**.md'
-      - '.markdownlint.json'
-      - '.github/workflows/markdown-lint.yml'
+      - "**.md"
+      - ".markdownlint.json"
+      - ".github/workflows/markdown-lint.yml"
 
 permissions:
   contents: read

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import * as RadixTooltip from "@radix-ui/react-tooltip";
 import React, { forwardRef } from "react";
 import type { ComponentPropsWithoutRef, ComponentRef } from "react";
@@ -30,7 +31,7 @@ const TooltipContent = forwardRef<
     <RadixTooltip.Content
       ref={ref}
       sideOffset={sideOffset}
-      className={`z-50 overflow-hidden rounded-md border border-border/50 bg-card/95 px-3 py-1.5 text-xs normal-case text-foreground shadow-xl backdrop-blur-md animate-in fade-in zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 ${className}`}
+      className={`border-border/50 bg-card/95 text-foreground animate-in fade-in zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 overflow-hidden rounded-md border px-3 py-1.5 text-xs normal-case shadow-xl backdrop-blur-md ${className}`}
       {...props}
     />
   </TooltipPortal>

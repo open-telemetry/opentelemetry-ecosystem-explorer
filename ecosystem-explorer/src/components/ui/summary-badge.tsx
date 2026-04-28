@@ -27,7 +27,7 @@ export interface SummaryBadgeProps {
  */
 export function SummaryBadge({ children }: SummaryBadgeProps): JSX.Element {
   return (
-    <span className="inline-flex items-center rounded-full border border-secondary/40 px-2 py-0.5 text-[10px] font-medium tabular-nums leading-none text-secondary">
+    <span className="border-secondary/40 text-secondary inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] leading-none font-medium tabular-nums">
       {children}
     </span>
   );

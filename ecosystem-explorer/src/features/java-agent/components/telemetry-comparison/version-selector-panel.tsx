@@ -40,22 +40,22 @@ export function VersionSelectorPanel({
 }: VersionSelectorPanelProps) {
   return (
     <div className="mx-auto max-w-4xl">
-      <div className="flex flex-col gap-6 rounded-xl border border-border/30 bg-card/40 backdrop-blur-sm p-6 shadow-sm">
+      <div className="border-border/30 bg-card/40 flex flex-col gap-6 rounded-xl border p-6 shadow-sm backdrop-blur-sm">
         {/* Info banner */}
-        <div className="flex items-center gap-2 rounded-lg bg-secondary/10 px-3 py-2 border border-secondary/20 w-fit">
-          <Info className="h-4 w-4 text-secondary" aria-hidden="true" />
-          <span className="text-xs font-medium text-foreground/90">
+        <div className="bg-secondary/10 border-secondary/20 flex w-fit items-center gap-2 rounded-lg border px-3 py-2">
+          <Info className="text-secondary h-4 w-4" aria-hidden="true" />
+          <span className="text-foreground/90 text-xs font-medium">
             Compare telemetry between two releases
           </span>
         </div>
 
         {/* Version selectors */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {/* From version selector */}
           <div className="space-y-3">
             <label
               htmlFor="from-version-select"
-              className="block rounded-md bg-muted/50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-foreground/70 w-fit"
+              className="bg-muted/50 text-foreground/70 block w-fit rounded-md px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase"
             >
               From
             </label>
@@ -63,7 +63,7 @@ export function VersionSelectorPanel({
               id="from-version-select"
               value={fromVersion}
               onChange={(e) => onFromVersionChange(e.target.value)}
-              className="w-full cursor-pointer rounded-lg border-2 border-primary/20 bg-primary/5 px-4 py-2.5 text-sm font-medium text-foreground shadow-sm transition-all duration-200 hover:border-primary/40 hover:bg-primary/10 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50"
+              className="border-primary/20 bg-primary/5 text-foreground hover:border-primary/40 hover:bg-primary/10 focus:ring-primary/50 focus:border-primary/50 w-full cursor-pointer rounded-lg border-2 px-4 py-2.5 text-sm font-medium shadow-sm transition-all duration-200 hover:shadow-md focus:ring-2 focus:outline-none"
             >
               {versions.map((v) => (
                 <option key={v.version} value={v.version}>
@@ -77,7 +77,7 @@ export function VersionSelectorPanel({
           <div className="space-y-3">
             <label
               htmlFor="to-version-select"
-              className="block rounded-md bg-muted/50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-foreground/70 w-fit"
+              className="bg-muted/50 text-foreground/70 block w-fit rounded-md px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase"
             >
               To
             </label>
@@ -85,7 +85,7 @@ export function VersionSelectorPanel({
               id="to-version-select"
               value={toVersion}
               onChange={(e) => onToVersionChange(e.target.value)}
-              className="w-full cursor-pointer rounded-lg border-2 border-primary/20 bg-primary/5 px-4 py-2.5 text-sm font-medium text-foreground shadow-sm transition-all duration-200 hover:border-primary/40 hover:bg-primary/10 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50"
+              className="border-primary/20 bg-primary/5 text-foreground hover:border-primary/40 hover:bg-primary/10 focus:ring-primary/50 focus:border-primary/50 w-full cursor-pointer rounded-lg border-2 px-4 py-2.5 text-sm font-medium shadow-sm transition-all duration-200 hover:shadow-md focus:ring-2 focus:outline-none"
             >
               {versions.map((v) => (
                 <option key={v.version} value={v.version}>
@@ -100,7 +100,7 @@ export function VersionSelectorPanel({
           <div className="space-y-3">
             <label
               htmlFor="when-condition-select"
-              className="block rounded-md bg-muted/50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest text-foreground/70 w-fit"
+              className="bg-muted/50 text-foreground/70 block w-fit rounded-md px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase"
             >
               Configuration
             </label>
@@ -108,7 +108,7 @@ export function VersionSelectorPanel({
               id="when-condition-select"
               value={whenCondition}
               onChange={(e) => onWhenConditionChange(e.target.value)}
-              className="w-full cursor-pointer rounded-lg border-2 border-primary/20 bg-primary/5 px-4 py-2.5 text-sm font-medium text-foreground shadow-sm transition-all duration-200 hover:border-primary/40 hover:bg-primary/10 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50"
+              className="border-primary/20 bg-primary/5 text-foreground hover:border-primary/40 hover:bg-primary/10 focus:ring-primary/50 focus:border-primary/50 w-full cursor-pointer rounded-lg border-2 px-4 py-2.5 text-sm font-medium shadow-sm transition-all duration-200 hover:shadow-md focus:ring-2 focus:outline-none"
             >
               {availableConditions.map((c) => (
                 <option key={c} value={c}>
