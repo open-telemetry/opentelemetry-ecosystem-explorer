@@ -19,9 +19,9 @@ import { NavigationCard } from "@/components/ui/navigation-card";
 
 export function AgentExploreLanding() {
   return (
-    <section className="relative py-8 px-6 bg-background">
-      <div className="max-w-6xl mx-auto">
-        <div className="grid md:grid-cols-2 gap-4">
+    <section className="bg-background relative px-6 py-8">
+      <div className="mx-auto max-w-6xl">
+        <div className="grid gap-4 md:grid-cols-2">
           <NavigationCard
             title="Instrumentation Libraries"
             description="Explore auto-instrumentation for Java applications. Discover supported libraries, configuration options, and emitted telemetry."

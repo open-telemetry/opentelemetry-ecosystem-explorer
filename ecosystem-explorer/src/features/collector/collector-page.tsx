@@ -21,18 +21,18 @@ export function CollectorPage() {
     <PageContainer>
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">OpenTelemetry Collector</h1>
+          <h1 className="text-foreground mb-2 text-3xl font-bold">OpenTelemetry Collector</h1>
           <p className="text-muted-foreground">
             Navigate Collector components like receivers, processors, and exporters.
           </p>
         </div>
 
         {isEnabled("COLLECTOR_PAGE") ? (
-          <div className="rounded-lg border border-border/50 bg-card/50 p-8 text-center">
+          <div className="border-border/50 bg-card/50 rounded-lg border p-8 text-center">
             <p className="text-muted-foreground">Insert Collector explorer here ...</p>
           </div>
         ) : (
-          <div className="rounded-lg border border-border/50 bg-card/50 p-8 text-center">
+          <div className="border-border/50 bg-card/50 rounded-lg border p-8 text-center">
             <p className="text-muted-foreground">Collector explorer coming soon...</p>
           </div>
         )}

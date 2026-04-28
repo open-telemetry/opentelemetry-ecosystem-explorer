@@ -52,7 +52,7 @@ export function InfoTooltip({
         onKeyDown={(e) => {
           if (e.key === "Escape") setOpen(false);
         }}
-        className="inline-flex h-4 w-4 items-center justify-center rounded-full text-muted-foreground hover:text-foreground focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+        className="text-muted-foreground hover:text-foreground focus-visible:ring-primary/40 inline-flex h-4 w-4 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2"
       >
         <Info className="h-3 w-3" aria-hidden="true" />
       </button>
@@ -61,7 +61,7 @@ export function InfoTooltip({
         id={id}
         data-open={open}
         className={[
-          "pointer-events-none absolute left-0 top-full z-20 mt-1 w-max max-w-xs rounded-md border border-border/60 bg-card px-2 py-1 text-xs text-foreground shadow-lg",
+          "border-border/60 bg-card text-foreground pointer-events-none absolute top-full left-0 z-20 mt-1 w-max max-w-xs rounded-md border px-2 py-1 text-xs shadow-lg",
           open ? "opacity-100" : "opacity-0",
           "transition-opacity",
         ].join(" ")}

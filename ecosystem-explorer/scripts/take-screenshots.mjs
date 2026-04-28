@@ -88,7 +88,10 @@ async function takeScreenshots() {
     await page.route("**/*", (route) => {
       try {
         const hostname = new URL(route.request().url()).hostname;
-        if (BLOCKED_HOSTS.has(hostname) || [...BLOCKED_HOSTS].some((h) => hostname.endsWith(`.${h}`))) {
+        if (
+          BLOCKED_HOSTS.has(hostname) ||
+          [...BLOCKED_HOSTS].some((h) => hostname.endsWith(`.${h}`))
+        ) {
           route.abort();
           return;
         }
@@ -113,10 +116,9 @@ async function takeScreenshots() {
       waitUntil: "domcontentloaded",
       timeout: 10000,
     });
-    await page.waitForFunction(
-      () => document.body.textContent.includes("Showing"),
-      { timeout: 15000 }
-    );
+    await page.waitForFunction(() => document.body.textContent.includes("Showing"), {
+      timeout: 15000,
+    });
     await page.screenshot({
       path: path.join(SCREENSHOTS_DIR, "instrumentation-list.png"),
     });

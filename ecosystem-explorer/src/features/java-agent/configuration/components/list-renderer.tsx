@@ -49,7 +49,7 @@ export function ListRenderer({ node, depth, path }: ListRendererProps): JSX.Elem
   const body = (
     <div className="space-y-3">
       {items.length === 0 ? (
-        <p className="text-xs text-muted-foreground">No items</p>
+        <p className="text-muted-foreground text-xs">No items</p>
       ) : (
         <ul className="space-y-3">
           {items.map((itemValue, i) => {
@@ -58,12 +58,12 @@ export function ListRenderer({ node, depth, path }: ListRendererProps): JSX.Elem
             return (
               <li
                 key={itemKeys[i]}
-                className="rounded-lg border border-border/40 bg-background/30 p-4 space-y-3"
+                className="border-border/40 bg-background/30 space-y-3 rounded-lg border p-4"
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="flex items-center gap-2 text-sm font-medium">
                     <span className="text-muted-foreground tabular-nums">{i + 1}</span>
-                    <span className={derived ? "text-foreground" : "italic text-muted-foreground"}>
+                    <span className={derived ? "text-foreground" : "text-muted-foreground italic"}>
                       {label}
                     </span>
                   </span>
@@ -72,7 +72,7 @@ export function ListRenderer({ node, depth, path }: ListRendererProps): JSX.Elem
                       type="button"
                       aria-label={`Remove item ${i + 1}`}
                       onClick={() => removeListItem(path, i)}
-                      className="rounded-md border border-border/60 p-1 text-muted-foreground hover:border-red-500/40 hover:text-red-400"
+                      className="border-border/60 text-muted-foreground rounded-md border p-1 hover:border-red-500/40 hover:text-red-400"
                     >
                       <X className="h-3 w-3" aria-hidden="true" />
                     </button>
@@ -100,7 +100,7 @@ export function ListRenderer({ node, depth, path }: ListRendererProps): JSX.Elem
           aria-expanded={expanded}
           aria-label={expanded ? `Collapse ${node.label}` : `Expand ${node.label}`}
           onClick={() => setExpanded((e) => !e)}
-          className="flex items-center gap-1 text-sm font-medium text-foreground hover:text-primary"
+          className="text-foreground hover:text-primary flex items-center gap-1 text-sm font-medium"
         >
           {expanded ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}
           {node.label}
@@ -114,9 +114,9 @@ export function ListRenderer({ node, depth, path }: ListRendererProps): JSX.Elem
             type="button"
             aria-label={`Add item to ${node.label}`}
             onClick={() => addListItem(path)}
-            className="ml-auto inline-flex items-center gap-1 rounded-md border border-border/60 px-2 py-1 text-xs text-foreground hover:border-primary/40"
+            className="border-border/60 text-foreground hover:border-primary/40 ml-auto inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs"
           >
-            <Plus className="h-3 w-3 text-primary" aria-hidden="true" />
+            <Plus className="text-primary h-3 w-3" aria-hidden="true" />
             Add
           </button>
         )}

@@ -1,0 +1,35 @@
+# Dependencies
+node_modules
+.venv
+
+# Build output
+dist
+build
+.vite
+.pytest_cache
+
+# Logs
+*.log
+
+# Lock files
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+uv.lock
+bun.lock
+
+# IDE
+.vscode
+.idea
+
+# Coverage
+coverage
+
+# Python (handled by Ruff)
+*.py
+
+# Data (avoid formatting large generated files)
+ecosystem-explorer/public/data
+
+# Registry (written by automation watchers - do not reformat)
+ecosystem-registry

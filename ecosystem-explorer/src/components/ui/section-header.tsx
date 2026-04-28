@@ -29,7 +29,7 @@ export function SectionHeader({ children, className = "" }: SectionHeaderProps) 
           background: "linear-gradient(to right, transparent, hsl(var(--border-hsl)))",
         }}
       />
-      <h2 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
+      <h2 className="text-muted-foreground text-sm font-medium tracking-wider uppercase">
         {children}
       </h2>
       <div

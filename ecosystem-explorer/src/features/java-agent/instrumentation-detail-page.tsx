@@ -108,16 +108,16 @@ export function InstrumentationDetailPage() {
         <div className="flex min-h-[400px] items-center justify-center">
           <div className="text-center">
             <div
-              className="inline-flex rounded-full p-4 animate-pulse"
+              className="inline-flex animate-pulse rounded-full p-4"
               style={{
                 boxShadow: "0 0 60px hsl(var(--primary-hsl) / 0.2)",
               }}
             >
-              <Loader2 className="h-12 w-12 animate-spin text-primary" aria-hidden="true" />
+              <Loader2 className="text-primary h-12 w-12 animate-spin" aria-hidden="true" />
             </div>
             <div className="mt-6 space-y-2">
               <div className="text-lg font-medium">Loading instrumentation...</div>
-              <div className="text-sm text-muted-foreground">This may take a moment</div>
+              <div className="text-muted-foreground text-sm">This may take a moment</div>
             </div>
           </div>
         </div>
@@ -160,7 +160,7 @@ export function InstrumentationDetailPage() {
       <BackButton />
 
       <div className="mt-3 space-y-6">
-        <header className="relative overflow-hidden rounded-lg border border-border/60 bg-card/80 p-8">
+        <header className="border-border/60 bg-card/80 relative overflow-hidden rounded-lg border p-8">
           <div
             className="absolute inset-0"
             style={{
@@ -183,14 +183,14 @@ export function InstrumentationDetailPage() {
           <div className="relative z-10 space-y-4">
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 space-y-3">
-                <h1 className="text-3xl font-bold leading-tight md:text-4xl">
+                <h1 className="text-3xl leading-tight font-bold md:text-4xl">
                   <span className="bg-gradient-to-r from-[hsl(var(--secondary-hsl))] to-[hsl(var(--primary-hsl))] bg-clip-text text-transparent">
                     {displayName}
                   </span>
                 </h1>
                 {showRawName && (
                   <p className="text-sm">
-                    <code className="rounded bg-muted px-2 py-1 text-foreground">
+                    <code className="bg-muted text-foreground rounded px-2 py-1">
                       {instrumentation.name}
                     </code>
                   </p>
@@ -220,13 +220,13 @@ export function InstrumentationDetailPage() {
             </div>
 
             {instrumentation.description && (
-              <p className="max-w-4xl text-base leading-relaxed text-muted-foreground">
+              <p className="text-muted-foreground max-w-4xl text-base leading-relaxed">
                 {instrumentation.description}
               </p>
             )}
           </div>
 
-          <div className="pointer-events-none absolute -bottom-1 -right-1 h-24 w-24 opacity-80">
+          <div className="pointer-events-none absolute -right-1 -bottom-1 h-24 w-24 opacity-80">
             <svg viewBox="0 0 64 64" className="h-full w-full">
               <path
                 d="M64 64 L64 32 L48 32 L48 48 L32 48 L32 64 Z"
@@ -236,7 +236,7 @@ export function InstrumentationDetailPage() {
           </div>
         </header>
 
-        <div className="relative overflow-hidden rounded-lg border border-border/60 bg-card/80">
+        <div className="border-border/60 bg-card/80 relative overflow-hidden rounded-lg border">
           <div className="absolute inset-0 opacity-5">
             <div
               className="h-full w-full"
@@ -283,14 +283,14 @@ export function InstrumentationDetailPage() {
                       {instrumentation.features && instrumentation.features.length > 0 && (
                         <DetailCard>
                           <div className="space-y-3">
-                            <h3 className="text-sm font-medium text-muted-foreground">Features</h3>
+                            <h3 className="text-muted-foreground text-sm font-medium">Features</h3>
                             <ul className="space-y-2">
                               {instrumentation.features.map((feature) => {
                                 const info = getFeatureInfo(feature);
                                 return (
                                   <li key={feature} className="flex items-start gap-2 text-sm">
                                     <Check
-                                      className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary"
+                                      className="text-primary mt-0.5 h-4 w-4 flex-shrink-0"
                                       aria-hidden="true"
                                     />
                                     <div>
@@ -298,7 +298,7 @@ export function InstrumentationDetailPage() {
                                         {info ? info.label : feature}
                                       </span>
                                       {info && (
-                                        <p className="mt-0.5 text-xs text-muted-foreground">
+                                        <p className="text-muted-foreground mt-0.5 text-xs">
                                           {info.description}
                                         </p>
                                       )}
@@ -315,7 +315,7 @@ export function InstrumentationDetailPage() {
                         instrumentation.semantic_conventions.length > 0 && (
                           <DetailCard>
                             <div className="space-y-3">
-                              <h3 className="text-sm font-medium text-muted-foreground">
+                              <h3 className="text-muted-foreground text-sm font-medium">
                                 Semantic Conventions
                               </h3>
                               <div className="flex flex-wrap gap-2">
@@ -328,7 +328,7 @@ export function InstrumentationDetailPage() {
                                         href={info.url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="px-3 py-1 text-sm rounded-md border border-primary/40 bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                                        className="border-primary/40 bg-primary/10 text-primary hover:bg-primary/20 rounded-md border px-3 py-1 text-sm transition-colors"
                                       >
                                         {info.label}
                                       </a>
@@ -357,10 +357,10 @@ export function InstrumentationDetailPage() {
                       {instrumentation.minimum_java_version && (
                         <DetailCard withGrid withHoverEffect>
                           <div className="space-y-2">
-                            <h3 className="text-sm font-medium text-muted-foreground">
+                            <h3 className="text-muted-foreground text-sm font-medium">
                               Minimum Java Version
                             </h3>
-                            <p className="text-lg font-semibold text-foreground">
+                            <p className="text-foreground text-lg font-semibold">
                               {instrumentation.minimum_java_version}
                             </p>
                           </div>
@@ -371,11 +371,11 @@ export function InstrumentationDetailPage() {
                         instrumentation.javaagent_target_versions.length > 0 && (
                           <DetailCard>
                             <div className="space-y-3">
-                              <h3 className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
+                              <h3 className="text-muted-foreground flex items-center gap-1.5 text-sm font-medium">
                                 Target Versions
                                 <Tooltip content="The versions of the target library that this instrumentation supports.">
                                   <HelpCircle
-                                    className="h-3.5 w-3.5 cursor-help opacity-70 hover:opacity-100 transition-opacity focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-full"
+                                    className="focus:ring-ring h-3.5 w-3.5 cursor-help rounded-full opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-1 focus:outline-none"
                                     aria-label="More information about target versions"
                                     tabIndex={0}
                                     role="button"
@@ -403,7 +403,7 @@ export function InstrumentationDetailPage() {
                         Instrumentation Scope
                         <Tooltip content="An instrumentation scope is metadata indicating the identity of what produced a piece of telemetry.">
                           <HelpCircle
-                            className="h-4 w-4 cursor-help opacity-70 hover:opacity-100 transition-opacity focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 rounded-full"
+                            className="focus:ring-ring h-4 w-4 cursor-help rounded-full opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-1 focus:outline-none"
                             aria-label="More information about instrumentation scope"
                             tabIndex={0}
                             role="button"
@@ -414,17 +414,17 @@ export function InstrumentationDetailPage() {
                     <DetailCard withGrid>
                       <div className="space-y-3">
                         <div>
-                          <h3 className="text-sm font-medium text-muted-foreground">Scope Name</h3>
-                          <p className="mt-1 text-sm font-medium text-foreground">
+                          <h3 className="text-muted-foreground text-sm font-medium">Scope Name</h3>
+                          <p className="text-foreground mt-1 text-sm font-medium">
                             {instrumentation.scope.name}
                           </p>
                         </div>
                         {instrumentation.scope.schema_url && (
                           <div>
-                            <h3 className="text-sm font-medium text-muted-foreground">
+                            <h3 className="text-muted-foreground text-sm font-medium">
                               Schema URL
                             </h3>
-                            <code className="mt-1 block break-all rounded bg-muted px-2 py-1 text-xs">
+                            <code className="bg-muted mt-1 block rounded px-2 py-1 text-xs break-all">
                               {instrumentation.scope.schema_url}
                             </code>
                           </div>
@@ -442,18 +442,18 @@ export function InstrumentationDetailPage() {
                         <DetailCard withHoverEffect>
                           <div className="flex items-start gap-3">
                             <ExternalLink
-                              className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary"
+                              className="text-primary mt-0.5 h-5 w-5 flex-shrink-0"
                               aria-hidden="true"
                             />
                             <div className="flex-1 space-y-1">
-                              <h3 className="text-sm font-medium text-muted-foreground">
+                              <h3 className="text-muted-foreground text-sm font-medium">
                                 Library Link
                               </h3>
                               <a
                                 href={instrumentation.library_link}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="break-all text-sm text-primary hover:underline"
+                                className="text-primary text-sm break-all hover:underline"
                               >
                                 {instrumentation.library_link}
                               </a>
@@ -467,18 +467,18 @@ export function InstrumentationDetailPage() {
                           <DetailCard withHoverEffect>
                             <div className="flex items-start gap-3">
                               <Code
-                                className="mt-0.5 h-5 w-5 flex-shrink-0 text-primary"
+                                className="text-primary mt-0.5 h-5 w-5 flex-shrink-0"
                                 aria-hidden="true"
                               />
                               <div className="flex-1 space-y-1">
-                                <h3 className="text-sm font-medium text-muted-foreground">
+                                <h3 className="text-muted-foreground text-sm font-medium">
                                   Source Path
                                 </h3>
                                 <a
                                   href={buildSourceUrl(instrumentation.source_path)}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="break-all text-sm text-primary hover:underline"
+                                  className="text-primary text-sm break-all hover:underline"
                                 >
                                   {instrumentation.source_path}
                                 </a>
@@ -497,7 +497,7 @@ export function InstrumentationDetailPage() {
                 <div className="space-y-8">
                   <div className="flex justify-center">
                     <div
-                      className="inline-flex rounded-lg border border-border bg-transparent p-1"
+                      className="border-border inline-flex rounded-lg border bg-transparent p-1"
                       role="group"
                     >
                       <button
@@ -543,10 +543,10 @@ export function InstrumentationDetailPage() {
                 <div className="flex min-h-[300px] items-center justify-center">
                   <div className="text-center">
                     <Activity
-                      className="mx-auto h-12 w-12 text-muted-foreground/50"
+                      className="text-muted-foreground/50 mx-auto h-12 w-12"
                       aria-hidden="true"
                     />
-                    <p className="mt-4 text-sm text-muted-foreground">
+                    <p className="text-muted-foreground mt-4 text-sm">
                       No telemetry information available.
                     </p>
                   </div>
@@ -561,7 +561,7 @@ export function InstrumentationDetailPage() {
                     <DetailCard key={config.name} withHoverEffect>
                       <div className="space-y-3">
                         <div className="flex items-start justify-between gap-3">
-                          <code className="flex-1 break-all text-sm font-mono text-primary">
+                          <code className="text-primary flex-1 font-mono text-sm break-all">
                             {config.name}
                           </code>
                           <GlowBadge variant="info" withGlow>
@@ -569,15 +569,15 @@ export function InstrumentationDetailPage() {
                           </GlowBadge>
                         </div>
 
-                        <p className="text-sm leading-relaxed text-muted-foreground">
+                        <p className="text-muted-foreground text-sm leading-relaxed">
                           {config.description}
                         </p>
 
-                        <div className="flex items-start gap-2 rounded-lg border border-border/30 bg-muted/30 p-3">
-                          <span className="text-xs font-medium text-muted-foreground">
+                        <div className="border-border/30 bg-muted/30 flex items-start gap-2 rounded-lg border p-3">
+                          <span className="text-muted-foreground text-xs font-medium">
                             Default:
                           </span>
-                          <code className="flex-1 break-all text-xs">
+                          <code className="flex-1 text-xs break-all">
                             {typeof config.default === "boolean"
                               ? config.default.toString()
                               : config.default}
@@ -591,10 +591,10 @@ export function InstrumentationDetailPage() {
                 <div className="flex min-h-[300px] items-center justify-center">
                   <div className="text-center">
                     <Settings
-                      className="mx-auto h-12 w-12 text-muted-foreground/50"
+                      className="text-muted-foreground/50 mx-auto h-12 w-12"
                       aria-hidden="true"
                     />
-                    <p className="mt-4 text-sm text-muted-foreground">
+                    <p className="text-muted-foreground mt-4 text-sm">
                       No configuration options available.
                     </p>
                   </div>

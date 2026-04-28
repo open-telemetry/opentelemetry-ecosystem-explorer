@@ -27,11 +27,11 @@ interface DiffResultsSectionProps {
 function SectionDivider({ children }: { children: ReactNode }) {
   return (
     <div className="flex items-center justify-center gap-4">
-      <div className="h-px w-16 bg-gradient-to-r from-transparent to-border" />
-      <span className="text-sm font-medium uppercase tracking-wider text-muted-foreground">
+      <div className="to-border h-px w-16 bg-gradient-to-r from-transparent" />
+      <span className="text-muted-foreground text-sm font-medium tracking-wider uppercase">
         {children}
       </span>
-      <div className="h-px w-16 bg-gradient-to-l from-transparent to-border" />
+      <div className="to-border h-px w-16 bg-gradient-to-l from-transparent" />
     </div>
   );
 }
@@ -60,9 +60,9 @@ export function DiffResultsSection({
   if (!hasAnyChanges) {
     return (
       <div className="flex min-h-[300px] items-center justify-center">
-        <div className="text-center space-y-2">
-          <p className="text-lg font-medium text-muted-foreground">No differences found</p>
-          <p className="text-sm text-muted-foreground/70">
+        <div className="space-y-2 text-center">
+          <p className="text-muted-foreground text-lg font-medium">No differences found</p>
+          <p className="text-muted-foreground/70 text-sm">
             Telemetry is identical for <span className="font-mono">{whenCondition}</span> between
             the selected versions.
           </p>
@@ -78,11 +78,11 @@ export function DiffResultsSection({
         <div className="space-y-6">
           <SectionDivider>Telemetry Added/Removed</SectionDivider>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
             {/* Metrics */}
             {addedOrRemovedMetrics.length > 0 && (
               <div className="space-y-6">
-                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
+                <h3 className="text-muted-foreground text-xs font-black tracking-[0.2em] uppercase">
                   Metrics
                 </h3>
                 <div className="space-y-6">
@@ -96,7 +96,7 @@ export function DiffResultsSection({
             {/* Spans */}
             {addedOrRemovedSpans.length > 0 && (
               <div className="space-y-6">
-                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
+                <h3 className="text-muted-foreground text-xs font-black tracking-[0.2em] uppercase">
                   Spans
                 </h3>
                 <div className="space-y-6">
@@ -115,11 +115,11 @@ export function DiffResultsSection({
         <div className="space-y-6">
           <SectionDivider>Telemetry Changed</SectionDivider>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
             {/* Metrics */}
             {changedMetrics.length > 0 && (
               <div className="space-y-6">
-                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
+                <h3 className="text-muted-foreground text-xs font-black tracking-[0.2em] uppercase">
                   Metrics
                 </h3>
                 <div className="space-y-6">
@@ -133,7 +133,7 @@ export function DiffResultsSection({
             {/* Spans */}
             {changedSpans.length > 0 && (
               <div className="space-y-6">
-                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
+                <h3 className="text-muted-foreground text-xs font-black tracking-[0.2em] uppercase">
                   Spans
                 </h3>
                 <div className="space-y-6">

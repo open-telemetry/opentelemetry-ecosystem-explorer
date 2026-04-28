@@ -16,9 +16,9 @@ Automated pipelines that extract metadata from upstream OpenTelemetry projects.
 
 **What it does**:
 
-* Watches upstream projects for new releases
-* Extracts and normalizes metadata to registry schema
-* Generates content-addressed storage files for the web app
+- Watches upstream projects for new releases
+- Extracts and normalizes metadata to registry schema
+- Generates content-addressed storage files for the web app
 
 **Tools**: collector-watcher, java-instrumentation-watcher, configuration-watcher, explorer-db-builder
 
@@ -28,8 +28,8 @@ Versioned storage of normalized metadata.
 
 **What it does**:
 
-* Stores historical metadata for all versions
-* Organized by ecosystem (Java Agent, Collector, etc.)
+- Stores historical metadata for all versions
+- Organized by ecosystem (Java Agent, Collector, etc.)
 
 **Format**: YAML files organized by version
 
@@ -39,9 +39,9 @@ React web app for browsing and exploring the registry.
 
 **What it does**:
 
-* Search, filter, and browse instrumentations and collector components
-* View detailed metadata (supported signals, library versions, etc.)
-* Compare versions
+- Search, filter, and browse instrumentations and collector components
+- View detailed metadata (supported signals, library versions, etc.)
+- Compare versions
 
 **Tech**: React 19, TypeScript, Vite, Tailwind CSS
 
@@ -64,8 +64,8 @@ React web app for browsing and exploring the registry.
 
 **Benefits**:
 
-* Automatic deduplication across versions
-* Immutable files enable aggressive caching
-* Easy version comparison and change identification
+- Automatic deduplication across versions
+- Immutable files enable aggressive caching
+- Easy version comparison and change identification
 
 See [Content-Addressed Storage](./content-addressed-storage.md) for implementation details.

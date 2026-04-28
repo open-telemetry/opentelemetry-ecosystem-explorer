@@ -37,8 +37,8 @@ ecosystem-registry/
 
 ## Key Principles
 
-* **Aggregated YAML files**: One file per component type per version (human-readable, git-friendly)
-* **Version-scoped**: Each version has a complete, independent snapshot that can be regenerated from source
+- **Aggregated YAML files**: One file per component type per version (human-readable, git-friendly)
+- **Version-scoped**: Each version has a complete, independent snapshot that can be regenerated from source
 
 ## Java Agent Structure
 
@@ -109,8 +109,8 @@ libraries:
 
 **Key Features**:
 
-* `libraries`: Array of all instrumentations
-* Complete metadata for each instrumentation in a single file
+- `libraries`: Array of all instrumentations
+- Complete metadata for each instrumentation in a single file
 
 ## Collector Structure
 
@@ -183,10 +183,10 @@ components:
 
 **Key Features**:
 
-* `distribution`: core or contrib
-* `repository`: Source repository name
-* `component_type`: receiver, processor, exporter, connector, or extension
-* `components`: Array of all components of this type
+- `distribution`: core or contrib
+- `repository`: Source repository name
+- `component_type`: receiver, processor, exporter, connector, or extension
+- `components`: Array of all components of this type
 
 ## Version Types
 

@@ -16,19 +16,19 @@ additional information.
 
 **Understanding the system**:
 
-* [Architecture Overview](./architecture-overview.md) - Three-component system design and data flow
-* [Watchers and Registry Consumers](./watchers-registry-consumers.md) - Automation pipeline
-* [Registry Structure](./registry-structure.md) - Metadata organization and versioning
-* [Content-Addressed Storage](./content-addressed-storage.md) - Storage pattern for multi-version support
-* [Frontend Architecture](./frontend-architecture.md) - Web app caching and data loading
+- [Architecture Overview](./architecture-overview.md) - Three-component system design and data flow
+- [Watchers and Registry Consumers](./watchers-registry-consumers.md) - Automation pipeline
+- [Registry Structure](./registry-structure.md) - Metadata organization and versioning
+- [Content-Addressed Storage](./content-addressed-storage.md) - Storage pattern for multi-version support
+- [Frontend Architecture](./frontend-architecture.md) - Web app caching and data loading
 
 **Deployment**: The web app deploys automatically to production when changes merge to `main`. Registry updates run
 nightly via GitHub Actions.
 
 ## Project Guiding Principles
 
-* Leverage automation as much as possible
-* Reduce burden/overhead on maintainers as much as possible
-* Keep maintenance burden and operational overhead of the web application low
-  * Avoid backend servers/databases and use static hosting/CDN where possible
-* Prioritize responsiveness, accessibility and localization from the start
+- Leverage automation as much as possible
+- Reduce burden/overhead on maintainers as much as possible
+- Keep maintenance burden and operational overhead of the web application low
+  - Avoid backend servers/databases and use static hosting/CDN where possible
+- Prioritize responsiveness, accessibility and localization from the start

@@ -46,7 +46,7 @@ interface ControlWrapperProps {
 
 function DefaultBadge() {
   return (
-    <span className="rounded border border-dashed border-border/60 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+    <span className="border-border/60 text-muted-foreground rounded border border-dashed px-1.5 py-0.5 text-[10px] font-medium tracking-wider uppercase">
       default
     </span>
   );
@@ -57,7 +57,7 @@ function ResetLink({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="text-xs font-medium text-primary hover:underline"
+      className="text-primary text-xs font-medium hover:underline"
     >
       Reset
     </button>
@@ -91,11 +91,11 @@ export function ControlWrapper({
       {!node.hideLabel && (
         <div className="flex items-center gap-2">
           {inputId ? (
-            <label htmlFor={inputId} className="text-sm font-medium text-foreground">
+            <label htmlFor={inputId} className="text-foreground text-sm font-medium">
               {node.label}
             </label>
           ) : (
-            <span className="text-sm font-medium text-foreground">{node.label}</span>
+            <span className="text-foreground text-sm font-medium">{node.label}</span>
           )}
           {node.required && (
             <span className="text-sm text-red-400" aria-hidden="true">

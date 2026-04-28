@@ -20,9 +20,9 @@ const REPO_URL = "https://github.com/open-telemetry/opentelemetry-ecosystem-expl
 
 export function AboutPage() {
   return (
-    <div className="max-w-4xl mx-auto px-6 py-12 space-y-10">
+    <div className="mx-auto max-w-4xl space-y-10 px-6 py-12">
       <div className="space-y-3">
-        <h1 className="text-3xl font-bold text-foreground">About</h1>
+        <h1 className="text-foreground text-3xl font-bold">About</h1>
         <p className="text-muted-foreground text-base leading-relaxed">
           The OpenTelemetry Ecosystem Explorer is a community-driven tool for discovering and
           exploring projects, instrumentations, and components across the{" "}
@@ -39,8 +39,8 @@ export function AboutPage() {
       </div>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold text-foreground">Goals</h2>
-        <div className="rounded-lg border border-border/50 bg-card/50 p-6 space-y-3 text-sm text-muted-foreground leading-relaxed">
+        <h2 className="text-foreground text-xl font-semibold">Goals</h2>
+        <div className="border-border/50 bg-card/50 text-muted-foreground space-y-3 rounded-lg border p-6 text-sm leading-relaxed">
           <p>
             The ecosystem is large and growing. Finding what instrumentation exists, what it
             produces, and how to configure it can be difficult. This project aims to make that
@@ -55,18 +55,18 @@ export function AboutPage() {
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold text-foreground">Get Involved</h2>
+        <h2 className="text-foreground text-xl font-semibold">Get Involved</h2>
         <div className="grid gap-4 sm:grid-cols-2">
           <a
             href={REPO_URL}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-start gap-4 rounded-lg border border-border/50 bg-card/50 p-5 hover:bg-card transition-colors"
+            className="border-border/50 bg-card/50 hover:bg-card flex items-start gap-4 rounded-lg border p-5 transition-colors"
           >
-            <GitHubIcon className="h-5 w-5 mt-0.5 flex-shrink-0 text-primary" aria-hidden="true" />
+            <GitHubIcon className="text-primary mt-0.5 h-5 w-5 flex-shrink-0" aria-hidden="true" />
             <div className="space-y-1">
-              <h3 className="text-sm font-medium text-foreground">Source Code</h3>
-              <p className="text-xs text-muted-foreground">
+              <h3 className="text-foreground text-sm font-medium">Source Code</h3>
+              <p className="text-muted-foreground text-xs">
                 Browse the repository, review open issues, and submit pull requests.
               </p>
             </div>
@@ -76,12 +76,12 @@ export function AboutPage() {
             href="https://opentelemetry.io/docs/"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-start gap-4 rounded-lg border border-border/50 bg-card/50 p-5 hover:bg-card transition-colors"
+            className="border-border/50 bg-card/50 hover:bg-card flex items-start gap-4 rounded-lg border p-5 transition-colors"
           >
-            <BookOpen className="h-5 w-5 mt-0.5 flex-shrink-0 text-primary" aria-hidden="true" />
+            <BookOpen className="text-primary mt-0.5 h-5 w-5 flex-shrink-0" aria-hidden="true" />
             <div className="space-y-1">
-              <h3 className="text-sm font-medium text-foreground">OpenTelemetry Docs</h3>
-              <p className="text-xs text-muted-foreground">
+              <h3 className="text-foreground text-sm font-medium">OpenTelemetry Docs</h3>
+              <p className="text-muted-foreground text-xs">
                 Learn about OpenTelemetry concepts, APIs, and SDKs at opentelemetry.io.
               </p>
             </div>
@@ -91,12 +91,12 @@ export function AboutPage() {
             href={`${REPO_URL}/issues/new?labels=bug`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-start gap-4 rounded-lg border border-border/50 bg-card/50 p-5 hover:bg-card transition-colors"
+            className="border-border/50 bg-card/50 hover:bg-card flex items-start gap-4 rounded-lg border p-5 transition-colors"
           >
-            <Bug className="h-5 w-5 mt-0.5 flex-shrink-0 text-primary" aria-hidden="true" />
+            <Bug className="text-primary mt-0.5 h-5 w-5 flex-shrink-0" aria-hidden="true" />
             <div className="space-y-1">
-              <h3 className="text-sm font-medium text-foreground">Report a Bug</h3>
-              <p className="text-xs text-muted-foreground">
+              <h3 className="text-foreground text-sm font-medium">Report a Bug</h3>
+              <p className="text-muted-foreground text-xs">
                 Found something wrong? Open an issue on GitHub and let us know.
               </p>
             </div>
@@ -106,15 +106,15 @@ export function AboutPage() {
             href={`${REPO_URL}/issues/new?labels=enhancement`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-start gap-4 rounded-lg border border-border/50 bg-card/50 p-5 hover:bg-card transition-colors"
+            className="border-border/50 bg-card/50 hover:bg-card flex items-start gap-4 rounded-lg border p-5 transition-colors"
           >
             <MessageSquare
-              className="h-5 w-5 mt-0.5 flex-shrink-0 text-primary"
+              className="text-primary mt-0.5 h-5 w-5 flex-shrink-0"
               aria-hidden="true"
             />
             <div className="space-y-1">
-              <h3 className="text-sm font-medium text-foreground">Request a Feature</h3>
-              <p className="text-xs text-muted-foreground">
+              <h3 className="text-foreground text-sm font-medium">Request a Feature</h3>
+              <p className="text-muted-foreground text-xs">
                 Have an idea? Open an issue to discuss it with the maintainers.
               </p>
             </div>
@@ -123,8 +123,8 @@ export function AboutPage() {
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold text-foreground">Contributing</h2>
-        <div className="rounded-lg border border-border/50 bg-card/50 p-6 space-y-3 text-sm text-muted-foreground leading-relaxed">
+        <h2 className="text-foreground text-xl font-semibold">Contributing</h2>
+        <div className="border-border/50 bg-card/50 text-muted-foreground space-y-3 rounded-lg border p-6 text-sm leading-relaxed">
           <p>
             Contributions of all sizes are welcome — from fixing a typo to adding new ecosystem
             coverage. To get started, read the{" "}

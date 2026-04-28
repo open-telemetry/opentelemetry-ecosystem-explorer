@@ -30,7 +30,7 @@ import { isEnabled } from "@/lib/feature-flags";
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="min-h-screen bg-background flex flex-col">
+      <div className="bg-background flex min-h-screen flex-col">
         <Header />
         <main className="flex-1 pt-16">
           <Routes>

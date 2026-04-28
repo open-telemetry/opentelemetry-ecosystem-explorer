@@ -90,14 +90,14 @@ export function KeyValueMapControl({ node, path, value, onChange }: KeyValueMapC
             type="button"
             onClick={handleAdd}
             aria-label={`Add entry to ${node.label}`}
-            className="flex items-center gap-1 rounded-md border border-border/60 bg-background/80 px-3 py-1.5 text-xs text-foreground transition-all hover:border-primary/40"
+            className="border-border/60 bg-background/80 text-foreground hover:border-primary/40 flex items-center gap-1 rounded-md border px-3 py-1.5 text-xs transition-all"
           >
-            <Plus className="h-3 w-3 text-primary" aria-hidden="true" />
+            <Plus className="text-primary h-3 w-3" aria-hidden="true" />
             Add
           </button>
         </div>
         {entries.length === 0 ? (
-          <p className="text-xs text-muted-foreground">No entries</p>
+          <p className="text-muted-foreground text-xs">No entries</p>
         ) : (
           <ul ref={listRef} className="space-y-2" aria-label={`${node.label} entries`}>
             {entries.map((entry, index) => (
@@ -133,7 +133,7 @@ export function KeyValueMapControl({ node, path, value, onChange }: KeyValueMapC
                   type="button"
                   onClick={() => handleRemove(index)}
                   aria-label={`Remove entry ${index + 1}`}
-                  className="shrink-0 rounded-lg border border-border/60 bg-background/80 p-2 text-muted-foreground transition-all hover:border-red-500/40 hover:text-red-400"
+                  className="border-border/60 bg-background/80 text-muted-foreground shrink-0 rounded-lg border p-2 transition-all hover:border-red-500/40 hover:text-red-400"
                 >
                   <X className="h-4 w-4" aria-hidden="true" />
                 </button>
