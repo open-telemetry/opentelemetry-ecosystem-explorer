@@ -24,7 +24,9 @@ import {
   Check,
   AlertCircle,
   Loader2,
+  HelpCircle,
 } from "lucide-react";
+
 import { BackButton } from "@/components/ui/back-button";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { SegmentedTabList } from "@/components/ui/segmented-tabs";
@@ -41,6 +43,7 @@ import { TelemetrySection } from "./components/telemetry-section";
 import { TelemetryComparisonSection } from "./components/telemetry-comparison/telemetry-comparison-section";
 import { VersionSelector } from "./components/version-selector";
 import { PageContainer } from "@/components/layout/page-container";
+import { Tooltip } from "@/components/ui/tooltip";
 
 function buildSourceUrl(sourcePath: string): string {
   try {
@@ -368,8 +371,16 @@ export function InstrumentationDetailPage() {
                         instrumentation.javaagent_target_versions.length > 0 && (
                           <DetailCard>
                             <div className="space-y-3">
-                              <h3 className="text-muted-foreground text-sm font-medium">
+                              <h3 className="text-muted-foreground flex items-center gap-1.5 text-sm font-medium">
                                 Target Versions
+                                <Tooltip content="The versions of the target library that this instrumentation supports.">
+                                  <HelpCircle
+                                    className="focus:ring-ring h-3.5 w-3.5 cursor-help rounded-full opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-1 focus:outline-none"
+                                    aria-label="More information about target versions"
+                                    tabIndex={0}
+                                    role="button"
+                                  />
+                                </Tooltip>
                               </h3>
                               <div className="flex flex-wrap gap-2">
                                 {instrumentation.javaagent_target_versions.map((targetVersion) => (
@@ -387,7 +398,19 @@ export function InstrumentationDetailPage() {
 
                 {instrumentation.scope && (
                   <div>
-                    <SectionHeader>Instrumentation Scope</SectionHeader>
+                    <SectionHeader>
+                      <div className="flex items-center gap-2">
+                        Instrumentation Scope
+                        <Tooltip content="An instrumentation scope is metadata indicating the identity of what produced a piece of telemetry.">
+                          <HelpCircle
+                            className="focus:ring-ring h-4 w-4 cursor-help rounded-full opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-1 focus:outline-none"
+                            aria-label="More information about instrumentation scope"
+                            tabIndex={0}
+                            role="button"
+                          />
+                        </Tooltip>
+                      </div>
+                    </SectionHeader>
                     <DetailCard withGrid>
                       <div className="space-y-3">
                         <div>

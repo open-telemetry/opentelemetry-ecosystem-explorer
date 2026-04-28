@@ -183,13 +183,11 @@ describe("InstrumentationGroupCard", () => {
         name: /Apache HttpClient group with 2 instrumentations/,
       });
 
-      // Expand
       await user.click(button);
       expect(
         screen.getByRole("link", { name: "View details for apache-httpclient-4.0" })
       ).toBeInTheDocument();
 
-      // Collapse
       await user.click(button);
       expect(
         screen.queryByRole("link", { name: "View details for apache-httpclient-4.0" })
@@ -216,13 +214,13 @@ describe("InstrumentationGroupCard", () => {
     it("shows aggregated Agent badge when any instrumentation has javaagent target", () => {
       renderGroupCard(multiGroup, defaultFilters);
 
-      expect(screen.getByTitle("Java Agent")).toBeInTheDocument();
+      expect(screen.getByLabelText("Has Java Agent target")).toBeInTheDocument();
     });
 
     it("shows aggregated Library badge when any instrumentation has standalone library", () => {
       renderGroupCard(multiGroup, defaultFilters);
 
-      expect(screen.getByTitle("Standalone Library")).toBeInTheDocument();
+      expect(screen.getByLabelText("Has standalone library target")).toBeInTheDocument();
     });
 
     it("shows aggregated Spans badge when any instrumentation has spans", () => {

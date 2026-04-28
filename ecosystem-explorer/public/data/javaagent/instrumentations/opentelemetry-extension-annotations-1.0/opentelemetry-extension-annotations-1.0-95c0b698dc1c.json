@@ -1,0 +1,13 @@
+{
+  "description": "Instruments methods annotated with OpenTelemetry extension annotations, such as @WithSpan and @SpanAttribute.",
+  "display_name": "OpenTelemetry Extension Annotations",
+  "has_javaagent": true,
+  "javaagent_target_versions": [
+    "io.opentelemetry:opentelemetry-extension-annotations:[0.16.0,)"
+  ],
+  "name": "opentelemetry-extension-annotations-1.0",
+  "scope": {
+    "name": "io.opentelemetry.opentelemetry-extension-annotations-1.0"
+  },
+  "source_path": "instrumentation/opentelemetry-extension-annotations-1.0"
+}

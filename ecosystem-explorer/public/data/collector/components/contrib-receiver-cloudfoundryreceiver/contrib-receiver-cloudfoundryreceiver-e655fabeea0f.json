@@ -1,0 +1,34 @@
+{
+  "description": "The Cloud Foundry Receiver connects to the RLP (Reverse Log Proxy) Gateway of the Cloud Foundry installation, typically available at the URL `https://log-stream.<cf-system-domain>`.",
+  "display_name": "Cloud Foundry Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-receiver-cloudfoundryreceiver",
+  "name": "cloudfoundryreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "crobert-1"
+      ],
+      "emeritus": [
+        "agoallikmaa",
+        "pellared"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ],
+      "development": [
+        "logs"
+      ]
+    }
+  },
+  "type": "receiver"
+}

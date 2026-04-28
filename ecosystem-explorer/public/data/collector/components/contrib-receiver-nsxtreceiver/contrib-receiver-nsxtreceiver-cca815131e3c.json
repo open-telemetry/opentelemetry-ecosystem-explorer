@@ -1,0 +1,152 @@
+{
+  "attributes": {
+    "class": {
+      "description": "The CPU usage of the architecture allocated for either DPDK (datapath) or non-DPDK (services) processes.",
+      "enum": [
+        "datapath",
+        "services"
+      ],
+      "type": "string"
+    },
+    "direction": {
+      "description": "The direction of network flow.",
+      "enum": [
+        "received",
+        "transmitted"
+      ],
+      "type": "string"
+    },
+    "disk_state": {
+      "description": "The state of storage space.",
+      "enum": [
+        "available",
+        "used"
+      ],
+      "name_override": "state",
+      "type": "string"
+    },
+    "packet.type": {
+      "description": "The type of packet counter.",
+      "enum": [
+        "dropped",
+        "errored",
+        "success"
+      ],
+      "name_override": "type",
+      "type": "string"
+    }
+  },
+  "description": "This receiver fetches metrics important to run virtual networking using NSX-T. The receiver ingests metrics via the [NSX Rest API](https://docs.vmware.com/en/VMware-NSX-Data-Center-for-vSphere/6.4/nsx_64_api.pdf).",
+  "display_name": "NSX-T Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-receiver-nsxtreceiver",
+  "metrics": {
+    "nsxt.node.cpu.utilization": {
+      "attributes": [
+        "class"
+      ],
+      "description": "The average amount of CPU being used by the node.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "%"
+    },
+    "nsxt.node.filesystem.usage": {
+      "attributes": [
+        "disk_state"
+      ],
+      "description": "The amount of storage space used by the node.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "nsxt.node.filesystem.utilization": {
+      "description": "The percentage of storage space utilized.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "%"
+    },
+    "nsxt.node.memory.cache.usage": {
+      "description": "The size of the node's memory cache.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "KBy"
+    },
+    "nsxt.node.memory.usage": {
+      "description": "The memory usage of the node.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "KBy"
+    },
+    "nsxt.node.network.io": {
+      "attributes": [
+        "direction"
+      ],
+      "description": "The number of bytes which have flowed through the network interface.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "nsxt.node.network.packet.count": {
+      "attributes": [
+        "direction",
+        "packet.type"
+      ],
+      "description": "The number of packets which have flowed through the network interface on the node.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{packets}"
+    }
+  },
+  "name": "nsxtreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "dashpole",
+        "schmikei"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver"
+}

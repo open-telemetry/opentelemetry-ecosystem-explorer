@@ -1,0 +1,32 @@
+{
+  "description": null,
+  "display_name": "Basic Auth Authenticator Extension",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-extension-basicauthextension",
+  "name": "basicauthextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "frzifus"
+      ],
+      "emeritus": [
+        "jpkrohling",
+        "svrakitin"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "extension"
+      ]
+    }
+  },
+  "type": "extension"
+}

@@ -22,6 +22,7 @@ from typing import Optional
 from java_instrumentation_watcher.inventory_manager import InventoryManager
 from semantic_version import Version
 
+from explorer_db_builder.collector_builder import run_collector_builder
 from explorer_db_builder.configuration_builder import run_configuration_builder
 from explorer_db_builder.database_writer import DatabaseWriter
 from explorer_db_builder.instrumentation_transformer import transform_instrumentation_format
@@ -180,18 +181,34 @@ def run_javaagent_builder(
         return 1
 
 
-def run_builder(clean: bool = False) -> int:
-    """Run all database builder pipelines. Returns 0 if both succeed, 1 if either fails."""
-    logger.info("--- Java Agent ---")
-    javaagent_result = run_javaagent_builder(clean=clean)
+def run_builder(clean: bool = False, ecosystem: str = "all") -> int:
+    """Run the selected database builder pipelines.
 
-    logger.info("")
-    logger.info("--- Configuration Schema ---")
-    config_result = run_configuration_builder(clean=clean)
+    Args:
+        clean: If True, wipe the output directories before building.
+        ecosystem: Which pipeline to run: "javaagent", "configuration", "collector", or "all".
 
-    if javaagent_result != 0 or config_result != 0:
-        return 1
-    return 0
+    Returns:
+        0 if all selected pipelines succeed, 1 if any fail.
+    """
+    results: list[int] = []
+
+    if ecosystem in ("javaagent", "all"):
+        logger.info("--- Java Agent ---")
+        results.append(run_javaagent_builder(clean=clean))
+        logger.info("")
+
+    if ecosystem in ("configuration", "all"):
+        logger.info("--- Configuration Schema ---")
+        results.append(run_configuration_builder(clean=clean))
+        logger.info("")
+
+    if ecosystem in ("collector", "all"):
+        logger.info("--- Collector ---")
+        results.append(run_collector_builder(clean=clean))
+        logger.info("")
+
+    return 1 if any(r != 0 for r in results) else 0
 
 
 def main() -> None:
@@ -205,6 +222,12 @@ def main() -> None:
         action="store_true",
         help="Clean the database directory before building",
     )
+    parser.add_argument(
+        "--ecosystem",
+        choices=["javaagent", "configuration", "collector", "all"],
+        default="all",
+        help="Which ecosystem pipeline to run (default: all)",
+    )
 
     args = parser.parse_args()
 
@@ -215,7 +238,7 @@ def main() -> None:
     logger.info("=" * 60)
     logger.info("")
 
-    exit_code = run_builder(clean=args.clean)
+    exit_code = run_builder(clean=args.clean, ecosystem=args.ecosystem)
     sys.exit(exit_code)
 
 

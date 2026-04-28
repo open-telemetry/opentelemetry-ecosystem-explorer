@@ -1,0 +1,27 @@
+{
+  "description": null,
+  "display_name": "Span Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-processor-spanprocessor",
+  "name": "spanprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "boostchicken"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "core"
+    ],
+    "stability": {
+      "alpha": [
+        "traces"
+      ]
+    }
+  },
+  "type": "processor"
+}

@@ -1,0 +1,30 @@
+{
+  "description": "This receiver receives spans from [Zipkin](https://zipkin.io/) (V1 and V2).",
+  "display_name": "Zipkin Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-receiver-zipkinreceiver",
+  "name": "zipkinreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "MovieStoreGuy",
+        "andrzej-stencel",
+        "crobert-1"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "traces"
+      ]
+    }
+  },
+  "type": "receiver"
+}

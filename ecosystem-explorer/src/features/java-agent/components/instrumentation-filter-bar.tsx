@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { getTelemetryFilterClasses, getTargetFilterClasses } from "../styles/filter-styles";
+import { Tooltip } from "@/components/ui/tooltip";
 
 export interface FilterState {
   search: string;
@@ -61,7 +62,6 @@ export function InstrumentationFilterBar({
         }}
       />
 
-      {/* Grid pattern overlay */}
       <div className="absolute inset-0 opacity-5">
         <div
           className="h-full w-full"
@@ -73,7 +73,6 @@ export function InstrumentationFilterBar({
         />
       </div>
 
-      {/* Content */}
       <div className="relative z-10 space-y-6">
         <div className="space-y-2">
           <label htmlFor="search" className="text-muted-foreground text-sm font-medium">
@@ -121,26 +120,30 @@ export function InstrumentationFilterBar({
           <div className="space-y-3">
             <div className="text-muted-foreground text-sm font-medium">Type</div>
             <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => toggleTarget("javaagent")}
-                aria-pressed={filters.target.has("javaagent")}
-                className={`rounded-lg border-2 px-4 py-2 text-sm font-medium transition-all duration-200 ${getTargetFilterClasses(
-                  "javaagent",
-                  filters.target.has("javaagent")
-                )}`}
-              >
-                Java Agent
-              </button>
-              <button
-                onClick={() => toggleTarget("library")}
-                aria-pressed={filters.target.has("library")}
-                className={`rounded-lg border-2 px-4 py-2 text-sm font-medium transition-all duration-200 ${getTargetFilterClasses(
-                  "library",
-                  filters.target.has("library")
-                )}`}
-              >
-                Standalone
-              </button>
+              <Tooltip content="Standard instrumentation that runs alongside the application using a Java agent.">
+                <button
+                  onClick={() => toggleTarget("javaagent")}
+                  aria-pressed={filters.target.has("javaagent")}
+                  className={`rounded-lg border-2 px-4 py-2 text-sm font-medium transition-all duration-200 ${getTargetFilterClasses(
+                    "javaagent",
+                    filters.target.has("javaagent")
+                  )}`}
+                >
+                  Java Agent
+                </button>
+              </Tooltip>
+              <Tooltip content="Standalone libraries are installed manually and for use without the agent.">
+                <button
+                  onClick={() => toggleTarget("library")}
+                  aria-pressed={filters.target.has("library")}
+                  className={`rounded-lg border-2 px-4 py-2 text-sm font-medium transition-all duration-200 ${getTargetFilterClasses(
+                    "library",
+                    filters.target.has("library")
+                  )}`}
+                >
+                  Standalone
+                </button>
+              </Tooltip>
             </div>
           </div>
         </div>

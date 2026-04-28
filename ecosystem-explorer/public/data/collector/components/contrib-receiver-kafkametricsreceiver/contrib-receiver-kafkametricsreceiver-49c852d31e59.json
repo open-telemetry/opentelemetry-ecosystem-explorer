@@ -1,0 +1,255 @@
+{
+  "attributes": {
+    "broker": {
+      "description": "The ID of the kafka broker",
+      "type": "string"
+    },
+    "group": {
+      "description": "The ID (string) of a consumer group",
+      "type": "string"
+    },
+    "partition": {
+      "description": "The number (integer) of the partition",
+      "type": "int"
+    },
+    "topic": {
+      "description": "The ID (integer) of a topic",
+      "type": "string"
+    }
+  },
+  "description": "The Kafka Metrics Receiver collects kafka metrics (brokers, topics, partitions, consumer groups) from a kafka server, and converts them into otlp.",
+  "display_name": "Kafka Metrics Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-receiver-kafkametricsreceiver",
+  "metrics": {
+    "kafka.broker.log_retention_period": {
+      "attributes": [
+        "broker"
+      ],
+      "description": "log retention time (s) of a broker.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "s"
+    },
+    "kafka.brokers": {
+      "description": "Number of brokers in the cluster.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{brokers}"
+    },
+    "kafka.consumer_group.lag": {
+      "attributes": [
+        "group",
+        "partition",
+        "topic"
+      ],
+      "description": "Current approximate lag of consumer group at partition of topic",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "kafka.consumer_group.lag_sum": {
+      "attributes": [
+        "group",
+        "topic"
+      ],
+      "description": "Current approximate sum of consumer group lag across all partitions of topic",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "kafka.consumer_group.members": {
+      "attributes": [
+        "group"
+      ],
+      "description": "Count of members in the consumer group",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{members}"
+    },
+    "kafka.consumer_group.offset": {
+      "attributes": [
+        "group",
+        "partition",
+        "topic"
+      ],
+      "description": "Current offset of the consumer group at partition of topic",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "kafka.consumer_group.offset_sum": {
+      "attributes": [
+        "group",
+        "topic"
+      ],
+      "description": "Sum of consumer group offset across partitions of topic",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "kafka.partition.current_offset": {
+      "attributes": [
+        "partition",
+        "topic"
+      ],
+      "description": "Current offset of partition of topic.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "kafka.partition.oldest_offset": {
+      "attributes": [
+        "partition",
+        "topic"
+      ],
+      "description": "Oldest offset of partition of topic",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "kafka.partition.replicas": {
+      "attributes": [
+        "partition",
+        "topic"
+      ],
+      "description": "Number of replicas for partition of topic",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{replicas}"
+    },
+    "kafka.partition.replicas_in_sync": {
+      "attributes": [
+        "partition",
+        "topic"
+      ],
+      "description": "Number of synchronized replicas of partition",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{replicas}"
+    },
+    "kafka.topic.log_retention_period": {
+      "attributes": [
+        "topic"
+      ],
+      "description": "log retention period of a topic (s).",
+      "enabled": false,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "s"
+    },
+    "kafka.topic.log_retention_size": {
+      "attributes": [
+        "topic"
+      ],
+      "description": "log retention size of a topic in Bytes, The value (-1) indicates infinite size.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "kafka.topic.min_insync_replicas": {
+      "attributes": [
+        "topic"
+      ],
+      "description": "minimum in-sync replicas of a topic.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "{replicas}"
+    },
+    "kafka.topic.partitions": {
+      "attributes": [
+        "topic"
+      ],
+      "description": "Number of partitions in topic.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{partitions}"
+    },
+    "kafka.topic.replication_factor": {
+      "attributes": [
+        "topic"
+      ],
+      "description": "replication factor of a topic.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "1"
+    }
+  },
+  "name": "kafkametricsreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "dmitryax"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver"
+}

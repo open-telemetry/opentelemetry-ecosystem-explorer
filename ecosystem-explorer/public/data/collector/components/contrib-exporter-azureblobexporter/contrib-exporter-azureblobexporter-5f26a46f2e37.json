@@ -1,0 +1,29 @@
+{
+  "description": null,
+  "display_name": "Azure Blob Storage Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-exporter-azureblobexporter",
+  "name": "azureblobexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "hgaol",
+        "MovieStoreGuy"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "exporter"
+}

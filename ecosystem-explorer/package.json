@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@radix-ui/react-tabs": "^1.1.13",
+    "@radix-ui/react-tooltip": "^1.2.8",
     "idb": "^8.0.3",
     "js-yaml": "^4.1.1",
     "lucide-react": "^1.0.0",

@@ -1,0 +1,26 @@
+{
+  "description": null,
+  "display_name": "Docker Observer Extension",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-extension-dockerobserver",
+  "name": "dockerobserver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "MovieStoreGuy"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "extension"
+      ]
+    }
+  },
+  "type": "extension"
+}
