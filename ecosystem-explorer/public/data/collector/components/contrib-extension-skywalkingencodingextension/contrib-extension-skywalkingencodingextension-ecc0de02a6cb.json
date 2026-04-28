@@ -1,0 +1,26 @@
+{
+  "description": "The `Skywalking` encoding extension is used to unmarshal Apache Skywalking segment traces. Marshalling is not supported.",
+  "display_name": "Skywalking Encoding Extension",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-extension-skywalkingencodingextension",
+  "name": "skywalkingencodingextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "JaredTan95"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "extension"
+      ]
+    }
+  },
+  "type": "extension"
+}

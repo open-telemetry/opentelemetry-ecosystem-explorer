@@ -60,6 +60,23 @@ def transform_instrumentation_format(inventory_data: dict[str, Any]) -> dict[str
         raise ValueError(f"Unsupported file format: {file_format}")
 
 
+def _transform_library_list_0_1_to_0_2(library_list: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    transformed_libraries = []
+    for library in library_list:
+        transformed_lib = library.copy()
+        if "target_versions" in transformed_lib:
+            target_versions = transformed_lib["target_versions"]
+            if "javaagent" in target_versions:
+                transformed_lib["javaagent_target_versions"] = target_versions["javaagent"]
+            if "library" in target_versions and target_versions["library"]:
+                transformed_lib["has_standalone_library"] = True
+            else:
+                transformed_lib["has_standalone_library"] = False
+            del transformed_lib["target_versions"]
+        transformed_libraries.append(transformed_lib)
+    return transformed_libraries
+
+
 def _transform_0_1_to_0_2(inventory_data: dict[str, Any]) -> dict[str, Any]:
     """Transform file_format 0.1 to 0.2.
 
@@ -77,36 +94,41 @@ def _transform_0_1_to_0_2(inventory_data: dict[str, Any]) -> dict[str, Any]:
     if "libraries" not in inventory_data:
         raise KeyError("Inventory data missing 'libraries' key")
 
-    libraries = inventory_data["libraries"]
-    if libraries is None:
-        return inventory_data
-
-    transformed_libraries = []
-    for library in libraries:
-        transformed_lib = library.copy()
-
-        if "target_versions" in transformed_lib:
-            target_versions = transformed_lib["target_versions"]
-
-            if "javaagent" in target_versions:
-                transformed_lib["javaagent_target_versions"] = target_versions["javaagent"]
-
-            if "library" in target_versions and target_versions["library"]:
-                transformed_lib["has_standalone_library"] = True
-            else:
-                transformed_lib["has_standalone_library"] = False
-
-            del transformed_lib["target_versions"]
-
-        transformed_libraries.append(transformed_lib)
-
     transformed_data = inventory_data.copy()
-    transformed_data["libraries"] = transformed_libraries
+    if inventory_data.get("libraries") is not None:
+        transformed_data["libraries"] = _transform_library_list_0_1_to_0_2(inventory_data["libraries"])
+
+    if inventory_data.get("custom") is not None:
+        transformed_data["custom"] = _transform_library_list_0_1_to_0_2(inventory_data["custom"])
+
     transformed_data["file_format"] = 0.2
 
-    logger.info(f"Transformed {len(transformed_libraries)} libraries from format 0.1 to 0.2")
+    logger.info("Transformed inventory from format 0.1 to 0.2")
 
     return transformed_data
+
+
+def _transform_library_list_0_2_to_0_3(library_list: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    transformed_libraries = []
+    for library in library_list:
+        transformed_lib = library.copy()
+        if "telemetry" in transformed_lib:
+            transformed_telemetry = []
+            for telemetry_entry in transformed_lib["telemetry"]:
+                transformed_entry = telemetry_entry.copy()
+                if "metrics" in transformed_entry:
+                    transformed_metrics = []
+                    for metric in transformed_entry["metrics"]:
+                        transformed_metric = metric.copy()
+                        if "type" in transformed_metric:
+                            transformed_metric["data_type"] = transformed_metric["type"]
+                            del transformed_metric["type"]
+                        transformed_metrics.append(transformed_metric)
+                    transformed_entry["metrics"] = transformed_metrics
+                transformed_telemetry.append(transformed_entry)
+            transformed_lib["telemetry"] = transformed_telemetry
+        transformed_libraries.append(transformed_lib)
+    return transformed_libraries
 
 
 def _transform_0_2_to_0_3(inventory_data: dict[str, Any]) -> dict[str, Any]:
@@ -121,43 +143,14 @@ def _transform_0_2_to_0_3(inventory_data: dict[str, Any]) -> dict[str, Any]:
     Returns:
         Transformed inventory data in format 0.3
     """
-    if "libraries" not in inventory_data:
-        raise KeyError("Inventory data missing 'libraries' key")
-
-    libraries = inventory_data["libraries"]
-    if libraries is None:
-        return inventory_data
-
-    transformed_libraries = []
-    for library in libraries:
-        transformed_lib = library.copy()
-
-        if "telemetry" in transformed_lib:
-            transformed_telemetry = []
-            for telemetry_entry in transformed_lib["telemetry"]:
-                transformed_entry = telemetry_entry.copy()
-
-                if "metrics" in transformed_entry:
-                    transformed_metrics = []
-                    for metric in transformed_entry["metrics"]:
-                        transformed_metric = metric.copy()
-
-                        if "type" in transformed_metric:
-                            transformed_metric["data_type"] = transformed_metric["type"]
-                            del transformed_metric["type"]
-
-                        transformed_metrics.append(transformed_metric)
-
-                    transformed_entry["metrics"] = transformed_metrics
-
-                transformed_telemetry.append(transformed_entry)
-
-            transformed_lib["telemetry"] = transformed_telemetry
-
-        transformed_libraries.append(transformed_lib)
-
     transformed_data = inventory_data.copy()
-    transformed_data["libraries"] = transformed_libraries
+
+    if inventory_data.get("libraries") is not None:
+        transformed_data["libraries"] = _transform_library_list_0_2_to_0_3(inventory_data["libraries"])
+
+    if inventory_data.get("custom") is not None:
+        transformed_data["custom"] = _transform_library_list_0_2_to_0_3(inventory_data["custom"])
+
     transformed_data["file_format"] = 0.3
     logger.info("Transformed inventory from format 0.2 to 0.3")
 

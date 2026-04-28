@@ -1,0 +1,27 @@
+{
+  "description": "The Metric Start Time Processor (`metric_start_time`) is used to set the start time for metric points with a cumulative aggregation temporality. It is commonly used with the `prometheus` receiver, which usually produces metric points without a start time.",
+  "display_name": "Metric Start Time Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-processor-metricstarttimeprocessor",
+  "name": "metricstarttimeprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "dashpole",
+        "ridwanmsharif"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "processor"
+}

@@ -27,9 +27,9 @@ import { PageContainer } from "@/components/layout/page-container";
 import { useCollectorComponent } from "@/hooks/use-collector-data";
 
 export function CollectorDetailPage() {
-  const { version, name } = useParams<{ version: string; name: string }>();
+  const { version, id } = useParams<{ version: string; id: string }>();
   const navigate = useNavigate();
-  const { data: component, loading, error } = useCollectorComponent(name ?? "", version ?? "");
+  const { data: component, loading, error } = useCollectorComponent(id ?? "", version ?? "");
 
   if (loading) {
     return (
@@ -102,7 +102,7 @@ export function CollectorDetailPage() {
               <div className="flex-1 space-y-3">
                 <div className="flex items-center gap-2">
                   <GlowBadge variant="info" className="uppercase tracking-wider text-[10px]">
-                    {component.component_type}
+                    {component.type}
                   </GlowBadge>
                   <GlowBadge variant="muted" className="uppercase tracking-wider text-[10px]">
                     {component.distribution}
@@ -165,13 +165,13 @@ export function CollectorDetailPage() {
                       <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                         Type
                       </h4>
-                      <p className="mt-1 text-sm font-medium">{component.type || component.name}</p>
+                      <p className="mt-1 text-sm font-medium">{component.type}</p>
                     </div>
                     <div>
                       <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                         Version
                       </h4>
-                      <p className="mt-1 text-sm font-medium">{component.version}</p>
+                      <p className="mt-1 text-sm font-medium">{version}</p>
                     </div>
                     <div>
                       <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
@@ -204,7 +204,7 @@ export function CollectorDetailPage() {
                     </a>
 
                     <a
-                      href={`${repositoryUrl}/tree/main/${component.component_type}/${component.type || component.name}`}
+                      href={`${repositoryUrl}/tree/main/${component.type}/${component.name}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center gap-3 p-3 rounded-lg border border-border/50 hover:bg-muted/50 transition-colors group"
@@ -272,60 +272,24 @@ export function CollectorDetailPage() {
             </TabsContent>
 
             <TabsContent value="owners" className="mt-0 p-6">
-              {component.codeowners &&
-              (component.codeowners.active?.length || component.codeowners.emeritus?.length) ? (
-                <div className="grid gap-6 md:grid-cols-2">
-                  {component.codeowners.active && component.codeowners.active.length > 0 && (
-                    <div>
-                      <SectionHeader>Active Maintainers</SectionHeader>
-                      <div className="space-y-2">
-                        {component.codeowners.active.map((owner) => (
-                          <a
-                            key={owner}
-                            href={`https://github.com/${owner}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-3 p-3 rounded-lg border border-border/30 hover:bg-muted/30 transition-colors"
-                          >
-                            <img
-                              src={`https://github.com/${owner}.png?size=40`}
-                              alt={owner}
-                              className="h-8 w-8 rounded-full border border-border"
-                            />
-                            <span className="font-medium">@{owner}</span>
-                            <ExternalLink className="ml-auto h-4 w-4 opacity-0 group-hover:opacity-100" />
-                          </a>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {component.codeowners.emeritus && component.codeowners.emeritus.length > 0 && (
-                    <div>
-                      <SectionHeader>Emeritus Maintainers</SectionHeader>
-                      <div className="space-y-2">
-                        {component.codeowners.emeritus.map((owner) => (
-                          <div
-                            key={owner}
-                            className="flex items-center gap-3 p-3 rounded-lg border border-border/10 bg-muted/10 opacity-60"
-                          >
-                            <img
-                              src={`https://github.com/${owner}.png?size=40`}
-                              alt={owner}
-                              className="h-8 w-8 rounded-full grayscale"
-                            />
-                            <span className="text-sm font-medium">@{owner}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
+              {component.status?.distributions && component.status.distributions.length > 0 ? (
+                <div className="space-y-6">
+                  <SectionHeader>Available In Distributions</SectionHeader>
+                  <div className="flex flex-wrap gap-3">
+                    {component.status.distributions.map((dist) => (
+                      <DetailCard key={dist} withHoverEffect className="inline-flex">
+                        <div className="flex items-center gap-2 px-2">
+                          <span className="text-sm font-semibold capitalize">{dist}</span>
+                        </div>
+                      </DetailCard>
+                    ))}
+                  </div>
                 </div>
               ) : (
                 <div className="text-center py-12">
                   <Users className="mx-auto h-12 w-12 text-muted-foreground/30" />
                   <p className="mt-4 text-muted-foreground">
-                    No maintainer information found in this registry entry.
+                    No distribution information found in this registry entry.
                   </p>
                 </div>
               )}

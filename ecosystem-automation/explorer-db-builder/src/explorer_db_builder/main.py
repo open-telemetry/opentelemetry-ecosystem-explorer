@@ -17,12 +17,12 @@
 import argparse
 import logging
 import sys
-from typing import Any, Optional
+from typing import Optional
 
 from java_instrumentation_watcher.inventory_manager import InventoryManager
 from semantic_version import Version
 
-from explorer_db_builder.collector_transformer import transform_collector_data
+from explorer_db_builder.collector_builder import run_collector_builder
 from explorer_db_builder.configuration_builder import run_configuration_builder
 from explorer_db_builder.database_writer import DatabaseWriter
 from explorer_db_builder.instrumentation_transformer import transform_instrumentation_format
@@ -75,7 +75,21 @@ def process_version(
     db_writer: DatabaseWriter,
     inventory: Optional[dict] = None,
 ) -> None:
-    """Process a single Java Agent version and write its data to the database."""
+    """Process a single version and write its data to the database.
+
+    Handles both old (0.1) and new (0.2) file formats by transforming
+    to the latest schema before writing.
+
+    Args:
+        version: The version to process
+        inventory_manager: Manager for accessing inventory data
+        db_writer: Writer for database operations
+        inventory: Optional pre-loaded inventory (e.g., backfilled data)
+
+    Raises:
+        ValueError: If no libraries found for the version or unsupported format
+        KeyError: If inventory data is malformed
+    """
     logger.info(f"Processing Java Agent version: {version}")
 
     if inventory is None:
@@ -83,37 +97,21 @@ def process_version(
 
     transformed_inventory = transform_instrumentation_format(inventory)
 
-    if "libraries" not in transformed_inventory:
-        raise KeyError(f"Inventory for version {version} missing 'libraries' key")
+    if "libraries" not in transformed_inventory and "custom" not in transformed_inventory:
+        raise KeyError(f"Inventory for version {version} missing 'libraries' and 'custom' keys")
 
-    libraries = transformed_inventory["libraries"]
-    if not libraries:
-        raise ValueError(f"No libraries found in inventory for version {version}")
+    libraries = transformed_inventory.get("libraries", [])
+    custom = transformed_inventory.get("custom", [])
 
-    logger.info(f"Found {len(libraries)} libraries")
+    if not libraries and not custom:
+        raise ValueError(f"No instrumentations found in inventory for version {version}")
 
-    library_map = db_writer.write_libraries(libraries)
-    db_writer.write_version_index(version, library_map)
+    logger.info(f"Found {len(libraries)} libraries and {len(custom)} custom instrumentations")
 
+    library_map = db_writer.write_libraries(libraries) if libraries else {}
+    custom_map = db_writer.write_libraries(custom) if custom else {}
 
-def process_collector_version(
-    version: Version,
-    distribution: str,
-    inventory_manager: Any,
-    db_writer: DatabaseWriter,
-) -> dict[str, str]:
-    """Process a single Collector version and write its data to the database."""
-    logger.info(f"Processing Collector {distribution} version: {version}")
-
-    inventory = inventory_manager.load_versioned_inventory(distribution, version)
-    components = transform_collector_data(inventory)
-
-    if not components:
-        logger.warning(f"No components found for Collector {distribution} version {version}")
-        return {}
-
-    logger.info(f"Found {len(components)} components")
-    return db_writer.write_components(components, sub_dir="components")
+    db_writer.write_version_index(version, library_map, custom_map)
 
 
 def run_javaagent_builder(
@@ -121,10 +119,19 @@ def run_javaagent_builder(
     db_writer: Optional[DatabaseWriter] = None,
     clean: bool = False,
 ) -> int:
-    """Run the javaagent database builder process."""
+    """Run the javaagent database builder process.
+
+    Args:
+        inventory_manager: Optional inventory manager (for testing)
+        db_writer: Optional database writer (for testing)
+        clean: If True, clean the database directory before building
+
+    Returns:
+        Exit code (0 for success, 1 for failure)
+    """
     try:
         inventory_manager = inventory_manager or InventoryManager()
-        db_writer = db_writer or DatabaseWriter("ecosystem-explorer/public/data/javaagent")
+        db_writer = db_writer or DatabaseWriter()
 
         if clean:
             db_writer.clean()
@@ -132,10 +139,15 @@ def run_javaagent_builder(
         versions = get_release_versions(inventory_manager)
         logger.info(f"Processing {len(versions)} release versions")
 
-        backfilled_inventories = backfill_metadata(
+        backfilled_libraries = backfill_metadata(
             versions,
             inventory_manager.load_versioned_inventory,
             item_key="libraries",
+        )
+        backfilled_inventories = backfill_metadata(
+            versions,
+            lambda v: backfilled_libraries[v],
+            item_key="custom",
         )
 
         for version in versions:
@@ -151,79 +163,52 @@ def run_javaagent_builder(
         logger.info("Database Statistics:")
         logger.info(f"  Files written: {stats['files_written']}")
         logger.info(f"  Total size: {stats['total_bytes']:,} bytes ({total_mb:.2f} MB)")
-        logger.info("Database build completed successfully")
+        logger.info("")
+        logger.info("✓ Database build completed successfully")
         return 0
 
     except ValueError as e:
-        logger.error(f"Validation error: {e}")
+        logger.error(f"❌ Validation error: {e}")
         return 1
     except KeyError as e:
-        logger.error(f"Data structure error: {e}")
+        logger.error(f"❌ Data structure error: {e}")
         return 1
     except OSError as e:
-        logger.error(f"File system error: {e}")
+        logger.error(f"❌ File system error: {e}")
         return 1
     except Exception as e:
-        logger.error(f"Unexpected error: {e}", exc_info=True)
+        logger.error(f"❌ Unexpected error: {e}", exc_info=True)
         return 1
 
 
-def run_collector_builder(clean: bool = False) -> int:
-    """Run the collector database builder process."""
-    try:
-        from collector_watcher.inventory_manager import InventoryManager as CollectorInventoryManager
+def run_builder(clean: bool = False, ecosystem: str = "all") -> int:
+    """Run the selected database builder pipelines.
 
-        inventory_manager = CollectorInventoryManager()
-        db_writer = DatabaseWriter("ecosystem-explorer/public/data/collector")
+    Args:
+        clean: If True, wipe the output directories before building.
+        ecosystem: Which pipeline to run: "javaagent", "configuration", "collector", or "all".
 
-        if clean:
-            db_writer.clean()
+    Returns:
+        0 if all selected pipelines succeed, 1 if any fail.
+    """
+    results: list[int] = []
 
-        distributions = ["core", "contrib"]
-        all_versions = set()
-        for dist in distributions:
-            all_versions.update(inventory_manager.list_release_versions(dist))
+    if ecosystem in ("javaagent", "all"):
+        logger.info("--- Java Agent ---")
+        results.append(run_javaagent_builder(clean=clean))
+        logger.info("")
 
-        sorted_versions = sorted(list(all_versions), reverse=True)
-        logger.info(f"Processing {len(sorted_versions)} Collector release versions")
+    if ecosystem in ("configuration", "all"):
+        logger.info("--- Configuration Schema ---")
+        results.append(run_configuration_builder(clean=clean))
+        logger.info("")
 
-        for version in sorted_versions:
-            version_component_map = {}
-            for dist in distributions:
-                if inventory_manager.version_exists(dist, version):
-                    dist_map = process_collector_version(version, dist, inventory_manager, db_writer)
-                    version_component_map.update(dist_map)
+    if ecosystem in ("collector", "all"):
+        logger.info("--- Collector ---")
+        results.append(run_collector_builder(clean=clean))
+        logger.info("")
 
-            if version_component_map:
-                db_writer.write_version_index(version, version_component_map, index_key="components")
-
-        db_writer.write_version_list(sorted_versions)
-
-        stats = db_writer.get_stats()
-        logger.info(f"Collector build completed: {stats['files_written']} files written")
-        return 0
-
-    except Exception as e:
-        logger.error(f"Collector builder failed: {e}", exc_info=True)
-        return 1
-
-
-def run_builder(clean: bool = False) -> int:
-    """Run all database builder pipelines. Returns 0 if both succeed, 1 if either fails."""
-    logger.info("--- Java Agent ---")
-    javaagent_result = run_javaagent_builder(clean=clean)
-
-    logger.info("")
-    logger.info("--- Collector ---")
-    collector_result = run_collector_builder(clean=clean)
-
-    logger.info("")
-    logger.info("--- Configuration Schema ---")
-    config_result = run_configuration_builder(clean=clean)
-
-    if javaagent_result != 0 or collector_result != 0 or config_result != 0:
-        return 1
-    return 0
+    return 1 if any(r != 0 for r in results) else 0
 
 
 def main() -> None:
@@ -237,6 +222,12 @@ def main() -> None:
         action="store_true",
         help="Clean the database directory before building",
     )
+    parser.add_argument(
+        "--ecosystem",
+        choices=["javaagent", "configuration", "collector", "all"],
+        default="all",
+        help="Which ecosystem pipeline to run (default: all)",
+    )
 
     args = parser.parse_args()
 
@@ -247,7 +238,7 @@ def main() -> None:
     logger.info("=" * 60)
     logger.info("")
 
-    exit_code = run_builder(clean=args.clean)
+    exit_code = run_builder(clean=args.clean, ecosystem=args.ecosystem)
     sys.exit(exit_code)
 
 

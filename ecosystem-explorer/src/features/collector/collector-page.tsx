@@ -55,7 +55,7 @@ export function CollectorPage() {
         comp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         comp.display_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         comp.description?.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesType = typeFilter === "all" || comp.component_type === typeFilter;
+      const matchesType = typeFilter === "all" || comp.type === typeFilter;
       return matchesSearch && matchesType;
     });
   }, [components, searchQuery, typeFilter]);
@@ -198,8 +198,8 @@ export function CollectorPage() {
               {filteredComponents.length > 0 ? (
                 filteredComponents.map((comp) => (
                   <Link
-                    key={`${comp.name}-${comp.component_type}-${comp.distribution}`}
-                    to={`/collector/components/${currentVersion}/${comp.name}`}
+                    key={comp.id}
+                    to={`/collector/components/${currentVersion}/${comp.id}`}
                     className="group block outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl"
                   >
                     <DetailCard
@@ -210,14 +210,14 @@ export function CollectorPage() {
                         <div className="flex items-start justify-between">
                           <div className="flex items-center gap-3">
                             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:scale-110 transition-transform duration-300">
-                              {getIcon(comp.component_type)}
+                              {getIcon(comp.type)}
                             </div>
                             <div className="space-y-1">
                               <GlowBadge
                                 variant="muted"
                                 className="text-[10px] uppercase tracking-widest font-bold"
                               >
-                                {comp.component_type}
+                                {comp.type}
                               </GlowBadge>
                             </div>
                           </div>

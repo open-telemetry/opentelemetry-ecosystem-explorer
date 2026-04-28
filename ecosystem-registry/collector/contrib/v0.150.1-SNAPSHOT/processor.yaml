@@ -387,7 +387,7 @@ components:
         type: string
 - name: logdedupprocessor
   metadata:
-    type: logdedup
+    type: log_dedup
     display_name: Log DeDuplication Processor
     description: The Log DeDuplication Processor is used to deduplicate logs by detecting
       identical logs over a range of time and emitting a single log with the count
@@ -613,6 +613,7 @@ components:
         - MovieStoreGuy
         - ankitpatel96
         - dineshg13
+        - MikeGoldsmith
 - name: spanprocessor
   metadata:
     type: span

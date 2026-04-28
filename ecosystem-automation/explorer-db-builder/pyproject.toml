@@ -6,14 +6,14 @@ requires-python = ">=3.11"
 dependencies = [
     "PyYAML>=6.0.1",
     "semantic-version>=2.10.0",
-    "java-instrumentation-watcher",
     "collector-watcher",
+    "java-instrumentation-watcher",
     "watcher-common",
 ]
 
 [tool.uv.sources]
-java-instrumentation-watcher = { workspace = true }
 collector-watcher = { workspace = true }
+java-instrumentation-watcher = { workspace = true }
 watcher-common = { workspace = true }
 
 [project.scripts]

@@ -1,0 +1,13 @@
+{
+  "description": "Provides a flexible way to capture telemetry at the method level in JVM applications. By weaving instrumentation into targeted methods at runtime based on the \"otel.instrumentation.methods.include\" configuration property, it measures entry and exit points, execution duration and exception occurrences. The resulting data is automatically translated into OpenTelemetry traces.",
+  "display_name": "Methods",
+  "has_javaagent": true,
+  "javaagent_target_versions": [
+    "Java 8+"
+  ],
+  "name": "methods",
+  "scope": {
+    "name": "io.opentelemetry.methods"
+  },
+  "source_path": "instrumentation/methods"
+}

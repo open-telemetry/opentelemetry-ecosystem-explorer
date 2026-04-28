@@ -29,16 +29,15 @@ export interface VersionManifest {
 }
 
 export interface CollectorComponent {
+  id: string;
   name: string;
-  component_type: "receiver" | "processor" | "exporter" | "extension" | "connector";
+  ecosystem: string;
+  type: "receiver" | "processor" | "exporter" | "extension" | "connector";
   distribution: "core" | "contrib" | string;
-  version: string;
+  display_name?: string | null;
+  description?: string | null;
   repository?: string;
-  type?: string;
-  display_name?: string;
-  description?: string;
   status?: ComponentStatus;
-  codeowners?: CodeOwners;
 }
 
 export interface ComponentStatus {
@@ -47,7 +46,21 @@ export interface ComponentStatus {
   distributions: string[];
 }
 
-export interface CodeOwners {
-  active?: string[];
-  emeritus?: string[];
+export interface CollectorIndex {
+  ecosystem: string;
+  taxonomy: {
+    distributions: string[];
+    types: string[];
+  };
+  components: IndexComponent[];
+}
+
+export interface IndexComponent {
+  id: string;
+  name: string;
+  distribution: string;
+  type: string;
+  display_name?: string | null;
+  description?: string | null;
+  stability?: string | null;
 }

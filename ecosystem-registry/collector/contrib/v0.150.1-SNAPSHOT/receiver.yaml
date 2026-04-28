@@ -4829,7 +4829,6 @@ components:
       stability:
         alpha:
         - metrics
-        development:
         - traces
       distributions:
       - contrib

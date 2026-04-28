@@ -1,0 +1,26 @@
+{
+  "description": "The Cisco OS Receiver is a modular receiver that collects metrics from Cisco network devices via SSH connections. It supports multiple scrapers for comprehensive network monitoring and provides native OpenTelemetry OTLP metrics generation.",
+  "display_name": "Cisco OS Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-receiver-ciscoosreceiver",
+  "name": "ciscoosreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "dmitryax"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver"
+}

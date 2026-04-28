@@ -59,7 +59,7 @@ export default function App() {
                 <Route path="/collector/components" element={<CollectorPage />} />
                 <Route path="/collector/components/:version" element={<CollectorPage />} />
                 <Route
-                  path="/collector/components/:version/:name"
+                  path="/collector/components/:version/:id"
                   element={<CollectorDetailPage />}
                 />
               </>

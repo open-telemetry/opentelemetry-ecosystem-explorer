@@ -30,6 +30,8 @@ jobs:
           enable-cache: true
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version-file: ".python-version"
       - name: Check copyright headers
         run: uv run python scripts/check_copyright.py
 
@@ -45,6 +47,8 @@ jobs:
 
       - name: Set up Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version-file: ".python-version"
 
       - name: Install dependencies
         run: uv sync --all-extras --dev
@@ -63,6 +67,11 @@ jobs:
         run: |
           cd ecosystem-automation/configuration-watcher
           uv run pytest tests/ --cov=configuration_watcher --cov-report=term-missing --cov-report=json
+
+      - name: Run explorer-db-builder tests
+        run: |
+          cd ecosystem-automation/explorer-db-builder
+          uv run pytest tests/ --cov=explorer_db_builder --cov-report=term-missing --cov-report=json
 
   test-ecosystem-explorer:
     runs-on: ubuntu-latest

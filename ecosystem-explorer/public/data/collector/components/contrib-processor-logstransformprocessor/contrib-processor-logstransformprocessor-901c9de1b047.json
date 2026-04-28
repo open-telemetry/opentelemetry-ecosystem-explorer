@@ -1,0 +1,24 @@
+{
+  "description": null,
+  "display_name": "Logs Transform Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-processor-logstransformprocessor",
+  "name": "logstransformprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "dehaansa"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "logs"
+      ]
+    }
+  },
+  "type": "processor"
+}

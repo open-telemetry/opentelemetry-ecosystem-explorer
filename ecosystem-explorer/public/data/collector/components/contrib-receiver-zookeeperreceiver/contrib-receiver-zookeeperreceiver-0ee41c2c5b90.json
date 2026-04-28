@@ -1,0 +1,31 @@
+{
+  "description": "The Zookeeper Receiver collects metrics from a Zookeeper instance, using the `mntr` command. The `mntr` 4 letter word command needs to be enabled for the receiver to be able to collect metrics.",
+  "display_name": "Zookeeper Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-receiver-zookeeperreceiver",
+  "name": "zookeeperreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "antonblock",
+        "akats7"
+      ],
+      "emeritus": [
+        "djaglowski"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver"
+}

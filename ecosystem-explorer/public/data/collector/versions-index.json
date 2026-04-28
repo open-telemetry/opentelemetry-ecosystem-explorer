@@ -3,34 +3,6 @@
     {
       "is_latest": true,
       "version": "0.150.0"
-    },
-    {
-      "is_latest": false,
-      "version": "0.149.0"
-    },
-    {
-      "is_latest": false,
-      "version": "0.148.0"
-    },
-    {
-      "is_latest": false,
-      "version": "0.147.0"
-    },
-    {
-      "is_latest": false,
-      "version": "0.146.1"
-    },
-    {
-      "is_latest": false,
-      "version": "0.146.0"
-    },
-    {
-      "is_latest": false,
-      "version": "0.145.0"
-    },
-    {
-      "is_latest": false,
-      "version": "0.144.0"
     }
   ]
 }

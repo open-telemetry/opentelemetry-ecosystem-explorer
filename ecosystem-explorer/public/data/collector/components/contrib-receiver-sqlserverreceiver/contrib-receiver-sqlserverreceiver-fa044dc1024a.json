@@ -1,0 +1,851 @@
+{
+  "attributes": {
+    "client.address": {
+      "description": "Hostname or address of the client.",
+      "type": "string"
+    },
+    "client.port": {
+      "description": "TCP port used by the client.",
+      "type": "int"
+    },
+    "database.status": {
+      "description": "The current status of a database",
+      "enum": [
+        "offline",
+        "online",
+        "pending_recovery",
+        "recovering",
+        "restoring",
+        "suspect"
+      ],
+      "type": "string"
+    },
+    "db.namespace": {
+      "description": "The database name.",
+      "type": "string"
+    },
+    "db.query.text": {
+      "description": "The text of the database query being executed.",
+      "type": "string"
+    },
+    "db.system.name": {
+      "description": "The database management system (DBMS) product as identified by the client instrumentation.",
+      "type": "string"
+    },
+    "direction": {
+      "description": "The direction of flow of bytes or operations.",
+      "enum": [
+        "read",
+        "write"
+      ],
+      "type": "string"
+    },
+    "file_type": {
+      "description": "The type of file being monitored.",
+      "type": "string"
+    },
+    "logical_filename": {
+      "description": "The logical filename of the file being monitored.",
+      "type": "string"
+    },
+    "network.peer.address": {
+      "description": "IP address of the peer client.",
+      "type": "string"
+    },
+    "network.peer.port": {
+      "description": "TCP port used by the peer client.",
+      "type": "int"
+    },
+    "page.operations": {
+      "description": "The page operation types.",
+      "enum": [
+        "read",
+        "write"
+      ],
+      "name_override": "type",
+      "type": "string"
+    },
+    "performance_counter.object_name": {
+      "description": "Category to which this counter belongs",
+      "type": "string"
+    },
+    "physical_filename": {
+      "description": "The physical filename of the file being monitored.",
+      "type": "string"
+    },
+    "replica.direction": {
+      "description": "The direction of flow of bytes for replica.",
+      "enum": [
+        "receive",
+        "transmit"
+      ],
+      "type": "string"
+    },
+    "server.address": {
+      "description": "The network address of the server hosting the database.",
+      "type": "string"
+    },
+    "server.port": {
+      "description": "The port number on which the server is listening.",
+      "type": "int"
+    },
+    "sqlserver.blocking_session_id": {
+      "description": "Session ID that is blocking the current session. 0 if none.",
+      "type": "int"
+    },
+    "sqlserver.command": {
+      "description": "SQL command type being executed.",
+      "type": "string"
+    },
+    "sqlserver.context_info": {
+      "description": "Context information for the session, represented as a hexadecimal string.",
+      "type": "string"
+    },
+    "sqlserver.cpu_time": {
+      "description": "CPU time consumed by the query, in seconds.",
+      "type": "double"
+    },
+    "sqlserver.deadlock_priority": {
+      "description": "Deadlock priority value for the session.",
+      "type": "int"
+    },
+    "sqlserver.estimated_completion_time": {
+      "description": "Estimated time remaining for the request to complete, in seconds.",
+      "type": "double"
+    },
+    "sqlserver.execution_count": {
+      "description": "Number of times that the plan has been executed since it was last compiled, reported in delta value.",
+      "type": "int"
+    },
+    "sqlserver.lock_timeout": {
+      "description": "Lock timeout value in seconds.",
+      "type": "double"
+    },
+    "sqlserver.logical_reads": {
+      "description": "Number of logical reads (data read from cache/memory).",
+      "type": "int"
+    },
+    "sqlserver.open_transaction_count": {
+      "description": "Number of transactions currently open in the session.",
+      "type": "int"
+    },
+    "sqlserver.percent_complete": {
+      "description": "Percentage of work completed.",
+      "type": "double"
+    },
+    "sqlserver.procedure_execution_count": {
+      "description": "Number of times that the procedure has been executed since it was last compiled, reported in delta value.",
+      "type": "int"
+    },
+    "sqlserver.procedure_id": {
+      "description": "The SQL Server ID of the stored procedure, if any",
+      "type": "string"
+    },
+    "sqlserver.procedure_name": {
+      "description": "The name of the stored procedure, if any",
+      "type": "string"
+    },
+    "sqlserver.query_hash": {
+      "description": "Binary hash value calculated on the query and used to identify queries with similar logic, reported in the HEX format.",
+      "type": "string"
+    },
+    "sqlserver.query_plan": {
+      "description": "The query execution plan used by the SQL Server.",
+      "type": "string"
+    },
+    "sqlserver.query_plan_hash": {
+      "description": "Binary hash value calculated on the query execution plan and used to identify similar query execution plans, reported in the HEX format.",
+      "type": "string"
+    },
+    "sqlserver.query_start": {
+      "description": "Timestamp of when the SQL query started (ISO 8601 format).",
+      "type": "string"
+    },
+    "sqlserver.reads": {
+      "description": "Number of physical reads performed by the query.",
+      "type": "int"
+    },
+    "sqlserver.request_status": {
+      "description": "Status of the request (e.g., running, suspended).",
+      "type": "string"
+    },
+    "sqlserver.row_count": {
+      "description": "Number of rows affected or returned by the query.",
+      "type": "int"
+    },
+    "sqlserver.session_id": {
+      "description": "ID of the SQL Server session.",
+      "type": "int"
+    },
+    "sqlserver.session_status": {
+      "description": "Status of the session (e.g., running, sleeping).",
+      "type": "string"
+    },
+    "sqlserver.total_elapsed_time": {
+      "description": "Total elapsed time for completed executions of this plan, reported in delta seconds.",
+      "type": "double"
+    },
+    "sqlserver.total_grant_kb": {
+      "description": "The total amount of reserved memory grant in KB this plan received since it was compiled, reported in delta value.",
+      "type": "int"
+    },
+    "sqlserver.total_logical_reads": {
+      "description": "Total number of logical reads performed by executions of this plan since it was compiled, reported in delta value.",
+      "type": "int"
+    },
+    "sqlserver.total_logical_writes": {
+      "description": "Total number of logical writes performed by executions of this plan since it was compiled, reported in delta value.",
+      "type": "int"
+    },
+    "sqlserver.total_physical_reads": {
+      "description": "Total number of physical reads performed by executions of this plan since it was compiled, reported in delta value.",
+      "type": "int"
+    },
+    "sqlserver.total_rows": {
+      "description": "Total number of rows returned by the query, reported in delta value.",
+      "type": "int"
+    },
+    "sqlserver.total_worker_time": {
+      "description": "Total amount of CPU time that was consumed by executions of this plan since it was compiled, reported in delta seconds.",
+      "type": "double"
+    },
+    "sqlserver.transaction_id": {
+      "description": "Unique ID of the active transaction.",
+      "type": "int"
+    },
+    "sqlserver.transaction_isolation_level": {
+      "description": "Transaction isolation level used in the session. Represented as numeric constant.",
+      "type": "int"
+    },
+    "sqlserver.wait_resource": {
+      "description": "The resource for which the session is waiting.",
+      "type": "string"
+    },
+    "sqlserver.wait_time": {
+      "description": "Duration in seconds the request has been waiting.",
+      "type": "double"
+    },
+    "sqlserver.wait_type": {
+      "description": "Type of wait encountered by the request. Empty if none.",
+      "type": "string"
+    },
+    "sqlserver.writes": {
+      "description": "Number of writes performed by the query.",
+      "type": "int"
+    },
+    "table.state": {
+      "description": "The state of the table.",
+      "enum": [
+        "active",
+        "inactive"
+      ],
+      "type": "string"
+    },
+    "table.status": {
+      "description": "The status of the table.",
+      "enum": [
+        "permanent",
+        "temporary"
+      ],
+      "type": "string"
+    },
+    "tempdb.state": {
+      "description": "The status of the tempdb space usage.",
+      "enum": [
+        "free",
+        "used"
+      ],
+      "type": "string"
+    },
+    "user.name": {
+      "description": "Login name associated with the SQL Server session.",
+      "type": "string"
+    },
+    "wait.category": {
+      "description": "Category of the reason for a wait.",
+      "type": "string"
+    },
+    "wait.type": {
+      "description": "Type of the wait, view [WaitTypes documentation](https://learn.microsoft.com/en-us/sql/relational-databases/system-dynamic-management-views/sys-dm-os-wait-stats-transact-sql?view=sql-server-ver16#WaitTypes) for more information.",
+      "type": "string"
+    }
+  },
+  "description": "The `sqlserver` receiver grabs metrics/logs about a Microsoft SQL Server instance. The receiver works by either using the Windows Performance Counters, or by directly connecting to the instance and querying it. Windows Performance Counters are only available when running on Windows.",
+  "display_name": "Microsoft SQL Server Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-receiver-sqlserverreceiver",
+  "metrics": {
+    "sqlserver.batch.request.rate": {
+      "description": "Number of batch requests received by SQL Server.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{requests}/s"
+    },
+    "sqlserver.batch.sql_compilation.rate": {
+      "description": "Number of SQL compilations needed.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{compilations}/s"
+    },
+    "sqlserver.batch.sql_recompilation.rate": {
+      "description": "Number of SQL recompilations needed.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{compilations}/s"
+    },
+    "sqlserver.computer.uptime": {
+      "description": "Computer uptime.",
+      "enabled": false,
+      "gauge": {
+        "input_type": "string",
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "{seconds}"
+    },
+    "sqlserver.cpu.count": {
+      "description": "Number of CPUs.",
+      "enabled": false,
+      "gauge": {
+        "input_type": "string",
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "{CPUs}"
+    },
+    "sqlserver.database.backup_or_restore.rate": {
+      "attributes": [],
+      "description": "Total number of backups/restores.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "\u201c{backups_or_restores}/s\u201d"
+    },
+    "sqlserver.database.count": {
+      "attributes": [
+        "database.status"
+      ],
+      "description": "The number of databases",
+      "enabled": false,
+      "gauge": {
+        "input_type": "string",
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "{databases}"
+    },
+    "sqlserver.database.execution.errors": {
+      "attributes": [],
+      "description": "Number of execution errors.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "\u201c{errors}\u201d"
+    },
+    "sqlserver.database.full_scan.rate": {
+      "attributes": [],
+      "description": "The number of unrestricted full table or index scans.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{scans}/s"
+    },
+    "sqlserver.database.io": {
+      "attributes": [
+        "direction",
+        "file_type",
+        "logical_filename",
+        "physical_filename"
+      ],
+      "description": "The number of bytes of I/O on this file.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "sqlserver.database.latency": {
+      "attributes": [
+        "direction",
+        "file_type",
+        "logical_filename",
+        "physical_filename"
+      ],
+      "description": "Total time that the users waited for I/O issued on this file.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "double"
+      },
+      "unit": "s"
+    },
+    "sqlserver.database.operations": {
+      "attributes": [
+        "direction",
+        "file_type",
+        "logical_filename",
+        "physical_filename"
+      ],
+      "description": "The number of operations issued on the file.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{operations}"
+    },
+    "sqlserver.database.tempdb.space": {
+      "attributes": [
+        "tempdb.state"
+      ],
+      "description": "Total free space in temporary DB.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "\u201cKB\u201d"
+    },
+    "sqlserver.database.tempdb.version_store.size": {
+      "attributes": [],
+      "description": "TempDB version store size.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "\u201cKB\u201d"
+    },
+    "sqlserver.deadlock.rate": {
+      "attributes": [],
+      "description": "Total number of deadlocks.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "\u201c{deadlocks}/s\u201d"
+    },
+    "sqlserver.index.search.rate": {
+      "attributes": [],
+      "description": "Total number of index searches.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "\u201c{searches}/s\u201d"
+    },
+    "sqlserver.lock.timeout.rate": {
+      "attributes": [],
+      "description": "Total number of lock timeouts.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "\u201c{timeouts}/s\u201d"
+    },
+    "sqlserver.lock.wait.count": {
+      "description": "Cumulative count of lock waits that occurred.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{wait}"
+    },
+    "sqlserver.lock.wait.rate": {
+      "description": "Number of lock requests resulting in a wait.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{requests}/s"
+    },
+    "sqlserver.lock.wait_time.avg": {
+      "description": "Average wait time for all lock requests that had to wait.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "ms"
+    },
+    "sqlserver.login.rate": {
+      "attributes": [],
+      "description": "Total number of logins.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "\u201c{logins}/s\u201d"
+    },
+    "sqlserver.logout.rate": {
+      "attributes": [],
+      "description": "Total number of logouts.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "\u201c{logouts}/s\u201d"
+    },
+    "sqlserver.memory.grants.pending.count": {
+      "attributes": [],
+      "description": "Total number of memory grants pending.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "\u201c{grants}\u201d"
+    },
+    "sqlserver.memory.usage": {
+      "attributes": [],
+      "description": "Total memory in use.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "double"
+      },
+      "unit": "\u201cKB\u201d"
+    },
+    "sqlserver.os.wait.duration": {
+      "attributes": [
+        "wait.category",
+        "wait.type"
+      ],
+      "description": "Total wait time for this wait type",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "double"
+      },
+      "unit": "s"
+    },
+    "sqlserver.page.buffer_cache.free_list.stalls.rate": {
+      "attributes": [],
+      "description": "Number of free list stalls.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "\u201c{stalls}/s\u201d"
+    },
+    "sqlserver.page.buffer_cache.hit_ratio": {
+      "description": "Pages found in the buffer pool without having to read from disk.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "%"
+    },
+    "sqlserver.page.checkpoint.flush.rate": {
+      "description": "Number of pages flushed by operations requiring dirty pages to be flushed.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{pages}/s"
+    },
+    "sqlserver.page.lazy_write.rate": {
+      "description": "Number of lazy writes moving dirty pages to disk.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{writes}/s"
+    },
+    "sqlserver.page.life_expectancy": {
+      "attributes": [
+        "performance_counter.object_name"
+      ],
+      "description": "Time a page will stay in the buffer pool.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "s"
+    },
+    "sqlserver.page.lookup.rate": {
+      "attributes": [],
+      "description": "Total number of page lookups.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "\u201c{lookups}/s\u201d"
+    },
+    "sqlserver.page.operation.rate": {
+      "attributes": [
+        "page.operations"
+      ],
+      "description": "Number of physical database page operations issued.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{operations}/s"
+    },
+    "sqlserver.page.split.rate": {
+      "description": "Number of pages split as a result of overflowing index pages.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{pages}/s"
+    },
+    "sqlserver.processes.blocked": {
+      "attributes": [],
+      "description": "The number of processes that are currently blocked",
+      "enabled": false,
+      "gauge": {
+        "input_type": "string",
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "{processes}"
+    },
+    "sqlserver.replica.data.rate": {
+      "attributes": [
+        "replica.direction"
+      ],
+      "description": "Throughput rate of replica data.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "By/s"
+    },
+    "sqlserver.resource_pool.disk.operations": {
+      "attributes": [
+        "direction"
+      ],
+      "description": "The rate of operations issued.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{operations}/s"
+    },
+    "sqlserver.resource_pool.disk.throttled.read.rate": {
+      "attributes": [],
+      "description": "The number of read operations that were throttled in the last second",
+      "enabled": false,
+      "gauge": {
+        "input_type": "string",
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "{reads}/s"
+    },
+    "sqlserver.resource_pool.disk.throttled.write.rate": {
+      "attributes": [],
+      "description": "The number of write operations that were throttled in the last second",
+      "enabled": false,
+      "gauge": {
+        "input_type": "string",
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{writes}/s"
+    },
+    "sqlserver.table.count": {
+      "attributes": [
+        "table.state",
+        "table.status"
+      ],
+      "description": "The number of tables.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "\u201c{tables}\u201d"
+    },
+    "sqlserver.transaction.delay": {
+      "attributes": [],
+      "description": "Time consumed in transaction delays.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "double"
+      },
+      "unit": "ms"
+    },
+    "sqlserver.transaction.mirror_write.rate": {
+      "attributes": [],
+      "description": "Total number of mirror write transactions.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "\u201c{transactions}/s\u201d"
+    },
+    "sqlserver.transaction.rate": {
+      "description": "Number of transactions started for the database (not including XTP-only transactions).",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{transactions}/s"
+    },
+    "sqlserver.transaction.write.rate": {
+      "description": "Number of transactions that wrote to the database and committed.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{transactions}/s"
+    },
+    "sqlserver.transaction_log.flush.data.rate": {
+      "description": "Total number of log bytes flushed.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "By/s"
+    },
+    "sqlserver.transaction_log.flush.rate": {
+      "description": "Number of log flushes.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{flushes}/s"
+    },
+    "sqlserver.transaction_log.flush.wait.rate": {
+      "description": "Number of commits waiting for a transaction log flush.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{commits}/s"
+    },
+    "sqlserver.transaction_log.growth.count": {
+      "description": "Total number of transaction log expansions for a database.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{growths}"
+    },
+    "sqlserver.transaction_log.shrink.count": {
+      "description": "Total number of transaction log shrinks for a database.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{shrinks}"
+    },
+    "sqlserver.transaction_log.usage": {
+      "description": "Percent of transaction log space used.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "%"
+    },
+    "sqlserver.user.connection.count": {
+      "description": "Number of users connected to the SQL Server.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "{connections}"
+    }
+  },
+  "name": "sqlserverreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "sincejune",
+        "crobert-1"
+      ],
+      "emeritus": [
+        "StefanKurek"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ],
+      "development": [
+        "logs"
+      ]
+    }
+  },
+  "type": "receiver"
+}
