@@ -1,0 +1,39 @@
+{
+  "component_type": "processor",
+  "display_name": "Transform Processor",
+  "distribution": "contrib",
+  "name": "transformprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "TylerHelmuth",
+        "evan-bradley",
+        "edmocosta",
+        "bogdandrutu"
+      ],
+      "emeritus": [
+        "anuraaga",
+        "kentquirk"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ],
+      "development": [
+        "profiles"
+      ]
+    }
+  },
+  "type": "transform",
+  "version": "0.150.0"
+}

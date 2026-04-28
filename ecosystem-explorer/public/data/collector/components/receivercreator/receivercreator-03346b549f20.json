@@ -1,0 +1,35 @@
+{
+  "component_type": "receiver",
+  "description": "This receiver can instantiate other receivers at runtime based on whether observed endpoints match a configured rule.",
+  "display_name": "Receiver Creator",
+  "distribution": "contrib",
+  "name": "receivercreator",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "dmitryax",
+        "ChrsMark"
+      ],
+      "emeritus": [
+        "rmfitzpatrick"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "traces"
+      ],
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver_creator",
+  "version": "0.149.0"
+}

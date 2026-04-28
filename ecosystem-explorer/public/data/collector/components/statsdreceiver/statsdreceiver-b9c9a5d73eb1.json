@@ -1,0 +1,25 @@
+{
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "name": "statsdreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "jmacd",
+        "dmitryax"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "statsd",
+  "version": "0.145.0"
+}

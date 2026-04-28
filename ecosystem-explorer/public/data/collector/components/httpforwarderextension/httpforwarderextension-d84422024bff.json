@@ -1,0 +1,29 @@
+{
+  "component_type": "extension",
+  "distribution": "contrib",
+  "name": "httpforwarderextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "atoulme"
+      ],
+      "emeritus": [
+        "rmfitzpatrick"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "extension"
+      ]
+    }
+  },
+  "type": "http_forwarder",
+  "version": "0.144.0"
+}

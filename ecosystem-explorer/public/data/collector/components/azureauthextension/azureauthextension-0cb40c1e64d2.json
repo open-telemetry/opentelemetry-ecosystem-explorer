@@ -1,0 +1,24 @@
+{
+  "component_type": "extension",
+  "distribution": "contrib",
+  "name": "azureauthextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "constanca-m"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "extension"
+      ]
+    }
+  },
+  "type": "azureauth",
+  "version": "0.144.0"
+}

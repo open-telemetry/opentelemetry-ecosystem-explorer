@@ -1,0 +1,25 @@
+{
+  "component_type": "extension",
+  "display_name": "Kafka Topics Observer Extension",
+  "distribution": "contrib",
+  "name": "kafkatopicsobserver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "MovieStoreGuy"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "extension"
+      ]
+    }
+  },
+  "type": "kafkatopics_observer",
+  "version": "0.147.0"
+}

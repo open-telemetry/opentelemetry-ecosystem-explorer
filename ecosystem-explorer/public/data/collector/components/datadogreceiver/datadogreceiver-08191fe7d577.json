@@ -1,0 +1,30 @@
+{
+  "component_type": "receiver",
+  "description": "The Datadog receiver enables translation between Datadog and OpenTelemetry-compatible backends. It currently has support for Datadog's APM traces, metrics, and logs.",
+  "display_name": "Datadog Receiver",
+  "distribution": "contrib",
+  "name": "datadogreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "boostchicken",
+        "gouthamve",
+        "MovieStoreGuy"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "datadog",
+  "version": "0.150.0"
+}

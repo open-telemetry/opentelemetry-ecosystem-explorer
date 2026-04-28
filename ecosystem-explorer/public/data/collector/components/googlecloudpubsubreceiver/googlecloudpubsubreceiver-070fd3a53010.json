@@ -1,0 +1,26 @@
+{
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "name": "googlecloudpubsubreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "alexvanboxel"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "googlecloudpubsub",
+  "version": "0.146.0"
+}

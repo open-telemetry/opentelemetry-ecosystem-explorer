@@ -1,0 +1,27 @@
+{
+  "component_type": "extension",
+  "display_name": "Headers Setter Extension",
+  "distribution": "contrib",
+  "name": "headerssetterextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "VihasMakwana"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "extension"
+      ]
+    }
+  },
+  "type": "headers_setter",
+  "version": "0.150.0"
+}

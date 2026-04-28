@@ -1,0 +1,30 @@
+{
+  "component_type": "exporter",
+  "display_name": "Pulsar Exporter",
+  "distribution": "contrib",
+  "name": "pulsarexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "dao-jun"
+      ],
+      "emeritus": [
+        "dmitryax"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "pulsar",
+  "version": "0.147.0"
+}

@@ -1,0 +1,60 @@
+{
+  "attributes": {
+    "node_id": {
+      "description": "The Kafka node ID.",
+      "type": "int"
+    },
+    "outcome": {
+      "description": "The operation outcome.",
+      "enum": [
+        "failure",
+        "success"
+      ],
+      "type": "string"
+    },
+    "partition": {
+      "description": "The Kafka topic partition.",
+      "type": "int"
+    },
+    "server.address": {
+      "description": "The Kafka node address.",
+      "type": "string"
+    },
+    "topic": {
+      "description": "The Kafka topic.",
+      "type": "string"
+    }
+  },
+  "component_type": "exporter",
+  "display_name": "Kafka Exporter",
+  "distribution": "contrib",
+  "name": "kafkaexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "pavolloffay",
+        "MovieStoreGuy",
+        "axw",
+        "paulojmdias"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "core"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ],
+      "development": [
+        "profiles"
+      ]
+    }
+  },
+  "type": "kafka",
+  "version": "0.149.0"
+}

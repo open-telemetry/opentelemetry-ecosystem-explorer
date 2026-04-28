@@ -1,0 +1,140 @@
+{
+  "attributes": {
+    "operation": {
+      "description": "The operation type for index operations.",
+      "enum": [
+        "delete",
+        "read",
+        "write"
+      ],
+      "type": "string"
+    },
+    "request": {
+      "description": "The request operation type.",
+      "enum": [
+        "get",
+        "put"
+      ],
+      "type": "string"
+    }
+  },
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "metrics": {
+    "riak.memory.limit": {
+      "description": "The amount of memory allocated to the node.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "riak.node.operation.count": {
+      "attributes": [
+        "request"
+      ],
+      "description": "The number of operations performed by the node.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{operation}"
+    },
+    "riak.node.operation.time.mean": {
+      "attributes": [
+        "request"
+      ],
+      "description": "The mean time between request and response for operations performed by the node over the last minute.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "us"
+    },
+    "riak.node.read_repair.count": {
+      "description": "The number of read repairs performed by the node.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{read_repair}"
+    },
+    "riak.vnode.index.operation.count": {
+      "attributes": [
+        "operation"
+      ],
+      "description": "The number of index operations performed by vnodes on the node.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{operation}"
+    },
+    "riak.vnode.operation.count": {
+      "attributes": [
+        "request"
+      ],
+      "description": "The number of operations performed by vnodes on the node.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{operation}"
+    }
+  },
+  "name": "riakreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "resource_attributes": {
+    "riak.node.name": {
+      "description": "The name this node uses to identify itself.",
+      "type": "string"
+    }
+  },
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "armstrmi"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "riak",
+  "version": "0.145.0"
+}

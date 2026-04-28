@@ -1,0 +1,29 @@
+{
+  "component_type": "extension",
+  "description": "This extension can be used to unmarshall a [Cloud Logging LogEntry](https://cloud.google.com/logging/docs/reference/v2/rest/v2/LogEntry) message type.",
+  "display_name": "Google Cloud LogEntry Encoding Extension",
+  "distribution": "contrib",
+  "name": "googlecloudlogentryencodingextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "constanca-m"
+      ],
+      "emeritus": [
+        "alexvanboxel"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "extension"
+      ]
+    }
+  },
+  "type": "google_cloud_logentry_encoding",
+  "version": "0.148.0"
+}

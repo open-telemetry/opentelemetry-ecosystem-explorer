@@ -1,0 +1,25 @@
+{
+  "component_type": "extension",
+  "distribution": "contrib",
+  "name": "awslogsencodingextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "axw",
+        "constanca-m"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "extension"
+      ]
+    }
+  },
+  "type": "awslogs_encoding",
+  "version": "0.144.0"
+}

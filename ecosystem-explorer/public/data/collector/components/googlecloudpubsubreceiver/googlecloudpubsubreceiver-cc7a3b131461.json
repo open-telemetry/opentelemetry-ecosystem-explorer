@@ -1,0 +1,28 @@
+{
+  "component_type": "receiver",
+  "description": "This receiver gets OTLP messages from a Google Cloud [Pubsub](https://cloud.google.com/pubsub) subscription.",
+  "display_name": "Google Pub/Sub Receiver",
+  "distribution": "contrib",
+  "name": "googlecloudpubsubreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "alexvanboxel"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "googlecloudpubsub",
+  "version": "0.150.0"
+}

@@ -1,0 +1,31 @@
+{
+  "component_type": "extension",
+  "description": "This extension provides Google OAuth2 Client Credentials and Metadata for gRPC and http based exporters.",
+  "display_name": "Google Client Auth Extension",
+  "distribution": "contrib",
+  "name": "googleclientauthextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "dashpole",
+        "aabmass",
+        "braydonk",
+        "jsuereth",
+        "psx95",
+        "ridwanmsharif"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "extension"
+      ]
+    }
+  },
+  "type": "googleclientauth",
+  "version": "0.150.0"
+}

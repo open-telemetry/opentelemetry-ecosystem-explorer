@@ -1,0 +1,1063 @@
+{
+  "attributes": {
+    "assert_type": {
+      "description": "MongoDB assertion type",
+      "enum": [
+        "msg",
+        "regular",
+        "user",
+        "warning"
+      ],
+      "type": "string"
+    },
+    "btree_counter_type": {
+      "description": "Database index effectiveness",
+      "enum": [
+        "accesses",
+        "hits",
+        "misses"
+      ],
+      "type": "string"
+    },
+    "cache_direction": {
+      "description": "Whether read into or written from",
+      "enum": [
+        "read_into",
+        "written_from"
+      ],
+      "type": "string"
+    },
+    "cache_ratio_type": {
+      "description": "Cache ratio type",
+      "enum": [
+        "cache_fill",
+        "dirty_fill"
+      ],
+      "type": "string"
+    },
+    "cache_status": {
+      "description": "Cache status",
+      "enum": [
+        "dirty",
+        "used"
+      ],
+      "type": "string"
+    },
+    "cluster_role": {
+      "description": "Whether process is acting as replica or primary",
+      "enum": [
+        "primary",
+        "replica"
+      ],
+      "type": "string"
+    },
+    "cpu_state": {
+      "description": "CPU state",
+      "enum": [
+        "guest",
+        "iowait",
+        "irq",
+        "kernel",
+        "nice",
+        "softirq",
+        "steal",
+        "user"
+      ],
+      "type": "string"
+    },
+    "cursor_state": {
+      "description": "Whether cursor is open or timed out",
+      "enum": [
+        "open",
+        "timed_out"
+      ],
+      "type": "string"
+    },
+    "direction": {
+      "description": "Network traffic direction",
+      "enum": [
+        "receive",
+        "transmit"
+      ],
+      "type": "string"
+    },
+    "disk_direction": {
+      "description": "Measurement type for disk operation",
+      "enum": [
+        "read",
+        "total",
+        "write"
+      ],
+      "type": "string"
+    },
+    "disk_status": {
+      "description": "Disk measurement type",
+      "enum": [
+        "free",
+        "used"
+      ],
+      "type": "string"
+    },
+    "document_status": {
+      "description": "Status of documents in the database",
+      "enum": [
+        "deleted",
+        "inserted",
+        "returned",
+        "updated"
+      ],
+      "type": "string"
+    },
+    "execution_type": {
+      "description": "Type of command",
+      "enum": [
+        "commands",
+        "reads",
+        "writes"
+      ],
+      "type": "string"
+    },
+    "global_lock_state": {
+      "description": "Which queue is locked",
+      "enum": [
+        "current_queue_readers",
+        "current_queue_total",
+        "current_queue_writers"
+      ],
+      "type": "string"
+    },
+    "memory_issue_type": {
+      "description": "Type of memory issue encountered",
+      "enum": [
+        "exceptions_thrown",
+        "extra_info",
+        "global_accesses_not_in_memory"
+      ],
+      "type": "string"
+    },
+    "memory_state": {
+      "description": "Memory usage type",
+      "enum": [
+        "computed",
+        "free",
+        "mapped",
+        "resident",
+        "shared",
+        "used",
+        "virtual"
+      ],
+      "type": "string"
+    },
+    "memory_status": {
+      "description": "Memory measurement type",
+      "enum": [
+        "available",
+        "buffers",
+        "cached",
+        "free",
+        "shared",
+        "used"
+      ],
+      "type": "string"
+    },
+    "object_type": {
+      "description": "MongoDB object type",
+      "enum": [
+        "collection",
+        "data",
+        "extent",
+        "index",
+        "object",
+        "storage",
+        "view"
+      ],
+      "type": "string"
+    },
+    "operation": {
+      "description": "Type of database operation",
+      "enum": [
+        "cmd",
+        "delete",
+        "getmore",
+        "insert",
+        "query",
+        "scan_and_order",
+        "ttl_deleted",
+        "update"
+      ],
+      "type": "string"
+    },
+    "oplog_type": {
+      "description": "Oplog type",
+      "enum": [
+        "master_lag_time_diff",
+        "master_time",
+        "slave_lag_master_time"
+      ],
+      "type": "string"
+    },
+    "scanned_type": {
+      "description": "Objects or indexes scanned during query",
+      "enum": [
+        "index_items",
+        "objects"
+      ],
+      "type": "string"
+    },
+    "storage_status": {
+      "description": "Views on database size",
+      "enum": [
+        "data_size",
+        "data_size_wo_system",
+        "index_size",
+        "total"
+      ],
+      "type": "string"
+    },
+    "ticket_type": {
+      "description": "Type of ticket available",
+      "enum": [
+        "available_reads",
+        "available_writes"
+      ],
+      "type": "string"
+    }
+  },
+  "component_type": "receiver",
+  "description": "The MongoDB Atlas Receiver receives metrics from [MongoDB Atlas](https://www.mongodb.com/cloud/atlas) via their [monitoring APIs](https://docs.atlas.mongodb.com/reference/api/monitoring-and-logs/), as well as alerts via a configured [webhook](https://www.mongodb.com/docs/atlas/tutorial/third-party-service-integrations/) and events from [events APIs](https://www.mongodb.com/docs/atlas/reference/api/events/).",
+  "display_name": "MongoDB Atlas Receiver",
+  "distribution": "contrib",
+  "metrics": {
+    "mongodbatlas.db.counts": {
+      "attributes": [
+        "object_type"
+      ],
+      "description": "Database feature size",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{objects}"
+    },
+    "mongodbatlas.db.size": {
+      "attributes": [
+        "object_type"
+      ],
+      "description": "Database feature size",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "mongodbatlas.disk.partition.iops.average": {
+      "attributes": [
+        "disk_direction"
+      ],
+      "description": "Disk partition iops",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{ops}/s"
+    },
+    "mongodbatlas.disk.partition.iops.max": {
+      "attributes": [
+        "disk_direction"
+      ],
+      "description": "Disk partition iops",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{ops}/s"
+    },
+    "mongodbatlas.disk.partition.latency.average": {
+      "attributes": [
+        "disk_direction"
+      ],
+      "description": "Disk partition latency",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "ms"
+    },
+    "mongodbatlas.disk.partition.latency.max": {
+      "attributes": [
+        "disk_direction"
+      ],
+      "description": "Disk partition latency",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "ms"
+    },
+    "mongodbatlas.disk.partition.queue.depth": {
+      "attributes": [],
+      "description": "Disk queue depth",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "mongodbatlas.disk.partition.space.average": {
+      "attributes": [
+        "disk_status"
+      ],
+      "description": "Disk partition space",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "mongodbatlas.disk.partition.space.max": {
+      "attributes": [
+        "disk_status"
+      ],
+      "description": "Disk partition space",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "mongodbatlas.disk.partition.throughput": {
+      "attributes": [
+        "disk_direction"
+      ],
+      "description": "Disk throughput",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "By/s"
+    },
+    "mongodbatlas.disk.partition.usage.average": {
+      "attributes": [
+        "disk_status"
+      ],
+      "description": "Disk partition usage (%)",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "mongodbatlas.disk.partition.usage.max": {
+      "attributes": [
+        "disk_status"
+      ],
+      "description": "Disk partition usage (%)",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "mongodbatlas.disk.partition.utilization.average": {
+      "description": "The percentage of time during which requests are being issued to and serviced by the partition.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "mongodbatlas.disk.partition.utilization.max": {
+      "description": "The maximum percentage of time during which requests are being issued to and serviced by the partition.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "mongodbatlas.process.asserts": {
+      "attributes": [
+        "assert_type"
+      ],
+      "description": "Number of assertions per second",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{assertions}/s"
+    },
+    "mongodbatlas.process.background_flush": {
+      "description": "Amount of data flushed in the background",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "mongodbatlas.process.cache.io": {
+      "attributes": [
+        "cache_direction"
+      ],
+      "description": "Cache throughput (per second)",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "mongodbatlas.process.cache.ratio": {
+      "attributes": [
+        "cache_ratio_type"
+      ],
+      "description": "Cache ratios represented as (%)",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "%"
+    },
+    "mongodbatlas.process.cache.size": {
+      "attributes": [
+        "cache_status"
+      ],
+      "description": "Cache sizes",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "double"
+      },
+      "unit": "By"
+    },
+    "mongodbatlas.process.connections": {
+      "description": "Number of current connections",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "double"
+      },
+      "unit": "{connections}"
+    },
+    "mongodbatlas.process.cpu.children.normalized.usage.average": {
+      "attributes": [
+        "cpu_state"
+      ],
+      "description": "CPU Usage for child processes, normalized to pct",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "mongodbatlas.process.cpu.children.normalized.usage.max": {
+      "attributes": [
+        "cpu_state"
+      ],
+      "description": "CPU Usage for child processes, normalized to pct",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "mongodbatlas.process.cpu.children.usage.average": {
+      "attributes": [
+        "cpu_state"
+      ],
+      "description": "CPU Usage for child processes (%)",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "mongodbatlas.process.cpu.children.usage.max": {
+      "attributes": [
+        "cpu_state"
+      ],
+      "description": "CPU Usage for child processes (%)",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "mongodbatlas.process.cpu.normalized.usage.average": {
+      "attributes": [
+        "cpu_state"
+      ],
+      "description": "CPU Usage, normalized to pct",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "mongodbatlas.process.cpu.normalized.usage.max": {
+      "attributes": [
+        "cpu_state"
+      ],
+      "description": "CPU Usage, normalized to pct",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "mongodbatlas.process.cpu.usage.average": {
+      "attributes": [
+        "cpu_state"
+      ],
+      "description": "CPU Usage (%)",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "mongodbatlas.process.cpu.usage.max": {
+      "attributes": [
+        "cpu_state"
+      ],
+      "description": "CPU Usage (%)",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "mongodbatlas.process.cursors": {
+      "attributes": [
+        "cursor_state"
+      ],
+      "description": "Number of cursors",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{cursors}"
+    },
+    "mongodbatlas.process.db.document.rate": {
+      "attributes": [
+        "document_status"
+      ],
+      "description": "Document access rates",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{documents}/s"
+    },
+    "mongodbatlas.process.db.operations.rate": {
+      "attributes": [
+        "cluster_role",
+        "operation"
+      ],
+      "description": "DB Operation Rates",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{operations}/s"
+    },
+    "mongodbatlas.process.db.operations.time": {
+      "attributes": [
+        "execution_type"
+      ],
+      "description": "DB Operation Times",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "double"
+      },
+      "unit": "ms"
+    },
+    "mongodbatlas.process.db.query_executor.scanned": {
+      "attributes": [
+        "scanned_type"
+      ],
+      "description": "Scanned objects",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{objects}/s"
+    },
+    "mongodbatlas.process.db.query_targeting.scanned_per_returned": {
+      "attributes": [
+        "scanned_type"
+      ],
+      "description": "Scanned objects per returned",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{scanned}/{returned}"
+    },
+    "mongodbatlas.process.db.storage": {
+      "attributes": [
+        "storage_status"
+      ],
+      "description": "Storage used by the database",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "mongodbatlas.process.global_lock": {
+      "attributes": [
+        "global_lock_state"
+      ],
+      "description": "Number and status of locks",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{locks}"
+    },
+    "mongodbatlas.process.index.btree_miss_ratio": {
+      "description": "Index miss ratio (%)",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "mongodbatlas.process.index.counters": {
+      "attributes": [
+        "btree_counter_type"
+      ],
+      "description": "Indexes",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{indexes}"
+    },
+    "mongodbatlas.process.journaling.commits": {
+      "description": "Journaling commits",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{commits}"
+    },
+    "mongodbatlas.process.journaling.data_files": {
+      "description": "Data file sizes",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "MiBy"
+    },
+    "mongodbatlas.process.journaling.written": {
+      "description": "Journals written",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "MiBy"
+    },
+    "mongodbatlas.process.memory.usage": {
+      "attributes": [
+        "memory_state"
+      ],
+      "description": "Memory Usage",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "mongodbatlas.process.network.io": {
+      "attributes": [
+        "direction"
+      ],
+      "description": "Network IO",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "By/s"
+    },
+    "mongodbatlas.process.network.requests": {
+      "description": "Network requests",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "double"
+      },
+      "unit": "{requests}"
+    },
+    "mongodbatlas.process.oplog.rate": {
+      "description": "Execution rate by operation",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "GiBy/h"
+    },
+    "mongodbatlas.process.oplog.time": {
+      "attributes": [
+        "oplog_type"
+      ],
+      "description": "Execution time by operation",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "s"
+    },
+    "mongodbatlas.process.page_faults": {
+      "attributes": [
+        "memory_issue_type"
+      ],
+      "description": "Page faults",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{faults}/s"
+    },
+    "mongodbatlas.process.restarts": {
+      "description": "Restarts in last hour",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{restarts}/h"
+    },
+    "mongodbatlas.process.tickets": {
+      "attributes": [
+        "ticket_type"
+      ],
+      "description": "Tickets",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{tickets}"
+    },
+    "mongodbatlas.system.cpu.normalized.usage.average": {
+      "attributes": [
+        "cpu_state"
+      ],
+      "description": "System CPU Normalized to pct",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "mongodbatlas.system.cpu.normalized.usage.max": {
+      "attributes": [
+        "cpu_state"
+      ],
+      "description": "System CPU Normalized to pct",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "mongodbatlas.system.cpu.usage.average": {
+      "attributes": [
+        "cpu_state"
+      ],
+      "description": "System CPU Usage (%)",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "mongodbatlas.system.cpu.usage.max": {
+      "attributes": [
+        "cpu_state"
+      ],
+      "description": "System CPU Usage (%)",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "mongodbatlas.system.fts.cpu.normalized.usage": {
+      "attributes": [
+        "cpu_state"
+      ],
+      "description": "Full text search disk usage (%)",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "mongodbatlas.system.fts.cpu.usage": {
+      "attributes": [
+        "cpu_state"
+      ],
+      "description": "Full-text search (%)",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "mongodbatlas.system.fts.disk.used": {
+      "description": "Full text search disk usage",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "mongodbatlas.system.fts.memory.usage": {
+      "attributes": [
+        "memory_state"
+      ],
+      "description": "Full-text search",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "double"
+      },
+      "unit": "MiBy"
+    },
+    "mongodbatlas.system.memory.usage.average": {
+      "attributes": [
+        "memory_status"
+      ],
+      "description": "System Memory Usage",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "KiBy"
+    },
+    "mongodbatlas.system.memory.usage.max": {
+      "attributes": [
+        "memory_status"
+      ],
+      "description": "System Memory Usage",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "KiBy"
+    },
+    "mongodbatlas.system.network.io.average": {
+      "attributes": [
+        "direction"
+      ],
+      "description": "System Network IO",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "By/s"
+    },
+    "mongodbatlas.system.network.io.max": {
+      "attributes": [
+        "direction"
+      ],
+      "description": "System Network IO",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "By/s"
+    },
+    "mongodbatlas.system.paging.io.average": {
+      "attributes": [
+        "direction"
+      ],
+      "description": "Swap IO",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{pages}/s"
+    },
+    "mongodbatlas.system.paging.io.max": {
+      "attributes": [
+        "direction"
+      ],
+      "description": "Swap IO",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{pages}/s"
+    },
+    "mongodbatlas.system.paging.usage.average": {
+      "attributes": [
+        "memory_state"
+      ],
+      "description": "Swap usage",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "KiBy"
+    },
+    "mongodbatlas.system.paging.usage.max": {
+      "attributes": [
+        "memory_state"
+      ],
+      "description": "Swap usage",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "KiBy"
+    }
+  },
+  "name": "mongodbatlasreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "resource_attributes": {
+    "mongodb_atlas.cluster.name": {
+      "description": "Cluster Name",
+      "type": "string"
+    },
+    "mongodb_atlas.db.name": {
+      "description": "Name of the Database",
+      "type": "string"
+    },
+    "mongodb_atlas.disk.partition": {
+      "description": "Name of a disk partition",
+      "type": "string"
+    },
+    "mongodb_atlas.host.name": {
+      "description": "Hostname of the process",
+      "type": "string"
+    },
+    "mongodb_atlas.org_name": {
+      "description": "Organization Name",
+      "type": "string"
+    },
+    "mongodb_atlas.process.id": {
+      "description": "ID of the process",
+      "type": "string"
+    },
+    "mongodb_atlas.process.port": {
+      "description": "Port process is bound to",
+      "type": "string"
+    },
+    "mongodb_atlas.process.type_name": {
+      "description": "Process type",
+      "type": "string"
+    },
+    "mongodb_atlas.project.id": {
+      "description": "Project ID",
+      "type": "string"
+    },
+    "mongodb_atlas.project.name": {
+      "description": "Project Name",
+      "type": "string"
+    },
+    "mongodb_atlas.provider.name": {
+      "description": "Provider Name",
+      "type": "string"
+    },
+    "mongodb_atlas.region.name": {
+      "description": "Region Name",
+      "type": "string"
+    },
+    "mongodb_atlas.user.alias": {
+      "description": "User-friendly hostname of the cluster node",
+      "type": "string"
+    }
+  },
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "justinianvoss22",
+        "dyl10s",
+        "ishleenk17"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics"
+      ]
+    }
+  },
+  "type": "mongodb_atlas",
+  "version": "0.148.0"
+}

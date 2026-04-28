@@ -1,0 +1,29 @@
+{
+  "component_type": "receiver",
+  "display_name": "JMX Receiver",
+  "distribution": "contrib",
+  "name": "jmxreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "atoulme",
+        "rogercoll"
+      ],
+      "emeritus": [
+        "rmfitzpatrick"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "deprecated": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "jmx",
+  "version": "0.147.0"
+}

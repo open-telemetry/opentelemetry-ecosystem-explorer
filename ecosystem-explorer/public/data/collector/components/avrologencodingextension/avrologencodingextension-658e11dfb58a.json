@@ -1,0 +1,24 @@
+{
+  "component_type": "extension",
+  "description": "The `avrolog` encoding extension is used to unmarshal AVRO and insert it into the body of a log record. Marshalling is not supported.",
+  "display_name": "AVRO Log Encoding Extension",
+  "distribution": "contrib",
+  "name": "avrologencodingextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "thmshmm"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "extension"
+      ]
+    }
+  },
+  "type": "avro_log_encoding",
+  "version": "0.149.0"
+}

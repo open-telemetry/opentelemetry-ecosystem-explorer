@@ -81,7 +81,7 @@ class InventoryManager:
                 "components": component_list,
             }
 
-            with open(file_path, "w") as f:
+            with open(file_path, "w", encoding="utf-8") as f:
                 yaml.dump(component_data, f, default_flow_style=False, sort_keys=False, allow_unicode=True)
 
     def load_versioned_inventory(self, distribution: DistributionName, version: Version) -> dict[str, Any]:
@@ -107,7 +107,7 @@ class InventoryManager:
             file_path = version_dir / f"{component_type}.yaml"
 
             if file_path.exists():
-                with open(file_path) as f:
+                with open(file_path, encoding="utf-8") as f:
                     data = yaml.safe_load(f) or {}
                     components[component_type] = data.get("components", [])
                     if not repository:
@@ -140,12 +140,9 @@ class InventoryManager:
         for item in dist_dir.iterdir():
             if item.is_dir():
                 try:
-                    # Parse version string, stripping 'v' prefix
-                    # Handles "v0.112.0", "v0.113.0-SNAPSHOT"
                     version = Version(item.name.lstrip("v"))
                     versions.append(version)
                 except ValueError:
-                    # Skip directories that don't match version format
                     continue
 
         return sorted(versions, reverse=True)
@@ -245,7 +242,7 @@ class InventoryManager:
                 "contrib": {component_type: [] for component_type in COMPONENT_TYPES},
             }
 
-        with open(deprecations_file) as f:
+        with open(deprecations_file, encoding="utf-8") as f:
             data = yaml.safe_load(f) or {}
 
         for dist in ["core", "contrib"]:
@@ -267,7 +264,7 @@ class InventoryManager:
         deprecations_file = self.inventory_dir / "deprecations.yaml"
         self.inventory_dir.mkdir(parents=True, exist_ok=True)
 
-        with open(deprecations_file, "w") as f:
+        with open(deprecations_file, "w", encoding="utf-8") as f:
             yaml.dump(deprecations, f, default_flow_style=False, sort_keys=False, allow_unicode=True)
 
         logger.info(f"Saved deprecations index to {deprecations_file}")

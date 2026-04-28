@@ -1,0 +1,25 @@
+{
+  "component_type": "receiver",
+  "display_name": "AWS ECS Container Metrics Receiver",
+  "distribution": "contrib",
+  "name": "awsecscontainermetricsreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "Aneurysm9"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "awsecscontainermetrics",
+  "version": "0.146.0"
+}

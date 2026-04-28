@@ -1,0 +1,27 @@
+{
+  "component_type": "extension",
+  "description": "This extension supports marshaling and unmarshalling Zipkin data representing traces.",
+  "display_name": "Zipkin Encoding Extension",
+  "distribution": "contrib",
+  "name": "zipkinencodingextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "MovieStoreGuy",
+        "dao-jun"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "extension"
+      ]
+    }
+  },
+  "type": "zipkin_encoding",
+  "version": "0.146.0"
+}

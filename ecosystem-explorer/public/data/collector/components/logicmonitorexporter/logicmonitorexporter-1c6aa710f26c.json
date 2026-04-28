@@ -1,0 +1,28 @@
+{
+  "component_type": "exporter",
+  "display_name": "LogicMonitor Exporter",
+  "distribution": "contrib",
+  "name": "logicmonitorexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "bogdandrutu",
+        "khyatigandhi6",
+        "avadhut123pisal"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "traces"
+      ]
+    }
+  },
+  "type": "logicmonitor",
+  "version": "0.148.0"
+}

@@ -1,0 +1,28 @@
+{
+  "component_type": "exporter",
+  "display_name": "OTLP gRPC Exporter",
+  "distribution": "core",
+  "name": "otlpexporter",
+  "repository": "opentelemetry-collector",
+  "status": {
+    "class": "exporter",
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s",
+      "otlp"
+    ],
+    "stability": {
+      "alpha": [
+        "profiles"
+      ],
+      "stable": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "otlp_grpc",
+  "version": "0.149.0"
+}

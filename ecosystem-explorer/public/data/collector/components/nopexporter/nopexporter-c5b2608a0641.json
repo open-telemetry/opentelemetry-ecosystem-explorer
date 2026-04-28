@@ -1,0 +1,32 @@
+{
+  "component_type": "exporter",
+  "display_name": "No-op Exporter",
+  "distribution": "core",
+  "name": "nopexporter",
+  "repository": "opentelemetry-collector",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "evan-bradley"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ],
+      "development": [
+        "profiles"
+      ]
+    }
+  },
+  "type": "nop",
+  "version": "0.145.0"
+}

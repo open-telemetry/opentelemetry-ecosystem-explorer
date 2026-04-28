@@ -1,0 +1,24 @@
+{
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "name": "solacereceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "mcardy"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "traces"
+      ]
+    }
+  },
+  "type": "solace",
+  "version": "0.146.0"
+}

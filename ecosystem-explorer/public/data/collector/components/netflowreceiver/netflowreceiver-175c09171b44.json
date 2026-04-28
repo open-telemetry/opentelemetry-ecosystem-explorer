@@ -1,0 +1,25 @@
+{
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "name": "netflowreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "evan-bradley",
+        "dlopes7"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs"
+      ]
+    }
+  },
+  "type": "netflow",
+  "version": "0.144.0"
+}

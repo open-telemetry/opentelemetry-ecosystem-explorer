@@ -1,0 +1,28 @@
+{
+  "component_type": "processor",
+  "distribution": "contrib",
+  "name": "attributesprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "boostchicken"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "attributes",
+  "version": "0.144.0"
+}

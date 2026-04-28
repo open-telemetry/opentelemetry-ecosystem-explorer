@@ -1,0 +1,29 @@
+{
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "name": "prometheusreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "Aneurysm9",
+        "dashpole",
+        "ArthurSens",
+        "krajorama"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "prometheus",
+  "version": "0.144.0"
+}

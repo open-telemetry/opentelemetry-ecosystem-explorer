@@ -1,0 +1,27 @@
+{
+  "component_type": "exporter",
+  "distribution": "contrib",
+  "name": "azuremonitorexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "pcwiese",
+        "hgaol"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "azuremonitor",
+  "version": "0.144.0"
+}

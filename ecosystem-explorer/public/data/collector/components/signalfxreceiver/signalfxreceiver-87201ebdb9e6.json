@@ -1,0 +1,26 @@
+{
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "name": "signalfxreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "dmitryax"
+      ],
+      "emeritus": null
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "deprecated": [
+        "logs",
+        "metrics"
+      ]
+    }
+  },
+  "type": "signalfx",
+  "version": "0.146.0"
+}

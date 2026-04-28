@@ -1,0 +1,22 @@
+{
+  "component_type": "processor",
+  "distribution": "contrib",
+  "name": "logstransformprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "dehaansa"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "logs"
+      ]
+    }
+  },
+  "type": "logstransform",
+  "version": "0.144.0"
+}

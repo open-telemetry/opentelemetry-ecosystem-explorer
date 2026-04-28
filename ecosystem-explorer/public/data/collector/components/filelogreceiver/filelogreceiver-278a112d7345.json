@@ -1,0 +1,29 @@
+{
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "name": "filelogreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "andrzej-stencel"
+      ],
+      "emeritus": [
+        "djaglowski"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "logs"
+      ]
+    }
+  },
+  "type": "filelog",
+  "version": "0.146.0"
+}

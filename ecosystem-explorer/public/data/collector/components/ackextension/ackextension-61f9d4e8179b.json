@@ -1,0 +1,30 @@
+{
+  "component_type": "extension",
+  "description": "This extension allows acking of data upon successful processing. The upstream agent can choose to send event again if ack fails.",
+  "display_name": "ACK Extension",
+  "distribution": "contrib",
+  "name": "ackextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "splunkericl"
+      ],
+      "emeritus": [
+        "zpzhuSplunk"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "extension"
+      ]
+    }
+  },
+  "type": "ack",
+  "version": "0.150.0"
+}

@@ -1,0 +1,32 @@
+{
+  "component_type": "exporter",
+  "display_name": "Coralogix Exporter",
+  "distribution": "contrib",
+  "name": "coralogixexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "povilasv",
+        "iblancasa",
+        "douglascamata"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "profiles"
+      ],
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "coralogix",
+  "version": "0.145.0"
+}

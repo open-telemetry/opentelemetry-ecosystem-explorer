@@ -1,0 +1,27 @@
+{
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "name": "awss3receiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "atoulme",
+        "adcharre"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "awss3",
+  "version": "0.144.0"
+}

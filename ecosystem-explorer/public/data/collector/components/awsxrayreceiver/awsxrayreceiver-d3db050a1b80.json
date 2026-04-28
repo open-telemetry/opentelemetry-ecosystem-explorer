@@ -1,0 +1,25 @@
+{
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "name": "awsxrayreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "wangzlei",
+        "srprash"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "traces"
+      ]
+    }
+  },
+  "type": "awsxray",
+  "version": "0.144.0"
+}

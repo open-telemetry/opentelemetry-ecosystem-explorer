@@ -1,0 +1,721 @@
+{
+  "attributes": {
+    "direction": {
+      "description": "Direction of flow of bytes/operations (receive or transmit).",
+      "enum": [
+        "receive",
+        "transmit"
+      ],
+      "type": "string"
+    },
+    "interface": {
+      "description": "Name of the network interface.",
+      "type": "string"
+    }
+  },
+  "component_type": "receiver",
+  "description": "The Kubelet Stats Receiver pulls node, pod, container, and volume metrics from the API server on a kubelet and sends it down the metric pipeline for further processing.",
+  "display_name": "Kubelet Stats Receiver",
+  "distribution": "contrib",
+  "metrics": {
+    "container.cpu.time": {
+      "attributes": [],
+      "description": "Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "double"
+      },
+      "unit": "s"
+    },
+    "container.cpu.usage": {
+      "attributes": [],
+      "description": "Total CPU usage (sum of all cores per second) averaged over the sample window",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{cpu}"
+    },
+    "container.filesystem.available": {
+      "attributes": [],
+      "description": "Container filesystem available",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "container.filesystem.capacity": {
+      "attributes": [],
+      "description": "Container filesystem capacity",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "container.filesystem.usage": {
+      "attributes": [],
+      "description": "Container filesystem usage",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "container.memory.available": {
+      "attributes": [],
+      "description": "Container memory available",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "container.memory.major_page_faults": {
+      "attributes": [],
+      "description": "Container memory major_page_faults",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "container.memory.page_faults": {
+      "attributes": [],
+      "description": "Container memory page_faults",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "container.memory.rss": {
+      "attributes": [],
+      "description": "Container memory rss",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "container.memory.usage": {
+      "attributes": [],
+      "description": "Container memory usage",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "container.memory.working_set": {
+      "attributes": [],
+      "description": "Container memory working_set",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "container.uptime": {
+      "attributes": [],
+      "description": "The time since the container started",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "s"
+    },
+    "k8s.container.cpu.node.utilization": {
+      "attributes": [],
+      "description": "Container cpu utilization as a ratio of the node's capacity",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "k8s.container.cpu_limit_utilization": {
+      "attributes": [],
+      "description": "Container cpu utilization as a ratio of the container's limits",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "k8s.container.cpu_request_utilization": {
+      "attributes": [],
+      "description": "Container cpu utilization as a ratio of the container's requests",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "k8s.container.memory.node.utilization": {
+      "attributes": [],
+      "description": "Container memory utilization as a ratio of the node's capacity",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "k8s.container.memory_limit_utilization": {
+      "attributes": [],
+      "description": "Container memory utilization as a ratio of the container's limits",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "k8s.container.memory_request_utilization": {
+      "attributes": [],
+      "description": "Container memory utilization as a ratio of the container's requests",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "k8s.node.cpu.time": {
+      "attributes": [],
+      "description": "Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "double"
+      },
+      "unit": "s"
+    },
+    "k8s.node.cpu.usage": {
+      "attributes": [],
+      "description": "Total CPU usage (sum of all cores per second) averaged over the sample window",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{cpu}"
+    },
+    "k8s.node.filesystem.available": {
+      "attributes": [],
+      "description": "Node filesystem available",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "k8s.node.filesystem.capacity": {
+      "attributes": [],
+      "description": "Node filesystem capacity",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "k8s.node.filesystem.usage": {
+      "attributes": [],
+      "description": "Node filesystem usage",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "k8s.node.memory.available": {
+      "attributes": [],
+      "description": "Node memory available",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "k8s.node.memory.major_page_faults": {
+      "attributes": [],
+      "description": "Node memory major_page_faults",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "k8s.node.memory.page_faults": {
+      "attributes": [],
+      "description": "Node memory page_faults",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "k8s.node.memory.rss": {
+      "attributes": [],
+      "description": "Node memory rss",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "k8s.node.memory.usage": {
+      "attributes": [],
+      "description": "Node memory usage",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "k8s.node.memory.working_set": {
+      "attributes": [],
+      "description": "Node memory working_set",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "k8s.node.network.errors": {
+      "attributes": [
+        "direction",
+        "interface"
+      ],
+      "description": "Node network errors",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "k8s.node.network.io": {
+      "attributes": [
+        "direction",
+        "interface"
+      ],
+      "description": "Node network IO",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "k8s.node.uptime": {
+      "attributes": [],
+      "description": "The time since the node started",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "s"
+    },
+    "k8s.pod.cpu.node.utilization": {
+      "attributes": [],
+      "description": "Pod cpu utilization as a ratio of the node's capacity",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "k8s.pod.cpu.time": {
+      "attributes": [],
+      "description": "Total cumulative CPU time (sum of all cores) spent by the container/pod/node since its creation",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "double"
+      },
+      "unit": "s"
+    },
+    "k8s.pod.cpu.usage": {
+      "attributes": [],
+      "description": "Total CPU usage (sum of all cores per second) averaged over the sample window",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{cpu}"
+    },
+    "k8s.pod.cpu_limit_utilization": {
+      "attributes": [],
+      "description": "Pod cpu utilization as a ratio of the pod's total container limits. If any container is missing a limit the metric is not emitted.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "k8s.pod.cpu_request_utilization": {
+      "attributes": [],
+      "description": "Pod cpu utilization as a ratio of the pod's total container requests. If any container is missing a request the metric is not emitted.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "k8s.pod.filesystem.available": {
+      "attributes": [],
+      "description": "Pod filesystem available",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "k8s.pod.filesystem.capacity": {
+      "attributes": [],
+      "description": "Pod filesystem capacity",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "k8s.pod.filesystem.usage": {
+      "attributes": [],
+      "description": "Pod filesystem usage",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "k8s.pod.memory.available": {
+      "attributes": [],
+      "description": "Pod memory available",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "k8s.pod.memory.major_page_faults": {
+      "attributes": [],
+      "description": "Pod memory major_page_faults",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "k8s.pod.memory.node.utilization": {
+      "attributes": [],
+      "description": "Pod memory utilization as a ratio of the node's capacity",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "k8s.pod.memory.page_faults": {
+      "attributes": [],
+      "description": "Pod memory page_faults",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "k8s.pod.memory.rss": {
+      "attributes": [],
+      "description": "Pod memory rss",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "k8s.pod.memory.usage": {
+      "attributes": [],
+      "description": "Pod memory usage",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "k8s.pod.memory.working_set": {
+      "attributes": [],
+      "description": "Pod memory working_set",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "k8s.pod.memory_limit_utilization": {
+      "attributes": [],
+      "description": "Pod memory utilization as a ratio of the pod's total container limits. If any container is missing a limit the metric is not emitted.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "k8s.pod.memory_request_utilization": {
+      "attributes": [],
+      "description": "Pod memory utilization as a ratio of the pod's total container requests. If any container is missing a request the metric is not emitted.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "k8s.pod.network.errors": {
+      "attributes": [
+        "direction",
+        "interface"
+      ],
+      "description": "Pod network errors",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "k8s.pod.network.io": {
+      "attributes": [
+        "direction",
+        "interface"
+      ],
+      "description": "Pod network IO",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "k8s.pod.uptime": {
+      "attributes": [],
+      "description": "The time since the pod started",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "s"
+    },
+    "k8s.pod.volume.usage": {
+      "attributes": [],
+      "description": "The number of used bytes in the pod volume.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "k8s.volume.available": {
+      "attributes": [],
+      "description": "The number of available bytes in the volume.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "k8s.volume.capacity": {
+      "attributes": [],
+      "description": "The total capacity in bytes of the volume.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "k8s.volume.inodes": {
+      "attributes": [],
+      "description": "The total inodes in the filesystem.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "k8s.volume.inodes.free": {
+      "attributes": [],
+      "description": "The free inodes in the filesystem.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "k8s.volume.inodes.used": {
+      "attributes": [],
+      "description": "The inodes used by the filesystem. This may not equal inodes - free because filesystem may share inodes with other filesystems.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "1"
+    }
+  },
+  "name": "kubeletstatsreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "resource_attributes": {
+    "aws.volume.id": {
+      "description": "[DEPRECATED] The id of the AWS Volume",
+      "type": "string"
+    },
+    "container.id": {
+      "description": "Container id used to identify container",
+      "type": "string"
+    },
+    "fs.type": {
+      "description": "[DEPRECATED] The filesystem type of the Volume",
+      "type": "string"
+    },
+    "gce.pd.name": {
+      "description": "[DEPRECATED] The name of the persistent disk in GCE",
+      "type": "string"
+    },
+    "glusterfs.endpoints.name": {
+      "description": "[DEPRECATED] The endpoint name that details Glusterfs topology",
+      "type": "string"
+    },
+    "glusterfs.path": {
+      "description": "[DEPRECATED] Glusterfs volume path",
+      "type": "string"
+    },
+    "k8s.container.name": {
+      "description": "Container name used by container runtime",
+      "type": "string"
+    },
+    "k8s.namespace.name": {
+      "description": "The name of the namespace that the pod is running in",
+      "type": "string"
+    },
+    "k8s.node.name": {
+      "description": "The name of the Node",
+      "type": "string"
+    },
+    "k8s.persistentvolumeclaim.name": {
+      "description": "The name of the Persistent Volume Claim",
+      "type": "string"
+    },
+    "k8s.pod.name": {
+      "description": "The name of the Pod",
+      "type": "string"
+    },
+    "k8s.pod.uid": {
+      "description": "The UID of the Pod",
+      "type": "string"
+    },
+    "k8s.volume.name": {
+      "description": "The name of the Volume",
+      "type": "string"
+    },
+    "k8s.volume.type": {
+      "description": "The type of the Volume",
+      "type": "string"
+    },
+    "partition": {
+      "description": "[DEPRECATED] The partition in the Volume",
+      "type": "string"
+    }
+  },
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "dmitryax",
+        "TylerHelmuth",
+        "ChrsMark"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "kubeletstats",
+  "version": "0.149.0"
+}

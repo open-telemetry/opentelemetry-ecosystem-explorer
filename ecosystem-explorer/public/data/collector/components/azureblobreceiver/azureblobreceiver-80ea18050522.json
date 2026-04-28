@@ -1,0 +1,26 @@
+{
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "name": "azureblobreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "eedorenko",
+        "mx-psi"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "traces"
+      ]
+    }
+  },
+  "type": "azureblob",
+  "version": "0.145.0"
+}

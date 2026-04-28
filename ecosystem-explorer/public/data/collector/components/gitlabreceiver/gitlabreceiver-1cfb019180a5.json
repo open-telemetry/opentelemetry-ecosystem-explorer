@@ -1,0 +1,25 @@
+{
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "name": "gitlabreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "adrielp",
+        "atoulme"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "traces"
+      ]
+    }
+  },
+  "type": "gitlab",
+  "version": "0.145.0"
+}

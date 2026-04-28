@@ -1,0 +1,26 @@
+{
+  "component_type": "extension",
+  "display_name": "Host Observer Extension",
+  "distribution": "contrib",
+  "name": "hostobserver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "MovieStoreGuy"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "extension"
+      ]
+    }
+  },
+  "type": "host_observer",
+  "version": "0.150.0"
+}

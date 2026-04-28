@@ -1,0 +1,25 @@
+{
+  "component_type": "extension",
+  "distribution": "contrib",
+  "name": "asapauthextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "jamesmoessis",
+        "MovieStoreGuy"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "extension"
+      ]
+    }
+  },
+  "type": "asapclient",
+  "version": "0.144.0"
+}

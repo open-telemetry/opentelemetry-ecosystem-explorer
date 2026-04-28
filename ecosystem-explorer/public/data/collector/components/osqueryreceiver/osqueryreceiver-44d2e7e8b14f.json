@@ -1,0 +1,26 @@
+{
+  "component_type": "receiver",
+  "description": "The osquery Receiver runs queries run on an [osquery](https://osquery.io/)'s daemon on a schedule and converts the output to logs.",
+  "display_name": "osquery Receiver",
+  "distribution": "contrib",
+  "name": "osqueryreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "smithclay"
+      ],
+      "emeritus": [
+        "nslaughter"
+      ]
+    },
+    "stability": {
+      "development": [
+        "logs"
+      ]
+    }
+  },
+  "type": "osquery",
+  "version": "0.149.0"
+}

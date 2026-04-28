@@ -1,0 +1,28 @@
+{
+  "component_type": "exporter",
+  "display_name": "Prometheus Exporter",
+  "distribution": "contrib",
+  "name": "prometheusexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "Aneurysm9",
+        "dashpole",
+        "ArthurSens"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "core"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "prometheus",
+  "version": "0.145.0"
+}

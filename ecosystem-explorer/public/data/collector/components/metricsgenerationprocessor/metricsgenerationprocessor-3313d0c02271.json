@@ -1,0 +1,26 @@
+{
+  "component_type": "processor",
+  "display_name": "Metrics Generation Processor",
+  "distribution": "contrib",
+  "name": "metricsgenerationprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "Aneurysm9",
+        "crobert-1"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "metricsgeneration",
+  "version": "0.149.0"
+}

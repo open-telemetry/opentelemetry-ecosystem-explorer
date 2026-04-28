@@ -1,0 +1,32 @@
+{
+  "component_type": "exporter",
+  "display_name": "Google Cloud Exporter",
+  "distribution": "contrib",
+  "name": "googlecloudexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "aabmass",
+        "dashpole",
+        "braydonk",
+        "jsuereth",
+        "psx95",
+        "ridwanmsharif"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "googlecloud",
+  "version": "0.150.0"
+}

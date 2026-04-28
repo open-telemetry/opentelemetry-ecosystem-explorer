@@ -1,0 +1,22 @@
+{
+  "component_type": "extension",
+  "display_name": "zPages Extension",
+  "distribution": "core",
+  "name": "zpagesextension",
+  "repository": "opentelemetry-collector",
+  "status": {
+    "class": "extension",
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "extension"
+      ]
+    }
+  },
+  "type": "zpages",
+  "version": "0.146.1"
+}

@@ -1,0 +1,25 @@
+{
+  "component_type": "extension",
+  "distribution": "contrib",
+  "name": "otlpencodingextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "dao-jun",
+        "VihasMakwana"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "extension"
+      ]
+    }
+  },
+  "type": "otlp_encoding",
+  "version": "0.144.0"
+}

@@ -19,6 +19,7 @@ import { Footer } from "@/components/layout/footer";
 import { HomePage } from "@/features/home/home-page";
 import { JavaAgentPage } from "@/features/java-agent/java-agent-page";
 import { CollectorPage } from "@/features/collector/collector-page";
+import { CollectorDetailPage } from "@/features/collector/collector-detail-page";
 import { NotFoundPage } from "@/features/not-found/not-found-page";
 import { JavaInstrumentationListPage } from "@/features/java-agent/java-instrumentation-list-page";
 import { JavaConfigurationListPage } from "@/features/java-agent/java-configuration-list-page";
@@ -52,7 +53,17 @@ export default function App() {
                 element={<ConfigurationBuilderPage />}
               />
             )}
-            <Route path="/collector" element={<CollectorPage />} />
+            {isEnabled("COLLECTOR_PAGE") && (
+              <>
+                <Route path="/collector" element={<CollectorPage />} />
+                <Route path="/collector/components" element={<CollectorPage />} />
+                <Route path="/collector/components/:version" element={<CollectorPage />} />
+                <Route
+                  path="/collector/components/:version/:name"
+                  element={<CollectorDetailPage />}
+                />
+              </>
+            )}
             <Route path="/about" element={<AboutPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>

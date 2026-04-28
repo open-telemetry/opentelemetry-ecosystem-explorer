@@ -1,0 +1,26 @@
+{
+  "component_type": "extension",
+  "display_name": "JSON Log Encoding Extension",
+  "distribution": "contrib",
+  "name": "jsonlogencodingextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "VihasMakwana",
+        "atoulme"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "extension"
+      ]
+    }
+  },
+  "type": "json_log_encoding",
+  "version": "0.146.0"
+}

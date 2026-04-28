@@ -1,0 +1,31 @@
+{
+  "component_type": "extension",
+  "description": "This extension accepts HTTP requests, optionally adds headers to them and forwards them. The RequestURIs of the original requests are preserved by the extension.",
+  "display_name": "HTTP Forwarder Extension",
+  "distribution": "contrib",
+  "name": "httpforwarderextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "atoulme"
+      ],
+      "emeritus": [
+        "rmfitzpatrick"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "extension"
+      ]
+    }
+  },
+  "type": "http_forwarder",
+  "version": "0.146.0"
+}

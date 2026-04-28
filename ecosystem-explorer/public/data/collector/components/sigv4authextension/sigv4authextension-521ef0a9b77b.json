@@ -1,0 +1,25 @@
+{
+  "component_type": "extension",
+  "distribution": "contrib",
+  "name": "sigv4authextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "Aneurysm9",
+        "erichsueh3"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "extension"
+      ]
+    }
+  },
+  "type": "sigv4auth",
+  "version": "0.144.0"
+}

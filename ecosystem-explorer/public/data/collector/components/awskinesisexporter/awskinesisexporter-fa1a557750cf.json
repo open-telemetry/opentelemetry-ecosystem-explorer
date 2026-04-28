@@ -1,0 +1,28 @@
+{
+  "component_type": "exporter",
+  "display_name": "AWS Kinesis Exporter",
+  "distribution": "contrib",
+  "name": "awskinesisexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "Aneurysm9",
+        "MovieStoreGuy"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "awskinesis",
+  "version": "0.145.0"
+}

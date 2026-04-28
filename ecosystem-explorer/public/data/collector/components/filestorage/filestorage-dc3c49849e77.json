@@ -1,0 +1,30 @@
+{
+  "component_type": "extension",
+  "distribution": "contrib",
+  "name": "filestorage",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "swiatekm",
+        "VihasMakwana"
+      ],
+      "emeritus": [
+        "djaglowski"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "extension"
+      ]
+    }
+  },
+  "type": "file_storage",
+  "version": "0.145.0"
+}

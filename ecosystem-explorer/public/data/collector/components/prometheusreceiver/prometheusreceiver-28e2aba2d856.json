@@ -1,0 +1,31 @@
+{
+  "component_type": "receiver",
+  "description": "The Prometheus Receiver receives metric data in [Prometheus](https://prometheus.io/) format.",
+  "display_name": "Prometheus Receiver",
+  "distribution": "contrib",
+  "name": "prometheusreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "Aneurysm9",
+        "dashpole",
+        "ArthurSens",
+        "krajorama"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "prometheus",
+  "version": "0.150.0"
+}

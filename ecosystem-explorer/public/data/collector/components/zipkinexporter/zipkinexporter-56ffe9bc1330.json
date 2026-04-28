@@ -1,0 +1,28 @@
+{
+  "component_type": "exporter",
+  "display_name": "Zipkin Exporter",
+  "distribution": "contrib",
+  "name": "zipkinexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "MovieStoreGuy",
+        "andrzej-stencel",
+        "crobert-1"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "core"
+    ],
+    "stability": {
+      "beta": [
+        "traces"
+      ]
+    }
+  },
+  "type": "zipkin",
+  "version": "0.149.0"
+}

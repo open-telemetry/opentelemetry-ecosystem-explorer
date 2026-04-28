@@ -1,0 +1,27 @@
+{
+  "component_type": "exporter",
+  "display_name": "BMC Helix Exporter",
+  "distribution": "contrib",
+  "name": "bmchelixexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "bertysentry",
+        "NassimBtk",
+        "MovieStoreGuy"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "bmchelix",
+  "version": "0.148.0"
+}

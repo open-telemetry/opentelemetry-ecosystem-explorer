@@ -1,0 +1,923 @@
+{
+  "attributes": {
+    "core": {
+      "description": "The CPU core number when utilising per-CPU metrics.",
+      "type": "string"
+    },
+    "device_major": {
+      "description": "Device major number for block IO operations.",
+      "type": "string"
+    },
+    "device_minor": {
+      "description": "Device minor number for block IO operations.",
+      "type": "string"
+    },
+    "interface": {
+      "description": "Network interface.",
+      "type": "string"
+    },
+    "operation": {
+      "description": "Type of BlockIO operation.",
+      "type": "string"
+    }
+  },
+  "component_type": "receiver",
+  "description": "The Docker Stats receiver queries the local Docker daemon's container stats API for all desired running containers on a configured interval. These stats are for container resource usage of cpu, memory, network, and the [blkio controller](https://www.kernel.org/doc/Documentation/cgroup-v1/blkio-controller.txt).",
+  "display_name": "Docker Stats Receiver",
+  "distribution": "contrib",
+  "metrics": {
+    "container.blockio.io_merged_recursive": {
+      "attributes": [
+        "device_major",
+        "device_minor",
+        "operation"
+      ],
+      "description": "Number of bios/requests merged into requests belonging to this cgroup and its descendant cgroups (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{operations}"
+    },
+    "container.blockio.io_queued_recursive": {
+      "attributes": [
+        "device_major",
+        "device_minor",
+        "operation"
+      ],
+      "description": "Number of requests queued up for this cgroup and its descendant cgroups (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{operations}"
+    },
+    "container.blockio.io_service_bytes_recursive": {
+      "attributes": [
+        "device_major",
+        "device_minor",
+        "operation"
+      ],
+      "description": "Number of bytes transferred to/from the disk by the group and descendant groups.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.blockio.io_service_time_recursive": {
+      "attributes": [
+        "device_major",
+        "device_minor",
+        "operation"
+      ],
+      "description": "Total amount of time in nanoseconds between request dispatch and request completion for the IOs done by this cgroup and descendant cgroups (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "ns"
+    },
+    "container.blockio.io_serviced_recursive": {
+      "attributes": [
+        "device_major",
+        "device_minor",
+        "operation"
+      ],
+      "description": "Number of IOs (bio) issued to the disk by the group and descendant groups (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{operations}"
+    },
+    "container.blockio.io_time_recursive": {
+      "attributes": [
+        "device_major",
+        "device_minor",
+        "operation"
+      ],
+      "description": "Disk time allocated to cgroup (and descendant cgroups) per device in milliseconds (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "ms"
+    },
+    "container.blockio.io_wait_time_recursive": {
+      "attributes": [
+        "device_major",
+        "device_minor",
+        "operation"
+      ],
+      "description": "Total amount of time the IOs for this cgroup (and descendant cgroups) spent waiting in the scheduler queues for service (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "ns"
+    },
+    "container.blockio.sectors_recursive": {
+      "attributes": [
+        "device_major",
+        "device_minor",
+        "operation"
+      ],
+      "description": "Number of sectors transferred to/from disk by the group and descendant groups (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{sectors}"
+    },
+    "container.cpu.limit": {
+      "description": "CPU limit set for the container.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "{cpus}"
+    },
+    "container.cpu.logical.count": {
+      "description": "Number of cores available to the container.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "{cpus}"
+    },
+    "container.cpu.shares": {
+      "description": "CPU shares set for the container.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "container.cpu.throttling_data.periods": {
+      "description": "Number of periods with throttling active.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{periods}"
+    },
+    "container.cpu.throttling_data.throttled_periods": {
+      "description": "Number of periods when the container hits its throttling limit.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{periods}"
+    },
+    "container.cpu.throttling_data.throttled_time": {
+      "description": "Aggregate time the container was throttled.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "ns"
+    },
+    "container.cpu.usage.kernelmode": {
+      "description": "Time spent by tasks of the cgroup in kernel mode (Linux). Time spent by all container processes in kernel mode (Windows).",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "ns"
+    },
+    "container.cpu.usage.percpu": {
+      "attributes": [
+        "core"
+      ],
+      "description": "Per-core CPU usage by the container (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "ns"
+    },
+    "container.cpu.usage.system": {
+      "description": "System CPU usage, as reported by docker.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "ns"
+    },
+    "container.cpu.usage.total": {
+      "description": "Total CPU time consumed.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "ns"
+    },
+    "container.cpu.usage.usermode": {
+      "description": "Time spent by tasks of the cgroup in user mode (Linux). Time spent by all container processes in user mode (Windows).",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "ns"
+    },
+    "container.cpu.utilization": {
+      "description": "Percent of CPU used by the container.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "container.memory.active_anon": {
+      "description": "The amount of anonymous memory that has been identified as active by the kernel.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.memory.active_file": {
+      "description": "Cache memory that has been identified as active by the kernel.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.memory.anon": {
+      "description": "Amount of memory used in anonymous mappings such as brk(), sbrk(), and mmap(MAP_ANONYMOUS) (Only available with cgroups v2).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.memory.cache": {
+      "description": "The amount of memory used by the processes of this control group that can be associated precisely with a block on a block device (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.memory.dirty": {
+      "description": "Bytes that are waiting to get written back to the disk, from this cgroup (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.memory.fails": {
+      "description": "Number of times the memory limit was hit.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{fails}"
+    },
+    "container.memory.file": {
+      "description": "Amount of memory used to cache filesystem data, including tmpfs and shared memory (Only available with cgroups v2).",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.memory.hierarchical_memory_limit": {
+      "description": "The maximum amount of physical memory that can be used by the processes of this control group (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.memory.hierarchical_memsw_limit": {
+      "description": "The maximum amount of RAM + swap that can be used by the processes of this control group (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.memory.inactive_anon": {
+      "description": "The amount of anonymous memory that has been identified as inactive by the kernel.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.memory.inactive_file": {
+      "description": "Cache memory that has been identified as inactive by the kernel.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.memory.mapped_file": {
+      "description": "Indicates the amount of memory mapped by the processes in the control group (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.memory.percent": {
+      "description": "Percentage of memory used. Not supported on Windows.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "1"
+    },
+    "container.memory.pgfault": {
+      "description": "Indicate the number of times that a process of the cgroup triggered a page fault.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{faults}"
+    },
+    "container.memory.pgmajfault": {
+      "description": "Indicate the number of times that a process of the cgroup triggered a major fault.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{faults}"
+    },
+    "container.memory.pgpgin": {
+      "description": "Number of pages read from disk by the cgroup (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{operations}"
+    },
+    "container.memory.pgpgout": {
+      "description": "Number of pages written to disk by the cgroup (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{operations}"
+    },
+    "container.memory.rss": {
+      "description": "The amount of memory that doesn\u2019t correspond to anything on disk: stacks, heaps, and anonymous memory maps (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.memory.rss_huge": {
+      "description": "Number of bytes of anonymous transparent hugepages in this cgroup (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.memory.total_active_anon": {
+      "description": "The amount of anonymous memory that has been identified as active by the kernel. Includes descendant cgroups (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.memory.total_active_file": {
+      "description": "Cache memory that has been identified as active by the kernel. Includes descendant cgroups (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.memory.total_cache": {
+      "description": "Total amount of memory used by the processes of this cgroup (and descendants) that can be associated with a block on a block device. Also accounts for memory used by tmpfs (Only available with cgroups v1). Not supported on Windows.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.memory.total_dirty": {
+      "description": "Bytes that are waiting to get written back to the disk, from this cgroup and descendants (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.memory.total_inactive_anon": {
+      "description": "The amount of anonymous memory that has been identified as inactive by the kernel. Includes descendant cgroups (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.memory.total_inactive_file": {
+      "description": "Cache memory that has been identified as inactive by the kernel. Includes descendant cgroups (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.memory.total_mapped_file": {
+      "description": "Indicates the amount of memory mapped by the processes in the control group and descendant groups (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.memory.total_pgfault": {
+      "description": "Indicate the number of times that a process of the cgroup (or descendant cgroups) triggered a page fault (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{faults}"
+    },
+    "container.memory.total_pgmajfault": {
+      "description": "Indicate the number of times that a process of the cgroup (or descendant cgroups) triggered a major fault (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{faults}"
+    },
+    "container.memory.total_pgpgin": {
+      "description": "Number of pages read from disk by the cgroup and descendant groups (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{operations}"
+    },
+    "container.memory.total_pgpgout": {
+      "description": "Number of pages written to disk by the cgroup and descendant groups (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{operations}"
+    },
+    "container.memory.total_rss": {
+      "description": "The amount of memory that doesn\u2019t correspond to anything on disk: stacks, heaps, and anonymous memory maps. Includes descendant cgroups (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.memory.total_rss_huge": {
+      "description": "Number of bytes of anonymous transparent hugepages in this cgroup and descendant cgroups (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.memory.total_unevictable": {
+      "description": "The amount of memory that cannot be reclaimed. Includes descendant cgroups (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.memory.total_writeback": {
+      "description": "Number of bytes of file/anon cache that are queued for syncing to disk in this cgroup and descendants (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.memory.unevictable": {
+      "description": "The amount of memory that cannot be reclaimed.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.memory.usage.limit": {
+      "description": "Memory limit of the container. Not supported on Windows.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.memory.usage.max": {
+      "description": "Maximum memory usage.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.memory.usage.total": {
+      "description": "Memory usage of the container. This excludes the cache.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.memory.writeback": {
+      "description": "Number of bytes of file/anon cache that are queued for syncing to disk in this cgroup (Only available with cgroups v1).",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.network.io.usage.rx_bytes": {
+      "attributes": [
+        "interface"
+      ],
+      "description": "Bytes received by the container.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.network.io.usage.rx_dropped": {
+      "attributes": [
+        "interface"
+      ],
+      "description": "Incoming packets dropped.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{packets}"
+    },
+    "container.network.io.usage.rx_errors": {
+      "attributes": [
+        "interface"
+      ],
+      "description": "Received errors. Not supported on Windows.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{errors}"
+    },
+    "container.network.io.usage.rx_packets": {
+      "attributes": [
+        "interface"
+      ],
+      "description": "Packets received.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{packets}"
+    },
+    "container.network.io.usage.tx_bytes": {
+      "attributes": [
+        "interface"
+      ],
+      "description": "Bytes sent.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "container.network.io.usage.tx_dropped": {
+      "attributes": [
+        "interface"
+      ],
+      "description": "Outgoing packets dropped.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{packets}"
+    },
+    "container.network.io.usage.tx_errors": {
+      "attributes": [
+        "interface"
+      ],
+      "description": "Sent errors. Not supported on Windows.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{errors}"
+    },
+    "container.network.io.usage.tx_packets": {
+      "attributes": [
+        "interface"
+      ],
+      "description": "Packets sent.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{packets}"
+    },
+    "container.pids.count": {
+      "description": "Number of pids in the container's cgroup.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{pids}"
+    },
+    "container.pids.limit": {
+      "description": "Maximum number of pids in the container's cgroup.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{pids}"
+    },
+    "container.restarts": {
+      "description": "Number of restarts for the container.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{restarts}"
+    },
+    "container.uptime": {
+      "description": "Time elapsed since container start time.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "s"
+    }
+  },
+  "name": "dockerstatsreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "resource_attributes": {
+    "container.command_line": {
+      "description": "The full command executed by the container.",
+      "type": "string"
+    },
+    "container.hostname": {
+      "description": "The hostname of the container.",
+      "type": "string"
+    },
+    "container.id": {
+      "description": "The ID of the container.",
+      "type": "string"
+    },
+    "container.image.id": {
+      "description": "The ID of the container image.",
+      "type": "string"
+    },
+    "container.image.name": {
+      "description": "The name of the docker image in use by the container.",
+      "type": "string"
+    },
+    "container.name": {
+      "description": "The name of the container.",
+      "type": "string"
+    },
+    "container.runtime": {
+      "description": "The runtime of the container. For this receiver, it will always be 'docker'.",
+      "type": "string"
+    }
+  },
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "jamesmoessis"
+      ],
+      "emeritus": [
+        "rmfitzpatrick"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    },
+    "unsupported_platforms": [
+      "darwin",
+      "windows"
+    ]
+  },
+  "type": "docker_stats",
+  "version": "0.150.0"
+}

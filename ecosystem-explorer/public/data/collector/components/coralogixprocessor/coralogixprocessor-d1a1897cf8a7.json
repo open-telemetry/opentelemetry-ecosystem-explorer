@@ -1,0 +1,26 @@
+{
+  "component_type": "processor",
+  "description": "The Coralogix processor adds attributes to spans that enable features in Coralogix.",
+  "display_name": "Coralogix Processor",
+  "distribution": "contrib",
+  "name": "coralogixprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "crobert-1",
+        "povilasv",
+        "iblancasa"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "alpha": [
+        "traces"
+      ]
+    }
+  },
+  "type": "coralogix",
+  "version": "0.150.0"
+}

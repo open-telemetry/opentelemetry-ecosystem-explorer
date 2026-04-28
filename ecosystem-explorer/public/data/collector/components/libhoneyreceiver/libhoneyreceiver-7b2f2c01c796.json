@@ -1,0 +1,26 @@
+{
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "name": "libhoneyreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "TylerHelmuth",
+        "mterhar"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "traces"
+      ]
+    }
+  },
+  "type": "libhoney",
+  "version": "0.147.0"
+}

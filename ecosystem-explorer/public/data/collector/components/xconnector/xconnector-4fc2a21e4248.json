@@ -1,0 +1,22 @@
+{
+  "component_type": "connector",
+  "distribution": "core",
+  "name": "xconnector",
+  "repository": "opentelemetry-collector",
+  "status": {
+    "class": "pkg",
+    "codeowners": {
+      "active": [
+        "mx-psi",
+        "dmathieu"
+      ]
+    },
+    "stability": {
+      "development": [
+        "profiles"
+      ]
+    }
+  },
+  "type": "xconnector",
+  "version": "0.146.1"
+}

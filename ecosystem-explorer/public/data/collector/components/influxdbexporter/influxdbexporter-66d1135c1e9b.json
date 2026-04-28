@@ -1,0 +1,27 @@
+{
+  "component_type": "exporter",
+  "display_name": "InfluxDB Exporter",
+  "distribution": "contrib",
+  "name": "influxdbexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "jacobmarble"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "influxdb",
+  "version": "0.149.0"
+}

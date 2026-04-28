@@ -1,0 +1,33 @@
+{
+  "attributes": {
+    "gcp.gcs.bucket.name": {
+      "description": "Bucket name.",
+      "type": "string"
+    },
+    "http.response.status_code": {
+      "description": "HTTP response status code.",
+      "type": "int"
+    }
+  },
+  "component_type": "receiver",
+  "display_name": "Google Pub/Sub Push Receiver",
+  "distribution": "contrib",
+  "name": "googlecloudpubsubpushreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "axw",
+        "constanca-m"
+      ]
+    },
+    "stability": {
+      "development": [
+        "logs"
+      ]
+    }
+  },
+  "type": "googlecloudpubsubpush",
+  "version": "0.147.0"
+}

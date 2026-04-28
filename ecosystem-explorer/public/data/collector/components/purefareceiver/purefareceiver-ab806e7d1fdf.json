@@ -1,0 +1,28 @@
+{
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "name": "purefareceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "dgoscn",
+        "chrroberts-pure"
+      ],
+      "emeritus": [
+        "jpkrohling"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "purefa",
+  "version": "0.144.0"
+}

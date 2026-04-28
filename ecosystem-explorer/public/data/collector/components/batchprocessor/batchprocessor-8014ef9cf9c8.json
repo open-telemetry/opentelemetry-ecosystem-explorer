@@ -1,0 +1,24 @@
+{
+  "component_type": "processor",
+  "display_name": "Batch Processor",
+  "distribution": "core",
+  "name": "batchprocessor",
+  "repository": "opentelemetry-collector",
+  "status": {
+    "class": "processor",
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "batch",
+  "version": "0.147.0"
+}

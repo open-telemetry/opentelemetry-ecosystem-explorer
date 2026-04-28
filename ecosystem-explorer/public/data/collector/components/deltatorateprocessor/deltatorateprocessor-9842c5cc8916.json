@@ -1,0 +1,25 @@
+{
+  "component_type": "processor",
+  "distribution": "contrib",
+  "name": "deltatorateprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "Aneurysm9"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "deltatorate",
+  "version": "0.145.0"
+}

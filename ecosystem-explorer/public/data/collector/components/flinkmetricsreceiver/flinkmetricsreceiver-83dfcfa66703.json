@@ -1,0 +1,478 @@
+{
+  "attributes": {
+    "checkpoint": {
+      "description": "The number of checkpoints completed or that failed.",
+      "enum": [
+        "completed",
+        "failed"
+      ],
+      "type": "string"
+    },
+    "garbage_collector_name": {
+      "description": "The names for the parallel scavenge and garbage first garbage collectors.",
+      "enum": [
+        "G1_Old_Generation",
+        "G1_Young_Generation",
+        "PS_MarkSweep",
+        "PS_Scavenge"
+      ],
+      "name_override": "name",
+      "type": "string"
+    },
+    "operator_name": {
+      "description": "The operator name.",
+      "name_override": "name",
+      "type": "string"
+    },
+    "record": {
+      "description": "The number of records received in, sent out or dropped due to arriving late.",
+      "enum": [
+        "dropped",
+        "in",
+        "out"
+      ],
+      "type": "string"
+    }
+  },
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "metrics": {
+    "flink.job.checkpoint.count": {
+      "attributes": [
+        "checkpoint"
+      ],
+      "description": "The number of checkpoints completed or failed.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{checkpoints}"
+    },
+    "flink.job.checkpoint.in_progress": {
+      "attributes": [],
+      "description": "The number of checkpoints in progress.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{checkpoints}"
+    },
+    "flink.job.last_checkpoint.size": {
+      "attributes": [],
+      "description": "The total size of the last checkpoint.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "flink.job.last_checkpoint.time": {
+      "attributes": [],
+      "description": "The end to end duration of the last checkpoint.",
+      "enabled": true,
+      "gauge": {
+        "input_type": "string",
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "ms"
+    },
+    "flink.job.restart.count": {
+      "attributes": [],
+      "description": "The total number of restarts since this job was submitted, including full restarts and fine-grained restarts.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{restarts}"
+    },
+    "flink.jvm.class_loader.classes_loaded": {
+      "attributes": [],
+      "description": "The total number of classes loaded since the start of the JVM.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{classes}"
+    },
+    "flink.jvm.cpu.load": {
+      "attributes": [],
+      "description": "The CPU usage of the JVM for a jobmanager or taskmanager.",
+      "enabled": true,
+      "gauge": {
+        "input_type": "string",
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "%"
+    },
+    "flink.jvm.cpu.time": {
+      "attributes": [],
+      "description": "The CPU time used by the JVM for a jobmanager or taskmanager.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "ns"
+    },
+    "flink.jvm.gc.collections.count": {
+      "attributes": [
+        "garbage_collector_name"
+      ],
+      "description": "The total number of collections that have occurred.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{collections}"
+    },
+    "flink.jvm.gc.collections.time": {
+      "attributes": [
+        "garbage_collector_name"
+      ],
+      "description": "The total time spent performing garbage collection.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "ms"
+    },
+    "flink.jvm.memory.direct.total_capacity": {
+      "attributes": [],
+      "description": "The total capacity of all buffers in the direct buffer pool.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "flink.jvm.memory.direct.used": {
+      "attributes": [],
+      "description": "The amount of memory used by the JVM for the direct buffer pool.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "flink.jvm.memory.heap.committed": {
+      "attributes": [],
+      "description": "The amount of heap memory guaranteed to be available to the JVM.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "flink.jvm.memory.heap.max": {
+      "attributes": [],
+      "description": "The maximum amount of heap memory that can be used for memory management.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "flink.jvm.memory.heap.used": {
+      "attributes": [],
+      "description": "The amount of heap memory currently used.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "flink.jvm.memory.mapped.total_capacity": {
+      "attributes": [],
+      "description": "The number of buffers in the mapped buffer pool.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "flink.jvm.memory.mapped.used": {
+      "attributes": [],
+      "description": "The amount of memory used by the JVM for the mapped buffer pool.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "flink.jvm.memory.metaspace.committed": {
+      "attributes": [],
+      "description": "The amount of memory guaranteed to be available to the JVM in the Metaspace memory pool.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "flink.jvm.memory.metaspace.max": {
+      "attributes": [],
+      "description": "The maximum amount of memory that can be used in the Metaspace memory pool.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "flink.jvm.memory.metaspace.used": {
+      "attributes": [],
+      "description": "The amount of memory currently used in the Metaspace memory pool.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "flink.jvm.memory.nonheap.committed": {
+      "attributes": [],
+      "description": "The amount of non-heap memory guaranteed to be available to the JVM.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "flink.jvm.memory.nonheap.max": {
+      "attributes": [],
+      "description": "The maximum amount of non-heap memory that can be used for memory management.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "flink.jvm.memory.nonheap.used": {
+      "attributes": [],
+      "description": "The amount of non-heap memory currently used.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "flink.jvm.threads.count": {
+      "attributes": [],
+      "description": "The total number of live threads.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{threads}"
+    },
+    "flink.memory.managed.total": {
+      "attributes": [],
+      "description": "The total amount of managed memory.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "flink.memory.managed.used": {
+      "attributes": [],
+      "description": "The amount of managed memory currently used.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "flink.operator.record.count": {
+      "attributes": [
+        "operator_name",
+        "record"
+      ],
+      "description": "The number of records an operator has.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{records}"
+    },
+    "flink.operator.watermark.output": {
+      "attributes": [
+        "operator_name"
+      ],
+      "description": "The last watermark this operator has emitted.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "ms"
+    },
+    "flink.task.record.count": {
+      "attributes": [
+        "record"
+      ],
+      "description": "The number of records a task has.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{records}"
+    }
+  },
+  "name": "flinkmetricsreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "resource_attributes": {
+    "flink.job.name": {
+      "description": "The job name.",
+      "type": "string"
+    },
+    "flink.resource.type": {
+      "description": "The flink scope type in which a metric belongs to.",
+      "enum": [
+        "jobmanager",
+        "taskmanager"
+      ],
+      "type": "string"
+    },
+    "flink.subtask.index": {
+      "description": "The subtask index.",
+      "type": "string"
+    },
+    "flink.task.name": {
+      "description": "The task name.",
+      "type": "string"
+    },
+    "flink.taskmanager.id": {
+      "description": "The taskmanager ID.",
+      "type": "string"
+    },
+    "host.name": {
+      "description": "The host name.",
+      "type": "string"
+    }
+  },
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "JonathanWamsley"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "flinkmetrics",
+  "version": "0.146.0"
+}

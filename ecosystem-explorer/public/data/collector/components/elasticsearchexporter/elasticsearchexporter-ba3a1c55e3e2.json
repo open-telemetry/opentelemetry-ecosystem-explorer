@@ -1,0 +1,65 @@
+{
+  "attributes": {
+    "error.type": {
+      "description": "The type of error that occurred when processing the documents.",
+      "type": "string"
+    },
+    "failure_store": {
+      "description": "The status of the failure store.",
+      "enum": [
+        "failed",
+        "not_enabled",
+        "unknown",
+        "used"
+      ],
+      "type": "string"
+    },
+    "http.response.status_code": {
+      "description": "HTTP status code.",
+      "type": "int"
+    },
+    "outcome": {
+      "description": "The operation outcome.",
+      "enum": [
+        "failed_client",
+        "failed_server",
+        "failure_store",
+        "internal_server_error",
+        "success",
+        "timeout",
+        "too_many"
+      ],
+      "type": "string"
+    }
+  },
+  "component_type": "exporter",
+  "display_name": "Elasticsearch Exporter",
+  "distribution": "contrib",
+  "name": "elasticsearchexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "JaredTan95",
+        "carsonip",
+        "lahsivjar"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "traces"
+      ],
+      "development": [
+        "metrics",
+        "profiles"
+      ]
+    }
+  },
+  "type": "elasticsearch",
+  "version": "0.150.0"
+}

@@ -1,0 +1,35 @@
+{
+  "component_type": "processor",
+  "distribution": "contrib",
+  "name": "redactionprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "dmitryax",
+        "mx-psi",
+        "TylerHelmuth",
+        "iblancasa"
+      ],
+      "emeritus": [
+        "leonsp-ai"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "metrics"
+      ],
+      "beta": [
+        "traces"
+      ]
+    }
+  },
+  "type": "redaction",
+  "version": "0.145.0"
+}

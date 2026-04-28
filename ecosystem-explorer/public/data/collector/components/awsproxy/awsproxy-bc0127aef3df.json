@@ -1,0 +1,25 @@
+{
+  "component_type": "extension",
+  "distribution": "contrib",
+  "name": "awsproxy",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "Aneurysm9",
+        "mxiamxia"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "extension"
+      ]
+    }
+  },
+  "type": "awsproxy",
+  "version": "0.144.0"
+}

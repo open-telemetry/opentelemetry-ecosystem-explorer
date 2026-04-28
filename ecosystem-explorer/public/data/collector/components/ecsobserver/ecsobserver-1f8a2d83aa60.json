@@ -1,0 +1,27 @@
+{
+  "component_type": "extension",
+  "distribution": "contrib",
+  "name": "ecsobserver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "dmitryax"
+      ],
+      "emeritus": [
+        "rmfitzpatrick"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "extension"
+      ]
+    }
+  },
+  "type": "ecs_observer",
+  "version": "0.145.0"
+}

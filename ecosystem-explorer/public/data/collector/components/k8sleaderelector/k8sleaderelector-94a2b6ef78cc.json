@@ -1,0 +1,26 @@
+{
+  "component_type": "extension",
+  "distribution": "contrib",
+  "name": "k8sleaderelector",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "dmitryax",
+        "rakesh-garimella"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "extension"
+      ]
+    }
+  },
+  "type": "k8s_leader_elector",
+  "version": "0.144.0"
+}

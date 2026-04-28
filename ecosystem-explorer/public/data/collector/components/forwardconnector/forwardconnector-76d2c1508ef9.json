@@ -1,0 +1,27 @@
+{
+  "component_type": "connector",
+  "display_name": "Forward Connector",
+  "distribution": "core",
+  "name": "forwardconnector",
+  "repository": "opentelemetry-collector",
+  "status": {
+    "class": "connector",
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "logs_to_logs",
+        "metrics_to_metrics",
+        "traces_to_traces"
+      ],
+      "development": [
+        "profiles_to_profiles"
+      ]
+    }
+  },
+  "type": "forward",
+  "version": "0.144.0"
+}

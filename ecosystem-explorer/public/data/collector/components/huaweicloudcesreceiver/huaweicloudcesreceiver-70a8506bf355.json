@@ -1,0 +1,28 @@
+{
+  "component_type": "receiver",
+  "description": "This receiver contains the implementation of the Huawei Cloud [Cloud Eye Service](https://www.huaweicloud.com/intl/en-us/product/ces.html) (CES) receiver for the OpenTelemetry Collector. The receiver collects metrics from Huawei Cloud's CES service and sends them to the OpenTelemetry Collector for processing and exporting.",
+  "display_name": "Huawei Cloud CES Receiver",
+  "distribution": "contrib",
+  "name": "huaweicloudcesreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "heitorganzeli",
+        "narcis96"
+      ],
+      "emeritus": [
+        "mwear"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "huaweicloudcesreceiver",
+  "version": "0.147.0"
+}

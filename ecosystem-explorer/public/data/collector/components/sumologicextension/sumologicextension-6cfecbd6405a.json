@@ -1,0 +1,33 @@
+{
+  "component_type": "extension",
+  "distribution": "contrib",
+  "name": "sumologicextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "rnishtala-sumo",
+        "pankaj101A",
+        "jagan2221"
+      ],
+      "emeritus": [
+        "aboguszewski-sumo",
+        "kasia-kujawa",
+        "mat-rumian",
+        "sumo-drosiek",
+        "chan-tim-sumo",
+        "echlebek",
+        "amdprophet"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "alpha": [
+        "extension"
+      ]
+    }
+  },
+  "type": "sumologic",
+  "version": "0.144.0"
+}

@@ -1,0 +1,30 @@
+{
+  "component_type": "processor",
+  "description": "The geoIP processor `geoipprocessor` enhances the attributes of a span, log, or metric by appending information about the geographical location of an IP address.",
+  "display_name": "GeoIP Processor",
+  "distribution": "contrib",
+  "name": "geoipprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "andrzej-stencel",
+        "michalpristas",
+        "rogercoll"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "geoip",
+  "version": "0.149.0"
+}

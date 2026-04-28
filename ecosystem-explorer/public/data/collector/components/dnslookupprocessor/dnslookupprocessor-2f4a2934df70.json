@@ -1,0 +1,26 @@
+{
+  "component_type": "processor",
+  "display_name": "DNS Lookup Processor",
+  "distribution": "contrib",
+  "name": "dnslookupprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "andrzej-stencel",
+        "kaisecheng",
+        "edmocosta"
+      ]
+    },
+    "stability": {
+      "development": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "dnslookup",
+  "version": "0.150.0"
+}

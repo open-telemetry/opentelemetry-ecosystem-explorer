@@ -1,0 +1,31 @@
+{
+  "component_type": "receiver",
+  "description": "The Pulsar Receiver receives logs, metrics, and traces from [Apache Pulsar](https://pulsar.apache.org/).",
+  "display_name": "Pulsar Receiver",
+  "distribution": "contrib",
+  "name": "pulsarreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "dao-jun"
+      ],
+      "emeritus": [
+        "dmitryax"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "pulsar",
+  "version": "0.148.0"
+}

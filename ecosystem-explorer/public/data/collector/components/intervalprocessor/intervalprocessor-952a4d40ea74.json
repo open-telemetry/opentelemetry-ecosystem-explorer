@@ -1,0 +1,29 @@
+{
+  "component_type": "processor",
+  "display_name": "Interval Processor",
+  "distribution": "contrib",
+  "name": "intervalprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "RichieSams"
+      ],
+      "emeritus": [
+        "tombrk"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "interval",
+  "version": "0.148.0"
+}

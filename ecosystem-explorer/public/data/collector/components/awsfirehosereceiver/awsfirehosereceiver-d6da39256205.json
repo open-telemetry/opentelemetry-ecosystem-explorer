@@ -1,0 +1,28 @@
+{
+  "component_type": "receiver",
+  "description": "The AWS Kinesis Data Firehose Receiver is for ingesting delivery stream messages and parsing the records received based on the configured record type.",
+  "display_name": "AWS Kinesis Data Firehose Receiver",
+  "distribution": "contrib",
+  "name": "awsfirehosereceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "Aneurysm9",
+        "axw"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "metrics"
+      ]
+    }
+  },
+  "type": "awsfirehose",
+  "version": "0.146.0"
+}

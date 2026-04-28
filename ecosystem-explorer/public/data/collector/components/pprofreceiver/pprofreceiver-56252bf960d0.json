@@ -1,0 +1,23 @@
+{
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "name": "pprofreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "MovieStoreGuy",
+        "atoulme"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "profiles"
+      ]
+    }
+  },
+  "type": "pprof",
+  "version": "0.147.0"
+}

@@ -1,0 +1,24 @@
+{
+  "component_type": "extension",
+  "display_name": "Remote Tap Extension",
+  "distribution": "contrib",
+  "name": "remotetapextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "atoulme"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "extension"
+      ]
+    }
+  },
+  "type": "remotetap",
+  "version": "0.150.0"
+}

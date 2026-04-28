@@ -1,0 +1,24 @@
+{
+  "component_type": "processor",
+  "distribution": "contrib",
+  "name": "coralogixprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "crobert-1",
+        "povilasv",
+        "iblancasa"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "alpha": [
+        "traces"
+      ]
+    }
+  },
+  "type": "coralogix",
+  "version": "0.144.0"
+}

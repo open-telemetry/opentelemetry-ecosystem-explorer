@@ -1,0 +1,791 @@
+{
+  "attributes": {
+    "collection": {
+      "description": "The name of a collection.",
+      "type": "string"
+    },
+    "connection_type": {
+      "description": "The status of the connection.",
+      "enum": [
+        "active",
+        "available",
+        "current"
+      ],
+      "name_override": "type",
+      "type": "string"
+    },
+    "lock_mode": {
+      "description": "The mode of Lock which denotes the degree of access",
+      "enum": [
+        "exclusive",
+        "intent_exclusive",
+        "intent_shared",
+        "shared"
+      ],
+      "type": "string"
+    },
+    "lock_type": {
+      "description": "The Resource over which the Lock controls access",
+      "enum": [
+        "collection",
+        "database",
+        "global",
+        "metadata",
+        "mutex",
+        "oplog",
+        "parallel_batch_write_mode",
+        "replication_state_transition"
+      ],
+      "type": "string"
+    },
+    "memory_type": {
+      "description": "The type of memory used.",
+      "enum": [
+        "resident",
+        "virtual"
+      ],
+      "name_override": "type",
+      "type": "string"
+    },
+    "operation": {
+      "description": "The MongoDB operation being counted.",
+      "enum": [
+        "command",
+        "delete",
+        "getmore",
+        "insert",
+        "query",
+        "update"
+      ],
+      "type": "string"
+    },
+    "operation_latency": {
+      "description": "The MongoDB operation with regards to latency",
+      "enum": [
+        "command",
+        "read",
+        "write"
+      ],
+      "name_override": "operation",
+      "type": "string"
+    },
+    "type": {
+      "description": "The result of a cache request.",
+      "enum": [
+        "hit",
+        "miss"
+      ],
+      "type": "string"
+    }
+  },
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "metrics": {
+    "mongodb.active.reads": {
+      "attributes": [],
+      "description": "The number of read operations currently being processed.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{reads}"
+    },
+    "mongodb.active.writes": {
+      "attributes": [],
+      "description": "The number of write operations currently being processed.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{writes}"
+    },
+    "mongodb.cache.operations": {
+      "attributes": [
+        "type"
+      ],
+      "description": "The number of cache operations of the instance.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{operations}"
+    },
+    "mongodb.collection.count": {
+      "attributes": [],
+      "description": "The number of collections.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{collections}"
+    },
+    "mongodb.commands.rate": {
+      "description": "The number of commands executed per second.",
+      "enabled": false,
+      "gauge": {
+        "aggregation_temporality": "delta",
+        "monotonic": false,
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "{command}/s"
+    },
+    "mongodb.connection.count": {
+      "attributes": [
+        "connection_type"
+      ],
+      "description": "The number of connections.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{connections}"
+    },
+    "mongodb.cursor.count": {
+      "attributes": [],
+      "description": "The number of open cursors maintained for clients.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{cursors}"
+    },
+    "mongodb.cursor.timeout.count": {
+      "attributes": [],
+      "description": "The number of cursors that have timed out.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{cursors}"
+    },
+    "mongodb.data.size": {
+      "attributes": [],
+      "description": "The size of the collection. Data compression does not affect this value.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "mongodb.database.count": {
+      "attributes": [],
+      "description": "The number of existing databases.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{databases}"
+    },
+    "mongodb.deletes.rate": {
+      "description": "The number of deletes executed per second.",
+      "enabled": false,
+      "gauge": {
+        "aggregation_temporality": "delta",
+        "monotonic": false,
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "{delete}/s"
+    },
+    "mongodb.document.operation.count": {
+      "attributes": [
+        "operation"
+      ],
+      "description": "The number of document operations executed.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{documents}"
+    },
+    "mongodb.extent.count": {
+      "attributes": [],
+      "description": "The number of extents.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{extents}"
+    },
+    "mongodb.flushes.rate": {
+      "description": "The number of flushes executed per second.",
+      "enabled": false,
+      "gauge": {
+        "aggregation_temporality": "delta",
+        "monotonic": false,
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "{flush}/s"
+    },
+    "mongodb.getmores.rate": {
+      "description": "The number of getmores executed per second.",
+      "enabled": false,
+      "gauge": {
+        "aggregation_temporality": "delta",
+        "monotonic": false,
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "{getmore}/s"
+    },
+    "mongodb.global_lock.time": {
+      "attributes": [],
+      "description": "The time the global lock has been held.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "ms"
+    },
+    "mongodb.health": {
+      "attributes": [],
+      "description": "The health status of the server.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "1"
+    },
+    "mongodb.index.access.count": {
+      "attributes": [
+        "collection"
+      ],
+      "description": "The number of times an index has been accessed.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{accesses}"
+    },
+    "mongodb.index.count": {
+      "attributes": [],
+      "description": "The number of indexes.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{indexes}"
+    },
+    "mongodb.index.size": {
+      "attributes": [],
+      "description": "Sum of the space allocated to all indexes in the database, including free index space.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "mongodb.inserts.rate": {
+      "description": "The number of insertions executed per second.",
+      "enabled": false,
+      "gauge": {
+        "aggregation_temporality": "delta",
+        "monotonic": false,
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "{insert}/s"
+    },
+    "mongodb.lock.acquire.count": {
+      "attributes": [
+        "lock_mode",
+        "lock_type"
+      ],
+      "description": "Number of times the lock was acquired in the specified mode.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{count}"
+    },
+    "mongodb.lock.acquire.time": {
+      "attributes": [
+        "lock_mode",
+        "lock_type"
+      ],
+      "description": "Cumulative wait time for the lock acquisitions.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "microseconds"
+    },
+    "mongodb.lock.acquire.wait_count": {
+      "attributes": [
+        "lock_mode",
+        "lock_type"
+      ],
+      "description": "Number of times the lock acquisitions encountered waits because the locks were held in a conflicting mode.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{count}"
+    },
+    "mongodb.lock.deadlock.count": {
+      "attributes": [
+        "lock_mode",
+        "lock_type"
+      ],
+      "description": "Number of times the lock acquisitions encountered deadlocks.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{count}"
+    },
+    "mongodb.memory.usage": {
+      "attributes": [
+        "memory_type"
+      ],
+      "description": "The amount of memory used.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "mongodb.network.io.receive": {
+      "attributes": [],
+      "description": "The number of bytes received.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "mongodb.network.io.transmit": {
+      "attributes": [],
+      "description": "The number of by transmitted.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "mongodb.network.request.count": {
+      "attributes": [],
+      "description": "The number of requests received by the server.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{requests}"
+    },
+    "mongodb.object.count": {
+      "attributes": [],
+      "description": "The number of objects.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{objects}"
+    },
+    "mongodb.operation.count": {
+      "attributes": [
+        "operation"
+      ],
+      "description": "The number of operations executed.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{operations}"
+    },
+    "mongodb.operation.latency.time": {
+      "attributes": [
+        "operation_latency"
+      ],
+      "description": "The latency of operations.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "us"
+    },
+    "mongodb.operation.repl.count": {
+      "attributes": [
+        "operation"
+      ],
+      "description": "The number of replicated operations executed.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{operations}"
+    },
+    "mongodb.operation.time": {
+      "attributes": [
+        "operation"
+      ],
+      "description": "The total time spent performing operations.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "ms"
+    },
+    "mongodb.page_faults": {
+      "attributes": [],
+      "description": "The number of page faults.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{faults}"
+    },
+    "mongodb.queries.rate": {
+      "description": "The number of queries executed per second.",
+      "enabled": false,
+      "gauge": {
+        "aggregation_temporality": "delta",
+        "monotonic": false,
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "{query}/s"
+    },
+    "mongodb.repl_commands_per_sec": {
+      "description": "The number of replicated commands executed per second.",
+      "enabled": false,
+      "gauge": {
+        "aggregation_temporality": "delta",
+        "monotonic": false,
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "{command}/s"
+    },
+    "mongodb.repl_deletes_per_sec": {
+      "description": "The number of replicated deletes executed per second.",
+      "enabled": false,
+      "gauge": {
+        "aggregation_temporality": "delta",
+        "monotonic": false,
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "{delete}/s"
+    },
+    "mongodb.repl_getmores_per_sec": {
+      "description": "The number of replicated getmores executed per second.",
+      "enabled": false,
+      "gauge": {
+        "aggregation_temporality": "delta",
+        "monotonic": false,
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "{getmore}/s"
+    },
+    "mongodb.repl_inserts_per_sec": {
+      "description": "The number of replicated insertions executed per second.",
+      "enabled": false,
+      "gauge": {
+        "aggregation_temporality": "delta",
+        "monotonic": false,
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "{insert}/s"
+    },
+    "mongodb.repl_queries_per_sec": {
+      "description": "The number of replicated queries executed per second.",
+      "enabled": false,
+      "gauge": {
+        "aggregation_temporality": "delta",
+        "monotonic": false,
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "{query}/s"
+    },
+    "mongodb.repl_updates_per_sec": {
+      "description": "The number of replicated updates executed per second.",
+      "enabled": false,
+      "gauge": {
+        "aggregation_temporality": "delta",
+        "monotonic": false,
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "{update}/s"
+    },
+    "mongodb.session.count": {
+      "attributes": [],
+      "description": "The total number of active sessions.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{sessions}"
+    },
+    "mongodb.storage.size": {
+      "attributes": [],
+      "description": "The total amount of storage allocated to this collection.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "mongodb.updates.rate": {
+      "description": "The number of updates executed per second.",
+      "enabled": false,
+      "gauge": {
+        "aggregation_temporality": "delta",
+        "monotonic": false,
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "{update}/s"
+    },
+    "mongodb.uptime": {
+      "attributes": [],
+      "description": "The amount of time that the server has been running.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "ms"
+    },
+    "mongodb.wtcache.bytes.read": {
+      "attributes": [],
+      "description": "The number of bytes read into the WiredTiger cache.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "By"
+    }
+  },
+  "name": "mongodbreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "resource_attributes": {
+    "database": {
+      "description": "The name of a database.",
+      "type": "string"
+    },
+    "server.address": {
+      "description": "The address of the MongoDB host.",
+      "type": "string"
+    },
+    "server.port": {
+      "description": "The port of the MongoDB host.",
+      "type": "int"
+    }
+  },
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "justinianvoss22"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "mongodb",
+  "version": "0.144.0"
+}

@@ -1,0 +1,24 @@
+{
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "name": "awsecscontainermetricsreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "Aneurysm9"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "awsecscontainermetrics",
+  "version": "0.145.0"
+}

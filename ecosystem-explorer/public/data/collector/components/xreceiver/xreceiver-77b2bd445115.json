@@ -1,0 +1,22 @@
+{
+  "component_type": "receiver",
+  "distribution": "core",
+  "name": "xreceiver",
+  "repository": "opentelemetry-collector",
+  "status": {
+    "class": "pkg",
+    "codeowners": {
+      "active": [
+        "mx-psi",
+        "dmathieu"
+      ]
+    },
+    "stability": {
+      "development": [
+        "profiles"
+      ]
+    }
+  },
+  "type": "xreceiver",
+  "version": "0.147.0"
+}

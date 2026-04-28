@@ -1,0 +1,29 @@
+{
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "name": "macosunifiedloggingreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "Caleb-Hurshman",
+        "atoulme"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs"
+      ]
+    },
+    "unsupported_platforms": [
+      "linux",
+      "windows"
+    ]
+  },
+  "type": "macosunifiedlogging",
+  "version": "0.146.0"
+}

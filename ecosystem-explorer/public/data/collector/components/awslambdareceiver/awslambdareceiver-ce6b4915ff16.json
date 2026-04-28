@@ -1,0 +1,26 @@
+{
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "name": "awslambdareceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "MichaelKatsoulis",
+        "Kavindu-Dodan",
+        "axw",
+        "pjanotti"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "logs",
+        "metrics"
+      ]
+    }
+  },
+  "type": "awslambda",
+  "version": "0.144.0"
+}

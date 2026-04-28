@@ -1,0 +1,26 @@
+{
+  "component_type": "exporter",
+  "display_name": "Logz.io Exporter",
+  "distribution": "contrib",
+  "name": "logzioexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "yotamloe"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "traces"
+      ]
+    }
+  },
+  "type": "logzio",
+  "version": "0.145.0"
+}

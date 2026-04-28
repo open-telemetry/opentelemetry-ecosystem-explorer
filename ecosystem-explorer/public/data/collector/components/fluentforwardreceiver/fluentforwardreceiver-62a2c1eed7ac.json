@@ -1,0 +1,27 @@
+{
+  "component_type": "receiver",
+  "description": "This receiver runs a TCP server that accepts events via the [Fluent Forward protocol](https://github.com/fluent/fluentd/wiki/Forward-Protocol-Specification-v1).",
+  "display_name": "Fluent Forward Receiver",
+  "distribution": "contrib",
+  "name": "fluentforwardreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "dmitryax"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "logs"
+      ]
+    }
+  },
+  "type": "fluentforward",
+  "version": "0.150.0"
+}

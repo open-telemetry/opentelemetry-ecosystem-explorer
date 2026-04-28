@@ -1,0 +1,238 @@
+{
+  "attributes": {
+    "error.message": {
+      "description": "Error message recorded during check",
+      "type": "string"
+    },
+    "http.method": {
+      "description": "HTTP request method",
+      "type": "string"
+    },
+    "http.status_class": {
+      "description": "HTTP response status class",
+      "type": "string"
+    },
+    "http.status_code": {
+      "description": "HTTP response status code",
+      "type": "int"
+    },
+    "http.tls.cn": {
+      "description": "The commonName in the subject of the certificate.",
+      "type": "string"
+    },
+    "http.tls.issuer": {
+      "description": "The entity that issued the certificate.",
+      "type": "string"
+    },
+    "http.tls.san": {
+      "description": "The Subject Alternative Name of the certificate.",
+      "type": "slice"
+    },
+    "http.url": {
+      "description": "Full HTTP request URL.",
+      "type": "string"
+    },
+    "network.transport": {
+      "description": "OSI transport layer or inter-process communication method.",
+      "type": "string"
+    },
+    "validation.type": {
+      "description": "Type of validation performed (contains, json_path, size, regex)",
+      "type": "string"
+    }
+  },
+  "component_type": "receiver",
+  "description": "The HTTP Check Receiver can be used for synthetic checks against HTTP endpoints.",
+  "display_name": "HTTP Check Receiver",
+  "distribution": "contrib",
+  "metrics": {
+    "httpcheck.client.connection.duration": {
+      "attributes": [
+        "http.url",
+        "network.transport"
+      ],
+      "description": "Time spent establishing TCP connection to the endpoint.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "ms"
+    },
+    "httpcheck.client.request.duration": {
+      "attributes": [
+        "http.url"
+      ],
+      "description": "Time spent sending the HTTP request to the endpoint.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "ms"
+    },
+    "httpcheck.dns.lookup.duration": {
+      "attributes": [
+        "http.url"
+      ],
+      "description": "Time spent performing DNS lookup for the endpoint.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "ms"
+    },
+    "httpcheck.duration": {
+      "attributes": [
+        "http.url"
+      ],
+      "description": "Measures the duration of the HTTP check.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "ms"
+    },
+    "httpcheck.error": {
+      "attributes": [
+        "error.message",
+        "http.url"
+      ],
+      "description": "Records errors occurring during HTTP check.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{error}"
+    },
+    "httpcheck.response.duration": {
+      "attributes": [
+        "http.url"
+      ],
+      "description": "Time spent receiving the HTTP response from the endpoint.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "ms"
+    },
+    "httpcheck.response.size": {
+      "attributes": [
+        "http.url"
+      ],
+      "description": "Size of response body in bytes.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "httpcheck.status": {
+      "attributes": [
+        "http.method",
+        "http.status_class",
+        "http.status_code",
+        "http.url"
+      ],
+      "description": "1 if the check resulted in status_code matching the status_class, otherwise 0.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "httpcheck.tls.cert_remaining": {
+      "attributes": [
+        "http.tls.cn",
+        "http.tls.issuer",
+        "http.tls.san",
+        "http.url"
+      ],
+      "description": "Time in seconds until certificate expiry, as specified by `NotAfter` field in the x.509 certificate. Negative values represent time in seconds since expiration.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "s"
+    },
+    "httpcheck.tls.handshake.duration": {
+      "attributes": [
+        "http.url"
+      ],
+      "description": "Time spent performing TLS handshake with the endpoint.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "ms"
+    },
+    "httpcheck.validation.failed": {
+      "attributes": [
+        "http.url",
+        "validation.type"
+      ],
+      "description": "Number of response validations that failed.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{validation}"
+    },
+    "httpcheck.validation.passed": {
+      "attributes": [
+        "http.url",
+        "validation.type"
+      ],
+      "description": "Number of response validations that passed.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{validation}"
+    }
+  },
+  "name": "httpcheckreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "resource_attributes": {},
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "VenuEmmadi"
+      ],
+      "emeritus": [
+        "codeboten"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "httpcheck",
+  "version": "0.147.0"
+}

@@ -1,0 +1,17 @@
+{
+  "component_type": "extension",
+  "distribution": "core",
+  "name": "xextension",
+  "repository": "opentelemetry-collector",
+  "status": {
+    "class": "extension",
+    "codeowners": null,
+    "stability": {
+      "development": [
+        "profiles"
+      ]
+    }
+  },
+  "type": "xextension",
+  "version": "0.144.0"
+}

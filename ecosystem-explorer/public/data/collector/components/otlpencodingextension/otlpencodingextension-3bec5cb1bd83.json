@@ -1,0 +1,27 @@
+{
+  "component_type": "extension",
+  "description": "This extension unmarshals and marshals data encoded according to the [OTLP specification](https://opentelemetry.io/docs/specs/otlp/).",
+  "display_name": "OTLP Encoding Extension",
+  "distribution": "contrib",
+  "name": "otlpencodingextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "dao-jun",
+        "VihasMakwana"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "extension"
+      ]
+    }
+  },
+  "type": "otlp_encoding",
+  "version": "0.149.0"
+}

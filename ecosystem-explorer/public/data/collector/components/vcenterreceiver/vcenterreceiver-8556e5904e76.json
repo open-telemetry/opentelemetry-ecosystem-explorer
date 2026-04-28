@@ -1,0 +1,1247 @@
+{
+  "attributes": {
+    "cpu_reservation_type": {
+      "description": "The type of CPU reservation for the host.",
+      "enum": [
+        "total",
+        "used"
+      ],
+      "type": "string"
+    },
+    "cpu_state": {
+      "description": "CPU time spent in idle, ready or idle state.",
+      "enum": [
+        "idle",
+        "ready",
+        "wait"
+      ],
+      "type": "string"
+    },
+    "disk_direction": {
+      "description": "The direction of disk latency.",
+      "enum": [
+        "read",
+        "write"
+      ],
+      "name_override": "direction",
+      "type": "string"
+    },
+    "disk_state": {
+      "description": "The state of storage and whether it is already allocated or free.",
+      "enum": [
+        "available",
+        "used"
+      ],
+      "type": "string"
+    },
+    "disk_type": {
+      "description": "The type of storage device that is being recorded.",
+      "enum": [
+        "physical",
+        "virtual"
+      ],
+      "type": "string"
+    },
+    "entity_status": {
+      "description": "The current status of the managed entity.",
+      "enum": [
+        "gray",
+        "green",
+        "red",
+        "yellow"
+      ],
+      "name_override": "status",
+      "type": "string"
+    },
+    "host_effective": {
+      "description": "Whether the host is effective in the vCenter cluster.",
+      "name_override": "effective",
+      "type": "bool"
+    },
+    "host_power_state": {
+      "description": "The current power state of the host.",
+      "enum": [
+        "off",
+        "on",
+        "standby",
+        "unknown"
+      ],
+      "name_override": "power_state",
+      "type": "string"
+    },
+    "memory_granted_type": {
+      "description": "The type of memory granted.",
+      "enum": [
+        "private",
+        "shared"
+      ],
+      "name_override": "type",
+      "type": "string"
+    },
+    "memory_usage_type": {
+      "description": "The type of memory usage.",
+      "enum": [
+        "guest",
+        "host",
+        "overhead"
+      ],
+      "name_override": "type",
+      "type": "string"
+    },
+    "object_name": {
+      "description": "The object on the virtual machine or host that is being reported on.",
+      "name_override": "object",
+      "type": "string"
+    },
+    "throughput_direction": {
+      "description": "The direction of network throughput.",
+      "enum": [
+        "received",
+        "transmitted"
+      ],
+      "name_override": "direction",
+      "type": "string"
+    },
+    "vm_count_power_state": {
+      "description": "The current power state of the virtual machine.",
+      "enum": [
+        "off",
+        "on",
+        "suspended",
+        "unknown"
+      ],
+      "name_override": "power_state",
+      "type": "string"
+    },
+    "vsan_latency_type": {
+      "description": "The type of vSAN latency.",
+      "enum": [
+        "read",
+        "write"
+      ],
+      "name_override": "type",
+      "type": "string"
+    },
+    "vsan_operation_type": {
+      "description": "The type of vSAN operation.",
+      "enum": [
+        "read",
+        "unmap",
+        "write"
+      ],
+      "name_override": "type",
+      "type": "string"
+    },
+    "vsan_throughput_direction": {
+      "description": "The type of vSAN throughput.",
+      "enum": [
+        "read",
+        "write"
+      ],
+      "name_override": "direction",
+      "type": "string"
+    }
+  },
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "metrics": {
+    "vcenter.cluster.cpu.effective": {
+      "attributes": [],
+      "description": "The effective CPU available to the cluster. This value excludes CPU from hosts in maintenance mode or are unresponsive.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "MHz"
+    },
+    "vcenter.cluster.cpu.limit": {
+      "attributes": [],
+      "description": "The amount of CPU available to the cluster.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "MHz"
+    },
+    "vcenter.cluster.host.count": {
+      "attributes": [
+        "host_effective"
+      ],
+      "description": "The number of hosts in the cluster.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{hosts}"
+    },
+    "vcenter.cluster.memory.effective": {
+      "attributes": [],
+      "description": "The effective available memory of the cluster.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "vcenter.cluster.memory.limit": {
+      "attributes": [],
+      "description": "The available memory of the cluster.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "vcenter.cluster.vm.count": {
+      "attributes": [
+        "vm_count_power_state"
+      ],
+      "description": "The number of virtual machines in the cluster.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{virtual_machines}"
+    },
+    "vcenter.cluster.vm_template.count": {
+      "attributes": [],
+      "description": "The number of virtual machine templates in the cluster.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{virtual_machine_templates}"
+    },
+    "vcenter.cluster.vsan.congestions": {
+      "attributes": [],
+      "description": "The congestions of IOs generated by all vSAN clients in the cluster.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "{congestions/s}"
+    },
+    "vcenter.cluster.vsan.latency.avg": {
+      "attributes": [
+        "vsan_latency_type"
+      ],
+      "description": "The overall cluster latency while accessing vSAN storage.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "us"
+    },
+    "vcenter.cluster.vsan.operations": {
+      "attributes": [
+        "vsan_operation_type"
+      ],
+      "description": "The vSAN IOPs of a cluster.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "{operations/s}"
+    },
+    "vcenter.cluster.vsan.throughput": {
+      "attributes": [
+        "vsan_throughput_direction"
+      ],
+      "description": "The vSAN throughput of a cluster.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "By/s"
+    },
+    "vcenter.datacenter.cluster.count": {
+      "attributes": [
+        "entity_status"
+      ],
+      "description": "The number of clusters in the datacenter.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{clusters}"
+    },
+    "vcenter.datacenter.cpu.limit": {
+      "attributes": [],
+      "description": "The total amount of CPU available to the datacenter.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "MHz"
+    },
+    "vcenter.datacenter.datastore.count": {
+      "attributes": [],
+      "description": "The number of datastores in the datacenter.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{datastores}"
+    },
+    "vcenter.datacenter.disk.space": {
+      "attributes": [
+        "disk_state"
+      ],
+      "description": "The amount of available and used disk space in the datacenter.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "vcenter.datacenter.host.count": {
+      "attributes": [
+        "entity_status",
+        "host_power_state"
+      ],
+      "description": "The number of hosts in the datacenter.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{hosts}"
+    },
+    "vcenter.datacenter.memory.limit": {
+      "attributes": [],
+      "description": "The total amount of memory available to the datacenter.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "vcenter.datacenter.vm.count": {
+      "attributes": [
+        "entity_status",
+        "vm_count_power_state"
+      ],
+      "description": "The number of VM's in the datacenter.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{virtual_machines}"
+    },
+    "vcenter.datastore.disk.usage": {
+      "attributes": [
+        "disk_state"
+      ],
+      "description": "The amount of space in the datastore.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "vcenter.datastore.disk.utilization": {
+      "attributes": [],
+      "description": "The utilization of the datastore.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "%"
+    },
+    "vcenter.host.cpu.capacity": {
+      "attributes": [],
+      "description": "Total CPU capacity of the host system.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "MHz"
+    },
+    "vcenter.host.cpu.reserved": {
+      "attributes": [
+        "cpu_reservation_type"
+      ],
+      "description": "The CPU of the host reserved for use by virtual machines.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "MHz"
+    },
+    "vcenter.host.cpu.usage": {
+      "attributes": [],
+      "description": "The amount of CPU used by the host.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "MHz"
+    },
+    "vcenter.host.cpu.utilization": {
+      "attributes": [],
+      "description": "The CPU utilization of the host system.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "%"
+    },
+    "vcenter.host.disk.latency.avg": {
+      "attributes": [
+        "disk_direction",
+        "object_name"
+      ],
+      "description": "The latency of operations to the host system's disk.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "ms"
+    },
+    "vcenter.host.disk.latency.max": {
+      "attributes": [
+        "object_name"
+      ],
+      "description": "Highest latency value across all disks used by the host.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "ms"
+    },
+    "vcenter.host.disk.throughput": {
+      "attributes": [
+        "disk_direction",
+        "object_name"
+      ],
+      "description": "Average number of kilobytes read from or written to the disk each second.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{KiBy/s}"
+    },
+    "vcenter.host.memory.capacity": {
+      "attributes": [],
+      "description": "Total memory capacity of the host system.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "double"
+      },
+      "unit": "MiBy"
+    },
+    "vcenter.host.memory.usage": {
+      "attributes": [],
+      "description": "The amount of memory the host system is using.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "MiBy"
+    },
+    "vcenter.host.memory.utilization": {
+      "attributes": [],
+      "description": "The percentage of the host system's memory capacity that is being utilized.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "%"
+    },
+    "vcenter.host.network.packet.drop.rate": {
+      "attributes": [
+        "object_name",
+        "throughput_direction"
+      ],
+      "description": "The rate of packets dropped across each physical NIC (network interface controller) instance on the host.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "{packets/s}"
+    },
+    "vcenter.host.network.packet.error.rate": {
+      "attributes": [
+        "object_name",
+        "throughput_direction"
+      ],
+      "description": "The rate of packet errors transmitted or received on the host network.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "{errors/s}"
+    },
+    "vcenter.host.network.packet.rate": {
+      "attributes": [
+        "object_name",
+        "throughput_direction"
+      ],
+      "description": "The rate of packets transmitted or received across each physical NIC (network interface controller) instance on the host.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "{packets/s}"
+    },
+    "vcenter.host.network.throughput": {
+      "attributes": [
+        "object_name",
+        "throughput_direction"
+      ],
+      "description": "The amount of data that was transmitted or received over the network by the host.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{KiBy/s}"
+    },
+    "vcenter.host.network.usage": {
+      "attributes": [
+        "object_name"
+      ],
+      "description": "The sum of the data transmitted and received for all the NIC instances of the host.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{KiBy/s}"
+    },
+    "vcenter.host.vsan.cache.hit_rate": {
+      "attributes": [],
+      "description": "The host's read IOs which could be satisfied by the local client cache.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "%"
+    },
+    "vcenter.host.vsan.congestions": {
+      "attributes": [],
+      "description": "The congestions of IOs generated by all vSAN clients in the host.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "{congestions/s}"
+    },
+    "vcenter.host.vsan.latency.avg": {
+      "attributes": [
+        "vsan_latency_type"
+      ],
+      "description": "The host latency while accessing vSAN storage.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "us"
+    },
+    "vcenter.host.vsan.operations": {
+      "attributes": [
+        "vsan_operation_type"
+      ],
+      "description": "The vSAN IOPs of a host.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "{operations/s}"
+    },
+    "vcenter.host.vsan.throughput": {
+      "attributes": [
+        "vsan_throughput_direction"
+      ],
+      "description": "The vSAN throughput of a host.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "By/s"
+    },
+    "vcenter.resource_pool.cpu.shares": {
+      "attributes": [],
+      "description": "The amount of shares of CPU in the resource pool.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{shares}"
+    },
+    "vcenter.resource_pool.cpu.usage": {
+      "attributes": [],
+      "description": "The usage of the CPU used by the resource pool.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "MHz"
+    },
+    "vcenter.resource_pool.memory.ballooned": {
+      "attributes": [],
+      "description": "The amount of memory in a resource pool that is ballooned due to virtualization.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "MiBy"
+    },
+    "vcenter.resource_pool.memory.granted": {
+      "attributes": [
+        "memory_granted_type"
+      ],
+      "description": "The amount of memory that is granted to VMs in the resource pool from shared and non-shared host memory.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "MiBy"
+    },
+    "vcenter.resource_pool.memory.shares": {
+      "attributes": [],
+      "description": "The amount of shares of memory in the resource pool.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{shares}"
+    },
+    "vcenter.resource_pool.memory.swapped": {
+      "attributes": [],
+      "description": "The amount of memory that is granted to VMs in the resource pool from the host's swap space.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "MiBy"
+    },
+    "vcenter.resource_pool.memory.usage": {
+      "attributes": [
+        "memory_usage_type"
+      ],
+      "description": "The usage of the memory by the resource pool.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "MiBy"
+    },
+    "vcenter.vm.cpu.readiness": {
+      "attributes": [],
+      "description": "Percentage of time that the virtual machine was ready, but could not get scheduled to run on the physical CPU.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "%"
+    },
+    "vcenter.vm.cpu.time": {
+      "attributes": [
+        "cpu_state",
+        "object_name"
+      ],
+      "description": "CPU time spent in idle, ready or wait state.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "%"
+    },
+    "vcenter.vm.cpu.usage": {
+      "attributes": [],
+      "description": "The amount of CPU used by the VM.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "MHz"
+    },
+    "vcenter.vm.cpu.utilization": {
+      "attributes": [],
+      "description": "The CPU utilization of the VM.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "%"
+    },
+    "vcenter.vm.disk.latency.avg": {
+      "attributes": [
+        "disk_direction",
+        "disk_type",
+        "object_name"
+      ],
+      "description": "The latency of operations to the virtual machine's disk.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "ms"
+    },
+    "vcenter.vm.disk.latency.max": {
+      "attributes": [
+        "object_name"
+      ],
+      "description": "The highest reported total latency (device and kernel times) over an interval of 20 seconds.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "ms"
+    },
+    "vcenter.vm.disk.throughput": {
+      "attributes": [
+        "disk_direction",
+        "object_name"
+      ],
+      "description": "Average number of kilobytes read from or written to the virtual disk each second.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "{KiBy/s}"
+    },
+    "vcenter.vm.disk.usage": {
+      "attributes": [
+        "disk_state"
+      ],
+      "description": "The amount of storage space used by the virtual machine.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "vcenter.vm.disk.utilization": {
+      "attributes": [],
+      "description": "The utilization of storage on the virtual machine.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "%"
+    },
+    "vcenter.vm.memory.ballooned": {
+      "attributes": [],
+      "description": "The amount of memory that is ballooned due to virtualization.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "MiBy"
+    },
+    "vcenter.vm.memory.granted": {
+      "attributes": [],
+      "description": "The amount of memory that is granted to a VM.",
+      "enabled": false,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "MiBy"
+    },
+    "vcenter.vm.memory.swapped": {
+      "attributes": [],
+      "description": "The portion of memory that is granted to this VM from the host's swap space.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "MiBy"
+    },
+    "vcenter.vm.memory.swapped_ssd": {
+      "attributes": [],
+      "description": "The amount of memory swapped to fast disk device such as SSD.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "KiBy"
+    },
+    "vcenter.vm.memory.usage": {
+      "attributes": [],
+      "description": "The amount of memory that is used by the virtual machine.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "MiBy"
+    },
+    "vcenter.vm.memory.utilization": {
+      "attributes": [],
+      "description": "The memory utilization of the VM.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "%"
+    },
+    "vcenter.vm.network.broadcast.packet.rate": {
+      "attributes": [
+        "object_name",
+        "throughput_direction"
+      ],
+      "description": "The rate of broadcast packets transmitted or received by each vNIC (virtual network interface controller) on the virtual machine.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "{packets/s}"
+    },
+    "vcenter.vm.network.multicast.packet.rate": {
+      "attributes": [
+        "object_name",
+        "throughput_direction"
+      ],
+      "description": "The rate of multicast packets transmitted or received by each vNIC (virtual network interface controller) on the virtual machine.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "{packets/s}"
+    },
+    "vcenter.vm.network.packet.drop.rate": {
+      "attributes": [
+        "object_name",
+        "throughput_direction"
+      ],
+      "description": "The rate of transmitted or received packets dropped by each vNIC (virtual network interface controller) on the virtual machine.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "{packets/s}"
+    },
+    "vcenter.vm.network.packet.rate": {
+      "attributes": [
+        "object_name",
+        "throughput_direction"
+      ],
+      "description": "The rate of packets transmitted or received by each vNIC (virtual network interface controller) on the virtual machine.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "{packets/s}"
+    },
+    "vcenter.vm.network.throughput": {
+      "attributes": [
+        "object_name",
+        "throughput_direction"
+      ],
+      "description": "The amount of data that was transmitted or received over the network of the virtual machine.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By/s"
+    },
+    "vcenter.vm.network.usage": {
+      "attributes": [
+        "object_name"
+      ],
+      "description": "The network utilization combined transmit and receive rates during an interval.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{KiBy/s}"
+    },
+    "vcenter.vm.vsan.latency.avg": {
+      "attributes": [
+        "vsan_latency_type"
+      ],
+      "description": "The virtual machine latency while accessing vSAN storage.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "us"
+    },
+    "vcenter.vm.vsan.operations": {
+      "attributes": [
+        "vsan_operation_type"
+      ],
+      "description": "The vSAN IOPs of a virtual machine.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "{operations/s}"
+    },
+    "vcenter.vm.vsan.throughput": {
+      "attributes": [
+        "vsan_throughput_direction"
+      ],
+      "description": "The vSAN throughput of a virtual machine.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "By/s"
+    }
+  },
+  "name": "vcenterreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "resource_attributes": {
+    "vcenter.cluster.name": {
+      "description": "The name of the vCenter cluster.",
+      "type": "string"
+    },
+    "vcenter.datacenter.name": {
+      "description": "The name of the vCenter datacenter.",
+      "type": "string"
+    },
+    "vcenter.datastore.name": {
+      "description": "The name of the vCenter datastore.",
+      "type": "string"
+    },
+    "vcenter.host.name": {
+      "description": "The hostname of the vCenter ESXi host.",
+      "type": "string"
+    },
+    "vcenter.resource_pool.inventory_path": {
+      "description": "The inventory path of the resource pool.",
+      "type": "string"
+    },
+    "vcenter.resource_pool.name": {
+      "description": "The name of the resource pool.",
+      "type": "string"
+    },
+    "vcenter.virtual_app.inventory_path": {
+      "description": "The inventory path of the vApp.",
+      "type": "string"
+    },
+    "vcenter.virtual_app.name": {
+      "description": "The name of the vApp.",
+      "type": "string"
+    },
+    "vcenter.vm.id": {
+      "description": "The instance UUID of the virtual machine.",
+      "type": "string"
+    },
+    "vcenter.vm.name": {
+      "description": "The name of the virtual machine.",
+      "type": "string"
+    },
+    "vcenter.vm_template.id": {
+      "description": "The instance UUID of the virtual machine template.",
+      "type": "string"
+    },
+    "vcenter.vm_template.name": {
+      "description": "The name of the virtual machine template.",
+      "type": "string"
+    }
+  },
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "schmikei",
+        "ishleenk17"
+      ],
+      "emeritus": [
+        "StefanKurek"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "vcenter",
+  "version": "0.144.0"
+}

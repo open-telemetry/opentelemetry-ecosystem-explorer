@@ -1,0 +1,27 @@
+{
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "name": "snmpreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "tamir-michaeli"
+      ],
+      "emeritus": [
+        "StefanKurek"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "snmp",
+  "version": "0.145.0"
+}

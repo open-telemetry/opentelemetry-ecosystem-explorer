@@ -1,0 +1,31 @@
+{
+  "component_type": "receiver",
+  "display_name": "No-op Receiver",
+  "distribution": "core",
+  "name": "nopreceiver",
+  "repository": "opentelemetry-collector",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "evan-bradley"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "core"
+    ],
+    "stability": {
+      "alpha": [
+        "profiles"
+      ],
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "nop",
+  "version": "0.149.0"
+}

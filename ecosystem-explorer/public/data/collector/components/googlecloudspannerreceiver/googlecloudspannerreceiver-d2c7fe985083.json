@@ -1,0 +1,32 @@
+{
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "name": "googlecloudspannerreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "dashpole",
+        "KiranmayiB",
+        "nsj07"
+      ],
+      "emeritus": [
+        "architjugran",
+        "varunraiko",
+        "harishbohara11",
+        "dsimil"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "googlecloudspanner",
+  "version": "0.145.0"
+}

@@ -1,0 +1,27 @@
+{
+  "component_type": "receiver",
+  "description": "The Pprof Receiver collects profiles from files specified with a glob pattern, from a remote endpoint or the running collector.",
+  "display_name": "Pprof Receiver",
+  "distribution": "contrib",
+  "name": "pprofreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "MovieStoreGuy",
+        "atoulme"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "profiles"
+      ]
+    }
+  },
+  "type": "pprof",
+  "version": "0.150.0"
+}

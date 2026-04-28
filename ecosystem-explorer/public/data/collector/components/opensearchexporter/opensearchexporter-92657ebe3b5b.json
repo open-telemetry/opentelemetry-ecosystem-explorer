@@ -1,0 +1,33 @@
+{
+  "component_type": "exporter",
+  "display_name": "OpenSearch Exporter",
+  "distribution": "contrib",
+  "name": "opensearchexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "ps48"
+      ],
+      "emeritus": [
+        "Aneurysm9",
+        "MitchellGale",
+        "MaxKsyunz",
+        "YANG-DB"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "traces"
+      ]
+    }
+  },
+  "type": "opensearch",
+  "version": "0.146.0"
+}

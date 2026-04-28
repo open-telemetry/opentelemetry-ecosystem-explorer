@@ -1,0 +1,23 @@
+{
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "name": "k8slogreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "emeritus": [
+        "h0cheung",
+        "TylerHelmuth"
+      ],
+      "seeking_new": true
+    },
+    "stability": {
+      "unmaintained": [
+        "logs"
+      ]
+    }
+  },
+  "type": "k8slog",
+  "version": "0.144.0"
+}

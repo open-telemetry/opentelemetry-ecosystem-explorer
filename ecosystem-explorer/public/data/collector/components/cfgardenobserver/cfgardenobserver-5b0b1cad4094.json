@@ -1,0 +1,27 @@
+{
+  "component_type": "extension",
+  "display_name": "Cloud Foundry Garden Observer Extension",
+  "distribution": "contrib",
+  "name": "cfgardenobserver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "crobert-1",
+        "jriguera"
+      ],
+      "emeritus": [
+        "m1rp",
+        "cemdk"
+      ]
+    },
+    "stability": {
+      "alpha": [
+        "extension"
+      ]
+    }
+  },
+  "type": "cfgarden_observer",
+  "version": "0.147.0"
+}

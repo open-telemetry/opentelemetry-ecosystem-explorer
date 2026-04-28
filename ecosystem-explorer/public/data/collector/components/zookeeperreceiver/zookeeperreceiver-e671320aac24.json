@@ -1,0 +1,29 @@
+{
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "name": "zookeeperreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "antonblock",
+        "akats7"
+      ],
+      "emeritus": [
+        "djaglowski"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "zookeeper",
+  "version": "0.147.0"
+}

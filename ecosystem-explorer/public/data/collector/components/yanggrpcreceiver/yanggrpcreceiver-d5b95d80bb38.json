@@ -1,0 +1,22 @@
+{
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "name": "yanggrpcreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "atoulme"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "yanggrpc",
+  "version": "0.144.0"
+}

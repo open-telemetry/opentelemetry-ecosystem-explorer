@@ -1,0 +1,30 @@
+{
+  "component_type": "receiver",
+  "description": "The UDP Receiver receives logs over UDP.",
+  "display_name": "UDP Receiver",
+  "distribution": "contrib",
+  "name": "udplogreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "VihasMakwana"
+      ],
+      "emeritus": [
+        "djaglowski"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs"
+      ]
+    }
+  },
+  "type": "udplog",
+  "version": "0.148.0"
+}

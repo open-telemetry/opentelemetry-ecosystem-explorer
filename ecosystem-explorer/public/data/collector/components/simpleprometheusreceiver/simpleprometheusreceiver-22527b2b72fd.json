@@ -1,0 +1,24 @@
+{
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "name": "simpleprometheusreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "fatsheep9146"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "prometheus_simple",
+  "version": "0.147.0"
+}

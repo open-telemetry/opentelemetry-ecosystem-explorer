@@ -1,0 +1,29 @@
+{
+  "component_type": "receiver",
+  "description": "This receiver can receive telemetry data in [Faro format](https://github.com/grafana/faro) that adheres to the [Faro OpenAPI schema](https://github.com/grafana/faro/blob/main/spec/gen/faro.gen.yaml).",
+  "display_name": "Faro Receiver",
+  "distribution": "contrib",
+  "name": "faroreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "dehaansa",
+        "rlankfo",
+        "mar4uk"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "traces"
+      ]
+    }
+  },
+  "type": "faro",
+  "version": "0.149.0"
+}

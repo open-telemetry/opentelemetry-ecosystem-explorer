@@ -1,0 +1,26 @@
+{
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "name": "carbonreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [],
+      "emeritus": [
+        "aboguszewski-sumo"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "unmaintained": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "carbon",
+  "version": "0.144.0"
+}

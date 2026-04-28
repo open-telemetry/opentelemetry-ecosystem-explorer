@@ -1,0 +1,54 @@
+{
+  "attributes": {
+    "endpoint": {
+      "description": "The endpoint of the backend",
+      "type": "string"
+    },
+    "resolver": {
+      "description": "Resolver used",
+      "enum": [
+        "aws",
+        "dns",
+        "k8s",
+        "static"
+      ],
+      "type": "string"
+    },
+    "success": {
+      "description": "Whether an outcome was successful",
+      "type": "bool"
+    }
+  },
+  "component_type": "exporter",
+  "display_name": "Load Balancing Exporter",
+  "distribution": "contrib",
+  "name": "loadbalancingexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "rlankfo"
+      ],
+      "emeritus": [
+        "jpkrohling"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "traces"
+      ],
+      "development": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "loadbalancing",
+  "version": "0.146.0"
+}

@@ -1,0 +1,353 @@
+{
+  "attributes": {
+    "bind_type": {
+      "description": "The type of bind to the domain server.",
+      "enum": [
+        "client",
+        "server"
+      ],
+      "name_override": "type",
+      "type": "string"
+    },
+    "direction": {
+      "description": "The direction of data flow.",
+      "enum": [
+        "received",
+        "sent"
+      ],
+      "type": "string"
+    },
+    "network_data_type": {
+      "description": "The type of network data sent.",
+      "enum": [
+        "compressed",
+        "uncompressed"
+      ],
+      "name_override": "type",
+      "type": "string"
+    },
+    "operation_type": {
+      "description": "The type of operation.",
+      "enum": [
+        "read",
+        "search",
+        "write"
+      ],
+      "name_override": "type",
+      "type": "string"
+    },
+    "suboperation_type": {
+      "description": "The type of suboperation.",
+      "enum": [
+        "search",
+        "security_descriptor_propagations_event"
+      ],
+      "name_override": "type",
+      "type": "string"
+    },
+    "sync_result": {
+      "description": "The result status of the sync request.",
+      "enum": [
+        "other",
+        "schema_mismatch",
+        "success"
+      ],
+      "name_override": "result",
+      "type": "string"
+    },
+    "value_type": {
+      "description": "The type of value sent.",
+      "enum": [
+        "distinguished_names",
+        "other"
+      ],
+      "name_override": "type",
+      "type": "string"
+    }
+  },
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "metrics": {
+    "active_directory.ds.bind.rate": {
+      "attributes": [
+        "bind_type"
+      ],
+      "description": "The number of binds per second serviced by this domain controller.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "double"
+      },
+      "unit": "{binds}/s"
+    },
+    "active_directory.ds.ldap.bind.last_successful.time": {
+      "description": "The amount of time taken for the last successful LDAP bind.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "ms"
+    },
+    "active_directory.ds.ldap.bind.rate": {
+      "description": "The number of successful LDAP binds per second.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "double"
+      },
+      "unit": "{binds}/s"
+    },
+    "active_directory.ds.ldap.client.session.count": {
+      "description": "The number of connected LDAP client sessions.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{sessions}"
+    },
+    "active_directory.ds.ldap.search.rate": {
+      "description": "The number of LDAP searches per second.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "double"
+      },
+      "unit": "{searches}/s"
+    },
+    "active_directory.ds.name_cache.hit_rate": {
+      "description": "The percentage of directory object name component lookups that are satisfied by the Directory System Agent's name cache.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": {
+        "level": "development"
+      },
+      "unit": "%"
+    },
+    "active_directory.ds.notification.queued": {
+      "description": "The number of pending update notifications that have been queued to push to clients.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{notifications}"
+    },
+    "active_directory.ds.operation.rate": {
+      "attributes": [
+        "operation_type"
+      ],
+      "description": "The number of operations performed per second.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "double"
+      },
+      "unit": "{operations}/s"
+    },
+    "active_directory.ds.replication.network.io": {
+      "attributes": [
+        "direction",
+        "network_data_type"
+      ],
+      "description": "The amount of network data transmitted by the Directory Replication Agent.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "active_directory.ds.replication.object.rate": {
+      "attributes": [
+        "direction"
+      ],
+      "description": "The number of objects transmitted by the Directory Replication Agent per second.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "double"
+      },
+      "unit": "{objects}/s"
+    },
+    "active_directory.ds.replication.operation.pending": {
+      "description": "The number of pending replication operations for the Directory Replication Agent.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{operations}"
+    },
+    "active_directory.ds.replication.property.rate": {
+      "attributes": [
+        "direction"
+      ],
+      "description": "The number of properties transmitted by the Directory Replication Agent per second.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "double"
+      },
+      "unit": "{properties}/s"
+    },
+    "active_directory.ds.replication.sync.object.pending": {
+      "description": "The number of objects remaining until the full sync completes for the Directory Replication Agent.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{objects}"
+    },
+    "active_directory.ds.replication.sync.request.count": {
+      "attributes": [
+        "sync_result"
+      ],
+      "description": "The number of sync requests made by the Directory Replication Agent.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{requests}"
+    },
+    "active_directory.ds.replication.value.rate": {
+      "attributes": [
+        "direction",
+        "value_type"
+      ],
+      "description": "The number of values transmitted by the Directory Replication Agent per second.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "double"
+      },
+      "unit": "{values}/s"
+    },
+    "active_directory.ds.security_descriptor_propagations_event.queued": {
+      "description": "The number of security descriptor propagation events that are queued for processing.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{events}"
+    },
+    "active_directory.ds.suboperation.rate": {
+      "attributes": [
+        "suboperation_type"
+      ],
+      "description": "The rate of sub-operations performed.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "double"
+      },
+      "unit": "{suboperations}/s"
+    },
+    "active_directory.ds.thread.count": {
+      "description": "The number of threads in use by the directory service.",
+      "enabled": true,
+      "stability": {
+        "level": "development"
+      },
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{threads}"
+    }
+  },
+  "name": "activedirectorydsreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "pjanotti"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    },
+    "unsupported_platforms": [
+      "darwin",
+      "linux"
+    ]
+  },
+  "type": "active_directory_ds",
+  "version": "0.145.0"
+}

@@ -1,0 +1,34 @@
+{
+  "component_type": "processor",
+  "display_name": "Probabilistic Sampling Processor",
+  "distribution": "contrib",
+  "name": "probabilisticsamplerprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "jmacd"
+      ],
+      "emeritus": [
+        "jpkrohling"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "logs"
+      ],
+      "beta": [
+        "traces"
+      ]
+    }
+  },
+  "type": "probabilistic_sampler",
+  "version": "0.146.0"
+}

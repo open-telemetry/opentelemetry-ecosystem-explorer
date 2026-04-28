@@ -1,0 +1,27 @@
+{
+  "component_type": "extension",
+  "display_name": "Performance Profiler Extension",
+  "distribution": "contrib",
+  "name": "pprofextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "MovieStoreGuy"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "extension"
+      ]
+    }
+  },
+  "type": "pprof",
+  "version": "0.150.0"
+}

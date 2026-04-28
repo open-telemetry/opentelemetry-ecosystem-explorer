@@ -1,0 +1,28 @@
+{
+  "component_type": "exporter",
+  "display_name": "OTLP HTTP Exporter",
+  "distribution": "core",
+  "name": "otlphttpexporter",
+  "repository": "opentelemetry-collector",
+  "status": {
+    "class": "exporter",
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s",
+      "otlp"
+    ],
+    "stability": {
+      "development": [
+        "profiles"
+      ],
+      "stable": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "otlp_http",
+  "version": "0.148.0"
+}

@@ -77,9 +77,12 @@ def _transform_0_1_to_0_2(inventory_data: dict[str, Any]) -> dict[str, Any]:
     if "libraries" not in inventory_data:
         raise KeyError("Inventory data missing 'libraries' key")
 
-    transformed_libraries = []
+    libraries = inventory_data["libraries"]
+    if libraries is None:
+        return inventory_data
 
-    for library in inventory_data["libraries"]:
+    transformed_libraries = []
+    for library in libraries:
         transformed_lib = library.copy()
 
         if "target_versions" in transformed_lib:
@@ -118,9 +121,15 @@ def _transform_0_2_to_0_3(inventory_data: dict[str, Any]) -> dict[str, Any]:
     Returns:
         Transformed inventory data in format 0.3
     """
-    transformed_libraries = []
+    if "libraries" not in inventory_data:
+        raise KeyError("Inventory data missing 'libraries' key")
 
-    for library in inventory_data["libraries"]:
+    libraries = inventory_data["libraries"]
+    if libraries is None:
+        return inventory_data
+
+    transformed_libraries = []
+    for library in libraries:
         transformed_lib = library.copy()
 
         if "telemetry" in transformed_lib:

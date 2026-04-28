@@ -1,0 +1,28 @@
+{
+  "component_type": "extension",
+  "description": "This extension unmarshalls metrics encoded in formats produced by [Amazon CloudWatch Metric Streams](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch-Metric-Streams.html).",
+  "display_name": "AWS CloudWatch Metric Streams Encoding Extension",
+  "distribution": "contrib",
+  "name": "awscloudwatchmetricstreamsencodingextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "axw",
+        "constanca-m",
+        "Kavindu-Dodan"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "extension"
+      ]
+    }
+  },
+  "type": "awscloudwatchmetricstreams_encoding",
+  "version": "0.149.0"
+}

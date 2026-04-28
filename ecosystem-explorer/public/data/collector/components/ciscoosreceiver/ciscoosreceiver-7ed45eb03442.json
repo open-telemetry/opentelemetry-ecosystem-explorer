@@ -1,0 +1,22 @@
+{
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "name": "ciscoosreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "dmitryax"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "ciscoos",
+  "version": "0.145.0"
+}

@@ -1,0 +1,30 @@
+{
+  "component_type": "connector",
+  "description": "Signal to metrics connector produces metrics from all signal types (traces, logs, or metrics).",
+  "display_name": "Signal to Metrics Connector",
+  "distribution": "contrib",
+  "name": "signaltometricsconnector",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "connector",
+    "codeowners": {
+      "active": [
+        "ChrsMark",
+        "lahsivjar"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs_to_metrics",
+        "metrics_to_metrics",
+        "profiles_to_metrics",
+        "traces_to_metrics"
+      ]
+    }
+  },
+  "type": "signal_to_metrics",
+  "version": "0.150.0"
+}

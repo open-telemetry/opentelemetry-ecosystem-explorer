@@ -17,11 +17,12 @@
 import argparse
 import logging
 import sys
-from typing import Optional
+from typing import Any, Optional
 
 from java_instrumentation_watcher.inventory_manager import InventoryManager
 from semantic_version import Version
 
+from explorer_db_builder.collector_transformer import transform_collector_data
 from explorer_db_builder.configuration_builder import run_configuration_builder
 from explorer_db_builder.database_writer import DatabaseWriter
 from explorer_db_builder.instrumentation_transformer import transform_instrumentation_format
@@ -74,21 +75,7 @@ def process_version(
     db_writer: DatabaseWriter,
     inventory: Optional[dict] = None,
 ) -> None:
-    """Process a single version and write its data to the database.
-
-    Handles both old (0.1) and new (0.2) file formats by transforming
-    to the latest schema before writing.
-
-    Args:
-        version: The version to process
-        inventory_manager: Manager for accessing inventory data
-        db_writer: Writer for database operations
-        inventory: Optional pre-loaded inventory (e.g., backfilled data)
-
-    Raises:
-        ValueError: If no libraries found for the version or unsupported format
-        KeyError: If inventory data is malformed
-    """
+    """Process a single Java Agent version and write its data to the database."""
     logger.info(f"Processing Java Agent version: {version}")
 
     if inventory is None:
@@ -109,24 +96,35 @@ def process_version(
     db_writer.write_version_index(version, library_map)
 
 
+def process_collector_version(
+    version: Version,
+    distribution: str,
+    inventory_manager: Any,
+    db_writer: DatabaseWriter,
+) -> dict[str, str]:
+    """Process a single Collector version and write its data to the database."""
+    logger.info(f"Processing Collector {distribution} version: {version}")
+
+    inventory = inventory_manager.load_versioned_inventory(distribution, version)
+    components = transform_collector_data(inventory)
+
+    if not components:
+        logger.warning(f"No components found for Collector {distribution} version {version}")
+        return {}
+
+    logger.info(f"Found {len(components)} components")
+    return db_writer.write_components(components, sub_dir="components")
+
+
 def run_javaagent_builder(
     inventory_manager: Optional[InventoryManager] = None,
     db_writer: Optional[DatabaseWriter] = None,
     clean: bool = False,
 ) -> int:
-    """Run the javaagent database builder process.
-
-    Args:
-        inventory_manager: Optional inventory manager (for testing)
-        db_writer: Optional database writer (for testing)
-        clean: If True, clean the database directory before building
-
-    Returns:
-        Exit code (0 for success, 1 for failure)
-    """
+    """Run the javaagent database builder process."""
     try:
         inventory_manager = inventory_manager or InventoryManager()
-        db_writer = db_writer or DatabaseWriter()
+        db_writer = db_writer or DatabaseWriter("ecosystem-explorer/public/data/javaagent")
 
         if clean:
             db_writer.clean()
@@ -153,21 +151,60 @@ def run_javaagent_builder(
         logger.info("Database Statistics:")
         logger.info(f"  Files written: {stats['files_written']}")
         logger.info(f"  Total size: {stats['total_bytes']:,} bytes ({total_mb:.2f} MB)")
-        logger.info("")
-        logger.info("✓ Database build completed successfully")
+        logger.info("Database build completed successfully")
         return 0
 
     except ValueError as e:
-        logger.error(f"❌ Validation error: {e}")
+        logger.error(f"Validation error: {e}")
         return 1
     except KeyError as e:
-        logger.error(f"❌ Data structure error: {e}")
+        logger.error(f"Data structure error: {e}")
         return 1
     except OSError as e:
-        logger.error(f"❌ File system error: {e}")
+        logger.error(f"File system error: {e}")
         return 1
     except Exception as e:
-        logger.error(f"❌ Unexpected error: {e}", exc_info=True)
+        logger.error(f"Unexpected error: {e}", exc_info=True)
+        return 1
+
+
+def run_collector_builder(clean: bool = False) -> int:
+    """Run the collector database builder process."""
+    try:
+        from collector_watcher.inventory_manager import InventoryManager as CollectorInventoryManager
+
+        inventory_manager = CollectorInventoryManager()
+        db_writer = DatabaseWriter("ecosystem-explorer/public/data/collector")
+
+        if clean:
+            db_writer.clean()
+
+        distributions = ["core", "contrib"]
+        all_versions = set()
+        for dist in distributions:
+            all_versions.update(inventory_manager.list_release_versions(dist))
+
+        sorted_versions = sorted(list(all_versions), reverse=True)
+        logger.info(f"Processing {len(sorted_versions)} Collector release versions")
+
+        for version in sorted_versions:
+            version_component_map = {}
+            for dist in distributions:
+                if inventory_manager.version_exists(dist, version):
+                    dist_map = process_collector_version(version, dist, inventory_manager, db_writer)
+                    version_component_map.update(dist_map)
+
+            if version_component_map:
+                db_writer.write_version_index(version, version_component_map, index_key="components")
+
+        db_writer.write_version_list(sorted_versions)
+
+        stats = db_writer.get_stats()
+        logger.info(f"Collector build completed: {stats['files_written']} files written")
+        return 0
+
+    except Exception as e:
+        logger.error(f"Collector builder failed: {e}", exc_info=True)
         return 1
 
 
@@ -177,10 +214,14 @@ def run_builder(clean: bool = False) -> int:
     javaagent_result = run_javaagent_builder(clean=clean)
 
     logger.info("")
+    logger.info("--- Collector ---")
+    collector_result = run_collector_builder(clean=clean)
+
+    logger.info("")
     logger.info("--- Configuration Schema ---")
     config_result = run_configuration_builder(clean=clean)
 
-    if javaagent_result != 0 or config_result != 0:
+    if javaagent_result != 0 or collector_result != 0 or config_result != 0:
         return 1
     return 0
 

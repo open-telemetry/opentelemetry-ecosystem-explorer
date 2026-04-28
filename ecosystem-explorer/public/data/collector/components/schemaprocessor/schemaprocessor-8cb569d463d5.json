@@ -1,0 +1,27 @@
+{
+  "component_type": "processor",
+  "display_name": "Schema Processor",
+  "distribution": "contrib",
+  "name": "schemaprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "MovieStoreGuy",
+        "ankitpatel96",
+        "dineshg13"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "schema",
+  "version": "0.149.0"
+}

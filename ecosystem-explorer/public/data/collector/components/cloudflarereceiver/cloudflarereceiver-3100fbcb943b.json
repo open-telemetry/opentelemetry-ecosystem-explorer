@@ -1,0 +1,27 @@
+{
+  "component_type": "receiver",
+  "description": "The Cloudflare Receiver allows Cloudflare's [LogPush Jobs](https://developers.cloudflare.com/logs/logpush/) to send logs over HTTPS from the Cloudflare logs aggregation system to an OpenTelemetry collector.",
+  "display_name": "Cloudflare Receiver",
+  "distribution": "contrib",
+  "name": "cloudflarereceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "dehaansa"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs"
+      ]
+    }
+  },
+  "type": "cloudflare",
+  "version": "0.148.0"
+}

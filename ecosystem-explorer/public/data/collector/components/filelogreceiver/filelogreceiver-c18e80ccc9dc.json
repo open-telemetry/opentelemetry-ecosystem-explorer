@@ -1,0 +1,34 @@
+{
+  "component_type": "receiver",
+  "description": "This receiver tails and parses logs from files.",
+  "display_name": "File Log Receiver",
+  "distribution": "contrib",
+  "name": "filelogreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "andrzej-stencel",
+        "paulojmdias",
+        "VihasMakwana",
+        "braydonk"
+      ],
+      "emeritus": [
+        "djaglowski"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "logs"
+      ]
+    }
+  },
+  "type": "file_log",
+  "version": "0.150.0"
+}

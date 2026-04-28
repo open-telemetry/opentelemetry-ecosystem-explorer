@@ -1,0 +1,216 @@
+{
+  "attributes": {
+    "command": {
+      "description": "The type of command.",
+      "enum": [
+        "flush",
+        "get",
+        "set",
+        "touch"
+      ],
+      "type": "string"
+    },
+    "direction": {
+      "description": "Direction of data flow.",
+      "enum": [
+        "received",
+        "sent"
+      ],
+      "type": "string"
+    },
+    "operation": {
+      "description": "The type of operation.",
+      "enum": [
+        "decrement",
+        "get",
+        "increment"
+      ],
+      "type": "string"
+    },
+    "state": {
+      "description": "The type of CPU usage.",
+      "enum": [
+        "system",
+        "user"
+      ],
+      "type": "string"
+    },
+    "type": {
+      "description": "Result of cache request.",
+      "enum": [
+        "hit",
+        "miss"
+      ],
+      "type": "string"
+    }
+  },
+  "component_type": "receiver",
+  "description": "This receiver can fetch stats from a Memcached instance using the [stats command](https://github.com/memcached/memcached/wiki/Commands#statistics). A detailed description of all the stats available is at https://github.com/memcached/memcached/blob/master/doc/protocol.txt#L1159.",
+  "display_name": "Memcached Receiver",
+  "distribution": "contrib",
+  "metrics": {
+    "memcached.bytes": {
+      "attributes": [],
+      "description": "Current number of bytes used by this server to store items.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "memcached.commands": {
+      "attributes": [
+        "command"
+      ],
+      "description": "Commands executed.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{commands}"
+    },
+    "memcached.connections.current": {
+      "attributes": [],
+      "description": "The current number of open connections.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{connections}"
+    },
+    "memcached.connections.total": {
+      "attributes": [],
+      "description": "Total number of connections opened since the server started running.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{connections}"
+    },
+    "memcached.cpu.usage": {
+      "attributes": [
+        "state"
+      ],
+      "description": "Accumulated user and system time.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "double"
+      },
+      "unit": "s"
+    },
+    "memcached.current_items": {
+      "attributes": [],
+      "description": "Number of items currently stored in the cache.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{items}"
+    },
+    "memcached.evictions": {
+      "attributes": [],
+      "description": "Cache item evictions.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{evictions}"
+    },
+    "memcached.network": {
+      "attributes": [
+        "direction"
+      ],
+      "description": "Bytes transferred over the network.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "by"
+    },
+    "memcached.operation_hit_ratio": {
+      "attributes": [
+        "operation"
+      ],
+      "description": "Hit ratio for operations, expressed as a percentage value between 0.0 and 100.0.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "%"
+    },
+    "memcached.operations": {
+      "attributes": [
+        "operation",
+        "type"
+      ],
+      "description": "Operation counts.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{operations}"
+    },
+    "memcached.threads": {
+      "attributes": [],
+      "description": "Number of threads used by the memcached instance.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{threads}"
+    }
+  },
+  "name": "memcachedreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "jsirianni"
+      ],
+      "emeritus": [
+        "djaglowski"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "memcached",
+  "version": "0.148.0"
+}

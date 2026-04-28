@@ -1,0 +1,22 @@
+{
+  "component_type": "processor",
+  "distribution": "core",
+  "name": "xprocessor",
+  "repository": "opentelemetry-collector",
+  "status": {
+    "class": "pkg",
+    "codeowners": {
+      "active": [
+        "mx-psi",
+        "dmathieu"
+      ]
+    },
+    "stability": {
+      "development": [
+        "profiles"
+      ]
+    }
+  },
+  "type": "xprocessor",
+  "version": "0.147.0"
+}

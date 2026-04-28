@@ -1,0 +1,24 @@
+{
+  "component_type": "exporter",
+  "distribution": "contrib",
+  "name": "googlesecopsexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "braydonk",
+        "colelaven",
+        "dpaasman00",
+        "mrsillydog"
+      ]
+    },
+    "stability": {
+      "development": [
+        "logs"
+      ]
+    }
+  },
+  "type": "google_secops",
+  "version": "0.150.0"
+}

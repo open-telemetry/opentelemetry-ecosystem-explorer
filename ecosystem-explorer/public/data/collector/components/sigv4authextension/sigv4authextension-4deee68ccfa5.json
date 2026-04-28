@@ -1,0 +1,27 @@
+{
+  "component_type": "extension",
+  "description": "This extension provides Sigv4 authentication for making requests to AWS services. You can read about the [Sigv4 process](https://docs.aws.amazon.com/general/latest/gr/signature-version-4.html).",
+  "display_name": "SigV4 Authenticator Extension",
+  "distribution": "contrib",
+  "name": "sigv4authextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "Aneurysm9",
+        "erichsueh3"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "extension"
+      ]
+    }
+  },
+  "type": "sigv4auth",
+  "version": "0.148.0"
+}

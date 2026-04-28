@@ -1,0 +1,25 @@
+{
+  "component_type": "extension",
+  "display_name": "Azure Authenticator Extension",
+  "distribution": "contrib",
+  "name": "azureauthextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "constanca-m"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "extension"
+      ]
+    }
+  },
+  "type": "azureauth",
+  "version": "0.147.0"
+}

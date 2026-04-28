@@ -1,0 +1,24 @@
+{
+  "component_type": "receiver",
+  "distribution": "contrib",
+  "name": "wavefrontreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "samiura"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "deprecated": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "wavefront",
+  "version": "0.146.0"
+}
