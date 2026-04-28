@@ -21,7 +21,10 @@
   "scope": {
     "name": "io.opentelemetry.cassandra-4.4"
   },
-  "semantic_conventions": ["DATABASE_CLIENT_SPANS", "DATABASE_CLIENT_METRICS"],
+  "semantic_conventions": [
+    "DATABASE_CLIENT_SPANS",
+    "DATABASE_CLIENT_METRICS"
+  ],
   "source_path": "instrumentation/cassandra/cassandra-4.4",
   "telemetry": [
     {

@@ -17,15 +17,22 @@
   "description": "This instrumentation enables database client spans and database client metrics for Couchbase 2.6 operations. It automatically traces key-value operations (get, upsert, replace, remove), view queries, N1QL queries, and cluster management operations.",
   "display_name": "Couchbase Client",
   "has_javaagent": true,
-  "javaagent_target_versions": ["com.couchbase.client:java-client:[2.6.0,3)"],
+  "javaagent_target_versions": [
+    "com.couchbase.client:java-client:[2.6.0,3)"
+  ],
   "library_link": "https://github.com/couchbase/couchbase-java-client",
   "name": "couchbase-2.6",
   "scope": {
     "name": "io.opentelemetry.couchbase-2.6"
   },
-  "semantic_conventions": ["DATABASE_CLIENT_SPANS", "DATABASE_CLIENT_METRICS"],
+  "semantic_conventions": [
+    "DATABASE_CLIENT_SPANS",
+    "DATABASE_CLIENT_METRICS"
+  ],
   "source_path": "instrumentation/couchbase/couchbase-2.6",
-  "tags": ["couchbase"],
+  "tags": [
+    "couchbase"
+  ],
   "telemetry": [
     {
       "spans": [

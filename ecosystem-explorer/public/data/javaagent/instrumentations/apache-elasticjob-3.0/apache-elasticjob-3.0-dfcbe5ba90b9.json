@@ -19,7 +19,9 @@
     "name": "io.opentelemetry.apache-elasticjob-3.0"
   },
   "source_path": "instrumentation/apache-elasticjob-3.0",
-  "tags": ["apache"],
+  "tags": [
+    "apache"
+  ],
   "telemetry": [
     {
       "spans": [

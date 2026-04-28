@@ -10,10 +10,14 @@
   ],
   "description": "This instrumentation enables context propagation for Guava ListenableFuture, it does not emit any telemetry on its own.",
   "display_name": "Guava",
-  "features": ["CONTEXT_PROPAGATION"],
+  "features": [
+    "CONTEXT_PROPAGATION"
+  ],
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": ["com.google.guava:guava:[10.0,]"],
+  "javaagent_target_versions": [
+    "com.google.guava:guava:[10.0,]"
+  ],
   "library_link": "https://github.com/google/guava",
   "name": "guava-10.0",
   "scope": {

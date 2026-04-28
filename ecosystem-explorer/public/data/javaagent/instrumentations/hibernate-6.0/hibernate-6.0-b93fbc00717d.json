@@ -10,7 +10,9 @@
   "description": "This instrumentation enables spans for Hibernate ORM operations.",
   "display_name": "Hibernate",
   "has_javaagent": true,
-  "javaagent_target_versions": ["org.hibernate:hibernate-core:[6.0.0.Final,)"],
+  "javaagent_target_versions": [
+    "org.hibernate:hibernate-core:[6.0.0.Final,)"
+  ],
   "library_link": "https://hibernate.org/",
   "minimum_java_version": 11,
   "name": "hibernate-6.0",
@@ -18,7 +20,9 @@
     "name": "io.opentelemetry.hibernate-6.0"
   },
   "source_path": "instrumentation/hibernate/hibernate-6.0",
-  "tags": ["hibernate"],
+  "tags": [
+    "hibernate"
+  ],
   "telemetry": [
     {
       "spans": [

@@ -9,9 +9,14 @@
   ],
   "description": "This instrumentation enriches HTTP server spans with route information, and enables controller spans for Apache Struts 2 actions (controller spans are disabled by default).",
   "display_name": "Apache Struts 2",
-  "features": ["HTTP_ROUTE", "CONTROLLER_SPANS"],
+  "features": [
+    "HTTP_ROUTE",
+    "CONTROLLER_SPANS"
+  ],
   "has_javaagent": true,
-  "javaagent_target_versions": ["org.apache.struts:struts2-core:[7.0.0,)"],
+  "javaagent_target_versions": [
+    "org.apache.struts:struts2-core:[7.0.0,)"
+  ],
   "library_link": "https://struts.apache.org/",
   "minimum_java_version": 17,
   "name": "struts-7.0",

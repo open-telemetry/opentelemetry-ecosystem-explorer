@@ -80,15 +80,21 @@
   ],
   "description": "This instrumentation bridges Logback log events to OpenTelemetry logs.",
   "display_name": "Logback",
-  "features": ["LOGGING_BRIDGE"],
+  "features": [
+    "LOGGING_BRIDGE"
+  ],
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": ["ch.qos.logback:logback-classic:[0.9.16,)"],
+  "javaagent_target_versions": [
+    "ch.qos.logback:logback-classic:[0.9.16,)"
+  ],
   "library_link": "https://logback.qos.ch/",
   "name": "logback-appender-1.0",
   "scope": {
     "name": "io.opentelemetry.logback-appender-1.0"
   },
   "source_path": "instrumentation/logback/logback-appender-1.0",
-  "tags": ["logback"]
+  "tags": [
+    "logback"
+  ]
 }

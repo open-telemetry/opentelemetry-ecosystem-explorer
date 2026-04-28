@@ -22,13 +22,17 @@
   "description": "This instrumentation enables messaging spans for RabbitMQ message producers and consumers.",
   "display_name": "RabbitMQ",
   "has_javaagent": true,
-  "javaagent_target_versions": ["com.rabbitmq:amqp-client:[2.7.0,)"],
+  "javaagent_target_versions": [
+    "com.rabbitmq:amqp-client:[2.7.0,)"
+  ],
   "library_link": "https://www.rabbitmq.com/client-libraries/java-api-guide",
   "name": "rabbitmq-2.7",
   "scope": {
     "name": "io.opentelemetry.rabbitmq-2.7"
   },
-  "semantic_conventions": ["MESSAGING_SPANS"],
+  "semantic_conventions": [
+    "MESSAGING_SPANS"
+  ],
   "source_path": "instrumentation/rabbitmq-2.7",
   "telemetry": [
     {

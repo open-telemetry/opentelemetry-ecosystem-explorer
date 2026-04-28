@@ -21,9 +21,15 @@
   ],
   "description": "This instrumentation enriches HTTP server spans with route information for Spring WebMVC 3.1+. It also enables controller spans (controller spans are disabled by default) and view spans (view spans are disabled by default).",
   "display_name": "Spring WebMVC",
-  "features": ["HTTP_ROUTE", "CONTROLLER_SPANS", "VIEW_SPANS"],
+  "features": [
+    "HTTP_ROUTE",
+    "CONTROLLER_SPANS",
+    "VIEW_SPANS"
+  ],
   "has_javaagent": true,
-  "javaagent_target_versions": ["org.springframework:spring-webmvc:[3.1.0.RELEASE,6)"],
+  "javaagent_target_versions": [
+    "org.springframework:spring-webmvc:[3.1.0.RELEASE,6)"
+  ],
   "library_link": "https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/mvc/package-summary.html",
   "name": "spring-webmvc-3.1",
   "scope": {

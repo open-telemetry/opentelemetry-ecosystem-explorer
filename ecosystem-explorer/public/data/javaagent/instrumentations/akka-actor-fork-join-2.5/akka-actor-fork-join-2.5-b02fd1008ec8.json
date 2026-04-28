@@ -1,7 +1,9 @@
 {
   "description": "This instrumentation provides context propagation for the Akka Fork-Join Pool, it does not emit any telemetry on its own.",
   "display_name": "Akka Actors",
-  "features": ["CONTEXT_PROPAGATION"],
+  "features": [
+    "CONTEXT_PROPAGATION"
+  ],
   "has_javaagent": true,
   "javaagent_target_versions": [
     "com.typesafe.akka:akka-actor_2.12:[2.5,2.6)",
@@ -14,5 +16,7 @@
     "name": "io.opentelemetry.akka-actor-fork-join-2.5"
   },
   "source_path": "instrumentation/akka/akka-actor-fork-join-2.5",
-  "tags": ["akka"]
+  "tags": [
+    "akka"
+  ]
 }

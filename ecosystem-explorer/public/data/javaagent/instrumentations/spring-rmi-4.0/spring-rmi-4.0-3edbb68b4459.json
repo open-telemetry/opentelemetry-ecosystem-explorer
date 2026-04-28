@@ -2,13 +2,18 @@
   "description": "This instrumentation enables RPC client and RPC server spans for Spring RMI applications.",
   "display_name": "Spring RMI",
   "has_javaagent": true,
-  "javaagent_target_versions": ["org.springframework:spring-context:[4.0.0.RELEASE,6)"],
+  "javaagent_target_versions": [
+    "org.springframework:spring-context:[4.0.0.RELEASE,6)"
+  ],
   "library_link": "https://docs.spring.io/spring-framework/docs/4.0.x/javadoc-api/org/springframework/remoting/rmi/package-summary.html",
   "name": "spring-rmi-4.0",
   "scope": {
     "name": "io.opentelemetry.spring-rmi-4.0"
   },
-  "semantic_conventions": ["RPC_CLIENT_SPANS", "RPC_SERVER_SPANS"],
+  "semantic_conventions": [
+    "RPC_CLIENT_SPANS",
+    "RPC_SERVER_SPANS"
+  ],
   "source_path": "instrumentation/spring/spring-rmi-4.0",
   "telemetry": [
     {

@@ -27,19 +27,28 @@
   ],
   "description": "This instrumentation enables HTTP server spans and HTTP server metrics for Restlet servers.",
   "display_name": "Restlet",
-  "features": ["HTTP_ROUTE"],
+  "features": [
+    "HTTP_ROUTE"
+  ],
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": ["org.restlet:org.restlet:[1.1.0, 1.2-M1)"],
+  "javaagent_target_versions": [
+    "org.restlet:org.restlet:[1.1.0, 1.2-M1)"
+  ],
   "library_link": "https://restlet.github.io/",
   "name": "restlet-1.1",
   "scope": {
     "name": "io.opentelemetry.restlet-1.1",
     "schema_url": "https://opentelemetry.io/schemas/1.37.0"
   },
-  "semantic_conventions": ["HTTP_SERVER_SPANS", "HTTP_SERVER_METRICS"],
+  "semantic_conventions": [
+    "HTTP_SERVER_SPANS",
+    "HTTP_SERVER_METRICS"
+  ],
   "source_path": "instrumentation/restlet/restlet-1.1",
-  "tags": ["restlet"],
+  "tags": [
+    "restlet"
+  ],
   "telemetry": [
     {
       "metrics": [

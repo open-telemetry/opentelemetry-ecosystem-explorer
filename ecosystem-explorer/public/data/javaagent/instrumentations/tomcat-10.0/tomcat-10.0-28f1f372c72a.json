@@ -2,7 +2,9 @@
   "description": "This instrumentation enables HTTP server spans and HTTP server metrics for Apache Tomcat.",
   "display_name": "Apache Tomcat",
   "has_javaagent": true,
-  "javaagent_target_versions": ["org.apache.tomcat.embed:tomcat-embed-core:[10,)"],
+  "javaagent_target_versions": [
+    "org.apache.tomcat.embed:tomcat-embed-core:[10,)"
+  ],
   "library_link": "https://tomcat.apache.org/",
   "minimum_java_version": 11,
   "name": "tomcat-10.0",
@@ -10,5 +12,7 @@
     "name": "io.opentelemetry.tomcat-10.0"
   },
   "source_path": "instrumentation/tomcat/tomcat-10.0",
-  "tags": ["tomcat"]
+  "tags": [
+    "tomcat"
+  ]
 }

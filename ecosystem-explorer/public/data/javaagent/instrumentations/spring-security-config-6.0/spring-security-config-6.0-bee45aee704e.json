@@ -35,7 +35,9 @@
   "display_name": "Spring Security",
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": ["org.springframework.security:spring-security-config:[6.0.0,]"],
+  "javaagent_target_versions": [
+    "org.springframework.security:spring-security-config:[6.0.0,]"
+  ],
   "library_link": "https://spring.io/projects/spring-security",
   "minimum_java_version": 17,
   "name": "spring-security-config-6.0",
@@ -43,5 +45,7 @@
     "name": "io.opentelemetry.spring-security-config-6.0"
   },
   "source_path": "instrumentation/spring/spring-security-config-6.0",
-  "tags": ["spring"]
+  "tags": [
+    "spring"
+  ]
 }

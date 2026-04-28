@@ -18,14 +18,18 @@
   "description": "This instrumentation enables messaging spans for Jakarta JMS (Java Message Service) message producers and consumers.",
   "display_name": "JMS (Java Message Service)",
   "has_javaagent": true,
-  "javaagent_target_versions": ["jakarta.jms:jakarta.jms-api:[3.0.0,)"],
+  "javaagent_target_versions": [
+    "jakarta.jms:jakarta.jms-api:[3.0.0,)"
+  ],
   "library_link": "https://jakarta.ee/specifications/messaging/3.0/",
   "minimum_java_version": 11,
   "name": "jms-3.0",
   "scope": {
     "name": "io.opentelemetry.jms-3.0"
   },
-  "semantic_conventions": ["MESSAGING_SPANS"],
+  "semantic_conventions": [
+    "MESSAGING_SPANS"
+  ],
   "source_path": "instrumentation/jms/jms-3.0",
   "telemetry": [
     {

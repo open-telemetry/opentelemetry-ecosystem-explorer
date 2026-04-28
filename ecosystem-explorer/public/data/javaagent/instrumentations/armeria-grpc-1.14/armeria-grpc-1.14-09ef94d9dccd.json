@@ -2,14 +2,18 @@
   "description": "This instrumentation enables RPC client spans and metrics for the Armeria gRPC client, and RPC server spans and metrics for the Armeria gRPC server.",
   "display_name": "Armeria gRPC",
   "has_javaagent": true,
-  "javaagent_target_versions": ["com.linecorp.armeria:armeria-grpc:[1.14.0,)"],
+  "javaagent_target_versions": [
+    "com.linecorp.armeria:armeria-grpc:[1.14.0,)"
+  ],
   "library_link": "https://armeria.dev/",
   "name": "armeria-grpc-1.14",
   "scope": {
     "name": "io.opentelemetry.armeria-grpc-1.14"
   },
   "source_path": "instrumentation/armeria/armeria-grpc-1.14",
-  "tags": ["armeria"],
+  "tags": [
+    "armeria"
+  ],
   "telemetry": [
     {
       "spans": [

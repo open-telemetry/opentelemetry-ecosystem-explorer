@@ -32,15 +32,21 @@
   "description": "This instrumentation enables messaging spans for Kafka producers and consumers, and collects internal Kafka client metrics.",
   "display_name": "Apache Kafka Client",
   "has_javaagent": true,
-  "javaagent_target_versions": ["org.apache.kafka:kafka-clients:[0.11.0.0,)"],
+  "javaagent_target_versions": [
+    "org.apache.kafka:kafka-clients:[0.11.0.0,)"
+  ],
   "library_link": "https://kafka.apache.org/",
   "name": "kafka-clients-0.11",
   "scope": {
     "name": "io.opentelemetry.kafka-clients-0.11"
   },
-  "semantic_conventions": ["MESSAGING_SPANS"],
+  "semantic_conventions": [
+    "MESSAGING_SPANS"
+  ],
   "source_path": "instrumentation/kafka/kafka-clients/kafka-clients-0.11",
-  "tags": ["kafka"],
+  "tags": [
+    "kafka"
+  ],
   "telemetry": [
     {
       "spans": [

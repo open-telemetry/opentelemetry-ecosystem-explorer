@@ -2,14 +2,18 @@
   "description": "This instrumentation enables database connection pool metrics for Tomcat JDBC.",
   "display_name": "Tomcat JDBC",
   "has_javaagent": true,
-  "javaagent_target_versions": ["org.apache.tomcat:tomcat-jdbc:[8.5.0,)"],
+  "javaagent_target_versions": [
+    "org.apache.tomcat:tomcat-jdbc:[8.5.0,)"
+  ],
   "library_link": "https://tomcat.apache.org/tomcat-8.5-doc/jdbc-pool.html",
   "name": "tomcat-jdbc",
   "scope": {
     "name": "io.opentelemetry.tomcat-jdbc"
   },
   "source_path": "instrumentation/tomcat/tomcat-jdbc",
-  "tags": ["tomcat"],
+  "tags": [
+    "tomcat"
+  ],
   "telemetry": [
     {
       "metrics": [

@@ -21,16 +21,23 @@
   ],
   "description": "This instrumentation enables HTTP server spans and metrics for Java Servlet API.",
   "display_name": "Servlet",
-  "features": ["HTTP_ROUTE"],
+  "features": [
+    "HTTP_ROUTE"
+  ],
   "has_javaagent": true,
-  "javaagent_target_versions": ["javax.servlet:servlet-api:[2.2, 3.0)"],
+  "javaagent_target_versions": [
+    "javax.servlet:servlet-api:[2.2, 3.0)"
+  ],
   "library_link": "https://javaee.github.io/servlet-spec/",
   "name": "servlet-2.2",
   "scope": {
     "name": "io.opentelemetry.servlet-2.2",
     "schema_url": "https://opentelemetry.io/schemas/1.37.0"
   },
-  "semantic_conventions": ["HTTP_SERVER_SPANS", "HTTP_SERVER_METRICS"],
+  "semantic_conventions": [
+    "HTTP_SERVER_SPANS",
+    "HTTP_SERVER_METRICS"
+  ],
   "source_path": "instrumentation/servlet/servlet-2.2",
   "telemetry": [
     {

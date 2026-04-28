@@ -10,7 +10,9 @@
   "description": "This instrumentation enables spans for PowerJob job processor executions.",
   "display_name": "PowerJob",
   "has_javaagent": true,
-  "javaagent_target_versions": ["tech.powerjob:powerjob-worker:[4.0.0,)"],
+  "javaagent_target_versions": [
+    "tech.powerjob:powerjob-worker:[4.0.0,)"
+  ],
   "library_link": "https://github.com/PowerJob/PowerJob",
   "name": "powerjob-4.0",
   "scope": {

@@ -11,15 +11,22 @@
   "display_name": "OpenAI Java SDK",
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": ["com.openai:openai-java:[1.1.0,3)"],
+  "javaagent_target_versions": [
+    "com.openai:openai-java:[1.1.0,3)"
+  ],
   "library_link": "https://github.com/openai/openai-java",
   "name": "openai-java-1.1",
   "scope": {
     "name": "io.opentelemetry.openai-java-1.1"
   },
-  "semantic_conventions": ["GENAI_CLIENT_SPANS", "GENAI_CLIENT_METRICS"],
+  "semantic_conventions": [
+    "GENAI_CLIENT_SPANS",
+    "GENAI_CLIENT_METRICS"
+  ],
   "source_path": "instrumentation/openai/openai-java-1.1",
-  "tags": ["openai"],
+  "tags": [
+    "openai"
+  ],
   "telemetry": [
     {
       "metrics": [

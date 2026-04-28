@@ -1,11 +1,4 @@
 {
-  "custom_instrumentations": {
-    "external-annotations": "d65a552db9da",
-    "jmx-metrics": "b72871c123a7",
-    "methods": "441fe7278b5c",
-    "opentelemetry-extension-annotations-1.0": "95c0b698dc1c",
-    "opentelemetry-instrumentation-annotations-1.16": "a8aea4f6f24b"
-  },
   "instrumentations": {
     "activej-http-6.0": "66f3ecd869cf",
     "akka-actor-2.3": "157cb9222c9a",

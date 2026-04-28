@@ -31,16 +31,22 @@
   "display_name": "GraphQL Java",
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": ["com.graphql-java:graphql-java:[20,)"],
+  "javaagent_target_versions": [
+    "com.graphql-java:graphql-java:[20,)"
+  ],
   "library_link": "https://www.graphql-java.com/",
   "minimum_java_version": 11,
   "name": "graphql-java-20.0",
   "scope": {
     "name": "io.opentelemetry.graphql-java-20.0"
   },
-  "semantic_conventions": ["GRAPHQL_SERVER_SPANS"],
+  "semantic_conventions": [
+    "GRAPHQL_SERVER_SPANS"
+  ],
   "source_path": "instrumentation/graphql-java/graphql-java-20.0",
-  "tags": ["graphql"],
+  "tags": [
+    "graphql"
+  ],
   "telemetry": [
     {
       "spans": [

@@ -12,7 +12,9 @@
     "name": "io.opentelemetry.spring-data-1.8"
   },
   "source_path": "instrumentation/spring/spring-data/spring-data-1.8",
-  "tags": ["spring"],
+  "tags": [
+    "spring"
+  ],
   "telemetry": [
     {
       "spans": [

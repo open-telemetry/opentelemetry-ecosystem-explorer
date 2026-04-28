@@ -9,7 +9,10 @@
   ],
   "description": "This instrumentation enriches HTTP server spans with route information, and enables controller spans for Vaadin applications (controller spans are disabled by default).",
   "display_name": "Vaadin",
-  "features": ["HTTP_ROUTE", "CONTROLLER_SPANS"],
+  "features": [
+    "HTTP_ROUTE",
+    "CONTROLLER_SPANS"
+  ],
   "has_javaagent": true,
   "javaagent_target_versions": [
     "com.vaadin:flow-server:[2.2.0,3)",

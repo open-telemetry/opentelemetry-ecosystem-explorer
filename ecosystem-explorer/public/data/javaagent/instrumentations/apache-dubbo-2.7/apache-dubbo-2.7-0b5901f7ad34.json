@@ -10,7 +10,9 @@
   "description": "The Apache Dubbo instrumentation provides RPC client spans and metrics, and RPC server spans and metrics for Apache Dubbo RPC calls.",
   "display_name": "Apache Dubbo",
   "has_javaagent": true,
-  "javaagent_target_versions": ["org.apache.dubbo:dubbo:[2.7,)"],
+  "javaagent_target_versions": [
+    "org.apache.dubbo:dubbo:[2.7,)"
+  ],
   "library_link": "https://github.com/apache/dubbo/",
   "name": "apache-dubbo-2.7",
   "scope": {

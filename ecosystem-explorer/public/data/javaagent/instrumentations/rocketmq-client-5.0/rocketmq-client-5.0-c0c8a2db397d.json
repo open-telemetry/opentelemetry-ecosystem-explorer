@@ -16,15 +16,21 @@
   "description": "This instrumentation enables messaging spans for Apache RocketMQ message producers and consumers using the gRPC/Protobuf Protocol.",
   "display_name": "Apache RocketMQ Client - gRPC Protocol",
   "has_javaagent": true,
-  "javaagent_target_versions": ["org.apache.rocketmq:rocketmq-client-java:[5.0.0,)"],
+  "javaagent_target_versions": [
+    "org.apache.rocketmq:rocketmq-client-java:[5.0.0,)"
+  ],
   "library_link": "https://rocketmq.apache.org/",
   "name": "rocketmq-client-5.0",
   "scope": {
     "name": "io.opentelemetry.rocketmq-client-5.0"
   },
-  "semantic_conventions": ["MESSAGING_SPANS"],
+  "semantic_conventions": [
+    "MESSAGING_SPANS"
+  ],
   "source_path": "instrumentation/rocketmq/rocketmq-client-5.0",
-  "tags": ["rocketmq"],
+  "tags": [
+    "rocketmq"
+  ],
   "telemetry": [
     {
       "spans": [

@@ -2,7 +2,9 @@
   "description": "This instrumentation enhances messaging span creation for Spring Cloud AWS SQS. It coordinates with the AWS SDK instrumentation to create spans at the appropriate points in Spring Cloud AWS message handling.",
   "display_name": "Spring Cloud AWS",
   "has_javaagent": true,
-  "javaagent_target_versions": ["io.awspring.cloud:spring-cloud-aws-sqs:[3.0.0,)"],
+  "javaagent_target_versions": [
+    "io.awspring.cloud:spring-cloud-aws-sqs:[3.0.0,)"
+  ],
   "library_link": "https://spring.io/projects/spring-cloud-aws",
   "minimum_java_version": 17,
   "name": "spring-cloud-aws-3.0",

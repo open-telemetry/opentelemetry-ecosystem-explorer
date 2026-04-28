@@ -3,15 +3,21 @@
   "display_name": "HikariCP",
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": ["com.zaxxer:HikariCP:[3.0.0,)"],
+  "javaagent_target_versions": [
+    "com.zaxxer:HikariCP:[3.0.0,)"
+  ],
   "library_link": "https://github.com/brettwooldridge/HikariCP",
   "name": "hikaricp-3.0",
   "scope": {
     "name": "io.opentelemetry.hikaricp-3.0"
   },
-  "semantic_conventions": ["DATABASE_POOL_METRICS"],
+  "semantic_conventions": [
+    "DATABASE_POOL_METRICS"
+  ],
   "source_path": "instrumentation/hikaricp-3.0",
-  "tags": ["hikaricp"],
+  "tags": [
+    "hikaricp"
+  ],
   "telemetry": [
     {
       "metrics": [

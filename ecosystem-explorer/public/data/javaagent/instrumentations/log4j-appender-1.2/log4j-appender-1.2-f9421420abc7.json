@@ -27,9 +27,13 @@
   ],
   "description": "This instrumentation bridges Log4j log events to OpenTelemetry logs.",
   "display_name": "Log4j",
-  "features": ["LOGGING_BRIDGE"],
+  "features": [
+    "LOGGING_BRIDGE"
+  ],
   "has_javaagent": true,
-  "javaagent_target_versions": ["log4j:log4j:[1.2,)"],
+  "javaagent_target_versions": [
+    "log4j:log4j:[1.2,)"
+  ],
   "library_link": "https://logging.apache.org/log4j/1.2/",
   "name": "log4j-appender-1.2",
   "scope": {

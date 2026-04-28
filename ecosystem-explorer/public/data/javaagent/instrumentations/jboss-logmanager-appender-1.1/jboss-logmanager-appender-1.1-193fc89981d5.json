@@ -11,7 +11,10 @@
       "declarative_name": "java.jboss_logmanager.capture_mdc_attributes/development",
       "default": "",
       "description": "Controls which MDC attributes to capture. Use \"*\" to capture all MDC attributes or provide a comma-separated list of specific keys.",
-      "examples": ["custom-mdc-key", "key1,key2,key3"],
+      "examples": [
+        "custom-mdc-key",
+        "key1,key2,key3"
+      ],
       "name": "otel.instrumentation.jboss-logmanager.experimental.capture-mdc-attributes",
       "type": "list"
     },
@@ -25,14 +28,20 @@
   ],
   "description": "This instrumentation bridges JBoss LogManager log events to OpenTelemetry logs.",
   "display_name": "JBoss Log Manager",
-  "features": ["LOGGING_BRIDGE"],
+  "features": [
+    "LOGGING_BRIDGE"
+  ],
   "has_javaagent": true,
-  "javaagent_target_versions": ["org.jboss.logmanager:jboss-logmanager:[1.1.0.GA,)"],
+  "javaagent_target_versions": [
+    "org.jboss.logmanager:jboss-logmanager:[1.1.0.GA,)"
+  ],
   "library_link": "https://github.com/jboss-logging/jboss-logmanager",
   "name": "jboss-logmanager-appender-1.1",
   "scope": {
     "name": "io.opentelemetry.jboss-logmanager-appender-1.1"
   },
   "source_path": "instrumentation/jboss-logmanager/jboss-logmanager-appender-1.1",
-  "tags": ["jboss"]
+  "tags": [
+    "jboss"
+  ]
 }

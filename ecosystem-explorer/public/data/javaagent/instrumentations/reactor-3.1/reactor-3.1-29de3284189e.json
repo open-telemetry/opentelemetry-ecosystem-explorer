@@ -9,15 +9,21 @@
   ],
   "description": "This instrumentation enables context propagation for Project Reactor reactive streams, it does not emit any telemetry on its own.",
   "display_name": "Reactor",
-  "features": ["CONTEXT_PROPAGATION"],
+  "features": [
+    "CONTEXT_PROPAGATION"
+  ],
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": ["io.projectreactor:reactor-core:[3.1.0.RELEASE,)"],
+  "javaagent_target_versions": [
+    "io.projectreactor:reactor-core:[3.1.0.RELEASE,)"
+  ],
   "library_link": "https://projectreactor.io/",
   "name": "reactor-3.1",
   "scope": {
     "name": "io.opentelemetry.reactor-3.1"
   },
   "source_path": "instrumentation/reactor/reactor-3.1",
-  "tags": ["reactor"]
+  "tags": [
+    "reactor"
+  ]
 }

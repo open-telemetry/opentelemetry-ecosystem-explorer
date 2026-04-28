@@ -47,13 +47,18 @@
   "display_name": "JDBC",
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": ["Java 8+"],
+  "javaagent_target_versions": [
+    "Java 8+"
+  ],
   "library_link": "https://docs.oracle.com/javase/8/docs/api/java/sql/package-summary.html",
   "name": "jdbc",
   "scope": {
     "name": "io.opentelemetry.jdbc"
   },
-  "semantic_conventions": ["DATABASE_CLIENT_SPANS", "DATABASE_CLIENT_METRICS"],
+  "semantic_conventions": [
+    "DATABASE_CLIENT_SPANS",
+    "DATABASE_CLIENT_METRICS"
+  ],
   "source_path": "instrumentation/jdbc",
   "telemetry": [
     {

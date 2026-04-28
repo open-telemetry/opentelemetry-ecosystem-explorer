@@ -9,9 +9,13 @@
   ],
   "description": "This instrumentation enables controller spans for Mojarra JSF action listeners (controller spans are disabled by default).",
   "display_name": "JSF",
-  "features": ["CONTROLLER_SPANS"],
+  "features": [
+    "CONTROLLER_SPANS"
+  ],
   "has_javaagent": true,
-  "javaagent_target_versions": ["org.glassfish:jakarta.faces:[3,)"],
+  "javaagent_target_versions": [
+    "org.glassfish:jakarta.faces:[3,)"
+  ],
   "library_link": "https://github.com/eclipse-ee4j/mojarra",
   "minimum_java_version": 11,
   "name": "jsf-mojarra-3.0",
@@ -19,7 +23,9 @@
     "name": "io.opentelemetry.jsf-mojarra-3.0"
   },
   "source_path": "instrumentation/jsf/jsf-mojarra-3.0",
-  "tags": ["jsf"],
+  "tags": [
+    "jsf"
+  ],
   "telemetry": [
     {
       "spans": [

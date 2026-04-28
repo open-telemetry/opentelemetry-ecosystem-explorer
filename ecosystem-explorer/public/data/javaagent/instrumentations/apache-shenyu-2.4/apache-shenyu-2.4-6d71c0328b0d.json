@@ -9,14 +9,20 @@
   ],
   "description": "This instrumentation does not emit telemetry on its own. Instead, it augments existing HTTP server spans and HTTP server metrics with the HTTP route and Shenyu specific attributes.",
   "display_name": "Apache ShenYu",
-  "features": ["HTTP_ROUTE"],
+  "features": [
+    "HTTP_ROUTE"
+  ],
   "has_javaagent": true,
-  "javaagent_target_versions": ["org.apache.shenyu:shenyu-web:[2.4.0,)"],
+  "javaagent_target_versions": [
+    "org.apache.shenyu:shenyu-web:[2.4.0,)"
+  ],
   "library_link": "https://shenyu.apache.org/",
   "name": "apache-shenyu-2.4",
   "scope": {
     "name": "io.opentelemetry.apache-shenyu-2.4"
   },
   "source_path": "instrumentation/apache-shenyu-2.4",
-  "tags": ["apache"]
+  "tags": [
+    "apache"
+  ]
 }

@@ -51,6 +51,9 @@
   "scope": {
     "name": "io.opentelemetry.liberty-20.0"
   },
-  "semantic_conventions": ["HTTP_SERVER_SPANS", "HTTP_SERVER_METRICS"],
+  "semantic_conventions": [
+    "HTTP_SERVER_SPANS",
+    "HTTP_SERVER_METRICS"
+  ],
   "source_path": "instrumentation/liberty/liberty-20.0"
 }

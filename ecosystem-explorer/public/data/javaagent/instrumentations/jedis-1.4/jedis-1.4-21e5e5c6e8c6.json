@@ -16,13 +16,18 @@
   "description": "This instrumentation enables database client spans and database client metrics for Jedis Redis operations.",
   "display_name": "Jedis",
   "has_javaagent": true,
-  "javaagent_target_versions": ["redis.clients:jedis:[1.4.0,3.0.0)"],
+  "javaagent_target_versions": [
+    "redis.clients:jedis:[1.4.0,3.0.0)"
+  ],
   "library_link": "https://github.com/redis/jedis",
   "name": "jedis-1.4",
   "scope": {
     "name": "io.opentelemetry.jedis-1.4"
   },
-  "semantic_conventions": ["DATABASE_CLIENT_SPANS", "DATABASE_CLIENT_METRICS"],
+  "semantic_conventions": [
+    "DATABASE_CLIENT_SPANS",
+    "DATABASE_CLIENT_METRICS"
+  ],
   "source_path": "instrumentation/jedis/jedis-1.4",
   "telemetry": [
     {

@@ -20,5 +20,7 @@
     "name": "io.opentelemetry.spring-cloud-gateway-webmvc-4.3"
   },
   "source_path": "instrumentation/spring/spring-cloud-gateway/spring-cloud-gateway-webmvc-4.3",
-  "tags": ["spring"]
+  "tags": [
+    "spring"
+  ]
 }

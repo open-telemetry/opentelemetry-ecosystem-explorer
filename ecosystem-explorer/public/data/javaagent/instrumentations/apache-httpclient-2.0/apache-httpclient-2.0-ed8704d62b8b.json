@@ -40,14 +40,19 @@
   "description": "This instrumentation enables HTTP client spans and HTTP client metrics for versions 2 and 3 of the Apache HttpClient.",
   "display_name": "Apache HttpClient",
   "has_javaagent": true,
-  "javaagent_target_versions": ["commons-httpclient:commons-httpclient:[2.0,4.0)"],
+  "javaagent_target_versions": [
+    "commons-httpclient:commons-httpclient:[2.0,4.0)"
+  ],
   "library_link": "https://hc.apache.org/index.html",
   "name": "apache-httpclient-2.0",
   "scope": {
     "name": "io.opentelemetry.apache-httpclient-2.0",
     "schema_url": "https://opentelemetry.io/schemas/1.37.0"
   },
-  "semantic_conventions": ["HTTP_CLIENT_SPANS", "HTTP_CLIENT_METRICS"],
+  "semantic_conventions": [
+    "HTTP_CLIENT_SPANS",
+    "HTTP_CLIENT_METRICS"
+  ],
   "source_path": "instrumentation/apache-httpclient/apache-httpclient-2.0",
   "telemetry": [
     {

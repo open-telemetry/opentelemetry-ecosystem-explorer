@@ -20,9 +20,14 @@
   "scope": {
     "name": "io.opentelemetry.elasticsearch-transport-5.3"
   },
-  "semantic_conventions": ["DATABASE_CLIENT_SPANS", "DATABASE_CLIENT_METRICS"],
+  "semantic_conventions": [
+    "DATABASE_CLIENT_SPANS",
+    "DATABASE_CLIENT_METRICS"
+  ],
   "source_path": "instrumentation/elasticsearch/elasticsearch-transport-5.3",
-  "tags": ["elasticsearch"],
+  "tags": [
+    "elasticsearch"
+  ],
   "telemetry": [
     {
       "spans": [

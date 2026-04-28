@@ -10,7 +10,9 @@
   "description": "This instrumentation enables spans for XXL-Job task executions.",
   "display_name": "XXL-Job",
   "has_javaagent": true,
-  "javaagent_target_versions": ["com.xuxueli:xxl-job-core:[2.3.0,)"],
+  "javaagent_target_versions": [
+    "com.xuxueli:xxl-job-core:[2.3.0,)"
+  ],
   "library_link": "https://github.com/xuxueli/xxl-job",
   "name": "xxl-job-2.3.0",
   "scope": {

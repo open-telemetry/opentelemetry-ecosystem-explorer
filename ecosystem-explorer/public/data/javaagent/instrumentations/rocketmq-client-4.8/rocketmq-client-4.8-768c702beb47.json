@@ -17,15 +17,21 @@
   "display_name": "Apache RocketMQ Client - Remoting Protocol",
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": ["org.apache.rocketmq:rocketmq-client:[4.0.0,)"],
+  "javaagent_target_versions": [
+    "org.apache.rocketmq:rocketmq-client:[4.0.0,)"
+  ],
   "library_link": "https://rocketmq.apache.org/",
   "name": "rocketmq-client-4.8",
   "scope": {
     "name": "io.opentelemetry.rocketmq-client-4.8"
   },
-  "semantic_conventions": ["MESSAGING_SPANS"],
+  "semantic_conventions": [
+    "MESSAGING_SPANS"
+  ],
   "source_path": "instrumentation/rocketmq/rocketmq-client-4.8",
-  "tags": ["rocketmq"],
+  "tags": [
+    "rocketmq"
+  ],
   "telemetry": [
     {
       "spans": [

@@ -57,7 +57,9 @@
   ],
   "description": "This instrumentation enables HTTP client spans and metrics for the Pekko HTTP client, and HTTP server spans and metrics for the Pekko HTTP server.",
   "display_name": "Pekko HTTP",
-  "features": ["HTTP_ROUTE"],
+  "features": [
+    "HTTP_ROUTE"
+  ],
   "has_javaagent": true,
   "javaagent_target_versions": [
     "com.softwaremill.sttp.tapir:tapir-pekko-http-server_3:[1.7,)",

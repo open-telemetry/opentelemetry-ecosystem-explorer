@@ -15,7 +15,9 @@
     "HTTP_SERVER_METRICS"
   ],
   "source_path": "instrumentation/spring/spring-webflux/spring-webflux-5.3",
-  "tags": ["spring"],
+  "tags": [
+    "spring"
+  ],
   "telemetry": [
     {
       "metrics": [

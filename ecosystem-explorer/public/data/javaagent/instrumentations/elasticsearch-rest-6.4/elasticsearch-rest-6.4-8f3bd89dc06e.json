@@ -18,15 +18,22 @@
   "description": "This instrumentation enables database client spans and database client metrics for Elasticsearch REST clients.",
   "display_name": "Elasticsearch REST Client",
   "has_javaagent": true,
-  "javaagent_target_versions": ["org.elasticsearch.client:elasticsearch-rest-client:[6.4,7.0)"],
+  "javaagent_target_versions": [
+    "org.elasticsearch.client:elasticsearch-rest-client:[6.4,7.0)"
+  ],
   "library_link": "https://www.elastic.co/guide/en/elasticsearch/client/java-rest",
   "name": "elasticsearch-rest-6.4",
   "scope": {
     "name": "io.opentelemetry.elasticsearch-rest-6.4"
   },
-  "semantic_conventions": ["DATABASE_CLIENT_SPANS", "DATABASE_CLIENT_METRICS"],
+  "semantic_conventions": [
+    "DATABASE_CLIENT_SPANS",
+    "DATABASE_CLIENT_METRICS"
+  ],
   "source_path": "instrumentation/elasticsearch/elasticsearch-rest-6.4",
-  "tags": ["elasticsearch"],
+  "tags": [
+    "elasticsearch"
+  ],
   "telemetry": [
     {
       "spans": [

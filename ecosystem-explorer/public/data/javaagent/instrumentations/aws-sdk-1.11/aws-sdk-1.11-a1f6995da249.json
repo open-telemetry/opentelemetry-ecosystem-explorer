@@ -44,7 +44,9 @@
     "GENAI_CLIENT_METRICS"
   ],
   "source_path": "instrumentation/aws-sdk/aws-sdk-1.11",
-  "tags": ["aws"],
+  "tags": [
+    "aws"
+  ],
   "telemetry": [
     {
       "spans": [

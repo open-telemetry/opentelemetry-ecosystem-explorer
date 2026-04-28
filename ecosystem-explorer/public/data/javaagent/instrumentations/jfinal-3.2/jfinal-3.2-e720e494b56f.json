@@ -9,9 +9,14 @@
   ],
   "description": "This instrumentation enriches HTTP server spans with route information, and enables controller spans for JFinal controller methods (controller spans are disabled by default).",
   "display_name": "JFinal",
-  "features": ["HTTP_ROUTE", "CONTROLLER_SPANS"],
+  "features": [
+    "HTTP_ROUTE",
+    "CONTROLLER_SPANS"
+  ],
   "has_javaagent": true,
-  "javaagent_target_versions": ["com.jfinal:jfinal:[3.2,)"],
+  "javaagent_target_versions": [
+    "com.jfinal:jfinal:[3.2,)"
+  ],
   "library_link": "https://github.com/jfinal/jfinal",
   "name": "jfinal-3.2",
   "scope": {

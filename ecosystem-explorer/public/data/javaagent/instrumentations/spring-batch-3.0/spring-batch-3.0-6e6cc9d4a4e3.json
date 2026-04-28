@@ -23,7 +23,9 @@
   "disabled_by_default": true,
   "display_name": "Spring Batch",
   "has_javaagent": true,
-  "javaagent_target_versions": ["org.springframework.batch:spring-batch-core:[3.0.0.RELEASE,5)"],
+  "javaagent_target_versions": [
+    "org.springframework.batch:spring-batch-core:[3.0.0.RELEASE,5)"
+  ],
   "library_link": "https://spring.io/projects/spring-batch",
   "name": "spring-batch-3.0",
   "scope": {

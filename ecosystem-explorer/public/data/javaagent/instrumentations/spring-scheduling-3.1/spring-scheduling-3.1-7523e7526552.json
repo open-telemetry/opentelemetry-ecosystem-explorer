@@ -10,7 +10,9 @@
   "description": "This instrumentation enables tracing for Spring Scheduling tasks.",
   "display_name": "Spring Scheduling",
   "has_javaagent": true,
-  "javaagent_target_versions": ["org.springframework:spring-context:[3.1.0.RELEASE,]"],
+  "javaagent_target_versions": [
+    "org.springframework:spring-context:[3.1.0.RELEASE,]"
+  ],
   "library_link": "https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/scheduling/package-summary.html",
   "name": "spring-scheduling-3.1",
   "scope": {

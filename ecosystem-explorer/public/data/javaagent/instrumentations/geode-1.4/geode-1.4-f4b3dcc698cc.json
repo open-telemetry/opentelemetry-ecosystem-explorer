@@ -10,13 +10,18 @@
   "description": "This instrumentation enables database client spans and database client metrics for Apache Geode cache operations.",
   "display_name": "Apache Geode",
   "has_javaagent": true,
-  "javaagent_target_versions": ["org.apache.geode:geode-core:[1.4.0,)"],
+  "javaagent_target_versions": [
+    "org.apache.geode:geode-core:[1.4.0,)"
+  ],
   "library_link": "https://geode.apache.org/",
   "name": "geode-1.4",
   "scope": {
     "name": "io.opentelemetry.geode-1.4"
   },
-  "semantic_conventions": ["DATABASE_CLIENT_SPANS", "DATABASE_CLIENT_METRICS"],
+  "semantic_conventions": [
+    "DATABASE_CLIENT_SPANS",
+    "DATABASE_CLIENT_METRICS"
+  ],
   "source_path": "instrumentation/geode-1.4",
   "telemetry": [
     {

@@ -88,7 +88,9 @@
     "HTTP_SERVER_METRICS"
   ],
   "source_path": "instrumentation/netty/netty-4.1",
-  "tags": ["netty"],
+  "tags": [
+    "netty"
+  ],
   "telemetry": [
     {
       "metrics": [

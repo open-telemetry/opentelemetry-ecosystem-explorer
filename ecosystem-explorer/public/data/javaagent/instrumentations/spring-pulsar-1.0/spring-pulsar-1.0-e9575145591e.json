@@ -22,16 +22,22 @@
   "description": "This instrumentation enables consumer messaging spans for Spring Pulsar listeners.",
   "display_name": "Spring Pulsar",
   "has_javaagent": true,
-  "javaagent_target_versions": ["org.springframework.pulsar:spring-pulsar:[1.0.0,)"],
+  "javaagent_target_versions": [
+    "org.springframework.pulsar:spring-pulsar:[1.0.0,)"
+  ],
   "library_link": "https://spring.io/projects/spring-pulsar",
   "minimum_java_version": 17,
   "name": "spring-pulsar-1.0",
   "scope": {
     "name": "io.opentelemetry.spring-pulsar-1.0"
   },
-  "semantic_conventions": ["MESSAGING_SPANS"],
+  "semantic_conventions": [
+    "MESSAGING_SPANS"
+  ],
   "source_path": "instrumentation/spring/spring-pulsar-1.0",
-  "tags": ["spring"],
+  "tags": [
+    "spring"
+  ],
   "telemetry": [
     {
       "spans": [

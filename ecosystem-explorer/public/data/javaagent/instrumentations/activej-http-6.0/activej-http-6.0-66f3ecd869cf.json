@@ -32,7 +32,9 @@
   "description": "This instrumentation enables HTTP server spans and HTTP server metrics for the ActiveJ HTTP server.",
   "display_name": "ActiveJ",
   "has_javaagent": true,
-  "javaagent_target_versions": ["io.activej:activej-http:[6.0,)"],
+  "javaagent_target_versions": [
+    "io.activej:activej-http:[6.0,)"
+  ],
   "library_link": "https://activej.io/",
   "minimum_java_version": 17,
   "name": "activej-http-6.0",
@@ -40,9 +42,14 @@
     "name": "io.opentelemetry.activej-http-6.0",
     "schema_url": "https://opentelemetry.io/schemas/1.37.0"
   },
-  "semantic_conventions": ["HTTP_SERVER_SPANS", "HTTP_SERVER_METRICS"],
+  "semantic_conventions": [
+    "HTTP_SERVER_SPANS",
+    "HTTP_SERVER_METRICS"
+  ],
   "source_path": "instrumentation/activej-http-6.0",
-  "tags": ["activej"],
+  "tags": [
+    "activej"
+  ],
   "telemetry": [
     {
       "metrics": [

@@ -16,13 +16,18 @@
   "description": "This instrumentation enables database client spans and database client metrics for Redis operations using the Vert.x Redis Client library.",
   "display_name": "Vert.x Redis Client",
   "has_javaagent": true,
-  "javaagent_target_versions": ["io.vertx:vertx-redis-client:[4.0.0,)"],
+  "javaagent_target_versions": [
+    "io.vertx:vertx-redis-client:[4.0.0,)"
+  ],
   "library_link": "https://vertx.io/docs/vertx-redis-client/java/",
   "name": "vertx-redis-client-4.0",
   "scope": {
     "name": "io.opentelemetry.vertx-redis-client-4.0"
   },
-  "semantic_conventions": ["DATABASE_CLIENT_SPANS", "DATABASE_CLIENT_METRICS"],
+  "semantic_conventions": [
+    "DATABASE_CLIENT_SPANS",
+    "DATABASE_CLIENT_METRICS"
+  ],
   "source_path": "instrumentation/vertx/vertx-redis-client-4.0",
   "telemetry": [
     {

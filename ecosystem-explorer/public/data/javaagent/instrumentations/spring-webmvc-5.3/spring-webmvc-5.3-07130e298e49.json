@@ -1,7 +1,9 @@
 {
   "description": "This instrumentation provides a library integration for Spring WebMVC controllers, that enables the creation of HTTP server spans and metrics for requests processed by the Spring servlet container.",
   "display_name": "Spring WebMVC",
-  "features": ["HTTP_ROUTE"],
+  "features": [
+    "HTTP_ROUTE"
+  ],
   "has_standalone_library": true,
   "library_link": "https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/mvc/package-summary.html",
   "name": "spring-webmvc-5.3",
@@ -9,9 +11,14 @@
     "name": "io.opentelemetry.spring-webmvc-5.3",
     "schema_url": "https://opentelemetry.io/schemas/1.37.0"
   },
-  "semantic_conventions": ["HTTP_SERVER_SPANS", "HTTP_SERVER_METRICS"],
+  "semantic_conventions": [
+    "HTTP_SERVER_SPANS",
+    "HTTP_SERVER_METRICS"
+  ],
   "source_path": "instrumentation/spring/spring-webmvc/spring-webmvc-5.3",
-  "tags": ["spring"],
+  "tags": [
+    "spring"
+  ],
   "telemetry": [
     {
       "metrics": [

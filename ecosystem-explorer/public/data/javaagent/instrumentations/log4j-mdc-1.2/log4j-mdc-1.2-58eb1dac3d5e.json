@@ -28,12 +28,16 @@
   "description": "This instrumentation adds trace context (trace ID, span ID, and trace flags) to the Log4j MDC, it does not emit any telemetry on its own.",
   "display_name": "Log4j",
   "has_javaagent": true,
-  "javaagent_target_versions": ["log4j:log4j:[1.2,)"],
+  "javaagent_target_versions": [
+    "log4j:log4j:[1.2,)"
+  ],
   "library_link": "https://logging.apache.org/log4j/1.2/",
   "name": "log4j-mdc-1.2",
   "scope": {
     "name": "io.opentelemetry.log4j-mdc-1.2"
   },
   "source_path": "instrumentation/log4j/log4j-mdc-1.2",
-  "tags": ["log4j"]
+  "tags": [
+    "log4j"
+  ]
 }

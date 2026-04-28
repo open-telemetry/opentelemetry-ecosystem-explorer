@@ -9,7 +9,10 @@
   ],
   "description": "This instrumentation enriches HTTP server spans with route information for Spring WebFlux 5.0+. It also installs WebClient telemetry interceptors and enables controller spans (controller spans are disabled by default).",
   "display_name": "Spring WebFlux",
-  "features": ["HTTP_ROUTE", "CONTROLLER_SPANS"],
+  "features": [
+    "HTTP_ROUTE",
+    "CONTROLLER_SPANS"
+  ],
   "has_javaagent": true,
   "javaagent_target_versions": [
     "io.projectreactor.ipc:reactor-netty:[0.7.0.RELEASE,)",
@@ -23,7 +26,9 @@
     "schema_url": "https://opentelemetry.io/schemas/1.37.0"
   },
   "source_path": "instrumentation/spring/spring-webflux/spring-webflux-5.0",
-  "tags": ["spring"],
+  "tags": [
+    "spring"
+  ],
   "telemetry": [
     {
       "metrics": [

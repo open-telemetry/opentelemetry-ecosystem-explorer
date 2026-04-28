@@ -17,13 +17,18 @@
   "display_name": "MongoDB Driver",
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": ["org.mongodb:mongo-java-driver:[3.1,)"],
+  "javaagent_target_versions": [
+    "org.mongodb:mongo-java-driver:[3.1,)"
+  ],
   "library_link": "https://www.mongodb.com/docs/drivers/java-drivers/",
   "name": "mongo-3.1",
   "scope": {
     "name": "io.opentelemetry.mongo-3.1"
   },
-  "semantic_conventions": ["DATABASE_CLIENT_SPANS", "DATABASE_CLIENT_METRICS"],
+  "semantic_conventions": [
+    "DATABASE_CLIENT_SPANS",
+    "DATABASE_CLIENT_METRICS"
+  ],
   "source_path": "instrumentation/mongo/mongo-3.1",
   "telemetry": [
     {

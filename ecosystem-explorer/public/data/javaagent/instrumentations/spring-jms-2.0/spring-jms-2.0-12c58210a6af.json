@@ -16,15 +16,21 @@
   "description": "This instrumentation enables messaging spans for Spring JMS message consumers.",
   "display_name": "Spring JMS",
   "has_javaagent": true,
-  "javaagent_target_versions": ["org.springframework:spring-jms:[2.0,6)"],
+  "javaagent_target_versions": [
+    "org.springframework:spring-jms:[2.0,6)"
+  ],
   "library_link": "https://docs.spring.io/spring-framework/reference/integration/jms.html",
   "name": "spring-jms-2.0",
   "scope": {
     "name": "io.opentelemetry.spring-jms-2.0"
   },
-  "semantic_conventions": ["MESSAGING_SPANS"],
+  "semantic_conventions": [
+    "MESSAGING_SPANS"
+  ],
   "source_path": "instrumentation/spring/spring-jms/spring-jms-2.0",
-  "tags": ["spring"],
+  "tags": [
+    "spring"
+  ],
   "telemetry": [
     {
       "spans": [

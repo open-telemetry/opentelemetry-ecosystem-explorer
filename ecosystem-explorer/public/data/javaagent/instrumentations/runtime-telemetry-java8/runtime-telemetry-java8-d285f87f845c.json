@@ -8,7 +8,11 @@
   "scope": {
     "name": "io.opentelemetry.runtime-telemetry-java8"
   },
-  "semantic_conventions": ["JVM_RUNTIME_METRICS"],
+  "semantic_conventions": [
+    "JVM_RUNTIME_METRICS"
+  ],
   "source_path": "instrumentation/runtime-telemetry/runtime-telemetry-java8",
-  "tags": ["runtime"]
+  "tags": [
+    "runtime"
+  ]
 }

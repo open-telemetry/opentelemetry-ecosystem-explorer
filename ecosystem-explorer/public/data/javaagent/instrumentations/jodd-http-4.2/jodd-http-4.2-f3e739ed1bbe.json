@@ -40,14 +40,19 @@
   "description": "This instrumentation enables HTTP client spans and HTTP client metrics for Jodd HTTP.",
   "display_name": "Jodd HTTP",
   "has_javaagent": true,
-  "javaagent_target_versions": ["org.jodd:jodd-http:[4.1.1,)"],
+  "javaagent_target_versions": [
+    "org.jodd:jodd-http:[4.1.1,)"
+  ],
   "library_link": "https://http.jodd.org/",
   "name": "jodd-http-4.2",
   "scope": {
     "name": "io.opentelemetry.jodd-http-4.2",
     "schema_url": "https://opentelemetry.io/schemas/1.37.0"
   },
-  "semantic_conventions": ["HTTP_CLIENT_SPANS", "HTTP_CLIENT_METRICS"],
+  "semantic_conventions": [
+    "HTTP_CLIENT_SPANS",
+    "HTTP_CLIENT_METRICS"
+  ],
   "source_path": "instrumentation/jodd-http-4.2",
   "telemetry": [
     {
