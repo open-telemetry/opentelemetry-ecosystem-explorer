@@ -101,9 +101,7 @@ setting it to `false` hides it.
 ```tsx
 import { isEnabled } from "@/lib/feature-flags";
 
-{
-  isEnabled("JAVA_CONFIG_BUILDER") && <MyComponent />;
-}
+{isEnabled("JAVA_CONFIG_BUILDER") && <MyComponent />}
 ```
 
 The available feature flags are defined in `src/lib/feature-flags.ts`.
