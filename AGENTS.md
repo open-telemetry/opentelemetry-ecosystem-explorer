@@ -171,7 +171,6 @@ Avoid redundant comments for obvious code. Only add comments when they provide n
 When writing markdown using code blocks, always specify the language for syntax highlighting (e.g., `python`, `yaml`,
 `tsx`).
 
-For markdown lists, use "\*" (instead of "-") for unordered lists and "1." for ordered lists to ensure proper rendering.
 
 When adding imports, always do it at the top of the file unless there is a specific reason to do otherwise (e.g., to
 avoid circular dependencies), and in those cases, explain with a comment.
