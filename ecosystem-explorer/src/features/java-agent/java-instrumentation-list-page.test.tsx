@@ -52,6 +52,7 @@ describe("JavaInstrumentationListPage - Filtering", () => {
       display_name: "HTTP Client",
       description: "Instrumentation for HTTP clients",
       scope: { name: "http" },
+      has_javaagent: true,
       javaagent_target_versions: ["1.0.0"],
       telemetry: [{ when: "always", spans: [{ span_kind: "CLIENT" }] }],
     },
@@ -81,6 +82,7 @@ describe("JavaInstrumentationListPage - Filtering", () => {
       display_name: "Kafka Client",
       description: "Messaging instrumentation for Kafka",
       scope: { name: "kafka" },
+      has_javaagent: true,
       javaagent_target_versions: ["1.0.0"],
       has_standalone_library: true,
       telemetry: [
@@ -104,6 +106,7 @@ describe("JavaInstrumentationListPage - Filtering", () => {
       display_name: "Spring Web",
       description: "Instrumentation for Spring Web applications",
       scope: { name: "spring" },
+      has_javaagent: true,
       javaagent_target_versions: ["1.0.0"],
     },
   ];

@@ -40,6 +40,7 @@ export interface InstrumentationData {
   semantic_conventions?: string[];
   features?: string[];
   scope: InstrumentationScope;
+  has_javaagent?: boolean;
   has_standalone_library?: boolean;
   javaagent_target_versions?: string[];
   configurations?: Configuration[];

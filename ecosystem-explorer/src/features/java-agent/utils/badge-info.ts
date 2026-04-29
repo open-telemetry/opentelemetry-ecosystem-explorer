@@ -29,9 +29,7 @@ export function getBadgeInfo(instrumentation: InstrumentationData): BadgeInfo {
   return {
     hasSpans: instrumentation.telemetry?.some((t) => t.spans && t.spans.length > 0) ?? false,
     hasMetrics: instrumentation.telemetry?.some((t) => t.metrics && t.metrics.length > 0) ?? false,
-    hasJavaAgentTarget:
-      !!instrumentation.javaagent_target_versions &&
-      instrumentation.javaagent_target_versions.length > 0,
+    hasJavaAgentTarget: instrumentation.has_javaagent === true,
     hasLibraryTarget: instrumentation.has_standalone_library === true,
   };
 }
@@ -48,9 +46,7 @@ export function getAggregatedBadgeInfo(instrumentations: InstrumentationData[]):
     hasMetrics: instrumentations.some(
       (instr) => instr.telemetry?.some((t) => t.metrics && t.metrics.length > 0) ?? false
     ),
-    hasJavaAgentTarget: instrumentations.some(
-      (instr) => !!instr.javaagent_target_versions && instr.javaagent_target_versions.length > 0
-    ),
+    hasJavaAgentTarget: instrumentations.some((instr) => instr.has_javaagent === true),
     hasLibraryTarget: instrumentations.some((instr) => instr.has_standalone_library === true),
   };
 }

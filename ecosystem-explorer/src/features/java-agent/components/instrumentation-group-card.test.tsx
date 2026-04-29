@@ -97,6 +97,7 @@ describe("InstrumentationGroupCard", () => {
           display_name: "Apache HttpClient",
           description: "Instrumentation for Apache HttpClient version 4",
           scope: { name: "io.opentelemetry.apache-httpclient-4.0" },
+          has_javaagent: true,
           javaagent_target_versions: ["org.apache.httpcomponents:httpclient:[4.0,)"],
           telemetry: [{ when: "default", spans: [{ span_kind: "CLIENT" }] }],
         },
@@ -105,6 +106,7 @@ describe("InstrumentationGroupCard", () => {
           display_name: "Apache HttpClient",
           description: "Instrumentation for Apache HttpClient version 5",
           scope: { name: "io.opentelemetry.apache-httpclient-5.0" },
+          has_javaagent: true,
           javaagent_target_versions: ["org.apache.httpcomponents.client5:httpclient5:[5.0,)"],
           has_standalone_library: true,
           telemetry: [

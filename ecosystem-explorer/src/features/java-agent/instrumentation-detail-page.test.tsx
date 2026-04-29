@@ -52,6 +52,7 @@ const mockInstrumentation: InstrumentationData = {
   scope: { name: "jdbc" },
   library_link: "https://example.com/jdbc",
   source_path: "https://github.com/example/jdbc",
+  has_javaagent: true,
   javaagent_target_versions: ["1.0.0", "2.0.0"],
   has_standalone_library: true,
 };

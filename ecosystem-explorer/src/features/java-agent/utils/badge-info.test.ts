@@ -34,6 +34,11 @@ describe("getBadgeInfo", () => {
     });
   });
 
+  it("returns false for javaagent target when has_javaagent is false", () => {
+    const info = getBadgeInfo(makeInstr({ name: "no-agent", has_javaagent: false }));
+    expect(info.hasJavaAgentTarget).toBe(false);
+  });
+
   it("detects spans", () => {
     const info = getBadgeInfo(
       makeInstr({
@@ -70,7 +75,7 @@ describe("getBadgeInfo", () => {
   });
 
   it("detects javaagent target", () => {
-    const info = getBadgeInfo(makeInstr({ name: "agent", javaagent_target_versions: ["1.0"] }));
+    const info = getBadgeInfo(makeInstr({ name: "agent", has_javaagent: true }));
     expect(info.hasJavaAgentTarget).toBe(true);
   });
 
@@ -108,7 +113,7 @@ describe("getAggregatedBadgeInfo", () => {
           },
         ],
       }),
-      makeInstr({ name: "c", javaagent_target_versions: ["1.0"] }),
+      makeInstr({ name: "c", has_javaagent: true }),
     ];
 
     const info = getAggregatedBadgeInfo(instrumentations);

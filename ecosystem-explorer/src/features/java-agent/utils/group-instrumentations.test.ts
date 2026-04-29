@@ -152,6 +152,7 @@ describe("groupInstrumentationsByDisplayName", () => {
       description: "Kafka instrumentation",
       scope: { name: "io.opentelemetry.kafka-clients-0.11" },
       tags: ["kafka"],
+      has_javaagent: true,
       javaagent_target_versions: ["Java 8+"],
       has_standalone_library: true,
       telemetry: [{ when: "default", spans: [{ span_kind: "PRODUCER" }] }],

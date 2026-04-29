@@ -63,9 +63,10 @@ describe("InstrumentationCard", () => {
     expect(screen.getByText("A test instrumentation for testing purposes")).toBeInTheDocument();
   });
 
-  it("displays Agent badge when javaagent target versions exist", () => {
+  it("displays Agent badge when has_javaagent is true", () => {
     const instrumentation: InstrumentationData = {
       ...baseInstrumentation,
+      has_javaagent: true,
       javaagent_target_versions: ["1.0.0", "2.0.0"],
     };
     renderCard(instrumentation);
@@ -84,6 +85,7 @@ describe("InstrumentationCard", () => {
   it("displays both Agent and Library badges when both exist", () => {
     const instrumentation: InstrumentationData = {
       ...baseInstrumentation,
+      has_javaagent: true,
       javaagent_target_versions: ["1.0.0"],
       has_standalone_library: true,
     };
@@ -155,6 +157,7 @@ describe("InstrumentationCard", () => {
   it("highlights Agent badge when javaagent filter is active", () => {
     const instrumentation: InstrumentationData = {
       ...baseInstrumentation,
+      has_javaagent: true,
       javaagent_target_versions: ["1.0.0"],
     };
     const activeFilters: FilterState = {

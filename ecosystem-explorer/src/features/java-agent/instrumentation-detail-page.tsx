@@ -348,9 +348,7 @@ export function InstrumentationDetailPage() {
                   </div>
                 )}
 
-                {(instrumentation.minimum_java_version ||
-                  (instrumentation.javaagent_target_versions &&
-                    instrumentation.javaagent_target_versions.length > 0)) && (
+                {(instrumentation.minimum_java_version || instrumentation.has_javaagent) && (
                   <div>
                     <SectionHeader>Requirements</SectionHeader>
                     <div className="space-y-4">
