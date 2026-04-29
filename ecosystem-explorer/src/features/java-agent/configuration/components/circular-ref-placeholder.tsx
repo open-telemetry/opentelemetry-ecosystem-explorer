@@ -21,8 +21,8 @@ interface CircularRefPlaceholderProps {
 
 export function CircularRefPlaceholder({ node }: CircularRefPlaceholderProps) {
   return (
-    <div className="rounded-md border border-border/40 bg-background/40 px-4 py-2 text-sm text-muted-foreground">
-      <strong className="font-medium text-foreground">{node.label}</strong>
+    <div className="border-border/40 bg-background/40 text-muted-foreground rounded-md border px-4 py-2 text-sm">
+      <strong className="text-foreground font-medium">{node.label}</strong>
       <span>
         {" "}
         — Circular reference to {node.refType}. Configure this under its canonical section.

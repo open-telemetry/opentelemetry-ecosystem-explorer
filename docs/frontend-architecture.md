@@ -11,12 +11,12 @@ capabilities with offline support through IndexedDB caching.
 
 ## Technology Stack
 
-* **Framework**: React + TypeScript
-* **Build Tool**: Vite
-* **Styling**: Tailwind CSS v4
-* **Testing**: Vitest + React Testing Library
-* **Caching**: IndexedDB via `idb`
-* **Deployment**: Static site hosting
+- **Framework**: React + TypeScript
+- **Build Tool**: Vite
+- **Styling**: Tailwind CSS v4
+- **Testing**: Vitest + React Testing Library
+- **Caching**: IndexedDB via `idb`
+- **Deployment**: Static site hosting
 
 ### IndexedDB Cache
 
@@ -24,15 +24,15 @@ Persistent storage across browser sessions using `idb` library wrapper.
 
 **Stores**:
 
-* `metadata`: Versions and manifests
-* `instrumentations`: Full instrumentation data
+- `metadata`: Versions and manifests
+- `instrumentations`: Full instrumentation data
 
 **Entry Format**:
 
 ```typescript
 interface CacheEntry<T> {
   data: T;
-  cachedAt: number;   // For future TTL
+  cachedAt: number; // For future TTL
 }
 ```
 

@@ -50,7 +50,7 @@ export function SwitchPill({
       data-variant={variant}
       onClick={onClick}
       className={[
-        "relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:ring-offset-2 focus:ring-offset-background",
+        "focus:ring-primary/20 focus:ring-offset-background relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:ring-2 focus:ring-offset-2 focus:outline-none",
         checked ? "bg-primary" : "bg-border",
         dashed ? "border border-dashed border-[hsl(var(--border-hsl))] opacity-70" : "",
       ].join(" ")}

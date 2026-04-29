@@ -45,7 +45,7 @@ export function TargetBadges({
       {badges.hasJavaAgentTarget && (
         <Tooltip content="Standard instrumentation that runs alongside the application using a Java agent.">
           <span
-            className={`${cls} cursor-help transition-all focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 ${
+            className={`${cls} focus:ring-ring cursor-help transition-all focus:ring-2 focus:ring-offset-1 focus:outline-none ${
               isJavaAgentFilterActive
                 ? FILTER_STYLES.target.javaagent.active
                 : FILTER_STYLES.target.javaagent.inactive
@@ -60,7 +60,7 @@ export function TargetBadges({
       {badges.hasLibraryTarget && (
         <Tooltip content="Standalone libraries are installed manually and for use without the agent.">
           <span
-            className={`${cls} cursor-help transition-all focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 ${
+            className={`${cls} focus:ring-ring cursor-help transition-all focus:ring-2 focus:ring-offset-1 focus:outline-none ${
               isLibraryFilterActive
                 ? FILTER_STYLES.target.library.active
                 : FILTER_STYLES.target.library.inactive
@@ -90,7 +90,7 @@ export function TelemetryBadges({
       {badges.hasSpans && (
         <Tooltip content="Produces span telemetry for distributed tracing.">
           <span
-            className={`${cls} cursor-help transition-all focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 ${
+            className={`${cls} focus:ring-ring cursor-help transition-all focus:ring-2 focus:ring-offset-1 focus:outline-none ${
               isSpansFilterActive
                 ? FILTER_STYLES.telemetry.spans.active
                 : FILTER_STYLES.telemetry.spans.inactive
@@ -105,7 +105,7 @@ export function TelemetryBadges({
       {badges.hasMetrics && (
         <Tooltip content="Produces metric telemetry for monitoring.">
           <span
-            className={`${cls} cursor-help transition-all focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1 ${
+            className={`${cls} focus:ring-ring cursor-help transition-all focus:ring-2 focus:ring-offset-1 focus:outline-none ${
               isMetricsFilterActive
                 ? FILTER_STYLES.telemetry.metrics.active
                 : FILTER_STYLES.telemetry.metrics.inactive

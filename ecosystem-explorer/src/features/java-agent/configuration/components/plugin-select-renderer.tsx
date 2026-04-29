@@ -60,7 +60,7 @@ export function PluginSelectRenderer({
       <div
         role="tablist"
         aria-label={`${node.label} variant`}
-        className="flex flex-wrap items-center gap-x-1 border-b border-border/60"
+        className="border-border/60 flex flex-wrap items-center gap-x-1 border-b"
       >
         {node.description && <InfoTooltip text={node.description} className="mr-1 self-center" />}
         {node.options.map((opt) => {
@@ -107,7 +107,7 @@ export function PluginSelectRenderer({
             placeholder="custom-plugin-name"
             value={customDraft}
             onChange={(e) => setCustomDraft(e.target.value)}
-            className="flex-1 rounded-md border border-border/60 bg-background/80 px-3 py-1.5 text-sm"
+            className="border-border/60 bg-background/80 flex-1 rounded-md border px-3 py-1.5 text-sm"
           />
           <button
             type="button"
@@ -118,7 +118,7 @@ export function PluginSelectRenderer({
               setCustomPickerOpen(false);
               setCustomDraft("");
             }}
-            className="rounded-md border border-border/60 bg-card px-3 py-1.5 text-xs text-foreground hover:bg-card/80"
+            className="border-border/60 bg-card text-foreground hover:bg-card/80 rounded-md border px-3 py-1.5 text-xs"
           >
             Save
           </button>
@@ -128,7 +128,7 @@ export function PluginSelectRenderer({
               setCustomPickerOpen(false);
               setCustomDraft("");
             }}
-            className="rounded-md border border-border/60 bg-card px-3 py-1.5 text-xs text-muted-foreground hover:bg-card/80"
+            className="border-border/60 bg-card text-muted-foreground hover:bg-card/80 rounded-md border px-3 py-1.5 text-xs"
           >
             Cancel
           </button>
@@ -149,7 +149,7 @@ export function PluginSelectRenderer({
       )}
 
       {isCustom && (
-        <p className="text-xs text-muted-foreground">
+        <p className="text-muted-foreground text-xs">
           Custom plugin. Configure its body manually by importing YAML or leave it as an empty
           block.
         </p>

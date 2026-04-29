@@ -135,7 +135,7 @@ export function UnionRenderer({ node, depth, path }: UnionRendererProps): JSX.El
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2">
-        <p className="text-sm font-medium text-foreground">{node.label}</p>
+        <p className="text-foreground text-sm font-medium">{node.label}</p>
         {node.description && <InfoTooltip text={node.description} />}
       </div>
       {showChooser && (
@@ -143,7 +143,7 @@ export function UnionRenderer({ node, depth, path }: UnionRendererProps): JSX.El
           <legend className="sr-only">{node.label}</legend>
           <div className="flex flex-wrap gap-2">
             {effectiveVariants.map((v) => (
-              <label key={v.key} className="flex items-center gap-2 text-xs text-muted-foreground">
+              <label key={v.key} className="text-muted-foreground flex items-center gap-2 text-xs">
                 <input
                   type="radio"
                   name={`${path}-variant`}

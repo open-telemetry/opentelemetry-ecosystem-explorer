@@ -22,6 +22,12 @@ contrib:
     source_repo: opentelemetry-collector-contrib
     distributions: []
     subtype: null
+  - name: dnslookupprocessor
+    last_version: v0.150.0
+    deprecated_in_version: v0.151.0
+    source_repo: opentelemetry-collector-contrib
+    distributions: []
+    subtype: null
   receiver:
   - name: bigipreceiver
     last_version: v0.146.0

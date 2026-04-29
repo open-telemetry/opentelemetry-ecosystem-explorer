@@ -10,9 +10,9 @@ repository to detect new releases and pull the latest schema files.
 
 Process:
 
-* Clone or update a local copy of the opentelemetry-configuration repository.
-* Copy all YAML schema files from the `schema/` directory.
-* Create or update versioned snapshots in the `ecosystem-registry/configuration` directory.
+- Clone or update a local copy of the opentelemetry-configuration repository.
+- Copy all YAML schema files from the `schema/` directory.
+- Create or update versioned snapshots in the `ecosystem-registry/configuration` directory.
 
 You can pass in a location of the repository via the `OTEL_CONFIGURATION_PATH` environment variable,
 or it will default to cloning into `tmp_repos/`.
@@ -29,9 +29,9 @@ uv run configuration-watcher
 
 This will:
 
-* Process the latest release version (if not already tracked)
-* Update the SNAPSHOT version from the main branch
-* Skip versions that already exist in the inventory
+- Process the latest release version (if not already tracked)
+- Update the SNAPSHOT version from the main branch
+- Skip versions that already exist in the inventory
 
 ### Backfill Mode
 
@@ -47,9 +47,9 @@ uv run configuration-watcher --backfill --versions "1.0.0,0.4.0"
 
 ### Options
 
-* `--backfill` - Enable backfill mode (regenerates existing versions)
-* `--versions VERSION_LIST` - Comma-separated list of versions (e.g., "1.0.0,0.4.0")
-* `--inventory-dir PATH` - Custom path to inventory directory (default: ecosystem-registry/configuration)
+- `--backfill` - Enable backfill mode (regenerates existing versions)
+- `--versions VERSION_LIST` - Comma-separated list of versions (e.g., "1.0.0,0.4.0")
+- `--inventory-dir PATH` - Custom path to inventory directory (default: ecosystem-registry/configuration)
 
 ## Development
 

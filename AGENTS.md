@@ -11,8 +11,8 @@ over time.
 
 Handles automated data collection and synchronization:
 
-* Runs scheduled pipelines to collect and aggregate metadata from various projects
-* Updates the registry with new metadata
+- Runs scheduled pipelines to collect and aggregate metadata from various projects
+- Updates the registry with new metadata
 
 ### ecosystem-explorer
 
@@ -37,8 +37,8 @@ jest-dom matchers.
 
 **Website Structure**: Landing page with navigation to two main areas:
 
-* `/java-agent`: Java Agent instrumentation explorer
-* `/collector`: Collector component explorer
+- `/java-agent`: Java Agent instrumentation explorer
+- `/collector`: Collector component explorer
 
 #### Accessibility Guidelines
 
@@ -49,27 +49,27 @@ All components must follow accessibility best practices:
 
 **Required Attributes:**
 
-* Use semantic HTML elements (`<nav>`, `<main>`, `<header>`, `<footer>`, `<button>`, etc.)
-* Add `aria-label` or `aria-labelledby` to icon-only buttons and interactive elements
-* Include `role` attributes when semantic HTML isn't sufficient (e.g., `role="img"` for decorative SVGs)
-* Provide text alternatives for images and icons using `aria-label` or `alt` attributes
+- Use semantic HTML elements (`<nav>`, `<main>`, `<header>`, `<footer>`, `<button>`, etc.)
+- Add `aria-label` or `aria-labelledby` to icon-only buttons and interactive elements
+- Include `role` attributes when semantic HTML isn't sufficient (e.g., `role="img"` for decorative SVGs)
+- Provide text alternatives for images and icons using `aria-label` or `alt` attributes
 
 **Interactive Elements:**
 
-* Ensure all interactive elements are keyboard accessible
-* Maintain visible focus indicators
-* Use proper button elements (`<button>`) instead of div/span with click handlers
-* Support both mouse and keyboard interactions
-* **Toggle buttons MUST use `aria-pressed`** to indicate their state (`aria-pressed="true"` when active,
+- Ensure all interactive elements are keyboard accessible
+- Maintain visible focus indicators
+- Use proper button elements (`<button>`) instead of div/span with click handlers
+- Support both mouse and keyboard interactions
+- **Toggle buttons MUST use `aria-pressed`** to indicate their state (`aria-pressed="true"` when active,
   `aria-pressed="false"` when inactive)
-* Filter buttons, favorite buttons, or any button that maintains a pressed/unpressed state requires `aria-pressed`
+- Filter buttons, favorite buttons, or any button that maintains a pressed/unpressed state requires `aria-pressed`
 
 **Form Controls:**
 
-* Always associate labels with form inputs using `htmlFor` and `id`
-* Provide clear placeholder text or helper text for complex inputs
-* Use `aria-invalid` and `aria-describedby` for error states
-* Group related form controls with `<fieldset>` and `<legend>`
+- Always associate labels with form inputs using `htmlFor` and `id`
+- Provide clear placeholder text or helper text for complex inputs
+- Use `aria-invalid` and `aria-describedby` for error states
+- Group related form controls with `<fieldset>` and `<legend>`
 
 **Examples:**
 
@@ -111,33 +111,33 @@ All components must follow accessibility best practices:
 
 **Testing:**
 
-* Verify components work with keyboard navigation (Tab, Enter, Space, Arrow keys)
-* Test with screen readers when implementing complex interactions
-* Use semantic HTML and ARIA attributes appropriately (not excessively)
-* Test all interactive states (hover, focus, active, disabled) for proper feedback
+- Verify components work with keyboard navigation (Tab, Enter, Space, Arrow keys)
+- Test with screen readers when implementing complex interactions
+- Use semantic HTML and ARIA attributes appropriately (not excessively)
+- Test all interactive states (hover, focus, active, disabled) for proper feedback
 
 **Code Review Checklist:**
 
 When reviewing UI components, always verify:
 
-* [ ] All interactive elements have appropriate ARIA attributes
-* [ ] Toggle buttons use `aria-pressed`
-* [ ] Icon-only buttons have `aria-label`
-* [ ] Form inputs are properly labeled
-* [ ] Keyboard navigation works correctly
-* [ ] Focus indicators are visible
-* [ ] Color contrast meets WCAG AA standards (use browser dev tools to verify)
+- [ ] All interactive elements have appropriate ARIA attributes
+- [ ] Toggle buttons use `aria-pressed`
+- [ ] Icon-only buttons have `aria-label`
+- [ ] Form inputs are properly labeled
+- [ ] Keyboard navigation works correctly
+- [ ] Focus indicators are visible
+- [ ] Color contrast meets WCAG AA standards (use browser dev tools to verify)
 
 ## GitHub Actions Best Practices
 
 When working with GitHub Actions in this repository:
 
-* **Always pin actions to specific commit SHAs** for security (helps to prevent supply chain attacks)
-* **Verify SHA authenticity** before using - check the actual repository to ensure the SHA exists and corresponds to
+- **Always pin actions to specific commit SHAs** for security (helps to prevent supply chain attacks)
+- **Verify SHA authenticity** before using - check the actual repository to ensure the SHA exists and corresponds to
   the intended version
-* **Never generate or guess SHAs** - always look up the correct SHA from the action's repository
-* **Include version comments** alongside SHAs for readability (e.g., `# v4.1.0`)
-* **Format**: `uses: owner/action@<full-sha> # vX.Y.Z`
+- **Never generate or guess SHAs** - always look up the correct SHA from the action's repository
+- **Include version comments** alongside SHAs for readability (e.g., `# v4.1.0`)
+- **Format**: `uses: owner/action@<full-sha> # vX.Y.Z`
 
 Example:
 
@@ -156,22 +156,20 @@ Avoid redundant comments for obvious code. Only add comments when they provide n
 
 **When to add comments:**
 
-* ✅ Public API methods (docstrings required)
-* ✅ Non-obvious logic or workarounds
-* ✅ Complex algorithms that aren't self-explanatory
-* ✅ Edge cases or gotchas that aren't immediately clear
+- ✅ Public API methods (docstrings required)
+- ✅ Non-obvious logic or workarounds
+- ✅ Complex algorithms that aren't self-explanatory
+- ✅ Edge cases or gotchas that aren't immediately clear
 
 **When NOT to add comments:**
 
-* ❌ Obvious operations where the method/variable name is clear
-* ❌ Simple getters, setters, or straightforward logic
-* ❌ Comments that just restate what the code does
-* ❌ Comments on test methods that just describe the test name
+- ❌ Obvious operations where the method/variable name is clear
+- ❌ Simple getters, setters, or straightforward logic
+- ❌ Comments that just restate what the code does
+- ❌ Comments on test methods that just describe the test name
 
 When writing markdown using code blocks, always specify the language for syntax highlighting (e.g., `python`, `yaml`,
 `tsx`).
-
-For markdown lists, use "*" (instead of "-") for unordered lists and "1." for ordered lists to ensure proper rendering.
 
 When adding imports, always do it at the top of the file unless there is a specific reason to do otherwise (e.g., to
 avoid circular dependencies), and in those cases, explain with a comment.

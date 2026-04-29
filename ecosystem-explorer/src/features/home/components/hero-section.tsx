@@ -17,7 +17,7 @@ import { Compass } from "@/components/icons/compass";
 
 export function HeroSection() {
   return (
-    <section className="relative flex items-center justify-center overflow-hidden bg-background py-12">
+    <section className="bg-background relative flex items-center justify-center overflow-hidden py-12">
       {/* Ambient radial gradient background */}
       <div
         className="absolute inset-0"
@@ -48,11 +48,11 @@ export function HeroSection() {
             boxShadow: "0 0 60px hsl(var(--primary-hsl) / 0.2)",
           }}
         >
-          <Compass className="h-24 w-24 text-foreground md:h-32 md:w-32" />
+          <Compass className="text-foreground h-24 w-24 md:h-32 md:w-32" />
         </div>
 
         <div className="space-y-2">
-          <h1 className="text-balance text-3xl font-bold leading-tight tracking-tight md:text-4xl">
+          <h1 className="text-3xl leading-tight font-bold tracking-tight text-balance md:text-4xl">
             <span className="text-foreground">OpenTelemetry</span>
             <br />
             <span className="bg-gradient-to-r from-[hsl(var(--secondary-hsl))] to-[hsl(var(--primary-hsl))] bg-clip-text text-transparent">
@@ -60,7 +60,7 @@ export function HeroSection() {
             </span>
           </h1>
 
-          <p className="mx-auto max-w-2xl text-balance text-sm leading-relaxed text-muted-foreground md:text-base">
+          <p className="text-muted-foreground mx-auto max-w-2xl text-sm leading-relaxed text-balance md:text-base">
             Navigate the vast landscape of OpenTelemetry.
           </p>
         </div>
@@ -68,7 +68,7 @@ export function HeroSection() {
 
       {/* Bottom fade transition */}
       <div
-        className="pointer-events-none absolute bottom-0 left-0 right-0 h-64"
+        className="pointer-events-none absolute right-0 bottom-0 left-0 h-64"
         style={{
           background:
             "linear-gradient(to top, hsl(var(--background-hsl)) 0%, hsl(var(--background-hsl) / 0.6) 30%, transparent 100%)",

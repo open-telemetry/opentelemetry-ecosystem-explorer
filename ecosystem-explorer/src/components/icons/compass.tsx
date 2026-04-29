@@ -83,7 +83,7 @@ export function Compass({ className }: { className?: string }) {
         viewBox="0 0 200 200"
         aria-label="Animated Compass"
         role="img"
-        className="w-full h-full"
+        className="h-full w-full"
         style={{
           filter:
             "drop-shadow(0 0 8px hsl(var(--primary-hsl) / 0.4)) drop-shadow(0 0 16px hsl(var(--primary-hsl) / 0.2))",

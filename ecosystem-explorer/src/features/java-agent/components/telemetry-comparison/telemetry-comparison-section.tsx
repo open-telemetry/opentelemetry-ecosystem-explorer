@@ -71,8 +71,8 @@ export function TelemetryComparisonSection({
       {loading && (
         <div className="flex min-h-[300px] items-center justify-center">
           <div className="flex items-center gap-3">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
-            <p className="text-sm text-muted-foreground">Loading comparison data...</p>
+            <Loader2 className="text-primary h-6 w-6 animate-spin" />
+            <p className="text-muted-foreground text-sm">Loading comparison data...</p>
           </div>
         </div>
       )}
@@ -80,9 +80,9 @@ export function TelemetryComparisonSection({
       {/* Error state */}
       {error && !loading && (
         <div className="flex min-h-[200px] items-center justify-center">
-          <div className="rounded-lg border border-red-400/30 bg-red-400/10 p-6 max-w-2xl">
+          <div className="max-w-2xl rounded-lg border border-red-400/30 bg-red-400/10 p-6">
             <div className="flex items-start gap-3">
-              <AlertCircle className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />
+              <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-400" />
               <div className="space-y-1">
                 <p className="font-medium text-red-400">Comparison Error</p>
                 <p className="text-sm text-red-400/80">{error.message}</p>
@@ -96,7 +96,7 @@ export function TelemetryComparisonSection({
       {!loading && !error && (fromNotFound || toNotFound) && (
         <div className="rounded-lg border border-yellow-400/30 bg-yellow-400/10 p-6">
           <div className="flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 text-yellow-400 mt-0.5 flex-shrink-0" />
+            <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-yellow-400" />
             <div className="space-y-1">
               <p className="font-medium text-yellow-400">Version Availability Note</p>
               {fromNotFound && (
@@ -121,7 +121,7 @@ export function TelemetryComparisonSection({
         <div className="flex min-h-[200px] items-center justify-center">
           <div className="rounded-lg border border-yellow-400/30 bg-yellow-400/10 p-6">
             <div className="flex items-start gap-3">
-              <AlertCircle className="h-5 w-5 text-yellow-400 mt-0.5 flex-shrink-0" />
+              <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-yellow-400" />
               <div className="space-y-1">
                 <p className="font-medium text-yellow-400">Same Version Selected</p>
                 <p className="text-sm text-yellow-400/80">

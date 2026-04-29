@@ -96,14 +96,14 @@ export function FieldMeta({ node }: FieldMetaProps) {
   if (items.length === 0) return null;
 
   return (
-    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+    <div className="text-muted-foreground flex items-center gap-2 text-xs">
       {items.map((item, i) => {
         const { Icon } = item;
         return (
           <Fragment key={i}>
             {i > 0 && <span aria-hidden="true">·</span>}
             <span className="flex items-center gap-1">
-              <Icon className="h-3 w-3 text-primary" aria-hidden={true} />
+              <Icon className="text-primary h-3 w-3" aria-hidden={true} />
               {item.text}
             </span>
           </Fragment>

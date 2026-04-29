@@ -48,7 +48,7 @@ export function GeneralSectionCard({ leafChildren }: GeneralSectionCardProps): J
         >
           {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
         </button>
-        <h3 className="text-base font-semibold text-foreground truncate">
+        <h3 className="text-foreground truncate text-base font-semibold">
           {GENERAL_SECTION_LABEL}
         </h3>
       </header>

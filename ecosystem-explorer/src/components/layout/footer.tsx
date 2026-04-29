@@ -20,18 +20,18 @@ import { OtelLogo } from "@/components/icons/otel-logo";
 
 export function Footer() {
   return (
-    <footer className="border-t border-border/30 px-6 py-4 bg-background flex-shrink-0">
-      <div className="max-w-6xl mx-auto flex flex-col items-center gap-3">
-        <div className="flex flex-col md:grid md:grid-cols-3 items-center gap-3 w-full">
-          <div className="flex items-center gap-2 text-muted-foreground">
-            <OtelLogo className="h-5 w-5 text-primary" />
+    <footer className="border-border/30 bg-background flex-shrink-0 border-t px-6 py-4">
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-3">
+        <div className="flex w-full flex-col items-center gap-3 md:grid md:grid-cols-3">
+          <div className="text-muted-foreground flex items-center gap-2">
+            <OtelLogo className="text-primary h-5 w-5" />
             <span className="text-sm">OpenTelemetry Ecosystem Explorer</span>
           </div>
-          <p className="text-sm text-muted-foreground hidden md:flex items-center justify-center gap-1.5">
+          <p className="text-muted-foreground hidden items-center justify-center gap-1.5 text-sm md:flex">
             <Map className="h-4 w-4" aria-hidden="true" />
             Charting the observability landscape
           </p>
-          <nav className="flex items-center justify-end gap-4 text-sm text-muted-foreground">
+          <nav className="text-muted-foreground flex items-center justify-end gap-4 text-sm">
             <Link to="/about" className="hover:text-foreground transition-colors">
               About
             </Link>
@@ -39,7 +39,7 @@ export function Footer() {
               href="https://github.com/open-telemetry/opentelemetry-ecosystem-explorer"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-foreground transition-colors flex items-center gap-1"
+              className="hover:text-foreground flex items-center gap-1 transition-colors"
               aria-label="GitHub repository"
             >
               <GitHubIcon className="h-4 w-4" aria-hidden="true" />
@@ -49,7 +49,7 @@ export function Footer() {
               href="https://opentelemetry.io"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-foreground transition-colors flex items-center gap-1"
+              className="hover:text-foreground flex items-center gap-1 transition-colors"
               aria-label="OpenTelemetry website"
             >
               <OtelLogo className="h-4 w-4" aria-hidden="true" />
@@ -57,7 +57,7 @@ export function Footer() {
             </a>
           </nav>
         </div>
-        <p className="text-xs text-muted-foreground">&copy; 2026–Present OpenTelemetry Authors</p>
+        <p className="text-muted-foreground text-xs">&copy; 2026–Present OpenTelemetry Authors</p>
       </div>
     </footer>
   );

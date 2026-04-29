@@ -97,7 +97,7 @@ function InstrumentationTabContent({ activeTab }: { activeTab: string }) {
         activeKey={null}
         onSectionClick={() => {}}
       />
-      <div className="rounded-xl border border-border/40 bg-card/30 p-8 text-center text-sm text-muted-foreground">
+      <div className="border-border/40 bg-card/30 text-muted-foreground rounded-xl border p-8 text-center text-sm">
         Instrumentation browser is coming in a follow-up PR (#250).
       </div>
     </div>
@@ -132,7 +132,7 @@ export function ConfigurationBuilderPage() {
                 Configuration Builder
               </span>
             </h1>
-            <p className="text-base text-muted-foreground">
+            <p className="text-muted-foreground text-base">
               Build and customize your OpenTelemetry Java Agent configuration
             </p>
           </div>
@@ -147,7 +147,7 @@ export function ConfigurationBuilderPage() {
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsContent value="sdk">
             {schema.loading || starter.loading ? (
-              <p className="mt-4 text-sm text-muted-foreground">Loading schema…</p>
+              <p className="text-muted-foreground mt-4 text-sm">Loading schema…</p>
             ) : schema.error || !root ? (
               <p className="mt-4 text-sm text-red-400">Failed to load schema.</p>
             ) : starter.error ? (
