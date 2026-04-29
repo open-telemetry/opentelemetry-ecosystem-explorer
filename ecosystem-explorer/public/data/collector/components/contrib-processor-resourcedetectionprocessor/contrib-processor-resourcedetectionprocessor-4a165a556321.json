@@ -9,13 +9,25 @@
   "status": {
     "class": "processor",
     "codeowners": {
-      "active": ["Aneurysm9", "dashpole"],
+      "active": [
+        "Aneurysm9",
+        "dashpole"
+      ],
       "seeking_new": true
     },
-    "distributions": ["contrib", "k8s"],
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
     "stability": {
-      "beta": ["logs", "metrics", "traces"],
-      "development": ["profiles"]
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ],
+      "development": [
+        "profiles"
+      ]
     }
   },
   "type": "processor"

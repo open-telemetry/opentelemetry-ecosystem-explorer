@@ -24,7 +24,9 @@
   "id": "contrib-receiver-kafkametricsreceiver",
   "metrics": {
     "kafka.broker.log_retention_period": {
-      "attributes": ["broker"],
+      "attributes": [
+        "broker"
+      ],
       "description": "log retention time (s) of a broker.",
       "enabled": false,
       "gauge": {
@@ -45,7 +47,11 @@
       "unit": "{brokers}"
     },
     "kafka.consumer_group.lag": {
-      "attributes": ["group", "partition", "topic"],
+      "attributes": [
+        "group",
+        "partition",
+        "topic"
+      ],
       "description": "Current approximate lag of consumer group at partition of topic",
       "enabled": true,
       "gauge": {
@@ -55,7 +61,10 @@
       "unit": "1"
     },
     "kafka.consumer_group.lag_sum": {
-      "attributes": ["group", "topic"],
+      "attributes": [
+        "group",
+        "topic"
+      ],
       "description": "Current approximate sum of consumer group lag across all partitions of topic",
       "enabled": true,
       "gauge": {
@@ -65,7 +74,9 @@
       "unit": "1"
     },
     "kafka.consumer_group.members": {
-      "attributes": ["group"],
+      "attributes": [
+        "group"
+      ],
       "description": "Count of members in the consumer group",
       "enabled": true,
       "stability": "development",
@@ -77,7 +88,11 @@
       "unit": "{members}"
     },
     "kafka.consumer_group.offset": {
-      "attributes": ["group", "partition", "topic"],
+      "attributes": [
+        "group",
+        "partition",
+        "topic"
+      ],
       "description": "Current offset of the consumer group at partition of topic",
       "enabled": true,
       "gauge": {
@@ -87,7 +102,10 @@
       "unit": "1"
     },
     "kafka.consumer_group.offset_sum": {
-      "attributes": ["group", "topic"],
+      "attributes": [
+        "group",
+        "topic"
+      ],
       "description": "Sum of consumer group offset across partitions of topic",
       "enabled": true,
       "gauge": {
@@ -97,7 +115,10 @@
       "unit": "1"
     },
     "kafka.partition.current_offset": {
-      "attributes": ["partition", "topic"],
+      "attributes": [
+        "partition",
+        "topic"
+      ],
       "description": "Current offset of partition of topic.",
       "enabled": true,
       "gauge": {
@@ -107,7 +128,10 @@
       "unit": "1"
     },
     "kafka.partition.oldest_offset": {
-      "attributes": ["partition", "topic"],
+      "attributes": [
+        "partition",
+        "topic"
+      ],
       "description": "Oldest offset of partition of topic",
       "enabled": true,
       "gauge": {
@@ -117,7 +141,10 @@
       "unit": "1"
     },
     "kafka.partition.replicas": {
-      "attributes": ["partition", "topic"],
+      "attributes": [
+        "partition",
+        "topic"
+      ],
       "description": "Number of replicas for partition of topic",
       "enabled": true,
       "stability": "development",
@@ -129,7 +156,10 @@
       "unit": "{replicas}"
     },
     "kafka.partition.replicas_in_sync": {
-      "attributes": ["partition", "topic"],
+      "attributes": [
+        "partition",
+        "topic"
+      ],
       "description": "Number of synchronized replicas of partition",
       "enabled": true,
       "stability": "development",
@@ -141,7 +171,9 @@
       "unit": "{replicas}"
     },
     "kafka.topic.log_retention_period": {
-      "attributes": ["topic"],
+      "attributes": [
+        "topic"
+      ],
       "description": "log retention period of a topic (s).",
       "enabled": false,
       "gauge": {
@@ -151,7 +183,9 @@
       "unit": "s"
     },
     "kafka.topic.log_retention_size": {
-      "attributes": ["topic"],
+      "attributes": [
+        "topic"
+      ],
       "description": "log retention size of a topic in Bytes, The value (-1) indicates infinite size.",
       "enabled": false,
       "gauge": {
@@ -161,7 +195,9 @@
       "unit": "By"
     },
     "kafka.topic.min_insync_replicas": {
-      "attributes": ["topic"],
+      "attributes": [
+        "topic"
+      ],
       "description": "minimum in-sync replicas of a topic.",
       "enabled": false,
       "gauge": {
@@ -171,7 +207,9 @@
       "unit": "{replicas}"
     },
     "kafka.topic.partitions": {
-      "attributes": ["topic"],
+      "attributes": [
+        "topic"
+      ],
       "description": "Number of partitions in topic.",
       "enabled": true,
       "stability": "development",
@@ -183,7 +221,9 @@
       "unit": "{partitions}"
     },
     "kafka.topic.replication_factor": {
-      "attributes": ["topic"],
+      "attributes": [
+        "topic"
+      ],
       "description": "replication factor of a topic.",
       "enabled": false,
       "gauge": {
@@ -198,11 +238,17 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": ["dmitryax"]
+      "active": [
+        "dmitryax"
+      ]
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "beta": ["metrics"]
+      "beta": [
+        "metrics"
+      ]
     }
   },
   "type": "receiver"

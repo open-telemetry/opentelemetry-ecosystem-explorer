@@ -9,12 +9,18 @@
   "status": {
     "class": "extension",
     "codeowners": {
-      "active": ["atoulme"],
+      "active": [
+        "atoulme"
+      ],
       "seeking_new": true
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "alpha": ["extension"]
+      "alpha": [
+        "extension"
+      ]
     }
   },
   "type": "extension"

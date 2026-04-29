@@ -293,11 +293,18 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": ["jamesmoessis", "MovieStoreGuy"]
+      "active": [
+        "jamesmoessis",
+        "MovieStoreGuy"
+      ]
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "alpha": ["metrics"]
+      "alpha": [
+        "metrics"
+      ]
     }
   },
   "type": "receiver"

@@ -2,46 +2,71 @@
   "attributes": {
     "direction": {
       "description": "Whether the metric is in regards to input or output operations.",
-      "enum": ["in", "out"],
+      "enum": [
+        "in",
+        "out"
+      ],
       "type": "string"
     },
     "executor_task_result": {
       "description": "The result of the executor tasks for which the metric was recorded.",
-      "enum": ["completed", "failed"],
+      "enum": [
+        "completed",
+        "failed"
+      ],
       "name_override": "result",
       "type": "string"
     },
     "gc_type": {
       "description": "The type of the garbage collection performed for the metric.",
-      "enum": ["major", "minor"],
+      "enum": [
+        "major",
+        "minor"
+      ],
       "type": "string"
     },
     "job_result": {
       "description": "The result of the job stages or tasks for which the metric was recorded.",
-      "enum": ["completed", "failed", "skipped"],
+      "enum": [
+        "completed",
+        "failed",
+        "skipped"
+      ],
       "name_override": "result",
       "type": "string"
     },
     "location": {
       "description": "The location of the memory for which the metric was recorded..",
-      "enum": ["off_heap", "on_heap"],
+      "enum": [
+        "off_heap",
+        "on_heap"
+      ],
       "type": "string"
     },
     "pool_memory_type": {
       "description": "The type of pool memory for which the metric was recorded.",
-      "enum": ["direct", "mapped"],
+      "enum": [
+        "direct",
+        "mapped"
+      ],
       "name_override": "type",
       "type": "string"
     },
     "scheduler_status": {
       "description": "The status of the DAGScheduler stages for which the metric was recorded.",
-      "enum": ["running", "waiting"],
+      "enum": [
+        "running",
+        "waiting"
+      ],
       "name_override": "status",
       "type": "string"
     },
     "source": {
       "description": "The source from which data was fetched for the metric.",
-      "enum": ["local", "remote"],
+      "enum": [
+        "local",
+        "remote"
+      ],
       "type": "string"
     },
     "stage_active": {
@@ -66,13 +91,20 @@
     },
     "stage_task_result": {
       "description": "The result of the stage tasks for which the metric was recorded.",
-      "enum": ["completed", "failed", "killed"],
+      "enum": [
+        "completed",
+        "failed",
+        "killed"
+      ],
       "name_override": "result",
       "type": "string"
     },
     "state": {
       "description": "The state of the memory for which the metric was recorded.",
-      "enum": ["free", "used"],
+      "enum": [
+        "free",
+        "used"
+      ],
       "type": "string"
     }
   },
@@ -95,7 +127,10 @@
       "unit": "mb"
     },
     "spark.driver.block_manager.memory.usage": {
-      "attributes": ["location", "state"],
+      "attributes": [
+        "location",
+        "state"
+      ],
       "description": "Memory usage for the driver's BlockManager.",
       "enabled": true,
       "stability": "development",
@@ -219,7 +254,9 @@
       "unit": "{ job }"
     },
     "spark.driver.dag_scheduler.stage.count": {
-      "attributes": ["scheduler_status"],
+      "attributes": [
+        "scheduler_status"
+      ],
       "description": "Number of stages the DAGScheduler is either running or needs to run.",
       "enabled": true,
       "stability": "development",
@@ -243,7 +280,9 @@
       "unit": "{ stage }"
     },
     "spark.driver.executor.gc.operations": {
-      "attributes": ["gc_type"],
+      "attributes": [
+        "gc_type"
+      ],
       "description": "Number of garbage collection operations performed by the driver.",
       "enabled": true,
       "stability": "development",
@@ -255,7 +294,9 @@
       "unit": "{ gc_operation }"
     },
     "spark.driver.executor.gc.time": {
-      "attributes": ["gc_type"],
+      "attributes": [
+        "gc_type"
+      ],
       "description": "Total elapsed time during garbage collection operations performed by the driver.",
       "enabled": true,
       "stability": "development",
@@ -267,7 +308,9 @@
       "unit": "ms"
     },
     "spark.driver.executor.memory.execution": {
-      "attributes": ["location"],
+      "attributes": [
+        "location"
+      ],
       "description": "Amount of execution memory currently used by the driver.",
       "enabled": true,
       "stability": "development",
@@ -279,7 +322,9 @@
       "unit": "bytes"
     },
     "spark.driver.executor.memory.jvm": {
-      "attributes": ["location"],
+      "attributes": [
+        "location"
+      ],
       "description": "Amount of memory used by the driver's JVM.",
       "enabled": true,
       "stability": "development",
@@ -291,7 +336,9 @@
       "unit": "bytes"
     },
     "spark.driver.executor.memory.pool": {
-      "attributes": ["pool_memory_type"],
+      "attributes": [
+        "pool_memory_type"
+      ],
       "description": "Amount of pool memory currently used by the driver.",
       "enabled": true,
       "stability": "development",
@@ -303,7 +350,9 @@
       "unit": "bytes"
     },
     "spark.driver.executor.memory.storage": {
-      "attributes": ["location"],
+      "attributes": [
+        "location"
+      ],
       "description": "Amount of storage memory currently used by the driver.",
       "enabled": true,
       "stability": "development",
@@ -481,7 +530,9 @@
       "unit": "bytes"
     },
     "spark.executor.shuffle.io.size": {
-      "attributes": ["direction"],
+      "attributes": [
+        "direction"
+      ],
       "description": "Amount of data written and read during shuffle operations for this executor.",
       "enabled": true,
       "stability": "development",
@@ -493,7 +544,10 @@
       "unit": "bytes"
     },
     "spark.executor.storage_memory.usage": {
-      "attributes": ["location", "state"],
+      "attributes": [
+        "location",
+        "state"
+      ],
       "description": "The executor's storage memory usage.",
       "enabled": true,
       "stability": "development",
@@ -529,7 +583,9 @@
       "unit": "{ task }"
     },
     "spark.executor.task.result": {
-      "attributes": ["executor_task_result"],
+      "attributes": [
+        "executor_task_result"
+      ],
       "description": "Number of tasks with a specific result in this executor.",
       "enabled": true,
       "stability": "development",
@@ -565,7 +621,9 @@
       "unit": "{ stage }"
     },
     "spark.job.stage.result": {
-      "attributes": ["job_result"],
+      "attributes": [
+        "job_result"
+      ],
       "description": "Number of stages with a specific result in this job.",
       "enabled": true,
       "stability": "development",
@@ -589,7 +647,9 @@
       "unit": "{ task }"
     },
     "spark.job.task.result": {
-      "attributes": ["job_result"],
+      "attributes": [
+        "job_result"
+      ],
       "description": "Number of tasks with a specific result in this job.",
       "enabled": true,
       "stability": "development",
@@ -637,7 +697,9 @@
       "unit": "ms"
     },
     "spark.stage.io.records": {
-      "attributes": ["direction"],
+      "attributes": [
+        "direction"
+      ],
       "description": "Number of records written and read in this stage.",
       "enabled": true,
       "stability": "development",
@@ -649,7 +711,9 @@
       "unit": "{ record }"
     },
     "spark.stage.io.size": {
-      "attributes": ["direction"],
+      "attributes": [
+        "direction"
+      ],
       "description": "Amount of data written and read at this stage.",
       "enabled": true,
       "stability": "development",
@@ -697,7 +761,9 @@
       "unit": "bytes"
     },
     "spark.stage.shuffle.blocks_fetched": {
-      "attributes": ["source"],
+      "attributes": [
+        "source"
+      ],
       "description": "Number of blocks fetched in shuffle operations in this stage.",
       "enabled": true,
       "stability": "development",
@@ -733,7 +799,9 @@
       "unit": "bytes"
     },
     "spark.stage.shuffle.io.read.size": {
-      "attributes": ["source"],
+      "attributes": [
+        "source"
+      ],
       "description": "Amount of data read in shuffle operations in this stage.",
       "enabled": true,
       "stability": "development",
@@ -745,7 +813,9 @@
       "unit": "bytes"
     },
     "spark.stage.shuffle.io.records": {
-      "attributes": ["direction"],
+      "attributes": [
+        "direction"
+      ],
       "description": "Number of records written or read in shuffle operations in this stage.",
       "enabled": true,
       "stability": "development",
@@ -781,7 +851,12 @@
       "unit": "ns"
     },
     "spark.stage.status": {
-      "attributes": ["stage_active", "stage_complete", "stage_failed", "stage_pending"],
+      "attributes": [
+        "stage_active",
+        "stage_complete",
+        "stage_failed",
+        "stage_pending"
+      ],
       "description": "A one-hot encoding representing the status of this stage.",
       "enabled": true,
       "stability": "development",
@@ -805,7 +880,9 @@
       "unit": "{ task }"
     },
     "spark.stage.task.result": {
-      "attributes": ["stage_task_result"],
+      "attributes": [
+        "stage_task_result"
+      ],
       "description": "Number of tasks with a specific result in this stage.",
       "enabled": true,
       "stability": "development",
@@ -834,11 +911,18 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": ["Caleb-Hurshman", "mrsillydog"]
+      "active": [
+        "Caleb-Hurshman",
+        "mrsillydog"
+      ]
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "alpha": ["metrics"]
+      "alpha": [
+        "metrics"
+      ]
     }
   },
   "type": "receiver"

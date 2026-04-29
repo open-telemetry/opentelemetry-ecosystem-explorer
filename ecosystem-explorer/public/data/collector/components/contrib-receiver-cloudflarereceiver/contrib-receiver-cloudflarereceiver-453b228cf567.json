@@ -9,12 +9,18 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": ["dehaansa"],
+      "active": [
+        "dehaansa"
+      ],
       "seeking_new": true
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "alpha": ["logs"]
+      "alpha": [
+        "logs"
+      ]
     }
   },
   "type": "receiver"

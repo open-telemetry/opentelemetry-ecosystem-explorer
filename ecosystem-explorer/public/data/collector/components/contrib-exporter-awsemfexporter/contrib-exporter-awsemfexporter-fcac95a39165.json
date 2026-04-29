@@ -9,12 +9,22 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": ["Aneurysm9", "mxiamxia"],
-      "emeritus": ["shaochengwang", "bryan-aguilar"]
+      "active": [
+        "Aneurysm9",
+        "mxiamxia"
+      ],
+      "emeritus": [
+        "shaochengwang",
+        "bryan-aguilar"
+      ]
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "beta": ["metrics"]
+      "beta": [
+        "metrics"
+      ]
     }
   },
   "type": "exporter"

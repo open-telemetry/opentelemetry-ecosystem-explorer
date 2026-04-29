@@ -9,11 +9,19 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": ["adrielp", "atoulme", "niwoerner"]
+      "active": [
+        "adrielp",
+        "atoulme",
+        "niwoerner"
+      ]
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "alpha": ["traces"]
+      "alpha": [
+        "traces"
+      ]
     }
   },
   "type": "receiver"

@@ -9,7 +9,11 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": ["rnishtala-sumo", "pankaj101A", "jagan2221"],
+      "active": [
+        "rnishtala-sumo",
+        "pankaj101A",
+        "jagan2221"
+      ],
       "emeritus": [
         "aboguszewski-sumo",
         "kasia-kujawa",
@@ -20,9 +24,15 @@
         "amdprophet"
       ]
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "beta": ["logs", "metrics", "traces"]
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
     }
   },
   "type": "exporter"

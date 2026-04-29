@@ -9,14 +9,26 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": ["dao-jun"],
-      "emeritus": ["dmitryax"]
+      "active": [
+        "dao-jun"
+      ],
+      "emeritus": [
+        "dmitryax"
+      ]
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "alpha": ["logs", "metrics", "traces"]
+      "alpha": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
     },
-    "unsupported_platforms": ["aix"]
+    "unsupported_platforms": [
+      "aix"
+    ]
   },
   "type": "exporter"
 }

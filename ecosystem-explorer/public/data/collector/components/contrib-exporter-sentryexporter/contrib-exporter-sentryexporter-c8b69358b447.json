@@ -9,11 +9,19 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": ["AbhiPrasad", "giortzisg"]
+      "active": [
+        "AbhiPrasad",
+        "giortzisg"
+      ]
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "alpha": ["logs", "traces"]
+      "alpha": [
+        "logs",
+        "traces"
+      ]
     }
   },
   "type": "exporter"

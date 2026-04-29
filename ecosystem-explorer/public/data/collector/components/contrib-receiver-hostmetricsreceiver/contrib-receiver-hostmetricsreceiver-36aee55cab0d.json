@@ -9,12 +9,24 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": ["dmitryax", "braydonk", "rogercoll"]
+      "active": [
+        "dmitryax",
+        "braydonk",
+        "rogercoll"
+      ]
     },
-    "distributions": ["contrib", "core", "k8s"],
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
     "stability": {
-      "beta": ["metrics"],
-      "development": ["logs"]
+      "beta": [
+        "metrics"
+      ],
+      "development": [
+        "logs"
+      ]
     }
   },
   "type": "receiver"

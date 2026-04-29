@@ -9,11 +9,17 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": ["smithclay"],
-      "emeritus": ["nslaughter"]
+      "active": [
+        "smithclay"
+      ],
+      "emeritus": [
+        "nslaughter"
+      ]
     },
     "stability": {
-      "development": ["logs"]
+      "development": [
+        "logs"
+      ]
     }
   },
   "type": "receiver"

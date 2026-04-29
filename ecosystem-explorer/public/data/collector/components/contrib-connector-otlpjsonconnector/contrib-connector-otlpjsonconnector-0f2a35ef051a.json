@@ -9,12 +9,23 @@
   "status": {
     "class": "connector",
     "codeowners": {
-      "active": ["ChrsMark"],
-      "emeritus": ["djaglowski"]
+      "active": [
+        "ChrsMark"
+      ],
+      "emeritus": [
+        "djaglowski"
+      ]
     },
-    "distributions": ["contrib", "k8s"],
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
     "stability": {
-      "alpha": ["logs_to_logs", "logs_to_metrics", "logs_to_traces"]
+      "alpha": [
+        "logs_to_logs",
+        "logs_to_metrics",
+        "logs_to_traces"
+      ]
     }
   },
   "type": "connector"

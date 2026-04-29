@@ -9,13 +9,21 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": ["andrzej-stencel"],
-      "emeritus": ["djaglowski"],
+      "active": [
+        "andrzej-stencel"
+      ],
+      "emeritus": [
+        "djaglowski"
+      ],
       "seeking_new": true
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "beta": ["logs"]
+      "beta": [
+        "logs"
+      ]
     }
   },
   "type": "receiver"

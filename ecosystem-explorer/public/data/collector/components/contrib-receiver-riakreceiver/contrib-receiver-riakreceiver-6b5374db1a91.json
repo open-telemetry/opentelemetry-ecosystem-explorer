@@ -2,12 +2,19 @@
   "attributes": {
     "operation": {
       "description": "The operation type for index operations.",
-      "enum": ["delete", "read", "write"],
+      "enum": [
+        "delete",
+        "read",
+        "write"
+      ],
       "type": "string"
     },
     "request": {
       "description": "The request operation type.",
-      "enum": ["get", "put"],
+      "enum": [
+        "get",
+        "put"
+      ],
       "type": "string"
     }
   },
@@ -29,7 +36,9 @@
       "unit": "By"
     },
     "riak.node.operation.count": {
-      "attributes": ["request"],
+      "attributes": [
+        "request"
+      ],
       "description": "The number of operations performed by the node.",
       "enabled": true,
       "stability": "development",
@@ -41,7 +50,9 @@
       "unit": "{operation}"
     },
     "riak.node.operation.time.mean": {
-      "attributes": ["request"],
+      "attributes": [
+        "request"
+      ],
       "description": "The mean time between request and response for operations performed by the node over the last minute.",
       "enabled": true,
       "gauge": {
@@ -62,7 +73,9 @@
       "unit": "{read_repair}"
     },
     "riak.vnode.index.operation.count": {
-      "attributes": ["operation"],
+      "attributes": [
+        "operation"
+      ],
       "description": "The number of index operations performed by vnodes on the node.",
       "enabled": true,
       "stability": "development",
@@ -74,7 +87,9 @@
       "unit": "{operation}"
     },
     "riak.vnode.operation.count": {
-      "attributes": ["request"],
+      "attributes": [
+        "request"
+      ],
       "description": "The number of operations performed by vnodes on the node.",
       "enabled": true,
       "stability": "development",
@@ -91,12 +106,18 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": ["armstrmi"],
+      "active": [
+        "armstrmi"
+      ],
       "seeking_new": true
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "beta": ["metrics"]
+      "beta": [
+        "metrics"
+      ]
     }
   },
   "type": "receiver"

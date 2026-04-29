@@ -9,11 +9,22 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": ["aabmass", "dashpole", "braydonk", "jsuereth", "psx95", "ridwanmsharif"]
+      "active": [
+        "aabmass",
+        "dashpole",
+        "braydonk",
+        "jsuereth",
+        "psx95",
+        "ridwanmsharif"
+      ]
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "beta": ["metrics"]
+      "beta": [
+        "metrics"
+      ]
     }
   },
   "type": "exporter"

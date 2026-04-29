@@ -9,11 +9,18 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": ["MovieStoreGuy", "atoulme"]
+      "active": [
+        "MovieStoreGuy",
+        "atoulme"
+      ]
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "alpha": ["profiles"]
+      "alpha": [
+        "profiles"
+      ]
     }
   },
   "type": "receiver"

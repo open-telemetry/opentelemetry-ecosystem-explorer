@@ -6,7 +6,12 @@
     },
     "resolver": {
       "description": "Resolver used",
-      "enum": ["aws", "dns", "k8s", "static"],
+      "enum": [
+        "aws",
+        "dns",
+        "k8s",
+        "static"
+      ],
       "type": "string"
     },
     "success": {
@@ -24,14 +29,26 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": ["rlankfo"],
-      "emeritus": ["jpkrohling"],
+      "active": [
+        "rlankfo"
+      ],
+      "emeritus": [
+        "jpkrohling"
+      ],
       "seeking_new": true
     },
-    "distributions": ["contrib", "k8s"],
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
     "stability": {
-      "beta": ["logs", "traces"],
-      "development": ["metrics"]
+      "beta": [
+        "logs",
+        "traces"
+      ],
+      "development": [
+        "metrics"
+      ]
     }
   },
   "type": "exporter"

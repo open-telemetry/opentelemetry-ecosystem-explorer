@@ -9,11 +9,21 @@
   "status": {
     "class": "connector",
     "codeowners": {
-      "active": ["greatestusername", "shalper2", "crobert-1"]
+      "active": [
+        "greatestusername",
+        "shalper2",
+        "crobert-1"
+      ]
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "alpha": ["logs_to_metrics", "metrics_to_metrics", "traces_to_metrics"]
+      "alpha": [
+        "logs_to_metrics",
+        "metrics_to_metrics",
+        "traces_to_metrics"
+      ]
     }
   },
   "type": "connector"

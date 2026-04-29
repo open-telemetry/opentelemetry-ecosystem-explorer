@@ -9,12 +9,19 @@
   "status": {
     "class": "extension",
     "codeowners": {
-      "active": ["VihasMakwana"],
+      "active": [
+        "VihasMakwana"
+      ],
       "seeking_new": true
     },
-    "distributions": ["contrib", "k8s"],
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
     "stability": {
-      "alpha": ["extension"]
+      "alpha": [
+        "extension"
+      ]
     }
   },
   "type": "extension"

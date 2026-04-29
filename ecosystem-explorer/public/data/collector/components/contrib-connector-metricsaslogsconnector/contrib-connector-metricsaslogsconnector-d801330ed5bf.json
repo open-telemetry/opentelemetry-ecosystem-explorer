@@ -9,11 +9,15 @@
   "status": {
     "class": "connector",
     "codeowners": {
-      "active": ["atoulme"]
+      "active": [
+        "atoulme"
+      ]
     },
     "distributions": [],
     "stability": {
-      "development": ["metrics_to_logs"]
+      "development": [
+        "metrics_to_logs"
+      ]
     }
   },
   "type": "connector"

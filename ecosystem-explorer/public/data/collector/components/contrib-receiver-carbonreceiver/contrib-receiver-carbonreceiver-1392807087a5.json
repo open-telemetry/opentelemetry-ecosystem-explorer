@@ -9,13 +9,21 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": ["atoulme"],
-      "emeritus": ["aboguszewski-sumo"],
+      "active": [
+        "atoulme"
+      ],
+      "emeritus": [
+        "aboguszewski-sumo"
+      ],
       "seeking_new": true
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "beta": ["metrics"]
+      "beta": [
+        "metrics"
+      ]
     }
   },
   "type": "receiver"

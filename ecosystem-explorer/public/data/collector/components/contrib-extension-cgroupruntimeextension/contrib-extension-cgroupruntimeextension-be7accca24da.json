@@ -9,13 +9,23 @@
   "status": {
     "class": "extension",
     "codeowners": {
-      "active": ["mx-psi", "rogercoll"]
+      "active": [
+        "mx-psi",
+        "rogercoll"
+      ]
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "alpha": ["extension"]
+      "alpha": [
+        "extension"
+      ]
     },
-    "unsupported_platforms": ["darwin", "windows"]
+    "unsupported_platforms": [
+      "darwin",
+      "windows"
+    ]
   },
   "type": "extension"
 }

@@ -9,11 +9,17 @@
   "status": {
     "class": "extension",
     "codeowners": {
-      "active": ["constanca-m"]
+      "active": [
+        "constanca-m"
+      ]
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "alpha": ["extension"]
+      "alpha": [
+        "extension"
+      ]
     }
   },
   "type": "extension"

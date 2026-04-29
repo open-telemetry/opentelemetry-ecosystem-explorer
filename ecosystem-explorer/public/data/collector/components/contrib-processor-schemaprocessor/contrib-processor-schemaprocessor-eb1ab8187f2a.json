@@ -9,11 +9,19 @@
   "status": {
     "class": "processor",
     "codeowners": {
-      "active": ["MovieStoreGuy", "ankitpatel96", "dineshg13"]
+      "active": [
+        "MovieStoreGuy",
+        "ankitpatel96",
+        "dineshg13"
+      ]
     },
     "distributions": [],
     "stability": {
-      "development": ["logs", "metrics", "traces"]
+      "development": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
     }
   },
   "type": "processor"

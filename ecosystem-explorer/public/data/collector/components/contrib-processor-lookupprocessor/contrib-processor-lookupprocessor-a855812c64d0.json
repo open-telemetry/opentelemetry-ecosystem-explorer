@@ -9,11 +9,17 @@
   "status": {
     "class": "processor",
     "codeowners": {
-      "active": ["jsvd", "dehaansa", "VihasMakwana"]
+      "active": [
+        "jsvd",
+        "dehaansa",
+        "VihasMakwana"
+      ]
     },
     "distributions": [],
     "stability": {
-      "development": ["logs"]
+      "development": [
+        "logs"
+      ]
     }
   },
   "type": "processor"

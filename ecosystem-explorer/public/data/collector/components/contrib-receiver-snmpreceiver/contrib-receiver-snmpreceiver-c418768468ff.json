@@ -9,12 +9,20 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": ["tamir-michaeli"],
-      "emeritus": ["StefanKurek"]
+      "active": [
+        "tamir-michaeli"
+      ],
+      "emeritus": [
+        "StefanKurek"
+      ]
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "alpha": ["metrics"]
+      "alpha": [
+        "metrics"
+      ]
     }
   },
   "type": "receiver"

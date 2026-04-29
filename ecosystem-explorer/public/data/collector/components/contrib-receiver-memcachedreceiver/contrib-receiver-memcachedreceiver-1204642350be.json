@@ -2,27 +2,45 @@
   "attributes": {
     "command": {
       "description": "The type of command.",
-      "enum": ["flush", "get", "set", "touch"],
+      "enum": [
+        "flush",
+        "get",
+        "set",
+        "touch"
+      ],
       "type": "string"
     },
     "direction": {
       "description": "Direction of data flow.",
-      "enum": ["received", "sent"],
+      "enum": [
+        "received",
+        "sent"
+      ],
       "type": "string"
     },
     "operation": {
       "description": "The type of operation.",
-      "enum": ["decrement", "get", "increment"],
+      "enum": [
+        "decrement",
+        "get",
+        "increment"
+      ],
       "type": "string"
     },
     "state": {
       "description": "The type of CPU usage.",
-      "enum": ["system", "user"],
+      "enum": [
+        "system",
+        "user"
+      ],
       "type": "string"
     },
     "type": {
       "description": "Result of cache request.",
-      "enum": ["hit", "miss"],
+      "enum": [
+        "hit",
+        "miss"
+      ],
       "type": "string"
     }
   },
@@ -43,7 +61,9 @@
       "unit": "By"
     },
     "memcached.commands": {
-      "attributes": ["command"],
+      "attributes": [
+        "command"
+      ],
       "description": "Commands executed.",
       "enabled": true,
       "stability": "development",
@@ -79,7 +99,9 @@
       "unit": "{connections}"
     },
     "memcached.cpu.usage": {
-      "attributes": ["state"],
+      "attributes": [
+        "state"
+      ],
       "description": "Accumulated user and system time.",
       "enabled": true,
       "stability": "development",
@@ -115,7 +137,9 @@
       "unit": "{evictions}"
     },
     "memcached.network": {
-      "attributes": ["direction"],
+      "attributes": [
+        "direction"
+      ],
       "description": "Bytes transferred over the network.",
       "enabled": true,
       "stability": "development",
@@ -127,7 +151,9 @@
       "unit": "by"
     },
     "memcached.operation_hit_ratio": {
-      "attributes": ["operation"],
+      "attributes": [
+        "operation"
+      ],
       "description": "Hit ratio for operations, expressed as a percentage value between 0.0 and 100.0.",
       "enabled": true,
       "gauge": {
@@ -137,7 +163,10 @@
       "unit": "%"
     },
     "memcached.operations": {
-      "attributes": ["operation", "type"],
+      "attributes": [
+        "operation",
+        "type"
+      ],
       "description": "Operation counts.",
       "enabled": true,
       "stability": "development",
@@ -166,13 +195,21 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": ["jsirianni"],
-      "emeritus": ["djaglowski"],
+      "active": [
+        "jsirianni"
+      ],
+      "emeritus": [
+        "djaglowski"
+      ],
       "seeking_new": true
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "beta": ["metrics"]
+      "beta": [
+        "metrics"
+      ]
     }
   },
   "type": "receiver"

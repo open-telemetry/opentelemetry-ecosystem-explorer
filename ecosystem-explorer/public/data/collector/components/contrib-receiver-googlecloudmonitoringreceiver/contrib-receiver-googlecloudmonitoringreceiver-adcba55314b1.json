@@ -9,12 +9,21 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": ["dashpole", "TylerHelmuth"],
-      "emeritus": ["abhishek-at-cloudwerx"]
+      "active": [
+        "dashpole",
+        "TylerHelmuth"
+      ],
+      "emeritus": [
+        "abhishek-at-cloudwerx"
+      ]
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "alpha": ["metrics"]
+      "alpha": [
+        "metrics"
+      ]
     }
   },
   "type": "receiver"
