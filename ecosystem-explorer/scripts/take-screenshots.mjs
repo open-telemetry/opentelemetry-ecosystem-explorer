@@ -133,7 +133,7 @@ async function takeScreenshots() {
     });
     await page.waitForSelector('[role="tablist"]', {
       state: "visible",
-      timeout: 10000,
+      timeout: 20000,
     });
     // Details tab is active by default
     await page.screenshot({
@@ -167,6 +167,35 @@ async function takeScreenshots() {
       fullPage: true,
     });
     logTime("Configuration tab screenshot done");
+
+    // 6. Collector list
+    logTime("Taking collector list screenshot...");
+    await page.goto(`${BASE_URL}/collector/components`, {
+      waitUntil: "domcontentloaded",
+      timeout: 10000,
+    });
+    await page.waitForFunction(() => document.body.textContent.includes("Showing"), {
+      timeout: 15000,
+    });
+    await page.screenshot({ path: path.join(SCREENSHOTS_DIR, "collector-list.png") });
+    logTime("Collector list screenshot done");
+
+    // 7. Collector detail
+    logTime("Taking collector detail screenshot...");
+    // Use a known stable receiver for the screenshot
+    await page.goto(`${BASE_URL}/collector/components/latest/receiver-otlp`, {
+      waitUntil: "domcontentloaded",
+      timeout: 10000,
+    });
+    await page.waitForSelector('[role="tablist"]', {
+      state: "visible",
+      timeout: 20000,
+    });
+    await page.screenshot({
+      path: path.join(SCREENSHOTS_DIR, "collector-detail.png"),
+      fullPage: true,
+    });
+    logTime("Collector detail screenshot done");
 
     logTime("All screenshots completed successfully!");
   } catch (error) {

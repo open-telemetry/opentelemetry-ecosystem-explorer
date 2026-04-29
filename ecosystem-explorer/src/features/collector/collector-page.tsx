@@ -31,6 +31,7 @@ import { PageContainer } from "@/components/layout/page-container";
 import { GlowBadge } from "@/components/ui/glow-badge";
 import { DetailCard } from "@/components/ui/detail-card";
 import { useCollectorVersions, useCollectorComponents } from "@/hooks/use-collector-data";
+import { isEnabled } from "@/lib/feature-flags";
 
 export function CollectorPage() {
   const { version: urlVersion } = useParams<{ version: string }>();
@@ -97,7 +98,20 @@ export function CollectorPage() {
           </p>
         </header>
 
-        <div className="border-border/60 bg-card/80 relative overflow-hidden rounded-xl border p-6">
+        {!isEnabled("COLLECTOR_PAGE") ? (
+          <div className="border-border/40 bg-card/30 flex flex-col items-center justify-center rounded-2xl border-2 border-dashed py-24 text-center backdrop-blur-sm">
+            <div className="bg-primary/10 mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full">
+              <Box className="text-primary h-10 w-10 animate-pulse" aria-hidden="true" />
+            </div>
+            <h2 className="text-foreground text-2xl font-bold tracking-tight">Coming Soon</h2>
+            <p className="text-muted-foreground mx-auto mt-3 max-w-md text-lg leading-relaxed">
+              We're currently building the Collector component explorer. Stay tuned for a
+              comprehensive view of receivers, processors, and more!
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="border-border/60 bg-card/80 relative overflow-hidden rounded-xl border p-6">
           <div className="bg-gradient-radial from-secondary/5 via-primary/2 absolute inset-0 to-transparent opacity-50" />
 
           <div className="relative z-10 flex flex-col gap-6 md:flex-row md:items-end">
@@ -288,7 +302,9 @@ export function CollectorPage() {
             </div>
           </div>
         )}
-      </div>
-    </PageContainer>
+      </>
+    )}
+  </div>
+</PageContainer>
   );
 }

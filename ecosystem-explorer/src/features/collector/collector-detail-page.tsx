@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Info, ExternalLink, Code, AlertCircle, Loader2, Check, Users } from "lucide-react";
 import { GitHubIcon } from "@/components/icons/github-icon";
@@ -30,6 +31,19 @@ export function CollectorDetailPage() {
   const { version, id } = useParams<{ version: string; id: string }>();
   const navigate = useNavigate();
   const { data: component, loading, error } = useCollectorComponent(id ?? "", version ?? "");
+  const [activeTab, setActiveTab] = useState("details");
+
+  const getStabilityLabel = (level: string) => {
+    const labels: Record<string, string> = {
+      alpha: "Alpha",
+      beta: "Beta",
+      stable: "Stable",
+      deprecated: "Deprecated",
+      unmaintained: "Unmaintained",
+      development: "In Development",
+    };
+    return labels[level.toLowerCase()] || level;
+  };
 
   if (loading) {
     return (
@@ -82,7 +96,7 @@ export function CollectorDetailPage() {
   }
 
   const repositoryUrl = component.repository
-    ? `https://github.com/open-telemetry/${component.repository}`
+    ? `https://github.com/${component.repository}`
     : "https://github.com/open-telemetry/opentelemetry-collector-contrib";
 
   return (
@@ -101,10 +115,10 @@ export function CollectorDetailPage() {
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1 space-y-3">
                 <div className="flex items-center gap-2">
-                  <GlowBadge variant="info" className="text-[10px] tracking-wider uppercase">
+                  <GlowBadge variant="info" className="text-xs tracking-wider uppercase">
                     {component.type}
                   </GlowBadge>
-                  <GlowBadge variant="muted" className="text-[10px] tracking-wider uppercase">
+                  <GlowBadge variant="muted" className="text-xs tracking-wider uppercase">
                     {component.distribution}
                   </GlowBadge>
                 </div>
@@ -130,10 +144,10 @@ export function CollectorDetailPage() {
         </header>
 
         <div className="border-border/60 bg-card/80 relative overflow-hidden rounded-lg border">
-          <Tabs defaultValue="details" className="relative z-10">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="relative z-10">
             <div className="px-6 pt-4">
               <SegmentedTabList
-                value="details"
+                value={activeTab}
                 tabs={[
                   {
                     value: "details",
@@ -233,9 +247,9 @@ export function CollectorDetailPage() {
                             variant={
                               level === "stable" ? "success" : level === "beta" ? "info" : "warning"
                             }
-                            className="capitalize"
+                            className="text-xs capitalize"
                           >
-                            {level}
+                            {getStabilityLabel(level)}
                           </GlowBadge>
                           <div className="flex flex-wrap gap-2">
                             {signals.map((signal) => (
@@ -272,14 +286,28 @@ export function CollectorDetailPage() {
             </TabsContent>
 
             <TabsContent value="owners" className="mt-0 p-6">
-              {component.status?.distributions && component.status.distributions.length > 0 ? (
+              {component.status?.codeowners?.active &&
+              component.status.codeowners.active.length > 0 ? (
                 <div className="space-y-6">
-                  <SectionHeader>Available In Distributions</SectionHeader>
-                  <div className="flex flex-wrap gap-3">
-                    {component.status.distributions.map((dist) => (
-                      <DetailCard key={dist} withHoverEffect className="inline-flex">
-                        <div className="flex items-center gap-2 px-2">
-                          <span className="text-sm font-semibold capitalize">{dist}</span>
+                  <SectionHeader>Code Owners</SectionHeader>
+                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    {component.status.codeowners.active.map((owner: string) => (
+                      <DetailCard key={owner} withHoverEffect>
+                        <div className="flex items-center gap-3">
+                          <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
+                            <GitHubIcon className="text-primary h-5 w-5" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-semibold">{owner}</p>
+                            <a
+                              href={`https://github.com/${owner.replace("@", "")}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-primary text-xs hover:underline"
+                            >
+                              View profile
+                            </a>
+                          </div>
                         </div>
                       </DetailCard>
                     ))}
@@ -289,7 +317,7 @@ export function CollectorDetailPage() {
                 <div className="py-12 text-center">
                   <Users className="text-muted-foreground/30 mx-auto h-12 w-12" />
                   <p className="text-muted-foreground mt-4">
-                    No distribution information found in this registry entry.
+                    No code owner information found for this component.
                   </p>
                 </div>
               )}

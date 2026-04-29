@@ -44,6 +44,10 @@ export interface ComponentStatus {
   class: string;
   stability: Record<string, string[]>;
   distributions: string[];
+  codeowners?: {
+    active?: string[];
+    emeritus?: string[];
+  };
 }
 
 export interface CollectorIndex {

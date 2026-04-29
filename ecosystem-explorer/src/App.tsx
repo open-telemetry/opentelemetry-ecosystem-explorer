@@ -53,9 +53,9 @@ export default function App() {
                 element={<ConfigurationBuilderPage />}
               />
             )}
+            <Route path="/collector" element={<CollectorPage />} />
             {isEnabled("COLLECTOR_PAGE") && (
               <>
-                <Route path="/collector" element={<CollectorPage />} />
                 <Route path="/collector/components" element={<CollectorPage />} />
                 <Route path="/collector/components/:version" element={<CollectorPage />} />
                 <Route
