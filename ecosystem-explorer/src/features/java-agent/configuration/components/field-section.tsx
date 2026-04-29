@@ -179,7 +179,7 @@ function Body({ children }: { children: ReactNode }) {
   // body that's always visible.
   if (!headless && !open) return null;
   return (
-    <div id={bodyId} className="mt-3">
+    <div id={bodyId} className={headless ? undefined : "mt-3"}>
       {children}
     </div>
   );

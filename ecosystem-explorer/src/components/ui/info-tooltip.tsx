@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useId, type JSX } from "react";
+import { useId, useState, type JSX } from "react";
 import { Info } from "lucide-react";
 import * as HoverCard from "@radix-ui/react-hover-card";
 import { MarkdownDescription } from "./markdown-description";
@@ -36,16 +36,19 @@ export function InfoTooltip({
 }: InfoTooltipProps): JSX.Element | null {
   const autoId = useId();
   const id = describedById ?? autoId;
+  const [open, setOpen] = useState(false);
   if (text.trim() === "") return null;
 
   return (
     <span className={`relative inline-flex ${className ?? ""}`}>
-      <HoverCard.Root openDelay={100} closeDelay={150}>
+      <HoverCard.Root open={open} onOpenChange={setOpen} openDelay={100} closeDelay={150}>
         <HoverCard.Trigger asChild>
           <button
             type="button"
             aria-label="Description"
             aria-describedby={id}
+            onFocus={() => setOpen(true)}
+            onBlur={() => setOpen(false)}
             className="text-muted-foreground hover:text-foreground focus-visible:ring-primary/40 inline-flex h-4 w-4 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2"
           >
             <Info className="h-3 w-3" aria-hidden="true" />

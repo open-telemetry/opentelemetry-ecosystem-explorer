@@ -35,22 +35,27 @@ export function TruncatedDescription({
 
   return (
     <div className={className ?? "text-muted-foreground text-xs"}>
-      <MarkdownDescription text={summary} />
+      <p>
+        <MarkdownDescription text={summary} inline />
+        {rest !== null && (
+          <>
+            {" "}
+            <button
+              type="button"
+              onClick={() => setExpanded((e) => !e)}
+              aria-expanded={expanded}
+              aria-controls={tailId}
+              className="text-primary underline-offset-2 hover:underline"
+            >
+              {expanded ? "Show less" : "Show more"}
+            </button>
+          </>
+        )}
+      </p>
       {rest !== null && (
-        <>
-          <div id={tailId} data-testid="truncated-rest" hidden={!expanded}>
-            <MarkdownDescription text={rest} />
-          </div>
-          <button
-            type="button"
-            onClick={() => setExpanded((e) => !e)}
-            aria-expanded={expanded}
-            aria-controls={tailId}
-            className="text-primary underline-offset-2 hover:underline"
-          >
-            {expanded ? "Show less" : "Show more"}
-          </button>
-        </>
+        <div id={tailId} data-testid="truncated-rest" hidden={!expanded}>
+          <MarkdownDescription text={rest} />
+        </div>
       )}
     </div>
   );

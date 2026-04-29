@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 import type { ComponentProps, JSX } from "react";
+import { Fragment } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 interface MarkdownDescriptionProps {
   text: string;
   className?: string;
+  /** When true, do not wrap output in a `<div>` and unwrap the top-level `<p>`
+   *  so the rendered nodes flow inline with surrounding text. */
+  inline?: boolean;
 }
 
 const ALLOWED = ["p", "ul", "ol", "li", "a", "strong", "em", "code"];
@@ -41,8 +45,21 @@ function Anchor({ href, children, ...rest }: ComponentProps<"a">): JSX.Element {
 export function MarkdownDescription({
   text,
   className,
+  inline,
 }: MarkdownDescriptionProps): JSX.Element | null {
   if (text.trim() === "") return null;
+  if (inline) {
+    return (
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        allowedElements={ALLOWED}
+        unwrapDisallowed
+        components={{ a: Anchor, p: Fragment }}
+      >
+        {text}
+      </ReactMarkdown>
+    );
+  }
   return (
     <div className={className}>
       <ReactMarkdown

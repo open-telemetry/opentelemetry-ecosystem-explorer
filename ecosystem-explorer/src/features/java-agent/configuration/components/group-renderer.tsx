@@ -104,13 +104,17 @@ export function GroupRenderer({
     );
   }
 
-  // Nested group (depth >= 1).
+  // Nested group (depth >= 1). When headless, the parent owns the visible label
+  // (e.g. ListRenderer's item card header, PluginSelectRenderer's tablist), so
+  // skip role="group" on the FieldSection wrapper too — otherwise it would
+  // render an unnamed group.
   return (
     <FieldSection
       node={node}
       level="field"
       value={value}
       headless={headless}
+      asGroup={!headless}
       open={expanded}
       onOpenChange={setExpanded}
     >

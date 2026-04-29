@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { InfoTooltip } from "./info-tooltip";
 
 describe("InfoTooltip", () => {
@@ -54,6 +54,21 @@ describe("InfoTooltip", () => {
   it("starts with the hover card closed", () => {
     render(<InfoTooltip text="X" />);
     const trigger = screen.getByRole("button", { name: "Description" });
+    expect(trigger).toHaveAttribute("data-state", "closed");
+  });
+
+  it("opens the popup on focus so sighted keyboard users see it", () => {
+    render(<InfoTooltip text="Keyboard visible description." />);
+    const trigger = screen.getByRole("button", { name: "Description" });
+    fireEvent.focus(trigger);
+    expect(trigger).toHaveAttribute("data-state", "open");
+  });
+
+  it("closes the popup on blur", () => {
+    render(<InfoTooltip text="Keyboard visible description." />);
+    const trigger = screen.getByRole("button", { name: "Description" });
+    fireEvent.focus(trigger);
+    fireEvent.blur(trigger);
     expect(trigger).toHaveAttribute("data-state", "closed");
   });
 });
