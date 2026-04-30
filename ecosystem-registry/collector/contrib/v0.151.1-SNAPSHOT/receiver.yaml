@@ -9250,6 +9250,7 @@ components:
         active:
         - antonblock
         - ishleenk17
+        - cjksplunk
         seeking_new: true
         emeritus:
         - djaglowski
