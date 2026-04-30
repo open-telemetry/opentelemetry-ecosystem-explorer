@@ -13,11 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { describe, it, expect, vi } from "vitest";
+import { beforeAll, afterEach, describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { Configuration } from "@/types/javaagent";
 import { InstrumentationConfigurationTab } from "./instrumentation-configuration-tab";
+
+beforeAll(() => {
+  Object.defineProperty(navigator, "clipboard", {
+    configurable: true,
+    writable: true,
+    value: { writeText: vi.fn() },
+  });
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 const baseConfig: Configuration = {
   name: "otel.instrumentation.http.known-methods",
