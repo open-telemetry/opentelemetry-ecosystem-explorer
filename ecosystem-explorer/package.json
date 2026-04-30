@@ -9,9 +9,9 @@
   ],
   "scripts": {
     "serve": "vite",
-    "build": "tsc -b && vite build",
-    "netlify-build:preview": "tsc -b && vite build",
-    "netlify-build:production": "tsc -b && vite build",
+    "build": "tsc -b && vite build && node scripts/generate-agent-docs.mjs",
+    "netlify-build:preview": "tsc -b && vite build && node scripts/generate-agent-docs.mjs",
+    "netlify-build:production": "tsc -b && vite build && node scripts/generate-agent-docs.mjs",
     "typecheck": "tsc -b",
     "lint": "eslint .",
     "format": "prettier --write .",
