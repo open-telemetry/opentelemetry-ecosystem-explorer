@@ -18,7 +18,7 @@ repos:
         name: prettier
         entry: bunx prettier --write
         language: system
-        files: \.(js|ts|tsx|css|json|yaml|yml|md)$
+        files: \.(js|mjs|ts|tsx|css|json|yaml|yml|md)$
         exclude: ^ecosystem-explorer/public/data/
 
   - repo: local
@@ -60,7 +60,7 @@ repos:
         entry: uv run python scripts/add_copyright.py
         language: system
         pass_filenames: false
-        files: \.(py|js|ts|tsx)$
+        files: \.(py|js|mjs|ts|tsx)$
         stages: [pre-commit]
 
       - id: check-copyright-headers
@@ -68,5 +68,5 @@ repos:
         entry: uv run python scripts/check_copyright.py
         language: system
         pass_filenames: false
-        files: \.(py|js|ts|tsx)$
+        files: \.(py|js|mjs|ts|tsx)$
         stages: [pre-commit]
