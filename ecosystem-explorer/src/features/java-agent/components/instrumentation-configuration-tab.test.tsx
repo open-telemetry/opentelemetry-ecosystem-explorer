@@ -64,23 +64,22 @@ describe("InstrumentationConfigurationTab", () => {
     expect(screen.getByText("Known HTTP methods.")).toBeInTheDocument();
   });
 
-  it("defaults to System Properties format and shows the flat name", () => {
+  it("defaults to Declarative format and renders nested YAML", () => {
     render(<InstrumentationConfigurationTab configurations={[baseConfig]} />);
-    const nameEl = screen.getByTestId("config-name");
-    expect(nameEl.textContent).toBe(baseConfig.name);
-    expect(nameEl.tagName).toBe("CODE");
-  });
-
-  it("switches to Declarative format and renders nested YAML", async () => {
-    const user = userEvent.setup();
-    render(<InstrumentationConfigurationTab configurations={[baseConfig]} />);
-    await user.click(screen.getByRole("tab", { name: "Declarative" }));
-
     const nameEl = screen.getByTestId("config-name");
     // YamlCodeBlock renders a <pre> inside the wrapper div
     expect(nameEl.querySelector("pre")).not.toBeNull();
     expect(nameEl.textContent).toContain("java:");
     expect(nameEl.textContent).toContain("known_methods: <value>");
+  });
+
+  it("switches to System Properties format and shows the flat name", async () => {
+    const user = userEvent.setup();
+    render(<InstrumentationConfigurationTab configurations={[baseConfig]} />);
+    await user.click(screen.getByRole("tab", { name: "System Properties" }));
+    const nameEl = screen.getByTestId("config-name");
+    expect(nameEl.textContent).toBe(baseConfig.name);
+    expect(nameEl.tagName).toBe("CODE");
   });
 
   it("renders a `dev` stability badge when declarative_name has /development suffix", () => {

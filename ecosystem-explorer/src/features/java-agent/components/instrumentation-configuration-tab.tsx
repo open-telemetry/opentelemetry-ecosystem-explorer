@@ -21,8 +21,8 @@ import { SegmentedTabList } from "@/components/ui/segmented-tabs";
 import { ConfigurationCard, type ConfigurationFormat } from "./configuration-card";
 
 const FORMAT_TABS = [
-  { value: "system-property", label: "System Properties" },
   { value: "declarative", label: "Declarative" },
+  { value: "system-property", label: "System Properties" },
 ];
 
 interface InstrumentationConfigurationTabProps {
@@ -32,7 +32,7 @@ interface InstrumentationConfigurationTabProps {
 export function InstrumentationConfigurationTab({
   configurations,
 }: InstrumentationConfigurationTabProps) {
-  const [format, setFormat] = useState<ConfigurationFormat>("system-property");
+  const [format, setFormat] = useState<ConfigurationFormat>("declarative");
 
   if (configurations.length === 0) {
     return (
