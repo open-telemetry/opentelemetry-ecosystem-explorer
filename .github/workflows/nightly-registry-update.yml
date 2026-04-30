@@ -141,7 +141,7 @@ jobs:
       contents: read
       issues: write
     needs: [synchronize-inventory]
-    if: always()
+    if: ${{ !cancelled() && needs.synchronize-inventory.result != 'skipped' }}
     uses: ./.github/workflows/reusable-workflow-notification.yml
     with:
       success: ${{ needs.synchronize-inventory.outputs.collector_result == 'success' }}
@@ -152,7 +152,7 @@ jobs:
       contents: read
       issues: write
     needs: [synchronize-inventory]
-    if: always()
+    if: ${{ !cancelled() && needs.synchronize-inventory.result != 'skipped' }}
     uses: ./.github/workflows/reusable-workflow-notification.yml
     with:
       success: ${{ needs.synchronize-inventory.outputs.java_result == 'success' }}
@@ -163,7 +163,7 @@ jobs:
       contents: read
       issues: write
     needs: [synchronize-inventory]
-    if: always()
+    if: ${{ !cancelled() && needs.synchronize-inventory.result != 'skipped' }}
     uses: ./.github/workflows/reusable-workflow-notification.yml
     with:
       success: ${{ needs.synchronize-inventory.outputs.configuration_result == 'success' }}
