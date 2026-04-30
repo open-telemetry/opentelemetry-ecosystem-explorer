@@ -15,6 +15,7 @@
  */
 import { JavaInstrumentationIcon } from "@/components/icons/java-instrumentation-icon";
 import { ConfigurationIcon } from "@/components/icons/configuration-icon";
+import { ReleaseIcon } from "@/components/icons/release-icon";
 import { NavigationCard } from "@/components/ui/navigation-card";
 
 export function AgentExploreLanding() {
@@ -33,6 +34,12 @@ export function AgentExploreLanding() {
             description="Discover options for configuring the Java Agent and instrumentation."
             href="/java-agent/configuration"
             icon={<ConfigurationIcon className="h-20 w-20" />}
+          />
+          <NavigationCard
+            title="Releases"
+            description="Compare Java Agent versions to see changes in telemetry and configuration."
+            href="/java-agent/releases"
+            icon={<ReleaseIcon className="h-20 w-20" />}
           />
         </div>
       </div>
