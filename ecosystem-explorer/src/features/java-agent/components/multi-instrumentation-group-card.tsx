@@ -20,6 +20,7 @@ import type { FilterState } from "./instrumentation-filter-bar";
 import { getAggregatedBadgeInfo } from "../utils/badge-info";
 import { TargetBadges, TelemetryBadges } from "./instrumentation-badges";
 import { SubInstrumentationItem } from "./sub-instrumentation-item";
+import { renderWithInlineCode } from "@/lib/render-inline-code";
 
 interface MultiInstrumentationGroupCardProps {
   group: InstrumentationGroup;
@@ -84,7 +85,7 @@ export function MultiInstrumentationGroupCard({
 
           {description && (
             <p className="text-muted-foreground line-clamp-2 pl-8 text-sm leading-relaxed">
-              {description}
+              {renderWithInlineCode(description)}
             </p>
           )}
 

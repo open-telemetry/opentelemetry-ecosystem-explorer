@@ -20,6 +20,7 @@ import { GlowBadge } from "@/components/ui/glow-badge";
 import { StabilityBadge } from "@/components/ui/stability-badge";
 import { YamlCodeBlock } from "../configuration/components/yaml-code-block";
 import { formatDeclarativeYaml, getStabilityLabel } from "../utils/format";
+import { renderWithInlineCode } from "@/lib/render-inline-code";
 
 export type ConfigurationFormat = "system-property" | "declarative";
 
@@ -74,7 +75,9 @@ export function ConfigurationCard({ config, format }: ConfigurationCardProps) {
           </div>
         </div>
 
-        <p className="text-muted-foreground text-sm leading-relaxed">{config.description}</p>
+        <p className="text-muted-foreground text-sm leading-relaxed">
+          {renderWithInlineCode(config.description)}
+        </p>
 
         <div className="border-border/30 bg-muted/30 flex items-start gap-2 rounded-lg border p-3">
           <span className="text-muted-foreground shrink-0 text-xs font-medium">Default:</span>
