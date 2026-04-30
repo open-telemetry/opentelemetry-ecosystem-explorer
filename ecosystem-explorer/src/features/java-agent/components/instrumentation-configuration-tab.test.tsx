@@ -126,9 +126,7 @@ describe("InstrumentationConfigurationTab", () => {
 
   it("copies the flat name to clipboard in System Properties mode", async () => {
     const user = userEvent.setup();
-    const writeText = vi
-      .spyOn(navigator.clipboard, "writeText")
-      .mockResolvedValue(undefined);
+    const writeText = vi.spyOn(navigator.clipboard, "writeText").mockResolvedValue(undefined);
 
     render(<InstrumentationConfigurationTab configurations={[baseConfig]} />);
     await user.click(screen.getByRole("button", { name: "Copy" }));
@@ -139,9 +137,7 @@ describe("InstrumentationConfigurationTab", () => {
 
   it("copies the YAML snippet in Declarative mode", async () => {
     const user = userEvent.setup();
-    const writeText = vi
-      .spyOn(navigator.clipboard, "writeText")
-      .mockResolvedValue(undefined);
+    const writeText = vi.spyOn(navigator.clipboard, "writeText").mockResolvedValue(undefined);
 
     render(<InstrumentationConfigurationTab configurations={[baseConfig]} />);
     await user.click(screen.getByRole("tab", { name: "Declarative" }));

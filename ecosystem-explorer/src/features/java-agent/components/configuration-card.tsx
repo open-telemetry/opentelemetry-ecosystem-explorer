@@ -29,9 +29,7 @@ interface ConfigurationCardProps {
 }
 
 export function ConfigurationCard({ config, format }: ConfigurationCardProps) {
-  const stability = config.declarative_name
-    ? getStabilityLabel(config.declarative_name)
-    : null;
+  const stability = config.declarative_name ? getStabilityLabel(config.declarative_name) : null;
 
   const showDeclarative = format === "declarative" && Boolean(config.declarative_name);
   const yamlCode = config.declarative_name
