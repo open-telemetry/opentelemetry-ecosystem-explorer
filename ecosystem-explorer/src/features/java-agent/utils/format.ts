@@ -153,3 +153,23 @@ export function getInstrumentationDisplayName(instrumentation: InstrumentationDa
 
   return name;
 }
+
+export function getStabilityLabel(declarativeName: string): string | null {
+  const idx = declarativeName.indexOf("/");
+  if (idx === -1) return null;
+  // The suffix may contain dots (e.g. "development.enabled") — take the segment up to the next dot
+  const suffix = declarativeName.slice(idx + 1);
+  const dot = suffix.indexOf(".");
+  return dot === -1 ? suffix : suffix.slice(0, dot);
+}
+
+export function formatDeclarativeYaml(declarativeName: string, value: string): string {
+  const baseName = declarativeName.includes("/")
+    ? declarativeName.slice(0, declarativeName.indexOf("/"))
+    : declarativeName;
+  const parts = baseName.split(".");
+  return parts
+    .map((part, i) => `${"  ".repeat(i)}${part}:`)
+    .join("\n")
+    .replace(/:$/, `: ${value}`);
+}

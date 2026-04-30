@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 import { describe, it, expect } from "vitest";
-import { getInstrumentationDisplayName, getSemanticConventionInfo, getFeatureInfo } from "./format";
+import {
+  getInstrumentationDisplayName,
+  getSemanticConventionInfo,
+  getFeatureInfo,
+  getStabilityLabel,
+  formatDeclarativeYaml,
+} from "./format";
 import type { InstrumentationData } from "@/types/javaagent";
 
 describe("getInstrumentationDisplayName", () => {
@@ -157,5 +163,50 @@ describe("getFeatureInfo", () => {
 
   it("returns null for an empty string", () => {
     expect(getFeatureInfo("")).toBeNull();
+  });
+});
+
+describe("getStabilityLabel", () => {
+  it("returns null when no slash is present", () => {
+    expect(getStabilityLabel("java.common.http.known_methods")).toBeNull();
+  });
+
+  it("returns the suffix after the slash", () => {
+    expect(
+      getStabilityLabel("java.common.http.client.emit_experimental_telemetry/development")
+    ).toBe("development");
+  });
+
+  it("strips any segment after the first dot in the suffix", () => {
+    expect(getStabilityLabel("java.common.messaging.receive_telemetry/development.enabled")).toBe(
+      "development"
+    );
+  });
+
+  it("returns empty string when slash is the last character", () => {
+    expect(getStabilityLabel("foo/")).toBe("");
+  });
+});
+
+describe("formatDeclarativeYaml", () => {
+  it("formats a single-segment name", () => {
+    expect(formatDeclarativeYaml("foo", "<value>")).toBe("foo: <value>");
+  });
+
+  it("formats a multi-segment dotted path with nested indentation", () => {
+    expect(formatDeclarativeYaml("java.common.http.known_methods", "<value>")).toBe(
+      "java:\n  common:\n    http:\n      known_methods: <value>"
+    );
+  });
+
+  it("strips the stability suffix before formatting", () => {
+    expect(
+      formatDeclarativeYaml(
+        "java.common.http.client.emit_experimental_telemetry/development",
+        "<value>"
+      )
+    ).toBe(
+      "java:\n  common:\n    http:\n      client:\n        emit_experimental_telemetry: <value>"
+    );
   });
 });
