@@ -45,6 +45,7 @@ import { VersionSelector } from "./components/version-selector";
 import { PageContainer } from "@/components/layout/page-container";
 import { Tooltip } from "@/components/ui/tooltip";
 import { InstrumentationConfigurationTab } from "./components/instrumentation-configuration-tab";
+import { renderWithInlineCode } from "@/lib/render-inline-code";
 
 function buildSourceUrl(sourcePath: string): string {
   try {
@@ -222,7 +223,7 @@ export function InstrumentationDetailPage() {
 
             {instrumentation.description && (
               <p className="text-muted-foreground max-w-4xl text-base leading-relaxed">
-                {instrumentation.description}
+                {renderWithInlineCode(instrumentation.description)}
               </p>
             )}
           </div>
