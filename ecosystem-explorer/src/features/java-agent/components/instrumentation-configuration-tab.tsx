@@ -45,6 +45,20 @@ export function InstrumentationConfigurationTab({
     );
   }
 
+  const hasAnyDeclarativeName = configurations.some((c) => Boolean(c.declarative_name));
+
+  const grid = (cardFormat: ConfigurationFormat) => (
+    <div className="grid gap-4 md:grid-cols-2">
+      {configurations.map((config) => (
+        <ConfigurationCard key={config.name} config={config} format={cardFormat} />
+      ))}
+    </div>
+  );
+
+  if (!hasAnyDeclarativeName) {
+    return grid("system-property");
+  }
+
   return (
     <Tabs
       className="space-y-6"
@@ -52,22 +66,8 @@ export function InstrumentationConfigurationTab({
       onValueChange={(v) => setFormat(v as ConfigurationFormat)}
     >
       <SegmentedTabList tabs={FORMAT_TABS} value={format} />
-
-      <TabsContent value="declarative">
-        <div className="grid gap-4 md:grid-cols-2">
-          {configurations.map((config) => (
-            <ConfigurationCard key={config.name} config={config} format="declarative" />
-          ))}
-        </div>
-      </TabsContent>
-
-      <TabsContent value="system-property">
-        <div className="grid gap-4 md:grid-cols-2">
-          {configurations.map((config) => (
-            <ConfigurationCard key={config.name} config={config} format="system-property" />
-          ))}
-        </div>
-      </TabsContent>
+      <TabsContent value="declarative">{grid("declarative")}</TabsContent>
+      <TabsContent value="system-property">{grid("system-property")}</TabsContent>
     </Tabs>
   );
 }

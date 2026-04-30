@@ -63,6 +63,31 @@ const exampleConfig: Configuration = {
   example: ["foo", "bar"],
 };
 
+// Mirrors the real JDBC instrumentation dataset (no declarative_name on any
+// entry). Source: public/data/javaagent/instrumentations/jdbc/*.json.
+const jdbcLikeConfigs: Configuration[] = [
+  {
+    name: "otel.instrumentation.jdbc.query-sanitization.enabled",
+    description:
+      "Enables query sanitization for database queries. Takes precedence over otel.instrumentation.common.db.query-sanitization.enabled.",
+    type: "boolean",
+    default: true,
+  },
+  {
+    name: "otel.instrumentation.jdbc.experimental.transaction.enabled",
+    description:
+      "Enables experimental instrumentation to create spans for COMMIT and ROLLBACK operations.",
+    type: "boolean",
+    default: false,
+  },
+  {
+    name: "otel.instrumentation.common.peer-service-mapping",
+    description: "Used to specify a mapping from host names or IP addresses to peer services.",
+    type: "map",
+    default: "",
+  },
+];
+
 describe("InstrumentationConfigurationTab", () => {
   it("renders the empty state when there are no configurations", () => {
     render(<InstrumentationConfigurationTab configurations={[]} />);
@@ -128,11 +153,13 @@ describe("InstrumentationConfigurationTab", () => {
 
   it("falls back to flat name in Declarative mode if declarative_name is missing", async () => {
     const user = userEvent.setup();
-    render(<InstrumentationConfigurationTab configurations={[exampleConfig]} />);
+    render(<InstrumentationConfigurationTab configurations={[baseConfig, exampleConfig]} />);
     await user.click(screen.getByRole("tab", { name: "Declarative" }));
-    const nameEl = screen.getByTestId("config-name");
-    expect(nameEl.textContent).toBe(exampleConfig.name);
-    expect(nameEl.tagName).toBe("CODE");
+    const fallback = screen
+      .getAllByTestId("config-name")
+      .find((el) => el.textContent === exampleConfig.name);
+    expect(fallback).toBeDefined();
+    expect(fallback?.tagName).toBe("CODE");
   });
 
   it("copies the flat name to clipboard in System Properties mode", async () => {
@@ -145,6 +172,27 @@ describe("InstrumentationConfigurationTab", () => {
 
     expect(writeText).toHaveBeenCalledWith(baseConfig.name);
     expect(await screen.findByRole("button", { name: "Copied" })).toBeInTheDocument();
+  });
+
+  it("hides the format toggle when no configuration has a declarative_name (JDBC-like)", () => {
+    render(<InstrumentationConfigurationTab configurations={jdbcLikeConfigs} />);
+
+    expect(screen.queryByRole("tab", { name: "Declarative" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "System Properties" })).not.toBeInTheDocument();
+
+    const names = screen.getAllByTestId("config-name");
+    expect(names).toHaveLength(jdbcLikeConfigs.length);
+    for (const [i, nameEl] of names.entries()) {
+      expect(nameEl.tagName).toBe("CODE");
+      expect(nameEl.textContent).toBe(jdbcLikeConfigs[i].name);
+    }
+  });
+
+  it("shows the format toggle when at least one configuration has a declarative_name", () => {
+    render(<InstrumentationConfigurationTab configurations={[baseConfig, exampleConfig]} />);
+
+    expect(screen.getByRole("tab", { name: "Declarative" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "System Properties" })).toBeInTheDocument();
   });
 
   it("copies the YAML snippet in Declarative mode", async () => {
