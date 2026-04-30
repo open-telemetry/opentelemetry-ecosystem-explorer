@@ -16,7 +16,7 @@
 import { useState } from "react";
 import { Settings } from "lucide-react";
 import type { Configuration } from "@/types/javaagent";
-import { Tabs } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { SegmentedTabList } from "@/components/ui/segmented-tabs";
 import { ConfigurationCard, type ConfigurationFormat } from "./configuration-card";
 
@@ -46,16 +46,28 @@ export function InstrumentationConfigurationTab({
   }
 
   return (
-    <div className="space-y-6">
-      <Tabs value={format} onValueChange={(v) => setFormat(v as ConfigurationFormat)}>
-        <SegmentedTabList tabs={FORMAT_TABS} value={format} />
-      </Tabs>
+    <Tabs
+      className="space-y-6"
+      value={format}
+      onValueChange={(v) => setFormat(v as ConfigurationFormat)}
+    >
+      <SegmentedTabList tabs={FORMAT_TABS} value={format} />
 
-      <div className="grid gap-4 md:grid-cols-2">
-        {configurations.map((config) => (
-          <ConfigurationCard key={config.name} config={config} format={format} />
-        ))}
-      </div>
-    </div>
+      <TabsContent value="declarative">
+        <div className="grid gap-4 md:grid-cols-2">
+          {configurations.map((config) => (
+            <ConfigurationCard key={config.name} config={config} format="declarative" />
+          ))}
+        </div>
+      </TabsContent>
+
+      <TabsContent value="system-property">
+        <div className="grid gap-4 md:grid-cols-2">
+          {configurations.map((config) => (
+            <ConfigurationCard key={config.name} config={config} format="system-property" />
+          ))}
+        </div>
+      </TabsContent>
+    </Tabs>
   );
 }
