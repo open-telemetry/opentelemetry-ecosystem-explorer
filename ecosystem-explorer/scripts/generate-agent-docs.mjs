@@ -24,6 +24,8 @@ const rootDir = path.join(__dirname, "..");
 const publicDir = path.join(rootDir, "public");
 const distDir = path.join(rootDir, "dist");
 const agentDir = path.join(distDir, "agent");
+const collectorAgentDir = path.join(agentDir, "collector");
+const javaagentAgentDir = path.join(agentDir, "javaagent");
 
 /**
  * Generates agent-accessible documentation in the dist directory.
@@ -33,8 +35,10 @@ const agentDir = path.join(distDir, "agent");
 async function generateDocs() {
   console.log("Generating Agent Markdown Docs...");
 
-  await fs.mkdir(agentDir, { recursive: true });
+  await fs.mkdir(collectorAgentDir, { recursive: true });
+  await fs.mkdir(javaagentAgentDir, { recursive: true });
 
+  // --- Collector Docs ---
   const collectorIndexRaw = await fs.readFile(
     path.join(publicDir, "data/collector/index.json"),
     "utf-8"
@@ -48,11 +52,25 @@ async function generateDocs() {
     collectorMd += `| ${displayName} | \`${comp.id}\` | \`${comp.stability}\` | [/data/collector/components/${comp.id}.json](/data/collector/components/${comp.id}.json) |\n`;
   }
 
-  collectorMd += `\n## Navigating Versions\n\nTo explore specific versions, fetch the versions index at [/data/collector/versions-index.json](/data/collector/versions-index.json).\n`;
-  await fs.writeFile(path.join(agentDir, "collector.md"), collectorMd);
-  console.log(" - Generated dist/agent/collector.md");
+  collectorMd += `\n## Navigating Versions\n\nTo explore specific versions, refer to the [Versions Index](/agent/collector/versions.md).\n`;
+  await fs.writeFile(path.join(collectorAgentDir, "index.md"), collectorMd);
+  console.log(" - Generated dist/agent/collector/index.md");
 
-  // Resolve the latest version to generate a current instrumentation index
+  // Collector Versions
+  const collectorVersionsRaw = await fs.readFile(
+    path.join(publicDir, "data/collector/versions-index.json"),
+    "utf-8"
+  );
+  const collectorVersions = JSON.parse(collectorVersionsRaw);
+
+  let collectorVersionsMd = `# Collector Versions\n\nThis is an index of available OpenTelemetry Collector versions.\n\n| Version | Index URL | Is Latest |\n| --- | --- | --- |\n`;
+  for (const v of collectorVersions.versions) {
+    collectorVersionsMd += `| ${v.version} | [/data/collector/versions/${v.version}-index.json](/data/collector/versions/${v.version}-index.json) | ${v.is_latest ? "Yes" : "No"} |\n`;
+  }
+  await fs.writeFile(path.join(collectorAgentDir, "versions.md"), collectorVersionsMd);
+  console.log(" - Generated dist/agent/collector/versions.md");
+
+  // --- Java Agent Docs ---
   const javaagentVersionsRaw = await fs.readFile(
     path.join(publicDir, "data/javaagent/versions-index.json"),
     "utf-8"
@@ -69,7 +87,6 @@ async function generateDocs() {
     );
     const manifest = JSON.parse(manifestRaw);
 
-    // Merge core and custom instrumentations for a complete index
     const allInstrumentations = {
       ...manifest.instrumentations,
       ...manifest.custom_instrumentations,
@@ -90,17 +107,28 @@ async function generateDocs() {
     }
   }
 
-  javaagentMd += `\n## Navigating Versions\n\nTo explore specific versions or see a changelog of components, fetch the versions index at [/data/javaagent/versions-index.json](/data/javaagent/versions-index.json).\n`;
-  await fs.writeFile(path.join(agentDir, "javaagent.md"), javaagentMd);
-  console.log(" - Generated dist/agent/javaagent.md");
+  javaagentMd += `\n## Navigating Versions\n\nTo explore specific versions or see a changelog of components, refer to the [Versions Index](/agent/javaagent/versions.md).\n`;
+  await fs.writeFile(path.join(javaagentAgentDir, "index.md"), javaagentMd);
+  console.log(" - Generated dist/agent/javaagent/index.md");
 
+  // Java Agent Versions
+  let javaagentVersionsMd = `# Java Agent Versions\n\nThis is an index of available OpenTelemetry Java Agent versions.\n\n| Version | Index URL | Is Latest |\n| --- | --- | --- |\n`;
+  for (const v of javaagentVersions.versions) {
+    javaagentVersionsMd += `| ${v.version} | [/data/javaagent/versions/${v.version}-index.json](/data/javaagent/versions/${v.version}-index.json) | ${v.is_latest ? "Yes" : "No"} |\n`;
+  }
+  await fs.writeFile(path.join(javaagentAgentDir, "versions.md"), javaagentVersionsMd);
+  console.log(" - Generated dist/agent/javaagent/versions.md");
+
+  // --- llms.txt ---
   const llmsTxt = `# OpenTelemetry Ecosystem Explorer
 
 This site contains metadata about the OpenTelemetry ecosystem.
 For agent consumption, we provide index files that point to our structured JSON datasets:
 
-- [Collector Components](/agent/collector.md)
-- [Java Agent Instrumentations](/agent/javaagent.md)
+- [Collector Components](/agent/collector/index.md)
+- [Collector Versions](/agent/collector/versions.md)
+- [Java Agent Instrumentations](/agent/javaagent/index.md)
+- [Java Agent Versions](/agent/javaagent/versions.md)
 `;
   await fs.writeFile(path.join(distDir, "llms.txt"), llmsTxt);
   console.log(" - Generated dist/llms.txt");
