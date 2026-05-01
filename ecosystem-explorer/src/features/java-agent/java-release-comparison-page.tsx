@@ -44,8 +44,8 @@ export function JavaReleaseComparisonPage() {
           </div>
           <h2 className="text-xl font-semibold">Under Development</h2>
           <p className="text-muted-foreground mt-2 max-w-md">
-            The Java Agent Release Comparison tool is currently being built. 
-            Check back soon to compare telemetry changes across versions.
+            The Java Agent Release Comparison tool is currently being built. Check back soon to
+            compare telemetry changes across versions.
           </p>
         </div>
       </div>
