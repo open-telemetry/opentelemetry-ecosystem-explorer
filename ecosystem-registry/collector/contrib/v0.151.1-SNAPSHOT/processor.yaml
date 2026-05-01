@@ -241,6 +241,7 @@ components:
       codeowners:
         active:
         - atoulme
+        - aarvee11
 - name: k8sattributesprocessor
   metadata:
     type: k8s_attributes
