@@ -7322,6 +7322,42 @@ components:
         - direction
         - interface
         stability: development
+      k8s.node.system_container.cpu.time:
+        description: Total cumulative CPU time (sum of all cores) spent by the system
+          container since its creation
+        unit: s
+        enabled: false
+        sum:
+          value_type: double
+          monotonic: true
+          aggregation_temporality: cumulative
+        attributes: []
+        stability: development
+      k8s.node.system_container.cpu.usage:
+        description: Total CPU usage (sum of all cores per second) averaged over the
+          sample window for the system container
+        unit: '{cpu}'
+        enabled: false
+        gauge:
+          value_type: double
+        attributes: []
+        stability: development
+      k8s.node.system_container.memory.usage:
+        description: System container memory usage
+        unit: By
+        enabled: false
+        gauge:
+          value_type: int
+        attributes: []
+        stability: development
+      k8s.node.system_container.memory.working_set:
+        description: System container memory working_set
+        unit: By
+        enabled: false
+        gauge:
+          value_type: int
+        attributes: []
+        stability: development
       k8s.node.uptime:
         description: The time since the node started
         unit: s
@@ -7588,6 +7624,9 @@ components:
         type: string
       k8s.node.name:
         description: The name of the Node
+        type: string
+      k8s.node.system_container.name:
+        description: The name of the system container
         type: string
       k8s.persistentvolumeclaim.name:
         description: The name of the Persistent Volume Claim
