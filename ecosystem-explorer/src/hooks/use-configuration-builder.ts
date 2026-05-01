@@ -45,6 +45,7 @@ import {
 } from "@/lib/schema-defaults";
 import { hydrateStarterState } from "@/lib/state-hydrate";
 import { buildListItemIds } from "@/lib/build-list-item-ids";
+import { load as loadYaml } from "js-yaml";
 import { isPlainObject } from "@/lib/value-guards";
 import {
   validateField as validateFieldNode,
@@ -225,8 +226,7 @@ export function useConfigurationBuilderState(
   const loadFromYaml = useCallback(async (yaml: string) => {
     let parsed: unknown;
     try {
-      const jsYaml = await import("js-yaml");
-      parsed = jsYaml.load(yaml);
+      parsed = loadYaml(yaml);
     } catch (error) {
       throw new Error("Failed to parse YAML configuration", { cause: error });
     }
