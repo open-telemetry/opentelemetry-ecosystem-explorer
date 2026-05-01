@@ -48,7 +48,9 @@ export default function App() {
               element={<InstrumentationDetailPage />}
             />
             <Route path="/java-agent/configuration" element={<JavaConfigurationListPage />} />
-            <Route path="/java-agent/releases" element={<JavaReleaseComparisonPage />} />
+            {isEnabled("JAVA_RELEASE_COMPARISON") && (
+              <Route path="/java-agent/releases" element={<JavaReleaseComparisonPage />} />
+            )}
             {isEnabled("JAVA_CONFIG_BUILDER") && (
               <Route
                 path="/java-agent/configuration/builder"
