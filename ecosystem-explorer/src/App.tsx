@@ -23,6 +23,7 @@ import { CollectorDetailPage } from "@/features/collector/collector-detail-page"
 import { NotFoundPage } from "@/features/not-found/not-found-page";
 import { JavaInstrumentationListPage } from "@/features/java-agent/java-instrumentation-list-page";
 import { JavaConfigurationListPage } from "@/features/java-agent/java-configuration-list-page";
+import { JavaReleaseComparisonPage } from "@/features/java-agent/java-release-comparison-page";
 import { InstrumentationDetailPage } from "@/features/java-agent/instrumentation-detail-page";
 import { ConfigurationBuilderPage } from "@/features/java-agent/configuration/configuration-builder-page";
 import { AboutPage } from "@/features/about/about-page";
@@ -47,6 +48,9 @@ export default function App() {
               element={<InstrumentationDetailPage />}
             />
             <Route path="/java-agent/configuration" element={<JavaConfigurationListPage />} />
+            {isEnabled("JAVA_RELEASE_COMPARISON") && (
+              <Route path="/java-agent/releases" element={<JavaReleaseComparisonPage />} />
+            )}
             {isEnabled("JAVA_CONFIG_BUILDER") && (
               <Route
                 path="/java-agent/configuration/builder"
