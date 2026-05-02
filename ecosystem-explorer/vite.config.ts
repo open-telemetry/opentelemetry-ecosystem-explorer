@@ -28,13 +28,20 @@ export default defineConfig({
     rolldownOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes("node_modules/react") || id.includes("node_modules/react-dom") || id.includes("node_modules/react-router")) {
+          if (
+            id.includes("node_modules/react") ||
+            id.includes("node_modules/react-dom") ||
+            id.includes("node_modules/react-router")
+          ) {
             return "vendor-react";
           }
           if (id.includes("node_modules/js-yaml")) {
             return "vendor-yaml";
           }
-          if (id.includes("node_modules/react-markdown") || id.includes("node_modules/remark-gfm")) {
+          if (
+            id.includes("node_modules/react-markdown") ||
+            id.includes("node_modules/remark-gfm")
+          ) {
             return "vendor-markdown";
           }
           if (id.includes("node_modules/lucide-react")) {
