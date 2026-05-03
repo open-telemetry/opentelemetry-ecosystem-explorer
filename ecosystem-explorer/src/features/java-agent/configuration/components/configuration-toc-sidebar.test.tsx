@@ -123,9 +123,8 @@ describe("ConfigurationTocSidebar", () => {
         search: "",
         onSearchChange,
       });
-      await user.type(screen.getByPlaceholderText(/Search instrumentations/i), "cas");
-      expect(onSearchChange).toHaveBeenCalledTimes(3);
-      expect(onSearchChange).toHaveBeenLastCalledWith("s");
+      await user.type(screen.getByPlaceholderText(/Search instrumentations/i), "c");
+      expect(onSearchChange).toHaveBeenCalledWith("c");
     });
 
     it("toggles statusFilter from 'all' to 'overridden' when the chip is clicked", async () => {

@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 import { useCallback, useMemo, type JSX } from "react";
-import type { InstrumentationData } from "@/types/javaagent";
-import type { ConfigValue, ConfigValues } from "@/types/configuration-builder";
+import type { InstrumentationModule } from "@/types/javaagent";
 import { useInstrumentations } from "@/hooks/use-javaagent-data";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
+import { useOverrideStatusMap, type OverrideStatus } from "@/hooks/use-override-status";
+import { groupByModule } from "@/lib/normalize-instrumentation";
 import { SectionCardShell } from "./section-card-shell";
 import { InstrumentationRow } from "./instrumentation-row";
 
@@ -27,78 +28,52 @@ export interface InstrumentationBrowserProps {
   statusFilter: "all" | "overridden";
 }
 
-const SECTION_KEY = "instrumentation/development";
-const LANG = "java";
-
-type OverrideEntry = { enabled?: boolean } | undefined;
-
 export function InstrumentationBrowser({
   version,
   search,
   statusFilter,
 }: InstrumentationBrowserProps): JSX.Element {
   const { data: instrumentations, loading, error } = useInstrumentations(version);
-  const { state, setValueByPath, setEnabled, removeMapEntry } = useConfigurationBuilder();
+  const { setOverride } = useConfigurationBuilder();
+  const overrideMap = useOverrideStatusMap();
 
-  const overrides = useMemo<Record<string, OverrideEntry>>(() => {
-    const section = state.values[SECTION_KEY];
-    if (!isPlainObject(section)) return {};
-    const lang = section[LANG];
-    if (!isPlainObject(lang)) return {};
-    return lang as Record<string, OverrideEntry>;
-  }, [state.values]);
-
-  const sorted = useMemo(() => {
-    if (!instrumentations) return [];
-    return [...instrumentations].sort((a, b) => a.name.localeCompare(b.name));
-  }, [instrumentations]);
-
-  const overrideCount = useMemo(
-    () => sorted.filter((i) => isOverridden(overrides[i.name])).length,
-    [sorted, overrides]
+  const modules = useMemo<InstrumentationModule[]>(
+    () => (instrumentations ? groupByModule(instrumentations) : []),
+    [instrumentations]
   );
+
+  const overrideCount = overrideMap.size;
 
   const trimmedSearch = search.trim();
   const filtered = useMemo(() => {
     const q = trimmedSearch.toLowerCase();
-    return sorted.filter((inst) => {
-      if (statusFilter === "overridden" && !isOverridden(overrides[inst.name])) return false;
-      if (q && !matchesQuery(inst, q)) return false;
+    return modules.filter((m) => {
+      if (statusFilter === "overridden" && (overrideMap.get(m.name) ?? "none") === "none")
+        return false;
+      if (q && !matchesQuery(m, q)) return false;
       return true;
     });
-  }, [sorted, overrides, trimmedSearch, statusFilter]);
+  }, [modules, overrideMap, trimmedSearch, statusFilter]);
 
   const handleAddOverride = useCallback(
-    (inst: InstrumentationData) => {
-      const startEnabled = inst.disabled_by_default === true;
-      // setValueByPath bypasses parsePath's "." split — instrumentation IDs
-      // like "cassandra-4.4" must reach the reducer as discrete segments.
-      setValueByPath([SECTION_KEY, LANG, inst.name], { enabled: startEnabled });
-      setEnabled(SECTION_KEY, true);
+    (m: InstrumentationModule) => {
+      setOverride(m.name, m.defaultDisabled ? "enabled" : "disabled");
     },
-    [setValueByPath, setEnabled]
+    [setOverride]
   );
 
   const handleSetEnabled = useCallback(
-    (id: string, enabled: boolean) => {
-      setValueByPath([SECTION_KEY, LANG, id, "enabled"], enabled);
+    (name: string, enabled: boolean) => {
+      setOverride(name, enabled ? "enabled" : "disabled");
     },
-    [setValueByPath]
+    [setOverride]
   );
 
   const handleRemoveOverride = useCallback(
-    (id: string) => {
-      // removeMapEntry actually deletes the key, unlike setValueByPath(...,
-      // undefined) which would leave a stale `{ id: undefined }` entry that
-      // the section-flag mirror treats as "still has content". The dotted
-      // path is safe here: neither "instrumentation/development" nor "java"
-      // contains a "." that parsePath would split on.
-      removeMapEntry(`${SECTION_KEY}.${LANG}`, id);
-      // The mirror effect in InstrumentationTabBody flips
-      // enabledSections[SECTION_KEY] to false on the next render once the
-      // values tree is empty.
+    (name: string) => {
+      setOverride(name, "none");
     },
-    [removeMapEntry]
+    [setOverride]
   );
 
   return (
@@ -106,9 +81,9 @@ export function InstrumentationBrowser({
       <header className="flex flex-wrap items-baseline justify-between gap-2">
         <h3 className="text-foreground text-base font-semibold">
           Instrumentations
-          {sorted.length > 0 ? (
+          {modules.length > 0 ? (
             <span className="text-muted-foreground ml-2 text-xs font-normal">
-              · {sorted.length} total
+              · {modules.length} modules
               {overrideCount > 0 ? ` · ${overrideCount} overridden` : ""}
             </span>
           ) : null}
@@ -121,9 +96,9 @@ export function InstrumentationBrowser({
         <p className="text-sm text-red-400">Failed to load instrumentations.</p>
       ) : (
         <Body
-          total={sorted.length}
+          total={modules.length}
           filtered={filtered}
-          overrides={overrides}
+          overrideMap={overrideMap}
           search={trimmedSearch}
           statusFilter={statusFilter}
           overrideCount={overrideCount}
@@ -138,20 +113,20 @@ export function InstrumentationBrowser({
 
 interface BodyProps {
   total: number;
-  filtered: InstrumentationData[];
-  overrides: Record<string, OverrideEntry>;
+  filtered: InstrumentationModule[];
+  overrideMap: Map<string, "enabled" | "disabled">;
   search: string;
   statusFilter: "all" | "overridden";
   overrideCount: number;
-  onAddOverride: (inst: InstrumentationData) => void;
-  onSetEnabled: (id: string, enabled: boolean) => void;
-  onRemoveOverride: (id: string) => void;
+  onAddOverride: (m: InstrumentationModule) => void;
+  onSetEnabled: (name: string, enabled: boolean) => void;
+  onRemoveOverride: (name: string) => void;
 }
 
 function Body({
   total,
   filtered,
-  overrides,
+  overrideMap,
   search,
   statusFilter,
   overrideCount,
@@ -169,17 +144,20 @@ function Body({
         <EmptyState search={search} statusFilter={statusFilter} total={total} />
       ) : (
         <ul className="space-y-1.5">
-          {filtered.map((inst) => (
-            <li key={inst.name}>
-              <InstrumentationRow
-                instrumentation={inst}
-                override={toRowOverride(overrides[inst.name])}
-                onAddOverride={() => onAddOverride(inst)}
-                onSetEnabled={(enabled) => onSetEnabled(inst.name, enabled)}
-                onRemoveOverride={() => onRemoveOverride(inst.name)}
-              />
-            </li>
-          ))}
+          {filtered.map((m) => {
+            const status: OverrideStatus = overrideMap.get(m.name) ?? "none";
+            return (
+              <li key={m.name}>
+                <InstrumentationRow
+                  module={m}
+                  status={status}
+                  onAddOverride={() => onAddOverride(m)}
+                  onSetEnabled={(enabled) => onSetEnabled(m.name, enabled)}
+                  onRemoveOverride={() => onRemoveOverride(m.name)}
+                />
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>
@@ -220,30 +198,17 @@ function readout(
   statusFilter: "all" | "overridden",
   overrideCount: number
 ): string {
-  const parts: string[] = [];
-  if (search) parts.push(`Search "${search}" · ${shown} of ${total}`);
-  else if (statusFilter === "overridden") parts.push(`Overridden · ${overrideCount} of ${total}`);
-  else parts.push(`No filter · ${total} instrumentations`);
-  return parts.join(" · ");
+  if (search) return `Search "${search}" · ${shown} of ${total}`;
+  if (statusFilter === "overridden") return `Overridden · ${overrideCount} of ${total}`;
+  return `No filter · ${total} modules`;
 }
 
-function matchesQuery(inst: InstrumentationData, q: string): boolean {
-  return (
-    inst.name.toLowerCase().includes(q) ||
-    (inst.display_name?.toLowerCase().includes(q) ?? false) ||
-    (inst.description?.toLowerCase().includes(q) ?? false)
-  );
-}
-
-function isOverridden(entry: OverrideEntry): boolean {
-  return !!entry && typeof entry === "object" && typeof entry.enabled === "boolean";
-}
-
-function toRowOverride(entry: OverrideEntry): { enabled: boolean } | undefined {
-  if (!isOverridden(entry)) return undefined;
-  return { enabled: (entry as { enabled: boolean }).enabled };
-}
-
-function isPlainObject(v: ConfigValue | undefined): v is ConfigValues {
-  return !!v && typeof v === "object" && !Array.isArray(v);
+function matchesQuery(m: InstrumentationModule, q: string): boolean {
+  if (m.name.toLowerCase().includes(q)) return true;
+  for (const e of m.coveredEntries) {
+    if (e.name.toLowerCase().includes(q)) return true;
+    if (e.display_name?.toLowerCase().includes(q)) return true;
+    if (e.description?.toLowerCase().includes(q)) return true;
+  }
+  return false;
 }

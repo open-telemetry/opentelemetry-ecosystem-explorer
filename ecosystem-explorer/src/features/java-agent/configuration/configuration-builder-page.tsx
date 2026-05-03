@@ -180,36 +180,18 @@ function InstrumentationTabBody({ activeTab, schema, generalNode }: Instrumentat
   const sectionsContainerRef = useRef<HTMLDivElement>(null);
   const { activeKey, scrollToSection } = useActiveSection(sectionKeys, sectionsContainerRef);
 
-  // The SDK schema declares `instrumentation/development.java` as a
-  // `key_value_map` (opaque), so the values-tree shape we write under
-  // `["instrumentation/development", "java", <id>, "enabled"]` round-trips
-  // verbatim through the YAML generator without a schema lookup.
   const { state, setEnabled } = useConfigurationBuilder();
 
   const overrideCount = useMemo(() => {
-    const javaTree = getByPath(state.values, [INSTRUMENTATION_DEV_KEY, "java"]);
-    if (!javaTree || typeof javaTree !== "object" || Array.isArray(javaTree)) return 0;
-    let count = 0;
-    for (const entry of Object.values(javaTree as Record<string, unknown>)) {
-      if (
-        entry !== null &&
-        typeof entry === "object" &&
-        !Array.isArray(entry) &&
-        "enabled" in (entry as Record<string, unknown>)
-      ) {
-        count += 1;
-      }
-    }
-    return count;
+    const inst = getByPath(state.values, ["distribution", "javaagent", "instrumentation"]);
+    if (!inst || typeof inst !== "object" || Array.isArray(inst)) return 0;
+    const enabled = (inst as Record<string, unknown>).enabled;
+    const disabled = (inst as Record<string, unknown>).disabled;
+    const ec = Array.isArray(enabled) ? enabled.length : 0;
+    const dc = Array.isArray(disabled) ? disabled.length : 0;
+    return ec + dc;
   }, [state.values]);
 
-  // Mirror `enabledSections["instrumentation/development"]` to whether any
-  // user content exists under it. The General card and the Instrumentation
-  // browser both write through values-tree paths rooted at this section,
-  // but neither owns a SwitchPill that would otherwise drive the flag.
-  // The predicate has to walk the tree (not just check the section's
-  // top-level presence) because removeMapEntry can leave behind an empty
-  // map like `{ java: {} }` that should not keep the section enabled.
   const devSection = state.values[INSTRUMENTATION_DEV_KEY];
   const hasDevContent = useMemo(() => hasMeaningfulLeaf(devSection), [devSection]);
   const isDevEnabled = state.enabledSections[INSTRUMENTATION_DEV_KEY] === true;
@@ -218,6 +200,18 @@ function InstrumentationTabBody({ activeTab, schema, generalNode }: Instrumentat
       setEnabled(INSTRUMENTATION_DEV_KEY, hasDevContent);
     }
   }, [hasDevContent, isDevEnabled, setEnabled]);
+
+  const distributionSection = state.values["distribution"];
+  const hasDistributionContent = useMemo(
+    () => hasMeaningfulLeaf(distributionSection),
+    [distributionSection]
+  );
+  const isDistributionEnabled = state.enabledSections["distribution"] === true;
+  useEffect(() => {
+    if (hasDistributionContent !== isDistributionEnabled) {
+      setEnabled("distribution", hasDistributionContent);
+    }
+  }, [hasDistributionContent, isDistributionEnabled, setEnabled]);
 
   return (
     <div className={BUILDER_GRID}>

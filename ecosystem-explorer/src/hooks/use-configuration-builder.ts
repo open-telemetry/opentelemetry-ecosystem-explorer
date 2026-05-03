@@ -52,7 +52,7 @@ import {
   validateAll as validateAllNodes,
 } from "@/lib/config-validation";
 
-const STORAGE_KEY = "otel-config-builder-state-v1";
+const STORAGE_KEY = "otel-config-builder-state-v2";
 
 export interface ConfigurationBuilderStateContextValue {
   state: ConfigurationBuilderState;
@@ -61,6 +61,7 @@ export interface ConfigurationBuilderStateContextValue {
 export interface ConfigurationBuilderActionsContextValue {
   setValue: (path: string, value: ConfigValue) => void;
   setValueByPath: (path: Path, value: ConfigValue) => void;
+  setOverride: (module: string, status: "enabled" | "disabled" | "none") => void;
   setEnabled: (section: string, enabled: boolean) => void;
   selectPlugin: (path: string, pluginKey: string) => void;
   addListItem: (path: string) => void;
@@ -160,6 +161,10 @@ export function useConfigurationBuilderState(
   // Array-form sibling of setValue, for paths whose segments may contain dots.
   const setValueByPath = useCallback((path: Path, value: ConfigValue) => {
     dispatch({ type: "SET_VALUE", path, value });
+  }, []);
+
+  const setOverride = useCallback((module: string, status: "enabled" | "disabled" | "none") => {
+    dispatch({ type: "SET_OVERRIDE", module, status });
   }, []);
 
   const setEnabled = useCallback((section: string, enabled: boolean) => {
@@ -291,6 +296,7 @@ export function useConfigurationBuilderState(
     () => ({
       setValue,
       setValueByPath,
+      setOverride,
       setEnabled,
       selectPlugin,
       addListItem,

@@ -16,227 +16,137 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import type { InstrumentationData } from "@/types/javaagent";
-import type { ConfigurationBuilderState } from "@/types/configuration-builder";
-
-const setValueByPath = vi.fn();
-const setEnabled = vi.fn();
-const removeMapEntry = vi.fn();
-
-let mockBuilderState: ConfigurationBuilderState;
-
-vi.mock("@/hooks/use-configuration-builder", () => ({
-  useConfigurationBuilder: () => ({
-    state: mockBuilderState,
-    setValueByPath: (...args: unknown[]) => setValueByPath(...args),
-    setEnabled: (...args: unknown[]) => setEnabled(...args),
-    removeMapEntry: (...args: unknown[]) => removeMapEntry(...args),
-    setValue: vi.fn(),
-    selectPlugin: vi.fn(),
-    addListItem: vi.fn(),
-    removeListItem: vi.fn(),
-    setMapEntry: vi.fn(),
-    resetToDefaults: vi.fn(),
-    enableAllSections: vi.fn(),
-    loadFromYaml: vi.fn(),
-    validateField: vi.fn(),
-    validateAll: vi.fn(),
-    clearValidationError: vi.fn(),
-  }),
-}));
-
-const useInstrumentationsMock = vi.fn();
-vi.mock("@/hooks/use-javaagent-data", () => ({
-  useInstrumentations: (version: string) => useInstrumentationsMock(version),
-}));
-
+import { useInstrumentations } from "@/hooks/use-javaagent-data";
+import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
+import { useOverrideStatusMap } from "@/hooks/use-override-status";
 import { InstrumentationBrowser } from "./instrumentation-browser";
 
-const FIXTURE: InstrumentationData[] = [
-  {
-    name: "cassandra-4.4",
-    display_name: "Cassandra Driver",
-    description: "Database client spans + metrics for the DataStax Cassandra Driver.",
-    disabled_by_default: false,
-    scope: { name: "io.opentelemetry.cassandra-4.4" },
-  },
-  {
-    name: "akka-http-10.0",
-    display_name: "Akka HTTP 10.0",
-    description: "HTTP client + server spans for Akka HTTP.",
-    disabled_by_default: false,
-    scope: { name: "io.opentelemetry.akka-http-10.0" },
-  },
-  {
-    name: "jmx-metrics",
-    display_name: "JMX Metrics",
-    description: "Built-in JMX metric gatherer.",
-    disabled_by_default: true,
-    _is_custom: true,
-    scope: { name: "io.opentelemetry.jmx-metrics" },
-  },
-];
+vi.mock("@/hooks/use-javaagent-data");
+vi.mock("@/hooks/use-configuration-builder");
+vi.mock("@/hooks/use-override-status");
 
-function emptyState(): ConfigurationBuilderState {
+const mockedInstr = vi.mocked(useInstrumentations);
+const mockedBuilder = vi.mocked(useConfigurationBuilder);
+const mockedOverride = vi.mocked(useOverrideStatusMap);
+
+function entry(name: string, opts: Partial<InstrumentationData> = {}): InstrumentationData {
   return {
-    version: "1.0.0",
-    values: {},
-    enabledSections: {},
-    validationErrors: {},
-    isDirty: false,
-    listItemIds: {},
-  };
+    name,
+    scope: { name: `io.opentelemetry.${name}` },
+    ...opts,
+  } as InstrumentationData;
 }
 
+const FIXTURE: InstrumentationData[] = [
+  entry("cassandra-3.0", { description: "Cassandra Driver context propagation" }),
+  entry("cassandra-4.0"),
+  entry("cassandra-4.4"),
+  entry("kafka-clients-0.11", { display_name: "Kafka Clients" }),
+  entry("kafka-clients-3.5"),
+  entry("jmx-metrics", { disabled_by_default: true }),
+];
+
+const setOverride = vi.fn();
+
 beforeEach(() => {
-  setValueByPath.mockReset();
-  setEnabled.mockReset();
-  removeMapEntry.mockReset();
-  mockBuilderState = emptyState();
-  useInstrumentationsMock.mockReset();
+  setOverride.mockReset();
+  mockedInstr.mockReturnValue({ data: FIXTURE, loading: false, error: null });
+  mockedBuilder.mockReturnValue({
+    state: {
+      values: {},
+      enabledSections: {},
+      validationErrors: {},
+      isDirty: false,
+      version: "2.27.0",
+      listItemIds: {},
+    },
+    setOverride,
+  } as unknown as ReturnType<typeof useConfigurationBuilder>);
+  mockedOverride.mockReturnValue(new Map());
 });
 
 describe("InstrumentationBrowser", () => {
-  it("renders loading copy while loading", () => {
-    useInstrumentationsMock.mockReturnValue({ data: null, loading: true, error: null });
-    render(<InstrumentationBrowser version="1.0.0" search="" statusFilter="all" />);
-    expect(screen.getByText(/Loading instrumentations/i)).toBeInTheDocument();
+  it("groups entries into module rows with version count", () => {
+    render(<InstrumentationBrowser version="2.27.0" search="" statusFilter="all" />);
+    expect(screen.getByText("cassandra")).toBeInTheDocument();
+    expect(screen.getByText("kafka_clients")).toBeInTheDocument();
+    expect(screen.getByText("jmx_metrics")).toBeInTheDocument();
+    expect(screen.getByText(/3 versions/)).toBeInTheDocument();
+    expect(screen.getByText(/2 versions/)).toBeInTheDocument();
   });
 
-  it("renders error copy when the load fails", () => {
-    useInstrumentationsMock.mockReturnValue({
-      data: null,
-      loading: false,
-      error: new Error("boom"),
-    });
-    render(<InstrumentationBrowser version="1.0.0" search="" statusFilter="all" />);
-    expect(screen.getByText(/Failed to load instrumentations/i)).toBeInTheDocument();
+  it("matches search against the registry name of any covered entry", () => {
+    render(<InstrumentationBrowser version="2.27.0" search="cassandra-4.4" statusFilter="all" />);
+    expect(screen.getByText("cassandra")).toBeInTheDocument();
+    expect(screen.queryByText("kafka_clients")).not.toBeInTheDocument();
   });
 
-  it("renders all instrumentations from the fixture", () => {
-    useInstrumentationsMock.mockReturnValue({ data: FIXTURE, loading: false, error: null });
-    render(<InstrumentationBrowser version="1.0.0" search="" statusFilter="all" />);
-    expect(screen.getByText("Cassandra Driver")).toBeInTheDocument();
-    expect(screen.getByText("Akka HTTP 10.0")).toBeInTheDocument();
-    expect(screen.getByText("JMX Metrics")).toBeInTheDocument();
+  it("matches search against display_name on any covered entry", () => {
+    render(<InstrumentationBrowser version="2.27.0" search="Kafka Clients" statusFilter="all" />);
+    expect(screen.getByText("kafka_clients")).toBeInTheDocument();
+    expect(screen.queryByText("cassandra")).not.toBeInTheDocument();
   });
 
-  it("filters by name (case-insensitive)", () => {
-    useInstrumentationsMock.mockReturnValue({ data: FIXTURE, loading: false, error: null });
-    render(<InstrumentationBrowser version="1.0.0" search="cassandra" statusFilter="all" />);
-    expect(screen.getByText("Cassandra Driver")).toBeInTheDocument();
-    expect(screen.queryByText("Akka HTTP 10.0")).toBeNull();
-    expect(screen.queryByText("JMX Metrics")).toBeNull();
+  it("matches search against description on any covered entry", () => {
+    render(
+      <InstrumentationBrowser version="2.27.0" search="context propagation" statusFilter="all" />
+    );
+    expect(screen.getByText("cassandra")).toBeInTheDocument();
+    expect(screen.queryByText("kafka_clients")).not.toBeInTheDocument();
   });
 
-  it("filters by description substring", () => {
-    useInstrumentationsMock.mockReturnValue({ data: FIXTURE, loading: false, error: null });
-    render(<InstrumentationBrowser version="1.0.0" search="JMX metric" statusFilter="all" />);
-    expect(screen.getByText("JMX Metrics")).toBeInTheDocument();
-    expect(screen.queryByText("Cassandra Driver")).toBeNull();
+  it("search is case-insensitive", () => {
+    render(<InstrumentationBrowser version="2.27.0" search="CASSANDRA" statusFilter="all" />);
+    expect(screen.getByText("cassandra")).toBeInTheDocument();
   });
 
-  it("statusFilter='overridden' shows only overridden rows", () => {
-    mockBuilderState = {
-      ...emptyState(),
-      values: {
-        "instrumentation/development": {
-          java: {
-            "cassandra-4.4": { enabled: false },
-          },
-        },
-      },
-    };
-    useInstrumentationsMock.mockReturnValue({ data: FIXTURE, loading: false, error: null });
-    render(<InstrumentationBrowser version="1.0.0" search="" statusFilter="overridden" />);
-    expect(screen.getByText("Cassandra Driver")).toBeInTheDocument();
-    expect(screen.queryByText("Akka HTTP 10.0")).toBeNull();
-    expect(screen.queryByText("JMX Metrics")).toBeNull();
+  it("filters to overridden when statusFilter='overridden'", () => {
+    mockedOverride.mockReturnValue(new Map([["cassandra", "disabled"]]));
+    render(<InstrumentationBrowser version="2.27.0" search="" statusFilter="overridden" />);
+    expect(screen.getByText("cassandra")).toBeInTheDocument();
+    expect(screen.queryByText("kafka_clients")).not.toBeInTheDocument();
   });
 
-  it("renders the empty-search copy when nothing matches", () => {
-    useInstrumentationsMock.mockReturnValue({ data: FIXTURE, loading: false, error: null });
-    render(<InstrumentationBrowser version="1.0.0" search="nope-zzz" statusFilter="all" />);
+  it("calls setOverride('cassandra', 'disabled') when + Override is clicked on a default-enabled module", () => {
+    render(<InstrumentationBrowser version="2.27.0" search="" statusFilter="all" />);
+    fireEvent.click(screen.getByLabelText("Override cassandra"));
+    expect(setOverride).toHaveBeenCalledWith("cassandra", "disabled");
+  });
+
+  it("calls setOverride('jmx_metrics', 'enabled') when + Override is clicked on a default-disabled module", () => {
+    render(<InstrumentationBrowser version="2.27.0" search="" statusFilter="all" />);
+    fireEvent.click(screen.getByLabelText("Override jmx_metrics"));
+    expect(setOverride).toHaveBeenCalledWith("jmx_metrics", "enabled");
+  });
+
+  it("calls setOverride(name, 'none') when ✕ is clicked on an overridden row", () => {
+    mockedOverride.mockReturnValue(new Map([["cassandra", "disabled"]]));
+    render(<InstrumentationBrowser version="2.27.0" search="" statusFilter="all" />);
+    fireEvent.click(screen.getByLabelText("Remove override for cassandra"));
+    expect(setOverride).toHaveBeenCalledWith("cassandra", "none");
+  });
+
+  it("calls setOverride('cassandra', 'enabled') when toggling overridden Disabled→Enabled", () => {
+    mockedOverride.mockReturnValue(new Map([["cassandra", "disabled"]]));
+    render(<InstrumentationBrowser version="2.27.0" search="" statusFilter="all" />);
+    fireEvent.click(screen.getAllByRole("button", { name: "Enabled" })[0]);
+    expect(setOverride).toHaveBeenCalledWith("cassandra", "enabled");
+  });
+
+  it("renders empty state for unmatched search", () => {
+    render(<InstrumentationBrowser version="2.27.0" search="nonexistent" statusFilter="all" />);
     expect(screen.getByText(/No instrumentations match/)).toBeInTheDocument();
-    expect(screen.getByText(/Clear the search to show all 3/)).toBeInTheDocument();
   });
 
-  it("header readout reflects total and override count", () => {
-    mockBuilderState = {
-      ...emptyState(),
-      values: {
-        "instrumentation/development": {
-          java: {
-            "cassandra-4.4": { enabled: false },
-          },
-        },
-      },
-    };
-    useInstrumentationsMock.mockReturnValue({ data: FIXTURE, loading: false, error: null });
-    render(<InstrumentationBrowser version="1.0.0" search="" statusFilter="all" />);
-    expect(screen.getByText(/3 total/)).toBeInTheDocument();
-    expect(screen.getByText(/1 overridden/)).toBeInTheDocument();
-    expect(screen.getByText(/No filter · 3 instrumentations/)).toBeInTheDocument();
+  it("shows loading state", () => {
+    mockedInstr.mockReturnValue({ data: null, loading: true, error: null });
+    render(<InstrumentationBrowser version="2.27.0" search="" statusFilter="all" />);
+    expect(screen.getByText(/Loading instrumentations/)).toBeInTheDocument();
   });
 
-  it("clicking + Override writes the opposite-of-default and enables the section", () => {
-    useInstrumentationsMock.mockReturnValue({ data: FIXTURE, loading: false, error: null });
-    render(<InstrumentationBrowser version="1.0.0" search="cassandra" statusFilter="all" />);
-    fireEvent.click(screen.getByRole("button", { name: /Override Cassandra Driver/ }));
-    // cassandra-4.4 is enabled-by-default → starting override is enabled: false
-    expect(setValueByPath).toHaveBeenCalledWith(
-      ["instrumentation/development", "java", "cassandra-4.4"],
-      { enabled: false }
-    );
-    expect(setEnabled).toHaveBeenCalledWith("instrumentation/development", true);
-  });
-
-  it("clicking + Override on a disabled-by-default row writes enabled: true", () => {
-    useInstrumentationsMock.mockReturnValue({ data: FIXTURE, loading: false, error: null });
-    render(<InstrumentationBrowser version="1.0.0" search="jmx" statusFilter="all" />);
-    fireEvent.click(screen.getByRole("button", { name: /Override JMX Metrics/ }));
-    expect(setValueByPath).toHaveBeenCalledWith(
-      ["instrumentation/development", "java", "jmx-metrics"],
-      { enabled: true }
-    );
-  });
-
-  it("toggling an existing override writes only the enabled leaf", () => {
-    mockBuilderState = {
-      ...emptyState(),
-      values: {
-        "instrumentation/development": {
-          java: { "cassandra-4.4": { enabled: false } },
-        },
-      },
-    };
-    useInstrumentationsMock.mockReturnValue({ data: FIXTURE, loading: false, error: null });
-    render(<InstrumentationBrowser version="1.0.0" search="cassandra" statusFilter="all" />);
-    fireEvent.click(screen.getByRole("button", { name: "Enabled" }));
-    expect(setValueByPath).toHaveBeenCalledWith(
-      ["instrumentation/development", "java", "cassandra-4.4", "enabled"],
-      true
-    );
-  });
-
-  it("removing an override calls removeMapEntry to actually delete the key", () => {
-    mockBuilderState = {
-      ...emptyState(),
-      values: {
-        "instrumentation/development": {
-          java: { "cassandra-4.4": { enabled: false } },
-        },
-      },
-    };
-    useInstrumentationsMock.mockReturnValue({ data: FIXTURE, loading: false, error: null });
-    render(<InstrumentationBrowser version="1.0.0" search="cassandra" statusFilter="all" />);
-    fireEvent.click(screen.getByRole("button", { name: /Remove override for Cassandra Driver/ }));
-    // removeMapEntry truly deletes the key — the section flag is then driven
-    // by the mirror effect in InstrumentationTabBody, not by the browser.
-    expect(removeMapEntry).toHaveBeenCalledWith(
-      "instrumentation/development.java",
-      "cassandra-4.4"
-    );
-    expect(setValueByPath).not.toHaveBeenCalled();
-    expect(setEnabled).not.toHaveBeenCalled();
+  it("shows error state", () => {
+    mockedInstr.mockReturnValue({ data: null, loading: false, error: new Error("boom") });
+    render(<InstrumentationBrowser version="2.27.0" search="" statusFilter="all" />);
+    expect(screen.getByText(/Failed to load/)).toBeInTheDocument();
   });
 });

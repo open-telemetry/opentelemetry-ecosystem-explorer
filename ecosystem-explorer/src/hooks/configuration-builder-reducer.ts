@@ -171,6 +171,41 @@ export function configurationBuilderReducer(
       return { ...state, values: newValues, enabledSections: newEnabled, isDirty: true };
     }
 
+    case "SET_OVERRIDE": {
+      const path = ["distribution", "javaagent", "instrumentation"];
+      const current = getByPath(state.values, path);
+      const inst = isPlainObject(current) ? current : {};
+      const enabledArr = Array.isArray(inst.enabled) ? (inst.enabled as string[]) : [];
+      const disabledArr = Array.isArray(inst.disabled) ? (inst.disabled as string[]) : [];
+
+      const remainingEnabled = enabledArr.filter((m) => m !== action.module);
+      const remainingDisabled = disabledArr.filter((m) => m !== action.module);
+
+      let nextEnabled = remainingEnabled;
+      let nextDisabled = remainingDisabled;
+      if (action.status === "enabled") {
+        nextEnabled = [...remainingEnabled, action.module].sort();
+      } else if (action.status === "disabled") {
+        nextDisabled = [...remainingDisabled, action.module].sort();
+      }
+
+      if (nextEnabled.length === 0 && nextDisabled.length === 0) {
+        const { distribution: _omit, ...rest } = state.values;
+        void _omit;
+        return { ...state, values: rest, isDirty: true };
+      }
+
+      const newInstrumentation: ConfigValues = {};
+      if (nextEnabled.length > 0) newInstrumentation.enabled = nextEnabled;
+      if (nextDisabled.length > 0) newInstrumentation.disabled = nextDisabled;
+
+      return {
+        ...state,
+        values: setByPath(state.values, path, newInstrumentation),
+        isDirty: true,
+      };
+    }
+
     default:
       return state;
   }

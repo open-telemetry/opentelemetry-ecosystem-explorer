@@ -24,7 +24,7 @@ import type {
   TextInputNode,
 } from "@/types/configuration";
 
-const STORAGE_KEY = "otel-config-builder-state-v1";
+const STORAGE_KEY = "otel-config-builder-state-v2";
 
 const mockSchema: GroupNode = {
   controlType: "group",
@@ -109,6 +109,18 @@ describe("useConfigurationBuilderState", () => {
     // through parsePath: that would split "cassandra-4.4" into "cassandra-4"
     // and "4" as separate segments.
     expect(development.java["cassandra-4"]).toBeUndefined();
+  });
+
+  it("setOverride dispatches SET_OVERRIDE and round-trips through state", () => {
+    const { result } = renderHook(() => useConfigurationBuilderState(mockSchema, "1.0.0", null));
+    act(() => {
+      result.current.setOverride("cassandra", "disabled");
+    });
+    const distribution = result.current.state.values["distribution"] as Record<
+      string,
+      Record<string, Record<string, unknown>>
+    >;
+    expect(distribution.javaagent.instrumentation.disabled).toEqual(["cassandra"]);
   });
 
   it("should enable a section with defaults", () => {

@@ -15,27 +15,35 @@
  */
 import type { JSX } from "react";
 import { ChevronRight, Plus, X } from "lucide-react";
-import type { InstrumentationData } from "@/types/javaagent";
+import type { InstrumentationModule } from "@/types/javaagent";
+import type { OverrideStatus } from "@/hooks/use-override-status";
 
 export interface InstrumentationRowProps {
-  instrumentation: InstrumentationData;
-  override: { enabled: boolean } | undefined;
+  module: InstrumentationModule;
+  status: OverrideStatus;
   onAddOverride: () => void;
   onSetEnabled: (enabled: boolean) => void;
   onRemoveOverride: () => void;
 }
 
 export function InstrumentationRow({
-  instrumentation,
-  override,
+  module,
+  status,
   onAddOverride,
   onSetEnabled,
   onRemoveOverride,
 }: InstrumentationRowProps): JSX.Element {
-  const display = instrumentation.display_name ?? instrumentation.name;
-  const enabledByDefault = !instrumentation.disabled_by_default;
-  const isOverridden = override !== undefined;
-  const overrideEnabled = override?.enabled ?? false;
+  const isOverridden = status !== "none";
+  const overrideEnabled = status === "enabled";
+  const enabledByDefault = !module.defaultDisabled;
+
+  const description =
+    module.coveredEntries[module.coveredEntries.length - 1]?.description ?? undefined;
+  const dashedName = module.name.replace(/_/g, "-");
+  const versionsCovered = module.coveredEntries
+    .map((e) => e.name.replace(`${dashedName}-`, "").replace(dashedName, ""))
+    .filter((s) => s !== "")
+    .join(", ");
 
   const containerClass = isOverridden
     ? overrideEnabled
@@ -45,24 +53,29 @@ export function InstrumentationRow({
 
   return (
     <div
-      data-testid={`instrumentation-row-${instrumentation.name}`}
+      data-testid={`instrumentation-row-${module.name}`}
       className={`flex flex-col gap-2 rounded-md border px-3 py-2 transition-colors sm:flex-row sm:items-center sm:gap-3 ${containerClass}`}
     >
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <span className="text-foreground text-sm font-medium">{display}</span>
-          <span className="text-muted-foreground font-mono text-xs break-all">
-            {instrumentation.name}
-          </span>
-          {instrumentation._is_custom ? (
+          <span className="text-foreground font-mono text-sm font-medium">{module.name}</span>
+          {module.coveredEntries.length > 1 ? (
+            <span className="border-border/60 text-muted-foreground inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] leading-none">
+              {module.coveredEntries.length} versions
+            </span>
+          ) : null}
+          {module.coveredEntries.some((e) => e._is_custom === true) ? (
             <span className="border-border/60 text-muted-foreground inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] leading-none">
               custom
             </span>
           ) : null}
         </div>
-        {instrumentation.description ? (
-          <p className="text-muted-foreground mt-0.5 truncate text-xs">
-            {instrumentation.description}
+        {description ? (
+          <p className="text-muted-foreground mt-0.5 truncate text-xs">{description}</p>
+        ) : null}
+        {versionsCovered ? (
+          <p className="text-muted-foreground/70 mt-0.5 truncate text-[11px]">
+            covers {versionsCovered}
           </p>
         ) : null}
       </div>
@@ -77,7 +90,7 @@ export function InstrumentationRow({
         {isOverridden ? (
           <button
             type="button"
-            aria-label={`Remove override for ${display}`}
+            aria-label={`Remove override for ${module.name}`}
             onClick={onRemoveOverride}
             className="text-muted-foreground hover:text-foreground rounded-md p-1"
           >
@@ -87,7 +100,7 @@ export function InstrumentationRow({
           <button
             type="button"
             onClick={onAddOverride}
-            aria-label={`Override ${display}`}
+            aria-label={`Override ${module.name}`}
             className="border-border/60 text-foreground hover:bg-card/80 inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs"
           >
             <Plus className="h-3 w-3" aria-hidden="true" />
@@ -95,9 +108,6 @@ export function InstrumentationRow({
           </button>
         )}
 
-        {/* Reserved for PR2 inline configurations[] expansion. Hidden on
-            narrow viewports because there's no body to reveal yet and it
-            takes scarce horizontal space. */}
         <span
           aria-hidden="true"
           className="text-muted-foreground/60 hidden h-5 w-5 items-center justify-center sm:inline-flex"
