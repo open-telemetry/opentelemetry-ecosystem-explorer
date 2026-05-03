@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState } from "react";
+import { useState, useId } from "react";
 import { ChevronDown, ChevronRight, Plus, Minus, RefreshCw } from "lucide-react";
 import { GlowBadge } from "@/components/ui/glow-badge";
 import { DiffResultsSection } from "../telemetry-comparison/diff-results-section";
@@ -65,6 +65,7 @@ const statusConfig = {
  */
 export function InstrumentationDiffCard({ diff }: InstrumentationDiffCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const contentId = useId();
 
   const config = statusConfig[diff.status];
   const StatusIcon = config.icon;
@@ -91,7 +92,8 @@ export function InstrumentationDiffCard({ diff }: InstrumentationDiffCardProps) 
       <button
         onClick={() => setIsExpanded(!isExpanded)}
         aria-expanded={isExpanded}
-        className="flex w-full items-center justify-between gap-4 p-5 text-left transition-colors hover:bg-white/5"
+        aria-controls={contentId}
+        className="focus-visible:ring-primary/50 flex w-full items-center justify-between gap-4 p-5 text-left transition-colors hover:bg-white/5 focus-visible:ring-2 focus-visible:outline-none"
       >
         <div className="flex min-w-0 flex-1 items-center gap-3">
           <StatusIcon className={`h-4 w-4 flex-shrink-0 ${config.iconColor}`} aria-hidden="true" />
@@ -122,7 +124,7 @@ export function InstrumentationDiffCard({ diff }: InstrumentationDiffCardProps) 
       </button>
 
       {isExpanded && (
-        <div className="border-border/20 border-t px-5 py-6">
+        <div id={contentId} className="border-border/20 border-t px-5 py-6">
           {hasTelemetryChanges && (
             <div className="space-y-4">
               <h3 className="text-muted-foreground text-xs font-bold tracking-widest uppercase">

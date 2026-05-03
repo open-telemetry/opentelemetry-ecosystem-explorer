@@ -155,7 +155,7 @@ export function JavaReleaseComparisonPage() {
         )}
 
         {diff && fromVersion !== toVersion && !diffLoading && (
-          <div className="animate-in fade-in space-y-12 duration-500">
+          <div className="animate-in fade-in space-y-12 duration-300">
             <div className="border-border/30 bg-card/40 flex flex-col gap-8 rounded-2xl border p-8 backdrop-blur-sm">
               <div className="flex items-center justify-center gap-12">
                 <div className="text-center">
@@ -290,7 +290,7 @@ export function JavaReleaseComparisonPage() {
                           <tr
                             key={metric.name}
                             className={`border-border/10 border-b transition-colors hover:bg-white/5 ${
-                              index % 2 === 1 ? "bg-muted/10" : ""
+                              index % 2 === 1 ? "bg-muted/40" : ""
                             }`}
                           >
                             <td className="p-4">
