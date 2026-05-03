@@ -17,21 +17,28 @@ import type { JSX } from "react";
 import { ChevronRight, Plus, X } from "lucide-react";
 import type { InstrumentationModule } from "@/types/javaagent";
 import type { OverrideStatus } from "@/hooks/use-override-status";
+import { InstrumentationConfigForm } from "./instrumentation-config-form";
 
 export interface InstrumentationRowProps {
   module: InstrumentationModule;
   status: OverrideStatus;
+  isExpanded: boolean;
   onAddOverride: () => void;
   onSetEnabled: (enabled: boolean) => void;
   onRemoveOverride: () => void;
+  onToggleExpand: () => void;
+  onJumpToGeneral: (sectionKey: string) => void;
 }
 
 export function InstrumentationRow({
   module,
   status,
+  isExpanded,
   onAddOverride,
   onSetEnabled,
   onRemoveOverride,
+  onToggleExpand,
+  onJumpToGeneral,
 }: InstrumentationRowProps): JSX.Element {
   const isOverridden = status !== "none";
   const overrideEnabled = status === "enabled";
@@ -54,67 +61,83 @@ export function InstrumentationRow({
   return (
     <div
       data-testid={`instrumentation-row-${module.name}`}
-      className={`flex flex-col gap-2 rounded-md border px-3 py-2 transition-colors sm:flex-row sm:items-center sm:gap-3 ${containerClass}`}
+      data-expanded={String(isExpanded)}
+      className={`rounded-md border transition-colors ${containerClass}`}
     >
-      <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-          <span className="text-foreground font-mono text-sm font-medium">{module.name}</span>
-          {module.coveredEntries.length > 1 ? (
-            <span className="border-border/60 text-muted-foreground inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] leading-none">
-              {module.coveredEntries.length} versions
-            </span>
+      <div className="flex flex-col gap-2 px-3 py-2 sm:flex-row sm:items-center sm:gap-3">
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span className="text-foreground font-mono text-sm font-medium">{module.name}</span>
+            {module.coveredEntries.length > 1 ? (
+              <span className="border-border/60 text-muted-foreground inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] leading-none">
+                {module.coveredEntries.length} versions
+              </span>
+            ) : null}
+            {module.coveredEntries.some((e) => e._is_custom === true) ? (
+              <span className="border-border/60 text-muted-foreground inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] leading-none">
+                custom
+              </span>
+            ) : null}
+          </div>
+          {description ? (
+            <p className="text-muted-foreground mt-0.5 truncate text-xs">{description}</p>
           ) : null}
-          {module.coveredEntries.some((e) => e._is_custom === true) ? (
-            <span className="border-border/60 text-muted-foreground inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] leading-none">
-              custom
-            </span>
+          {versionsCovered ? (
+            <p className="text-muted-foreground/70 mt-0.5 truncate text-[11px]">
+              covers {versionsCovered}
+            </p>
           ) : null}
         </div>
-        {description ? (
-          <p className="text-muted-foreground mt-0.5 truncate text-xs">{description}</p>
-        ) : null}
-        {versionsCovered ? (
-          <p className="text-muted-foreground/70 mt-0.5 truncate text-[11px]">
-            covers {versionsCovered}
-          </p>
-        ) : null}
-      </div>
 
-      <div className="flex items-center gap-2 sm:contents">
-        {isOverridden ? (
-          <OverrideToggle enabled={overrideEnabled} onChange={onSetEnabled} />
-        ) : (
-          <DefaultPill enabledByDefault={enabledByDefault} />
-        )}
+        <div className="flex items-center gap-2 sm:contents">
+          {isOverridden ? (
+            <OverrideToggle enabled={overrideEnabled} onChange={onSetEnabled} />
+          ) : (
+            <DefaultPill enabledByDefault={enabledByDefault} />
+          )}
 
-        {isOverridden ? (
+          {isOverridden ? (
+            <button
+              type="button"
+              aria-label={`Remove override for ${module.name}`}
+              onClick={onRemoveOverride}
+              className="text-muted-foreground hover:text-foreground rounded-md p-1"
+            >
+              <X className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={onAddOverride}
+              aria-label={`Override ${module.name}`}
+              className="border-border/60 text-foreground hover:bg-card/80 inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs"
+            >
+              <Plus className="h-3 w-3" aria-hidden="true" />
+              Override
+            </button>
+          )}
+
           <button
             type="button"
-            aria-label={`Remove override for ${module.name}`}
-            onClick={onRemoveOverride}
-            className="text-muted-foreground hover:text-foreground rounded-md p-1"
+            data-row-toggle
+            aria-label={`Toggle details for ${module.name}`}
+            aria-expanded={isExpanded}
+            onClick={onToggleExpand}
+            className="text-muted-foreground/60 hover:text-foreground hidden h-5 w-5 items-center justify-center sm:inline-flex"
           >
-            <X className="h-3.5 w-3.5" aria-hidden="true" />
+            <ChevronRight
+              className={`h-4 w-4 transition-transform ${isExpanded ? "rotate-90" : ""}`}
+              aria-hidden="true"
+            />
           </button>
-        ) : (
-          <button
-            type="button"
-            onClick={onAddOverride}
-            aria-label={`Override ${module.name}`}
-            className="border-border/60 text-foreground hover:bg-card/80 inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs"
-          >
-            <Plus className="h-3 w-3" aria-hidden="true" />
-            Override
-          </button>
-        )}
-
-        <span
-          aria-hidden="true"
-          className="text-muted-foreground/60 hidden h-5 w-5 items-center justify-center sm:inline-flex"
-        >
-          <ChevronRight className="h-4 w-4" />
-        </span>
+        </div>
       </div>
+
+      {isExpanded ? (
+        <div className="border-border/40 border-t px-3 py-3">
+          <InstrumentationConfigForm module={module} onJumpToGeneral={onJumpToGeneral} />
+        </div>
+      ) : null}
     </div>
   );
 }

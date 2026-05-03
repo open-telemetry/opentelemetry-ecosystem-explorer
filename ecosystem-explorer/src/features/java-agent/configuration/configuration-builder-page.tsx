@@ -26,9 +26,13 @@ import {
 } from "@/hooks/use-configuration-data";
 import { ConfigurationBuilderProvider } from "@/hooks/configuration-builder-provider";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
-import { useVersions as useJavaAgentVersions } from "@/hooks/use-javaagent-data";
+import {
+  useVersions as useJavaAgentVersions,
+  useInstrumentations,
+} from "@/hooks/use-javaagent-data";
+import { groupByModule } from "@/lib/normalize-instrumentation";
+import { useOverriddenModules } from "@/hooks/use-overridden-modules";
 import type { GroupNode } from "@/types/configuration";
-import { getByPath } from "@/lib/config-path";
 import { hasMeaningfulLeaf } from "@/lib/state-hydrate";
 import { SchemaRenderer } from "./components/schema-renderer";
 import { PreviewCard } from "./components/preview-card";
@@ -182,15 +186,13 @@ function InstrumentationTabBody({ activeTab, schema, generalNode }: Instrumentat
 
   const { state, setEnabled } = useConfigurationBuilder();
 
-  const overrideCount = useMemo(() => {
-    const inst = getByPath(state.values, ["distribution", "javaagent", "instrumentation"]);
-    if (!inst || typeof inst !== "object" || Array.isArray(inst)) return 0;
-    const enabled = (inst as Record<string, unknown>).enabled;
-    const disabled = (inst as Record<string, unknown>).disabled;
-    const ec = Array.isArray(enabled) ? enabled.length : 0;
-    const dc = Array.isArray(disabled) ? disabled.length : 0;
-    return ec + dc;
-  }, [state.values]);
+  const instrumentationsState = useInstrumentations(javaAgentVersion);
+  const modules = useMemo(
+    () => (instrumentationsState.data ? groupByModule(instrumentationsState.data) : []),
+    [instrumentationsState.data]
+  );
+  const overriddenSet = useOverriddenModules(modules);
+  const overrideCount = overriddenSet.size;
 
   const devSection = state.values[INSTRUMENTATION_DEV_KEY];
   const hasDevContent = useMemo(() => hasMeaningfulLeaf(devSection), [devSection]);
@@ -229,9 +231,12 @@ function InstrumentationTabBody({ activeTab, schema, generalNode }: Instrumentat
       <div ref={sectionsContainerRef} className="space-y-4">
         <InstrumentationGeneralCard generalNode={generalNode} />
         <InstrumentationBrowser
-          version={javaAgentVersion}
+          instrumentations={instrumentationsState.data}
+          loading={instrumentationsState.loading}
+          error={instrumentationsState.error}
           search={search}
           statusFilter={statusFilter}
+          onJumpToGeneral={scrollToSection}
         />
       </div>
       <PreviewCard schema={schema} />

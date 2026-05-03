@@ -13,27 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useCallback, useMemo, type JSX } from "react";
-import type { InstrumentationModule } from "@/types/javaagent";
-import { useInstrumentations } from "@/hooks/use-javaagent-data";
+import { useState, useCallback, useMemo, type JSX } from "react";
+import type { InstrumentationData, InstrumentationModule } from "@/types/javaagent";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
 import { useOverrideStatusMap, type OverrideStatus } from "@/hooks/use-override-status";
+import { useOverriddenModules } from "@/hooks/use-overridden-modules";
 import { groupByModule } from "@/lib/normalize-instrumentation";
 import { SectionCardShell } from "./section-card-shell";
 import { InstrumentationRow } from "./instrumentation-row";
 
 export interface InstrumentationBrowserProps {
-  version: string;
+  instrumentations: InstrumentationData[] | null;
+  loading: boolean;
+  error: Error | null;
   search: string;
   statusFilter: "all" | "overridden";
+  onJumpToGeneral: (sectionKey: string) => void;
 }
 
 export function InstrumentationBrowser({
-  version,
+  instrumentations,
+  loading,
+  error,
   search,
   statusFilter,
+  onJumpToGeneral,
 }: InstrumentationBrowserProps): JSX.Element {
-  const { data: instrumentations, loading, error } = useInstrumentations(version);
   const { setOverride } = useConfigurationBuilder();
   const overrideMap = useOverrideStatusMap();
 
@@ -42,18 +47,29 @@ export function InstrumentationBrowser({
     [instrumentations]
   );
 
-  const overrideCount = overrideMap.size;
+  const overriddenSet = useOverriddenModules(modules);
+  const overrideCount = overriddenSet.size;
+
+  const [expandedSet, setExpandedSet] = useState<Set<string>>(() => new Set());
+
+  const toggleExpand = useCallback((name: string) => {
+    setExpandedSet((prev) => {
+      const next = new Set(prev);
+      if (next.has(name)) next.delete(name);
+      else next.add(name);
+      return next;
+    });
+  }, []);
 
   const trimmedSearch = search.trim();
   const filtered = useMemo(() => {
     const q = trimmedSearch.toLowerCase();
     return modules.filter((m) => {
-      if (statusFilter === "overridden" && (overrideMap.get(m.name) ?? "none") === "none")
-        return false;
+      if (statusFilter === "overridden" && !overriddenSet.has(m.name)) return false;
       if (q && !matchesQuery(m, q)) return false;
       return true;
     });
-  }, [modules, overrideMap, trimmedSearch, statusFilter]);
+  }, [modules, overriddenSet, trimmedSearch, statusFilter]);
 
   const handleAddOverride = useCallback(
     (m: InstrumentationModule) => {
@@ -99,12 +115,15 @@ export function InstrumentationBrowser({
           total={modules.length}
           filtered={filtered}
           overrideMap={overrideMap}
+          expandedSet={expandedSet}
           search={trimmedSearch}
           statusFilter={statusFilter}
           overrideCount={overrideCount}
           onAddOverride={handleAddOverride}
           onSetEnabled={handleSetEnabled}
           onRemoveOverride={handleRemoveOverride}
+          onToggleExpand={toggleExpand}
+          onJumpToGeneral={onJumpToGeneral}
         />
       )}
     </SectionCardShell>
@@ -115,24 +134,30 @@ interface BodyProps {
   total: number;
   filtered: InstrumentationModule[];
   overrideMap: Map<string, "enabled" | "disabled">;
+  expandedSet: Set<string>;
   search: string;
   statusFilter: "all" | "overridden";
   overrideCount: number;
   onAddOverride: (m: InstrumentationModule) => void;
   onSetEnabled: (name: string, enabled: boolean) => void;
   onRemoveOverride: (name: string) => void;
+  onToggleExpand: (name: string) => void;
+  onJumpToGeneral: (sectionKey: string) => void;
 }
 
 function Body({
   total,
   filtered,
   overrideMap,
+  expandedSet,
   search,
   statusFilter,
   overrideCount,
   onAddOverride,
   onSetEnabled,
   onRemoveOverride,
+  onToggleExpand,
+  onJumpToGeneral,
 }: BodyProps): JSX.Element {
   return (
     <div className="space-y-3">
@@ -151,9 +176,12 @@ function Body({
                 <InstrumentationRow
                   module={m}
                   status={status}
+                  isExpanded={expandedSet.has(m.name)}
                   onAddOverride={() => onAddOverride(m)}
                   onSetEnabled={(enabled) => onSetEnabled(m.name, enabled)}
                   onRemoveOverride={() => onRemoveOverride(m.name)}
+                  onToggleExpand={() => onToggleExpand(m.name)}
+                  onJumpToGeneral={onJumpToGeneral}
                 />
               </li>
             );

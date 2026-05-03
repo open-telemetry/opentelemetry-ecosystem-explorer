@@ -15,8 +15,15 @@
  */
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import type { InstrumentationData, InstrumentationModule } from "@/types/javaagent";
 import { InstrumentationRow } from "./instrumentation-row";
+
+vi.mock("./instrumentation-config-form", () => ({
+  InstrumentationConfigForm: ({ module: m }: { module: { name: string } }) => (
+    <div data-testid={`form-stub-${m.name}`} />
+  ),
+}));
 
 function entry(name: string, opts: Partial<InstrumentationData> = {}): InstrumentationData {
   return {
@@ -34,6 +41,12 @@ function moduleFixture(
   return { name, defaultDisabled, coveredEntries };
 }
 
+const expansionDefaults = {
+  isExpanded: false,
+  onToggleExpand: vi.fn(),
+  onJumpToGeneral: vi.fn(),
+} as const;
+
 describe("InstrumentationRow", () => {
   it("renders the module name as the primary label", () => {
     render(
@@ -43,6 +56,7 @@ describe("InstrumentationRow", () => {
         onAddOverride={() => {}}
         onSetEnabled={() => {}}
         onRemoveOverride={() => {}}
+        {...expansionDefaults}
       />
     );
     expect(screen.getByText("cassandra")).toBeInTheDocument();
@@ -57,6 +71,7 @@ describe("InstrumentationRow", () => {
         onAddOverride={() => {}}
         onSetEnabled={() => {}}
         onRemoveOverride={() => {}}
+        {...expansionDefaults}
       />
     );
     expect(screen.getByText("enabled by default")).toBeInTheDocument();
@@ -70,6 +85,7 @@ describe("InstrumentationRow", () => {
         onAddOverride={() => {}}
         onSetEnabled={() => {}}
         onRemoveOverride={() => {}}
+        {...expansionDefaults}
       />
     );
     expect(screen.getByText("disabled by default")).toBeInTheDocument();
@@ -84,6 +100,7 @@ describe("InstrumentationRow", () => {
         onAddOverride={onAdd}
         onSetEnabled={() => {}}
         onRemoveOverride={() => {}}
+        {...expansionDefaults}
       />
     );
     fireEvent.click(screen.getByLabelText(/Override cassandra/));
@@ -100,6 +117,7 @@ describe("InstrumentationRow", () => {
         onAddOverride={() => {}}
         onSetEnabled={onSetEnabled}
         onRemoveOverride={onRemove}
+        {...expansionDefaults}
       />
     );
     expect(screen.getByRole("button", { name: "Enabled" })).toHaveAttribute(
@@ -125,6 +143,7 @@ describe("InstrumentationRow", () => {
         onAddOverride={() => {}}
         onSetEnabled={onSetEnabled}
         onRemoveOverride={() => {}}
+        {...expansionDefaults}
       />
     );
     rerender(
@@ -134,6 +153,7 @@ describe("InstrumentationRow", () => {
         onAddOverride={() => {}}
         onSetEnabled={onSetEnabled}
         onRemoveOverride={() => {}}
+        {...expansionDefaults}
       />
     );
     expect(screen.getByRole("button", { name: "Enabled" })).toHaveAttribute("aria-pressed", "true");
@@ -153,6 +173,7 @@ describe("InstrumentationRow", () => {
         onAddOverride={() => {}}
         onSetEnabled={() => {}}
         onRemoveOverride={() => {}}
+        {...expansionDefaults}
       />
     );
     expect(screen.getByText("custom")).toBeInTheDocument();
@@ -166,8 +187,85 @@ describe("InstrumentationRow", () => {
         onAddOverride={() => {}}
         onSetEnabled={() => {}}
         onRemoveOverride={() => {}}
+        {...expansionDefaults}
       />
     );
     expect(screen.queryByText("custom")).toBeNull();
+  });
+});
+
+describe("InstrumentationRow — expansion", () => {
+  const baseModule = {
+    name: "cassandra",
+    defaultDisabled: false,
+    coveredEntries: [{ name: "cassandra-4.4", scope: { name: "io.opentelemetry.cassandra-4.4" } }],
+  };
+
+  it("calls onToggleExpand when the toggle button is clicked", async () => {
+    const user = userEvent.setup();
+    const onToggle = vi.fn();
+    render(
+      <InstrumentationRow
+        module={baseModule}
+        status="none"
+        isExpanded={false}
+        onAddOverride={vi.fn()}
+        onSetEnabled={vi.fn()}
+        onRemoveOverride={vi.fn()}
+        onToggleExpand={onToggle}
+        onJumpToGeneral={vi.fn()}
+      />
+    );
+    await user.click(screen.getByRole("button", { name: /toggle details for cassandra/i }));
+    expect(onToggle).toHaveBeenCalledTimes(1);
+  });
+
+  it("renders the config form only when expanded", () => {
+    const props = {
+      module: baseModule,
+      status: "none" as const,
+      onAddOverride: vi.fn(),
+      onSetEnabled: vi.fn(),
+      onRemoveOverride: vi.fn(),
+      onToggleExpand: vi.fn(),
+      onJumpToGeneral: vi.fn(),
+    };
+    const { rerender } = render(<InstrumentationRow {...props} isExpanded={false} />);
+    expect(screen.queryByTestId("form-stub-cassandra")).toBeNull();
+    rerender(<InstrumentationRow {...props} isExpanded={true} />);
+    expect(screen.getByTestId("form-stub-cassandra")).toBeInTheDocument();
+  });
+
+  it("exposes data-expanded and rotates the chevron icon when expanded", () => {
+    const { rerender } = render(
+      <InstrumentationRow
+        module={baseModule}
+        status="none"
+        isExpanded={false}
+        onAddOverride={vi.fn()}
+        onSetEnabled={vi.fn()}
+        onRemoveOverride={vi.fn()}
+        onToggleExpand={vi.fn()}
+        onJumpToGeneral={vi.fn()}
+      />
+    );
+    const row = screen.getByTestId("instrumentation-row-cassandra");
+    expect(row.getAttribute("data-expanded")).toBe("false");
+    expect(row.querySelector(".rotate-90")).toBeNull();
+
+    rerender(
+      <InstrumentationRow
+        module={baseModule}
+        status="none"
+        isExpanded={true}
+        onAddOverride={vi.fn()}
+        onSetEnabled={vi.fn()}
+        onRemoveOverride={vi.fn()}
+        onToggleExpand={vi.fn()}
+        onJumpToGeneral={vi.fn()}
+      />
+    );
+    expect(row.getAttribute("data-expanded")).toBe("true");
+    expect(row.querySelector(".rotate-90")).not.toBeNull();
   });
 });

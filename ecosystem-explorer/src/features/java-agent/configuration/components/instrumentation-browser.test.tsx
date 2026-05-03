@@ -15,17 +15,19 @@
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import type { InstrumentationData } from "@/types/javaagent";
-import { useInstrumentations } from "@/hooks/use-javaagent-data";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
 import { useOverrideStatusMap } from "@/hooks/use-override-status";
+import { useOverriddenModules } from "@/hooks/use-overridden-modules";
 import { InstrumentationBrowser } from "./instrumentation-browser";
 
-vi.mock("@/hooks/use-javaagent-data");
 vi.mock("@/hooks/use-configuration-builder");
 vi.mock("@/hooks/use-override-status");
+vi.mock("@/hooks/use-overridden-modules", () => ({
+  useOverriddenModules: vi.fn(() => new Set<string>()),
+}));
 
-const mockedInstr = vi.mocked(useInstrumentations);
 const mockedBuilder = vi.mocked(useConfigurationBuilder);
 const mockedOverride = vi.mocked(useOverrideStatusMap);
 
@@ -48,9 +50,14 @@ const FIXTURE: InstrumentationData[] = [
 
 const setOverride = vi.fn();
 
+const browserDefaults = {
+  loading: false,
+  error: null,
+  onJumpToGeneral: vi.fn(),
+} as const;
+
 beforeEach(() => {
   setOverride.mockReset();
-  mockedInstr.mockReturnValue({ data: FIXTURE, loading: false, error: null });
   mockedBuilder.mockReturnValue({
     state: {
       values: {},
@@ -63,11 +70,19 @@ beforeEach(() => {
     setOverride,
   } as unknown as ReturnType<typeof useConfigurationBuilder>);
   mockedOverride.mockReturnValue(new Map());
+  vi.mocked(useOverriddenModules).mockReturnValue(new Set<string>());
 });
 
 describe("InstrumentationBrowser", () => {
   it("groups entries into module rows with version count", () => {
-    render(<InstrumentationBrowser version="2.27.0" search="" statusFilter="all" />);
+    render(
+      <InstrumentationBrowser
+        instrumentations={FIXTURE}
+        search=""
+        statusFilter="all"
+        {...browserDefaults}
+      />
+    );
     expect(screen.getByText("cassandra")).toBeInTheDocument();
     expect(screen.getByText("kafka_clients")).toBeInTheDocument();
     expect(screen.getByText("jmx_metrics")).toBeInTheDocument();
@@ -76,77 +91,250 @@ describe("InstrumentationBrowser", () => {
   });
 
   it("matches search against the registry name of any covered entry", () => {
-    render(<InstrumentationBrowser version="2.27.0" search="cassandra-4.4" statusFilter="all" />);
+    render(
+      <InstrumentationBrowser
+        instrumentations={FIXTURE}
+        search="cassandra-4.4"
+        statusFilter="all"
+        {...browserDefaults}
+      />
+    );
     expect(screen.getByText("cassandra")).toBeInTheDocument();
     expect(screen.queryByText("kafka_clients")).not.toBeInTheDocument();
   });
 
   it("matches search against display_name on any covered entry", () => {
-    render(<InstrumentationBrowser version="2.27.0" search="Kafka Clients" statusFilter="all" />);
+    render(
+      <InstrumentationBrowser
+        instrumentations={FIXTURE}
+        search="Kafka Clients"
+        statusFilter="all"
+        {...browserDefaults}
+      />
+    );
     expect(screen.getByText("kafka_clients")).toBeInTheDocument();
     expect(screen.queryByText("cassandra")).not.toBeInTheDocument();
   });
 
   it("matches search against description on any covered entry", () => {
     render(
-      <InstrumentationBrowser version="2.27.0" search="context propagation" statusFilter="all" />
+      <InstrumentationBrowser
+        instrumentations={FIXTURE}
+        search="context propagation"
+        statusFilter="all"
+        {...browserDefaults}
+      />
     );
     expect(screen.getByText("cassandra")).toBeInTheDocument();
     expect(screen.queryByText("kafka_clients")).not.toBeInTheDocument();
   });
 
   it("search is case-insensitive", () => {
-    render(<InstrumentationBrowser version="2.27.0" search="CASSANDRA" statusFilter="all" />);
+    render(
+      <InstrumentationBrowser
+        instrumentations={FIXTURE}
+        search="CASSANDRA"
+        statusFilter="all"
+        {...browserDefaults}
+      />
+    );
     expect(screen.getByText("cassandra")).toBeInTheDocument();
   });
 
   it("filters to overridden when statusFilter='overridden'", () => {
-    mockedOverride.mockReturnValue(new Map([["cassandra", "disabled"]]));
-    render(<InstrumentationBrowser version="2.27.0" search="" statusFilter="overridden" />);
+    vi.mocked(useOverriddenModules).mockReturnValue(new Set(["cassandra"]));
+    render(
+      <InstrumentationBrowser
+        instrumentations={FIXTURE}
+        search=""
+        statusFilter="overridden"
+        {...browserDefaults}
+      />
+    );
     expect(screen.getByText("cassandra")).toBeInTheDocument();
     expect(screen.queryByText("kafka_clients")).not.toBeInTheDocument();
   });
 
   it("calls setOverride('cassandra', 'disabled') when + Override is clicked on a default-enabled module", () => {
-    render(<InstrumentationBrowser version="2.27.0" search="" statusFilter="all" />);
+    render(
+      <InstrumentationBrowser
+        instrumentations={FIXTURE}
+        search=""
+        statusFilter="all"
+        {...browserDefaults}
+      />
+    );
     fireEvent.click(screen.getByLabelText("Override cassandra"));
     expect(setOverride).toHaveBeenCalledWith("cassandra", "disabled");
   });
 
   it("calls setOverride('jmx_metrics', 'enabled') when + Override is clicked on a default-disabled module", () => {
-    render(<InstrumentationBrowser version="2.27.0" search="" statusFilter="all" />);
+    render(
+      <InstrumentationBrowser
+        instrumentations={FIXTURE}
+        search=""
+        statusFilter="all"
+        {...browserDefaults}
+      />
+    );
     fireEvent.click(screen.getByLabelText("Override jmx_metrics"));
     expect(setOverride).toHaveBeenCalledWith("jmx_metrics", "enabled");
   });
 
   it("calls setOverride(name, 'none') when ✕ is clicked on an overridden row", () => {
     mockedOverride.mockReturnValue(new Map([["cassandra", "disabled"]]));
-    render(<InstrumentationBrowser version="2.27.0" search="" statusFilter="all" />);
+    render(
+      <InstrumentationBrowser
+        instrumentations={FIXTURE}
+        search=""
+        statusFilter="all"
+        {...browserDefaults}
+      />
+    );
     fireEvent.click(screen.getByLabelText("Remove override for cassandra"));
     expect(setOverride).toHaveBeenCalledWith("cassandra", "none");
   });
 
   it("calls setOverride('cassandra', 'enabled') when toggling overridden Disabled→Enabled", () => {
     mockedOverride.mockReturnValue(new Map([["cassandra", "disabled"]]));
-    render(<InstrumentationBrowser version="2.27.0" search="" statusFilter="all" />);
+    render(
+      <InstrumentationBrowser
+        instrumentations={FIXTURE}
+        search=""
+        statusFilter="all"
+        {...browserDefaults}
+      />
+    );
     fireEvent.click(screen.getAllByRole("button", { name: "Enabled" })[0]);
     expect(setOverride).toHaveBeenCalledWith("cassandra", "enabled");
   });
 
   it("renders empty state for unmatched search", () => {
-    render(<InstrumentationBrowser version="2.27.0" search="nonexistent" statusFilter="all" />);
+    render(
+      <InstrumentationBrowser
+        instrumentations={FIXTURE}
+        search="nonexistent"
+        statusFilter="all"
+        {...browserDefaults}
+      />
+    );
     expect(screen.getByText(/No instrumentations match/)).toBeInTheDocument();
   });
 
   it("shows loading state", () => {
-    mockedInstr.mockReturnValue({ data: null, loading: true, error: null });
-    render(<InstrumentationBrowser version="2.27.0" search="" statusFilter="all" />);
+    render(
+      <InstrumentationBrowser
+        instrumentations={null}
+        loading={true}
+        error={null}
+        search=""
+        statusFilter="all"
+        onJumpToGeneral={vi.fn()}
+      />
+    );
     expect(screen.getByText(/Loading instrumentations/)).toBeInTheDocument();
   });
 
   it("shows error state", () => {
-    mockedInstr.mockReturnValue({ data: null, loading: false, error: new Error("boom") });
-    render(<InstrumentationBrowser version="2.27.0" search="" statusFilter="all" />);
+    render(
+      <InstrumentationBrowser
+        instrumentations={null}
+        loading={false}
+        error={new Error("boom")}
+        search=""
+        statusFilter="all"
+        onJumpToGeneral={vi.fn()}
+      />
+    );
     expect(screen.getByText(/Failed to load/)).toBeInTheDocument();
+  });
+});
+
+describe("InstrumentationBrowser — expansion and override filter", () => {
+  beforeEach(() => {
+    vi.mocked(useOverriddenModules).mockReturnValue(new Set<string>());
+  });
+
+  const cassandraData = [
+    {
+      name: "cassandra-4.4",
+      scope: { name: "io.opentelemetry.cassandra-4.4" },
+      configurations: [
+        {
+          name: "x",
+          declarative_name: "java.cassandra.query_sanitization.enabled",
+          description: "",
+          type: "boolean" as const,
+          default: true,
+        },
+      ],
+    },
+  ];
+  const twoModules = [
+    { name: "cassandra-4.4", scope: { name: "io.opentelemetry.cassandra-4.4" } },
+    { name: "graphql-java-20.0", scope: { name: "io.opentelemetry.graphql-java-20.0" } },
+  ];
+
+  it("expands a row when its toggle button is clicked", async () => {
+    const user = userEvent.setup();
+    render(
+      <InstrumentationBrowser
+        instrumentations={cassandraData}
+        search=""
+        statusFilter="all"
+        {...browserDefaults}
+      />
+    );
+    const row = screen.getByTestId("instrumentation-row-cassandra");
+    expect(row.getAttribute("data-expanded")).toBe("false");
+    await user.click(screen.getByRole("button", { name: /toggle details for cassandra/i }));
+    expect(row.getAttribute("data-expanded")).toBe("true");
+  });
+
+  it("keeps multiple rows expanded simultaneously", async () => {
+    const user = userEvent.setup();
+    render(
+      <InstrumentationBrowser
+        instrumentations={twoModules}
+        search=""
+        statusFilter="all"
+        {...browserDefaults}
+      />
+    );
+    const cass = screen.getByTestId("instrumentation-row-cassandra");
+    const graphql = screen.getByTestId("instrumentation-row-graphql_java");
+    expect(cass.getAttribute("data-expanded")).toBe("false");
+    expect(graphql.getAttribute("data-expanded")).toBe("false");
+    await user.click(screen.getByRole("button", { name: /toggle details for cassandra/i }));
+    await user.click(screen.getByRole("button", { name: /toggle details for graphql_java/i }));
+    expect(cass.getAttribute("data-expanded")).toBe("true");
+    expect(graphql.getAttribute("data-expanded")).toBe("true");
+  });
+
+  it("uses useOverriddenModules to filter when statusFilter is 'overridden'", () => {
+    vi.mocked(useOverriddenModules).mockReturnValue(new Set(["cassandra"]));
+    render(
+      <InstrumentationBrowser
+        instrumentations={twoModules}
+        search=""
+        statusFilter="overridden"
+        {...browserDefaults}
+      />
+    );
+    expect(screen.getByTestId("instrumentation-row-cassandra")).toBeInTheDocument();
+    expect(screen.queryByTestId("instrumentation-row-graphql_java")).toBeNull();
+  });
+
+  it("renders the override count in the header from useOverriddenModules", () => {
+    vi.mocked(useOverriddenModules).mockReturnValue(new Set(["cassandra"]));
+    render(
+      <InstrumentationBrowser
+        instrumentations={[twoModules[0]]}
+        search=""
+        statusFilter="all"
+        {...browserDefaults}
+      />
+    );
+    expect(screen.getByText(/1 overridden/i)).toBeInTheDocument();
   });
 });
