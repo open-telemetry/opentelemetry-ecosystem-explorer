@@ -55,4 +55,5 @@ export type ConfigurationBuilderAction =
   | { type: "LOAD_STATE"; state: ConfigurationBuilderState }
   | { type: "SET_VALIDATION_ERRORS"; errors: Record<string, string> }
   | { type: "SET_FIELD_ERROR"; path: string; error: string | null }
-  | { type: "ENABLE_ALL_SECTIONS"; defaultsBySection: Record<string, ConfigValues> };
+  | { type: "ENABLE_ALL_SECTIONS"; defaultsBySection: Record<string, ConfigValues> }
+  | { type: "SET_OVERRIDE"; module: string; status: "enabled" | "disabled" | "none" };

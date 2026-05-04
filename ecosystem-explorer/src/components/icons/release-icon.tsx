@@ -13,15 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
-import App from "./App";
 
-describe("App", () => {
-  it("renders the page title", async () => {
-    render(<App />);
-    const heading = await screen.findByRole("heading", { level: 1 });
-    expect(heading).toHaveTextContent("OpenTelemetry");
-    expect(heading).toHaveTextContent("Ecosystem Explorer");
-  });
-});
+export function ReleaseIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      role="img"
+      aria-label="Release Comparison Icon"
+      className={`text-primary ${className || ""}`}
+    >
+      <path d="M12 8V12L15 15" />
+      <circle cx="12" cy="12" r="9" />
+      <path d="M3 12h1" />
+      <path d="M20 12h1" />
+      <path d="M12 3v1" />
+      <path d="M12 20v1" />
+    </svg>
+  );
+}

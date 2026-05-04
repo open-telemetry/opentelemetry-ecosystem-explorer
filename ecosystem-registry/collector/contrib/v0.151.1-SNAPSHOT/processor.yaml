@@ -21,6 +21,20 @@ components:
       codeowners:
         active:
         - boostchicken
+- name: cardinalityguardianprocessor
+  metadata:
+    type: cardinality_guardian
+    status:
+      class: processor
+      stability:
+        development:
+        - metrics
+      distributions: []
+      codeowners:
+        active:
+        - atoulme
+        - YElayyat
+        - jmacd
 - name: coralogixprocessor
   metadata:
     type: coralogix
@@ -108,6 +122,7 @@ components:
         - logs
       distributions:
       - contrib
+      - k8s
       codeowners:
         active:
         - MikeGoldsmith

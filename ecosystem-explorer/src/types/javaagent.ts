@@ -145,3 +145,9 @@ export interface TelemetryDiffResult {
   metrics: MetricDiff[];
   spans: SpanDiff[];
 }
+
+export interface InstrumentationModule {
+  name: string;
+  defaultDisabled: boolean;
+  coveredEntries: InstrumentationData[];
+}

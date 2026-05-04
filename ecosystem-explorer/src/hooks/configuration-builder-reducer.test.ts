@@ -336,4 +336,91 @@ describe("configurationBuilderReducer", () => {
       expect(next.isDirty).toBe(false);
     });
   });
+
+  describe("SET_OVERRIDE", () => {
+    const PATH = ["distribution", "javaagent", "instrumentation"] as const;
+    const initial = { ...INITIAL_STATE, version: "1.0.0" };
+
+    function getInst(s: ReturnType<typeof configurationBuilderReducer>) {
+      let cur: unknown = s.values;
+      for (const seg of PATH) {
+        if (!cur || typeof cur !== "object") return undefined;
+        cur = (cur as Record<string, unknown>)[seg];
+      }
+      return cur as { enabled?: string[]; disabled?: string[] } | undefined;
+    }
+
+    it("adds a module to disabled[] sorted alphabetically", () => {
+      let s = configurationBuilderReducer(initial, {
+        type: "SET_OVERRIDE",
+        module: "kafka_clients",
+        status: "disabled",
+      });
+      s = configurationBuilderReducer(s, {
+        type: "SET_OVERRIDE",
+        module: "cassandra",
+        status: "disabled",
+      });
+      expect(getInst(s)?.disabled).toEqual(["cassandra", "kafka_clients"]);
+      expect(getInst(s)?.enabled).toBeUndefined();
+    });
+
+    it("moves a module between arrays atomically (no duplicates)", () => {
+      let s = configurationBuilderReducer(initial, {
+        type: "SET_OVERRIDE",
+        module: "cassandra",
+        status: "disabled",
+      });
+      s = configurationBuilderReducer(s, {
+        type: "SET_OVERRIDE",
+        module: "cassandra",
+        status: "enabled",
+      });
+      expect(getInst(s)?.disabled).toBeUndefined();
+      expect(getInst(s)?.enabled).toEqual(["cassandra"]);
+    });
+
+    it("removes a module from both arrays when status is none", () => {
+      let s = configurationBuilderReducer(initial, {
+        type: "SET_OVERRIDE",
+        module: "cassandra",
+        status: "disabled",
+      });
+      s = configurationBuilderReducer(s, {
+        type: "SET_OVERRIDE",
+        module: "cassandra",
+        status: "none",
+      });
+      expect(s.values["distribution"]).toBeUndefined();
+    });
+
+    it("recovers from corrupt initial state (module in both arrays)", () => {
+      const corrupt = {
+        ...initial,
+        values: {
+          distribution: {
+            javaagent: {
+              instrumentation: { enabled: ["cassandra"], disabled: ["cassandra"] },
+            },
+          },
+        },
+      };
+      const s = configurationBuilderReducer(corrupt, {
+        type: "SET_OVERRIDE",
+        module: "cassandra",
+        status: "disabled",
+      });
+      expect(getInst(s)?.enabled).toBeUndefined();
+      expect(getInst(s)?.disabled).toEqual(["cassandra"]);
+    });
+
+    it("sets isDirty", () => {
+      const s = configurationBuilderReducer(initial, {
+        type: "SET_OVERRIDE",
+        module: "cassandra",
+        status: "disabled",
+      });
+      expect(s.isDirty).toBe(true);
+    });
+  });
 });

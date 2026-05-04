@@ -76,7 +76,7 @@ export function ConfigurationCard({ config, format }: ConfigurationCardProps) {
         </div>
 
         <p className="text-muted-foreground text-sm leading-relaxed">
-          {renderWithInlineCode(config.description)}
+          {config.description && renderWithInlineCode(config.description)}
         </p>
 
         <div className="border-border/30 bg-muted/30 flex items-start gap-2 rounded-lg border p-3">
