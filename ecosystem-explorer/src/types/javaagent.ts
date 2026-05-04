@@ -56,7 +56,7 @@ export interface InstrumentationScope {
 export interface Configuration {
   name: string;
   declarative_name?: string;
-  description?: string;
+  description: string;
   type: "boolean" | "string" | "list" | "map" | "int" | "double";
   default: string | boolean | number;
   example?: string[];
