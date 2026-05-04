@@ -162,9 +162,16 @@ class InstrumentationSync:
             logger.warning(f"  README discovery failed for {ref}: {e}")
             return
 
+        libraries_raw = instrumentations.get("libraries", [])
+        # Parsed YAML may keep grouped format {tag: [lib, ...]} or flat list
+        if isinstance(libraries_raw, dict):
+            libraries = [lib for group in libraries_raw.values() for lib in group]
+        else:
+            libraries = libraries_raw
+
         name_by_source = {
             lib["source_path"]: lib["name"]
-            for lib in instrumentations.get("libraries", [])
+            for lib in libraries
             if lib.get("source_path") and lib.get("name")
         }
 

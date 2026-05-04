@@ -38,8 +38,14 @@ class TestInstrumentationSync:
         return Mock()
 
     @pytest.fixture
-    def sync(self, mock_client, inventory_manager):
-        return InstrumentationSync(mock_client, inventory_manager)
+    def mock_readme_extractor(self):
+        extractor = Mock()
+        extractor.discover_library_readmes.return_value = {}
+        return extractor
+
+    @pytest.fixture
+    def sync(self, mock_client, inventory_manager, mock_readme_extractor):
+        return InstrumentationSync(mock_client, inventory_manager, readme_extractor=mock_readme_extractor)
 
     def test_process_latest_release_new_version(self, sync, mock_client):
         mock_client.get_latest_release_tag.return_value = "v2.10.0"
@@ -209,3 +215,103 @@ libraries:
         assert test_lib["name"] == "Test Name"
         assert test_lib["description"] == "Description with trailing spaces."
         assert test_lib["tags"] == ["test"]
+
+    # --- _sync_library_readmes ---
+
+    _YAML_WITH_LIBRARIES = """
+file_format: 0.5
+libraries:
+  instrumentation:
+  - name: akka-actor-2.3
+    source_path: instrumentation/akka/akka-actor-2.3
+  - name: apache-httpclient-4.3
+    source_path: instrumentation/apache-httpclient/apache-httpclient-4.3
+"""
+
+    _TREE = [
+        {"type": "blob", "path": "instrumentation/akka/akka-actor-2.3/library/README.md"},
+        {"type": "blob", "path": "instrumentation/apache-httpclient/apache-httpclient-4.3/library/README.md"},
+    ]
+
+    def test_release_sync_writes_readmes(self, mock_client, inventory_manager):
+        mock_client.get_latest_release_tag.return_value = "v2.10.0"
+        mock_client.fetch_instrumentation_list.return_value = self._YAML_WITH_LIBRARIES
+        mock_client.resolve_ref_to_sha.return_value = "sha123"
+        mock_client.fetch_tree.return_value = self._TREE
+        mock_client.fetch_raw_file.return_value = "# README"
+
+        sync = InstrumentationSync(mock_client, inventory_manager)
+        version = sync.process_latest_release()
+
+        readme_dir = inventory_manager.get_version_dir(version) / "library_readmes"
+        assert readme_dir.exists()
+        assert len(list(readme_dir.glob("*.md"))) == 2
+        mock_client.resolve_ref_to_sha.assert_called_once_with("v2.10.0")
+
+    def test_snapshot_sync_writes_readmes(self, mock_client, inventory_manager):
+        mock_client.get_latest_release_tag.return_value = "v2.10.0"
+        mock_client.fetch_instrumentation_list.return_value = self._YAML_WITH_LIBRARIES
+        mock_client.resolve_ref_to_sha.return_value = "sha123"
+        mock_client.fetch_tree.return_value = self._TREE
+        mock_client.fetch_raw_file.return_value = "# README"
+
+        sync = InstrumentationSync(mock_client, inventory_manager)
+        snapshot_version = sync.update_snapshot()
+
+        readme_dir = inventory_manager.get_version_dir(snapshot_version) / "library_readmes"
+        assert readme_dir.exists()
+        mock_client.resolve_ref_to_sha.assert_called_once_with("main")
+
+    def test_one_readme_fetch_failure_others_written(self, mock_client, inventory_manager):
+        from java_instrumentation_watcher.java_instrumentation_client import GithubAPIError
+
+        mock_client.get_latest_release_tag.return_value = "v2.10.0"
+        mock_client.fetch_instrumentation_list.return_value = self._YAML_WITH_LIBRARIES
+        mock_client.resolve_ref_to_sha.return_value = "sha123"
+        mock_client.fetch_tree.return_value = self._TREE
+        mock_client.fetch_raw_file.side_effect = [
+            GithubAPIError("timeout"),
+            "# Apache README",
+        ]
+
+        sync = InstrumentationSync(mock_client, inventory_manager)
+        version = sync.process_latest_release()
+
+        assert version == Version("2.10.0")
+        readme_dir = inventory_manager.get_version_dir(version) / "library_readmes"
+        assert len(list(readme_dir.glob("*.md"))) == 1
+
+    def test_resolve_ref_failure_does_not_abort_sync(self, mock_client, inventory_manager):
+        from java_instrumentation_watcher.java_instrumentation_client import GithubAPIError
+
+        mock_client.get_latest_release_tag.return_value = "v2.10.0"
+        mock_client.fetch_instrumentation_list.return_value = self._YAML_WITH_LIBRARIES
+        mock_client.resolve_ref_to_sha.side_effect = GithubAPIError("API down")
+
+        sync = InstrumentationSync(mock_client, inventory_manager)
+        version = sync.process_latest_release()
+
+        assert version == Version("2.10.0")
+        assert inventory_manager.version_exists(version)
+        readme_dir = inventory_manager.get_version_dir(version) / "library_readmes"
+        assert not readme_dir.exists()
+
+    def test_library_without_source_path_skipped(self, mock_client, inventory_manager):
+        yaml_no_source = """
+file_format: 0.5
+libraries:
+  instrumentation:
+  - name: some-lib
+"""
+        mock_client.get_latest_release_tag.return_value = "v2.10.0"
+        mock_client.fetch_instrumentation_list.return_value = yaml_no_source
+        mock_client.resolve_ref_to_sha.return_value = "sha123"
+        mock_client.fetch_tree.return_value = [
+            {"type": "blob", "path": "instrumentation/some/lib/library/README.md"},
+        ]
+
+        sync = InstrumentationSync(mock_client, inventory_manager)
+        version = sync.process_latest_release()
+
+        assert version == Version("2.10.0")
+        mock_client.fetch_raw_file.assert_not_called()
