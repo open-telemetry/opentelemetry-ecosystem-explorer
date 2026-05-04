@@ -12,3 +12,5 @@ tmp_repos/
 metadata-issues.md
 
 *.DS_Store
+# Local Netlify folder
+.netlify

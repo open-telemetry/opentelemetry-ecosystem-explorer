@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OpenTelemetry Collector Component",
+  "description": "Schema for OpenTelemetry Collector component metadata in the ecosystem registry.",
+  "type": "object",
+  "required": ["id", "name", "type"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the component (e.g., core-receiver-otlpreceiver)."
+    },
+    "name": {
+      "type": "string",
+      "description": "The short name of the component (e.g., otlpreceiver)."
+    },
+    "display_name": {
+      "type": ["string", "null"],
+      "description": "Human-readable name of the component."
+    },
+    "type": {
+      "type": "string",
+      "enum": ["receiver", "processor", "exporter", "extension", "connector"],
+      "description": "The functional type of the component."
+    },
+    "description": {
+      "type": ["string", "null"],
+      "description": "Brief description of the component's functionality."
+    },
+    "stability": {
+      "type": "string",
+      "enum": ["alpha", "beta", "stable", "deprecated", "unmaintained", "development"],
+      "description": "The overall stability level of the component."
+    },
+    "distribution": {
+      "type": "string",
+      "enum": ["core", "contrib", "k8s"],
+      "description": "The distribution where this component originates."
+    },
+    "ecosystem": {
+      "type": "string",
+      "const": "collector"
+    },
+    "github_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Link to the component's source code on GitHub."
+    },
+    "repository": {
+      "type": "string",
+      "description": "The GitHub repository name."
+    },
+    "is_core": {
+      "type": "boolean",
+      "description": "Whether the component is part of the core collector distribution."
+    },
+    "status": {
+      "type": "object",
+      "description": "Detailed status information including codeowners and per-signal stability."
+    }
+  }
+}

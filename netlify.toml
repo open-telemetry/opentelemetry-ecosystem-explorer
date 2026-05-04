@@ -14,6 +14,22 @@ VITE_FEATURE_FLAG_COLLECTOR_PAGE = "true"
 VITE_FEATURE_FLAG_JAVA_CONFIG_BUILDER = "true"
 VITE_FEATURE_FLAG_COLLECTOR_PAGE = "true"
 
+[[edge_functions]]
+function = "agent-negotiation"
+path = "/agent/*"
+
+[[edge_functions]]
+function = "agent-negotiation"
+path = "/llms.txt"
+
+[[edge_functions]]
+function = "agent-negotiation"
+path = "/llms-full.txt"
+
+[[edge_functions]]
+function = "agent-negotiation"
+path = "/schemas/*"
+
 [[redirects]]
 from = "/*"
 to = "/index.html"

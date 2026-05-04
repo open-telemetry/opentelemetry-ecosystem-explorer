@@ -1,0 +1,61 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OpenTelemetry Java Agent Instrumentation",
+  "description": "Schema for OpenTelemetry Java Agent instrumentation metadata in the ecosystem registry.",
+  "type": "object",
+  "required": ["name"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The unique name of the instrumentation (e.g., akka-actor-2.3)."
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Human-readable name of the instrumentation."
+    },
+    "description": {
+      "type": ["string", "null"],
+      "description": "Brief description of what is being instrumented and how."
+    },
+    "features": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "List of telemetry features provided (e.g., TRACING, METRICS, CONTEXT_PROPAGATION)."
+    },
+    "has_javaagent": {
+      "type": "boolean",
+      "description": "Indicates if this instrumentation is compatible with the OpenTelemetry Java Agent."
+    },
+    "javaagent_target_versions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Maven coordinates and version ranges of libraries supported by this instrumentation."
+    },
+    "library_link": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL to the documentation or homepage of the instrumented library."
+    },
+    "scope": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" }
+      },
+      "description": "The OpenTelemetry instrumentation scope (meter/logger/tracer name)."
+    },
+    "source_path": {
+      "type": "string",
+      "description": "Relative path to the instrumentation source code in the opentelemetry-java-instrumentation repository."
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Searchable tags associated with this instrumentation."
+    },
+    "github_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Direct link to the instrumentation's source code."
+    }
+  }
+}
