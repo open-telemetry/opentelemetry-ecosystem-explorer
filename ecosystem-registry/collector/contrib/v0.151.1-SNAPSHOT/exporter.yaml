@@ -176,7 +176,7 @@ components:
         - hgaol
 - name: bmchelixexporter
   metadata:
-    type: bmchelix
+    type: bmc_helix
     display_name: BMC Helix Exporter
     status:
       class: exporter

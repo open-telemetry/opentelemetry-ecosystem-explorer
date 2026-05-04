@@ -1874,7 +1874,7 @@ components:
         seeking_new: true
 - name: cloudfoundryreceiver
   metadata:
-    type: cloudfoundry
+    type: cloud_foundry
     display_name: Cloud Foundry Receiver
     description: The Cloud Foundry Receiver connects to the RLP (Reverse Log Proxy)
       Gateway of the Cloud Foundry installation, typically available at the URL `https://log-stream.<cf-system-domain>`.
@@ -7027,7 +7027,7 @@ components:
         type: string
 - name: kubeletstatsreceiver
   metadata:
-    type: kubeletstats
+    type: kubelet_stats
     display_name: Kubelet Stats Receiver
     description: The Kubelet Stats Receiver pulls node, pod, container, and volume
       metrics from the API server on a kubelet and sends it down the metric pipeline
