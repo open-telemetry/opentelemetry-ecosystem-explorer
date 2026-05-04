@@ -18,6 +18,7 @@ import type { InstrumentationData } from "@/types/javaagent";
 import type { FilterState } from "./instrumentation-filter-bar";
 import { getBadgeInfo } from "../utils/badge-info";
 import { TargetBadges, TelemetryBadges } from "./instrumentation-badges";
+import { renderWithInlineCode } from "@/lib/render-inline-code";
 
 interface SubInstrumentationItemProps {
   instrumentation: InstrumentationData;
@@ -44,7 +45,7 @@ export function SubInstrumentationItem({
           <span className="text-sm font-medium">{instrumentation.name}</span>
           {instrumentation.description && (
             <p className="text-muted-foreground mt-0.5 line-clamp-1 text-xs">
-              {instrumentation.description}
+              {renderWithInlineCode(instrumentation.description)}
             </p>
           )}
         </div>

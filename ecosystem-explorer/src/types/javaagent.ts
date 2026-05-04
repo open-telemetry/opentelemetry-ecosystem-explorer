@@ -55,9 +55,11 @@ export interface InstrumentationScope {
 
 export interface Configuration {
   name: string;
+  declarative_name?: string;
   description: string;
   type: "boolean" | "string" | "list" | "map" | "int" | "double";
   default: string | boolean | number;
+  example?: string[];
 }
 
 export interface Telemetry {
@@ -142,4 +144,10 @@ export interface SpanDiff {
 export interface TelemetryDiffResult {
   metrics: MetricDiff[];
   spans: SpanDiff[];
+}
+
+export interface InstrumentationModule {
+  name: string;
+  defaultDisabled: boolean;
+  coveredEntries: InstrumentationData[];
 }

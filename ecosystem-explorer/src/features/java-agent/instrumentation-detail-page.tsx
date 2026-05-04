@@ -44,6 +44,8 @@ import { TelemetryComparisonSection } from "./components/telemetry-comparison/te
 import { VersionSelector } from "./components/version-selector";
 import { PageContainer } from "@/components/layout/page-container";
 import { Tooltip } from "@/components/ui/tooltip";
+import { InstrumentationConfigurationTab } from "./components/instrumentation-configuration-tab";
+import { renderWithInlineCode } from "@/lib/render-inline-code";
 
 function buildSourceUrl(sourcePath: string): string {
   try {
@@ -221,7 +223,7 @@ export function InstrumentationDetailPage() {
 
             {instrumentation.description && (
               <p className="text-muted-foreground max-w-4xl text-base leading-relaxed">
-                {instrumentation.description}
+                {renderWithInlineCode(instrumentation.description)}
               </p>
             )}
           </div>
@@ -553,51 +555,9 @@ export function InstrumentationDetailPage() {
             </TabsContent>
 
             <TabsContent value="configuration" className="mt-0 p-6">
-              {instrumentation.configurations && instrumentation.configurations.length > 0 ? (
-                <div className="grid gap-4 md:grid-cols-2">
-                  {instrumentation.configurations.map((config) => (
-                    <DetailCard key={config.name} withHoverEffect>
-                      <div className="space-y-3">
-                        <div className="flex items-start justify-between gap-3">
-                          <code className="text-primary flex-1 font-mono text-sm break-all">
-                            {config.name}
-                          </code>
-                          <GlowBadge variant="info" withGlow>
-                            {config.type}
-                          </GlowBadge>
-                        </div>
-
-                        <p className="text-muted-foreground text-sm leading-relaxed">
-                          {config.description}
-                        </p>
-
-                        <div className="border-border/30 bg-muted/30 flex items-start gap-2 rounded-lg border p-3">
-                          <span className="text-muted-foreground text-xs font-medium">
-                            Default:
-                          </span>
-                          <code className="flex-1 text-xs break-all">
-                            {typeof config.default === "boolean"
-                              ? config.default.toString()
-                              : config.default}
-                          </code>
-                        </div>
-                      </div>
-                    </DetailCard>
-                  ))}
-                </div>
-              ) : (
-                <div className="flex min-h-[300px] items-center justify-center">
-                  <div className="text-center">
-                    <Settings
-                      className="text-muted-foreground/50 mx-auto h-12 w-12"
-                      aria-hidden="true"
-                    />
-                    <p className="text-muted-foreground mt-4 text-sm">
-                      No configuration options available.
-                    </p>
-                  </div>
-                </div>
-              )}
+              <InstrumentationConfigurationTab
+                configurations={instrumentation.configurations ?? []}
+              />
             </TabsContent>
           </Tabs>
         </div>

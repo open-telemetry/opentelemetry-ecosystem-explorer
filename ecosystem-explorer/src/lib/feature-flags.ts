@@ -23,6 +23,9 @@ const FEATURE_FLAGS = [
 
   // Collector Page - Still in development
   "COLLECTOR_PAGE",
+
+  // Java Agent Release Comparison - Still in development
+  "JAVA_RELEASE_COMPARISON",
 ] as const;
 
 const FEATURE_FLAG_PREFIX = "VITE_FEATURE_FLAG_";

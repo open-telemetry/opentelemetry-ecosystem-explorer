@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type JSX } from "react";
+import { ChevronDown, ChevronRight } from "lucide-react";
 import { BackButton } from "@/components/ui/back-button";
 import { PageContainer } from "@/components/layout/page-container";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
@@ -24,21 +25,54 @@ import {
   useConfigStarter,
 } from "@/hooks/use-configuration-data";
 import { ConfigurationBuilderProvider } from "@/hooks/configuration-builder-provider";
+import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
+import {
+  useVersions as useJavaAgentVersions,
+  useInstrumentations,
+} from "@/hooks/use-javaagent-data";
+import { groupByModule } from "@/lib/normalize-instrumentation";
+import { useOverriddenModules } from "@/hooks/use-overridden-modules";
 import type { GroupNode } from "@/types/configuration";
+import { hasMeaningfulLeaf } from "@/lib/state-hydrate";
 import { SchemaRenderer } from "./components/schema-renderer";
 import { PreviewCard } from "./components/preview-card";
-import { ConfigurationTocSidebar, type TocSection } from "./components/configuration-toc-sidebar";
+import {
+  ConfigurationTocSidebar,
+  type StatusFilter,
+  type TocSection,
+} from "./components/configuration-toc-sidebar";
 import {
   GeneralSectionCard,
   GENERAL_SECTION_KEY,
   GENERAL_SECTION_LABEL,
 } from "./components/general-section-card";
+import { InstrumentationBrowser } from "./components/instrumentation-browser";
+import { SectionCardShell } from "./components/section-card-shell";
 import { useActiveSection } from "./hooks/use-active-section";
 
-const HIDDEN_SDK_KEYS = new Set(["file_format", "instrumentation/development", "distribution"]);
+// Per-tab hidden-keys: SDK hides the entire `instrumentation/development`
+// subtree (the Instrumentation tab owns it), while the Instrumentation tab
+// only hides the always-synthetic top-level keys. The Instrumentation tab
+// renders explicitly-picked subtrees, so HIDDEN_KEYS_BY_TAB.instrumentation
+// is currently advisory; it pins the asymmetry for future call sites.
+const HIDDEN_KEYS_BY_TAB = {
+  sdk: new Set(["file_format", "instrumentation/development", "distribution"]),
+  instrumentation: new Set(["file_format", "distribution"]),
+};
+const SDK_HIDDEN_KEYS = HIDDEN_KEYS_BY_TAB.sdk;
 
-const SDK_GRID = "grid grid-cols-1 gap-6 lg:grid-cols-[256px_1fr_420px] lg:gap-7";
-const INSTRUMENTATION_GRID = "grid grid-cols-1 gap-6 lg:grid-cols-[256px_1fr] lg:gap-7";
+// Both tabs render a 3-column shell (sidebar / content / live preview).
+// `minmax(0, 1fr)` overrides Grid's default `min-width: auto` on the middle
+// track so long descendant content (instrumentation IDs, code spans) cannot
+// expand the column past its 1fr share. Without it the third column gets
+// pushed off-screen.
+const BUILDER_GRID = "grid grid-cols-1 gap-6 lg:grid-cols-[256px_minmax(0,1fr)_420px] lg:gap-7";
+
+const INSTRUMENTATION_DEV_KEY = "instrumentation/development";
+const GENERAL_SUBKEY = "general";
+const INSTRUMENTATIONS_SECTION_KEY = "instrumentations";
+const INSTRUMENTATIONS_SECTION_LABEL = "Instrumentations";
+const GENERAL_SETTINGS_LABEL = "General settings";
 
 interface SdkTabContentProps {
   schema: GroupNode;
@@ -49,7 +83,7 @@ interface SdkTabContentProps {
 
 function SdkTabContent({ schema, starter, version, activeTab }: SdkTabContentProps) {
   const { groupChildren, leafChildren } = useMemo(() => {
-    const visible = schema.children.filter((c) => !HIDDEN_SDK_KEYS.has(c.key));
+    const visible = schema.children.filter((c) => !SDK_HIDDEN_KEYS.has(c.key));
     return {
       groupChildren: visible.filter((c) => c.controlType === "group"),
       leafChildren: visible.filter((c) => c.controlType !== "group"),
@@ -69,7 +103,7 @@ function SdkTabContent({ schema, starter, version, activeTab }: SdkTabContentPro
 
   return (
     <ConfigurationBuilderProvider key={version} schema={schema} version={version} starter={starter}>
-      <div className={SDK_GRID}>
+      <div className={BUILDER_GRID}>
         <ConfigurationTocSidebar
           activeTab={activeTab}
           sections={tocSections}
@@ -88,19 +122,177 @@ function SdkTabContent({ schema, starter, version, activeTab }: SdkTabContentPro
   );
 }
 
-function InstrumentationTabContent({ activeTab }: { activeTab: string }) {
+interface InstrumentationTabContentProps {
+  schema: GroupNode;
+  starter: ReturnType<typeof useConfigStarter>["data"];
+  version: string;
+  activeTab: string;
+}
+
+function InstrumentationTabContent({
+  schema,
+  starter,
+  version,
+  activeTab,
+}: InstrumentationTabContentProps) {
+  const generalNode = useMemo<GroupNode | null>(() => {
+    const devNode = schema.children.find((c) => c.key === INSTRUMENTATION_DEV_KEY);
+    if (!devNode || devNode.controlType !== "group") return null;
+    const general = devNode.children.find((c) => c.key === GENERAL_SUBKEY);
+    if (!general || general.controlType !== "group") return null;
+    return general;
+  }, [schema]);
+
   return (
-    <div className={INSTRUMENTATION_GRID}>
+    <ConfigurationBuilderProvider key={version} schema={schema} version={version} starter={starter}>
+      <InstrumentationTabBody activeTab={activeTab} schema={schema} generalNode={generalNode} />
+    </ConfigurationBuilderProvider>
+  );
+}
+
+interface InstrumentationTabBodyProps {
+  activeTab: string;
+  schema: GroupNode;
+  generalNode: GroupNode | null;
+}
+
+function InstrumentationTabBody({ activeTab, schema, generalNode }: InstrumentationTabBodyProps) {
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+
+  // The page-level `version` is the SDK config schema version (e.g. "1.0.0").
+  // The instrumentation registry is keyed by Java agent version (e.g. "2.27.0")
+  // — a separate namespace. Resolve the latest agent version for the browser
+  // until a unified version picker lands as a follow-up.
+  const javaAgentVersions = useJavaAgentVersions();
+  const javaAgentVersion = useMemo(
+    () =>
+      javaAgentVersions.data?.versions.find((v) => v.is_latest)?.version ??
+      javaAgentVersions.data?.versions[0]?.version ??
+      "",
+    [javaAgentVersions.data]
+  );
+
+  const tocSections: TocSection[] = useMemo(
+    () => [
+      { key: GENERAL_SECTION_KEY, label: GENERAL_SETTINGS_LABEL },
+      { key: INSTRUMENTATIONS_SECTION_KEY, label: INSTRUMENTATIONS_SECTION_LABEL },
+    ],
+    []
+  );
+  const sectionKeys = useMemo(() => tocSections.map((s) => s.key), [tocSections]);
+  const sectionsContainerRef = useRef<HTMLDivElement>(null);
+  const { activeKey, scrollToSection } = useActiveSection(sectionKeys, sectionsContainerRef);
+
+  const { state, setEnabled } = useConfigurationBuilder();
+
+  const instrumentationsState = useInstrumentations(javaAgentVersion);
+  const modules = useMemo(
+    () => (instrumentationsState.data ? groupByModule(instrumentationsState.data) : []),
+    [instrumentationsState.data]
+  );
+  const overriddenSet = useOverriddenModules(modules);
+  const overrideCount = overriddenSet.size;
+
+  const devSection = state.values[INSTRUMENTATION_DEV_KEY];
+  const hasDevContent = useMemo(() => hasMeaningfulLeaf(devSection), [devSection]);
+  const isDevEnabled = state.enabledSections[INSTRUMENTATION_DEV_KEY] === true;
+  useEffect(() => {
+    if (hasDevContent !== isDevEnabled) {
+      setEnabled(INSTRUMENTATION_DEV_KEY, hasDevContent);
+    }
+  }, [hasDevContent, isDevEnabled, setEnabled]);
+
+  const distributionSection = state.values["distribution"];
+  const hasDistributionContent = useMemo(
+    () => hasMeaningfulLeaf(distributionSection),
+    [distributionSection]
+  );
+  const isDistributionEnabled = state.enabledSections["distribution"] === true;
+  useEffect(() => {
+    if (hasDistributionContent !== isDistributionEnabled) {
+      setEnabled("distribution", hasDistributionContent);
+    }
+  }, [hasDistributionContent, isDistributionEnabled, setEnabled]);
+
+  return (
+    <div className={BUILDER_GRID}>
       <ConfigurationTocSidebar
         activeTab={activeTab}
-        sections={[]}
-        activeKey={null}
-        onSectionClick={() => {}}
+        sections={tocSections}
+        activeKey={activeKey}
+        onSectionClick={scrollToSection}
+        search={search}
+        onSearchChange={setSearch}
+        statusFilter={statusFilter}
+        onStatusFilterChange={setStatusFilter}
+        overrideCount={overrideCount}
       />
-      <div className="border-border/40 bg-card/30 text-muted-foreground rounded-xl border p-8 text-center text-sm">
-        Instrumentation browser is coming in a follow-up PR (#250).
+      <div ref={sectionsContainerRef} className="space-y-4">
+        <InstrumentationGeneralCard generalNode={generalNode} />
+        <InstrumentationBrowser
+          instrumentations={instrumentationsState.data}
+          loading={instrumentationsState.loading}
+          error={instrumentationsState.error}
+          search={search}
+          statusFilter={statusFilter}
+          onJumpToGeneral={scrollToSection}
+        />
       </div>
+      <PreviewCard schema={schema} />
     </div>
+  );
+}
+
+interface InstrumentationGeneralCardProps {
+  generalNode: GroupNode | null;
+}
+
+// Renders the `instrumentation/development.general.*` subtree as a card
+// without the depth=0 SwitchPill that GroupRenderer would otherwise add.
+// The SwitchPill is wrong here because its enable key is the GroupNode's
+// own `key` (`general`), not the top-level YAML section
+// `instrumentation/development` — see InstrumentationTabBody's effect for
+// the section-flag mirroring.
+function InstrumentationGeneralCard({ generalNode }: InstrumentationGeneralCardProps): JSX.Element {
+  const [expanded, setExpanded] = useState(true);
+  return (
+    <SectionCardShell sectionKey={GENERAL_SECTION_KEY}>
+      <header className="flex items-center gap-2">
+        <button
+          type="button"
+          aria-expanded={expanded}
+          aria-label={
+            expanded ? `Collapse ${GENERAL_SETTINGS_LABEL}` : `Expand ${GENERAL_SETTINGS_LABEL}`
+          }
+          onClick={() => setExpanded((e) => !e)}
+          className="text-muted-foreground hover:text-foreground"
+        >
+          {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+        </button>
+        <h3 className="text-foreground truncate text-base font-semibold">
+          {GENERAL_SETTINGS_LABEL}
+        </h3>
+      </header>
+      {expanded ? (
+        generalNode ? (
+          <div className="space-y-3">
+            {generalNode.children.map((child) => (
+              <SchemaRenderer
+                key={child.key}
+                node={child}
+                depth={1}
+                path={`${INSTRUMENTATION_DEV_KEY}.${GENERAL_SUBKEY}.${child.key}`}
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="text-muted-foreground text-sm">
+            The schema for this version does not expose general instrumentation settings.
+          </p>
+        )
+      ) : null}
+    </SectionCardShell>
   );
 }
 
@@ -162,7 +354,20 @@ export function ConfigurationBuilderPage() {
             ) : null}
           </TabsContent>
           <TabsContent value="instrumentation">
-            <InstrumentationTabContent activeTab={activeTab} />
+            {schema.loading || starter.loading ? (
+              <p className="text-muted-foreground mt-4 text-sm">Loading schema…</p>
+            ) : schema.error || !root ? (
+              <p className="mt-4 text-sm text-red-400">Failed to load schema.</p>
+            ) : starter.error ? (
+              <p className="mt-4 text-sm text-red-400">Failed to load starter template.</p>
+            ) : version ? (
+              <InstrumentationTabContent
+                schema={root}
+                starter={starter.data}
+                version={version}
+                activeTab={activeTab}
+              />
+            ) : null}
           </TabsContent>
         </Tabs>
       </div>

@@ -19,6 +19,7 @@ import type { FilterState } from "./instrumentation-filter-bar";
 import { getBadgeInfo } from "../utils/badge-info";
 import { TargetBadges, TelemetryBadges } from "./instrumentation-badges";
 import { getInstrumentationDisplayName } from "../utils/format";
+import { renderWithInlineCode } from "@/lib/render-inline-code";
 
 interface InstrumentationCardProps {
   instrumentation: InstrumentationData;
@@ -64,7 +65,7 @@ export function InstrumentationCard({
 
         {instrumentation.description && (
           <p className="text-muted-foreground line-clamp-3 text-sm leading-relaxed">
-            {instrumentation.description}
+            {renderWithInlineCode(instrumentation.description)}
           </p>
         )}
 

@@ -2,7 +2,7 @@ globs:
   - "**/*.md"
 ignores:
   - CLAUDE.md
-  - AGENTS.md
+  - "**/AGENTS.md"
   - "ecosystem-explorer/DESIGN.md"
   - "**/tmp_repos/**"
   - "**/node_modules/**"

@@ -63,7 +63,7 @@ def get_expected_header(filename: str) -> str | None:
     """Return the expected copyright header for the given file."""
     if filename.endswith(".py"):
         return PY_HEADER
-    if filename.endswith((".js", ".ts", ".tsx", ".jsx")):
+    if filename.endswith((".js", ".ts", ".tsx", ".jsx", ".mjs")):
         return JS_HEADER
     return None
 

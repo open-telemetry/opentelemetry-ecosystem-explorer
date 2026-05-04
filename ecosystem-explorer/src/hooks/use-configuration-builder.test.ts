@@ -24,7 +24,7 @@ import type {
   TextInputNode,
 } from "@/types/configuration";
 
-const STORAGE_KEY = "otel-config-builder-state-v1";
+const STORAGE_KEY = "otel-config-builder-state-v2";
 
 const mockSchema: GroupNode = {
   controlType: "group",
@@ -81,6 +81,46 @@ describe("useConfigurationBuilderState", () => {
     });
     expect(result.current.state.values.file_format).toBe("1.0");
     expect(result.current.state.isDirty).toBe(true);
+  });
+
+  it("setValueByPath writes the value at the array-form path", () => {
+    const { result } = renderHook(() => useConfigurationBuilderState(mockSchema, "1.0.0", null));
+    act(() => {
+      result.current.setValueByPath(["file_format"], "1.0");
+    });
+    expect(result.current.state.values.file_format).toBe("1.0");
+    expect(result.current.state.isDirty).toBe(true);
+  });
+
+  it("setValueByPath preserves dotted segments instead of splitting them", () => {
+    const { result } = renderHook(() => useConfigurationBuilderState(mockSchema, "1.0.0", null));
+    act(() => {
+      result.current.setValueByPath(
+        ["instrumentation/development", "java", "cassandra-4.4", "enabled"],
+        true
+      );
+    });
+    const development = result.current.state.values["instrumentation/development"] as Record<
+      string,
+      Record<string, Record<string, unknown>>
+    >;
+    expect(development.java["cassandra-4.4"].enabled).toBe(true);
+    // Guard against future regressions where someone routes setValueByPath
+    // through parsePath: that would split "cassandra-4.4" into "cassandra-4"
+    // and "4" as separate segments.
+    expect(development.java["cassandra-4"]).toBeUndefined();
+  });
+
+  it("setOverride dispatches SET_OVERRIDE and round-trips through state", () => {
+    const { result } = renderHook(() => useConfigurationBuilderState(mockSchema, "1.0.0", null));
+    act(() => {
+      result.current.setOverride("cassandra", "disabled");
+    });
+    const distribution = result.current.state.values["distribution"] as Record<
+      string,
+      Record<string, Record<string, unknown>>
+    >;
+    expect(distribution.javaagent.instrumentation.disabled).toEqual(["cassandra"]);
   });
 
   it("should enable a section with defaults", () => {

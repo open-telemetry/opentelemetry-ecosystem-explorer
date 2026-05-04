@@ -133,7 +133,7 @@ components:
         - djaglowski
 - name: roundrobinconnector
   metadata:
-    type: roundrobin
+    type: round_robin
     display_name: Round-Robin Connector
     status:
       class: connector

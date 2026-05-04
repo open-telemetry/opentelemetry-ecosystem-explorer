@@ -15,7 +15,9 @@
  */
 import { JavaInstrumentationIcon } from "@/components/icons/java-instrumentation-icon";
 import { ConfigurationIcon } from "@/components/icons/configuration-icon";
+import { ReleaseIcon } from "@/components/icons/release-icon";
 import { NavigationCard } from "@/components/ui/navigation-card";
+import { isEnabled } from "@/lib/feature-flags";
 
 export function AgentExploreLanding() {
   return (
@@ -34,6 +36,14 @@ export function AgentExploreLanding() {
             href="/java-agent/configuration"
             icon={<ConfigurationIcon className="h-20 w-20" />}
           />
+          {isEnabled("JAVA_RELEASE_COMPARISON") && (
+            <NavigationCard
+              title="Releases"
+              description="Compare Java Agent versions to see changes in telemetry and configuration."
+              href="/java-agent/releases"
+              icon={<ReleaseIcon className="h-20 w-20" />}
+            />
+          )}
         </div>
       </div>
     </section>
