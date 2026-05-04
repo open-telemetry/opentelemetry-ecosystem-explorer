@@ -14,12 +14,14 @@
 #
 """GitHub API client for fetching data."""
 
+import logging
 from typing import Optional
 
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3 import Retry
 
+logger = logging.getLogger(__name__)
 
 class GithubAPIError(Exception):
     """Custom exception for GitHub API errors."""
@@ -70,19 +72,38 @@ class JavaInstrumentationClient:
             raise GithubAPIError(f"Unexpected API response format: {e}") from e
 
     def fetch_instrumentation_list(self, ref: str = "main") -> str:
-        """
-        Fetch the instrumentation list YAML file from the repository.
+        """Fetch the instrumentation list YAML file from the repository at the given ref."""
+        return self.fetch_raw_file(self.LIST, ref)
 
-        Args:
-            ref: Git reference (branch, tag, or commit SHA). Default is "main".
-
-        Returns:
-            Content of the instrumentation list YAML file as a string.
-        """
-        url = f"https://raw.githubusercontent.com/{self.REPO}/{ref}/{self.LIST}"
+    def resolve_ref_to_sha(self, ref: str) -> str:
+        """Resolve a tag/branch/sha to a commit SHA via GET /repos/{REPO}/commits/{ref}."""
+        url = f"https://api.github.com/repos/{self.REPO}/commits/{ref}"
         try:
-            response = self._session.get(url, timeout=self.TIMEOUT)
-            response.raise_for_status()
-            return response.text
+            resp = self._session.get(url, timeout=self.TIMEOUT)
+            resp.raise_for_status()
+            return resp.json()["sha"]
+        except (requests.RequestException, KeyError, ValueError) as e:
+            raise GithubAPIError(f"Failed to resolve ref {ref!r}: {e}") from e
+
+    def fetch_tree(self, sha: str) -> list[dict]:
+        """Recursively fetch the git tree at a commit SHA. Returns the `tree` array."""
+        url = f"https://api.github.com/repos/{self.REPO}/git/trees/{sha}?recursive=1"
+        try:
+            resp = self._session.get(url, timeout=self.TIMEOUT)
+            resp.raise_for_status()
+            data = resp.json()
+            if data.get("truncated"):
+                logger.warning(f"Tree at {sha} was truncated; README discovery may be incomplete")
+            return data.get("tree", [])
+        except (requests.RequestException, ValueError) as e:
+            raise GithubAPIError(f"Failed to fetch tree for {sha}: {e}") from e
+
+    def fetch_raw_file(self, path: str, ref: str) -> str:
+        """Fetch a raw file from raw.githubusercontent.com at the given ref."""
+        url = f"https://raw.githubusercontent.com/{self.REPO}/{ref}/{path}"
+        try:
+            resp = self._session.get(url, timeout=self.TIMEOUT)
+            resp.raise_for_status()
+            return resp.text
         except requests.RequestException as e:
-            raise GithubAPIError(f"Error fetching instrumentation list: {e}") from e
+            raise GithubAPIError(f"Failed to fetch {path} at {ref}: {e}") from e

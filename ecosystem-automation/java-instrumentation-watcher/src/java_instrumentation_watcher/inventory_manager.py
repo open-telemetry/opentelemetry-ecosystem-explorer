@@ -14,10 +14,12 @@
 #
 """Inventory management for Java instrumentation tracking."""
 
+from collections.abc import Iterable
 from typing import Any
 
 import yaml
 from semantic_version import Version
+from watcher_common.content_hashing import compute_content_hash
 from watcher_common.inventory_manager import BaseInventoryManager
 
 
@@ -25,6 +27,7 @@ class InventoryManager(BaseInventoryManager):
     """Manages Java instrumentation inventory storage and retrieval."""
 
     FILE_NAME = "instrumentation.yaml"
+    README_DIR = "library_readmes"
 
     def __init__(self, inventory_dir: str = "ecosystem-registry/java/javaagent"):
         """
@@ -88,3 +91,21 @@ class InventoryManager(BaseInventoryManager):
         with open(file_path) as f:
             data = yaml.safe_load(f) or {}
             return data
+
+    def save_library_readmes(
+        self,
+        version: Version,
+        readmes: Iterable[tuple[str, str]],  # (library_name, content)
+    ) -> int:
+        """Write each README content-addressed. Returns count newly written."""
+        target_dir = self.get_version_dir(version) / self.README_DIR
+        target_dir.mkdir(parents=True, exist_ok=True)
+        written = 0
+        for name, content in readmes:
+            digest = compute_content_hash(content)
+            file_path = target_dir / f"{name}-{digest}.md"
+            if file_path.exists():
+                continue
+            file_path.write_text(content, encoding="utf-8")
+            written += 1
+        return written
