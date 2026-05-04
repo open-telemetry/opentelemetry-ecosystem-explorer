@@ -75,9 +75,11 @@ export function ConfigurationCard({ config, format }: ConfigurationCardProps) {
           </div>
         </div>
 
-        <p className="text-muted-foreground text-sm leading-relaxed">
-          {config.description && renderWithInlineCode(config.description)}
-        </p>
+        {config.description && (
+          <p className="text-muted-foreground text-sm leading-relaxed">
+            {renderWithInlineCode(config.description)}
+          </p>
+        )}
 
         <div className="border-border/30 bg-muted/30 flex items-start gap-2 rounded-lg border p-3">
           <span className="text-muted-foreground shrink-0 text-xs font-medium">Default:</span>
