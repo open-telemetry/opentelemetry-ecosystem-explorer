@@ -13,31 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useMemo, useState, type JSX } from "react";
-import { Copy, Download, RefreshCcw, ListPlus } from "lucide-react";
+import { useMemo, type JSX } from "react";
+import { Download, RefreshCcw, ListPlus } from "lucide-react";
 import type { ConfigNode } from "@/types/configuration";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
 import { generateYaml } from "@/lib/yaml-generator";
 import { downloadText } from "@/lib/download-text";
+import { CopyButton } from "@/components/ui/copy-button";
 import { YamlCodeBlock } from "./yaml-code-block";
 
 interface PreviewCardProps {
   schema: ConfigNode;
 }
 
-const COPIED_FLASH_MS = 2000;
-
 export function PreviewCard({ schema }: PreviewCardProps): JSX.Element {
   const { state, enableAllSections, resetToDefaults, validateAll } = useConfigurationBuilder();
   const yaml = useMemo(() => generateYaml(state, schema), [state, schema]);
-  const [copied, setCopied] = useState(false);
-
-  const handleCopy = async () => {
-    validateAll();
-    await navigator.clipboard.writeText(yaml);
-    setCopied(true);
-    setTimeout(() => setCopied(false), COPIED_FLASH_MS);
-  };
 
   const handleReset = () => {
     if (state.isDirty) {
@@ -55,14 +46,11 @@ export function PreviewCard({ schema }: PreviewCardProps): JSX.Element {
       <header className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="text-foreground text-sm font-medium">Output Preview</h3>
         <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={handleCopy}
-            className="border-border/60 bg-card text-foreground hover:bg-card/80 flex items-center gap-1 rounded-md border px-3 py-1 text-xs"
-          >
-            <Copy className="h-3 w-3" aria-hidden="true" />
-            {copied ? "Copied" : "Copy"}
-          </button>
+          <CopyButton
+            text={yaml}
+            onCopy={validateAll}
+            className="border-border/60 bg-card text-foreground hover:bg-card/80 inline-flex cursor-pointer items-center gap-1 rounded-md border px-3 py-1 text-xs"
+          />
           <button
             type="button"
             onClick={() => {
