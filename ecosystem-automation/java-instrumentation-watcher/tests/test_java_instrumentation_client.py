@@ -205,7 +205,7 @@ def test_fetch_tree_success(mock_session_class):
 
 
 @patch("java_instrumentation_watcher.java_instrumentation_client.requests.Session")
-def test_fetch_tree_truncated_logs_warning(mock_session_class, caplog):
+def test_fetch_tree_truncated_raises(mock_session_class):
     mock_session = Mock()
     mock_session_class.return_value = mock_session
 
@@ -213,13 +213,9 @@ def test_fetch_tree_truncated_logs_warning(mock_session_class, caplog):
     mock_response.json.return_value = {"truncated": True, "tree": [{"type": "blob", "path": "foo"}]}
     mock_session.get.return_value = mock_response
 
-    import logging
     client = JavaInstrumentationClient()
-    with caplog.at_level(logging.WARNING):
-        tree = client.fetch_tree("abc123")
-
-    assert len(tree) == 1
-    assert "truncated" in caplog.text
+    with pytest.raises(GithubAPIError, match="truncated"):
+        client.fetch_tree("abc123")
 
 
 @patch("java_instrumentation_watcher.java_instrumentation_client.requests.Session")

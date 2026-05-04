@@ -79,6 +79,7 @@ instrumentations:
 
     def test_update_snapshot(self, sync, mock_client):
         mock_client.get_latest_release_tag.return_value = "v2.10.0"
+        mock_client.resolve_ref_to_sha.return_value = "sha123"
         mock_client.fetch_instrumentation_list.return_value = """
 instrumentations:
   - id: snapshot-test
@@ -88,7 +89,8 @@ instrumentations:
         snapshot_version = sync.update_snapshot()
 
         assert snapshot_version == Version("2.10.1-SNAPSHOT")
-        mock_client.fetch_instrumentation_list.assert_called_once_with(ref="main")
+        mock_client.resolve_ref_to_sha.assert_any_call("main")
+        mock_client.fetch_instrumentation_list.assert_called_once_with(ref="sha123")
 
         # Verify saved to inventory
         assert sync.inventory_manager.version_exists(Version("2.10.1-SNAPSHOT"))
@@ -101,6 +103,7 @@ instrumentations:
         )
 
         mock_client.get_latest_release_tag.return_value = "v2.10.0"
+        mock_client.resolve_ref_to_sha.return_value = "sha123"
         mock_client.fetch_instrumentation_list.return_value = """
 instrumentations:
   - id: test
@@ -115,6 +118,7 @@ instrumentations:
 
     def test_sync_full_workflow(self, sync, mock_client):
         mock_client.get_latest_release_tag.return_value = "v2.10.0"
+        mock_client.resolve_ref_to_sha.return_value = "sha123"
         mock_client.fetch_instrumentation_list.side_effect = [
             """
 instrumentations:
@@ -143,8 +147,11 @@ instrumentations:
             version=Version("2.10.0"),
             instrumentations={"file_format": 0.1, "libraries": {}},
         )
+        # Seed readme dir so backfill doesn't trigger
+        inventory_manager.save_library_readmes(Version("2.10.0"), [("mylib", "# content")])
 
         mock_client.get_latest_release_tag.return_value = "v2.10.0"
+        mock_client.resolve_ref_to_sha.return_value = "sha123"
         mock_client.fetch_instrumentation_list.return_value = """
 instrumentations:
   - id: snapshot-test
@@ -260,7 +267,44 @@ libraries:
 
         readme_dir = inventory_manager.get_version_dir(snapshot_version) / "library_readmes"
         assert readme_dir.exists()
-        mock_client.resolve_ref_to_sha.assert_called_once_with("main")
+        # resolve_ref_to_sha called twice: once in update_snapshot, once in _sync_library_readmes
+        assert mock_client.resolve_ref_to_sha.call_count == 2
+        mock_client.fetch_instrumentation_list.assert_called_once_with(ref="sha123")
+
+    def test_process_latest_release_backfills_missing_readmes(self, mock_client, inventory_manager):
+        version = Version("2.10.0")
+        inventory_manager.save_versioned_inventory(
+            version=version,
+            instrumentations={"file_format": 0.1, "libraries": []},
+        )
+
+        mock_client.get_latest_release_tag.return_value = "v2.10.0"
+        mock_client.resolve_ref_to_sha.return_value = "sha123"
+        mock_client.fetch_tree.return_value = self._TREE
+        mock_client.fetch_raw_file.return_value = "# README"
+
+        sync = InstrumentationSync(mock_client, inventory_manager)
+        result = sync.process_latest_release()
+
+        assert result is None
+        readme_dir = inventory_manager.get_version_dir(version) / "library_readmes"
+        assert readme_dir.exists()
+
+    def test_process_latest_release_skips_backfill_when_readmes_exist(self, mock_client, inventory_manager):
+        version = Version("2.10.0")
+        inventory_manager.save_versioned_inventory(
+            version=version,
+            instrumentations={"file_format": 0.1, "libraries": []},
+        )
+        inventory_manager.save_library_readmes(version, [("mylib", "# content")])
+
+        mock_client.get_latest_release_tag.return_value = "v2.10.0"
+
+        sync = InstrumentationSync(mock_client, inventory_manager)
+        result = sync.process_latest_release()
+
+        assert result is None
+        mock_client.resolve_ref_to_sha.assert_not_called()
 
     def test_one_readme_fetch_failure_others_written(self, mock_client, inventory_manager):
         from java_instrumentation_watcher.java_instrumentation_client import GithubAPIError

@@ -93,7 +93,7 @@ class JavaInstrumentationClient:
             resp.raise_for_status()
             data = resp.json()
             if data.get("truncated"):
-                logger.warning(f"Tree at {sha} was truncated; README discovery may be incomplete")
+                raise GithubAPIError(f"Tree at {sha} was truncated; README discovery aborted")
             return data.get("tree", [])
         except (requests.RequestException, ValueError) as e:
             raise GithubAPIError(f"Failed to fetch tree for {sha}: {e}") from e

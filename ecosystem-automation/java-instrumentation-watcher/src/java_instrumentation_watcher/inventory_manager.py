@@ -92,6 +92,10 @@ class InventoryManager(BaseInventoryManager):
             data = yaml.safe_load(f) or {}
             return data
 
+    def readme_dir_exists(self, version: Version) -> bool:
+        """Return True if the library_readmes directory exists for this version."""
+        return (self.get_version_dir(version) / self.README_DIR).exists()
+
     def save_library_readmes(
         self,
         version: Version,

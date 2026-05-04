@@ -237,6 +237,19 @@ class TestInventoryManager:
 
     # --- save_library_readmes ---
 
+    def test_readme_dir_exists_false_when_no_readmes(self, inventory_manager):
+        version = Version("2.10.0")
+        inventory_manager.save_versioned_inventory(
+            version=version,
+            instrumentations={"file_format": 0.1, "libraries": []},
+        )
+        assert not inventory_manager.readme_dir_exists(version)
+
+    def test_readme_dir_exists_true_after_save(self, inventory_manager):
+        version = Version("2.10.0")
+        inventory_manager.save_library_readmes(version, [("mylib", "# content")])
+        assert inventory_manager.readme_dir_exists(version)
+
     def test_save_library_readmes_writes_content_addressed_files(self, inventory_manager):
         version = Version("2.10.0")
         readmes = [

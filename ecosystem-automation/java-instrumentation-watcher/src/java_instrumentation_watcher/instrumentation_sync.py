@@ -90,6 +90,9 @@ class InstrumentationSync:
         version = Version(tag_string.lstrip("v"))
 
         if self.inventory_manager.version_exists(version):
+            if not self.inventory_manager.readme_dir_exists(version):
+                instrumentations = self.inventory_manager.load_versioned_inventory(version)
+                self._sync_library_readmes(version, tag_string, instrumentations)
             return None
 
         logger.info(f"  Fetching instrumentation list for {tag_string}...")
@@ -128,8 +131,14 @@ class InstrumentationSync:
             prerelease=("SNAPSHOT",),
         )
 
+        try:
+            main_ref = self.client.resolve_ref_to_sha("main")
+        except GithubAPIError:
+            logger.warning("  Could not resolve main to SHA; falling back to branch ref")
+            main_ref = "main"
+
         logger.info("  Fetching instrumentation list from main branch...")
-        yaml_content = self.client.fetch_instrumentation_list(ref="main")
+        yaml_content = self.client.fetch_instrumentation_list(ref=main_ref)
         instrumentations = parse_instrumentation_yaml(yaml_content)
 
         removed = self.inventory_manager.cleanup_snapshots()
@@ -140,7 +149,7 @@ class InstrumentationSync:
             version=snapshot_version,
             instrumentations=instrumentations,
         )
-        self._sync_library_readmes(snapshot_version, "main", instrumentations)
+        self._sync_library_readmes(snapshot_version, main_ref, instrumentations)
 
         return snapshot_version
 
