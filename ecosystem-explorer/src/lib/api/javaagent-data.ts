@@ -49,7 +49,7 @@ export async function loadInstrumentation(
   const libraryHash = resolvedManifest.instrumentations[id];
   const customHash = resolvedManifest.custom_instrumentations?.[id];
   const hash = libraryHash || customHash;
-  const isCustom = !!customHash;
+  const isCustom = !libraryHash && !!customHash;
 
   if (!hash) {
     throw new Error(`Instrumentation "${id}" not found in version ${version}`);
@@ -71,7 +71,7 @@ export async function loadAllInstrumentations(version: string): Promise<Instrume
   const libraryIds = Object.keys(manifest.instrumentations || {});
   const customIds = Object.keys(manifest.custom_instrumentations || {});
 
-  const allIds = [...libraryIds, ...customIds];
+  const allIds = [...new Set([...libraryIds, ...customIds])];
 
   return Promise.all(
     allIds.map(async (id) => {
