@@ -21,8 +21,7 @@ import { SwitchPill } from "@/components/ui/switch-pill";
 import { SchemaRenderer } from "./schema-renderer";
 import { SectionCardShell } from "./section-card-shell";
 import { FieldSection } from "./field-section";
-
-const DEEP_NESTING_DEPTH = 3;
+import { useStarterPaths } from "./configuration-ui-context";
 
 export interface GroupRendererProps {
   node: GroupNode;
@@ -45,9 +44,10 @@ export function GroupRenderer({
   headless = false,
 }: GroupRendererProps): JSX.Element {
   const { state, setEnabled } = useConfigurationBuilder();
+  const starterPaths = useStarterPaths();
   const isTopLevel = depth === 0;
   const enabled = isTopLevel ? state.enabledSections[node.key] === true : true;
-  const initialExpanded = isTopLevel ? enabled : false;
+  const initialExpanded = isTopLevel ? enabled : starterPaths.has(path);
   const [expanded, setExpanded] = useState(initialExpanded);
   const [prevEnabled, setPrevEnabled] = useState(enabled);
   if (isTopLevel && prevEnabled !== enabled) {
@@ -57,22 +57,17 @@ export function GroupRenderer({
 
   const value = getByPath(state.values, parsePath(path));
 
-  const body = (
-    <div
-      className={
-        depth >= DEEP_NESTING_DEPTH ? "border-border/40 space-y-3 border-l pl-3" : "space-y-3"
-      }
-    >
-      {node.children.map((child) => (
-        <SchemaRenderer
-          key={child.key}
-          node={child}
-          depth={depth + 1}
-          path={path ? `${path}.${child.key}` : child.key}
-        />
-      ))}
-    </div>
-  );
+  const childNodes = node.children.map((child) => (
+    <SchemaRenderer
+      key={child.key}
+      node={child}
+      depth={depth + 1}
+      path={path ? `${path}.${child.key}` : child.key}
+    />
+  ));
+
+  const indent = depth >= 1 && !headless;
+  const body = <div className={indent ? "space-y-3 pl-3" : "space-y-3"}>{childNodes}</div>;
 
   if (isTopLevel) {
     return (
@@ -104,10 +99,6 @@ export function GroupRenderer({
     );
   }
 
-  // Nested group (depth >= 1). When headless, the parent owns the visible label
-  // (e.g. ListRenderer's item card header, PluginSelectRenderer's tablist), so
-  // skip role="group" on the FieldSection wrapper too — otherwise it would
-  // render an unnamed group.
   return (
     <FieldSection
       node={node}
@@ -121,7 +112,6 @@ export function GroupRenderer({
       <FieldSection.Header>
         <FieldSection.Chevron />
         <FieldSection.Label />
-        <FieldSection.Badge />
         <FieldSection.Info />
       </FieldSection.Header>
       <FieldSection.Body>{body}</FieldSection.Body>

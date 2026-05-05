@@ -24,7 +24,7 @@ vi.mock("@/hooks/use-configuration-builder", () => ({
   useConfigurationBuilder: () => ({ state: mockState }),
 }));
 
-import { useOverriddenModules } from "./use-overridden-modules";
+import { useCustomizedModules } from "./use-customized-modules";
 
 const baseState: ConfigurationBuilderState = {
   version: "1.0.0",
@@ -54,13 +54,13 @@ function makeModule(name: string, declarativeNames: string[]): InstrumentationMo
   };
 }
 
-describe("useOverriddenModules", () => {
+describe("useCustomizedModules", () => {
   beforeEach(() => {
     mockState = { ...baseState, values: {} };
   });
 
-  it("returns empty set when no overrides exist", () => {
-    const { result } = renderHook(() => useOverriddenModules([]));
+  it("returns empty set when no customizations exist", () => {
+    const { result } = renderHook(() => useCustomizedModules([]));
     expect(result.current.size).toBe(0);
   });
 
@@ -75,7 +75,7 @@ describe("useOverriddenModules", () => {
         },
       },
     };
-    const { result } = renderHook(() => useOverriddenModules([]));
+    const { result } = renderHook(() => useCustomizedModules([]));
     expect([...result.current].sort()).toEqual(["armeria_grpc", "spring_webmvc", "tomcat"]);
   });
 
@@ -86,7 +86,7 @@ describe("useOverriddenModules", () => {
         java: { cassandra: { query_sanitization: { enabled: false } } },
       },
     };
-    const { result } = renderHook(() => useOverriddenModules([cassandra]));
+    const { result } = renderHook(() => useCustomizedModules([cassandra]));
     expect([...result.current]).toEqual(["cassandra"]);
   });
 
@@ -97,7 +97,7 @@ describe("useOverriddenModules", () => {
         java: { kafka: { producer_propagation: { enabled: false } } },
       },
     };
-    const { result } = renderHook(() => useOverriddenModules([kafkaClients]));
+    const { result } = renderHook(() => useCustomizedModules([kafkaClients]));
     expect([...result.current]).toEqual(["kafka_clients"]);
   });
 
@@ -108,7 +108,7 @@ describe("useOverriddenModules", () => {
         java: { common: { http: { known_methods: ["GET"] } } },
       },
     };
-    const { result } = renderHook(() => useOverriddenModules([akkaHttp]));
+    const { result } = renderHook(() => useCustomizedModules([akkaHttp]));
     expect(result.current.size).toBe(0);
   });
 
@@ -119,7 +119,7 @@ describe("useOverriddenModules", () => {
         general: { http: { server: { request_captured_headers: ["X-Foo"] } } },
       },
     };
-    const { result } = renderHook(() => useOverriddenModules([akkaHttp]));
+    const { result } = renderHook(() => useCustomizedModules([akkaHttp]));
     expect(result.current.size).toBe(0);
   });
 
@@ -130,11 +130,11 @@ describe("useOverriddenModules", () => {
         java: { cassandra: { query_sanitization: {} } },
       },
     };
-    const { result } = renderHook(() => useOverriddenModules([cassandra]));
+    const { result } = renderHook(() => useCustomizedModules([cassandra]));
     expect(result.current.size).toBe(0);
   });
 
-  it("unions enabled-state and config-level overrides", () => {
+  it("unions enabled-state and config-level customizations", () => {
     const cassandra = makeModule("cassandra", ["java.cassandra.query_sanitization.enabled"]);
     mockState.values = {
       distribution: {
@@ -144,7 +144,7 @@ describe("useOverriddenModules", () => {
         java: { cassandra: { query_sanitization: { enabled: false } } },
       },
     };
-    const { result } = renderHook(() => useOverriddenModules([cassandra]));
+    const { result } = renderHook(() => useCustomizedModules([cassandra]));
     expect([...result.current].sort()).toEqual(["cassandra", "tomcat"]);
   });
 
@@ -153,7 +153,7 @@ describe("useOverriddenModules", () => {
     mockState.values = {
       "instrumentation/development": { java: { graphql: { capture_query: true } } },
     };
-    const { result } = renderHook(() => useOverriddenModules([cassandra]));
+    const { result } = renderHook(() => useCustomizedModules([cassandra]));
     expect(result.current.size).toBe(0);
   });
 });

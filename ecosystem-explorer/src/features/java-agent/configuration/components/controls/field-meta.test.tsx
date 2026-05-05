@@ -81,23 +81,42 @@ describe("FieldMeta", () => {
     expect(screen.getByText("≤ 10 items")).toBeInTheDocument();
   });
 
-  it("renders defaultBehavior text without 'Default:' prefix", () => {
+  it("renders defaultBehavior with a 'Default:' prefix on its own line", () => {
     render(<FieldMeta node={{ defaultBehavior: "128" }} />);
-    expect(screen.getByText("128")).toBeInTheDocument();
-    expect(screen.queryByText(/Default:/)).not.toBeInTheDocument();
+    expect(screen.getByText("Default:")).toBeInTheDocument();
+    expect(screen.getByText("128", { exact: false })).toBeInTheDocument();
   });
 
-  it("renders constraints then default, middot-joined, in order", () => {
+  it("places constraint chips in their own row above the default-behavior line", () => {
     const { container } = render(
       <FieldMeta node={{ constraints: { minimum: 0, maximum: 100 }, defaultBehavior: "50" }} />
     );
-    expect(container.textContent).toMatch(/0–100.*·.*50/);
+    const root = container.firstChild as HTMLElement;
+    const rows = root.children;
+    expect(rows).toHaveLength(2);
+    expect(rows[0].textContent).toContain("0–100");
+    expect(rows[1].textContent).toContain("Default:");
+    expect(rows[1].textContent).toContain("50");
   });
 
-  it("renders items range then default, middot-joined, in order", () => {
-    const { container } = render(
-      <FieldMeta node={{ constraints: { minItems: 1, maxItems: 5 }, defaultBehavior: "empty" }} />
-    );
-    expect(container.textContent).toMatch(/1–5 items.*·.*empty/);
+  it("each constraint chip is whitespace-nowrap so its icon and text never wrap inside the chip", () => {
+    render(<FieldMeta node={{ constraints: { minimum: 0 } }} />);
+    const chip = screen.getByText("≥ 0");
+    expect(chip.className).toMatch(/whitespace-nowrap/);
+  });
+
+  it("renders only the chips row when no defaultBehavior is set", () => {
+    const { container } = render(<FieldMeta node={{ constraints: { minimum: 0 } }} />);
+    const root = container.firstChild as HTMLElement;
+    expect(root.children).toHaveLength(1);
+    expect(root.children[0].textContent).toContain("≥ 0");
+  });
+
+  it("renders only the default row when no constraints are set", () => {
+    const { container } = render(<FieldMeta node={{ defaultBehavior: "anything" }} />);
+    const root = container.firstChild as HTMLElement;
+    expect(root.children).toHaveLength(1);
+    expect(root.children[0].textContent).toContain("Default:");
+    expect(root.children[0].textContent).toContain("anything");
   });
 });
