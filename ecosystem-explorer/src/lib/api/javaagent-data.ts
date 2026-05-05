@@ -48,6 +48,7 @@ export async function loadInstrumentation(
 
   const libraryHash = resolvedManifest.instrumentations[id];
   const customHash = resolvedManifest.custom_instrumentations?.[id];
+  // Library takes precedence; isCustom mirrors that same precedence rule.
   const hash = libraryHash || customHash;
   const isCustom = !libraryHash && !!customHash;
 

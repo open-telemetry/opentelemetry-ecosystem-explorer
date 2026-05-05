@@ -232,6 +232,27 @@ describe("javaagent-data", () => {
         javaagentData.loadInstrumentation("non-existent", "2.10.0", mockVersionManifest)
       ).rejects.toThrow('Instrumentation "non-existent" not found in version 2.10.0');
     });
+
+    it("should prefer library hash and mark as non-custom when id exists in both maps", async () => {
+      const overlapManifest: VersionManifest = {
+        version: "2.10.0",
+        instrumentations: { "akka-actor": "library-hash-abc" },
+        custom_instrumentations: { "akka-actor": "custom-hash-xyz" },
+      };
+
+      vi.spyOn(idbCache, "getCached").mockImplementation(async (key: string) => {
+        if (key === "instrumentation-library-hash-abc") return mockInstrumentationData;
+        return null;
+      });
+
+      const result = await javaagentData.loadInstrumentation(
+        "akka-actor",
+        "2.10.0",
+        overlapManifest
+      );
+
+      expect(result._is_custom).toBe(false);
+    });
   });
 
   describe("loadAllInstrumentations", () => {
@@ -295,6 +316,25 @@ describe("javaagent-data", () => {
       const result = await javaagentData.loadAllInstrumentations("2.10.0");
 
       expect(result).toEqual([]);
+    });
+
+    it("should return one entry and mark as non-custom when id exists in both maps", async () => {
+      const overlapManifest: VersionManifest = {
+        version: "2.10.0",
+        instrumentations: { "akka-actor": "library-hash-abc" },
+        custom_instrumentations: { "akka-actor": "custom-hash-xyz" },
+      };
+
+      vi.spyOn(idbCache, "getCached").mockImplementation(async (key: string) => {
+        if (key === "manifest-2.10.0") return overlapManifest;
+        if (key === "instrumentation-library-hash-abc") return mockInstrumentationData;
+        return null;
+      });
+
+      const result = await javaagentData.loadAllInstrumentations("2.10.0");
+
+      expect(result).toHaveLength(1);
+      expect(result[0]._is_custom).toBe(false);
     });
   });
 });
