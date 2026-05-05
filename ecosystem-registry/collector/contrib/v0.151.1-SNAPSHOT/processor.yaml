@@ -490,7 +490,7 @@ components:
         - ridwanmsharif
 - name: metricstransformprocessor
   metadata:
-    type: metricstransform
+    type: metrics_transform
     display_name: Metrics Transform Processor
     status:
       class: processor
