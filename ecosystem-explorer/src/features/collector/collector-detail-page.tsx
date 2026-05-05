@@ -15,7 +15,7 @@
  */
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Info, ExternalLink, Code, AlertCircle, Loader2, Check, Users } from "lucide-react";
+import { Info, ExternalLink, AlertCircle, Loader2, Check, Users } from "lucide-react";
 import { GitHubIcon } from "@/components/icons/github-icon";
 
 import { BackButton } from "@/components/ui/back-button";
@@ -106,7 +106,7 @@ export function CollectorDetailPage() {
   }
 
   const repositoryUrl = component.repository
-    ? `https://github.com/${component.repository.includes("/") ? component.repository : `open-telemetry/${component.repository}`}`
+    ? `https://github.com/${component.repository}`
     : "https://github.com/open-telemetry/opentelemetry-collector-contrib";
 
   return (
@@ -227,7 +227,7 @@ export function CollectorDetailPage() {
                       Links & Resources
                     </h3>
                     <a
-                      href={repositoryUrl}
+                      href={`${repositoryUrl}/tree/main/${component.type}/${component.name}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="border-border/50 hover:bg-muted/50 group flex items-center gap-3 rounded-lg border p-3 transition-colors"
@@ -236,20 +236,6 @@ export function CollectorDetailPage() {
                       <div>
                         <p className="text-sm font-medium">Source Code</p>
                         <p className="text-muted-foreground text-xs">View on GitHub</p>
-                      </div>
-                      <ExternalLink className="text-muted-foreground ml-auto h-4 w-4" />
-                    </a>
-
-                    <a
-                      href={`${repositoryUrl}/tree/main/${component.type}/${component.name}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="border-border/50 hover:bg-muted/50 group flex items-center gap-3 rounded-lg border p-3 transition-colors"
-                    >
-                      <Code className="text-primary h-5 w-5 transition-transform group-hover:scale-110" />
-                      <div>
-                        <p className="text-sm font-medium">Component Documentation</p>
-                        <p className="text-muted-foreground text-xs">Read the README</p>
                       </div>
                       <ExternalLink className="text-muted-foreground ml-auto h-4 w-4" />
                     </a>
