@@ -21,6 +21,7 @@ from unittest.mock import Mock, patch
 
 import git
 import pytest
+import yaml
 from collector_watcher.collector_sync import CollectorSync
 from collector_watcher.inventory_manager import InventoryManager
 from semantic_version import Version
@@ -124,6 +125,92 @@ def test_save_version(collector_sync, sample_components, temp_inventory_dir):
     assert (version_dir / "receiver.yaml").exists()
     assert (version_dir / "processor.yaml").exists()
     assert (version_dir / "exporter.yaml").exists()
+
+
+def test_save_version_writes_schema_hash_unknown_when_schema_absent(
+    collector_sync, sample_components, temp_inventory_dir
+):
+    """When the upstream repo has no metadata-schema.yaml, schema_hash is 'unknown'."""
+    version = Version("0.112.0")
+    collector_sync.save_version("core", version, sample_components)
+
+    version_dir = temp_inventory_dir / "core" / "v0.112.0"
+    with open(version_dir / "receiver.yaml") as f:
+        data = yaml.safe_load(f)
+    assert data["schema_hash"] == "unknown"
+
+
+def test_save_version_writes_schema_hash_when_schema_present(
+    collector_sync, sample_components, temp_inventory_dir, temp_git_repos
+):
+    """When the upstream repo has metadata-schema.yaml, schema_hash is a 12-char hex."""
+    # Plant a fake schema file in the repo the sync uses for "core"
+    schema_dir = Path(temp_git_repos["core"]) / "cmd" / "mdatagen"
+    schema_dir.mkdir(parents=True, exist_ok=True)
+    (schema_dir / "metadata-schema.yaml").write_text("type: object\n")
+
+    version = Version("0.112.0")
+    collector_sync.save_version("core", version, sample_components)
+
+    version_dir = temp_inventory_dir / "core" / "v0.112.0"
+    with open(version_dir / "receiver.yaml") as f:
+        data = yaml.safe_load(f)
+
+    schema_hash = data["schema_hash"]
+    assert schema_hash != "unknown"
+    assert len(schema_hash) == 12
+    assert all(c in "0123456789abcdef" for c in schema_hash)
+
+
+def test_save_version_copies_schema_to_meta_dir_when_present(
+    collector_sync, sample_components, temp_inventory_dir, temp_git_repos
+):
+    """metadata-schema.yaml is copied into the shared meta/ directory, not the distribution dir."""
+    schema_dir = Path(temp_git_repos["core"]) / "cmd" / "mdatagen"
+    schema_dir.mkdir(parents=True, exist_ok=True)
+    (schema_dir / "metadata-schema.yaml").write_text("type: object\n")
+
+    version = Version("0.112.0")
+    collector_sync.save_version("core", version, sample_components)
+
+    # Schema is in the shared meta/ directory
+    meta_path = temp_inventory_dir / "meta" / "v0.112.0" / "metadata-schema.yaml"
+    assert meta_path.exists()
+    assert meta_path.read_text() == "type: object\n"
+
+    # Schema is NOT duplicated inside the distribution directory
+    assert not (temp_inventory_dir / "core" / "v0.112.0" / "metadata-schema.yaml").exists()
+
+
+def test_save_version_schema_only_copied_for_core_not_contrib(
+    collector_sync, sample_components, temp_inventory_dir, temp_git_repos
+):
+    """Schema file is written to meta/ when saving core, not when saving contrib."""
+    for dist in ["core", "contrib"]:
+        schema_dir = Path(temp_git_repos[dist]) / "cmd" / "mdatagen"
+        schema_dir.mkdir(parents=True, exist_ok=True)
+        (schema_dir / "metadata-schema.yaml").write_text(f"type: {dist}\n")
+
+    version = Version("0.112.0")
+
+    # Save contrib first — should NOT create meta/ schema
+    collector_sync.save_version("contrib", version, sample_components)
+    assert not (temp_inventory_dir / "meta" / "v0.112.0" / "metadata-schema.yaml").exists()
+
+    # Save core — should create meta/ schema (from core repo)
+    collector_sync.save_version("core", version, sample_components)
+    meta_path = temp_inventory_dir / "meta" / "v0.112.0" / "metadata-schema.yaml"
+    assert meta_path.exists()
+    assert meta_path.read_text() == "type: core\n"
+
+
+def test_save_version_does_not_create_schema_file_when_absent(collector_sync, sample_components, temp_inventory_dir):
+    """When the upstream repo has no schema file, no metadata-schema.yaml is written anywhere."""
+    version = Version("0.112.0")
+    collector_sync.save_version("core", version, sample_components)
+
+    assert not (temp_inventory_dir / "meta" / "v0.112.0" / "metadata-schema.yaml").exists()
+    assert not (temp_inventory_dir / "core" / "v0.112.0" / "metadata-schema.yaml").exists()
 
 
 def test_process_latest_release_already_exists(collector_sync, sample_components, temp_inventory_dir):

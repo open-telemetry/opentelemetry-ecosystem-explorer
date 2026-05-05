@@ -15,6 +15,7 @@
 """Collector metadata synchronization to registry."""
 
 import logging
+from pathlib import Path
 from typing import Any
 
 from semantic_version import Version
@@ -23,6 +24,7 @@ from watcher_common.version_detector import VersionDetector
 from .component_scanner import ComponentScanner
 from .deprecation_detector import DeprecationDetector
 from .inventory_manager import InventoryManager
+from .schema_copier import SCHEMA_RELATIVE_PATH, CollectorSchemaCopier
 from .type_defs import DistributionName
 
 logger = logging.getLogger(__name__)
@@ -163,19 +165,43 @@ class CollectorSync:
         """
         Save scanned components for a specific version.
 
+        Records the schema content hash in every component YAML file for drift
+        detection and parser routing. When saving the core distribution, also
+        copies metadata-schema.yaml into the shared meta/ directory — once per
+        version, since the schema belongs to the opentelemetry-collector core repo
+        and is identical across distributions.
+
+        Registry layout after this call (core example):
+            ecosystem-registry/collector/
+                core/v{version}/*.yaml          (component data, each with schema_hash)
+                meta/v{version}/metadata-schema.yaml  (shared schema copy)
+
         Args:
             distribution: Distribution name
             version: Version being saved
             components: Scanned components
         """
+        repo_path = Path(self.repos[distribution])
+        copier = CollectorSchemaCopier()
+        schema_src = repo_path / SCHEMA_RELATIVE_PATH
+        schema_hash = copier.compute_schema_hash(schema_src)
+
         repository = self.get_repository_name(distribution)
         self.inventory_manager.save_versioned_inventory(
             distribution=distribution,
             version=version,
             components=components,
             repository=repository,
+            schema_hash=schema_hash,
         )
-        logger.info("  Saved %s %s", distribution, version)
+
+        # Copy the schema file once, from core, into the shared meta/ directory.
+        # Contrib does not contain mdatagen; copying from core avoids duplication.
+        if distribution == "core":
+            meta_dir = self.inventory_manager.meta_schema_path(version).parent
+            copier.copy_schema(repo_path, meta_dir)
+
+        logger.info("  Saved %s %s (schema_hash=%s)", distribution, version, schema_hash)
 
     def initialize_previous_version(self, distribution: DistributionName) -> None:
         """

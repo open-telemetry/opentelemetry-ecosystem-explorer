@@ -50,12 +50,29 @@ class InventoryManager:
         """
         return self.inventory_dir / distribution / f"v{version}"
 
+    def meta_schema_path(self, version: Version) -> Path:
+        """
+        Return the canonical path for the stored upstream metadata-schema.yaml.
+
+        The schema belongs to the mdatagen tool (opentelemetry-collector core) and
+        is the same file regardless of distribution. It is stored once under a shared
+        meta/ directory rather than duplicated inside each distribution's tree.
+
+        Args:
+            version: Version object
+
+        Returns:
+            Path to ecosystem-registry/collector/meta/v{version}/metadata-schema.yaml
+        """
+        return self.inventory_dir / "meta" / f"v{version}" / "metadata-schema.yaml"
+
     def save_versioned_inventory(
         self,
         distribution: DistributionName,
         version: Version,
         components: dict[str, list[dict[str, Any]]],
         repository: str,
+        schema_hash: str = "unknown",
     ) -> None:
         """
         Save inventory for a specific distribution and version.
@@ -65,6 +82,8 @@ class InventoryManager:
             version: Version object
             components: Dictionary of component type to component list
             repository: Name of the repository being scanned
+            schema_hash: 12-char hex hash of metadata-schema.yaml at scan time,
+                         or "unknown" when the schema file was absent in the repo
         """
         version_dir = self.get_version_dir(distribution, version)
         version_dir.mkdir(parents=True, exist_ok=True)
@@ -78,6 +97,7 @@ class InventoryManager:
                 "version": str(version),
                 "repository": repository,
                 "component_type": component_type,
+                "schema_hash": schema_hash,
                 "components": component_list,
             }
 
@@ -93,15 +113,18 @@ class InventoryManager:
             version: Version object
 
         Returns:
-            Inventory dictionary with all components, or empty structure if it doesn't exist
+            Inventory dictionary with all components, or empty structure if it doesn't exist.
+            Includes schema_hash field (defaults to "unknown" for files written before
+            schema fingerprinting was introduced).
         """
         version_dir = self.get_version_dir(distribution, version)
 
         if not version_dir.exists():
-            return {"distribution": distribution, "version": str(version), "components": {}}
+            return {"distribution": distribution, "version": str(version), "schema_hash": "unknown", "components": {}}
 
         components = {}
         repository = ""
+        schema_hash = "unknown"
 
         for component_type in COMPONENT_TYPES:
             file_path = version_dir / f"{component_type}.yaml"
@@ -112,6 +135,8 @@ class InventoryManager:
                     components[component_type] = data.get("components", [])
                     if not repository:
                         repository = data.get("repository", "")
+                    if schema_hash == "unknown":
+                        schema_hash = data.get("schema_hash", "unknown")
             else:
                 components[component_type] = []
 
@@ -119,6 +144,7 @@ class InventoryManager:
             "distribution": distribution,
             "version": str(version),
             "repository": repository,
+            "schema_hash": schema_hash,
             "components": components,
         }
 

@@ -84,6 +84,39 @@ def test_save_versioned_inventory(temp_inventory_dir, sample_components, sample_
     assert len(loaded["components"]) == 2
 
 
+def test_save_versioned_inventory_includes_schema_hash(temp_inventory_dir, sample_components, sample_version):
+    manager = InventoryManager(str(temp_inventory_dir))
+
+    manager.save_versioned_inventory(
+        distribution="core",
+        version=sample_version,
+        components=sample_components,
+        repository="opentelemetry-collector",
+        schema_hash="abc123def456",
+    )
+
+    with open(temp_inventory_dir / "core" / "v0.112.0" / "receiver.yaml") as f:
+        loaded = yaml.safe_load(f)
+
+    assert loaded["schema_hash"] == "abc123def456"
+
+
+def test_save_versioned_inventory_default_schema_hash(temp_inventory_dir, sample_components, sample_version):
+    manager = InventoryManager(str(temp_inventory_dir))
+
+    manager.save_versioned_inventory(
+        distribution="core",
+        version=sample_version,
+        components=sample_components,
+        repository="opentelemetry-collector",
+    )
+
+    with open(temp_inventory_dir / "core" / "v0.112.0" / "receiver.yaml") as f:
+        loaded = yaml.safe_load(f)
+
+    assert loaded["schema_hash"] == "unknown"
+
+
 def test_load_versioned_inventory(temp_inventory_dir, sample_components, sample_version):
     manager = InventoryManager(str(temp_inventory_dir))
 
@@ -92,6 +125,7 @@ def test_load_versioned_inventory(temp_inventory_dir, sample_components, sample_
         version=sample_version,
         components=sample_components,
         repository="opentelemetry-collector-contrib",
+        schema_hash="aabbccddeeff",
     )
 
     loaded = manager.load_versioned_inventory("contrib", sample_version)
@@ -99,7 +133,36 @@ def test_load_versioned_inventory(temp_inventory_dir, sample_components, sample_
     assert loaded["distribution"] == "contrib"
     assert loaded["version"] == "0.112.0"
     assert loaded["repository"] == "opentelemetry-collector-contrib"
+    assert loaded["schema_hash"] == "aabbccddeeff"
     assert loaded["components"] == sample_components
+
+
+def test_load_versioned_inventory_backward_compat_missing_schema_hash(
+    temp_inventory_dir, sample_components, sample_version
+):
+    """Files written before schema_hash was added should load with 'unknown'."""
+    manager = InventoryManager(str(temp_inventory_dir))
+
+    # Write a YAML file without schema_hash to simulate old registry files
+    version_dir = temp_inventory_dir / "core" / "v0.112.0"
+    version_dir.mkdir(parents=True)
+    legacy_data = {
+        "distribution": "core",
+        "version": "0.112.0",
+        "repository": "opentelemetry-collector",
+        "component_type": "receiver",
+        "components": [],
+    }
+    with open(version_dir / "receiver.yaml", "w") as f:
+        yaml.dump(legacy_data, f)
+    # Write stubs for the other component types
+    for ct in ["connector", "exporter", "extension", "processor"]:
+        stub = {**legacy_data, "component_type": ct}
+        with open(version_dir / f"{ct}.yaml", "w") as f:
+            yaml.dump(stub, f)
+
+    loaded = manager.load_versioned_inventory("core", sample_version)
+    assert loaded["schema_hash"] == "unknown"
 
 
 def test_load_nonexistent_versioned_inventory(temp_inventory_dir, sample_version):
@@ -109,7 +172,22 @@ def test_load_nonexistent_versioned_inventory(temp_inventory_dir, sample_version
 
     assert loaded["distribution"] == "contrib"
     assert loaded["version"] == "0.112.0"
+    assert loaded["schema_hash"] == "unknown"
     assert loaded["components"] == {}
+
+
+def test_meta_schema_path_helper(temp_inventory_dir, sample_version):
+    manager = InventoryManager(str(temp_inventory_dir))
+    path = manager.meta_schema_path(sample_version)
+
+    expected = temp_inventory_dir / "meta" / "v0.112.0" / "metadata-schema.yaml"
+    assert path == expected
+
+
+def test_meta_schema_path_is_distribution_independent(temp_inventory_dir, sample_version):
+    """The meta schema path must not depend on distribution."""
+    manager = InventoryManager(str(temp_inventory_dir))
+    assert manager.meta_schema_path(sample_version) == manager.meta_schema_path(sample_version)
 
 
 def test_list_versions(temp_inventory_dir, sample_components):
