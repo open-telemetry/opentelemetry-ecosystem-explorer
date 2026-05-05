@@ -114,7 +114,7 @@ def test_fetch_instrumentation_list_http_error(mock_session_class):
 
     client = JavaInstrumentationClient()
 
-    with pytest.raises(GithubAPIError, match="Error fetching instrumentation list"):
+    with pytest.raises(GithubAPIError, match="Failed to fetch"):
         client.fetch_instrumentation_list(ref="v2.24.0")
 
 
@@ -126,3 +126,165 @@ def test_client_with_auth_token(mock_session_class):
     JavaInstrumentationClient(github_token="test_token_123")
 
     mock_session.headers.update.assert_called_once_with({"Authorization": "Bearer test_token_123"})
+
+
+# --- resolve_ref_to_sha ---
+
+@patch("java_instrumentation_watcher.java_instrumentation_client.requests.Session")
+def test_resolve_ref_to_sha_success(mock_session_class):
+    mock_session = Mock()
+    mock_session_class.return_value = mock_session
+
+    mock_response = Mock()
+    mock_response.json.return_value = {"sha": "abc123def456"}
+    mock_session.get.return_value = mock_response
+
+    client = JavaInstrumentationClient()
+    sha = client.resolve_ref_to_sha("v2.27.0")
+
+    assert sha == "abc123def456"
+    mock_session.get.assert_called_once_with(
+        "https://api.github.com/repos/open-telemetry/opentelemetry-java-instrumentation/commits/v2.27.0",
+        timeout=30,
+    )
+
+
+@patch("java_instrumentation_watcher.java_instrumentation_client.requests.Session")
+def test_resolve_ref_to_sha_http_error(mock_session_class):
+    mock_session = Mock()
+    mock_session_class.return_value = mock_session
+
+    mock_response = Mock()
+    mock_response.raise_for_status.side_effect = requests.HTTPError("404 Not Found")
+    mock_session.get.return_value = mock_response
+
+    client = JavaInstrumentationClient()
+
+    with pytest.raises(GithubAPIError, match="Failed to resolve ref"):
+        client.resolve_ref_to_sha("v2.27.0")
+
+
+@patch("java_instrumentation_watcher.java_instrumentation_client.requests.Session")
+def test_resolve_ref_to_sha_missing_key(mock_session_class):
+    mock_session = Mock()
+    mock_session_class.return_value = mock_session
+
+    mock_response = Mock()
+    mock_response.json.return_value = {"url": "https://..."}  # no 'sha'
+    mock_session.get.return_value = mock_response
+
+    client = JavaInstrumentationClient()
+
+    with pytest.raises(GithubAPIError, match="Failed to resolve ref"):
+        client.resolve_ref_to_sha("v2.27.0")
+
+
+# --- fetch_tree ---
+
+@patch("java_instrumentation_watcher.java_instrumentation_client.requests.Session")
+def test_fetch_tree_success(mock_session_class):
+    mock_session = Mock()
+    mock_session_class.return_value = mock_session
+
+    tree_entries = [
+        {"type": "blob", "path": "instrumentation/akka/akka-actor-2.3/library/README.md"},
+        {"type": "tree", "path": "instrumentation/akka"},
+    ]
+    mock_response = Mock()
+    mock_response.json.return_value = {"truncated": False, "tree": tree_entries}
+    mock_session.get.return_value = mock_response
+
+    client = JavaInstrumentationClient()
+    tree = client.fetch_tree("abc123")
+
+    assert tree == tree_entries
+    mock_session.get.assert_called_once_with(
+        "https://api.github.com/repos/open-telemetry/opentelemetry-java-instrumentation/git/trees/abc123?recursive=1",
+        timeout=30,
+    )
+
+
+@patch("java_instrumentation_watcher.java_instrumentation_client.requests.Session")
+def test_fetch_tree_truncated_raises(mock_session_class):
+    mock_session = Mock()
+    mock_session_class.return_value = mock_session
+
+    mock_response = Mock()
+    mock_response.json.return_value = {"truncated": True, "tree": [{"type": "blob", "path": "foo"}]}
+    mock_session.get.return_value = mock_response
+
+    client = JavaInstrumentationClient()
+    with pytest.raises(GithubAPIError, match="truncated"):
+        client.fetch_tree("abc123")
+
+
+@patch("java_instrumentation_watcher.java_instrumentation_client.requests.Session")
+def test_fetch_tree_http_error(mock_session_class):
+    mock_session = Mock()
+    mock_session_class.return_value = mock_session
+
+    mock_response = Mock()
+    mock_response.raise_for_status.side_effect = requests.HTTPError("500")
+    mock_session.get.return_value = mock_response
+
+    client = JavaInstrumentationClient()
+
+    with pytest.raises(GithubAPIError, match="Failed to fetch tree"):
+        client.fetch_tree("abc123")
+
+
+# --- fetch_raw_file ---
+
+@patch("java_instrumentation_watcher.java_instrumentation_client.requests.Session")
+def test_fetch_raw_file_success(mock_session_class):
+    mock_session = Mock()
+    mock_session_class.return_value = mock_session
+
+    mock_response = Mock()
+    mock_response.text = "# README content"
+    mock_session.get.return_value = mock_response
+
+    client = JavaInstrumentationClient()
+    content = client.fetch_raw_file("instrumentation/akka/akka-actor-2.3/library/README.md", "abc123")
+
+    assert content == "# README content"
+    mock_session.get.assert_called_once_with(
+        "https://raw.githubusercontent.com/open-telemetry/opentelemetry-java-instrumentation/abc123/instrumentation/akka/akka-actor-2.3/library/README.md",
+        timeout=30,
+    )
+
+
+@patch("java_instrumentation_watcher.java_instrumentation_client.requests.Session")
+def test_fetch_raw_file_http_error(mock_session_class):
+    mock_session = Mock()
+    mock_session_class.return_value = mock_session
+
+    mock_response = Mock()
+    mock_response.raise_for_status.side_effect = requests.HTTPError("404")
+    mock_session.get.return_value = mock_response
+
+    client = JavaInstrumentationClient()
+
+    with pytest.raises(GithubAPIError, match="Failed to fetch"):
+        client.fetch_raw_file("some/path.md", "abc123")
+
+
+# --- fetch_instrumentation_list regression ---
+
+@patch("java_instrumentation_watcher.java_instrumentation_client.requests.Session")
+def test_fetch_instrumentation_list_delegates_to_fetch_raw_file(mock_session_class):
+    mock_session = Mock()
+    mock_session_class.return_value = mock_session
+
+    mock_response = Mock()
+    mock_response.text = "file_format: 0.1\nlibraries: []\n"
+    mock_session.get.return_value = mock_response
+
+    client = JavaInstrumentationClient()
+    content = client.fetch_instrumentation_list(ref="v2.27.0")
+
+    assert "file_format" in content
+    mock_session.get.assert_called_once_with(
+        "https://raw.githubusercontent.com/open-telemetry/opentelemetry-java-instrumentation/v2.27.0/docs/instrumentation-list.yaml",
+        timeout=30,
+    )

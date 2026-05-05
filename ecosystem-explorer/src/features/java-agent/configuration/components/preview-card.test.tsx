@@ -28,6 +28,7 @@ const schema: ConfigNode = {
 
 const enableAllSections = vi.fn();
 const resetToDefaults = vi.fn();
+const validateAll = vi.fn();
 const confirmSpy = vi.fn(() => true);
 
 vi.stubGlobal("confirm", confirmSpy);
@@ -46,7 +47,7 @@ vi.mock("@/hooks/use-configuration-builder", () => ({
     setValue: vi.fn(),
     setEnabled: vi.fn(),
     selectPlugin: vi.fn(),
-    validateAll: vi.fn(),
+    validateAll: (...a: unknown[]) => validateAll(...a),
   }),
 }));
 
@@ -70,6 +71,12 @@ describe("PreviewCard", () => {
     render(<PreviewCard schema={schema} />);
     fireEvent.click(screen.getByRole("button", { name: /reset/i }));
     expect(resetToDefaults).toHaveBeenCalledTimes(1);
+  });
+
+  it("triggers validateAll on Copy click regardless of clipboard availability", () => {
+    render(<PreviewCard schema={schema} />);
+    fireEvent.click(screen.getByRole("button", { name: /copy/i }));
+    expect(validateAll).toHaveBeenCalledTimes(1);
   });
 
   it("renders the YAML output via YamlCodeBlock with token spans", () => {
