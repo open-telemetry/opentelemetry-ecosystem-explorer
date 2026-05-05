@@ -13,10 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useState } from "react";
+import { Menu, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { OtelLogo } from "@/components/icons/otel-logo";
 
 export function Header() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
     <header className="border-border/30 bg-background/95 fixed top-0 right-0 left-0 z-50 h-16 border-b backdrop-blur-xl">
       <div className="mx-auto flex h-full max-w-screen-2xl items-center justify-between px-6">
@@ -24,7 +28,7 @@ export function Header() {
           <OtelLogo className="text-primary h-6 w-6" />
           <span className="text-foreground font-semibold">OTel Explorer</span>
         </Link>
-        <nav className="hidden items-center gap-8 md:flex">
+        <nav aria-label="Main" className="hidden items-center gap-8 md:flex">
           <Link
             to="/java-agent"
             className="text-muted-foreground hover:text-foreground text-sm transition-colors"
@@ -38,7 +42,45 @@ export function Header() {
             Collector
           </Link>
         </nav>
+        <button
+          type="button"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={menuOpen}
+          aria-controls="mobile-nav"
+          className="text-muted-foreground hover:text-foreground md:hidden"
+          onClick={() => setMenuOpen((prev) => !prev)}
+        >
+          {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
       </div>
+      {menuOpen && (
+        <nav
+          id="mobile-nav"
+          aria-label="Mobile main"
+          className="border-border/30 bg-background/95 border-b px-6 py-4 md:hidden"
+        >
+          <ul className="flex flex-col gap-4">
+            <li>
+              <Link
+                to="/java-agent"
+                className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+                onClick={() => setMenuOpen(false)}
+              >
+                Java Agent
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/collector"
+                className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+                onClick={() => setMenuOpen(false)}
+              >
+                Collector
+              </Link>
+            </li>
+          </ul>
+        </nav>
+      )}
     </header>
   );
 }

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect } from "vitest";
 import { Header } from "./header";
@@ -66,5 +67,53 @@ describe("Header", () => {
 
     const homeLink = screen.getByRole("link", { name: /otel explorer/i });
     expect(homeLink).toHaveAttribute("href", "/");
+  });
+
+  it("shows hamburger button", () => {
+    render(
+      <MemoryRouter>
+        <Header />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByRole("button", { name: /open menu/i })).toBeInTheDocument();
+  });
+
+  it("toggles mobile menu open and closed", async () => {
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter>
+        <Header />
+      </MemoryRouter>
+    );
+
+    const toggleButton = screen.getByRole("button", { name: /open menu/i });
+    expect(toggleButton).toHaveAttribute("aria-expanded", "false");
+
+    await user.click(toggleButton);
+
+    expect(screen.getByRole("button", { name: /close menu/i })).toHaveAttribute(
+      "aria-expanded",
+      "true"
+    );
+    expect(screen.getByRole("navigation", { name: /mobile main/i })).toBeInTheDocument();
+  });
+
+  it("closes mobile menu when a nav link is clicked", async () => {
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter>
+        <Header />
+      </MemoryRouter>
+    );
+
+    await user.click(screen.getByRole("button", { name: /open menu/i }));
+    expect(screen.getByRole("navigation", { name: /mobile main/i })).toBeInTheDocument();
+
+    const mobileNav = screen.getByRole("navigation", { name: /mobile main/i });
+    const javaAgentLink = mobileNav.querySelector("a");
+    await user.click(javaAgentLink!);
+
+    expect(screen.queryByRole("navigation", { name: /mobile main/i })).not.toBeInTheDocument();
   });
 });
