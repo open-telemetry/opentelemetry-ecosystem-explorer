@@ -46,12 +46,11 @@ export function PreviewCard({ schema }: PreviewCardProps): JSX.Element {
       <header className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="text-foreground text-sm font-medium">Output Preview</h3>
         <div className="flex flex-wrap items-center gap-2">
-          <div onClickCapture={validateAll}>
-            <CopyButton
-              text={yaml}
-              className="border-border/60 bg-card text-foreground hover:bg-card/80 inline-flex cursor-pointer items-center gap-1 rounded-md border px-3 py-1 text-xs"
-            />
-          </div>
+          <CopyButton
+            text={yaml}
+            onClick={validateAll}
+            className="border-border/60 bg-card text-foreground hover:bg-card/80 inline-flex cursor-pointer items-center gap-1 rounded-md border px-3 py-1 text-xs"
+          />
           <button
             type="button"
             onClick={() => {
