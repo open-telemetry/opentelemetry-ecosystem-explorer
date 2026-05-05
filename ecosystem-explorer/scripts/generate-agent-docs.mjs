@@ -31,7 +31,7 @@ const javaagentAgentDir = path.join(agentDir, "javaagent");
  * Builds the Collector components index markdown.
  */
 function buildCollectorIndex(components) {
-  let md = `# Collector Components\n\nThis is an index of all OpenTelemetry Collector components.\nFor full configuration details, please refer to the raw JSON data.\n\n## Components\n\n| Display Name | ID | Stability | JSON Data URL |\n| --- | --- | --- | --- |\n`;
+  let md = `> For the complete documentation index, see [llms.txt](/llms.txt)\n\n# Collector Components\n\n<!-- llms-txt-link: /llms.txt -->\n\nThis is an index of all OpenTelemetry Collector components.\nFor full configuration details, please refer to the raw JSON data.\n\n**JSON Schema**: [collector-component.schema.json](/schemas/collector-component.schema.json)\n\n## Components\n\n| Display Name | ID | Stability | JSON Data URL |\n| --- | --- | --- | --- |\n`;
 
   for (const comp of components) {
     const displayName = comp.display_name || comp.name || "Unknown";
@@ -46,7 +46,7 @@ function buildCollectorIndex(components) {
  * Builds the Collector versions index markdown.
  */
 function buildCollectorVersions(versions) {
-  let md = `# Collector Versions\n\nThis is an index of available OpenTelemetry Collector versions.\n\n| Version | Index URL | Is Latest |\n| --- | --- | --- |\n`;
+  let md = `# Collector Versions\n\n<!-- llms-txt-link: /llms.txt -->\n\nThis is an index of available OpenTelemetry Collector versions.\n\n| Version | Index URL | Is Latest |\n| --- | --- | --- |\n`;
   for (const v of versions) {
     md += `| ${v.version} | [/data/collector/versions/${v.version}-index.json](/data/collector/versions/${v.version}-index.json) | ${v.is_latest ? "Yes" : "No"} |\n`;
   }
@@ -58,7 +58,7 @@ function buildCollectorVersions(versions) {
  */
 async function buildJavaAgentIndex(versions, publicPath) {
   const latestVersion = versions.find((v) => v.is_latest)?.version;
-  let md = `# Java Agent Instrumentations\n\nThis is an index of all OpenTelemetry Java Agent instrumentations.\nFor full configuration details, please refer to the raw JSON data.\n\n## Components\n\n| Display Name | ID | JSON Data URL |\n| --- | --- | --- |\n`;
+  let md = `> For the complete documentation index, see [llms.txt](/llms.txt)\n\n# Java Agent Instrumentations\n\n<!-- llms-txt-link: /llms.txt -->\n\nThis is an index of all OpenTelemetry Java Agent instrumentations.\nFor full configuration details, please refer to the raw JSON data.\n\n**JSON Schema**: [javaagent-instrumentation.schema.json](/schemas/javaagent-instrumentation.schema.json)\n\n## Components\n\n| Display Name | ID | JSON Data URL |\n| --- | --- | --- |\n`;
 
   if (latestVersion) {
     const manifestRaw = await fs.readFile(
@@ -95,7 +95,7 @@ async function buildJavaAgentIndex(versions, publicPath) {
  * Builds the Java Agent versions index markdown.
  */
 function buildJavaAgentVersions(versions) {
-  let md = `# Java Agent Versions\n\nThis is an index of available OpenTelemetry Java Agent versions.\n\n| Version | Index URL | Is Latest |\n| --- | --- | --- |\n`;
+  let md = `# Java Agent Versions\n\n<!-- llms-txt-link: /llms.txt -->\n\nThis is an index of available OpenTelemetry Java Agent versions.\n\n| Version | Index URL | Is Latest |\n| --- | --- | --- |\n`;
   for (const v of versions) {
     md += `| ${v.version} | [/data/javaagent/versions/${v.version}-index.json](/data/javaagent/versions/${v.version}-index.json) | ${v.is_latest ? "Yes" : "No"} |\n`;
   }
@@ -108,13 +108,25 @@ function buildJavaAgentVersions(versions) {
 function buildLlmsTxt() {
   return `# OpenTelemetry Ecosystem Explorer
 
-This site contains metadata about the OpenTelemetry ecosystem.
+<!-- llms-full-txt-link: /llms-full.txt -->
+
+> This site contains metadata about the OpenTelemetry ecosystem.
+
 For agent consumption, we provide index files that point to our structured JSON datasets:
 
 - [Collector Components](/agent/collector/index.md)
 - [Collector Versions](/agent/collector/versions.md)
 - [Java Agent Instrumentations](/agent/javaagent/index.md)
 - [Java Agent Versions](/agent/javaagent/versions.md)
+
+**For a single-file version of all documentation, see [llms-full.txt](/llms-full.txt).**
+
+## Data Schemas
+
+To help agents parse our JSON data, we provide the following JSON Schemas:
+
+- [Collector Component Schema](/schemas/collector-component.schema.json)
+- [Java Agent Instrumentation Schema](/schemas/javaagent-instrumentation.schema.json)
 
 ## Navigation Patterns
 
@@ -138,7 +150,6 @@ async function generateDocs() {
   await fs.mkdir(collectorAgentDir, { recursive: true });
   await fs.mkdir(javaagentAgentDir, { recursive: true });
 
-  // Load Data
   const collectorIndex = JSON.parse(
     await fs.readFile(path.join(publicDir, "data/collector/index.json"), "utf-8")
   );
@@ -149,33 +160,41 @@ async function generateDocs() {
     await fs.readFile(path.join(publicDir, "data/javaagent/versions-index.json"), "utf-8")
   );
 
-  // Generate MD files
-  await fs.writeFile(
-    path.join(collectorAgentDir, "index.md"),
-    buildCollectorIndex(collectorIndex.components)
-  );
+  const collectorIndexMd = buildCollectorIndex(collectorIndex.components);
+  const collectorVersionsMd = buildCollectorVersions(collectorVersions.versions);
+  const javaagentIndexMd = await buildJavaAgentIndex(javaagentVersions.versions, publicDir);
+  const javaagentVersionsMd = buildJavaAgentVersions(javaagentVersions.versions);
+  const llmsTxt = buildLlmsTxt();
+
+  await fs.writeFile(path.join(collectorAgentDir, "index.md"), collectorIndexMd);
   console.log(" - Generated dist/agent/collector/index.md");
 
-  await fs.writeFile(
-    path.join(collectorAgentDir, "versions.md"),
-    buildCollectorVersions(collectorVersions.versions)
-  );
+  await fs.writeFile(path.join(collectorAgentDir, "versions.md"), collectorVersionsMd);
   console.log(" - Generated dist/agent/collector/versions.md");
 
-  await fs.writeFile(
-    path.join(javaagentAgentDir, "index.md"),
-    await buildJavaAgentIndex(javaagentVersions.versions, publicDir)
-  );
+  await fs.writeFile(path.join(javaagentAgentDir, "index.md"), javaagentIndexMd);
   console.log(" - Generated dist/agent/javaagent/index.md");
 
-  await fs.writeFile(
-    path.join(javaagentAgentDir, "versions.md"),
-    buildJavaAgentVersions(javaagentVersions.versions)
-  );
+  await fs.writeFile(path.join(javaagentAgentDir, "versions.md"), javaagentVersionsMd);
   console.log(" - Generated dist/agent/javaagent/versions.md");
 
-  await fs.writeFile(path.join(distDir, "llms.txt"), buildLlmsTxt());
+  await fs.writeFile(path.join(distDir, "llms.txt"), llmsTxt);
   console.log(" - Generated dist/llms.txt");
+
+  const llmsFullTxt = [
+    llmsTxt,
+    "\n---\n",
+    collectorIndexMd,
+    "\n---\n",
+    collectorVersionsMd,
+    "\n---\n",
+    javaagentIndexMd,
+    "\n---\n",
+    javaagentVersionsMd,
+  ].join("\n");
+
+  await fs.writeFile(path.join(distDir, "llms-full.txt"), llmsFullTxt);
+  console.log(" - Generated dist/llms-full.txt");
 }
 
 generateDocs().catch(console.error);
