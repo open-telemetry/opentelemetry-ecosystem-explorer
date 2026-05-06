@@ -19,8 +19,10 @@ import type { Context } from "@netlify/edge-functions";
 export default async (request: Request, context: Context) => {
   const url = new URL(request.url);
   const { pathname } = url;
+  const acceptHeader = request.headers.get("accept") || "";
+  const isMarkdownRequested = acceptHeader.includes("text/markdown");
 
-  // 1. Handle root documentation files
+  // Documentation root files
   if (pathname === "/llms.txt" || pathname === "/llms-full.txt") {
     const response = await context.rewrite(pathname);
     if (response.status === 200) {
@@ -28,64 +30,40 @@ export default async (request: Request, context: Context) => {
       if (contentType && contentType.includes("text/html")) {
         return new Response("Not Found", { status: 404 });
       }
-      response.headers.set("Content-Type", "text/plain");
+      response.headers.set("Content-Type", "text/plain; charset=UTF-8");
       return response;
     }
     return new Response("Not Found", { status: 404 });
   }
 
-  // 2. Handle Sitemap and Robots
-  if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
-    const response = await context.rewrite(pathname);
-    if (response.status === 200) {
-      const responseContentType = response.headers.get("content-type");
-      if (responseContentType && responseContentType.includes("text/html")) {
-        return new Response("Not Found", { status: 404 });
-      }
-      const contentType = pathname.endsWith(".xml") ? "application/xml" : "text/plain";
-      response.headers.set("Content-Type", contentType);
-      return response;
+  // Content negotiation for AI agents
+  if (isMarkdownRequested) {
+    let mdPath = "";
+    if (pathname === "/" || pathname === "/index.html") {
+      mdPath = "/llms.txt";
+    } else if (pathname.startsWith("/java-agent")) {
+      mdPath = "/agent/javaagent/index.md";
+    } else if (pathname.startsWith("/collector")) {
+      mdPath = "/agent/collector/index.md";
     }
-    return new Response("Not Found", { status: 404 });
-  }
 
-  // 3. Handle JSON schemas
-  if (pathname.startsWith("/schemas/")) {
-    if (
-      pathname === "/schemas/collector-component.schema.json" ||
-      pathname === "/schemas/javaagent-instrumentation.schema.json"
-    ) {
-      const response = await context.rewrite(pathname);
+    if (mdPath) {
+      const response = await context.rewrite(mdPath);
       if (response.status === 200) {
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.includes("text/html")) {
           return new Response("Not Found", { status: 404 });
         }
-        response.headers.set("Content-Type", "application/json");
+        const finalContentType = mdPath.endsWith(".md")
+          ? "text/markdown; charset=UTF-8"
+          : "text/plain; charset=UTF-8";
+        response.headers.set("Content-Type", finalContentType);
         return response;
       }
     }
-    return new Response("Not Found", { status: 404 });
   }
 
-  // 4. Handle JSON data files
-  if (pathname.startsWith("/data/")) {
-    if (pathname.endsWith(".json")) {
-      const response = await context.rewrite(pathname);
-      if (response.status === 200) {
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.includes("text/html")) {
-          return new Response("Not Found", { status: 404 });
-        }
-        response.headers.set("Content-Type", "application/json");
-        return response;
-      }
-    }
-    return new Response("Not Found", { status: 404 });
-  }
-
-  // 5. Handle agent documentation routes
-  let mdPath = pathname;
+  // Explicit agent documentation routes
   const agentPathMap: Record<string, string> = {
     "/agent/collector": "/agent/collector/index.md",
     "/agent/collector/": "/agent/collector/index.md",
@@ -97,24 +75,51 @@ export default async (request: Request, context: Context) => {
     "/agent/javaagent/versions/": "/agent/javaagent/versions.md",
   };
 
-  if (agentPathMap[mdPath]) {
-    mdPath = agentPathMap[mdPath];
+  let resolvedPath = agentPathMap[pathname] || pathname;
+  if (resolvedPath.endsWith(".md") || resolvedPath.startsWith("/agent/")) {
+    if (resolvedPath.endsWith(".md")) {
+      const response = await context.rewrite(resolvedPath);
+      if (response.status === 200) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("text/html")) {
+          return new Response("Not Found", { status: 404 });
+        }
+        response.headers.set("Content-Type", "text/markdown; charset=UTF-8");
+        return response;
+      }
+    }
+    return new Response("Not Found", { status: 404 });
   }
 
-  if (mdPath.endsWith(".md")) {
-    const response = await context.rewrite(mdPath);
+  // JSON schemas and metadata
+  if (pathname.startsWith("/schemas/") || pathname.startsWith("/data/")) {
+    const response = await context.rewrite(pathname);
     if (response.status === 200) {
       const contentType = response.headers.get("content-type");
       if (contentType && contentType.includes("text/html")) {
         return new Response("Not Found", { status: 404 });
       }
-      response.headers.set("Content-Type", "text/markdown");
+      const finalContentType = pathname.endsWith(".json") ? "application/json" : "text/plain";
+      response.headers.set("Content-Type", finalContentType);
       return response;
     }
-  }
-
-  // 6. Fallback for any other /agent/ path to avoid soft 404s
-  if (pathname.startsWith("/agent/")) {
     return new Response("Not Found", { status: 404 });
   }
+
+  // Sitemap and Robots
+  if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
+    const response = await context.rewrite(pathname);
+    if (response.status === 200) {
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("text/html")) {
+        return new Response("Not Found", { status: 404 });
+      }
+      const finalContentType = pathname.endsWith(".xml") ? "application/xml" : "text/plain";
+      response.headers.set("Content-Type", finalContentType);
+      return response;
+    }
+    return new Response("Not Found", { status: 404 });
+  }
+
+  return undefined;
 };
