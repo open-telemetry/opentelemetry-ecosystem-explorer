@@ -13,13 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { OtelLogo } from "@/components/icons/otel-logo";
+
+const NAV_ITEMS = [
+  { to: "/java-agent", label: "Java Agent" },
+  { to: "/collector", label: "Collector" },
+] as const;
 
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
 
   return (
     <header className="border-border/30 bg-background/95 fixed top-0 right-0 left-0 z-50 h-16 border-b backdrop-blur-xl">
@@ -29,18 +39,15 @@ export function Header() {
           <span className="text-foreground font-semibold">OTel Explorer</span>
         </Link>
         <nav aria-label="Main" className="hidden items-center gap-8 md:flex">
-          <Link
-            to="/java-agent"
-            className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-          >
-            Java Agent
-          </Link>
-          <Link
-            to="/collector"
-            className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-          >
-            Collector
-          </Link>
+          {NAV_ITEMS.map(({ to, label }) => (
+            <Link
+              key={to}
+              to={to}
+              className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+            >
+              {label}
+            </Link>
+          ))}
         </nav>
         <button
           type="button"
@@ -53,34 +60,25 @@ export function Header() {
           {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
-      {menuOpen && (
-        <nav
-          id="mobile-nav"
-          aria-label="Mobile main"
-          className="border-border/30 bg-background/95 border-b px-6 py-4 md:hidden"
-        >
-          <ul className="flex flex-col gap-4">
-            <li>
+      <nav
+        id="mobile-nav"
+        aria-label="Mobile main"
+        hidden={!menuOpen}
+        className="border-border/30 bg-background/95 border-b px-6 py-4 md:hidden"
+      >
+        <ul className="flex flex-col gap-4">
+          {NAV_ITEMS.map(({ to, label }) => (
+            <li key={to}>
               <Link
-                to="/java-agent"
+                to={to}
                 className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                onClick={() => setMenuOpen(false)}
               >
-                Java Agent
+                {label}
               </Link>
             </li>
-            <li>
-              <Link
-                to="/collector"
-                className="text-muted-foreground hover:text-foreground text-sm transition-colors"
-                onClick={() => setMenuOpen(false)}
-              >
-                Collector
-              </Link>
-            </li>
-          </ul>
-        </nav>
-      )}
+          ))}
+        </ul>
+      </nav>
     </header>
   );
 }

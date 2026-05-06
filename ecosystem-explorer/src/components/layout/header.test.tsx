@@ -110,8 +110,9 @@ describe("Header", () => {
     await user.click(screen.getByRole("button", { name: /open menu/i }));
     expect(screen.getByRole("navigation", { name: /mobile main/i })).toBeInTheDocument();
 
-    const mobileNav = screen.getByRole("navigation", { name: /mobile main/i });
-    const javaAgentLink = mobileNav.querySelector("a");
+    const javaAgentLink = screen.getAllByRole("link", { name: /java agent/i }).find(
+      (el) => el.closest("nav[aria-label='Mobile main']")
+    );
     await user.click(javaAgentLink!);
 
     expect(screen.queryByRole("navigation", { name: /mobile main/i })).not.toBeInTheDocument();
