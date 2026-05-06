@@ -105,10 +105,6 @@ export function CollectorDetailPage() {
     );
   }
 
-  const repositoryUrl = component.repository
-    ? `https://github.com/${component.repository}`
-    : "https://github.com/open-telemetry/opentelemetry-collector-contrib";
-
   return (
     <PageContainer>
       <BackButton />
@@ -227,7 +223,7 @@ export function CollectorDetailPage() {
                       Links & Resources
                     </h3>
                     <a
-                      href={`${repositoryUrl}/tree/main/${component.type}/${component.name}`}
+                      href={`https://github.com/open-telemetry/${component.repository}/tree/main/${component.type}/${component.name}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="border-border/50 hover:bg-muted/50 group flex items-center gap-3 rounded-lg border p-3 transition-colors"
