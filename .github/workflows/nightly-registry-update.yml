@@ -11,7 +11,9 @@ permissions:
 
 jobs:
   synchronize-inventory:
-    if: github.event_name != 'schedule' || github.repository == 'open-telemetry/opentelemetry-ecosystem-explorer'
+    if:
+      github.event_name != 'schedule' || github.repository ==
+      'open-telemetry/opentelemetry-ecosystem-explorer'
     permissions:
       contents: write
       pull-requests: write
@@ -109,7 +111,9 @@ jobs:
       - name: Commit and push changes
         if: steps.check_changes.outputs.has_changes == 'true'
         env:
-          GH_TOKEN: ${{ steps.repo_check.outputs.is_primary == 'true' && steps.otelbot-token.outputs.token || secrets.GITHUB_TOKEN }}
+          GH_TOKEN:
+            ${{ steps.repo_check.outputs.is_primary == 'true' && steps.otelbot-token.outputs.token
+            || secrets.GITHUB_TOKEN }}
         run: |
           BRANCH="otelbot/automated-inventory-update"
 

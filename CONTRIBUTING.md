@@ -1,13 +1,14 @@
 # Contributing to OpenTelemetry Ecosystem Explorer
 
-Welcome to the OpenTelemetry Ecosystem Explorer! Whether you're fixing a typo, reporting a bug, or proposing a new
-feature, every contribution helps.
+Welcome to the OpenTelemetry Ecosystem Explorer! Whether you're fixing a typo, reporting a bug, or
+proposing a new feature, every contribution helps.
 
-This project helps users discover and explore OpenTelemetry projects, instrumentations, and components across the
-[OpenTelemetry](https://opentelemetry.io/) ecosystem.
+This project helps users discover and explore OpenTelemetry projects, instrumentations, and
+components across the [OpenTelemetry](https://opentelemetry.io/) ecosystem.
 
-**No contribution is too small!** We value all forms of participation, from documentation improvements to code
-contributions. If you're new to open source or OpenTelemetry, don't hesitate to ask questions.
+**No contribution is too small!** We value all forms of participation, from documentation
+improvements to code contributions. If you're new to open source or OpenTelemetry, don't hesitate to
+ask questions.
 
 ## Quick Start
 
@@ -19,8 +20,8 @@ cd ecosystem-explorer && bun install && bun run serve
 # Visit http://localhost:5173
 ```
 
-Now you can browse Java Agent instrumentations and Collector components locally. Continue reading for detailed setup
-and contribution guidelines.
+Now you can browse Java Agent instrumentations and Collector components locally. Continue reading
+for detailed setup and contribution guidelines.
 
 ## Finding Issues to Work On
 
@@ -28,43 +29,44 @@ Look for issues tagged with:
 
 - [`good first issue`](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/labels/good%20first%20issue)
   \- Great for newcomers
-- [`help wanted`](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/labels/help%20wanted) - Community
-  contributions welcome
+- [`help wanted`](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/labels/help%20wanted) -
+  Community contributions welcome
 - [`documentation`](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/labels/documentation) -
   Documentation improvements
 
 ## Mapping The Ecosystem
 
-Building the registry, automation pipelines, and Explorer interface is only part of the work. Before systems can be
-automated, the terrain must first be mapped.
+Building the registry, automation pipelines, and Explorer interface is only part of the work. Before
+systems can be automated, the terrain must first be mapped.
 
-Each project within the ecosystem represents its own landscape with distinct components, structures, and
-conventions. Our task is to survey these landscapes and determine:
+Each project within the ecosystem represents its own landscape with distinct components, structures,
+and conventions. Our task is to survey these landscapes and determine:
 
 - What components exist?
 - What metadata is available?
 - Is that metadata structured in a way that can be incorporated into the registry?
 - Where are the gaps?
 
-In many cases, this requires careful exploration like reading source code, locating configuration files, identifying
-implicit conventions, and translating them into structured, registry-ready data. Even existing data should be regularly
-reviewed and iterated upon.
+In many cases, this requires careful exploration like reading source code, locating configuration
+files, identifying implicit conventions, and translating them into structured, registry-ready data.
+Even existing data should be regularly reviewed and iterated upon.
 
-If you are interested in a particular language, auto-instrumentation tool, or corner of the ecosystem, we would love
-your help.
+If you are interested in a particular language, auto-instrumentation tool, or corner of the
+ecosystem, we would love your help.
 
-Choose an area that interests you and begin the survey. Trace the components, locate data, identify patterns, and
-document what you find. If something is unclear or incomplete, open an issue or start a discussion, expedition logs are
-part of the process. We can help validate findings, refine translation strategies, and support integration into the
-registry.
+Choose an area that interests you and begin the survey. Trace the components, locate data, identify
+patterns, and document what you find. If something is unclear or incomplete, open an issue or start
+a discussion, expedition logs are part of the process. We can help validate findings, refine
+translation strategies, and support integration into the registry.
 
-This work is valuable for both newcomers and seasoned contributors. For those new to the community, it provides a
-structured way to understand how projects are organized, how metadata is shaped, and how automation connects systems
-together. For experienced contributors, it offers a broader, cross-ecosystem perspective, revealing patterns,
-inconsistencies, and opportunities for improvement that are often invisible when focused on a single project.
+This work is valuable for both newcomers and seasoned contributors. For those new to the community,
+it provides a structured way to understand how projects are organized, how metadata is shaped, and
+how automation connects systems together. For experienced contributors, it offers a broader,
+cross-ecosystem perspective, revealing patterns, inconsistencies, and opportunities for improvement
+that are often invisible when focused on a single project.
 
-Whether you are surveying your first repository or helping refine automation across dozens, every mapped component
-strengthens the atlas.
+Whether you are surveying your first repository or helping refine automation across dozens, every
+mapped component strengthens the atlas.
 
 ## Pre-requisites
 
@@ -77,7 +79,8 @@ Before you begin contributing, ensure you have the following tools installed:
   - Download from [python.org](https://www.python.org/downloads/)
 
 - **uv**: Fast Python package installer and resolver
-  - Install with: `pip install uv` or follow [uv installation guide](https://github.com/astral-sh/uv)
+  - Install with: `pip install uv` or follow
+    [uv installation guide](https://github.com/astral-sh/uv)
 
 - **Bun**: JavaScript runtime and package manager (used for ecosystem-explorer and markdown linting)
   - Check your version: `bun --version`
@@ -137,8 +140,7 @@ This repository contains three components:
 - **ecosystem-automation**: Automation pipelines
 - **ecosystem-explorer**: Web application
 
-Reference
-implementations: [collector-watcher](https://github.com/jaydeluca/collector-watcher),
+Reference implementations: [collector-watcher](https://github.com/jaydeluca/collector-watcher),
 [instrumentation-explorer](https://github.com/jaydeluca/instrumentation-explorer)
 
 ### Running Code Quality Checks
@@ -218,8 +220,8 @@ include in your PR for visual review.
 Add the `add-screenshots` label to your PR. A GitHub Actions workflow will:
 
 1. Build the frontend
-2. Launch a local server and use Playwright to capture screenshots of key pages (home, instrumentation
-   list, and instrumentation detail tabs)
+2. Launch a local server and use Playwright to capture screenshots of key pages (home,
+   instrumentation list, and instrumentation detail tabs)
 3. Commit the screenshots to `ecosystem-explorer/screenshots/` on your PR branch
 
 The workflow re-runs automatically on new commits while the label is present.
@@ -241,13 +243,14 @@ node scripts/take-screenshots.mjs
 
 ### AI Usage
 
-AI tools can be used to assist with code generation, documentation, and other tasks related to this project. However,
-all contributions must be reviewed and tested by a human before submission.
+AI tools can be used to assist with code generation, documentation, and other tasks related to this
+project. However, all contributions must be reviewed and tested by a human before submission.
 
-When working on UI elements, ensure that your agents reference the `ecosystem-explorer/DESIGN.md` document for detailed
-guidelines to help ensure consistency and quality across the project.
+When working on UI elements, ensure that your agents reference the `ecosystem-explorer/DESIGN.md`
+document for detailed guidelines to help ensure consistency and quality across the project.
 
-For more details, read our [Generative AI contribution policy](https://github.com/open-telemetry/community/blob/main/policies/genai.md).
+For more details, read our
+[Generative AI contribution policy](https://github.com/open-telemetry/community/blob/main/policies/genai.md).
 
 ### Code Standards
 
@@ -265,14 +268,15 @@ By participating, you agree to uphold this code.
 
 ### Contributor License Agreement (CLA)
 
-All contributors must sign the [OpenTelemetry CLA](https://docs.linuxfoundation.org/lfx/easycla). The CLA bot will
-comment on your PR if you haven't signed it yet. This is a one-time process.
+All contributors must sign the [OpenTelemetry CLA](https://docs.linuxfoundation.org/lfx/easycla).
+The CLA bot will comment on your PR if you haven't signed it yet. This is a one-time process.
 
 ### Feature Proposals
 
 Before implementing significant new features:
 
-1. [Open an issue](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/new) to discuss your idea
+1. [Open an issue](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/new) to
+   discuss your idea
 2. Explain the use case and proposed approach
 3. Get feedback from maintainers
 4. Proceed with implementation once there's consensus
@@ -283,10 +287,10 @@ This helps avoid wasted effort on features that may not align with project goals
 
 ### Community Resources
 
-- **Slack**: Join the [#otel-ecosystem-explorer](https://cloud-native.slack.com/archives/C09N6DDGSPQ) channel on CNCF
-  Slack
-  ([get invite](https://communityinviter.com/apps/cloud-native/cncf))
-- **OpenTelemetry Community**: [Community repo](https://github.com/open-telemetry/community) with governance and
-  contributing guides
+- **Slack**: Join the
+  [#otel-ecosystem-explorer](https://cloud-native.slack.com/archives/C09N6DDGSPQ) channel on CNCF
+  Slack ([get invite](https://communityinviter.com/apps/cloud-native/cncf))
+- **OpenTelemetry Community**: [Community repo](https://github.com/open-telemetry/community) with
+  governance and contributing guides
 - **Project Proposal**:
   [Ecosystem Explorer Proposal](https://github.com/open-telemetry/community/blob/main/projects/ecosystem-explorer.md)

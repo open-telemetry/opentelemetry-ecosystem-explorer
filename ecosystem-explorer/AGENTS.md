@@ -1,8 +1,11 @@
 # AGENTS.md — ecosystem-explorer
 
-React 19 + Vite + TypeScript frontend that provides search and exploration for the OpenTelemetry ecosystem. Tailwind CSS v4 for styling, Radix UI primitives, Vitest for unit tests, Playwright for integration tests.
+React 19 + Vite + TypeScript frontend that provides search and exploration for the OpenTelemetry
+ecosystem. Tailwind CSS v4 for styling, Radix UI primitives, Vitest for unit tests, Playwright for
+integration tests.
 
-For design system reference (colors, typography, spacing, component patterns) see `DESIGN.md` in this directory.
+For design system reference (colors, typography, spacing, component patterns) see `DESIGN.md` in
+this directory.
 
 ## Commands
 
@@ -19,7 +22,8 @@ All commands run from `ecosystem-explorer/` with `bun`:
 
 ## Project structure
 
-- `src/features/{feature}/` — Feature-scoped pages, components, hooks, utils. Tests sit alongside source.
+- `src/features/{feature}/` — Feature-scoped pages, components, hooks, utils. Tests sit alongside
+  source.
 - `src/components/ui/` — Wrapped Radix UI primitives. Use these instead of importing Radix directly.
 - `src/components/layout/` — Shared layout components.
 - `src/hooks/` — Cross-feature hooks.
@@ -27,36 +31,47 @@ All commands run from `ecosystem-explorer/` with `bun`:
 
 The `@/` import alias maps to `src/`. Always use `@/` for intra-`src` imports.
 
-Routes are registered centrally in `App.tsx`. To add a feature route: create a `*-page.tsx` under `src/features/{feature}/`, then register a `<Route>` in `App.tsx`. The header and footer wrap all routes globally, so do not duplicate them per page.
+Routes are registered centrally in `App.tsx`. To add a feature route: create a `*-page.tsx` under
+`src/features/{feature}/`, then register a `<Route>` in `App.tsx`. The header and footer wrap all
+routes globally, so do not duplicate them per page.
 
 ## Testing
 
-- Unit tests live next to source as `*.test.ts(x)` and run with `bun run test`. Integration tests use `*.integration.test.ts(x)` and run with `bun run test:integration`.
+- Unit tests live next to source as `*.test.ts(x)` and run with `bun run test`. Integration tests
+  use `*.integration.test.ts(x)` and run with `bun run test:integration`.
 - Add or update tests for the code you change.
 - Use `bun run test -t "<name>"` to iterate on a single test without re-running the full suite.
 
 ## Data fetching
 
-Wrap data fetching in custom hooks with explicit loading/data/error state. Do not fetch directly inside components. IndexedDB is used for client-side caching with a 24-hour expiry. Bump the IndexedDB schema version when changing it, or integration tests will fail with stale schema.
+Wrap data fetching in custom hooks with explicit loading/data/error state. Do not fetch directly
+inside components. IndexedDB is used for client-side caching with a 24-hour expiry. Bump the
+IndexedDB schema version when changing it, or integration tests will fail with stale schema.
 
 ## Styling
 
-- Color tokens are defined in `src/themes.ts` and applied via Tailwind classes. Do not hardcode colors.
-- Every Radix primitive used in the app must have a wrapper in `src/components/ui/` that adds Tailwind styling and accessibility defaults.
+- Color tokens are defined in `src/themes.ts` and applied via Tailwind classes. Do not hardcode
+  colors.
+- Every Radix primitive used in the app must have a wrapper in `src/components/ui/` that adds
+  Tailwind styling and accessibility defaults.
 
 ## Feature flags
 
-Feature flags live in `src/lib/feature-flags.ts` and are accessed via `isEnabled("FLAG_NAME")`. They're read from `import.meta.env.VITE_FEATURE_FLAG_*` and baked at build time, so they cannot be toggled at runtime. Document new flags in `.env.development` for local testing.
+Feature flags live in `src/lib/feature-flags.ts` and are accessed via `isEnabled("FLAG_NAME")`.
+They're read from `import.meta.env.VITE_FEATURE_FLAG_*` and baked at build time, so they cannot be
+toggled at runtime. Document new flags in `.env.development` for local testing.
 
 ## Accessibility Guidelines
 
-Accessibility is a critical requirement for all UI components. Prioritize accessibility from the start, not as an afterthought.
+Accessibility is a critical requirement for all UI components. Prioritize accessibility from the
+start, not as an afterthought.
 
 **Required Attributes:**
 
 - Use semantic HTML elements (`<nav>`, `<main>`, `<header>`, `<footer>`, `<button>`, etc.)
 - Add `aria-label` or `aria-labelledby` to icon-only buttons and interactive elements
-- Include `role` attributes when semantic HTML isn't sufficient (e.g., `role="img"` for decorative SVGs)
+- Include `role` attributes when semantic HTML isn't sufficient (e.g., `role="img"` for decorative
+  SVGs)
 - Provide text alternatives for images and icons using `aria-label` or `alt` attributes
 
 **Interactive Elements:**
@@ -65,9 +80,10 @@ Accessibility is a critical requirement for all UI components. Prioritize access
 - Maintain visible focus indicators
 - Use proper button elements (`<button>`) instead of div/span with click handlers
 - Support both mouse and keyboard interactions
-- **Toggle buttons MUST use `aria-pressed`** to indicate their state (`aria-pressed="true"` when active,
-  `aria-pressed="false"` when inactive)
-- Filter buttons, favorite buttons, or any button that maintains a pressed/unpressed state requires `aria-pressed`
+- **Toggle buttons MUST use `aria-pressed`** to indicate their state (`aria-pressed="true"` when
+  active, `aria-pressed="false"` when inactive)
+- Filter buttons, favorite buttons, or any button that maintains a pressed/unpressed state requires
+  `aria-pressed`
 
 **Form Controls:**
 
@@ -135,7 +151,8 @@ When reviewing UI components, always verify:
 
 ## Footguns
 
-- `bun run build` runs typecheck first; strict TypeScript blocks builds on unused locals or parameters.
+- `bun run build` runs typecheck first; strict TypeScript blocks builds on unused locals or
+  parameters.
 - Route params are unvalidated. Pages must validate URL params and handle missing data gracefully.
 
 ## Before finishing

@@ -2,13 +2,14 @@
 
 Automation tools for the OpenTelemetry Ecosystem Explorer project.
 
-**Note: This directory is part of a uv workspace. All package management should be done from the repository root using
-`uv` commands.**
+**Note: This directory is part of a uv workspace. All package management should be done from the
+repository root using `uv` commands.**
 
 ## Components
 
 - **collector-watcher**: Collects and aggregates metadata from OpenTelemetry Collector components
-- **java-instrumentation-watcher**: Collects and aggregates metadata from the OpenTelemetry Java Instrumentation project
+- **java-instrumentation-watcher**: Collects and aggregates metadata from the OpenTelemetry Java
+  Instrumentation project
 - **explorer-db-builder**: Builds the database for the ecosystem explorer web application
 
 **Setup**: See [Contributing Guide](../CONTRIBUTING.md#getting-started) for project setup.
