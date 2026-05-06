@@ -21,6 +21,7 @@ interface CopyButtonProps {
   label?: string;
   copiedLabel?: string;
   className?: string;
+  onClick?: () => void;
   onCopy?: () => void;
 }
 
@@ -34,6 +35,7 @@ export function CopyButton({
   label = "Copy",
   copiedLabel = "Copied",
   className,
+  onClick,
   onCopy,
 }: CopyButtonProps) {
   const [copied, setCopied] = useState(false);
@@ -48,6 +50,7 @@ export function CopyButton({
   }, []);
 
   const handleCopy = () => {
+    onClick?.();
     if (!navigator.clipboard?.writeText) return; // Clipboard API not supported, stay silent.
     navigator.clipboard.writeText(text).then(
       () => {
