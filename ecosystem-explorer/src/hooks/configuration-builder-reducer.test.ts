@@ -337,7 +337,7 @@ describe("configurationBuilderReducer", () => {
     });
   });
 
-  describe("SET_OVERRIDE", () => {
+  describe("SET_CUSTOMIZATION", () => {
     const PATH = ["distribution", "javaagent", "instrumentation"] as const;
     const initial = { ...INITIAL_STATE, version: "1.0.0" };
 
@@ -352,12 +352,12 @@ describe("configurationBuilderReducer", () => {
 
     it("adds a module to disabled[] sorted alphabetically", () => {
       let s = configurationBuilderReducer(initial, {
-        type: "SET_OVERRIDE",
+        type: "SET_CUSTOMIZATION",
         module: "kafka_clients",
         status: "disabled",
       });
       s = configurationBuilderReducer(s, {
-        type: "SET_OVERRIDE",
+        type: "SET_CUSTOMIZATION",
         module: "cassandra",
         status: "disabled",
       });
@@ -367,12 +367,12 @@ describe("configurationBuilderReducer", () => {
 
     it("moves a module between arrays atomically (no duplicates)", () => {
       let s = configurationBuilderReducer(initial, {
-        type: "SET_OVERRIDE",
+        type: "SET_CUSTOMIZATION",
         module: "cassandra",
         status: "disabled",
       });
       s = configurationBuilderReducer(s, {
-        type: "SET_OVERRIDE",
+        type: "SET_CUSTOMIZATION",
         module: "cassandra",
         status: "enabled",
       });
@@ -382,12 +382,12 @@ describe("configurationBuilderReducer", () => {
 
     it("removes a module from both arrays when status is none", () => {
       let s = configurationBuilderReducer(initial, {
-        type: "SET_OVERRIDE",
+        type: "SET_CUSTOMIZATION",
         module: "cassandra",
         status: "disabled",
       });
       s = configurationBuilderReducer(s, {
-        type: "SET_OVERRIDE",
+        type: "SET_CUSTOMIZATION",
         module: "cassandra",
         status: "none",
       });
@@ -406,7 +406,7 @@ describe("configurationBuilderReducer", () => {
         },
       };
       const s = configurationBuilderReducer(corrupt, {
-        type: "SET_OVERRIDE",
+        type: "SET_CUSTOMIZATION",
         module: "cassandra",
         status: "disabled",
       });
@@ -416,7 +416,7 @@ describe("configurationBuilderReducer", () => {
 
     it("sets isDirty", () => {
       const s = configurationBuilderReducer(initial, {
-        type: "SET_OVERRIDE",
+        type: "SET_CUSTOMIZATION",
         module: "cassandra",
         status: "disabled",
       });

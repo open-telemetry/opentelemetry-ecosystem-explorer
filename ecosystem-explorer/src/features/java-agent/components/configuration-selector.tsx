@@ -46,10 +46,10 @@ export function ConfigurationSelector({
         </div>
 
         {/* Right: Label + Select */}
-        <div className="flex items-center gap-3">
+        <div className="flex w-full items-center gap-3 sm:w-auto">
           <label
             htmlFor="config-select"
-            className="bg-muted/50 text-foreground/70 rounded-md px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase"
+            className="bg-muted/50 text-foreground/70 shrink-0 rounded-md px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase"
           >
             Configuration
           </label>
@@ -57,7 +57,7 @@ export function ConfigurationSelector({
             id="config-select"
             value={selectedWhen}
             onChange={(e) => onWhenChange(e.target.value)}
-            className="border-primary/20 bg-primary/5 text-foreground hover:border-primary/40 hover:bg-primary/10 focus:ring-primary/50 focus:border-primary/50 min-w-[200px] cursor-pointer rounded-lg border-2 px-4 py-2.5 text-sm font-medium shadow-sm transition-all duration-200 hover:shadow-md focus:ring-2 focus:outline-none"
+            className="border-primary/20 bg-primary/5 text-foreground hover:border-primary/40 hover:bg-primary/10 focus:ring-primary/50 focus:border-primary/50 min-w-0 flex-1 cursor-pointer rounded-lg border-2 px-4 py-2.5 text-sm font-medium shadow-sm transition-all duration-200 hover:shadow-md focus:ring-2 focus:outline-none sm:min-w-[200px] sm:flex-none"
           >
             {telemetry.map((t) => (
               <option key={t.when} value={t.when}>

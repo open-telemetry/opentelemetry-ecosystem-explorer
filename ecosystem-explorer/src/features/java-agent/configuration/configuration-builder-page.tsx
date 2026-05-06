@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useEffect, useMemo, useRef, useState, type JSX } from "react";
-import { ChevronDown, ChevronRight } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { BackButton } from "@/components/ui/back-button";
 import { PageContainer } from "@/components/layout/page-container";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
@@ -31,7 +30,7 @@ import {
   useInstrumentations,
 } from "@/hooks/use-javaagent-data";
 import { groupByModule } from "@/lib/normalize-instrumentation";
-import { useOverriddenModules } from "@/hooks/use-overridden-modules";
+import { useCustomizedModules } from "@/hooks/use-customized-modules";
 import type { GroupNode } from "@/types/configuration";
 import { hasMeaningfulLeaf } from "@/lib/state-hydrate";
 import { SchemaRenderer } from "./components/schema-renderer";
@@ -47,7 +46,6 @@ import {
   GENERAL_SECTION_LABEL,
 } from "./components/general-section-card";
 import { InstrumentationBrowser } from "./components/instrumentation-browser";
-import { SectionCardShell } from "./components/section-card-shell";
 import { useActiveSection } from "./hooks/use-active-section";
 
 // Per-tab hidden-keys: SDK hides the entire `instrumentation/development`
@@ -111,7 +109,9 @@ function SdkTabContent({ schema, starter, version, activeTab }: SdkTabContentPro
           onSectionClick={scrollToSection}
         />
         <div ref={sectionsContainerRef} className="space-y-4">
-          {hasGeneralLeaves && <GeneralSectionCard leafChildren={leafChildren} />}
+          {hasGeneralLeaves && (
+            <GeneralSectionCard label={GENERAL_SECTION_LABEL} children={leafChildren} />
+          )}
           {groupChildren.map((child) => (
             <SchemaRenderer key={child.key} node={child} depth={0} path={child.key} />
           ))}
@@ -191,15 +191,15 @@ function InstrumentationTabBody({ activeTab, schema, generalNode }: Instrumentat
     () => (instrumentationsState.data ? groupByModule(instrumentationsState.data) : []),
     [instrumentationsState.data]
   );
-  const overriddenSet = useOverriddenModules(modules);
-  const overrideCount = overriddenSet.size;
+  const customizedSet = useCustomizedModules(modules);
+  const customizationCount = customizedSet.size;
 
   const devSection = state.values[INSTRUMENTATION_DEV_KEY];
   const hasDevContent = useMemo(() => hasMeaningfulLeaf(devSection), [devSection]);
   const isDevEnabled = state.enabledSections[INSTRUMENTATION_DEV_KEY] === true;
   useEffect(() => {
-    if (hasDevContent !== isDevEnabled) {
-      setEnabled(INSTRUMENTATION_DEV_KEY, hasDevContent);
+    if (hasDevContent && !isDevEnabled) {
+      setEnabled(INSTRUMENTATION_DEV_KEY, true);
     }
   }, [hasDevContent, isDevEnabled, setEnabled]);
 
@@ -210,8 +210,8 @@ function InstrumentationTabBody({ activeTab, schema, generalNode }: Instrumentat
   );
   const isDistributionEnabled = state.enabledSections["distribution"] === true;
   useEffect(() => {
-    if (hasDistributionContent !== isDistributionEnabled) {
-      setEnabled("distribution", hasDistributionContent);
+    if (hasDistributionContent && !isDistributionEnabled) {
+      setEnabled("distribution", true);
     }
   }, [hasDistributionContent, isDistributionEnabled, setEnabled]);
 
@@ -226,10 +226,17 @@ function InstrumentationTabBody({ activeTab, schema, generalNode }: Instrumentat
         onSearchChange={setSearch}
         statusFilter={statusFilter}
         onStatusFilterChange={setStatusFilter}
-        overrideCount={overrideCount}
+        customizationCount={customizationCount}
       />
       <div ref={sectionsContainerRef} className="space-y-4">
-        <InstrumentationGeneralCard generalNode={generalNode} />
+        <GeneralSectionCard
+          label={GENERAL_SETTINGS_LABEL}
+          sectionKey={GENERAL_SECTION_KEY}
+          children={generalNode?.children ?? []}
+          pathPrefix={`${INSTRUMENTATION_DEV_KEY}.${GENERAL_SUBKEY}`}
+          defaultExpanded={true}
+          emptyMessage="The schema for this version does not expose general instrumentation settings."
+        />
         <InstrumentationBrowser
           instrumentations={instrumentationsState.data}
           loading={instrumentationsState.loading}
@@ -241,58 +248,6 @@ function InstrumentationTabBody({ activeTab, schema, generalNode }: Instrumentat
       </div>
       <PreviewCard schema={schema} />
     </div>
-  );
-}
-
-interface InstrumentationGeneralCardProps {
-  generalNode: GroupNode | null;
-}
-
-// Renders the `instrumentation/development.general.*` subtree as a card
-// without the depth=0 SwitchPill that GroupRenderer would otherwise add.
-// The SwitchPill is wrong here because its enable key is the GroupNode's
-// own `key` (`general`), not the top-level YAML section
-// `instrumentation/development` — see InstrumentationTabBody's effect for
-// the section-flag mirroring.
-function InstrumentationGeneralCard({ generalNode }: InstrumentationGeneralCardProps): JSX.Element {
-  const [expanded, setExpanded] = useState(true);
-  return (
-    <SectionCardShell sectionKey={GENERAL_SECTION_KEY}>
-      <header className="flex items-center gap-2">
-        <button
-          type="button"
-          aria-expanded={expanded}
-          aria-label={
-            expanded ? `Collapse ${GENERAL_SETTINGS_LABEL}` : `Expand ${GENERAL_SETTINGS_LABEL}`
-          }
-          onClick={() => setExpanded((e) => !e)}
-          className="text-muted-foreground hover:text-foreground"
-        >
-          {expanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-        </button>
-        <h3 className="text-foreground truncate text-base font-semibold">
-          {GENERAL_SETTINGS_LABEL}
-        </h3>
-      </header>
-      {expanded ? (
-        generalNode ? (
-          <div className="space-y-3">
-            {generalNode.children.map((child) => (
-              <SchemaRenderer
-                key={child.key}
-                node={child}
-                depth={1}
-                path={`${INSTRUMENTATION_DEV_KEY}.${GENERAL_SUBKEY}.${child.key}`}
-              />
-            ))}
-          </div>
-        ) : (
-          <p className="text-muted-foreground text-sm">
-            The schema for this version does not expose general instrumentation settings.
-          </p>
-        )
-      ) : null}
-    </SectionCardShell>
   );
 }
 

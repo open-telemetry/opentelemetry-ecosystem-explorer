@@ -171,7 +171,7 @@ export function configurationBuilderReducer(
       return { ...state, values: newValues, enabledSections: newEnabled, isDirty: true };
     }
 
-    case "SET_OVERRIDE": {
+    case "SET_CUSTOMIZATION": {
       const path = ["distribution", "javaagent", "instrumentation"];
       const current = getByPath(state.values, path);
       const inst = isPlainObject(current) ? current : {};

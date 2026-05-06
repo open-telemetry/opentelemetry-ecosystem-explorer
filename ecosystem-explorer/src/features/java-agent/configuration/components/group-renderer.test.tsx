@@ -16,7 +16,8 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { GroupRenderer } from "./group-renderer";
-import type { GroupNode } from "@/types/configuration";
+import { StarterPathsContext } from "./configuration-ui-context";
+import type { ConfigNode, GroupNode } from "@/types/configuration";
 
 const mockState: {
   values: Record<string, unknown>;
@@ -208,5 +209,50 @@ describe("GroupRenderer", () => {
     render(<GroupRenderer node={node} depth={1} path="tracer.processors[0].batch" />);
     const allMatches = screen.getAllByText("Batch span processor.");
     expect(allMatches).toHaveLength(1);
+  });
+
+  it("at depth 1, non-headless body uses left indent (no nested box)", () => {
+    const nodeWithChild: GroupNode = {
+      ...groupNode,
+      children: [
+        {
+          controlType: "text_input",
+          key: "endpoint",
+          label: "Endpoint",
+          path: "resource.endpoint",
+        } as unknown as ConfigNode,
+      ],
+    };
+    const { container } = render(<GroupRenderer node={nodeWithChild} depth={1} path="resource" />);
+    fireEvent.click(screen.getByRole("button", { name: /Expand Resource/ }));
+    const indented = container.querySelectorAll<HTMLElement>(".pl-3");
+    expect(indented.length).toBeGreaterThan(0);
+  });
+
+  it("at depth 1, headless body has no extra indent (parent already provides container)", () => {
+    const nodeWithChild: GroupNode = {
+      ...groupNode,
+      children: [
+        {
+          controlType: "text_input",
+          key: "endpoint",
+          label: "Endpoint",
+          path: "resource.endpoint",
+        } as unknown as ConfigNode,
+      ],
+    };
+    const { container } = render(
+      <GroupRenderer node={nodeWithChild} depth={1} path="resource" headless />
+    );
+    expect(container.querySelectorAll<HTMLElement>(".pl-3")).toHaveLength(0);
+  });
+
+  it("at depth >= 1 starts expanded when its path is in StarterPathsContext", () => {
+    render(
+      <StarterPathsContext.Provider value={new Set(["resource"])}>
+        <GroupRenderer node={groupNode} depth={1} path="resource" />
+      </StarterPathsContext.Provider>
+    );
+    expect(screen.getByRole("button", { name: /Collapse Resource/ })).toBeInTheDocument();
   });
 });

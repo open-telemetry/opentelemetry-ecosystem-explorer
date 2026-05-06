@@ -96,7 +96,7 @@ describe("groupInstrumentationsByDisplayName", () => {
     expect(groups.map((g) => g.displayName)).toEqual(["Akka Actors", "JDBC", "Zookeeper"]);
   });
 
-  it("sorts instrumentations within a group alphabetically by name", () => {
+  it("sorts instrumentations within a group by numeric version order", () => {
     const instrumentations: InstrumentationData[] = [
       makeInstr({ name: "mongo-4.0", display_name: "MongoDB Driver" }),
       makeInstr({ name: "mongo-3.1", display_name: "MongoDB Driver" }),
@@ -109,6 +109,22 @@ describe("groupInstrumentationsByDisplayName", () => {
       "mongo-3.1",
       "mongo-3.7",
       "mongo-4.0",
+    ]);
+  });
+
+  it("sorts multi-digit version suffixes in numeric not lexicographic order", () => {
+    const instrumentations: InstrumentationData[] = [
+      makeInstr({ name: "jetty-12.0", display_name: "Eclipse Jetty" }),
+      makeInstr({ name: "jetty-8.0", display_name: "Eclipse Jetty" }),
+      makeInstr({ name: "jetty-11.0", display_name: "Eclipse Jetty" }),
+    ];
+
+    const groups = groupInstrumentationsByDisplayName(instrumentations);
+
+    expect(groups[0].instrumentations.map((i) => i.name)).toEqual([
+      "jetty-8.0",
+      "jetty-11.0",
+      "jetty-12.0",
     ]);
   });
 

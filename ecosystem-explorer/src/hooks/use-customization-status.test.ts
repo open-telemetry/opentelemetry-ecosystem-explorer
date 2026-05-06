@@ -16,7 +16,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook } from "@testing-library/react";
 import { useConfigurationBuilder } from "./use-configuration-builder";
-import { useOverrideStatus, useOverrideStatusMap } from "./use-override-status";
+import { useCustomizationStatus, useCustomizationStatusMap } from "./use-customization-status";
 
 vi.mock("./use-configuration-builder");
 
@@ -47,18 +47,18 @@ function fakeBuilderState(
   } as unknown as ReturnType<typeof useConfigurationBuilder>;
 }
 
-describe("useOverrideStatusMap", () => {
+describe("useCustomizationStatusMap", () => {
   beforeEach(() => mocked.mockReset());
 
-  it("returns an empty map when there are no overrides", () => {
+  it("returns an empty map when there are no customizations", () => {
     mocked.mockReturnValue(fakeBuilderState());
-    const { result } = renderHook(() => useOverrideStatusMap());
+    const { result } = renderHook(() => useCustomizationStatusMap());
     expect(result.current.size).toBe(0);
   });
 
   it("maps each module name to its status", () => {
     mocked.mockReturnValue(fakeBuilderState(["jmx_metrics"], ["cassandra", "kafka_clients"]));
-    const { result } = renderHook(() => useOverrideStatusMap());
+    const { result } = renderHook(() => useCustomizationStatusMap());
     expect(result.current.get("cassandra")).toBe("disabled");
     expect(result.current.get("jmx_metrics")).toBe("enabled");
     expect(result.current.get("kafka_clients")).toBe("disabled");
@@ -66,29 +66,29 @@ describe("useOverrideStatusMap", () => {
   });
 });
 
-describe("useOverrideStatus", () => {
+describe("useCustomizationStatus", () => {
   beforeEach(() => mocked.mockReset());
 
   it("returns 'none' for an unknown module", () => {
     mocked.mockReturnValue(fakeBuilderState());
-    const { result } = renderHook(() => useOverrideStatus("cassandra"));
+    const { result } = renderHook(() => useCustomizationStatus("cassandra"));
     expect(result.current).toBe("none");
   });
 
   it("returns 'enabled' / 'disabled' as appropriate", () => {
     mocked.mockReturnValue(fakeBuilderState(["jmx_metrics"], ["cassandra"]));
-    expect(renderHook(() => useOverrideStatus("cassandra")).result.current).toBe("disabled");
-    expect(renderHook(() => useOverrideStatus("jmx_metrics")).result.current).toBe("enabled");
-    expect(renderHook(() => useOverrideStatus("foo")).result.current).toBe("none");
+    expect(renderHook(() => useCustomizationStatus("cassandra")).result.current).toBe("disabled");
+    expect(renderHook(() => useCustomizationStatus("jmx_metrics")).result.current).toBe("enabled");
+    expect(renderHook(() => useCustomizationStatus("foo")).result.current).toBe("none");
   });
 });
 
-describe("useOverrideStatusMap memoization", () => {
+describe("useCustomizationStatusMap memoization", () => {
   beforeEach(() => mocked.mockReset());
 
   it("returns the same Map reference across re-renders when state.values is unchanged", () => {
     mocked.mockReturnValue(fakeBuilderState(["jmx_metrics"], ["cassandra"]));
-    const { result, rerender } = renderHook(() => useOverrideStatusMap());
+    const { result, rerender } = renderHook(() => useCustomizationStatusMap());
     const first = result.current;
     rerender();
     expect(result.current).toBe(first);
