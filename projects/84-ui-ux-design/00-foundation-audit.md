@@ -4,7 +4,7 @@ issue: 84
 type: audit
 phase: 1
 status: planning
-last_updated: "2026-05-08"
+last_updated: "2026-05-06"
 ---
 
 > [!NOTE]
@@ -103,7 +103,7 @@ src/
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | **Color drift between `index.css` and `themes.ts`.** `index.css` `@layer theme` has cyan values (`--primary-hsl: 185 85% 70%`) but `themes.ts` defines orange (`38 95% 52%`). `ThemeProvider` overwrites the CSS values on mount, but there's a flash of wrong-color-theme on first paint. | `src/index.css` lines 13–30 vs `src/themes.ts` lines 50–67    | Needs reconciling as part of theme work. The CSS defaults should match the default theme so first paint is correct.                       |
 | **Single theme.** `ThemeId = "dark-blue"` only — no light, no dark, no auto.                                                                                                                                                                                                               | `src/themes.ts:17`                                            | Foundation task #1 must extend this. Light + dark + auto with `prefers-color-scheme`.                                                     |
-| **`data-theme` attribute, not `data-bs-theme`.**                                                                                                                                                                                                                                           | `src/theme-context.tsx:53`                                    | Keeping `data-theme` (decided 2026-05-08, see Q1). The codebase isn't on Bootstrap, so `data-bs-theme` would be misleading.               |
+| **`data-theme` attribute, not `data-bs-theme`.**                                                                                                                                                                                                                                           | `src/theme-context.tsx:53`                                    | Keeping `data-theme` (decided 2026-05-06, see Q1). The codebase isn't on Bootstrap, so `data-bs-theme` would be misleading.               |
 | **`StabilityBadge` only handles `"development"`.** Returns `null` for everything else.                                                                                                                                                                                                     | `src/components/ui/stability-badge.tsx:27`                    | Foundation task #7 needs to extend this OR introduce a separate `<StatusPill>` and migrate `StabilityBadge` callers over time.            |
 | **`GlowBadge` missing `error/danger` variant.** Has primary/success/info/warning/muted.                                                                                                                                                                                                    | `src/components/ui/glow-badge.tsx:18`                         | One-line addition.                                                                                                                        |
 | **Header has only Java Agent + Collector links.**                                                                                                                                                                                                                                          | `src/components/layout/header.tsx:27–40`                      | The new navbar replaces this entirely. The current Header keeps shipping behind the flag.                                                 |
@@ -371,7 +371,7 @@ These were carried over from `00-foundation.md`.
    `data-bs-theme` (full alignment, requires updating `theme-context.tsx` and any CSS that reads
    it)?
    - **Why this matters now:** the theme task is the first PR. Choose before opening it.
-   - **Decision (2026-05-08):** Keep `data-theme`. opentelemetry.io uses `data-bs-theme` because
+   - **Decision (2026-05-06):** Keep `data-theme`. opentelemetry.io uses `data-bs-theme` because
      Hugo Docsy is Bootstrap-based; the explorer is on Tailwind v4 with no Bootstrap, so
      `data-bs-theme` would be misleading. Visual alignment with opentelemetry.io is driven by
      colors, layout, and component patterns — not the HTML attribute name. Smaller PR diff, more
@@ -380,7 +380,7 @@ These were carried over from `00-foundation.md`.
 2. **Logo source.** Local `OtelLogo` SVG already exists at `src/components/icons/otel-logo.tsx`.
    Stick with it (recommended), or fetch the canonical SVG from `opentelemetry.io/img/logos/`?
    - **Why this matters now:** affects the NavBar PR.
-   - **Decision (2026-05-08):** Stick with the current local `OtelLogo` component. Self-contained,
+   - **Decision (2026-05-06):** Stick with the current local `OtelLogo` component. Self-contained,
      no extra fetch dependency, already used elsewhere in the codebase. If the upstream SVG changes
      meaningfully later, we can revisit.
 
@@ -392,7 +392,7 @@ These were carried over from `00-foundation.md`.
    - **(b)** Add Font Awesome (~75kb minified) for footer parity.
    - **(c)** Inline SVGs for the missing brand marks; keep Lucide for everything else.
    - Recommended: **(c)** — minimal weight, full control.
-   - **Decision (2026-05-08):** Option (c). Inline SVGs for the brand marks Lucide doesn't ship
+   - **Decision (2026-05-06):** Option (c). Inline SVGs for the brand marks Lucide doesn't ship
      (Bluesky, Mastodon, Stack Overflow); use Lucide for everything else. Avoids adding ~75kb of
      Font Awesome for a handful of footer icons; keeps the bundle lean. Inline SVGs live alongside
      existing icon components under `src/components/icons/`.
@@ -408,7 +408,7 @@ These were carried over from `00-foundation.md`.
      Building `<StatusPill>` in PR 4 without touching `StabilityBadge` keeps PR 4 small and focused,
      and decouples the configuration-builder visual from the foundation work. Migration becomes a
      follow-up cleanup PR after Phase 1 lands.
-   - **Decision (2026-05-08):** Adopt the recommendation above. Add `<StatusPill>` in PR 4 as a new
+   - **Decision (2026-05-06):** Adopt the recommendation above. Add `<StatusPill>` in PR 4 as a new
      primitive; leave `<StabilityBadge>` callers unchanged for now. Migrate the configuration
      builder to `<StatusPill stability="development" />` in a follow-up PR after Phase 1 cleanup.
 
@@ -416,7 +416,7 @@ These were carried over from `00-foundation.md`.
    Visually we map to four colors (success/info/warning/danger). The `development` ↔ `alpha` overlap
    and `unmaintained` ↔ `deprecated` synonym need locking before pill colors ship.
    - **Maintainer call** — needs alignment with `ecosystem-registry` maintainers.
-   - **Decision (2026-05-08):** Adopt the
+   - **Decision (2026-05-06):** Adopt the
      [OpenTelemetry Collector stability spec](https://github.com/open-telemetry/opentelemetry-collector/blob/main/docs/component-stability.md)
      verbatim. **Six** stability levels — Development, Alpha, Beta, Stable, Deprecated, Unmaintained
      — with this color mapping:

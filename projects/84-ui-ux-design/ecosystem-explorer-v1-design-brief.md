@@ -4,7 +4,7 @@ issue: 84
 type: brief
 phase: meta
 status: complete
-last_updated: "2026-05-08"
+last_updated: "2026-05-06"
 ---
 
 ## v1 design proposal — Ecosystem Explorer
@@ -54,7 +54,7 @@ you put the two side by side, the gap is obvious:
 | Hero              | `td-cover-block` with bg image + dark overlay + centered content + `btn-lg btn-primary/btn-secondary`    | Generic gradient             | **Use cover-block**                                                                                                                                           |
 | CNCF callout      | On every page (`td-box--secondary`)                                                                      | Missing                      | **Add to every page**                                                                                                                                         |
 | Component pattern | Bootstrap `.card` with `border-success` etc. + `text-bg-*` badges                                        | Custom                       | **Adopt** + extend with type stripe                                                                                                                           |
-| Theme tokens      | `data-bs-theme` attribute                                                                                | Tailwind v4 only             | **Keep existing `data-theme` attribute, extend to light/dark/auto** (decided 2026-05-08; explorer isn't on Bootstrap, so `data-bs-theme` would be misleading) |
+| Theme tokens      | `data-bs-theme` attribute                                                                                | Tailwind v4 only             | **Keep existing `data-theme` attribute, extend to light/dark/auto** (decided 2026-05-06; explorer isn't on Bootstrap, so `data-bs-theme` would be misleading) |
 
 This is visible in the mockup. `DESIGN.md` will be updated to reflect the as-built state in the
 Phase 1 cleanup PR (PR 8), once the foundation lands.

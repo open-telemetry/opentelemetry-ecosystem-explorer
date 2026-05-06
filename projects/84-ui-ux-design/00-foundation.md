@@ -4,7 +4,7 @@ issue: 84
 type: plan
 phase: 1
 status: planning
-last_updated: "2026-05-08"
+last_updated: "2026-05-06"
 ---
 
 > [!NOTE]
