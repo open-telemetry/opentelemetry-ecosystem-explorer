@@ -110,6 +110,28 @@ describe("groupByModule", () => {
       "cassandra-4.4",
     ]);
   });
+
+  it("sorts entries by semantic version order, placing double-digit versions after single-digit ones", () => {
+    const entries = [
+      makeEntry({ name: "jetty-httpclient-12.0" }),
+      makeEntry({ name: "jetty-httpclient-9.2" }),
+      makeEntry({ name: "jetty-8.0" }),
+      makeEntry({ name: "jetty-11.0" }),
+      makeEntry({ name: "jetty-12.0" }),
+    ];
+    const modules = groupByModule(entries);
+    const httpclient = modules.find((m) => m.name === "jetty_httpclient")!;
+    expect(httpclient.coveredEntries.map((e) => e.name)).toEqual([
+      "jetty-httpclient-9.2",
+      "jetty-httpclient-12.0",
+    ]);
+    const jetty = modules.find((m) => m.name === "jetty")!;
+    expect(jetty.coveredEntries.map((e) => e.name)).toEqual([
+      "jetty-8.0",
+      "jetty-11.0",
+      "jetty-12.0",
+    ]);
+  });
 });
 
 describe("snapshot: full registry", () => {
