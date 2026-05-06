@@ -1,0 +1,59 @@
+/*
+ * Design token — CSS custom properties.
+ *
+ * Brand hues are canonical from opentelemetry.io's _vars.scss:
+ *   $primary   = blue  hsl(228, 37%, 49%)
+ *   $secondary = orange hsl(41, 100%, 48%)
+ *
+ * Surface tokens differ per theme; syntax tokens reuse the dark palette in
+ * light mode for now (revisit when a light-mode syntax consumer lands).
+ */
+
+@layer theme {
+  :root,
+  [data-theme="dark"] {
+    /* Brand */
+    --primary-hsl: 228 37% 49%; /* OTel blue   — structural / navbar / buttons */
+    --secondary-hsl: 41 100% 48%; /* OTel orange — accents / hover / CTAs */
+
+    /* Surfaces — navy palette */
+    --background-hsl: 232 38% 15%;
+    --foreground-hsl: 210 17% 98%;
+    --card-hsl: 232 35% 19%;
+    --card-secondary-hsl: 232 32% 23%;
+    --muted-hsl: 232 28% 22%;
+    --muted-foreground-hsl: 220 14% 65%;
+    --border-hsl: 232 22% 28%;
+
+    /* Syntax */
+    --syntax-comment-hsl: 220 18% 58%;
+    --syntax-key-hsl: 28 95% 65%;
+    --syntax-string-hsl: 95 60% 65%;
+    --syntax-number-hsl: 330 80% 72%;
+    --syntax-keyword-hsl: 265 70% 78%;
+    --syntax-punct-hsl: 220 22% 55%;
+  }
+
+  [data-theme="light"] {
+    /* Brand — identical across themes */
+    --primary-hsl: 228 37% 49%;
+    --secondary-hsl: 41 100% 48%;
+
+    /* Surfaces — light palette */
+    --background-hsl: 0 0% 100%;
+    --foreground-hsl: 220 13% 15%;
+    --card-hsl: 210 17% 98%;
+    --card-secondary-hsl: 210 14% 95%;
+    --muted-hsl: 210 14% 92%;
+    --muted-foreground-hsl: 220 9% 40%;
+    --border-hsl: 210 14% 88%;
+
+    /* Syntax — reuse dark values until a light-mode consumer needs distinct tokens */
+    --syntax-comment-hsl: 220 18% 58%;
+    --syntax-key-hsl: 28 95% 65%;
+    --syntax-string-hsl: 95 60% 65%;
+    --syntax-number-hsl: 330 80% 72%;
+    --syntax-keyword-hsl: 265 70% 78%;
+    --syntax-punct-hsl: 220 22% 55%;
+  }
+}
