@@ -60,15 +60,15 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                 currentTelemetry.metrics.map((metric) => (
                   <div
                     key={metric.name}
-                    className="border-border/30 bg-card/30 rounded-2xl border p-6 md:p-10"
+                    className="border-border/30 bg-card/30 rounded-2xl border p-4 sm:p-6 md:p-10"
                   >
                     <div className="space-y-6">
                       {/* Metric name and type badge */}
-                      <div className="flex items-start justify-between gap-4">
-                        <code className="text-foreground flex-1 font-mono text-lg font-semibold break-all">
+                      <div className="flex flex-wrap items-start gap-x-4 gap-y-2">
+                        <code className="text-foreground min-w-0 flex-1 font-mono text-base font-semibold break-all sm:text-lg">
                           {metric.name}
                         </code>
-                        <GlowBadge variant="success" withGlow className="text-[10px]">
+                        <GlowBadge variant="success" withGlow className="flex-shrink-0 text-[10px]">
                           {metric.instrument}
                         </GlowBadge>
                       </div>
@@ -113,15 +113,15 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                 currentTelemetry.spans.map((span, index) => (
                   <div
                     key={`${span.span_kind}-${index}`}
-                    className="border-border/30 bg-card/30 rounded-2xl border p-6 md:p-10"
+                    className="border-border/30 bg-card/30 rounded-2xl border p-4 sm:p-6 md:p-10"
                   >
                     <div className="space-y-6">
                       {/* Span kind badge */}
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-foreground text-lg font-bold md:text-xl">
+                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                        <h3 className="text-foreground flex-1 text-base font-bold sm:text-lg md:text-xl">
                           {span.span_kind} Span
                         </h3>
-                        <GlowBadge variant="info" withGlow className="text-xs">
+                        <GlowBadge variant="info" withGlow className="flex-shrink-0 text-xs">
                           {span.span_kind}
                         </GlowBadge>
                       </div>

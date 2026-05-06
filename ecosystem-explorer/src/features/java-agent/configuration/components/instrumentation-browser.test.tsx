@@ -18,18 +18,18 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { InstrumentationData } from "@/types/javaagent";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
-import { useOverrideStatusMap } from "@/hooks/use-override-status";
-import { useOverriddenModules } from "@/hooks/use-overridden-modules";
+import { useCustomizationStatusMap } from "@/hooks/use-customization-status";
+import { useCustomizedModules } from "@/hooks/use-customized-modules";
 import { InstrumentationBrowser } from "./instrumentation-browser";
 
 vi.mock("@/hooks/use-configuration-builder");
-vi.mock("@/hooks/use-override-status");
-vi.mock("@/hooks/use-overridden-modules", () => ({
-  useOverriddenModules: vi.fn(() => new Set<string>()),
+vi.mock("@/hooks/use-customization-status");
+vi.mock("@/hooks/use-customized-modules", () => ({
+  useCustomizedModules: vi.fn(() => new Set<string>()),
 }));
 
 const mockedBuilder = vi.mocked(useConfigurationBuilder);
-const mockedOverride = vi.mocked(useOverrideStatusMap);
+const mockedCustomization = vi.mocked(useCustomizationStatusMap);
 
 function entry(name: string, opts: Partial<InstrumentationData> = {}): InstrumentationData {
   return {
@@ -48,7 +48,7 @@ const FIXTURE: InstrumentationData[] = [
   entry("jmx-metrics", { disabled_by_default: true }),
 ];
 
-const setOverride = vi.fn();
+const setCustomization = vi.fn();
 
 const browserDefaults = {
   loading: false,
@@ -57,7 +57,7 @@ const browserDefaults = {
 } as const;
 
 beforeEach(() => {
-  setOverride.mockReset();
+  setCustomization.mockReset();
   mockedBuilder.mockReturnValue({
     state: {
       values: {},
@@ -67,10 +67,10 @@ beforeEach(() => {
       version: "2.27.0",
       listItemIds: {},
     },
-    setOverride,
+    setCustomization,
   } as unknown as ReturnType<typeof useConfigurationBuilder>);
-  mockedOverride.mockReturnValue(new Map());
-  vi.mocked(useOverriddenModules).mockReturnValue(new Set<string>());
+  mockedCustomization.mockReturnValue(new Map());
+  vi.mocked(useCustomizedModules).mockReturnValue(new Set<string>());
 });
 
 describe("InstrumentationBrowser", () => {
@@ -141,13 +141,13 @@ describe("InstrumentationBrowser", () => {
     expect(screen.getByText("cassandra")).toBeInTheDocument();
   });
 
-  it("filters to overridden when statusFilter='overridden'", () => {
-    vi.mocked(useOverriddenModules).mockReturnValue(new Set(["cassandra"]));
+  it("filters to customized when statusFilter='customized'", () => {
+    vi.mocked(useCustomizedModules).mockReturnValue(new Set(["cassandra"]));
     render(
       <InstrumentationBrowser
         instrumentations={FIXTURE}
         search=""
-        statusFilter="overridden"
+        statusFilter="customized"
         {...browserDefaults}
       />
     );
@@ -155,7 +155,7 @@ describe("InstrumentationBrowser", () => {
     expect(screen.queryByText("kafka_clients")).not.toBeInTheDocument();
   });
 
-  it("calls setOverride('cassandra', 'disabled') when + Override is clicked on a default-enabled module", () => {
+  it("calls setCustomization('cassandra', 'disabled') when + Customize is clicked on a default-enabled module", () => {
     render(
       <InstrumentationBrowser
         instrumentations={FIXTURE}
@@ -164,11 +164,11 @@ describe("InstrumentationBrowser", () => {
         {...browserDefaults}
       />
     );
-    fireEvent.click(screen.getByLabelText("Override cassandra"));
-    expect(setOverride).toHaveBeenCalledWith("cassandra", "disabled");
+    fireEvent.click(screen.getByLabelText("Customize cassandra"));
+    expect(setCustomization).toHaveBeenCalledWith("cassandra", "disabled");
   });
 
-  it("calls setOverride('jmx_metrics', 'enabled') when + Override is clicked on a default-disabled module", () => {
+  it("calls setCustomization('jmx_metrics', 'enabled') when + Customize is clicked on a default-disabled module", () => {
     render(
       <InstrumentationBrowser
         instrumentations={FIXTURE}
@@ -177,12 +177,12 @@ describe("InstrumentationBrowser", () => {
         {...browserDefaults}
       />
     );
-    fireEvent.click(screen.getByLabelText("Override jmx_metrics"));
-    expect(setOverride).toHaveBeenCalledWith("jmx_metrics", "enabled");
+    fireEvent.click(screen.getByLabelText("Customize jmx_metrics"));
+    expect(setCustomization).toHaveBeenCalledWith("jmx_metrics", "enabled");
   });
 
-  it("calls setOverride(name, 'none') when ✕ is clicked on an overridden row", () => {
-    mockedOverride.mockReturnValue(new Map([["cassandra", "disabled"]]));
+  it("calls setCustomization(name, 'none') when ✕ is clicked on an customized row", () => {
+    mockedCustomization.mockReturnValue(new Map([["cassandra", "disabled"]]));
     render(
       <InstrumentationBrowser
         instrumentations={FIXTURE}
@@ -191,12 +191,12 @@ describe("InstrumentationBrowser", () => {
         {...browserDefaults}
       />
     );
-    fireEvent.click(screen.getByLabelText("Remove override for cassandra"));
-    expect(setOverride).toHaveBeenCalledWith("cassandra", "none");
+    fireEvent.click(screen.getByLabelText("Remove customization for cassandra"));
+    expect(setCustomization).toHaveBeenCalledWith("cassandra", "none");
   });
 
-  it("calls setOverride('cassandra', 'enabled') when toggling overridden Disabled→Enabled", () => {
-    mockedOverride.mockReturnValue(new Map([["cassandra", "disabled"]]));
+  it("calls setCustomization('cassandra', 'enabled') when toggling customized Disabled→Enabled", () => {
+    mockedCustomization.mockReturnValue(new Map([["cassandra", "disabled"]]));
     render(
       <InstrumentationBrowser
         instrumentations={FIXTURE}
@@ -206,7 +206,7 @@ describe("InstrumentationBrowser", () => {
       />
     );
     fireEvent.click(screen.getAllByRole("button", { name: "Enabled" })[0]);
-    expect(setOverride).toHaveBeenCalledWith("cassandra", "enabled");
+    expect(setCustomization).toHaveBeenCalledWith("cassandra", "enabled");
   });
 
   it("renders empty state for unmatched search", () => {
@@ -250,9 +250,9 @@ describe("InstrumentationBrowser", () => {
   });
 });
 
-describe("InstrumentationBrowser — expansion and override filter", () => {
+describe("InstrumentationBrowser — expansion and customization filter", () => {
   beforeEach(() => {
-    vi.mocked(useOverriddenModules).mockReturnValue(new Set<string>());
+    vi.mocked(useCustomizedModules).mockReturnValue(new Set<string>());
   });
 
   const cassandraData = [
@@ -311,13 +311,13 @@ describe("InstrumentationBrowser — expansion and override filter", () => {
     expect(graphql.getAttribute("data-expanded")).toBe("true");
   });
 
-  it("uses useOverriddenModules to filter when statusFilter is 'overridden'", () => {
-    vi.mocked(useOverriddenModules).mockReturnValue(new Set(["cassandra"]));
+  it("uses useCustomizedModules to filter when statusFilter is 'customized'", () => {
+    vi.mocked(useCustomizedModules).mockReturnValue(new Set(["cassandra"]));
     render(
       <InstrumentationBrowser
         instrumentations={twoModules}
         search=""
-        statusFilter="overridden"
+        statusFilter="customized"
         {...browserDefaults}
       />
     );
@@ -325,8 +325,8 @@ describe("InstrumentationBrowser — expansion and override filter", () => {
     expect(screen.queryByTestId("instrumentation-row-graphql_java")).toBeNull();
   });
 
-  it("renders the override count in the header from useOverriddenModules", () => {
-    vi.mocked(useOverriddenModules).mockReturnValue(new Set(["cassandra"]));
+  it("renders the customization count in the header from useCustomizedModules", () => {
+    vi.mocked(useCustomizedModules).mockReturnValue(new Set(["cassandra"]));
     render(
       <InstrumentationBrowser
         instrumentations={[twoModules[0]]}
@@ -335,6 +335,6 @@ describe("InstrumentationBrowser — expansion and override filter", () => {
         {...browserDefaults}
       />
     );
-    expect(screen.getByText(/1 overridden/i)).toBeInTheDocument();
+    expect(screen.getByText(/1 customized/i)).toBeInTheDocument();
   });
 });

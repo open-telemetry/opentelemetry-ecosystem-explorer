@@ -26,6 +26,9 @@ const FEATURE_FLAGS = [
 
   // Java Agent Release Comparison - Still in development
   "JAVA_RELEASE_COMPARISON",
+
+  // V1 Redesign - Still in development - https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/84
+  "V1_REDESIGN",
 ] as const;
 
 const FEATURE_FLAG_PREFIX = "VITE_FEATURE_FLAG_";

@@ -21,6 +21,7 @@ import { SchemaRenderer } from "./schema-renderer";
 import { parsePath, getByPath } from "@/lib/config-path";
 import { deriveListItemLabel } from "@/lib/derive-list-item-label";
 import { FieldSection } from "./field-section";
+import { ListItemContext, useStarterPaths } from "./configuration-ui-context";
 
 export interface ListRendererProps {
   node: ListNode;
@@ -30,6 +31,7 @@ export interface ListRendererProps {
 
 export function ListRenderer({ node, depth, path }: ListRendererProps): JSX.Element {
   const { state, addListItem, removeListItem } = useConfigurationBuilder();
+  const starterPaths = useStarterPaths();
   const raw = getByPath(state.values, parsePath(path));
   const items = Array.isArray(raw) ? raw : [];
   const { constraints } = node;
@@ -39,14 +41,14 @@ export function ListRenderer({ node, depth, path }: ListRendererProps): JSX.Elem
     storedIds && storedIds.length === items.length
       ? storedIds
       : items.map((_, i) => `${path}#${i}`);
+  const itemHasTablist = node.itemSchema.controlType === "plugin_select";
 
   return (
-    <FieldSection node={node} level="field" value={items} defaultExpanded={false}>
+    <FieldSection node={node} level="field" value={items} defaultExpanded={starterPaths.has(path)}>
       <FieldSection.Header>
         <FieldSection.Chevron />
         <FieldSection.Label />
         <FieldSection.Stability />
-        <FieldSection.Badge />
         <FieldSection.Info />
         <FieldSection.Action>
           <button
@@ -68,37 +70,43 @@ export function ListRenderer({ node, depth, path }: ListRendererProps): JSX.Elem
             {items.map((itemValue, i) => {
               const itemPath = `${path}[${i}]`;
               const { label, derived } = deriveListItemLabel(node, itemValue, i);
+              const removeButton = canRemove ? (
+                <button
+                  type="button"
+                  aria-label={`Remove item ${i + 1}`}
+                  onClick={() => removeListItem(path, i)}
+                  className="border-border/60 text-muted-foreground rounded-md border p-1 hover:border-red-500/40 hover:text-red-400"
+                >
+                  <X className="h-3 w-3" aria-hidden="true" />
+                </button>
+              ) : null;
               return (
                 <li
                   key={itemKeys[i]}
-                  className="border-border/40 bg-background/30 space-y-3 rounded-lg border p-4"
+                  className={`border-border/40 bg-background/30 space-y-3 rounded-lg border p-4 ${itemHasTablist ? "relative" : ""}`}
                 >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="flex items-center gap-2 text-sm font-medium">
-                      <span className="text-muted-foreground tabular-nums">{i + 1}</span>
+                  {itemHasTablist ? (
+                    removeButton && (
+                      <span className="absolute top-3 right-3 z-10">{removeButton}</span>
+                    )
+                  ) : (
+                    <div className="flex items-center justify-between gap-2">
                       <span
-                        className={derived ? "text-foreground" : "text-muted-foreground italic"}
+                        className={`text-sm font-medium ${derived ? "text-foreground" : "text-muted-foreground italic"}`}
                       >
                         {label}
                       </span>
-                    </span>
-                    {canRemove && (
-                      <button
-                        type="button"
-                        aria-label={`Remove item ${i + 1}`}
-                        onClick={() => removeListItem(path, i)}
-                        className="border-border/60 text-muted-foreground rounded-md border p-1 hover:border-red-500/40 hover:text-red-400"
-                      >
-                        <X className="h-3 w-3" aria-hidden="true" />
-                      </button>
-                    )}
-                  </div>
-                  <SchemaRenderer
-                    node={node.itemSchema}
-                    depth={depth + 1}
-                    path={itemPath}
-                    headless={node.itemSchema.controlType === "group"}
-                  />
+                      {removeButton}
+                    </div>
+                  )}
+                  <ListItemContext.Provider value={true}>
+                    <SchemaRenderer
+                      node={node.itemSchema}
+                      depth={depth + 1}
+                      path={itemPath}
+                      headless={node.itemSchema.controlType === "group"}
+                    />
+                  </ListItemContext.Provider>
                 </li>
               );
             })}

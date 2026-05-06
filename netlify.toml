@@ -1,7 +1,12 @@
 [build]
 base = "ecosystem-explorer"
 publish = "dist"
-command = "npm run netlify-build:preview"
+command = """
+  if [[ "$HEAD" == feat/84-* || "$BRANCH" == feat/84-* ]]; then
+    export VITE_FEATURE_FLAG_V1_REDESIGN=true
+  fi
+  npm run netlify-build:preview
+"""
 
 [context.production]
 command = "npm run netlify-build:production"

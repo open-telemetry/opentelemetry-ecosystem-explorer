@@ -22,7 +22,7 @@ export interface TocSection {
   label: string;
 }
 
-export type StatusFilter = "all" | "overridden";
+export type StatusFilter = "all" | "customized";
 
 export interface ConfigurationTocSidebarProps {
   activeTab: string;
@@ -34,7 +34,7 @@ export interface ConfigurationTocSidebarProps {
   onSearchChange?: (value: string) => void;
   statusFilter?: StatusFilter;
   onStatusFilterChange?: (value: StatusFilter) => void;
-  overrideCount?: number;
+  customizationCount?: number;
 }
 
 const TABS = [
@@ -58,12 +58,12 @@ export function ConfigurationTocSidebar({
   onSearchChange,
   statusFilter = "all",
   onStatusFilterChange,
-  overrideCount = 0,
+  customizationCount = 0,
 }: ConfigurationTocSidebarProps): JSX.Element {
   const isInstrumentation = activeTab === "instrumentation";
   const showTocNav = activeTab === "sdk" || isInstrumentation;
-  const showStatusSection = isInstrumentation && overrideCount > 0;
-  const isOverriddenActive = statusFilter === "overridden";
+  const showStatusSection = isInstrumentation && customizationCount > 0;
+  const isCustomizedActive = statusFilter === "customized";
 
   return (
     <aside className="lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:self-start lg:overflow-auto">
@@ -91,14 +91,16 @@ export function ConfigurationTocSidebar({
           <div className={SECTION_LABEL}>Status</div>
           <button
             type="button"
-            aria-pressed={isOverriddenActive}
-            onClick={() => onStatusFilterChange?.(isOverriddenActive ? "all" : "overridden")}
+            aria-pressed={isCustomizedActive}
+            onClick={() => onStatusFilterChange?.(isCustomizedActive ? "all" : "customized")}
             className={`${LINK_BASE} flex items-center justify-between ${
-              isOverriddenActive ? LINK_ACTIVE : LINK_INACTIVE
+              isCustomizedActive ? LINK_ACTIVE : LINK_INACTIVE
             }`}
           >
-            <span>Overridden</span>
-            <span className="text-primary text-xs font-medium tabular-nums">{overrideCount}</span>
+            <span>Customized</span>
+            <span className="text-primary text-xs font-medium tabular-nums">
+              {customizationCount}
+            </span>
           </button>
         </div>
       )}

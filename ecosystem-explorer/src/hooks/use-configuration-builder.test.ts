@@ -111,10 +111,10 @@ describe("useConfigurationBuilderState", () => {
     expect(development.java["cassandra-4"]).toBeUndefined();
   });
 
-  it("setOverride dispatches SET_OVERRIDE and round-trips through state", () => {
+  it("setCustomization dispatches SET_CUSTOMIZATION and round-trips through state", () => {
     const { result } = renderHook(() => useConfigurationBuilderState(mockSchema, "1.0.0", null));
     act(() => {
-      result.current.setOverride("cassandra", "disabled");
+      result.current.setCustomization("cassandra", "disabled");
     });
     const distribution = result.current.state.values["distribution"] as Record<
       string,
