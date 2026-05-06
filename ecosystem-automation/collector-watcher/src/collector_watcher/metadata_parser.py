@@ -231,7 +231,7 @@ class MetadataParserFactory:
     @classmethod
     def get_default_parser(cls) -> BaseMetadataParser:
         """Return the parser for the latest registered schema version."""
-        latest = sorted(cls._parsers.keys())[-1]
+        latest = sorted(cls._parsers.keys(), key=lambda v: int(v[1:]))[-1]
         return cls._parsers[latest]()
 
 
