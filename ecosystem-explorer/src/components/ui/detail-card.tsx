@@ -34,7 +34,7 @@ export function DetailCard({
     <div
       className={`group border-border/60 bg-card/80 relative overflow-hidden rounded-lg border p-6 ${
         withHoverEffect
-          ? "hover:border-primary/40 hover:bg-card hover:shadow-primary/10 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
+          ? "hover:border-secondary/40 hover:bg-card hover:shadow-secondary/10 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg"
           : ""
       } ${className}`}
     >

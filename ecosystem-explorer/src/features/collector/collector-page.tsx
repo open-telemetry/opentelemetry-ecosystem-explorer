@@ -88,7 +88,7 @@ export function CollectorPage() {
         <header className="space-y-4">
           <h1 className="text-foreground text-4xl font-bold tracking-tight sm:text-5xl">
             Collector{" "}
-            <span className="from-secondary to-primary bg-gradient-to-r bg-clip-text text-transparent">
+            <span className="from-otel-orange to-otel-blue bg-gradient-to-r bg-clip-text text-transparent">
               Components
             </span>
           </h1>
@@ -100,8 +100,8 @@ export function CollectorPage() {
 
         {!isEnabled("COLLECTOR_PAGE") ? (
           <div className="border-border/40 bg-card/30 flex flex-col items-center justify-center rounded-2xl border-2 border-dashed py-24 text-center backdrop-blur-sm">
-            <div className="bg-primary/10 mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full">
-              <Box className="text-primary h-10 w-10 animate-pulse" aria-hidden="true" />
+            <div className="bg-secondary/10 mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full">
+              <Box className="text-secondary h-10 w-10 animate-pulse" aria-hidden="true" />
             </div>
             <h2 className="text-foreground text-2xl font-bold tracking-tight">Coming Soon</h2>
             <p className="text-muted-foreground mx-auto mt-3 max-w-md text-lg leading-relaxed">
@@ -112,7 +112,7 @@ export function CollectorPage() {
         ) : (
           <>
             <div className="border-border/60 bg-card/80 relative overflow-hidden rounded-xl border p-6">
-              <div className="bg-gradient-radial from-secondary/5 via-primary/2 absolute inset-0 to-transparent opacity-50" />
+              <div className="bg-gradient-radial from-otel-orange/5 via-otel-blue/2 absolute inset-0 to-transparent opacity-50" />
 
               <div className="relative z-10 flex flex-col gap-6 md:flex-row md:items-end">
                 <div className="flex-1 space-y-2">
@@ -197,8 +197,8 @@ export function CollectorPage() {
 
             {componentsLoading ? (
               <div className="flex flex-col items-center justify-center space-y-4 py-32">
-                <div className="inline-flex animate-pulse rounded-full p-4 shadow-[0_0_60px_hsl(var(--primary-hsl)/0.2)]">
-                  <Loader2 className="text-primary h-10 w-10 animate-spin" aria-hidden="true" />
+                <div className="inline-flex animate-pulse rounded-full p-4 shadow-[0_0_60px_hsl(var(--otel-orange-hsl)/0.2)]">
+                  <Loader2 className="text-secondary h-10 w-10 animate-spin" aria-hidden="true" />
                 </div>
                 <p className="text-muted-foreground text-sm font-medium">Loading components...</p>
               </div>
@@ -221,12 +221,12 @@ export function CollectorPage() {
                       >
                         <DetailCard
                           withHoverEffect
-                          className="border-border/50 group-hover:border-primary/30 h-full transition-colors"
+                          className="border-border/50 group-hover:border-secondary/30 h-full transition-colors"
                         >
                           <div className="flex h-full flex-col space-y-4">
                             <div className="flex items-start justify-between">
                               <div className="flex items-center gap-3">
-                                <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110">
+                                <div className="bg-secondary/10 text-secondary flex h-10 w-10 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110">
                                   {getIcon(comp.type)}
                                 </div>
                                 <div className="space-y-1">
@@ -245,7 +245,7 @@ export function CollectorPage() {
                             </div>
 
                             <div className="space-y-1.5">
-                              <h3 className="group-hover:text-primary text-lg leading-tight font-bold transition-colors">
+                              <h3 className="group-hover:text-secondary text-lg leading-tight font-bold transition-colors">
                                 {comp.display_name || comp.name}
                               </h3>
                               <div className="flex items-center gap-2">

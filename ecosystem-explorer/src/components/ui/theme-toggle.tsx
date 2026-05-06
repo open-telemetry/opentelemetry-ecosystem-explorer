@@ -35,7 +35,7 @@ export function ThemeToggle() {
       type="button"
       aria-label={LABEL[mode]}
       onClick={() => setMode(NEXT[mode])}
-      className="flex h-8 w-8 items-center justify-center rounded-md text-foreground/70 transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+      className="text-foreground/70 hover:bg-muted hover:text-foreground focus-visible:ring-primary flex h-8 w-8 items-center justify-center rounded-md transition-colors focus-visible:ring-2 focus-visible:outline-none"
     >
       <Icon size={16} aria-hidden />
     </button>

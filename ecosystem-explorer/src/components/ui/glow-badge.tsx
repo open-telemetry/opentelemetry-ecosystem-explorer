@@ -26,8 +26,8 @@ interface GlowBadgeProps {
 
 const variantStyles: Record<BadgeVariant, { base: string; glow: string }> = {
   primary: {
-    base: "bg-primary/10 border-primary/30 text-primary",
-    glow: "shadow-sm shadow-primary/20",
+    base: "bg-secondary/10 border-secondary/30 text-secondary",
+    glow: "shadow-sm shadow-secondary/20",
   },
   success: {
     base: "bg-green-500/10 border-green-500/30 text-green-600 dark:text-green-400",

@@ -108,7 +108,6 @@ const light: Theme = {
 
 export const themes: Record<ResolvedThemeId, Theme> = { light, dark };
 
-export const resolveThemeId = (id: ThemeId): ResolvedThemeId =>
-  id === "dark-blue" ? "dark" : id;
+export const resolveThemeId = (id: ThemeId): ResolvedThemeId => (id === "dark-blue" ? "dark" : id);
 
 export const DEFAULT_THEME: ResolvedThemeId = "dark";

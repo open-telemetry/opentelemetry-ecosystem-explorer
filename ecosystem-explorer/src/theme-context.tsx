@@ -13,13 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from "react";
+import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { type ResolvedThemeId } from "./themes";
 
 export type ThemeMode = "light" | "dark" | "auto";
@@ -85,9 +79,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const setMode = (next: ThemeMode) => setModeState(next);
 
   return (
-    <ThemeContext.Provider value={{ mode, resolved, setMode }}>
-      {children}
-    </ThemeContext.Provider>
+    <ThemeContext.Provider value={{ mode, resolved, setMode }}>{children}</ThemeContext.Provider>
   );
 }
 

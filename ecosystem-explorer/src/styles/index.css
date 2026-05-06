@@ -35,6 +35,8 @@
  * Must live in the same file that imports "tailwindcss".
  */
 @theme {
+  --color-otel-blue: hsl(var(--otel-blue-hsl));
+  --color-otel-orange: hsl(var(--otel-orange-hsl));
   --color-primary: hsl(var(--primary-hsl));
   --color-secondary: hsl(var(--secondary-hsl));
   --color-background: hsl(var(--background-hsl));

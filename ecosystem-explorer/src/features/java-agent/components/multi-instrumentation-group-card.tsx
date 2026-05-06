@@ -44,7 +44,7 @@ export function MultiInstrumentationGroupCard({
   const description = group.instrumentations.find((i) => i.description)?.description;
 
   return (
-    <div className="group border-border bg-card hover:border-primary/40 relative flex h-full flex-col overflow-hidden rounded-lg border transition-all duration-300 hover:shadow-[0_0_30px_hsl(var(--primary-hsl)/0.12)]">
+    <div className="group border-border bg-card hover:border-secondary/40 relative flex h-full flex-col overflow-hidden rounded-lg border transition-all duration-300 hover:shadow-[0_0_30px_hsl(var(--otel-orange-hsl)/0.12)]">
       {/* Grid pattern background */}
       <div className="absolute inset-0 opacity-[0.15]">
         <div
@@ -73,7 +73,7 @@ export function MultiInstrumentationGroupCard({
                 }`}
               />
               <h3 className="truncate text-lg leading-tight font-semibold">{group.displayName}</h3>
-              <span className="bg-primary/15 text-primary flex-shrink-0 rounded-full px-2.5 py-1 text-xs font-medium">
+              <span className="bg-secondary/15 text-secondary flex-shrink-0 rounded-full px-2.5 py-1 text-xs font-medium">
                 {group.instrumentations.length} versions
               </span>
             </div>

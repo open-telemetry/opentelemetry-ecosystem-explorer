@@ -5,6 +5,16 @@
  *   $primary   = blue  hsl(228, 37%, 49%)
  *   $secondary = orange hsl(41, 100%, 48%)
  *
+ * Two-tier brand system:
+ *   --otel-blue-hsl / --otel-orange-hsl  — named primitives, never swap these
+ *   --primary-hsl / --secondary-hsl       — semantic role tokens; re-point only
+ *     here to change which hue plays a structural vs accent role
+ *
+ * SVG illustrations and gradient ornaments reference --otel-*-hsl directly so
+ * they express literal hue intent and stay correct across any role reassignment.
+ * Interactive UI chrome (focus rings, hover borders, CTA buttons) uses
+ * --primary-hsl / --secondary-hsl to track whichever hue plays that role.
+ *
  * Surface tokens differ per theme; syntax tokens reuse the dark palette in
  * light mode for now (revisit when a light-mode syntax consumer lands).
  */
@@ -12,9 +22,13 @@
 @layer theme {
   :root,
   [data-theme="dark"] {
-    /* Brand */
-    --primary-hsl: 228 37% 49%; /* OTel blue   — structural / navbar / buttons */
-    --secondary-hsl: 41 100% 48%; /* OTel orange — accents / hover / CTAs */
+    /* Brand primitives — stable, never reassigned */
+    --otel-blue-hsl: 228 37% 49%;
+    --otel-orange-hsl: 41 100% 48%;
+
+    /* Semantic role tokens */
+    --primary-hsl: var(--otel-blue-hsl); /* structural / navbar / buttons */
+    --secondary-hsl: var(--otel-orange-hsl); /* accents / hover / CTAs */
 
     /* Surfaces — navy palette */
     --background-hsl: 232 38% 15%;
@@ -35,9 +49,13 @@
   }
 
   [data-theme="light"] {
-    /* Brand — identical across themes */
-    --primary-hsl: 228 37% 49%;
-    --secondary-hsl: 41 100% 48%;
+    /* Brand primitives — identical across themes */
+    --otel-blue-hsl: 228 37% 49%;
+    --otel-orange-hsl: 41 100% 48%;
+
+    /* Semantic role tokens */
+    --primary-hsl: var(--otel-blue-hsl);
+    --secondary-hsl: var(--otel-orange-hsl);
 
     /* Surfaces — light palette */
     --background-hsl: 0 0% 100%;
