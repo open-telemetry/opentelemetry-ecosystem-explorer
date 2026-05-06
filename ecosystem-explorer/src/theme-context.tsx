@@ -13,47 +13,84 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { type ThemeId, themes, DEFAULT_THEME } from "./themes";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+  type ReactNode,
+} from "react";
+import { type ResolvedThemeId } from "./themes";
 
-interface ThemeContextType {
-  themeId: ThemeId;
-  setThemeId: (themeId: ThemeId) => void;
+export type ThemeMode = "light" | "dark" | "auto";
+
+interface ThemeContextValue {
+  /** The user's stored preference. */
+  mode: ThemeMode;
+  /** The resolved theme actually applied to the document. */
+  resolved: ResolvedThemeId;
+  setMode: (mode: ThemeMode) => void;
 }
 
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+const STORAGE_KEY = "td-color-theme";
+const VALID_MODES: ThemeMode[] = ["light", "dark", "auto"];
+
+function isValidMode(value: string | null): value is ThemeMode {
+  return VALID_MODES.includes(value as ThemeMode);
+}
+
+function getSystemTheme(): ResolvedThemeId {
+  if (typeof window === "undefined") return "dark";
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [themeId, setThemeId] = useState<ThemeId>(DEFAULT_THEME);
+  const [mode, setModeState] = useState<ThemeMode>(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      return isValidMode(stored) ? stored : "auto";
+    } catch {
+      return "auto";
+    }
+  });
+
+  const resolved = useMemo<ResolvedThemeId>(() => {
+    if (mode === "auto") return getSystemTheme();
+    return mode;
+  }, [mode]);
 
   useEffect(() => {
-    const theme = themes[themeId];
-    const root = document.documentElement;
+    document.documentElement.dataset.theme = resolved;
+  }, [resolved]);
 
-    const flat: Record<string, string> = {
-      primary: theme.colors.primary,
-      secondary: theme.colors.secondary,
-      background: theme.colors.background,
-      foreground: theme.colors.foreground,
-      card: theme.colors.card,
-      "card-secondary": theme.colors.cardSecondary,
-      muted: theme.colors.muted,
-      "muted-foreground": theme.colors.mutedForeground,
-      border: theme.colors.border,
-      "syntax-comment": theme.colors.syntax.comment,
-      "syntax-key": theme.colors.syntax.key,
-      "syntax-string": theme.colors.syntax.string,
-      "syntax-number": theme.colors.syntax.number,
-      "syntax-keyword": theme.colors.syntax.keyword,
-      "syntax-punct": theme.colors.syntax.punct,
-    };
-    for (const [name, value] of Object.entries(flat)) {
-      root.style.setProperty(`--${name}-hsl`, value);
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, mode);
+    } catch {
+      // localStorage unavailable (private mode quota, etc.)
     }
-    root.setAttribute("data-theme", themeId);
-  }, [themeId]);
+  }, [mode]);
 
-  return <ThemeContext.Provider value={{ themeId, setThemeId }}>{children}</ThemeContext.Provider>;
+  useEffect(() => {
+    if (mode !== "auto") return;
+    const mql = window.matchMedia("(prefers-color-scheme: dark)");
+    const handler = (e: MediaQueryListEvent) => {
+      document.documentElement.dataset.theme = e.matches ? "dark" : "light";
+    };
+    mql.addEventListener("change", handler);
+    return () => mql.removeEventListener("change", handler);
+  }, [mode]);
+
+  const setMode = (next: ThemeMode) => setModeState(next);
+
+  return (
+    <ThemeContext.Provider value={{ mode, resolved, setMode }}>
+      {children}
+    </ThemeContext.Provider>
+  );
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
