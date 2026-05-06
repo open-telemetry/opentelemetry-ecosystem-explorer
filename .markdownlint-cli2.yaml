@@ -7,7 +7,6 @@ ignores:
   - "**/tmp_repos/**"
   - "**/node_modules/**"
   - ".claude/**"
-  - "ecosystem-registry/**"
 
 config:
   default: true

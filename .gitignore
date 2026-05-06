@@ -15,3 +15,6 @@ metadata-issues.md
 
 # Personal Claude session context — never committed
 CLAUDE.local.md
+
+# Local Netlify folder
+.netlify
