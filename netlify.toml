@@ -38,6 +38,10 @@ path = "/sitemap.xml"
 function = "agent-negotiation"
 path = "/robots.txt"
 
+[[edge_functions]]
+function = "agent-negotiation"
+path = "/data/*"
+
 [[redirects]]
 from = "/*"
 to = "/index.html"

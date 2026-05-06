@@ -64,7 +64,7 @@ export interface ComponentStatus {
   /** Functional types this component supports (e.g., as a receiver, processor). */
   class: string;
   /** Stability levels per telemetry signal (metrics, logs, traces). */
-  stability: Record<string, string[]>;
+  stability: Partial<Record<Stability, string[]>>;
   distributions: string[];
   codeowners?: {
     active?: string[];
@@ -88,5 +88,5 @@ export interface IndexComponent {
   type: string;
   display_name?: string | null;
   description?: string | null;
-  stability?: string | null;
+  stability?: Stability | null;
 }

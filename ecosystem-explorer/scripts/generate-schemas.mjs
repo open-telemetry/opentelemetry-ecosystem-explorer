@@ -56,7 +56,7 @@ async function generateSchema(filePath, typeName, outputName) {
   }
 
   // Add standard header
-  schema.$schema = "http://json-schema.org/draft-07/schema#";
+  schema.$schema = "https://json-schema.org/draft-07/schema#";
 
   const outputPath = path.resolve(ROOT_DIR, "public/schemas", outputName);
   await fs.writeFile(outputPath, JSON.stringify(schema, null, 2), "utf-8");

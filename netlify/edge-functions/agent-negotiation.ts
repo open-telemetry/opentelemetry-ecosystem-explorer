@@ -68,7 +68,23 @@ export default async (request: Request, context: Context) => {
     return new Response("Not Found", { status: 404 });
   }
 
-  // 4. Handle agent documentation routes
+  // 4. Handle JSON data files
+  if (pathname.startsWith("/data/")) {
+    if (pathname.endsWith(".json")) {
+      const response = await context.rewrite(pathname);
+      if (response.status === 200) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("text/html")) {
+          return new Response("Not Found", { status: 404 });
+        }
+        response.headers.set("Content-Type", "application/json");
+        return response;
+      }
+    }
+    return new Response("Not Found", { status: 404 });
+  }
+
+  // 5. Handle agent documentation routes
   let mdPath = pathname;
   const agentPathMap: Record<string, string> = {
     "/agent/collector": "/agent/collector/index.md",
@@ -97,7 +113,7 @@ export default async (request: Request, context: Context) => {
     }
   }
 
-  // 5. Fallback for any other /agent/ path to avoid soft 404s
+  // 6. Fallback for any other /agent/ path to avoid soft 404s
   if (pathname.startsWith("/agent/")) {
     return new Response("Not Found", { status: 404 });
   }
