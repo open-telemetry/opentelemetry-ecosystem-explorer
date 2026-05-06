@@ -17,7 +17,6 @@ import {
   createContext,
   useContext,
   useEffect,
-  useMemo,
   useState,
   type ReactNode,
 } from "react";
@@ -57,10 +56,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     }
   });
 
-  const resolved = useMemo<ResolvedThemeId>(() => {
-    if (mode === "auto") return getSystemTheme();
-    return mode;
-  }, [mode]);
+  const [systemTheme, setSystemTheme] = useState<ResolvedThemeId>(getSystemTheme);
+
+  const resolved: ResolvedThemeId = mode === "auto" ? systemTheme : mode;
 
   useEffect(() => {
     document.documentElement.dataset.theme = resolved;
@@ -78,7 +76,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     if (mode !== "auto") return;
     const mql = window.matchMedia("(prefers-color-scheme: dark)");
     const handler = (e: MediaQueryListEvent) => {
-      document.documentElement.dataset.theme = e.matches ? "dark" : "light";
+      setSystemTheme(e.matches ? "dark" : "light");
     };
     mql.addEventListener("change", handler);
     return () => mql.removeEventListener("change", handler);

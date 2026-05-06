@@ -51,6 +51,7 @@ describe("ThemeProvider", () => {
   });
 
   it("reads stored light preference on mount", () => {
+    mockMatchMedia(false);
     localStorage.setItem("td-color-theme", "light");
     render(
       <ThemeProvider>
@@ -61,6 +62,7 @@ describe("ThemeProvider", () => {
   });
 
   it("reads stored dark preference on mount", () => {
+    mockMatchMedia(false);
     localStorage.setItem("td-color-theme", "dark");
     render(
       <ThemeProvider>
@@ -99,6 +101,7 @@ describe("ThemeProvider", () => {
 
     act(() => mql.fire(true));
     expect(document.documentElement.dataset.theme).toBe("dark");
+    expect(result.current.resolved).toBe("dark");
     expect(localStorage.getItem("td-color-theme")).toBe("auto");
   });
 });
