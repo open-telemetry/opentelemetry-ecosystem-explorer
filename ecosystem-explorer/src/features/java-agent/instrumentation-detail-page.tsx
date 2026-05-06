@@ -162,7 +162,7 @@ export function InstrumentationDetailPage() {
       <BackButton />
 
       <div className="mt-3 space-y-6">
-        <header className="border-border/60 bg-card/80 relative overflow-hidden rounded-lg border p-8">
+        <header className="border-border/60 bg-card/80 relative overflow-hidden rounded-lg border p-5 sm:p-8">
           <div
             className="absolute inset-0"
             style={{
@@ -183,9 +183,9 @@ export function InstrumentationDetailPage() {
           </div>
 
           <div className="relative z-10 space-y-4">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1 space-y-3">
-                <h1 className="text-3xl leading-tight font-bold md:text-4xl">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0 flex-1 space-y-2">
+                <h1 className="text-2xl leading-tight font-bold sm:text-3xl md:text-4xl">
                   <span className="bg-gradient-to-r from-[hsl(var(--secondary-hsl))] to-[hsl(var(--primary-hsl))] bg-clip-text text-transparent">
                     {displayName}
                   </span>
@@ -198,8 +198,7 @@ export function InstrumentationDetailPage() {
                   </p>
                 )}
               </div>
-
-              <div className="flex flex-shrink-0 items-center gap-3">
+              <div className="flex flex-shrink-0 flex-wrap items-center gap-3">
                 {versionsData &&
                   versionsData.versions.length > 0 &&
                   version &&
@@ -251,7 +250,7 @@ export function InstrumentationDetailPage() {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="relative z-10">
-            <div className="px-6 pt-4 pb-0">
+            <div className="overflow-x-auto px-4 pt-4 pb-0 sm:px-6">
               <SegmentedTabList
                 value={activeTab}
                 tabs={[
@@ -274,7 +273,7 @@ export function InstrumentationDetailPage() {
               />
             </div>
 
-            <TabsContent value="details" className="mt-0 p-6">
+            <TabsContent value="details" className="mt-0 p-4 sm:p-6">
               <div className="space-y-8">
                 {((instrumentation.features && instrumentation.features.length > 0) ||
                   (instrumentation.semantic_conventions &&
@@ -492,19 +491,19 @@ export function InstrumentationDetailPage() {
               </div>
             </TabsContent>
 
-            <TabsContent value="telemetry" className="mt-0 p-6">
+            <TabsContent value="telemetry" className="mt-0 p-4 sm:p-6">
               {instrumentation.telemetry && instrumentation.telemetry.length > 0 ? (
                 <div className="space-y-8">
                   <div className="flex justify-center">
                     <div
-                      className="border-border inline-flex rounded-lg border bg-transparent p-1"
+                      className="border-border inline-flex w-full rounded-lg border bg-transparent p-1 sm:w-auto"
                       role="group"
                     >
                       <button
                         type="button"
                         onClick={() => setShowComparison(false)}
                         aria-pressed={!showComparison}
-                        className={`rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 ease-in-out ${
+                        className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 ease-in-out sm:flex-none ${
                           !showComparison
                             ? "bg-card text-foreground shadow-sm"
                             : "text-muted-foreground hover:text-foreground"
@@ -516,7 +515,7 @@ export function InstrumentationDetailPage() {
                         type="button"
                         onClick={() => setShowComparison(true)}
                         aria-pressed={showComparison}
-                        className={`rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 ease-in-out ${
+                        className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 ease-in-out sm:flex-none ${
                           showComparison
                             ? "bg-card text-foreground shadow-sm"
                             : "text-muted-foreground hover:text-foreground"
@@ -554,7 +553,7 @@ export function InstrumentationDetailPage() {
               )}
             </TabsContent>
 
-            <TabsContent value="configuration" className="mt-0 p-6">
+            <TabsContent value="configuration" className="mt-0 p-4 sm:p-6">
               <InstrumentationConfigurationTab
                 configurations={instrumentation.configurations ?? []}
               />
