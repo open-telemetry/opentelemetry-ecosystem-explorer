@@ -162,6 +162,28 @@ def test_save_version_writes_schema_hash_when_schema_present(
     assert all(c in "0123456789abcdef" for c in schema_hash)
 
 
+def test_save_version_contrib_reads_schema_hash_from_core(
+    collector_sync, sample_components, temp_inventory_dir, temp_git_repos
+):
+    """Contrib has no mdatagen — its schema_hash must come from the core repo."""
+    # Plant a schema file in core only. Contrib intentionally has none.
+    schema_dir = Path(temp_git_repos["core"]) / "cmd" / "mdatagen"
+    schema_dir.mkdir(parents=True, exist_ok=True)
+    (schema_dir / "metadata-schema.yaml").write_text("type: object\n")
+
+    version = Version("0.112.0")
+    collector_sync.save_version("core", version, sample_components)
+    collector_sync.save_version("contrib", version, sample_components)
+
+    with open(temp_inventory_dir / "core" / "v0.112.0" / "receiver.yaml") as f:
+        core_hash = yaml.safe_load(f)["schema_hash"]
+    with open(temp_inventory_dir / "contrib" / "v0.112.0" / "receiver.yaml") as f:
+        contrib_hash = yaml.safe_load(f)["schema_hash"]
+
+    assert contrib_hash != "unknown"
+    assert contrib_hash == core_hash
+
+
 def test_save_version_copies_schema_to_meta_dir_when_present(
     collector_sync, sample_components, temp_inventory_dir, temp_git_repos
 ):

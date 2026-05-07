@@ -14,10 +14,11 @@
 #
 """Copies and hashes the upstream collector metadata schema file."""
 
-import hashlib
 import logging
 import shutil
 from pathlib import Path
+
+from watcher_common.content_hashing import compute_content_hash
 
 logger = logging.getLogger(__name__)
 
@@ -72,5 +73,4 @@ class CollectorSchemaCopier:
         """
         if not schema_path.exists():
             return UNKNOWN_HASH
-        digest = hashlib.sha256(schema_path.read_bytes()).hexdigest()
-        return digest[:12]
+        return compute_content_hash(schema_path.read_bytes())

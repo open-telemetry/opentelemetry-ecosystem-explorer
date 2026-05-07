@@ -181,10 +181,12 @@ class CollectorSync:
             version: Version being saved
             components: Scanned components
         """
-        repo_path = Path(self.repos[distribution])
         copier = CollectorSchemaCopier()
-        schema_src = repo_path / SCHEMA_RELATIVE_PATH
-        schema_hash = copier.compute_schema_hash(schema_src)
+        # Schema lives only in core (mdatagen is not in contrib). Read it from
+        # core regardless of which distribution we're saving so contrib carries
+        # the same schema_hash as the corresponding core checkout.
+        core_repo_path = Path(self.repos["core"])
+        schema_hash = copier.compute_schema_hash(core_repo_path / SCHEMA_RELATIVE_PATH)
 
         repository = self.get_repository_name(distribution)
         self.inventory_manager.save_versioned_inventory(
@@ -196,10 +198,9 @@ class CollectorSync:
         )
 
         # Copy the schema file once, from core, into the shared meta/ directory.
-        # Contrib does not contain mdatagen; copying from core avoids duplication.
         if distribution == "core":
             meta_dir = self.inventory_manager.meta_schema_path(version).parent
-            copier.copy_schema(repo_path, meta_dir)
+            copier.copy_schema(core_repo_path, meta_dir)
 
         logger.info("  Saved %s %s (schema_hash=%s)", distribution, version, schema_hash)
 
