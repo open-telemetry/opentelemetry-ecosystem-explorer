@@ -5094,7 +5094,7 @@ components:
         - alexvanboxel
 - name: googlecloudspannerreceiver
   metadata:
-    type: googlecloudspanner
+    type: google_cloud_spanner
     display_name: Google Cloud Spanner Receiver
     status:
       class: receiver
@@ -6786,7 +6786,7 @@ components:
         - krisztianfekete
 - name: kafkametricsreceiver
   metadata:
-    type: kafkametrics
+    type: kafka_metrics
     display_name: Kafka Metrics Receiver
     description: The Kafka Metrics Receiver collects kafka metrics (brokers, topics,
       partitions, consumer groups) from a kafka server, and converts them into otlp.

@@ -28,6 +28,13 @@ const BASE_URL = `http://localhost:${PORT}`;
 const DETAIL_VERSION = "2.25.0";
 const DETAIL_NAME = "spring-webmvc-6.0";
 
+// Viewport sizes captured for each page. Edit here to add, remove, or resize.
+const VIEWPORTS = [
+  { name: "desktop", width: 1800, height: 1200 },
+  { name: "tablet", width: 768, height: 1024 },
+  { name: "mobile", width: 390, height: 844 },
+];
+
 async function startServer() {
   return new Promise((resolve) => {
     const server = http.createServer((req, res) => {
@@ -89,7 +96,6 @@ async function takeScreenshots() {
     logTime("Launching browser...");
     browser = await chromium.launch({ headless: true });
     const page = await browser.newPage();
-    await page.setViewportSize({ width: 1800, height: 1200 });
 
     // Block external requests that can cause timeouts
     const BLOCKED_HOSTS = new Set([
@@ -116,99 +122,70 @@ async function takeScreenshots() {
 
     logTime("Browser ready");
 
-    // 1. Home page
-    logTime("Taking home page screenshot...");
-    await page.goto(BASE_URL, { waitUntil: "domcontentloaded", timeout: 10000 });
-    await page.waitForSelector("h1", { state: "visible", timeout: 5000 });
-    await page.screenshot({ path: path.join(SCREENSHOTS_DIR, "home.png") });
-    logTime("Home page screenshot done");
+    for (const viewport of VIEWPORTS) {
+      logTime(`Starting ${viewport.name} (${viewport.width}×${viewport.height})...`);
+      await page.setViewportSize({ width: viewport.width, height: viewport.height });
+      const p = (name) => path.join(SCREENSHOTS_DIR, `${viewport.name}-${name}.png`);
 
-    // 2. Java agent instrumentation list
-    logTime("Taking instrumentation list screenshot...");
-    await page.goto(`${BASE_URL}/java-agent/instrumentation`, {
-      waitUntil: "domcontentloaded",
-      timeout: 10000,
-    });
-    await page.waitForFunction(() => document.body.textContent.includes("Showing"), {
-      timeout: 15000,
-    });
-    await page.screenshot({
-      path: path.join(SCREENSHOTS_DIR, "instrumentation-list.png"),
-    });
-    logTime("Instrumentation list screenshot done");
+      // 1. Home page
+      await page.goto(BASE_URL, { waitUntil: "domcontentloaded", timeout: 10000 });
+      await page.waitForSelector("h1", { state: "visible", timeout: 5000 });
+      await page.screenshot({ path: p("home") });
 
-    // 3. Java agent instrumentation detail - Details tab
-    logTime("Taking instrumentation detail screenshots...");
-    const detailUrl = `${BASE_URL}/java-agent/instrumentation/${DETAIL_VERSION}/${DETAIL_NAME}`;
-    await page.goto(detailUrl, {
-      waitUntil: "domcontentloaded",
-      timeout: 10000,
-    });
-    await page.waitForSelector('[role="tablist"]', {
-      state: "visible",
-      timeout: 20000,
-    });
-    // Details tab is active by default
-    await page.screenshot({
-      path: path.join(SCREENSHOTS_DIR, "detail-details.png"),
-      fullPage: true,
-    });
-    logTime("Details tab screenshot done");
+      // 2. Java agent instrumentation list
+      await page.goto(`${BASE_URL}/java-agent/instrumentation`, {
+        waitUntil: "domcontentloaded",
+        timeout: 10000,
+      });
+      await page.waitForFunction(() => document.body.textContent.includes("Showing"), {
+        timeout: 15000,
+      });
+      await page.screenshot({ path: p("instrumentation-list") });
 
-    // 4. Telemetry tab
-    await page.getByRole("tab", { name: "Telemetry" }).click();
-    await page.waitForSelector('[role="tabpanel"][data-state="active"]', {
-      state: "visible",
-      timeout: 5000,
-    });
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    await page.screenshot({
-      path: path.join(SCREENSHOTS_DIR, "detail-telemetry.png"),
-      fullPage: true,
-    });
-    logTime("Telemetry tab screenshot done");
+      // 3. Java agent instrumentation detail - Details tab
+      const detailUrl = `${BASE_URL}/java-agent/instrumentation/${DETAIL_VERSION}/${DETAIL_NAME}`;
+      await page.goto(detailUrl, { waitUntil: "domcontentloaded", timeout: 10000 });
+      await page.waitForSelector('[role="tablist"]', { state: "visible", timeout: 20000 });
+      await page.screenshot({ path: p("detail-details"), fullPage: true });
 
-    // 5. Configuration tab
-    await page.getByRole("tab", { name: "Configuration" }).click();
-    await page.waitForSelector('[role="tabpanel"][data-state="active"]', {
-      state: "visible",
-      timeout: 5000,
-    });
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    await page.screenshot({
-      path: path.join(SCREENSHOTS_DIR, "detail-configuration.png"),
-      fullPage: true,
-    });
-    logTime("Configuration tab screenshot done");
+      // 4. Telemetry tab
+      await page.getByRole("tab", { name: "Telemetry" }).click();
+      await page.waitForSelector('[role="tabpanel"][data-state="active"]', {
+        state: "visible",
+        timeout: 5000,
+      });
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      await page.screenshot({ path: p("detail-telemetry"), fullPage: true });
 
-    // 6. Collector list
-    logTime("Taking collector list screenshot...");
-    await page.goto(`${BASE_URL}/collector/components`, {
-      waitUntil: "domcontentloaded",
-      timeout: 10000,
-    });
-    await page.waitForFunction(() => document.body.textContent.includes("Showing"), {
-      timeout: 15000,
-    });
-    await page.screenshot({ path: path.join(SCREENSHOTS_DIR, "collector-list.png") });
-    logTime("Collector list screenshot done");
+      // 5. Configuration tab
+      await page.getByRole("tab", { name: "Configuration" }).click();
+      await page.waitForSelector('[role="tabpanel"][data-state="active"]', {
+        state: "visible",
+        timeout: 5000,
+      });
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      await page.screenshot({ path: p("detail-configuration"), fullPage: true });
 
-    // 7. Collector detail
-    logTime("Taking collector detail screenshot...");
-    // Use a known stable receiver for the screenshot
-    await page.goto(`${BASE_URL}/collector/components/latest/receiver-otlp`, {
-      waitUntil: "domcontentloaded",
-      timeout: 10000,
-    });
-    await page.waitForSelector('[role="tablist"]', {
-      state: "visible",
-      timeout: 20000,
-    });
-    await page.screenshot({
-      path: path.join(SCREENSHOTS_DIR, "collector-detail.png"),
-      fullPage: true,
-    });
-    logTime("Collector detail screenshot done");
+      // 6. Collector list
+      await page.goto(`${BASE_URL}/collector/components`, {
+        waitUntil: "domcontentloaded",
+        timeout: 10000,
+      });
+      await page.waitForFunction(() => document.body.textContent.includes("Showing"), {
+        timeout: 15000,
+      });
+      await page.screenshot({ path: p("collector-list") });
+
+      // 7. Collector detail
+      await page.goto(`${BASE_URL}/collector/components/latest/receiver-otlp`, {
+        waitUntil: "domcontentloaded",
+        timeout: 10000,
+      });
+      await page.waitForSelector('[role="tablist"]', { state: "visible", timeout: 20000 });
+      await page.screenshot({ path: p("collector-detail"), fullPage: true });
+
+      logTime(`${viewport.name} done`);
+    }
 
     logTime("All screenshots completed successfully!");
   } catch (error) {
