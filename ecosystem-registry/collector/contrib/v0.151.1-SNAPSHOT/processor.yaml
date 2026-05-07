@@ -155,6 +155,19 @@ components:
         - bogdandrutu
         emeritus:
         - boostchicken
+- name: genainormalizerprocessor
+  metadata:
+    type: genainormalizer
+    display_name: GenAI Normalizer Processor
+    status:
+      class: processor
+      stability:
+        development:
+        - traces
+      distributions: []
+      codeowners:
+        active:
+        - TylerHelmuth
 - name: geoipprocessor
   metadata:
     type: geoip
