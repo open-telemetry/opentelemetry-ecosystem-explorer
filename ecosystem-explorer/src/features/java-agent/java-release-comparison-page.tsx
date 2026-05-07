@@ -206,24 +206,33 @@ export function JavaReleaseComparisonPage() {
                   <p className="text-4xl font-black text-green-400">
                     {diff.totals.added}
                   </p>
-                  <p className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">
-                    Modules Added
+                  <p className="font-bold text-green-400 text-sm">
+                    Instrumentation{diff.totals.added !== 1 ? "s" : ""} Added
+                  </p>
+                  <p className="text-muted-foreground text-xs">
+                    New in {toVersion}
                   </p>
                 </div>
                 <div className="text-center">
                   <p className="text-4xl font-black text-blue-400">
                     {diff.totals.changed}
                   </p>
-                  <p className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">
-                    Modules Changed
+                  <p className="font-bold text-blue-400 text-sm">
+                    Instrumentation{diff.totals.changed !== 1 ? "s" : ""} Changed
+                  </p>
+                  <p className="text-muted-foreground text-xs">
+                    Telemetry or config updates
                   </p>
                 </div>
                 <div className="text-center">
                   <p className="text-4xl font-black text-red-400">
                     {diff.totals.removed}
                   </p>
-                  <p className="text-muted-foreground text-[10px] font-bold tracking-widest uppercase">
-                    Modules Removed
+                  <p className="font-bold text-red-400 text-sm">
+                    Instrumentation{diff.totals.removed !== 1 ? "s" : ""} Removed
+                  </p>
+                  <p className="text-muted-foreground text-xs">
+                    Not present in {toVersion}
                   </p>
                 </div>
               </div>
