@@ -299,7 +299,7 @@ class MetadataParser:
             return None
 
         try:
-            with open(self.metadata_path) as f:
+            with open(self.metadata_path, encoding="utf-8") as f:
                 raw = yaml.safe_load(f)
         except yaml.YAMLError as e:
             logger.warning("Failed to parse %s: %s", self.metadata_path, e)
