@@ -20,11 +20,7 @@ import App from "./App";
 describe("App", () => {
   it("renders the page title", async () => {
     render(<App />);
-    const heading = await screen.findByRole(
-      "heading",
-      { level: 1 },
-      { timeout: 8000 },
-    );
+    const heading = await screen.findByRole("heading", { level: 1 }, { timeout: 8000 });
     expect(heading).toHaveTextContent("OpenTelemetry");
     expect(heading).toHaveTextContent("Ecosystem Explorer");
   }, 10000);

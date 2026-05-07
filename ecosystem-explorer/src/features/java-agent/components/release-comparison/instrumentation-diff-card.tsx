@@ -15,13 +15,7 @@
  */
 
 import { useState, useId } from "react";
-import {
-  ChevronDown,
-  ChevronRight,
-  Plus,
-  Minus,
-  RefreshCw,
-} from "lucide-react";
+import { ChevronDown, ChevronRight, Plus, Minus, RefreshCw } from "lucide-react";
 import { GlowBadge } from "@/components/ui/glow-badge";
 import { DiffResultsSection } from "../telemetry-comparison/diff-results-section";
 import type { MetricDiff, SpanDiff } from "@/types/javaagent";
@@ -70,9 +64,7 @@ const statusConfig = {
  * InstrumentationDiffCard renders an expandable card summarizing the changes
  * for a single instrumentation module between two Java Agent releases.
  */
-export function InstrumentationDiffCard({
-  diff,
-}: InstrumentationDiffCardProps) {
+export function InstrumentationDiffCard({ diff }: InstrumentationDiffCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const contentId = useId();
 
@@ -80,9 +72,7 @@ export function InstrumentationDiffCard({
   const StatusIcon = config.icon;
 
   const hasTelemetryChanges =
-    diff.telemetryDiff.metrics.some(
-      (m: MetricDiff) => m.status !== "unchanged",
-    ) ||
+    diff.telemetryDiff.metrics.some((m: MetricDiff) => m.status !== "unchanged") ||
     diff.telemetryDiff.spans.some((s: SpanDiff) => s.status !== "unchanged");
 
   const hasConfigChanges =
@@ -92,10 +82,10 @@ export function InstrumentationDiffCard({
       diff.configDiff.changed.length > 0);
 
   const changedMetricsCount = diff.telemetryDiff.metrics.filter(
-    (m: MetricDiff) => m.status !== "unchanged",
+    (m: MetricDiff) => m.status !== "unchanged"
   ).length;
   const changedSpansCount = diff.telemetryDiff.spans.filter(
-    (s: SpanDiff) => s.status !== "unchanged",
+    (s: SpanDiff) => s.status !== "unchanged"
   ).length;
 
   return (
@@ -109,13 +99,8 @@ export function InstrumentationDiffCard({
         className="focus-visible:ring-primary/50 flex w-full items-center justify-between gap-4 p-5 text-left transition-colors hover:bg-white/5 focus-visible:ring-2 focus-visible:outline-none"
       >
         <div className="flex min-w-0 flex-1 items-center gap-3">
-          <StatusIcon
-            className={`h-4 w-4 flex-shrink-0 ${config.iconColor}`}
-            aria-hidden="true"
-          />
-          <span className="truncate font-mono text-sm font-semibold">
-            {diff.displayName}
-          </span>
+          <StatusIcon className={`h-4 w-4 flex-shrink-0 ${config.iconColor}`} aria-hidden="true" />
+          <span className="truncate font-mono text-sm font-semibold">{diff.displayName}</span>
         </div>
 
         <div className="flex flex-shrink-0 items-center gap-2">
@@ -134,15 +119,9 @@ export function InstrumentationDiffCard({
           {hasConfigChanges && <GlowBadge variant="warning">Config</GlowBadge>}
 
           {isExpanded ? (
-            <ChevronDown
-              className="text-muted-foreground h-4 w-4"
-              aria-hidden="true"
-            />
+            <ChevronDown className="text-muted-foreground h-4 w-4" aria-hidden="true" />
           ) : (
-            <ChevronRight
-              className="text-muted-foreground h-4 w-4"
-              aria-hidden="true"
-            />
+            <ChevronRight className="text-muted-foreground h-4 w-4" aria-hidden="true" />
           )}
         </div>
       </button>
@@ -166,9 +145,7 @@ export function InstrumentationDiffCard({
               <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                 {diff.configDiff.added.length > 0 && (
                   <div className="space-y-2">
-                    <p className="text-xs font-bold text-green-400 uppercase">
-                      Added
-                    </p>
+                    <p className="text-xs font-bold text-green-400 uppercase">Added</p>
                     <div className="flex flex-wrap gap-1.5">
                       {diff.configDiff.added.map((name) => (
                         <GlowBadge key={name} variant="success">
@@ -180,9 +157,7 @@ export function InstrumentationDiffCard({
                 )}
                 {diff.configDiff.removed.length > 0 && (
                   <div className="space-y-2">
-                    <p className="text-xs font-bold text-red-400 uppercase">
-                      Removed
-                    </p>
+                    <p className="text-xs font-bold text-red-400 uppercase">Removed</p>
                     <div className="flex flex-wrap gap-1.5">
                       {diff.configDiff.removed.map((name) => (
                         <GlowBadge key={name} variant="warning">
@@ -194,9 +169,7 @@ export function InstrumentationDiffCard({
                 )}
                 {diff.configDiff.changed.length > 0 && (
                   <div className="space-y-2">
-                    <p className="text-xs font-bold text-blue-400 uppercase">
-                      Modified
-                    </p>
+                    <p className="text-xs font-bold text-blue-400 uppercase">Modified</p>
                     <div className="flex flex-wrap gap-1.5">
                       {diff.configDiff.changed.map((name) => (
                         <GlowBadge key={name} variant="info">
@@ -212,8 +185,7 @@ export function InstrumentationDiffCard({
 
           {!hasTelemetryChanges && !hasConfigChanges && (
             <p className="text-muted-foreground text-sm">
-              This module was {diff.status} with no detailed telemetry breakdown
-              available.
+              This module was {diff.status} with no detailed telemetry breakdown available.
             </p>
           )}
         </div>

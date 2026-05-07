@@ -40,13 +40,9 @@ vi.mock("@/components/ui/tabs", () => ({
       {children}
     </div>
   ),
-  TabsContent: ({
-    children,
-    value,
-  }: {
-    children: React.ReactNode;
-    value: string;
-  }) => <div data-testid={`tab-content-${value}`}>{children}</div>,
+  TabsContent: ({ children, value }: { children: React.ReactNode; value: string }) => (
+    <div data-testid={`tab-content-${value}`}>{children}</div>
+  ),
 }));
 
 vi.mock("@/components/ui/segmented-tabs", () => ({
@@ -71,12 +67,9 @@ function renderPage(initialPath = "/java-agent/releases?from=1.9.0&to=2.0.0") {
   return render(
     <MemoryRouter initialEntries={[initialPath]}>
       <Routes>
-        <Route
-          path="/java-agent/releases"
-          element={<JavaReleaseComparisonPage />}
-        />
+        <Route path="/java-agent/releases" element={<JavaReleaseComparisonPage />} />
       </Routes>
-    </MemoryRouter>,
+    </MemoryRouter>
   );
 }
 
@@ -150,8 +143,10 @@ describe("JavaReleaseComparisonPage", () => {
     renderPage();
 
     await waitFor(() => {
-      expect(screen.getByText("Modules Added")).toBeInTheDocument();
-      expect(screen.getByText("Modules Changed")).toBeInTheDocument();
+      // The count and label are in separate <p> elements.
+      // With added=1 and changed=1 (singular), the labels are:
+      expect(screen.getByText("Instrumentation Added")).toBeInTheDocument();
+      expect(screen.getByText("Instrumentation Changed")).toBeInTheDocument();
     });
   });
 
@@ -168,8 +163,6 @@ describe("JavaReleaseComparisonPage", () => {
 
   it("shows invalid comparison message for same versions", async () => {
     renderPage("/java-agent/releases?from=2.0.0&to=2.0.0");
-    expect(
-      screen.getByText(/Select two different versions/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Select two different versions/i)).toBeInTheDocument();
   });
 });

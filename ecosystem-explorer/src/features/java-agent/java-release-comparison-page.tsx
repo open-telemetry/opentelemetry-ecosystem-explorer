@@ -34,8 +34,7 @@ export function JavaReleaseComparisonPage() {
   const { data: versionsData, loading: versionsLoading } = useVersions();
 
   const versions = useMemo(() => versionsData?.versions ?? [], [versionsData]);
-  const latestVersion =
-    versions.find((v: { is_latest: boolean }) => v.is_latest)?.version ?? "";
+  const latestVersion = versions.find((v: { is_latest: boolean }) => v.is_latest)?.version ?? "";
   const previousVersion = versions.length > 1 ? versions[1].version : "";
 
   const fromVersion = searchParams.get("from") || previousVersion;
@@ -44,26 +43,18 @@ export function JavaReleaseComparisonPage() {
   const changelogUrl = `https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/tag/v${toVersion}`;
 
   useEffect(() => {
-    if (
-      versions.length > 0 &&
-      (!searchParams.get("from") || !searchParams.get("to"))
-    ) {
+    if (versions.length > 0 && (!searchParams.get("from") || !searchParams.get("to"))) {
       setSearchParams(
         {
-          from:
-            fromVersion || versions[Math.min(1, versions.length - 1)].version,
+          from: fromVersion || versions[Math.min(1, versions.length - 1)].version,
           to: toVersion || versions[0].version,
         },
-        { replace: true },
+        { replace: true }
       );
     }
   }, [versions, fromVersion, toVersion, searchParams, setSearchParams]);
 
-  const {
-    diff,
-    loading: diffLoading,
-    error,
-  } = useReleaseComparison(fromVersion, toVersion);
+  const { diff, loading: diffLoading, error } = useReleaseComparison(fromVersion, toVersion);
 
   const handleFromVersionChange = (version: string) => {
     setSearchParams({ from: version, to: toVersion });
@@ -102,8 +93,7 @@ export function JavaReleaseComparisonPage() {
               </span>
             </h1>
             <p className="text-muted-foreground max-w-2xl">
-              Compare Java Agent releases to discover new features and changes
-              in telemetry.
+              Compare Java Agent releases to discover new features and changes in telemetry.
             </p>
           </div>
           <a
@@ -130,12 +120,9 @@ export function JavaReleaseComparisonPage() {
             <div className="flex items-start gap-3">
               <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-yellow-400" />
               <div className="space-y-1">
-                <p className="font-medium text-yellow-400">
-                  Invalid Comparison
-                </p>
+                <p className="font-medium text-yellow-400">Invalid Comparison</p>
                 <p className="text-sm text-yellow-400/80">
-                  {versions.findIndex((v) => v.version === fromVersion) ===
-                    -1 ||
+                  {versions.findIndex((v) => v.version === fromVersion) === -1 ||
                   versions.findIndex((v) => v.version === toVersion) === -1
                     ? "One or both selected versions do not exist in the registry."
                     : "Comparisons are usually performed from an older version to a newer version."}
@@ -148,9 +135,7 @@ export function JavaReleaseComparisonPage() {
         {fromVersion === toVersion && (
           <div className="border-border flex min-h-[300px] items-center justify-center rounded-xl border border-dashed">
             <div className="text-center">
-              <p className="text-muted-foreground">
-                Select two different versions to see changes.
-              </p>
+              <p className="text-muted-foreground">Select two different versions to see changes.</p>
             </div>
           </div>
         )}
@@ -173,9 +158,7 @@ export function JavaReleaseComparisonPage() {
           <div className="rounded-lg border border-red-400/30 bg-red-400/10 p-6 text-red-400">
             <div className="flex items-center gap-3">
               <AlertCircle className="h-5 w-5" />
-              <p className="font-medium">
-                Error loading comparison data: {error.message}
-              </p>
+              <p className="font-medium">Error loading comparison data: {error.message}</p>
             </div>
           </div>
         )}
@@ -203,37 +186,25 @@ export function JavaReleaseComparisonPage() {
 
               <div className="border-border/30 grid grid-cols-3 gap-6 border-t pt-8">
                 <div className="text-center">
-                  <p className="text-4xl font-black text-green-400">
-                    {diff.totals.added}
-                  </p>
-                  <p className="font-bold text-green-400 text-sm">
+                  <p className="text-4xl font-black text-green-400">{diff.totals.added}</p>
+                  <p className="text-sm font-bold text-green-400">
                     Instrumentation{diff.totals.added !== 1 ? "s" : ""} Added
                   </p>
-                  <p className="text-muted-foreground text-xs">
-                    New in {toVersion}
-                  </p>
+                  <p className="text-muted-foreground text-xs">New in {toVersion}</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-4xl font-black text-blue-400">
-                    {diff.totals.changed}
-                  </p>
-                  <p className="font-bold text-blue-400 text-sm">
+                  <p className="text-4xl font-black text-blue-400">{diff.totals.changed}</p>
+                  <p className="text-sm font-bold text-blue-400">
                     Instrumentation{diff.totals.changed !== 1 ? "s" : ""} Changed
                   </p>
-                  <p className="text-muted-foreground text-xs">
-                    Telemetry or config updates
-                  </p>
+                  <p className="text-muted-foreground text-xs">Telemetry or config updates</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-4xl font-black text-red-400">
-                    {diff.totals.removed}
-                  </p>
-                  <p className="font-bold text-red-400 text-sm">
+                  <p className="text-4xl font-black text-red-400">{diff.totals.removed}</p>
+                  <p className="text-sm font-bold text-red-400">
                     Instrumentation{diff.totals.removed !== 1 ? "s" : ""} Removed
                   </p>
-                  <p className="text-muted-foreground text-xs">
-                    Not present in {toVersion}
-                  </p>
+                  <p className="text-muted-foreground text-xs">Not present in {toVersion}</p>
                 </div>
               </div>
             </div>
@@ -241,9 +212,7 @@ export function JavaReleaseComparisonPage() {
             <div className="space-y-8">
               <Tabs
                 value={activeTab}
-                onValueChange={(v: string) =>
-                  setActiveTab(v as "changes" | "metrics")
-                }
+                onValueChange={(v: string) => setActiveTab(v as "changes" | "metrics")}
                 className="w-full"
               >
                 <SegmentedTabList
@@ -277,10 +246,7 @@ export function JavaReleaseComparisonPage() {
                     ) : (
                       <div className="grid gap-4">
                         {filteredInstrumentations.map((instr) => (
-                          <InstrumentationDiffCard
-                            key={instr.id}
-                            diff={instr}
-                          />
+                          <InstrumentationDiffCard key={instr.id} diff={instr} />
                         ))}
                       </div>
                     )}
@@ -292,8 +258,7 @@ export function JavaReleaseComparisonPage() {
                     <div className="flex items-center justify-between">
                       <h2 className="text-2xl font-bold">Aggregate Metrics</h2>
                       <div className="bg-muted/50 text-foreground/70 rounded-full px-4 py-1 text-xs font-bold">
-                        {diff.aggregateMetrics.length} Total Metrics in{" "}
-                        {toVersion}
+                        {diff.aggregateMetrics.length} Total Metrics in {toVersion}
                       </div>
                     </div>
 

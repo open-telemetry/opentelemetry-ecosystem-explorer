@@ -16,19 +16,29 @@
 
 import { describe, it, expect } from "vitest";
 import { compareReleases } from "./release-diff";
-import type {
-  InstrumentationData,
-  Metric,
-  Span,
-  Configuration,
-} from "@/types/javaagent";
+import type { InstrumentationData, Metric, Span, Configuration } from "@/types/javaagent";
+
+/** Create a minimal Metric mock keyed by name. */
+function makeMetric(name: string, description = ""): Metric {
+  return { name, description } as unknown as Metric;
+}
+
+/** Create a minimal Span mock keyed by span_kind. */
+function makeSpan(span_kind: Span["span_kind"]): Span {
+  return { span_kind } as unknown as Span;
+}
+
+/** Create a minimal Configuration mock. */
+function makeConfig(name: string, description = "", type = "string"): Configuration {
+  return { name, description, type } as unknown as Configuration;
+}
 
 describe("release-diff utility", () => {
   const mockInstrumentation = (
     name: string,
     metrics: Metric[] = [],
     spans: Span[] = [],
-    configurations: Configuration[] = [],
+    configurations: Configuration[] = []
   ): InstrumentationData => ({
     name,
     display_name: `${name} Display`,
@@ -45,15 +55,12 @@ describe("release-diff utility", () => {
 
   it("should detect added, removed and changed instrumentations", () => {
     const fromData: InstrumentationData[] = [
-      mockInstrumentation("instr1", [{ name: "metric1" } as Metric]),
+      mockInstrumentation("instr1", [makeMetric("metric1")]),
       mockInstrumentation("instr2"),
     ];
 
     const toData: InstrumentationData[] = [
-      mockInstrumentation("instr1", [
-        { name: "metric1" } as Metric,
-        { name: "metric2" } as Metric,
-      ]),
+      mockInstrumentation("instr1", [makeMetric("metric1"), makeMetric("metric2")]),
       mockInstrumentation("instr3"),
     ];
 
@@ -88,14 +95,12 @@ describe("release-diff utility", () => {
   });
 
   it("should detect span changes as changed", () => {
+    // Spans are keyed by span_kind; adding a new kind triggers a diff
     const fromData: InstrumentationData[] = [
-      mockInstrumentation("instr1", [], [{ name: "span1" } as Span]),
+      mockInstrumentation("instr1", [], [makeSpan("CLIENT")]),
     ];
     const toData: InstrumentationData[] = [
-      mockInstrumentation("instr1", [], [
-        { name: "span1" } as Span,
-        { name: "span2" } as Span,
-      ]),
+      mockInstrumentation("instr1", [], [makeSpan("CLIENT"), makeSpan("SERVER")]),
     ];
 
     const diff = compareReleases("1.0.0", "1.1.0", fromData, toData);
@@ -105,16 +110,12 @@ describe("release-diff utility", () => {
     expect(instr1?.status).toBe("changed");
   });
 
-  it("should detect config changes as changed", () => {
+  it("should detect config description changes", () => {
     const fromData: InstrumentationData[] = [
-      mockInstrumentation("instr1", [], [], [
-        { name: "config1", description: "old desc", type: "string" } as Configuration,
-      ]),
+      mockInstrumentation("instr1", [], [], [makeConfig("config1", "old desc")]),
     ];
     const toData: InstrumentationData[] = [
-      mockInstrumentation("instr1", [], [], [
-        { name: "config1", description: "new desc", type: "string" } as Configuration,
-      ]),
+      mockInstrumentation("instr1", [], [], [makeConfig("config1", "new desc")]),
     ];
 
     const diff = compareReleases("1.0.0", "1.1.0", fromData, toData);
@@ -127,14 +128,10 @@ describe("release-diff utility", () => {
 
   it("should detect added and removed config keys", () => {
     const fromData: InstrumentationData[] = [
-      mockInstrumentation("instr1", [], [], [
-        { name: "old-config", description: "old", type: "boolean" } as Configuration,
-      ]),
+      mockInstrumentation("instr1", [], [], [makeConfig("old-config")]),
     ];
     const toData: InstrumentationData[] = [
-      mockInstrumentation("instr1", [], [], [
-        { name: "new-config", description: "new", type: "string" } as Configuration,
-      ]),
+      mockInstrumentation("instr1", [], [], [makeConfig("new-config")]),
     ];
 
     const diff = compareReleases("1.0.0", "1.1.0", fromData, toData);
@@ -146,12 +143,10 @@ describe("release-diff utility", () => {
 
   it("should compute aggregate metrics from the target release", () => {
     const toData: InstrumentationData[] = [
-      mockInstrumentation("instr1", [
-        { name: "http.requests", description: "Total HTTP requests" } as Metric,
-      ]),
+      mockInstrumentation("instr1", [makeMetric("http.requests", "Total HTTP requests")]),
       mockInstrumentation("instr2", [
-        { name: "http.requests", description: "Total HTTP requests" } as Metric,
-        { name: "db.queries", description: "Total DB queries" } as Metric,
+        makeMetric("http.requests", "Total HTTP requests"),
+        makeMetric("db.queries", "Total DB queries"),
       ]),
     ];
 
@@ -159,9 +154,7 @@ describe("release-diff utility", () => {
 
     expect(diff.aggregateMetrics).toHaveLength(2);
 
-    const httpMetric = diff.aggregateMetrics.find(
-      (m) => m.name === "http.requests",
-    );
+    const httpMetric = diff.aggregateMetrics.find((m) => m.name === "http.requests");
     expect(httpMetric?.emittedBy).toHaveLength(2);
     expect(httpMetric?.emittedBy).toContain("instr1 Display");
     expect(httpMetric?.emittedBy).toContain("instr2 Display");
@@ -182,10 +175,7 @@ describe("release-diff utility", () => {
 
   it("should sort aggregate metrics alphabetically", () => {
     const toData: InstrumentationData[] = [
-      mockInstrumentation("instr1", [
-        { name: "z.metric" } as Metric,
-        { name: "a.metric" } as Metric,
-      ]),
+      mockInstrumentation("instr1", [makeMetric("z.metric"), makeMetric("a.metric")]),
     ];
 
     const diff = compareReleases("1.0.0", "1.1.0", [], toData);

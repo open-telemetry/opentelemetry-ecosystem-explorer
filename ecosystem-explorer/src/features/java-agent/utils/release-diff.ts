@@ -66,22 +66,16 @@ export function compareReleases(
   fromVersion: string,
   toVersion: string,
   fromData: InstrumentationData[] = [],
-  toData: InstrumentationData[] = [],
+  toData: InstrumentationData[] = []
 ): ReleaseDiff {
   // Ensure we have valid arrays even if null/undefined was passed
   const safeFromData = Array.isArray(fromData) ? fromData : [];
   const safeToData = Array.isArray(toData) ? toData : [];
 
-  const fromMap = new Map(
-    safeFromData.map((d: InstrumentationData) => [d.name, d]),
-  );
-  const toMap = new Map(
-    safeToData.map((d: InstrumentationData) => [d.name, d]),
-  );
+  const fromMap = new Map(safeFromData.map((d: InstrumentationData) => [d.name, d]));
+  const toMap = new Map(safeToData.map((d: InstrumentationData) => [d.name, d]));
 
-  const allNames = Array.from(
-    new Set([...fromMap.keys(), ...toMap.keys()]),
-  ).sort();
+  const allNames = Array.from(new Set([...fromMap.keys(), ...toMap.keys()])).sort();
   const instrumentations: InstrumentationDiff[] = [];
 
   let added = 0;
@@ -112,10 +106,10 @@ export function compareReleases(
       const telemetryDiff = compareTelemetry(fromInstr, toInstr);
 
       const fromConfigs = new Map<string, Configuration>(
-        (fromInstr.configurations || []).map((c: Configuration) => [c.name, c]),
+        (fromInstr.configurations || []).map((c: Configuration) => [c.name, c])
       );
       const toConfigs = new Map<string, Configuration>(
-        (toInstr.configurations || []).map((c: Configuration) => [c.name, c]),
+        (toInstr.configurations || []).map((c: Configuration) => [c.name, c])
       );
 
       const configAdded: string[] = [];
@@ -144,14 +138,10 @@ export function compareReleases(
       }
 
       const isConfigChanged =
-        configAdded.length > 0 ||
-        configRemoved.length > 0 ||
-        configChanged.length > 0;
+        configAdded.length > 0 || configRemoved.length > 0 || configChanged.length > 0;
 
       const isTelemetryChanged =
-        telemetryDiff.metrics.some(
-          (m: MetricDiff) => m.status !== "unchanged",
-        ) ||
+        telemetryDiff.metrics.some((m: MetricDiff) => m.status !== "unchanged") ||
         telemetryDiff.spans.some((s: SpanDiff) => s.status !== "unchanged");
 
       const isChanged = isTelemetryChanged || isConfigChanged;
@@ -174,14 +164,9 @@ export function compareReleases(
     }
   }
 
-  const metricToInstrumentations = new Map<
-    string,
-    { description: string; emittedBy: string[] }
-  >();
+  const metricToInstrumentations = new Map<string, { description: string; emittedBy: string[] }>();
   for (const instr of safeToData) {
-    const defaultTelemetry = instr.telemetry?.find(
-      (t: Telemetry) => t.when === "default",
-    );
+    const defaultTelemetry = instr.telemetry?.find((t: Telemetry) => t.when === "default");
     if (defaultTelemetry?.metrics) {
       for (const metric of defaultTelemetry.metrics) {
         const existing = metricToInstrumentations.get(metric.name) || {

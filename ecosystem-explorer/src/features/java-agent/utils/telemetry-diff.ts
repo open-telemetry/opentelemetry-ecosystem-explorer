@@ -31,27 +31,22 @@ import type {
 
 export function getTelemetryForCondition(
   instrumentation: InstrumentationData | null,
-  when: string,
+  when: string
 ): Telemetry | null {
   if (!instrumentation?.telemetry) return null;
-  return (
-    instrumentation.telemetry.find((t: Telemetry) => t.when === when) ?? null
-  );
+  return instrumentation.telemetry.find((t: Telemetry) => t.when === when) ?? null;
 }
 
-export function getDefaultTelemetry(
-  instrumentation: InstrumentationData | null,
-): Telemetry | null {
+export function getDefaultTelemetry(instrumentation: InstrumentationData | null): Telemetry | null {
   return getTelemetryForCondition(instrumentation, "default");
 }
 
 export function getAvailableWhenConditions(
   base: InstrumentationData | null,
-  comparison: InstrumentationData | null,
+  comparison: InstrumentationData | null
 ): string[] {
   const baseWhens = base?.telemetry?.map((t: Telemetry) => t.when) ?? [];
-  const comparisonWhens =
-    comparison?.telemetry?.map((t: Telemetry) => t.when) ?? [];
+  const comparisonWhens = comparison?.telemetry?.map((t: Telemetry) => t.when) ?? [];
   const unique = Array.from(new Set([...baseWhens, ...comparisonWhens]));
   return unique.sort((a, b) => {
     if (a === "default") return -1;
@@ -65,12 +60,10 @@ export function getAvailableWhenConditions(
  */
 function compareAttributes(
   baseAttrs: Attribute[] = [],
-  comparisonAttrs: Attribute[] = [],
+  comparisonAttrs: Attribute[] = []
 ): AttributeChanges {
   const baseMap = new Map(baseAttrs.map((a: Attribute) => [a.name, a]));
-  const comparisonMap = new Map(
-    comparisonAttrs.map((a: Attribute) => [a.name, a]),
-  );
+  const comparisonMap = new Map(comparisonAttrs.map((a: Attribute) => [a.name, a]));
 
   const added: Attribute[] = [];
   const removed: Attribute[] = [];
@@ -105,12 +98,10 @@ function compareAttributes(
  */
 function compareMetrics(
   baseMetrics: Metric[] = [],
-  comparisonMetrics: Metric[] = [],
+  comparisonMetrics: Metric[] = []
 ): MetricDiff[] {
   const baseMap = new Map(baseMetrics.map((m: Metric) => [m.name, m]));
-  const comparisonMap = new Map(
-    comparisonMetrics.map((m: Metric) => [m.name, m]),
-  );
+  const comparisonMap = new Map(comparisonMetrics.map((m: Metric) => [m.name, m]));
   const diffs: MetricDiff[] = [];
 
   // Process all metrics from both versions
@@ -136,16 +127,13 @@ function compareMetrics(
       // Check if metric changed
       const attributeChanges = compareAttributes(
         baseMetric.attributes ?? [],
-        comparisonMetric.attributes ?? [],
+        comparisonMetric.attributes ?? []
       );
 
-      const descriptionChanged =
-        baseMetric.description !== comparisonMetric.description;
-      const dataTypeChanged =
-        baseMetric.data_type !== comparisonMetric.data_type;
+      const descriptionChanged = baseMetric.description !== comparisonMetric.description;
+      const dataTypeChanged = baseMetric.data_type !== comparisonMetric.data_type;
       const unitChanged = baseMetric.unit !== comparisonMetric.unit;
-      const instrumentChanged =
-        baseMetric.instrument !== comparisonMetric.instrument;
+      const instrumentChanged = baseMetric.instrument !== comparisonMetric.instrument;
       const attributesChanged =
         attributeChanges.added.length > 0 ||
         attributeChanges.removed.length > 0 ||
@@ -210,10 +198,7 @@ function compareMetrics(
 /**
  * Compare two spans
  */
-function compareSpans(
-  baseSpans: Span[] = [],
-  comparisonSpans: Span[] = [],
-): SpanDiff[] {
+function compareSpans(baseSpans: Span[] = [], comparisonSpans: Span[] = []): SpanDiff[] {
   const diffs: SpanDiff[] = [];
 
   // Group spans by span_kind for comparison
@@ -237,10 +222,7 @@ function compareSpans(
     const comparisonSpansOfKind = comparisonByKind.get(kind) || [];
 
     // Compare same-indexed spans of the same kind
-    const maxLength = Math.max(
-      baseSpansOfKind.length,
-      comparisonSpansOfKind.length,
-    );
+    const maxLength = Math.max(baseSpansOfKind.length, comparisonSpansOfKind.length);
 
     for (let i = 0; i < maxLength; i++) {
       const baseSpan = baseSpansOfKind[i];
@@ -262,7 +244,7 @@ function compareSpans(
         // Check if span changed
         const attributeChanges = compareAttributes(
           baseSpan.attributes ?? [],
-          comparisonSpan.attributes ?? [],
+          comparisonSpan.attributes ?? []
         );
 
         const attributesChanged =
@@ -296,22 +278,13 @@ function compareSpans(
 export function compareTelemetry(
   baseInstrumentation: InstrumentationData | null,
   comparisonInstrumentation: InstrumentationData | null,
-  when: string = "default",
+  when: string = "default"
 ): TelemetryDiffResult {
   const baseTelemetry = getTelemetryForCondition(baseInstrumentation, when);
-  const comparisonTelemetry = getTelemetryForCondition(
-    comparisonInstrumentation,
-    when,
-  );
+  const comparisonTelemetry = getTelemetryForCondition(comparisonInstrumentation, when);
 
-  const metrics = compareMetrics(
-    baseTelemetry?.metrics ?? [],
-    comparisonTelemetry?.metrics ?? [],
-  );
-  const spans = compareSpans(
-    baseTelemetry?.spans ?? [],
-    comparisonTelemetry?.spans ?? [],
-  );
+  const metrics = compareMetrics(baseTelemetry?.metrics ?? [], comparisonTelemetry?.metrics ?? []);
+  const spans = compareSpans(baseTelemetry?.spans ?? [], comparisonTelemetry?.spans ?? []);
 
   return { metrics, spans };
 }
