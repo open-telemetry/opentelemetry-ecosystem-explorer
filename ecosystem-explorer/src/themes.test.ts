@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, it, expect } from "vitest";
-import { themes, resolveThemeId, DEFAULT_THEME } from "./themes";
+import { themes, DEFAULT_THEME } from "./themes";
 
 const COLOR_KEYS = [
   "primary",
@@ -45,16 +45,5 @@ describe("themes", () => {
 
   it("DEFAULT_THEME is dark", () => {
     expect(DEFAULT_THEME).toBe("dark");
-  });
-});
-
-describe("resolveThemeId", () => {
-  it("resolves dark-blue to dark", () => {
-    expect(resolveThemeId("dark-blue")).toBe("dark");
-  });
-
-  it("passes through light and dark unchanged", () => {
-    expect(resolveThemeId("light")).toBe("light");
-    expect(resolveThemeId("dark")).toBe("dark");
   });
 });

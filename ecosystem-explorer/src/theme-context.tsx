@@ -69,6 +69,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (mode !== "auto") return;
     const mql = window.matchMedia("(prefers-color-scheme: dark)");
+    setSystemTheme(mql.matches ? "dark" : "light");
     const handler = (e: MediaQueryListEvent) => {
       setSystemTheme(e.matches ? "dark" : "light");
     };

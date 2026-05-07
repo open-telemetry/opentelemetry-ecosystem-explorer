@@ -25,6 +25,7 @@ interface GlowBadgeProps {
 }
 
 const variantStyles: Record<BadgeVariant, { base: string; glow: string }> = {
+  // TODO(#84 PR 4): rename variant or remap tokens — "primary" currently uses secondary tokens after the brand swap.
   primary: {
     base: "bg-secondary/10 border-secondary/30 text-secondary",
     glow: "shadow-sm shadow-secondary/20",

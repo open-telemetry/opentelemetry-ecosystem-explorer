@@ -17,6 +17,9 @@
  *
  * Surface tokens differ per theme; syntax tokens reuse the dark palette in
  * light mode for now (revisit when a light-mode syntax consumer lands).
+ *
+ * Note: dark-theme surface tokens are applied globally (no V1_REDESIGN gate).
+ * V1_REDESIGN gates UI components and layout; the base palette ships on merge.
  */
 
 @layer theme {

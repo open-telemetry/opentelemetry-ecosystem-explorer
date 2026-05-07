@@ -28,9 +28,6 @@
 
 export type ResolvedThemeId = "light" | "dark";
 
-/** "dark-blue" kept as a backwards-compat alias; resolves to "dark". Drop in PR 8. */
-export type ThemeId = ResolvedThemeId | "dark-blue";
-
 export interface Theme {
   id: ResolvedThemeId;
   name: string;
@@ -107,7 +104,5 @@ const light: Theme = {
 };
 
 export const themes: Record<ResolvedThemeId, Theme> = { light, dark };
-
-export const resolveThemeId = (id: ThemeId): ResolvedThemeId => (id === "dark-blue" ? "dark" : id);
 
 export const DEFAULT_THEME: ResolvedThemeId = "dark";
