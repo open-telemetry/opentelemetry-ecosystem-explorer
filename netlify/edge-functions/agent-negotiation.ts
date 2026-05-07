@@ -31,6 +31,7 @@ export default async (request: Request, context: Context) => {
         return new Response("Not Found", { status: 404 });
       }
       response.headers.set("Content-Type", "text/plain; charset=UTF-8");
+      response.headers.set("Vary", "Accept");
       return response;
     }
     return new Response("Not Found", { status: 404 });
@@ -58,9 +59,12 @@ export default async (request: Request, context: Context) => {
           ? "text/markdown; charset=UTF-8"
           : "text/plain; charset=UTF-8";
         response.headers.set("Content-Type", finalContentType);
+        response.headers.set("Vary", "Accept");
         return response;
       }
     }
+    // Strict 404 for unrecognized Markdown requests (Copilot feedback)
+    return new Response("Not Found", { status: 404 });
   }
 
   // Explicit agent documentation routes
