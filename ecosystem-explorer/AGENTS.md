@@ -1,8 +1,8 @@
 # AGENTS.md — ecosystem-explorer
 
 React 19 + Vite + TypeScript frontend that provides search and exploration for the OpenTelemetry
-ecosystem. Tailwind CSS v4 for styling, Radix UI primitives, Vitest for unit tests, Playwright for
-integration tests.
+ecosystem. Tailwind CSS v4 for styling, Radix UI primitives, Vitest for both unit and integration
+tests (Playwright is used only by `scripts/take-screenshots.mjs`).
 
 For design system reference (colors, typography, spacing, component patterns) see `DESIGN.md` in
 this directory.
@@ -18,7 +18,7 @@ All commands run from `ecosystem-explorer/` with `bun`:
 - `bun run format` — Prettier write
 - `bun run test` — Unit tests (Vitest with jsdom)
 - `bun run test -t "<name>"` — Run a single unit test by name
-- `bun run test:integration` — Playwright-based integration tests
+- `bun run test:integration` — Vitest integration tests (config: `vitest.integration.config.ts`)
 
 ## Project structure
 

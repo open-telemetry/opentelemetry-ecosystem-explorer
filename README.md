@@ -53,8 +53,9 @@ For more information about the maintainer role, see the
 
 ## Approvers
 
-- [Vitor Vasconcellos](https://github.com/vitorvasc), Mercado Libre
+- [Vitor Vasconcellos](https://github.com/vitorvasc)
 - [Marylia Gutierrez](https://github.com/maryliag), Grafana Labs
+- [Luca Cavenaghi](https://github.com/lucacavenaghi97), Akamas Labs
 
 For more information about the approver role, see the
 [community repository](https://github.com/open-telemetry/community/blob/main/guides/contributor/membership.md#approver).

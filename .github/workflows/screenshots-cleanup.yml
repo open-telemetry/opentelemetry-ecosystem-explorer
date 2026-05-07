@@ -1,0 +1,51 @@
+name: PR Screenshots - Cleanup
+
+# Deletes the screenshots subfolder for a closed PR from the upstream
+# `screenshots` orphan branch. Uses pull_request_target (not pull_request)
+# so the token has contents: write even when the PR comes from a fork.
+# No PR code is checked out here — only the upstream screenshots branch.
+
+on:
+  pull_request_target:
+    branches: [main]
+    types: [closed]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: screenshots-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Delete PR screenshots
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if ! git ls-remote --exit-code --heads origin screenshots > /dev/null 2>&1; then
+            echo "No screenshots branch found, nothing to clean up."
+            exit 0
+          fi
+
+          git fetch origin screenshots
+          git checkout -B screenshots FETCH_HEAD
+
+          if [ ! -d "${PR_NUMBER}" ]; then
+            echo "No screenshots for PR #${PR_NUMBER}, nothing to clean up."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git rm -rf "${PR_NUMBER}/"
+          git commit -m "chore: remove screenshots for PR #${PR_NUMBER}"
+          git push origin screenshots
