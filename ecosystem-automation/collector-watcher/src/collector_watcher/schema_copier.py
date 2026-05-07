@@ -12,7 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-"""Copies and hashes the upstream collector metadata schema file."""
+"""Stores the upstream collector metadata schema in content-addressable storage.
+
+The schema is stored once per distinct content under
+``meta/schemas/{hash}.yaml`` rather than once per release. This means a schema
+that is unchanged across many collector releases occupies a single file, and
+``schema_hash`` recorded on a component YAML directly identifies the file
+holding that schema (no version directory lookup required).
+"""
 
 import logging
 import shutil
@@ -22,54 +29,61 @@ from watcher_common.content_hashing import compute_content_hash
 
 logger = logging.getLogger(__name__)
 
-# Location of the schema file within the upstream opentelemetry-collector repo
 SCHEMA_RELATIVE_PATH = "cmd/mdatagen/metadata-schema.yaml"
-SCHEMA_FILENAME = "metadata-schema.yaml"
 
-# Sentinel returned when the schema file is absent (older tags pre-date the file)
 UNKNOWN_HASH = "unknown"
 
 
 class CollectorSchemaCopier:
-    """Copies and hashes metadata-schema.yaml from a collector repo checkout."""
+    """Stores metadata-schema.yaml from a collector repo into content-addressable storage."""
 
-    def copy_schema(self, repo_path: Path, target_dir: Path) -> str | None:
+    def store_schema(self, repo_path: Path, schemas_dir: Path) -> str | None:
         """
-        Copy metadata-schema.yaml from the upstream repository to target_dir.
+        Copy metadata-schema.yaml from the upstream repo into a hash-named file.
+
+        The destination is ``schemas_dir / f"{schema_hash}.yaml"``. If a file
+        with that name already exists (because the same schema content was
+        stored previously), the copy is skipped — the existing file is the
+        canonical record. Returns the schema hash on success.
 
         Args:
             repo_path: Path to the checked-out collector repository.
-            target_dir: Directory to copy the schema file into.
+            schemas_dir: Content-addressable storage directory (typically
+                ``ecosystem-registry/collector/meta/schemas``).
 
         Returns:
-            The destination filename on success, None if the schema file is
-            absent in the repository (graceful degradation for older tags).
+            The 12-char schema hash on success, or None if the upstream repo
+            does not contain ``cmd/mdatagen/metadata-schema.yaml`` (older tags
+            pre-date the file).
         """
         src = repo_path / SCHEMA_RELATIVE_PATH
         if not src.exists():
-            logger.debug("Schema file not found in repo at %s, skipping copy", src)
+            logger.debug("Schema file not found in repo at %s, skipping store", src)
             return None
 
-        target_dir.mkdir(parents=True, exist_ok=True)
-        dst = target_dir / SCHEMA_FILENAME
+        schema_hash = compute_content_hash(src.read_bytes())
+        dst = schemas_dir / f"{schema_hash}.yaml"
+        if dst.exists():
+            logger.debug("Schema %s already stored at %s, skipping copy", schema_hash, dst)
+            return schema_hash
+
+        schemas_dir.mkdir(parents=True, exist_ok=True)
         shutil.copy2(src, dst)
-        logger.debug("Copied schema to %s", dst)
-        return SCHEMA_FILENAME
+        logger.debug("Stored schema %s at %s", schema_hash, dst)
+        return schema_hash
 
     def compute_schema_hash(self, schema_path: Path) -> str:
         """
-        Compute a stable content hash of the schema file.
+        Compute the content hash of a schema file.
 
-        Uses SHA-256 of the raw file bytes, truncated to 12 hex characters.
-        Returns the sentinel UNKNOWN_HASH if the file does not exist, so
-        registry files written against older tags that lack the schema file
-        carry an explicit marker rather than a missing field.
+        Returns ``UNKNOWN_HASH`` when the file is absent — used by component
+        YAMLs scanned from older collector tags that pre-date the schema file.
 
         Args:
             schema_path: Path to the schema file.
 
         Returns:
-            12-character hex hash string, or UNKNOWN_HASH.
+            12-character hex hash, or ``UNKNOWN_HASH``.
         """
         if not schema_path.exists():
             return UNKNOWN_HASH

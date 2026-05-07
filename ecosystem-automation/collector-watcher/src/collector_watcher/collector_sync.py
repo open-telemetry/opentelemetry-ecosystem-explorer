@@ -24,7 +24,7 @@ from watcher_common.version_detector import VersionDetector
 from .component_scanner import ComponentScanner
 from .deprecation_detector import DeprecationDetector
 from .inventory_manager import InventoryManager
-from .schema_copier import SCHEMA_RELATIVE_PATH, CollectorSchemaCopier
+from .schema_copier import CollectorSchemaCopier
 from .type_defs import DistributionName
 
 logger = logging.getLogger(__name__)
@@ -165,16 +165,19 @@ class CollectorSync:
         """
         Save scanned components for a specific version.
 
-        Records the schema content hash in every component YAML file for drift
-        detection and parser routing. When saving the core distribution, also
-        copies metadata-schema.yaml into the shared meta/ directory — once per
-        version, since the schema belongs to the opentelemetry-collector core repo
-        and is identical across distributions.
+        Stores the upstream schema in content-addressable storage at
+        ``meta/schemas/{hash}.yaml`` (deduplicated across versions and
+        distributions) and records that hash in every component YAML for
+        drift detection and parser routing.
 
-        Registry layout after this call (core example):
+        Schema is always read from the core repo: ``mdatagen`` lives only in
+        ``opentelemetry-collector``, and the schema is identical across
+        distributions, so contrib carries the same ``schema_hash`` as core.
+
+        Registry layout after this call:
             ecosystem-registry/collector/
-                core/v{version}/*.yaml          (component data, each with schema_hash)
-                meta/v{version}/metadata-schema.yaml  (shared schema copy)
+                {distribution}/v{version}/*.yaml   (component data, each with schema_hash)
+                meta/schemas/{hash}.yaml           (one file per distinct schema)
 
         Args:
             distribution: Distribution name
@@ -182,11 +185,9 @@ class CollectorSync:
             components: Scanned components
         """
         copier = CollectorSchemaCopier()
-        # Schema lives only in core (mdatagen is not in contrib). Read it from
-        # core regardless of which distribution we're saving so contrib carries
-        # the same schema_hash as the corresponding core checkout.
         core_repo_path = Path(self.repos["core"])
-        schema_hash = copier.compute_schema_hash(core_repo_path / SCHEMA_RELATIVE_PATH)
+        stored_hash = copier.store_schema(core_repo_path, self.inventory_manager.meta_schemas_dir())
+        schema_hash = stored_hash if stored_hash is not None else "unknown"
 
         repository = self.get_repository_name(distribution)
         self.inventory_manager.save_versioned_inventory(
@@ -196,11 +197,6 @@ class CollectorSync:
             repository=repository,
             schema_hash=schema_hash,
         )
-
-        # Copy the schema file once, from core, into the shared meta/ directory.
-        if distribution == "core":
-            meta_dir = self.inventory_manager.meta_schema_path(version).parent
-            copier.copy_schema(core_repo_path, meta_dir)
 
         logger.info("  Saved %s %s (schema_hash=%s)", distribution, version, schema_hash)
 

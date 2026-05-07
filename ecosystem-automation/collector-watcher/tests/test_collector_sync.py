@@ -184,10 +184,10 @@ def test_save_version_contrib_reads_schema_hash_from_core(
     assert contrib_hash == core_hash
 
 
-def test_save_version_copies_schema_to_meta_dir_when_present(
+def test_save_version_stores_schema_in_cas_when_present(
     collector_sync, sample_components, temp_inventory_dir, temp_git_repos
 ):
-    """metadata-schema.yaml is copied into the shared meta/ directory, not the distribution dir."""
+    """The schema is stored at meta/schemas/{hash}.yaml, not under a distribution directory."""
     schema_dir = Path(temp_git_repos["core"]) / "cmd" / "mdatagen"
     schema_dir.mkdir(parents=True, exist_ok=True)
     (schema_dir / "metadata-schema.yaml").write_text("type: object\n")
@@ -195,43 +195,42 @@ def test_save_version_copies_schema_to_meta_dir_when_present(
     version = Version("0.112.0")
     collector_sync.save_version("core", version, sample_components)
 
-    # Schema is in the shared meta/ directory
-    meta_path = temp_inventory_dir / "meta" / "v0.112.0" / "metadata-schema.yaml"
-    assert meta_path.exists()
-    assert meta_path.read_text() == "type: object\n"
+    with open(temp_inventory_dir / "core" / "v0.112.0" / "receiver.yaml") as f:
+        schema_hash = yaml.safe_load(f)["schema_hash"]
+
+    schemas_dir = temp_inventory_dir / "meta" / "schemas"
+    stored = schemas_dir / f"{schema_hash}.yaml"
+    assert stored.exists()
+    assert stored.read_text() == "type: object\n"
 
     # Schema is NOT duplicated inside the distribution directory
     assert not (temp_inventory_dir / "core" / "v0.112.0" / "metadata-schema.yaml").exists()
 
 
-def test_save_version_schema_only_copied_for_core_not_contrib(
+def test_save_version_cas_dedupes_across_distributions(
     collector_sync, sample_components, temp_inventory_dir, temp_git_repos
 ):
-    """Schema file is written to meta/ when saving core, not when saving contrib."""
-    for dist in ["core", "contrib"]:
-        schema_dir = Path(temp_git_repos[dist]) / "cmd" / "mdatagen"
-        schema_dir.mkdir(parents=True, exist_ok=True)
-        (schema_dir / "metadata-schema.yaml").write_text(f"type: {dist}\n")
+    """Saving core and contrib at the same schema content yields a single CAS file."""
+    schema_dir = Path(temp_git_repos["core"]) / "cmd" / "mdatagen"
+    schema_dir.mkdir(parents=True, exist_ok=True)
+    (schema_dir / "metadata-schema.yaml").write_text("type: object\n")
 
     version = Version("0.112.0")
-
-    # Save contrib first — should NOT create meta/ schema
     collector_sync.save_version("contrib", version, sample_components)
-    assert not (temp_inventory_dir / "meta" / "v0.112.0" / "metadata-schema.yaml").exists()
-
-    # Save core — should create meta/ schema (from core repo)
     collector_sync.save_version("core", version, sample_components)
-    meta_path = temp_inventory_dir / "meta" / "v0.112.0" / "metadata-schema.yaml"
-    assert meta_path.exists()
-    assert meta_path.read_text() == "type: core\n"
+
+    schemas_dir = temp_inventory_dir / "meta" / "schemas"
+    stored_files = list(schemas_dir.glob("*.yaml"))
+    assert len(stored_files) == 1
 
 
 def test_save_version_does_not_create_schema_file_when_absent(collector_sync, sample_components, temp_inventory_dir):
-    """When the upstream repo has no schema file, no metadata-schema.yaml is written anywhere."""
+    """When core has no schema, nothing is written to meta/schemas/ and schema_hash is 'unknown'."""
     version = Version("0.112.0")
     collector_sync.save_version("core", version, sample_components)
 
-    assert not (temp_inventory_dir / "meta" / "v0.112.0" / "metadata-schema.yaml").exists()
+    schemas_dir = temp_inventory_dir / "meta" / "schemas"
+    assert not schemas_dir.exists() or not any(schemas_dir.iterdir())
     assert not (temp_inventory_dir / "core" / "v0.112.0" / "metadata-schema.yaml").exists()
 
 

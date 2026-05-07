@@ -84,10 +84,7 @@ jobs:
         if: always()
         run: |
           FRESH="tmp_repos/opentelemetry-collector/cmd/mdatagen/metadata-schema.yaml"
-
-          # Find the most recent release version's stored schema snapshot from meta/
-          STORED=$(find ecosystem-registry/collector/meta -name metadata-schema.yaml \
-            -not -path "*SNAPSHOT*" 2>/dev/null | sort -V | tail -1)
+          SCHEMAS_DIR="ecosystem-registry/collector/meta/schemas"
 
           if [ ! -f "$FRESH" ]; then
             echo "Fresh schema not found in cloned repo, skipping drift detection"
@@ -95,22 +92,39 @@ jobs:
             exit 0
           fi
 
-          if [ ! -f "$STORED" ]; then
-            echo "No stored schema baseline found yet, skipping drift detection"
+          # Schemas are stored in CAS at meta/schemas/{hash}.yaml. If a file
+          # already exists for the fresh content's hash, we've stored it
+          # before — no drift.
+          FRESH_HASH=$(sha256sum "$FRESH" | cut -c1-12)
+          if [ -f "$SCHEMAS_DIR/$FRESH_HASH.yaml" ]; then
             echo "schema_changed=false" >> $GITHUB_OUTPUT
             exit 0
           fi
 
-          if ! diff -q "$FRESH" "$STORED" > /dev/null 2>&1; then
-            echo "schema_changed=true" >> $GITHUB_OUTPUT
+          # Drift detected. Diff against the schema referenced by the latest
+          # non-SNAPSHOT release (any component YAML in that version directory
+          # carries the canonical schema_hash) so the issue body shows what
+          # actually changed.
+          LATEST_VERSION=$(ls ecosystem-registry/collector/core 2>/dev/null \
+            | grep -v SNAPSHOT | sort -V | tail -1)
+          STORED=""
+          if [ -n "$LATEST_VERSION" ]; then
+            REF_FILE=$(find "ecosystem-registry/collector/core/$LATEST_VERSION" \
+              -name '*.yaml' 2>/dev/null | head -1)
+            if [ -n "$REF_FILE" ]; then
+              STORED_HASH=$(grep '^schema_hash:' "$REF_FILE" | awk '{print $2}')
+              [ -f "$SCHEMAS_DIR/$STORED_HASH.yaml" ] && STORED="$SCHEMAS_DIR/$STORED_HASH.yaml"
+            fi
+          fi
+
+          echo "schema_changed=true" >> $GITHUB_OUTPUT
+          if [ -n "$STORED" ]; then
             DIFF_OUTPUT=$(diff "$STORED" "$FRESH" | head -80 || true)
             {
               echo "schema_diff<<SCHEMA_DIFF_EOF"
               echo "$DIFF_OUTPUT"
               echo "SCHEMA_DIFF_EOF"
             } >> $GITHUB_OUTPUT
-          else
-            echo "schema_changed=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Run java-instrumentation-watcher
