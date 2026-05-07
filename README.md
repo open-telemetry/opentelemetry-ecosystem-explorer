@@ -53,7 +53,7 @@ For more information about the maintainer role, see the
 
 ## Approvers
 
-- [Vitor Vasconcellos](https://github.com/vitorvasc), Mercado Libre
+- [Vitor Vasconcellos](https://github.com/vitorvasc)
 - [Marylia Gutierrez](https://github.com/maryliag), Grafana Labs
 - [Luca Cavenaghi](https://github.com/lucacavenaghi97), Akamas Labs
 
