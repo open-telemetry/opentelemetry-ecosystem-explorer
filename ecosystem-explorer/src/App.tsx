@@ -20,49 +20,57 @@ import { Footer } from "@/components/layout/footer";
 import { isEnabled } from "@/lib/feature-flags";
 
 const HomePage = lazy(() =>
-  import("@/features/home/home-page").then((m) => ({ default: m.HomePage }))
+  import("@/features/home/home-page").then((m) => ({ default: m.HomePage })),
 );
 const JavaAgentPage = lazy(() =>
-  import("@/features/java-agent/java-agent-page").then((m) => ({ default: m.JavaAgentPage }))
+  import("@/features/java-agent/java-agent-page").then((m) => ({
+    default: m.JavaAgentPage,
+  })),
 );
 const CollectorPage = lazy(() =>
-  import("@/features/collector/collector-page").then((m) => ({ default: m.CollectorPage }))
+  import("@/features/collector/collector-page").then((m) => ({
+    default: m.CollectorPage,
+  })),
 );
 const CollectorDetailPage = lazy(() =>
   import("@/features/collector/collector-detail-page").then((m) => ({
     default: m.CollectorDetailPage,
-  }))
+  })),
 );
 const NotFoundPage = lazy(() =>
-  import("@/features/not-found/not-found-page").then((m) => ({ default: m.NotFoundPage }))
+  import("@/features/not-found/not-found-page").then((m) => ({
+    default: m.NotFoundPage,
+  })),
 );
 const JavaInstrumentationListPage = lazy(() =>
   import("@/features/java-agent/java-instrumentation-list-page").then((m) => ({
     default: m.JavaInstrumentationListPage,
-  }))
+  })),
 );
 const JavaConfigurationListPage = lazy(() =>
   import("@/features/java-agent/java-configuration-list-page").then((m) => ({
     default: m.JavaConfigurationListPage,
-  }))
+  })),
 );
 const JavaReleaseComparisonPage = lazy(() =>
   import("@/features/java-agent/java-release-comparison-page").then((m) => ({
     default: m.JavaReleaseComparisonPage,
-  }))
+  })),
 );
 const InstrumentationDetailPage = lazy(() =>
   import("@/features/java-agent/instrumentation-detail-page").then((m) => ({
     default: m.InstrumentationDetailPage,
-  }))
+  })),
 );
 const ConfigurationBuilderPage = lazy(() =>
-  import("@/features/java-agent/configuration/configuration-builder-page").then((m) => ({
-    default: m.ConfigurationBuilderPage,
-  }))
+  import("@/features/java-agent/configuration/configuration-builder-page").then(
+    (m) => ({
+      default: m.ConfigurationBuilderPage,
+    }),
+  ),
 );
 const AboutPage = lazy(() =>
-  import("@/features/about/about-page").then((m) => ({ default: m.AboutPage }))
+  import("@/features/about/about-page").then((m) => ({ default: m.AboutPage })),
 );
 
 export default function App() {
@@ -75,7 +83,10 @@ export default function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/java-agent" element={<JavaAgentPage />} />
-              <Route path="/java-agent/instrumentation" element={<JavaInstrumentationListPage />} />
+              <Route
+                path="/java-agent/instrumentation"
+                element={<JavaInstrumentationListPage />}
+              />
               <Route
                 path="/java-agent/instrumentation/:version"
                 element={<JavaInstrumentationListPage />}
@@ -84,9 +95,15 @@ export default function App() {
                 path="/java-agent/instrumentation/:version/:name"
                 element={<InstrumentationDetailPage />}
               />
-              <Route path="/java-agent/configuration" element={<JavaConfigurationListPage />} />
+              <Route
+                path="/java-agent/configuration"
+                element={<JavaConfigurationListPage />}
+              />
               {isEnabled("JAVA_RELEASE_COMPARISON") && (
-                <Route path="/java-agent/releases" element={<JavaReleaseComparisonPage />} />
+                <Route
+                  path="/java-agent/releases"
+                  element={<JavaReleaseComparisonPage />}
+                />
               )}
               {isEnabled("JAVA_CONFIG_BUILDER") && (
                 <Route
@@ -97,8 +114,14 @@ export default function App() {
               <Route path="/collector" element={<CollectorPage />} />
               {isEnabled("COLLECTOR_PAGE") && (
                 <>
-                  <Route path="/collector/components" element={<CollectorPage />} />
-                  <Route path="/collector/components/:version" element={<CollectorPage />} />
+                  <Route
+                    path="/collector/components"
+                    element={<CollectorPage />}
+                  />
+                  <Route
+                    path="/collector/components/:version"
+                    element={<CollectorPage />}
+                  />
                   <Route
                     path="/collector/components/:version/:id"
                     element={<CollectorDetailPage />}
