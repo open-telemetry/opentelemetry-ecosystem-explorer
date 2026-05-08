@@ -32,9 +32,7 @@
       "unit": "{file}"
     },
     "file.ctime": {
-      "attributes": [
-        "file.permissions"
-      ],
+      "attributes": ["file.permissions"],
       "description": "Elapsed time since the last change of the file or folder, in seconds since Epoch. In addition to `file.mtime`, this metric tracks metadata changes such as permissions or renaming the file.",
       "enabled": false,
       "stability": "development",
@@ -71,18 +69,12 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "atoulme"
-      ],
+      "active": ["atoulme"],
       "seeking_new": true
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "metrics"
-      ]
+      "beta": ["metrics"]
     }
   },
   "type": "receiver"

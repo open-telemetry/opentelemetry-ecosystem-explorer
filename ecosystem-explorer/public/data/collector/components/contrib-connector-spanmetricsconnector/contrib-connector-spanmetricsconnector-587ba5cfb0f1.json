@@ -9,23 +9,13 @@
   "status": {
     "class": "connector",
     "codeowners": {
-      "active": [
-        "portertech",
-        "Frapschen",
-        "iblancasa"
-      ],
-      "emeritus": [
-        "albertteoh"
-      ],
+      "active": ["portertech", "Frapschen", "iblancasa"],
+      "emeritus": ["albertteoh"],
       "seeking_new": true
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "traces_to_metrics"
-      ]
+      "alpha": ["traces_to_metrics"]
     }
   },
   "type": "connector"

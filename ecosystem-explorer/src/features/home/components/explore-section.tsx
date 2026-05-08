@@ -16,6 +16,7 @@
 import { JavaIcon } from "@/components/icons/java-icon";
 import { PipelineIcon } from "@/components/icons/pipeline-icon";
 import { NavigationCard } from "@/components/ui/navigation-card";
+import { Activity } from "lucide-react";
 
 export function ExploreSection() {
   return (
@@ -31,7 +32,7 @@ export function ExploreSection() {
 
       <div className="relative mx-auto max-w-6xl">
         {/* Navigation cards */}
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-3">
           <NavigationCard
             title="OpenTelemetry Java Agent"
             description="Explore auto-instrumentation for Java applications. Discover supported libraries, configuration options, and emitted telemetry."
@@ -43,6 +44,16 @@ export function ExploreSection() {
             description="Navigate Collector components like receivers, processors, and exporters."
             href="/collector"
             icon={<PipelineIcon className="h-20 w-20" />}
+          />
+          <NavigationCard
+            title="Prometheus Ecosystem"
+            description="Explore the Prometheus ecosystem. Discover official and community exporters and client libraries."
+            href="/prometheus"
+            icon={
+              <div className="bg-primary/10 flex h-20 w-20 items-center justify-center rounded-2xl">
+                <Activity className="text-primary h-12 w-12" />
+              </div>
+            }
           />
         </div>
       </div>

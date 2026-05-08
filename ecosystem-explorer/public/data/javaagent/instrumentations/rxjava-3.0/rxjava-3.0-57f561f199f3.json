@@ -9,14 +9,10 @@
   ],
   "description": "This instrumentation enables context propagation for RxJava 3 reactive streams and adds support for @WithSpan annotations on methods that return RxJava 3 types. It does not emit any telemetry on its own.",
   "display_name": "RxJava",
-  "features": [
-    "CONTEXT_PROPAGATION"
-  ],
+  "features": ["CONTEXT_PROPAGATION"],
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": [
-    "io.reactivex.rxjava3:rxjava:[3.0.0,3.1.0]"
-  ],
+  "javaagent_target_versions": ["io.reactivex.rxjava3:rxjava:[3.0.0,3.1.0]"],
   "library_link": "https://github.com/ReactiveX/RxJava/tree/3.x",
   "name": "rxjava-3.0",
   "scope": {

@@ -9,18 +9,11 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "yotamloe"
-      ]
+      "active": ["yotamloe"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "logs",
-        "traces"
-      ]
+      "beta": ["logs", "traces"]
     }
   },
   "type": "exporter"

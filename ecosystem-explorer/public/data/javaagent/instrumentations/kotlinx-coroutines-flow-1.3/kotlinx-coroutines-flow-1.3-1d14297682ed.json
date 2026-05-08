@@ -12,7 +12,5 @@
     "name": "io.opentelemetry.kotlinx-coroutines-flow-1.3"
   },
   "source_path": "instrumentation/kotlinx-coroutines/kotlinx-coroutines-flow-1.3",
-  "tags": [
-    "kotlinx"
-  ]
+  "tags": ["kotlinx"]
 }

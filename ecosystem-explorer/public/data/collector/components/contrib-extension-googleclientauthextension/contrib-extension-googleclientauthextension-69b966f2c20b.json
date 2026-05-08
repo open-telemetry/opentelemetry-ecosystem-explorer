@@ -9,22 +9,11 @@
   "status": {
     "class": "extension",
     "codeowners": {
-      "active": [
-        "dashpole",
-        "aabmass",
-        "braydonk",
-        "jsuereth",
-        "psx95",
-        "ridwanmsharif"
-      ]
+      "active": ["dashpole", "aabmass", "braydonk", "jsuereth", "psx95", "ridwanmsharif"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "extension"
-      ]
+      "beta": ["extension"]
     }
   },
   "type": "extension"

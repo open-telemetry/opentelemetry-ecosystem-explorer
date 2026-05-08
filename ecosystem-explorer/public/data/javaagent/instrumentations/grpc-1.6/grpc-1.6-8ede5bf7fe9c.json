@@ -18,10 +18,7 @@
       "declarative_name": "java.grpc.capture_metadata.client.request",
       "default": "",
       "description": "A comma-separated list of request metadata keys. gRPC client instrumentation will capture metadata values corresponding to configured keys as span attributes.",
-      "examples": [
-        "custom-request-header",
-        "my-metadata-key,another-metadata-key"
-      ],
+      "examples": ["custom-request-header", "my-metadata-key,another-metadata-key"],
       "name": "otel.instrumentation.grpc.capture-metadata.client.request",
       "type": "list"
     },
@@ -37,9 +34,7 @@
   "display_name": "gRPC",
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": [
-    "io.grpc:grpc-core:[1.6.0,)"
-  ],
+  "javaagent_target_versions": ["io.grpc:grpc-core:[1.6.0,)"],
   "library_link": "https://github.com/grpc/grpc-java",
   "name": "grpc-1.6",
   "scope": {

@@ -10,10 +10,7 @@
   ],
   "description": "This instrumentation enriches HTTP server spans with route information, and enables controller spans for the Finatra web framework (controller spans are disabled by default).",
   "display_name": "Finatra",
-  "features": [
-    "HTTP_ROUTE",
-    "CONTROLLER_SPANS"
-  ],
+  "features": ["HTTP_ROUTE", "CONTROLLER_SPANS"],
   "has_javaagent": true,
   "javaagent_target_versions": [
     "com.twitter:finatra-http_2.11:[2.9.0,]",
@@ -25,9 +22,7 @@
     "name": "io.opentelemetry.finatra-2.9"
   },
   "source_path": "instrumentation/finatra-2.9",
-  "tags": [
-    "finatra"
-  ],
+  "tags": ["finatra"],
   "telemetry": [
     {
       "spans": [

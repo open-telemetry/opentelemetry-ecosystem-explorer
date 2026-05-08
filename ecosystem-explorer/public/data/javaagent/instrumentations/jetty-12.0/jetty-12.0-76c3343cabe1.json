@@ -28,9 +28,7 @@
   "description": "This instrumentation enables HTTP server spans and HTTP server metrics for Jetty.",
   "display_name": "Eclipse Jetty",
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "org.eclipse.jetty:jetty-server:[12,)"
-  ],
+  "javaagent_target_versions": ["org.eclipse.jetty:jetty-server:[12,)"],
   "library_link": "https://eclipse.dev/jetty/",
   "minimum_java_version": 17,
   "name": "jetty-12.0",
@@ -38,14 +36,9 @@
     "name": "io.opentelemetry.jetty-12.0",
     "schema_url": "https://opentelemetry.io/schemas/1.37.0"
   },
-  "semantic_conventions": [
-    "HTTP_SERVER_SPANS",
-    "HTTP_SERVER_METRICS"
-  ],
+  "semantic_conventions": ["HTTP_SERVER_SPANS", "HTTP_SERVER_METRICS"],
   "source_path": "instrumentation/jetty/jetty-12.0",
-  "tags": [
-    "jetty"
-  ],
+  "tags": ["jetty"],
   "telemetry": [
     {
       "metrics": [

@@ -9,15 +9,10 @@
   "status": {
     "class": "pkg",
     "codeowners": {
-      "active": [
-        "mx-psi",
-        "dmathieu"
-      ]
+      "active": ["mx-psi", "dmathieu"]
     },
     "stability": {
-      "alpha": [
-        "profiles"
-      ]
+      "alpha": ["profiles"]
     }
   },
   "type": "connector"

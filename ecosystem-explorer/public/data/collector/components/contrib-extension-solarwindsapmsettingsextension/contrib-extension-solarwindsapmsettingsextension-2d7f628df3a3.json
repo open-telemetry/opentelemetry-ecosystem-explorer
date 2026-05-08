@@ -9,16 +9,11 @@
   "status": {
     "class": "extension",
     "codeowners": {
-      "active": [
-        "jerrytfleung",
-        "cheempz"
-      ]
+      "active": ["jerrytfleung", "cheempz"]
     },
     "distributions": [],
     "stability": {
-      "development": [
-        "extension"
-      ]
+      "development": ["extension"]
     }
   },
   "type": "extension"

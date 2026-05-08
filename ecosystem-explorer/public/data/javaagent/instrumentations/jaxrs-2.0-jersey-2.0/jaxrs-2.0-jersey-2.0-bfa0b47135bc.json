@@ -17,10 +17,7 @@
   ],
   "description": "This instrumentation enriches HTTP server spans with route information, and enables controller spans for JAX-RS methods when using Jersey (controller spans are disabled by default).",
   "display_name": "Eclipse Jersey JAX-RS 2.x",
-  "features": [
-    "HTTP_ROUTE",
-    "CONTROLLER_SPANS"
-  ],
+  "features": ["HTTP_ROUTE", "CONTROLLER_SPANS"],
   "has_javaagent": true,
   "javaagent_target_versions": [
     "org.glassfish.jersey.core:jersey-server:[2.0,3.0.0)",
@@ -32,9 +29,7 @@
     "name": "io.opentelemetry.jaxrs-2.0-jersey-2.0"
   },
   "source_path": "instrumentation/jaxrs/jaxrs-2.0/jaxrs-2.0-jersey-2.0",
-  "tags": [
-    "jaxrs"
-  ],
+  "tags": ["jaxrs"],
   "telemetry": [
     {
       "spans": [

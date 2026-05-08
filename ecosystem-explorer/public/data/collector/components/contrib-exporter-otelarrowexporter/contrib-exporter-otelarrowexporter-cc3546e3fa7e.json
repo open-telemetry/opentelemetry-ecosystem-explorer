@@ -9,24 +9,12 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "jmacd",
-        "JakeDern"
-      ],
-      "emeritus": [
-        "moh-osman3"
-      ]
+      "active": ["jmacd", "JakeDern"],
+      "emeritus": ["moh-osman3"]
     },
-    "distributions": [
-      "contrib",
-      "k8s"
-    ],
+    "distributions": ["contrib", "k8s"],
     "stability": {
-      "beta": [
-        "logs",
-        "metrics",
-        "traces"
-      ]
+      "beta": ["logs", "metrics", "traces"]
     }
   },
   "type": "exporter"

@@ -203,13 +203,7 @@
   ],
   "ecosystem": "prometheus",
   "taxonomy": {
-    "distributions": [
-      "community",
-      "official"
-    ],
-    "types": [
-      "exporter",
-      "sdk"
-    ]
+    "distributions": ["community", "official"],
+    "types": ["exporter", "sdk"]
   }
 }

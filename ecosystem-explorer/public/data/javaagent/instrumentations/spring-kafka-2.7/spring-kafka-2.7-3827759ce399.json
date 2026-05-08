@@ -23,17 +23,13 @@
   "display_name": "Spring Kafka",
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": [
-    "org.springframework.kafka:spring-kafka:[2.7.0,)"
-  ],
+  "javaagent_target_versions": ["org.springframework.kafka:spring-kafka:[2.7.0,)"],
   "library_link": "https://spring.io/projects/spring-kafka",
   "name": "spring-kafka-2.7",
   "scope": {
     "name": "io.opentelemetry.spring-kafka-2.7"
   },
-  "semantic_conventions": [
-    "MESSAGING_SPANS"
-  ],
+  "semantic_conventions": ["MESSAGING_SPANS"],
   "source_path": "instrumentation/spring/spring-kafka-2.7",
   "telemetry": [
     {

@@ -5,3 +5,4 @@ src/prometheus_watcher.egg-info/SOURCES.txt
 src/prometheus_watcher.egg-info/dependency_links.txt
 src/prometheus_watcher.egg-info/requires.txt
 src/prometheus_watcher.egg-info/top_level.txt
+tests/test_prometheus_inventory.py

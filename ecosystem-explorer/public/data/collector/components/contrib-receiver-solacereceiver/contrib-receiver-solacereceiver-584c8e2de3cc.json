@@ -9,17 +9,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "mcardy"
-      ]
+      "active": ["mcardy"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "traces"
-      ]
+      "beta": ["traces"]
     }
   },
   "type": "receiver"

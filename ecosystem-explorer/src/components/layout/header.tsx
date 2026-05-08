@@ -37,6 +37,12 @@ export function Header() {
           >
             Collector
           </Link>
+          <Link
+            to="/prometheus"
+            className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+          >
+            Prometheus
+          </Link>
         </nav>
       </div>
     </header>

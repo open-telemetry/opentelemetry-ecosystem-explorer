@@ -9,6 +9,7 @@ members = [
     "explorer-db-builder",
     "java-instrumentation-watcher",
     "opentelemetry-ecosystem-explorer",
+    "prometheus-watcher",
     "watcher-common",
 ]
 
@@ -435,6 +436,7 @@ source = { editable = "ecosystem-automation/explorer-db-builder" }
 dependencies = [
     { name = "collector-watcher" },
     { name = "java-instrumentation-watcher" },
+    { name = "prometheus-watcher" },
     { name = "pyyaml" },
     { name = "semantic-version" },
     { name = "watcher-common" },
@@ -450,6 +452,7 @@ dev = [
 requires-dist = [
     { name = "collector-watcher", editable = "ecosystem-automation/collector-watcher" },
     { name = "java-instrumentation-watcher", editable = "ecosystem-automation/java-instrumentation-watcher" },
+    { name = "prometheus-watcher", editable = "ecosystem-automation/prometheus-watcher" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.1.0" },
     { name = "pyyaml", specifier = ">=6.0.1" },
@@ -481,14 +484,14 @@ wheels = [
 
 [[package]]
 name = "gitpython"
-version = "3.1.50"
+version = "3.1.47"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "gitdb" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/33/f6/354ae6491228b5eb40e10d89c4d13c651fe1cf7556e35ebdded50cff57ce/gitpython-3.1.50.tar.gz", hash = "sha256:80da2d12504d52e1f998772dc5baf6e553f8d2fcfe1fcc226c9d9a2ee3372dcc", size = 219798, upload-time = "2026-05-06T04:01:26.571Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c1/bd/50db468e9b1310529a19fce651b3b0e753b5c07954d486cba31bbee9a5d5/gitpython-3.1.47.tar.gz", hash = "sha256:dba27f922bd2b42cb54c87a8ab3cb6beb6bf07f3d564e21ac848913a05a8a3cd", size = 216978, upload-time = "2026-04-22T02:44:44.059Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/20/7a/1c6e3562dfd8950adbb11ffbc65d21e7c89d01a6e4f137fa981056de25c5/gitpython-3.1.50-py3-none-any.whl", hash = "sha256:d352abe2908d07355014abdd21ddf798c2a961469239afec4962e9da884858f9", size = 212507, upload-time = "2026-05-06T04:01:23.799Z" },
+    { url = "https://files.pythonhosted.org/packages/f2/c5/a1bc0996af85757903cf2bf444a7824e68e0035ce63fb41d6f76f9def68b/gitpython-3.1.47-py3-none-any.whl", hash = "sha256:489f590edfd6d20571b2c0e72c6a6ac6915ee8b8cd04572330e3842207a78905", size = 209547, upload-time = "2026-04-22T02:44:41.271Z" },
 ]
 
 [[package]]
@@ -564,6 +567,7 @@ dependencies = [
     { name = "configuration-watcher" },
     { name = "explorer-db-builder" },
     { name = "java-instrumentation-watcher" },
+    { name = "prometheus-watcher" },
 ]
 
 [package.dev-dependencies]
@@ -580,6 +584,7 @@ requires-dist = [
     { name = "configuration-watcher", editable = "ecosystem-automation/configuration-watcher" },
     { name = "explorer-db-builder", editable = "ecosystem-automation/explorer-db-builder" },
     { name = "java-instrumentation-watcher", editable = "ecosystem-automation/java-instrumentation-watcher" },
+    { name = "prometheus-watcher", editable = "ecosystem-automation/prometheus-watcher" },
 ]
 
 [package.metadata.requires-dev]
@@ -631,6 +636,23 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/8e/22/2de9408ac81acbb8a7d05d4cc064a152ccf33b3d480ebe0cd292153db239/pre_commit-4.6.0.tar.gz", hash = "sha256:718d2208cef53fdc38206e40524a6d4d9576d103eb16f0fec11c875e7716e9d9", size = 198525, upload-time = "2026-04-21T20:31:41.613Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/80/6e/4b28b62ecb6aae56769c34a8ff1d661473ec1e9519e2d5f8b2c150086b26/pre_commit-4.6.0-py2.py3-none-any.whl", hash = "sha256:e2cf246f7299edcabcf15f9b0571fdce06058527f0a06535068a86d38089f29b", size = 226472, upload-time = "2026-04-21T20:31:40.092Z" },
+]
+
+[[package]]
+name = "prometheus-watcher"
+version = "0.1.0"
+source = { editable = "ecosystem-automation/prometheus-watcher" }
+dependencies = [
+    { name = "pyyaml" },
+    { name = "semantic-version" },
+    { name = "watcher-common" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "pyyaml", specifier = ">=6.0.0" },
+    { name = "semantic-version", specifier = ">=2.10.0" },
+    { name = "watcher-common", editable = "ecosystem-automation/watcher-common" },
 ]
 
 [[package]]

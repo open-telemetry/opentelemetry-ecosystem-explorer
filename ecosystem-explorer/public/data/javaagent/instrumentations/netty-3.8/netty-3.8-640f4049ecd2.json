@@ -58,9 +58,7 @@
   "description": "This instrumentation enables HTTP client spans, HTTP client metrics, HTTP server spans, and HTTP server metrics for the Netty framework.",
   "display_name": "Netty HTTP codec",
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "io.netty:netty:[3.8.0.Final,4)"
-  ],
+  "javaagent_target_versions": ["io.netty:netty:[3.8.0.Final,4)"],
   "library_link": "https://netty.io/",
   "name": "netty-3.8",
   "scope": {

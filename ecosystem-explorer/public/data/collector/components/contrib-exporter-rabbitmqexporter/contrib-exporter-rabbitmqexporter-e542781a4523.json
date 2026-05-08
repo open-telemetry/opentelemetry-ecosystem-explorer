@@ -9,22 +9,12 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "atoulme"
-      ],
-      "emeritus": [
-        "swar8080"
-      ]
+      "active": ["atoulme"],
+      "emeritus": ["swar8080"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "logs",
-        "metrics",
-        "traces"
-      ]
+      "alpha": ["logs", "metrics", "traces"]
     }
   },
   "type": "exporter"

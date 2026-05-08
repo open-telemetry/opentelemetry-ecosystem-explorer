@@ -3,21 +3,15 @@
   "display_name": "c3p0",
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": [
-    "com.mchange:c3p0:(,)"
-  ],
+  "javaagent_target_versions": ["com.mchange:c3p0:(,)"],
   "library_link": "https://github.com/swaldman/c3p0",
   "name": "c3p0-0.9",
   "scope": {
     "name": "io.opentelemetry.c3p0-0.9"
   },
-  "semantic_conventions": [
-    "DATABASE_POOL_METRICS"
-  ],
+  "semantic_conventions": ["DATABASE_POOL_METRICS"],
   "source_path": "instrumentation/c3p0-0.9",
-  "tags": [
-    "c3p0"
-  ],
+  "tags": ["c3p0"],
   "telemetry": [
     {
       "metrics": [

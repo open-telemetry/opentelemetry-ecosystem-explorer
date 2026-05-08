@@ -9,6 +9,7 @@ dependencies = [
     "collector-watcher",
     "configuration-watcher",
     "java-instrumentation-watcher",
+    "prometheus-watcher",
     "explorer-db-builder",
 ]
 
@@ -21,6 +22,8 @@ members = [
 collector-watcher = { workspace = true }
 configuration-watcher = { workspace = true }
 java-instrumentation-watcher = { workspace = true }
+prometheus-watcher = { workspace = true }
+watcher-common = { workspace = true }
 explorer-db-builder = { workspace = true }
 
 [dependency-groups]

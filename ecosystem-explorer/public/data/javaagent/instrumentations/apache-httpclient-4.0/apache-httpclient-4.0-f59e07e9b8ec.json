@@ -50,10 +50,7 @@
     "name": "io.opentelemetry.apache-httpclient-4.0",
     "schema_url": "https://opentelemetry.io/schemas/1.37.0"
   },
-  "semantic_conventions": [
-    "HTTP_CLIENT_SPANS",
-    "HTTP_CLIENT_METRICS"
-  ],
+  "semantic_conventions": ["HTTP_CLIENT_SPANS", "HTTP_CLIENT_METRICS"],
   "source_path": "instrumentation/apache-httpclient/apache-httpclient-4.0",
   "telemetry": [
     {

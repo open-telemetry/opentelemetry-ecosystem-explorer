@@ -9,18 +9,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "jmacd",
-        "dmitryax"
-      ]
+      "active": ["jmacd", "dmitryax"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "metrics"
-      ]
+      "beta": ["metrics"]
     }
   },
   "type": "receiver"

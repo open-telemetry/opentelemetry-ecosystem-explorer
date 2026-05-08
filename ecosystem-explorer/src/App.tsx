@@ -36,6 +36,9 @@ const CollectorDetailPage = lazy(() =>
 const NotFoundPage = lazy(() =>
   import("@/features/not-found/not-found-page").then((m) => ({ default: m.NotFoundPage }))
 );
+const PrometheusPage = lazy(() =>
+  import("@/features/prometheus/prometheus-page").then((m) => ({ default: m.PrometheusPage }))
+);
 const JavaInstrumentationListPage = lazy(() =>
   import("@/features/java-agent/java-instrumentation-list-page").then((m) => ({
     default: m.JavaInstrumentationListPage,
@@ -105,6 +108,8 @@ export default function App() {
                   />
                 </>
               )}
+              <Route path="/prometheus" element={<PrometheusPage />} />
+              <Route path="/prometheus/:version" element={<PrometheusPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Routes>

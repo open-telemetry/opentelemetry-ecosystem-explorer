@@ -27,6 +27,7 @@ from explorer_db_builder.configuration_builder import run_configuration_builder
 from explorer_db_builder.database_writer import DatabaseWriter
 from explorer_db_builder.instrumentation_transformer import transform_instrumentation_format
 from explorer_db_builder.metadata_backfiller import backfill_metadata
+from explorer_db_builder.prometheus_builder import run_prometheus_builder
 
 logger = logging.getLogger(__name__)
 
@@ -208,6 +209,11 @@ def run_builder(clean: bool = False, ecosystem: str = "all") -> int:
         results.append(run_collector_builder(clean=clean))
         logger.info("")
 
+    if ecosystem in ("prometheus", "all"):
+        logger.info("--- Prometheus ---")
+        results.append(run_prometheus_builder(clean=clean))
+        logger.info("")
+
     return 1 if any(r != 0 for r in results) else 0
 
 
@@ -224,7 +230,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--ecosystem",
-        choices=["javaagent", "configuration", "collector", "all"],
+        choices=["javaagent", "configuration", "collector", "prometheus", "all"],
         default="all",
         help="Which ecosystem pipeline to run (default: all)",
     )
