@@ -221,8 +221,9 @@ Add the `add-screenshots` label to your PR. A GitHub Actions workflow will:
 
 1. Build the frontend
 2. Launch a local server and use Playwright to capture screenshots of key pages (home,
-   instrumentation list, and instrumentation detail tabs)
-3. Commit the screenshots to `ecosystem-explorer/screenshots/` on your PR branch
+   instrumentation list, instrumentation detail tabs, collector list, and collector detail) at
+   desktop, tablet, and mobile viewports
+3. Commit the screenshots to the `otelbot/screenshots` branch and post them as an inline PR comment
 
 The workflow re-runs automatically on new commits while the label is present.
 

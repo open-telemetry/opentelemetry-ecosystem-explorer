@@ -42,10 +42,17 @@ jobs:
           echo "head_repo=$(cat /tmp/pr-metadata/head_repo.txt)" >> "$GITHUB_OUTPUT"
           echo "head_sha=$(cat /tmp/pr-metadata/head_sha.txt)"   >> "$GITHUB_OUTPUT"
 
+      - name: Get otelbot token
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        id: otelbot-token
+        with:
+          app-id: ${{ vars.OTELBOT_APP_ID }}
+          private-key: ${{ secrets.OTELBOT_PRIVATE_KEY }}
+
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ steps.otelbot-token.outputs.token }}
           fetch-depth: 0
 
       - name: Download screenshots artifact
@@ -56,22 +63,22 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Commit screenshots to screenshots branch
+      - name: Use CLA approved github bot
+        run: .github/scripts/use-cla-approved-bot.sh
+
+      - name: Commit screenshots to otelbot/screenshots branch
         env:
           PR_NUMBER: ${{ steps.metadata.outputs.pr_number }}
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-
-          if git ls-remote --exit-code --heads origin screenshots > /dev/null 2>&1; then
-            git fetch origin screenshots
-            git checkout -B screenshots FETCH_HEAD
+          if git ls-remote --exit-code --heads origin otelbot/screenshots > /dev/null 2>&1; then
+            git fetch origin otelbot/screenshots
+            git checkout -B otelbot/screenshots FETCH_HEAD
           else
-            git checkout --orphan screenshots
+            git checkout --orphan otelbot/screenshots
             git rm -rf . --quiet 2>/dev/null || true
             git clean -fd --quiet
             git commit --allow-empty -m "chore: initialize screenshots branch"
-            git push origin screenshots
+            git push origin otelbot/screenshots
           fi
 
           rm -rf -- "${PR_NUMBER}"
@@ -94,7 +101,7 @@ jobs:
           find /tmp/screenshots -mindepth 1 -maxdepth 1 -type f -name "*.png" -exec cp -- {} "${PR_NUMBER}/" \;
           git add -A -- "${PR_NUMBER}/"
           git diff --quiet --exit-code --cached || git commit -m "docs: update screenshots for PR #${PR_NUMBER}"
-          git push origin screenshots
+          git push origin otelbot/screenshots
 
       - name: Build comment body
         env:
@@ -119,7 +126,7 @@ jobs:
           short_sha  = head_sha[:7]
           commit_url = f"https://github.com/{head_repo}/commit/{head_sha}"
           run_url    = f"https://github.com/{repo}/actions/runs/{run_id}"
-          base_url   = f"https://raw.githubusercontent.com/{repo}/screenshots/{pr_number}"
+          base_url   = f"https://raw.githubusercontent.com/{repo}/otelbot/screenshots/{pr_number}"
           timestamp  = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
           def table(slug):
@@ -161,12 +168,12 @@ jobs:
         env:
           PR_NUMBER: ${{ steps.metadata.outputs.pr_number }}
           REPO: ${{ github.repository }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.otelbot-token.outputs.token }}
         run: |
           jq -n --rawfile body /tmp/comment_body.txt '{body: $body}' > /tmp/comment_payload.json
 
           EXISTING_ID=$(gh api "/repos/${REPO}/issues/${PR_NUMBER}/comments" \
-            --jq '[.[] | select(.user.login == "github-actions[bot]") | select(.body | contains("<!-- screenshots-bot -->")) | .id] | first // empty')
+            --jq '[.[] | select(.user.login == "otelbot[bot]") | select(.body | contains("<!-- screenshots-bot -->")) | .id] | first // empty')
 
           if [ -n "$EXISTING_ID" ]; then
             gh api "/repos/${REPO}/issues/comments/${EXISTING_ID}" -X PATCH --input /tmp/comment_payload.json
