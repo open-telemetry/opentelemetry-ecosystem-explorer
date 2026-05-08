@@ -1,0 +1,12 @@
+{
+  "description": "Prometheus instrumentation library for Go applications.",
+  "display_name": "Prometheus Go Client",
+  "distribution": "official",
+  "ecosystem": "prometheus",
+  "id": "prometheus-official-sdk-client_golang",
+  "language": "Go",
+  "name": "client_golang",
+  "repository": "prometheus/client_golang",
+  "type": "sdk",
+  "website": "https://github.com/prometheus/client_golang"
+}

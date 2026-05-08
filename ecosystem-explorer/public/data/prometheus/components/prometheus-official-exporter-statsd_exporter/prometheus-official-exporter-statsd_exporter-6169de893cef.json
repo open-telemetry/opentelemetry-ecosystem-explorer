@@ -1,0 +1,12 @@
+{
+  "category": "system",
+  "description": "Exporter for StatsD metrics.",
+  "display_name": "StatsD Exporter",
+  "distribution": "official",
+  "ecosystem": "prometheus",
+  "id": "prometheus-official-exporter-statsd_exporter",
+  "name": "statsd_exporter",
+  "repository": "prometheus/statsd_exporter",
+  "type": "exporter",
+  "website": "https://github.com/prometheus/statsd_exporter"
+}

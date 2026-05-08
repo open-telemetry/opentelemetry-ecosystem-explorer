@@ -1,0 +1,12 @@
+{
+  "category": "network",
+  "description": "Exporter for SNMP metrics.",
+  "display_name": "SNMP Exporter",
+  "distribution": "official",
+  "ecosystem": "prometheus",
+  "id": "prometheus-official-exporter-snmp_exporter",
+  "name": "snmp_exporter",
+  "repository": "prometheus/snmp_exporter",
+  "type": "exporter",
+  "website": "https://github.com/prometheus/snmp_exporter"
+}

@@ -1,0 +1,12 @@
+{
+  "category": "database",
+  "description": "Exporter for MySQL server metrics.",
+  "display_name": "MySQL Server Exporter",
+  "distribution": "official",
+  "ecosystem": "prometheus",
+  "id": "prometheus-official-exporter-mysqld_exporter",
+  "name": "mysqld_exporter",
+  "repository": "prometheus/mysqld_exporter",
+  "type": "exporter",
+  "website": "https://github.com/prometheus/mysqld_exporter"
+}

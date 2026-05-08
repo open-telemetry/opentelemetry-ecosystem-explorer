@@ -1,0 +1,12 @@
+{
+  "description": "Prometheus instrumentation library for JVM-based applications.",
+  "display_name": "Prometheus Java Client",
+  "distribution": "official",
+  "ecosystem": "prometheus",
+  "id": "prometheus-official-sdk-client_java",
+  "language": "Java",
+  "name": "client_java",
+  "repository": "prometheus/client_java",
+  "type": "sdk",
+  "website": "https://github.com/prometheus/client_java"
+}

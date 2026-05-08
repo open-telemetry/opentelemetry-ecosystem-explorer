@@ -1,0 +1,12 @@
+{
+  "category": "network",
+  "description": "Allows blackbox probing of endpoints over HTTP, HTTPS, DNS, TCP and ICMP.",
+  "display_name": "Blackbox Exporter",
+  "distribution": "official",
+  "ecosystem": "prometheus",
+  "id": "prometheus-official-exporter-blackbox_exporter",
+  "name": "blackbox_exporter",
+  "repository": "prometheus/blackbox_exporter",
+  "type": "exporter",
+  "website": "https://github.com/prometheus/blackbox_exporter"
+}

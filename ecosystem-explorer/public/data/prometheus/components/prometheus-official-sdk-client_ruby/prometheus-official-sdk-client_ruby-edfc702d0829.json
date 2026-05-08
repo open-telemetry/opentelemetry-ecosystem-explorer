@@ -1,0 +1,12 @@
+{
+  "description": "Prometheus instrumentation library for Ruby applications.",
+  "display_name": "Prometheus Ruby Client",
+  "distribution": "official",
+  "ecosystem": "prometheus",
+  "id": "prometheus-official-sdk-client_ruby",
+  "language": "Ruby",
+  "name": "client_ruby",
+  "repository": "prometheus/client_ruby",
+  "type": "sdk",
+  "website": "https://github.com/prometheus/client_ruby"
+}

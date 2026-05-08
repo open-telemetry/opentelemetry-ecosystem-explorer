@@ -1,0 +1,12 @@
+{
+  "category": "system",
+  "description": "Exporter for Collectd metrics.",
+  "display_name": "Collectd Exporter",
+  "distribution": "official",
+  "ecosystem": "prometheus",
+  "id": "prometheus-official-exporter-collectd_exporter",
+  "name": "collectd_exporter",
+  "repository": "prometheus/collectd_exporter",
+  "type": "exporter",
+  "website": "https://github.com/prometheus/collectd_exporter"
+}

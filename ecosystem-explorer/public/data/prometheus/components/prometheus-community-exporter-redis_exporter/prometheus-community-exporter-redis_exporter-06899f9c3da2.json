@@ -1,0 +1,12 @@
+{
+  "category": "database",
+  "description": "Prometheus exporter for Redis metrics.",
+  "display_name": "Redis Exporter",
+  "distribution": "community",
+  "ecosystem": "prometheus",
+  "id": "prometheus-community-exporter-redis_exporter",
+  "name": "redis_exporter",
+  "repository": "oliver006/redis_exporter",
+  "type": "exporter",
+  "website": "https://github.com/oliver006/redis_exporter"
+}

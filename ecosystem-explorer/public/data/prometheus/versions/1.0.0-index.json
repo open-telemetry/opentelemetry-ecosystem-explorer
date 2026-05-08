@@ -1,0 +1,30 @@
+{
+  "components": {
+    "prometheus-community-exporter-elasticsearch_exporter": "71bf970cb5dd",
+    "prometheus-community-exporter-kafka_exporter": "6ddeb7d92654",
+    "prometheus-community-exporter-nginx_exporter": "af66813f759d",
+    "prometheus-community-exporter-postgres_exporter": "d797f0917966",
+    "prometheus-community-exporter-postgresql_exporter": "5efb8968654f",
+    "prometheus-community-exporter-redis_exporter": "06899f9c3da2",
+    "prometheus-official-exporter-blackbox_exporter": "1f3d5b47e364",
+    "prometheus-official-exporter-cloudwatch_exporter": "114f1cbdac9d",
+    "prometheus-official-exporter-collectd_exporter": "2d2468ac90de",
+    "prometheus-official-exporter-consul_exporter": "d4edc3a0ca83",
+    "prometheus-official-exporter-graphite_exporter": "30c5dc3d5789",
+    "prometheus-official-exporter-haproxy_exporter": "a17a81ccaa14",
+    "prometheus-official-exporter-influxdb_exporter": "9f6c526434dd",
+    "prometheus-official-exporter-jmx_exporter": "a8d0224427ed",
+    "prometheus-official-exporter-memcached_exporter": "4e2fa9daefb2",
+    "prometheus-official-exporter-mysqld_exporter": "a30b850a8fc0",
+    "prometheus-official-exporter-node_exporter": "64430a445e65",
+    "prometheus-official-exporter-snmp_exporter": "05c13042b799",
+    "prometheus-official-exporter-statsd_exporter": "6169de893cef",
+    "prometheus-official-sdk-client_cpp": "f596d814edd6",
+    "prometheus-official-sdk-client_golang": "7b00e2aa6fb9",
+    "prometheus-official-sdk-client_java": "0156bff769f1",
+    "prometheus-official-sdk-client_python": "2962f5888835",
+    "prometheus-official-sdk-client_ruby": "edfc702d0829",
+    "prometheus-official-sdk-client_rust": "42e2fd2ba74f"
+  },
+  "version": "1.0.0"
+}

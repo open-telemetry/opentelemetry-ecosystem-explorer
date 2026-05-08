@@ -1,0 +1,12 @@
+{
+  "category": "system",
+  "description": "Exporter for JMX metrics.",
+  "display_name": "JMX Exporter",
+  "distribution": "official",
+  "ecosystem": "prometheus",
+  "id": "prometheus-official-exporter-jmx_exporter",
+  "name": "jmx_exporter",
+  "repository": "prometheus/jmx_exporter",
+  "type": "exporter",
+  "website": "https://github.com/prometheus/jmx_exporter"
+}

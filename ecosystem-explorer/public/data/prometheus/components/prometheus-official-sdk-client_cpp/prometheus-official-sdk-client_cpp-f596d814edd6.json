@@ -1,0 +1,12 @@
+{
+  "description": "Prometheus instrumentation library for C++ applications.",
+  "display_name": "Prometheus C++ Client",
+  "distribution": "official",
+  "ecosystem": "prometheus",
+  "id": "prometheus-official-sdk-client_cpp",
+  "language": "C++",
+  "name": "client_cpp",
+  "repository": "prometheus/client_cpp",
+  "type": "sdk",
+  "website": "https://github.com/prometheus/client_cpp"
+}

@@ -1,0 +1,96 @@
+distribution: official
+version: 1.0.0
+repository: prometheus/prometheus
+component_type: exporter
+components:
+  - name: node_exporter
+    metadata:
+      type: system
+      display_name: Node Exporter
+      description: Exporter for machine metrics.
+      repository: prometheus/node_exporter
+      website: https://github.com/prometheus/node_exporter
+  - name: blackbox_exporter
+    metadata:
+      type: network
+      display_name: Blackbox Exporter
+      description: Allows blackbox probing of endpoints over HTTP, HTTPS, DNS, TCP and ICMP.
+      repository: prometheus/blackbox_exporter
+      website: https://github.com/prometheus/blackbox_exporter
+  - name: snmp_exporter
+    metadata:
+      type: network
+      display_name: SNMP Exporter
+      description: Exporter for SNMP metrics.
+      repository: prometheus/snmp_exporter
+      website: https://github.com/prometheus/snmp_exporter
+  - name: mysqld_exporter
+    metadata:
+      type: database
+      display_name: MySQL Server Exporter
+      description: Exporter for MySQL server metrics.
+      repository: prometheus/mysqld_exporter
+      website: https://github.com/prometheus/mysqld_exporter
+  - name: consul_exporter
+    metadata:
+      type: discovery
+      display_name: Consul Exporter
+      description: Exporter for Consul metrics.
+      repository: prometheus/consul_exporter
+      website: https://github.com/prometheus/consul_exporter
+  - name: memcached_exporter
+    metadata:
+      type: database
+      display_name: Memcached Exporter
+      description: Exporter for Memcached metrics.
+      repository: prometheus/memcached_exporter
+      website: https://github.com/prometheus/memcached_exporter
+  - name: haproxy_exporter
+    metadata:
+      type: network
+      display_name: HAProxy Exporter
+      description: Exporter for HAProxy metrics.
+      repository: prometheus/haproxy_exporter
+      website: https://github.com/prometheus/haproxy_exporter
+  - name: cloudwatch_exporter
+    metadata:
+      type: cloud
+      display_name: CloudWatch Exporter
+      description: Exporter for AWS CloudWatch metrics.
+      repository: prometheus/cloudwatch_exporter
+      website: https://github.com/prometheus/cloudwatch_exporter
+  - name: collectd_exporter
+    metadata:
+      type: system
+      display_name: Collectd Exporter
+      description: Exporter for Collectd metrics.
+      repository: prometheus/collectd_exporter
+      website: https://github.com/prometheus/collectd_exporter
+  - name: graphite_exporter
+    metadata:
+      type: system
+      display_name: Graphite Exporter
+      description: Exporter for Graphite metrics.
+      repository: prometheus/graphite_exporter
+      website: https://github.com/prometheus/graphite_exporter
+  - name: influxdb_exporter
+    metadata:
+      type: database
+      display_name: InfluxDB Exporter
+      description: Exporter for InfluxDB metrics.
+      repository: prometheus/influxdb_exporter
+      website: https://github.com/prometheus/influxdb_exporter
+  - name: jmx_exporter
+    metadata:
+      type: system
+      display_name: JMX Exporter
+      description: Exporter for JMX metrics.
+      repository: prometheus/jmx_exporter
+      website: https://github.com/prometheus/jmx_exporter
+  - name: statsd_exporter
+    metadata:
+      type: system
+      display_name: StatsD Exporter
+      description: Exporter for StatsD metrics.
+      repository: prometheus/statsd_exporter
+      website: https://github.com/prometheus/statsd_exporter

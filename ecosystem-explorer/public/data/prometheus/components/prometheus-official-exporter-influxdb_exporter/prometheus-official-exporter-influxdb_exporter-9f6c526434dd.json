@@ -1,0 +1,12 @@
+{
+  "category": "database",
+  "description": "Exporter for InfluxDB metrics.",
+  "display_name": "InfluxDB Exporter",
+  "distribution": "official",
+  "ecosystem": "prometheus",
+  "id": "prometheus-official-exporter-influxdb_exporter",
+  "name": "influxdb_exporter",
+  "repository": "prometheus/influxdb_exporter",
+  "type": "exporter",
+  "website": "https://github.com/prometheus/influxdb_exporter"
+}

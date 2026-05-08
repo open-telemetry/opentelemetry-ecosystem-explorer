@@ -1,0 +1,215 @@
+{
+  "components": [
+    {
+      "description": "Exporter for machine metrics.",
+      "display_name": "Node Exporter",
+      "distribution": "official",
+      "id": "prometheus-official-exporter-node_exporter",
+      "name": "node_exporter",
+      "type": "exporter"
+    },
+    {
+      "description": "Allows blackbox probing of endpoints over HTTP, HTTPS, DNS, TCP and ICMP.",
+      "display_name": "Blackbox Exporter",
+      "distribution": "official",
+      "id": "prometheus-official-exporter-blackbox_exporter",
+      "name": "blackbox_exporter",
+      "type": "exporter"
+    },
+    {
+      "description": "Exporter for SNMP metrics.",
+      "display_name": "SNMP Exporter",
+      "distribution": "official",
+      "id": "prometheus-official-exporter-snmp_exporter",
+      "name": "snmp_exporter",
+      "type": "exporter"
+    },
+    {
+      "description": "Exporter for MySQL server metrics.",
+      "display_name": "MySQL Server Exporter",
+      "distribution": "official",
+      "id": "prometheus-official-exporter-mysqld_exporter",
+      "name": "mysqld_exporter",
+      "type": "exporter"
+    },
+    {
+      "description": "Exporter for Consul metrics.",
+      "display_name": "Consul Exporter",
+      "distribution": "official",
+      "id": "prometheus-official-exporter-consul_exporter",
+      "name": "consul_exporter",
+      "type": "exporter"
+    },
+    {
+      "description": "Exporter for Memcached metrics.",
+      "display_name": "Memcached Exporter",
+      "distribution": "official",
+      "id": "prometheus-official-exporter-memcached_exporter",
+      "name": "memcached_exporter",
+      "type": "exporter"
+    },
+    {
+      "description": "Exporter for HAProxy metrics.",
+      "display_name": "HAProxy Exporter",
+      "distribution": "official",
+      "id": "prometheus-official-exporter-haproxy_exporter",
+      "name": "haproxy_exporter",
+      "type": "exporter"
+    },
+    {
+      "description": "Exporter for AWS CloudWatch metrics.",
+      "display_name": "CloudWatch Exporter",
+      "distribution": "official",
+      "id": "prometheus-official-exporter-cloudwatch_exporter",
+      "name": "cloudwatch_exporter",
+      "type": "exporter"
+    },
+    {
+      "description": "Exporter for Collectd metrics.",
+      "display_name": "Collectd Exporter",
+      "distribution": "official",
+      "id": "prometheus-official-exporter-collectd_exporter",
+      "name": "collectd_exporter",
+      "type": "exporter"
+    },
+    {
+      "description": "Exporter for Graphite metrics.",
+      "display_name": "Graphite Exporter",
+      "distribution": "official",
+      "id": "prometheus-official-exporter-graphite_exporter",
+      "name": "graphite_exporter",
+      "type": "exporter"
+    },
+    {
+      "description": "Exporter for InfluxDB metrics.",
+      "display_name": "InfluxDB Exporter",
+      "distribution": "official",
+      "id": "prometheus-official-exporter-influxdb_exporter",
+      "name": "influxdb_exporter",
+      "type": "exporter"
+    },
+    {
+      "description": "Exporter for JMX metrics.",
+      "display_name": "JMX Exporter",
+      "distribution": "official",
+      "id": "prometheus-official-exporter-jmx_exporter",
+      "name": "jmx_exporter",
+      "type": "exporter"
+    },
+    {
+      "description": "Exporter for StatsD metrics.",
+      "display_name": "StatsD Exporter",
+      "distribution": "official",
+      "id": "prometheus-official-exporter-statsd_exporter",
+      "name": "statsd_exporter",
+      "type": "exporter"
+    },
+    {
+      "description": "Prometheus instrumentation library for Go applications.",
+      "display_name": "Prometheus Go Client",
+      "distribution": "official",
+      "id": "prometheus-official-sdk-client_golang",
+      "name": "client_golang",
+      "type": "sdk"
+    },
+    {
+      "description": "Prometheus instrumentation library for JVM-based applications.",
+      "display_name": "Prometheus Java Client",
+      "distribution": "official",
+      "id": "prometheus-official-sdk-client_java",
+      "name": "client_java",
+      "type": "sdk"
+    },
+    {
+      "description": "Prometheus instrumentation library for Python applications.",
+      "display_name": "Prometheus Python Client",
+      "distribution": "official",
+      "id": "prometheus-official-sdk-client_python",
+      "name": "client_python",
+      "type": "sdk"
+    },
+    {
+      "description": "Prometheus instrumentation library for Ruby applications.",
+      "display_name": "Prometheus Ruby Client",
+      "distribution": "official",
+      "id": "prometheus-official-sdk-client_ruby",
+      "name": "client_ruby",
+      "type": "sdk"
+    },
+    {
+      "description": "Prometheus instrumentation library for Rust applications.",
+      "display_name": "Prometheus Rust Client",
+      "distribution": "official",
+      "id": "prometheus-official-sdk-client_rust",
+      "name": "client_rust",
+      "type": "sdk"
+    },
+    {
+      "description": "Prometheus instrumentation library for C++ applications.",
+      "display_name": "Prometheus C++ Client",
+      "distribution": "official",
+      "id": "prometheus-official-sdk-client_cpp",
+      "name": "client_cpp",
+      "type": "sdk"
+    },
+    {
+      "description": "Prometheus exporter for Redis metrics.",
+      "display_name": "Redis Exporter",
+      "distribution": "community",
+      "id": "prometheus-community-exporter-redis_exporter",
+      "name": "redis_exporter",
+      "type": "exporter"
+    },
+    {
+      "description": "Prometheus exporter for PostgreSQL server metrics.",
+      "display_name": "PostgreSQL Exporter",
+      "distribution": "community",
+      "id": "prometheus-community-exporter-postgres_exporter",
+      "name": "postgres_exporter",
+      "type": "exporter"
+    },
+    {
+      "description": "Prometheus exporter for PostgreSQL server metrics (alternate).",
+      "display_name": "PostgreSQL Server Exporter",
+      "distribution": "community",
+      "id": "prometheus-community-exporter-postgresql_exporter",
+      "name": "postgresql_exporter",
+      "type": "exporter"
+    },
+    {
+      "description": "Prometheus exporter for Elasticsearch metrics.",
+      "display_name": "Elasticsearch Exporter",
+      "distribution": "community",
+      "id": "prometheus-community-exporter-elasticsearch_exporter",
+      "name": "elasticsearch_exporter",
+      "type": "exporter"
+    },
+    {
+      "description": "Prometheus exporter for Kafka metrics.",
+      "display_name": "Kafka Exporter",
+      "distribution": "community",
+      "id": "prometheus-community-exporter-kafka_exporter",
+      "name": "kafka_exporter",
+      "type": "exporter"
+    },
+    {
+      "description": "Prometheus exporter for NGINX metrics.",
+      "display_name": "NGINX Exporter",
+      "distribution": "community",
+      "id": "prometheus-community-exporter-nginx_exporter",
+      "name": "nginx_exporter",
+      "type": "exporter"
+    }
+  ],
+  "ecosystem": "prometheus",
+  "taxonomy": {
+    "distributions": [
+      "community",
+      "official"
+    ],
+    "types": [
+      "exporter",
+      "sdk"
+    ]
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "category": "database",
+  "description": "Exporter for Memcached metrics.",
+  "display_name": "Memcached Exporter",
+  "distribution": "official",
+  "ecosystem": "prometheus",
+  "id": "prometheus-official-exporter-memcached_exporter",
+  "name": "memcached_exporter",
+  "repository": "prometheus/memcached_exporter",
+  "type": "exporter",
+  "website": "https://github.com/prometheus/memcached_exporter"
+}

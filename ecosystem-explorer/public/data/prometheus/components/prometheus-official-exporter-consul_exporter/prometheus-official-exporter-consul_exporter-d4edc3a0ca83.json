@@ -1,0 +1,12 @@
+{
+  "category": "discovery",
+  "description": "Exporter for Consul metrics.",
+  "display_name": "Consul Exporter",
+  "distribution": "official",
+  "ecosystem": "prometheus",
+  "id": "prometheus-official-exporter-consul_exporter",
+  "name": "consul_exporter",
+  "repository": "prometheus/consul_exporter",
+  "type": "exporter",
+  "website": "https://github.com/prometheus/consul_exporter"
+}

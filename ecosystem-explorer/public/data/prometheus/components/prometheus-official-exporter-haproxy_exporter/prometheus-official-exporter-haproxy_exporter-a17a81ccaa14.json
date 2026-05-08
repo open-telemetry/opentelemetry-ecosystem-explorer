@@ -1,0 +1,12 @@
+{
+  "category": "network",
+  "description": "Exporter for HAProxy metrics.",
+  "display_name": "HAProxy Exporter",
+  "distribution": "official",
+  "ecosystem": "prometheus",
+  "id": "prometheus-official-exporter-haproxy_exporter",
+  "name": "haproxy_exporter",
+  "repository": "prometheus/haproxy_exporter",
+  "type": "exporter",
+  "website": "https://github.com/prometheus/haproxy_exporter"
+}

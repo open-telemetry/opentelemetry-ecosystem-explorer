@@ -1,0 +1,12 @@
+{
+  "category": "network",
+  "description": "Prometheus exporter for NGINX metrics.",
+  "display_name": "NGINX Exporter",
+  "distribution": "community",
+  "ecosystem": "prometheus",
+  "id": "prometheus-community-exporter-nginx_exporter",
+  "name": "nginx_exporter",
+  "repository": "nginxinc/nginx-prometheus-exporter",
+  "type": "exporter",
+  "website": "https://github.com/nginxinc/nginx-prometheus-exporter"
+}

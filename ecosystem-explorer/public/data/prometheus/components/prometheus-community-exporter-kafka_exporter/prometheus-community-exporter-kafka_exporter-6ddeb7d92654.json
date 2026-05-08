@@ -1,0 +1,12 @@
+{
+  "category": "messaging",
+  "description": "Prometheus exporter for Kafka metrics.",
+  "display_name": "Kafka Exporter",
+  "distribution": "community",
+  "ecosystem": "prometheus",
+  "id": "prometheus-community-exporter-kafka_exporter",
+  "name": "kafka_exporter",
+  "repository": "danielqsj/kafka_exporter",
+  "type": "exporter",
+  "website": "https://github.com/danielqsj/kafka_exporter"
+}

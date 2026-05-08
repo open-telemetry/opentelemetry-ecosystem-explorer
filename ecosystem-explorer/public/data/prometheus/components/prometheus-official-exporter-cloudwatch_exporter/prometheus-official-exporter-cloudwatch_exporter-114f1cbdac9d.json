@@ -1,0 +1,12 @@
+{
+  "category": "cloud",
+  "description": "Exporter for AWS CloudWatch metrics.",
+  "display_name": "CloudWatch Exporter",
+  "distribution": "official",
+  "ecosystem": "prometheus",
+  "id": "prometheus-official-exporter-cloudwatch_exporter",
+  "name": "cloudwatch_exporter",
+  "repository": "prometheus/cloudwatch_exporter",
+  "type": "exporter",
+  "website": "https://github.com/prometheus/cloudwatch_exporter"
+}

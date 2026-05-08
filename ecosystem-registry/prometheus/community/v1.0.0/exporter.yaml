@@ -1,0 +1,47 @@
+distribution: community
+version: 1.0.0
+repository: prometheus-community/community
+component_type: exporter
+components:
+  - name: redis_exporter
+    metadata:
+      type: database
+      display_name: Redis Exporter
+      description: Prometheus exporter for Redis metrics.
+      repository: oliver006/redis_exporter
+      website: https://github.com/oliver006/redis_exporter
+  - name: postgres_exporter
+    metadata:
+      type: database
+      display_name: PostgreSQL Exporter
+      description: Prometheus exporter for PostgreSQL server metrics.
+      repository: prometheus-community/postgres_exporter
+      website: https://github.com/prometheus-community/postgres_exporter
+  - name: postgresql_exporter
+    metadata:
+      type: database
+      display_name: PostgreSQL Server Exporter
+      description: Prometheus exporter for PostgreSQL server metrics (alternate).
+      repository: prometheus-community/postgres_exporter
+      website: https://github.com/prometheus-community/postgres_exporter
+  - name: elasticsearch_exporter
+    metadata:
+      type: database
+      display_name: Elasticsearch Exporter
+      description: Prometheus exporter for Elasticsearch metrics.
+      repository: prometheus-community/elasticsearch_exporter
+      website: https://github.com/prometheus-community/elasticsearch_exporter
+  - name: kafka_exporter
+    metadata:
+      type: messaging
+      display_name: Kafka Exporter
+      description: Prometheus exporter for Kafka metrics.
+      repository: danielqsj/kafka_exporter
+      website: https://github.com/danielqsj/kafka_exporter
+  - name: nginx_exporter
+    metadata:
+      type: network
+      display_name: NGINX Exporter
+      description: Prometheus exporter for NGINX metrics.
+      repository: nginxinc/nginx-prometheus-exporter
+      website: https://github.com/nginxinc/nginx-prometheus-exporter

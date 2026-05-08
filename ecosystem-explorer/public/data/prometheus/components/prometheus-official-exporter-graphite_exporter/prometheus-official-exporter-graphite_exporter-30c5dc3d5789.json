@@ -1,0 +1,12 @@
+{
+  "category": "system",
+  "description": "Exporter for Graphite metrics.",
+  "display_name": "Graphite Exporter",
+  "distribution": "official",
+  "ecosystem": "prometheus",
+  "id": "prometheus-official-exporter-graphite_exporter",
+  "name": "graphite_exporter",
+  "repository": "prometheus/graphite_exporter",
+  "type": "exporter",
+  "website": "https://github.com/prometheus/graphite_exporter"
+}

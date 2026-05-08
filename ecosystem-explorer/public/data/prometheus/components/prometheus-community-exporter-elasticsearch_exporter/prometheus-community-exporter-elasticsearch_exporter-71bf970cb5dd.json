@@ -1,0 +1,12 @@
+{
+  "category": "database",
+  "description": "Prometheus exporter for Elasticsearch metrics.",
+  "display_name": "Elasticsearch Exporter",
+  "distribution": "community",
+  "ecosystem": "prometheus",
+  "id": "prometheus-community-exporter-elasticsearch_exporter",
+  "name": "elasticsearch_exporter",
+  "repository": "prometheus-community/elasticsearch_exporter",
+  "type": "exporter",
+  "website": "https://github.com/prometheus-community/elasticsearch_exporter"
+}

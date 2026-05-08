@@ -1,0 +1,47 @@
+distribution: official
+version: 1.0.0
+repository: prometheus/prometheus
+component_type: sdk
+components:
+  - name: client_golang
+    metadata:
+      language: Go
+      display_name: Prometheus Go Client
+      description: Prometheus instrumentation library for Go applications.
+      repository: prometheus/client_golang
+      website: https://github.com/prometheus/client_golang
+  - name: client_java
+    metadata:
+      language: Java
+      display_name: Prometheus Java Client
+      description: Prometheus instrumentation library for JVM-based applications.
+      repository: prometheus/client_java
+      website: https://github.com/prometheus/client_java
+  - name: client_python
+    metadata:
+      language: Python
+      display_name: Prometheus Python Client
+      description: Prometheus instrumentation library for Python applications.
+      repository: prometheus/client_python
+      website: https://github.com/prometheus/client_python
+  - name: client_ruby
+    metadata:
+      language: Ruby
+      display_name: Prometheus Ruby Client
+      description: Prometheus instrumentation library for Ruby applications.
+      repository: prometheus/client_ruby
+      website: https://github.com/prometheus/client_ruby
+  - name: client_rust
+    metadata:
+      language: Rust
+      display_name: Prometheus Rust Client
+      description: Prometheus instrumentation library for Rust applications.
+      repository: prometheus/client_rust
+      website: https://github.com/prometheus/client_rust
+  - name: client_cpp
+    metadata:
+      language: C++
+      display_name: Prometheus C++ Client
+      description: Prometheus instrumentation library for C++ applications.
+      repository: prometheus/client_cpp
+      website: https://github.com/prometheus/client_cpp

@@ -1,0 +1,12 @@
+{
+  "category": "system",
+  "description": "Exporter for machine metrics.",
+  "display_name": "Node Exporter",
+  "distribution": "official",
+  "ecosystem": "prometheus",
+  "id": "prometheus-official-exporter-node_exporter",
+  "name": "node_exporter",
+  "repository": "prometheus/node_exporter",
+  "type": "exporter",
+  "website": "https://github.com/prometheus/node_exporter"
+}

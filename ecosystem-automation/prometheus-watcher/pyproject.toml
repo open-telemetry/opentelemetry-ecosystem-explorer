@@ -1,0 +1,20 @@
+[project]
+name = "prometheus-watcher"
+version = "0.1.0"
+description = "Watcher for Prometheus ecosystem registry data"
+authors = [
+    { name = "OpenTelemetry Authors" }
+]
+dependencies = [
+    "pyyaml>=6.0.0",
+    "semantic_version>=2.10.0",
+    "watcher-common",
+]
+requires-python = ">=3.11"
+
+[tool.uv.sources]
+watcher-common = { workspace = true }
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"

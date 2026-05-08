@@ -1,0 +1,12 @@
+{
+  "description": "Prometheus instrumentation library for Rust applications.",
+  "display_name": "Prometheus Rust Client",
+  "distribution": "official",
+  "ecosystem": "prometheus",
+  "id": "prometheus-official-sdk-client_rust",
+  "language": "Rust",
+  "name": "client_rust",
+  "repository": "prometheus/client_rust",
+  "type": "sdk",
+  "website": "https://github.com/prometheus/client_rust"
+}

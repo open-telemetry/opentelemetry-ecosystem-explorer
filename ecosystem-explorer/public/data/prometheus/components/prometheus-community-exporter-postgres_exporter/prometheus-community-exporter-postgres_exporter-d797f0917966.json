@@ -1,0 +1,12 @@
+{
+  "category": "database",
+  "description": "Prometheus exporter for PostgreSQL server metrics.",
+  "display_name": "PostgreSQL Exporter",
+  "distribution": "community",
+  "ecosystem": "prometheus",
+  "id": "prometheus-community-exporter-postgres_exporter",
+  "name": "postgres_exporter",
+  "repository": "prometheus-community/postgres_exporter",
+  "type": "exporter",
+  "website": "https://github.com/prometheus-community/postgres_exporter"
+}
