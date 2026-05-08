@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { Attribute } from "@/types/javaagent";
+import { ChevronDown } from "lucide-react";
 
 interface AttributeTableProps {
   attributes: Attribute[];
@@ -25,40 +26,48 @@ export function AttributeTable({ attributes }: AttributeTableProps) {
   }
 
   return (
-    <div className="border-border/30 overflow-x-auto rounded-lg border">
-      <table aria-label="Attributes" className="w-full min-w-[260px] border-collapse">
-        <thead>
-          <tr className="bg-white/5">
-            <th
-              scope="col"
-              className="text-muted-foreground p-2 text-left text-[10px] font-bold tracking-widest uppercase sm:p-3"
-            >
-              Key
-            </th>
-            <th
-              scope="col"
-              className="text-muted-foreground p-2 text-left text-[10px] font-bold tracking-widest uppercase sm:p-3"
-            >
-              Type
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {attributes.map((attr, index) => (
-            <tr
-              key={attr.name}
-              className={`attribute-row ${index % 2 === 1 ? "bg-white/[0.03]" : ""}`}
-            >
-              <td className="p-2 font-mono text-xs sm:p-4 sm:text-sm">{attr.name}</td>
-              <td className="p-2 sm:p-4">
-                <span className="border-border/30 bg-card/80 text-muted-foreground inline-block w-fit rounded border px-2 py-1 text-xs font-bold tracking-wider uppercase">
-                  {attr.type}
-                </span>
-              </td>
+    <details className="group border-border/30 bg-card/50 overflow-hidden rounded-lg border open:bg-transparent">
+      <summary className="hover:bg-card/80 flex cursor-pointer items-center justify-between p-3 text-sm font-medium transition-colors">
+        <span className="text-muted-foreground text-xs font-black tracking-[0.2em] uppercase">
+          View {attributes.length} Attribute{attributes.length === 1 ? "" : "s"}
+        </span>
+        <ChevronDown className="text-muted-foreground h-4 w-4 transition-transform group-open:rotate-180" />
+      </summary>
+      <div className="border-border/30 overflow-x-auto border-t">
+        <table aria-label="Attributes" className="w-full min-w-[260px] border-collapse">
+          <thead>
+            <tr className="bg-white/5">
+              <th
+                scope="col"
+                className="text-muted-foreground p-2 text-left text-[10px] font-bold tracking-widest uppercase sm:p-3"
+              >
+                Key
+              </th>
+              <th
+                scope="col"
+                className="text-muted-foreground p-2 text-left text-[10px] font-bold tracking-widest uppercase sm:p-3"
+              >
+                Type
+              </th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {attributes.map((attr, index) => (
+              <tr
+                key={attr.name}
+                className={`attribute-row ${index % 2 === 1 ? "bg-white/[0.03]" : ""}`}
+              >
+                <td className="p-2 font-mono text-xs sm:p-4 sm:text-sm">{attr.name}</td>
+                <td className="p-2 sm:p-4">
+                  <span className="border-border/30 bg-card/80 text-muted-foreground inline-block w-fit rounded border px-2 py-1 text-xs font-bold tracking-wider uppercase">
+                    {attr.type}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </details>
   );
 }

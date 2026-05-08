@@ -39,6 +39,8 @@ import {
   getSemanticConventionInfo,
   getFeatureInfo,
 } from "./utils/format";
+import { getBadgeInfo } from "./utils/badge-info";
+import { TelemetryBadges } from "./components/instrumentation-badges";
 import { TelemetrySection } from "./components/telemetry-section";
 import { TelemetryComparisonSection } from "./components/telemetry-comparison/telemetry-comparison-section";
 import { VersionSelector } from "./components/version-selector";
@@ -156,6 +158,7 @@ export function InstrumentationDetailPage() {
   const displayName = getInstrumentationDisplayName(instrumentation);
   const showRawName =
     instrumentation.display_name && instrumentation.display_name !== instrumentation.name;
+  const badgeInfo = getBadgeInfo(instrumentation);
 
   return (
     <PageContainer>
@@ -217,6 +220,7 @@ export function InstrumentationDetailPage() {
                     ? "Disabled by Default"
                     : "Enabled by Default"}
                 </GlowBadge>
+                <TelemetryBadges badges={badgeInfo} />
               </div>
             </div>
 
@@ -275,6 +279,81 @@ export function InstrumentationDetailPage() {
 
             <TabsContent value="details" className="mt-0 p-4 sm:p-6">
               <div className="space-y-8">
+                {/* Value Proposition Summary */}
+                {(badgeInfo.hasMetrics || badgeInfo.hasSpans) && (
+                  <div>
+                    <SectionHeader>Telemetry Overview</SectionHeader>
+                    <div className="grid gap-4 md:grid-cols-2">
+                      {badgeInfo.hasSpans && (
+                        <DetailCard withHoverEffect>
+                          <div className="flex items-start gap-3">
+                            <Activity
+                              className="text-info mt-0.5 h-5 w-5 flex-shrink-0"
+                              aria-hidden="true"
+                            />
+                            <div className="flex-1 space-y-1">
+                              <h3 className="text-foreground text-sm font-semibold">
+                                Traces & Spans
+                              </h3>
+                              <p className="text-muted-foreground text-sm">
+                                Follows individual requests step-by-step. Use this to see exactly
+                                where time is spent and where errors happen.
+                              </p>
+                              {instrumentation.telemetry &&
+                                instrumentation.telemetry[0] &&
+                                instrumentation.telemetry[0].spans && (
+                                  <div className="mt-2 flex flex-wrap gap-1">
+                                    {instrumentation.telemetry[0].spans.map((span, idx) => (
+                                      <GlowBadge key={idx} variant="info" className="text-[10px]">
+                                        {span.span_kind}
+                                      </GlowBadge>
+                                    ))}
+                                  </div>
+                                )}
+                            </div>
+                          </div>
+                        </DetailCard>
+                      )}
+
+                      {badgeInfo.hasMetrics && (
+                        <DetailCard withHoverEffect>
+                          <div className="flex items-start gap-3">
+                            <Activity
+                              className="text-success mt-0.5 h-5 w-5 flex-shrink-0"
+                              aria-hidden="true"
+                            />
+                            <div className="flex-1 space-y-1">
+                              <h3 className="text-foreground text-sm font-semibold">
+                                Performance Metrics
+                              </h3>
+                              <p className="text-muted-foreground text-sm">
+                                Gives you the big picture of system health, like total request
+                                counts, error rates, and average speeds over time.
+                              </p>
+                              {instrumentation.telemetry &&
+                                instrumentation.telemetry[0] &&
+                                instrumentation.telemetry[0].metrics && (
+                                  <div className="mt-2 flex flex-wrap gap-1">
+                                    {instrumentation.telemetry[0].metrics.map((metric, idx) => (
+                                      <span
+                                        key={idx}
+                                        className="bg-success/10 text-success border-success/20 truncate rounded border px-1.5 py-0.5 font-mono text-[10px]"
+                                        title={metric.name}
+                                      >
+                                        {metric.name.length > 50
+                                          ? metric.name.substring(0, 50) + "..."
+                                          : metric.name}
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
+                            </div>
+                          </div>
+                        </DetailCard>
+                      )}
+                    </div>
+                  </div>
+                )}
                 {((instrumentation.features && instrumentation.features.length > 0) ||
                   (instrumentation.semantic_conventions &&
                     instrumentation.semantic_conventions.length > 0)) && (

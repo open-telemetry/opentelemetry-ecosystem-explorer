@@ -90,10 +90,7 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
 
                       {/* Attributes section */}
                       {metric.attributes && metric.attributes.length > 0 && (
-                        <div className="space-y-4">
-                          <h4 className="text-muted-foreground text-xs font-black tracking-[0.2em] uppercase">
-                            Attributes
-                          </h4>
+                        <div className="pt-2">
                           <AttributeTable attributes={metric.attributes} />
                         </div>
                       )}
@@ -128,10 +125,7 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
 
                       {/* Attributes section */}
                       {span.attributes && span.attributes.length > 0 && (
-                        <div className="space-y-4">
-                          <h4 className="text-muted-foreground text-xs font-black tracking-[0.2em] uppercase">
-                            Attributes
-                          </h4>
+                        <div className="pt-2">
                           <AttributeTable attributes={span.attributes} />
                         </div>
                       )}
