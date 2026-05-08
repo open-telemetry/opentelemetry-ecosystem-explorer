@@ -2,6 +2,7 @@ distribution: contrib
 version: 0.151.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: processor
+schema_hash: 8ef455c6e37c
 components:
 - name: attributesprocessor
   metadata:
@@ -155,6 +156,19 @@ components:
         - bogdandrutu
         emeritus:
         - boostchicken
+- name: genainormalizerprocessor
+  metadata:
+    type: genainormalizer
+    display_name: GenAI Normalizer Processor
+    status:
+      class: processor
+      stability:
+        development:
+        - traces
+      distributions: []
+      codeowners:
+        active:
+        - TylerHelmuth
 - name: geoipprocessor
   metadata:
     type: geoip
@@ -490,7 +504,7 @@ components:
         - ridwanmsharif
 - name: metricstransformprocessor
   metadata:
-    type: metricstransform
+    type: metrics_transform
     display_name: Metrics Transform Processor
     status:
       class: processor

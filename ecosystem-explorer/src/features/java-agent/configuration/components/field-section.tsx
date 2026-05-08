@@ -18,11 +18,9 @@ import { createContext, useContext, useId, useState, type ReactNode } from "reac
 import { ChevronDown, ChevronRight } from "lucide-react";
 import type { ConfigNodeBase, Constraints } from "@/types/configuration";
 import type { ConfigValue } from "@/types/configuration-builder";
-import { SummaryBadge } from "@/components/ui/summary-badge";
 import { StabilityBadge } from "@/components/ui/stability-badge";
 import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { TruncatedDescription } from "@/components/ui/truncated-description";
-import { countConfiguredLeaves } from "@/lib/state-summary";
 
 type Level = "section" | "field";
 
@@ -193,40 +191,6 @@ function Empty({ children }: { children?: ReactNode }) {
   );
 }
 
-function deriveBadgeText(
-  node: ConfigNodeBase,
-  value: ConfigValue | null | undefined
-): string | null {
-  if (node.controlType === "group") {
-    const fields = countConfiguredLeaves(value ?? null);
-    if (fields === 0) return null;
-    return `${fields} ${fields === 1 ? "field" : "fields"} set`;
-  }
-  if (node.controlType === "key_value_map") {
-    const n =
-      value && typeof value === "object" && !Array.isArray(value) ? Object.keys(value).length : 0;
-    if (n === 0) return null;
-    return `${n} ${n === 1 ? "entry" : "entries"}`;
-  }
-  if (
-    node.controlType === "list" ||
-    node.controlType === "string_list" ||
-    node.controlType === "number_list"
-  ) {
-    const n = Array.isArray(value) ? value.length : 0;
-    if (n === 0) return null;
-    return `${n} ${n === 1 ? "item" : "items"}`;
-  }
-  return null;
-}
-
-function Badge() {
-  const { node, value } = useFieldSection();
-  const text = deriveBadgeText(node, value);
-  if (!text) return null;
-  return <SummaryBadge>{text}</SummaryBadge>;
-}
-
 function Stability() {
   const { node } = useFieldSection();
   return <StabilityBadge stability={node.stability} />;
@@ -266,7 +230,6 @@ export const FieldSection = Object.assign(Root, {
   Chevron,
   Body,
   Empty,
-  Badge,
   Stability,
   Info,
   Description,

@@ -2,6 +2,7 @@ distribution: contrib
 version: 0.151.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: extension
+schema_hash: 8ef455c6e37c
 components:
 - name: ackextension
   metadata:
@@ -473,6 +474,21 @@ components:
         active:
         - dmitryax
         - rakesh-garimella
+- name: mcp
+  metadata:
+    type: mcp
+    display_name: MCP Server
+    status:
+      class: extension
+      stability:
+        development:
+        - extension
+      distributions: []
+      codeowners:
+        active:
+        - pavolloffay
+        - codeboten
+        - dmitryax
 - name: oauth2clientauthextension
   metadata:
     type: oauth2client

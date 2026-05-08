@@ -1,0 +1,59 @@
+name: PR Screenshots - Cleanup
+
+# Deletes the screenshots subfolder for a closed PR from the upstream
+# `otelbot/screenshots` orphan branch. Uses pull_request_target (not pull_request)
+# so the token has contents: write even when the PR comes from a fork.
+# No PR code is checked out here — only the upstream otelbot/screenshots branch.
+
+on:
+  pull_request_target:
+    branches: [main]
+    types: [closed]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: screenshots-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get otelbot token
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        id: otelbot-token
+        with:
+          app-id: ${{ vars.OTELBOT_APP_ID }}
+          private-key: ${{ secrets.OTELBOT_PRIVATE_KEY }}
+
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          token: ${{ steps.otelbot-token.outputs.token }}
+          fetch-depth: 0
+
+      - name: Use CLA approved github bot
+        run: .github/scripts/use-cla-approved-bot.sh
+
+      - name: Delete PR screenshots
+        env:
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if ! git ls-remote --exit-code --heads origin otelbot/screenshots > /dev/null 2>&1; then
+            echo "No otelbot/screenshots branch found, nothing to clean up."
+            exit 0
+          fi
+
+          git fetch origin otelbot/screenshots
+          git checkout -B otelbot/screenshots FETCH_HEAD
+
+          if [ ! -d "${PR_NUMBER}" ]; then
+            echo "No screenshots for PR #${PR_NUMBER}, nothing to clean up."
+            exit 0
+          fi
+
+          git rm -rf "${PR_NUMBER}/"
+          git commit -m "chore: remove screenshots for PR #${PR_NUMBER}"
+          git push origin otelbot/screenshots

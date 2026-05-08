@@ -3,18 +3,8 @@ name: Build and Test
 on:
   push:
     branches: [main]
-    paths:
-      - "ecosystem-automation/**"
-      - "ecosystem-explorer/**"
-      - ".github/workflows/build-and-test.yml"
-      - "scripts/**"
   pull_request:
     branches: [main]
-    paths:
-      - "ecosystem-automation/**"
-      - "ecosystem-explorer/**"
-      - ".github/workflows/build-and-test.yml"
-      - "scripts/**"
 
 permissions:
   contents: read

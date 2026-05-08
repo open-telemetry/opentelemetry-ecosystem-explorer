@@ -1,0 +1,182 @@
+name: PR Screenshots - Commit
+
+# Second half of a two-workflow setup for safe fork PR support.
+# Triggered by screenshots-capture.yml completing (contents: write here, none there).
+# Downloads artifacts uploaded by the capture job, pushes screenshots to the
+# upstream `screenshots` orphan branch, and posts or updates a PR comment with
+# inline images. No fork code ever runs in this job.
+
+on:
+  workflow_run:
+    workflows: ["PR Screenshots - Capture"]
+    types: [completed]
+
+concurrency:
+  group: screenshots-${{ github.event.workflow_run.pull_requests[0].number }}
+  cancel-in-progress: true
+
+permissions:
+  actions: read
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  commit:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download PR metadata artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: pr-metadata-${{ github.event.workflow_run.id }}
+          path: /tmp/pr-metadata
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Read PR metadata
+        id: metadata
+        run: |
+          echo "pr_number=$(cat /tmp/pr-metadata/pr_number.txt)" >> "$GITHUB_OUTPUT"
+          echo "head_ref=$(cat /tmp/pr-metadata/head_ref.txt)"   >> "$GITHUB_OUTPUT"
+          echo "head_repo=$(cat /tmp/pr-metadata/head_repo.txt)" >> "$GITHUB_OUTPUT"
+          echo "head_sha=$(cat /tmp/pr-metadata/head_sha.txt)"   >> "$GITHUB_OUTPUT"
+
+      - name: Get otelbot token
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        id: otelbot-token
+        with:
+          app-id: ${{ vars.OTELBOT_APP_ID }}
+          private-key: ${{ secrets.OTELBOT_PRIVATE_KEY }}
+
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          token: ${{ steps.otelbot-token.outputs.token }}
+          fetch-depth: 0
+
+      - name: Download screenshots artifact
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: screenshots-${{ github.event.workflow_run.id }}
+          path: /tmp/screenshots
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Use CLA approved github bot
+        run: .github/scripts/use-cla-approved-bot.sh
+
+      - name: Commit screenshots to otelbot/screenshots branch
+        env:
+          PR_NUMBER: ${{ steps.metadata.outputs.pr_number }}
+        run: |
+          if git ls-remote --exit-code --heads origin otelbot/screenshots > /dev/null 2>&1; then
+            git fetch origin otelbot/screenshots
+            git checkout -B otelbot/screenshots FETCH_HEAD
+          else
+            git checkout --orphan otelbot/screenshots
+            git rm -rf . --quiet 2>/dev/null || true
+            git clean -fd --quiet
+            git commit --allow-empty -m "chore: initialize screenshots branch"
+            git push origin otelbot/screenshots
+          fi
+
+          rm -rf -- "${PR_NUMBER}"
+          mkdir -p -- "${PR_NUMBER}"
+          UNEXPECTED=$(find /tmp/screenshots -mindepth 1 -maxdepth 1 -type f ! -name "*.png")
+          if [ -n "$UNEXPECTED" ]; then
+            echo "::error::Unexpected file types in screenshots artifact:"
+            echo "$UNEXPECTED"
+            exit 1
+          fi
+
+          while IFS= read -r -d '' f; do
+            size=$(stat -c%s "$f")
+            if [ "$size" -gt $((5 * 1024 * 1024)) ]; then
+              echo "::error::File exceeds 5 MB limit: $f ($size bytes)"
+              exit 1
+            fi
+          done < <(find /tmp/screenshots -mindepth 1 -maxdepth 1 -type f -name "*.png" -print0)
+
+          find /tmp/screenshots -mindepth 1 -maxdepth 1 -type f -name "*.png" -exec cp -- {} "${PR_NUMBER}/" \;
+          git add -A -- "${PR_NUMBER}/"
+          git diff --quiet --exit-code --cached || git commit -m "docs: update screenshots for PR #${PR_NUMBER}"
+          git push origin otelbot/screenshots
+
+      - name: Build comment body
+        env:
+          PR_NUMBER: ${{ steps.metadata.outputs.pr_number }}
+          HEAD_REF: ${{ steps.metadata.outputs.head_ref }}
+          HEAD_REPO: ${{ steps.metadata.outputs.head_repo }}
+          HEAD_SHA: ${{ steps.metadata.outputs.head_sha }}
+          WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
+          REPO: ${{ github.repository }}
+        run: |
+          python3 - << 'PYEOF'
+          import os
+          from datetime import datetime, timezone
+
+          pr_number = os.environ["PR_NUMBER"]
+          head_ref  = os.environ["HEAD_REF"]
+          head_repo = os.environ["HEAD_REPO"]
+          head_sha  = os.environ["HEAD_SHA"]
+          run_id    = os.environ["WORKFLOW_RUN_ID"]
+          repo      = os.environ["REPO"]
+
+          short_sha  = head_sha[:7]
+          commit_url = f"https://github.com/{head_repo}/commit/{head_sha}"
+          run_url    = f"https://github.com/{repo}/actions/runs/{run_id}"
+          base_url   = f"https://raw.githubusercontent.com/{repo}/otelbot/screenshots/{pr_number}"
+          timestamp  = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+
+          def table(slug):
+              return (
+                  "| Desktop | Tablet | Mobile |\n"
+                  "|---|---|---|\n"
+                  f"| ![{slug} desktop]({base_url}/desktop-{slug}.png)"
+                  f" | ![{slug} tablet]({base_url}/tablet-{slug}.png)"
+                  f" | ![{slug} mobile]({base_url}/mobile-{slug}.png) |"
+              )
+
+          pages = [
+              ("Home",                        "home"),
+              ("Instrumentation List",        "instrumentation-list"),
+              ("Detail — Details tab",         "detail-details"),
+              ("Detail — Telemetry tab",        "detail-telemetry"),
+              ("Detail — Configuration tab",    "detail-configuration"),
+              ("Collector List",              "collector-list"),
+              ("Collector Detail",            "collector-detail"),
+          ]
+
+          sections = "\n\n".join(
+              f"**{label}**\n\n{table(slug)}" for label, slug in pages
+          )
+
+          footer = (
+              f"_Captured from [`{short_sha}`]({commit_url}) on `{head_ref}` "
+              f"· [workflow run]({run_url})"
+              f"· {timestamp}_"
+          )
+
+          body = f"<!-- screenshots-bot -->\n## PR Screenshots\n\n{sections}\n\n---\n{footer}\n"
+
+          with open("/tmp/comment_body.txt", "w") as f:
+              f.write(body)
+          PYEOF
+
+      - name: Post or update PR comment
+        env:
+          PR_NUMBER: ${{ steps.metadata.outputs.pr_number }}
+          REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ steps.otelbot-token.outputs.token }}
+        run: |
+          jq -n --rawfile body /tmp/comment_body.txt '{body: $body}' > /tmp/comment_payload.json
+
+          EXISTING_ID=$(gh api "/repos/${REPO}/issues/${PR_NUMBER}/comments" \
+            --jq '[.[] | select(.user.login == "otelbot[bot]") | select(.body | contains("<!-- screenshots-bot -->")) | .id] | first // empty')
+
+          if [ -n "$EXISTING_ID" ]; then
+            gh api "/repos/${REPO}/issues/comments/${EXISTING_ID}" -X PATCH --input /tmp/comment_payload.json
+          else
+            gh api "/repos/${REPO}/issues/${PR_NUMBER}/comments" -X POST --input /tmp/comment_payload.json
+          fi

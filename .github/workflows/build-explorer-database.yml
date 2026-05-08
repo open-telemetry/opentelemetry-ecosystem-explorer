@@ -115,7 +115,9 @@ jobs:
       - name: Commit and push changes
         if: steps.check_changes.outputs.has_changes == 'true'
         env:
-          GH_TOKEN: ${{ steps.repo_check.outputs.is_primary == 'true' && steps.otelbot-token.outputs.token || secrets.GITHUB_TOKEN }}
+          GH_TOKEN:
+            ${{ steps.repo_check.outputs.is_primary == 'true' && steps.otelbot-token.outputs.token
+            || secrets.GITHUB_TOKEN }}
         run: |
           BRANCH="otelbot/automated-explorer-database-update-${{ inputs.ecosystem }}"
 

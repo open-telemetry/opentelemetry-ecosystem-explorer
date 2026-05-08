@@ -2,6 +2,7 @@ distribution: contrib
 version: 0.151.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: receiver
+schema_hash: 8ef455c6e37c
 components:
 - name: activedirectorydsreceiver
   metadata:
@@ -5094,7 +5095,7 @@ components:
         - alexvanboxel
 - name: googlecloudspannerreceiver
   metadata:
-    type: googlecloudspanner
+    type: google_cloud_spanner
     display_name: Google Cloud Spanner Receiver
     status:
       class: receiver
@@ -6786,7 +6787,7 @@ components:
         - krisztianfekete
 - name: kafkametricsreceiver
   metadata:
-    type: kafkametrics
+    type: kafka_metrics
     display_name: Kafka Metrics Receiver
     description: The Kafka Metrics Receiver collects kafka metrics (brokers, topics,
       partitions, consumer groups) from a kafka server, and converts them into otlp.

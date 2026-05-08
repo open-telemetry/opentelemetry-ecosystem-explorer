@@ -62,7 +62,7 @@ export interface ConfigurationBuilderStateContextValue {
 export interface ConfigurationBuilderActionsContextValue {
   setValue: (path: string, value: ConfigValue) => void;
   setValueByPath: (path: Path, value: ConfigValue) => void;
-  setOverride: (module: string, status: "enabled" | "disabled" | "none") => void;
+  setCustomization: (module: string, status: "enabled" | "disabled" | "none") => void;
   setEnabled: (section: string, enabled: boolean) => void;
   selectPlugin: (path: string, pluginKey: string) => void;
   addListItem: (path: string) => void;
@@ -164,9 +164,12 @@ export function useConfigurationBuilderState(
     dispatch({ type: "SET_VALUE", path, value });
   }, []);
 
-  const setOverride = useCallback((module: string, status: "enabled" | "disabled" | "none") => {
-    dispatch({ type: "SET_OVERRIDE", module, status });
-  }, []);
+  const setCustomization = useCallback(
+    (module: string, status: "enabled" | "disabled" | "none") => {
+      dispatch({ type: "SET_CUSTOMIZATION", module, status });
+    },
+    []
+  );
 
   const setEnabled = useCallback((section: string, enabled: boolean) => {
     let defaults: ConfigValues | undefined;
@@ -296,7 +299,7 @@ export function useConfigurationBuilderState(
     () => ({
       setValue,
       setValueByPath,
-      setOverride,
+      setCustomization,
       setEnabled,
       selectPlugin,
       addListItem,

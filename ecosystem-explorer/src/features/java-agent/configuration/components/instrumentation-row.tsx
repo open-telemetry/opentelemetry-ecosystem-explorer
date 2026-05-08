@@ -16,16 +16,16 @@
 import type { JSX } from "react";
 import { ChevronRight, Plus, X } from "lucide-react";
 import type { InstrumentationModule } from "@/types/javaagent";
-import type { OverrideStatus } from "@/hooks/use-override-status";
+import type { CustomizationStatus } from "@/hooks/use-customization-status";
 import { InstrumentationConfigForm } from "./instrumentation-config-form";
 
 export interface InstrumentationRowProps {
   module: InstrumentationModule;
-  status: OverrideStatus;
+  status: CustomizationStatus;
   isExpanded: boolean;
-  onAddOverride: () => void;
+  onAddCustomization: () => void;
   onSetEnabled: (enabled: boolean) => void;
-  onRemoveOverride: () => void;
+  onRemoveCustomization: () => void;
   onToggleExpand: () => void;
   onJumpToGeneral: (sectionKey: string) => void;
 }
@@ -34,14 +34,14 @@ export function InstrumentationRow({
   module,
   status,
   isExpanded,
-  onAddOverride,
+  onAddCustomization,
   onSetEnabled,
-  onRemoveOverride,
+  onRemoveCustomization,
   onToggleExpand,
   onJumpToGeneral,
 }: InstrumentationRowProps): JSX.Element {
-  const isOverridden = status !== "none";
-  const overrideEnabled = status === "enabled";
+  const isCustomized = status !== "none";
+  const customizationEnabled = status === "enabled";
   const enabledByDefault = !module.defaultDisabled;
 
   const description =
@@ -52,8 +52,8 @@ export function InstrumentationRow({
     .filter((s) => s !== "")
     .join(", ");
 
-  const containerClass = isOverridden
-    ? overrideEnabled
+  const containerClass = isCustomized
+    ? customizationEnabled
       ? "border-primary/40 bg-primary/5"
       : "border-red-500/40 bg-red-500/5"
     : "border-border/60 bg-background/30 hover:bg-background/50";
@@ -90,17 +90,17 @@ export function InstrumentationRow({
         </div>
 
         <div className="flex items-center gap-2 sm:contents">
-          {isOverridden ? (
-            <OverrideToggle enabled={overrideEnabled} onChange={onSetEnabled} />
+          {isCustomized ? (
+            <CustomizationToggle enabled={customizationEnabled} onChange={onSetEnabled} />
           ) : (
             <DefaultPill enabledByDefault={enabledByDefault} />
           )}
 
-          {isOverridden ? (
+          {isCustomized ? (
             <button
               type="button"
-              aria-label={`Remove override for ${module.name}`}
-              onClick={onRemoveOverride}
+              aria-label={`Remove customization for ${module.name}`}
+              onClick={onRemoveCustomization}
               className="text-muted-foreground hover:text-foreground rounded-md p-1"
             >
               <X className="h-3.5 w-3.5" aria-hidden="true" />
@@ -108,12 +108,12 @@ export function InstrumentationRow({
           ) : (
             <button
               type="button"
-              onClick={onAddOverride}
-              aria-label={`Override ${module.name}`}
+              onClick={onAddCustomization}
+              aria-label={`Customize ${module.name}`}
               className="border-border/60 text-foreground hover:bg-card/80 inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs"
             >
               <Plus className="h-3 w-3" aria-hidden="true" />
-              Override
+              Customize
             </button>
           )}
 
@@ -157,7 +157,7 @@ function DefaultPill({ enabledByDefault }: { enabledByDefault: boolean }) {
   );
 }
 
-function OverrideToggle({
+function CustomizationToggle({
   enabled,
   onChange,
 }: {
@@ -170,7 +170,7 @@ function OverrideToggle({
   return (
     <div
       role="group"
-      aria-label="Override state"
+      aria-label="Customization state"
       className="border-border/60 inline-flex overflow-hidden rounded-md border"
     >
       <button

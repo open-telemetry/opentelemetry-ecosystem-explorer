@@ -21,7 +21,10 @@ interface RenderInputProps<T> {
   value: T;
   setValue: (next: T) => void;
   ariaLabel: string;
+  index: number;
 }
+
+const ROW_FOCUSABLE_SELECTOR = 'input, [role="switch"], select';
 
 export interface FocusManagedInputListHandle {
   /**
@@ -73,7 +76,7 @@ export function FocusManagedInputList<T>({
     () => ({
       notifyAdded: () => {
         requestAnimationFrame(() => {
-          const inputs = listRef.current?.querySelectorAll("input");
+          const inputs = listRef.current?.querySelectorAll<HTMLElement>(ROW_FOCUSABLE_SELECTOR);
           inputs?.item(inputs.length - 1)?.focus();
         });
         announce("Item added");
@@ -85,7 +88,7 @@ export function FocusManagedInputList<T>({
   const handleRemove = (index: number) => {
     onChange(items.filter((_, i) => i !== index));
     requestAnimationFrame(() => {
-      const inputs = listRef.current?.querySelectorAll("input");
+      const inputs = listRef.current?.querySelectorAll<HTMLElement>(ROW_FOCUSABLE_SELECTOR);
       if (inputs && inputs.length > 0) {
         const focusIndex = Math.min(index, inputs.length - 1);
         inputs.item(focusIndex)?.focus();
@@ -113,6 +116,7 @@ export function FocusManagedInputList<T>({
                 value: item,
                 setValue: (next) => setItemAt(index, next),
                 ariaLabel: `Item ${index + 1}`,
+                index,
               })}
               {canRemove && (
                 <button

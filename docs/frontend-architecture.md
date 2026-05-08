@@ -1,13 +1,13 @@
 # Frontend Architecture
 
-The React-based web application that provides an interactive interface for exploring
-OpenTelemetry component metadata.
+The React-based web application that provides an interactive interface for exploring OpenTelemetry
+component metadata.
 
 ## Overview
 
-The ecosystem-explorer is a static web application built with React, TypeScript, and Vite.
-It consumes the content-addressed database and provides search, filtering, and comparison
-capabilities with offline support through IndexedDB caching.
+The ecosystem-explorer is a static web application built with React, TypeScript, and Vite. It
+consumes the content-addressed database and provides search, filtering, and comparison capabilities
+with offline support through IndexedDB caching.
 
 ## Technology Stack
 

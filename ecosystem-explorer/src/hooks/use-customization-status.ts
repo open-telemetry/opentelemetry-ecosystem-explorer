@@ -17,11 +17,11 @@ import { useMemo } from "react";
 import { getByPath } from "@/lib/config-path";
 import { useConfigurationBuilder } from "./use-configuration-builder";
 
-export type OverrideStatus = "enabled" | "disabled" | "none";
+export type CustomizationStatus = "enabled" | "disabled" | "none";
 
 const PATH = ["distribution", "javaagent", "instrumentation"] as const;
 
-export function useOverrideStatusMap(): Map<string, "enabled" | "disabled"> {
+export function useCustomizationStatusMap(): Map<string, "enabled" | "disabled"> {
   const { state } = useConfigurationBuilder();
   return useMemo(() => {
     const inst = getByPath(state.values, [...PATH]);
@@ -39,6 +39,6 @@ export function useOverrideStatusMap(): Map<string, "enabled" | "disabled"> {
   }, [state.values]);
 }
 
-export function useOverrideStatus(module: string): OverrideStatus {
-  return useOverrideStatusMap().get(module) ?? "none";
+export function useCustomizationStatus(module: string): CustomizationStatus {
+  return useCustomizationStatusMap().get(module) ?? "none";
 }

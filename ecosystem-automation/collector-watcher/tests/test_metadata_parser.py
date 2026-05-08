@@ -19,7 +19,12 @@ import tempfile
 from pathlib import Path
 
 import pytest
-from collector_watcher.metadata_parser import MetadataParser
+from collector_watcher.metadata_parser import (
+    MetadataParser,
+    MetadataParserFactory,
+    MetadataParserV1,
+    parse_component_metadata,
+)
 
 
 @pytest.fixture
@@ -357,3 +362,150 @@ resource_attributes:
         metadata["resource_attributes"]["service.name"]["description"]
         == "The name of the service running the collector."
     )
+
+
+# ---------------------------------------------------------------------------
+# MetadataParserV1 — direct unit tests
+# ---------------------------------------------------------------------------
+
+
+def test_parser_v1_schema_version():
+    assert MetadataParserV1().get_schema_version() == "v1"
+
+
+def test_parser_v1_parse_returns_none_for_empty():
+    assert MetadataParserV1().parse({}) is None
+    assert MetadataParserV1().parse(None) is None  # type: ignore[arg-type]
+
+
+def test_parser_v1_parse_type_field():
+    result = MetadataParserV1().parse({"type": "otlp"})
+    assert result is not None
+    assert result["type"] == "otlp"
+
+
+def test_parser_v1_parse_status():
+    raw = {
+        "type": "test",
+        "status": {
+            "class": "receiver",
+            "stability": {"stable": ["metrics", "traces"], "beta": ["logs"]},
+            "distributions": ["contrib", "core"],
+        },
+    }
+    result = MetadataParserV1().parse(raw)
+    assert result["status"]["class"] == "receiver"
+    assert result["status"]["stability"]["stable"] == ["metrics", "traces"]
+    assert result["status"]["distributions"] == ["contrib", "core"]
+
+
+def test_parser_v1_sorted_attributes():
+    raw = {
+        "type": "test",
+        "attributes": {
+            "z_attr": {"type": "string"},
+            "a_attr": {"type": "int"},
+        },
+    }
+    result = MetadataParserV1().parse(raw)
+    assert list(result["attributes"].keys()) == ["a_attr", "z_attr"]
+
+
+def test_parser_v1_ignores_unknown_top_level_fields():
+    """Unknown fields (e.g. future schema additions) are silently dropped."""
+    raw = {"type": "test", "future_field": "some_value"}
+    result = MetadataParserV1().parse(raw)
+    assert "future_field" not in result
+
+
+# ---------------------------------------------------------------------------
+# MetadataParserFactory
+# ---------------------------------------------------------------------------
+
+
+def test_factory_get_parser_v1():
+    parser = MetadataParserFactory.get_parser("v1")
+    assert isinstance(parser, MetadataParserV1)
+
+
+def test_factory_get_default_parser_returns_latest():
+    parser = MetadataParserFactory.get_default_parser()
+    assert isinstance(parser, MetadataParserV1)
+
+
+def test_factory_raises_on_unknown_version():
+    with pytest.raises(ValueError, match="Unsupported schema_version"):
+        MetadataParserFactory.get_parser("v99")
+
+
+def test_factory_error_message_lists_supported_versions():
+    with pytest.raises(ValueError, match="v1"):
+        MetadataParserFactory.get_parser("v_unknown")
+
+
+# ---------------------------------------------------------------------------
+# parse_component_metadata convenience function
+# ---------------------------------------------------------------------------
+
+
+def test_parse_component_metadata_none_version_uses_default():
+    raw = {"type": "otlp"}
+    result = parse_component_metadata(raw, schema_version=None)
+    assert result is not None
+    assert result["type"] == "otlp"
+
+
+def test_parse_component_metadata_explicit_v1():
+    raw = {"type": "batch"}
+    result = parse_component_metadata(raw, schema_version="v1")
+    assert result["type"] == "batch"
+
+
+def test_parse_component_metadata_raises_on_bad_version():
+    with pytest.raises(ValueError):
+        parse_component_metadata({"type": "test"}, schema_version="v_bad")
+
+
+def test_parse_component_metadata_returns_none_for_empty():
+    assert parse_component_metadata({}) is None
+
+
+# ---------------------------------------------------------------------------
+# MetadataParser file-I/O wrapper — schema_version auto-detection
+# ---------------------------------------------------------------------------
+
+
+def test_metadata_parser_accepts_schema_version_override(temp_component_dir):
+    """Explicit schema_version is forwarded to the factory."""
+    create_metadata_file(temp_component_dir, "type: otlp")
+    parser = MetadataParser(temp_component_dir)
+    result = parser.parse(schema_version="v1")
+    assert result is not None
+    assert result["type"] == "otlp"
+
+
+def test_metadata_parser_raises_on_unsupported_schema_version(temp_component_dir):
+    """Unsupported explicit schema_version propagates as ValueError."""
+    create_metadata_file(temp_component_dir, "type: otlp")
+    parser = MetadataParser(temp_component_dir)
+    with pytest.raises(ValueError, match="Unsupported schema_version"):
+        parser.parse(schema_version="v_bad")
+
+
+def test_metadata_parser_auto_detects_schema_version_field(temp_component_dir):
+    """If metadata.yaml carries a schema_version field matching a known version, it is used."""
+    content = "type: test\nschema_version: v1\n"
+    create_metadata_file(temp_component_dir, content)
+    parser = MetadataParser(temp_component_dir)
+    result = parser.parse()
+    assert result is not None
+    assert result["type"] == "test"
+
+
+def test_metadata_parser_unknown_schema_version_in_file_raises(temp_component_dir):
+    """An unknown schema_version declared inside metadata.yaml is propagated as ValueError."""
+    content = "type: test\nschema_version: v_future\n"
+    create_metadata_file(temp_component_dir, content)
+    parser = MetadataParser(temp_component_dir)
+    with pytest.raises(ValueError, match="Unsupported schema_version"):
+        parser.parse()

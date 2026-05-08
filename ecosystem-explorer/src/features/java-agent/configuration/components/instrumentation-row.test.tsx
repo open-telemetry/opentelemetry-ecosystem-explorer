@@ -53,9 +53,9 @@ describe("InstrumentationRow", () => {
       <InstrumentationRow
         module={moduleFixture("cassandra", [entry("cassandra-3.0"), entry("cassandra-4.4")])}
         status="none"
-        onAddOverride={() => {}}
+        onAddCustomization={() => {}}
         onSetEnabled={() => {}}
-        onRemoveOverride={() => {}}
+        onRemoveCustomization={() => {}}
         {...expansionDefaults}
       />
     );
@@ -68,9 +68,9 @@ describe("InstrumentationRow", () => {
       <InstrumentationRow
         module={moduleFixture("cassandra", [entry("cassandra-4.4")])}
         status="none"
-        onAddOverride={() => {}}
+        onAddCustomization={() => {}}
         onSetEnabled={() => {}}
-        onRemoveOverride={() => {}}
+        onRemoveCustomization={() => {}}
         {...expansionDefaults}
       />
     );
@@ -82,41 +82,41 @@ describe("InstrumentationRow", () => {
       <InstrumentationRow
         module={moduleFixture("jmx_metrics", [entry("jmx-metrics")], true)}
         status="none"
-        onAddOverride={() => {}}
+        onAddCustomization={() => {}}
         onSetEnabled={() => {}}
-        onRemoveOverride={() => {}}
+        onRemoveCustomization={() => {}}
         {...expansionDefaults}
       />
     );
     expect(screen.getByText("disabled by default")).toBeInTheDocument();
   });
 
-  it("calls onAddOverride when + Override is clicked", () => {
+  it("calls onAddCustomization when + Customize is clicked", () => {
     const onAdd = vi.fn();
     render(
       <InstrumentationRow
         module={moduleFixture("cassandra", [entry("cassandra-4.4")])}
         status="none"
-        onAddOverride={onAdd}
+        onAddCustomization={onAdd}
         onSetEnabled={() => {}}
-        onRemoveOverride={() => {}}
+        onRemoveCustomization={() => {}}
         {...expansionDefaults}
       />
     );
-    fireEvent.click(screen.getByLabelText(/Override cassandra/));
+    fireEvent.click(screen.getByLabelText(/Customize cassandra/));
     expect(onAdd).toHaveBeenCalledOnce();
   });
 
-  it("renders the toggle and ✕ when overridden, with correct aria-pressed", () => {
+  it("renders the toggle and ✕ when customized, with correct aria-pressed", () => {
     const onSetEnabled = vi.fn();
     const onRemove = vi.fn();
     render(
       <InstrumentationRow
         module={moduleFixture("cassandra", [entry("cassandra-4.4")])}
         status="disabled"
-        onAddOverride={() => {}}
+        onAddCustomization={() => {}}
         onSetEnabled={onSetEnabled}
-        onRemoveOverride={onRemove}
+        onRemoveCustomization={onRemove}
         {...expansionDefaults}
       />
     );
@@ -130,7 +130,7 @@ describe("InstrumentationRow", () => {
     );
     fireEvent.click(screen.getByRole("button", { name: "Enabled" }));
     expect(onSetEnabled).toHaveBeenCalledWith(true);
-    fireEvent.click(screen.getByLabelText(/Remove override for cassandra/));
+    fireEvent.click(screen.getByLabelText(/Remove customization for cassandra/));
     expect(onRemove).toHaveBeenCalledOnce();
   });
 
@@ -140,9 +140,9 @@ describe("InstrumentationRow", () => {
       <InstrumentationRow
         module={moduleFixture("cassandra", [entry("cassandra-4.4")])}
         status="disabled"
-        onAddOverride={() => {}}
+        onAddCustomization={() => {}}
         onSetEnabled={onSetEnabled}
-        onRemoveOverride={() => {}}
+        onRemoveCustomization={() => {}}
         {...expansionDefaults}
       />
     );
@@ -150,9 +150,9 @@ describe("InstrumentationRow", () => {
       <InstrumentationRow
         module={moduleFixture("cassandra", [entry("cassandra-4.4")])}
         status="enabled"
-        onAddOverride={() => {}}
+        onAddCustomization={() => {}}
         onSetEnabled={onSetEnabled}
-        onRemoveOverride={() => {}}
+        onRemoveCustomization={() => {}}
         {...expansionDefaults}
       />
     );
@@ -170,9 +170,9 @@ describe("InstrumentationRow", () => {
       <InstrumentationRow
         module={moduleFixture("jmx_metrics", [entry("jmx-metrics", { _is_custom: true })], true)}
         status="none"
-        onAddOverride={() => {}}
+        onAddCustomization={() => {}}
         onSetEnabled={() => {}}
-        onRemoveOverride={() => {}}
+        onRemoveCustomization={() => {}}
         {...expansionDefaults}
       />
     );
@@ -184,9 +184,9 @@ describe("InstrumentationRow", () => {
       <InstrumentationRow
         module={moduleFixture("cassandra", [entry("cassandra-4.4")])}
         status="none"
-        onAddOverride={() => {}}
+        onAddCustomization={() => {}}
         onSetEnabled={() => {}}
-        onRemoveOverride={() => {}}
+        onRemoveCustomization={() => {}}
         {...expansionDefaults}
       />
     );
@@ -209,9 +209,9 @@ describe("InstrumentationRow — expansion", () => {
         module={baseModule}
         status="none"
         isExpanded={false}
-        onAddOverride={vi.fn()}
+        onAddCustomization={vi.fn()}
         onSetEnabled={vi.fn()}
-        onRemoveOverride={vi.fn()}
+        onRemoveCustomization={vi.fn()}
         onToggleExpand={onToggle}
         onJumpToGeneral={vi.fn()}
       />
@@ -224,9 +224,9 @@ describe("InstrumentationRow — expansion", () => {
     const props = {
       module: baseModule,
       status: "none" as const,
-      onAddOverride: vi.fn(),
+      onAddCustomization: vi.fn(),
       onSetEnabled: vi.fn(),
-      onRemoveOverride: vi.fn(),
+      onRemoveCustomization: vi.fn(),
       onToggleExpand: vi.fn(),
       onJumpToGeneral: vi.fn(),
     };
@@ -242,9 +242,9 @@ describe("InstrumentationRow — expansion", () => {
         module={baseModule}
         status="none"
         isExpanded={false}
-        onAddOverride={vi.fn()}
+        onAddCustomization={vi.fn()}
         onSetEnabled={vi.fn()}
-        onRemoveOverride={vi.fn()}
+        onRemoveCustomization={vi.fn()}
         onToggleExpand={vi.fn()}
         onJumpToGeneral={vi.fn()}
       />
@@ -258,9 +258,9 @@ describe("InstrumentationRow — expansion", () => {
         module={baseModule}
         status="none"
         isExpanded={true}
-        onAddOverride={vi.fn()}
+        onAddCustomization={vi.fn()}
         onSetEnabled={vi.fn()}
-        onRemoveOverride={vi.fn()}
+        onRemoveCustomization={vi.fn()}
         onToggleExpand={vi.fn()}
         onJumpToGeneral={vi.fn()}
       />

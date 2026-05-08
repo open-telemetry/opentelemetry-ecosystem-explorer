@@ -245,13 +245,13 @@ export function InstrumentationConfigField({
 
   const { state, setValueByPath, removeMapEntry } = useConfigurationBuilder();
   const currentValue = getByPath(state.values, path);
-  const isOverridden = currentValue !== undefined && currentValue !== null;
-  const typeMismatch = isOverridden && !valueMatchesType(currentValue, entry.type);
+  const isCustomized = currentValue !== undefined && currentValue !== null;
+  const typeMismatch = isCustomized && !valueMatchesType(currentValue, entry.type);
 
   const parentPath = path.slice(0, -1).join(".");
   const leafKey = String(path[path.length - 1]);
 
-  const handleOverride = () => {
+  const handleCustomization = () => {
     setValueByPath(path, parseDefault(entry.type, entry.default));
   };
 
@@ -292,7 +292,7 @@ export function InstrumentationConfigField({
             disabled={true}
             showAdd={false}
           />
-        ) : isOverridden ? (
+        ) : isCustomized ? (
           <Render
             value={currentValue as ConfigValue}
             onChange={handleChange}
@@ -313,7 +313,7 @@ export function InstrumentationConfigField({
           >
             Edit in General Settings ↑
           </button>
-        ) : isOverridden ? (
+        ) : isCustomized ? (
           <button
             type="button"
             onClick={handleReset}
@@ -326,11 +326,11 @@ export function InstrumentationConfigField({
         ) : (
           <button
             type="button"
-            onClick={handleOverride}
+            onClick={handleCustomization}
             className="border-border/60 text-foreground hover:bg-card/80 inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs"
           >
             <Plus className="h-3 w-3" aria-hidden="true" />
-            Override
+            Customize
           </button>
         )}
       </div>

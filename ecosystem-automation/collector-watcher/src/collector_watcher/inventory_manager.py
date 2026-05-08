@@ -50,12 +50,68 @@ class InventoryManager:
         """
         return self.inventory_dir / distribution / f"v{version}"
 
+    def meta_schemas_dir(self) -> Path:
+        """
+        Return the content-addressable schema storage directory.
+
+        The schema is stored once per distinct content as ``{hash}.yaml``,
+        not once per version. A component YAML's ``schema_hash`` field
+        directly identifies its schema file at
+        ``meta_schemas_dir() / f"{schema_hash}.yaml"``.
+        """
+        return self.inventory_dir / "meta" / "schemas"
+
+    def prune_orphan_schemas(self) -> int:
+        """
+        Delete schema files in ``meta/schemas/`` no longer referenced by any
+        component YAML.
+
+        Walks every distribution's version directories, collects the set of
+        ``schema_hash`` values referenced by component YAMLs, then removes any
+        ``meta/schemas/{hash}.yaml`` whose hash is not in that set. Should be
+        called after deleting a version (release backfill, snapshot cleanup)
+        to reclaim files that lost their last reference.
+
+        Returns:
+            Number of orphan schema files deleted.
+        """
+        schemas_dir = self.meta_schemas_dir()
+        if not schemas_dir.exists():
+            return 0
+
+        referenced: set[str] = set()
+        if self.inventory_dir.exists():
+            for dist_dir in self.inventory_dir.iterdir():
+                if not dist_dir.is_dir() or dist_dir.name == "meta":
+                    continue
+                for version_dir in dist_dir.iterdir():
+                    if not version_dir.is_dir():
+                        continue
+                    for component_file in version_dir.glob("*.yaml"):
+                        try:
+                            with open(component_file, encoding="utf-8") as f:
+                                data = yaml.safe_load(f) or {}
+                        except yaml.YAMLError:
+                            continue
+                        schema_hash = data.get("schema_hash")
+                        if schema_hash and schema_hash != "unknown":
+                            referenced.add(schema_hash)
+
+        removed = 0
+        for stored in schemas_dir.glob("*.yaml"):
+            if stored.stem not in referenced:
+                stored.unlink()
+                removed += 1
+
+        return removed
+
     def save_versioned_inventory(
         self,
         distribution: DistributionName,
         version: Version,
         components: dict[str, list[dict[str, Any]]],
         repository: str,
+        schema_hash: str = "unknown",
     ) -> None:
         """
         Save inventory for a specific distribution and version.
@@ -65,6 +121,8 @@ class InventoryManager:
             version: Version object
             components: Dictionary of component type to component list
             repository: Name of the repository being scanned
+            schema_hash: 12-char hex hash of metadata-schema.yaml at scan time,
+                         or "unknown" when the schema file was absent in the repo
         """
         version_dir = self.get_version_dir(distribution, version)
         version_dir.mkdir(parents=True, exist_ok=True)
@@ -78,6 +136,7 @@ class InventoryManager:
                 "version": str(version),
                 "repository": repository,
                 "component_type": component_type,
+                "schema_hash": schema_hash,
                 "components": component_list,
             }
 
@@ -93,15 +152,18 @@ class InventoryManager:
             version: Version object
 
         Returns:
-            Inventory dictionary with all components, or empty structure if it doesn't exist
+            Inventory dictionary with all components, or empty structure if it doesn't exist.
+            Includes schema_hash field (defaults to "unknown" for files written before
+            schema fingerprinting was introduced).
         """
         version_dir = self.get_version_dir(distribution, version)
 
         if not version_dir.exists():
-            return {"distribution": distribution, "version": str(version), "components": {}}
+            return {"distribution": distribution, "version": str(version), "schema_hash": "unknown", "components": {}}
 
         components = {}
         repository = ""
+        schema_hash = "unknown"
 
         for component_type in COMPONENT_TYPES:
             file_path = version_dir / f"{component_type}.yaml"
@@ -112,6 +174,8 @@ class InventoryManager:
                     components[component_type] = data.get("components", [])
                     if not repository:
                         repository = data.get("repository", "")
+                    if schema_hash == "unknown":
+                        schema_hash = data.get("schema_hash", "unknown")
             else:
                 components[component_type] = []
 
@@ -119,6 +183,7 @@ class InventoryManager:
             "distribution": distribution,
             "version": str(version),
             "repository": repository,
+            "schema_hash": schema_hash,
             "components": components,
         }
 
@@ -192,6 +257,9 @@ class InventoryManager:
                 shutil.rmtree(snapshot_dir)
                 count += 1
 
+        if count > 0:
+            self.prune_orphan_schemas()
+
         return count
 
     def version_exists(self, distribution: DistributionName, version: Version) -> bool:
@@ -222,6 +290,7 @@ class InventoryManager:
         version_dir = self.get_version_dir(distribution, version)
         if version_dir.exists():
             shutil.rmtree(version_dir)
+            self.prune_orphan_schemas()
             return True
         return False
 

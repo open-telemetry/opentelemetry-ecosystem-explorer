@@ -65,9 +65,14 @@ export function JavaInstrumentationListPage() {
       if (filters.search) {
         const searchLower = filters.search.toLowerCase();
         const name = getInstrumentationDisplayName(instr).toLowerCase();
+        const rawName = instr.name.toLowerCase();
         const description = (instr.description || "").toLowerCase();
 
-        if (!name.includes(searchLower) && !description.includes(searchLower)) {
+        if (
+          !name.includes(searchLower) &&
+          !rawName.includes(searchLower) &&
+          !description.includes(searchLower)
+        ) {
           return false;
         }
       }

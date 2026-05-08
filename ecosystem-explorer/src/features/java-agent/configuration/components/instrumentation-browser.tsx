@@ -16,8 +16,11 @@
 import { useState, useCallback, useMemo, type JSX } from "react";
 import type { InstrumentationData, InstrumentationModule } from "@/types/javaagent";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
-import { useOverrideStatusMap, type OverrideStatus } from "@/hooks/use-override-status";
-import { useOverriddenModules } from "@/hooks/use-overridden-modules";
+import {
+  useCustomizationStatusMap,
+  type CustomizationStatus,
+} from "@/hooks/use-customization-status";
+import { useCustomizedModules } from "@/hooks/use-customized-modules";
 import { groupByModule } from "@/lib/normalize-instrumentation";
 import { SectionCardShell } from "./section-card-shell";
 import { InstrumentationRow } from "./instrumentation-row";
@@ -27,7 +30,7 @@ export interface InstrumentationBrowserProps {
   loading: boolean;
   error: Error | null;
   search: string;
-  statusFilter: "all" | "overridden";
+  statusFilter: "all" | "customized";
   onJumpToGeneral: (sectionKey: string) => void;
 }
 
@@ -39,16 +42,16 @@ export function InstrumentationBrowser({
   statusFilter,
   onJumpToGeneral,
 }: InstrumentationBrowserProps): JSX.Element {
-  const { setOverride } = useConfigurationBuilder();
-  const overrideMap = useOverrideStatusMap();
+  const { setCustomization } = useConfigurationBuilder();
+  const customizationMap = useCustomizationStatusMap();
 
   const modules = useMemo<InstrumentationModule[]>(
     () => (instrumentations ? groupByModule(instrumentations) : []),
     [instrumentations]
   );
 
-  const overriddenSet = useOverriddenModules(modules);
-  const overrideCount = overriddenSet.size;
+  const customizedSet = useCustomizedModules(modules);
+  const customizationCount = customizedSet.size;
 
   const [expandedSet, setExpandedSet] = useState<Set<string>>(() => new Set());
 
@@ -65,31 +68,31 @@ export function InstrumentationBrowser({
   const filtered = useMemo(() => {
     const q = trimmedSearch.toLowerCase();
     return modules.filter((m) => {
-      if (statusFilter === "overridden" && !overriddenSet.has(m.name)) return false;
+      if (statusFilter === "customized" && !customizedSet.has(m.name)) return false;
       if (q && !matchesQuery(m, q)) return false;
       return true;
     });
-  }, [modules, overriddenSet, trimmedSearch, statusFilter]);
+  }, [modules, customizedSet, trimmedSearch, statusFilter]);
 
-  const handleAddOverride = useCallback(
+  const handleAddCustomization = useCallback(
     (m: InstrumentationModule) => {
-      setOverride(m.name, m.defaultDisabled ? "enabled" : "disabled");
+      setCustomization(m.name, m.defaultDisabled ? "enabled" : "disabled");
     },
-    [setOverride]
+    [setCustomization]
   );
 
   const handleSetEnabled = useCallback(
     (name: string, enabled: boolean) => {
-      setOverride(name, enabled ? "enabled" : "disabled");
+      setCustomization(name, enabled ? "enabled" : "disabled");
     },
-    [setOverride]
+    [setCustomization]
   );
 
-  const handleRemoveOverride = useCallback(
+  const handleRemoveCustomization = useCallback(
     (name: string) => {
-      setOverride(name, "none");
+      setCustomization(name, "none");
     },
-    [setOverride]
+    [setCustomization]
   );
 
   return (
@@ -100,7 +103,7 @@ export function InstrumentationBrowser({
           {modules.length > 0 ? (
             <span className="text-muted-foreground ml-2 text-xs font-normal">
               · {modules.length} modules
-              {overrideCount > 0 ? ` · ${overrideCount} overridden` : ""}
+              {customizationCount > 0 ? ` · ${customizationCount} customized` : ""}
             </span>
           ) : null}
         </h3>
@@ -114,14 +117,14 @@ export function InstrumentationBrowser({
         <Body
           total={modules.length}
           filtered={filtered}
-          overrideMap={overrideMap}
+          customizationMap={customizationMap}
           expandedSet={expandedSet}
           search={trimmedSearch}
           statusFilter={statusFilter}
-          overrideCount={overrideCount}
-          onAddOverride={handleAddOverride}
+          customizationCount={customizationCount}
+          onAddCustomization={handleAddCustomization}
           onSetEnabled={handleSetEnabled}
-          onRemoveOverride={handleRemoveOverride}
+          onRemoveCustomization={handleRemoveCustomization}
           onToggleExpand={toggleExpand}
           onJumpToGeneral={onJumpToGeneral}
         />
@@ -133,14 +136,14 @@ export function InstrumentationBrowser({
 interface BodyProps {
   total: number;
   filtered: InstrumentationModule[];
-  overrideMap: Map<string, "enabled" | "disabled">;
+  customizationMap: Map<string, "enabled" | "disabled">;
   expandedSet: Set<string>;
   search: string;
-  statusFilter: "all" | "overridden";
-  overrideCount: number;
-  onAddOverride: (m: InstrumentationModule) => void;
+  statusFilter: "all" | "customized";
+  customizationCount: number;
+  onAddCustomization: (m: InstrumentationModule) => void;
   onSetEnabled: (name: string, enabled: boolean) => void;
-  onRemoveOverride: (name: string) => void;
+  onRemoveCustomization: (name: string) => void;
   onToggleExpand: (name: string) => void;
   onJumpToGeneral: (sectionKey: string) => void;
 }
@@ -148,21 +151,21 @@ interface BodyProps {
 function Body({
   total,
   filtered,
-  overrideMap,
+  customizationMap,
   expandedSet,
   search,
   statusFilter,
-  overrideCount,
-  onAddOverride,
+  customizationCount,
+  onAddCustomization,
   onSetEnabled,
-  onRemoveOverride,
+  onRemoveCustomization,
   onToggleExpand,
   onJumpToGeneral,
 }: BodyProps): JSX.Element {
   return (
     <div className="space-y-3">
       <div className="border-border/40 bg-background/30 text-muted-foreground rounded-md border px-3 py-2 text-xs">
-        {readout(total, filtered.length, search, statusFilter, overrideCount)}
+        {readout(total, filtered.length, search, statusFilter, customizationCount)}
       </div>
 
       {filtered.length === 0 ? (
@@ -170,16 +173,16 @@ function Body({
       ) : (
         <ul className="space-y-1.5">
           {filtered.map((m) => {
-            const status: OverrideStatus = overrideMap.get(m.name) ?? "none";
+            const status: CustomizationStatus = customizationMap.get(m.name) ?? "none";
             return (
               <li key={m.name}>
                 <InstrumentationRow
                   module={m}
                   status={status}
                   isExpanded={expandedSet.has(m.name)}
-                  onAddOverride={() => onAddOverride(m)}
+                  onAddCustomization={() => onAddCustomization(m)}
                   onSetEnabled={(enabled) => onSetEnabled(m.name, enabled)}
-                  onRemoveOverride={() => onRemoveOverride(m.name)}
+                  onRemoveCustomization={() => onRemoveCustomization(m.name)}
                   onToggleExpand={() => onToggleExpand(m.name)}
                   onJumpToGeneral={onJumpToGeneral}
                 />
@@ -198,7 +201,7 @@ function EmptyState({
   total,
 }: {
   search: string;
-  statusFilter: "all" | "overridden";
+  statusFilter: "all" | "customized";
   total: number;
 }): JSX.Element {
   if (search) {
@@ -208,10 +211,10 @@ function EmptyState({
       </p>
     );
   }
-  if (statusFilter === "overridden") {
+  if (statusFilter === "customized") {
     return (
       <p className="text-muted-foreground text-sm">
-        You haven&rsquo;t overridden any instrumentation yet. Click &ldquo;+ Override&rdquo; on a
+        You haven&rsquo;t customized any instrumentation yet. Click &ldquo;+ Customize&rdquo; on a
         row to add one.
       </p>
     );
@@ -223,11 +226,11 @@ function readout(
   total: number,
   shown: number,
   search: string,
-  statusFilter: "all" | "overridden",
-  overrideCount: number
+  statusFilter: "all" | "customized",
+  customizationCount: number
 ): string {
   if (search) return `Search "${search}" · ${shown} of ${total}`;
-  if (statusFilter === "overridden") return `Overridden · ${overrideCount} of ${total}`;
+  if (statusFilter === "customized") return `Customized · ${customizationCount} of ${total}`;
   return `No filter · ${total} modules`;
 }
 

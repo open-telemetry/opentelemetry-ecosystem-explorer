@@ -192,6 +192,18 @@ describe("JavaInstrumentationListPage - Filtering", () => {
     expect(screen.getByText("Showing 1 of 4 instrumentations")).toBeInTheDocument();
   });
 
+  it("filters by raw instrumentation id", async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    const searchInput = await screen.findByPlaceholderText("Search instrumentations...");
+    await user.type(searchInput, "http-client");
+
+    expect(screen.getByText("HTTP Client")).toBeInTheDocument();
+    expect(screen.queryByText("Kafka Client")).not.toBeInTheDocument();
+    expect(screen.getByText("Showing 1 of 4 instrumentations")).toBeInTheDocument();
+  });
+
   it("searches by formatted name when display_name is absent", async () => {
     const user = userEvent.setup();
     vi.mocked(useInstrumentations).mockReturnValue({

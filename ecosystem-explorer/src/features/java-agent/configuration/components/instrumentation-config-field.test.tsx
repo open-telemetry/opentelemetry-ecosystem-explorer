@@ -82,10 +82,10 @@ describe("InstrumentationConfigField — boolean", () => {
     render(<InstrumentationConfigField config={cfg} onJumpToGeneral={vi.fn()} />);
     expect(screen.getByText("java.graphql.capture_query")).toBeInTheDocument();
     expect(screen.getByText(/whether to capture/i)).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /override/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /customize/i })).toBeInTheDocument();
   });
 
-  it("clicking Override writes the parsed default at the path", async () => {
+  it("clicking Customize writes the parsed default at the path", async () => {
     const user = userEvent.setup();
     const cfg = makeAggregated({
       declarative_name: "java.graphql.capture_query",
@@ -93,14 +93,14 @@ describe("InstrumentationConfigField — boolean", () => {
       default: true,
     });
     render(<InstrumentationConfigField config={cfg} onJumpToGeneral={vi.fn()} />);
-    await user.click(screen.getByRole("button", { name: /override/i }));
+    await user.click(screen.getByRole("button", { name: /customize/i }));
     expect(setValueByPath).toHaveBeenCalledWith(
       ["instrumentation/development", "java", "graphql", "capture_query"],
       true
     );
   });
 
-  it("toggles via SwitchPill when overridden", async () => {
+  it("toggles via SwitchPill when customized", async () => {
     const user = userEvent.setup();
     mockState = {
       ...baseState,
@@ -150,7 +150,7 @@ describe("InstrumentationConfigField — list", () => {
     mockState = { ...baseState, values: {} };
   });
 
-  it("Override parses CSV (with whitespace) into a real array, not a forwarded string", async () => {
+  it("Customize parses CSV (with whitespace) into a real array, not a forwarded string", async () => {
     const user = userEvent.setup();
     const cfg = makeAggregated({
       declarative_name: "java.common.http.known_methods",
@@ -158,13 +158,13 @@ describe("InstrumentationConfigField — list", () => {
       default: " GET , POST ",
     });
     render(<InstrumentationConfigField config={cfg} onJumpToGeneral={vi.fn()} />);
-    await user.click(screen.getByRole("button", { name: /override/i }));
+    await user.click(screen.getByRole("button", { name: /customize/i }));
     const [, value] = setValueByPath.mock.calls[0];
     expect(Array.isArray(value)).toBe(true);
     expect(value).toEqual(["GET", "POST"]);
   });
 
-  it("Override seeds with [] for an empty CSV default", async () => {
+  it("Customize seeds with [] for an empty CSV default", async () => {
     const user = userEvent.setup();
     const cfg = makeAggregated({
       declarative_name: "general.http.client.request_captured_headers",
@@ -174,7 +174,7 @@ describe("InstrumentationConfigField — list", () => {
     render(
       <InstrumentationConfigField config={{ ...cfg, scope: "common" }} onJumpToGeneral={vi.fn()} />
     );
-    await user.click(screen.getByRole("button", { name: /override/i }));
+    await user.click(screen.getByRole("button", { name: /customize/i }));
     const [, value] = setValueByPath.mock.calls[0];
     expect(value).toEqual([]);
   });
@@ -187,7 +187,7 @@ describe("InstrumentationConfigField — string / int / double", () => {
     mockState = { ...baseState, values: {} };
   });
 
-  it("string Override seeds with the default string", async () => {
+  it("string Customize seeds with the default string", async () => {
     const user = userEvent.setup();
     const cfg = makeAggregated({
       declarative_name: "java.executors.include",
@@ -195,14 +195,14 @@ describe("InstrumentationConfigField — string / int / double", () => {
       default: "io.foo.*",
     });
     render(<InstrumentationConfigField config={cfg} onJumpToGeneral={vi.fn()} />);
-    await user.click(screen.getByRole("button", { name: /override/i }));
+    await user.click(screen.getByRole("button", { name: /customize/i }));
     expect(setValueByPath).toHaveBeenCalledWith(
       ["instrumentation/development", "java", "executors", "include"],
       "io.foo.*"
     );
   });
 
-  it("int Override seeds with the numeric default", async () => {
+  it("int Customize seeds with the numeric default", async () => {
     const user = userEvent.setup();
     const cfg = makeAggregated({
       declarative_name: "java.example.max_queue",
@@ -210,7 +210,7 @@ describe("InstrumentationConfigField — string / int / double", () => {
       default: 100,
     });
     render(<InstrumentationConfigField config={cfg} onJumpToGeneral={vi.fn()} />);
-    await user.click(screen.getByRole("button", { name: /override/i }));
+    await user.click(screen.getByRole("button", { name: /customize/i }));
     expect(setValueByPath).toHaveBeenCalledWith(
       ["instrumentation/development", "java", "example", "max_queue"],
       100
@@ -225,7 +225,7 @@ describe("InstrumentationConfigField — read-only general scope", () => {
     mockState = { ...baseState, values: {} };
   });
 
-  it("does not render Override / Reset, renders a jump link instead", async () => {
+  it("does not render Customize / Reset, renders a jump link instead", async () => {
     const user = userEvent.setup();
     const onJump = vi.fn();
     const cfg = makeAggregated({
@@ -234,7 +234,7 @@ describe("InstrumentationConfigField — read-only general scope", () => {
       default: "",
     });
     render(<InstrumentationConfigField config={cfg} onJumpToGeneral={onJump} />);
-    expect(screen.queryByRole("button", { name: /override/i })).toBeNull();
+    expect(screen.queryByRole("button", { name: /customize/i })).toBeNull();
     expect(screen.queryByRole("button", { name: /reset/i })).toBeNull();
     await user.click(screen.getByRole("button", { name: /edit in general settings/i }));
     expect(onJump).toHaveBeenCalledWith("general");
@@ -383,7 +383,7 @@ describe("InstrumentationConfigField — map entries grow", () => {
     const { rerender } = render(
       <InstrumentationConfigField config={cfg} onJumpToGeneral={vi.fn()} />
     );
-    await user.click(screen.getByRole("button", { name: /override/i }));
+    await user.click(screen.getByRole("button", { name: /customize/i }));
     rerender(<InstrumentationConfigField config={cfg} onJumpToGeneral={vi.fn()} />);
     await user.click(screen.getByRole("button", { name: /add entry/i }));
     rerender(<InstrumentationConfigField config={cfg} onJumpToGeneral={vi.fn()} />);

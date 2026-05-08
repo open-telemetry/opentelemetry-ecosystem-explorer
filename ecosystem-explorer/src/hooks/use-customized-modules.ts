@@ -22,7 +22,7 @@ import { useConfigurationBuilder } from "./use-configuration-builder";
 
 const ENABLED_PATH = ["distribution", "javaagent", "instrumentation"] as const;
 
-export function useOverriddenModules(modules: InstrumentationModule[]): Set<string> {
+export function useCustomizedModules(modules: InstrumentationModule[]): Set<string> {
   const { state } = useConfigurationBuilder();
   return useMemo(() => {
     const result = new Set<string>();
