@@ -4,7 +4,7 @@ issue: 154
 type: roadmap
 phase: meta
 status: in-progress
-last_updated: "2026-05-07"
+last_updated: "2026-05-08"
 ---
 
 ## Next steps
@@ -45,7 +45,7 @@ In order:
 | 1   | Should GenAI instrumentation be a new top-level ecosystem in the explorer, or surfaced as a signal/category on existing entries? | Open   |
 | 2   | Is the genai-otel-conformance dashboard an integration target (i.e., pull its data into the registry) or just a reference?       | Open   |
 | 3   | How should third-party (non-OTel-org) instrumentation libraries be classified vs. contrib/native ones?                           | Open   |
-| 4   | Which languages are in scope for a first registry cut? (Python + JS/TS seem clearest; Java and .NET have less coverage.)         | Open   |
+| 4   | Which languages are in scope for a first registry cut? (Python + JS/TS and Java now seem viable; .NET remains behind.)           | Open   |
 
 ---
 

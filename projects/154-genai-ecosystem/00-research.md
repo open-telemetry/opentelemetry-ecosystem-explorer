@@ -4,7 +4,7 @@ issue: 154
 type: audit
 phase: 1
 status: in-progress
-last_updated: "2026-05-07"
+last_updated: "2026-05-08"
 ---
 
 ## Research — GenAI instrumentation landscape
@@ -68,21 +68,23 @@ OpenAI JS SDK expecting plug-and-play instrumentation won't find a contrib solut
 
 ## Java
 
-Java instrumentation for GenAI is early-stage compared to Python. The main
+Java instrumentation for GenAI is rapidly evolving. The main
 [opentelemetry-java-instrumentation](https://github.com/open-telemetry/opentelemetry-java-instrumentation)
-repo doesn't have dedicated GenAI instrumentations yet as of early 2026.
+agent now includes dedicated support for major providers.
 
-| Framework / SDK | Library                       | Type    | Signals | Semconv notes                                                                                                       |
-| --------------- | ----------------------------- | ------- | ------- | ------------------------------------------------------------------------------------------------------------------- |
-| AWS Bedrock     | `opentelemetry-java-contrib`  | Contrib | Traces  | Partial. Inference spans exist; attribute coverage of GenAI semconv is incomplete.                                  |
-| LangChain4j     | No OTel instrumentation found | —       | —       | Framework has its own observability hooks but no OTel bridge.                                                       |
-| Spring AI       | No OTel instrumentation found | —       | —       | Spring AI has Micrometer integration; an OTel bridge exists for Micrometer but GenAI-specific spans aren't emitted. |
+| Framework / SDK | Library                              | Type  | Signals         | Semconv notes                                                                            |
+| --------------- | ------------------------------------ | ----- | --------------- | ---------------------------------------------------------------------------------------- |
+| OpenAI Java SDK | `opentelemetry-java-instrumentation` | Agent | Traces, Metrics | Standardized GenAI client spans and metrics (token usage, model) following OTel semconv. |
+| AWS Bedrock     | `opentelemetry-java-instrumentation` | Agent | Traces          | Supported via AWS SDK instrumentation. Captures inference spans.                         |
+| LangChain4j     | No OTel instrumentation found        | —     | —               | Framework has its own observability hooks but no direct OTel bridge yet.                 |
+| Spring AI       | No OTel instrumentation found        | —     | —               | Spring AI has Micrometer integration; an OTel bridge exists for Micrometer.              |
 
 ### Java observations
 
-Java is the weakest area. Spring AI + Micrometer is the closest thing to structured telemetry but
-it's not on the OTel GenAI semconv path. LangChain4j is widely used in the Java ecosystem but has no
-instrumentation at all yet.
+Java coverage is stronger than initially reported, with the official agent supporting OpenAI and
+Bedrock (via the AWS SDK). While high-level frameworks like Spring AI and LangChain4j lack direct
+OTel-native instrumentations, the underlying SDK support provides a solid foundation for capturing
+standardized GenAI telemetry.
 
 ---
 
@@ -147,9 +149,9 @@ their attribute naming diverges from each other and from OTel semconv in places.
 dashboard that queries `gen_ai.*` attributes won't get data from openinference-instrumented apps
 without a mapping layer.
 
-**Java and .NET are 1–2 years behind Python.** The frameworks exist and are in production use, but
-the instrumentation layer hasn't caught up. Spring AI and LangChain4j in particular are large enough
-that this gap is worth flagging.
+**Java and .NET are catching up.** The frameworks exist and are in production use. Java's official
+agent now covers major SDKs, but higher-level framework integration (Spring AI, LangChain4j) is
+still emerging. .NET remains focused on Semantic Kernel.
 
 ---
 
@@ -161,9 +163,10 @@ that this gap is worth flagging.
 2. **The JS/TS gap is critical.** While Traceloop covers LangChain.js, there is no direct,
    low-dependency OTel-native way to instrument the OpenAI JS SDK. This is a major opportunity for
    the OpenTelemetry ecosystem.
-3. **Java and .NET require bridge-level research.** Since these ecosystems rely on Spring AI,
+3. **Java and .NET require framework-level research.** Since these ecosystems rely on Spring AI,
    LangChain4j, and Semantic Kernel, the focus should be on how these frameworks' native telemetry
-   can be mapped or exported to OTel, rather than building separate instrumentations.
+   can be mapped or exported to OTel, supplementing the SDK-level instrumentation already present in
+   Java.
 4. **Semantic convention convergence is ongoing.** The "experimental" attributes (like temperature,
    top_p, and tool calls) are inconsistent. The
    [genai-otel-conformance](https://github.com/trask/genai-otel-conformance) project should be used
