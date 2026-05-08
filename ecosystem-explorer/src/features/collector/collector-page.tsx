@@ -25,6 +25,7 @@ import {
   Plug,
   Workflow,
   ChevronDown,
+  AlertCircle,
 } from "lucide-react";
 
 import { PageContainer } from "@/components/layout/page-container";
@@ -55,14 +56,22 @@ function CollectorPageInner({ urlVersion }: { urlVersion?: string }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
 
-  const { data: versionData, loading: versionsLoading } = useCollectorVersions();
+  const {
+    data: versionData,
+    loading: versionsLoading,
+    error: versionsError,
+  } = useCollectorVersions();
 
   const currentVersion = useMemo(() => {
     if (urlVersion) return urlVersion;
     return versionData?.versions.find((v) => v.is_latest)?.version || "";
   }, [urlVersion, versionData]);
 
-  const { data: components, loading: componentsLoading } = useCollectorComponents(currentVersion);
+  const {
+    data: components,
+    loading: componentsLoading,
+    error: componentsError,
+  } = useCollectorComponents(currentVersion);
 
   const filteredComponents = useMemo(() => {
     if (!components) return [];
@@ -161,7 +170,13 @@ function CollectorPageInner({ urlVersion }: { urlVersion?: string }) {
         </div>
       </div>
 
-      {componentsLoading ? (
+      {componentsError || versionsError ? (
+        <div className="flex flex-col items-center justify-center space-y-4 py-32 text-center text-red-500">
+          <AlertCircle className="mx-auto h-12 w-12 opacity-50" aria-hidden="true" />
+          <h3 className="text-xl font-semibold">Error loading data</h3>
+          <p className="text-muted-foreground">Please try refreshing the page.</p>
+        </div>
+      ) : componentsLoading || versionsLoading || !currentVersion ? (
         <div className="flex flex-col items-center justify-center space-y-4 py-32">
           <div className="inline-flex animate-pulse rounded-full p-4 shadow-[0_0_60px_hsl(var(--primary-hsl)/0.2)]">
             <Loader2 className="text-primary h-10 w-10 animate-spin" aria-hidden="true" />
