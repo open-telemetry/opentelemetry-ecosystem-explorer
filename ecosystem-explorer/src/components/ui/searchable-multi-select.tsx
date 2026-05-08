@@ -61,11 +61,11 @@ export function SearchableMultiSelect({
   return (
     <div className={`relative space-y-2 ${className}`} ref={containerRef}>
       <label className="text-muted-foreground text-sm font-medium">{label}</label>
-      
+
       <div
         onClick={() => setIsOpen(!isOpen)}
-        className={`border-border/60 bg-background/80 hover:border-primary/50 flex min-h-[42px] cursor-pointer items-center justify-between rounded-lg border px-4 py-2 text-sm backdrop-blur-sm transition-all duration-200 focus-within:ring-2 focus-within:ring-primary/20 ${
-          isOpen ? "border-primary/50 ring-2 ring-primary/20" : ""
+        className={`border-border/60 bg-background/80 hover:border-primary/50 focus-within:ring-primary/20 flex min-h-[42px] cursor-pointer items-center justify-between rounded-lg border px-4 py-2 text-sm backdrop-blur-sm transition-all duration-200 focus-within:ring-2 ${
+          isOpen ? "border-primary/50 ring-primary/20 ring-2" : ""
         }`}
       >
         <span className={selected.length === 0 ? "text-muted-foreground/50" : "text-foreground"}>
@@ -79,7 +79,7 @@ export function SearchableMultiSelect({
       </div>
 
       {isOpen && (
-        <div className="border-border/60 bg-background/95 ring-border/5 absolute z-[100] mt-1 w-full rounded-lg border shadow-xl backdrop-blur-md ring-1">
+        <div className="border-border/60 bg-background/95 ring-border/5 absolute z-[100] mt-1 w-full rounded-lg border shadow-xl ring-1 backdrop-blur-md">
           <div className="border-border/50 border-b p-2">
             <div className="relative">
               <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
@@ -93,24 +93,24 @@ export function SearchableMultiSelect({
               />
             </div>
           </div>
-          
-          <div 
-            className="max-h-[240px] overflow-y-auto p-1 custom-scrollbar"
+
+          <div
+            className="custom-scrollbar max-h-[240px] overflow-y-auto p-1"
             onWheel={(e) => e.stopPropagation()}
             onTouchStart={(e) => e.stopPropagation()}
             onTouchMove={(e) => e.stopPropagation()}
           >
             {filteredOptions.length === 0 ? (
-              <div className="text-muted-foreground py-4 text-center text-sm">
-                No options found
-              </div>
+              <div className="text-muted-foreground py-4 text-center text-sm">No options found</div>
             ) : (
               filteredOptions.map((option) => (
                 <div
                   key={option}
                   onClick={() => toggleOption(option)}
                   className={`hover:bg-primary/10 flex cursor-pointer items-center justify-between rounded-md px-3 py-2 text-sm transition-colors ${
-                    selected.includes(option) ? "bg-primary/5 text-primary font-medium" : "text-foreground"
+                    selected.includes(option)
+                      ? "bg-primary/5 text-primary font-medium"
+                      : "text-foreground"
                   }`}
                 >
                   <span>{option}</span>
@@ -141,7 +141,7 @@ export function SelectedChips({
       {selected.map((item) => (
         <span
           key={item}
-          className="bg-primary/10 border-primary/20 text-primary flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium backdrop-blur-sm transition-all hover:bg-primary/20"
+          className="bg-primary/10 border-primary/20 text-primary hover:bg-primary/20 flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium backdrop-blur-sm transition-all"
         >
           {item}
           <button

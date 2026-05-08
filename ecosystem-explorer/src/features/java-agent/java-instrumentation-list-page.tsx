@@ -103,19 +103,16 @@ export function JavaInstrumentationListPage() {
         }
       }
 
-
       if (filters.semantic.length > 0) {
-        const hasMatch = filters.semantic.some((s) =>
-          instr.semantic_conventions?.includes(s)
-        );
+        const hasMatch = filters.semantic.some((s) => instr.semantic_conventions?.includes(s));
         if (!hasMatch) return false;
       }
-
 
       if (filters.features.length > 0) {
         const hasMatch = filters.features.some((f) => {
           if (f === "TRACING") return instr.telemetry?.some((t) => t.spans && t.spans.length > 0);
-          if (f === "METRICS") return instr.telemetry?.some((t) => t.metrics && t.metrics.length > 0);
+          if (f === "METRICS")
+            return instr.telemetry?.some((t) => t.metrics && t.metrics.length > 0);
           return instr.features?.includes(f) || instr.tags?.includes(f);
         });
         if (!hasMatch) return false;
@@ -206,9 +203,9 @@ export function JavaInstrumentationListPage() {
           )}
         </div>
 
-        <InstrumentationFilterBar 
-          filters={filters} 
-          onFiltersChange={setFilters} 
+        <InstrumentationFilterBar
+          filters={filters}
+          onFiltersChange={setFilters}
           instrumentations={instrumentations ?? []}
         />
 

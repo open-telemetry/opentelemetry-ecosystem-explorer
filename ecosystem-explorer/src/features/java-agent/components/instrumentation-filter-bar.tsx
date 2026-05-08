@@ -81,7 +81,7 @@ export function InstrumentationFilterBar({
 
   return (
     <div className="border-border/60 bg-card/80 relative rounded-lg border p-6">
-     {/* Ambient radial gradient background */}
+      {/* Ambient radial gradient background */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-lg">
         <div
           className="absolute inset-0"
