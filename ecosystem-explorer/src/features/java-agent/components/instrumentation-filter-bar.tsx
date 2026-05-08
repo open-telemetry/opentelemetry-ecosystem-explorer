@@ -16,20 +16,29 @@
 import { getTelemetryFilterClasses, getTargetFilterClasses } from "../styles/filter-styles";
 import { Tooltip } from "@/components/ui/tooltip";
 
+import type { InstrumentationData } from "@/types/javaagent";
+
 export interface FilterState {
   search: string;
   telemetry: Set<"spans" | "metrics">;
   target: Set<"javaagent" | "library">;
+  semantic: string[];
+  features: string[];
 }
 
 interface InstrumentationFilterBarProps {
   filters: FilterState;
   onFiltersChange: (filters: FilterState) => void;
+  instrumentations: InstrumentationData[];
 }
+
+import { useMemo } from "react";
+import { SearchableMultiSelect, SelectedChips } from "@/components/ui/searchable-multi-select";
 
 export function InstrumentationFilterBar({
   filters,
   onFiltersChange,
+  instrumentations,
 }: InstrumentationFilterBarProps) {
   const toggleTelemetry = (type: "spans" | "metrics") => {
     const newTelemetry = new Set(filters.telemetry);
@@ -51,43 +60,82 @@ export function InstrumentationFilterBar({
     onFiltersChange({ ...filters, target: newTarget });
   };
 
-  return (
-    <div className="border-border/60 bg-card/80 relative overflow-hidden rounded-lg border p-6">
-      {/* Ambient radial gradient background */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(circle at top left, hsl(var(--secondary-hsl) / 0.08) 0%, hsl(var(--primary-hsl) / 0.04) 40%, transparent 70%)",
-        }}
-      />
+  const semanticOptions = useMemo(() => {
+    const options = new Set<string>();
+    instrumentations.forEach((instr) => {
+      instr.semantic_conventions?.forEach((s) => options.add(s));
+    });
+    return Array.from(options).sort();
+  }, [instrumentations]);
 
-      <div className="absolute inset-0 opacity-5">
+  const featureOptions = useMemo(() => {
+    const options = new Set<string>();
+    instrumentations.forEach((instr) => {
+      instr.features?.forEach((f) => options.add(f));
+      instr.tags?.forEach((t) => options.add(t));
+      if (instr.telemetry?.some((t) => t.spans && t.spans.length > 0)) options.add("TRACING");
+      if (instr.telemetry?.some((t) => t.metrics && t.metrics.length > 0)) options.add("METRICS");
+    });
+    return Array.from(options).sort();
+  }, [instrumentations]);
+
+  return (
+    <div className="border-border/60 bg-card/80 relative rounded-lg border p-6">
+     {/* Ambient radial gradient background */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-lg">
         <div
-          className="h-full w-full"
+          className="absolute inset-0"
           style={{
-            backgroundImage:
-              "linear-gradient(hsl(var(--border-hsl)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--border-hsl)) 1px, transparent 1px)",
-            backgroundSize: "24px 24px",
+            background:
+              "radial-gradient(circle at top left, hsl(var(--secondary-hsl) / 0.08) 0%, hsl(var(--primary-hsl) / 0.04) 40%, transparent 70%)",
           }}
         />
+
+        <div className="absolute inset-0 opacity-5">
+          <div
+            className="h-full w-full"
+            style={{
+              backgroundImage:
+                "linear-gradient(hsl(var(--border-hsl)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--border-hsl)) 1px, transparent 1px)",
+              backgroundSize: "24px 24px",
+            }}
+          />
+        </div>
       </div>
 
-      <div className="relative z-10 space-y-6">
-        <div className="space-y-2">
-          <label htmlFor="search" className="text-muted-foreground text-sm font-medium">
-            Search
-          </label>
-          <div className="relative">
-            <input
-              id="search"
-              type="text"
-              placeholder="Search instrumentations..."
-              value={filters.search}
-              onChange={(e) => onFiltersChange({ ...filters, search: e.target.value })}
-              className="border-border/60 bg-background/80 placeholder:text-muted-foreground/50 focus:border-primary/50 focus:ring-primary/20 w-full rounded-lg border px-4 py-2.5 text-sm backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none"
-            />
+      <div className="relative z-40 space-y-6">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="space-y-2">
+            <label htmlFor="search" className="text-muted-foreground text-sm font-medium">
+              Search
+            </label>
+            <div className="relative">
+              <input
+                id="search"
+                type="text"
+                placeholder="Search instrumentations..."
+                value={filters.search}
+                onChange={(e) => onFiltersChange({ ...filters, search: e.target.value })}
+                className="border-border/60 bg-background/80 placeholder:text-muted-foreground/50 focus:border-primary/50 focus:ring-primary/20 w-full rounded-lg border px-4 py-2.5 text-sm backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none"
+              />
+            </div>
           </div>
+
+          <SearchableMultiSelect
+            label="Semantic Conventions"
+            placeholder="Filter by convention..."
+            options={semanticOptions}
+            selected={filters.semantic}
+            onChange={(selected) => onFiltersChange({ ...filters, semantic: selected })}
+          />
+
+          <SearchableMultiSelect
+            label="Features"
+            placeholder="Filter by feature..."
+            options={featureOptions}
+            selected={filters.features}
+            onChange={(selected) => onFiltersChange({ ...filters, features: selected })}
+          />
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
@@ -146,6 +194,27 @@ export function InstrumentationFilterBar({
               </Tooltip>
             </div>
           </div>
+        </div>
+
+        <div className="space-y-3">
+          <SelectedChips
+            selected={filters.semantic}
+            onRemove={(item) =>
+              onFiltersChange({
+                ...filters,
+                semantic: filters.semantic.filter((s) => s !== item),
+              })
+            }
+          />
+          <SelectedChips
+            selected={filters.features}
+            onRemove={(item) =>
+              onFiltersChange({
+                ...filters,
+                features: filters.features.filter((f) => f !== item),
+              })
+            }
+          />
         </div>
       </div>
 

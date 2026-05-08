@@ -56,6 +56,8 @@ export function JavaInstrumentationListPage() {
     search: "",
     telemetry: new Set(),
     target: new Set(),
+    semantic: [],
+    features: [],
   });
 
   const filteredInstrumentations = useMemo(() => {
@@ -99,6 +101,24 @@ export function JavaInstrumentationListPage() {
         if (filters.target.has("library") && !hasLibrary) {
           return false;
         }
+      }
+
+
+      if (filters.semantic.length > 0) {
+        const hasMatch = filters.semantic.some((s) =>
+          instr.semantic_conventions?.includes(s)
+        );
+        if (!hasMatch) return false;
+      }
+
+
+      if (filters.features.length > 0) {
+        const hasMatch = filters.features.some((f) => {
+          if (f === "TRACING") return instr.telemetry?.some((t) => t.spans && t.spans.length > 0);
+          if (f === "METRICS") return instr.telemetry?.some((t) => t.metrics && t.metrics.length > 0);
+          return instr.features?.includes(f) || instr.tags?.includes(f);
+        });
+        if (!hasMatch) return false;
       }
 
       return true;
@@ -186,7 +206,11 @@ export function JavaInstrumentationListPage() {
           )}
         </div>
 
-        <InstrumentationFilterBar filters={filters} onFiltersChange={setFilters} />
+        <InstrumentationFilterBar 
+          filters={filters} 
+          onFiltersChange={setFilters} 
+          instrumentations={instrumentations ?? []}
+        />
 
         <div className="border-border/50 flex items-center justify-between border-b pb-4">
           <div className="text-muted-foreground text-sm">
