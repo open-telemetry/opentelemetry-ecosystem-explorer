@@ -2,6 +2,7 @@ distribution: contrib
 version: 0.151.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: connector
+schema_hash: 8ef455c6e37c
 components:
 - name: countconnector
   metadata:
@@ -114,7 +115,7 @@ components:
         - atoulme
 - name: otlpjsonconnector
   metadata:
-    type: otlpjson
+    type: otlp_json
     display_name: OTLP JSON Connector
     status:
       class: connector
@@ -210,7 +211,7 @@ components:
         - lahsivjar
 - name: slowsqlconnector
   metadata:
-    type: slowsql
+    type: slow_sql
     display_name: Slow SQL Connector
     status:
       class: connector
