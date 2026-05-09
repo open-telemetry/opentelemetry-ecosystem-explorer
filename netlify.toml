@@ -11,6 +11,9 @@ command = """
 [context.production]
 command = "npm run netlify-build:production"
 
+[context.production.environment]
+VITE_FARO_URL = "https://faro-collector-prod-us-east-2.grafana.net/collect/e587d17d38a90612e9dbedd3a3146b77"
+
 [context.deploy-preview.environment]
 VITE_FEATURE_FLAG_JAVA_CONFIG_BUILDER = "true"
 VITE_FEATURE_FLAG_COLLECTOR_PAGE = "true"

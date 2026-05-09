@@ -102,8 +102,29 @@ describe("parseDefault", () => {
     expect(parseDefault("list", "")).toEqual([]);
   });
 
-  it("returns an empty object for map default", () => {
+  it("returns an empty object for empty map default", () => {
     expect(parseDefault("map", "")).toEqual({});
+  });
+
+  it("parses key=value pairs for map default", () => {
+    expect(parseDefault("map", "host1=serviceA,host2=serviceB")).toEqual({
+      host1: "serviceA",
+      host2: "serviceB",
+    });
+  });
+
+  it("trims whitespace around keys and values in map default", () => {
+    expect(parseDefault("map", " host1 = serviceA , host2 = serviceB ")).toEqual({
+      host1: "serviceA",
+      host2: "serviceB",
+    });
+  });
+
+  it("skips pairs with no equals sign in map default", () => {
+    expect(parseDefault("map", "host1=serviceA,invalidentry,host2=serviceB")).toEqual({
+      host1: "serviceA",
+      host2: "serviceB",
+    });
   });
 
   it("trims whitespace inside list CSV", () => {

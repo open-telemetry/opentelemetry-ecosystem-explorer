@@ -31,7 +31,7 @@ export function JavaInstrumentationListPage() {
   const { version: versionParam } = useParams<{ version?: string }>();
   const navigate = useNavigate();
 
-  const { data: versionsData, loading: versionsLoading } = useVersions();
+  const { data: versionsData, loading: versionsLoading, error: versionsError } = useVersions();
 
   const latestVersion = versionsData?.versions.find((v) => v.is_latest)?.version ?? "";
 
@@ -139,6 +139,17 @@ export function JavaInstrumentationListPage() {
     );
   }
 
+  if (versionsError) {
+    return (
+      <PageContainer>
+        <div className="rounded-lg border border-red-500/50 bg-red-500/10 p-6 text-red-600 dark:text-red-400">
+          <h3 className="mb-2 font-semibold">Error loading versions</h3>
+          <p className="text-sm">{versionsError.message}</p>
+        </div>
+      </PageContainer>
+    );
+  }
+
   if (error) {
     return (
       <PageContainer>
@@ -153,8 +164,11 @@ export function JavaInstrumentationListPage() {
   if (!resolvedVersion) {
     return (
       <PageContainer>
-        <div className="rounded-lg border border-yellow-500/50 bg-yellow-500/10 p-6 text-yellow-600 dark:text-yellow-400">
+        <div className="rounded-lg border border-red-500/50 bg-red-500/10 p-6 text-red-600 dark:text-red-400">
           <h3 className="mb-2 font-semibold">No version available</h3>
+          <p className="text-sm">
+            Could not determine the latest Java agent version. Please try refreshing the page.
+          </p>
         </div>
       </PageContainer>
     );
