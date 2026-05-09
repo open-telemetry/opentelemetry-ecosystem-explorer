@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useRef, useEffect, useId } from "react";
+import { useState, useId } from "react";
 import { Search, ChevronDown, Check, X } from "lucide-react";
+import * as Popover from "@radix-ui/react-popover";
+import { Command } from "cmdk";
 
 interface SearchableMultiSelectProps {
   label: string;
@@ -34,14 +36,7 @@ export function SearchableMultiSelect({
   className = "",
 }: SearchableMultiSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [search, setSearch] = useState("");
-  const containerRef = useRef<HTMLDivElement>(null);
-
   const triggerId = useId();
-
-  const filteredOptions = options.filter((option) =>
-    option.toLowerCase().includes(search.toLowerCase())
-  );
 
   const toggleOption = (option: string) => {
     const newSelected = selected.includes(option)
@@ -50,93 +45,70 @@ export function SearchableMultiSelect({
     onChange(newSelected);
   };
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   return (
-    <div className={`relative space-y-2 ${className}`} ref={containerRef}>
+    <div className={`relative space-y-2 ${className}`}>
       <label htmlFor={triggerId} className="text-muted-foreground text-sm font-medium">{label}</label>
 
-      <button
-        type="button"
-        id={triggerId}
-        onClick={() => setIsOpen(!isOpen)}
-        aria-expanded={isOpen}
-        aria-haspopup="listbox"
-        className={`border-border/60 bg-background/80 hover:border-primary/50 focus:ring-primary/20 flex min-h-[42px] w-full cursor-pointer items-center justify-between rounded-lg border px-4 py-2 text-left text-sm backdrop-blur-sm transition-all duration-200 focus:outline-none focus:ring-2 ${
-          isOpen ? "border-primary/50 ring-primary/20 ring-2" : ""
-        }`}
-      >
-        <span className={selected.length === 0 ? "text-muted-foreground/50" : "text-foreground"}>
-          {selected.length === 0 ? placeholder : `${selected.length} selected`}
-        </span>
-        <ChevronDown
-          className={`text-muted-foreground h-4 w-4 transition-transform duration-200 ${
-            isOpen ? "rotate-180" : ""
-          }`}
-        />
-      </button>
-
-      {isOpen && (
-        <div className="border-border/60 bg-background/95 ring-border/5 absolute z-[100] mt-1 w-full rounded-lg border shadow-xl ring-1 backdrop-blur-md">
-          <div className="border-border/50 border-b p-2">
-            <div className="relative">
-              <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-              <input
-                type="text"
-                placeholder="Search..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                autoFocus
-                className="bg-muted/50 focus:bg-muted w-full rounded-md py-1.5 pr-3 pl-9 text-sm transition-colors focus:outline-none"
-              />
-            </div>
-          </div>
-
-          <div
-            className="custom-scrollbar max-h-[240px] overflow-y-auto p-1"
-            role="listbox"
-            onWheel={(e) => e.stopPropagation()}
-            onTouchStart={(e) => e.stopPropagation()}
-            onTouchMove={(e) => e.stopPropagation()}
+      <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
+        <Popover.Trigger asChild>
+          <button
+            type="button"
+            id={triggerId}
+            className={`border-border/60 bg-background/80 hover:border-primary/50 focus:ring-primary/20 flex min-h-[42px] w-full cursor-pointer items-center justify-between rounded-lg border px-4 py-2 text-left text-sm backdrop-blur-sm transition-all duration-200 focus:outline-none focus:ring-2 ${
+              isOpen ? "border-primary/50 ring-primary/20 ring-2" : ""
+            }`}
           >
-            {filteredOptions.length === 0 ? (
-              <div className="text-muted-foreground py-4 text-center text-sm">No options found</div>
-            ) : (
-              filteredOptions.map((option) => (
-                <div
-                  key={option}
-                  role="option"
-                  aria-selected={selected.includes(option)}
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" || e.key === " ") {
-                      e.preventDefault();
-                      toggleOption(option);
-                    }
-                  }}
-                  onClick={() => toggleOption(option)}
-                  className={`hover:bg-primary/10 flex cursor-pointer items-center justify-between rounded-md px-3 py-2 text-sm transition-colors ${
-                    selected.includes(option)
-                      ? "bg-primary/5 text-primary font-medium"
-                      : "text-foreground"
-                  }`}
-                >
-                  <span>{option}</span>
-                  {selected.includes(option) && <Check className="h-4 w-4" />}
+            <span className={selected.length === 0 ? "text-muted-foreground/50" : "text-foreground"}>
+              {selected.length === 0 ? placeholder : `${selected.length} selected`}
+            </span>
+            <ChevronDown
+              className={`text-muted-foreground h-4 w-4 transition-transform duration-200 ${
+                isOpen ? "rotate-180" : ""
+              }`}
+            />
+          </button>
+        </Popover.Trigger>
+
+        <Popover.Portal>
+          <Popover.Content
+            align="start"
+            className="border-border/60 bg-background/95 ring-border/5 z-[100] mt-1 w-[var(--radix-popover-trigger-width)] rounded-lg border shadow-xl ring-1 backdrop-blur-md overflow-hidden"
+          >
+            <Command className="flex w-full flex-col overflow-hidden bg-transparent">
+              <div className="border-border/50 border-b p-2">
+                <div className="relative">
+                  <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                  <Command.Input
+                    placeholder="Search..."
+                    className="bg-muted/50 focus:bg-muted w-full rounded-md py-1.5 pr-3 pl-9 text-sm transition-colors focus:outline-none"
+                  />
                 </div>
-              ))
-            )}
-          </div>
-        </div>
-      )}
+              </div>
+
+              <Command.List className="custom-scrollbar max-h-[240px] overflow-y-auto p-1">
+                <Command.Empty className="text-muted-foreground py-4 text-center text-sm">No options found</Command.Empty>
+                <Command.Group>
+                  {options.map((option) => (
+                    <Command.Item
+                      key={option}
+                      value={option}
+                      onSelect={() => toggleOption(option)}
+                      className={`hover:bg-primary/10 flex cursor-pointer items-center justify-between rounded-md px-3 py-2 text-sm transition-colors data-[selected=true]:bg-primary/10 data-[selected=true]:text-primary outline-none ${
+                        selected.includes(option)
+                          ? "bg-primary/5 text-primary font-medium"
+                          : "text-foreground"
+                      }`}
+                    >
+                      <span>{option}</span>
+                      {selected.includes(option) && <Check className="h-4 w-4" />}
+                    </Command.Item>
+                  ))}
+                </Command.Group>
+              </Command.List>
+            </Command>
+          </Popover.Content>
+        </Popover.Portal>
+      </Popover.Root>
     </div>
   );
 }
