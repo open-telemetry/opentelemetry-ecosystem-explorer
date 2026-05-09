@@ -21,9 +21,9 @@ export interface FetchWithCacheOptions<T = unknown> {
   allow404?: boolean;
   /**
    * Optional validator for cached data. When provided, cached data that fails
-   * validation is discarded and a fresh network request is made. This prevents
-   * stale or logically-empty cached responses (e.g. `{ versions: [] }`) from
-   * being served to the caller.
+   * validation is ignored for the current request and a fresh network request
+   * is made. This prevents stale or logically-empty cached responses (e.g.
+   * `{ versions: [] }`) from being served to the caller.
    */
   validate?: (data: T) => boolean;
 }
@@ -43,8 +43,15 @@ export async function fetchWithCache<T>(
       if (isIDBAvailable()) {
         const cachedData = await getCached<T>(cacheKey, storeType);
         if (cachedData !== null) {
-          if (!options?.validate || options.validate(cachedData)) {
+          if (!options?.validate) {
             return cachedData;
+          }
+          try {
+            if (options.validate(cachedData)) {
+              return cachedData;
+            }
+          } catch {
+            // treat validator exceptions as validation failures and fall back to network fetch
           }
         }
       }
