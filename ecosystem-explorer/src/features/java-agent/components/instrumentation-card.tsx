@@ -20,6 +20,7 @@ import { getBadgeInfo } from "../utils/badge-info";
 import { TargetBadges, TelemetryBadges } from "./instrumentation-badges";
 import { getInstrumentationDisplayName } from "../utils/format";
 import { renderWithInlineCode } from "@/lib/render-inline-code";
+import { GlowBadge } from "@/components/ui/glow-badge";
 
 interface InstrumentationCardProps {
   instrumentation: InstrumentationData;
@@ -27,7 +28,6 @@ interface InstrumentationCardProps {
   version: string;
 }
 
-import { GlowBadge } from "@/components/ui/glow-badge";
 
 export function InstrumentationCard({
   instrumentation,

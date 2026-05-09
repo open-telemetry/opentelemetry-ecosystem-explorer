@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useId } from "react";
 import { Search, ChevronDown, Check, X } from "lucide-react";
 
 interface SearchableMultiSelectProps {
@@ -36,6 +36,8 @@ export function SearchableMultiSelect({
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const triggerId = useId();
 
   const filteredOptions = options.filter((option) =>
     option.toLowerCase().includes(search.toLowerCase())
@@ -60,11 +62,15 @@ export function SearchableMultiSelect({
 
   return (
     <div className={`relative space-y-2 ${className}`} ref={containerRef}>
-      <label className="text-muted-foreground text-sm font-medium">{label}</label>
+      <label htmlFor={triggerId} className="text-muted-foreground text-sm font-medium">{label}</label>
 
-      <div
+      <button
+        type="button"
+        id={triggerId}
         onClick={() => setIsOpen(!isOpen)}
-        className={`border-border/60 bg-background/80 hover:border-primary/50 focus-within:ring-primary/20 flex min-h-[42px] cursor-pointer items-center justify-between rounded-lg border px-4 py-2 text-sm backdrop-blur-sm transition-all duration-200 focus-within:ring-2 ${
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
+        className={`border-border/60 bg-background/80 hover:border-primary/50 focus:ring-primary/20 flex min-h-[42px] w-full cursor-pointer items-center justify-between rounded-lg border px-4 py-2 text-left text-sm backdrop-blur-sm transition-all duration-200 focus:outline-none focus:ring-2 ${
           isOpen ? "border-primary/50 ring-primary/20 ring-2" : ""
         }`}
       >
@@ -76,7 +82,7 @@ export function SearchableMultiSelect({
             isOpen ? "rotate-180" : ""
           }`}
         />
-      </div>
+      </button>
 
       {isOpen && (
         <div className="border-border/60 bg-background/95 ring-border/5 absolute z-[100] mt-1 w-full rounded-lg border shadow-xl ring-1 backdrop-blur-md">
@@ -96,6 +102,7 @@ export function SearchableMultiSelect({
 
           <div
             className="custom-scrollbar max-h-[240px] overflow-y-auto p-1"
+            role="listbox"
             onWheel={(e) => e.stopPropagation()}
             onTouchStart={(e) => e.stopPropagation()}
             onTouchMove={(e) => e.stopPropagation()}
@@ -106,6 +113,15 @@ export function SearchableMultiSelect({
               filteredOptions.map((option) => (
                 <div
                   key={option}
+                  role="option"
+                  aria-selected={selected.includes(option)}
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      toggleOption(option);
+                    }
+                  }}
                   onClick={() => toggleOption(option)}
                   className={`hover:bg-primary/10 flex cursor-pointer items-center justify-between rounded-md px-3 py-2 text-sm transition-colors ${
                     selected.includes(option)
@@ -145,7 +161,9 @@ export function SelectedChips({
         >
           {item}
           <button
+            type="button"
             onClick={() => onRemove(item)}
+            aria-label={`Remove ${item}`}
             className="hover:text-foreground transition-colors"
           >
             <X className="h-3 w-3" />

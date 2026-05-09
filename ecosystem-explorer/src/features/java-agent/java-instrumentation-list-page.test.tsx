@@ -55,6 +55,8 @@ describe("JavaInstrumentationListPage - Filtering", () => {
       has_javaagent: true,
       javaagent_target_versions: ["1.0.0"],
       telemetry: [{ when: "always", spans: [{ span_kind: "CLIENT" }] }],
+      semantic_conventions: ["http"],
+      features: ["stable"],
     },
     {
       name: "jdbc",
@@ -76,6 +78,8 @@ describe("JavaInstrumentationListPage - Filtering", () => {
           ],
         },
       ],
+      semantic_conventions: ["db"],
+      tags: ["sql"],
     },
     {
       name: "kafka-client",
@@ -100,6 +104,9 @@ describe("JavaInstrumentationListPage - Filtering", () => {
           ],
         },
       ],
+      semantic_conventions: ["messaging"],
+      features: ["stable"],
+      tags: ["pubsub"],
     },
     {
       name: "spring-web",
@@ -108,6 +115,7 @@ describe("JavaInstrumentationListPage - Filtering", () => {
       scope: { name: "spring" },
       has_javaagent: true,
       javaagent_target_versions: ["1.0.0"],
+      features: ["experimental"],
     },
   ];
 
@@ -354,5 +362,96 @@ describe("JavaInstrumentationListPage - Filtering", () => {
 
     expect(screen.getByText("Error loading instrumentations")).toBeInTheDocument();
     expect(screen.getByText("Failed to load instrumentations")).toBeInTheDocument();
+  });
+
+  it("filters by semantic conventions (OR logic)", async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    await waitFor(() => expect(screen.getByText("HTTP Client")).toBeInTheDocument());
+
+    const semanticButton = screen.getByRole("button", { name: /Semantic Conventions/i });
+    await user.click(semanticButton);
+
+    const httpOption = screen.getByRole("option", { name: "http" });
+    await user.click(httpOption);
+
+    expect(screen.getByText("HTTP Client")).toBeInTheDocument();
+    expect(screen.queryByText("JDBC")).not.toBeInTheDocument();
+
+    const dbOption = screen.getByRole("option", { name: "db" });
+    await user.click(dbOption);
+
+    expect(screen.getByText("HTTP Client")).toBeInTheDocument();
+    expect(screen.getByText("JDBC")).toBeInTheDocument();
+    expect(screen.queryByText("Kafka Client")).not.toBeInTheDocument();
+  });
+
+  it("filters by features and tags (OR logic)", async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    await waitFor(() => expect(screen.getByText("HTTP Client")).toBeInTheDocument());
+
+    const featuresButton = screen.getByRole("button", { name: /Features/i });
+    await user.click(featuresButton);
+
+    const sqlOption = screen.getByRole("option", { name: "sql" });
+    await user.click(sqlOption);
+
+    expect(screen.getByText("JDBC")).toBeInTheDocument();
+    expect(screen.queryByText("HTTP Client")).not.toBeInTheDocument();
+
+    const experimentalOption = screen.getByRole("option", { name: "experimental" });
+    await user.click(experimentalOption);
+
+    expect(screen.getByText("JDBC")).toBeInTheDocument();
+    expect(screen.getByText("Spring Web")).toBeInTheDocument();
+    expect(screen.queryByText("HTTP Client")).not.toBeInTheDocument();
+  });
+
+  it("filters by special TRACING and METRICS features", async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    await waitFor(() => expect(screen.getByText("HTTP Client")).toBeInTheDocument());
+
+    const featuresButton = screen.getByRole("button", { name: /Features/i });
+    await user.click(featuresButton);
+
+    const tracingOption = screen.getByRole("option", { name: "TRACING" });
+    await user.click(tracingOption);
+
+    expect(screen.getByText("HTTP Client")).toBeInTheDocument();
+    expect(screen.getByText("Kafka Client")).toBeInTheDocument();
+    expect(screen.queryByText("JDBC")).not.toBeInTheDocument();
+
+    // Clear TRACING and select METRICS
+    await user.click(tracingOption);
+    const metricsOption = screen.getByRole("option", { name: "METRICS" });
+    await user.click(metricsOption);
+
+    expect(screen.getByText("JDBC")).toBeInTheDocument();
+    expect(screen.getByText("Kafka Client")).toBeInTheDocument();
+    expect(screen.queryByText("HTTP Client")).not.toBeInTheDocument();
+  });
+
+  it("combines filters from different categories (AND logic)", async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    await waitFor(() => expect(screen.getByText("HTTP Client")).toBeInTheDocument());
+
+    const semanticButton = screen.getByRole("button", { name: /Semantic Conventions/i });
+    await user.click(semanticButton);
+    await user.click(screen.getByRole("option", { name: "http" }));
+
+    const featuresButton = screen.getByRole("button", { name: /Features/i });
+    await user.click(featuresButton);
+    await user.click(screen.getByRole("option", { name: "stable" }));
+
+    expect(screen.getByText("HTTP Client")).toBeInTheDocument();
+    expect(screen.queryByText("Kafka Client")).not.toBeInTheDocument();
+    expect(screen.queryByText("JDBC")).not.toBeInTheDocument();
   });
 });

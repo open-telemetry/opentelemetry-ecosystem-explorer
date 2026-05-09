@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useMemo } from "react";
 import { getTelemetryFilterClasses, getTargetFilterClasses } from "../styles/filter-styles";
 import { Tooltip } from "@/components/ui/tooltip";
+import { SearchableMultiSelect, SelectedChips } from "@/components/ui/searchable-multi-select";
 
 import type { InstrumentationData } from "@/types/javaagent";
 
@@ -32,8 +34,6 @@ interface InstrumentationFilterBarProps {
   instrumentations: InstrumentationData[];
 }
 
-import { useMemo } from "react";
-import { SearchableMultiSelect, SelectedChips } from "@/components/ui/searchable-multi-select";
 
 export function InstrumentationFilterBar({
   filters,
