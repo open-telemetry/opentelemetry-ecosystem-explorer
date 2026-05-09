@@ -46,8 +46,6 @@ export interface InstrumentationData {
   source_path?: string;
   /** Minimum Java version required by this instrumentation. */
   minimum_java_version?: number;
-  /** Searchable tags associated with this instrumentation. */
-  tags?: string[];
   /** List of semantic conventions followed by this instrumentation. */
   semantic_conventions?: string[];
   /** List of telemetry features provided (e.g., TRACING, METRICS). */
