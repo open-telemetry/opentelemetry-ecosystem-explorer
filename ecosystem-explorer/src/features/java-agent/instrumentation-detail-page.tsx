@@ -296,8 +296,7 @@ export function InstrumentationDetailPage() {
                                 Traces & Spans
                               </h3>
                               <p className="text-muted-foreground text-sm">
-                                Follows individual requests step-by-step. Use this to see exactly
-                                where time is spent and where errors happen.
+                                Provides visibility into application activity and execution flow across services and components.
                               </p>
                               {instrumentation.telemetry &&
                                 instrumentation.telemetry[0] &&
