@@ -166,7 +166,9 @@ export function JavaInstrumentationListPage() {
       <PageContainer>
         <div className="rounded-lg border border-red-500/50 bg-red-500/10 p-6 text-red-600 dark:text-red-400">
           <h3 className="mb-2 font-semibold">No version available</h3>
-          <p className="text-sm">Could not determine the latest Java agent version. Please try refreshing the page.</p>
+          <p className="text-sm">
+            Could not determine the latest Java agent version. Please try refreshing the page.
+          </p>
         </div>
       </PageContainer>
     );

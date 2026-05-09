@@ -158,7 +158,8 @@ describe("fetchWithCache", () => {
       vi.spyOn(idbCache, "getCached").mockResolvedValue(data);
 
       const result = await fetchWithCache("key", "/url", STORES.METADATA, {
-        validate: (d: unknown) => Array.isArray((d as typeof data).versions) && (d as typeof data).versions.length > 0,
+        validate: (d: unknown) =>
+          Array.isArray((d as typeof data).versions) && (d as typeof data).versions.length > 0,
       });
 
       expect(result).toEqual(data);
@@ -178,7 +179,9 @@ describe("fetchWithCache", () => {
       });
 
       const result = await fetchWithCache("key", "/url", STORES.METADATA, {
-        validate: (d: unknown) => Array.isArray((d as typeof staleData).versions) && (d as typeof staleData).versions.length > 0,
+        validate: (d: unknown) =>
+          Array.isArray((d as typeof staleData).versions) &&
+          (d as typeof staleData).versions.length > 0,
       });
 
       expect(result).toEqual(freshData);
