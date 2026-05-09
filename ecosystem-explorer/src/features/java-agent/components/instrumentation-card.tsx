@@ -74,35 +74,29 @@ export function InstrumentationCard({
         <div className="flex flex-wrap items-center gap-2">
           <TelemetryBadges badges={badgeInfo} activeFilters={activeFilters} />
 
-          {instrumentation.semantic_conventions?.map((s) => (
-            <GlowBadge
-              key={s}
-              variant={activeFilters?.semantic.includes(s) ? "primary" : "muted"}
-              className="px-1.5 py-0"
-            >
-              {s}
-            </GlowBadge>
-          ))}
+          {instrumentation.semantic_conventions
+            ?.filter((s) => activeFilters?.semantic.includes(s))
+            .map((s) => (
+              <GlowBadge key={s} variant="primary" className="px-1.5 py-0">
+                {s}
+              </GlowBadge>
+            ))}
 
-          {instrumentation.features?.map((f) => (
-            <GlowBadge
-              key={f}
-              variant={activeFilters?.features.includes(f) ? "info" : "muted"}
-              className="px-1.5 py-0"
-            >
-              {f}
-            </GlowBadge>
-          ))}
+          {instrumentation.features
+            ?.filter((f) => activeFilters?.features.includes(f))
+            .map((f) => (
+              <GlowBadge key={f} variant="info" className="px-1.5 py-0">
+                {f}
+              </GlowBadge>
+            ))}
 
-          {instrumentation.tags?.map((t) => (
-            <GlowBadge
-              key={t}
-              variant={activeFilters?.features.includes(t) ? "info" : "muted"}
-              className="px-1.5 py-0 opacity-80"
-            >
-              #{t}
-            </GlowBadge>
-          ))}
+          {instrumentation.tags
+            ?.filter((t) => activeFilters?.features.includes(t))
+            .map((t) => (
+              <GlowBadge key={t} variant="info" className="px-1.5 py-0 opacity-80">
+                #{t}
+              </GlowBadge>
+            ))}
         </div>
       </div>
     </Link>
