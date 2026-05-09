@@ -324,7 +324,7 @@ export function InstrumentationDetailPage() {
                             />
                             <div className="flex-1 space-y-1">
                               <h3 className="text-foreground text-sm font-semibold">
-                                Performance Metrics
+                               Metrics
                               </h3>
                               <p className="text-muted-foreground text-sm">
                                 Gives you the big picture of system health, like total request
