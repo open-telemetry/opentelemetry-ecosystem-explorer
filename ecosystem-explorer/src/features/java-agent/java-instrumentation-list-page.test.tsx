@@ -79,7 +79,6 @@ describe("JavaInstrumentationListPage - Filtering", () => {
         },
       ],
       semantic_conventions: ["db"],
-      tags: ["sql"],
     },
     {
       name: "kafka-client",
@@ -106,7 +105,6 @@ describe("JavaInstrumentationListPage - Filtering", () => {
       ],
       semantic_conventions: ["messaging"],
       features: ["stable"],
-      tags: ["pubsub"],
     },
     {
       name: "spring-web",
