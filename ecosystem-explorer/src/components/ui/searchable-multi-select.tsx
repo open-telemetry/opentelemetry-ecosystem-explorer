@@ -24,6 +24,7 @@ interface SearchableMultiSelectProps {
   options: string[];
   selected: string[];
   onChange: (selected: string[]) => void;
+  renderOption?: (option: string) => React.ReactNode;
   className?: string;
 }
 
@@ -33,6 +34,7 @@ export function SearchableMultiSelect({
   options,
   selected,
   onChange,
+  renderOption,
   className = "",
 }: SearchableMultiSelectProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -47,18 +49,22 @@ export function SearchableMultiSelect({
 
   return (
     <div className={`relative space-y-2 ${className}`}>
-      <label htmlFor={triggerId} className="text-muted-foreground text-sm font-medium">{label}</label>
+      <label htmlFor={triggerId} className="text-muted-foreground text-sm font-medium">
+        {label}
+      </label>
 
       <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
         <Popover.Trigger asChild>
           <button
             type="button"
             id={triggerId}
-            className={`border-border/60 bg-background/80 hover:border-primary/50 focus:ring-primary/20 flex min-h-[42px] w-full cursor-pointer items-center justify-between rounded-lg border px-4 py-2 text-left text-sm backdrop-blur-sm transition-all duration-200 focus:outline-none focus:ring-2 ${
+            className={`border-border/60 bg-background/80 hover:border-primary/50 focus:ring-primary/20 flex min-h-[42px] w-full cursor-pointer items-center justify-between rounded-lg border px-4 py-2 text-left text-sm backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none ${
               isOpen ? "border-primary/50 ring-primary/20 ring-2" : ""
             }`}
           >
-            <span className={selected.length === 0 ? "text-muted-foreground/50" : "text-foreground"}>
+            <span
+              className={selected.length === 0 ? "text-muted-foreground/50" : "text-foreground"}
+            >
               {selected.length === 0 ? placeholder : `${selected.length} selected`}
             </span>
             <ChevronDown
@@ -72,7 +78,7 @@ export function SearchableMultiSelect({
         <Popover.Portal>
           <Popover.Content
             align="start"
-            className="border-border/60 bg-background/95 ring-border/5 z-[100] mt-1 w-[var(--radix-popover-trigger-width)] rounded-lg border shadow-xl ring-1 backdrop-blur-md overflow-hidden"
+            className="border-border/60 bg-background/95 ring-border/5 z-[100] mt-1 w-[var(--radix-popover-trigger-width)] overflow-hidden rounded-lg border shadow-xl ring-1 backdrop-blur-md"
           >
             <Command className="flex w-full flex-col overflow-hidden bg-transparent">
               <div className="border-border/50 border-b p-2">
@@ -86,20 +92,22 @@ export function SearchableMultiSelect({
               </div>
 
               <Command.List className="custom-scrollbar max-h-[240px] overflow-y-auto p-1">
-                <Command.Empty className="text-muted-foreground py-4 text-center text-sm">No options found</Command.Empty>
+                <Command.Empty className="text-muted-foreground py-4 text-center text-sm">
+                  No options found
+                </Command.Empty>
                 <Command.Group>
                   {options.map((option) => (
                     <Command.Item
                       key={option}
                       value={option}
                       onSelect={() => toggleOption(option)}
-                      className={`hover:bg-primary/10 flex cursor-pointer items-center justify-between rounded-md px-3 py-2 text-sm transition-colors data-[selected=true]:bg-primary/10 data-[selected=true]:text-primary outline-none ${
+                      className={`hover:bg-primary/10 data-[selected=true]:bg-primary/10 data-[selected=true]:text-primary flex cursor-pointer items-center justify-between rounded-md px-3 py-2 text-sm transition-colors outline-none ${
                         selected.includes(option)
                           ? "bg-primary/5 text-primary font-medium"
                           : "text-foreground"
                       }`}
                     >
-                      <span>{option}</span>
+                      <span>{renderOption ? renderOption(option) : option}</span>
                       {selected.includes(option) && <Check className="h-4 w-4" />}
                     </Command.Item>
                   ))}
@@ -116,10 +124,12 @@ export function SearchableMultiSelect({
 export function SelectedChips({
   selected,
   onRemove,
+  renderItem,
   className = "",
 }: {
   selected: string[];
   onRemove: (item: string) => void;
+  renderItem?: (item: string) => React.ReactNode;
   className?: string;
 }) {
   if (selected.length === 0) return null;
@@ -131,7 +141,7 @@ export function SelectedChips({
           key={item}
           className="bg-primary/10 border-primary/20 text-primary hover:bg-primary/20 flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-medium backdrop-blur-sm transition-all"
         >
-          {item}
+          {renderItem ? renderItem(item) : item}
           <button
             type="button"
             onClick={() => onRemove(item)}

@@ -18,6 +18,8 @@ import { getTelemetryFilterClasses, getTargetFilterClasses } from "../styles/fil
 import { Tooltip } from "@/components/ui/tooltip";
 import { SearchableMultiSelect, SelectedChips } from "@/components/ui/searchable-multi-select";
 
+import { getSemanticConventionInfo, getFeatureInfo } from "../utils/format";
+
 import type { InstrumentationData } from "@/types/javaagent";
 
 export interface FilterState {
@@ -33,7 +35,6 @@ interface InstrumentationFilterBarProps {
   onFiltersChange: (filters: FilterState) => void;
   instrumentations: InstrumentationData[];
 }
-
 
 export function InstrumentationFilterBar({
   filters,
@@ -113,7 +114,7 @@ export function InstrumentationFilterBar({
                 placeholder="Search instrumentations..."
                 value={filters.search}
                 onChange={(e) => onFiltersChange({ ...filters, search: e.target.value })}
-                className="border-border/60 bg-background/80 placeholder:text-muted-foreground/50 focus:border-primary/50 focus:ring-primary/20 flex h-[42px] w-full rounded-lg border px-4 py-2 text-sm backdrop-blur-sm transition-all duration-200 focus:outline-none focus:ring-2"
+                className="border-border/60 bg-background/80 placeholder:text-muted-foreground/50 focus:border-primary/50 focus:ring-primary/20 flex h-[42px] w-full rounded-lg border px-4 py-2 text-sm backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none"
               />
             </div>
           </div>
@@ -124,6 +125,7 @@ export function InstrumentationFilterBar({
             options={semanticOptions}
             selected={filters.semantic}
             onChange={(selected) => onFiltersChange({ ...filters, semantic: selected })}
+            renderOption={(s) => getSemanticConventionInfo(s)?.label ?? s}
           />
 
           <SearchableMultiSelect
@@ -132,6 +134,7 @@ export function InstrumentationFilterBar({
             options={featureOptions}
             selected={filters.features}
             onChange={(selected) => onFiltersChange({ ...filters, features: selected })}
+            renderOption={(f) => getFeatureInfo(f)?.label ?? f}
           />
         </div>
 
@@ -202,6 +205,7 @@ export function InstrumentationFilterBar({
                 semantic: filters.semantic.filter((s) => s !== item),
               })
             }
+            renderItem={(s) => getSemanticConventionInfo(s)?.label ?? s}
           />
           <SelectedChips
             selected={filters.features}
@@ -211,6 +215,7 @@ export function InstrumentationFilterBar({
                 features: filters.features.filter((f) => f !== item),
               })
             }
+            renderItem={(f) => getFeatureInfo(f)?.label ?? f}
           />
         </div>
       </div>
