@@ -64,10 +64,10 @@ export function VersionSelectorPanel({
                 id="from-version-select"
                 value={fromVersion}
                 onChange={(e) => onFromVersionChange(e.target.value)}
-                className="border-border/60 bg-background/80 text-foreground hover:border-primary/40 focus:border-primary/50 focus:ring-primary/20 w-full cursor-pointer appearance-none rounded-lg border-2 px-4 py-2.5 text-sm font-medium backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none"
+                className="border-border/60 bg-background/80 text-foreground hover:border-primary/40 focus:border-primary/50 focus:ring-primary/20 w-full cursor-pointer appearance-none rounded-lg border-2 px-4 py-2.5 text-sm font-medium backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none dark:[color-scheme:dark]"
               >
                 {versions.map((v) => (
-                  <option key={v.version} value={v.version} className="bg-card text-foreground">
+                  <option key={v.version} value={v.version}>
                     {v.version} {v.is_latest ? "(latest)" : ""}
                   </option>
                 ))}
@@ -92,10 +92,10 @@ export function VersionSelectorPanel({
                 id="to-version-select"
                 value={toVersion}
                 onChange={(e) => onToVersionChange(e.target.value)}
-                className="border-border/60 bg-background/80 text-foreground hover:border-primary/40 focus:border-primary/50 focus:ring-primary/20 w-full cursor-pointer appearance-none rounded-lg border-2 px-4 py-2.5 text-sm font-medium backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none"
+                className="border-border/60 bg-background/80 text-foreground hover:border-primary/40 focus:border-primary/50 focus:ring-primary/20 w-full cursor-pointer appearance-none rounded-lg border-2 px-4 py-2.5 text-sm font-medium backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none dark:[color-scheme:dark]"
               >
                 {versions.map((v) => (
-                  <option key={v.version} value={v.version} className="bg-card text-foreground">
+                  <option key={v.version} value={v.version}>
                     {v.version} {v.is_latest ? "(latest)" : ""}
                   </option>
                 ))}
@@ -121,10 +121,10 @@ export function VersionSelectorPanel({
                 id="when-condition-select"
                 value={whenCondition}
                 onChange={(e) => onWhenConditionChange(e.target.value)}
-                className="border-border/60 bg-background/80 text-foreground hover:border-primary/40 focus:border-primary/50 focus:ring-primary/20 w-full cursor-pointer appearance-none rounded-lg border-2 px-4 py-2.5 text-sm font-medium backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none"
+                className="border-border/60 bg-background/80 text-foreground hover:border-primary/40 focus:border-primary/50 focus:ring-primary/20 w-full cursor-pointer appearance-none rounded-lg border-2 px-4 py-2.5 text-sm font-medium backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none dark:[color-scheme:dark]"
               >
                 {availableConditions.map((c) => (
-                  <option key={c} value={c} className="bg-card text-foreground">
+                  <option key={c} value={c}>
                     {c === "default" ? "Default" : c}
                   </option>
                 ))}

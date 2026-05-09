@@ -27,7 +27,7 @@ interface SelectControlProps {
 }
 
 const SELECT_CLASS =
-  "w-full appearance-none rounded-lg border border-border/60 bg-background/80 px-4 pr-10 py-2.5 text-sm backdrop-blur-sm transition-all duration-200 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20";
+  "w-full appearance-none rounded-lg border border-border/60 bg-background/80 px-4 pr-10 py-2.5 text-sm backdrop-blur-sm transition-all duration-200 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 dark:[color-scheme:dark]";
 
 export function SelectControl({ node, path, value, onChange }: SelectControlProps) {
   const id = useId();
@@ -53,14 +53,14 @@ export function SelectControl({ node, path, value, onChange }: SelectControlProp
           className={SELECT_CLASS}
         >
           {node.nullable ? (
-            <option value="" className="bg-card text-foreground">
+            <option value="">
               {node.nullBehavior ?? node.defaultBehavior ?? "Default"}
             </option>
           ) : value === null ? (
-            <option value="" disabled hidden className="bg-card text-foreground" />
+            <option value="" disabled hidden />
           ) : null}
           {node.enumOptions.map((opt) => (
-            <option key={opt.value} value={opt.value} className="bg-card text-foreground">
+            <option key={opt.value} value={opt.value}>
               {opt.value}
             </option>
           ))}
