@@ -1601,7 +1601,7 @@ components:
         - axw
 - name: awslambdareceiver
   metadata:
-    type: awslambda
+    type: aws_lambda
     display_name: AWS Lambda Receiver
     status:
       class: receiver
@@ -16772,7 +16772,7 @@ components:
         type: string
 - name: tcpcheckreceiver
   metadata:
-    type: tcpcheck
+    type: tcp_check
     display_name: TCP Check Receiver
     description: This receiver creates stats by connecting to a TCP server.
     status:
