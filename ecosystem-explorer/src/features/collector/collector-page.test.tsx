@@ -164,8 +164,14 @@ describe("CollectorPage", () => {
 
     renderAtRoute("/collector/components/9.9.9");
 
+    expect(useCollectorComponents).toHaveBeenCalledWith("9.9.9");
     expect(screen.getByRole("heading", { name: "Error loading data" })).toBeInTheDocument();
-    expect(screen.queryByText(/Showing/)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText((_content, element) =>
+        element?.textContent?.replace(/\s+/g, " ").trim() === "Showing 0 components"
+      )
+    ).not.toBeInTheDocument();
+    expect(screen.queryByText("No components found")).not.toBeInTheDocument();
   });
 
   it("renders component cards when data loads successfully", () => {
