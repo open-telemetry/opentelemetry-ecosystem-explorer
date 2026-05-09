@@ -73,8 +73,6 @@ export function InstrumentationFilterBar({
     instrumentations.forEach((instr) => {
       instr.features?.forEach((f) => options.add(f));
       instr.tags?.forEach((t) => options.add(t));
-      if (instr.telemetry?.some((t) => t.spans && t.spans.length > 0)) options.add("TRACING");
-      if (instr.telemetry?.some((t) => t.metrics && t.metrics.length > 0)) options.add("METRICS");
     });
     return Array.from(options).sort();
   }, [instrumentations]);

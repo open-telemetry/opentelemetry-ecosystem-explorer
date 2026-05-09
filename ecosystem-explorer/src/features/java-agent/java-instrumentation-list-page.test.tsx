@@ -410,32 +410,6 @@ describe("JavaInstrumentationListPage - Filtering", () => {
     expect(screen.queryByText("HTTP Client")).not.toBeInTheDocument();
   });
 
-  it("filters by special TRACING and METRICS features", async () => {
-    const user = userEvent.setup();
-    renderPage();
-
-    await waitFor(() => expect(screen.getByText("HTTP Client")).toBeInTheDocument());
-
-    const featuresButton = screen.getByRole("button", { name: /Features/i });
-    await user.click(featuresButton);
-
-    const tracingOption = screen.getByRole("option", { name: "TRACING" });
-    await user.click(tracingOption);
-
-    expect(screen.getByText("HTTP Client")).toBeInTheDocument();
-    expect(screen.getByText("Kafka Client")).toBeInTheDocument();
-    expect(screen.queryByText("JDBC")).not.toBeInTheDocument();
-
-    // Clear TRACING and select METRICS
-    await user.click(tracingOption);
-    const metricsOption = screen.getByRole("option", { name: "METRICS" });
-    await user.click(metricsOption);
-
-    expect(screen.getByText("JDBC")).toBeInTheDocument();
-    expect(screen.getByText("Kafka Client")).toBeInTheDocument();
-    expect(screen.queryByText("HTTP Client")).not.toBeInTheDocument();
-  });
-
   it("combines filters from different categories (AND logic)", async () => {
     const user = userEvent.setup();
     renderPage();
