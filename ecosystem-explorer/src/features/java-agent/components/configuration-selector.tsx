@@ -58,10 +58,10 @@ export function ConfigurationSelector({
               id="config-select"
               value={selectedWhen}
               onChange={(e) => onWhenChange(e.target.value)}
-              className="border-border/60 bg-background/80 text-foreground hover:border-primary/40 focus:border-primary/50 focus:ring-primary/20 min-w-0 w-full cursor-pointer appearance-none rounded-lg border-2 py-2.5 pr-10 pl-4 text-sm font-medium backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none sm:min-w-[200px]"
+              className="border-border/60 bg-background/80 text-foreground hover:border-primary/40 focus:border-primary/50 focus:ring-primary/20 min-w-0 w-full cursor-pointer appearance-none rounded-lg border-2 py-2.5 pr-10 pl-4 text-sm font-medium backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none dark:[color-scheme:dark] sm:min-w-[200px]"
             >
               {telemetry.map((t) => (
-                <option key={t.when} value={t.when} className="bg-card text-foreground">
+                <option key={t.when} value={t.when}>
                   {getConfigLabel(t.when)}
                 </option>
               ))}
