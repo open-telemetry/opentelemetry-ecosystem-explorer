@@ -28,6 +28,7 @@ vi.mock("@/lib/feature-flags", () => ({
 }));
 
 import { useCollectorVersions, useCollectorComponents } from "@/hooks/use-collector-data";
+import type { CollectorComponent } from "@/types/collector";
 
 const mockVersionsData = {
   versions: [
@@ -36,7 +37,7 @@ const mockVersionsData = {
   ],
 };
 
-const mockComponents = [
+const mockComponents: CollectorComponent[] = [
   {
     id: "receiver-otlp",
     name: "otlpreceiver",
