@@ -151,4 +151,59 @@ describe("fetchWithCache", () => {
       fetchWithCache("test-500-soft", "/broken.json", STORES.CONFIGURATION, { allow404: true })
     ).rejects.toThrow(/500/);
   });
+
+  describe("validate option", () => {
+    it("returns cached data when validate passes", async () => {
+      const data = { versions: [{ version: "1.0.0", is_latest: true }] };
+      vi.spyOn(idbCache, "getCached").mockResolvedValue(data);
+
+      const result = await fetchWithCache("key", "/url", STORES.METADATA, {
+        validate: (d: unknown) =>
+          Array.isArray((d as typeof data).versions) && (d as typeof data).versions.length > 0,
+      });
+
+      expect(result).toEqual(data);
+      expect(global.fetch).not.toHaveBeenCalled();
+    });
+
+    it("bypasses cache and re-fetches when validate fails", async () => {
+      const staleData = { versions: [] };
+      const freshData = { versions: [{ version: "1.0.0", is_latest: true }] };
+
+      vi.spyOn(idbCache, "getCached").mockResolvedValue(staleData);
+      vi.spyOn(idbCache, "setCached").mockResolvedValue();
+
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ok: true,
+        json: async () => freshData,
+      });
+
+      const result = await fetchWithCache("key", "/url", STORES.METADATA, {
+        validate: (d: unknown) =>
+          Array.isArray((d as typeof staleData).versions) &&
+          (d as typeof staleData).versions.length > 0,
+      });
+
+      expect(result).toEqual(freshData);
+      expect(global.fetch).toHaveBeenCalledWith("/url");
+    });
+
+    it("fetches from network when no cached data exists and validate is provided", async () => {
+      const freshData = { versions: [{ version: "2.0.0", is_latest: true }] };
+      vi.spyOn(idbCache, "getCached").mockResolvedValue(null);
+      vi.spyOn(idbCache, "setCached").mockResolvedValue();
+
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ok: true,
+        json: async () => freshData,
+      });
+
+      const result = await fetchWithCache("key", "/url", STORES.METADATA, {
+        validate: (d: unknown) => Array.isArray((d as typeof freshData).versions),
+      });
+
+      expect(result).toEqual(freshData);
+      expect(global.fetch).toHaveBeenCalledWith("/url");
+    });
+  });
 });
