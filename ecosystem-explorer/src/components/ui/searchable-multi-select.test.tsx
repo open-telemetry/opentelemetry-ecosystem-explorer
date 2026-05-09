@@ -43,7 +43,7 @@ describe("SearchableMultiSelect", () => {
     const user = userEvent.setup();
     render(<SearchableMultiSelect {...defaultProps} />);
     
-    const trigger = screen.getByRole("button", { name: /select fruits/i });
+    const trigger = screen.getByRole("button", { name: "Fruits" });
     await user.click(trigger);
 
     expect(screen.getByRole("dialog")).toBeInTheDocument();
@@ -57,7 +57,7 @@ describe("SearchableMultiSelect", () => {
     const user = userEvent.setup();
     render(<SearchableMultiSelect {...defaultProps} />);
     
-    await user.click(screen.getByRole("button", { name: /select fruits/i }));
+    await user.click(screen.getByRole("button", { name: "Fruits" }));
     
     const searchInput = screen.getByPlaceholderText("Search...");
     await user.type(searchInput, "ba");
@@ -71,7 +71,7 @@ describe("SearchableMultiSelect", () => {
     const onChange = vi.fn();
     render(<SearchableMultiSelect {...defaultProps} onChange={onChange} />);
     
-    await user.click(screen.getByRole("button", { name: /select fruits/i }));
+    await user.click(screen.getByRole("button", { name: "Fruits" }));
     await user.click(screen.getByRole("option", { name: "Banana" }));
     
     expect(onChange).toHaveBeenCalledWith(["Banana"]);
@@ -82,7 +82,7 @@ describe("SearchableMultiSelect", () => {
     const onChange = vi.fn();
     render(<SearchableMultiSelect {...defaultProps} selected={["Apple", "Banana"]} onChange={onChange} />);
     
-    await user.click(screen.getByRole("button", { name: /2 selected/i }));
+    await user.click(screen.getByRole("button", { name: "Fruits" }));
     await user.click(screen.getByRole("option", { name: "Banana" }));
     
     expect(onChange).toHaveBeenCalledWith(["Apple"]);
