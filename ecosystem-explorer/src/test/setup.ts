@@ -17,11 +17,17 @@ import { vi } from "vitest";
 import "@testing-library/jest-dom";
 
 class ResizeObserverMock {
+  private readonly callback: ResizeObserverCallback;
+
+  constructor(callback: ResizeObserverCallback) {
+    this.callback = callback;
+  }
+
   observe() {}
   unobserve() {}
   disconnect() {}
 }
-global.ResizeObserver = ResizeObserverMock;
+globalThis.ResizeObserver = ResizeObserverMock as typeof ResizeObserver;
 HTMLElement.prototype.scrollIntoView = vi.fn();
 HTMLElement.prototype.hasPointerCapture = vi.fn();
 HTMLElement.prototype.releasePointerCapture = vi.fn();
