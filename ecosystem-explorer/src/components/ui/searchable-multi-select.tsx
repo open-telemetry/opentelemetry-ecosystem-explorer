@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useId } from "react";
+import { useState, useId, type ReactNode } from "react";
 import { Search, ChevronDown, Check, X } from "lucide-react";
 import * as Popover from "@radix-ui/react-popover";
 import { Command } from "cmdk";
@@ -24,7 +24,7 @@ interface SearchableMultiSelectProps {
   options: string[];
   selected: string[];
   onChange: (selected: string[]) => void;
-  renderOption?: (option: string) => React.ReactNode;
+  renderOption?: (option: string) => ReactNode;
   className?: string;
 }
 
@@ -129,7 +129,7 @@ export function SelectedChips({
 }: {
   selected: string[];
   onRemove: (item: string) => void;
-  renderItem?: (item: string) => React.ReactNode;
+  renderItem?: (item: string) => ReactNode;
   className?: string;
 }) {
   if (selected.length === 0) return null;
