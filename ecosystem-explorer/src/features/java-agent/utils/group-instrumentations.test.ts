@@ -167,7 +167,6 @@ describe("groupInstrumentationsByDisplayName", () => {
       display_name: "Apache Kafka Client",
       description: "Kafka instrumentation",
       scope: { name: "io.opentelemetry.kafka-clients-0.11" },
-      tags: ["kafka"],
       has_javaagent: true,
       javaagent_target_versions: ["Java 8+"],
       has_standalone_library: true,
