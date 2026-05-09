@@ -25,6 +25,8 @@ import {
   AlertCircle,
   Loader2,
   HelpCircle,
+  ChevronsDown,
+  ChevronsUp,
 } from "lucide-react";
 
 import { BackButton } from "@/components/ui/back-button";
@@ -78,6 +80,8 @@ export function InstrumentationDetailPage() {
   const navigate = useNavigate();
   const [showComparison, setShowComparison] = useState(false);
   const [activeTab, setActiveTab] = useState("details");
+  const [expandVersion, setExpandVersion] = useState(0);
+  const [collapseVersion, setCollapseVersion] = useState(0);
 
   const { data: versionsData, loading: versionsLoading } = useVersions();
 
@@ -572,7 +576,7 @@ export function InstrumentationDetailPage() {
             <TabsContent value="telemetry" className="mt-0 p-4 sm:p-6">
               {instrumentation.telemetry && instrumentation.telemetry.length > 0 ? (
                 <div className="space-y-8">
-                  <div className="flex justify-center">
+                  <div className="flex flex-col items-center gap-6">
                     <div
                       className="border-border inline-flex w-full rounded-lg border bg-transparent p-1 sm:w-auto"
                       role="group"
@@ -602,10 +606,34 @@ export function InstrumentationDetailPage() {
                         Version Comparison
                       </button>
                     </div>
+
+                    {!showComparison && instrumentation.telemetry && instrumentation.telemetry.length > 0 && (
+                      <div className="flex items-center gap-3">
+                        <button
+                          onClick={() => setExpandVersion((v) => v + 1)}
+                          className="hover:border-primary/30 hover:bg-primary/5 border-border/30 bg-card/50 text-muted-foreground hover:text-primary flex items-center gap-2 rounded-lg border px-3 py-1.5 text-[10px] font-black tracking-[0.15em] uppercase transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                        >
+                          <ChevronsDown className="h-3.5 w-3.5" />
+                          Expand All
+                        </button>
+                        <div className="bg-border/30 h-4 w-px" />
+                        <button
+                          onClick={() => setCollapseVersion((v) => v + 1)}
+                          className="hover:border-primary/30 hover:bg-primary/5 border-border/30 bg-card/50 text-muted-foreground hover:text-primary flex items-center gap-2 rounded-lg border px-3 py-1.5 text-[10px] font-black tracking-[0.15em] uppercase transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                        >
+                          <ChevronsUp className="h-3.5 w-3.5" />
+                          Collapse All
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   {!showComparison ? (
-                    <TelemetrySection telemetry={instrumentation.telemetry} />
+                    <TelemetrySection
+                      telemetry={instrumentation.telemetry}
+                      expandVersion={expandVersion}
+                      collapseVersion={collapseVersion}
+                    />
                   ) : (
                     versionsData && (
                       <TelemetryComparisonSection

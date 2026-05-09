@@ -13,20 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useState } from "react";
 import type { Attribute } from "@/types/javaagent";
 import { ChevronDown } from "lucide-react";
 
 interface AttributeTableProps {
   attributes: Attribute[];
+  expandVersion?: number;
+  collapseVersion?: number;
 }
 
-export function AttributeTable({ attributes }: AttributeTableProps) {
+export function AttributeTable({ attributes, expandVersion = 0, collapseVersion = 0 }: AttributeTableProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [prevExpand, setPrevExpand] = useState(expandVersion);
+  const [prevCollapse, setPrevCollapse] = useState(collapseVersion);
+
+  if (expandVersion > prevExpand) {
+    setPrevExpand(expandVersion);
+    setIsOpen(true);
+  }
+
+  if (collapseVersion > prevCollapse) {
+    setPrevCollapse(collapseVersion);
+    setIsOpen(false);
+  }
+
   if (attributes.length === 0) {
     return null;
   }
 
   return (
-    <details className="group border-border/30 bg-card/50 overflow-hidden rounded-lg border open:bg-transparent">
+    <details 
+      open={isOpen}
+      onToggle={(e) => setIsOpen((e.target as HTMLDetailsElement).open)}
+      className="group border-border/30 bg-card/50 overflow-hidden rounded-lg border open:bg-transparent"
+    >
       <summary className="hover:bg-card/80 flex cursor-pointer items-center justify-between p-3 text-sm font-medium transition-colors">
         <span className="text-muted-foreground text-xs font-black tracking-[0.2em] uppercase">
           View {attributes.length} Attribute{attributes.length === 1 ? "" : "s"}

@@ -22,9 +22,15 @@ import type { Telemetry } from "@/types/javaagent";
 
 interface TelemetrySectionProps {
   telemetry: Telemetry[];
+  expandVersion?: number;
+  collapseVersion?: number;
 }
 
-export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
+export function TelemetrySection({ 
+  telemetry, 
+  expandVersion = 0, 
+  collapseVersion = 0 
+}: TelemetrySectionProps) {
   const [selectedWhen, setSelectedWhen] = useState(telemetry[0]?.when ?? "default");
 
   // Validate selected value and fall back to first option if invalid
@@ -91,7 +97,11 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                       {/* Attributes section */}
                       {metric.attributes && metric.attributes.length > 0 && (
                         <div className="pt-2">
-                          <AttributeTable attributes={metric.attributes} />
+                          <AttributeTable
+                            attributes={metric.attributes}
+                            expandVersion={expandVersion}
+                            collapseVersion={collapseVersion}
+                          />
                         </div>
                       )}
                     </div>
@@ -126,7 +136,11 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                       {/* Attributes section */}
                       {span.attributes && span.attributes.length > 0 && (
                         <div className="pt-2">
-                          <AttributeTable attributes={span.attributes} />
+                          <AttributeTable
+                            attributes={span.attributes}
+                            expandVersion={expandVersion}
+                            collapseVersion={collapseVersion}
+                          />
                         </div>
                       )}
                     </div>
