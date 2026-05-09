@@ -74,29 +74,37 @@ export function InstrumentationCard({
         <div className="flex flex-wrap items-center gap-2">
           <TelemetryBadges badges={badgeInfo} activeFilters={activeFilters} />
 
-          {instrumentation.semantic_conventions
-            ?.filter((s) => activeFilters?.semantic.includes(s))
-            .map((s) => (
-              <GlowBadge key={s} variant="primary" className="px-1.5 py-0">
+          {instrumentation.semantic_conventions?.map((s) => {
+            const isActive =
+              !activeFilters ||
+              activeFilters.semantic.length === 0 ||
+              activeFilters.semantic.includes(s);
+            return (
+              <GlowBadge
+                key={s}
+                variant="primary"
+                className={`px-1.5 py-0 ${isActive ? "" : "opacity-40 grayscale"}`}
+              >
                 {s}
               </GlowBadge>
-            ))}
+            );
+          })}
 
-          {instrumentation.features
-            ?.filter((f) => activeFilters?.features.includes(f))
-            .map((f) => (
-              <GlowBadge key={f} variant="info" className="px-1.5 py-0">
+          {instrumentation.features?.map((f) => {
+            const isActive =
+              !activeFilters ||
+              activeFilters.features.length === 0 ||
+              activeFilters.features.includes(f);
+            return (
+              <GlowBadge
+                key={f}
+                variant="info"
+                className={`px-1.5 py-0 ${isActive ? "" : "opacity-40 grayscale"}`}
+              >
                 {f}
               </GlowBadge>
-            ))}
-
-          {instrumentation.tags
-            ?.filter((t) => activeFilters?.features.includes(t))
-            .map((t) => (
-              <GlowBadge key={t} variant="info" className="px-1.5 py-0 opacity-80">
-                #{t}
-              </GlowBadge>
-            ))}
+            );
+          })}
         </div>
       </div>
     </Link>

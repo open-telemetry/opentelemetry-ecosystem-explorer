@@ -110,7 +110,7 @@ export function JavaInstrumentationListPage() {
 
       if (filters.features.length > 0) {
         const hasMatch = filters.features.some((f) => {
-          return instr.features?.includes(f) || instr.tags?.includes(f);
+          return instr.features?.includes(f);
         });
         if (!hasMatch) return false;
       }

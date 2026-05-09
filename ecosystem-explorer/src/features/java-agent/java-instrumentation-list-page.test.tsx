@@ -20,15 +20,7 @@ import userEvent from "@testing-library/user-event";
 import { JavaInstrumentationListPage } from "./java-instrumentation-list-page";
 import type { InstrumentationData } from "@/types/javaagent";
 
-class ResizeObserverMock {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
-}
-global.ResizeObserver = ResizeObserverMock;
-HTMLElement.prototype.scrollIntoView = vi.fn();
-HTMLElement.prototype.hasPointerCapture = vi.fn();
-HTMLElement.prototype.releasePointerCapture = vi.fn();
+
 
 vi.mock("@/hooks/use-javaagent-data", () => ({
   useVersions: vi.fn(),
@@ -397,7 +389,7 @@ describe("JavaInstrumentationListPage - Filtering", () => {
     expect(screen.queryByText("Kafka Client")).not.toBeInTheDocument();
   });
 
-  it("filters by features and tags (OR logic)", async () => {
+  it("filters by features (OR logic)", async () => {
     const user = userEvent.setup();
     renderPage();
 
@@ -406,16 +398,9 @@ describe("JavaInstrumentationListPage - Filtering", () => {
     const featuresButton = screen.getByRole("button", { name: /Features/i });
     await user.click(featuresButton);
 
-    const sqlOption = screen.getByRole("option", { name: "sql" });
-    await user.click(sqlOption);
-
-    expect(screen.getByText("JDBC")).toBeInTheDocument();
-    expect(screen.queryByText("HTTP Client")).not.toBeInTheDocument();
-
     const experimentalOption = screen.getByRole("option", { name: "experimental" });
     await user.click(experimentalOption);
 
-    expect(screen.getByText("JDBC")).toBeInTheDocument();
     expect(screen.getByText("Spring Web")).toBeInTheDocument();
     expect(screen.queryByText("HTTP Client")).not.toBeInTheDocument();
   });

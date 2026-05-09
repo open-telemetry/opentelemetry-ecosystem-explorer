@@ -72,7 +72,6 @@ export function InstrumentationFilterBar({
     const options = new Set<string>();
     instrumentations.forEach((instr) => {
       instr.features?.forEach((f) => options.add(f));
-      instr.tags?.forEach((t) => options.add(t));
     });
     return Array.from(options).sort();
   }, [instrumentations]);
