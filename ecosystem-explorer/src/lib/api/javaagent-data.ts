@@ -23,7 +23,8 @@ export async function loadVersions(): Promise<VersionsIndex> {
   const data = await fetchWithCache<VersionsIndex>(
     "versions-index",
     `${BASE_PATH}/versions-index.json`,
-    STORES.METADATA
+    STORES.METADATA,
+    { validate: (d) => Array.isArray(d.versions) && d.versions.length > 0 }
   );
   if (!data) throw new Error("Versions index returned null unexpectedly");
   return data;
