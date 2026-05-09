@@ -17,11 +17,7 @@ import { vi } from "vitest";
 import "@testing-library/jest-dom";
 
 class ResizeObserverMock {
-  private readonly callback: ResizeObserverCallback;
-
-  constructor(callback: ResizeObserverCallback) {
-    this.callback = callback;
-  }
+  constructor() {}
 
   observe() {}
   unobserve() {}
