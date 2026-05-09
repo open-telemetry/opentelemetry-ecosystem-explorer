@@ -25,8 +25,11 @@ const HomePage = lazy(() =>
 const JavaAgentPage = lazy(() =>
   import("@/features/java-agent/java-agent-page").then((m) => ({ default: m.JavaAgentPage }))
 );
-const CollectorPage = lazy(() =>
-  import("@/features/collector/collector-page").then((m) => ({ default: m.CollectorPage }))
+const CollectorPage = lazy(() => import("@/features/collector/collector-page"));
+const CollectorComponentsPage = lazy(() =>
+  import("@/features/collector/collector-components-page").then((m) => ({
+    default: m.CollectorComponentsPage,
+  }))
 );
 const CollectorDetailPage = lazy(() =>
   import("@/features/collector/collector-detail-page").then((m) => ({
@@ -95,16 +98,9 @@ export default function App() {
                 />
               )}
               <Route path="/collector" element={<CollectorPage />} />
-              {isEnabled("COLLECTOR_PAGE") && (
-                <>
-                  <Route path="/collector/components" element={<CollectorPage />} />
-                  <Route path="/collector/components/:version" element={<CollectorPage />} />
-                  <Route
-                    path="/collector/components/:version/:id"
-                    element={<CollectorDetailPage />}
-                  />
-                </>
-              )}
+              <Route path="/collector/components" element={<CollectorComponentsPage />} />
+              <Route path="/collector/components/:version" element={<CollectorComponentsPage />} />
+              <Route path="/collector/components/:version/:id" element={<CollectorDetailPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
