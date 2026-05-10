@@ -203,6 +203,78 @@ describe("CollectorPage", () => {
     expect(screen.getByText(/Showing/)).toHaveTextContent("Showing 2 components");
   });
 
+  it("shows all stability levels with signals and no fallback description for components without descriptions", () => {
+    const componentWithoutDescription: CollectorComponent = {
+      id: "exporter-elasticsearch",
+      name: "elasticsearchexporter",
+      display_name: "Elasticsearch Exporter",
+      description: null,
+      ecosystem: "collector",
+      type: "exporter",
+      distribution: "contrib",
+      status: {
+        class: "exporter",
+        stability: { beta: ["logs", "traces"], development: ["metrics", "profiles"] },
+        distributions: ["contrib"],
+      },
+    };
+
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: mockVersionsData,
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponents).mockReturnValue({
+      data: [componentWithoutDescription],
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components");
+
+    expect(
+      screen.queryByText("Browse technical details and configuration options for this component.")
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("beta")).toBeInTheDocument();
+    expect(screen.getByText("logs, traces")).toBeInTheDocument();
+    expect(screen.getByText("development")).toBeInTheDocument();
+    expect(screen.getByText("metrics, profiles")).toBeInTheDocument();
+  });
+
+  it("renders stability levels in precedence order regardless of JSON key order", () => {
+    const componentWithUnsortedStability: CollectorComponent = {
+      id: "receiver-otlp-unsorted",
+      name: "otlpreceiver-unsorted",
+      display_name: "OTLP Receiver Unsorted",
+      description: null,
+      ecosystem: "collector",
+      type: "receiver",
+      distribution: "core",
+      status: {
+        class: "receiver",
+        stability: { alpha: ["profiles"], stable: ["logs", "metrics", "traces"] },
+        distributions: ["core"],
+      },
+    };
+
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: mockVersionsData,
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponents).mockReturnValue({
+      data: [componentWithUnsortedStability],
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components");
+
+    const badges = screen.getAllByText(/^(stable|alpha)$/);
+    expect(badges[0]).toHaveTextContent("stable");
+    expect(badges[1]).toHaveTextContent("alpha");
+  });
+
   it("renders version selector with available versions", () => {
     vi.mocked(useCollectorVersions).mockReturnValue({
       data: mockVersionsData,
