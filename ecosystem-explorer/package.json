@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "serve": "vite",
+    "prebuild": "node aggregate-configurations.cjs",
     "build": "tsc -b && bun scripts/generate-schemas.mjs && vite build && bun scripts/generate-agent-docs.mjs",
     "generate-schemas": "bun scripts/generate-schemas.mjs",
     "generate-agent-docs": "bun scripts/generate-agent-docs.mjs",
