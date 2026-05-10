@@ -198,7 +198,7 @@ function CollectorPageInner({ urlVersion }: { urlVersion?: string }) {
                 <Link
                   key={comp.id}
                   to={`/collector/components/${currentVersion}/${comp.id}`}
-                  className="group focus-visible:ring-primary block rounded-xl outline-none focus-visible:ring-2"
+                  className="group focus-visible:ring-primary block min-w-0 rounded-xl outline-none focus-visible:ring-2"
                 >
                   <DetailCard
                     withHoverEffect
