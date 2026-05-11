@@ -23,7 +23,7 @@ export function HeroSection() {
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(circle at center, hsl(var(--otel-orange-hsl) / 0.08) 0%, hsl(var(--otel-blue-hsl) / 0.04) 30%, transparent 70%)",
+            "radial-gradient(circle at center, hsl(var(--hero-accent-hsl) / 0.08) 0%, hsl(var(--hero-accent-alt-hsl) / 0.04) 30%, transparent 70%)",
         }}
       />
 
@@ -45,7 +45,7 @@ export function HeroSection() {
         <div
           className="inline-flex rounded-full p-4"
           style={{
-            boxShadow: "0 0 60px hsl(var(--otel-orange-hsl) / 0.2)",
+            boxShadow: "0 0 60px hsl(var(--hero-accent-hsl) / 0.2)",
           }}
         >
           <Compass className="text-foreground h-24 w-24 md:h-32 md:w-32" />

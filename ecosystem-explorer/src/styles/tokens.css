@@ -33,6 +33,10 @@
     --primary-hsl: var(--otel-blue-hsl); /* structural / navbar / buttons */
     --secondary-hsl: var(--otel-orange-hsl); /* accents / hover / CTAs */
 
+    /* Ornament accents — flip per theme (compass, hero glow, ambient radial) */
+    --hero-accent-hsl: var(--otel-orange-hsl);
+    --hero-accent-alt-hsl: var(--otel-blue-hsl);
+
     /* Surfaces — navy palette */
     --background-hsl: 232 38% 15%;
     --foreground-hsl: 210 17% 98%;
@@ -59,6 +63,10 @@
     /* Semantic role tokens */
     --primary-hsl: var(--otel-blue-hsl);
     --secondary-hsl: var(--otel-orange-hsl);
+
+    /* Ornament accents — flip per theme (compass, hero glow, ambient radial) */
+    --hero-accent-hsl: var(--otel-blue-hsl);
+    --hero-accent-alt-hsl: var(--otel-orange-hsl);
 
     /* Surfaces — light palette */
     --background-hsl: 0 0% 100%;
