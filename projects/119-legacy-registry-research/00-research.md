@@ -161,11 +161,10 @@ Based on the comment from @svrnm (an OpenTelemetry maintainer) in the issue:
    generated from V1 registry YAML files.
 2. **Hugo shortcodes**: A macro allows documentation pages to embed the current version of a
    component by referencing its package name. The version comes from `package.version` in V1.
-3. **Version update automation**: A nightly workflow
-   (`.github/workflows/auto-update-registry.yml`) runs as `otelbot[bot]` and calls
-   `.github/scripts/update-registry-versions.sh`. That script runs `go list -m --versions` against
-   the Go module index for each component and updates the `package.version` field in
-   `data/registry/collector-*.yml`. It does not read from V2 at all.
+3. **Version update automation**: A nightly workflow (`.github/workflows/auto-update-registry.yml`)
+   runs as `otelbot[bot]` and calls `.github/scripts/update-registry-versions.sh`. That script runs
+   `go list -m --versions` against the Go module index for each component and updates the
+   `package.version` field in `data/registry/collector-*.yml`. It does not read from V2 at all.
 
 ---
 
