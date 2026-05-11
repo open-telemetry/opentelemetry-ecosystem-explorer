@@ -15,19 +15,9 @@
  */
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { ThemeProvider } from "@/theme-context";
 import { ThemeToggle } from "./theme-toggle";
-
-function setup() {
-  vi.stubGlobal("matchMedia", () => ({
-    matches: true,
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-  }));
-  localStorage.clear();
-  document.documentElement.removeAttribute("data-theme");
-}
 
 function renderToggle() {
   return render(
@@ -39,18 +29,16 @@ function renderToggle() {
 
 describe("ThemeToggle", () => {
   beforeEach(() => {
-    setup();
-    vi.unstubAllGlobals();
+    localStorage.clear();
+    document.documentElement.removeAttribute("data-theme");
   });
 
   it("renders an auto-mode trigger labelled for accessibility", () => {
-    setup();
     renderToggle();
     expect(screen.getByRole("button", { name: /toggle theme \(auto\)/i })).toBeInTheDocument();
   });
 
   it("opens a menu with Light, Dark, and Auto options", async () => {
-    setup();
     renderToggle();
     const user = userEvent.setup();
 
@@ -62,7 +50,6 @@ describe("ThemeToggle", () => {
   });
 
   it("selecting Light applies data-theme=light and updates the trigger label", async () => {
-    setup();
     renderToggle();
     const user = userEvent.setup();
 
@@ -74,7 +61,6 @@ describe("ThemeToggle", () => {
   });
 
   it("selecting Dark applies data-theme=dark", async () => {
-    setup();
     renderToggle();
     const user = userEvent.setup();
 

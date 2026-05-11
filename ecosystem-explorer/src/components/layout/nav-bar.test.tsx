@@ -15,7 +15,7 @@
  */
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { NavBar } from "./nav-bar";
 import { ThemeProvider } from "@/theme-context";
 
@@ -30,16 +30,6 @@ function renderNavBar() {
 }
 
 describe("NavBar", () => {
-  beforeEach(() => {
-    vi.stubGlobal("matchMedia", () => ({
-      matches: true,
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-    }));
-    localStorage.clear();
-    document.documentElement.removeAttribute("data-theme");
-  });
-
   it("renders the OpenTelemetry brand and links the logo lockup to home", () => {
     renderNavBar();
 

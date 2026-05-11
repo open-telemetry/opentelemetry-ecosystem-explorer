@@ -32,19 +32,10 @@
 }
 
 /*
- * The trigger button on opentelemetry.io carries class `nav-link`, so the
- * navbar's hover-underline rule applies. We mirror it explicitly here since
- * the React clone uses a different class on the trigger.
+ * Hover and open-state visuals (color + underline) come from `.td-navbar`'s
+ * shared rule in `navbar.css`. The trigger renders inside the navbar so it
+ * picks them up automatically.
  */
-.td-light-dark-menu__trigger:hover,
-.td-light-dark-menu__trigger[data-state="open"] {
-  color: hsl(var(--navbar-accent-hsl));
-  text-decoration: underline;
-  text-decoration-thickness: 3px;
-  text-decoration-color: hsl(var(--navbar-accent-hsl) / 0.75);
-  text-underline-offset: 0.5em;
-}
-
 .td-light-dark-menu__trigger:focus-visible {
   outline: revert;
   box-shadow: none;
