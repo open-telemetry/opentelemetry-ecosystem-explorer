@@ -43,38 +43,44 @@ describe("ThemeToggle", () => {
     vi.unstubAllGlobals();
   });
 
-  it("starts in auto mode and shows the Monitor icon aria-label", () => {
+  it("renders an auto-mode trigger labelled for accessibility", () => {
     setup();
     renderToggle();
-    expect(screen.getByRole("button", { name: /switch to light theme/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /toggle theme \(auto\)/i })).toBeInTheDocument();
   });
 
-  it("cycles auto → light → dark → auto on successive clicks", async () => {
-    setup();
-    renderToggle();
-    const user = userEvent.setup();
-    const btn = screen.getByRole("button");
-
-    // auto → light
-    await user.click(btn);
-    expect(btn).toHaveAttribute("aria-label", "Switch to dark theme");
-
-    // light → dark
-    await user.click(btn);
-    expect(btn).toHaveAttribute("aria-label", "Switch to system theme");
-
-    // dark → auto
-    await user.click(btn);
-    expect(btn).toHaveAttribute("aria-label", "Switch to light theme");
-  });
-
-  it("updates data-theme on click", async () => {
+  it("opens a menu with Light, Dark, and Auto options", async () => {
     setup();
     renderToggle();
     const user = userEvent.setup();
 
-    // auto (prefers-dark mocked as true) → resolved=dark; click → light
-    await user.click(screen.getByRole("button"));
+    await user.click(screen.getByRole("button", { name: /toggle theme/i }));
+
+    expect(await screen.findByRole("menuitem", { name: /light/i })).toBeInTheDocument();
+    expect(screen.getByRole("menuitem", { name: /dark/i })).toBeInTheDocument();
+    expect(screen.getByRole("menuitem", { name: /auto/i })).toBeInTheDocument();
+  });
+
+  it("selecting Light applies data-theme=light and updates the trigger label", async () => {
+    setup();
+    renderToggle();
+    const user = userEvent.setup();
+
+    await user.click(screen.getByRole("button", { name: /toggle theme/i }));
+    await user.click(await screen.findByRole("menuitem", { name: /light/i }));
+
     expect(document.documentElement.dataset.theme).toBe("light");
+    expect(screen.getByRole("button", { name: /toggle theme \(light\)/i })).toBeInTheDocument();
+  });
+
+  it("selecting Dark applies data-theme=dark", async () => {
+    setup();
+    renderToggle();
+    const user = userEvent.setup();
+
+    await user.click(screen.getByRole("button", { name: /toggle theme/i }));
+    await user.click(await screen.findByRole("menuitem", { name: /dark/i }));
+
+    expect(document.documentElement.dataset.theme).toBe("dark");
   });
 });

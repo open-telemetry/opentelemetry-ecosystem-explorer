@@ -19,6 +19,17 @@ import { createRoot } from "react-dom/client";
 import "./styles/index.css";
 import App from "./App.tsx";
 import { ThemeProvider } from "./theme-context";
+import { isEnabled } from "./lib/feature-flags";
+
+/*
+ * Flag the document root so CSS can gate v1-redesign-only token overrides
+ * (e.g. page background) without each consumer plumbing the flag through
+ * React. Runs once at bundle load, before the first paint, so there's no
+ * flash. The flag itself is read from an env var at build time.
+ */
+if (isEnabled("V1_REDESIGN")) {
+  document.documentElement.setAttribute("data-v1-redesign", "true");
+}
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

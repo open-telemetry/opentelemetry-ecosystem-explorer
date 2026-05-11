@@ -1,0 +1,112 @@
+/*
+ * Navbar — mirrors opentelemetry.io's `.td-navbar` chrome verbatim.
+ *
+ * Source rules (in the local opentelemetry.io clone):
+ *   themes/docsy/assets/scss/td/_nav.scss              — base sizing + layout
+ *   themes/docsy/assets/scss/td/extra/_navbar.scss     — hover/active underline
+ *   themes/docsy/assets/scss/td/_navbar-mobile-scroll.scss — right-alignment
+ *   assets/scss/_navbar.scss                           — project overrides
+ *   assets/scss/_variables_project.scss                — bg / hover colours
+ *
+ * Pixel-anchored at 16px-rem: the explorer sets `html { font-size: 14px }`
+ * globally (see base.css), so rem-based descendants here would shrink. We
+ * pin the navbar subtree at 16px so `em` resolves correctly, and use absolute
+ * `px` literals for values that would otherwise need `rem`.
+ */
+
+.td-navbar {
+  font-size: 16px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 32;
+  min-height: 64px;
+  margin: 0;
+  background-color: hsl(var(--navbar-bg-hsl));
+  color: hsl(var(--navbar-fg-hsl));
+  /* No border-bottom — `--td-navbar-border-bottom: none` upstream. */
+}
+
+.td-navbar-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 64px;
+  padding: 0 24px;
+}
+
+.td-navbar .navbar-brand {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #fff;
+  padding: 0;
+}
+
+.td-navbar .navbar-brand:focus-visible {
+  outline: revert;
+}
+
+.td-navbar .navbar-brand svg {
+  height: 48px;
+  width: auto;
+  fill: currentColor;
+}
+
+/*
+ * The wrapper that gets pushed to the right at md+ — mirrors
+ * `.td-navbar-nav-scroll { margin-left: auto !important }` upstream.
+ */
+.td-navbar-nav-scroll {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+.td-navbar .navbar-nav {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  white-space: nowrap;
+}
+
+.td-navbar .nav-item {
+  padding-inline-end: 8px;
+}
+
+.td-navbar .nav-item:last-child {
+  padding-inline-end: 0;
+}
+
+.td-navbar .nav-link {
+  display: inline-block;
+  padding: 8px;
+  color: hsl(var(--navbar-fg-hsl));
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+
+.td-navbar .nav-link:hover,
+.td-navbar .nav-link.active {
+  color: hsl(var(--navbar-accent-hsl));
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-decoration-color: hsl(var(--navbar-accent-hsl) / 0.75);
+  text-underline-offset: 0.375em;
+}
+
+.td-navbar .nav-link:hover {
+  text-underline-offset: 0.5em;
+}
+
+.td-navbar .nav-link:focus,
+.td-navbar .nav-link:focus-visible {
+  outline: revert;
+  box-shadow: none;
+}

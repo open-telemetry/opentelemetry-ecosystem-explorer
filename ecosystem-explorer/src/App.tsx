@@ -16,6 +16,7 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Header } from "@/components/layout/header";
+import { NavBar } from "@/components/layout/nav-bar";
 import { Footer } from "@/components/layout/footer";
 import { isEnabled } from "@/lib/feature-flags";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
@@ -70,7 +71,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <div className="bg-background flex min-h-screen flex-col">
-        <Header />
+        {isEnabled("V1_REDESIGN") ? <NavBar /> : <Header />}
         <main className="flex-1 pt-16">
           <ErrorBoundary>
             <Suspense

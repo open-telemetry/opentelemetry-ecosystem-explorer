@@ -23,6 +23,24 @@
  */
 
 @layer theme {
+  :root {
+    /*
+     * Navbar surface — always-dark, theme-invariant.
+     * Values mirror opentelemetry.io's `.td-navbar` (see upstream
+     * `assets/scss/_variables_project.scss`):
+     *   bg     = shade-color($primary, 22%) ≈ #3d4c86 (otel blue, darkened)
+     *   text   = $gray-100 (#f8f9fa) per the project's `_navbar.scss` override
+     *   accent = $secondary (otel orange) — hover + active underline
+     * Logo SVG is shipped with `fill="currentColor"` and rendered white by the
+     * `.navbar-brand { color: #fff }` rule in `navbar.css`, not a token.
+     * `--td-navbar-border-bottom: none` upstream — we don't emit a border.
+     * Kept outside the [data-theme] blocks so neither theme rewrites them.
+     */
+    --navbar-bg-hsl: 228 38% 38%; /* #3d4c86 */
+    --navbar-fg-hsl: 210 17% 98%; /* #f8f9fa (gray-100) */
+    --navbar-accent-hsl: var(--otel-orange-hsl); /* hover + active line */
+  }
+
   :root,
   [data-theme="dark"] {
     /* Brand primitives — stable, never reassigned */
@@ -84,5 +102,27 @@
     --syntax-number-hsl: 330 80% 72%;
     --syntax-keyword-hsl: 265 70% 78%;
     --syntax-punct-hsl: 220 22% 55%;
+  }
+
+  /*
+   * V1_REDESIGN page-surface overrides — gated on `<html data-v1-redesign>`
+   * which `main.tsx` sets at bundle load when the feature flag is on. Aligns
+   * the explorer's page bg/fg with opentelemetry.io's Bootstrap defaults so
+   * the new chrome doesn't sit on a mismatched navy backdrop. Other surface
+   * tokens (card, muted, border) stay on the explorer's palette for now;
+   * those move when their pages get redesigned.
+   *   Dark:  --bs-body-bg = #212529 (gray-900) / --bs-body-color = #dee2e6
+   *   Light: --bs-body-bg = #fff             / --bs-body-color = #212529
+   * Light values are already this in the explorer, so we override dark only.
+   */
+  [data-v1-redesign="true"],
+  [data-v1-redesign="true"][data-theme="dark"] {
+    --background-hsl: 210 11% 15%; /* #212529 */
+    --foreground-hsl: 210 11% 88%; /* #dee2e6 */
+  }
+
+  [data-v1-redesign="true"][data-theme="light"] {
+    --background-hsl: 0 0% 100%;
+    --foreground-hsl: 210 11% 15%;
   }
 }

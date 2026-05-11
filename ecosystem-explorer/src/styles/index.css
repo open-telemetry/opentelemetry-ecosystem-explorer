@@ -17,9 +17,11 @@
 /**
  * Styles entry point.
  *
- * - tokens.css  — design-token CSS custom properties (per-theme HSL triplets)
- * - base.css    — global element resets
- * - syntax.css  — YAML / config syntax-highlight token classes
+ * - tokens.css        — design-token CSS custom properties (per-theme HSL triplets)
+ * - base.css          — global element resets
+ * - syntax.css        — YAML / config syntax-highlight token classes
+ * - navbar.css        — v1 navbar (`.td-navbar`) — mirrors opentelemetry.io
+ * - theme-toggle.css  — v1 theme toggle dropdown — mirrors opentelemetry.io
  *
  * Tailwind v4 bundles @import rules via Lightning CSS at build time, so each
  * partial is inlined into the final stylesheet — no extra network requests.
@@ -29,6 +31,8 @@
 @import "./tokens.css";
 @import "./base.css";
 @import "./syntax.css";
+@import "./navbar.css";
+@import "./theme-toggle.css";
 
 /**
  * Tailwind theme — maps --*-hsl triplets to hsl() utility classes.
