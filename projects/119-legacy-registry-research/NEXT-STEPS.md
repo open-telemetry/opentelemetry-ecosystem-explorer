@@ -89,6 +89,34 @@ opentelemetry.io automation.
 
 ---
 
+### Proposal E: Invert the relationship — make V2 the source of truth and V1 a generated artifact
+
+**What it is**: Instead of syncing V2 data into V1, flip the ownership model entirely. A new nightly
+emitter in `ecosystem-automation/` reads V2 registry data and regenerates
+`opentelemetry.io/data/registry/collector-*.yml` directly. For the fields V2 does not yet carry
+(license, authors, tags), a thin per-entry sidecar file is maintained alongside the emitter.
+`createdAt` is derivable from release history and does not need to be stored manually. The `otelbot`
+nightly job is retired because the emitter sets `package.version` directly.
+
+**Why it helps**: The opentelemetry.io website does not change at all. Same URLs, same Hugo
+templates, same `version-from-registry` shortcode, same MiniSearch index. Nothing user-facing moves.
+Compared to Proposal A, this approach removes a moving part (otelbot) rather than adding a new sync
+layer that has to coexist with otelbot writing the same fields. As other ecosystem watchers come
+online, the sidecar shrinks and the emitter coverage grows naturally.
+
+**Challenges**:
+
+- Requires writing a new emitter in ecosystem-automation and coordinating its output format with the
+  opentelemetry.io maintainers.
+- The sidecar file for V1-only fields (license, authors, tags) needs a clear ownership model and an
+  initial population pass.
+- Retiring otelbot requires agreement from the opentelemetry.io team since it currently owns version
+  updates for all registry entries, not just collector ones.
+
+**Effort**: Medium-high. New emitter plus coordination across two repositories.
+
+---
+
 ### Proposal D: Document and stabilize the current state before changing anything
 
 **What it is**: Before automating further, write a clear description of the current V1 schema,
