@@ -18,6 +18,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { isEnabled } from "@/lib/feature-flags";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 const HomePage = lazy(() =>
   import("@/features/home/home-page").then((m) => ({ default: m.HomePage }))
@@ -74,27 +75,24 @@ export default function App() {
       <div className="bg-background flex min-h-screen flex-col">
         <Header />
         <main className="flex-1 pt-16">
-          <Suspense>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/java-agent" element={<JavaAgentPage />} />
-              <Route path="/java-agent/instrumentation" element={<JavaInstrumentationListPage />} />
-              <Route
-                path="/java-agent/instrumentation/:version"
-                element={<JavaInstrumentationListPage />}
-              />
-              <Route
-                path="/java-agent/instrumentation/:version/:name"
-                element={<InstrumentationDetailPage />}
-              />
-              <Route path="/java-agent/configuration" element={<JavaConfigurationListPage />} />
-              {isEnabled("JAVA_RELEASE_COMPARISON") && (
-                <Route path="/java-agent/releases" element={<JavaReleaseComparisonPage />} />
-              )}
-              {isEnabled("JAVA_CONFIG_BUILDER") && (
+          <ErrorBoundary>
+            <Suspense
+              fallback={
+                <div
+                  className="flex min-h-[400px] items-center justify-center"
+                  role="status"
+                  aria-live="polite"
+                >
+                  <div className="text-muted-foreground text-sm font-medium">Loading...</div>
+                </div>
+              }
+            >
+              <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/java-agent" element={<JavaAgentPage />} />
                 <Route
-                  path="/java-agent/configuration/builder"
-                  element={<ConfigurationBuilderPage />}
+                  path="/java-agent/instrumentation"
+                  element={<JavaInstrumentationListPage />}
                 />
               )}
               <Route path="/collector" element={<CollectorPage />} />
