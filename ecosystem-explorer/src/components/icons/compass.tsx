@@ -86,7 +86,7 @@ export function Compass({ className }: { className?: string }) {
         className="h-full w-full"
         style={{
           filter:
-            "drop-shadow(0 0 8px hsl(var(--otel-blue-hsl) / 0.4)) drop-shadow(0 0 16px hsl(var(--otel-blue-hsl) / 0.2))",
+            "drop-shadow(0 0 8px hsl(var(--otel-orange-hsl) / 0.4)) drop-shadow(0 0 16px hsl(var(--otel-orange-hsl) / 0.2))",
         }}
       >
         {/* Outer ring */}
@@ -95,7 +95,7 @@ export function Compass({ className }: { className?: string }) {
           cy="100"
           r="95"
           fill="none"
-          stroke="hsl(var(--otel-blue-hsl))"
+          stroke="hsl(var(--otel-orange-hsl))"
           strokeWidth="1.5"
           opacity="0.4"
         />
@@ -104,7 +104,7 @@ export function Compass({ className }: { className?: string }) {
           cy="100"
           r="90"
           fill="none"
-          stroke="hsl(var(--otel-blue-hsl))"
+          stroke="hsl(var(--otel-orange-hsl))"
           strokeWidth="0.5"
           opacity="0.2"
         />
@@ -122,7 +122,7 @@ export function Compass({ className }: { className?: string }) {
               y1={100 - innerR * Math.cos(angle)}
               x2={100 + outerR * Math.sin(angle)}
               y2={100 - outerR * Math.cos(angle)}
-              stroke="hsl(var(--otel-blue-hsl))"
+              stroke="hsl(var(--otel-orange-hsl))"
               strokeWidth={isMajor ? 1.5 : 0.5}
               opacity={isMajor ? 0.7 : 0.3}
             />
@@ -140,7 +140,7 @@ export function Compass({ className }: { className?: string }) {
               y={100 - r * Math.cos(angle)}
               textAnchor="middle"
               dominantBaseline="middle"
-              fill="hsl(var(--otel-blue-hsl))"
+              fill="hsl(var(--otel-orange-hsl))"
               className="font-mono text-sm font-bold"
             >
               {dir}
@@ -151,18 +151,18 @@ export function Compass({ className }: { className?: string }) {
         {/* Rotating needle group */}
         <g ref={needleGroupRef}>
           {/* North needle */}
-          <polygon points="100,25 95,100 100,90 105,100" fill="hsl(var(--otel-blue-hsl))" />
+          <polygon points="100,25 95,100 100,90 105,100" fill="hsl(var(--otel-orange-hsl))" />
           {/* South needle */}
           <polygon
             points="100,175 95,100 100,110 105,100"
-            fill="hsl(var(--otel-blue-hsl))"
+            fill="hsl(var(--otel-orange-hsl))"
             opacity="0.4"
           />
         </g>
 
         {/* Center circle */}
-        <circle cx="100" cy="100" r="8" fill="hsl(var(--otel-orange-hsl))" opacity="0.6" />
-        <circle cx="100" cy="100" r="4" fill="hsl(var(--otel-blue-hsl))" />
+        <circle cx="100" cy="100" r="8" fill="hsl(var(--otel-blue-hsl))" opacity="0.6" />
+        <circle cx="100" cy="100" r="4" fill="hsl(var(--otel-orange-hsl))" />
 
         {/* Inner decorative circles */}
         <circle
@@ -170,7 +170,7 @@ export function Compass({ className }: { className?: string }) {
           cy="100"
           r="50"
           fill="none"
-          stroke="hsl(var(--otel-blue-hsl))"
+          stroke="hsl(var(--otel-orange-hsl))"
           strokeWidth="0.5"
           opacity="0.2"
           strokeDasharray="4 4"
