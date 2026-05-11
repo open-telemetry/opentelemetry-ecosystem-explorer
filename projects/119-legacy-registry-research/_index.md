@@ -18,8 +18,8 @@ last_updated: "2026-05-11"
 ## What this folder is
 
 A research workspace for
-[issue #119](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/119),
-which tasks us with identifying the overlaps and gaps between the V1 registry
+[issue #119](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/119), which
+tasks us with identifying the overlaps and gaps between the V1 registry
 (opentelemetry.io/data/registry) and the V2 registry (ecosystem-explorer), starting with collector
 components, and producing concrete proposals on how the two registries should relate going forward.
 
@@ -37,11 +37,11 @@ components, and producing concrete proposals on how the two registries should re
 
 ## Files in this folder
 
-| File                                   | Purpose                                                      |
-| -------------------------------------- | ------------------------------------------------------------ |
-| [`_index.md`](./_index.md)             | This file. Stable folder landing page.                       |
-| [`00-research.md`](./00-research.md)   | Full research findings. Component counts, metadata fields, automation analysis, gap table. |
-| [`NEXT-STEPS.md`](./NEXT-STEPS.md)     | Rolling roadmap. Proposals and recommended actions.          |
+| File                                 | Purpose                                                                                    |
+| ------------------------------------ | ------------------------------------------------------------------------------------------ |
+| [`_index.md`](./_index.md)           | This file. Stable folder landing page.                                                     |
+| [`00-research.md`](./00-research.md) | Full research findings. Component counts, metadata fields, automation analysis, gap table. |
+| [`NEXT-STEPS.md`](./NEXT-STEPS.md)   | Rolling roadmap. Proposals and recommended actions.                                        |
 
 ---
 
