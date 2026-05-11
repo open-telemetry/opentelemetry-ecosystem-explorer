@@ -27,7 +27,10 @@ function mockMatchMedia(prefersDark: boolean) {
       const idx = listeners.indexOf(fn);
       if (idx !== -1) listeners.splice(idx, 1);
     },
-    fire: (matches: boolean) => listeners.forEach((fn) => fn({ matches })),
+    fire: (matches: boolean) => {
+      mql.matches = matches;
+      listeners.forEach((fn) => fn({ matches }));
+    },
   };
   vi.stubGlobal("matchMedia", () => mql);
   return mql;

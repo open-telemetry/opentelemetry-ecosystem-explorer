@@ -13,7 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  useSyncExternalStore,
+  type ReactNode,
+} from "react";
 import { type ResolvedThemeId } from "./themes";
 
 export type ThemeMode = "light" | "dark" | "auto";
@@ -33,9 +40,18 @@ function isValidMode(value: string | null): value is ThemeMode {
   return VALID_MODES.includes(value as ThemeMode);
 }
 
-function getSystemTheme(): ResolvedThemeId {
-  if (typeof window === "undefined") return "dark";
+function subscribeSystemTheme(callback: () => void): () => void {
+  const mql = window.matchMedia("(prefers-color-scheme: dark)");
+  mql.addEventListener("change", callback);
+  return () => mql.removeEventListener("change", callback);
+}
+
+function getSystemThemeSnapshot(): ResolvedThemeId {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
+function getServerSystemTheme(): ResolvedThemeId {
+  return "dark";
 }
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
@@ -50,7 +66,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     }
   });
 
-  const [systemTheme, setSystemTheme] = useState<ResolvedThemeId>(getSystemTheme);
+  const systemTheme = useSyncExternalStore(
+    subscribeSystemTheme,
+    getSystemThemeSnapshot,
+    getServerSystemTheme
+  );
 
   const resolved: ResolvedThemeId = mode === "auto" ? systemTheme : mode;
 
@@ -64,17 +84,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     } catch {
       // localStorage unavailable (private mode quota, etc.)
     }
-  }, [mode]);
-
-  useEffect(() => {
-    if (mode !== "auto") return;
-    const mql = window.matchMedia("(prefers-color-scheme: dark)");
-    setSystemTheme(mql.matches ? "dark" : "light");
-    const handler = (e: MediaQueryListEvent) => {
-      setSystemTheme(e.matches ? "dark" : "light");
-    };
-    mql.addEventListener("change", handler);
-    return () => mql.removeEventListener("change", handler);
   }, [mode]);
 
   const setMode = (next: ThemeMode) => setModeState(next);
