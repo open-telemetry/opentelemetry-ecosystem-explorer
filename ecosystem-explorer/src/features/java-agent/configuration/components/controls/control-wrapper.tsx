@@ -97,6 +97,11 @@ export function ControlWrapper({
 
   return (
     <div className="space-y-2">
+      {labelHidden && inputId && (
+        <label htmlFor={inputId} className="sr-only">
+          {node.label}
+        </label>
+      )}
       {!labelHidden && (
         <div className="flex items-center gap-2">
           {inputId ? (
