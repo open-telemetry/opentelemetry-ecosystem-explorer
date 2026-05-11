@@ -42,17 +42,9 @@ jobs:
           echo "head_repo=$(cat /tmp/pr-metadata/head_repo.txt)" >> "$GITHUB_OUTPUT"
           echo "head_sha=$(cat /tmp/pr-metadata/head_sha.txt)"   >> "$GITHUB_OUTPUT"
 
-      - name: Get otelbot token
-        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
-        id: otelbot-token
-        with:
-          app-id: ${{ vars.OTELBOT_APP_ID }}
-          private-key: ${{ secrets.OTELBOT_PRIVATE_KEY }}
-
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          token: ${{ steps.otelbot-token.outputs.token }}
           fetch-depth: 0
 
       - name: Download screenshots artifact
@@ -163,6 +155,13 @@ jobs:
           with open("/tmp/comment_body.txt", "w") as f:
               f.write(body)
           PYEOF
+
+      - name: Get otelbot token
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        id: otelbot-token
+        with:
+          app-id: ${{ vars.OTELBOT_APP_ID }}
+          private-key: ${{ secrets.OTELBOT_PRIVATE_KEY }}
 
       - name: Post or update PR comment
         env:
