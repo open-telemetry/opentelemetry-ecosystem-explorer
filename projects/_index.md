@@ -24,6 +24,15 @@ projects/
 
 ---
 
+## Current initiatives
+
+| Folder                                           | Issue                                                                                 | Description                                                                                                                 | Status      |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| [`84-ui-ux-design/`](./84-ui-ux-design/)         | [#84](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/84)   | Explorer UI/UX redesign — visual alignment with opentelemetry.io, phased across five page areas.                            | planning    |
+| [`154-genai-ecosystem/`](./154-genai-ecosystem/) | [#154](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/154) | Research GenAI ecosystem — survey of GenAI/LLM instrumentation libraries and semantic convention coverage across languages. | in-progress |
+
+---
+
 ## Folder convention
 
 Each significant initiative gets its own subfolder, named after the GitHub issue that tracks it:

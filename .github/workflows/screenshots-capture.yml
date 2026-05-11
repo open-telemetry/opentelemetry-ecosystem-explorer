@@ -45,6 +45,8 @@ jobs:
 
       - name: Build the frontend
         run: bun run build
+        env:
+          VITE_FEATURE_FLAG_COLLECTOR_PAGE: "true"
 
       - name: Create screenshots directory
         run: mkdir -p screenshots
