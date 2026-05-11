@@ -77,7 +77,7 @@ export function InstrumentationDetailPage() {
   const [showComparison, setShowComparison] = useState(false);
   const [activeTab, setActiveTab] = useState("details");
 
-  const { data: versionsData, loading: versionsLoading } = useVersions();
+  const { data: versionsData, loading: versionsLoading, error: versionsError } = useVersions();
 
   const shouldFetchInstrumentation = version !== "latest";
   const {
@@ -122,6 +122,32 @@ export function InstrumentationDetailPage() {
               <div className="text-muted-foreground text-sm">This may take a moment</div>
             </div>
           </div>
+        </div>
+      </PageContainer>
+    );
+  }
+
+  if (versionsError) {
+    return (
+      <PageContainer>
+        <BackButton />
+        <div className="mt-3">
+          <DetailCard className="border-red-500/50 bg-red-500/5">
+            <div className="flex gap-4">
+              <AlertCircle
+                className="h-6 w-6 flex-shrink-0 text-red-600 dark:text-red-400"
+                aria-hidden="true"
+              />
+              <div className="flex-1 space-y-2">
+                <h3 className="font-semibold text-red-600 dark:text-red-400">
+                  Error loading versions
+                </h3>
+                <p className="text-sm text-red-600/90 dark:text-red-400/90">
+                  {versionsError.message}
+                </p>
+              </div>
+            </div>
+          </DetailCard>
         </div>
       </PageContainer>
     );

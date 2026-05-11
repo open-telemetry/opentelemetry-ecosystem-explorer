@@ -110,16 +110,19 @@ The available feature flags are defined in `src/lib/feature-flags.ts`.
 
 **Deployment behavior:**
 
-Branch deploys and deploy previews enable both current feature flags through `netlify.toml`.
-Production does not enable them by default.
+Branch deploys and deploy previews enable `JAVA_CONFIG_BUILDER` and `COLLECTOR_PAGE` through
+`netlify.toml`. `JAVA_RELEASE_COMPARISON` is not enabled in any deploy context. `V1_REDESIGN` is
+enabled automatically on `feat/84-*` branches via the build command. Production enables none of
+these flags by default.
 
 ## Data Fetching and Caching
 
 We use IndexedDB as a cache to minimize network requests and build a db in the browser. The data
 layer consists of three main parts:
 
-1. IDB Cache (`src/lib/api/idb-cache.ts`) - Browser-persistent storage with two object stores:
-   `metadata` (versions, manifests) and `instrumentations` (content-addressed data)
+1. IDB Cache (`src/lib/api/idb-cache.ts`) - Browser-persistent storage with three object stores:
+   `metadata` (versions, manifests), `instrumentations` (content-addressed data), and
+   `configuration` (declarative configuration schema data)
 
 2. Data API (`src/lib/api/javaagent-data.ts`) - Fetching layer that checks IndexedDB first, falls
    back to network, and caches responses.

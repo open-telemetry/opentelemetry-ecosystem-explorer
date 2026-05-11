@@ -599,7 +599,7 @@ components:
     status:
       class: extension
       stability:
-        alpha:
+        deprecated:
         - extension
       distributions:
       - contrib

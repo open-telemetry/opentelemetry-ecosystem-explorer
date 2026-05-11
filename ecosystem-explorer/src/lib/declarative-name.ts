@@ -46,6 +46,13 @@ export function parseDefault(
       if (typeof raw !== "string" || raw === "") return [];
       return raw.split(",").map((item) => item.trim());
     case "map":
-      return {};
+      if (typeof raw !== "string" || raw === "") return {};
+      return Object.fromEntries(
+        raw.split(",").flatMap((pair) => {
+          const eq = pair.indexOf("=");
+          if (eq === -1) return [];
+          return [[pair.slice(0, eq).trim(), pair.slice(eq + 1).trim()]];
+        })
+      );
   }
 }

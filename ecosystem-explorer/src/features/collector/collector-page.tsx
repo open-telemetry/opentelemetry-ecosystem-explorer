@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 
 import { PageContainer } from "@/components/layout/page-container";
+import { BackButton } from "@/components/ui/back-button";
 import { GlowBadge } from "@/components/ui/glow-badge";
 import { DetailCard } from "@/components/ui/detail-card";
 import { useCollectorVersions, useCollectorComponents } from "@/hooks/use-collector-data";
@@ -198,7 +199,7 @@ function CollectorPageInner({ urlVersion }: { urlVersion?: string }) {
                 <Link
                   key={comp.id}
                   to={`/collector/components/${currentVersion}/${comp.id}`}
-                  className="group focus-visible:ring-primary block rounded-xl outline-none focus-visible:ring-2"
+                  className="group focus-visible:ring-primary block min-w-0 rounded-xl outline-none focus-visible:ring-2"
                 >
                   <DetailCard
                     withHoverEffect
@@ -295,7 +296,8 @@ export function CollectorPage() {
 
   return (
     <PageContainer>
-      <div className="space-y-8">
+      <div className="space-y-6">
+        <BackButton />
         <header className="space-y-4">
           <h1 className="text-foreground text-4xl font-bold tracking-tight sm:text-5xl">
             Collector{" "}
