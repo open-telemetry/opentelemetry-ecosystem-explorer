@@ -276,9 +276,12 @@ export function InstrumentationDetailPage() {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="relative z-10">
-            <div className="overflow-x-auto px-4 pt-4 pb-0 sm:px-6">
+            <div
+              className="px-4 pt-4 pb-0 sm:px-6 [&_[role=tab]>svg]:hidden [&_[role=tab]]:px-2 sm:[&_[role=tab]>svg]:block sm:[&_[role=tab]]:px-4"
+            >
               <SegmentedTabList
                 value={activeTab}
+                fullWidth
                 tabs={[
                   {
                     value: "details",
