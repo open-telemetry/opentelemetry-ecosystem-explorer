@@ -161,23 +161,25 @@ Based on the comment from @svrnm (an OpenTelemetry maintainer) in the issue:
    generated from V1 registry YAML files.
 2. **Hugo shortcodes**: A macro allows documentation pages to embed the current version of a
    component by referencing its package name. The version comes from `package.version` in V1.
-3. **collector-sync automation**: A Python tool at `opentelemetry.io/scripts/collector-sync` reads
-   from V2 registry data to update V1 registry entries, primarily the version field.
+3. **Version update automation**: A nightly workflow
+   (`.github/workflows/auto-update-registry.yml`) runs as `otelbot[bot]` and calls
+   `.github/scripts/update-registry-versions.sh`. That script runs `go list -m --versions` against
+   the Go module index for each component and updates the `package.version` field in
+   `data/registry/collector-*.yml`. It does not read from V2 at all.
 
 ---
 
 ## How collector-sync Works
 
 The collector-sync script is a Python project at `scripts/collector-sync/` in the opentelemetry.io
-repo. At a high level:
+repo. It writes to `data/collector-versions.yml` and
+`data/collector/{receivers,exporters,processors,extensions,connectors}.yml`. Those files are used by
+Hugo `{{< component-link >}}` shortcodes to inject component names and links into documentation
+pages. They are not the per-component registry entries under `data/registry/` that issue 119 is
+about.
 
-1. It pulls collector component metadata from the V2 registry (ecosystem-explorer).
-2. It matches V2 components to existing V1 registry entries by package name.
-3. It updates the `package.version` field in the matched V1 entries.
-4. Changes are submitted as a pull request for review.
-
-The key implication: **V2 is already the source of truth for version data in V1**. The link between
-the two registries exists today, but only for version updates.
+**Important**: collector-sync and the V1 registry (`data/registry/`) are two separate systems.
+collector-sync does not update `data/registry/` and does not read from V2 registry data.
 
 ---
 
@@ -188,8 +190,11 @@ the two registries exists today, but only for version updates.
 2. V1 has fields that V2 does not track: license, author attribution, and human-assigned tags. These
    fields are important for the opentelemetry.io registry page but are not needed for the Ecosystem
    Explorer.
-3. V2 is already used by V1 automation for version updates, so the data pipeline connection exists.
+3. V1 and V2 are currently fully independent pipelines. V1 version updates come from the Go module
+   index via the otelbot nightly workflow. V2 metadata comes from upstream `metadata.yaml` files via
+   collector-watcher. There is no automation today that reads from V2 and writes into the V1
+   per-component registry entries under `data/registry/`.
 4. V1 has some entries that V2 does not, particularly components from third-party distributions.
-   These would need to be handled separately if V2 were to fully drive V1.
+   These would need to be handled separately if V2 were ever used to drive V1.
 5. V1 has no mechanism for detecting new components or removing stale ones automatically. V2
    automation does this nightly.

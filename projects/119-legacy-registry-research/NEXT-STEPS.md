@@ -11,18 +11,23 @@ last_updated: "2026-05-11"
 
 Research phase complete. Findings are in [`00-research.md`](./00-research.md).
 
-The core finding is that V2 is already the upstream data source for V1 version updates via the
-collector-sync script. The question now is whether and how to expand that relationship.
+**Correction from reviewer feedback**: An earlier version of the research claimed that V2 was
+already feeding V1 via `collector-sync`. That was wrong. `collector-sync` writes to
+`data/collector/` files that power Hugo shortcodes, not to the per-component `data/registry/`
+entries. The V1 registry is updated by a separate `otelbot` nightly workflow that reads from the Go
+module index. V1 and V2 are fully independent today. The question is whether to build a new
+connection between them.
 
 ---
 
 ## Proposals
 
-### Proposal A: Expand collector-sync to sync more fields from V2 to V1
+### Proposal A: Build a new V2 to data/registry/ sync path
 
-**What it is**: Extend the existing collector-sync automation to push additional V2 fields into V1
-entries, not just the version. Specifically: stability level, display name, description, and
-codeowners.
+**What it is**: Write a new script or workflow that reads V2 registry data and updates the matching
+V1 entries under `data/registry/` in the opentelemetry.io repo. Fields to sync would include
+stability level, display name, description, and codeowners. This is a new pipeline, not an extension
+of collector-sync (which does not touch `data/registry/`).
 
 **Why it helps**: V1 entries would stay more accurate automatically. Users of the opentelemetry.io
 registry would see up-to-date stability information instead of stale or missing data.
@@ -31,13 +36,15 @@ registry would see up-to-date stability information instead of stale or missing 
 
 - V1 has fields (license, authors, tags) that V2 does not track. Those fields would still need to be
   maintained manually in V1.
+- The new sync path would need to coexist with the existing `otelbot` nightly job, which is today
+  the source of truth for the `package.version` field.
 - The matching logic (V2 component name to V1 entry) would need to handle renames and deprecations
   gracefully.
 - Some V1 entries point to components outside core and contrib (third-party distributions). V2 does
   not have data for these so they would be skipped by automation.
 
-**Effort**: Medium. The collector-sync script already has the scaffolding. Adding fields is
-incremental work.
+**Effort**: Medium. Requires writing a new sync script and integrating it with the opentelemetry.io
+automation.
 
 ---
 
