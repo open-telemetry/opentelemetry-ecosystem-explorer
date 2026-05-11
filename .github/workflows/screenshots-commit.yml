@@ -121,13 +121,26 @@ jobs:
           base_url   = f"https://raw.githubusercontent.com/{repo}/otelbot/screenshots/{pr_number}"
           timestamp  = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
-          def table(slug):
+          VIEWPORTS = ("desktop", "tablet", "mobile")
+
+          def theme_table(slug, theme):
+              cells = " | ".join(
+                  f"![{slug} {vp} {theme}]({base_url}/{vp}-{theme}-{slug}.png)"
+                  for vp in VIEWPORTS
+              )
               return (
                   "| Desktop | Tablet | Mobile |\n"
                   "|---|---|---|\n"
-                  f"| ![{slug} desktop]({base_url}/desktop-{slug}.png)"
-                  f" | ![{slug} tablet]({base_url}/tablet-{slug}.png)"
-                  f" | ![{slug} mobile]({base_url}/mobile-{slug}.png) |"
+                  f"| {cells} |"
+              )
+
+          def page_section(label, slug):
+              return (
+                  f"<details>\n"
+                  f"<summary><strong>{label}</strong></summary>\n\n"
+                  f"**Light**\n\n{theme_table(slug, 'light')}\n\n"
+                  f"**Dark**\n\n{theme_table(slug, 'dark')}\n\n"
+                  f"</details>"
               )
 
           pages = [
@@ -140,9 +153,7 @@ jobs:
               ("Collector Detail",            "collector-detail"),
           ]
 
-          sections = "\n\n".join(
-              f"**{label}**\n\n{table(slug)}" for label, slug in pages
-          )
+          sections = "\n\n".join(page_section(label, slug) for label, slug in pages)
 
           footer = (
               f"_Captured from [`{short_sha}`]({commit_url}) on `{head_ref}` "
