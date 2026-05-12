@@ -39,7 +39,7 @@ export function InstrumentationCard({
   return (
     <Link
       to={detailUrl}
-      className="group border-border bg-card hover:border-primary/40 hover:bg-card-secondary relative flex h-full flex-col overflow-hidden rounded-lg border p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_30px_hsl(var(--primary-hsl)/0.12)]"
+      className="group border-border bg-card hover:border-secondary/40 hover:bg-card-secondary relative flex h-full flex-col overflow-hidden rounded-lg border p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_30px_hsl(var(--otel-orange-hsl)/0.12)]"
       aria-label={`View details for ${displayName}`}
     >
       {/* Grid pattern background */}

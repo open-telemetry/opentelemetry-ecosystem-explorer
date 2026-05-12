@@ -26,6 +26,11 @@ export function CollectorPage() {
           <h1 className="mb-2 text-3xl font-bold md:text-4xl">
             <span className="bg-gradient-to-r from-[hsl(var(--secondary-hsl))] to-[hsl(var(--primary-hsl))] bg-clip-text text-transparent">
               OpenTelemetry Collector
+        <header className="space-y-4">
+          <h1 className="text-foreground text-4xl font-bold tracking-tight sm:text-5xl">
+            Collector{" "}
+            <span className="from-otel-orange to-otel-blue bg-gradient-to-r bg-clip-text text-transparent">
+              Components
             </span>
           </h1>
           <p className="text-muted-foreground">
@@ -34,6 +39,22 @@ export function CollectorPage() {
           </p>
         </div>
         <CollectorExploreLanding />
+        </header>
+
+        {!isEnabled("COLLECTOR_PAGE") ? (
+          <div className="border-border/40 bg-card/30 flex flex-col items-center justify-center rounded-2xl border-2 border-dashed py-24 text-center backdrop-blur-sm">
+            <div className="bg-secondary/10 mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full">
+              <Box className="text-secondary h-10 w-10 animate-pulse" aria-hidden="true" />
+            </div>
+            <h2 className="text-foreground text-2xl font-bold tracking-tight">Coming Soon</h2>
+            <p className="text-muted-foreground mx-auto mt-3 max-w-md text-lg leading-relaxed">
+              We're currently building the Collector component explorer. Stay tuned for a
+              comprehensive view of receivers, processors, and more!
+            </p>
+          </div>
+        ) : (
+          <CollectorPageInner urlVersion={urlVersion} />
+        )}
       </div>
     </PageContainer>
   );
