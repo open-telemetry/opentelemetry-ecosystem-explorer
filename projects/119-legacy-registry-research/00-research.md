@@ -166,6 +166,32 @@ Based on the comment from @svrnm (an OpenTelemetry maintainer) in the issue:
    `go list -m --versions` against the Go module index for each component and updates the
    `package.version` field in `data/registry/collector-*.yml`. It does not read from V2 at all.
 
+### How Users Use V1
+
+Understanding what users are actually looking for when they visit the registry matters for deciding
+which fields are worth automating and which proposals add the most real-world value.
+
+Based on the opentelemetry.io registry page and its search and filter capabilities, the primary user
+jobs are:
+
+- **Discovery**: A developer building a pipeline wants to know which receivers, exporters, or
+  processors exist for a given technology (e.g. "is there a Kafka receiver?"). They scan the
+  registry by component type or search by name.
+- **Version lookup**: A developer pinning a component in their config wants to know the current
+  stable version so they can set the right image tag or Go module version. The `package.version`
+  field in V1 serves this need directly.
+- **Stability check**: Before adopting a component in production, a user wants to know if it is
+  stable, alpha, or deprecated. V1 currently has no stability field, so users have no way to answer
+  this question from the registry alone.
+- **Source navigation**: A user who wants to file a bug, read the source, or check the README
+  follows the `urls.repo` field to the component repository.
+- **Maintainer contact**: A user who needs to understand ownership or reach the team maintaining a
+  component looks at the authors field, though V1 entries are often missing or outdated here.
+
+The most common and high-value use cases are version lookup and discovery. Stability check is a gap
+today that V2 data could fill if synced into V1. The maintainer contact use case is less urgent
+since codeowners information in V2 is more current than the authors field in V1.
+
 ---
 
 ## How collector-sync Works
