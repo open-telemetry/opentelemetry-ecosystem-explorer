@@ -33,6 +33,7 @@ function aggregateConfigs() {
   console.log("Aggregating OpenTelemetry configurations with instrumentation mapping...");
   const jsonFiles = findJsonFiles(INSTRUMENTATIONS_DIR);
   const allConfigs = new Map();
+  let hasErrors = false;
 
   jsonFiles.forEach((filePath) => {
     try {
@@ -51,6 +52,20 @@ function aggregateConfigs() {
               });
             } else {
               const existing = allConfigs.get(config.name);
+
+              const fieldsToMerge = [
+                "declarative_name",
+                "description",
+                "default",
+                "type",
+                "example",
+              ];
+              fieldsToMerge.forEach((field) => {
+                if (!existing[field] && config[field]) {
+                  existing[field] = config[field];
+                }
+              });
+
               if (!existing.instrumentations.includes(instrumentationName)) {
                 existing.instrumentations.push(instrumentationName);
               }
@@ -60,8 +75,14 @@ function aggregateConfigs() {
       }
     } catch (err) {
       console.error(`Error parsing ${filePath}:`, err);
+      hasErrors = true;
     }
   });
+
+  if (hasErrors) {
+    console.error("Aggregation failed due to parsing errors. Halting build.");
+    process.exit(1);
+  }
 
   const finalArray = Array.from(allConfigs.values()).sort((a, b) => a.name.localeCompare(b.name));
 

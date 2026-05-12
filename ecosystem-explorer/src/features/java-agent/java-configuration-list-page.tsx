@@ -27,12 +27,12 @@ interface GlobalConfiguration extends Configuration {
 }
 
 const FORMAT_TABS = [
-  { value: "system-property", label: "Normal View (System Properties)" },
-  { value: "declarative", label: "Declarative Representation" },
+  { value: "system-property", label: "System Properties" },
+  { value: "declarative", label: "Declarative Configuration" },
 ];
 
 export function JavaConfigurationListPage() {
-  const [format, setFormat] = useState<ConfigurationFormat>("system-property");
+  const [format, setFormat] = useState<ConfigurationFormat>("declarative");
   const [searchQuery, setSearchQuery] = useState("");
   const [allConfigurations, setAllConfigurations] = useState<GlobalConfiguration[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -109,6 +109,7 @@ export function JavaConfigurationListPage() {
               <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
               <input
                 type="text"
+                aria-label="Search configurations"
                 placeholder="Search configurations, descriptions, or instrumentations..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -125,7 +126,11 @@ export function JavaConfigurationListPage() {
 
           <div className="mt-6">
             <div className="text-muted-foreground mb-4 text-sm">
-              {isLoading ? "Loading..." : `Found ${filteredConfigs.length} configurations`}
+              {isLoading
+                ? "Loading..."
+                : error
+                  ? "Unable to load configurations"
+                  : `Found ${filteredConfigs.length} configurations`}
             </div>
 
             {isLoading ? (
@@ -159,9 +164,9 @@ export function JavaConfigurationListPage() {
               </div>
             ) : (
               <div className="grid gap-4 md:grid-cols-2">
-                {filteredConfigs.map((config, index) => (
+                {filteredConfigs.map((config) => (
                   <ConfigurationCard
-                    key={`${config.name}-${index}`}
+                    key={config.name}
                     config={config}
                     format={format}
                     instrumentations={config.instrumentations}
