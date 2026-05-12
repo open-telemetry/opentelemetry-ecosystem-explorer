@@ -16,7 +16,6 @@
 
 import argparse
 import logging
-import os
 import sys
 
 from .dotnet_client import DotNetInstrumentationClient
@@ -57,8 +56,7 @@ def main():
     logger.info("")
 
     try:
-        github_token = os.environ.get("GITHUB_TOKEN")
-        client = DotNetInstrumentationClient(github_token=github_token)
+        client = DotNetInstrumentationClient()
         inventory_manager = InventoryManager(inventory_dir=args.inventory_dir)
 
         sync = InstrumentationSync(client, inventory_manager)

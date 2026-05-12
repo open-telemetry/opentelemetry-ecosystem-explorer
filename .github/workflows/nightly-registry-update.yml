@@ -144,8 +144,6 @@ jobs:
       - name: Run dotnet-instrumentation-watcher
         id: dotnet_instrumentation_watcher
         if: always()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: uv run dotnet-instrumentation-watcher
         continue-on-error: true
 

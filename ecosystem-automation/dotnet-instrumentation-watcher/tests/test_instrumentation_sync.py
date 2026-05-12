@@ -32,7 +32,7 @@ def mock_inventory():
 
 
 def test_process_latest_release(mock_client, mock_inventory):
-    mock_client.get_latest_release_tag.return_value = "v1.2.3"
+    mock_client.get_core_version.return_value = "1.2.3"
     mock_inventory.version_exists.return_value = False
     mock_client.fetch_instrumentation_list.return_value = {"modules": []}
 
@@ -44,7 +44,7 @@ def test_process_latest_release(mock_client, mock_inventory):
 
 
 def test_process_latest_release_already_exists(mock_client, mock_inventory):
-    mock_client.get_latest_release_tag.return_value = "v1.2.3"
+    mock_client.get_core_version.return_value = "1.2.3"
     mock_inventory.version_exists.return_value = True
 
     sync = InstrumentationSync(mock_client, mock_inventory)
@@ -55,7 +55,7 @@ def test_process_latest_release_already_exists(mock_client, mock_inventory):
 
 
 def test_update_snapshot(mock_client, mock_inventory):
-    mock_client.get_latest_release_tag.return_value = "v1.2.3"
+    mock_client.get_core_version.return_value = "1.2.3"
     mock_client.fetch_instrumentation_list.return_value = {"modules": []}
     mock_inventory.cleanup_snapshots.return_value = 1
 

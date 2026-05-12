@@ -14,29 +14,28 @@
 #
 from unittest.mock import MagicMock, patch
 
-import pytest
-from dotnet_instrumentation_watcher.dotnet_client import DotNetInstrumentationClient, GithubAPIError
+from dotnet_instrumentation_watcher.dotnet_client import DotNetInstrumentationClient
 
 
-def test_get_latest_release_tag_success():
+def test_get_core_version_success():
     client = DotNetInstrumentationClient()
     with patch.object(client._session, "get") as mock_get:
         mock_response = MagicMock()
-        mock_response.json.return_value = {"tag_name": "v1.2.3"}
+        mock_response.json.return_value = {"data": [{"version": "1.15.3"}]}
         mock_get.return_value = mock_response
 
-        tag = client.get_latest_release_tag()
-        assert tag == "v1.2.3"
+        version = client.get_core_version()
+        assert version == "1.15.3"
 
 
-def test_get_latest_release_tag_error():
+def test_get_core_version_error():
     client = DotNetInstrumentationClient()
     with patch.object(client._session, "get") as mock_get:
         from requests import RequestException
 
         mock_get.side_effect = RequestException("API error")
-        with pytest.raises(GithubAPIError):
-            client.get_latest_release_tag()
+        version = client.get_core_version()
+        assert version == "1.0.0"  # Default fallback
 
 
 def test_fetch_instrumentation_list():
@@ -44,10 +43,10 @@ def test_fetch_instrumentation_list():
     with patch.object(client._session, "get") as mock_get:
         mock_response = MagicMock()
         mock_response.json.return_value = {
-            "tree": [
-                {"path": "src/OpenTelemetry.Instrumentation.Test/OpenTelemetry.Instrumentation.Test.csproj"},
-                {"path": "src/OpenTelemetry.Exporter.Test/OpenTelemetry.Exporter.Test.csproj"},
-                {"path": "src/OpenTelemetry.Extensions.Test/OpenTelemetry.Extensions.Test.csproj"},
+            "data": [
+                {"id": "OpenTelemetry.Instrumentation.Test", "version": "1.0.0", "description": "Test instrumentation"},
+                {"id": "OpenTelemetry.Exporter.Test", "version": "1.1.0", "description": "Test exporter"},
+                {"id": "OpenTelemetry.Extensions.Test", "version": "1.2.0", "description": "Test extension"},
             ]
         }
         mock_get.return_value = mock_response
@@ -60,3 +59,8 @@ def test_fetch_instrumentation_list():
         assert "instrumentation" in types
         assert "exporter" in types
         assert "extension" in types
+
+        assert result["modules"][0]["name"] == "OpenTelemetry.Exporter.Test"
+        assert result["modules"][0]["version"] == "1.1.0"
+        assert result["modules"][2]["name"] == "OpenTelemetry.Instrumentation.Test"
+        assert result["modules"][2]["version"] == "1.0.0"

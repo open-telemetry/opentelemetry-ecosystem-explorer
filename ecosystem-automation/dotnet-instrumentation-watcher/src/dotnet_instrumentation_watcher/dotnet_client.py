@@ -12,33 +12,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-"""GitHub API client for fetching .NET instrumentation data."""
+"""NuGet API client for fetching .NET instrumentation data."""
 
-from typing import Dict, Optional
+import logging
+from typing import Any, Dict, List
 
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3 import Retry
 
+logger = logging.getLogger(__name__)
 
-class GithubAPIError(Exception):
-    """Custom exception for GitHub API errors."""
+
+class NuGetAPIError(Exception):
+    """Custom exception for NuGet API errors."""
 
     pass
 
 
 class DotNetInstrumentationClient:
-    """Client for fetching .NET instrumentation metadata from GitHub."""
+    """Client for fetching .NET instrumentation metadata from NuGet."""
 
-    REPO = "open-telemetry/opentelemetry-dotnet-contrib"
+    SEARCH_URL = "https://azuresearch-usnc.nuget.org/query"
+    OWNER = "OpenTelemetry"
     TIMEOUT = 30
 
-    def __init__(self, github_token: Optional[str] = None):
-        """
-        Args:
-            github_token: Optional GitHub token for authentication
-        """
-        self.github_token = github_token
+    def __init__(self):
+        """Initialize the client."""
         self._session = requests.Session()
 
         retry_strategy = Retry(
@@ -50,55 +50,97 @@ class DotNetInstrumentationClient:
         adapter = HTTPAdapter(max_retries=retry_strategy)
         self._session.mount("https://", adapter)
 
-        if self.github_token:
-            self._session.headers.update({"Authorization": f"Bearer {self.github_token}"})
+    def fetch_instrumentation_list(self) -> Dict[str, Any]:
+        """
+        Fetch instrumentation list by querying NuGet for packages owned by OpenTelemetry.
+        """
+        all_packages = self._fetch_all_packages_by_owner(self.OWNER)
+        modules = []
 
-    def get_latest_release_tag(self) -> str:
-        """Get the latest release tag from the GitHub repository."""
-        url = f"https://api.github.com/repos/{self.REPO}/releases/latest"
+        for pkg in all_packages:
+            # Skip deprecated packages
+            if pkg.get("deprecation"):
+                logger.info(f"  Skipping deprecated package: {pkg.get('id')}")
+                continue
+
+            package_id = pkg.get("id", "")
+            version = pkg.get("version", "")
+            description = pkg.get("description", "")
+
+            # Filter and classify packages
+            if "Instrumentation" in package_id:
+                component_type = "instrumentation"
+            elif "Exporter" in package_id:
+                component_type = "exporter"
+            elif "Extensions" in package_id or "Resources" in package_id or "Sampler" in package_id:
+                component_type = "extension"
+            else:
+                # Skip core packages like OpenTelemetry, OpenTelemetry.Api unless they match patterns
+                # but we might want to include them as 'core' if needed.
+                # For now, let's stick to the previous classification logic.
+                continue
+
+            modules.append(
+                {
+                    "name": package_id,
+                    "description": description or f"{package_id} for OpenTelemetry",
+                    "type": component_type,
+                    "version": version,
+                }
+            )
+
+        # Sort by name for consistency
+        modules.sort(key=lambda x: x["name"])
+
+        return {"modules": modules}
+
+    def get_core_version(self) -> str:
+        """
+        Get the latest version of the core OpenTelemetry package.
+        This is used as the 'ecosystem version' for the registry.
+        """
+        params = {
+            "q": "PackageId:OpenTelemetry",
+            "prerelease": "false",
+            "take": 1,
+        }
         try:
-            response = self._session.get(url, timeout=self.TIMEOUT)
+            response = self._session.get(self.SEARCH_URL, params=params, timeout=self.TIMEOUT)
             response.raise_for_status()
             data = response.json()
-            return data["tag_name"]
-        except requests.RequestException as e:
-            raise GithubAPIError(f"Error fetching latest release tag: {e}") from e
-        except (KeyError, ValueError) as e:
-            raise GithubAPIError(f"Unexpected API response format: {e}") from e
+            if data.get("data"):
+                return data["data"][0]["version"]
+            return "1.0.0"
+        except (requests.RequestException, KeyError, IndexError) as e:
+            logger.error(f"Error fetching core version: {e}")
+            return "1.0.0"
 
-    def fetch_instrumentation_list(self, ref: str = "main") -> Dict:
-        """
-        Fetch instrumentation list by dynamically extracting data from .csproj files.
-        """
-        url = f"https://api.github.com/repos/{self.REPO}/git/trees/{ref}?recursive=1"
-        try:
-            response = self._session.get(url, timeout=self.TIMEOUT)
-            response.raise_for_status()
-            tree_data = response.json().get("tree", [])
+    def _fetch_all_packages_by_owner(self, owner: str) -> List[Dict[str, Any]]:
+        """Fetch all packages for a specific owner using pagination."""
+        packages = []
+        skip = 0
+        take = 20
 
-            modules = []
-            for item in tree_data:
-                path = item.get("path", "")
-                if path.endswith(".csproj") and path.startswith("src/") and "Tests" not in path:
-                    package_name = path.split("/")[-1].replace(".csproj", "")
+        while True:
+            params = {
+                "q": f"owner:{owner}",
+                "prerelease": "false",
+                "skip": skip,
+                "take": take,
+            }
+            try:
+                response = self._session.get(self.SEARCH_URL, params=params, timeout=self.TIMEOUT)
+                response.raise_for_status()
+                data = response.json()
 
-                    if "Instrumentation" in package_name:
-                        component_type = "instrumentation"
-                    elif "Exporter" in package_name:
-                        component_type = "exporter"
-                    else:
-                        component_type = "extension"
+                batch = data.get("data", [])
+                packages.extend(batch)
 
-                    modules.append(
-                        {
-                            "name": package_name,
-                            "description": f"{package_name} for OpenTelemetry",
-                            "type": component_type,
-                            "version": "1.0.0",
-                        }
-                    )
+                if len(batch) < take:
+                    break
 
-            return {"modules": modules}
+                skip += take
+            except requests.RequestException as e:
+                raise NuGetAPIError(f"Error fetching packages from NuGet: {e}") from e
 
-        except requests.RequestException as e:
-            raise GithubAPIError(f"Error fetching instrumentation list: {e}") from e
+        return packages

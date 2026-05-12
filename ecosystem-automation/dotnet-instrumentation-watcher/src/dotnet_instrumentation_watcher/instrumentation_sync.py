@@ -79,23 +79,19 @@ class InstrumentationSync:
         Returns:
             Version if newly processed, None if already exists
         """
-        tag_string = self.client.get_latest_release_tag()
-        logger.info(f"  Latest release tag: {tag_string}")
-
-        clean_tag = tag_string.lstrip("v")
-        if "-" in clean_tag:
-            clean_tag = clean_tag.split("-")[0]
+        version_string = self.client.get_core_version()
+        logger.info(f"  Latest core package version: {version_string}")
 
         try:
-            version = Version(clean_tag)
+            version = Version(version_string)
         except ValueError:
             version = Version("1.0.0")
 
         if self.inventory_manager.version_exists(version):
             return None
 
-        logger.info(f"  Fetching instrumentation list for {tag_string}...")
-        instrumentations = self.client.fetch_instrumentation_list(ref=tag_string)
+        logger.info(f"  Fetching instrumentation list for version {version_string}...")
+        instrumentations = self.client.fetch_instrumentation_list()
 
         self.inventory_manager.save_versioned_inventory(
             version=version,
@@ -106,36 +102,32 @@ class InstrumentationSync:
 
     def update_snapshot(self) -> Version:
         """
-        Update snapshot version from main branch.
+        Update snapshot version from NuGet data.
 
         This will:
         1. Determine next snapshot version
-        2. Fetch from main branch
+        2. Fetch from NuGet
         3. Clean up old snapshots
         4. Save new snapshot
 
         Returns:
             The snapshot version
         """
-        latest_release_tag = self.client.get_latest_release_tag()
-        clean_tag = latest_release_tag.lstrip("v")
-        if "-" in clean_tag:
-            clean_tag = clean_tag.split("-")[0]
-
+        latest_version_string = self.client.get_core_version()
         try:
-            latest_release = Version(clean_tag)
+            latest_version = Version(latest_version_string)
         except ValueError:
-            latest_release = Version("1.0.0")
+            latest_version = Version("1.0.0")
 
         snapshot_version = Version(
-            major=latest_release.major,
-            minor=latest_release.minor,
-            patch=latest_release.patch + 1,
+            major=latest_version.major,
+            minor=latest_version.minor,
+            patch=latest_version.patch + 1,
             prerelease=("SNAPSHOT",),
         )
 
-        logger.info("  Fetching instrumentation list from main branch...")
-        instrumentations = self.client.fetch_instrumentation_list(ref="main")
+        logger.info("  Fetching instrumentation list from NuGet...")
+        instrumentations = self.client.fetch_instrumentation_list()
 
         removed = self.inventory_manager.cleanup_snapshots()
         if removed > 0:
