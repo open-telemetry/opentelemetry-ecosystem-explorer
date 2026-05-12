@@ -14,10 +14,22 @@
  * limitations under the License.
  */
 
-export type ThemeId = "dark-blue";
+/**
+ * Theme metadata — typed canonical reference for the HSL triplets in tokens.css.
+ *
+ * Naming mirrors opentelemetry.io's _vars.scss:
+ *   $primary   = blue  (228 37% 49%)
+ *   $secondary = orange (41 100% 48%)
+ *
+ * JS does NOT inject these values at runtime; CSS owns them via [data-theme="..."] selectors
+ * in src/styles/tokens.css. This file exists for type safety and as a single source of truth
+ * that documents which values the CSS emits.
+ */
+
+export type ResolvedThemeId = "light" | "dark";
 
 export interface Theme {
-  id: ThemeId;
+  id: ResolvedThemeId;
   name: string;
   description: string;
   colors: {
@@ -41,31 +53,56 @@ export interface Theme {
   };
 }
 
-export const themes: Record<ThemeId, Theme> = {
-  "dark-blue": {
-    id: "dark-blue",
-    name: "OTel Vibrant",
-    description: "Dark blue theme",
-    colors: {
-      primary: "38 95% 52%", // Vibrant orange
-      secondary: "228 60% 55%", // Brighter blue
-      background: "232 38% 15%", // Deep navy
-      foreground: "210 45% 99%", // Bright white with blue hint
-      card: "232 35% 19%", // Card background
-      cardSecondary: "232 32% 23%", // Hover state
-      muted: "232 30% 17%", // Darker background for code/badges
-      mutedForeground: "220 22% 65%", // Muted text
-      border: "232 28% 26%", // Borders
-      syntax: {
-        comment: "220 18% 58%", // Italic gray-blue
-        key: "28 95% 65%", // Peach orange
-        string: "95 60% 65%", // Soft green
-        number: "330 80% 72%", // Pink
-        keyword: "265 70% 78%", // Lavender (true/false/null)
-        punct: "220 22% 55%", // Muted (`-`, `:`, `,`, etc.)
-      },
+const dark: Theme = {
+  id: "dark",
+  name: "OTel Vibrant",
+  description: "Default OpenTelemetry-aligned dark theme.",
+  colors: {
+    primary: "228 37% 49%",
+    secondary: "41 100% 48%",
+    background: "232 38% 15%",
+    foreground: "210 17% 98%",
+    card: "232 35% 19%",
+    cardSecondary: "232 32% 23%",
+    muted: "232 28% 22%",
+    mutedForeground: "220 14% 65%",
+    border: "232 22% 28%",
+    syntax: {
+      comment: "220 18% 58%",
+      key: "28 95% 65%",
+      string: "95 60% 65%",
+      number: "330 80% 72%",
+      keyword: "265 70% 78%",
+      punct: "220 22% 55%",
     },
   },
 };
 
-export const DEFAULT_THEME: ThemeId = "dark-blue";
+const light: Theme = {
+  id: "light",
+  name: "OTel Light",
+  description: "Light theme aligned with opentelemetry.io.",
+  colors: {
+    primary: "228 37% 49%",
+    secondary: "41 100% 48%",
+    background: "0 0% 100%",
+    foreground: "220 13% 15%",
+    card: "210 17% 98%",
+    cardSecondary: "210 14% 95%",
+    muted: "210 14% 92%",
+    mutedForeground: "220 9% 40%",
+    border: "210 14% 88%",
+    syntax: {
+      comment: "220 18% 58%",
+      key: "28 95% 65%",
+      string: "95 60% 65%",
+      number: "330 80% 72%",
+      keyword: "265 70% 78%",
+      punct: "220 22% 55%",
+    },
+  },
+};
+
+export const themes: Record<ResolvedThemeId, Theme> = { light, dark };
+
+export const DEFAULT_THEME: ResolvedThemeId = "dark";
