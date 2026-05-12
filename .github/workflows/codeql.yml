@@ -20,7 +20,9 @@ permissions:
 jobs:
   analyze:
     name: Analyze (${{ matrix.language }})
-    if: github.event_name != 'schedule' || github.repository == 'open-telemetry/opentelemetry-ecosystem-explorer'
+    if:
+      github.event_name != 'schedule' || github.repository ==
+      'open-telemetry/opentelemetry-ecosystem-explorer'
     permissions:
       contents: read
       actions: read # for github/codeql-action/init to get workflow details
@@ -49,7 +51,7 @@ jobs:
         working-directory: ecosystem-explorer
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@95e58e9a2cdfd71adc6e0353d5c52f41a045d225 # v4.35.2
+        uses: github/codeql-action/init@e46ed2cbd01164d986452f91f178727624ae40d7 # v4.35.3
         with:
           languages: ${{ matrix.language }}
 
@@ -59,6 +61,6 @@ jobs:
         working-directory: ecosystem-explorer
 
       - name: Perform CodeQL analysis
-        uses: github/codeql-action/analyze@95e58e9a2cdfd71adc6e0353d5c52f41a045d225 # v4.35.2
+        uses: github/codeql-action/analyze@e46ed2cbd01164d986452f91f178727624ae40d7 # v4.35.3
         with:
           category: "/language:${{matrix.language}}"

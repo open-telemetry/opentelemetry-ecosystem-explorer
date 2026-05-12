@@ -18,9 +18,9 @@ import { describe, it, expect } from "vitest";
 import App from "./App";
 
 describe("App", () => {
-  it("renders the page title", () => {
+  it("renders the page title", async () => {
     render(<App />);
-    const heading = screen.getByRole("heading", { level: 1 });
+    const heading = await screen.findByRole("heading", { level: 1 });
     expect(heading).toHaveTextContent("OpenTelemetry");
     expect(heading).toHaveTextContent("Ecosystem Explorer");
   });

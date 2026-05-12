@@ -21,6 +21,22 @@ export function hasUserValues(current: ConfigValue | undefined): boolean {
   return current !== undefined && current !== null;
 }
 
+// Recursive sibling of hasUserValues: walks objects/arrays and returns true
+// only when at least one leaf carries actual content. Treats undefined, null,
+// and empty string as empty (matching yaml-generator's stripEmpties). Use
+// this when "the section/key is empty after edits" matters — e.g. mirroring
+// values-tree presence to enabledSections.
+export function hasMeaningfulLeaf(value: ConfigValue | undefined): boolean {
+  if (value === undefined || value === null || value === "") return false;
+  if (Array.isArray(value)) {
+    return value.some((v) => hasMeaningfulLeaf(v));
+  }
+  if (typeof value === "object") {
+    return Object.values(value).some((v) => hasMeaningfulLeaf(v));
+  }
+  return true;
+}
+
 export function hydrateStarterState(
   version: string,
   starter: ConfigStarter | null

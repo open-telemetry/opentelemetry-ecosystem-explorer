@@ -1,12 +1,13 @@
 # System Architecture Overview
 
-This system collects metadata about OpenTelemetry components (Java Agent instrumentations, Collector components)
-and makes it searchable through a web app. Data flows from source repositories → automation scripts → versioned
-registry → web application.
+This system collects metadata about OpenTelemetry components (Java Agent instrumentations, Collector
+components) and makes it searchable through a web app. Data flows from source repositories →
+automation scripts → versioned registry → web application.
 
 The OpenTelemetry Ecosystem Explorer is built as a three-component system comprising the
-`ecosystem-automation`, `ecosystem-registry`, and `ecosystem-explorer` components. Each component has a distinct role in
-collecting, storing, and presenting metadata about OpenTelemetry ecosystem components.
+`ecosystem-automation`, `ecosystem-registry`, and `ecosystem-explorer` components. Each component
+has a distinct role in collecting, storing, and presenting metadata about OpenTelemetry ecosystem
+components.
 
 ## Component Responsibilities
 
@@ -20,7 +21,8 @@ Automated pipelines that extract metadata from upstream OpenTelemetry projects.
 - Extracts and normalizes metadata to registry schema
 - Generates content-addressed storage files for the web app
 
-**Tools**: collector-watcher, java-instrumentation-watcher, configuration-watcher, explorer-db-builder
+**Tools**: collector-watcher, java-instrumentation-watcher, configuration-watcher,
+explorer-db-builder
 
 ### ecosystem-registry
 

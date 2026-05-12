@@ -234,3 +234,84 @@ class TestInventoryManager:
         versions = inventory_manager.list_versions()
         assert len(versions) == 1
         assert versions[0] == valid_version
+
+    # --- save_library_readmes ---
+
+    def test_readme_dir_exists_false_when_no_readmes(self, inventory_manager):
+        version = Version("2.10.0")
+        inventory_manager.save_versioned_inventory(
+            version=version,
+            instrumentations={"file_format": 0.1, "libraries": []},
+        )
+        assert not inventory_manager.readme_dir_exists(version)
+
+    def test_readme_dir_exists_true_after_save(self, inventory_manager):
+        version = Version("2.10.0")
+        inventory_manager.save_library_readmes(version, [("mylib", "# content")])
+        assert inventory_manager.readme_dir_exists(version)
+
+    def test_save_library_readmes_writes_content_addressed_files(self, inventory_manager):
+        version = Version("2.10.0")
+        readmes = [
+            ("akka-actor-2.3", "# Akka Actor"),
+            ("apache-httpclient-4.3", "# Apache HttpClient"),
+        ]
+
+        written = inventory_manager.save_library_readmes(version, readmes)
+
+        assert written == 2
+        readme_dir = inventory_manager.get_version_dir(version) / "library_readmes"
+        files = list(readme_dir.glob("*.md"))
+        assert len(files) == 2
+        names = {f.stem.split("-")[0] for f in files}
+        assert "akka" in names or any("akka-actor" in f.name for f in files)
+
+    def test_save_library_readmes_filename_format(self, inventory_manager):
+        from watcher_common.content_hashing import compute_content_hash
+
+        version = Version("2.10.0")
+        content = "# Hello"
+        expected_hash = compute_content_hash(content)
+
+        inventory_manager.save_library_readmes(version, [("mylib-1.0", content)])
+
+        readme_dir = inventory_manager.get_version_dir(version) / "library_readmes"
+        expected_file = readme_dir / f"mylib-1.0-{expected_hash}.md"
+        assert expected_file.exists()
+        assert expected_file.read_text(encoding="utf-8") == content
+
+    def test_save_library_readmes_idempotent(self, inventory_manager):
+        version = Version("2.10.0")
+        readmes = [("mylib-1.0", "# Content")]
+
+        first = inventory_manager.save_library_readmes(version, readmes)
+        second = inventory_manager.save_library_readmes(version, readmes)
+
+        assert first == 1
+        assert second == 0
+
+    def test_save_library_readmes_different_content_same_name(self, inventory_manager):
+        version = Version("2.10.0")
+
+        first = inventory_manager.save_library_readmes(version, [("mylib-1.0", "# v1")])
+        second = inventory_manager.save_library_readmes(version, [("mylib-1.0", "# v2")])
+
+        assert first == 1
+        assert second == 1
+        readme_dir = inventory_manager.get_version_dir(version) / "library_readmes"
+        assert len(list(readme_dir.glob("*.md"))) == 2
+
+    def test_cleanup_snapshots_removes_library_readmes(self, inventory_manager):
+        snapshot = Version("2.10.0-SNAPSHOT")
+        inventory_manager.save_versioned_inventory(
+            version=snapshot,
+            instrumentations={"file_format": 0.1, "libraries": []},
+        )
+        inventory_manager.save_library_readmes(snapshot, [("mylib-1.0", "# Content")])
+
+        snapshot_dir = inventory_manager.get_version_dir(snapshot)
+        assert (snapshot_dir / "library_readmes").exists()
+
+        inventory_manager.cleanup_snapshots()
+
+        assert not snapshot_dir.exists()

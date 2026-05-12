@@ -30,14 +30,8 @@ describe("ConfigurationBuilderPage — lists + plugin select", () => {
     // Wait for top-level cards to render.
     await screen.findByRole("switch", { name: /Enable Logger Provider/i }, { timeout: 10_000 });
 
-    // The Processors list lives inside the Logger Provider card and starts
-    // collapsed at depth >= 1. Click the chevron to reveal its items.
-    const expandProcessors = await screen.findAllByRole("button", {
-      name: /Expand Processors/i,
-    });
-    await user.click(expandProcessors[0]);
-
-    // Locate its Add button by accessible name.
+    // The Processors list auto-expands when the starter populates it. Find
+    // the Add button directly without clicking a chevron first.
     const addButtons = await screen.findAllByRole("button", {
       name: /Add item to Processors/i,
     });

@@ -13,8 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Fragment, type ComponentType } from "react";
-import { ArrowLeftRight, Equal, ListOrdered } from "lucide-react";
 import type { Constraints } from "@/types/configuration";
 
 interface FieldMetaNode {
@@ -26,89 +24,63 @@ interface FieldMetaProps {
   node: FieldMetaNode;
 }
 
-interface MetaItem {
-  Icon: ComponentType<{ className?: string; "aria-hidden"?: boolean }>;
-  text: string;
-}
-
-function rangeItem(constraints: Constraints): MetaItem | null {
+function rangeChip(constraints: Constraints): string | null {
   const hasMin = constraints.minimum !== undefined;
   const hasMax = constraints.maximum !== undefined;
   const hasExMin = constraints.exclusiveMinimum !== undefined;
   const hasExMax = constraints.exclusiveMaximum !== undefined;
 
-  if (hasMin && hasMax) {
-    return { Icon: ArrowLeftRight, text: `${constraints.minimum}–${constraints.maximum}` };
-  }
+  if (hasMin && hasMax) return `${constraints.minimum}–${constraints.maximum}`;
   if (!hasMin && !hasMax && hasExMin && hasExMax) {
-    return {
-      Icon: ArrowLeftRight,
-      text: `> ${constraints.exclusiveMinimum} & < ${constraints.exclusiveMaximum}`,
-    };
+    return `> ${constraints.exclusiveMinimum} & < ${constraints.exclusiveMaximum}`;
   }
-  if (hasMin) {
-    return { Icon: ArrowLeftRight, text: `≥ ${constraints.minimum}` };
-  }
-  if (hasExMin) {
-    return { Icon: ArrowLeftRight, text: `> ${constraints.exclusiveMinimum}` };
-  }
-  if (hasMax) {
-    return { Icon: ArrowLeftRight, text: `≤ ${constraints.maximum}` };
-  }
-  if (hasExMax) {
-    return { Icon: ArrowLeftRight, text: `< ${constraints.exclusiveMaximum}` };
-  }
+  if (hasMin) return `≥ ${constraints.minimum}`;
+  if (hasExMin) return `> ${constraints.exclusiveMinimum}`;
+  if (hasMax) return `≤ ${constraints.maximum}`;
+  if (hasExMax) return `< ${constraints.exclusiveMaximum}`;
   return null;
 }
 
-function itemsItem(constraints: Constraints): MetaItem | null {
+function itemsChip(constraints: Constraints): string | null {
   const hasMin = constraints.minItems !== undefined;
   const hasMax = constraints.maxItems !== undefined;
-  if (hasMin && hasMax) {
-    return { Icon: ListOrdered, text: `${constraints.minItems}–${constraints.maxItems} items` };
-  }
+  if (hasMin && hasMax) return `${constraints.minItems}–${constraints.maxItems} items`;
   if (hasMin) {
     const unit = constraints.minItems === 1 ? "item" : "items";
-    return { Icon: ListOrdered, text: `≥ ${constraints.minItems} ${unit}` };
+    return `≥ ${constraints.minItems} ${unit}`;
   }
-  if (hasMax) {
-    return { Icon: ListOrdered, text: `≤ ${constraints.maxItems} items` };
-  }
+  if (hasMax) return `≤ ${constraints.maxItems} items`;
   return null;
-}
-
-function defaultItem(node: FieldMetaNode): MetaItem | null {
-  if (node.defaultBehavior === undefined) return null;
-  return { Icon: Equal, text: node.defaultBehavior };
 }
 
 export function FieldMeta({ node }: FieldMetaProps) {
-  const items: MetaItem[] = [];
+  const chips: string[] = [];
   if (node.constraints) {
-    const r = rangeItem(node.constraints);
-    if (r) items.push(r);
-    const i = itemsItem(node.constraints);
-    if (i) items.push(i);
+    const r = rangeChip(node.constraints);
+    if (r) chips.push(r);
+    const i = itemsChip(node.constraints);
+    if (i) chips.push(i);
   }
-  const d = defaultItem(node);
-  if (d) items.push(d);
+  const hasDefault = node.defaultBehavior !== undefined;
 
-  if (items.length === 0) return null;
+  if (chips.length === 0 && !hasDefault) return null;
 
   return (
-    <div className="text-muted-foreground flex items-center gap-2 text-xs">
-      {items.map((item, i) => {
-        const { Icon } = item;
-        return (
-          <Fragment key={i}>
-            {i > 0 && <span aria-hidden="true">·</span>}
-            <span className="flex items-center gap-1">
-              <Icon className="text-primary h-3 w-3" aria-hidden={true} />
-              {item.text}
+    <div className="text-muted-foreground space-y-1 text-xs">
+      {chips.length > 0 && (
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          {chips.map((text, i) => (
+            <span key={i} className="whitespace-nowrap">
+              {text}
             </span>
-          </Fragment>
-        );
-      })}
+          ))}
+        </div>
+      )}
+      {hasDefault && (
+        <p>
+          <span className="text-foreground/70 font-medium">Default:</span> {node.defaultBehavior}
+        </p>
+      )}
     </div>
   );
 }

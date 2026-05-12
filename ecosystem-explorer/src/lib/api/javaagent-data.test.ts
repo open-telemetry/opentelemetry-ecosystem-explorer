@@ -114,6 +114,26 @@ describe("javaagent-data", () => {
       await expect(javaagentData.loadVersions()).rejects.toThrow("Network error");
     });
 
+    it("should bypass cache and re-fetch when cached versions list is empty", async () => {
+      const staleData: VersionsIndex = { versions: [] };
+      const freshData: VersionsIndex = {
+        versions: [{ version: "2.10.0", is_latest: true }],
+      };
+
+      vi.spyOn(idbCache, "getCached").mockResolvedValue(staleData);
+      vi.spyOn(idbCache, "setCached").mockResolvedValue();
+
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ok: true,
+        json: async () => freshData,
+      });
+
+      const result = await javaagentData.loadVersions();
+
+      expect(result).toEqual(freshData);
+      expect(global.fetch).toHaveBeenCalledWith("/data/javaagent/versions-index.json");
+    });
+
     it("should deduplicate concurrent requests to the same resource", async () => {
       vi.spyOn(idbCache, "getCached").mockResolvedValue(null);
       vi.spyOn(idbCache, "setCached").mockResolvedValue();

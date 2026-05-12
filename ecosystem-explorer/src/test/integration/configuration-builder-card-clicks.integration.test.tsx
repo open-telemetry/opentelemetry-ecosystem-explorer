@@ -35,56 +35,25 @@ describe("ConfigurationBuilderPage — card click behavior", () => {
     renderPage();
     const user = userEvent.setup();
 
-    // Enable Logger Provider so its body renders, mirroring the user's bug
-    // report path of clicking inside an expanded section card.
-    const loggerSwitch = await screen.findByRole(
-      "switch",
-      { name: /Enable Logger Provider/i },
-      { timeout: 10_000 }
-    );
-    if (loggerSwitch.getAttribute("aria-checked") !== "true") {
-      await user.click(loggerSwitch);
-    }
+    // Wait for the page to settle. Resource is auto-enabled by the starter
+    // and its service.name Value union renders a text input inline.
+    await screen.findByRole("switch", { name: /Enable Resource/i }, { timeout: 10_000 });
 
-    // Scope all subsequent queries to the Logger Provider card.
-    const loggerSection = document.querySelector<HTMLElement>(
-      '[data-section-key="logger_provider"]'
-    );
-    expect(loggerSection).not.toBeNull();
-    const logger = within(loggerSection as HTMLElement);
+    const resourceSection = document.querySelector<HTMLElement>('[data-section-key="resource"]');
+    expect(resourceSection).not.toBeNull();
+    const resource = within(resourceSection as HTMLElement);
 
-    // Expand the Logger Configurator group so its leaf controls render.
-    await user.click(logger.getByRole("button", { name: "Expand Logger Configurator" }));
-
-    // Wait for at least one nested expand button or input to materialize.
+    // The Value union for service.name is defaultExpanded with the Text
+    // variant selected; its text input is in the DOM straight away.
     await waitFor(() => {
-      expect(logger.queryAllByRole("button").length).toBeGreaterThan(2);
+      expect(resource.queryAllByRole("textbox").length).toBeGreaterThan(0);
     });
-
-    // Expand the Loggers list inside Logger Configurator if present (the
-    // schema may evolve; pick whichever expand chevron leads to a textbox).
-    // Items are rendered headless after deriveListItemLabel landed, so the
-    // form fields are inline as soon as Add fires — no per-item Expand step.
-    const expandLoggers = logger.queryAllByRole("button", { name: "Expand Loggers" });
-    if (expandLoggers.length > 0) {
-      await user.click(expandLoggers[0]);
-      const addLoggers = logger.queryAllByRole("button", { name: "Add item to Loggers" });
-      if (addLoggers.length > 0) {
-        await user.click(addLoggers[0]);
-        await waitFor(() => {
-          expect(logger.queryAllByRole("textbox").length).toBeGreaterThan(0);
-        });
-      }
-    }
 
     // Force scrollY > 0 so a "jump to top" would be detectable.
     Object.defineProperty(window, "scrollY", { configurable: true, value: 400 });
     const scrollYBefore = window.scrollY;
 
-    const textInputs = logger.getAllByRole("textbox");
-    expect(textInputs.length).toBeGreaterThan(0);
-    const target = textInputs[0];
-
+    const target = resource.getAllByRole("textbox")[0];
     await user.click(target);
 
     // 1. The input keeps focus (was not stolen by the section element).
@@ -92,7 +61,8 @@ describe("ConfigurationBuilderPage — card click behavior", () => {
     // 2. No code path adjusted scroll position.
     expect(window.scrollY).toBe(scrollYBefore);
     // 3. Typing actually lands characters.
-    await user.type(target, "my-logger");
-    expect(target).toHaveValue("my-logger");
+    await user.clear(target);
+    await user.type(target, "my-service");
+    expect(target).toHaveValue("my-service");
   });
 });

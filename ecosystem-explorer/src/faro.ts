@@ -16,19 +16,23 @@
 import { getWebInstrumentations, initializeFaro } from "@grafana/faro-react";
 import { TracingInstrumentation } from "@grafana/faro-web-tracing";
 
-initializeFaro({
-  url: "https://faro-collector-prod-us-east-2.grafana.net/collect/e587d17d38a90612e9dbedd3a3146b77",
-  app: {
-    name: "ecosystem-explorer",
-    version: "0.0.0",
-    environment: import.meta.env.MODE,
-  },
-  instrumentations: [...getWebInstrumentations(), new TracingInstrumentation()],
-  ignoreErrors: [
-    /^ResizeObserver loop limit exceeded$/,
-    /^ResizeObserver loop completed with undelivered notifications$/,
-    /^Script error\.$/,
-    /chrome-extension:\/\//,
-    /moz-extension:\/\//,
-  ],
-});
+const faroUrl = import.meta.env.VITE_FARO_URL;
+
+if (faroUrl) {
+  initializeFaro({
+    url: faroUrl,
+    app: {
+      name: "ecosystem-explorer",
+      version: "0.0.0",
+      environment: import.meta.env.MODE,
+    },
+    instrumentations: [...getWebInstrumentations(), new TracingInstrumentation()],
+    ignoreErrors: [
+      /^ResizeObserver loop limit exceeded$/,
+      /^ResizeObserver loop completed with undelivered notifications$/,
+      /^Script error\.$/,
+      /chrome-extension:\/\//,
+      /moz-extension:\/\//,
+    ],
+  });
+}

@@ -18,9 +18,9 @@ import type { JSX } from "react";
 import type { ConfigNode, UnionNode } from "@/types/configuration";
 import type { ConfigValue } from "@/types/configuration-builder";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
-import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { SchemaRenderer } from "./schema-renderer";
 import { parsePath, getByPath } from "@/lib/config-path";
+import { FieldSection } from "./field-section";
 
 export interface UnionRendererProps {
   node: UnionNode;
@@ -95,13 +95,15 @@ const CONTROL_TYPE_DISPLAY: Record<ConfigNode["controlType"], string> = {
   circular_ref: "Reference",
 };
 
-// The schema parser names anonymous union members "Variant 1", "Variant 2", …
-// when no explicit label is set. Filter those out so we fall back to the
-// control-type display name instead of leaking parser-generated labels to UI.
 const ANONYMOUS_VARIANT_LABEL_RE = /^Variant \d+$/;
 
 function displayLabel(variant: ConfigNode): string {
   if (variant.label && !ANONYMOUS_VARIANT_LABEL_RE.test(variant.label)) return variant.label;
+  if (variant.controlType === "list") {
+    const inner =
+      CONTROL_TYPE_DISPLAY[variant.itemSchema.controlType] ?? variant.itemSchema.controlType;
+    return `${inner} list`;
+  }
   return CONTROL_TYPE_DISPLAY[variant.controlType] ?? variant.controlType;
 }
 
@@ -109,6 +111,11 @@ function isRenderable(variant: ConfigNode): boolean {
   if (variant.controlType === "group" && variant.children.length === 0) return false;
   return true;
 }
+
+const TAB_BASE =
+  "px-3 py-1.5 text-xs font-medium border-b-2 -mb-px transition-colors focus:outline-none focus-visible:text-foreground";
+const TAB_ACTIVE = "border-primary text-primary";
+const TAB_INACTIVE = "border-transparent text-muted-foreground hover:text-foreground";
 
 export function UnionRenderer({ node, depth, path }: UnionRendererProps): JSX.Element {
   const { state, setValue } = useConfigurationBuilder();
@@ -132,39 +139,60 @@ export function UnionRenderer({ node, depth, path }: UnionRendererProps): JSX.El
     setValue(path, emptyValueFor(nextVariant));
   };
 
-  return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-2">
-        <p className="text-foreground text-sm font-medium">{node.label}</p>
-        {node.description && <InfoTooltip text={node.description} />}
-      </div>
-      {showChooser && (
-        <fieldset>
-          <legend className="sr-only">{node.label}</legend>
-          <div className="flex flex-wrap gap-2">
-            {effectiveVariants.map((v) => (
-              <label key={v.key} className="text-muted-foreground flex items-center gap-2 text-xs">
-                <input
-                  type="radio"
-                  name={`${path}-variant`}
-                  value={v.key}
-                  checked={selectedKey === v.key}
-                  onChange={() => handleChange(v.key)}
-                />
-                {displayLabel(v)}
-              </label>
-            ))}
-          </div>
-        </fieldset>
-      )}
-      {selectedVariant && (
-        <SchemaRenderer
-          key={selectedVariant.key}
-          node={{ ...selectedVariant, hideLabel: true } as ConfigNode}
-          depth={depth + 1}
-          path={path}
-        />
-      )}
+  const tablist = showChooser ? (
+    <div
+      role="tablist"
+      aria-label={`${node.label} variant`}
+      className="border-border/60 flex flex-wrap items-center gap-x-1 border-b"
+    >
+      {effectiveVariants.map((v) => {
+        const active = selectedKey === v.key;
+        return (
+          <button
+            key={v.key}
+            type="button"
+            role="tab"
+            aria-selected={active}
+            onClick={() => handleChange(v.key)}
+            className={`${TAB_BASE} ${active ? TAB_ACTIVE : TAB_INACTIVE}`}
+          >
+            {displayLabel(v)}
+          </button>
+        );
+      })}
     </div>
+  ) : null;
+
+  const variantBody = selectedVariant ? (
+    <SchemaRenderer
+      key={selectedVariant.key}
+      node={
+        {
+          ...selectedVariant,
+          label: displayLabel(selectedVariant),
+          hideLabel: true,
+        } as ConfigNode
+      }
+      depth={depth + 1}
+      path={path}
+      inline
+    />
+  ) : null;
+
+  return (
+    <FieldSection node={node} level="field" defaultExpanded>
+      <FieldSection.Header>
+        <FieldSection.Chevron />
+        <FieldSection.Label />
+        <FieldSection.Stability />
+        <FieldSection.Info />
+      </FieldSection.Header>
+      <FieldSection.Body>
+        <div className="space-y-2">
+          {tablist}
+          {variantBody}
+        </div>
+      </FieldSection.Body>
+    </FieldSection>
   );
 }

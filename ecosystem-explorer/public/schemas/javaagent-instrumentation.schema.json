@@ -1,0 +1,285 @@
+{
+  "description": "Detailed metadata for an OpenTelemetry Java Agent instrumentation.",
+  "type": "object",
+  "properties": {
+    "name": {
+      "description": "The unique name of the instrumentation (e.g., akka-actor-2.3).",
+      "type": "string"
+    },
+    "display_name": {
+      "description": "Human-readable name of the instrumentation.",
+      "type": "string"
+    },
+    "disabled_by_default": {
+      "description": "Whether this instrumentation is disabled by default.",
+      "type": "boolean"
+    },
+    "description": {
+      "description": "Brief description of what is being instrumented and how.",
+      "type": "string"
+    },
+    "library_link": {
+      "description": "URL to the documentation or homepage of the instrumented library.",
+      "type": "string"
+    },
+    "source_path": {
+      "description": "Relative path to the instrumentation source code in the repository.",
+      "type": "string"
+    },
+    "minimum_java_version": {
+      "description": "Minimum Java version required by this instrumentation.",
+      "type": "number"
+    },
+    "semantic_conventions": {
+      "description": "List of semantic conventions followed by this instrumentation.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "features": {
+      "description": "List of telemetry features provided (e.g., TRACING, METRICS).",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "scope": {
+      "description": "The OpenTelemetry instrumentation scope (meter/logger/tracer name).",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the instrumentation scope.",
+          "type": "string"
+        },
+        "schema_url": {
+          "description": "Optional URL for the OpenTelemetry schema used by this scope.",
+          "type": "string"
+        }
+      },
+      "propertyOrder": ["name", "schema_url"],
+      "required": ["name"]
+    },
+    "has_javaagent": {
+      "description": "Indicates if this instrumentation is compatible with the OpenTelemetry Java Agent.",
+      "type": "boolean"
+    },
+    "has_standalone_library": {
+      "description": "Indicates if this instrumentation is available as a standalone library.",
+      "type": "boolean"
+    },
+    "javaagent_target_versions": {
+      "description": "Maven coordinates and version ranges of libraries supported by this instrumentation.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "configurations": {
+      "description": "List of configuration options available for this instrumentation.",
+      "type": "array",
+      "items": {
+        "description": "A configuration option for a Java Agent instrumentation.",
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "The system property or environment variable name.",
+            "type": "string"
+          },
+          "declarative_name": {
+            "description": "A more human-readable name for declarative configuration.",
+            "type": "string"
+          },
+          "description": {
+            "description": "Description of what the configuration option does.",
+            "type": "string"
+          },
+          "type": {
+            "description": "The expected data type of the configuration value.",
+            "enum": ["boolean", "double", "int", "list", "map", "string"],
+            "type": "string"
+          },
+          "default": {
+            "description": "The default value if not specified.",
+            "type": ["string", "number", "boolean"]
+          },
+          "example": {
+            "description": "Example values for this configuration option.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "propertyOrder": ["name", "declarative_name", "description", "type", "default", "example"],
+        "required": ["default", "description", "name", "type"]
+      }
+    },
+    "telemetry": {
+      "description": "Telemetry emitted by this instrumentation under specific conditions.",
+      "type": "array",
+      "items": {
+        "description": "Telemetry emitted by an instrumentation.",
+        "type": "object",
+        "properties": {
+          "when": {
+            "description": "When this telemetry is emitted (e.g., \"on every request\").",
+            "type": "string"
+          },
+          "metrics": {
+            "description": "Metrics emitted by this instrumentation.",
+            "type": "array",
+            "items": {
+              "description": "Metadata for a metric emitted by an instrumentation.",
+              "type": "object",
+              "properties": {
+                "name": {
+                  "description": "The name of the metric.",
+                  "type": "string"
+                },
+                "description": {
+                  "description": "Description of what the metric measures.",
+                  "type": "string"
+                },
+                "instrument": {
+                  "description": "The instrument type (e.g., counter, gauge).",
+                  "enum": ["counter", "gauge", "histogram", "updowncounter"],
+                  "type": "string"
+                },
+                "data_type": {
+                  "description": "The OpenTelemetry data type for the metric.",
+                  "enum": [
+                    "COUNTER",
+                    "DOUBLE_GAUGE",
+                    "DOUBLE_SUM",
+                    "HISTOGRAM",
+                    "LONG_GAUGE",
+                    "LONG_SUM",
+                    "SUMMARY"
+                  ],
+                  "type": "string"
+                },
+                "unit": {
+                  "description": "The unit of measurement (e.g., ms, bytes).",
+                  "type": "string"
+                },
+                "attributes": {
+                  "description": "Attributes associated with the metric.",
+                  "type": "array",
+                  "items": {
+                    "description": "An attribute associated with a metric or span.",
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "description": "The name of the attribute.",
+                        "type": "string"
+                      },
+                      "type": {
+                        "description": "The data type of the attribute value.",
+                        "enum": [
+                          "BOOLEAN",
+                          "BOOLEAN_ARRAY",
+                          "DOUBLE",
+                          "DOUBLE_ARRAY",
+                          "LONG",
+                          "LONG_ARRAY",
+                          "STRING",
+                          "STRING_ARRAY"
+                        ],
+                        "type": "string"
+                      }
+                    },
+                    "propertyOrder": ["name", "type"],
+                    "required": ["name", "type"]
+                  }
+                }
+              },
+              "propertyOrder": [
+                "name",
+                "description",
+                "instrument",
+                "data_type",
+                "unit",
+                "attributes"
+              ],
+              "required": ["data_type", "description", "instrument", "name", "unit"]
+            }
+          },
+          "spans": {
+            "description": "Spans emitted by this instrumentation.",
+            "type": "array",
+            "items": {
+              "description": "Metadata for a span emitted by an instrumentation.",
+              "type": "object",
+              "properties": {
+                "span_kind": {
+                  "description": "The span kind (e.g., CLIENT, SERVER).",
+                  "enum": ["CLIENT", "CONSUMER", "INTERNAL", "PRODUCER", "SERVER"],
+                  "type": "string"
+                },
+                "attributes": {
+                  "description": "Attributes associated with the span.",
+                  "type": "array",
+                  "items": {
+                    "description": "An attribute associated with a metric or span.",
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "description": "The name of the attribute.",
+                        "type": "string"
+                      },
+                      "type": {
+                        "description": "The data type of the attribute value.",
+                        "enum": [
+                          "BOOLEAN",
+                          "BOOLEAN_ARRAY",
+                          "DOUBLE",
+                          "DOUBLE_ARRAY",
+                          "LONG",
+                          "LONG_ARRAY",
+                          "STRING",
+                          "STRING_ARRAY"
+                        ],
+                        "type": "string"
+                      }
+                    },
+                    "propertyOrder": ["name", "type"],
+                    "required": ["name", "type"]
+                  }
+                }
+              },
+              "propertyOrder": ["span_kind", "attributes"],
+              "required": ["span_kind"]
+            }
+          }
+        },
+        "propertyOrder": ["when", "metrics", "spans"],
+        "required": ["when"]
+      }
+    },
+    "_is_custom": {
+      "description": "Whether this is a custom (non-upstream) instrumentation.",
+      "type": "boolean"
+    }
+  },
+  "propertyOrder": [
+    "name",
+    "display_name",
+    "disabled_by_default",
+    "description",
+    "library_link",
+    "source_path",
+    "minimum_java_version",
+    "semantic_conventions",
+    "features",
+    "scope",
+    "has_javaagent",
+    "has_standalone_library",
+    "javaagent_target_versions",
+    "configurations",
+    "telemetry",
+    "_is_custom"
+  ],
+  "required": ["name", "scope"],
+  "$schema": "https://json-schema.org/draft-07/schema#"
+}

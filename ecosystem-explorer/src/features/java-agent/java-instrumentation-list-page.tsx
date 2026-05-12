@@ -31,7 +31,7 @@ export function JavaInstrumentationListPage() {
   const { version: versionParam } = useParams<{ version?: string }>();
   const navigate = useNavigate();
 
-  const { data: versionsData, loading: versionsLoading } = useVersions();
+  const { data: versionsData, loading: versionsLoading, error: versionsError } = useVersions();
 
   const latestVersion = versionsData?.versions.find((v) => v.is_latest)?.version ?? "";
 
@@ -65,9 +65,14 @@ export function JavaInstrumentationListPage() {
       if (filters.search) {
         const searchLower = filters.search.toLowerCase();
         const name = getInstrumentationDisplayName(instr).toLowerCase();
+        const rawName = instr.name.toLowerCase();
         const description = (instr.description || "").toLowerCase();
 
-        if (!name.includes(searchLower) && !description.includes(searchLower)) {
+        if (
+          !name.includes(searchLower) &&
+          !rawName.includes(searchLower) &&
+          !description.includes(searchLower)
+        ) {
           return false;
         }
       }
@@ -134,6 +139,17 @@ export function JavaInstrumentationListPage() {
     );
   }
 
+  if (versionsError) {
+    return (
+      <PageContainer>
+        <div className="rounded-lg border border-red-500/50 bg-red-500/10 p-6 text-red-600 dark:text-red-400">
+          <h3 className="mb-2 font-semibold">Error loading versions</h3>
+          <p className="text-sm">{versionsError.message}</p>
+        </div>
+      </PageContainer>
+    );
+  }
+
   if (error) {
     return (
       <PageContainer>
@@ -148,8 +164,11 @@ export function JavaInstrumentationListPage() {
   if (!resolvedVersion) {
     return (
       <PageContainer>
-        <div className="rounded-lg border border-yellow-500/50 bg-yellow-500/10 p-6 text-yellow-600 dark:text-yellow-400">
+        <div className="rounded-lg border border-red-500/50 bg-red-500/10 p-6 text-red-600 dark:text-red-400">
           <h3 className="mb-2 font-semibold">No version available</h3>
+          <p className="text-sm">
+            Could not determine the latest Java agent version. Please try refreshing the page.
+          </p>
         </div>
       </PageContainer>
     );
@@ -163,7 +182,7 @@ export function JavaInstrumentationListPage() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-3">
             <h1 className="text-3xl font-bold md:text-4xl">
-              <span className="bg-gradient-to-r from-[hsl(var(--secondary-hsl))] to-[hsl(var(--primary-hsl))] bg-clip-text text-transparent">
+              <span className="from-otel-orange to-otel-blue bg-gradient-to-r bg-clip-text text-transparent">
                 OpenTelemetry Java Agent
               </span>
             </h1>
