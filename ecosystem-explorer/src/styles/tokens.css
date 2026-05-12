@@ -1,0 +1,88 @@
+/*
+ * Design token — CSS custom properties.
+ *
+ * Brand hues are canonical from opentelemetry.io's _vars.scss:
+ *   $primary   = blue  hsl(228, 37%, 49%)
+ *   $secondary = orange hsl(41, 100%, 48%)
+ *
+ * Two-tier brand system:
+ *   --otel-blue-hsl / --otel-orange-hsl  — named primitives, never swap these
+ *   --primary-hsl / --secondary-hsl       — semantic role tokens; re-point only
+ *     here to change which hue plays a structural vs accent role
+ *
+ * SVG illustrations and gradient ornaments reference --otel-*-hsl directly so
+ * they express literal hue intent and stay correct across any role reassignment.
+ * Interactive UI chrome (focus rings, hover borders, CTA buttons) uses
+ * --primary-hsl / --secondary-hsl to track whichever hue plays that role.
+ *
+ * Surface tokens differ per theme; syntax tokens reuse the dark palette in
+ * light mode for now (revisit when a light-mode syntax consumer lands).
+ *
+ * Note: dark-theme surface tokens are applied globally (no V1_REDESIGN gate).
+ * V1_REDESIGN gates UI components and layout; the base palette ships on merge.
+ */
+
+@layer theme {
+  :root,
+  [data-theme="dark"] {
+    /* Brand primitives — stable, never reassigned */
+    --otel-blue-hsl: 228 37% 49%;
+    --otel-orange-hsl: 41 100% 48%;
+
+    /* Semantic role tokens */
+    --primary-hsl: var(--otel-blue-hsl); /* structural / navbar / buttons */
+    --secondary-hsl: var(--otel-orange-hsl); /* accents / hover / CTAs */
+
+    /* Ornament accents — flip per theme (compass, hero glow, ambient radial) */
+    --hero-accent-hsl: var(--otel-orange-hsl);
+    --hero-accent-alt-hsl: var(--otel-blue-hsl);
+
+    /* Surfaces — navy palette */
+    --background-hsl: 232 38% 15%;
+    --foreground-hsl: 210 17% 98%;
+    --card-hsl: 232 35% 19%;
+    --card-secondary-hsl: 232 32% 23%;
+    --muted-hsl: 232 28% 22%;
+    --muted-foreground-hsl: 220 14% 65%;
+    --border-hsl: 232 22% 28%;
+
+    /* Syntax */
+    --syntax-comment-hsl: 220 18% 58%;
+    --syntax-key-hsl: 28 95% 65%;
+    --syntax-string-hsl: 95 60% 65%;
+    --syntax-number-hsl: 330 80% 72%;
+    --syntax-keyword-hsl: 265 70% 78%;
+    --syntax-punct-hsl: 220 22% 55%;
+  }
+
+  [data-theme="light"] {
+    /* Brand primitives — identical across themes */
+    --otel-blue-hsl: 228 37% 49%;
+    --otel-orange-hsl: 41 100% 48%;
+
+    /* Semantic role tokens */
+    --primary-hsl: var(--otel-blue-hsl);
+    --secondary-hsl: var(--otel-orange-hsl);
+
+    /* Ornament accents — flip per theme (compass, hero glow, ambient radial) */
+    --hero-accent-hsl: var(--otel-blue-hsl);
+    --hero-accent-alt-hsl: var(--otel-orange-hsl);
+
+    /* Surfaces — light palette */
+    --background-hsl: 0 0% 100%;
+    --foreground-hsl: 220 13% 15%;
+    --card-hsl: 210 17% 98%;
+    --card-secondary-hsl: 210 14% 95%;
+    --muted-hsl: 210 14% 92%;
+    --muted-foreground-hsl: 220 9% 40%;
+    --border-hsl: 210 14% 88%;
+
+    /* Syntax — reuse dark values until a light-mode consumer needs distinct tokens */
+    --syntax-comment-hsl: 220 18% 58%;
+    --syntax-key-hsl: 28 95% 65%;
+    --syntax-string-hsl: 95 60% 65%;
+    --syntax-number-hsl: 330 80% 72%;
+    --syntax-keyword-hsl: 265 70% 78%;
+    --syntax-punct-hsl: 220 22% 55%;
+  }
+}

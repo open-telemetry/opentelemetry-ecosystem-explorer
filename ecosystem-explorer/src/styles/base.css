@@ -1,0 +1,36 @@
+/* Global element resets and defaults. */
+
+* {
+  border-color: hsl(var(--border-hsl));
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  background-color: hsl(var(--background-hsl));
+  color: hsl(var(--foreground-hsl));
+}
+
+#root {
+  min-height: 100vh;
+}
+
+html {
+  /* Root font size affects overall rem calculations for all components. */
+  font-size: 14px;
+  /* Reserve space for the fixed header so anchor / scrollIntoView lands below it. */
+  scroll-padding-top: 5rem;
+}
+
+/* Tab trigger border color override */
+[role="tab"] {
+  border-top-color: transparent !important;
+}
+
+[role="tab"][data-state="active"] {
+  border-top-color: hsl(var(--primary-hsl)) !important;
+}

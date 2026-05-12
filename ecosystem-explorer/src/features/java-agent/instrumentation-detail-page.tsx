@@ -112,10 +112,10 @@ export function InstrumentationDetailPage() {
             <div
               className="inline-flex animate-pulse rounded-full p-4"
               style={{
-                boxShadow: "0 0 60px hsl(var(--primary-hsl) / 0.2)",
+                boxShadow: "0 0 60px hsl(var(--otel-orange-hsl) / 0.2)",
               }}
             >
-              <Loader2 className="text-primary h-12 w-12 animate-spin" aria-hidden="true" />
+              <Loader2 className="text-secondary h-12 w-12 animate-spin" aria-hidden="true" />
             </div>
             <div className="mt-6 space-y-2">
               <div className="text-lg font-medium">Loading instrumentation...</div>
@@ -193,7 +193,7 @@ export function InstrumentationDetailPage() {
             className="absolute inset-0"
             style={{
               background:
-                "radial-gradient(circle at top right, hsl(var(--primary-hsl) / 0.06) 0%, hsl(var(--secondary-hsl) / 0.03) 40%, transparent 70%)",
+                "radial-gradient(circle at top right, hsl(var(--otel-blue-hsl) / 0.06) 0%, hsl(var(--otel-orange-hsl) / 0.03) 40%, transparent 70%)",
             }}
           />
 
@@ -212,7 +212,7 @@ export function InstrumentationDetailPage() {
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div className="min-w-0 flex-1 space-y-2">
                 <h1 className="text-2xl leading-tight font-bold sm:text-3xl md:text-4xl">
-                  <span className="bg-gradient-to-r from-[hsl(var(--secondary-hsl))] to-[hsl(var(--primary-hsl))] bg-clip-text text-transparent">
+                  <span className="from-otel-orange to-otel-blue bg-gradient-to-r bg-clip-text text-transparent">
                     {displayName}
                   </span>
                 </h1>
@@ -257,7 +257,7 @@ export function InstrumentationDetailPage() {
             <svg viewBox="0 0 64 64" className="h-full w-full">
               <path
                 d="M64 64 L64 32 L48 32 L48 48 L32 48 L32 64 Z"
-                style={{ fill: "hsl(var(--secondary-hsl) / 0.5)" }}
+                style={{ fill: "hsl(var(--otel-orange-hsl) / 0.5)" }}
               />
             </svg>
           </div>
@@ -317,7 +317,7 @@ export function InstrumentationDetailPage() {
                                 return (
                                   <li key={feature} className="flex items-start gap-2 text-sm">
                                     <Check
-                                      className="text-primary mt-0.5 h-4 w-4 flex-shrink-0"
+                                      className="text-secondary mt-0.5 h-4 w-4 flex-shrink-0"
                                       aria-hidden="true"
                                     />
                                     <div>
@@ -355,7 +355,7 @@ export function InstrumentationDetailPage() {
                                         href={info.url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="border-primary/40 bg-primary/10 text-primary hover:bg-primary/20 rounded-md border px-3 py-1 text-sm transition-colors"
+                                        className="border-secondary/40 bg-secondary/10 text-secondary hover:bg-secondary/20 rounded-md border px-3 py-1 text-sm transition-colors"
                                       >
                                         {info.label}
                                       </a>
@@ -467,7 +467,7 @@ export function InstrumentationDetailPage() {
                         <DetailCard withHoverEffect>
                           <div className="flex items-start gap-3">
                             <ExternalLink
-                              className="text-primary mt-0.5 h-5 w-5 flex-shrink-0"
+                              className="text-secondary mt-0.5 h-5 w-5 flex-shrink-0"
                               aria-hidden="true"
                             />
                             <div className="flex-1 space-y-1">
@@ -478,7 +478,7 @@ export function InstrumentationDetailPage() {
                                 href={instrumentation.library_link}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-primary text-sm break-all hover:underline"
+                                className="text-secondary text-sm break-all hover:underline"
                               >
                                 {instrumentation.library_link}
                               </a>
@@ -492,7 +492,7 @@ export function InstrumentationDetailPage() {
                           <DetailCard withHoverEffect>
                             <div className="flex items-start gap-3">
                               <Code
-                                className="text-primary mt-0.5 h-5 w-5 flex-shrink-0"
+                                className="text-secondary mt-0.5 h-5 w-5 flex-shrink-0"
                                 aria-hidden="true"
                               />
                               <div className="flex-1 space-y-1">
@@ -503,7 +503,7 @@ export function InstrumentationDetailPage() {
                                   href={buildSourceUrl(instrumentation.source_path)}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-primary text-sm break-all hover:underline"
+                                  className="text-secondary text-sm break-all hover:underline"
                                 >
                                   {instrumentation.source_path}
                                 </a>
