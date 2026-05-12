@@ -69,7 +69,7 @@ export function AboutPage() {
                 className="border-border/50 bg-card/50 hover:bg-card flex items-start gap-4 rounded-lg border p-5 transition-colors"
               >
                 <GitHubIcon
-                  className="text-primary mt-0.5 h-5 w-5 flex-shrink-0"
+                  className="text-secondary mt-0.5 h-5 w-5 flex-shrink-0"
                   aria-hidden="true"
                 />
                 <div className="space-y-1">
@@ -87,7 +87,7 @@ export function AboutPage() {
                 className="border-border/50 bg-card/50 hover:bg-card flex items-start gap-4 rounded-lg border p-5 transition-colors"
               >
                 <BookOpen
-                  className="text-primary mt-0.5 h-5 w-5 flex-shrink-0"
+                  className="text-secondary mt-0.5 h-5 w-5 flex-shrink-0"
                   aria-hidden="true"
                 />
                 <div className="space-y-1">
@@ -104,7 +104,7 @@ export function AboutPage() {
                 rel="noopener noreferrer"
                 className="border-border/50 bg-card/50 hover:bg-card flex items-start gap-4 rounded-lg border p-5 transition-colors"
               >
-                <Bug className="text-primary mt-0.5 h-5 w-5 flex-shrink-0" aria-hidden="true" />
+                <Bug className="text-secondary mt-0.5 h-5 w-5 flex-shrink-0" aria-hidden="true" />
                 <div className="space-y-1">
                   <h3 className="text-foreground text-sm font-medium">Report a Bug</h3>
                   <p className="text-muted-foreground text-xs">
@@ -120,7 +120,7 @@ export function AboutPage() {
                 className="border-border/50 bg-card/50 hover:bg-card flex items-start gap-4 rounded-lg border p-5 transition-colors"
               >
                 <MessageSquare
-                  className="text-primary mt-0.5 h-5 w-5 flex-shrink-0"
+                  className="text-secondary mt-0.5 h-5 w-5 flex-shrink-0"
                   aria-hidden="true"
                 />
                 <div className="space-y-1">

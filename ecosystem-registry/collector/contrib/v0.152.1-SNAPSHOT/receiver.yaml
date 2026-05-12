@@ -1,5 +1,5 @@
 distribution: contrib
-version: 0.151.1-SNAPSHOT
+version: 0.152.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: receiver
 schema_hash: 8ef455c6e37c
@@ -10730,6 +10730,13 @@ components:
           monotonic: true
           value_type: double
         stability: development
+      oracledb.data_dictionary.hit_ratio:
+        description: Data dictionary cache hit ratio from v$rowcache.
+        unit: '%'
+        enabled: false
+        gauge:
+          value_type: double
+        stability: development
       oracledb.db_block_gets:
         description: Number of times a current block was requested from the buffer
           cache.
@@ -11050,6 +11057,13 @@ components:
           value_type: int
           input_type: string
         stability: development
+      oracledb.recycle_bin.limit:
+        description: Total size of the recycle bin.
+        unit: By
+        enabled: false
+        gauge:
+          value_type: double
+        stability: development
       oracledb.sessions.limit:
         description: Maximum limit of active sessions, -1 if unlimited.
         unit: '{sessions}'
@@ -11068,6 +11082,20 @@ components:
         attributes:
         - session_status
         - session_type
+        stability: development
+      oracledb.storage.usage:
+        description: Used database storage size from dba_data_files and dba_free_space.
+        unit: By
+        enabled: false
+        gauge:
+          value_type: double
+        stability: development
+      oracledb.storage.utilization:
+        description: Fraction of allocated database storage that is used.
+        unit: '1'
+        enabled: false
+        gauge:
+          value_type: double
         stability: development
       oracledb.tablespace_size.limit:
         description: Maximum size of tablespace in bytes, -1 if unlimited.

@@ -275,7 +275,7 @@ export function ConfigurationBuilderPage() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-3">
             <h1 className="text-3xl font-bold md:text-4xl">
-              <span className="bg-gradient-to-r from-[hsl(var(--secondary-hsl))] to-[hsl(var(--primary-hsl))] bg-clip-text text-transparent">
+              <span className="from-otel-orange to-otel-blue bg-gradient-to-r bg-clip-text text-transparent">
                 Configuration Builder
               </span>
             </h1>

@@ -1,0 +1,31 @@
+/* YAML / config syntax highlighting token classes. */
+
+.y-comment {
+  color: hsl(var(--syntax-comment-hsl));
+  font-style: italic;
+}
+
+.y-key {
+  color: hsl(var(--syntax-key-hsl));
+}
+
+.y-string {
+  color: hsl(var(--syntax-string-hsl));
+}
+
+.y-number {
+  color: hsl(var(--syntax-number-hsl));
+}
+
+.y-keyword {
+  color: hsl(var(--syntax-keyword-hsl));
+  font-style: italic;
+}
+
+.y-punct {
+  color: hsl(var(--syntax-punct-hsl));
+}
+
+.y-plain {
+  color: hsl(var(--foreground-hsl));
+}
