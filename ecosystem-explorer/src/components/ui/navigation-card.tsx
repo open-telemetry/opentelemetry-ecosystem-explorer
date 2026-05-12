@@ -30,7 +30,7 @@ export function NavigationCard({ title, description, href, icon }: NavigationCar
 
   return (
     <Link to={href} className="group block h-full">
-      <div className="border-border/60 bg-card/80 hover:border-primary/50 hover:bg-card hover:shadow-primary/15 relative h-full overflow-hidden rounded-lg border p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+      <div className="border-border/60 bg-card/80 hover:border-primary/50 hover:bg-card hover:shadow-primary/15 relative h-full overflow-hidden rounded-lg border p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:p-8">
         {/* Grid lines background */}
         <div className="absolute inset-0 opacity-10">
           <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
@@ -49,23 +49,27 @@ export function NavigationCard({ title, description, href, icon }: NavigationCar
           </svg>
         </div>
 
-        <div className="relative z-10 flex gap-4">
-          {/* Icon on the left */}
+        <div className="relative z-10 flex flex-col gap-4 sm:flex-row">
+          {/* Icon */}
           <div className="flex-shrink-0">
-            <div className="border-border/50 bg-background/50 text-primary group-hover:border-primary/50 group-hover:bg-primary/10 flex h-32 w-32 items-center justify-center rounded-lg border transition-colors">
+            <div className="border-border/50 bg-background/50 text-primary group-hover:border-primary/50 group-hover:bg-primary/10 flex h-24 w-24 items-center justify-center rounded-lg border transition-colors sm:h-32 sm:w-32">
               {icon}
             </div>
           </div>
 
-          {/* Content on the right */}
+          {/* Content */}
           <div className="min-w-0 flex-1">
             <div className="mb-2 flex items-center justify-between gap-2">
-              <h3 className="group-hover:text-primary text-2xl font-semibold text-[hsl(var(--secondary-hsl))] transition-colors">
+              <h3 className="group-hover:text-primary text-xl font-semibold text-[hsl(var(--secondary-hsl))] transition-colors sm:text-2xl">
                 {title}
               </h3>
+
               <ArrowRight className="text-muted-foreground group-hover:text-primary h-5 w-5 flex-shrink-0 transition-all duration-300 group-hover:translate-x-1" />
             </div>
-            <p className="text-muted-foreground text-base leading-relaxed">{description}</p>
+
+            <p className="text-muted-foreground text-base leading-relaxed">
+              {description}
+            </p>
           </div>
         </div>
 
