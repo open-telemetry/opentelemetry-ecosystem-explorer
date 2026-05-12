@@ -341,6 +341,8 @@ describe("JavaInstrumentationListPage - Filtering", () => {
     renderPage();
 
     expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Back" })).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Search instrumentations...")).toBeInTheDocument();
     expect(screen.getByText("Loading instrumentations...")).toBeInTheDocument();
   });
 
@@ -354,7 +356,10 @@ describe("JavaInstrumentationListPage - Filtering", () => {
     renderPage();
 
     expect(screen.getByRole("heading", { level: 1 })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Back" })).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Search instrumentations...")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Error loading data" })).toBeInTheDocument();
+    expect(screen.getByText("Failed to load instrumentations")).toBeInTheDocument();
     expect(screen.getByText("Please try refreshing the page.")).toBeInTheDocument();
   });
 });

@@ -139,18 +139,19 @@ export function JavaInstrumentationListPage() {
                 OpenTelemetry Java Agent
               </span>
             </h1>
-            <p className="text-muted-foreground text-base">
-              Explore {instrumentations?.length ?? 0} available instrumentations.
-            </p>
+            {instrumentations != null && (
+              <p className="text-muted-foreground text-base">
+                Explore {instrumentations.length} available instrumentations.
+              </p>
+            )}
           </div>
 
-          {versionsData && versionsData.versions.length > 0 && (
-            <VersionSelector
-              versions={versionsData.versions}
-              currentVersion={resolvedVersion}
-              onVersionChange={handleVersionChange}
-            />
-          )}
+          <VersionSelector
+            versions={versionsData?.versions ?? []}
+            currentVersion={resolvedVersion}
+            onVersionChange={handleVersionChange}
+            disabled={versionsLoading}
+          />
         </div>
 
         <InstrumentationFilterBar filters={filters} onFiltersChange={setFilters} />
@@ -159,9 +160,14 @@ export function JavaInstrumentationListPage() {
           <div className="flex flex-col items-center justify-center space-y-4 py-32 text-center text-red-500">
             <AlertCircle className="mx-auto h-12 w-12 opacity-50" aria-hidden="true" />
             <h3 className="text-xl font-semibold">Error loading data</h3>
+            {(versionsError ?? error)?.message && (
+              <p className="text-muted-foreground text-sm">
+                {(versionsError ?? error)!.message}
+              </p>
+            )}
             <p className="text-muted-foreground">Please try refreshing the page.</p>
           </div>
-        ) : versionsLoading || instrumentationsLoading || !resolvedVersion ? (
+        ) : versionsLoading || instrumentationsLoading || (!resolvedVersion && !versionsError) ? (
           <div className="flex flex-col items-center justify-center space-y-4 py-32">
             <div className="inline-flex animate-pulse rounded-full p-4 shadow-[0_0_60px_hsl(var(--primary-hsl)/0.2)]">
               <Loader2 className="text-primary h-10 w-10 animate-spin" aria-hidden="true" />
