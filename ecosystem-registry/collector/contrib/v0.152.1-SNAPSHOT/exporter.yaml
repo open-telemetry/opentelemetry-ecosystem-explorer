@@ -1,5 +1,5 @@
 distribution: contrib
-version: 0.151.1-SNAPSHOT
+version: 0.152.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: exporter
 schema_hash: 8ef455c6e37c
@@ -25,7 +25,7 @@ components:
     status:
       class: exporter
       stability:
-        unmaintained:
+        beta:
         - logs
         - metrics
         - traces
@@ -33,6 +33,8 @@ components:
       - contrib
       codeowners:
         active:
+        - vyagh
+        emeritus:
         - shabicheng
         - kongluoxing
         - qiansheng91
