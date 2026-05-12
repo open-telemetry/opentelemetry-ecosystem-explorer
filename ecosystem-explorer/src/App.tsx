@@ -94,15 +94,45 @@ export default function App() {
                   path="/java-agent/instrumentation"
                   element={<JavaInstrumentationListPage />}
                 />
-              )}
-              <Route path="/collector" element={<CollectorPage />} />
-              <Route path="/collector/components" element={<CollectorComponentsPage />} />
-              <Route path="/collector/components/:version" element={<CollectorComponentsPage />} />
-              <Route path="/collector/components/:version/:id" element={<CollectorDetailPage />} />
-              <Route path="/about" element={<AboutPage />} />
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-          </Suspense>
+                <Route
+                  path="/java-agent/instrumentation/:version"
+                  element={<JavaInstrumentationListPage />}
+                />
+                <Route
+                  path="/java-agent/instrumentation/:version/:name"
+                  element={<InstrumentationDetailPage />}
+                />
+                <Route
+                  path="/java-agent/configuration"
+                  element={<JavaConfigurationListPage />}
+                />
+                {isEnabled("JAVA_RELEASE_COMPARISON") && (
+                  <Route
+                    path="/java-agent/releases"
+                    element={<JavaReleaseComparisonPage />}
+                  />
+                )}
+                {isEnabled("JAVA_CONFIG_BUILDER") && (
+                  <Route
+                    path="/java-agent/configuration/builder"
+                    element={<ConfigurationBuilderPage />}
+                  />
+                )}
+                <Route path="/collector" element={<CollectorPage />} />
+                <Route path="/collector/components" element={<CollectorComponentsPage />} />
+                <Route
+                  path="/collector/components/:version"
+                  element={<CollectorComponentsPage />}
+                />
+                <Route
+                  path="/collector/components/:version/:id"
+                  element={<CollectorDetailPage />}
+                />
+                <Route path="/about" element={<AboutPage />} />
+                <Route path="*" element={<NotFoundPage />} />
+              </Routes>
+            </Suspense>
+          </ErrorBoundary>
         </main>
         <Footer />
       </div>
