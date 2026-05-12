@@ -53,9 +53,7 @@ export function SelectControl({ node, path, value, onChange }: SelectControlProp
           className={SELECT_CLASS}
         >
           {node.nullable ? (
-            <option value="">
-              {node.nullBehavior ?? node.defaultBehavior ?? "Default"}
-            </option>
+            <option value="">{node.nullBehavior ?? node.defaultBehavior ?? "Default"}</option>
           ) : value === null ? (
             <option value="" disabled hidden />
           ) : null}
