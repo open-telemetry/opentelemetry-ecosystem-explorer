@@ -135,3 +135,16 @@
 .td-light-dark-menu__item[data-active="true"] .bi {
   opacity: 1;
 }
+
+/*
+ * Mobile — inside the collapsed navbar panel the trigger should fill the
+ * full row so the tap target is comfortable and aligns with the stacked
+ * nav-link above it.
+ */
+@media (max-width: 767.98px) {
+  .td-navbar-collapse .td-light-dark-menu__trigger {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 12px 8px;
+  }
+}

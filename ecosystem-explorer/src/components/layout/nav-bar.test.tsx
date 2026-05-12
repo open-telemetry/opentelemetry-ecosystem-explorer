@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import { MemoryRouter, Route, Routes, useNavigate } from "react-router-dom";
 import { describe, it, expect } from "vitest";
 import { NavBar } from "./nav-bar";
 import { ThemeProvider } from "@/theme-context";
@@ -57,5 +57,74 @@ describe("NavBar", () => {
     renderNavBar();
 
     expect(screen.getByRole("button", { name: /toggle theme/i })).toBeInTheDocument();
+  });
+
+  it("renders the hamburger toggler collapsed by default", () => {
+    renderNavBar();
+
+    const toggler = screen.getByRole("button", { name: /toggle navigation/i });
+    expect(toggler).toHaveAttribute("aria-expanded", "false");
+    expect(toggler).toHaveAttribute("aria-controls", "td-navbar-collapse");
+
+    const panel = document.getElementById("td-navbar-collapse");
+    expect(panel).toHaveAttribute("data-state", "closed");
+  });
+
+  it("toggles the collapse panel open and closed on click", () => {
+    renderNavBar();
+
+    const toggler = screen.getByRole("button", { name: /toggle navigation/i });
+    fireEvent.click(toggler);
+    expect(toggler).toHaveAttribute("aria-expanded", "true");
+    expect(document.getElementById("td-navbar-collapse")).toHaveAttribute("data-state", "open");
+
+    fireEvent.click(toggler);
+    expect(toggler).toHaveAttribute("aria-expanded", "false");
+    expect(document.getElementById("td-navbar-collapse")).toHaveAttribute("data-state", "closed");
+  });
+
+  it("closes the panel when Escape is pressed", () => {
+    renderNavBar();
+
+    const toggler = screen.getByRole("button", { name: /toggle navigation/i });
+    fireEvent.click(toggler);
+    expect(toggler).toHaveAttribute("aria-expanded", "true");
+
+    act(() => {
+      document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
+    });
+
+    expect(toggler).toHaveAttribute("aria-expanded", "false");
+  });
+
+  it("collapses the panel when the route changes", () => {
+    function Pusher() {
+      const navigate = useNavigate();
+      return (
+        <button type="button" onClick={() => navigate("/about")}>
+          go
+        </button>
+      );
+    }
+
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <ThemeProvider>
+          <NavBar />
+          <Routes>
+            <Route path="/" element={<Pusher />} />
+            <Route path="/about" element={<div>about</div>} />
+          </Routes>
+        </ThemeProvider>
+      </MemoryRouter>
+    );
+
+    const toggler = screen.getByRole("button", { name: /toggle navigation/i });
+    fireEvent.click(toggler);
+    expect(toggler).toHaveAttribute("aria-expanded", "true");
+
+    fireEvent.click(screen.getByRole("button", { name: /^go$/i }));
+
+    expect(toggler).toHaveAttribute("aria-expanded", "false");
   });
 });
