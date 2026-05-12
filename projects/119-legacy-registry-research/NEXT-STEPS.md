@@ -60,10 +60,27 @@ maintenance today.
 
 **Challenges**:
 
+- V1 is currently maintained entirely by hand. Introducing a mix of manually maintained and
+  auto-generated entries could confuse contributors. A clear convention for marking which fields are
+  auto-generated would be needed so contributors know not to edit those fields manually.
 - The generated entry would be missing V1-only fields (license, authors, tags). A review step is
-  essential.
+  essential before any generated entry is merged.
 - Need to establish a reliable matching key between the two registries (Go module path is the most
   stable option).
+
+**Suggested incremental path**:
+
+Before committing to full automation, a dry-run experiment would be valuable to validate the
+matching logic and the quality of the generated output. Smaller investigation steps before that:
+
+1. Determine whether `license` can be derived automatically. All contrib components are Apache 2.0,
+   so this field may be inferrable without a sidecar.
+2. Determine whether `tags` are actually required for the opentelemetry.io registry search and
+   filtering. If the tags are predictable from component type and language, they could also be
+   generated rather than manually assigned.
+
+If both of those are derivable, the set of fields requiring manual input shrinks to `authors` and
+`createdAt`, which makes the human review step much lighter.
 
 **Effort**: Medium. Requires a new script or extending the collector-watcher.
 
