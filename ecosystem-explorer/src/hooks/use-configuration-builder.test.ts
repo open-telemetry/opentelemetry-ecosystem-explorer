@@ -24,7 +24,7 @@ import type {
   TextInputNode,
 } from "@/types/configuration";
 
-const STORAGE_KEY = "otel-config-builder-state-v2";
+const STORAGE_KEY = "otel-config-builder-state-v3";
 
 const mockSchema: GroupNode = {
   controlType: "group",
@@ -274,6 +274,24 @@ describe("useConfigurationBuilderState", () => {
           state: {
             version: "0.9.0",
             values: { file_format: "0.9" },
+            enabledSections: {},
+            validationErrors: {},
+            isDirty: true,
+          },
+        })
+      );
+      const { result } = renderHook(() => useConfigurationBuilderState(mockSchema, "1.0.0", null));
+      expect(result.current.state.values).toEqual({});
+    });
+
+    it("ignores state stored under the previous v2 storage key", () => {
+      localStorage.setItem(
+        "otel-config-builder-state-v2",
+        JSON.stringify({
+          schemaVersion: "1.0.0",
+          state: {
+            version: "1.0.0",
+            values: { file_format: "from-v2-storage" },
             enabledSections: {},
             validationErrors: {},
             isDirty: true,

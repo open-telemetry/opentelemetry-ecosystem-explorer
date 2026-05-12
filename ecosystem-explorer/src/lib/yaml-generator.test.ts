@@ -35,14 +35,21 @@ const emptyState: ConfigurationBuilderState = {
 };
 
 describe("generateYaml", () => {
-  it("generates default header and respects override", () => {
+  it("generates default header with schema version, file-loader hint, and respects override", () => {
     const defaultOutput = generateYaml(emptyState, emptySchema);
-    expect(defaultOutput).toContain("# OpenTelemetry SDK Configuration");
     expect(defaultOutput).toContain("# Schema version: 1.0.0");
+    expect(defaultOutput).toContain("#   -Dotel.config.file=/path/to/otel-config.yaml");
+    expect(defaultOutput).not.toContain("Java agent:");
 
     const overridden = generateYaml(emptyState, emptySchema, { header: "# custom" });
     expect(overridden.startsWith("# custom\n")).toBe(true);
     expect(overridden).not.toContain("# OpenTelemetry SDK Configuration");
+  });
+
+  it("includes the Java agent version when supplied via options", () => {
+    const output = generateYaml(emptyState, emptySchema, { javaAgentVersion: "2.27.0" });
+    expect(output).toContain("# Schema version: 1.0.0");
+    expect(output).toContain("Java agent: 2.27.0");
   });
 
   const fixtureSchema: ConfigNode = {
@@ -109,6 +116,8 @@ describe("generateYaml", () => {
 
     expect(output).toContain('file_format: "1.0"');
     expect(output).not.toContain("file_format: 1.0.1");
+    expect(output).not.toMatch(/^#[^\n]*\n[^\n]*file_format:/m);
+    expect(output).not.toContain("# File Format");
 
     const fileFormatIdx = output.indexOf("file_format:");
     const loggerIdx = output.indexOf("logger_provider:");
@@ -120,9 +129,9 @@ describe("generateYaml", () => {
     expect(resourceIdx).toBeGreaterThan(loggerIdx);
     expect(tracerIdx).toBeGreaterThan(resourceIdx);
 
-    expect(output).toContain("# Logger Provider — Configure logger provider.");
-    expect(output).toContain("# Resource — Configure resource for all signals.");
-    expect(output).toContain("# Tracer Provider — Configure tracer provider.");
+    expect(output).toContain("# Logger Provider: Configure logger provider.");
+    expect(output).toContain("# Resource: Configure resource for all signals.");
+    expect(output).toContain("# Tracer Provider: Configure tracer provider.");
 
     expect(output).not.toContain("legacy_thing");
   });

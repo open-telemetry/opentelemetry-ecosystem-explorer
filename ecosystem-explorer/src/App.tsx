@@ -103,12 +103,10 @@ export default function App() {
                 {isEnabled("JAVA_RELEASE_COMPARISON") && (
                   <Route path="/java-agent/releases" element={<JavaReleaseComparisonPage />} />
                 )}
-                {isEnabled("JAVA_CONFIG_BUILDER") && (
-                  <Route
-                    path="/java-agent/configuration/builder"
-                    element={<ConfigurationBuilderPage />}
-                  />
-                )}
+                <Route
+                  path="/java-agent/configuration/builder"
+                  element={<ConfigurationBuilderPage />}
+                />
                 <Route path="/collector" element={<CollectorPage />} />
                 {isEnabled("COLLECTOR_PAGE") && (
                   <>

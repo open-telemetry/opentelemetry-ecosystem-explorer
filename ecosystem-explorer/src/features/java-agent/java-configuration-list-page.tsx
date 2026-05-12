@@ -16,7 +16,6 @@
 import { ConfigurationIcon } from "@/components/icons/configuration-icon";
 import { BackButton } from "@/components/ui/back-button";
 import { NavigationCard } from "@/components/ui/navigation-card";
-import { isEnabled } from "@/lib/feature-flags";
 import { PageContainer } from "@/components/layout/page-container";
 
 export function JavaConfigurationListPage() {
@@ -31,18 +30,12 @@ export function JavaConfigurationListPage() {
             </span>
           </h1>
         </div>
-        {isEnabled("JAVA_CONFIG_BUILDER") ? (
-          <NavigationCard
-            title="Configuration Builder"
-            description="Build and customize your OpenTelemetry Java Agent configuration"
-            href="/java-agent/configuration/builder"
-            icon={<ConfigurationIcon className="h-16 w-16" />}
-          />
-        ) : (
-          <div className="border-border/50 bg-card/50 rounded-lg border p-8 text-center">
-            <p className="text-muted-foreground">Configuration Builder coming soon...</p>
-          </div>
-        )}
+        <NavigationCard
+          title="Configuration Builder"
+          description="Build and customize your OpenTelemetry Java Agent configuration"
+          href="/java-agent/configuration/builder"
+          icon={<ConfigurationIcon className="h-16 w-16" />}
+        />
       </div>
     </PageContainer>
   );
