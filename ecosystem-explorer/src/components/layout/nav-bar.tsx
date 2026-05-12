@@ -111,7 +111,7 @@ export function NavBar() {
                     className="nav-link"
                     href="https://opentelemetry.io/docs/"
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                   >
                     Docs
                   </a>

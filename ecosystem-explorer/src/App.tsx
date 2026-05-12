@@ -72,7 +72,7 @@ export default function App() {
     <BrowserRouter>
       <div className="bg-background flex min-h-screen flex-col">
         {isEnabled("V1_REDESIGN") ? <NavBar /> : <Header />}
-        <main className="flex-1 pt-[104px] md:pt-16">
+        <main className={`flex-1 ${isEnabled("V1_REDESIGN") ? "pt-[104px] md:pt-16" : "pt-16"}`}>
           <ErrorBoundary>
             <Suspense
               fallback={

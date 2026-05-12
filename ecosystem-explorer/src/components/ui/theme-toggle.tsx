@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { type JSX } from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { BsCircleHalf } from "@/components/icons/bs-icon-circle-half";
 import { BsSunFill } from "@/components/icons/bs-icon-sun-fill";
@@ -32,7 +33,7 @@ import { type ThemeMode, useTheme } from "@/theme-context";
 type Option = {
   mode: ThemeMode;
   label: string;
-  Icon: (props: { className?: string }) => React.JSX.Element;
+  Icon: (props: { className?: string }) => JSX.Element;
 };
 
 const OPTIONS: ReadonlyArray<Option> = [

@@ -35,7 +35,7 @@ describe("NavBar", () => {
 
     const homeLink = screen.getByRole("link", { name: /openTelemetry.*home/i });
     expect(homeLink).toHaveAttribute("href", "/");
-    expect(screen.getByTitle("OpenTelemetry")).toBeInTheDocument();
+    expect(screen.getByLabelText("OpenTelemetry")).toBeInTheDocument();
   });
 
   it("renders a single Docs link pointing to opentelemetry.io", () => {
@@ -44,7 +44,7 @@ describe("NavBar", () => {
     const docsLink = screen.getByRole("link", { name: /^docs$/i });
     expect(docsLink).toHaveAttribute("href", "https://opentelemetry.io/docs/");
     expect(docsLink).toHaveAttribute("target", "_blank");
-    expect(docsLink).toHaveAttribute("rel", "noreferrer");
+    expect(docsLink).toHaveAttribute("rel", "noopener noreferrer");
   });
 
   it("labels the primary navigation landmark", () => {
