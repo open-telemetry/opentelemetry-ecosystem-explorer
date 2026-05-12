@@ -96,5 +96,4 @@ describe("NavBar", () => {
 
     expect(toggler).toHaveAttribute("aria-expanded", "false");
   });
-
 });
