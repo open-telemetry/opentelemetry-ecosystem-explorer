@@ -20,6 +20,7 @@ interface VersionSelectorProps {
   versions: VersionInfo[];
   currentVersion: string;
   onVersionChange: (version: string) => void;
+  disabled?: boolean;
   label?: string;
   id?: string;
 }
@@ -28,6 +29,7 @@ export function VersionSelector({
   versions,
   currentVersion,
   onVersionChange,
+  disabled = false,
   label = "Version",
   id = "version-select",
 }: VersionSelectorProps) {
@@ -41,7 +43,8 @@ export function VersionSelector({
           id={id}
           value={currentVersion}
           onChange={(e) => onVersionChange(e.target.value)}
-          className="border-border/60 bg-background/80 focus:border-primary/50 focus:ring-primary/20 cursor-pointer appearance-none rounded-lg border py-1.5 pr-8 pl-3 text-sm font-medium backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none"
+          disabled={disabled}
+          className="border-border/60 bg-background/80 focus:border-primary/50 focus:ring-primary/20 cursor-pointer appearance-none rounded-lg border py-1.5 pr-8 pl-3 text-sm font-medium backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
         >
           {versions.map((v) => (
             <option key={v.version} value={v.version}>
