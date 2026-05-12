@@ -24,9 +24,23 @@ const SCREENSHOTS_DIR = path.resolve("screenshots");
 const PORT = 4173;
 const BASE_URL = `http://localhost:${PORT}`;
 
-// Pick an instrumentation known to have telemetry and configuration data
-const DETAIL_VERSION = "2.25.0";
+// Resolve latest versions at runtime from the generated data files.
+// This prevents the script from going stale when new versions are released.
+function resolveLatestVersion(indexPath) {
+  const index = JSON.parse(fs.readFileSync(indexPath, "utf-8"));
+  const latest = index.versions.find((v) => v.is_latest);
+  if (!latest) throw new Error(`No latest version found in ${indexPath}`);
+  return latest.version;
+}
+
+const DETAIL_VERSION = resolveLatestVersion(
+  path.resolve("public/data/javaagent/versions-index.json")
+);
 const DETAIL_NAME = "spring-webmvc-6.0";
+const COLLECTOR_VERSION = resolveLatestVersion(
+  path.resolve("public/data/collector/versions-index.json")
+);
+const COLLECTOR_DETAIL_ID = "core-receiver-otlpreceiver";
 
 // Viewport sizes captured for each page. Edit here to add, remove, or resize.
 const VIEWPORTS = [
@@ -34,6 +48,9 @@ const VIEWPORTS = [
   { name: "tablet", width: 768, height: 1024 },
   { name: "mobile", width: 390, height: 844 },
 ];
+
+// Themes captured for each page/viewport. Dark first because it's the default.
+const THEMES = ["dark", "light"];
 
 async function startServer() {
   return new Promise((resolve) => {
@@ -104,6 +121,16 @@ async function clickTab(page, name) {
   }
 }
 
+async function assertNoError(page, url) {
+  const errorHeading = page.getByRole("heading", { name: /error/i });
+  const notFound = page.getByRole("heading", { name: /not found/i });
+  const hasError = await errorHeading.isVisible().catch(() => false);
+  const has404 = await notFound.isVisible().catch(() => false);
+  if (hasError || has404) {
+    throw new Error(`Screenshot aborted: error page detected at ${url}`);
+  }
+}
+
 async function takeScreenshots() {
   const server = await startServer();
   let browser;
@@ -115,7 +142,6 @@ async function takeScreenshots() {
 
     logTime("Launching browser...");
     browser = await chromium.launch({ headless: true });
-    const page = await browser.newPage();
 
     // Block external requests that can cause timeouts
     const BLOCKED_HOSTS = new Set([
@@ -124,7 +150,7 @@ async function takeScreenshots() {
       "fonts.googleapis.com",
       "fonts.gstatic.com",
     ]);
-    await page.route("**/*", (route) => {
+    const blockExternal = (route) => {
       try {
         const hostname = new URL(route.request().url()).hostname;
         if (
@@ -138,59 +164,78 @@ async function takeScreenshots() {
         // If URL parsing fails, allow the request
       }
       route.continue();
-    });
+    };
 
     logTime("Browser ready");
 
-    for (const viewport of VIEWPORTS) {
-      logTime(`Starting ${viewport.name} (${viewport.width}×${viewport.height})...`);
-      await page.setViewportSize({ width: viewport.width, height: viewport.height });
-      const p = (name) => path.join(SCREENSHOTS_DIR, `${viewport.name}-${name}.png`);
+    for (const theme of THEMES) {
+      logTime(`Starting theme: ${theme}`);
+      const context = await browser.newContext({ colorScheme: theme });
+      const page = await context.newPage();
+      await page.route("**/*", blockExternal);
 
-      // 1. Home page
-      await page.goto(BASE_URL, { waitUntil: "domcontentloaded", timeout: 10000 });
-      await page.waitForSelector("h1", { state: "visible", timeout: 5000 });
-      await page.screenshot({ path: p("home") });
+      try {
+        for (const viewport of VIEWPORTS) {
+          logTime(`  ${theme} / ${viewport.name} (${viewport.width}×${viewport.height})...`);
+          await page.setViewportSize({ width: viewport.width, height: viewport.height });
+          const p = (name) => path.join(SCREENSHOTS_DIR, `${viewport.name}-${theme}-${name}.png`);
 
-      // 2. Java agent instrumentation list
-      await page.goto(`${BASE_URL}/java-agent/instrumentation`, {
-        waitUntil: "domcontentloaded",
-        timeout: 10000,
-      });
-      await settle(page);
-      await page.screenshot({ path: p("instrumentation-list") });
+          // 1. Home page
+          await page.goto(BASE_URL, { waitUntil: "domcontentloaded", timeout: 10000 });
+          await page.waitForSelector("h1", { state: "visible", timeout: 5000 });
+          await assertNoError(page, BASE_URL);
+          await page.screenshot({ path: p("home") });
 
-      // 3. Java agent instrumentation detail - Details tab
-      const detailUrl = `${BASE_URL}/java-agent/instrumentation/${DETAIL_VERSION}/${DETAIL_NAME}`;
-      await page.goto(detailUrl, { waitUntil: "domcontentloaded", timeout: 10000 });
-      await settle(page);
-      await page.screenshot({ path: p("detail-details"), fullPage: true });
+          // 2. Java agent instrumentation list
+          await page.goto(`${BASE_URL}/java-agent/instrumentation`, {
+            waitUntil: "domcontentloaded",
+            timeout: 10000,
+          });
+          await settle(page);
+          await assertNoError(page, `${BASE_URL}/java-agent/instrumentation`);
+          await page.screenshot({ path: p("instrumentation-list") });
 
-      // 4. Telemetry tab (skipped gracefully if tabs aren't present in this branch)
-      await clickTab(page, "Telemetry");
-      await page.screenshot({ path: p("detail-telemetry"), fullPage: true });
+          // 3. Java agent instrumentation detail - Details tab
+          const detailUrl = `${BASE_URL}/java-agent/instrumentation/${DETAIL_VERSION}/${DETAIL_NAME}`;
+          await page.goto(detailUrl, { waitUntil: "domcontentloaded", timeout: 10000 });
+          await settle(page);
+          await assertNoError(page, detailUrl);
+          await page.screenshot({ path: p("detail-details"), fullPage: true });
 
-      // 5. Configuration tab (skipped gracefully if tabs aren't present in this branch)
-      await clickTab(page, "Configuration");
-      await page.screenshot({ path: p("detail-configuration"), fullPage: true });
+          // 4. Telemetry tab (skipped gracefully if tabs aren't present in this branch)
+          await clickTab(page, "Telemetry");
+          await assertNoError(page, detailUrl);
+          await page.screenshot({ path: p("detail-telemetry"), fullPage: true });
 
-      // 6. Collector list
-      await page.goto(`${BASE_URL}/collector/components`, {
-        waitUntil: "domcontentloaded",
-        timeout: 10000,
-      });
-      await settle(page);
-      await page.screenshot({ path: p("collector-list") });
+          // 5. Configuration tab (skipped gracefully if tabs aren't present in this branch)
+          await clickTab(page, "Configuration");
+          await assertNoError(page, detailUrl);
+          await page.screenshot({ path: p("detail-configuration"), fullPage: true });
 
-      // 7. Collector detail
-      await page.goto(`${BASE_URL}/collector/components/latest/receiver-otlp`, {
-        waitUntil: "domcontentloaded",
-        timeout: 10000,
-      });
-      await settle(page);
-      await page.screenshot({ path: p("collector-detail"), fullPage: true });
+          // 6. Collector list
+          await page.goto(`${BASE_URL}/collector/components`, {
+            waitUntil: "domcontentloaded",
+            timeout: 10000,
+          });
+          await settle(page);
+          await assertNoError(page, `${BASE_URL}/collector/components`);
+          await page.screenshot({ path: p("collector-list") });
 
-      logTime(`${viewport.name} done`);
+          // 7. Collector detail
+          const collectorDetailUrl = `${BASE_URL}/collector/components/${COLLECTOR_VERSION}/${COLLECTOR_DETAIL_ID}`;
+          await page.goto(collectorDetailUrl, {
+            waitUntil: "domcontentloaded",
+            timeout: 10000,
+          });
+          await settle(page);
+          await assertNoError(page, collectorDetailUrl);
+          await page.screenshot({ path: p("collector-detail"), fullPage: true });
+
+          logTime(`  ${theme} / ${viewport.name} done`);
+        }
+      } finally {
+        await context.close();
+      }
     }
 
     logTime("All screenshots completed successfully!");

@@ -447,11 +447,10 @@ These were carried over from `00-foundation.md`.
       migrate in a follow-up cleanup PR after Phase 1.
 - [x] Pin the stability-terminology mapping (Q5) — locked: six-level OTel collector spec
       (development / alpha / beta / stable / deprecated / unmaintained).
-- [x] Add `V1_REDESIGN` to `FEATURE_FLAGS` (one-line PR — can ship first as a no-op). The
-      `netlify.toml` build command already pattern-matches `feat/84-*` to enable the flag, so
-      previews on those branches will pick it up immediately once the flag exists in
-      `lib/feature-flags.ts`.
-- [ ] Reconcile color drift: rewrite `index.css` defaults to match the actual default theme.
+- [x] Add `V1_REDESIGN` to `FEATURE_FLAGS` — already done on `main` (added alongside
+      `JAVA_RELEASE_COMPARISON` in a prior commit). `netlify.toml` was also already wired. Flag is a
+      no-op until PR 2 wires it into `App.tsx`.
+- [ ] Reconcile color drift: rewrite `index.css` defaults to match the actual default theme. (PR 1)
 
 Once these are done, the first PR is **"Add light + dark + auto theme system + theme toggle in
 navbar"** — small, visible, low-risk, gated by `V1_REDESIGN` so it can land without disrupting

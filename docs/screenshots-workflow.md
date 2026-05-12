@@ -7,11 +7,11 @@ as an inline PR comment.
 
 The workflow is split across three files to support fork PRs safely:
 
-| File                      | Trigger                          | Token                                     | Responsibility                                                                 |
-| ------------------------- | -------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------ |
-| `screenshots-capture.yml` | `pull_request`                   | `contents: read`                          | Builds the app, captures screenshots, uploads artifacts                        |
-| `screenshots-commit.yml`  | `workflow_run` (after capture)   | `contents: write`, `pull-requests: write` | Downloads artifacts, commits to `otelbot/screenshots` branch, posts PR comment |
-| `screenshots-cleanup.yml` | `pull_request_target` (on close) | `contents: write`                         | Deletes the PR's subfolder from the `otelbot/screenshots` branch               |
+| File                      | Trigger                          | Token                                     | Responsibility                                                                                                                        |
+| ------------------------- | -------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `screenshots-capture.yml` | `pull_request`                   | `contents: read`                          | Builds the app, captures screenshots, uploads artifacts                                                                               |
+| `screenshots-commit.yml`  | `workflow_run` (after capture)   | `contents: write`, `pull-requests: write` | Downloads artifacts, commits to `otelbot/screenshots` branch, posts PR comment                                                        |
+| `screenshots-cleanup.yml` | `pull_request_target` (on close) | `contents: write`                         | Currently disabled (`if: false`). Originally deleted the PR's subfolder on close; retained as a no-op so old PR comments keep working |
 
 **Why two workflows for capture + commit?** GitHub restricts fork PRs from running workflows with
 write access. Splitting into a read-only capture phase and a write-capable commit phase (triggered
@@ -31,24 +31,31 @@ The layout is flat:
 ```text
 screenshots (branch)
 ├── 377/
-│   ├── desktop-home.png
-│   ├── tablet-home.png
-│   ├── mobile-home.png
-│   ├── desktop-instrumentation-list.png
+│   ├── desktop-light-home.png
+│   ├── desktop-dark-home.png
+│   ├── tablet-light-home.png
+│   ├── tablet-dark-home.png
+│   ├── mobile-light-home.png
+│   ├── mobile-dark-home.png
+│   ├── desktop-light-instrumentation-list.png
 │   └── ...
 ├── 381/
 │   └── ...
 └── ...
 ```
 
-The commit workflow creates the `otelbot/screenshots` branch automatically on first run. When a PR
-closes, the cleanup workflow deletes its subfolder and commits the removal.
+The commit workflow creates the `otelbot/screenshots` branch automatically on first run. The cleanup
+workflow is currently disabled (gated by `if: false`) so PR subfolders are retained indefinitely,
+which keeps image links in older PR comments alive. Flip the gate to `true` if deletion-on-close
+needs to come back.
 
 Raw content URLs follow the pattern:
 
 ```text
-https://raw.githubusercontent.com/open-telemetry/opentelemetry-ecosystem-explorer/otelbot/screenshots/<pr>/<viewport>-<page>.png
+https://raw.githubusercontent.com/open-telemetry/opentelemetry-ecosystem-explorer/otelbot/screenshots/<pr>/<viewport>-<theme>-<page>.png
 ```
+
+where `<theme>` is `light` or `dark`.
 
 These URLs are embedded directly in the PR comment as inline images.
 
@@ -69,8 +76,9 @@ const VIEWPORTS = [
 ];
 ```
 
-Add, remove, or resize entries there. The `name` field becomes the filename prefix
-(`desktop-home.png`) and the column header in the PR comment table.
+Add, remove, or resize entries there. The `name` field becomes the filename prefix and the column
+header in the PR comment table. Each viewport is captured twice (light + dark), yielding filenames
+like `desktop-light-home.png` and `desktop-dark-home.png`.
 
 ## Adding or removing pages
 
@@ -78,8 +86,10 @@ Pages are captured sequentially inside the viewport loop in `take-screenshots.mj
 navigate to the URL and call `page.screenshot()` with an appropriate name. To remove a page, delete
 its navigation block.
 
-The PR comment table is built from a hardcoded `pages` list in the `Build comment body` step of
-`screenshots-commit.yml`. Update it to match any changes to the page set in the script.
+The PR comment renders one collapsible `<details>` block per page (closed by default), each
+containing a Light and a Dark viewport table. Both the page list and the per-page section are built
+from a hardcoded `pages` list in the `Build comment body` step of `screenshots-commit.yml`. Update
+it to match any changes to the page set in the script.
 
 ## Fork PR limitations
 
