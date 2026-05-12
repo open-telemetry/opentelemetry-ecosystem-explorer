@@ -78,17 +78,17 @@ export function InstrumentationFilterBar({
   }, [instrumentations]);
 
   return (
-    <div className="border-border/60 bg-card/80 relative rounded-lg border p-6">
+    <div className="border-border/60 bg-card/80 relative overflow-hidden rounded-lg border p-6">
       {/* Ambient radial gradient background */}
-      <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-lg">
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              "radial-gradient(circle at top left, hsl(var(--secondary-hsl) / 0.08) 0%, hsl(var(--primary-hsl) / 0.04) 40%, transparent 70%)",
-          }}
-        />
+      <div
+        className="absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(circle at top left, hsl(var(--otel-orange-hsl) / 0.08) 0%, hsl(var(--otel-blue-hsl) / 0.04) 40%, transparent 70%)",
+        }}
+      />
 
+      <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-lg">
         <div className="absolute inset-0 opacity-5">
           <div
             className="h-full w-full"
@@ -225,7 +225,7 @@ export function InstrumentationFilterBar({
         <svg viewBox="0 0 64 64" className="h-full w-full">
           <path
             d="M64 64 L64 40 L52 40 L52 52 L40 52 L40 64 Z"
-            style={{ fill: "hsl(var(--primary-hsl) / 0.4)" }}
+            style={{ fill: "hsl(var(--otel-orange-hsl) / 0.4)" }}
           />
         </svg>
       </div>

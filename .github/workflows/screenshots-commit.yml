@@ -42,17 +42,9 @@ jobs:
           echo "head_repo=$(cat /tmp/pr-metadata/head_repo.txt)" >> "$GITHUB_OUTPUT"
           echo "head_sha=$(cat /tmp/pr-metadata/head_sha.txt)"   >> "$GITHUB_OUTPUT"
 
-      - name: Get otelbot token
-        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
-        id: otelbot-token
-        with:
-          app-id: ${{ vars.OTELBOT_APP_ID }}
-          private-key: ${{ secrets.OTELBOT_PRIVATE_KEY }}
-
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          token: ${{ steps.otelbot-token.outputs.token }}
           fetch-depth: 0
 
       - name: Download screenshots artifact
@@ -129,13 +121,26 @@ jobs:
           base_url   = f"https://raw.githubusercontent.com/{repo}/otelbot/screenshots/{pr_number}"
           timestamp  = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
-          def table(slug):
+          VIEWPORTS = ("desktop", "tablet", "mobile")
+
+          def theme_table(slug, theme):
+              cells = " | ".join(
+                  f"![{slug} {vp} {theme}]({base_url}/{vp}-{theme}-{slug}.png)"
+                  for vp in VIEWPORTS
+              )
               return (
                   "| Desktop | Tablet | Mobile |\n"
                   "|---|---|---|\n"
-                  f"| ![{slug} desktop]({base_url}/desktop-{slug}.png)"
-                  f" | ![{slug} tablet]({base_url}/tablet-{slug}.png)"
-                  f" | ![{slug} mobile]({base_url}/mobile-{slug}.png) |"
+                  f"| {cells} |"
+              )
+
+          def page_section(label, slug):
+              return (
+                  f"<details>\n"
+                  f"<summary><strong>{label}</strong></summary>\n\n"
+                  f"**Light**\n\n{theme_table(slug, 'light')}\n\n"
+                  f"**Dark**\n\n{theme_table(slug, 'dark')}\n\n"
+                  f"</details>"
               )
 
           pages = [
@@ -148,9 +153,7 @@ jobs:
               ("Collector Detail",            "collector-detail"),
           ]
 
-          sections = "\n\n".join(
-              f"**{label}**\n\n{table(slug)}" for label, slug in pages
-          )
+          sections = "\n\n".join(page_section(label, slug) for label, slug in pages)
 
           footer = (
               f"_Captured from [`{short_sha}`]({commit_url}) on `{head_ref}` "
@@ -163,6 +166,13 @@ jobs:
           with open("/tmp/comment_body.txt", "w") as f:
               f.write(body)
           PYEOF
+
+      - name: Get otelbot token
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        id: otelbot-token
+        with:
+          app-id: ${{ vars.OTELBOT_APP_ID }}
+          private-key: ${{ secrets.OTELBOT_PRIVATE_KEY }}
 
       - name: Post or update PR comment
         env:

@@ -37,7 +37,7 @@ export function SubInstrumentationItem({
   return (
     <Link
       to={detailUrl}
-      className="border-primary/30 bg-background/50 hover:bg-card-secondary/50 hover:border-primary/60 block rounded-md border-l-2 p-3 transition-colors"
+      className="border-secondary/30 bg-background/50 hover:bg-card-secondary/50 hover:border-secondary/60 block rounded-md border-l-2 p-3 transition-colors"
       aria-label={`View details for ${instrumentation.name}`}
     >
       <div className="flex items-center justify-between gap-2">
