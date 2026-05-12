@@ -38,7 +38,6 @@ export function JavaConfigurationListPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch the newly aggregated configurations
   useEffect(() => {
     fetch("/data/javaagent/global-configurations.json")
       .then((res) => {
