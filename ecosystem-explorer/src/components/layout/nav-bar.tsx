@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { OpenTelemetryWordmark } from "@/components/icons/opentelemetry-wordmark";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 
@@ -32,11 +32,9 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
  */
 export function NavBar() {
   const [isOpen, setIsOpen] = useState(false);
-  const { pathname } = useLocation();
 
-  useEffect(() => {
-    setIsOpen(false);
-  }, [pathname]);
+  // When internal links land inside the collapsed panel, close it from each
+  // link's `onClick` rather than reintroducing a pathname-watching effect.
 
   useEffect(() => {
     if (!isOpen) return;

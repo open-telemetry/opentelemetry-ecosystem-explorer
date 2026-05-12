@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import { MemoryRouter, Route, Routes, useNavigate } from "react-router-dom";
+import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect } from "vitest";
 import { NavBar } from "./nav-bar";
 import { ThemeProvider } from "@/theme-context";
@@ -97,34 +97,4 @@ describe("NavBar", () => {
     expect(toggler).toHaveAttribute("aria-expanded", "false");
   });
 
-  it("collapses the panel when the route changes", () => {
-    function Pusher() {
-      const navigate = useNavigate();
-      return (
-        <button type="button" onClick={() => navigate("/about")}>
-          go
-        </button>
-      );
-    }
-
-    render(
-      <MemoryRouter initialEntries={["/"]}>
-        <ThemeProvider>
-          <NavBar />
-          <Routes>
-            <Route path="/" element={<Pusher />} />
-            <Route path="/about" element={<div>about</div>} />
-          </Routes>
-        </ThemeProvider>
-      </MemoryRouter>
-    );
-
-    const toggler = screen.getByRole("button", { name: /toggle navigation/i });
-    fireEvent.click(toggler);
-    expect(toggler).toHaveAttribute("aria-expanded", "true");
-
-    fireEvent.click(screen.getByRole("button", { name: /^go$/i }));
-
-    expect(toggler).toHaveAttribute("aria-expanded", "false");
-  });
 });
