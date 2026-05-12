@@ -161,9 +161,7 @@ export function JavaInstrumentationListPage() {
             <AlertCircle className="mx-auto h-12 w-12 opacity-50" aria-hidden="true" />
             <h3 className="text-xl font-semibold">Error loading data</h3>
             {(versionsError ?? error)?.message && (
-              <p className="text-muted-foreground text-sm">
-                {(versionsError ?? error)!.message}
-              </p>
+              <p className="text-muted-foreground text-sm">{(versionsError ?? error)!.message}</p>
             )}
             <p className="text-muted-foreground">Please try refreshing the page.</p>
           </div>
