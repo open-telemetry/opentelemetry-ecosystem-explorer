@@ -55,6 +55,8 @@ not sprinkled across components. No new infrastructure.
 
 ## File layout
 
+<!-- markdownlint-disable MD013 -->
+
 ```text
 src/
 ├── App.tsx                  ← BrowserRouter; post-pivot, a single V1_REDESIGN boundary read swaps <V1App /> for <LegacyApp />
