@@ -28,7 +28,7 @@ export function ConfigurationIcon({ className }: { className?: string }) {
         width="120"
         height="120"
         rx="8"
-        fill="hsl(var(--primary-hsl))"
+        fill="hsl(var(--otel-orange-hsl))"
         opacity="0.08"
       />
       <rect
@@ -38,7 +38,7 @@ export function ConfigurationIcon({ className }: { className?: string }) {
         height="120"
         rx="8"
         fill="none"
-        stroke="hsl(var(--primary-hsl))"
+        stroke="hsl(var(--otel-orange-hsl))"
         strokeWidth="3"
       />
 
@@ -50,7 +50,7 @@ export function ConfigurationIcon({ className }: { className?: string }) {
           y1="70"
           x2="135"
           y2="70"
-          stroke="hsl(var(--primary-hsl))"
+          stroke="hsl(var(--otel-orange-hsl))"
           strokeWidth="3"
           opacity="0.3"
         />
@@ -60,12 +60,12 @@ export function ConfigurationIcon({ className }: { className?: string }) {
           y1="70"
           x2="95"
           y2="70"
-          stroke="hsl(var(--primary-hsl))"
+          stroke="hsl(var(--otel-orange-hsl))"
           strokeWidth="3"
           opacity="0.8"
         />
         {/* Knob */}
-        <circle cx="95" cy="70" r="8" fill="hsl(var(--primary-hsl))" />
+        <circle cx="95" cy="70" r="8" fill="hsl(var(--otel-orange-hsl))" />
         <circle cx="95" cy="70" r="5" fill="white" opacity="0.3" />
       </g>
 
@@ -76,7 +76,7 @@ export function ConfigurationIcon({ className }: { className?: string }) {
           y1="100"
           x2="135"
           y2="100"
-          stroke="hsl(var(--primary-hsl))"
+          stroke="hsl(var(--otel-orange-hsl))"
           strokeWidth="3"
           opacity="0.3"
         />
@@ -85,11 +85,11 @@ export function ConfigurationIcon({ className }: { className?: string }) {
           y1="100"
           x2="120"
           y2="100"
-          stroke="hsl(var(--primary-hsl))"
+          stroke="hsl(var(--otel-orange-hsl))"
           strokeWidth="3"
           opacity="0.8"
         />
-        <circle cx="120" cy="100" r="8" fill="hsl(var(--primary-hsl))" />
+        <circle cx="120" cy="100" r="8" fill="hsl(var(--otel-orange-hsl))" />
         <circle cx="120" cy="100" r="5" fill="white" opacity="0.3" />
       </g>
 
@@ -100,7 +100,7 @@ export function ConfigurationIcon({ className }: { className?: string }) {
           y1="130"
           x2="135"
           y2="130"
-          stroke="hsl(var(--primary-hsl))"
+          stroke="hsl(var(--otel-orange-hsl))"
           strokeWidth="3"
           opacity="0.3"
         />
@@ -109,23 +109,30 @@ export function ConfigurationIcon({ className }: { className?: string }) {
           y1="130"
           x2="80"
           y2="130"
-          stroke="hsl(var(--primary-hsl))"
+          stroke="hsl(var(--otel-orange-hsl))"
           strokeWidth="3"
           opacity="0.8"
         />
-        <circle cx="80" cy="130" r="8" fill="hsl(var(--primary-hsl))" />
+        <circle cx="80" cy="130" r="8" fill="hsl(var(--otel-orange-hsl))" />
         <circle cx="80" cy="130" r="5" fill="white" opacity="0.3" />
       </g>
 
       {/* Gear icon accent in top-right */}
       <g transform="translate(145, 55)">
-        <circle cx="0" cy="0" r="10" fill="none" stroke="hsl(var(--primary-hsl))" strokeWidth="2" />
-        <circle cx="0" cy="0" r="4" fill="hsl(var(--primary-hsl))" opacity="0.6" />
+        <circle
+          cx="0"
+          cy="0"
+          r="10"
+          fill="none"
+          stroke="hsl(var(--otel-orange-hsl))"
+          strokeWidth="2"
+        />
+        <circle cx="0" cy="0" r="4" fill="hsl(var(--otel-orange-hsl))" opacity="0.6" />
         {/* Gear teeth */}
-        <rect x="-2" y="-12" width="4" height="4" fill="hsl(var(--primary-hsl))" />
-        <rect x="-2" y="8" width="4" height="4" fill="hsl(var(--primary-hsl))" />
-        <rect x="-12" y="-2" width="4" height="4" fill="hsl(var(--primary-hsl))" />
-        <rect x="8" y="-2" width="4" height="4" fill="hsl(var(--primary-hsl))" />
+        <rect x="-2" y="-12" width="4" height="4" fill="hsl(var(--otel-orange-hsl))" />
+        <rect x="-2" y="8" width="4" height="4" fill="hsl(var(--otel-orange-hsl))" />
+        <rect x="-12" y="-2" width="4" height="4" fill="hsl(var(--otel-orange-hsl))" />
+        <rect x="8" y="-2" width="4" height="4" fill="hsl(var(--otel-orange-hsl))" />
       </g>
     </svg>
   );

@@ -43,8 +43,22 @@ jobs:
       - name: Install Playwright browsers
         run: bunx playwright install --with-deps chromium
 
+      - name: Resolve feature flags
+        id: flags
+        env:
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+        run: |
+          V1_REDESIGN=false
+          if [[ "$HEAD_REF" == feat/84-* ]]; then
+            V1_REDESIGN=true
+          fi
+          echo "v1_redesign=$V1_REDESIGN" >> "$GITHUB_OUTPUT"
+
       - name: Build the frontend
         run: bun run build
+        env:
+          VITE_FEATURE_FLAG_COLLECTOR_PAGE: "true"
+          VITE_FEATURE_FLAG_V1_REDESIGN: ${{ steps.flags.outputs.v1_redesign }}
 
       - name: Create screenshots directory
         run: mkdir -p screenshots
