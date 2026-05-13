@@ -53,8 +53,15 @@ Concretely:
   top-level component `<V1App />` defines its own `<Routes>`.
 - **`src/App.tsx` reduces to a single boundary read:**
   `isEnabled("V1_REDESIGN") ? <V1App /> : <LegacyApp />`. That is the only place `V1_REDESIGN` is
-  referenced in runtime code. No flag reads in `main.tsx`, no flag reads inside components, no
-  `data-v1-redesign` attribute on `<html>`.
+  referenced for application routing decisions. No `data-v1-redesign` attribute on `<html>` (the
+  class-based scoping below replaces it).
+- **One narrow carve-out in `main.tsx` for early-paint styling.** `main.tsx` reads the flag once to
+  add the `.v1-app` class to `<html>` before React mounts. This keeps body bg painted against v1
+  surface tokens from the first paint (zero navy-to-v1 flash during the React mount window). The
+  flag value is build-time-constant via Vite's `import.meta.env` substitution, so the conditional
+  evaluates once per build. CSS variables declared on `.v1-app` cascade through `<body>` via
+  `body { background-color: hsl(var(--background-hsl)) }` in `src/styles/base.css`. PR 2b
+  implements this; PR 8 cleanup removes it along with the App.tsx boundary read.
 - **No URL prefix.** v1 mounts at the canonical paths (`/`, `/java-agent/...`, etc.). Both sub-apps
   own the same path space; the boundary read decides which one is reachable.
 - **Per-deploy bundle selection.** The existing `netlify.toml` pattern (`feat/84-*` branches set
@@ -67,13 +74,16 @@ includes `StatusPill`, `GlowBadge`, `ThemeToggle`, and future `TypeStripe` / `Ca
 page-level features that exist only for v1 live under `src/v1/`. No retroactive moves of code
 already merged on `main` (PR 1 theme system, PR 4 StatusPill).
 
-**Cutover model.** The cleanup PR (PR 8) does four things in one diff:
+**Cutover model.** The cleanup PR (PR 8) does five things in one diff:
 
 1. Removes the `isEnabled("V1_REDESIGN")` read in `src/App.tsx`.
-2. Deletes the `<LegacyApp />` branch.
-3. Deletes legacy chrome (`src/components/layout/header.tsx`, the legacy `Footer`) and legacy
+2. Removes the `main.tsx` carve-out that adds `.v1-app` to `<html>` pre-mount (after cutover, v1
+   is unconditional, so the class can move to a static `<html class="v1-app">` in `index.html` —
+   or the v1 surface tokens can move back to `:root` since they're the only palette).
+3. Deletes the `<LegacyApp />` branch.
+4. Deletes legacy chrome (`src/components/layout/header.tsx`, the legacy `Footer`) and legacy
    feature directories that v1 has replaced.
-4. Removes the `V1_REDESIGN` entry from `src/lib/feature-flags.ts` and the `feat/84-*` pattern from
+5. Removes the `V1_REDESIGN` entry from `src/lib/feature-flags.ts` and the `feat/84-*` pattern from
    `netlify.toml`.
 
 After cutover, v1 is the only app. `src/v1/` stays in place; a future flattening (hoisting
@@ -94,7 +104,10 @@ After cutover, v1 is the only app. `src/v1/` stays in place; a future flattening
 - **PRs 4 (StatusPill — already shipped), 5 (TypeStripe + Card), 7 (Playwright)** continue to use
   `src/components/ui/`. Cross-cutting primitives stay shared.
 - **CSS scoping that depended on the `data-v1-redesign` attribute** moves into v1-only stylesheets
-  imported by `src/v1/`, or gets scoped via a class set by `<V1App />`. PR 2b decides which.
+  imported by `src/v1/` under the `.v1-app` class. `main.tsx`'s one-line carve-out (above) sets
+  the class on `<html>` pre-mount so the cascade reaches `<body>`. `<V1App />`'s wrapper `<div
+  className="v1-app">` also carries the class for nested scoping. **Locked in PR 2b's grilling
+  session (2026-05-13).**
 
 ## Supersedes
 

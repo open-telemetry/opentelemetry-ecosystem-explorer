@@ -300,19 +300,42 @@ const FEATURE_FLAGS = [
 ### Use the flag (App.tsx boundary pattern)
 
 ```tsx
+import { BrowserRouter } from "react-router-dom";
 import { isEnabled } from "@/lib/feature-flags";
-import { LegacyApp } from "@/legacy/LegacyApp"; // or inline in App.tsx
-import { V1App } from "@/v1/V1App";
+import { LegacyApp } from "@/LegacyApp";
+import { V1App } from "@/v1";
 
 export default function App() {
-  return isEnabled("V1_REDESIGN") ? <V1App /> : <LegacyApp />;
+  return <BrowserRouter>{isEnabled("V1_REDESIGN") ? <V1App /> : <LegacyApp />}</BrowserRouter>;
 }
 ```
 
-`<V1App />` lives at `src/v1/V1App.tsx` and owns its own `<BrowserRouter>` (or shared) +
-`<Routes>` + chrome (`<NavBar />`, `<Footer />`, `<CncfCallout />`). `<LegacyApp />` is the
-pre-pivot router subtree (`<Header />` + existing `<Routes>` + `<Footer />`). Each Netlify deploy
-bundles whichever branch is reachable; the unused branch is tree-shaken out.
+A single `<BrowserRouter>` wraps both sub-apps so they share a Router instance and the URL bar
+behaves identically. `<V1App />` lives at `src/v1/V1App.tsx` and owns its own `<Routes>` + chrome
+(`<NavBar />`, `<Footer />` placeholder until PR 6, `<CncfCallout />` in PR 6). `<LegacyApp />`
+lives at `src/LegacyApp.tsx` and is the pre-pivot router subtree (`<Header />` + existing
+`<Routes>` + legacy `<Footer />`).
+
+Both sub-apps mirror the same route list — the v1 route table starts identical to legacy (rendering
+the same lazy-loaded page components) and each Phase 2-5 PR swaps one route's component to its v1
+version. `LegacyApp.tsx`'s table is frozen until PR 8 deletes it.
+
+Per-deploy bundle: both branches ship in both bundles because `isEnabled()` uses computed-key env
+access that Vite's static-replacement pass can't constant-fold. Cost is ~5KB JS + ~11KB CSS of
+unused selectors per build — accepted in exchange for keeping the flag-read convention consistent
+across the codebase. CSS doesn't leak: v1 stylesheets are imported only by `<V1App />` and selectors
+use `.td-navbar`, `.td-light-dark-menu__*`, or `.v1-app` — none of which match elements rendered by
+`<LegacyApp />`.
+
+### CSS scoping
+
+v1 stylesheets live under `src/v1/styles/` (aggregated by `src/v1/styles/index.css`, imported by
+`<V1App />`). Surface-token overrides that the dormant `[data-v1-redesign]` block carried in
+`src/styles/tokens.css` move to `src/v1/styles/tokens.css` and re-scope from
+`[data-v1-redesign="true"][data-theme="X"]` to `.v1-app` (dark default) +
+`[data-theme="light"] .v1-app` (light override). `data-theme` lives on `<html>` (ThemeProvider
+contract, unchanged); `.v1-app` is the class on `<V1App />`'s root div. Cascade keeps the override
+inside V1App's subtree.
 
 ### Enable locally
 
