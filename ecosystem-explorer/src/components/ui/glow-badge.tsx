@@ -15,7 +15,15 @@
  */
 import React from "react";
 
-type BadgeVariant = "accent" | "secondary" | "success" | "info" | "warning" | "error" | "muted";
+type BadgeVariant =
+  | "primary"
+  | "accent"
+  | "secondary"
+  | "success"
+  | "info"
+  | "warning"
+  | "error"
+  | "muted";
 
 interface GlowBadgeProps {
   children: React.ReactNode;
@@ -25,6 +33,10 @@ interface GlowBadgeProps {
 }
 
 const variantStyles: Record<BadgeVariant, { base: string; glow: string }> = {
+  primary: {
+    base: "bg-primary/10 border-primary/30 text-primary",
+    glow: "shadow-sm shadow-primary/20",
+  },
   accent: {
     base: "bg-secondary/10 border-secondary/30 text-secondary",
     glow: "shadow-sm shadow-secondary/20",
@@ -61,7 +73,7 @@ export function GlowBadge({
   withGlow = false,
   className = "",
 }: GlowBadgeProps) {
-  const styles = variantStyles[variant];
+  const styles = variantStyles[variant] || variantStyles["accent"];
   const glowClass = withGlow ? styles.glow : "";
 
   return (

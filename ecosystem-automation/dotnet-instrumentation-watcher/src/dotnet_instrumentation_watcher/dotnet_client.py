@@ -52,7 +52,12 @@ class DotNetInstrumentationClient:
         self._session.mount("https://", adapter)
 
     def _get_search_url(self) -> str:
-        """Resolve the search URL from the NuGet service index."""
+        """Resolve the search URL from the NuGet service index.
+
+        Raises:
+            NuGetAPIError: If the service index cannot be fetched or does not
+                contain a SearchQueryService resource.
+        """
         if self._search_url:
             return self._search_url
 
@@ -60,19 +65,22 @@ class DotNetInstrumentationClient:
             response = self._session.get(self.SERVICE_INDEX_URL, timeout=self.TIMEOUT)
             response.raise_for_status()
             index_data = response.json()
-            for resource in index_data.get("resources", []):
-                if resource.get("@type") == "SearchQueryService":
-                    self._search_url = resource.get("@id")
-                    return self._search_url
         except requests.RequestException as e:
-            logger.error(f"Error fetching NuGet service index: {e}")
+            raise NuGetAPIError(f"Error fetching NuGet service index: {e}") from e
 
-        # Fallback to a known endpoint if index fetch fails
-        return "https://azuresearch-usnc.nuget.org/query"
+        for resource in index_data.get("resources", []):
+            if resource.get("@type") == "SearchQueryService":
+                self._search_url = resource["@id"]
+                return self._search_url
+
+        raise NuGetAPIError("NuGet service index did not contain a SearchQueryService resource")
 
     def fetch_instrumentation_list(self) -> Dict[str, Any]:
         """
         Fetch instrumentation list by querying NuGet for packages owned by OpenTelemetry.
+
+        The top-level ``version`` field in each search result entry is the latest
+        version of the package as reported by NuGet — no local sorting is needed.
         """
         all_packages = self._fetch_all_packages_by_owner(self.OWNER)
         modules = []
@@ -80,10 +88,13 @@ class DotNetInstrumentationClient:
         for pkg in all_packages:
             package_id = pkg.get("id", "")
 
-            # Skip deprecated and Contrib packages (which are considered legacy/deprecated)
-            if pkg.get("deprecation") or package_id.startswith("OpenTelemetry.Contrib."):
-                logger.info(f"  Skipping deprecated/contrib package: {package_id}")
+            # Skip packages flagged as deprecated by NuGet (includes Contrib packages).
+            if pkg.get("deprecation"):
+                logger.info(f"  Skipping deprecated package: {package_id}")
                 continue
+
+            # The top-level "version" field is the latest version returned by the
+            # NuGet search API — rely on the server ordering rather than sorting locally.
             version = pkg.get("version", "")
             description = pkg.get("description", "")
 
@@ -95,9 +106,7 @@ class DotNetInstrumentationClient:
             elif "Extensions" in package_id or "Resources" in package_id or "Sampler" in package_id:
                 component_type = "extension"
             else:
-                # Skip core packages like OpenTelemetry, OpenTelemetry.Api unless they match patterns
-                # but we might want to include them as 'core' if needed.
-                # For now, let's stick to the previous classification logic.
+                # Skip core and unclassified packages.
                 continue
 
             modules.append(
@@ -109,15 +118,18 @@ class DotNetInstrumentationClient:
                 }
             )
 
-        # Sort by name for consistency
+        # Sort by name for deterministic registry output.
         modules.sort(key=lambda x: x["name"])
 
         return {"modules": modules}
 
     def get_core_version(self) -> str:
-        """
-        Get the latest version of the core OpenTelemetry package.
+        """Get the latest stable version of the core OpenTelemetry package.
+
         This is used as the 'ecosystem version' for the registry.
+
+        Raises:
+            NuGetAPIError: If the version cannot be determined.
         """
         params = {
             "q": "PackageId:OpenTelemetry",
@@ -129,12 +141,14 @@ class DotNetInstrumentationClient:
             response = self._session.get(search_url, params=params, timeout=self.TIMEOUT)
             response.raise_for_status()
             data = response.json()
-            if data.get("data"):
-                return data["data"][0]["version"]
-            return "1.0.0"
-        except (requests.RequestException, KeyError, IndexError) as e:
-            logger.error(f"Error fetching core version: {e}")
-            return "1.0.0"
+            results = data.get("data", [])
+            if not results:
+                raise NuGetAPIError("No results returned for core OpenTelemetry package")
+            return results[0]["version"]
+        except (KeyError, IndexError) as e:
+            raise NuGetAPIError(f"Unexpected response shape fetching core version: {e}") from e
+        except requests.RequestException as e:
+            raise NuGetAPIError(f"Error fetching core version: {e}") from e
 
     def _fetch_all_packages_by_owner(self, owner: str) -> List[Dict[str, Any]]:
         """Fetch all packages for a specific owner using pagination."""
