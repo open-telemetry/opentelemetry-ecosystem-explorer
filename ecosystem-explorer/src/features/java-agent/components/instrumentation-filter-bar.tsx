@@ -13,23 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useMemo } from "react";
 import { getTelemetryFilterClasses, getTargetFilterClasses } from "../styles/filter-styles";
 import { Tooltip } from "@/components/ui/tooltip";
+import { SearchableMultiSelect, SelectedChips } from "@/components/ui/searchable-multi-select";
+
+import { getSemanticConventionInfo, getFeatureInfo } from "../utils/format";
+
+import type { InstrumentationData } from "@/types/javaagent";
 
 export interface FilterState {
   search: string;
   telemetry: Set<"spans" | "metrics">;
   target: Set<"javaagent" | "library">;
+  semantic: string[];
+  features: string[];
 }
 
 interface InstrumentationFilterBarProps {
   filters: FilterState;
   onFiltersChange: (filters: FilterState) => void;
+  instrumentations: InstrumentationData[];
 }
 
 export function InstrumentationFilterBar({
   filters,
   onFiltersChange,
+  instrumentations,
 }: InstrumentationFilterBarProps) {
   const toggleTelemetry = (type: "spans" | "metrics") => {
     const newTelemetry = new Set(filters.telemetry);
@@ -51,6 +61,22 @@ export function InstrumentationFilterBar({
     onFiltersChange({ ...filters, target: newTarget });
   };
 
+  const semanticOptions = useMemo(() => {
+    const options = new Set<string>();
+    instrumentations.forEach((instr) => {
+      instr.semantic_conventions?.forEach((s) => options.add(s));
+    });
+    return Array.from(options).sort();
+  }, [instrumentations]);
+
+  const featureOptions = useMemo(() => {
+    const options = new Set<string>();
+    instrumentations.forEach((instr) => {
+      instr.features?.forEach((f) => options.add(f));
+    });
+    return Array.from(options).sort();
+  }, [instrumentations]);
+
   return (
     <div className="border-border/60 bg-card/80 relative overflow-hidden rounded-lg border p-6">
       {/* Ambient radial gradient background */}
@@ -62,32 +88,54 @@ export function InstrumentationFilterBar({
         }}
       />
 
-      <div className="absolute inset-0 opacity-5">
-        <div
-          className="h-full w-full"
-          style={{
-            backgroundImage:
-              "linear-gradient(hsl(var(--border-hsl)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--border-hsl)) 1px, transparent 1px)",
-            backgroundSize: "24px 24px",
-          }}
-        />
+      <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-lg">
+        <div className="absolute inset-0 opacity-5">
+          <div
+            className="h-full w-full"
+            style={{
+              backgroundImage:
+                "linear-gradient(hsl(var(--border-hsl)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--border-hsl)) 1px, transparent 1px)",
+              backgroundSize: "24px 24px",
+            }}
+          />
+        </div>
       </div>
 
-      <div className="relative z-10 space-y-6">
-        <div className="space-y-2">
-          <label htmlFor="search" className="text-muted-foreground text-sm font-medium">
-            Search
-          </label>
-          <div className="relative">
-            <input
-              id="search"
-              type="text"
-              placeholder="Search instrumentations..."
-              value={filters.search}
-              onChange={(e) => onFiltersChange({ ...filters, search: e.target.value })}
-              className="border-border/60 bg-background/80 placeholder:text-muted-foreground/50 focus:border-primary/50 focus:ring-primary/20 w-full rounded-lg border px-4 py-2.5 text-sm backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none"
-            />
+      <div className="relative z-40 space-y-6">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="space-y-2">
+            <label htmlFor="search" className="text-muted-foreground text-sm font-medium">
+              Search
+            </label>
+            <div className="relative">
+              <input
+                id="search"
+                type="text"
+                placeholder="Search instrumentations..."
+                value={filters.search}
+                onChange={(e) => onFiltersChange({ ...filters, search: e.target.value })}
+                className="border-border/60 bg-background/80 placeholder:text-muted-foreground/50 focus:border-primary/50 focus:ring-primary/20 flex h-[42px] w-full rounded-lg border px-4 py-2 text-sm backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none"
+              />
+            </div>
           </div>
+
+          <SearchableMultiSelect
+            label="Semantic Conventions"
+            placeholder="Filter by convention..."
+            options={semanticOptions}
+            selected={filters.semantic}
+            onChange={(selected) => onFiltersChange({ ...filters, semantic: selected })}
+            renderOption={(s) => getSemanticConventionInfo(s)?.label ?? s}
+          />
+
+          <SearchableMultiSelect
+            label="Features"
+            placeholder="Filter by feature..."
+            options={featureOptions}
+            selected={filters.features}
+            onChange={(selected) => onFiltersChange({ ...filters, features: selected })}
+            renderOption={(f) => getFeatureInfo(f)?.label ?? f}
+          />
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
@@ -146,6 +194,29 @@ export function InstrumentationFilterBar({
               </Tooltip>
             </div>
           </div>
+        </div>
+
+        <div className="space-y-3">
+          <SelectedChips
+            selected={filters.semantic}
+            onRemove={(item) =>
+              onFiltersChange({
+                ...filters,
+                semantic: filters.semantic.filter((s) => s !== item),
+              })
+            }
+            renderItem={(s) => getSemanticConventionInfo(s)?.label ?? s}
+          />
+          <SelectedChips
+            selected={filters.features}
+            onRemove={(item) =>
+              onFiltersChange({
+                ...filters,
+                features: filters.features.filter((f) => f !== item),
+              })
+            }
+            renderItem={(f) => getFeatureInfo(f)?.label ?? f}
+          />
         </div>
       </div>
 

@@ -38,6 +38,8 @@ const defaultFilters: FilterState = {
   search: "",
   telemetry: new Set(),
   target: new Set(),
+  semantic: [],
+  features: [],
 };
 
 describe("TargetBadges", () => {
@@ -73,6 +75,8 @@ describe("TargetBadges", () => {
       search: "",
       telemetry: new Set(),
       target: new Set(["javaagent"]),
+      semantic: [],
+      features: [],
     };
     render(
       <TargetBadges badges={{ ...allFalse, hasJavaAgentTarget: true }} activeFilters={filters} />
@@ -81,7 +85,13 @@ describe("TargetBadges", () => {
   });
 
   it("highlights Library badge when library filter is active", () => {
-    const filters: FilterState = { search: "", telemetry: new Set(), target: new Set(["library"]) };
+    const filters: FilterState = {
+      search: "",
+      telemetry: new Set(),
+      target: new Set(["library"]),
+      semantic: [],
+      features: [],
+    };
     render(
       <TargetBadges badges={{ ...allFalse, hasLibraryTarget: true }} activeFilters={filters} />
     );
@@ -121,13 +131,25 @@ describe("TelemetryBadges", () => {
   });
 
   it("highlights Spans badge when spans filter is active", () => {
-    const filters: FilterState = { search: "", telemetry: new Set(["spans"]), target: new Set() };
+    const filters: FilterState = {
+      search: "",
+      telemetry: new Set(["spans"]),
+      target: new Set(),
+      semantic: [],
+      features: [],
+    };
     render(<TelemetryBadges badges={{ ...allFalse, hasSpans: true }} activeFilters={filters} />);
     expect(screen.getByText("Spans").className).toContain(FILTER_STYLES.telemetry.spans.active);
   });
 
   it("highlights Metrics badge when metrics filter is active", () => {
-    const filters: FilterState = { search: "", telemetry: new Set(["metrics"]), target: new Set() };
+    const filters: FilterState = {
+      search: "",
+      telemetry: new Set(["metrics"]),
+      target: new Set(),
+      semantic: [],
+      features: [],
+    };
     render(<TelemetryBadges badges={{ ...allFalse, hasMetrics: true }} activeFilters={filters} />);
     expect(screen.getByText("Metrics").className).toContain(FILTER_STYLES.telemetry.metrics.active);
   });
