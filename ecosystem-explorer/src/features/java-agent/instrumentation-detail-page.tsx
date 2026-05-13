@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
   Info,
@@ -79,7 +79,12 @@ export function InstrumentationDetailPage() {
 
   const { data: versionsData, loading: versionsLoading, error: versionsError } = useVersions();
 
-  const shouldFetchInstrumentation = version !== "latest";
+  const isVersionValid =
+    version === "latest" ||
+    !versionsData ||
+    versionsData.versions.some((v) => v.version === version);
+
+  const shouldFetchInstrumentation = version !== "latest" && isVersionValid;
   const {
     data: instrumentation,
     loading: instrumentationLoading,
@@ -145,6 +150,42 @@ export function InstrumentationDetailPage() {
                 <p className="text-sm text-red-600/90 dark:text-red-400/90">
                   {versionsError.message}
                 </p>
+              </div>
+            </div>
+          </DetailCard>
+        </div>
+      </PageContainer>
+    );
+  }
+
+  if (!isVersionValid && versionsData) {
+    const latestVersion = versionsData.versions.find((v) => v.is_latest)?.version;
+    return (
+      <PageContainer>
+        <BackButton />
+        <div className="mt-3">
+          <DetailCard className="border-yellow-500/50 bg-yellow-500/5">
+            <div className="flex gap-4">
+              <AlertCircle
+                className="h-6 w-6 flex-shrink-0 text-yellow-600 dark:text-yellow-400"
+                aria-hidden="true"
+              />
+              <div className="flex-1 space-y-3">
+                <h3 className="font-semibold text-yellow-600 dark:text-yellow-400">
+                  Version not found
+                </h3>
+                <p className="text-sm text-yellow-600/90 dark:text-yellow-400/90">
+                  Version <code className="rounded bg-yellow-500/10 px-1 py-0.5">{version}</code>{" "}
+                  does not exist.
+                </p>
+                {latestVersion && name && (
+                  <Link
+                    to={`/java-agent/instrumentation/${latestVersion}/${name}`}
+                    className="inline-flex items-center gap-1.5 text-sm text-yellow-600 underline hover:no-underline dark:text-yellow-400"
+                  >
+                    View {name} under the latest version ({latestVersion})
+                  </Link>
+                )}
               </div>
             </div>
           </DetailCard>
