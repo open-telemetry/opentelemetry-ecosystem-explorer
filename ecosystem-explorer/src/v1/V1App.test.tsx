@@ -14,39 +14,34 @@
  * limitations under the License.
  */
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, afterEach, vi } from "vitest";
-import App from "./App";
-import { ThemeProvider } from "./theme-context";
+import { MemoryRouter } from "react-router-dom";
+import { describe, it, expect } from "vitest";
+import { V1App } from "./V1App";
+import { ThemeProvider } from "@/theme-context";
 
-describe("App", () => {
-  afterEach(() => {
-    vi.unstubAllEnvs();
-  });
-
-  it("renders the legacy app when V1_REDESIGN is disabled", async () => {
-    vi.stubEnv("VITE_FEATURE_FLAG_V1_REDESIGN", "");
-
+describe("V1App", () => {
+  it("renders the v1 navbar", async () => {
     render(
       <ThemeProvider>
-        <App />
-      </ThemeProvider>
-    );
-
-    const heading = await screen.findByRole("heading", { level: 1 });
-    expect(heading).toHaveTextContent("OpenTelemetry");
-    expect(heading).toHaveTextContent("Ecosystem Explorer");
-  });
-
-  it("renders the v1 app when V1_REDESIGN is enabled", async () => {
-    vi.stubEnv("VITE_FEATURE_FLAG_V1_REDESIGN", "true");
-
-    const { container } = render(
-      <ThemeProvider>
-        <App />
+        <MemoryRouter initialEntries={["/"]}>
+          <V1App />
+        </MemoryRouter>
       </ThemeProvider>
     );
 
     expect(await screen.findByLabelText("OpenTelemetry")).toBeInTheDocument();
+    expect(screen.getByRole("navigation", { name: /primary/i })).toBeInTheDocument();
+  });
+
+  it("wraps content in a .v1-app scoping container", () => {
+    const { container } = render(
+      <ThemeProvider>
+        <MemoryRouter initialEntries={["/"]}>
+          <V1App />
+        </MemoryRouter>
+      </ThemeProvider>
+    );
+
     expect(container.querySelector(".v1-app")).not.toBeNull();
   });
 });
