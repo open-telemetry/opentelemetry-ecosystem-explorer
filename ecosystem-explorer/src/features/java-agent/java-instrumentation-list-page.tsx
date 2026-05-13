@@ -57,6 +57,8 @@ export function JavaInstrumentationListPage() {
     search: "",
     telemetry: new Set(),
     target: new Set(),
+    semantic: [],
+    features: [],
   });
 
   const filteredInstrumentations = useMemo(() => {
@@ -100,6 +102,18 @@ export function JavaInstrumentationListPage() {
         if (filters.target.has("library") && !hasLibrary) {
           return false;
         }
+      }
+
+      if (filters.semantic.length > 0) {
+        const hasMatch = filters.semantic.some((s) => instr.semantic_conventions?.includes(s));
+        if (!hasMatch) return false;
+      }
+
+      if (filters.features.length > 0) {
+        const hasMatch = filters.features.some((f) => {
+          return instr.features?.includes(f);
+        });
+        if (!hasMatch) return false;
       }
 
       return true;
@@ -154,7 +168,11 @@ export function JavaInstrumentationListPage() {
           />
         </div>
 
-        <InstrumentationFilterBar filters={filters} onFiltersChange={setFilters} />
+        <InstrumentationFilterBar
+          filters={filters}
+          onFiltersChange={setFilters}
+          instrumentations={instrumentations ?? []}
+        />
 
         {versionsError || error ? (
           <div className="flex flex-col items-center justify-center space-y-4 py-32 text-center text-red-500">
