@@ -207,6 +207,7 @@ components:
         - axw
         - constanca-m
         - Kavindu-Dodan
+        - MichaelKatsoulis
 - name: azureencodingextension
   subtype: encoding
   metadata:

@@ -635,17 +635,29 @@ components:
     status:
       class: processor
       stability:
-        development:
+        alpha:
         - logs
         - metrics
         - traces
-      distributions: []
+      distributions:
+      - contrib
       codeowners:
         active:
         - MovieStoreGuy
         - ankitpatel96
         - dineshg13
         - MikeGoldsmith
+    attributes:
+      from_schema_url:
+        description: The schema URL the signal arrived with
+        type: string
+      migration_from_schema_url:
+        description: The migration from version boundary (only present when migration
+          is active)
+        type: string
+      to_schema_url:
+        description: The target schema URL the signal was translated to
+        type: string
 - name: spanprocessor
   metadata:
     type: span
