@@ -19,6 +19,8 @@ concurrency:
 
 jobs:
   cleanup:
+    # Disabled to avoid breaking images on older PRs. Flip to `true` to re-enable deletion.
+    if: false
     runs-on: ubuntu-latest
     steps:
       - name: Get otelbot token

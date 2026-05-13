@@ -23,7 +23,8 @@ export async function loadVersions(): Promise<VersionsIndex> {
   const data = await fetchWithCache<VersionsIndex>(
     "versions-index",
     `${BASE_PATH}/versions-index.json`,
-    STORES.METADATA
+    STORES.METADATA,
+    { validate: (d) => Array.isArray(d.versions) && d.versions.length > 0 }
   );
   if (!data) throw new Error("Versions index returned null unexpectedly");
   return data;
@@ -33,7 +34,14 @@ export async function loadVersionManifest(version: string): Promise<VersionManif
   const data = await fetchWithCache<VersionManifest>(
     `manifest-${version}`,
     `${BASE_PATH}/versions/${version}-index.json`,
-    STORES.METADATA
+    STORES.METADATA,
+    {
+      validate: (d) =>
+        typeof d.version === "string" &&
+        d.version === version &&
+        d.instrumentations !== null &&
+        typeof d.instrumentations === "object",
+    }
   );
   if (!data) throw new Error(`Manifest for version ${version} returned null unexpectedly`);
   return data;

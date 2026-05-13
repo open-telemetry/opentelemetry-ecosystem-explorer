@@ -164,6 +164,8 @@ describe("InstrumentationCard", () => {
       search: "",
       telemetry: new Set(),
       target: new Set(["javaagent"]),
+      semantic: [],
+      features: [],
     };
 
     renderCard(instrumentation, activeFilters);
@@ -181,6 +183,8 @@ describe("InstrumentationCard", () => {
       search: "",
       telemetry: new Set(),
       target: new Set(["library"]),
+      semantic: [],
+      features: [],
     };
 
     renderCard(instrumentation, activeFilters);
@@ -198,6 +202,8 @@ describe("InstrumentationCard", () => {
       search: "",
       telemetry: new Set(["spans"]),
       target: new Set(),
+      semantic: [],
+      features: [],
     };
 
     renderCard(instrumentation, activeFilters);
@@ -228,6 +234,8 @@ describe("InstrumentationCard", () => {
       search: "",
       telemetry: new Set(["metrics"]),
       target: new Set(),
+      semantic: [],
+      features: [],
     };
 
     renderCard(instrumentation, activeFilters);

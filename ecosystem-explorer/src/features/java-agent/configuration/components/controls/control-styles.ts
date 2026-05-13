@@ -20,11 +20,11 @@
  * touches one place.
  */
 export const INPUT_CLASS =
-  "w-full rounded-lg border border-border/60 bg-background/80 px-4 py-2.5 text-sm backdrop-blur-sm transition-all duration-200 placeholder:text-muted-foreground/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20";
+  "w-full rounded-lg border border-border/60 bg-background/80 px-4 py-2.5 text-sm backdrop-blur-sm transition-all duration-200 placeholder:text-muted-foreground/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 [color-scheme:dark]";
 
 /**
  * Compact variant used by list-of-input controls (string-list, number-list)
  * where each row needs a tighter vertical rhythm than a standalone input.
  */
 export const LIST_INPUT_CLASS =
-  "w-full rounded-lg border border-border/60 bg-background/80 px-4 py-2 text-sm backdrop-blur-sm transition-all duration-200 placeholder:text-muted-foreground/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20";
+  "w-full rounded-lg border border-border/60 bg-background/80 px-4 py-2 text-sm backdrop-blur-sm transition-all duration-200 placeholder:text-muted-foreground/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 [color-scheme:dark]";

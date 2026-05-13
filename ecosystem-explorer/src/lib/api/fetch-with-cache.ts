@@ -17,15 +17,22 @@ import { getCached, setCached, isIDBAvailable, type StoreName } from "./idb-cach
 
 const inflightRequests = new Map<string, Promise<unknown>>();
 
-export interface FetchWithCacheOptions {
+export interface FetchWithCacheOptions<T = unknown> {
   allow404?: boolean;
+  /**
+   * Optional validator for cached data. When provided, cached data that fails
+   * validation is ignored for the current request and a fresh network request
+   * is made. This prevents stale or logically-empty cached responses (e.g.
+   * `{ versions: [] }`) from being served to the caller.
+   */
+  validate?: (data: T) => boolean;
 }
 
 export async function fetchWithCache<T>(
   cacheKey: string,
   url: string,
   storeType: StoreName,
-  options?: FetchWithCacheOptions
+  options?: FetchWithCacheOptions<T>
 ): Promise<T | null> {
   if (inflightRequests.has(cacheKey)) {
     return inflightRequests.get(cacheKey) as Promise<T | null>;
@@ -36,7 +43,16 @@ export async function fetchWithCache<T>(
       if (isIDBAvailable()) {
         const cachedData = await getCached<T>(cacheKey, storeType);
         if (cachedData !== null) {
-          return cachedData;
+          if (!options?.validate) {
+            return cachedData;
+          }
+          try {
+            if (options.validate(cachedData)) {
+              return cachedData;
+            }
+          } catch {
+            // treat validator exceptions as validation failures and fall back to network fetch
+          }
         }
       }
 

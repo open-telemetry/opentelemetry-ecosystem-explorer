@@ -29,7 +29,7 @@ export function JavaReleaseComparisonPage() {
 
         <div className="space-y-2">
           <h1 className="text-3xl font-bold md:text-4xl">
-            <span className="bg-gradient-to-r from-[hsl(var(--secondary-hsl))] to-[hsl(var(--primary-hsl))] bg-clip-text text-transparent">
+            <span className="from-otel-orange to-otel-blue bg-gradient-to-r bg-clip-text text-transparent">
               Release Comparison
             </span>
           </h1>
@@ -39,8 +39,8 @@ export function JavaReleaseComparisonPage() {
         </div>
 
         <div className="border-border flex min-h-[400px] flex-col items-center justify-center rounded-2xl border border-dashed p-12 text-center">
-          <div className="bg-primary/10 mb-4 flex h-16 w-16 items-center justify-center rounded-full">
-            <span className="text-primary text-2xl font-bold">!</span>
+          <div className="bg-secondary/10 mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+            <span className="text-secondary text-2xl font-bold">!</span>
           </div>
           <h2 className="text-xl font-semibold">Under Development</h2>
           <p className="text-muted-foreground mt-2 max-w-md">

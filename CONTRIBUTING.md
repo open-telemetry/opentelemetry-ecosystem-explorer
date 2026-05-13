@@ -119,7 +119,7 @@ bun install
 cd ecosystem-explorer && bun install && cd ..
 
 # Set up pre-commit hooks (recommended)
-pre-commit install
+uv run pre-commit install
 ```
 
 ### Create a Branch
