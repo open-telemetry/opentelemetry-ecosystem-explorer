@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { useState } from "react";
+import { Maximize2, Minimize2 } from "lucide-react";
 import { SectionDivider } from "@/components/ui/section-divider";
 import { GlowBadge } from "@/components/ui/glow-badge";
 import { AttributeTable } from "./attribute-table";
@@ -35,6 +36,37 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
 
   const currentTelemetry = telemetry.find((t) => t.when === effectiveSelectedWhen) ?? telemetry[0];
 
+  const [expandedMetrics, setExpandedMetrics] = useState<Set<string>>(
+    new Set(currentTelemetry?.metrics?.map((m) => m.name) || [])
+  );
+  const [expandedSpans, setExpandedSpans] = useState<Set<string>>(
+    new Set(currentTelemetry?.spans?.map((_, i) => i.toString()) || [])
+  );
+
+  // Synchronize expanded state when telemetry changes without using useEffect
+  const [prevTelemetry, setPrevTelemetry] = useState(currentTelemetry);
+  if (currentTelemetry !== prevTelemetry) {
+    setPrevTelemetry(currentTelemetry);
+    setExpandedMetrics(new Set(currentTelemetry?.metrics?.map((m) => m.name) || []));
+    setExpandedSpans(new Set(currentTelemetry?.spans?.map((_, i) => i.toString()) || []));
+  }
+
+  const expandAllMetrics = () => {
+    setExpandedMetrics(new Set(currentTelemetry?.metrics?.map((m) => m.name) || []));
+  };
+
+  const collapseAllMetrics = () => {
+    setExpandedMetrics(new Set());
+  };
+
+  const expandAllSpans = () => {
+    setExpandedSpans(new Set(currentTelemetry?.spans?.map((_, i) => i.toString()) || []));
+  };
+
+  const collapseAllSpans = () => {
+    setExpandedSpans(new Set());
+  };
+
   const hasMetrics = currentTelemetry?.metrics && currentTelemetry.metrics.length > 0;
   const hasSpans = currentTelemetry?.spans && currentTelemetry.spans.length > 0;
   const hasBothMetricsAndSpans = hasMetrics && hasSpans;
@@ -53,91 +85,169 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
       <div className={hasBothMetricsAndSpans ? "grid grid-cols-1 gap-8 lg:grid-cols-2" : ""}>
         {/* Metrics Section */}
         {hasMetrics && (
-          <div>
-            <SectionDivider>Metrics</SectionDivider>
-            <div className={hasBothMetricsAndSpans ? "space-y-8" : "mx-auto max-w-3xl space-y-8"}>
+          <div className="space-y-6">
+            <SectionDivider className="mb-0">Metrics</SectionDivider>
+            <div className="mt-4 flex justify-center">
+              <div className="border-border/50 bg-muted/80 inline-flex items-center rounded-xl border p-1 shadow-sm backdrop-blur-sm">
+                <button
+                  type="button"
+                  onClick={expandAllMetrics}
+                  className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${
+                    expandedMetrics.size === (currentTelemetry.metrics?.length || 0)
+                      ? "border-secondary/40 bg-secondary/12 text-secondary border shadow-sm"
+                      : "text-muted-foreground hover:text-foreground border border-transparent"
+                  }`}
+                >
+                  <Maximize2 className="h-3 w-3" />
+                  Expand All
+                </button>
+                <button
+                  type="button"
+                  onClick={collapseAllMetrics}
+                  className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${
+                    expandedMetrics.size === 0
+                      ? "border-secondary/40 bg-secondary/12 text-secondary border shadow-sm"
+                      : "text-muted-foreground hover:text-foreground border border-transparent"
+                  }`}
+                >
+                  <Minimize2 className="h-3 w-3" />
+                  Collapse All
+                </button>
+              </div>
+            </div>
+
+            <div className={hasBothMetricsAndSpans ? "space-y-4" : "mx-auto max-w-3xl space-y-4"}>
               {currentTelemetry.metrics &&
-                currentTelemetry.metrics.map((metric) => (
-                  <div
-                    key={metric.name}
-                    className="border-border/30 bg-card/30 rounded-2xl border p-4 sm:p-6 md:p-10"
-                  >
-                    <div className="space-y-6">
-                      {/* Metric name and type badge */}
-                      <div className="flex flex-wrap items-start gap-x-4 gap-y-2">
-                        <code className="text-foreground min-w-0 flex-1 font-mono text-base font-semibold break-all sm:text-lg">
+                currentTelemetry.metrics.map((metric) => {
+                  const isExpanded = expandedMetrics.has(metric.name);
+                  return (
+                    <div
+                      key={metric.name}
+                      className="border-border/30 bg-card/30 rounded-2xl border transition-all duration-200"
+                    >
+                      <div className="flex items-center justify-between gap-4 p-4 sm:px-6 sm:py-5">
+                        <code className="text-foreground min-w-0 flex-1 font-mono text-sm font-semibold break-all sm:text-base">
                           {metric.name}
                         </code>
-                        <GlowBadge variant="success" withGlow className="flex-shrink-0 text-[10px]">
+                        <GlowBadge
+                          variant="success"
+                          withGlow
+                          className="flex-shrink-0 py-0.5 text-[9px]"
+                        >
                           {metric.instrument}
                         </GlowBadge>
                       </div>
 
-                      {/* Description */}
-                      <p className="text-foreground/80 text-base leading-relaxed md:text-base">
-                        {metric.description}
-                      </p>
+                      {isExpanded && (
+                        <div className="border-border/20 border-t p-4 pt-6 sm:p-6 sm:pt-8 md:p-10 md:pt-10">
+                          <div className="space-y-6">
+                            {/* Description */}
+                            <p className="text-foreground/80 text-base leading-relaxed md:text-base">
+                              {metric.description}
+                            </p>
 
-                      {/* Unit section with border */}
-                      <div className="border-border/30 flex items-center gap-3 border-b pb-6">
-                        <span className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
-                          Unit
-                        </span>
-                        <code className="border-border/30 text-foreground/80 rounded border bg-white/[0.03] px-2 py-1 text-sm">
-                          {metric.unit}
-                        </code>
-                      </div>
+                            {/* Unit section with border */}
+                            <div className="border-border/30 flex items-center gap-3 border-b pb-6">
+                              <span className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
+                                Unit
+                              </span>
+                              <code className="border-border/30 text-foreground/80 rounded border bg-white/[0.03] px-2 py-1 text-sm">
+                                {metric.unit}
+                              </code>
+                            </div>
 
-                      {/* Attributes section */}
-                      {metric.attributes && metric.attributes.length > 0 && (
-                        <div className="space-y-4">
-                          <h4 className="text-muted-foreground text-xs font-black tracking-[0.2em] uppercase">
-                            Attributes
-                          </h4>
-                          <AttributeTable attributes={metric.attributes} />
+                            {/* Attributes section */}
+                            {metric.attributes && metric.attributes.length > 0 && (
+                              <div className="space-y-4">
+                                <h4 className="text-muted-foreground text-xs font-black tracking-[0.2em] uppercase">
+                                  Attributes
+                                </h4>
+                                <AttributeTable attributes={metric.attributes} />
+                              </div>
+                            )}
+                          </div>
                         </div>
                       )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
             </div>
           </div>
         )}
 
         {/* Spans Section */}
         {hasSpans && (
-          <div>
-            <SectionDivider>Spans</SectionDivider>
-            <div className={hasBothMetricsAndSpans ? "space-y-8" : "mx-auto max-w-3xl space-y-8"}>
+          <div className="space-y-6">
+            <SectionDivider className="mb-0">Spans</SectionDivider>
+            <div className="mt-4 flex justify-center">
+              <div className="border-border/50 bg-muted/80 inline-flex items-center rounded-xl border p-1 shadow-sm backdrop-blur-sm">
+                <button
+                  type="button"
+                  onClick={expandAllSpans}
+                  className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${
+                    expandedSpans.size === (currentTelemetry.spans?.length || 0)
+                      ? "border-secondary/40 bg-secondary/12 text-secondary border shadow-sm"
+                      : "text-muted-foreground hover:text-foreground border border-transparent"
+                  }`}
+                >
+                  <Maximize2 className="h-3 w-3" />
+                  Expand All
+                </button>
+                <button
+                  type="button"
+                  onClick={collapseAllSpans}
+                  className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${
+                    expandedSpans.size === 0
+                      ? "border-secondary/40 bg-secondary/12 text-secondary border shadow-sm"
+                      : "text-muted-foreground hover:text-foreground border border-transparent"
+                  }`}
+                >
+                  <Minimize2 className="h-3 w-3" />
+                  Collapse All
+                </button>
+              </div>
+            </div>
+
+            <div className={hasBothMetricsAndSpans ? "space-y-4" : "mx-auto max-w-3xl space-y-4"}>
               {currentTelemetry.spans &&
-                currentTelemetry.spans.map((span, index) => (
-                  <div
-                    key={`${span.span_kind}-${index}`}
-                    className="border-border/30 bg-card/30 rounded-2xl border p-4 sm:p-6 md:p-10"
-                  >
-                    <div className="space-y-6">
-                      {/* Span kind badge */}
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-                        <h3 className="text-foreground flex-1 text-base font-bold sm:text-lg md:text-xl">
+                currentTelemetry.spans.map((span, index) => {
+                  const isExpanded = expandedSpans.has(index.toString());
+                  return (
+                    <div
+                      key={`${span.span_kind}-${index}`}
+                      className="border-border/30 bg-card/30 rounded-2xl border transition-all duration-200"
+                    >
+                      <div className="flex items-center justify-between gap-4 p-4 sm:px-6 sm:py-5">
+                        <h3 className="text-foreground flex-1 text-sm font-bold sm:text-base md:text-lg">
                           {span.span_kind} Span
                         </h3>
-                        <GlowBadge variant="info" withGlow className="flex-shrink-0 text-xs">
+                        <GlowBadge
+                          variant="info"
+                          withGlow
+                          className="flex-shrink-0 py-0.5 text-[9px]"
+                        >
                           {span.span_kind}
                         </GlowBadge>
                       </div>
 
-                      {/* Attributes section */}
-                      {span.attributes && span.attributes.length > 0 && (
-                        <div className="space-y-4">
-                          <h4 className="text-muted-foreground text-xs font-black tracking-[0.2em] uppercase">
-                            Attributes
-                          </h4>
-                          <AttributeTable attributes={span.attributes} />
+                      {isExpanded && (
+                        <div className="border-border/20 border-t p-4 pt-6 sm:p-6 sm:pt-8 md:p-10 md:pt-10">
+                          <div className="space-y-6">
+                            {/* Attributes section */}
+                            {span.attributes && span.attributes.length > 0 && (
+                              <div className="space-y-4">
+                                <h4 className="text-muted-foreground text-xs font-black tracking-[0.2em] uppercase">
+                                  Attributes
+                                </h4>
+                                <AttributeTable attributes={span.attributes} />
+                              </div>
+                            )}
+                          </div>
                         </div>
                       )}
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
             </div>
           </div>
         )}
