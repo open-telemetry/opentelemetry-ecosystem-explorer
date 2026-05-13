@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { AlertCircle, Loader2 } from "lucide-react";
 import { BackButton } from "@/components/ui/back-button";
 import { useVersions, useInstrumentations } from "@/hooks/use-javaagent-data";
 import {
@@ -56,6 +57,8 @@ export function JavaInstrumentationListPage() {
     search: "",
     telemetry: new Set(),
     target: new Set(),
+    semantic: [],
+    features: [],
   });
 
   const filteredInstrumentations = useMemo(() => {
@@ -101,6 +104,18 @@ export function JavaInstrumentationListPage() {
         }
       }
 
+      if (filters.semantic.length > 0) {
+        const hasMatch = filters.semantic.some((s) => instr.semantic_conventions?.includes(s));
+        if (!hasMatch) return false;
+      }
+
+      if (filters.features.length > 0) {
+        const hasMatch = filters.features.some((f) => {
+          return instr.features?.includes(f);
+        });
+        if (!hasMatch) return false;
+      }
+
       return true;
     });
   }, [instrumentations, filters]);
@@ -126,54 +141,6 @@ export function JavaInstrumentationListPage() {
     navigate(`/java-agent/instrumentation/${newVersion}`);
   };
 
-  if (versionsLoading || instrumentationsLoading) {
-    return (
-      <PageContainer>
-        <div className="flex min-h-[400px] items-center justify-center">
-          <div className="space-y-2 text-center">
-            <div className="text-lg font-medium">Loading instrumentations...</div>
-            <div className="text-muted-foreground text-sm">This may take a moment</div>
-          </div>
-        </div>
-      </PageContainer>
-    );
-  }
-
-  if (versionsError) {
-    return (
-      <PageContainer>
-        <div className="rounded-lg border border-red-500/50 bg-red-500/10 p-6 text-red-600 dark:text-red-400">
-          <h3 className="mb-2 font-semibold">Error loading versions</h3>
-          <p className="text-sm">{versionsError.message}</p>
-        </div>
-      </PageContainer>
-    );
-  }
-
-  if (error) {
-    return (
-      <PageContainer>
-        <div className="rounded-lg border border-red-500/50 bg-red-500/10 p-6 text-red-600 dark:text-red-400">
-          <h3 className="mb-2 font-semibold">Error loading instrumentations</h3>
-          <p className="text-sm">{error.message}</p>
-        </div>
-      </PageContainer>
-    );
-  }
-
-  if (!resolvedVersion) {
-    return (
-      <PageContainer>
-        <div className="rounded-lg border border-red-500/50 bg-red-500/10 p-6 text-red-600 dark:text-red-400">
-          <h3 className="mb-2 font-semibold">No version available</h3>
-          <p className="text-sm">
-            Could not determine the latest Java agent version. Please try refreshing the page.
-          </p>
-        </div>
-      </PageContainer>
-    );
-  }
-
   return (
     <PageContainer>
       <div className="space-y-4">
@@ -186,79 +153,104 @@ export function JavaInstrumentationListPage() {
                 OpenTelemetry Java Agent
               </span>
             </h1>
-            <p className="text-muted-foreground text-base">
-              Explore {instrumentations?.length ?? 0} available instrumentations.
-            </p>
-          </div>
-
-          {versionsData && versionsData.versions.length > 0 && (
-            <VersionSelector
-              versions={versionsData.versions}
-              currentVersion={resolvedVersion}
-              onVersionChange={handleVersionChange}
-            />
-          )}
-        </div>
-
-        <InstrumentationFilterBar filters={filters} onFiltersChange={setFilters} />
-
-        <div className="border-border/50 flex items-center justify-between border-b pb-4">
-          <div className="text-muted-foreground text-sm">
-            Showing {filteredInstrumentations.length} of {instrumentations?.length ?? 0}{" "}
-            instrumentations
-          </div>
-        </div>
-
-        {filteredInstrumentations.length === 0 ? (
-          <div className="border-border/50 bg-card/30 flex min-h-[300px] items-center justify-center rounded-lg border">
-            <div className="text-center">
+            {instrumentations != null && (
               <p className="text-muted-foreground text-base">
-                No instrumentations found matching your filters.
+                Explore {instrumentations.length} available instrumentations.
               </p>
-              <p className="text-muted-foreground/70 mt-2 text-sm">
-                Try adjusting your search or filter criteria
-              </p>
+            )}
+          </div>
+
+          <VersionSelector
+            versions={versionsData?.versions ?? []}
+            currentVersion={resolvedVersion}
+            onVersionChange={handleVersionChange}
+            disabled={versionsLoading}
+          />
+        </div>
+
+        <InstrumentationFilterBar
+          filters={filters}
+          onFiltersChange={setFilters}
+          instrumentations={instrumentations ?? []}
+        />
+
+        {versionsError || error ? (
+          <div className="flex flex-col items-center justify-center space-y-4 py-32 text-center text-red-500">
+            <AlertCircle className="mx-auto h-12 w-12 opacity-50" aria-hidden="true" />
+            <h3 className="text-xl font-semibold">Error loading data</h3>
+            {(versionsError ?? error)?.message && (
+              <p className="text-muted-foreground text-sm">{(versionsError ?? error)!.message}</p>
+            )}
+            <p className="text-muted-foreground">Please try refreshing the page.</p>
+          </div>
+        ) : versionsLoading || instrumentationsLoading || (!resolvedVersion && !versionsError) ? (
+          <div className="flex flex-col items-center justify-center space-y-4 py-32">
+            <div className="inline-flex animate-pulse rounded-full p-4 shadow-[0_0_60px_hsl(var(--primary-hsl)/0.2)]">
+              <Loader2 className="text-primary h-10 w-10 animate-spin" aria-hidden="true" />
             </div>
+            <p className="text-muted-foreground text-sm font-medium">Loading instrumentations...</p>
           </div>
         ) : (
-          <div className="space-y-12">
-            {libraryGroups.length > 0 && (
-              <div className="grid gap-6 md:grid-cols-2">
-                {libraryGroups.map((group) => (
-                  <InstrumentationGroupCard
-                    key={group.displayName}
-                    group={group}
-                    activeFilters={filters}
-                    version={resolvedVersion}
-                  />
-                ))}
+          <>
+            <div className="border-border/50 flex items-center justify-between border-b pb-4">
+              <div className="text-muted-foreground text-sm">
+                Showing {filteredInstrumentations.length} of {instrumentations?.length ?? 0}{" "}
+                instrumentations
               </div>
-            )}
+            </div>
 
-            {customGroups.length > 0 && (
-              <div className="space-y-6">
-                <div className="border-border/50 border-b pb-2">
-                  <h2 className="text-foreground text-2xl font-semibold tracking-tight">
-                    Custom Instrumentations
-                  </h2>
-                  <p className="text-muted-foreground mt-1 text-sm">
-                    Non-library instrumentations such as methods, JMX metrics, and external
-                    annotations.
+            {filteredInstrumentations.length === 0 ? (
+              <div className="border-border/50 bg-card/30 flex min-h-[300px] items-center justify-center rounded-lg border">
+                <div className="text-center">
+                  <p className="text-muted-foreground text-base">
+                    No instrumentations found matching your filters.
+                  </p>
+                  <p className="text-muted-foreground/70 mt-2 text-sm">
+                    Try adjusting your search or filter criteria
                   </p>
                 </div>
-                <div className="grid gap-6 md:grid-cols-2">
-                  {customGroups.map((group) => (
-                    <InstrumentationGroupCard
-                      key={group.displayName}
-                      group={group}
-                      activeFilters={filters}
-                      version={resolvedVersion}
-                    />
-                  ))}
-                </div>
+              </div>
+            ) : (
+              <div className="space-y-12">
+                {libraryGroups.length > 0 && (
+                  <div className="grid gap-6 md:grid-cols-2">
+                    {libraryGroups.map((group) => (
+                      <InstrumentationGroupCard
+                        key={group.displayName}
+                        group={group}
+                        activeFilters={filters}
+                        version={resolvedVersion}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {customGroups.length > 0 && (
+                  <div className="space-y-6">
+                    <div className="border-border/50 border-b pb-2">
+                      <h2 className="text-foreground text-2xl font-semibold tracking-tight">
+                        Custom Instrumentations
+                      </h2>
+                      <p className="text-muted-foreground mt-1 text-sm">
+                        Non-library instrumentations such as methods, JMX metrics, and external
+                        annotations.
+                      </p>
+                    </div>
+                    <div className="grid gap-6 md:grid-cols-2">
+                      {customGroups.map((group) => (
+                        <InstrumentationGroupCard
+                          key={group.displayName}
+                          group={group}
+                          activeFilters={filters}
+                          version={resolvedVersion}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
-          </div>
+          </>
         )}
       </div>
     </PageContainer>
