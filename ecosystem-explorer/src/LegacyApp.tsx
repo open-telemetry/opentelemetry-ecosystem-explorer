@@ -66,6 +66,16 @@ const AboutPage = lazy(() =>
   import("@/features/about/about-page").then((m) => ({ default: m.AboutPage }))
 );
 
+/*
+ * Pre-pivot router subtree, reached when `isEnabled("V1_REDESIGN")` is false in
+ * `src/App.tsx`. The route table below MUST stay in sync with the table in
+ * `src/v1/V1App.tsx` until the cleanup deletes this file. Any new global
+ * route added here must also be added there, otherwise it's reachable only in
+ * legacy builds and 404s on `feat/84-*` preview deploys.
+ *
+ * When the cleanup PR removes this file, the route-sync warning becomes moot:
+ * v1's table becomes the only table.
+ */
 export function LegacyApp() {
   return (
     <div className="bg-background flex min-h-screen flex-col">

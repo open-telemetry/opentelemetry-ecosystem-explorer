@@ -189,6 +189,14 @@ icons right. Uses Lucide for consistency (avoid adding Font Awesome — see open
 **Concrete delta:** New `<FooterV1 />` (name TBD). Same flag swap pattern as NavBar. Footer test
 (`footer.test.tsx`) gets a sibling test for the new version.
 
+**Pre-PR-6 visual audit:** PR 2b reuses the legacy `<Footer />` inside `<V1App />` as a placeholder.
+The legacy footer's text colors (`text-muted-foreground`, link hovers, copyright) were tuned for the
+legacy navy palette; rendered inside `.v1-app`, body bg shifts to `#212529` (Bootstrap gray-900) but
+card / muted / border tokens still come from the global legacy palette, so contrast may regress.
+Before opening PR 6, capture the rendered contrast on a `feat/84-*` preview deploy and document any
+WCAG AA failures. PR 6's `<FooterV1 />` ships against the v1 surface tokens deliberately, so it
+shouldn't inherit the placeholder's issues, but the baseline gives a concrete target.
+
 ### 6. CncfCallout
 
 **Today:** None.

@@ -32,6 +32,10 @@ import "@/v1/styles/index.css";
  * Route paths mirror `<LegacyApp />` verbatim — both sub-apps share the
  * canonical path space, and the boundary read decides which is reachable per
  * deploy. Phase 2-5 PRs each swap one route's component to its v1 version.
+ *
+ * Route-sync: the route table below mirrors `src/LegacyApp.tsx`. Any new global
+ * route added here must also be added there until LegacyApp.tsx is deleted,
+ * otherwise the route is reachable only in v1 builds and 404s in legacy. 
  */
 
 const HomePage = lazy(() =>
