@@ -175,9 +175,8 @@ export function InstrumentationDetailPage() {
                   Version not found
                 </h3>
                 <p className="text-sm text-yellow-600/90 dark:text-yellow-400/90">
-                  Version{" "}
-                  <code className="rounded bg-yellow-500/10 px-1 py-0.5">{version}</code> does not
-                  exist.
+                  Version <code className="rounded bg-yellow-500/10 px-1 py-0.5">{version}</code>{" "}
+                  does not exist.
                 </p>
                 {latestVersion && name && (
                   <Link
