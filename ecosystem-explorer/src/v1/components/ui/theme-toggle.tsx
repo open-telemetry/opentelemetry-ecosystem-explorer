@@ -15,9 +15,9 @@
  */
 import { type JSX } from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { BsCircleHalf } from "@/components/icons/bs-icon-circle-half";
-import { BsSunFill } from "@/components/icons/bs-icon-sun-fill";
-import { BsMoonStarsFill } from "@/components/icons/bs-icon-moon-stars-fill";
+import { BsCircleHalf } from "@/v1/components/icons/bs-icon-circle-half";
+import { BsSunFill } from "@/v1/components/icons/bs-icon-sun-fill";
+import { BsMoonStarsFill } from "@/v1/components/icons/bs-icon-moon-stars-fill";
 import { type ThemeMode, useTheme } from "@/theme-context";
 
 /*
@@ -27,7 +27,7 @@ import { type ThemeMode, useTheme } from "@/theme-context";
  *   - menu rows are Light / Dark / Auto with Bootstrap-Icons glyphs
  *   - active row is signalled by background colour only (no checkmark) —
  *     upstream renders a `check2` SVG but always `d-none`-hides it.
- * Visuals live in `src/styles/theme-toggle.css`.
+ * Visuals live in `src/v1/styles/theme-toggle.css`.
  */
 
 type Option = {
