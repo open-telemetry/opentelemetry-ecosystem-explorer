@@ -88,6 +88,10 @@ modules:
   description: ASP.NET Core instrumentation for OpenTelemetry .NET
   type: instrumentation
   version: 1.15.2
+- name: OpenTelemetry.Instrumentation.GrpcNetClient
+  description: gRPC for .NET client instrumentation for OpenTelemetry .NET
+  type: instrumentation
+  version: 1.0.0-rc9
 - name: OpenTelemetry.Instrumentation.Http
   description: HTTP instrumentation for OpenTelemetry .NET.
   type: instrumentation
@@ -100,6 +104,10 @@ modules:
   description: SqlClient instrumentation for OpenTelemetry .NET.
   type: instrumentation
   version: 1.15.2
+- name: OpenTelemetry.Instrumentation.StackExchangeRedis
+  description: StackExchange.Redis instrumentation for OpenTelemetry .NET
+  type: instrumentation
+  version: 1.0.0-rc9
 - name: OpenTelemetry.Resources.AWS
   description: OpenTelemetry Resource Detectors for AWS ElasticBeanstalk, EC2, ECS,
     EKS.

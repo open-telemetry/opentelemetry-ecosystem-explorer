@@ -85,7 +85,8 @@ class InstrumentationSync:
         try:
             version = Version(version_string)
         except ValueError:
-            version = Version("1.0.0")
+            logger.error(f"Invalid core version string: {version_string}")
+            return None
 
         if self.inventory_manager.version_exists(version):
             return None
@@ -117,13 +118,16 @@ class InstrumentationSync:
         try:
             latest_version = Version(latest_version_string)
         except ValueError:
-            latest_version = Version("1.0.0")
+            logger.error(f"Invalid core version string for snapshot: {latest_version_string}")
+            # Fallback to a safe default if needed, but better to error out if we can't even get a version
+            raise ValueError(f"Could not resolve a valid core version: {latest_version_string}")
 
         snapshot_version = Version(
             major=latest_version.major,
             minor=latest_version.minor,
-            patch=latest_version.patch + 1,
-            prerelease=("SNAPSHOT",),
+            patch=latest_version.patch,
+            prerelease=latest_version.prerelease,
+            build=("SNAPSHOT",),
         )
 
         logger.info("  Fetching instrumentation list from NuGet...")

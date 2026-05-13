@@ -33,13 +33,14 @@ class NuGetAPIError(Exception):
 class DotNetInstrumentationClient:
     """Client for fetching .NET instrumentation metadata from NuGet."""
 
-    SEARCH_URL = "https://azuresearch-usnc.nuget.org/query"
+    SERVICE_INDEX_URL = "https://api.nuget.org/v3/index.json"
     OWNER = "OpenTelemetry"
     TIMEOUT = 30
 
     def __init__(self):
         """Initialize the client."""
         self._session = requests.Session()
+        self._search_url = None
 
         retry_strategy = Retry(
             total=3,
@@ -50,6 +51,25 @@ class DotNetInstrumentationClient:
         adapter = HTTPAdapter(max_retries=retry_strategy)
         self._session.mount("https://", adapter)
 
+    def _get_search_url(self) -> str:
+        """Resolve the search URL from the NuGet service index."""
+        if self._search_url:
+            return self._search_url
+
+        try:
+            response = self._session.get(self.SERVICE_INDEX_URL, timeout=self.TIMEOUT)
+            response.raise_for_status()
+            index_data = response.json()
+            for resource in index_data.get("resources", []):
+                if resource.get("@type") == "SearchQueryService":
+                    self._search_url = resource.get("@id")
+                    return self._search_url
+        except requests.RequestException as e:
+            logger.error(f"Error fetching NuGet service index: {e}")
+
+        # Fallback to a known endpoint if index fetch fails
+        return "https://azuresearch-usnc.nuget.org/query"
+
     def fetch_instrumentation_list(self) -> Dict[str, Any]:
         """
         Fetch instrumentation list by querying NuGet for packages owned by OpenTelemetry.
@@ -58,12 +78,12 @@ class DotNetInstrumentationClient:
         modules = []
 
         for pkg in all_packages:
-            # Skip deprecated packages
-            if pkg.get("deprecation"):
-                logger.info(f"  Skipping deprecated package: {pkg.get('id')}")
-                continue
-
             package_id = pkg.get("id", "")
+
+            # Skip deprecated and Contrib packages (which are considered legacy/deprecated)
+            if pkg.get("deprecation") or package_id.startswith("OpenTelemetry.Contrib."):
+                logger.info(f"  Skipping deprecated/contrib package: {package_id}")
+                continue
             version = pkg.get("version", "")
             description = pkg.get("description", "")
 
@@ -105,7 +125,8 @@ class DotNetInstrumentationClient:
             "take": 1,
         }
         try:
-            response = self._session.get(self.SEARCH_URL, params=params, timeout=self.TIMEOUT)
+            search_url = self._get_search_url()
+            response = self._session.get(search_url, params=params, timeout=self.TIMEOUT)
             response.raise_for_status()
             data = response.json()
             if data.get("data"):
@@ -124,12 +145,13 @@ class DotNetInstrumentationClient:
         while True:
             params = {
                 "q": f"owner:{owner}",
-                "prerelease": "false",
+                "prerelease": "true",
                 "skip": skip,
                 "take": take,
             }
             try:
-                response = self._session.get(self.SEARCH_URL, params=params, timeout=self.TIMEOUT)
+                search_url = self._get_search_url()
+                response = self._session.get(search_url, params=params, timeout=self.TIMEOUT)
                 response.raise_for_status()
                 data = response.json()
 

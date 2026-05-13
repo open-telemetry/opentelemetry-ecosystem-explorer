@@ -31,14 +31,6 @@ modules:
   description: StartupHook used by the OpenTelemetry.AutoInstrumentation project.
   type: instrumentation
   version: 1.15.0
-- name: OpenTelemetry.Contrib.Extensions.AWSXRay
-  description: OpenTelemetry extensions for AWS X-Ray.
-  type: extension
-  version: 1.2.0
-- name: OpenTelemetry.Contrib.Instrumentation.AWS
-  description: AWS client instrumentation for OpenTelemetry .NET
-  type: instrumentation
-  version: 1.0.2
 - name: OpenTelemetry.Exporter.Console
   description: Console exporter for OpenTelemetry .NET
   type: exporter
@@ -51,14 +43,6 @@ modules:
   description: In-memory exporter for OpenTelemetry .NET
   type: exporter
   version: 1.15.3
-- name: OpenTelemetry.Exporter.Instana
-  description: Instana .NET Exporter for OpenTelemetry.
-  type: exporter
-  version: 1.1.0
-- name: OpenTelemetry.Exporter.Jaeger
-  description: Jaeger exporter for OpenTelemetry .NET
-  type: exporter
-  version: 1.5.1
 - name: OpenTelemetry.Exporter.OneCollector
   description: An OpenTelemetry .NET exporter that sends telemetry to Microsoft OneCollector.
   type: exporter
@@ -104,6 +88,10 @@ modules:
   description: ASP.NET Core instrumentation for OpenTelemetry .NET
   type: instrumentation
   version: 1.15.2
+- name: OpenTelemetry.Instrumentation.GrpcNetClient
+  description: gRPC for .NET client instrumentation for OpenTelemetry .NET
+  type: instrumentation
+  version: 1.0.0-rc9
 - name: OpenTelemetry.Instrumentation.Http
   description: HTTP instrumentation for OpenTelemetry .NET.
   type: instrumentation
@@ -116,6 +104,10 @@ modules:
   description: SqlClient instrumentation for OpenTelemetry .NET.
   type: instrumentation
   version: 1.15.2
+- name: OpenTelemetry.Instrumentation.StackExchangeRedis
+  description: StackExchange.Redis instrumentation for OpenTelemetry .NET
+  type: instrumentation
+  version: 1.0.0-rc9
 - name: OpenTelemetry.Resources.AWS
   description: OpenTelemetry Resource Detectors for AWS ElasticBeanstalk, EC2, ECS,
     EKS.
