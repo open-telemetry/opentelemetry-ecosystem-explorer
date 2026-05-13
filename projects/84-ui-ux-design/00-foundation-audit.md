@@ -332,10 +332,21 @@ use `.td-navbar`, `.td-light-dark-menu__*`, or `.v1-app` — none of which match
 v1 stylesheets live under `src/v1/styles/` (aggregated by `src/v1/styles/index.css`, imported by
 `<V1App />`). Surface-token overrides that the dormant `[data-v1-redesign]` block carried in
 `src/styles/tokens.css` move to `src/v1/styles/tokens.css` and re-scope from
-`[data-v1-redesign="true"][data-theme="X"]` to `.v1-app` (dark default) +
-`[data-theme="light"] .v1-app` (light override). `data-theme` lives on `<html>` (ThemeProvider
-contract, unchanged); `.v1-app` is the class on `<V1App />`'s root div. Cascade keeps the override
-inside V1App's subtree.
+`[data-v1-redesign="true"][data-theme="X"]` to `.v1-app` (dark default) + a paired
+`[data-theme="light"].v1-app, [data-theme="light"] .v1-app` (light override; same-element +
+descendant selectors so the rule matches whether `.v1-app` sits on `<html>` or on the wrapper div).
+`data-theme` lives on `<html>` (ThemeProvider contract, unchanged).
+
+The `.v1-app` class is applied in **two** places, both intentional:
+
+- **`src/main.tsx`** adds it to `<html>` pre-mount via a single flag read. This is the only flag
+  read outside `src/App.tsx`'s boundary — the carve-out exists so body bg paints against v1 surface
+  tokens from the first paint (CSS variables on `.v1-app` cascade to `<body>` via the
+  `body { background-color: hsl(var(--background-hsl)) }` rule in `src/styles/base.css`). Without
+  it, body would briefly render against legacy navy during the React mount window.
+- **`<V1App />`'s wrapper `<div className="v1-app">`** carries the class for nested cascade scoping
+  inside the app tree. Redundant with the html-level class but harmless — both elements match the
+  same rule and declare the same values.
 
 ### Enable locally
 

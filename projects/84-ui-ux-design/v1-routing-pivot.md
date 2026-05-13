@@ -60,8 +60,8 @@ Concretely:
   surface tokens from the first paint (zero navy-to-v1 flash during the React mount window). The
   flag value is build-time-constant via Vite's `import.meta.env` substitution, so the conditional
   evaluates once per build. CSS variables declared on `.v1-app` cascade through `<body>` via
-  `body { background-color: hsl(var(--background-hsl)) }` in `src/styles/base.css`. PR 2b
-  implements this; PR 8 cleanup removes it along with the App.tsx boundary read.
+  `body { background-color: hsl(var(--background-hsl)) }` in `src/styles/base.css`. PR 2b implements
+  this; PR 8 cleanup removes it along with the App.tsx boundary read.
 - **No URL prefix.** v1 mounts at the canonical paths (`/`, `/java-agent/...`, etc.). Both sub-apps
   own the same path space; the boundary read decides which one is reachable.
 - **Per-deploy bundle selection.** The existing `netlify.toml` pattern (`feat/84-*` branches set
@@ -77,9 +77,9 @@ already merged on `main` (PR 1 theme system, PR 4 StatusPill).
 **Cutover model.** The cleanup PR (PR 8) does five things in one diff:
 
 1. Removes the `isEnabled("V1_REDESIGN")` read in `src/App.tsx`.
-2. Removes the `main.tsx` carve-out that adds `.v1-app` to `<html>` pre-mount (after cutover, v1
-   is unconditional, so the class can move to a static `<html class="v1-app">` in `index.html` —
-   or the v1 surface tokens can move back to `:root` since they're the only palette).
+2. Removes the `main.tsx` carve-out that adds `.v1-app` to `<html>` pre-mount (after cutover, v1 is
+   unconditional, so the class can move to a static `<html class="v1-app">` in `index.html` — or the
+   v1 surface tokens can move back to `:root` since they're the only palette).
 3. Deletes the `<LegacyApp />` branch.
 4. Deletes legacy chrome (`src/components/layout/header.tsx`, the legacy `Footer`) and legacy
    feature directories that v1 has replaced.
@@ -104,9 +104,9 @@ After cutover, v1 is the only app. `src/v1/` stays in place; a future flattening
 - **PRs 4 (StatusPill — already shipped), 5 (TypeStripe + Card), 7 (Playwright)** continue to use
   `src/components/ui/`. Cross-cutting primitives stay shared.
 - **CSS scoping that depended on the `data-v1-redesign` attribute** moves into v1-only stylesheets
-  imported by `src/v1/` under the `.v1-app` class. `main.tsx`'s one-line carve-out (above) sets
-  the class on `<html>` pre-mount so the cascade reaches `<body>`. `<V1App />`'s wrapper `<div
-  className="v1-app">` also carries the class for nested scoping. **Locked in PR 2b's grilling
+  imported by `src/v1/` under the `.v1-app` class. `main.tsx`'s one-line carve-out (above) sets the
+  class on `<html>` pre-mount so the cascade reaches `<body>`. `<V1App />`'s wrapper
+  `<div className="v1-app">` also carries the class for nested scoping. **Locked in PR 2b's grilling
   session (2026-05-13).**
 
 ## Supersedes
