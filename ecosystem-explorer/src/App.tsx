@@ -80,7 +80,7 @@ export default function App() {
                   role="status"
                   aria-live="polite"
                 >
-                  <div className="text-muted-foreground text-sm font-medium">Loading...</div>
+                  <div className="text-muted-foreground text-sm font-medium">Loading…</div>
                 </div>
               }
             >

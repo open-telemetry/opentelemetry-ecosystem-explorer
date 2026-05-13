@@ -4,7 +4,7 @@ issue: 84
 type: audit
 phase: 1
 status: planning
-last_updated: "2026-05-06"
+last_updated: "2026-05-13"
 ---
 
 > [!NOTE]
@@ -31,8 +31,10 @@ of the 11 tasks in `00-foundation.md` already have partial implementations we ca
 of replacing.
 
 The migration plan is now concrete: add a `V1_REDESIGN` flag to the existing `lib/feature-flags.ts`
-and use the same `isEnabled(...)` pattern that already gates `JAVA_CONFIG_BUILDER` and
-`COLLECTOR_PAGE`. No new infrastructure.
+and reuse the same `isEnabled(...)` pattern that already gates `JAVA_CONFIG_BUILDER` and
+`COLLECTOR_PAGE` — but **post-2026-05-12 pivot** ([`v1-routing-pivot.md`](./v1-routing-pivot.md)),
+the flag is read **once** at the boundary of `src/App.tsx` to swap between two top-level sub-apps,
+not sprinkled across components. No new infrastructure.
 
 ---
 
@@ -53,9 +55,11 @@ and use the same `isEnabled(...)` pattern that already gates `JAVA_CONFIG_BUILDE
 
 ## File layout
 
+<!-- markdownlint-disable MD013 -->
+
 ```text
 src/
-├── App.tsx                  ← BrowserRouter + Routes; some routes are flag-gated
+├── App.tsx                  ← BrowserRouter; post-pivot, a single V1_REDESIGN boundary read swaps <V1App /> for <LegacyApp />
 ├── main.tsx                 ← entry; ThemeProvider lives here
 ├── index.css                ← Tailwind import + @theme block + global styles
 ├── themes.ts                ← Theme definitions (currently: only "dark-blue")
@@ -87,8 +91,8 @@ src/
 | Foundation task   | Already exists                                          | Path                                                                         | Status                                                                                                                                                                                                                                                                                                                                                                    |
 | ----------------- | ------------------------------------------------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Theme system      | `ThemeProvider` + HSL custom properties                 | `src/theme-context.tsx`, `src/themes.ts`, `src/index.css`                    | **Extend** to support light + dark + auto                                                                                                                                                                                                                                                                                                                                 |
-| NavBar            | Sticky header with logo + 2 nav links                   | `src/components/layout/header.tsx`                                           | **Replace** with opentelemetry.io-style navbar (gated by V1_REDESIGN)                                                                                                                                                                                                                                                                                                     |
-| Footer            | 3-column footer with OTel branding                      | `src/components/layout/footer.tsx`                                           | **Replace** with two-cluster Docsy-style footer (gated)                                                                                                                                                                                                                                                                                                                   |
+| NavBar            | Sticky header with logo + 2 nav links                   | `src/components/layout/header.tsx`                                           | **Re-implement** as opentelemetry.io-style navbar inside `src/v1/components/layout/nav-bar.tsx`; mounted via `<V1App />` when the `V1_REDESIGN` boundary read is on. Legacy `Header` keeps shipping until PR 8 cleanup.                                                                                                                                                   |
+| Footer            | 3-column footer with OTel branding                      | `src/components/layout/footer.tsx`                                           | **Re-implement** as a two-cluster Docsy-style footer inside `src/v1/components/layout/`; mounted via `<V1App />`. Legacy `Footer` keeps shipping until PR 8 cleanup.                                                                                                                                                                                                      |
 | StatusPill        | `<StabilityBadge>` + `<GlowBadge variant="...">`        | `src/components/ui/stability-badge.tsx`, `src/components/ui/glow-badge.tsx`  | **Add new `<StatusPill>` primitive** in PR 4 — covers all six OTel stability levels (development / alpha / beta / stable / deprecated / unmaintained). Leaves `<StabilityBadge>` alone for now; migration is a follow-up cleanup PR after Phase 1. `GlowBadge` gains a `secondary` variant for `development` and an `error/danger` variant for `deprecated/unmaintained`. |
 | Card primitive    | `<NavigationCard>`, `<DetailCard>`                      | `src/components/ui/navigation-card.tsx`, `src/components/ui/detail-card.tsx` | **Audit + extend** — see if either is general enough to host the type-stripe slot                                                                                                                                                                                                                                                                                         |
 | TypeStripe        | —                                                       | —                                                                            | **New primitive**                                                                                                                                                                                                                                                                                                                                                         |
@@ -99,18 +103,18 @@ src/
 
 ## What's incomplete or drifting today
 
-| Issue                                                                                                                                                                                                                                                                                      | Where                                                         | Impact                                                                                                                                    |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
-| **Color drift between `index.css` and `themes.ts`.** `index.css` `@layer theme` has cyan values (`--primary-hsl: 185 85% 70%`) but `themes.ts` defines orange (`38 95% 52%`). `ThemeProvider` overwrites the CSS values on mount, but there's a flash of wrong-color-theme on first paint. | `src/index.css` lines 13–30 vs `src/themes.ts` lines 50–67    | Needs reconciling as part of theme work. The CSS defaults should match the default theme so first paint is correct.                       |
-| **Single theme.** `ThemeId = "dark-blue"` only — no light, no dark, no auto.                                                                                                                                                                                                               | `src/themes.ts:17`                                            | Foundation task #1 must extend this. Light + dark + auto with `prefers-color-scheme`.                                                     |
-| **`data-theme` attribute, not `data-bs-theme`.**                                                                                                                                                                                                                                           | `src/theme-context.tsx:53`                                    | Keeping `data-theme` (decided 2026-05-06, see Q1). The codebase isn't on Bootstrap, so `data-bs-theme` would be misleading.               |
-| **`StabilityBadge` only handles `"development"`.** Returns `null` for everything else.                                                                                                                                                                                                     | `src/components/ui/stability-badge.tsx:27`                    | Foundation task #7 needs to extend this OR introduce a separate `<StatusPill>` and migrate `StabilityBadge` callers over time.            |
-| **`GlowBadge` missing `error/danger` variant.** Has primary/success/info/warning/muted.                                                                                                                                                                                                    | `src/components/ui/glow-badge.tsx:18`                         | One-line addition.                                                                                                                        |
-| **Header has only Java Agent + Collector links.**                                                                                                                                                                                                                                          | `src/components/layout/header.tsx:27–40`                      | The new navbar replaces this entirely. The current Header keeps shipping behind the flag.                                                 |
-| **No theme toggle UI anywhere.** `ThemeProvider` exposes `setThemeId` but nothing calls it.                                                                                                                                                                                                | —                                                             | New work in foundation task #2.                                                                                                           |
-| **CollectorDetailPage is broken.** "Unexpected token '<', '<!doctype' is not valid JSON" — the API call returns HTML when it expects JSON.                                                                                                                                                 | `src/features/collector/collector-detail-page.tsx` (presumed) | Out of scope for foundation, but worth a sub-issue so it isn't forgotten. The detail page rewrite in Project 04 will replace this anyway. |
-| **No CNCF callout component or rendering anywhere.**                                                                                                                                                                                                                                       | —                                                             | New work.                                                                                                                                 |
-| **No Playwright visual regression suite.** Playwright is in `devDependencies` but `playwright.config.*` doesn't exist.                                                                                                                                                                     | —                                                             | First-time setup as part of foundation testing.                                                                                           |
+| Issue                                                                                                                                                                                                                                                                                      | Where                                                         | Impact                                                                                                                                                    |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Color drift between `index.css` and `themes.ts`.** `index.css` `@layer theme` has cyan values (`--primary-hsl: 185 85% 70%`) but `themes.ts` defines orange (`38 95% 52%`). `ThemeProvider` overwrites the CSS values on mount, but there's a flash of wrong-color-theme on first paint. | `src/index.css` lines 13–30 vs `src/themes.ts` lines 50–67    | Needs reconciling as part of theme work. The CSS defaults should match the default theme so first paint is correct.                                       |
+| **Single theme.** `ThemeId = "dark-blue"` only — no light, no dark, no auto.                                                                                                                                                                                                               | `src/themes.ts:17`                                            | Foundation task #1 must extend this. Light + dark + auto with `prefers-color-scheme`.                                                                     |
+| **`data-theme` attribute, not `data-bs-theme`.**                                                                                                                                                                                                                                           | `src/theme-context.tsx:53`                                    | Keeping `data-theme` (decided 2026-05-06, see Q1). The codebase isn't on Bootstrap, so `data-bs-theme` would be misleading.                               |
+| **`StabilityBadge` only handles `"development"`.** Returns `null` for everything else.                                                                                                                                                                                                     | `src/components/ui/stability-badge.tsx:27`                    | Foundation task #7 needs to extend this OR introduce a separate `<StatusPill>` and migrate `StabilityBadge` callers over time.                            |
+| **`GlowBadge` missing `error/danger` variant.** Has primary/success/info/warning/muted.                                                                                                                                                                                                    | `src/components/ui/glow-badge.tsx:18`                         | One-line addition.                                                                                                                                        |
+| **Header has only Java Agent + Collector links.**                                                                                                                                                                                                                                          | `src/components/layout/header.tsx:27–40`                      | The new v1 navbar (in `src/v1/components/layout/`) replaces this entirely. The current `Header` keeps shipping inside `<LegacyApp />` until PR 8 cleanup. |
+| **No theme toggle UI anywhere.** `ThemeProvider` exposes `setThemeId` but nothing calls it.                                                                                                                                                                                                | —                                                             | New work in foundation task #2.                                                                                                                           |
+| **CollectorDetailPage is broken.** "Unexpected token '<', '<!doctype' is not valid JSON" — the API call returns HTML when it expects JSON.                                                                                                                                                 | `src/features/collector/collector-detail-page.tsx` (presumed) | Out of scope for foundation, but worth a sub-issue so it isn't forgotten. The detail page rewrite in Project 04 will replace this anyway.                 |
+| **No CNCF callout component or rendering anywhere.**                                                                                                                                                                                                                                       | —                                                             | New work.                                                                                                                                                 |
+| **No Playwright visual regression suite.** Playwright is in `devDependencies` but `playwright.config.*` doesn't exist.                                                                                                                                                                     | —                                                             | First-time setup as part of foundation testing.                                                                                                           |
 
 ---
 
@@ -160,9 +164,10 @@ Agent, Collector).
 Blog · **Explorer** · search · language · theme toggle. Always-dark even in light mode (matches
 opentelemetry.io).
 
-**Concrete delta:** New `<NavBar />` at `components/layout/nav-bar.tsx`. App.tsx swaps based on
-`isEnabled("V1_REDESIGN") ? <NavBar /> : <Header />`. Old `Header` keeps existing tests passing
-during transition.
+**Concrete delta:** Post-2026-05-12 pivot, the new `<NavBar />` lives at
+`src/v1/components/layout/nav-bar.tsx` and is mounted from inside `<V1App />`. The boundary swap in
+`src/App.tsx` is at the sub-app level — `isEnabled("V1_REDESIGN") ? <V1App /> : <LegacyApp />` — not
+per-component. Legacy `Header` keeps its existing tests passing until PR 8 cleanup.
 
 ### 4. SubNav
 
@@ -189,11 +194,12 @@ icons right. Uses Lucide for consistency (avoid adding Font Awesome — see open
 **Today:** None.
 
 **Target:** Component rendering: "OpenTelemetry is a CNCF incubating project. Formed through a
-merger of the OpenTracing and OpenCensus projects." + CNCF logo. Sits above the footer on every
-route when `V1_REDESIGN` is on.
+merger of the OpenTracing and OpenCensus projects." + CNCF logo. Sits above the footer on every v1
+route (rendered inside `<V1App />`).
 
-**Concrete delta:** New `<CncfCallout />` at `components/layout/cncf-callout.tsx`. CNCF logo SVG in
-`components/icons/`. Optional layout slot in `App.tsx` (within the `V1_REDESIGN` branch).
+**Concrete delta:** New `<CncfCallout />` at `src/v1/components/layout/cncf-callout.tsx`. CNCF logo
+SVG in `src/v1/components/icons/` (or shared `src/components/icons/` if reused by legacy). Mounted
+in `<V1App />`'s layout wrapper.
 
 ### 7. StatusPill
 
@@ -272,9 +278,13 @@ variant), Card, and TypeStripe in both themes.
 
 ---
 
-## Migration strategy: feature-flagged side-by-side
+## Migration strategy: directory-separated, boundary-gated
 
-The existing flag system at `src/lib/feature-flags.ts` is exactly what we need.
+> Updated 2026-05-13 after the [pivot](./v1-routing-pivot.md). The original "feature-flagged
+> side-by-side per component" strategy was abandoned on the 2026-05-12 Communications SIG call.
+
+The existing flag system at `src/lib/feature-flags.ts` is exactly what we need — but the flag is now
+read **once**, at the boundary of `src/App.tsx`, to pick which top-level sub-app the bundle reaches.
 
 ### Add the flag
 
@@ -283,30 +293,26 @@ The existing flag system at `src/lib/feature-flags.ts` is exactly what we need.
 const FEATURE_FLAGS = [
   "JAVA_CONFIG_BUILDER",
   "COLLECTOR_PAGE",
-  "V1_REDESIGN", // ← new: gates NavBar + Footer + CncfCallout + theme toggle
+  "V1_REDESIGN", // ← single boundary read in App.tsx; no per-component sprawl
 ] as const;
 ```
 
-### Use the flag (App.tsx pattern)
+### Use the flag (App.tsx boundary pattern)
 
 ```tsx
 import { isEnabled } from "@/lib/feature-flags";
+import { LegacyApp } from "@/legacy/LegacyApp"; // or inline in App.tsx
+import { V1App } from "@/v1/V1App";
 
-const v1Redesign = isEnabled("V1_REDESIGN");
-
-return (
-  <BrowserRouter>
-    <div className="bg-background flex min-h-screen flex-col">
-      {v1Redesign ? <NavBar /> : <Header />}
-      <main className="flex-1 pt-16">
-        <Routes>{/* unchanged */}</Routes>
-      </main>
-      {v1Redesign && <CncfCallout />}
-      {v1Redesign ? <FooterV1 /> : <Footer />}
-    </div>
-  </BrowserRouter>
-);
+export default function App() {
+  return isEnabled("V1_REDESIGN") ? <V1App /> : <LegacyApp />;
+}
 ```
+
+`<V1App />` lives at `src/v1/V1App.tsx` and owns its own `<BrowserRouter>` (or shared) +
+`<Routes>` + chrome (`<NavBar />`, `<Footer />`, `<CncfCallout />`). `<LegacyApp />` is the
+pre-pivot router subtree (`<Header />` + existing `<Routes>` + `<Footer />`). Each Netlify deploy
+bundles whichever branch is reachable; the unused branch is tree-shaken out.
 
 ### Enable locally
 
@@ -338,16 +344,20 @@ gets the redesign chrome on automatically. Other contributors' PRs see the place
 
 ### Cleanup, when ready
 
-When all foundation tasks land + maintainers approve, a single PR removes the flag and deletes the
-legacy `Header` / `Footer`. That's the "go-live" moment for Phase 1.
+When all foundation tasks land + maintainers approve, a single PR (PR 8) does four things: removes
+the `isEnabled("V1_REDESIGN")` read in `src/App.tsx`, deletes the `<LegacyApp />` branch plus the
+legacy `Header` / `Footer` and replaced `src/features/...` content, removes the `V1_REDESIGN` entry
+from `feature-flags.ts`, and removes the `feat/84-*` pattern from `netlify.toml`. That's the
+"go-live" moment for Phase 1.
 
 ### Why not in-place replacement
 
 - The current site is shipping. Replacing `Header` directly means `main` looks broken until
   everything lands.
-- Side-by-side gives Netlify previews per PR with the flag on, so reviewers can see the diff
-  visually.
-- The cleanup PR is small and surgical, lowering review friction for the final swap.
+- Directory-separated trees give Netlify previews per PR with the v1 bundle, so reviewers can
+  compare the redesign preview URL to production (or a `main` preview) side-by-side in two tabs.
+- The cleanup PR is a delete-the-other-half diff rather than a flag-flip, lowering review friction
+  for the final swap.
 
 ---
 
@@ -461,19 +471,28 @@ navbar"** — small, visible, low-risk, gated by `V1_REDESIGN` so it can land wi
 ## Recommended PR sequence (preview)
 
 This is _next_ — Project 00's "break Phase 1 into PRs" track. Listed here as a preview so the audit
-feels complete:
+feels complete. **Post-2026-05-12 pivot** ([`v1-routing-pivot.md`](./v1-routing-pivot.md)) — see
+[`NEXT-STEPS.md`](./NEXT-STEPS.md) for the authoritative table.
 
 1. **PR 0: Add V1_REDESIGN flag** (1-line in `lib/feature-flags.ts` — unblocks everything;
    `netlify.toml` already pattern-matches `feat/84-*` so previews pick it up automatically).
-2. **PR 1: Theme system** — extend themes, no-flash init, theme toggle in a stub navbar.
-3. **PR 2: NavBar v1** — full opentelemetry.io-style navbar; theme toggle moves into it.
-4. **PR 3: SubNav** — breadcrumb component used by inner pages.
-5. **PR 4: StatusPill + GlowBadge `error` variant** — locks status mapping.
-6. **PR 5: TypeStripe + Card primitive update** — unblocks list and detail page projects.
-7. **PR 6: FooterV1 + CncfCallout** — closes the chrome.
-8. **PR 7: Playwright visual regression baseline** — locks the look.
-9. **PR 8: Cleanup** — remove `V1_REDESIGN` flag, delete legacy `Header`/`Footer`, update
-   `DESIGN.md`.
+2. **PR 1: Theme system** — extend themes, no-flash init, `<ThemeToggle />` authored (shared in
+   `src/components/ui/`).
+3. **PR 2: NavBar v1** — re-scoped 2026-05-13: dormant navbar component + theme-toggle rewrite +
+   icons + CSS in shared locations; docs capture the pivot. `App.tsx`/`main.tsx` wiring reverted.
+4. **PR 2b: v1 scaffolding** — introduce `src/v1/`, write a minimal `<V1App />`, move the dormant
+   navbar into `src/v1/components/layout/`, add the single `V1_REDESIGN` boundary read in
+   `src/App.tsx`.
+5. **PR 3: SubNav** — breadcrumb component used by inner v1 pages (lives in `src/v1/`).
+6. **PR 4: StatusPill + GlowBadge `error` variant** — locks status mapping (shared primitive in
+   `src/components/ui/`).
+7. **PR 5: TypeStripe + Card primitive update** — unblocks list and detail page projects (shared
+   primitives).
+8. **PR 6: FooterV1 + CncfCallout** — closes the v1 chrome (lives in `src/v1/`).
+9. **PR 7: Playwright visual regression baseline** — locks the look.
+10. **PR 8: Cleanup** — remove the `V1_REDESIGN` boundary read in `src/App.tsx`; delete the
+    `<LegacyApp />` branch, legacy `Header` / `Footer`, and replaced `src/features/...` content;
+    remove the `V1_REDESIGN` entry from `lib/feature-flags.ts` and the `feat/84-*` pattern from
+    `netlify.toml`; update `DESIGN.md`.
 
-Each PR is small enough for one contributor and one reviewer; each can ship independently behind the
-flag.
+Each PR is small enough for one contributor and one reviewer.

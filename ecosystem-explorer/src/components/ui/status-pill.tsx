@@ -15,25 +15,16 @@
  */
 import { GlowBadge } from "./glow-badge";
 
-const STABILITY_VARIANT = {
-  development: "secondary",
-  alpha: "warning",
-  beta: "info",
-  stable: "success",
-  deprecated: "error",
-  unmaintained: "error",
+const STABILITY = {
+  development: { variant: "secondary", label: "Development" },
+  alpha: { variant: "warning", label: "Alpha" },
+  beta: { variant: "info", label: "Beta" },
+  stable: { variant: "success", label: "Stable" },
+  deprecated: { variant: "error", label: "Deprecated" },
+  unmaintained: { variant: "error", label: "Unmaintained" },
 } as const;
 
-const STABILITY_LABEL = {
-  development: "Development",
-  alpha: "Alpha",
-  beta: "Beta",
-  stable: "Stable",
-  deprecated: "Deprecated",
-  unmaintained: "Unmaintained",
-} as const;
-
-export type Stability = keyof typeof STABILITY_VARIANT;
+export type Stability = keyof typeof STABILITY;
 
 interface StatusPillProps {
   stability: Stability;
@@ -41,9 +32,10 @@ interface StatusPillProps {
 }
 
 export function StatusPill({ stability, className }: StatusPillProps) {
+  const { variant, label } = STABILITY[stability];
   return (
-    <GlowBadge variant={STABILITY_VARIANT[stability]} className={className}>
-      {STABILITY_LABEL[stability]}
+    <GlowBadge variant={variant} className={className}>
+      {label}
     </GlowBadge>
   );
 }
