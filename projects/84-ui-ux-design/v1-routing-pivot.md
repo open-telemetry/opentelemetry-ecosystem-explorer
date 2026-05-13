@@ -7,11 +7,15 @@ status: in-progress
 last_updated: "2026-05-13"
 ---
 
+> [!NOTE]
+>
+> This file was drafted in collaboration with Claude Opus 4.7. Corrections are welcome.
+
 ## Pivot — V1_REDESIGN flag-sprawl → `src/v1/` router-boundary
 
-> Direction-setting note for the Phase 1 mechanism change decided on the 2026-05-12 OpenTelemetry
-> Communications SIG call. Read this before touching any redesign-era code or extending the
-> foundation plan in [`00-foundation.md`](./00-foundation.md).
+Direction-setting note for the Phase 1 mechanism change decided after the discussion at the
+2026-05-12 OpenTelemetry Communications SIG call. Read this before touching any redesign-era code or
+extending the foundation plan in [`00-foundation.md`](./00-foundation.md).
 
 ## Context
 
