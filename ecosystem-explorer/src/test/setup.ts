@@ -29,3 +29,15 @@ beforeEach(() => {
     removeEventListener: vi.fn(),
   }));
 });
+
+class ResizeObserverMock {
+  constructor() {}
+
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+globalThis.ResizeObserver = ResizeObserverMock as typeof ResizeObserver;
+HTMLElement.prototype.scrollIntoView = vi.fn();
+HTMLElement.prototype.hasPointerCapture = vi.fn();
+HTMLElement.prototype.releasePointerCapture = vi.fn();
