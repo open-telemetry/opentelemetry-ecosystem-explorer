@@ -35,7 +35,7 @@ import "@/v1/styles/index.css";
  *
  * Route-sync: the route table below mirrors `src/LegacyApp.tsx`. Any new global
  * route added here must also be added there until LegacyApp.tsx is deleted,
- * otherwise the route is reachable only in v1 builds and 404s in legacy. 
+ * otherwise the route is reachable only in v1 builds and 404s in legacy.
  */
 
 const HomePage = lazy(() =>
