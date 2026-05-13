@@ -16,6 +16,7 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Header } from "@/components/layout/header";
+import { Breadcrumbs } from "@/components/layout/breadcrumbs";
 import { Footer } from "@/components/layout/footer";
 import { isEnabled } from "@/lib/feature-flags";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
@@ -71,6 +72,7 @@ export default function App() {
     <BrowserRouter>
       <div className="bg-background flex min-h-screen flex-col">
         <Header />
+        <Breadcrumbs />
         <main className="flex-1 pt-16">
           <ErrorBoundary>
             <Suspense
