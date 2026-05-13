@@ -21,6 +21,7 @@ import { Tabs } from "@/components/ui/tabs";
 import { SegmentedTabList } from "@/components/ui/segmented-tabs";
 import { ConfigurationCard, type ConfigurationFormat } from "./components/configuration-card";
 import type { Configuration } from "@/types/javaagent";
+import { loadGlobalConfigurations } from "@/lib/api/javaagent-data";
 
 interface GlobalConfiguration extends Configuration {
   instrumentations?: string[];
@@ -31,31 +32,31 @@ const FORMAT_TABS = [
   { value: "declarative", label: "Declarative Configuration" },
 ];
 
-export function JavaConfigurationListPage() {
-  const [format, setFormat] = useState<ConfigurationFormat>("declarative");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [allConfigurations, setAllConfigurations] = useState<GlobalConfiguration[]>([]);
+function useGlobalConfigurations() {
+  const [data, setData] = useState<GlobalConfiguration[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/data/javaagent/global-configurations.json")
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to load configurations");
-        return res.json();
-      })
-      .then((data) => {
-        setAllConfigurations(data);
+    loadGlobalConfigurations()
+      .then((configs: unknown) => {
+        setData(configs as GlobalConfiguration[]);
         setIsLoading(false);
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         console.error("Failed to fetch configurations:", err);
-        setError(
-          "Data aggregation required: Global configuration data could not be loaded. Try running the build script first."
-        );
+        setError("Configuration data could not be loaded. Please try again later.");
         setIsLoading(false);
       });
   }, []);
+
+  return { data, isLoading, error };
+}
+
+export function JavaConfigurationListPage() {
+  const [format, setFormat] = useState<ConfigurationFormat>("declarative");
+  const [searchQuery, setSearchQuery] = useState("");
+  const { data: allConfigurations, isLoading, error } = useGlobalConfigurations();
 
   const filteredConfigs = useMemo(() => {
     if (!searchQuery.trim()) return allConfigurations;
