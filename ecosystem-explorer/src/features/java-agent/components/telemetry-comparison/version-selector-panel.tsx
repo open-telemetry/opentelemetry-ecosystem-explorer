@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Info } from "lucide-react";
+import { Info, ChevronDown } from "lucide-react";
 import type { VersionInfo } from "@/types/javaagent";
 
 interface VersionSelectorPanelProps {
@@ -59,18 +59,24 @@ export function VersionSelectorPanel({
             >
               From
             </label>
-            <select
-              id="from-version-select"
-              value={fromVersion}
-              onChange={(e) => onFromVersionChange(e.target.value)}
-              className="border-primary/20 bg-primary/5 text-foreground hover:border-primary/40 hover:bg-primary/10 focus:ring-primary/50 focus:border-primary/50 w-full cursor-pointer rounded-lg border-2 px-4 py-2.5 text-sm font-medium shadow-sm transition-all duration-200 hover:shadow-md focus:ring-2 focus:outline-none"
-            >
-              {versions.map((v) => (
-                <option key={v.version} value={v.version}>
-                  {v.version} {v.is_latest ? "(latest)" : ""}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                id="from-version-select"
+                value={fromVersion}
+                onChange={(e) => onFromVersionChange(e.target.value)}
+                className="border-border/60 bg-background/80 text-foreground hover:border-primary/40 focus:border-primary/50 focus:ring-primary/20 w-full cursor-pointer appearance-none rounded-lg border-2 px-4 py-2.5 text-sm font-medium [color-scheme:dark] backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none"
+              >
+                {versions.map((v) => (
+                  <option key={v.version} value={v.version}>
+                    {v.version} {v.is_latest ? "(latest)" : ""}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown
+                className="text-muted-foreground pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2"
+                aria-hidden="true"
+              />
+            </div>
           </div>
 
           {/* To version selector */}
@@ -81,18 +87,24 @@ export function VersionSelectorPanel({
             >
               To
             </label>
-            <select
-              id="to-version-select"
-              value={toVersion}
-              onChange={(e) => onToVersionChange(e.target.value)}
-              className="border-primary/20 bg-primary/5 text-foreground hover:border-primary/40 hover:bg-primary/10 focus:ring-primary/50 focus:border-primary/50 w-full cursor-pointer rounded-lg border-2 px-4 py-2.5 text-sm font-medium shadow-sm transition-all duration-200 hover:shadow-md focus:ring-2 focus:outline-none"
-            >
-              {versions.map((v) => (
-                <option key={v.version} value={v.version}>
-                  {v.version} {v.is_latest ? "(latest)" : ""}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                id="to-version-select"
+                value={toVersion}
+                onChange={(e) => onToVersionChange(e.target.value)}
+                className="border-border/60 bg-background/80 text-foreground hover:border-primary/40 focus:border-primary/50 focus:ring-primary/20 w-full cursor-pointer appearance-none rounded-lg border-2 px-4 py-2.5 text-sm font-medium [color-scheme:dark] backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none"
+              >
+                {versions.map((v) => (
+                  <option key={v.version} value={v.version}>
+                    {v.version} {v.is_latest ? "(latest)" : ""}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown
+                className="text-muted-foreground pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2"
+                aria-hidden="true"
+              />
+            </div>
           </div>
         </div>
 
@@ -104,18 +116,24 @@ export function VersionSelectorPanel({
             >
               Configuration
             </label>
-            <select
-              id="when-condition-select"
-              value={whenCondition}
-              onChange={(e) => onWhenConditionChange(e.target.value)}
-              className="border-primary/20 bg-primary/5 text-foreground hover:border-primary/40 hover:bg-primary/10 focus:ring-primary/50 focus:border-primary/50 w-full cursor-pointer rounded-lg border-2 px-4 py-2.5 text-sm font-medium shadow-sm transition-all duration-200 hover:shadow-md focus:ring-2 focus:outline-none"
-            >
-              {availableConditions.map((c) => (
-                <option key={c} value={c}>
-                  {c === "default" ? "Default" : c}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                id="when-condition-select"
+                value={whenCondition}
+                onChange={(e) => onWhenConditionChange(e.target.value)}
+                className="border-border/60 bg-background/80 text-foreground hover:border-primary/40 focus:border-primary/50 focus:ring-primary/20 w-full cursor-pointer appearance-none rounded-lg border-2 px-4 py-2.5 text-sm font-medium [color-scheme:dark] backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none"
+              >
+                {availableConditions.map((c) => (
+                  <option key={c} value={c}>
+                    {c === "default" ? "Default" : c}
+                  </option>
+                ))}
+              </select>
+              <ChevronDown
+                className="text-muted-foreground pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2"
+                aria-hidden="true"
+              />
+            </div>
           </div>
         )}
       </div>

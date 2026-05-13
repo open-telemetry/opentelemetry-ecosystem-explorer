@@ -1,0 +1,265 @@
+/*
+ * Navbar — mirrors opentelemetry.io's `.td-navbar` chrome verbatim.
+ *
+ * Source rules (in the local opentelemetry.io clone):
+ *   themes/docsy/assets/scss/td/_nav.scss              — base sizing + layout
+ *   themes/docsy/assets/scss/td/extra/_navbar.scss     — hover/active underline
+ *   themes/docsy/assets/scss/td/_navbar-mobile-scroll.scss — right-alignment
+ *   assets/scss/_navbar.scss                           — project overrides
+ *   assets/scss/_variables_project.scss                — bg / hover colours
+ *
+ * Pixel-anchored at 16px-rem: the explorer sets `html { font-size: 14px }`
+ * globally (see base.css), so rem-based descendants here would shrink. We
+ * pin the navbar subtree at 16px so `em` resolves correctly, and use absolute
+ * `px` literals for values that would otherwise need `rem`.
+ */
+
+.td-navbar {
+  font-size: 16px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 32;
+  min-height: 64px;
+  margin: 0;
+  background-color: hsl(var(--navbar-bg-hsl));
+  color: hsl(var(--navbar-fg-hsl));
+  /* No border-bottom — `--td-navbar-border-bottom: none` upstream. */
+}
+
+.td-navbar-container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 64px;
+  padding: 0 24px;
+}
+
+.td-navbar .navbar-brand {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #fff;
+  padding: 0;
+}
+
+.td-navbar .navbar-brand:focus-visible {
+  outline: revert;
+}
+
+.td-navbar .navbar-brand svg {
+  height: 48px;
+  width: auto;
+  fill: currentColor;
+}
+
+/*
+ * The collapse wrapper holds the nav-scroll on every viewport. On desktop
+ * we push it to the right (mirrors upstream `.td-navbar-nav-scroll { margin-left: auto !important }`);
+ * on mobile the auto-margin is dropped and the wrapper becomes an overlay
+ * (see the media query below).
+ */
+.td-navbar-collapse {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+.td-navbar-nav-scroll {
+  display: flex;
+  align-items: center;
+}
+
+.td-navbar .navbar-nav {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  white-space: nowrap;
+}
+
+.td-navbar .nav-item {
+  padding-inline-end: 8px;
+}
+
+.td-navbar .nav-item:last-child {
+  padding-inline-end: 0;
+}
+
+.td-navbar .nav-link {
+  display: inline-block;
+  padding: 8px;
+  color: hsl(var(--navbar-fg-hsl));
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+
+/*
+ * Shared hover/active affordance. The theme-toggle trigger lives inside
+ * `.td-navbar` and visually behaves like a nav-link (it carries class
+ * `nav-link` upstream), so we apply the same rule here rather than
+ * duplicating the property list in `theme-toggle.css`.
+ */
+.td-navbar .nav-link:hover,
+.td-navbar .nav-link.active,
+.td-navbar .td-light-dark-menu__trigger:hover,
+.td-navbar .td-light-dark-menu__trigger[data-state="open"] {
+  color: hsl(var(--navbar-accent-hsl));
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-decoration-color: hsl(var(--navbar-accent-hsl) / 0.75);
+  text-underline-offset: 0.5em;
+}
+
+/* Active (non-hovered) nav-link sits tighter at 0.375em offset, matching upstream. */
+.td-navbar .nav-link.active:not(:hover) {
+  text-underline-offset: 0.375em;
+}
+
+.td-navbar .nav-link:focus,
+.td-navbar .nav-link:focus-visible {
+  outline: revert;
+  box-shadow: none;
+}
+
+/*
+ * Hamburger toggler — hidden on desktop, revealed below `md` (767.98px).
+ * Sits between the brand and the nav-scroll wrapper in source order; we
+ * push it to the right edge with `margin-left: auto` only on mobile so the
+ * desktop layout (where `.td-navbar-nav-scroll` already grabs auto-margin)
+ * stays untouched.
+ */
+.td-navbar-toggler {
+  display: none;
+  background: transparent;
+  border: 0;
+  padding: 8px;
+  color: inherit;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.td-navbar-toggler:hover {
+  color: hsl(var(--navbar-accent-hsl));
+}
+
+.td-navbar-toggler:focus-visible {
+  outline: revert;
+}
+
+/*
+ * Backdrop — hidden on desktop, fades in behind the open panel on mobile so
+ * the user's focus collapses onto the menu. Clicking it dismisses the panel
+ * (handler lives in `nav-bar.tsx`).
+ */
+.td-navbar-backdrop {
+  display: none;
+}
+
+/*
+ * Mobile (< md, 768px) — mirrors upstream's `media-breakpoint-down(md)`
+ * boundary. Upstream stacks `flex-column` here; we instead grow the bar to
+ * upstream's mobile min-height (6.5rem ≈ 104px) and collapse the nav row
+ * into an overlay panel toggled by the hamburger.
+ */
+@media (max-width: 767.98px) {
+  .td-navbar {
+    min-height: 104px;
+  }
+
+  .td-navbar-container {
+    min-height: 104px;
+  }
+
+  .td-navbar-toggler {
+    display: inline-flex;
+    margin-left: auto;
+  }
+
+  .td-navbar-collapse {
+    position: absolute;
+    top: 104px;
+    left: 0;
+    right: 0;
+    margin-left: 0;
+    background-color: hsl(var(--navbar-bg-hsl));
+    padding: 12px 24px;
+    transform: translateY(-8px);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 180ms ease,
+      transform 180ms ease,
+      visibility 0s linear 180ms;
+  }
+
+  .td-navbar-collapse[data-state="open"] {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+    /* Sit above the backdrop within the navbar's stacking context. */
+    z-index: 1;
+    transition:
+      opacity 180ms ease,
+      transform 180ms ease,
+      visibility 0s linear 0s;
+  }
+
+  .td-navbar-collapse .navbar-nav {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+  }
+
+  .td-navbar-collapse .nav-item {
+    padding-inline-end: 0;
+  }
+
+  .td-navbar-collapse .nav-link {
+    padding: 12px 8px;
+  }
+
+  /*
+   * Backdrop — fades in behind the panel. `position: fixed` covers the
+   * viewport below the navbar bar (top: 104px) so the bar itself stays
+   * interactive and the close (X) icon is reachable.
+   */
+  .td-navbar-backdrop {
+    display: block;
+    position: fixed;
+    top: 104px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgb(0 0 0 / 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 180ms ease,
+      visibility 0s linear 180ms;
+  }
+
+  .td-navbar-backdrop[data-state="open"] {
+    opacity: 1;
+    visibility: visible;
+    transition:
+      opacity 180ms ease,
+      visibility 0s linear 0s;
+  }
+}
+
+/*
+ * Respect users who opt out of motion — collapse the animations to instant
+ * state changes.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .td-navbar-collapse,
+  .td-navbar-backdrop {
+    transition: none;
+  }
+}
