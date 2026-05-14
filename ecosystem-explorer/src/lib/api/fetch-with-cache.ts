@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright The OpenTelemetry Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -54,7 +54,7 @@ async function fetchWithRetry(
   let lastError: unknown;
   for (let i = 0; i < maxAttempts; i++) {
     try {
-      // HTTP responses (ok or non-ok) are returned immediately — no retry.
+      // HTTP responses (ok or non-ok) are returned immediately â€” no retry.
       // Only real network failures (catch block) trigger retries.
       return await fetch(url);
     } catch (error) {
@@ -130,8 +130,8 @@ export async function fetchWithCache<T>(
 
       // SPA 200 fallback: CDNs can return 200 + HTML during deployment propagation.
       // Use optional chaining so test mocks without headers don't crash.
-      const contentType = response.headers?.get?.("content-type") ?? null;
-      if (contentType && !contentType.includes("application/json")) {
+      const contentType = response.headers?.get?.("content-type") ?? "";
+      if (contentType.includes("text/html")) {
         if (isIDBAvailable()) {
           const staleData = await getCached<T>(cacheKey, storeType, { allowExpired: true });
           if (staleData !== null) {
