@@ -17,8 +17,66 @@ import { getCached, setCached, isIDBAvailable, type StoreName } from "./idb-cach
 
 const inflightRequests = new Map<string, Promise<unknown>>();
 
+/**
+ * Validates a path segment to prevent path traversal attacks.
+ * Rejects segments containing '..' or characters outside the safe set (alphanumeric, dots, underscores, and hyphens).
+ */
+// Security: Prevent path traversal by strictly validating all dynamic path segments.
+// CodeQL: This is an extra layer of protection to ensure all externally-provided
+// strings are strictly alphanumeric before being used in a fetch() URL.
+export function validatePathSegment(segment: string): void {
+  if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(segment) || segment.includes("..")) {
+    throw new Error(`Invalid path segment: ${segment}`);
+  }
+}
+
+/**
+ * Resolves a data path by combining the base URL with segments.
+ * Centralizes security validation and path construction.
+ */
+export function resolveDataPath(base: string, ...segments: string[]): string {
+  const baseUrl = import.meta.env.BASE_URL || "";
+  const normalizedBase = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
+
+  const parts = [normalizedBase, base.startsWith("/") ? base.slice(1) : base];
+
+  for (const segment of segments) {
+    validatePathSegment(segment);
+    parts.push(segment);
+  }
+
+  return parts.join("/");
+}
+
+const DEFAULT_MAX_RETRIES = 3;
+const DEFAULT_RETRY_DELAY_MS = 1000;
+
+async function fetchWithRetry(
+  url: string,
+  retries = DEFAULT_MAX_RETRIES,
+  delayMs = DEFAULT_RETRY_DELAY_MS,
+  allow404 = false
+): Promise<Response> {
+  const maxAttempts = Math.max(1, retries);
+  let lastResponse: Response | undefined;
+  for (let i = 0; i < maxAttempts; i++) {
+    try {
+      lastResponse = await fetch(url);
+      if (lastResponse.ok || (lastResponse.status === 404 && allow404) || i === maxAttempts - 1) {
+        return lastResponse;
+      }
+    } catch (error) {
+      if (i === maxAttempts - 1) throw error;
+    }
+    await new Promise((resolve) => setTimeout(resolve, delayMs * Math.pow(2, i)));
+  }
+  return lastResponse!;
+}
+
 export interface FetchWithCacheOptions<T = unknown> {
   allow404?: boolean;
+  retryCount?: number;
+  retryDelayMs?: number;
   /**
    * Optional validator for cached data. When provided, cached data that fails
    * validation is ignored for the current request and a fresh network request
@@ -56,11 +114,49 @@ export async function fetchWithCache<T>(
         }
       }
 
-      const response = await fetch(url);
+      let response: Response;
+      try {
+        response = await fetchWithRetry(
+          url,
+          options?.retryCount,
+          options?.retryDelayMs,
+          options?.allow404
+        );
+      } catch (error) {
+        if (isIDBAvailable()) {
+          const staleData = await getCached<T>(cacheKey, storeType, { allowExpired: true });
+          if (staleData !== null) {
+            if (options?.validate && !options.validate(staleData)) {
+              throw error;
+            }
+            console.warn("Failed to fetch, falling back to stale cache:", cacheKey, error);
+            return staleData;
+          }
+        }
+        throw error;
+      }
+
       if (!response.ok) {
         if (response.status === 404 && options?.allow404) {
           return null;
         }
+
+        if (isIDBAvailable()) {
+          const staleData = await getCached<T>(cacheKey, storeType, { allowExpired: true });
+          if (staleData !== null) {
+            if (options?.validate && !options.validate(staleData)) {
+              throw new Error(
+                `Failed to load ${cacheKey}: ${response.status} ${response.statusText}`
+              );
+            }
+            console.warn("Failed to load, falling back to stale cache:", {
+              cacheKey,
+              status: response.status,
+            });
+            return staleData;
+          }
+        }
+
         throw new Error(`Failed to load ${cacheKey}: ${response.status} ${response.statusText}`);
       }
 

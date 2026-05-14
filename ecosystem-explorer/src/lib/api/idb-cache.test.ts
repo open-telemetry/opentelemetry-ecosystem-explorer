@@ -15,7 +15,15 @@
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import "fake-indexeddb/auto";
-import { initDB, getCached, setCached, clearAllCached, closeDB, STORES } from "./idb-cache";
+import {
+  initDB,
+  getCached,
+  setCached,
+  clearAllCached,
+  closeDB,
+  pruneOldEntries,
+  STORES,
+} from "./idb-cache";
 
 describe("idb-cache", () => {
   beforeEach(async () => {
@@ -100,7 +108,7 @@ describe("idb-cache", () => {
       expect(result).toEqual(data);
     });
 
-    it("should return null and delete entries older than 24 hours", async () => {
+    it("should return null but keep entries older than 24 hours in the store", async () => {
       const key = "stale-key";
       const data = { value: "stale" };
       const now = Date.now();
@@ -110,10 +118,31 @@ describe("idb-cache", () => {
       const result = await getCached<typeof data>(key, STORES.METADATA);
 
       expect(result).toBeNull();
-      // Confirm it was deleted from the store
+      // Confirm it was NOT deleted from the store (to support stale fallback)
       const db = await initDB();
       const raw = await db.get(STORES.METADATA, key);
-      expect(raw).toBeUndefined();
+      expect(raw).toBeDefined();
+      expect(raw.data).toEqual(data);
+    });
+
+    it("should update lastAccessedAt even for expired data when allowed", async () => {
+      const key = "stale-key";
+      const data = { value: "stale" };
+      const startTime = Date.now();
+
+      await setCached(key, data, STORES.METADATA);
+
+      // Move time forward 25 hours
+      vi.setSystemTime(startTime + 25 * 60 * 60 * 1000);
+      const accessTime = Date.now();
+
+      const result = await getCached<typeof data>(key, STORES.METADATA, { allowExpired: true });
+      expect(result).toEqual(data);
+
+      // Verify lastAccessedAt was updated
+      const db = await initDB();
+      const raw = await db.get(STORES.METADATA, key);
+      expect(raw.lastAccessedAt).toBe(accessTime);
     });
 
     it("should return null for non-existent keys", async () => {
@@ -124,6 +153,7 @@ describe("idb-cache", () => {
 
     it("should overwrite existing data when key is reused", async () => {
       const key = "overwrite-test";
+
       const oldData = { value: "old" };
       const newData = { value: "new" };
 
@@ -168,6 +198,28 @@ describe("idb-cache", () => {
       ).resolves.not.toThrow();
       const result = await getCached("test", STORES.INSTRUMENTATIONS);
       expect(result).toEqual({ data: "value" });
+    });
+  });
+
+  describe("pruneOldEntries", () => {
+    it("should remove entries older than the threshold", async () => {
+      const now = Date.now();
+      await setCached("new-key", { data: "new" }, STORES.METADATA);
+
+      // Manually inject a stale entry by setting the time back
+      vi.setSystemTime(now - 10 * 24 * 60 * 60 * 1000); // 10 days ago
+      await setCached("stale-key", { data: "stale" }, STORES.METADATA);
+
+      vi.setSystemTime(now);
+      await pruneOldEntries(7); // Prune older than 7 days
+
+      const newResult = await getCached("new-key", STORES.METADATA);
+      expect(newResult).not.toBeNull();
+
+      // Verify deletion directly from the database
+      const db = await initDB();
+      const staleRaw = await db.get(STORES.METADATA, "stale-key");
+      expect(staleRaw).toBeUndefined();
     });
   });
 });

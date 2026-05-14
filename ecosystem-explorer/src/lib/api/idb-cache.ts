@@ -32,6 +32,7 @@ interface CacheEntry<T> {
   key: string;
   data: T;
   cachedAt: number;
+  lastAccessedAt?: number;
 }
 
 let dbInstance: IDBPDatabase | null = null;
@@ -91,7 +92,11 @@ export async function initDB(): Promise<IDBPDatabase> {
   return dbInitPromise;
 }
 
-export async function getCached<T>(key: string, store: StoreName): Promise<T | null> {
+export async function getCached<T>(
+  key: string,
+  store: StoreName,
+  options?: { allowExpired?: boolean }
+): Promise<T | null> {
   try {
     const db = await initDB();
     const entry = await db.get(store, key);
@@ -102,13 +107,22 @@ export async function getCached<T>(key: string, store: StoreName): Promise<T | n
 
     const cacheEntry = entry as CacheEntry<T>;
     if (isExpired(cacheEntry.cachedAt)) {
-      await db.delete(store, key);
+      if (options?.allowExpired) {
+        // Update last accessed time even for expired data if we are serving it
+        cacheEntry.lastAccessedAt = Date.now();
+        db.put(store, cacheEntry).catch(() => {});
+        return cacheEntry.data;
+      }
       return null;
     }
 
+    // Update last accessed time in background
+    cacheEntry.lastAccessedAt = Date.now();
+    db.put(store, cacheEntry).catch(() => {});
+
     return cacheEntry.data;
   } catch (error) {
-    console.error(`Failed to get cached data for %s:`, key, error);
+    console.error("Failed to get cached data for %s:", key, error);
     return null;
   }
 }
@@ -121,11 +135,12 @@ export async function setCached<T>(key: string, data: T, store: StoreName): Prom
       key,
       data,
       cachedAt: Date.now(),
+      lastAccessedAt: Date.now(),
     };
 
     await db.put(store, entry);
   } catch (error) {
-    console.error(`Failed to cache data for %s:`, key, error);
+    console.error("Failed to cache data for %s:", key, error);
   }
 }
 
@@ -136,6 +151,36 @@ export async function clearAllCached(): Promise<void> {
     await Promise.all(stores.map((store) => db.clear(store)));
   } catch (error) {
     console.error("Failed to clear cache:", error);
+  }
+}
+
+/**
+ * Prunes entries that haven't been accessed for the specified number of days.
+ * Helps prevent IndexedDB bloat from orphaned versioned data.
+ */
+export async function pruneOldEntries(maxAgeDays = 7): Promise<void> {
+  try {
+    const db = await initDB();
+    const maxAgeMs = maxAgeDays * 24 * 60 * 60 * 1000;
+    const now = Date.now();
+
+    for (const store of Object.values(STORES)) {
+      const tx = db.transaction(store, "readwrite");
+      let cursor = await tx.store.openCursor();
+
+      while (cursor) {
+        const entry = cursor.value as CacheEntry<unknown>;
+        const lastAccessed = entry.lastAccessedAt || entry.cachedAt;
+
+        if (now - lastAccessed > maxAgeMs) {
+          await cursor.delete();
+        }
+        cursor = await cursor.continue();
+      }
+      await tx.done;
+    }
+  } catch (error) {
+    console.error("Failed to prune old cache entries:", error);
   }
 }
 
