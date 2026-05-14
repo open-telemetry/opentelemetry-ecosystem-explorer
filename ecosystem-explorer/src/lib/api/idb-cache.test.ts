@@ -15,7 +15,15 @@
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import "fake-indexeddb/auto";
-import { initDB, getCached, setCached, clearAllCached, closeDB, pruneOldEntries, STORES } from "./idb-cache";
+import {
+  initDB,
+  getCached,
+  setCached,
+  clearAllCached,
+  closeDB,
+  pruneOldEntries,
+  STORES,
+} from "./idb-cache";
 
 describe("idb-cache", () => {
   beforeEach(async () => {
