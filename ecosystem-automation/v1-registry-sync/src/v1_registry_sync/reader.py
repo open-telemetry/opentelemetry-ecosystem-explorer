@@ -18,12 +18,9 @@ import logging
 from pathlib import Path
 from typing import Optional
 
-import yaml
-from semantic_version import Version
+from collector_watcher.inventory_manager import InventoryManager
 
 from .models import STABILITY_PRIORITY, ComponentSyncData, V1SyncReport
-
-COMPONENT_TYPES = ["connector", "exporter", "extension", "processor", "receiver"]
 
 logger = logging.getLogger(__name__)
 
@@ -38,80 +35,72 @@ def _most_stable_level(stability: Optional[dict]) -> Optional[str]:
     return None
 
 
-def _find_latest_version(distribution_dir: Path) -> Optional[str]:
-    """Return the name of the highest version directory (e.g. 'v0.151.0')."""
-    version_dirs = [d.name for d in distribution_dir.iterdir() if d.is_dir() and d.name.startswith("v")]
-    if not version_dirs:
-        return None
-    return sorted(version_dirs, key=lambda v: Version(v.lstrip("v")))[-1]
-
-
-def _parse_component_file(yaml_path: Path, distribution: str) -> list[ComponentSyncData]:
-    """Parse a single component-type YAML file and return sync data for each entry."""
-    with open(yaml_path, encoding="utf-8") as f:
-        data = yaml.safe_load(f)
-
-    if not data or "components" not in data:
-        return []
-
-    component_type = data.get("component_type", yaml_path.stem)
-    results: list[ComponentSyncData] = []
-
-    for component in data["components"]:
-        name = component.get("name", "")
-        metadata = component.get("metadata", {}) or {}
-        status = metadata.get("status", {}) or {}
-
-        stability_raw = status.get("stability")
-        stability = _most_stable_level(stability_raw)
-
-        results.append(
-            ComponentSyncData(
-                name=name,
-                component_type=component_type,
-                distribution=distribution,
-                display_name=metadata.get("display_name") or None,
-                description=metadata.get("description") or None,
-                stability=stability,
-            )
-        )
-
-    return results
-
-
 def read_latest_v2_components(
     inventory_dir: str = "ecosystem-registry/collector",
     distribution: str = "contrib",
+    v1_registry_dir: Optional[str] = None,
 ) -> V1SyncReport:
-    """Read V2 registry data for the latest version of a distribution.
+    """Read V2 registry data for the latest release version of a distribution.
 
     Args:
         inventory_dir: Path to the ecosystem-registry/collector directory.
         distribution: Either 'core' or 'contrib'.
+        v1_registry_dir: Optional path to opentelemetry.io data/registry/ directory.
+            When provided, each entry's v1_entry_exists field reflects whether the
+            expected V1 file is present on disk.
 
     Returns:
         A V1SyncReport containing proposed changes for each component.
     """
-    base = Path(inventory_dir) / distribution
-    if not base.exists():
-        raise FileNotFoundError(f"Distribution directory not found: {base}")
+    dist_dir = Path(inventory_dir) / distribution
+    if not dist_dir.exists():
+        raise FileNotFoundError(f"Distribution directory not found: {dist_dir}")
 
-    latest = _find_latest_version(base)
-    if not latest:
-        raise ValueError(f"No versioned data found in {base}")
+    inventory_manager = InventoryManager(inventory_dir)
+    release_versions = inventory_manager.list_release_versions(distribution)
+    if not release_versions:
+        raise ValueError(f"No release versions found for distribution '{distribution}'")
 
-    version_dir = base / latest
+    latest = release_versions[0]  # list is sorted newest-first
+    inventory = inventory_manager.load_versioned_inventory(distribution, latest)
+
+    v1_dir = Path(v1_registry_dir) if v1_registry_dir else None
     components: list[ComponentSyncData] = []
 
-    for component_type in COMPONENT_TYPES:
-        yaml_file = version_dir / f"{component_type}.yaml"
-        if yaml_file.exists():
-            found = _parse_component_file(yaml_file, distribution)
-            components.extend(found)
-            logger.info("  %s: loaded %d components", component_type, len(found))
+    for component_type, component_list in inventory["components"].items():
+        if not component_list:
+            continue
+
+        for component in component_list:
+            name = component.get("name", "")
+            metadata = component.get("metadata", {}) or {}
+            status = metadata.get("status", {}) or {}
+
+            stability_raw = status.get("stability")
+            stability = _most_stable_level(stability_raw)
+
+            target_v1_file = f"collector-{name}.yml"
+            v1_entry_exists = False
+            if v1_dir is not None:
+                v1_entry_exists = (v1_dir / target_v1_file).exists()
+
+            components.append(
+                ComponentSyncData(
+                    name=name,
+                    component_type=component_type,
+                    distribution=distribution,
+                    display_name=metadata.get("display_name") or None,
+                    description=metadata.get("description") or None,
+                    stability=stability,
+                    target_v1_file=target_v1_file,
+                    v1_entry_exists=v1_entry_exists,
+                )
+            )
+
+        logger.info("  %s: loaded %d components", component_type, len(component_list))
 
     return V1SyncReport(
-        version=latest.lstrip("v"),
+        version=str(latest),
         distribution=distribution,
         components=components,
     )

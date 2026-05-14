@@ -37,6 +37,8 @@ def sample_report():
                 display_name="Foo Receiver",
                 description="Receives foo data",
                 stability="beta",
+                target_v1_file="collector-fooreceiver.yml",
+                v1_entry_exists=True,
             ),
             ComponentSyncData(
                 name="barexporter",
@@ -45,6 +47,8 @@ def sample_report():
                 display_name=None,
                 description=None,
                 stability="stable",
+                target_v1_file="collector-barexporter.yml",
+                v1_entry_exists=False,
             ),
         ],
     )
@@ -58,25 +62,37 @@ class TestWriteReportJson:
         assert data["version"] == "0.10.0"
         assert data["distribution"] == "contrib"
 
-    def test_includes_proposed_changes(self, sample_report):
+    def test_includes_target_v1_file_and_exists_flag(self, sample_report):
         out = io.StringIO()
         write_report(sample_report, out, fmt="json")
         data = json.loads(out.getvalue())
 
         foo = next(c for c in data["components"] if c["name"] == "fooreceiver")
-        assert foo["proposed_v1_changes"]["title"] == "Foo Receiver"
-        assert foo["proposed_v1_changes"]["description"] == "Receives foo data"
-        assert foo["proposed_v1_changes"]["stability"] == "beta"
+        assert foo["target_v1_file"] == "collector-fooreceiver.yml"
+        assert foo["v1_entry_exists"] is True
 
-    def test_omits_null_fields_from_proposed_changes(self, sample_report):
+        bar = next(c for c in data["components"] if c["name"] == "barexporter")
+        assert bar["target_v1_file"] == "collector-barexporter.yml"
+        assert bar["v1_entry_exists"] is False
+
+    def test_includes_description_in_proposed_changes(self, sample_report):
+        out = io.StringIO()
+        write_report(sample_report, out, fmt="json")
+        data = json.loads(out.getvalue())
+
+        foo = next(c for c in data["components"] if c["name"] == "fooreceiver")
+        assert foo["proposed_v1_changes"]["description"] == "Receives foo data"
+        assert "title" not in foo["proposed_v1_changes"]
+        assert "stability" not in foo["proposed_v1_changes"]
+
+    def test_omits_null_description_from_proposed_changes(self, sample_report):
         out = io.StringIO()
         write_report(sample_report, out, fmt="json")
         data = json.loads(out.getvalue())
 
         bar = next(c for c in data["components"] if c["name"] == "barexporter")
-        assert "title" not in bar["proposed_v1_changes"]
         assert "description" not in bar["proposed_v1_changes"]
-        assert bar["proposed_v1_changes"]["stability"] == "stable"
+        assert "stability" not in bar["proposed_v1_changes"]
 
     def test_all_components_present(self, sample_report):
         out = io.StringIO()

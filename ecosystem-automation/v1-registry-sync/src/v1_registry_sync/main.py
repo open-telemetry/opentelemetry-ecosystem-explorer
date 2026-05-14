@@ -39,8 +39,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description=(
             "Read the latest V2 registry snapshot and produce a report showing "
-            "which stability, display_name, and description values would be synced "
-            "into the matching V1 entries under opentelemetry.io/data/registry/."
+            "which description values would be synced into the matching V1 entries "
+            "under opentelemetry.io/data/registry/."
         ),
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
@@ -56,6 +56,15 @@ def main() -> None:
         help="Distribution to read from V2",
     )
     parser.add_argument(
+        "--v1-registry-dir",
+        default=None,
+        help=(
+            "Optional path to the opentelemetry.io data/registry/ directory. "
+            "When provided, each entry includes a v1_entry_exists flag indicating "
+            "whether a matching V1 file is already present."
+        ),
+    )
+    parser.add_argument(
         "--output",
         default="-",
         help="Output file path, or - for stdout",
@@ -69,14 +78,17 @@ def main() -> None:
     args = parser.parse_args()
 
     try:
-        logger.info("V1 Registry Sync — dry-run report")
+        logger.info("V1 Registry Sync -- dry-run report")
         logger.info("Inventory directory : %s", args.inventory_dir)
         logger.info("Distribution        : %s", args.distribution)
+        if args.v1_registry_dir:
+            logger.info("V1 registry dir    : %s", args.v1_registry_dir)
         logger.info("")
 
         report = read_latest_v2_components(
             inventory_dir=args.inventory_dir,
             distribution=args.distribution,
+            v1_registry_dir=args.v1_registry_dir,
         )
 
         logger.info("")

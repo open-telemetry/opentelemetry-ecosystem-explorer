@@ -18,7 +18,6 @@ import pytest
 import yaml
 
 from v1_registry_sync.reader import (
-    _find_latest_version,
     _most_stable_level,
     read_latest_v2_components,
 )
@@ -87,16 +86,6 @@ class TestMostStableLevel:
         assert _most_stable_level({"deprecated": ["metrics"]}) == "deprecated"
 
 
-class TestFindLatestVersion:
-    def test_returns_highest_version(self, fake_registry):
-        result = _find_latest_version(fake_registry / "contrib")
-        assert result == "v0.10.0"
-
-    def test_returns_none_for_empty_dir(self, tmp_path):
-        (tmp_path / "contrib").mkdir()
-        assert _find_latest_version(tmp_path / "contrib") is None
-
-
 class TestReadLatestV2Components:
     def test_reads_components_from_latest_version(self, fake_registry):
         report = read_latest_v2_components(str(fake_registry), distribution="contrib")
@@ -126,6 +115,54 @@ class TestReadLatestV2Components:
 
         bar = next(c for c in report.components if c.name == "barreceiver")
         assert bar.display_name is None
+
+    def test_target_v1_file_follows_naming_convention(self, fake_registry):
+        report = read_latest_v2_components(str(fake_registry), distribution="contrib")
+
+        foo = next(c for c in report.components if c.name == "fooreceiver")
+        assert foo.target_v1_file == "collector-fooreceiver.yml"
+
+    def test_v1_entry_exists_false_when_no_v1_dir(self, fake_registry):
+        report = read_latest_v2_components(str(fake_registry), distribution="contrib")
+
+        for component in report.components:
+            assert component.v1_entry_exists is False
+
+    def test_v1_entry_exists_true_when_file_present(self, fake_registry, tmp_path):
+        v1_dir = tmp_path / "v1"
+        v1_dir.mkdir()
+        (v1_dir / "collector-fooreceiver.yml").touch()
+
+        report = read_latest_v2_components(
+            str(fake_registry), distribution="contrib", v1_registry_dir=str(v1_dir)
+        )
+
+        foo = next(c for c in report.components if c.name == "fooreceiver")
+        assert foo.v1_entry_exists is True
+
+        bar = next(c for c in report.components if c.name == "barreceiver")
+        assert bar.v1_entry_exists is False
+
+    def test_skips_snapshot_versions(self, tmp_path):
+        """list_release_versions excludes SNAPSHOT dirs so unreleased data is not picked up."""
+        for version in ["v0.9.0", "v0.10.0-SNAPSHOT"]:
+            version_dir = tmp_path / "contrib" / version
+            version_dir.mkdir(parents=True)
+
+        receiver_data = {
+            "distribution": "contrib",
+            "version": "0.10.0-SNAPSHOT",
+            "component_type": "receiver",
+            "components": [{"name": "snapshotreceiver", "metadata": {}}],
+        }
+        with open(
+            tmp_path / "contrib" / "v0.10.0-SNAPSHOT" / "receiver.yaml", "w", encoding="utf-8"
+        ) as f:
+            yaml.dump(receiver_data, f)
+
+        report = read_latest_v2_components(str(tmp_path), distribution="contrib")
+        assert report.version == "0.9.0"
+        assert all(c.name != "snapshotreceiver" for c in report.components)
 
     def test_raises_if_distribution_dir_missing(self, tmp_path):
         with pytest.raises(FileNotFoundError):

@@ -1,11 +1,10 @@
 [project]
 name = "v1-registry-sync"
 version = "0.1.0"
-description = "Dry-run tool for syncing stability and description from V2 registry into V1 entries"
+description = "Dry-run tool for syncing description from V2 registry into V1 entries"
 requires-python = ">=3.11"
 dependencies = [
-    "PyYAML>=6.0.1",
-    "semantic-version>=2.10.0",
+    "collector-watcher",
 ]
 
 [project.scripts]

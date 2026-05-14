@@ -37,16 +37,14 @@ class ComponentSyncData:
     display_name: Optional[str] = None
     description: Optional[str] = None
     stability: Optional[str] = None
+    target_v1_file: str = ""
+    v1_entry_exists: bool = False
 
     def proposed_changes(self) -> dict:
-        """Return only the fields that have values, keyed by V1 field name."""
+        """Return only the fields that have values and are valid V1 schema fields."""
         changes: dict = {}
-        if self.display_name is not None:
-            changes["title"] = self.display_name
         if self.description is not None:
             changes["description"] = self.description
-        if self.stability is not None:
-            changes["stability"] = self.stability
         return changes
 
 
@@ -66,6 +64,8 @@ class V1SyncReport:
                 {
                     "name": c.name,
                     "component_type": c.component_type,
+                    "target_v1_file": c.target_v1_file,
+                    "v1_entry_exists": c.v1_entry_exists,
                     "proposed_v1_changes": c.proposed_changes(),
                 }
                 for c in self.components
