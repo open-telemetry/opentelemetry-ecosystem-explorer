@@ -1,0 +1,33 @@
+{
+  "description": "This processor re-associates spans, log records and metric datapoints to a *Resource* that matches with the specified attributes. As a result, all spans, log records or metric datapoints with the same values for the specified attributes are \"grouped\" under the same *Resource*.",
+  "display_name": "Group by Attributes Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-groupbyattrsprocessor",
+  "name": "groupbyattrsprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "rnishtala-sumo",
+        "amdprophet"
+      ],
+      "emeritus": [
+        "echlebek"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "processor"
+}

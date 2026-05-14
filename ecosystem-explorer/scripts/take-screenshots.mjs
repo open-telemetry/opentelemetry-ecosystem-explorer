@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { chromium } from "playwright";
-import http from "http";
 import fs from "fs";
+import http from "http";
 import path from "path";
+import { chromium } from "playwright";
 
 const DIST_DIR = path.resolve("dist");
 const SCREENSHOTS_DIR = path.resolve("screenshots");
@@ -37,10 +37,8 @@ const DETAIL_VERSION = resolveLatestVersion(
   path.resolve("public/data/javaagent/versions-index.json")
 );
 const DETAIL_NAME = "spring-webmvc-6.0";
-const COLLECTOR_VERSION = resolveLatestVersion(
-  path.resolve("public/data/collector/versions-index.json")
-);
-const COLLECTOR_DETAIL_ID = "core-receiver-otlpreceiver";
+const COLLECTOR_DISTRIBUTION = "core";
+const COLLECTOR_DETAIL_NAME = "otlpreceiver";
 
 // Viewport sizes captured for each page. Edit here to add, remove, or resize.
 const VIEWPORTS = [
@@ -222,7 +220,7 @@ async function takeScreenshots() {
           await page.screenshot({ path: p("collector-list") });
 
           // 7. Collector detail
-          const collectorDetailUrl = `${BASE_URL}/collector/components/${COLLECTOR_VERSION}/${COLLECTOR_DETAIL_ID}`;
+          const collectorDetailUrl = `${BASE_URL}/collector/components/${COLLECTOR_DISTRIBUTION}/${COLLECTOR_DETAIL_NAME}`;
           await page.goto(collectorDetailUrl, {
             waitUntil: "domcontentloaded",
             timeout: 10000,

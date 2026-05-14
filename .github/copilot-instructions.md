@@ -35,9 +35,8 @@ reviewing.
 ## Review priorities
 
 - Stay on the diff. Do not propose refactors of code outside the change.
-- One concern per PR. If the PR is gated by a feature flag (e.g. `JAVA_CONFIG_BUILDER`,
-  `COLLECTOR_PAGE`, `V1_REDESIGN`), only flag bugs in the changed lines. Followup work belongs in a
-  separate PR.
+- One concern per PR. If the PR is gated by a feature flag (e.g. `COLLECTOR_PAGE`, `V1_REDESIGN`),
+  only flag bugs in the changed lines. Followup work belongs in a separate PR.
 - Use `bun`, not `node`, for scripts and docs in `ecosystem-explorer/`.
 - Imports go at the top of the file. A local import is acceptable only when a circular dependency
   forces it, and the workaround must be explained inline.

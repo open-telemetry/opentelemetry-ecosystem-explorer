@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterAll } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import * as downloadModule from "@/lib/download-text";
 import { PreviewCard } from "./preview-card";
@@ -63,6 +63,11 @@ describe("PreviewCard", () => {
   beforeEach(() => {
     useLatestJavaAgentVersionMock.mockReturnValue("2.27.0");
     downloadSpy.mockClear();
+  });
+
+  afterAll(() => {
+    downloadSpy.mockRestore();
+    vi.unstubAllGlobals();
   });
 
   it("renders the Output Preview title and action buttons", () => {

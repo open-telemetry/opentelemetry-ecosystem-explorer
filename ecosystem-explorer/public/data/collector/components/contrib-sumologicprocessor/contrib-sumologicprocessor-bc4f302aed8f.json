@@ -1,0 +1,39 @@
+{
+  "description": null,
+  "display_name": "Sumo Logic Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-sumologicprocessor",
+  "name": "sumologicprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "rnishtala-sumo",
+        "pankaj101A",
+        "jagan2221"
+      ],
+      "emeritus": [
+        "aboguszewski-sumo",
+        "kasia-kujawa",
+        "mat-rumian",
+        "sumo-drosiek",
+        "echlebek",
+        "chan-tim-sumo",
+        "amdprophet"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "processor"
+}

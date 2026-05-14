@@ -1,0 +1,31 @@
+{
+  "description": null,
+  "display_name": "AWS CloudWatch EMF Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-awsemfexporter",
+  "name": "awsemfexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "Aneurysm9",
+        "mxiamxia"
+      ],
+      "emeritus": [
+        "shaochengwang",
+        "bryan-aguilar"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "exporter"
+}

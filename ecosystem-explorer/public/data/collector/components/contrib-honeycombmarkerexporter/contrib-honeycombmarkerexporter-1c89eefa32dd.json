@@ -1,0 +1,27 @@
+{
+  "description": null,
+  "display_name": "Honeycomb Marker Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-honeycombmarkerexporter",
+  "name": "honeycombmarkerexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "TylerHelmuth",
+        "fchikwekwe"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs"
+      ]
+    }
+  },
+  "type": "exporter"
+}

@@ -41,10 +41,12 @@ export async function loadVersionManifest(version: string): Promise<VersionManif
 }
 
 export async function loadComponent(
-  id: string,
+  distribution: string,
+  name: string,
   version: string,
   manifest?: VersionManifest
 ): Promise<CollectorComponent> {
+  const id = `${distribution}-${name}`;
   const resolvedManifest = manifest ?? (await loadVersionManifest(version));
   const hash = resolvedManifest.components[id];
 
@@ -68,7 +70,11 @@ export async function loadAllComponents(version: string): Promise<CollectorCompo
 
   return Promise.all(
     componentIds.map(async (id) => {
-      return loadComponent(id, version, manifest);
+      // Parse id from format "distribution-name"
+      const parts = id.split("-");
+      const distribution = parts[0]; // "contrib" or "core"
+      const name = parts.slice(1).join("-"); // Everything after first dash
+      return loadComponent(distribution, name, version, manifest);
     })
   );
 }
