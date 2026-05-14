@@ -13,8 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { vi } from "vitest";
 import "@testing-library/jest-dom";
+import { beforeEach, vi } from "vitest";
+
+/*
+ * jsdom doesn't ship `window.matchMedia`, but `ThemeProvider` calls it on
+ * mount (via `useSyncExternalStore`) to resolve `auto` mode. Provide a stub
+ * globally so tests that render anything under the provider don't have to
+ * wire it up themselves. `matches: true` defaults to "system prefers dark".
+ */
+beforeEach(() => {
+  vi.stubGlobal("matchMedia", () => ({
+    matches: true,
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+  }));
+});
 
 class ResizeObserverMock {
   constructor() {}

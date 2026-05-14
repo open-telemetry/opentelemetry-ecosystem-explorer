@@ -27,6 +27,7 @@
   "dependencies": {
     "@grafana/faro-react": "^2.4.0",
     "@grafana/faro-web-tracing": "^2.4.0",
+    "@radix-ui/react-dropdown-menu": "^2.1.16",
     "@radix-ui/react-hover-card": "^1.1.15",
     "@radix-ui/react-popover": "^1.1.15",
     "@radix-ui/react-tabs": "^1.1.13",
