@@ -35,6 +35,8 @@ import { DetailCard } from "@/components/ui/detail-card";
 import { useCollectorVersions, useCollectorComponents } from "@/hooks/use-collector-data";
 import { isEnabled } from "@/lib/feature-flags";
 
+const STABILITY_ORDER = ["stable", "beta", "alpha", "development", "deprecated", "unmaintained"];
+
 const getIcon = (type: string) => {
   switch (type) {
     case "receiver":
@@ -240,26 +242,42 @@ function CollectorPageInner({ urlVersion }: { urlVersion?: string }) {
                         </div>
                       </div>
 
-                      <p className="text-muted-foreground/80 line-clamp-3 flex-1 text-sm leading-relaxed">
-                        {comp.description ||
-                          "Browse technical details and configuration options for this component."}
-                      </p>
+                      {comp.description && (
+                        <p className="text-muted-foreground/80 line-clamp-3 flex-1 text-sm leading-relaxed">
+                          {comp.description}
+                        </p>
+                      )}
 
-                      <div className="border-border/10 flex items-center gap-2 border-t pt-2">
-                        {comp.status?.stability &&
-                          Object.keys(comp.status.stability).length > 0 && (
-                            <GlowBadge
-                              variant={
-                                Object.keys(comp.status.stability)[0] === "stable"
-                                  ? "success"
-                                  : "info"
-                              }
-                              className="px-2 py-0 text-[9px]"
-                            >
-                              {Object.keys(comp.status.stability)[0]}
-                            </GlowBadge>
-                          )}
-                      </div>
+                      {comp.status?.stability && Object.keys(comp.status.stability).length > 0 && (
+                        <div className="border-border/10 flex flex-col gap-1.5 border-t pt-2">
+                          {Object.entries(comp.status.stability)
+                            .filter(([, signals]) => signals.length > 0)
+                            .sort(([a], [b]) => {
+                              const ai = STABILITY_ORDER.indexOf(a);
+                              const bi = STABILITY_ORDER.indexOf(b);
+                              return (ai === -1 ? Infinity : ai) - (bi === -1 ? Infinity : bi);
+                            })
+                            .map(([level, signals]) => (
+                              <div key={level} className="flex flex-wrap items-center gap-1.5">
+                                <GlowBadge
+                                  variant={
+                                    level === "stable"
+                                      ? "success"
+                                      : level === "beta"
+                                        ? "info"
+                                        : "warning"
+                                  }
+                                  className="px-2 py-0 text-[9px]"
+                                >
+                                  {level}
+                                </GlowBadge>
+                                <span className="text-muted-foreground text-[10px]">
+                                  {signals.join(", ")}
+                                </span>
+                              </div>
+                            ))}
+                        </div>
+                      )}
                     </div>
                   </DetailCard>
                 </Link>
