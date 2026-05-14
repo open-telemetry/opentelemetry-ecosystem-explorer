@@ -8,7 +8,7 @@
     "esbuild"
   ],
   "scripts": {
-    "serve": "vite",
+    "serve": "bun scripts/aggregate-configurations.mjs && vite",
     "build": "bun scripts/aggregate-configurations.mjs && tsc -b && bun scripts/generate-schemas.mjs && vite build && bun scripts/generate-agent-docs.mjs",
     "generate-schemas": "bun scripts/generate-schemas.mjs",
     "generate-agent-docs": "bun scripts/generate-agent-docs.mjs",
