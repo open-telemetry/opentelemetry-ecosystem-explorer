@@ -14,26 +14,31 @@
  * limitations under the License.
  */
 import type { InstrumentationData, VersionManifest, VersionsIndex } from "@/types/javaagent";
-import { STORES } from "./idb-cache";
-import { fetchWithCache } from "./fetch-with-cache";
+import { STORES, pruneOldEntries } from "./idb-cache";
+import { fetchWithCache, resolveDataPath } from "./fetch-with-cache";
 
-const BASE_PATH = "/data/javaagent";
+const BASE_DIR = "data/javaagent";
 
 export async function loadVersions(): Promise<VersionsIndex> {
   const data = await fetchWithCache<VersionsIndex>(
     "versions-index",
-    `${BASE_PATH}/versions-index.json`,
+    resolveDataPath(BASE_DIR, "versions-index.json"),
     STORES.METADATA,
     { validate: (d) => Array.isArray(d.versions) && d.versions.length > 0 }
   );
   if (!data) throw new Error("Versions index returned null unexpectedly");
+
+  // Trigger background cache pruning. The guard inside pruneOldEntries ensures
+  // this runs at most once every 24 hours regardless of how often loadVersions is called.
+  pruneOldEntries().catch(() => {});
+
   return data;
 }
 
 export async function loadVersionManifest(version: string): Promise<VersionManifest> {
   const data = await fetchWithCache<VersionManifest>(
     `manifest-${version}`,
-    `${BASE_PATH}/versions/${version}-index.json`,
+    resolveDataPath(BASE_DIR, "versions", `${version}-index.json`),
     STORES.METADATA,
     {
       validate: (d) =>
@@ -53,11 +58,7 @@ export async function loadInstrumentation(
   manifest?: VersionManifest
 ): Promise<InstrumentationData> {
   const resolvedManifest = manifest ?? (await loadVersionManifest(version));
-
-  const libraryHash = resolvedManifest.instrumentations[id];
-  const customHash = resolvedManifest.custom_instrumentations?.[id];
-  const hash = libraryHash || customHash;
-  const isCustom = !!customHash;
+  const hash = resolvedManifest.instrumentations[id];
 
   if (!hash) {
     throw new Error(`Instrumentation "${id}" not found in version ${version}`);
@@ -66,34 +67,20 @@ export async function loadInstrumentation(
   const filename = `${id}-${hash}.json`;
   const data = await fetchWithCache<InstrumentationData>(
     `instrumentation-${hash}`,
-    `${BASE_PATH}/instrumentations/${id}/${filename}`,
+    resolveDataPath(BASE_DIR, "instrumentations", id, filename),
     STORES.INSTRUMENTATIONS
   );
   if (!data) throw new Error(`Instrumentation "${id}" returned null unexpectedly`);
-
-  return { ...data, _is_custom: isCustom };
+  return data;
 }
 
 export async function loadAllInstrumentations(version: string): Promise<InstrumentationData[]> {
   const manifest = await loadVersionManifest(version);
-  const libraryIds = Object.keys(manifest.instrumentations || {});
-  const customIds = Object.keys(manifest.custom_instrumentations || {});
-
-  const allIds = [...libraryIds, ...customIds];
+  const instrumentationIds = Object.keys(manifest.instrumentations);
 
   return Promise.all(
-    allIds.map(async (id) => {
+    instrumentationIds.map(async (id) => {
       return loadInstrumentation(id, version, manifest);
     })
   );
-}
-
-export async function loadGlobalConfigurations() {
-  const data = await fetchWithCache(
-    "global-configurations",
-    `${BASE_PATH}/global-configurations.json`,
-    STORES.GLOBAL_CONFIGURATIONS
-  );
-  if (!data) throw new Error("Global configurations returned null unexpectedly");
-  return data;
 }
