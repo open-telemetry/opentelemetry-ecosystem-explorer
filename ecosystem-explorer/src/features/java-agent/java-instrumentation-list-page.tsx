@@ -21,7 +21,8 @@ import {
   InstrumentationFilterBar,
 } from "@/features/java-agent/components/instrumentation-filter-bar.tsx";
 import { useMemo, useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { X } from "lucide-react";
 import { InstrumentationGroupCard } from "@/features/java-agent/components/instrumentation-group-card.tsx";
 import { VersionSelector } from "@/features/java-agent/components/version-selector";
 import { getInstrumentationDisplayName } from "./utils/format";
@@ -36,14 +37,28 @@ export function JavaInstrumentationListPage() {
 
   const latestVersion = versionsData?.versions.find((v) => v.is_latest)?.version ?? "";
 
+  const [searchParams] = useSearchParams();
+  const invalidVersion = searchParams.get("redirectedFrom");
+  const [bannerDismissed, setBannerDismissed] = useState(false);
+
+  const isVersionValid =
+    !versionParam ||
+    versionParam === "latest" ||
+    (!!versionsData && versionsData.versions.some((v) => v.version === versionParam));
+
   // Redirect /java-agent/instrumentation (no version) or /latest to the actual latest version
+  // Also redirect invalid versions to latest and show a dismissible inline alert
   useEffect(() => {
     if (versionsData && latestVersion) {
       if (!versionParam || versionParam === "latest") {
         navigate(`/java-agent/instrumentation/${latestVersion}`, { replace: true });
+      } else if (!isVersionValid) {
+        navigate(`/java-agent/instrumentation/${latestVersion}?redirectedFrom=${versionParam}`, {
+          replace: true,
+        });
       }
     }
-  }, [versionParam, versionsData, latestVersion, navigate]);
+  }, [versionParam, versionsData, latestVersion, navigate, isVersionValid]);
 
   const resolvedVersion = versionParam && versionParam !== "latest" ? versionParam : "";
 
@@ -145,6 +160,22 @@ export function JavaInstrumentationListPage() {
     <PageContainer>
       <div className="space-y-4">
         <BackButton />
+
+        {invalidVersion && !bannerDismissed && (
+          <div className="flex items-start justify-between gap-2 rounded-lg border border-yellow-500/50 bg-yellow-500/10 px-4 py-3 text-sm text-yellow-700 dark:text-yellow-400">
+            <p>
+              Version &quot;{invalidVersion}&quot; was not found. Showing the latest version (
+              {latestVersion}) instead.
+            </p>
+            <button
+              onClick={() => setBannerDismissed(true)}
+              aria-label="Dismiss"
+              className="mt-0.5 shrink-0 hover:opacity-70"
+            >
+              <X className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
+        )}
 
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-3">

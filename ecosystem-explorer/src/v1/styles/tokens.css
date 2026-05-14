@@ -1,0 +1,51 @@
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * V1 page-surface overrides — declared on `.v1-app` so they cascade only
+ * through v1 chrome. The class is set in two places that both match the same
+ * `.v1-app` rule:
+ *   1. `src/main.tsx` adds it to `<html>` pre-mount so body bg paints
+ *      against v1 surface tokens from the first paint (no flash).
+ *   2. `<V1App />`'s wrapper `<div className="v1-app">` carries it for any
+ *      nested cascade scoping inside the app tree.
+ *
+ * `data-theme` lives on `<html>` (set by ThemeProvider). The light-theme
+ * override needs two selectors:
+ *   - `[data-theme="light"].v1-app`  — matches `<html>` when both attrs are
+ *     on the same element (main.tsx case)
+ *   - `[data-theme="light"] .v1-app` — matches the wrapper `<div>` when it's
+ *     a descendant of light-themed html (still works for nested cascade)
+ *
+ * Aligns v1 page bg/fg with opentelemetry.io's Bootstrap defaults so the new
+ * chrome doesn't sit on a mismatched navy backdrop. Other surface tokens
+ * (card, muted, border) stay on the explorer's palette for now; those move
+ * when their pages get redesigned.
+ *   Dark:  --bs-body-bg = #212529 (gray-900) / --bs-body-color = #dee2e6
+ *   Light: --bs-body-bg = #fff               / --bs-body-color = #212529
+ */
+@layer theme {
+  .v1-app {
+    --background-hsl: 210 11% 15%; /* #212529 */
+    --foreground-hsl: 210 11% 88%; /* #dee2e6 */
+  }
+
+  [data-theme="light"].v1-app,
+  [data-theme="light"] .v1-app {
+    --background-hsl: 0 0% 100%;
+    --foreground-hsl: 210 11% 15%;
+  }
+}

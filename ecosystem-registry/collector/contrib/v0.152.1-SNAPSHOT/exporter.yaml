@@ -395,7 +395,10 @@ components:
       - k8s
       codeowners:
         active:
+        - paulojmdias
+        emeritus:
         - atingchen
+        seeking_new: true
 - name: googlecloudexporter
   metadata:
     type: googlecloud
@@ -497,6 +500,9 @@ components:
       - contrib
       codeowners:
         active:
+        - VinozzZ
+        - codeboten
+        emeritus:
         - TylerHelmuth
         - fchikwekwe
 - name: influxdbexporter

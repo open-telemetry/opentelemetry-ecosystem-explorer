@@ -14,14 +14,39 @@
  * limitations under the License.
  */
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, afterEach, vi } from "vitest";
 import App from "./App";
+import { ThemeProvider } from "./theme-context";
 
 describe("App", () => {
-  it("renders the page title", async () => {
-    render(<App />);
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("renders the legacy app when V1_REDESIGN is disabled", async () => {
+    vi.stubEnv("VITE_FEATURE_FLAG_V1_REDESIGN", "");
+
+    render(
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
+    );
+
     const heading = await screen.findByRole("heading", { level: 1 });
     expect(heading).toHaveTextContent("OpenTelemetry");
     expect(heading).toHaveTextContent("Ecosystem Explorer");
+  });
+
+  it("renders the v1 app when V1_REDESIGN is enabled", async () => {
+    vi.stubEnv("VITE_FEATURE_FLAG_V1_REDESIGN", "true");
+
+    const { container } = render(
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
+    );
+
+    expect(await screen.findByLabelText("OpenTelemetry")).toBeInTheDocument();
+    expect(container.querySelector(".v1-app")).not.toBeNull();
   });
 });

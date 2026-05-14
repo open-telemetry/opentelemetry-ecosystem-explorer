@@ -128,6 +128,64 @@ describe("findNodeByPath", () => {
     expect(findNodeByPath(rootSchema, ["nonexistent"])).toBeUndefined();
   });
 
+  it("returns the circular_ref node and stops descending", () => {
+    const samplerSchema: ConfigNode = {
+      controlType: "group",
+      key: "root",
+      label: "Root",
+      path: "",
+      children: [
+        {
+          controlType: "group",
+          key: "tracer_provider",
+          label: "Tracer Provider",
+          path: "tracer_provider",
+          children: [
+            {
+              controlType: "plugin_select",
+              key: "sampler",
+              label: "Sampler",
+              path: "tracer_provider.sampler",
+              allowCustom: true,
+              options: [
+                {
+                  controlType: "group",
+                  key: "parent_based",
+                  label: "Parent Based",
+                  path: "tracer_provider.sampler.parent_based",
+                  children: [
+                    {
+                      controlType: "circular_ref",
+                      key: "root",
+                      label: "Root",
+                      path: "tracer_provider.sampler.parent_based.root",
+                      refType: "Sampler",
+                    } as CircularRefNode,
+                  ],
+                },
+              ],
+            } as PluginSelectNode,
+          ],
+        },
+      ],
+    };
+    const direct = findNodeByPath(samplerSchema, [
+      "tracer_provider",
+      "sampler",
+      "parent_based",
+      "root",
+    ]);
+    expect(direct?.controlType).toBe("circular_ref");
+    const past = findNodeByPath(samplerSchema, [
+      "tracer_provider",
+      "sampler",
+      "parent_based",
+      "root",
+      "always_on",
+    ]);
+    expect(past?.controlType).toBe("circular_ref");
+  });
+
   it("descends into union variants by key", () => {
     const schema: ConfigNode = {
       controlType: "group",
