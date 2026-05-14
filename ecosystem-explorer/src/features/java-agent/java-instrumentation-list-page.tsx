@@ -44,11 +44,10 @@ export function JavaInstrumentationListPage() {
   const isVersionValid =
     !versionParam ||
     versionParam === "latest" ||
-    !versionsData ||
-    versionsData.versions.some((v) => v.version === versionParam);
+    (!!versionsData && versionsData.versions.some((v) => v.version === versionParam));
 
   // Redirect /java-agent/instrumentation (no version) or /latest to the actual latest version
-  // Also redirect invalid versions to latest and show a dismissable inline alert
+  // Also redirect invalid versions to latest and show a dismissible inline alert
   useEffect(() => {
     if (versionsData && latestVersion) {
       if (!versionParam || versionParam === "latest") {
