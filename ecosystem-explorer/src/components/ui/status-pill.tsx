@@ -16,12 +16,12 @@
 import { GlowBadge } from "./glow-badge";
 
 const STABILITY = {
-  development: { variant: "secondary", label: "Development" },
+  development: { variant: "muted", label: "Development" },
   alpha: { variant: "warning", label: "Alpha" },
   beta: { variant: "info", label: "Beta" },
   stable: { variant: "success", label: "Stable" },
-  deprecated: { variant: "error", label: "Deprecated" },
-  unmaintained: { variant: "error", label: "Unmaintained" },
+  deprecated: { variant: "warning", label: "Deprecated" },
+  unmaintained: { variant: "warning", label: "Unmaintained" },
 } as const;
 
 export type Stability = keyof typeof STABILITY;

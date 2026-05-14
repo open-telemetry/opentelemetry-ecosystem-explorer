@@ -15,15 +15,7 @@
  */
 import React from "react";
 
-type BadgeVariant =
-  | "primary"
-  | "accent"
-  | "secondary"
-  | "success"
-  | "info"
-  | "warning"
-  | "error"
-  | "muted";
+type BadgeVariant = "primary" | "success" | "info" | "warning" | "muted";
 
 interface GlowBadgeProps {
   children: React.ReactNode;
@@ -37,14 +29,6 @@ const variantStyles: Record<BadgeVariant, { base: string; glow: string }> = {
     base: "bg-primary/10 border-primary/30 text-primary",
     glow: "shadow-sm shadow-primary/20",
   },
-  accent: {
-    base: "bg-secondary/10 border-secondary/30 text-secondary",
-    glow: "shadow-sm shadow-secondary/20",
-  },
-  secondary: {
-    base: "bg-slate-500/10 border-slate-500/30 text-slate-600 dark:text-slate-400",
-    glow: "shadow-sm shadow-slate-500/20",
-  },
   success: {
     base: "bg-green-500/10 border-green-500/30 text-green-600 dark:text-green-400",
     glow: "shadow-sm shadow-green-500/20",
@@ -57,10 +41,6 @@ const variantStyles: Record<BadgeVariant, { base: string; glow: string }> = {
     base: "bg-orange-500/10 border-orange-500/30 text-orange-600 dark:text-orange-400",
     glow: "shadow-sm shadow-orange-500/20",
   },
-  error: {
-    base: "bg-red-500/10 border-red-500/30 text-red-600 dark:text-red-400",
-    glow: "shadow-sm shadow-red-500/20",
-  },
   muted: {
     base: "bg-muted border-border/50 text-muted-foreground",
     glow: "",
@@ -69,11 +49,11 @@ const variantStyles: Record<BadgeVariant, { base: string; glow: string }> = {
 
 export function GlowBadge({
   children,
-  variant = "accent",
+  variant = "primary",
   withGlow = false,
   className = "",
 }: GlowBadgeProps) {
-  const styles = variantStyles[variant] || variantStyles["accent"];
+  const styles = variantStyles[variant];
   const glowClass = withGlow ? styles.glow : "";
 
   return (

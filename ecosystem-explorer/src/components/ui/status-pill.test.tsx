@@ -31,18 +31,23 @@ const VARIANTS: ReadonlyArray<{
   {
     stability: "development",
     label: "Development",
-    base: "text-slate-600",
-    dark: "dark:text-slate-400",
+    base: "text-muted-foreground",
+    dark: "",
   },
   { stability: "alpha", label: "Alpha", base: "text-orange-600", dark: "dark:text-orange-400" },
   { stability: "beta", label: "Beta", base: "text-blue-600", dark: "dark:text-blue-400" },
   { stability: "stable", label: "Stable", base: "text-green-600", dark: "dark:text-green-400" },
-  { stability: "deprecated", label: "Deprecated", base: "text-red-600", dark: "dark:text-red-400" },
+  {
+    stability: "deprecated",
+    label: "Deprecated",
+    base: "text-orange-600",
+    dark: "dark:text-orange-400",
+  },
   {
     stability: "unmaintained",
     label: "Unmaintained",
-    base: "text-red-600",
-    dark: "dark:text-red-400",
+    base: "text-orange-600",
+    dark: "dark:text-orange-400",
   },
 ];
 
@@ -70,7 +75,7 @@ describe("StatusPill", () => {
     }
   });
 
-  it("renders deprecated and unmaintained with distinct labels but the same red classes", () => {
+  it("renders deprecated and unmaintained with distinct labels but the same orange classes", () => {
     render(
       <>
         <StatusPill stability="deprecated" />
@@ -80,10 +85,10 @@ describe("StatusPill", () => {
     const deprecated = screen.getByText("Deprecated");
     const unmaintained = screen.getByText("Unmaintained");
     expect(deprecated).not.toBe(unmaintained);
-    expect(deprecated.className).toContain("text-red-600");
-    expect(deprecated.className).toContain("dark:text-red-400");
-    expect(unmaintained.className).toContain("text-red-600");
-    expect(unmaintained.className).toContain("dark:text-red-400");
+    expect(deprecated.className).toContain("text-orange-600");
+    expect(deprecated.className).toContain("dark:text-orange-400");
+    expect(unmaintained.className).toContain("text-orange-600");
+    expect(unmaintained.className).toContain("dark:text-orange-400");
   });
 
   it("forwards className to the rendered element", () => {

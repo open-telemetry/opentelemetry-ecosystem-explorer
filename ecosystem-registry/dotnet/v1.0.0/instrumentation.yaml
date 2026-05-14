@@ -1,9 +1,0 @@
-modules:
-- name: OpenTelemetry.Instrumentation.AspNetCore
-  description: ASP.NET Core instrumentation for OpenTelemetry
-  type: instrumentation
-  version: 1.0.0
-- name: OpenTelemetry.Instrumentation.Http
-  description: HttpClient instrumentation for OpenTelemetry
-  type: instrumentation
-  version: 1.0.0
