@@ -90,11 +90,11 @@ prefixed with `VITE_FEATURE_FLAG_`. They are evaluated at build time.
 Update `.env.development` file and set the flag to `true`, `1`, or `yes`:
 
 ```bash
-VITE_FEATURE_FLAG_JAVA_CONFIG_BUILDER=true
+VITE_FEATURE_FLAG_COLLECTOR_PAGE=true
 ```
 
-For example, setting `VITE_FEATURE_FLAG_JAVA_CONFIG_BUILDER` to `true` makes the Java Config Builder
-visible, while setting it to `false` hides it.
+For example, setting `VITE_FEATURE_FLAG_COLLECTOR_PAGE` to `true` makes the Collector Page visible,
+while setting it to `false` hides it.
 
 **Using a flag in code:**
 
@@ -102,7 +102,7 @@ visible, while setting it to `false` hides it.
 import { isEnabled } from "@/lib/feature-flags";
 
 {
-  isEnabled("JAVA_CONFIG_BUILDER") && <MyComponent />;
+  isEnabled("COLLECTOR_PAGE") && <MyComponent />;
 }
 ```
 
@@ -110,10 +110,10 @@ The available feature flags are defined in `src/lib/feature-flags.ts`.
 
 **Deployment behavior:**
 
-Branch deploys and deploy previews enable `JAVA_CONFIG_BUILDER` and `COLLECTOR_PAGE` through
-`netlify.toml`. `JAVA_RELEASE_COMPARISON` is not enabled in any deploy context. `V1_REDESIGN` is
-enabled automatically on `feat/84-*` branches via the build command. Production enables none of
-these flags by default.
+Branch deploys and deploy previews enable `COLLECTOR_PAGE` through `netlify.toml`.
+`JAVA_RELEASE_COMPARISON` is not enabled in any deploy context. `V1_REDESIGN` is enabled
+automatically on `feat/84-*` branches via the build command. Production enables none of these flags
+by default.
 
 ## Data Fetching and Caching
 
