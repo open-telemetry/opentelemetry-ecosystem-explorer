@@ -59,6 +59,7 @@ jobs:
         env:
           VITE_FEATURE_FLAG_COLLECTOR_PAGE: "true"
           VITE_FEATURE_FLAG_V1_REDESIGN: ${{ steps.flags.outputs.v1_redesign }}
+          VITE_FEATURE_FLAG_DEV_SHOWCASE: "true"
 
       - name: Create screenshots directory
         run: mkdir -p screenshots
@@ -72,6 +73,45 @@ jobs:
           name: screenshots-${{ github.run_id }}
           path: ecosystem-explorer/screenshots/
           retention-days: 1
+
+      - name: Fetch main baseline from otelbot/screenshots
+        id: baseline
+        working-directory: ${{ github.workspace }}
+        run: |
+          mkdir -p /tmp/baseline
+          if git fetch origin otelbot/screenshots:refs/remotes/origin/otelbot/screenshots 2>/dev/null; then
+            git archive --format=tar origin/otelbot/screenshots main 2>/dev/null \
+              | tar -x -C /tmp/baseline 2>/dev/null || true
+          fi
+          if [ -d /tmp/baseline/main ] && [ -n "$(ls -A /tmp/baseline/main 2>/dev/null)" ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Found baseline at /tmp/baseline/main ($(ls /tmp/baseline/main | wc -l) PNG files)"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "No main baseline yet; diff step will be skipped"
+          fi
+
+      - name: Compute pixel diff vs main baseline
+        if: steps.baseline.outputs.exists == 'true'
+        run: |
+          mkdir -p /tmp/diffs
+          node scripts/diff-screenshots.mjs /tmp/baseline/main screenshots /tmp/diffs \
+            > /tmp/diff-report.json \
+            || true
+          if command -v jq > /dev/null; then
+            jq '.summary' /tmp/diff-report.json || true
+          fi
+
+      - name: Upload diff artifact
+        if: steps.baseline.outputs.exists == 'true'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: screenshots-diff-${{ github.run_id }}
+          path: |
+            /tmp/diffs/
+            /tmp/diff-report.json
+          retention-days: 1
+          if-no-files-found: ignore
 
       - name: Save PR metadata
         env:

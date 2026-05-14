@@ -135,7 +135,9 @@ export function V1App() {
                 </>
               )}
               <Route path="/about" element={<AboutPage />} />
-              <Route path="/_dev/components" element={<DevComponentsPage />} />
+              {isEnabled("DEV_SHOWCASE") && (
+                <Route path="/_dev/components" element={<DevComponentsPage />} />
+              )}
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </Suspense>

@@ -44,8 +44,15 @@ const PIXELMATCH_THRESHOLD = Number(process.env.PIXELMATCH_THRESHOLD ?? "0.1");
 const DIFF_RATIO_THRESHOLD = Number(process.env.DIFF_RATIO_THRESHOLD ?? "0.001");
 
 function readPng(file) {
-  const data = fs.readFileSync(file);
-  return PNG.sync.read(data);
+  // pngjs throws on truncated, zero-byte, or otherwise malformed PNGs. Treat
+  // those as "unreadable" so the diff run still produces a usable report
+  // instead of aborting on a single bad file.
+  try {
+    const data = fs.readFileSync(file);
+    return PNG.sync.read(data);
+  } catch {
+    return null;
+  }
 }
 
 function walk(dir, base = dir) {
@@ -85,6 +92,10 @@ function main() {
 
     const a = readPng(baselinePath);
     const b = readPng(currentPath);
+    if (!a || !b) {
+      report.changed.push({ file: rel, reason: "unreadable", changedRatio: 1 });
+      continue;
+    }
     if (a.width !== b.width || a.height !== b.height) {
       report.changed.push({ file: rel, reason: "dimension-mismatch", changedRatio: 1 });
       continue;

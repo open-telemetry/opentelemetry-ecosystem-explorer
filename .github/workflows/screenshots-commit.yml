@@ -55,6 +55,16 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Download diff artifact (optional, may be absent if no baseline)
+        id: diff-artifact
+        continue-on-error: true
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: screenshots-diff-${{ github.event.workflow_run.id }}
+          path: /tmp/diff-artifact
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Use CLA approved github bot
         run: .github/scripts/use-cla-approved-bot.sh
 
@@ -91,6 +101,23 @@ jobs:
           done < <(find /tmp/screenshots -mindepth 1 -maxdepth 1 -type f -name "*.png" -print0)
 
           find /tmp/screenshots -mindepth 1 -maxdepth 1 -type f -name "*.png" -exec cp -- {} "${PR_NUMBER}/" \;
+
+          # Replace any prior diffs subtree, then copy fresh diff PNGs (if the
+          # capture step produced any). Absent baseline -> no diff artifact ->
+          # nothing to copy here, and the diffs/ subdir simply stays empty.
+          rm -rf -- "${PR_NUMBER}/diffs"
+          if [ -d /tmp/diff-artifact/diffs ] && [ -n "$(find /tmp/diff-artifact/diffs -name '*.png' -print -quit)" ]; then
+            mkdir -p "${PR_NUMBER}/diffs/main"
+            while IFS= read -r -d '' f; do
+              size=$(stat -c%s "$f")
+              if [ "$size" -gt $((5 * 1024 * 1024)) ]; then
+                echo "::error::Diff file exceeds 5 MB limit: $f ($size bytes)"
+                exit 1
+              fi
+            done < <(find /tmp/diff-artifact/diffs -type f -name "*.png" -print0)
+            find /tmp/diff-artifact/diffs -type f -name "*.png" -exec cp -- {} "${PR_NUMBER}/diffs/main/" \;
+          fi
+
           git add -A -- "${PR_NUMBER}/"
           git diff --quiet --exit-code --cached || git commit -m "docs: update screenshots for PR #${PR_NUMBER}"
           git push origin otelbot/screenshots
@@ -103,69 +130,9 @@ jobs:
           HEAD_SHA: ${{ steps.metadata.outputs.head_sha }}
           WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
           REPO: ${{ github.repository }}
-        run: |
-          python3 - << 'PYEOF'
-          import os
-          from datetime import datetime, timezone
-
-          pr_number = os.environ["PR_NUMBER"]
-          head_ref  = os.environ["HEAD_REF"]
-          head_repo = os.environ["HEAD_REPO"]
-          head_sha  = os.environ["HEAD_SHA"]
-          run_id    = os.environ["WORKFLOW_RUN_ID"]
-          repo      = os.environ["REPO"]
-
-          short_sha  = head_sha[:7]
-          commit_url = f"https://github.com/{head_repo}/commit/{head_sha}"
-          run_url    = f"https://github.com/{repo}/actions/runs/{run_id}"
-          base_url   = f"https://raw.githubusercontent.com/{repo}/otelbot/screenshots/{pr_number}"
-          timestamp  = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
-
-          VIEWPORTS = ("desktop", "tablet", "mobile")
-
-          def theme_table(slug, theme):
-              cells = " | ".join(
-                  f"![{slug} {vp} {theme}]({base_url}/{vp}-{theme}-{slug}.png)"
-                  for vp in VIEWPORTS
-              )
-              return (
-                  "| Desktop | Tablet | Mobile |\n"
-                  "|---|---|---|\n"
-                  f"| {cells} |"
-              )
-
-          def page_section(label, slug):
-              return (
-                  f"<details>\n"
-                  f"<summary><strong>{label}</strong></summary>\n\n"
-                  f"**Light**\n\n{theme_table(slug, 'light')}\n\n"
-                  f"**Dark**\n\n{theme_table(slug, 'dark')}\n\n"
-                  f"</details>"
-              )
-
-          pages = [
-              ("Home",                        "home"),
-              ("Instrumentation List",        "instrumentation-list"),
-              ("Detail — Details tab",         "detail-details"),
-              ("Detail — Telemetry tab",        "detail-telemetry"),
-              ("Detail — Configuration tab",    "detail-configuration"),
-              ("Collector List",              "collector-list"),
-              ("Collector Detail",            "collector-detail"),
-          ]
-
-          sections = "\n\n".join(page_section(label, slug) for label, slug in pages)
-
-          footer = (
-              f"_Captured from [`{short_sha}`]({commit_url}) on `{head_ref}` "
-              f"· [workflow run]({run_url})"
-              f"· {timestamp}_"
-          )
-
-          body = f"<!-- screenshots-bot -->\n## PR Screenshots\n\n{sections}\n\n---\n{footer}\n"
-
-          with open("/tmp/comment_body.txt", "w") as f:
-              f.write(body)
-          PYEOF
+          OUTPUT_PATH: /tmp/comment_body.txt
+          DIFF_REPORT_PATH: /tmp/diff-artifact/diff-report.json
+        run: python3 .github/scripts/build-screenshots-comment.py
 
       - name: Get otelbot token
         uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
