@@ -9,7 +9,8 @@ The tool reads the latest release snapshot from `ecosystem-registry/collector/` 
 report of proposed changes. Each entry in the report includes:
 
 - `target_v1_file`: the expected V1 filename for the component (e.g. `collector-kafkareceiver.yml`)
-- `v1_entry_exists`: whether that file is present in the V1 registry directory (when `--v1-registry-dir` is provided)
+- `v1_entry_exists`: whether that file is present in the V1 registry directory (when
+  `--v1-registry-dir` is provided)
 - `proposed_v1_changes`: fields from V2 that would be written to the V1 entry
 
 Only `description` is included in `proposed_v1_changes`. The V1 schema does not carry a `stability`
@@ -28,10 +29,10 @@ This reads `ecosystem-registry/collector/contrib/` by default and writes JSON to
 
 ### Options
 
-```
+```text
 --inventory-dir PATH   Path to ecosystem-registry/collector (default: ecosystem-registry/collector)
 --distribution         core or contrib (default: contrib)
---v1-registry-dir PATH Path to opentelemetry.io data/registry/ — enables v1_entry_exists checks
+--v1-registry-dir PATH Path to opentelemetry.io data/registry/ -- enables v1_entry_exists checks
 --output PATH          Output file path, or - for stdout (default: -)
 --format               json or yaml (default: json)
 ```
