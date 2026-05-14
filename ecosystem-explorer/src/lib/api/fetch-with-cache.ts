@@ -48,23 +48,22 @@ const DEFAULT_RETRY_DELAY_MS = 1000;
 async function fetchWithRetry(
   url: string,
   retries = DEFAULT_MAX_RETRIES,
-  delayMs = DEFAULT_RETRY_DELAY_MS,
-  allow404 = false
+  delayMs = DEFAULT_RETRY_DELAY_MS
 ): Promise<Response> {
   const maxAttempts = Math.max(1, retries);
-  let lastResponse: Response | undefined;
+  let lastError: unknown;
   for (let i = 0; i < maxAttempts; i++) {
     try {
-      lastResponse = await fetch(url);
-      if (lastResponse.ok || (lastResponse.status === 404 && allow404) || i === maxAttempts - 1) {
-        return lastResponse;
-      }
+      // HTTP responses (ok or non-ok) are returned immediately — no retry.
+      // Only real network failures (catch block) trigger retries.
+      return await fetch(url);
     } catch (error) {
+      lastError = error;
       if (i === maxAttempts - 1) throw error;
     }
     await new Promise((resolve) => setTimeout(resolve, delayMs * Math.pow(2, i)));
   }
-  return lastResponse!;
+  throw lastError;
 }
 
 export interface FetchWithCacheOptions<T = unknown> {
@@ -100,12 +99,7 @@ export async function fetchWithCache<T>(
 
       let response: Response;
       try {
-        response = await fetchWithRetry(
-          url,
-          options?.retryCount,
-          options?.retryDelayMs,
-          options?.allow404
-        );
+        response = await fetchWithRetry(url, options?.retryCount, options?.retryDelayMs);
       } catch (error) {
         if (isIDBAvailable()) {
           const staleData = await getCached<T>(cacheKey, storeType, { allowExpired: true });
@@ -136,8 +130,9 @@ export async function fetchWithCache<T>(
         throw new Error(`Failed to load ${cacheKey}: ${response.status} ${response.statusText}`);
       }
 
-      // SPA 200 fallback: CDNs can return 200 + HTML during deployment propagation
-      const contentType = response.headers.get("content-type");
+      // SPA 200 fallback: CDNs can return 200 + HTML during deployment propagation.
+      // Use optional chaining so test mocks without headers don't crash.
+      const contentType = response.headers?.get?.("content-type") ?? null;
       if (contentType && !contentType.includes("application/json")) {
         if (isIDBAvailable()) {
           const staleData = await getCached<T>(cacheKey, storeType, { allowExpired: true });
