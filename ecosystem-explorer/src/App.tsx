@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { BrowserRouter } from "react-router-dom";
-import { LegacyApp } from "@/LegacyApp";
-import { V1App } from "@/v1";
+import { lazy, Suspense } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Header } from "@/components/layout/header";
+import { Footer } from "@/components/layout/footer";
 import { isEnabled } from "@/lib/feature-flags";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 
@@ -141,5 +142,4 @@ export default function App() {
       </div>
     </BrowserRouter>
   );
-  return <BrowserRouter>{isEnabled("V1_REDESIGN") ? <V1App /> : <LegacyApp />}</BrowserRouter>;
 }
