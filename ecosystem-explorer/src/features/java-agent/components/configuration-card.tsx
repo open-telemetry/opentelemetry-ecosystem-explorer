@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ChevronRight } from "lucide-react";
 import type { Configuration } from "@/types/javaagent";
 import { CopyButton } from "@/components/ui/copy-button";
 import { DetailCard } from "@/components/ui/detail-card";
@@ -27,9 +28,10 @@ export type ConfigurationFormat = "system-property" | "declarative";
 interface ConfigurationCardProps {
   config: Configuration;
   format: ConfigurationFormat;
+  instrumentations?: string[];
 }
 
-export function ConfigurationCard({ config, format }: ConfigurationCardProps) {
+export function ConfigurationCard({ config, format, instrumentations }: ConfigurationCardProps) {
   const stability = config.declarative_name ? getStabilityLabel(config.declarative_name) : null;
 
   const showDeclarative = format === "declarative" && Boolean(config.declarative_name);
@@ -94,6 +96,28 @@ export function ConfigurationCard({ config, format }: ConfigurationCardProps) {
                 <code className="text-xs break-all">{ex}</code>
               </div>
             ))}
+          </div>
+        )}
+
+        {instrumentations && instrumentations.length > 0 && (
+          <div className="border-border/50 text-muted-foreground mt-4 border-t pt-3 text-xs">
+            <details className="group [&_summary::-webkit-details-marker]:hidden">
+              <summary className="text-foreground hover:text-primary flex cursor-pointer list-none items-center gap-1 font-semibold select-none">
+                <ChevronRight className="h-3 w-3 transition-transform group-open:rotate-90" />
+                {instrumentations.length} Instrumentation{instrumentations.length === 1 ? "" : "s"}{" "}
+                using this configuration
+              </summary>
+              <div className="mt-3 flex flex-wrap gap-1.5 pl-4">
+                {instrumentations.map((inst) => (
+                  <span
+                    key={inst}
+                    className="bg-muted/50 border-border/50 rounded-md border px-2 py-1 text-[10px] font-medium"
+                  >
+                    {inst}
+                  </span>
+                ))}
+              </div>
+            </details>
           </div>
         )}
       </div>

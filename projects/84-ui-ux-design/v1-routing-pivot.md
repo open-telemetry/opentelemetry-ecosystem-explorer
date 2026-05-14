@@ -53,27 +53,44 @@ Concretely:
   top-level component `<V1App />` defines its own `<Routes>`.
 - **`src/App.tsx` reduces to a single boundary read:**
   `isEnabled("V1_REDESIGN") ? <V1App /> : <LegacyApp />`. That is the only place `V1_REDESIGN` is
-  referenced in runtime code. No flag reads in `main.tsx`, no flag reads inside components, no
-  `data-v1-redesign` attribute on `<html>`.
+  referenced for application routing decisions. No `data-v1-redesign` attribute on `<html>` (the
+  class-based scoping below replaces it).
+- **One narrow carve-out in `main.tsx` for early-paint styling.** `main.tsx` reads the flag once to
+  add the `.v1-app` class to `<html>` before React mounts. This keeps body bg painted against v1
+  surface tokens from the first paint (zero navy-to-v1 flash during the React mount window). The
+  check uses the same `isEnabled("V1_REDESIGN")` API as the App.tsx boundary read, so it's a runtime
+  check that fires once at module load, not a build-time constant. CSS variables declared on
+  `.v1-app` cascade through `<body>` via `body { background-color: hsl(var(--background-hsl)) }` in
+  `src/styles/base.css`. PR 2b implements this; PR 8 cleanup removes it along with the App.tsx
+  boundary read.
 - **No URL prefix.** v1 mounts at the canonical paths (`/`, `/java-agent/...`, etc.). Both sub-apps
   own the same path space; the boundary read decides which one is reachable.
 - **Per-deploy bundle selection.** The existing `netlify.toml` pattern (`feat/84-*` branches set
-  `VITE_FEATURE_FLAG_V1_REDESIGN=true`) is unchanged. Tree-shaking strips the unreachable branch
-  from each build: `feat/84-*` previews ship v1 only; `main` and production ship legacy only.
-  Reviewers compare a PR's preview to the production URL side-by-side in two tabs.
+  `VITE_FEATURE_FLAG_V1_REDESIGN=true`) is unchanged. The boundary read is a runtime check, not a
+  build-time switch: `isEnabled("V1_REDESIGN")` reads `import.meta.env` via a computed key, which
+  Vite's static-replacement pass cannot constant-fold. Both `<V1App />` and `<LegacyApp />` ship in
+  both bundles (~5KB JS + ~11KB CSS unused per build); the runtime check picks which one mounts.
+  Tree-shaking the unreachable branch is aspirational and would require either switching the
+  boundary to literal-key `import.meta.env.VITE_FEATURE_FLAG_V1_REDESIGN` or using `React.lazy()`
+  for explicit code-splitting. Accepted trade-off for convention consistency with the rest of the
+  codebase's flag reads. Reviewers compare a PR's preview to the production URL side-by-side in two
+  tabs.
 
 **Shared-primitives placement.** Cross-cutting primitives stay in `src/components/ui/` — that
 includes `StatusPill`, `GlowBadge`, `ThemeToggle`, and future `TypeStripe` / `Card` work. Chrome and
 page-level features that exist only for v1 live under `src/v1/`. No retroactive moves of code
 already merged on `main` (PR 1 theme system, PR 4 StatusPill).
 
-**Cutover model.** The cleanup PR (PR 8) does four things in one diff:
+**Cutover model.** The cleanup PR (PR 8) does five things in one diff:
 
 1. Removes the `isEnabled("V1_REDESIGN")` read in `src/App.tsx`.
-2. Deletes the `<LegacyApp />` branch.
-3. Deletes legacy chrome (`src/components/layout/header.tsx`, the legacy `Footer`) and legacy
+2. Removes the `main.tsx` carve-out that adds `.v1-app` to `<html>` pre-mount (after cutover, v1 is
+   unconditional, so the class can move to a static `<html class="v1-app">` in `index.html` — or the
+   v1 surface tokens can move back to `:root` since they're the only palette).
+3. Deletes the `<LegacyApp />` branch.
+4. Deletes legacy chrome (`src/components/layout/header.tsx`, the legacy `Footer`) and legacy
    feature directories that v1 has replaced.
-4. Removes the `V1_REDESIGN` entry from `src/lib/feature-flags.ts` and the `feat/84-*` pattern from
+5. Removes the `V1_REDESIGN` entry from `src/lib/feature-flags.ts` and the `feat/84-*` pattern from
    `netlify.toml`.
 
 After cutover, v1 is the only app. `src/v1/` stays in place; a future flattening (hoisting
@@ -94,7 +111,10 @@ After cutover, v1 is the only app. `src/v1/` stays in place; a future flattening
 - **PRs 4 (StatusPill — already shipped), 5 (TypeStripe + Card), 7 (Playwright)** continue to use
   `src/components/ui/`. Cross-cutting primitives stay shared.
 - **CSS scoping that depended on the `data-v1-redesign` attribute** moves into v1-only stylesheets
-  imported by `src/v1/`, or gets scoped via a class set by `<V1App />`. PR 2b decides which.
+  imported by `src/v1/` under the `.v1-app` class. `main.tsx`'s one-line carve-out (above) sets the
+  class on `<html>` pre-mount so the cascade reaches `<body>`. `<V1App />`'s wrapper
+  `<div className="v1-app">` also carries the class for nested scoping. **Locked in PR 2b's grilling
+  session (2026-05-13).**
 
 ## Supersedes
 
@@ -104,7 +124,9 @@ This decision supersedes three rows in the NEXT-STEPS.md decision log:
   of small PRs (now ten including PR 2b), and still gated by `V1_REDESIGN` — but "gated" now means a
   single boundary read, not per-component sprawl.
 - **2026-05-05 — "Migration strategy: feature-flagged side-by-side, swap in cleanup PR."** Now:
-  directory-separated; per-deploy bundle via tree-shaking; swap is still in the cleanup PR but is a
+  directory-separated; per-deploy bundle via the runtime boundary read (tree-shaking the unreachable
+  branch isn't currently in play because `isEnabled()` uses computed-key env access that Vite can't
+  constant-fold; both branches ship in both bundles); swap is still in the cleanup PR but is a
   delete-the-other-half diff rather than a flag flip.
 - **2026-05-07 — "PR 1 dark-surface reconciliation lands globally on `main`; V1_REDESIGN gates UI
   components/layout, not the base palette."** Still accurate; the gate just moved from per-component

@@ -1,0 +1,27 @@
+{
+  "description": "The Delta to Rate Processor (`deltatorateprocessor`) converts delta sum metrics to rate metrics. This rate is a gauge.",
+  "display_name": "Delta to Rate Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-deltatorateprocessor",
+  "name": "deltatorateprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "Aneurysm9"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "processor"
+}

@@ -1,0 +1,27 @@
+{
+  "description": null,
+  "display_name": "Jaeger Encoding Extension",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-jaegerencodingextension",
+  "name": "jaegerencodingextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "MovieStoreGuy",
+        "atoulme"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "extension"
+      ]
+    }
+  },
+  "type": "extension"
+}
