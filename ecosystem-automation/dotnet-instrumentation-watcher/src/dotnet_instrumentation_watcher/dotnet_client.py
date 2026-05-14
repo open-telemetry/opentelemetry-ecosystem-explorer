@@ -134,6 +134,7 @@ class DotNetInstrumentationClient:
         params = {
             "q": "PackageId:OpenTelemetry",
             "prerelease": "false",
+            "semVerLevel": "2.0.0",
             "take": 1,
         }
         try:
@@ -160,6 +161,7 @@ class DotNetInstrumentationClient:
             params = {
                 "q": f"owner:{owner}",
                 "prerelease": "true",
+                "semVerLevel": "2.0.0",
                 "skip": skip,
                 "take": take,
             }
