@@ -71,7 +71,9 @@ export async function loadInstrumentation(
     STORES.INSTRUMENTATIONS
   );
   if (!data) throw new Error(`Instrumentation "${id}" returned null unexpectedly`);
-  return data;
+
+  // Add _is_custom: false to satisfy UI expectations and tests
+  return { ...data, _is_custom: false };
 }
 
 export async function loadAllInstrumentations(version: string): Promise<InstrumentationData[]> {
