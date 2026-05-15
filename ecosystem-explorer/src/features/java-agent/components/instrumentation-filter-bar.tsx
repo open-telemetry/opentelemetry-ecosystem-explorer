@@ -102,6 +102,28 @@ export function InstrumentationFilterBar({
       </div>
 
       <div className="relative z-40 space-y-6">
+        {(filters.search !== "" ||
+          filters.telemetry.size > 0 ||
+          filters.target.size > 0 ||
+          filters.semantic.length > 0 ||
+          filters.features.length > 0) && (
+          <div className="flex justify-end">
+            <button
+              onClick={() =>
+                onFiltersChange({
+                  search: "",
+                  telemetry: new Set(),
+                  target: new Set(),
+                  semantic: [],
+                  features: [],
+                })
+              }
+              className="text-primary text-sm font-semibold hover:underline"
+            >
+              Clear all
+            </button>
+          </div>
+        )}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <div className="space-y-2">
             <label htmlFor="search" className="text-muted-foreground text-sm font-medium">
