@@ -16,8 +16,14 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import schemaVersionsIndex from "../../../public/data/configuration/versions-index.json";
+import javaAgentVersionsIndex from "../../../public/data/javaagent/versions-index.json";
 import { installFetchInterceptor, uninstallFetchInterceptor } from "./helpers/fetch-interceptor";
 import { renderBuilderPage as renderPage } from "./helpers/render-builder-page";
+
+const latestSchemaVersion = schemaVersionsIndex.versions.find((v) => v.is_latest)!.version;
+const latestAgentVersion = javaAgentVersionsIndex.versions.find((v) => v.is_latest)!.version;
+const otherAgentVersion = javaAgentVersionsIndex.versions.find((v) => !v.is_latest)?.version;
 
 beforeAll(() => installFetchInterceptor());
 afterAll(() => uninstallFetchInterceptor());
@@ -42,11 +48,12 @@ describe("ConfigurationBuilderPage version selectors", () => {
       { timeout: 10_000 }
     )) as HTMLSelectElement;
     const agent = await findAgentSelector();
-    expect(schema.value).toBe("1.0.0");
-    expect(agent.value).toBe("2.27.0");
+    expect(schema.value).toBe(latestSchemaVersion);
+    expect(agent.value).toBe(latestAgentVersion);
   });
 
   it("re-runs the registry lookup and updates the Instrumentation tab when the Agent version changes", async () => {
+    if (!otherAgentVersion) return;
     renderPage();
     const user = userEvent.setup();
     const agent = await findAgentSelector();
@@ -59,7 +66,7 @@ describe("ConfigurationBuilderPage version selectors", () => {
     )) as HTMLElement;
     expect(within(reactorRow).getByText("2 versions")).toBeInTheDocument();
 
-    await user.selectOptions(agent, "2.26.1");
+    await user.selectOptions(agent, otherAgentVersion);
 
     await waitFor(
       () => {
@@ -71,6 +78,7 @@ describe("ConfigurationBuilderPage version selectors", () => {
   });
 
   it("updates the YAML preview header from the SDK tab when the Agent version changes", async () => {
+    if (!otherAgentVersion) return;
     renderPage();
     const user = userEvent.setup();
     const preview = (await screen.findByLabelText(
@@ -78,18 +86,19 @@ describe("ConfigurationBuilderPage version selectors", () => {
       {},
       { timeout: 10_000 }
     )) as HTMLElement;
-    expect(preview.textContent).toContain("Java agent: 2.27.0");
+    expect(preview.textContent).toContain(`Java agent: ${latestAgentVersion}`);
 
     const agent = await findAgentSelector();
-    await user.selectOptions(agent, "2.26.1");
+    await user.selectOptions(agent, otherAgentVersion);
 
     await waitFor(() => {
-      expect(preview.textContent).toContain("Java agent: 2.26.1");
+      expect(preview.textContent).toContain(`Java agent: ${otherAgentVersion}`);
     });
-    expect(preview.textContent).not.toContain("Java agent: 2.27.0");
+    expect(preview.textContent).not.toContain(`Java agent: ${latestAgentVersion}`);
   });
 
   it("preserves user-entered configuration values when the Agent version changes", async () => {
+    if (!otherAgentVersion) return;
     renderPage();
     const user = userEvent.setup();
     const resourceToggle = await screen.findByRole(
@@ -102,23 +111,24 @@ describe("ConfigurationBuilderPage version selectors", () => {
     await waitFor(() => expect(resourceToggle).toHaveAttribute("aria-checked", "false"));
 
     const agent = await findAgentSelector();
-    await user.selectOptions(agent, "2.26.1");
+    await user.selectOptions(agent, otherAgentVersion);
 
     expect(resourceToggle).toHaveAttribute("aria-checked", "false");
   });
 
-  it("does not persist the Agent selection — remount resets to latest with empty localStorage", async () => {
+  it("does not persist the Agent selection: remount resets to latest with empty localStorage", async () => {
+    if (!otherAgentVersion) return;
     const { unmount } = renderPage();
     const user = userEvent.setup();
     const agent = await findAgentSelector();
-    await user.selectOptions(agent, "2.26.1");
-    expect(agent.value).toBe("2.26.1");
+    await user.selectOptions(agent, otherAgentVersion);
+    expect(agent.value).toBe(otherAgentVersion);
 
     unmount();
     expect(localStorage.length).toBe(0);
 
     renderPage();
     const reloaded = await findAgentSelector();
-    expect(reloaded.value).toBe("2.27.0");
+    expect(reloaded.value).toBe(latestAgentVersion);
   });
 });
