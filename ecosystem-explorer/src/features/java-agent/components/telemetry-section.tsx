@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useState } from "react";
-import { Maximize2, Minimize2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Maximize2, Minimize2 } from "lucide-react";
 import { SectionDivider } from "@/components/ui/section-divider";
 import { GlowBadge } from "@/components/ui/glow-badge";
 import { AttributeTable } from "./attribute-table";
@@ -67,6 +67,30 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
     setExpandedSpans(new Set());
   };
 
+  const toggleMetric = (name: string) => {
+    setExpandedMetrics((prev) => {
+      const next = new Set(prev);
+      if (next.has(name)) {
+        next.delete(name);
+      } else {
+        next.add(name);
+      }
+      return next;
+    });
+  };
+
+  const toggleSpan = (index: string) => {
+    setExpandedSpans((prev) => {
+      const next = new Set(prev);
+      if (next.has(index)) {
+        next.delete(index);
+      } else {
+        next.add(index);
+      }
+      return next;
+    });
+  };
+
   const hasMetrics = currentTelemetry?.metrics && currentTelemetry.metrics.length > 0;
   const hasSpans = currentTelemetry?.spans && currentTelemetry.spans.length > 0;
   const hasBothMetricsAndSpans = hasMetrics && hasSpans;
@@ -92,11 +116,10 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                 <button
                   type="button"
                   onClick={expandAllMetrics}
-                  className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${
-                    expandedMetrics.size === (currentTelemetry.metrics?.length || 0)
-                      ? "border-secondary/40 bg-secondary/12 text-secondary border shadow-sm"
-                      : "text-muted-foreground hover:text-foreground border border-transparent"
-                  }`}
+                  className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${expandedMetrics.size === (currentTelemetry.metrics?.length || 0)
+                    ? "border-secondary/40 bg-secondary/12 text-secondary border shadow-sm"
+                    : "text-muted-foreground hover:text-foreground border border-transparent"
+                    }`}
                 >
                   <Maximize2 className="h-3 w-3" />
                   Expand All
@@ -104,11 +127,10 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                 <button
                   type="button"
                   onClick={collapseAllMetrics}
-                  className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${
-                    expandedMetrics.size === 0
-                      ? "border-secondary/40 bg-secondary/12 text-secondary border shadow-sm"
-                      : "text-muted-foreground hover:text-foreground border border-transparent"
-                  }`}
+                  className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${expandedMetrics.size === 0
+                    ? "border-secondary/40 bg-secondary/12 text-secondary border shadow-sm"
+                    : "text-muted-foreground hover:text-foreground border border-transparent"
+                    }`}
                 >
                   <Minimize2 className="h-3 w-3" />
                   Collapse All
@@ -125,17 +147,35 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                       key={metric.name}
                       className="border-border/30 bg-card/30 rounded-2xl border transition-all duration-200"
                     >
-                      <div className="flex items-center justify-between gap-4 p-4 sm:px-6 sm:py-5">
+                      <div
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => toggleMetric(metric.name)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            toggleMetric(metric.name);
+                          }
+                        }}
+                        className="flex cursor-pointer items-center justify-between gap-4 p-4 transition-colors hover:bg-white/[0.02] sm:px-6 sm:py-5"
+                      >
                         <code className="text-foreground min-w-0 flex-1 font-mono text-sm font-semibold break-all sm:text-base">
                           {metric.name}
                         </code>
-                        <GlowBadge
-                          variant="success"
-                          withGlow
-                          className="flex-shrink-0 py-0.5 text-[9px]"
-                        >
-                          {metric.instrument}
-                        </GlowBadge>
+                        <div className="flex flex-shrink-0 items-center gap-3">
+                          <GlowBadge
+                            variant="success"
+                            withGlow
+                            className="py-0.5 text-[9px]"
+                          >
+                            {metric.instrument}
+                          </GlowBadge>
+                          {isExpanded ? (
+                            <ChevronUp className="text-muted-foreground/50 h-4 w-4 transition-transform duration-200" />
+                          ) : (
+                            <ChevronDown className="text-muted-foreground/50 h-4 w-4 transition-transform duration-200" />
+                          )}
+                        </div>
                       </div>
 
                       {isExpanded && (
@@ -184,11 +224,10 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                 <button
                   type="button"
                   onClick={expandAllSpans}
-                  className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${
-                    expandedSpans.size === (currentTelemetry.spans?.length || 0)
-                      ? "border-secondary/40 bg-secondary/12 text-secondary border shadow-sm"
-                      : "text-muted-foreground hover:text-foreground border border-transparent"
-                  }`}
+                  className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${expandedSpans.size === (currentTelemetry.spans?.length || 0)
+                    ? "border-secondary/40 bg-secondary/12 text-secondary border shadow-sm"
+                    : "text-muted-foreground hover:text-foreground border border-transparent"
+                    }`}
                 >
                   <Maximize2 className="h-3 w-3" />
                   Expand All
@@ -196,11 +235,10 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                 <button
                   type="button"
                   onClick={collapseAllSpans}
-                  className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${
-                    expandedSpans.size === 0
-                      ? "border-secondary/40 bg-secondary/12 text-secondary border shadow-sm"
-                      : "text-muted-foreground hover:text-foreground border border-transparent"
-                  }`}
+                  className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${expandedSpans.size === 0
+                    ? "border-secondary/40 bg-secondary/12 text-secondary border shadow-sm"
+                    : "text-muted-foreground hover:text-foreground border border-transparent"
+                    }`}
                 >
                   <Minimize2 className="h-3 w-3" />
                   Collapse All
@@ -217,17 +255,35 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                       key={`${span.span_kind}-${index}`}
                       className="border-border/30 bg-card/30 rounded-2xl border transition-all duration-200"
                     >
-                      <div className="flex items-center justify-between gap-4 p-4 sm:px-6 sm:py-5">
+                      <div
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => toggleSpan(index.toString())}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            toggleSpan(index.toString());
+                          }
+                        }}
+                        className="flex cursor-pointer items-center justify-between gap-4 p-4 transition-colors hover:bg-white/[0.02] sm:px-6 sm:py-5"
+                      >
                         <h3 className="text-foreground flex-1 text-sm font-bold sm:text-base md:text-lg">
                           {span.span_kind} Span
                         </h3>
-                        <GlowBadge
-                          variant="info"
-                          withGlow
-                          className="flex-shrink-0 py-0.5 text-[9px]"
-                        >
-                          {span.span_kind}
-                        </GlowBadge>
+                        <div className="flex flex-shrink-0 items-center gap-3">
+                          <GlowBadge
+                            variant="info"
+                            withGlow
+                            className="py-0.5 text-[9px]"
+                          >
+                            {span.span_kind}
+                          </GlowBadge>
+                          {isExpanded ? (
+                            <ChevronUp className="text-muted-foreground/50 h-4 w-4 transition-transform duration-200" />
+                          ) : (
+                            <ChevronDown className="text-muted-foreground/50 h-4 w-4 transition-transform duration-200" />
+                          )}
+                        </div>
                       </div>
 
                       {isExpanded && (
