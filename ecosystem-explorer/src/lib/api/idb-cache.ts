@@ -17,7 +17,9 @@ import { openDB, type IDBPDatabase } from "idb";
 
 const DB_NAME = "otel-explorer-cache";
 const DB_VERSION = 8;
-const CACHE_EXPIRATION_MS = 24 * 60 * 60 * 1000; // 24 hours
+const CACHE_EXPIRATION_MS = 24 * 60 * 60 * 1000;
+const PRUNE_INTERVAL_MS = 24 * 60 * 60 * 1000;
+const PRUNE_KEY = "__internal_last_pruned_at";
 
 export const STORES = {
   METADATA: "metadata",
@@ -41,9 +43,7 @@ let dbInitFailed = false;
 
 function isExpired(cachedAt: number): boolean {
   const now = Date.now();
-  if (cachedAt > now) {
-    return true;
-  }
+  if (cachedAt > now) return true;
   return now - cachedAt > CACHE_EXPIRATION_MS;
 }
 
@@ -51,33 +51,24 @@ export async function initDB(): Promise<IDBPDatabase> {
   if (!isIDBAvailable()) {
     throw new Error("IndexedDB is not available in this environment");
   }
-
   if (dbInitFailed) {
     throw new Error("IndexedDB initialization previously failed");
   }
-
-  if (dbInstance) {
-    return dbInstance;
-  }
-
-  if (dbInitPromise) {
-    return dbInitPromise;
-  }
+  if (dbInstance) return dbInstance;
+  if (dbInitPromise) return dbInitPromise;
 
   dbInitPromise = (async () => {
     try {
       const db = await openDB(DB_NAME, DB_VERSION, {
         upgrade(db) {
-          const stores = Object.values(STORES);
-          stores.forEach((storeName) => {
+          for (const storeName of Object.values(STORES)) {
             if (db.objectStoreNames.contains(storeName)) {
               db.deleteObjectStore(storeName);
             }
             db.createObjectStore(storeName, { keyPath: "key" });
-          });
+          }
         },
       });
-
       dbInstance = db;
       dbInitPromise = null;
       return db;
@@ -100,29 +91,31 @@ export async function getCached<T>(
   try {
     const db = await initDB();
     const entry = await db.get(store, key);
-
-    if (!entry) {
-      return null;
-    }
+    if (!entry) return null;
 
     const cacheEntry = entry as CacheEntry<T>;
     if (isExpired(cacheEntry.cachedAt)) {
       if (options?.allowExpired) {
-        // Update last accessed time even for expired data if we are serving it
-        cacheEntry.lastAccessedAt = Date.now();
-        db.put(store, cacheEntry).catch(() => {});
+        const now = Date.now();
+        const lastAccessed = cacheEntry.lastAccessedAt ?? 0;
+        if (now - lastAccessed > 60 * 60 * 1000) {
+          cacheEntry.lastAccessedAt = now;
+          db.put(store, cacheEntry).catch(() => {});
+        }
         return cacheEntry.data;
       }
       return null;
     }
 
-    // Update last accessed time in background
-    cacheEntry.lastAccessedAt = Date.now();
-    db.put(store, cacheEntry).catch(() => {});
-
+    const now = Date.now();
+    const lastAccessed = cacheEntry.lastAccessedAt ?? 0;
+    if (now - lastAccessed > 60 * 60 * 1000) {
+      cacheEntry.lastAccessedAt = now;
+      db.put(store, cacheEntry).catch(() => {});
+    }
     return cacheEntry.data;
   } catch (error) {
-    console.error("Failed to get cached data for %s:", key, error);
+    console.error(`Failed to get cached data for %s:`, key, error);
     return null;
   }
 }
@@ -130,39 +123,43 @@ export async function getCached<T>(
 export async function setCached<T>(key: string, data: T, store: StoreName): Promise<void> {
   try {
     const db = await initDB();
-
     const entry: CacheEntry<T> = {
       key,
       data,
       cachedAt: Date.now(),
       lastAccessedAt: Date.now(),
     };
-
     await db.put(store, entry);
   } catch (error) {
-    console.error("Failed to cache data for %s:", key, error);
+    console.error(`Failed to cache data for %s:`, key, error);
   }
 }
 
 export async function clearAllCached(): Promise<void> {
   try {
     const db = await initDB();
-    const stores = Object.values(STORES);
-    await Promise.all(stores.map((store) => db.clear(store)));
+    await Promise.all(Object.values(STORES).map((store) => db.clear(store)));
   } catch (error) {
     console.error("Failed to clear cache:", error);
   }
 }
 
 /**
- * Prunes entries that haven't been accessed for the specified number of days.
- * Helps prevent IndexedDB bloat from orphaned versioned data.
+ * Removes entries not accessed within `maxAgeDays` days.
+ * A 24-hour frequency guard prevents excessive disk I/O on every navigation.
  */
 export async function pruneOldEntries(maxAgeDays = 7): Promise<void> {
   try {
     const db = await initDB();
-    const maxAgeMs = maxAgeDays * 24 * 60 * 60 * 1000;
     const now = Date.now();
+
+    const lastPruneEntry = await db.get(STORES.METADATA, PRUNE_KEY);
+    if (lastPruneEntry) {
+      const lastPrunedAt = (lastPruneEntry as CacheEntry<number>).data;
+      if (now - lastPrunedAt < PRUNE_INTERVAL_MS) return;
+    }
+
+    const maxAgeMs = maxAgeDays * 24 * 60 * 60 * 1000;
 
     for (const store of Object.values(STORES)) {
       const tx = db.transaction(store, "readwrite");
@@ -170,8 +167,12 @@ export async function pruneOldEntries(maxAgeDays = 7): Promise<void> {
 
       while (cursor) {
         const entry = cursor.value as CacheEntry<unknown>;
-        const lastAccessed = entry.lastAccessedAt || entry.cachedAt;
-
+        if (entry.key === PRUNE_KEY) {
+          cursor = await cursor.continue();
+          continue;
+        }
+        // Coalesce: prefer lastAccessedAt, fall back to cachedAt for older entries
+        const lastAccessed = entry.lastAccessedAt ?? entry.cachedAt;
         if (now - lastAccessed > maxAgeMs) {
           await cursor.delete();
         }
@@ -179,6 +180,13 @@ export async function pruneOldEntries(maxAgeDays = 7): Promise<void> {
       }
       await tx.done;
     }
+
+    await db.put(STORES.METADATA, {
+      key: PRUNE_KEY,
+      data: now,
+      cachedAt: now,
+      lastAccessedAt: now,
+    });
   } catch (error) {
     console.error("Failed to prune old cache entries:", error);
   }
