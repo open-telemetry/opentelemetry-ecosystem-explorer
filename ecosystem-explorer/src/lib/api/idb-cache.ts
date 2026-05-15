@@ -101,16 +101,23 @@ export async function getCached<T>(
     const cacheEntry = entry as CacheEntry<T>;
     if (isExpired(cacheEntry.cachedAt)) {
       if (options?.allowExpired) {
-        // Coalesce lastAccessedAt: bump so active stale entries survive the next prune
-        cacheEntry.lastAccessedAt = Date.now();
-        db.put(store, cacheEntry).catch(() => {});
+        const now = Date.now();
+        const lastAccessed = cacheEntry.lastAccessedAt ?? 0;
+        if (now - lastAccessed > 60 * 60 * 1000) {
+          cacheEntry.lastAccessedAt = now;
+          db.put(store, cacheEntry).catch(() => {});
+        }
         return cacheEntry.data;
       }
       return null;
     }
 
-    cacheEntry.lastAccessedAt = Date.now();
-    db.put(store, cacheEntry).catch(() => {});
+    const now = Date.now();
+    const lastAccessed = cacheEntry.lastAccessedAt ?? 0;
+    if (now - lastAccessed > 60 * 60 * 1000) {
+      cacheEntry.lastAccessedAt = now;
+      db.put(store, cacheEntry).catch(() => {});
+    }
     return cacheEntry.data;
   } catch (error) {
     console.error(`Failed to get cached data for %s:`, key, error);
