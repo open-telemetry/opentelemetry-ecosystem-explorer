@@ -37,6 +37,7 @@ class ComponentSyncData:
     display_name: Optional[str] = None
     description: Optional[str] = None
     stability: Optional[str] = None
+    expected_go_module_path: str = ""
     target_v1_file: str = ""
     v1_entry_exists: bool = False
 
@@ -64,6 +65,7 @@ class V1SyncReport:
                 {
                     "name": c.name,
                     "component_type": c.component_type,
+                    "expected_go_module_path": c.expected_go_module_path,
                     "target_v1_file": c.target_v1_file,
                     "v1_entry_exists": c.v1_entry_exists,
                     "proposed_v1_changes": c.proposed_changes(),

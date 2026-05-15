@@ -37,7 +37,8 @@ def sample_report():
                 display_name="Foo Receiver",
                 description="Receives foo data",
                 stability="beta",
-                target_v1_file="collector-fooreceiver.yml",
+                expected_go_module_path="github.com/open-telemetry/opentelemetry-collector-contrib/receiver/fooreceiver",
+                target_v1_file="collector-receiver-fooreceiver.yml",
                 v1_entry_exists=True,
             ),
             ComponentSyncData(
@@ -47,7 +48,8 @@ def sample_report():
                 display_name=None,
                 description=None,
                 stability="stable",
-                target_v1_file="collector-barexporter.yml",
+                expected_go_module_path="github.com/open-telemetry/opentelemetry-collector-contrib/exporter/barexporter",
+                target_v1_file="",
                 v1_entry_exists=False,
             ),
         ],
@@ -62,17 +64,28 @@ class TestWriteReportJson:
         assert data["version"] == "0.10.0"
         assert data["distribution"] == "contrib"
 
+    def test_includes_expected_go_module_path(self, sample_report):
+        out = io.StringIO()
+        write_report(sample_report, out, fmt="json")
+        data = json.loads(out.getvalue())
+
+        foo = next(c for c in data["components"] if c["name"] == "fooreceiver")
+        assert (
+            foo["expected_go_module_path"]
+            == "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/fooreceiver"
+        )
+
     def test_includes_target_v1_file_and_exists_flag(self, sample_report):
         out = io.StringIO()
         write_report(sample_report, out, fmt="json")
         data = json.loads(out.getvalue())
 
         foo = next(c for c in data["components"] if c["name"] == "fooreceiver")
-        assert foo["target_v1_file"] == "collector-fooreceiver.yml"
+        assert foo["target_v1_file"] == "collector-receiver-fooreceiver.yml"
         assert foo["v1_entry_exists"] is True
 
         bar = next(c for c in data["components"] if c["name"] == "barexporter")
-        assert bar["target_v1_file"] == "collector-barexporter.yml"
+        assert bar["target_v1_file"] == ""
         assert bar["v1_entry_exists"] is False
 
     def test_includes_description_in_proposed_changes(self, sample_report):

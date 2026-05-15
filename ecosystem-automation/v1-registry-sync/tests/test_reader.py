@@ -18,6 +18,8 @@ import pytest
 import yaml
 
 from v1_registry_sync.reader import (
+    _build_go_module_path,
+    _build_v1_index,
     _most_stable_level,
     read_latest_v2_components,
 )
@@ -69,6 +71,24 @@ def fake_registry(tmp_path):
     return tmp_path
 
 
+@pytest.fixture()
+def fake_v1_dir(tmp_path):
+    """Build a minimal fake V1 registry directory with realistic file names."""
+    v1_dir = tmp_path / "v1"
+    v1_dir.mkdir()
+
+    # Real V1 file names follow collector-{component_type}-{slug}.yml
+    foo_v1 = v1_dir / "collector-receiver-fooreceiver.yml"
+    foo_v1.write_text(
+        "title: Foo Receiver\n"
+        "package:\n"
+        "  name: github.com/open-telemetry/opentelemetry-collector-contrib/receiver/fooreceiver\n",
+        encoding="utf-8",
+    )
+
+    return v1_dir
+
+
 class TestMostStableLevel:
     def test_returns_stable_when_present(self):
         assert _most_stable_level({"stable": ["logs"], "beta": ["metrics"]}) == "stable"
@@ -84,6 +104,35 @@ class TestMostStableLevel:
 
     def test_deprecated_level(self):
         assert _most_stable_level({"deprecated": ["metrics"]}) == "deprecated"
+
+
+class TestBuildGoModulePath:
+    def test_contrib_receiver(self):
+        result = _build_go_module_path("contrib", "receiver", "kafkareceiver")
+        assert result == "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/kafkareceiver"
+
+    def test_core_exporter(self):
+        result = _build_go_module_path("core", "exporter", "otlpexporter")
+        assert result == "github.com/open-telemetry/opentelemetry-collector/exporter/otlpexporter"
+
+
+class TestBuildV1Index:
+    def test_indexes_package_name_to_filename(self, fake_v1_dir):
+        index = _build_v1_index(fake_v1_dir)
+        expected_path = "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/fooreceiver"
+        assert index[expected_path] == "collector-receiver-fooreceiver.yml"
+
+    def test_skips_files_without_package_name(self, tmp_path):
+        v1_dir = tmp_path / "v1"
+        v1_dir.mkdir()
+        (v1_dir / "collector-receiver-nopkg.yml").write_text("title: No Package\n", encoding="utf-8")
+        index = _build_v1_index(v1_dir)
+        assert len(index) == 0
+
+    def test_returns_empty_for_empty_dir(self, tmp_path):
+        v1_dir = tmp_path / "v1"
+        v1_dir.mkdir()
+        assert _build_v1_index(v1_dir) == {}
 
 
 class TestReadLatestV2Components:
@@ -116,31 +165,33 @@ class TestReadLatestV2Components:
         bar = next(c for c in report.components if c.name == "barreceiver")
         assert bar.display_name is None
 
-    def test_target_v1_file_follows_naming_convention(self, fake_registry):
+    def test_expected_go_module_path_always_set(self, fake_registry):
         report = read_latest_v2_components(str(fake_registry), distribution="contrib")
 
         foo = next(c for c in report.components if c.name == "fooreceiver")
-        assert foo.target_v1_file == "collector-fooreceiver.yml"
+        assert (
+            foo.expected_go_module_path
+            == "github.com/open-telemetry/opentelemetry-collector-contrib/receiver/fooreceiver"
+        )
 
-    def test_v1_entry_exists_false_when_no_v1_dir(self, fake_registry):
+    def test_target_v1_file_empty_when_no_v1_dir(self, fake_registry):
         report = read_latest_v2_components(str(fake_registry), distribution="contrib")
 
         for component in report.components:
+            assert component.target_v1_file == ""
             assert component.v1_entry_exists is False
 
-    def test_v1_entry_exists_true_when_file_present(self, fake_registry, tmp_path):
-        v1_dir = tmp_path / "v1"
-        v1_dir.mkdir()
-        (v1_dir / "collector-fooreceiver.yml").touch()
-
+    def test_target_v1_file_matched_via_go_module_path(self, fake_registry, fake_v1_dir):
         report = read_latest_v2_components(
-            str(fake_registry), distribution="contrib", v1_registry_dir=str(v1_dir)
+            str(fake_registry), distribution="contrib", v1_registry_dir=str(fake_v1_dir)
         )
 
         foo = next(c for c in report.components if c.name == "fooreceiver")
+        assert foo.target_v1_file == "collector-receiver-fooreceiver.yml"
         assert foo.v1_entry_exists is True
 
         bar = next(c for c in report.components if c.name == "barreceiver")
+        assert bar.target_v1_file == ""
         assert bar.v1_entry_exists is False
 
     def test_skips_snapshot_versions(self, tmp_path):
