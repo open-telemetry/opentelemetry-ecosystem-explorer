@@ -162,7 +162,7 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                         <code className="text-foreground min-w-0 flex-1 font-mono text-sm font-semibold break-all sm:text-base">
                           {metric.name}
                         </code>
-                        <div className="flex flex-shrink-0 items-center gap-3">
+                        <div className="flex shrink-0 items-center gap-3">
                           <GlowBadge
                             variant="success"
                             withGlow
