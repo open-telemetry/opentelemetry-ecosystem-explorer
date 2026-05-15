@@ -119,7 +119,9 @@ export async function fetchWithCache<T>(
           const staleData = await getCached<T>(cacheKey, storeType, { allowExpired: true });
           if (staleData !== null) {
             if (options?.validate && !options.validate(staleData)) {
-              throw new Error(`Failed to load ${cacheKey}: ${response.status} ${response.statusText}`);
+              throw new Error(
+                `Failed to load ${cacheKey}: ${response.status} ${response.statusText}`
+              );
             }
             console.warn("HTTP error, serving stale cache:", { cacheKey, status: response.status });
             return staleData;
@@ -136,7 +138,9 @@ export async function fetchWithCache<T>(
           const staleData = await getCached<T>(cacheKey, storeType, { allowExpired: true });
           if (staleData !== null) {
             if (options?.validate && !options.validate(staleData)) {
-              throw new Error(`Failed to load ${cacheKey}: unexpected content-type "${contentType}"`);
+              throw new Error(
+                `Failed to load ${cacheKey}: unexpected content-type "${contentType}"`
+              );
             }
             console.warn("CDN returned non-JSON 200, serving stale cache:", {
               cacheKey,

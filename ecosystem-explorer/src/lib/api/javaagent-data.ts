@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright The OpenTelemetry Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,11 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { InstrumentationData, VersionManifest, VersionsIndex } from "@/types/javaagent";
+import type {
+  InstrumentationData,
+  VersionManifest,
+  VersionsIndex,
+  Configuration,
+} from "@/types/javaagent";
 import { STORES, pruneOldEntries } from "./idb-cache";
 import { fetchWithCache, resolveDataPath } from "./fetch-with-cache";
 
 const BASE_DIR = "data/javaagent";
+
+export interface GlobalConfiguration extends Configuration {
+  instrumentations?: string[];
+}
 
 export async function loadVersions(): Promise<VersionsIndex> {
   const data = await fetchWithCache<VersionsIndex>(
@@ -85,4 +94,14 @@ export async function loadAllInstrumentations(version: string): Promise<Instrume
       return loadInstrumentation(id, version, manifest);
     })
   );
+}
+
+export async function loadGlobalConfigurations(): Promise<GlobalConfiguration[]> {
+  const data = await fetchWithCache<GlobalConfiguration[]>(
+    "global-configurations",
+    resolveDataPath(BASE_DIR, "global-configurations.json"),
+    STORES.METADATA
+  );
+  if (!data) throw new Error("Global configurations returned null unexpectedly");
+  return data;
 }
