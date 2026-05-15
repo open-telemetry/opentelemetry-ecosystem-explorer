@@ -145,7 +145,12 @@ describe("NumberInputControl", () => {
       constraints: { exclusiveMinimum: 0, exclusiveMaximum: 100 },
     };
     render(
-      <NumberInputControl node={exclusiveNode} path={exclusiveNode.path} value={1} onChange={vi.fn()} />
+      <NumberInputControl
+        node={exclusiveNode}
+        path={exclusiveNode.path}
+        value={1}
+        onChange={vi.fn()}
+      />
     );
     const input = screen.getByRole("spinbutton") as HTMLInputElement;
     expect(input.min).toBe("");
