@@ -17,9 +17,13 @@
 /**
  * Styles entry point.
  *
- * - tokens.css  — design-token CSS custom properties (per-theme HSL triplets)
- * - base.css    — global element resets
- * - syntax.css  — YAML / config syntax-highlight token classes
+ * - tokens.css        — design-token CSS custom properties (per-theme HSL triplets)
+ * - base.css          — global element resets
+ * - syntax.css        — YAML / config syntax-highlight token classes
+ *
+ * V1 chrome styles (`navbar.css`, `theme-toggle.css`, v1 surface-token overrides)
+ * live under `src/v1/styles/` and are imported by `<V1App />` so they only
+ * affect the v1 subtree. See `projects/84-ui-ux-design/v1-routing-pivot.md`.
  *
  * Tailwind v4 bundles @import rules via Lightning CSS at build time, so each
  * partial is inlined into the final stylesheet — no extra network requests.

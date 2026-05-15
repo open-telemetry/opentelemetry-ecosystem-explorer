@@ -40,8 +40,8 @@ def _derive_stability(stability: dict[str, list[str]] | None) -> str | None:
     return best
 
 
-def _make_component_id(distribution: str, component_type: str, name: str) -> str:
-    return f"{distribution}-{component_type}-{name}"
+def _make_component_id(distribution: str, name: str) -> str:
+    return f"{distribution}-{name}"
 
 
 def transform_collector_components(
@@ -78,7 +78,7 @@ def transform_collector_components(
             status: dict[str, Any] = metadata.get("status") or {}
 
             component: dict[str, Any] = {
-                "id": _make_component_id(distribution, component_type, name),
+                "id": _make_component_id(distribution, name),
                 "ecosystem": "collector",
                 "distribution": distribution,
                 "type": component_type,

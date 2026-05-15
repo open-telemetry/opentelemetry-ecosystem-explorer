@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { Info, ExternalLink, AlertCircle, Loader2, Check, Users } from "lucide-react";
 import { GitHubIcon } from "@/components/icons/github-icon";
 
@@ -25,7 +25,7 @@ import { GlowBadge } from "@/components/ui/glow-badge";
 import { DetailCard } from "@/components/ui/detail-card";
 import { SectionHeader } from "@/components/ui/section-header";
 import { PageContainer } from "@/components/layout/page-container";
-import { useCollectorComponent } from "@/hooks/use-collector-data";
+import { useCollectorComponent, useCollectorVersions } from "@/hooks/use-collector-data";
 
 const COMPONENT_TYPE_DESCRIPTIONS: Record<string, string> = {
   receiver: "Receivers collect telemetry data from various sources and formats.",
@@ -38,9 +38,21 @@ const COMPONENT_TYPE_DESCRIPTIONS: Record<string, string> = {
 };
 
 export function CollectorDetailPage() {
-  const { version, id } = useParams<{ version: string; id: string }>();
+  const { distribution, name } = useParams<{ distribution: string; name: string }>();
+
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { data: component, loading, error } = useCollectorComponent(id ?? "", version ?? "");
+  const { data: versionData } = useCollectorVersions();
+
+  const version =
+    searchParams.get("version") || versionData?.versions.find((v) => v.is_latest)?.version || "";
+
+  const versionLoading = !version;
+  const {
+    data: component,
+    loading,
+    error,
+  } = useCollectorComponent(distribution ?? "", name ?? "", version);
   const [activeTab, setActiveTab] = useState("details");
 
   const getStabilityLabel = (level: string) => {
@@ -55,7 +67,7 @@ export function CollectorDetailPage() {
     return labels[level.toLowerCase()] || level;
   };
 
-  if (loading) {
+  if (loading || versionLoading) {
     return (
       <PageContainer>
         <div className="flex min-h-[400px] items-center justify-center">
