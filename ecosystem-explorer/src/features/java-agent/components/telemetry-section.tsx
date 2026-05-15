@@ -116,10 +116,11 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                 <button
                   type="button"
                   onClick={expandAllMetrics}
-                  className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${expandedMetrics.size === (currentTelemetry.metrics?.length || 0)
-                    ? "border-secondary/40 bg-secondary/12 text-secondary border shadow-sm"
-                    : "text-muted-foreground hover:text-foreground border border-transparent"
-                    }`}
+                  className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${
+                    expandedMetrics.size === (currentTelemetry.metrics?.length || 0)
+                      ? "border-secondary/40 bg-secondary/12 text-secondary border shadow-sm"
+                      : "text-muted-foreground hover:text-foreground border border-transparent"
+                  }`}
                 >
                   <Maximize2 className="h-3 w-3" />
                   Expand All
@@ -127,10 +128,11 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                 <button
                   type="button"
                   onClick={collapseAllMetrics}
-                  className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${expandedMetrics.size === 0
-                    ? "border-secondary/40 bg-secondary/12 text-secondary border shadow-sm"
-                    : "text-muted-foreground hover:text-foreground border border-transparent"
-                    }`}
+                  className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${
+                    expandedMetrics.size === 0
+                      ? "border-secondary/40 bg-secondary/12 text-secondary border shadow-sm"
+                      : "text-muted-foreground hover:text-foreground border border-transparent"
+                  }`}
                 >
                   <Minimize2 className="h-3 w-3" />
                   Collapse All
@@ -163,11 +165,7 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                           {metric.name}
                         </code>
                         <div className="flex shrink-0 items-center gap-3">
-                          <GlowBadge
-                            variant="success"
-                            withGlow
-                            className="py-0.5 text-[9px]"
-                          >
+                          <GlowBadge variant="success" withGlow className="py-0.5 text-[9px]">
                             {metric.instrument}
                           </GlowBadge>
                           {isExpanded ? (
@@ -224,10 +222,11 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                 <button
                   type="button"
                   onClick={expandAllSpans}
-                  className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${expandedSpans.size === (currentTelemetry.spans?.length || 0)
-                    ? "border-secondary/40 bg-secondary/12 text-secondary border shadow-sm"
-                    : "text-muted-foreground hover:text-foreground border border-transparent"
-                    }`}
+                  className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${
+                    expandedSpans.size === (currentTelemetry.spans?.length || 0)
+                      ? "border-secondary/40 bg-secondary/12 text-secondary border shadow-sm"
+                      : "text-muted-foreground hover:text-foreground border border-transparent"
+                  }`}
                 >
                   <Maximize2 className="h-3 w-3" />
                   Expand All
@@ -235,10 +234,11 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                 <button
                   type="button"
                   onClick={collapseAllSpans}
-                  className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${expandedSpans.size === 0
-                    ? "border-secondary/40 bg-secondary/12 text-secondary border shadow-sm"
-                    : "text-muted-foreground hover:text-foreground border border-transparent"
-                    }`}
+                  className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${
+                    expandedSpans.size === 0
+                      ? "border-secondary/40 bg-secondary/12 text-secondary border shadow-sm"
+                      : "text-muted-foreground hover:text-foreground border border-transparent"
+                  }`}
                 >
                   <Minimize2 className="h-3 w-3" />
                   Collapse All
@@ -271,11 +271,7 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                           {span.span_kind} Span
                         </h3>
                         <div className="flex flex-shrink-0 items-center gap-3">
-                          <GlowBadge
-                            variant="info"
-                            withGlow
-                            className="py-0.5 text-[9px]"
-                          >
+                          <GlowBadge variant="info" withGlow className="py-0.5 text-[9px]">
                             {span.span_kind}
                           </GlowBadge>
                           {isExpanded ? (
