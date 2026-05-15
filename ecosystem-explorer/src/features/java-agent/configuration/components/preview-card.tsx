@@ -17,7 +17,6 @@ import { useMemo, type JSX } from "react";
 import { Download, RefreshCcw, ListPlus } from "lucide-react";
 import type { ConfigNode } from "@/types/configuration";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
-import { useLatestJavaAgentVersion } from "@/hooks/use-latest-java-agent-version";
 import { generateYaml } from "@/lib/yaml-generator";
 import { downloadText } from "@/lib/download-text";
 import { CopyButton } from "@/components/ui/copy-button";
@@ -25,13 +24,13 @@ import { YamlCodeBlock } from "./yaml-code-block";
 
 interface PreviewCardProps {
   schema: ConfigNode;
+  javaAgentVersion: string;
 }
 
-export function PreviewCard({ schema }: PreviewCardProps): JSX.Element {
+export function PreviewCard({ schema, javaAgentVersion }: PreviewCardProps): JSX.Element {
   const { state, enableAllSections, resetToDefaults, validateAll } = useConfigurationBuilder();
-  const javaAgentVersion = useLatestJavaAgentVersion();
   const yaml = useMemo(
-    () => generateYaml(state, schema, { javaAgentVersion }),
+    () => generateYaml(state, schema, { javaAgentVersion: javaAgentVersion || undefined }),
     [state, schema, javaAgentVersion]
   );
 
