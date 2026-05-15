@@ -8,12 +8,12 @@
     "esbuild"
   ],
   "scripts": {
-    "serve": "vite",
-    "build": "tsc -b && bun scripts/generate-schemas.mjs && vite build && bun scripts/generate-agent-docs.mjs",
+    "serve": "bun scripts/aggregate-configurations.mjs && vite",
+    "build": "bun scripts/aggregate-configurations.mjs && tsc -b && bun scripts/generate-schemas.mjs && vite build && bun scripts/generate-agent-docs.mjs",
     "generate-schemas": "bun scripts/generate-schemas.mjs",
     "generate-agent-docs": "bun scripts/generate-agent-docs.mjs",
-    "netlify-build:preview": "tsc -b && bun scripts/generate-schemas.mjs && vite build && bun scripts/generate-agent-docs.mjs",
-    "netlify-build:production": "tsc -b && bun scripts/generate-schemas.mjs && vite build && bun scripts/generate-agent-docs.mjs",
+    "netlify-build:preview": "bun scripts/aggregate-configurations.mjs && tsc -b && bun scripts/generate-schemas.mjs && vite build && bun scripts/generate-agent-docs.mjs",
+    "netlify-build:production": "bun scripts/aggregate-configurations.mjs && tsc -b && bun scripts/generate-schemas.mjs && vite build && bun scripts/generate-agent-docs.mjs",
     "typecheck": "tsc -b",
     "lint": "eslint .",
     "format": "prettier --write .",

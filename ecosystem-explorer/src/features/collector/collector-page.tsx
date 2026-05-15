@@ -13,26 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useMemo } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
 import {
-  Search,
-  Loader2,
-  ChevronRight,
   Box,
-  Layers,
-  Send,
-  Plug,
-  Workflow,
   ChevronDown,
-  AlertCircle,
+  ChevronRight,
+  Layers,
+  Loader2,
+  Plug,
+  Search,
+  Send,
+  Workflow,
 } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Link, useSearchParams, useParams } from "react-router-dom";
 
 import { PageContainer } from "@/components/layout/page-container";
 import { BackButton } from "@/components/ui/back-button";
 import { GlowBadge } from "@/components/ui/glow-badge";
 import { DetailCard } from "@/components/ui/detail-card";
-import { useCollectorVersions, useCollectorComponents } from "@/hooks/use-collector-data";
+import { useCollectorComponents, useCollectorVersions } from "@/hooks/use-collector-data";
 import { isEnabled } from "@/lib/feature-flags";
 
 const getIcon = (type: string) => {
@@ -52,8 +51,9 @@ const getIcon = (type: string) => {
   }
 };
 
-function CollectorPageInner({ urlVersion }: { urlVersion?: string }) {
-  const navigate = useNavigate();
+function CollectorPageInner() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { version: versionParam } = useParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("all");
 
@@ -64,15 +64,21 @@ function CollectorPageInner({ urlVersion }: { urlVersion?: string }) {
   } = useCollectorVersions();
 
   const currentVersion = useMemo(() => {
+    // Priority: URL param > search param > latest version
+    if (versionParam) return versionParam;
+    const urlVersion = searchParams.get("version");
     if (urlVersion) return urlVersion;
     return versionData?.versions.find((v) => v.is_latest)?.version || "";
-  }, [urlVersion, versionData]);
+  }, [versionParam, searchParams, versionData]);
 
   const {
     data: components,
     loading: componentsLoading,
     error: componentsError,
   } = useCollectorComponents(currentVersion);
+
+  // Check for errors
+  const hasError = versionsError || componentsError;
 
   const filteredComponents = useMemo(() => {
     if (!components) return [];
@@ -88,9 +94,13 @@ function CollectorPageInner({ urlVersion }: { urlVersion?: string }) {
   }, [components, searchQuery, typeFilter]);
 
   const handleVersionChange = (val: string) => {
-    navigate(`/collector/components/${val}`);
+    const latestVersion = versionData?.versions.find((v) => v.is_latest)?.version;
+    if (val === latestVersion) {
+      setSearchParams({});
+    } else {
+      setSearchParams({ version: val });
+    }
   };
-
   return (
     <>
       <div className="border-border/60 bg-card/80 relative overflow-hidden rounded-xl border p-6">
@@ -127,7 +137,7 @@ function CollectorPageInner({ urlVersion }: { urlVersion?: string }) {
                   id="type-filter"
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value)}
-                  className="border-border/60 bg-background/80 focus:border-primary/50 focus:ring-primary/20 w-[160px] cursor-pointer appearance-none rounded-lg border py-2.5 pr-10 pl-3 text-sm font-medium backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none"
+                  className="border-border/60 bg-background/80 focus:border-primary/50 focus:ring-primary/20 w-40 cursor-pointer appearance-none rounded-lg border py-2.5 pr-10 pl-3 text-sm font-medium backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none"
                 >
                   <option value="all">All Types</option>
                   <option value="receiver">Receivers</option>
@@ -153,7 +163,7 @@ function CollectorPageInner({ urlVersion }: { urlVersion?: string }) {
                   value={currentVersion}
                   onChange={(e) => handleVersionChange(e.target.value)}
                   disabled={versionsLoading}
-                  className="border-border/60 bg-background/80 focus:border-primary/50 focus:ring-primary/20 w-[160px] cursor-pointer appearance-none rounded-lg border py-2.5 pr-10 pl-3 text-sm font-medium backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none disabled:opacity-50"
+                  className="border-border/60 bg-background/80 focus:border-primary/50 focus:ring-primary/20 w-40 cursor-pointer appearance-none rounded-lg border py-2.5 pr-10 pl-3 text-sm font-medium backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none disabled:opacity-50"
                 >
                   {versionData?.versions.map((v) => (
                     <option key={v.version} value={v.version}>
@@ -171,18 +181,22 @@ function CollectorPageInner({ urlVersion }: { urlVersion?: string }) {
         </div>
       </div>
 
-      {componentsError || versionsError ? (
-        <div className="flex flex-col items-center justify-center space-y-4 py-32 text-center text-red-500">
-          <AlertCircle className="mx-auto h-12 w-12 opacity-50" aria-hidden="true" />
-          <h3 className="text-xl font-semibold">Error loading data</h3>
-          <p className="text-muted-foreground">Please try refreshing the page.</p>
-        </div>
-      ) : componentsLoading || versionsLoading || !currentVersion ? (
+      {componentsLoading ? (
         <div className="flex flex-col items-center justify-center space-y-4 py-32">
           <div className="inline-flex animate-pulse rounded-full p-4 shadow-[0_0_60px_hsl(var(--primary-hsl)/0.2)]">
             <Loader2 className="text-primary h-10 w-10 animate-spin" aria-hidden="true" />
           </div>
           <p className="text-muted-foreground text-sm font-medium">Loading components...</p>
+        </div>
+      ) : hasError ? (
+        <div className="flex flex-col items-center justify-center space-y-4 py-32">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-100/10 text-red-500">
+            <Box className="h-8 w-8" aria-hidden="true" />
+          </div>
+          <h2 className="text-foreground text-2xl font-bold">Error loading data</h2>
+          <p className="text-muted-foreground max-w-xs text-center">
+            Please try refreshing the page.
+          </p>
         </div>
       ) : (
         <div className="space-y-6">
@@ -195,75 +209,83 @@ function CollectorPageInner({ urlVersion }: { urlVersion?: string }) {
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {filteredComponents.length > 0 ? (
-              filteredComponents.map((comp) => (
-                <Link
-                  key={comp.id}
-                  to={`/collector/components/${currentVersion}/${comp.id}`}
-                  className="group focus-visible:ring-primary block min-w-0 rounded-xl outline-none focus-visible:ring-2"
-                >
-                  <DetailCard
-                    withHoverEffect
-                    className="border-border/50 group-hover:border-primary/30 h-full transition-colors"
+              filteredComponents.map((comp) => {
+                const latestVersion = versionData?.versions.find((v) => v.is_latest)?.version;
+                const detailUrl =
+                  currentVersion && currentVersion !== latestVersion
+                    ? `/collector/components/${comp.distribution}/${comp.name}?version=${currentVersion}`
+                    : `/collector/components/${comp.distribution}/${comp.name}`;
+
+                return (
+                  <Link
+                    key={comp.id}
+                    to={detailUrl}
+                    className="group focus-visible:ring-primary block rounded-xl outline-none focus-visible:ring-2"
                   >
-                    <div className="flex h-full flex-col space-y-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110">
-                            {getIcon(comp.type)}
+                    <DetailCard
+                      withHoverEffect
+                      className="border-border/50 group-hover:border-primary/30 h-full transition-colors"
+                    >
+                      <div className="flex h-full flex-col space-y-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="bg-primary/10 text-primary flex h-10 w-10 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110">
+                              {getIcon(comp.type)}
+                            </div>
+                            <div className="space-y-1">
+                              <GlowBadge
+                                variant="muted"
+                                className="text-[10px] font-bold tracking-widest uppercase"
+                              >
+                                {comp.type}
+                              </GlowBadge>
+                            </div>
                           </div>
-                          <div className="space-y-1">
-                            <GlowBadge
-                              variant="muted"
-                              className="text-[10px] font-bold tracking-widest uppercase"
-                            >
-                              {comp.type}
-                            </GlowBadge>
+                          <ChevronRight
+                            className="text-muted-foreground/40 h-5 w-5 opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100"
+                            aria-hidden="true"
+                          />
+                        </div>
+
+                        <div className="space-y-1.5">
+                          <h3 className="group-hover:text-primary text-lg leading-tight font-bold transition-colors">
+                            {comp.display_name || comp.name}
+                          </h3>
+                          <div className="flex items-center gap-2">
+                            <code className="text-muted-foreground bg-muted/50 rounded px-1.5 py-0.5 font-mono text-[11px]">
+                              {comp.name}
+                            </code>
+                            <span className="text-muted-foreground/60 text-[10px] font-medium tracking-tighter uppercase">
+                              {comp.distribution}
+                            </span>
                           </div>
                         </div>
-                        <ChevronRight
-                          className="text-muted-foreground/40 h-5 w-5 opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:opacity-100"
-                          aria-hidden="true"
-                        />
-                      </div>
 
-                      <div className="space-y-1.5">
-                        <h3 className="group-hover:text-primary text-lg leading-tight font-bold transition-colors">
-                          {comp.display_name || comp.name}
-                        </h3>
-                        <div className="flex items-center gap-2">
-                          <code className="text-muted-foreground bg-muted/50 rounded px-1.5 py-0.5 font-mono text-[11px]">
-                            {comp.name}
-                          </code>
-                          <span className="text-muted-foreground/60 text-[10px] font-medium tracking-tighter uppercase">
-                            {comp.distribution}
-                          </span>
+                        <p className="text-muted-foreground/80 line-clamp-3 flex-1 text-sm leading-relaxed">
+                          {comp.description ||
+                            "Browse technical details and configuration options for this component."}
+                        </p>
+
+                        <div className="border-border/10 flex items-center gap-2 border-t pt-2">
+                          {comp.status?.stability &&
+                            Object.keys(comp.status.stability).length > 0 && (
+                              <GlowBadge
+                                variant={
+                                  Object.keys(comp.status.stability)[0] === "stable"
+                                    ? "success"
+                                    : "info"
+                                }
+                                className="px-2 py-0 text-[9px]"
+                              >
+                                {Object.keys(comp.status.stability)[0]}
+                              </GlowBadge>
+                            )}
                         </div>
                       </div>
-
-                      <p className="text-muted-foreground/80 line-clamp-3 flex-1 text-sm leading-relaxed">
-                        {comp.description ||
-                          "Browse technical details and configuration options for this component."}
-                      </p>
-
-                      <div className="border-border/10 flex items-center gap-2 border-t pt-2">
-                        {comp.status?.stability &&
-                          Object.keys(comp.status.stability).length > 0 && (
-                            <GlowBadge
-                              variant={
-                                Object.keys(comp.status.stability)[0] === "stable"
-                                  ? "success"
-                                  : "info"
-                              }
-                              className="px-2 py-0 text-[9px]"
-                            >
-                              {Object.keys(comp.status.stability)[0]}
-                            </GlowBadge>
-                          )}
-                      </div>
-                    </div>
-                  </DetailCard>
-                </Link>
-              ))
+                    </DetailCard>
+                  </Link>
+                );
+              })
             ) : (
               <div className="border-border/40 col-span-full rounded-2xl border-2 border-dashed py-32 text-center">
                 <div className="bg-muted/10 mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full">
@@ -292,8 +314,6 @@ function CollectorPageInner({ urlVersion }: { urlVersion?: string }) {
 }
 
 export function CollectorPage() {
-  const { version: urlVersion } = useParams<{ version: string }>();
-
   return (
     <PageContainer>
       <div className="space-y-6">
@@ -301,7 +321,7 @@ export function CollectorPage() {
         <header className="space-y-4">
           <h1 className="text-foreground text-4xl font-bold tracking-tight sm:text-5xl">
             Collector{" "}
-            <span className="from-otel-orange to-otel-blue bg-gradient-to-r bg-clip-text text-transparent">
+            <span className="from-otel-orange to-otel-blue bg-linear-to-r bg-clip-text text-transparent">
               Components
             </span>
           </h1>
@@ -323,7 +343,7 @@ export function CollectorPage() {
             </p>
           </div>
         ) : (
-          <CollectorPageInner urlVersion={urlVersion} />
+          <CollectorPageInner />
         )}
       </div>
     </PageContainer>

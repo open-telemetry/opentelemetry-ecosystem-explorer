@@ -1,0 +1,29 @@
+{
+  "description": null,
+  "display_name": "Round-Robin Connector",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-roundrobinconnector",
+  "name": "roundrobinconnector",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "connector",
+    "codeowners": {
+      "active": [
+        "bogdandrutu"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "logs_to_logs",
+        "metrics_to_metrics",
+        "traces_to_traces"
+      ]
+    }
+  },
+  "type": "connector"
+}
