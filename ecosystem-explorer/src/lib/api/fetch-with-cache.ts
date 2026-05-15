@@ -17,14 +17,59 @@ import { getCached, setCached, isIDBAvailable, type StoreName } from "./idb-cach
 
 const inflightRequests = new Map<string, Promise<unknown>>();
 
+/**
+ * Validates a path segment to prevent path traversal attacks.
+ * Only allows alphanumeric characters, dots, underscores, and hyphens.
+ */
+export function validatePathSegment(segment: string): void {
+  if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(segment) || segment.includes("..")) {
+    throw new Error(`Invalid path segment: ${segment}`);
+  }
+}
+
+/**
+ * Resolves a data path by combining BASE_URL with path segments.
+ * Centralizes security validation and path construction.
+ */
+export function resolveDataPath(base: string, ...segments: string[]): string {
+  const baseUrl = import.meta.env.BASE_URL || "";
+  const normalizedBase = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
+  const parts = [normalizedBase, base.startsWith("/") ? base.slice(1) : base];
+  for (const segment of segments) {
+    validatePathSegment(segment);
+    parts.push(segment);
+  }
+  return parts.join("/");
+}
+
+const DEFAULT_MAX_RETRIES = 3;
+const DEFAULT_RETRY_DELAY_MS = 1000;
+
+async function fetchWithRetry(
+  url: string,
+  retries = DEFAULT_MAX_RETRIES,
+  delayMs = DEFAULT_RETRY_DELAY_MS
+): Promise<Response> {
+  const maxAttempts = Math.max(1, retries);
+  let lastError: unknown;
+  for (let i = 0; i < maxAttempts; i++) {
+    try {
+      // HTTP responses (ok or non-ok) are returned immediately - no retry.
+      // Only real network failures (catch block) trigger retries.
+      return await fetch(url);
+    } catch (error) {
+      lastError = error;
+      if (i === maxAttempts - 1) throw error;
+    }
+    await new Promise((resolve) => setTimeout(resolve, delayMs * Math.pow(2, i)));
+  }
+  throw lastError;
+}
+
 export interface FetchWithCacheOptions<T = unknown> {
   allow404?: boolean;
-  /**
-   * Optional validator for cached data. When provided, cached data that fails
-   * validation is ignored for the current request and a fresh network request
-   * is made. This prevents stale or logically-empty cached responses (e.g.
-   * `{ versions: [] }`) from being served to the caller.
-   */
+  retryCount?: number;
+  retryDelayMs?: number;
   validate?: (data: T) => boolean;
 }
 
@@ -43,34 +88,76 @@ export async function fetchWithCache<T>(
       if (isIDBAvailable()) {
         const cachedData = await getCached<T>(cacheKey, storeType);
         if (cachedData !== null) {
-          if (!options?.validate) {
-            return cachedData;
-          }
+          if (!options?.validate) return cachedData;
           try {
-            if (options.validate(cachedData)) {
-              return cachedData;
-            }
+            if (options.validate(cachedData)) return cachedData;
           } catch {
-            // treat validator exceptions as validation failures and fall back to network fetch
+            // validator exception = treat as invalid
           }
         }
       }
 
-      const response = await fetch(url);
+      let response: Response;
+      try {
+        response = await fetchWithRetry(url, options?.retryCount, options?.retryDelayMs);
+      } catch (error) {
+        if (isIDBAvailable()) {
+          const staleData = await getCached<T>(cacheKey, storeType, { allowExpired: true });
+          if (staleData !== null) {
+            if (options?.validate && !options.validate(staleData)) throw error;
+            console.warn("Network error, serving stale cache:", cacheKey, error);
+            return staleData;
+          }
+        }
+        throw error;
+      }
+
       if (!response.ok) {
-        if (response.status === 404 && options?.allow404) {
-          return null;
+        if (response.status === 404 && options?.allow404) return null;
+
+        if (isIDBAvailable()) {
+          const staleData = await getCached<T>(cacheKey, storeType, { allowExpired: true });
+          if (staleData !== null) {
+            if (options?.validate && !options.validate(staleData)) {
+              throw new Error(
+                `Failed to load ${cacheKey}: ${response.status} ${response.statusText}`
+              );
+            }
+            console.warn("HTTP error, serving stale cache:", { cacheKey, status: response.status });
+            return staleData;
+          }
         }
         throw new Error(`Failed to load ${cacheKey}: ${response.status} ${response.statusText}`);
       }
 
-      const data = await response.json();
+      // SPA 200 fallback: CDNs can return 200 + HTML during deployment propagation.
+      // Use optional chaining so test mocks without headers don't crash.
+      const contentType = response.headers?.get?.("content-type") ?? "";
+      if (contentType.includes("text/html")) {
+        if (isIDBAvailable()) {
+          const staleData = await getCached<T>(cacheKey, storeType, { allowExpired: true });
+          if (staleData !== null) {
+            if (options?.validate && !options.validate(staleData)) {
+              throw new Error(
+                `Failed to load ${cacheKey}: unexpected content-type "${contentType}"`
+              );
+            }
+            console.warn("CDN returned non-JSON 200, serving stale cache:", {
+              cacheKey,
+              contentType,
+            });
+            return staleData;
+          }
+        }
+        throw new Error(`Failed to load ${cacheKey}: unexpected content-type "${contentType}"`);
+      }
 
+      const data = await response.json();
       if (isIDBAvailable()) {
         try {
           await setCached(cacheKey, data, storeType);
         } catch {
-          // Cache write failure should not break data loading
+          // Cache write failures must not block data loading
         }
       }
 
