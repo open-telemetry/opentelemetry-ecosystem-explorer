@@ -16,7 +16,7 @@
 import { openDB, type IDBPDatabase } from "idb";
 
 const DB_NAME = "otel-explorer-cache";
-const DB_VERSION = 4;
+const DB_VERSION = 8;
 const CACHE_EXPIRATION_MS = 24 * 60 * 60 * 1000;
 const PRUNE_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const PRUNE_KEY = "__internal_last_pruned_at";
@@ -25,6 +25,7 @@ export const STORES = {
   METADATA: "metadata",
   INSTRUMENTATIONS: "instrumentations",
   CONFIGURATION: "configuration",
+  GLOBAL_CONFIGURATIONS: "global-configurations",
 } as const;
 
 export type StoreName = (typeof STORES)[keyof typeof STORES];
@@ -60,18 +61,12 @@ export async function initDB(): Promise<IDBPDatabase> {
     try {
       const db = await openDB(DB_NAME, DB_VERSION, {
         upgrade(db) {
-          if (db.objectStoreNames.contains(STORES.METADATA)) {
-            db.deleteObjectStore(STORES.METADATA);
+          for (const storeName of Object.values(STORES)) {
+            if (db.objectStoreNames.contains(storeName)) {
+              db.deleteObjectStore(storeName);
+            }
+            db.createObjectStore(storeName, { keyPath: "key" });
           }
-          if (db.objectStoreNames.contains(STORES.INSTRUMENTATIONS)) {
-            db.deleteObjectStore(STORES.INSTRUMENTATIONS);
-          }
-          if (db.objectStoreNames.contains(STORES.CONFIGURATION)) {
-            db.deleteObjectStore(STORES.CONFIGURATION);
-          }
-          db.createObjectStore(STORES.METADATA, { keyPath: "key" });
-          db.createObjectStore(STORES.INSTRUMENTATIONS, { keyPath: "key" });
-          db.createObjectStore(STORES.CONFIGURATION, { keyPath: "key" });
         },
       });
       dbInstance = db;
@@ -143,11 +138,7 @@ export async function setCached<T>(key: string, data: T, store: StoreName): Prom
 export async function clearAllCached(): Promise<void> {
   try {
     const db = await initDB();
-    await Promise.all([
-      db.clear(STORES.METADATA),
-      db.clear(STORES.INSTRUMENTATIONS),
-      db.clear(STORES.CONFIGURATION),
-    ]);
+    await Promise.all(Object.values(STORES).map((store) => db.clear(store)));
   } catch (error) {
     console.error("Failed to clear cache:", error);
   }
