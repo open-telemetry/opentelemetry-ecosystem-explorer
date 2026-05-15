@@ -138,4 +138,17 @@ describe("NumberInputControl", () => {
     rerender(<NumberInputControl node={node} path={node.path} value={99} onChange={vi.fn()} />);
     expect(screen.getByRole("spinbutton")).toHaveValue(99);
   });
+
+  it("does not set min/max attributes for exclusive-only constraints", () => {
+    const exclusiveNode: NumberInputNode = {
+      ...node,
+      constraints: { exclusiveMinimum: 0, exclusiveMaximum: 100 },
+    };
+    render(
+      <NumberInputControl node={exclusiveNode} path={exclusiveNode.path} value={1} onChange={vi.fn()} />
+    );
+    const input = screen.getByRole("spinbutton") as HTMLInputElement;
+    expect(input.min).toBe("");
+    expect(input.max).toBe("");
+  });
 });

@@ -51,8 +51,8 @@ export function NumberInputControl({ node, path, value, onChange }: NumberInputC
   const { state, validateField } = useConfigurationBuilder();
   const error = state.validationErrors[path] ?? null;
   const { constraints } = node;
-  const min = constraints?.minimum ?? constraints?.exclusiveMinimum;
-  const max = constraints?.maximum ?? constraints?.exclusiveMaximum;
+  const min = constraints?.minimum;
+  const max = constraints?.maximum;
 
   const [draft, setDraft] = useState<string>(() => formatValue(value));
   const [prevValue, setPrevValue] = useState<number | null>(value);
