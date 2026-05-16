@@ -18,52 +18,52 @@ export interface SearchResult {
   title: string;
   description: string;
   path: string;
-  type: 'page' | 'section';
+  type: "page" | "section";
 }
 
 // Define searchable content in the app
 const searchableContent: SearchResult[] = [
   {
-    title: 'Java Agent',
-    description: 'Explore OpenTelemetry Java auto-instrumentation',
-    path: '/java-agent',
-    type: 'page',
+    title: "Java Agent",
+    description: "Explore OpenTelemetry Java auto-instrumentation",
+    path: "/java-agent",
+    type: "page",
   },
   {
-    title: 'Java Instrumentations',
-    description: 'Browse supported Java libraries and instrumentations',
-    path: '/java-agent/instrumentations',
-    type: 'section',
+    title: "Java Instrumentations",
+    description: "Browse supported Java libraries and instrumentations",
+    path: "/java-agent/instrumentations",
+    type: "section",
   },
   {
-    title: 'Java Configurations',
-    description: 'Configure OpenTelemetry Java Agent behavior',
-    path: '/java-agent/configurations',
-    type: 'section',
+    title: "Java Configurations",
+    description: "Configure OpenTelemetry Java Agent behavior",
+    path: "/java-agent/configurations",
+    type: "section",
   },
   {
-    title: 'Java Release Comparison',
-    description: 'Compare features across Java Agent releases',
-    path: '/java-agent/release-comparison',
-    type: 'section',
+    title: "Java Release Comparison",
+    description: "Compare features across Java Agent releases",
+    path: "/java-agent/release-comparison",
+    type: "section",
   },
   {
-    title: 'Collector',
-    description: 'Explore OpenTelemetry Collector components',
-    path: '/collector',
-    type: 'page',
+    title: "Collector",
+    description: "Explore OpenTelemetry Collector components",
+    path: "/collector",
+    type: "page",
   },
   {
-    title: 'Configuration Builder',
-    description: 'Build custom OpenTelemetry configurations',
-    path: '/java-agent/config-builder',
-    type: 'section',
+    title: "Configuration Builder",
+    description: "Build custom OpenTelemetry configurations",
+    path: "/java-agent/config-builder",
+    type: "section",
   },
   {
-    title: 'About',
-    description: 'Learn about OpenTelemetry Ecosystem Explorer',
-    path: '/about',
-    type: 'page',
+    title: "About",
+    description: "Learn about OpenTelemetry Ecosystem Explorer",
+    path: "/about",
+    type: "page",
   },
 ];
 
@@ -76,7 +76,7 @@ export function search(query: string): SearchResult[] {
   if (!query.trim()) return [];
 
   const lowerQuery = query.toLowerCase();
-  
+
   return searchableContent
     .filter((item) => {
       const matchesTitle = item.title.toLowerCase().includes(lowerQuery);

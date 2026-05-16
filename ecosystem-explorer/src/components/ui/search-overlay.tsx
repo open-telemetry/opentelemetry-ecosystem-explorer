@@ -1,3 +1,19 @@
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
@@ -14,21 +30,20 @@ interface SearchOverlayProps {
 export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
-  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [recentSearches, setRecentSearches] = useState<string[]>(() => {
+    const stored = localStorage.getItem(RECENT_SEARCHES_KEY);
+    if (!stored) {
+      return [];
+    }
+
+    try {
+      return JSON.parse(stored) as string[];
+    } catch {
+      return [];
+    }
+  });
   const debouncedQuery = useDebouncedValue(query, 250);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  // Load recent searches from localStorage on mount
-  useEffect(() => {
-    const stored = localStorage.getItem(RECENT_SEARCHES_KEY);
-    if (stored) {
-      try {
-        setRecentSearches(JSON.parse(stored));
-      } catch {
-        setRecentSearches([]);
-      }
-    }
-  }, []);
 
   // Focus input on mount
   useEffect(() => {
@@ -45,11 +60,11 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
       setRecentSearches(updated);
       localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
     }
-    
+
     if (path) {
       navigate(path);
     }
-    
+
     onSelect?.(q);
     setQuery("");
     onClose();
@@ -62,7 +77,7 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
 
   // Get search results if query is debounced
   const searchResults = performSearch(debouncedQuery);
-  
+
   // Show recent searches if empty query, otherwise show search results
   const showRecent = !query.trim();
 
@@ -76,9 +91,9 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
       />
 
       {/* Overlay panel */}
-      <div className="fixed inset-x-0 top-16 z-50 mx-auto max-w-2xl rounded-lg border border-border/20 bg-background shadow-lg">
+      <div className="border-border/20 bg-background fixed inset-x-0 top-16 z-50 mx-auto max-w-2xl rounded-lg border shadow-lg">
         {/* Search input */}
-        <div className="flex items-center gap-3 border-b border-border/20 px-4 py-3">
+        <div className="border-border/20 flex items-center gap-3 border-b px-4 py-3">
           <Search className="text-muted-foreground h-5 w-5" />
           <input
             ref={inputRef}
@@ -93,7 +108,7 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
                 onClose();
               }
             }}
-            className="flex-1 bg-transparent outline-none text-foreground placeholder:text-muted-foreground text-sm"
+            className="text-foreground placeholder:text-muted-foreground flex-1 bg-transparent text-sm outline-none"
             aria-label="Search"
           />
           {query && (
@@ -111,21 +126,19 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
         <div className="max-h-96 overflow-y-auto">
           {searchResults.length > 0 && !showRecent ? (
             <>
-              <div className="px-4 py-2 text-xs font-semibold text-muted-foreground">
-                Results
-              </div>
+              <div className="text-muted-foreground px-4 py-2 text-xs font-semibold">Results</div>
               <ul className="space-y-1 px-2 py-2">
                 {searchResults.map((result) => (
                   <li key={result.path}>
                     <button
                       onClick={() => handleSelect(result.title, result.path)}
-                      className="w-full text-left rounded px-3 py-2 text-sm hover:bg-accent text-foreground transition-colors flex items-center justify-between"
+                      className="hover:bg-accent text-foreground flex w-full items-center justify-between rounded px-3 py-2 text-left text-sm transition-colors"
                     >
                       <div>
                         <div className="font-medium">{result.title}</div>
-                        <div className="text-xs text-muted-foreground">{result.description}</div>
+                        <div className="text-muted-foreground text-xs">{result.description}</div>
                       </div>
-                      <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0 ml-2" />
+                      <ChevronRight className="text-muted-foreground ml-2 h-4 w-4 flex-shrink-0" />
                     </button>
                   </li>
                 ))}
@@ -133,7 +146,7 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
             </>
           ) : recentSearches.length > 0 && showRecent ? (
             <>
-              <div className="px-4 py-2 text-xs font-semibold text-muted-foreground">
+              <div className="text-muted-foreground px-4 py-2 text-xs font-semibold">
                 Recent Searches
               </div>
               <ul className="space-y-1 px-2 py-2">
@@ -148,9 +161,9 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
                           handleSelect(searchQuery);
                         }
                       }}
-                      className="w-full text-left rounded px-3 py-2 text-sm hover:bg-accent text-foreground transition-colors"
+                      className="hover:bg-accent text-foreground w-full rounded px-3 py-2 text-left text-sm transition-colors"
                     >
-                      <Search className="mr-2 inline h-4 w-4 text-muted-foreground" />
+                      <Search className="text-muted-foreground mr-2 inline h-4 w-4" />
                       {searchQuery}
                     </button>
                   </li>
@@ -158,17 +171,17 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
               </ul>
               <button
                 onClick={handleClearRecent}
-                className="w-full px-4 py-2 text-xs text-muted-foreground hover:text-foreground border-t border-border/20"
+                className="text-muted-foreground hover:text-foreground border-border/20 w-full border-t px-4 py-2 text-xs"
               >
                 Clear recent searches
               </button>
             </>
           ) : query.trim() ? (
-            <div className="px-4 py-8 text-center text-sm text-muted-foreground">
+            <div className="text-muted-foreground px-4 py-8 text-center text-sm">
               No results for "{debouncedQuery}"
             </div>
           ) : (
-            <div className="px-4 py-8 text-center text-sm text-muted-foreground">
+            <div className="text-muted-foreground px-4 py-8 text-center text-sm">
               Start typing to search
             </div>
           )}

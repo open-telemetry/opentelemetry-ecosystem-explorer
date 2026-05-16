@@ -61,9 +61,7 @@ export function Header() {
           </div>
         </div>
       </header>
-      {isSearchOpen && (
-        <SearchOverlay onClose={() => setIsSearchOpen(false)} />
-      )}
+      {isSearchOpen && <SearchOverlay onClose={() => setIsSearchOpen(false)} />}
     </>
   );
 }
