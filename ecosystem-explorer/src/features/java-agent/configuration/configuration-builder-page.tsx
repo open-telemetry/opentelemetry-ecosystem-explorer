@@ -15,6 +15,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { BackButton } from "@/components/ui/back-button";
+import { BetaBadge } from "@/components/ui/beta-badge";
 import { PageContainer } from "@/components/layout/page-container";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { VersionSelector } from "@/features/java-agent/components/version-selector";
@@ -25,10 +26,8 @@ import {
 } from "@/hooks/use-configuration-data";
 import { ConfigurationBuilderProvider } from "@/hooks/configuration-builder-provider";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
-import {
-  useVersions as useJavaAgentVersions,
-  useInstrumentations,
-} from "@/hooks/use-javaagent-data";
+import { useInstrumentations } from "@/hooks/use-javaagent-data";
+import { useLatestJavaAgentVersion } from "@/hooks/use-latest-java-agent-version";
 import { groupByModule } from "@/lib/normalize-instrumentation";
 import { useCustomizedModules } from "@/hooks/use-customized-modules";
 import type { GroupNode } from "@/types/configuration";
@@ -161,17 +160,9 @@ function InstrumentationTabBody({ activeTab, schema, generalNode }: Instrumentat
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 
   // The page-level `version` is the SDK config schema version (e.g. "1.0.0").
-  // The instrumentation registry is keyed by Java agent version (e.g. "2.27.0")
-  // — a separate namespace. Resolve the latest agent version for the browser
-  // until a unified version picker lands as a follow-up.
-  const javaAgentVersions = useJavaAgentVersions();
-  const javaAgentVersion = useMemo(
-    () =>
-      javaAgentVersions.data?.versions.find((v) => v.is_latest)?.version ??
-      javaAgentVersions.data?.versions[0]?.version ??
-      "",
-    [javaAgentVersions.data]
-  );
+  // The instrumentation registry is keyed by Java agent version (e.g. "2.27.0"):
+  // a separate namespace. Resolve the latest agent version via the shared hook.
+  const javaAgentVersion = useLatestJavaAgentVersion() ?? "";
 
   const tocSections: TocSection[] = useMemo(
     () => [
@@ -274,13 +265,33 @@ export function ConfigurationBuilderPage() {
         <BackButton />
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-3">
-            <h1 className="text-3xl font-bold md:text-4xl">
-              <span className="from-otel-orange to-otel-blue bg-gradient-to-r bg-clip-text text-transparent">
-                Configuration Builder
-              </span>
-            </h1>
+            <div className="flex flex-wrap items-center gap-3">
+              <h1 className="text-3xl font-bold md:text-4xl">
+                <span className="from-otel-orange to-otel-blue bg-gradient-to-r bg-clip-text text-transparent">
+                  Configuration Builder
+                </span>
+              </h1>
+              <BetaBadge />
+            </div>
             <p className="text-muted-foreground text-base">
-              Build and customize your OpenTelemetry Java Agent configuration
+              Build and customize your OpenTelemetry Java Agent configuration.{" "}
+              <a
+                href="https://opentelemetry.io/docs/zero-code/java/agent/declarative-configuration/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-foreground underline"
+              >
+                Learn more about declarative configuration
+              </a>{" "}
+              ·{" "}
+              <a
+                href="https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/new"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-foreground underline"
+              >
+                Report an issue
+              </a>
             </p>
           </div>
           {versions.data && version ? (
@@ -293,13 +304,13 @@ export function ConfigurationBuilderPage() {
         </div>
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsContent value="sdk">
-            {schema.loading || starter.loading ? (
+            {!version || schema.loading || starter.loading ? (
               <p className="text-muted-foreground mt-4 text-sm">Loading schema…</p>
-            ) : schema.error || !root ? (
+            ) : schema.error ? (
               <p className="mt-4 text-sm text-red-400">Failed to load schema.</p>
             ) : starter.error ? (
               <p className="mt-4 text-sm text-red-400">Failed to load starter template.</p>
-            ) : version ? (
+            ) : root ? (
               <SdkTabContent
                 schema={root}
                 starter={starter.data}
@@ -309,13 +320,13 @@ export function ConfigurationBuilderPage() {
             ) : null}
           </TabsContent>
           <TabsContent value="instrumentation">
-            {schema.loading || starter.loading ? (
+            {!version || schema.loading || starter.loading ? (
               <p className="text-muted-foreground mt-4 text-sm">Loading schema…</p>
-            ) : schema.error || !root ? (
+            ) : schema.error ? (
               <p className="mt-4 text-sm text-red-400">Failed to load schema.</p>
             ) : starter.error ? (
               <p className="mt-4 text-sm text-red-400">Failed to load starter template.</p>
-            ) : version ? (
+            ) : root ? (
               <InstrumentationTabContent
                 schema={root}
                 starter={starter.data}
