@@ -51,6 +51,10 @@ export function useReleaseComparison(fromVersion: string, toVersion: string) {
 
         if (cancelled) return;
 
+        if (!fromData || !toData) {
+          throw new Error("Failed to load instrumentation data for one or both versions.");
+        }
+
         const result = compareReleases(fromVersion, toVersion, fromData, toData);
         setDiff(result);
         setLoading(false);

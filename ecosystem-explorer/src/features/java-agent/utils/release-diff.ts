@@ -58,11 +58,13 @@ export interface ReleaseDiff {
 export function compareReleases(
   fromVersion: string,
   toVersion: string,
-  fromData: InstrumentationData[],
-  toData: InstrumentationData[]
+  fromData: InstrumentationData[] = [],
+  toData: InstrumentationData[] = []
 ): ReleaseDiff {
-  const fromMap = new Map(fromData.map((d) => [d.name, d]));
-  const toMap = new Map(toData.map((d) => [d.name, d]));
+  const safeFromData = fromData || [];
+  const safeToData = toData || [];
+  const fromMap = new Map(safeFromData.map((d) => [d.name, d]));
+  const toMap = new Map(safeToData.map((d) => [d.name, d]));
 
   const allNames = Array.from(new Set([...fromMap.keys(), ...toMap.keys()])).sort();
   const instrumentations: InstrumentationDiff[] = [];

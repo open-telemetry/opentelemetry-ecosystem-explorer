@@ -71,7 +71,8 @@ export function JavaReleaseComparisonPage() {
     if (!fromVersion || !toVersion || versions.length === 0) return false;
     const fromIndex = versions.findIndex((v) => v.version === fromVersion);
     const toIndex = versions.findIndex((v) => v.version === toVersion);
-    return fromIndex <= toIndex && fromIndex !== -1 && toIndex !== -1;
+    if (fromIndex === -1 || toIndex === -1) return true;
+    return fromIndex <= toIndex;
   }, [fromVersion, toVersion, versions]);
 
   return (
@@ -114,9 +115,12 @@ export function JavaReleaseComparisonPage() {
             <div className="flex items-start gap-3">
               <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-yellow-400" />
               <div className="space-y-1">
-                <p className="font-medium text-yellow-400">Invalid Comparison Direction</p>
+                <p className="font-medium text-yellow-400">Invalid Comparison</p>
                 <p className="text-sm text-yellow-400/80">
-                  Comparisons are usually performed from an older version to a newer version.
+                  {versions.findIndex((v) => v.version === fromVersion) === -1 ||
+                  versions.findIndex((v) => v.version === toVersion) === -1
+                    ? "One or both of the selected versions do not exist in the registry."
+                    : "Comparisons are usually performed from an older version to a newer version."}
                 </p>
               </div>
             </div>
@@ -290,7 +294,7 @@ export function JavaReleaseComparisonPage() {
                           <tr
                             key={metric.name}
                             className={`border-border/10 border-b transition-colors hover:bg-white/5 ${
-                              index % 2 === 1 ? "bg-muted/10" : ""
+                              index % 2 === 1 ? "bg-muted/40" : ""
                             }`}
                           >
                             <td className="p-4">
