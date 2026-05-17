@@ -135,11 +135,7 @@ describe("ReleaseResultsTable", () => {
   });
 
   it("renders status badges", () => {
-    renderTable([
-      makeRow("a", "added"),
-      makeRow("b", "removed"),
-      makeRow("c", "changed"),
-    ]);
+    renderTable([makeRow("a", "added"), makeRow("b", "removed"), makeRow("c", "changed")]);
     expect(screen.getByText("added")).toBeInTheDocument();
     expect(screen.getByText("removed")).toBeInTheDocument();
     expect(screen.getByText("changed")).toBeInTheDocument();

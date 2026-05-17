@@ -36,10 +36,12 @@ export function JavaReleaseComparisonPage() {
   const fromVersion = searchParams.get("from") ?? previousVersion;
   const toVersion = searchParams.get("to") ?? latestVersion;
 
-  const { diffs, summary, loading: diffLoading, error: diffError } = useReleaseDiff(
-    fromVersion,
-    toVersion
-  );
+  const {
+    diffs,
+    summary,
+    loading: diffLoading,
+    error: diffError,
+  } = useReleaseDiff(fromVersion, toVersion);
 
   const sameVersion = Boolean(fromVersion && toVersion && fromVersion === toVersion);
 
@@ -60,11 +62,7 @@ export function JavaReleaseComparisonPage() {
         </div>
 
         {versionsLoading && (
-          <div
-            className="flex items-center justify-center py-12"
-            role="status"
-            aria-live="polite"
-          >
+          <div className="flex items-center justify-center py-12" role="status" aria-live="polite">
             <Loader2 className="text-primary h-6 w-6 animate-spin" aria-hidden="true" />
             <span className="text-muted-foreground ml-3 text-sm">Loading versions…</span>
           </div>

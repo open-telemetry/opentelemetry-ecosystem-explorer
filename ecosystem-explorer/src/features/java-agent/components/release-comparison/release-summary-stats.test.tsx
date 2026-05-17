@@ -37,9 +37,7 @@ function makeSummary(overrides: Partial<ReleaseDiffSummary> = {}): ReleaseDiffSu
 
 describe("ReleaseSummaryStats", () => {
   it("renders both version labels", () => {
-    render(
-      <ReleaseSummaryStats summary={makeSummary()} fromVersion="2.26.1" toVersion="2.27.0" />
-    );
+    render(<ReleaseSummaryStats summary={makeSummary()} fromVersion="2.26.1" toVersion="2.27.0" />);
     expect(screen.getByText("2.26.1")).toBeInTheDocument();
     expect(screen.getByText("2.27.0")).toBeInTheDocument();
   });

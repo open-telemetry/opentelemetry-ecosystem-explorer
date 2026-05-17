@@ -131,9 +131,7 @@ describe("computeReleaseDiff", () => {
 
   it("counts spans in removed instrumentation from default telemetry", () => {
     const instr = makeInstr("gone", {
-      telemetry: [
-        { when: "default", spans: [{ span_kind: "CLIENT" }, { span_kind: "SERVER" }] },
-      ],
+      telemetry: [{ when: "default", spans: [{ span_kind: "CLIENT" }, { span_kind: "SERVER" }] }],
     });
     const { diffs } = computeReleaseDiff([instr], []);
     expect(diffs[0].spansRemoved).toBe(2);
@@ -157,7 +155,11 @@ describe("computeReleaseDiff", () => {
   });
 
   it("sorts diffs: added before removed before changed before unchanged", () => {
-    const fromInstrs = [makeInstr("removed-lib"), makeInstr("changed-lib"), makeInstr("unchanged-lib")];
+    const fromInstrs = [
+      makeInstr("removed-lib"),
+      makeInstr("changed-lib"),
+      makeInstr("unchanged-lib"),
+    ];
     const toInstrs = [
       makeInstr("added-lib"),
       makeInstr("changed-lib", {
@@ -165,7 +167,13 @@ describe("computeReleaseDiff", () => {
           {
             when: "default",
             metrics: [
-              { name: "x", description: "d", instrument: "counter", data_type: "COUNTER", unit: "1" },
+              {
+                name: "x",
+                description: "d",
+                instrument: "counter",
+                data_type: "COUNTER",
+                unit: "1",
+              },
             ],
           },
         ],
@@ -205,8 +213,20 @@ describe("computeReleaseDiff", () => {
         {
           when: "default",
           metrics: [
-            { name: "m1", description: "d", instrument: "counter", data_type: "COUNTER", unit: "1" },
-            { name: "m2", description: "d", instrument: "gauge", data_type: "LONG_GAUGE", unit: "ms" },
+            {
+              name: "m1",
+              description: "d",
+              instrument: "counter",
+              data_type: "COUNTER",
+              unit: "1",
+            },
+            {
+              name: "m2",
+              description: "d",
+              instrument: "gauge",
+              data_type: "LONG_GAUGE",
+              unit: "ms",
+            },
           ],
         },
       ],

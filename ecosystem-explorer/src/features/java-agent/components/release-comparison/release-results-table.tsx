@@ -64,7 +64,7 @@ export function ReleaseResultsTable({ diffs, fromVersion, toVersion }: ReleaseRe
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Filter instrumentations…"
             aria-label="Filter instrumentations by name"
-            className="border-border/60 bg-background/80 text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:ring-primary/20 w-full rounded-lg border py-2 pl-9 pr-4 text-sm transition-all focus:ring-2 focus:outline-none"
+            className="border-border/60 bg-background/80 text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:ring-primary/20 w-full rounded-lg border py-2 pr-4 pl-9 text-sm transition-all focus:ring-2 focus:outline-none"
           />
         </div>
         {unchangedCount > 0 && (
@@ -145,15 +145,13 @@ export function ReleaseResultsTable({ diffs, fromVersion, toVersion }: ReleaseRe
   );
 }
 
-const STATUS_VARIANT: Record<
-  InstrumentationDiffStatus,
-  "success" | "error" | "warning" | "muted"
-> = {
-  added: "success",
-  removed: "error",
-  changed: "warning",
-  unchanged: "muted",
-};
+const STATUS_VARIANT: Record<InstrumentationDiffStatus, "success" | "error" | "warning" | "muted"> =
+  {
+    added: "success",
+    removed: "error",
+    changed: "warning",
+    unchanged: "muted",
+  };
 
 interface ReleaseInstrumentationRowProps {
   diff: InstrumentationReleaseDiff;
@@ -199,7 +197,7 @@ function ReleaseInstrumentationRow({
         />
       </td>
       <td className="p-3 sm:p-4">
-        <GlowBadge variant={STATUS_VARIANT[diff.status]} className="capitalize text-[10px]">
+        <GlowBadge variant={STATUS_VARIANT[diff.status]} className="text-[10px] capitalize">
           {diff.status}
         </GlowBadge>
       </td>

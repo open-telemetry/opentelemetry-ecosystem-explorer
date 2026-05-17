@@ -54,10 +54,7 @@ const STATUS_ORDER: Record<InstrumentationDiffStatus, number> = {
   unchanged: 3,
 };
 
-function countDefaultTelemetry(
-  instr: InstrumentationData,
-  kind: "metrics" | "spans"
-): number {
+function countDefaultTelemetry(instr: InstrumentationData, kind: "metrics" | "spans"): number {
   const defaultTelemetry = instr.telemetry?.find((t) => t.when === "default");
   return defaultTelemetry?.[kind]?.length ?? 0;
 }
