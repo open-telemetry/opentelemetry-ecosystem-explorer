@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { useState, useMemo, useEffect } from "react";
-import { Search, Settings, Loader2 } from "lucide-react";
+import { Search, Settings } from "lucide-react";
+import { Loader } from "@/components/ui/Loader";
 import { BackButton } from "@/components/ui/back-button";
 import { PageContainer } from "@/components/layout/page-container";
 import { Tabs } from "@/components/ui/tabs";
@@ -127,22 +128,14 @@ export function JavaConfigurationListPage() {
           <div className="mt-6">
             <div className="text-muted-foreground mb-4 text-sm">
               {isLoading
-                ? "Loading..."
+                ? "..."
                 : error
                   ? "Unable to load configurations"
                   : `Found ${filteredConfigs.length} configurations`}
             </div>
 
             {isLoading ? (
-              <div className="flex min-h-[300px] items-center justify-center rounded-lg border border-dashed">
-                <div className="text-center">
-                  <Loader2
-                    className="text-primary mx-auto h-12 w-12 animate-spin"
-                    aria-hidden="true"
-                  />
-                  <p className="text-muted-foreground mt-4 text-sm">Loading configurations...</p>
-                </div>
-              </div>
+              <Loader label="Loading configurations..." />
             ) : error ? (
               <div className="flex min-h-[300px] items-center justify-center rounded-lg border border-dashed">
                 <div className="mx-auto max-w-md px-4 text-center">

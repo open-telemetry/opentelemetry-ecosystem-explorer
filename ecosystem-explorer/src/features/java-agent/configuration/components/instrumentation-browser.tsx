@@ -15,6 +15,7 @@
  */
 import { useState, useCallback, useMemo, type JSX } from "react";
 import type { InstrumentationData, InstrumentationModule } from "@/types/javaagent";
+import { Loader } from "@/components/ui/Loader";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
 import {
   useCustomizationStatusMap,
@@ -110,7 +111,7 @@ export function InstrumentationBrowser({
       </header>
 
       {loading ? (
-        <p className="text-muted-foreground text-sm">Loading instrumentations…</p>
+        <Loader size="sm" label="Loading instrumentations…" />
       ) : error ? (
         <p className="text-sm text-red-400">Failed to load instrumentations.</p>
       ) : (

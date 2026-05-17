@@ -13,17 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Box,
-  ChevronDown,
-  ChevronRight,
-  Layers,
-  Loader2,
-  Plug,
-  Search,
-  Send,
-  Workflow,
-} from "lucide-react";
+import { Box, ChevronDown, ChevronRight, Layers, Plug, Search, Send, Workflow } from "lucide-react";
+import { Loader } from "@/components/ui/Loader";
 import { useMemo, useState } from "react";
 import { Link, useSearchParams, useParams } from "react-router-dom";
 
@@ -182,12 +173,7 @@ function CollectorPageInner() {
       </div>
 
       {componentsLoading ? (
-        <div className="flex flex-col items-center justify-center space-y-4 py-32">
-          <div className="inline-flex animate-pulse rounded-full p-4 shadow-[0_0_60px_hsl(var(--primary-hsl)/0.2)]">
-            <Loader2 className="text-primary h-10 w-10 animate-spin" aria-hidden="true" />
-          </div>
-          <p className="text-muted-foreground text-sm font-medium">Loading components...</p>
-        </div>
+        <Loader label="Loading components..." />
       ) : hasError ? (
         <div className="flex flex-col items-center justify-center space-y-4 py-32">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-red-100/10 text-red-500">

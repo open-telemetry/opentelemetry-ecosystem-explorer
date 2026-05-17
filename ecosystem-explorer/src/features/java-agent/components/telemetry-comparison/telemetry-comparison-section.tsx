@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle } from "lucide-react";
+import { Loader } from "@/components/ui/Loader";
 import type { VersionInfo } from "@/types/javaagent";
 import { useTelemetryComparison } from "../../hooks/use-telemetry-comparison";
 import { VersionSelectorPanel } from "./version-selector-panel";
@@ -70,10 +71,7 @@ export function TelemetryComparisonSection({
       {/* Loading state */}
       {loading && (
         <div className="flex min-h-[300px] items-center justify-center">
-          <div className="flex items-center gap-3">
-            <Loader2 className="text-primary h-6 w-6 animate-spin" />
-            <p className="text-muted-foreground text-sm">Loading comparison data...</p>
-          </div>
+          <Loader size="sm" label="Loading comparison data..." />
         </div>
       )}
 
