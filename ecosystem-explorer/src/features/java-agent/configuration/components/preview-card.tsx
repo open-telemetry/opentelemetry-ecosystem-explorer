@@ -24,15 +24,11 @@ import { YamlCodeBlock } from "./yaml-code-block";
 
 interface PreviewCardProps {
   schema: ConfigNode;
-  javaAgentVersion: string;
 }
 
-export function PreviewCard({ schema, javaAgentVersion }: PreviewCardProps): JSX.Element {
+export function PreviewCard({ schema }: PreviewCardProps): JSX.Element {
   const { state, enableAllSections, resetToDefaults, validateAll } = useConfigurationBuilder();
-  const yaml = useMemo(
-    () => generateYaml(state, schema, { javaAgentVersion: javaAgentVersion || undefined }),
-    [state, schema, javaAgentVersion]
-  );
+  const yaml = useMemo(() => generateYaml(state, schema), [state, schema]);
 
   const handleReset = () => {
     if (state.isDirty) {
@@ -45,7 +41,7 @@ export function PreviewCard({ schema, javaAgentVersion }: PreviewCardProps): JSX
   return (
     <section
       aria-label="Output Preview"
-      className="border-border/50 bg-card/40 space-y-3 rounded-xl border p-5 lg:sticky lg:top-20 lg:self-start"
+      className="border-border/50 bg-card/40 space-y-3 rounded-xl border p-5 lg:sticky lg:top-24"
     >
       <header className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="text-foreground text-sm font-medium">Output Preview</h3>

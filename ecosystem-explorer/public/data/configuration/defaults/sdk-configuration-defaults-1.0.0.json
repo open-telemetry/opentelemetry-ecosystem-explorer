@@ -1,69 +1,26 @@
 {
   "enabledSections": {
     "resource": true,
-    "propagator": true,
     "tracer_provider": true,
     "meter_provider": true,
-    "logger_provider": true
+    "logger_provider": true,
+    "propagator": true
   },
   "values": {
     "resource": {
-      "attributes_list": "${OTEL_RESOURCE_ATTRIBUTES}",
-      "detection/development": {
-        "detectors": [
-          { "service": {} },
-          { "host": {} },
-          { "process": {} },
-          { "container": {} }
-        ]
-      }
+      "attributes": [{ "name": "service.name", "value": "unknown_service" }]
+    },
+    "tracer_provider": {
+      "processors": [{ "batch": { "exporter": { "otlp_http": {} } } }]
+    },
+    "meter_provider": {
+      "readers": [{ "periodic": { "exporter": { "otlp_http": {} } } }]
+    },
+    "logger_provider": {
+      "processors": [{ "batch": { "exporter": { "otlp_http": {} } } }]
     },
     "propagator": {
       "composite": [{ "tracecontext": {} }, { "baggage": {} }]
-    },
-    "tracer_provider": {
-      "processors": [
-        {
-          "batch": {
-            "exporter": {
-              "otlp_http": {
-                "endpoint": "${OTEL_EXPORTER_OTLP_ENDPOINT:-http://localhost:4318}/v1/traces"
-              }
-            }
-          }
-        }
-      ],
-      "sampler": {
-        "parent_based": {
-          "root": { "always_on": {} }
-        }
-      }
-    },
-    "meter_provider": {
-      "readers": [
-        {
-          "periodic": {
-            "exporter": {
-              "otlp_http": {
-                "endpoint": "${OTEL_EXPORTER_OTLP_ENDPOINT:-http://localhost:4318}/v1/metrics"
-              }
-            }
-          }
-        }
-      ]
-    },
-    "logger_provider": {
-      "processors": [
-        {
-          "batch": {
-            "exporter": {
-              "otlp_http": {
-                "endpoint": "${OTEL_EXPORTER_OTLP_ENDPOINT:-http://localhost:4318}/v1/logs"
-              }
-            }
-          }
-        }
-      ]
     }
   }
 }

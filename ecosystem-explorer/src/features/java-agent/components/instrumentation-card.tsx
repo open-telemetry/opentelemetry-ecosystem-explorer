@@ -88,7 +88,7 @@ export function InstrumentationCard({
                   return (
                     <GlowBadge
                       key={s}
-                      variant="primary"
+                      variant="accent"
                       className={`px-1.5 py-0 ${isActive ? "" : "opacity-40 grayscale"}`}
                     >
                       {info?.label ?? s}

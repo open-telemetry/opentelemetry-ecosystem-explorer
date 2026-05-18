@@ -23,19 +23,18 @@ describe("App", () => {
     vi.unstubAllEnvs();
   });
 
-  it("renders the legacy app when V1_REDESIGN is disabled", () => {
+  it("renders the legacy app when V1_REDESIGN is disabled", async () => {
     vi.stubEnv("VITE_FEATURE_FLAG_V1_REDESIGN", "");
 
-    const { container } = render(
+    render(
       <ThemeProvider>
         <App />
       </ThemeProvider>
     );
 
-    // V1App adds .v1-app to scope its token overrides; absence confirms legacy rendering.
-    expect(container.querySelector(".v1-app")).toBeNull();
-    // LegacyApp's Header renders "OTel Explorer" synchronously — no lazy load needed.
-    expect(screen.getByText("OTel Explorer")).toBeInTheDocument();
+    const heading = await screen.findByRole("heading", { level: 1 });
+    expect(heading).toHaveTextContent("OpenTelemetry");
+    expect(heading).toHaveTextContent("Ecosystem Explorer");
   });
 
   it("renders the v1 app when V1_REDESIGN is enabled", async () => {

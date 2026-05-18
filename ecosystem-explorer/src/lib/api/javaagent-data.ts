@@ -13,41 +13,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type {
-  InstrumentationData,
-  VersionManifest,
-  VersionsIndex,
-  Configuration,
-} from "@/types/javaagent";
-import { STORES, pruneOldEntries } from "./idb-cache";
-import { fetchWithCache, resolveDataPath } from "./fetch-with-cache";
+import type { InstrumentationData, VersionManifest, VersionsIndex } from "@/types/javaagent";
+import { STORES } from "./idb-cache";
+import { fetchWithCache } from "./fetch-with-cache";
 
-const BASE_DIR = "data/javaagent";
-
-export interface GlobalConfiguration extends Configuration {
-  instrumentations?: string[];
-}
+const BASE_PATH = "/data/javaagent";
 
 export async function loadVersions(): Promise<VersionsIndex> {
   const data = await fetchWithCache<VersionsIndex>(
     "versions-index",
-    resolveDataPath(BASE_DIR, "versions-index.json"),
+    `${BASE_PATH}/versions-index.json`,
     STORES.METADATA,
     { validate: (d) => Array.isArray(d.versions) && d.versions.length > 0 }
   );
   if (!data) throw new Error("Versions index returned null unexpectedly");
-
-  // Trigger background cache pruning. The guard inside pruneOldEntries ensures
-  // this runs at most once every 24 hours regardless of how often loadVersions is called.
-  pruneOldEntries().catch(() => {});
-
   return data;
 }
 
 export async function loadVersionManifest(version: string): Promise<VersionManifest> {
   const data = await fetchWithCache<VersionManifest>(
     `manifest-${version}`,
-    resolveDataPath(BASE_DIR, "versions", `${version}-index.json`),
+    `${BASE_PATH}/versions/${version}-index.json`,
     STORES.METADATA,
     {
       validate: (d) =>
@@ -80,7 +66,7 @@ export async function loadInstrumentation(
   const filename = `${id}-${hash}.json`;
   const data = await fetchWithCache<InstrumentationData>(
     `instrumentation-${hash}`,
-    resolveDataPath(BASE_DIR, "instrumentations", id, filename),
+    `${BASE_PATH}/instrumentations/${id}/${filename}`,
     STORES.INSTRUMENTATIONS
   );
   if (!data) throw new Error(`Instrumentation "${id}" returned null unexpectedly`);
@@ -102,29 +88,10 @@ export async function loadAllInstrumentations(version: string): Promise<Instrume
   );
 }
 
-export async function loadLibraryReadme(
-  libraryName: string,
-  markdownHash: string
-): Promise<string> {
-  const baseUrl = import.meta.env.BASE_URL || "";
-  const normalizedBase = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
-  const url = `${normalizedBase}/${BASE_DIR}/markdown/${libraryName}-${markdownHash}.md`;
-  const data = await fetchWithCache<string>(
-    `readme-${libraryName}-${markdownHash}`,
-    url,
-    STORES.METADATA,
-    { format: "text" }
-  );
-  if (data === null) {
-    throw new Error(`README for ${libraryName} returned null unexpectedly`);
-  }
-  return data;
-}
-
-export async function loadGlobalConfigurations(): Promise<GlobalConfiguration[]> {
-  const data = await fetchWithCache<GlobalConfiguration[]>(
+export async function loadGlobalConfigurations() {
+  const data = await fetchWithCache(
     "global-configurations",
-    resolveDataPath(BASE_DIR, "global-configurations.json"),
+    `${BASE_PATH}/global-configurations.json`,
     STORES.GLOBAL_CONFIGURATIONS
   );
   if (!data) throw new Error("Global configurations returned null unexpectedly");

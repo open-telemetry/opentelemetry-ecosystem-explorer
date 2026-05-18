@@ -109,10 +109,12 @@ export function LegacyApp() {
               {isEnabled("JAVA_RELEASE_COMPARISON") && (
                 <Route path="/java-agent/releases" element={<JavaReleaseComparisonPage />} />
               )}
-              <Route
-                path="/java-agent/configuration/builder"
-                element={<ConfigurationBuilderPage />}
-              />
+              {isEnabled("JAVA_CONFIG_BUILDER") && (
+                <Route
+                  path="/java-agent/configuration/builder"
+                  element={<ConfigurationBuilderPage />}
+                />
+              )}
               <Route path="/collector" element={<CollectorPage />} />
               {isEnabled("COLLECTOR_PAGE") && (
                 <>

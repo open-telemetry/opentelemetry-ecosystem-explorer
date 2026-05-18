@@ -53,7 +53,7 @@ import {
   validateAll as validateAllNodes,
 } from "@/lib/config-validation";
 
-const STORAGE_KEY = "otel-config-builder-state-v3";
+const STORAGE_KEY = "otel-config-builder-state-v2";
 
 export interface ConfigurationBuilderStateContextValue {
   state: ConfigurationBuilderState;

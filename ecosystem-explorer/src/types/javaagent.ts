@@ -62,8 +62,6 @@ export interface InstrumentationData {
   configurations?: Configuration[];
   /** Telemetry emitted by this instrumentation under specific conditions. */
   telemetry?: Telemetry[];
-  /** Content hash of the library README markdown file. */
-  markdown_hash?: string;
   /** Whether this is a custom (non-upstream) instrumentation. */
   _is_custom?: boolean;
 }

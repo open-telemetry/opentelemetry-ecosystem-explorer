@@ -15,7 +15,6 @@
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { BackButton } from "@/components/ui/back-button";
-import { BetaBadge } from "@/components/ui/beta-badge";
 import { PageContainer } from "@/components/layout/page-container";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { VersionSelector } from "@/features/java-agent/components/version-selector";
@@ -26,7 +25,10 @@ import {
 } from "@/hooks/use-configuration-data";
 import { ConfigurationBuilderProvider } from "@/hooks/configuration-builder-provider";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
-import { useInstrumentations, useVersions } from "@/hooks/use-javaagent-data";
+import {
+  useVersions as useJavaAgentVersions,
+  useInstrumentations,
+} from "@/hooks/use-javaagent-data";
 import { groupByModule } from "@/lib/normalize-instrumentation";
 import { useCustomizedModules } from "@/hooks/use-customized-modules";
 import type { GroupNode } from "@/types/configuration";
@@ -73,18 +75,11 @@ const GENERAL_SETTINGS_LABEL = "General settings";
 interface SdkTabContentProps {
   schema: GroupNode;
   starter: ReturnType<typeof useConfigStarter>["data"];
-  schemaVersion: string;
-  javaAgentVersion: string;
+  version: string;
   activeTab: string;
 }
 
-function SdkTabContent({
-  schema,
-  starter,
-  schemaVersion,
-  javaAgentVersion,
-  activeTab,
-}: SdkTabContentProps) {
+function SdkTabContent({ schema, starter, version, activeTab }: SdkTabContentProps) {
   const { groupChildren, leafChildren } = useMemo(() => {
     const visible = schema.children.filter((c) => !SDK_HIDDEN_KEYS.has(c.key));
     return {
@@ -105,12 +100,7 @@ function SdkTabContent({
   const { activeKey, scrollToSection } = useActiveSection(sectionKeys, sectionsContainerRef);
 
   return (
-    <ConfigurationBuilderProvider
-      key={schemaVersion}
-      schema={schema}
-      version={schemaVersion}
-      starter={starter}
-    >
+    <ConfigurationBuilderProvider key={version} schema={schema} version={version} starter={starter}>
       <div className={BUILDER_GRID}>
         <ConfigurationTocSidebar
           activeTab={activeTab}
@@ -126,7 +116,7 @@ function SdkTabContent({
             <SchemaRenderer key={child.key} node={child} depth={0} path={child.key} />
           ))}
         </div>
-        <PreviewCard schema={schema} javaAgentVersion={javaAgentVersion} />
+        <PreviewCard schema={schema} />
       </div>
     </ConfigurationBuilderProvider>
   );
@@ -135,16 +125,14 @@ function SdkTabContent({
 interface InstrumentationTabContentProps {
   schema: GroupNode;
   starter: ReturnType<typeof useConfigStarter>["data"];
-  schemaVersion: string;
-  javaAgentVersion: string;
+  version: string;
   activeTab: string;
 }
 
 function InstrumentationTabContent({
   schema,
   starter,
-  schemaVersion,
-  javaAgentVersion,
+  version,
   activeTab,
 }: InstrumentationTabContentProps) {
   const generalNode = useMemo<GroupNode | null>(() => {
@@ -156,18 +144,8 @@ function InstrumentationTabContent({
   }, [schema]);
 
   return (
-    <ConfigurationBuilderProvider
-      key={schemaVersion}
-      schema={schema}
-      version={schemaVersion}
-      starter={starter}
-    >
-      <InstrumentationTabBody
-        activeTab={activeTab}
-        schema={schema}
-        generalNode={generalNode}
-        javaAgentVersion={javaAgentVersion}
-      />
+    <ConfigurationBuilderProvider key={version} schema={schema} version={version} starter={starter}>
+      <InstrumentationTabBody activeTab={activeTab} schema={schema} generalNode={generalNode} />
     </ConfigurationBuilderProvider>
   );
 }
@@ -176,17 +154,24 @@ interface InstrumentationTabBodyProps {
   activeTab: string;
   schema: GroupNode;
   generalNode: GroupNode | null;
-  javaAgentVersion: string;
 }
 
-function InstrumentationTabBody({
-  activeTab,
-  schema,
-  generalNode,
-  javaAgentVersion,
-}: InstrumentationTabBodyProps) {
+function InstrumentationTabBody({ activeTab, schema, generalNode }: InstrumentationTabBodyProps) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
+
+  // The page-level `version` is the SDK config schema version (e.g. "1.0.0").
+  // The instrumentation registry is keyed by Java agent version (e.g. "2.27.0")
+  // — a separate namespace. Resolve the latest agent version for the browser
+  // until a unified version picker lands as a follow-up.
+  const javaAgentVersions = useJavaAgentVersions();
+  const javaAgentVersion = useMemo(
+    () =>
+      javaAgentVersions.data?.versions.find((v) => v.is_latest)?.version ??
+      javaAgentVersions.data?.versions[0]?.version ??
+      "",
+    [javaAgentVersions.data]
+  );
 
   const tocSections: TocSection[] = useMemo(
     () => [
@@ -261,39 +246,26 @@ function InstrumentationTabBody({
           onJumpToGeneral={scrollToSection}
         />
       </div>
-      <PreviewCard schema={schema} javaAgentVersion={javaAgentVersion} />
+      <PreviewCard schema={schema} />
     </div>
   );
 }
 
 export function ConfigurationBuilderPage() {
-  const schemaVersionsState = useConfigVersions();
-  const latestSchemaVersion = useMemo(
+  const versions = useConfigVersions();
+  const latest = useMemo(
     () =>
-      schemaVersionsState.data?.versions.find((v) => v.is_latest)?.version ??
-      schemaVersionsState.data?.versions[0]?.version ??
+      versions.data?.versions.find((v) => v.is_latest)?.version ??
+      versions.data?.versions[0]?.version ??
       "",
-    [schemaVersionsState.data]
+    [versions.data]
   );
-  const [currentSchemaVersion, setCurrentSchemaVersion] = useState<string>("");
-  const schemaVersion = currentSchemaVersion || latestSchemaVersion;
+  const [currentVersion, setCurrentVersion] = useState<string>("");
+  const version = currentVersion || latest;
   const [activeTab, setActiveTab] = useState("sdk");
 
-  const javaAgentVersionsState = useVersions();
-  const javaAgentVersions = useMemo(
-    () => javaAgentVersionsState.data?.versions ?? [],
-    [javaAgentVersionsState.data]
-  );
-  const latestJavaAgentVersion = useMemo(
-    () =>
-      javaAgentVersions.find((v) => v.is_latest)?.version ?? javaAgentVersions[0]?.version ?? "",
-    [javaAgentVersions]
-  );
-  const [currentJavaAgentVersion, setCurrentJavaAgentVersion] = useState<string>("");
-  const javaAgentVersion = currentJavaAgentVersion || latestJavaAgentVersion;
-
-  const schema = useConfigSchema(schemaVersion);
-  const starter = useConfigStarter(schemaVersion);
+  const schema = useConfigSchema(version);
+  const starter = useConfigStarter(version);
   const root = (schema.data as GroupNode | null) ?? null;
 
   return (
@@ -302,87 +274,52 @@ export function ConfigurationBuilderPage() {
         <BackButton />
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-3">
-            <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-3xl font-bold md:text-4xl">
-                <span className="from-otel-orange to-otel-blue bg-gradient-to-r bg-clip-text text-transparent">
-                  Configuration Builder
-                </span>
-              </h1>
-              <BetaBadge />
-            </div>
+            <h1 className="text-3xl font-bold md:text-4xl">
+              <span className="from-otel-orange to-otel-blue bg-gradient-to-r bg-clip-text text-transparent">
+                Configuration Builder
+              </span>
+            </h1>
             <p className="text-muted-foreground text-base">
-              Build and customize your OpenTelemetry Java Agent configuration.{" "}
-              <a
-                href="https://opentelemetry.io/docs/zero-code/java/agent/declarative-configuration/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-foreground underline"
-              >
-                Learn more about declarative configuration
-              </a>{" "}
-              ·{" "}
-              <a
-                href="https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/new"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-foreground underline"
-              >
-                Report an issue
-              </a>
+              Build and customize your OpenTelemetry Java Agent configuration
             </p>
           </div>
-          <div className="flex flex-wrap items-center gap-4">
-            {schemaVersionsState.data && schemaVersion ? (
-              <VersionSelector
-                versions={schemaVersionsState.data.versions}
-                currentVersion={schemaVersion}
-                onVersionChange={setCurrentSchemaVersion}
-                label="Schema"
-                id="schema-version-select"
-              />
-            ) : null}
-            {javaAgentVersions.length > 0 && javaAgentVersion ? (
-              <VersionSelector
-                versions={javaAgentVersions}
-                currentVersion={javaAgentVersion}
-                onVersionChange={setCurrentJavaAgentVersion}
-                label="Agent"
-                id="java-agent-version-select"
-              />
-            ) : null}
-          </div>
+          {versions.data && version ? (
+            <VersionSelector
+              versions={versions.data.versions}
+              currentVersion={version}
+              onVersionChange={setCurrentVersion}
+            />
+          ) : null}
         </div>
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsContent value="sdk">
-            {!schemaVersion || schema.loading || starter.loading ? (
+            {schema.loading || starter.loading ? (
               <p className="text-muted-foreground mt-4 text-sm">Loading schema…</p>
-            ) : schema.error ? (
+            ) : schema.error || !root ? (
               <p className="mt-4 text-sm text-red-400">Failed to load schema.</p>
             ) : starter.error ? (
               <p className="mt-4 text-sm text-red-400">Failed to load starter template.</p>
-            ) : root ? (
+            ) : version ? (
               <SdkTabContent
                 schema={root}
                 starter={starter.data}
-                schemaVersion={schemaVersion}
-                javaAgentVersion={javaAgentVersion}
+                version={version}
                 activeTab={activeTab}
               />
             ) : null}
           </TabsContent>
           <TabsContent value="instrumentation">
-            {!schemaVersion || schema.loading || starter.loading ? (
+            {schema.loading || starter.loading ? (
               <p className="text-muted-foreground mt-4 text-sm">Loading schema…</p>
-            ) : schema.error ? (
+            ) : schema.error || !root ? (
               <p className="mt-4 text-sm text-red-400">Failed to load schema.</p>
             ) : starter.error ? (
               <p className="mt-4 text-sm text-red-400">Failed to load starter template.</p>
-            ) : root ? (
+            ) : version ? (
               <InstrumentationTabContent
                 schema={root}
                 starter={starter.data}
-                schemaVersion={schemaVersion}
-                javaAgentVersion={javaAgentVersion}
+                version={version}
                 activeTab={activeTab}
               />
             ) : null}
