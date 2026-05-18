@@ -46,6 +46,7 @@ export function SectionExpansionProvider({ children }: { children: ReactNode }) 
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useSectionExpansion(): SectionExpansionContextValue {
   const ctx = useContext(SectionExpansionContext);
   if (!ctx) {

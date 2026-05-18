@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useEffect, type JSX } from "react";
+import { useState, useMemo, type JSX } from "react";
 import type { ConfigNode } from "@/types/configuration";
 import { SchemaRenderer } from "./schema-renderer";
 import { SectionCardShell } from "./section-card-shell";
@@ -42,11 +42,13 @@ export function GeneralSectionCard({
 }: GeneralSectionCardProps): JSX.Element {
   const [expanded, setExpanded] = useState(defaultExpanded);
   const { signal } = useSectionExpansion();
-  useEffect(() => {
-    if (!signal) return;
-    if (signal.action === "expand") setExpanded(true);
-    if (signal.action === "collapse") setExpanded(false);
+  const signalExpanded = useMemo(() => {
+    if (!signal) return null;
+    if (signal.action === "expand") return true;
+    if (signal.action === "collapse") return false;
+    return null;
   }, [signal]);
+  const resolvedExpanded = signalExpanded !== null ? signalExpanded : expanded;
 
   const headerNode = {
     controlType: "group" as const,
@@ -60,7 +62,7 @@ export function GeneralSectionCard({
         node={headerNode}
         level="section"
         asGroup={false}
-        open={expanded}
+        open={resolvedExpanded}
         onOpenChange={setExpanded}
       >
         <FieldSection.Header>
