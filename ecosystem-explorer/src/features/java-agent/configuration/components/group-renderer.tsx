@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, type JSX } from "react";
+import { useState, useEffect, type JSX } from "react";
 import type { GroupNode } from "@/types/configuration";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
 import { getByPath, parsePath } from "@/lib/config-path";
@@ -22,6 +22,7 @@ import { SchemaRenderer } from "./schema-renderer";
 import { SectionCardShell } from "./section-card-shell";
 import { FieldSection } from "./field-section";
 import { useStarterPaths } from "./configuration-ui-context";
+import { useSectionExpansion } from "./section-expansion-context";
 
 export interface GroupRendererProps {
   node: GroupNode;
@@ -54,6 +55,13 @@ export function GroupRenderer({
     setPrevEnabled(enabled);
     if (enabled) setExpanded(true);
   }
+
+  const { signal } = useSectionExpansion();
+  useEffect(() => {
+    if (!signal || !isTopLevel) return;
+    if (signal.action === "expand" && enabled) setExpanded(true);
+    if (signal.action === "collapse") setExpanded(false);
+  }, [signal, isTopLevel, enabled]);
 
   const value = getByPath(state.values, parsePath(path));
 

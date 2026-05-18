@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { JSX } from "react";
+import { useState, useEffect, type JSX } from "react";
 import type { ConfigNode } from "@/types/configuration";
 import { SchemaRenderer } from "./schema-renderer";
 import { SectionCardShell } from "./section-card-shell";
 import { FieldSection } from "./field-section";
+import { useSectionExpansion } from "./section-expansion-context";
 
 export const GENERAL_SECTION_KEY = "general";
 export const GENERAL_SECTION_LABEL = "General";
@@ -39,6 +40,14 @@ export function GeneralSectionCard({
   sectionKey = GENERAL_SECTION_KEY,
   emptyMessage,
 }: GeneralSectionCardProps): JSX.Element {
+  const [expanded, setExpanded] = useState(defaultExpanded);
+  const { signal } = useSectionExpansion();
+  useEffect(() => {
+    if (!signal) return;
+    if (signal.action === "expand") setExpanded(true);
+    if (signal.action === "collapse") setExpanded(false);
+  }, [signal]);
+
   const headerNode = {
     controlType: "group" as const,
     key: "__general__",
@@ -51,7 +60,8 @@ export function GeneralSectionCard({
         node={headerNode}
         level="section"
         asGroup={false}
-        defaultExpanded={defaultExpanded}
+        open={expanded}
+        onOpenChange={setExpanded}
       >
         <FieldSection.Header>
           <FieldSection.Chevron />
