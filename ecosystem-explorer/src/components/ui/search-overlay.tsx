@@ -16,7 +16,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { search as performSearch } from "@/lib/search";
 import { X, Search, ChevronRight } from "lucide-react";
 import type { SearchResult } from "@/lib/search";
@@ -45,7 +44,7 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
       return [];
     }
   });
-  const debouncedQuery = useDebouncedValue(query, 250);
+  const searchTimerRef = useRef<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Focus input on mount
@@ -65,38 +64,15 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
     localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
   };
 
+  // Use a debounced search triggered from the input handler instead of an
+  // effect so we avoid calling setState synchronously inside `useEffect`.
   useEffect(() => {
-    let cancelled = false;
-    const trimmedQuery = debouncedQuery.trim();
-
-    if (!trimmedQuery) {
-      // When query is empty we show recent searches (controlled by `showRecent`).
-      // Avoid calling setState synchronously inside the effect to satisfy
-      // `react-hooks/set-state-in-effect` lint rule; stale `searchResults` are
-      // ignored while `showRecent` is true.
-      return;
-    }
-
-    setIsSearching(true);
-
-    void performSearch(trimmedQuery)
-      .then((results) => {
-        if (!cancelled) {
-          setSearchResults(results);
-          setIsSearching(false);
-        }
-      })
-      .catch(() => {
-        if (!cancelled) {
-          setSearchResults([]);
-          setIsSearching(false);
-        }
-      });
-
     return () => {
-      cancelled = true;
+      if (searchTimerRef.current) {
+        clearTimeout(searchTimerRef.current);
+      }
     };
-  }, [debouncedQuery]);
+  }, []);
 
   // Handle search selection
   const handleSelect = (q: string, path?: string) => {
@@ -147,7 +123,36 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
             type="text"
             placeholder="Search pages, instrumentations, and components..."
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              const val = e.target.value;
+              setQuery(val);
+
+              if (searchTimerRef.current) {
+                clearTimeout(searchTimerRef.current);
+              }
+
+              const trimmed = val.trim();
+              if (!trimmed) {
+                // Clear search results when input is empty.
+                setSearchResults([]);
+                setIsSearching(false);
+                return;
+              }
+
+              searchTimerRef.current = window.setTimeout(() => {
+                setIsSearching(true);
+                void performSearch(trimmed)
+                  .then((results) => {
+                    setSearchResults(results);
+                  })
+                  .catch(() => {
+                    setSearchResults([]);
+                  })
+                  .finally(() => {
+                    setIsSearching(false);
+                  });
+              }, 250);
+            }}
             onKeyDown={(e) => {
               if (e.key === "Enter" && query.trim()) {
                 handleSelect(query);
