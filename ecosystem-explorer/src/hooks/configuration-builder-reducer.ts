@@ -31,6 +31,9 @@ export const INITIAL_STATE: ConfigurationBuilderState = {
   validationErrors: {},
   isDirty: false,
   listItemIds: {},
+  uiState: {
+    isFormCollapsed: false,
+  },
 };
 
 export function configurationBuilderReducer(
@@ -203,6 +206,16 @@ export function configurationBuilderReducer(
         ...state,
         values: setByPath(state.values, path, newInstrumentation),
         isDirty: true,
+      };
+    }
+
+    case "TOGGLE_FORM_COLLAPSE": {
+      return {
+        ...state,
+        uiState: {
+          ...state.uiState,
+          isFormCollapsed: !state.uiState?.isFormCollapsed,
+        },
       };
     }
 

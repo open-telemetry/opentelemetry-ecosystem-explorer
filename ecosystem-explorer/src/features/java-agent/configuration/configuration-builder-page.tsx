@@ -59,12 +59,16 @@ const HIDDEN_KEYS_BY_TAB = {
 };
 const SDK_HIDDEN_KEYS = HIDDEN_KEYS_BY_TAB.sdk;
 
-// Both tabs render a 3-column shell (sidebar / content / live preview).
+// Both tabs render a 2 or 3-column shell (sidebar / [content] / live preview).
 // `minmax(0, 1fr)` overrides Grid's default `min-width: auto` on the middle
 // track so long descendant content (instrumentation IDs, code spans) cannot
 // expand the column past its 1fr share. Without it the third column gets
 // pushed off-screen.
-const BUILDER_GRID = "grid grid-cols-1 gap-6 lg:grid-cols-[256px_minmax(0,1fr)_420px] lg:gap-7";
+function getBuilderGridClass(isFormCollapsed: boolean) {
+  return isFormCollapsed
+    ? "grid grid-cols-1 gap-6 lg:grid-cols-[256px_1fr] lg:gap-7 transition-[grid-template-columns] duration-300"
+    : "grid grid-cols-1 gap-6 lg:grid-cols-[256px_minmax(0,1fr)_420px] lg:gap-7 transition-[grid-template-columns] duration-300";
+}
 
 const INSTRUMENTATION_DEV_KEY = "instrumentation/development";
 const GENERAL_SUBKEY = "general";
@@ -80,6 +84,19 @@ interface SdkTabContentProps {
 }
 
 function SdkTabContent({ schema, starter, version, activeTab }: SdkTabContentProps) {
+  return (
+    <ConfigurationBuilderProvider key={version} schema={schema} version={version} starter={starter}>
+      <SdkTabBody schema={schema} activeTab={activeTab} />
+    </ConfigurationBuilderProvider>
+  );
+}
+
+interface SdkTabBodyProps {
+  schema: GroupNode;
+  activeTab: string;
+}
+
+function SdkTabBody({ schema, activeTab }: SdkTabBodyProps) {
   const { groupChildren, leafChildren } = useMemo(() => {
     const visible = schema.children.filter((c) => !SDK_HIDDEN_KEYS.has(c.key));
     return {
@@ -99,26 +116,30 @@ function SdkTabContent({ schema, starter, version, activeTab }: SdkTabContentPro
   const sectionsContainerRef = useRef<HTMLDivElement>(null);
   const { activeKey, scrollToSection } = useActiveSection(sectionKeys, sectionsContainerRef);
 
+  const { state } = useConfigurationBuilder();
+  const isFormCollapsed = state.uiState?.isFormCollapsed ?? false;
+
   return (
-    <ConfigurationBuilderProvider key={version} schema={schema} version={version} starter={starter}>
-      <div className={BUILDER_GRID}>
-        <ConfigurationTocSidebar
-          activeTab={activeTab}
-          sections={tocSections}
-          activeKey={activeKey}
-          onSectionClick={scrollToSection}
-        />
-        <div ref={sectionsContainerRef} className="space-y-4">
-          {hasGeneralLeaves && (
-            <GeneralSectionCard label={GENERAL_SECTION_LABEL} children={leafChildren} />
-          )}
-          {groupChildren.map((child) => (
-            <SchemaRenderer key={child.key} node={child} depth={0} path={child.key} />
-          ))}
-        </div>
-        <PreviewCard schema={schema} />
+    <div className={getBuilderGridClass(isFormCollapsed)}>
+      <ConfigurationTocSidebar
+        activeTab={activeTab}
+        sections={tocSections}
+        activeKey={activeKey}
+        onSectionClick={scrollToSection}
+      />
+      <div
+        ref={sectionsContainerRef}
+        className={`space-y-4 ${isFormCollapsed ? "hidden" : "block"}`}
+      >
+        {hasGeneralLeaves && (
+          <GeneralSectionCard label={GENERAL_SECTION_LABEL} children={leafChildren} />
+        )}
+        {groupChildren.map((child) => (
+          <SchemaRenderer key={child.key} node={child} depth={0} path={child.key} />
+        ))}
       </div>
-    </ConfigurationBuilderProvider>
+      <PreviewCard schema={schema} />
+    </div>
   );
 }
 
@@ -215,8 +236,10 @@ function InstrumentationTabBody({ activeTab, schema, generalNode }: Instrumentat
     }
   }, [hasDistributionContent, isDistributionEnabled, setEnabled]);
 
+  const isFormCollapsed = state.uiState?.isFormCollapsed ?? false;
+
   return (
-    <div className={BUILDER_GRID}>
+    <div className={getBuilderGridClass(isFormCollapsed)}>
       <ConfigurationTocSidebar
         activeTab={activeTab}
         sections={tocSections}
@@ -228,7 +251,10 @@ function InstrumentationTabBody({ activeTab, schema, generalNode }: Instrumentat
         onStatusFilterChange={setStatusFilter}
         customizationCount={customizationCount}
       />
-      <div ref={sectionsContainerRef} className="space-y-4">
+      <div
+        ref={sectionsContainerRef}
+        className={`space-y-4 ${isFormCollapsed ? "hidden" : "block"}`}
+      >
         <GeneralSectionCard
           label={GENERAL_SETTINGS_LABEL}
           sectionKey={GENERAL_SECTION_KEY}

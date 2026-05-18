@@ -75,6 +75,7 @@ export interface ConfigurationBuilderActionsContextValue {
   validateField: (path: string) => string | null;
   validateAll: () => ValidationResult;
   clearValidationError: (path: string) => void;
+  toggleFormCollapse: () => void;
 }
 
 export const ConfigStateContext = createContext<ConfigurationBuilderStateContextValue | null>(null);
@@ -265,6 +266,7 @@ export function useConfigurationBuilderState(
         validationErrors: {},
         isDirty: true,
         listItemIds: {},
+        uiState: stateRef.current.uiState,
       },
     });
   }, []);
@@ -295,6 +297,10 @@ export function useConfigurationBuilderState(
     dispatch({ type: "SET_FIELD_ERROR", path: pathKey, error: null });
   }, []);
 
+  const toggleFormCollapse = useCallback(() => {
+    dispatch({ type: "TOGGLE_FORM_COLLAPSE" });
+  }, []);
+
   const actions = useMemo(
     () => ({
       setValue,
@@ -312,6 +318,7 @@ export function useConfigurationBuilderState(
       validateField: validateFieldAction,
       validateAll: validateAllAction,
       clearValidationError,
+      toggleFormCollapse,
     }),
     // all callbacks are stable; resetToDefaults reads starter via ref
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -423,4 +423,17 @@ describe("configurationBuilderReducer", () => {
       expect(s.isDirty).toBe(true);
     });
   });
+
+  describe("TOGGLE_FORM_COLLAPSE", () => {
+    it("toggles the isFormCollapsed state", () => {
+      const initial = { ...INITIAL_STATE, version: "1.0.0" };
+      expect(initial.uiState?.isFormCollapsed).toBe(false);
+
+      const s1 = configurationBuilderReducer(initial, { type: "TOGGLE_FORM_COLLAPSE" });
+      expect(s1.uiState?.isFormCollapsed).toBe(true);
+
+      const s2 = configurationBuilderReducer(s1, { type: "TOGGLE_FORM_COLLAPSE" });
+      expect(s2.uiState?.isFormCollapsed).toBe(false);
+    });
+  });
 });

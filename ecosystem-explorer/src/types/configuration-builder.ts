@@ -37,6 +37,9 @@ export interface ConfigurationBuilderState {
    * back to path+index keys when an entry is missing or out of sync.
    */
   listItemIds?: Record<string, string[]>;
+  uiState?: {
+    isFormCollapsed: boolean;
+  };
 }
 
 export interface ValidationResult {
@@ -56,4 +59,5 @@ export type ConfigurationBuilderAction =
   | { type: "SET_VALIDATION_ERRORS"; errors: Record<string, string> }
   | { type: "SET_FIELD_ERROR"; path: string; error: string | null }
   | { type: "ENABLE_ALL_SECTIONS"; defaultsBySection: Record<string, ConfigValues> }
-  | { type: "SET_CUSTOMIZATION"; module: string; status: "enabled" | "disabled" | "none" };
+  | { type: "SET_CUSTOMIZATION"; module: string; status: "enabled" | "disabled" | "none" }
+  | { type: "TOGGLE_FORM_COLLAPSE" };

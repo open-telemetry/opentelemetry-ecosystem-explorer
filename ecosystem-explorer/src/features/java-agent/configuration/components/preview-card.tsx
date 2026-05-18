@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useMemo, type JSX } from "react";
-import { Download, RefreshCcw, ListPlus } from "lucide-react";
+import { Download, RefreshCcw, ListPlus, Maximize2, Minimize2 } from "lucide-react";
 import type { ConfigNode } from "@/types/configuration";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
 import { generateYaml } from "@/lib/yaml-generator";
@@ -27,7 +27,9 @@ interface PreviewCardProps {
 }
 
 export function PreviewCard({ schema }: PreviewCardProps): JSX.Element {
-  const { state, enableAllSections, resetToDefaults, validateAll } = useConfigurationBuilder();
+  const { state, enableAllSections, resetToDefaults, validateAll, toggleFormCollapse } =
+    useConfigurationBuilder();
+  const isFormCollapsed = state.uiState?.isFormCollapsed ?? false;
   const yaml = useMemo(() => generateYaml(state, schema), [state, schema]);
 
   const handleReset = () => {
@@ -46,6 +48,26 @@ export function PreviewCard({ schema }: PreviewCardProps): JSX.Element {
       <header className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="text-foreground text-sm font-medium">Output Preview</h3>
         <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={toggleFormCollapse}
+            aria-pressed={isFormCollapsed}
+            aria-label={isFormCollapsed ? "Restore form panel" : "Collapse form panel"}
+            className="border-border/60 bg-card text-foreground hover:bg-card/80 flex items-center gap-1 rounded-md border px-3 py-1 text-xs"
+          >
+            {isFormCollapsed ? (
+              <>
+                <Minimize2 className="h-3 w-3" aria-hidden="true" />
+                Restore
+              </>
+            ) : (
+              <>
+                <Maximize2 className="h-3 w-3" aria-hidden="true" />
+                Expand
+              </>
+            )}
+          </button>
+          <span className="bg-border/60 mx-1 h-4 w-px" aria-hidden="true" />
           <CopyButton
             text={yaml}
             onClick={validateAll}
