@@ -74,12 +74,10 @@ const GENERAL_SETTINGS_LABEL = "General settings";
 
 interface SdkTabContentProps {
   schema: GroupNode;
-  starter: ReturnType<typeof useConfigStarter>["data"];
-  version: string;
   activeTab: string;
 }
 
-function SdkTabContent({ schema, starter, version, activeTab }: SdkTabContentProps) {
+function SdkTabContent({ schema, activeTab }: SdkTabContentProps) {
   const { groupChildren, leafChildren } = useMemo(() => {
     const visible = schema.children.filter((c) => !SDK_HIDDEN_KEYS.has(c.key));
     return {
@@ -100,41 +98,32 @@ function SdkTabContent({ schema, starter, version, activeTab }: SdkTabContentPro
   const { activeKey, scrollToSection } = useActiveSection(sectionKeys, sectionsContainerRef);
 
   return (
-    <ConfigurationBuilderProvider key={version} schema={schema} version={version} starter={starter}>
-      <div className={BUILDER_GRID}>
-        <ConfigurationTocSidebar
-          activeTab={activeTab}
-          sections={tocSections}
-          activeKey={activeKey}
-          onSectionClick={scrollToSection}
-        />
-        <div ref={sectionsContainerRef} className="space-y-4">
-          {hasGeneralLeaves && (
-            <GeneralSectionCard label={GENERAL_SECTION_LABEL} children={leafChildren} />
-          )}
-          {groupChildren.map((child) => (
-            <SchemaRenderer key={child.key} node={child} depth={0} path={child.key} />
-          ))}
-        </div>
-        <PreviewCard schema={schema} />
+    <div className={BUILDER_GRID}>
+      <ConfigurationTocSidebar
+        activeTab={activeTab}
+        sections={tocSections}
+        activeKey={activeKey}
+        onSectionClick={scrollToSection}
+      />
+      <div ref={sectionsContainerRef} className="space-y-4">
+        {hasGeneralLeaves && (
+          <GeneralSectionCard label={GENERAL_SECTION_LABEL} children={leafChildren} />
+        )}
+        {groupChildren.map((child) => (
+          <SchemaRenderer key={child.key} node={child} depth={0} path={child.key} />
+        ))}
       </div>
-    </ConfigurationBuilderProvider>
+      <PreviewCard schema={schema} />
+    </div>
   );
 }
 
 interface InstrumentationTabContentProps {
   schema: GroupNode;
-  starter: ReturnType<typeof useConfigStarter>["data"];
-  version: string;
   activeTab: string;
 }
 
-function InstrumentationTabContent({
-  schema,
-  starter,
-  version,
-  activeTab,
-}: InstrumentationTabContentProps) {
+function InstrumentationTabContent({ schema, activeTab }: InstrumentationTabContentProps) {
   const generalNode = useMemo<GroupNode | null>(() => {
     const devNode = schema.children.find((c) => c.key === INSTRUMENTATION_DEV_KEY);
     if (!devNode || devNode.controlType !== "group") return null;
@@ -143,11 +132,7 @@ function InstrumentationTabContent({
     return general;
   }, [schema]);
 
-  return (
-    <ConfigurationBuilderProvider key={version} schema={schema} version={version} starter={starter}>
-      <InstrumentationTabBody activeTab={activeTab} schema={schema} generalNode={generalNode} />
-    </ConfigurationBuilderProvider>
-  );
+  return <InstrumentationTabBody activeTab={activeTab} schema={schema} generalNode={generalNode} />;
 }
 
 interface InstrumentationTabBodyProps {
@@ -291,40 +276,24 @@ export function ConfigurationBuilderPage() {
             />
           ) : null}
         </div>
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsContent value="sdk">
-            {schema.loading || starter.loading ? (
-              <p className="text-muted-foreground mt-4 text-sm">Loading schema…</p>
-            ) : schema.error || !root ? (
-              <p className="mt-4 text-sm text-red-400">Failed to load schema.</p>
-            ) : starter.error ? (
-              <p className="mt-4 text-sm text-red-400">Failed to load starter template.</p>
-            ) : version ? (
-              <SdkTabContent
-                schema={root}
-                starter={starter.data}
-                version={version}
-                activeTab={activeTab}
-              />
-            ) : null}
-          </TabsContent>
-          <TabsContent value="instrumentation">
-            {schema.loading || starter.loading ? (
-              <p className="text-muted-foreground mt-4 text-sm">Loading schema…</p>
-            ) : schema.error || !root ? (
-              <p className="mt-4 text-sm text-red-400">Failed to load schema.</p>
-            ) : starter.error ? (
-              <p className="mt-4 text-sm text-red-400">Failed to load starter template.</p>
-            ) : version ? (
-              <InstrumentationTabContent
-                schema={root}
-                starter={starter.data}
-                version={version}
-                activeTab={activeTab}
-              />
-            ) : null}
-          </TabsContent>
-        </Tabs>
+        {schema.loading || starter.loading ? (
+          <p className="text-muted-foreground mt-4 text-sm">Loading schema…</p>
+        ) : schema.error || !root ? (
+          <p className="mt-4 text-sm text-red-400">Failed to load schema.</p>
+        ) : starter.error ? (
+          <p className="mt-4 text-sm text-red-400">Failed to load starter template.</p>
+        ) : version ? (
+          <ConfigurationBuilderProvider key={version} schema={root} version={version} starter={starter.data}>
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsContent value="sdk">
+                <SdkTabContent schema={root} activeTab={activeTab} />
+              </TabsContent>
+              <TabsContent value="instrumentation">
+                <InstrumentationTabContent schema={root} activeTab={activeTab} />
+              </TabsContent>
+            </Tabs>
+          </ConfigurationBuilderProvider>
+        ) : null}
       </div>
     </PageContainer>
   );
