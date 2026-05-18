@@ -18,9 +18,6 @@
 // There is no need to edit anything else in this file.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const FEATURE_FLAGS = [
-  // Declarative Configuration Builder for Java - Still in development
-  "JAVA_CONFIG_BUILDER",
-
   // Collector Page - Still in development
   "COLLECTOR_PAGE",
 

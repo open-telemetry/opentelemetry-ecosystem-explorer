@@ -1,0 +1,33 @@
+{
+  "description": null,
+  "display_name": "Remote Tap Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-remotetapprocessor",
+  "name": "remotetapprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "atoulme",
+        "jaronoff97"
+      ],
+      "emeritus": [
+        "pmcollins"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "processor"
+}

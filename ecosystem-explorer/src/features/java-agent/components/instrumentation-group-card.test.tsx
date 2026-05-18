@@ -37,6 +37,8 @@ const defaultFilters: FilterState = {
   search: "",
   telemetry: new Set(),
   target: new Set(),
+  semantic: [],
+  features: [],
 };
 
 describe("InstrumentationGroupCard", () => {

@@ -22,7 +22,7 @@ import { renderBuilderPage as renderPage } from "./helpers/render-builder-page";
 beforeAll(() => installFetchInterceptor());
 afterAll(() => uninstallFetchInterceptor());
 
-describe("ConfigurationBuilderPage — basic", () => {
+describe("ConfigurationBuilderPage basic", () => {
   it("renders the SDK tab with starter-preloaded sections", async () => {
     renderPage();
     const resourceToggle = await screen.findByRole(
@@ -112,7 +112,7 @@ describe("ConfigurationBuilderPage — basic", () => {
     expect(generalCard).not.toBeNull();
     const general = within(generalCard!);
     expect(general.getByText("General")).toBeInTheDocument();
-    // Collapsed by default — leaf fields not in the DOM yet.
+    // Collapsed by default; leaf fields not in the DOM yet.
     expect(general.queryByText("Disabled")).toBeNull();
     expect(general.queryByText("Log Level")).toBeNull();
     // Click the chevron to expand and reveal the leaves.
@@ -134,5 +134,24 @@ describe("ConfigurationBuilderPage — basic", () => {
     expect(limitsBtn).toHaveAttribute("aria-expanded", "false");
     // Its children (e.g. Attribute Value Length Limit) must not be in the DOM.
     expect(tracer.queryByText("Attribute Value Length Limit")).toBeNull();
+  });
+
+  it("renders the Beta badge and outbound docs/issue links in the header", async () => {
+    renderPage();
+    await screen.findByRole("switch", { name: /Enable Resource/i }, { timeout: 10_000 });
+    expect(screen.getByText("Beta")).toBeInTheDocument();
+
+    const docsLink = screen.getByRole("link", { name: /declarative configuration/i });
+    expect(docsLink).toHaveAttribute(
+      "href",
+      "https://opentelemetry.io/docs/zero-code/java/agent/declarative-configuration/"
+    );
+    expect(docsLink).toHaveAttribute("target", "_blank");
+
+    const issueLink = screen.getByRole("link", { name: /report an issue/i });
+    expect(issueLink).toHaveAttribute(
+      "href",
+      "https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/new"
+    );
   });
 });

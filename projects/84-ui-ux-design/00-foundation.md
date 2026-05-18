@@ -4,7 +4,7 @@ issue: 84
 type: plan
 phase: 1
 status: planning
-last_updated: "2026-05-06"
+last_updated: "2026-05-13"
 ---
 
 > [!NOTE]
@@ -19,6 +19,7 @@ last_updated: "2026-05-06"
 Tracks: [#84](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/84)
 References: [`ecosystem-explorer-v1-mockups.html`](./ecosystem-explorer-v1-mockups.html) ·
 [`ecosystem-explorer-v1-design-brief.md`](./ecosystem-explorer-v1-design-brief.md) ·
+[`v1-routing-pivot.md`](./v1-routing-pivot.md) ·
 [`ecosystem-explorer/DESIGN.md`](../../ecosystem-explorer/DESIGN.md)
 
 ---
@@ -77,12 +78,15 @@ without writing any of that themselves.
    auto and writes to `localStorage["td-color-theme"]`.
 3. **NavBar component** — port the navbar HTML/CSS from the mockup into a real component. Confirm
    logo lockup matches opentelemetry.io (linked SVG at
-   `/img/logos/opentelemetry-horizontal-color.svg` or our local copy). Sticky, full-width.
-4. **SubNav component** — breadcrumb + optional right-aligned actions slot.
+   `/img/logos/opentelemetry-horizontal-color.svg` or our local copy). Sticky, full-width. Lives in
+   `src/v1/components/layout/`.
+4. **SubNav component** — breadcrumb + optional right-aligned actions slot. Lives in
+   `src/v1/components/layout/`.
 5. **Footer component** — two clusters of Font Awesome social icons + centered copyright
-   (`© 2019–present OpenTelemetry Authors · Docs CC BY 4.0 · All Rights Reserved`).
-6. **CncfCallout component** — single-purpose, placed at the bottom of every route via a layout
-   wrapper.
+   (`© 2019–present OpenTelemetry Authors · Docs CC BY 4.0 · All Rights Reserved`). Lives in
+   `src/v1/components/layout/`.
+6. **CncfCallout component** — single-purpose, placed at the bottom of every v1 route via a layout
+   wrapper inside `<V1App />`. Lives in `src/v1/components/layout/`.
 7. **StatusPill component** — props:
    `stability: 'development' | 'alpha' | 'beta' | 'stable' | 'deprecated' | 'unmaintained'`,
    matching the OTel collector stability spec. Bootstrap-style

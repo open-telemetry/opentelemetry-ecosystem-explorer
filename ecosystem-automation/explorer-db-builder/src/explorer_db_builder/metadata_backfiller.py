@@ -22,7 +22,7 @@ from semantic_version import Version
 
 logger = logging.getLogger(__name__)
 
-BACKFILLABLE_FIELDS = ["display_name", "description", "library_link", "has_javaagent"]
+BACKFILLABLE_FIELDS = ["display_name", "description", "library_link", "has_javaagent", "markdown_hash"]
 NESTED_BACKFILLABLE_FIELDS: dict[str, list[str]] = {
     "configurations": ["declarative_name", "examples"],
 }

@@ -4,7 +4,7 @@ issue: 84
 type: index
 phase: meta
 status: planning
-last_updated: "2026-05-06"
+last_updated: "2026-05-13"
 ---
 
 > [!NOTE]
@@ -23,8 +23,10 @@ last_updated: "2026-05-06"
 ## What this folder is
 
 A planning workspace for the visual redesign of the OpenTelemetry Ecosystem Explorer. The work is
-staged in five phases (foundation + four pages), all gated behind a `V1_REDESIGN` feature flag, and
-all aligned to the visual language of [opentelemetry.io](https://opentelemetry.io).
+staged in five phases (foundation + four pages), gated via a single `V1_REDESIGN` boundary read in
+`src/App.tsx` that swaps between two top-level sub-apps; v1 chrome and pages live under `src/v1/`.
+All visuals align to [opentelemetry.io](https://opentelemetry.io). See
+[`v1-routing-pivot.md`](./v1-routing-pivot.md) for the 2026-05-12 mechanism decision.
 
 This folder follows the per-issue convention: each significant initiative gets its own subfolder
 under `projects/`, named `<issue-number>-<slug>/`. Future initiatives slot in alongside (e.g.,
@@ -74,14 +76,15 @@ After that, dive into whichever phase is relevant to your work.
 Each phase has its own plan with goal, scope (in/out), dependencies, tasks, acceptance criteria, and
 open questions.
 
-| Phase | File                                                   | Status   |
-| ----- | ------------------------------------------------------ | -------- |
-| 1     | [`00-foundation.md`](./00-foundation.md)               | planning |
-| 1     | [`00-foundation-audit.md`](./00-foundation-audit.md)   | planning |
-| 2     | [`01-home-page.md`](./01-home-page.md)                 | planning |
-| 3     | [`02-ecosystem-landing.md`](./02-ecosystem-landing.md) | planning |
-| 4     | [`03-list-page.md`](./03-list-page.md)                 | planning |
-| 5     | [`04-detail-page.md`](./04-detail-page.md)             | planning |
+| Phase | File                                                   | Status      |
+| ----- | ------------------------------------------------------ | ----------- |
+| 1     | [`00-foundation.md`](./00-foundation.md)               | planning    |
+| 1     | [`00-foundation-audit.md`](./00-foundation-audit.md)   | planning    |
+| 1     | [`v1-routing-pivot.md`](./v1-routing-pivot.md)         | in-progress |
+| 2     | [`01-home-page.md`](./01-home-page.md)                 | planning    |
+| 3     | [`02-ecosystem-landing.md`](./02-ecosystem-landing.md) | planning    |
+| 4     | [`03-list-page.md`](./03-list-page.md)                 | planning    |
+| 5     | [`04-detail-page.md`](./04-detail-page.md)             | planning    |
 
 `status` reflects the work the document describes (not the document itself). When the first PR for a
 phase opens, bump status to `in-progress`. When the cleanup PR for that phase merges, bump to
@@ -92,9 +95,10 @@ phase opens, bump status to `in-progress`. When the cleanup PR for that phase me
 ## Phase summary
 
 ```text
-Phase 1 — Foundation       (00-foundation.md, 00-foundation-audit.md)
+Phase 1 — Foundation       (00-foundation.md, 00-foundation-audit.md, v1-routing-pivot.md)
    └─ Theme system, NavBar, Footer, CncfCallout, StatusPill, TypeStripe, Card primitive.
-      Land first; everything else depends on it. 9 PRs gated behind V1_REDESIGN.
+      Land first; everything else depends on it. 10 PRs (incl. v1 scaffolding); v1
+      lives under src/v1/, mounted via a single V1_REDESIGN boundary read in App.tsx.
 
 Phase 2 — Home page         (01-home-page.md)
    └─ Cover-block hero, ⌘K search, OTel-purple stats band, ecosystems grid,
