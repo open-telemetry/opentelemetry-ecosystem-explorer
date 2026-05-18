@@ -33,6 +33,7 @@ import { GlowBadge } from "@/components/ui/glow-badge";
 import { DetailCard } from "@/components/ui/detail-card";
 import { useCollectorComponents, useCollectorVersions } from "@/hooks/use-collector-data";
 import { isEnabled } from "@/lib/feature-flags";
+import { matchesSearch } from "@/lib/search";
 
 const getIcon = (type: string) => {
   switch (type) {
@@ -84,12 +85,14 @@ function CollectorPageInner() {
     if (!components) return [];
 
     return components.filter((comp) => {
-      const matchesSearch =
-        comp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        comp.display_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        comp.description?.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesComponentSearch = matchesSearch(
+        searchQuery,
+        comp.name,
+        comp.display_name,
+        comp.description
+      );
       const matchesType = typeFilter === "all" || comp.type === typeFilter;
-      return matchesSearch && matchesType;
+      return matchesComponentSearch && matchesType;
     });
   }, [components, searchQuery, typeFilter]);
 

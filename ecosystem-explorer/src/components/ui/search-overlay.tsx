@@ -15,10 +15,11 @@
  */
 
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { search as performSearch } from "@/lib/search";
 import { X, Search, ChevronRight } from "lucide-react";
+import type { SearchResult } from "@/lib/search";
 
 const RECENT_SEARCHES_KEY = "otel_recent_searches";
 
@@ -30,6 +31,8 @@ interface SearchOverlayProps {
 export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>(() => {
     const stored = localStorage.getItem(RECENT_SEARCHES_KEY);
     if (!stored) {
@@ -52,14 +55,50 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
     }
   }, []);
 
+  const recordSearch = (searchQuery: string) => {
+    if (!searchQuery.trim()) {
+      return;
+    }
+
+    const updated = [searchQuery, ...recentSearches.filter((x) => x !== searchQuery)].slice(0, 6);
+    setRecentSearches(updated);
+    localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
+  };
+
+  useEffect(() => {
+    let cancelled = false;
+    const trimmedQuery = debouncedQuery.trim();
+
+    if (!trimmedQuery) {
+      setSearchResults([]);
+      setIsSearching(false);
+      return;
+    }
+
+    setIsSearching(true);
+
+    void performSearch(trimmedQuery)
+      .then((results) => {
+        if (!cancelled) {
+          setSearchResults(results);
+          setIsSearching(false);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setSearchResults([]);
+          setIsSearching(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [debouncedQuery]);
+
   // Handle search selection
   const handleSelect = (q: string, path?: string) => {
-    if (q.trim()) {
-      // Add to recent searches
-      const updated = [q, ...recentSearches.filter((x) => x !== q)].slice(0, 6);
-      setRecentSearches(updated);
-      localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
-    }
+    recordSearch(q);
 
     if (path) {
       navigate(path);
@@ -75,8 +114,14 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
     localStorage.removeItem(RECENT_SEARCHES_KEY);
   };
 
-  // Get search results if query is debounced
-  const searchResults = performSearch(debouncedQuery);
+  const handleRecentSearch = async (searchQuery: string) => {
+    const results = await performSearch(searchQuery);
+    if (results.length > 0) {
+      handleSelect(searchQuery, results[0].path);
+    } else {
+      handleSelect(searchQuery);
+    }
+  };
 
   // Show recent searches if empty query, otherwise show search results
   const showRecent = !query.trim();
@@ -98,7 +143,7 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
           <input
             ref={inputRef}
             type="text"
-            placeholder="Search instrumentations, collectors..."
+            placeholder="Search pages, instrumentations, and components..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => {
@@ -124,22 +169,27 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
 
         {/* Suggestions or recent searches */}
         <div className="max-h-96 overflow-y-auto">
-          {searchResults.length > 0 && !showRecent ? (
+          {isSearching && !showRecent ? (
+            <div className="text-muted-foreground px-4 py-8 text-center text-sm">
+              Searching...
+            </div>
+          ) : searchResults.length > 0 && !showRecent ? (
             <>
               <div className="text-muted-foreground px-4 py-2 text-xs font-semibold">Results</div>
               <ul className="space-y-1 px-2 py-2">
                 {searchResults.map((result) => (
                   <li key={result.path}>
-                    <button
-                      onClick={() => handleSelect(result.title, result.path)}
+                    <Link
+                      to={result.path}
+                      onClick={() => handleSelect(result.title)}
                       className="hover:bg-accent text-foreground flex w-full items-center justify-between rounded px-3 py-2 text-left text-sm transition-colors"
                     >
                       <div>
                         <div className="font-medium">{result.title}</div>
                         <div className="text-muted-foreground text-xs">{result.description}</div>
                       </div>
-                      <ChevronRight className="text-muted-foreground ml-2 h-4 w-4 flex-shrink-0" />
-                    </button>
+                      <ChevronRight className="text-muted-foreground ml-2 h-4 w-4 shrink-0" />
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -154,12 +204,7 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
                   <li key={searchQuery}>
                     <button
                       onClick={() => {
-                        const results = performSearch(searchQuery);
-                        if (results.length > 0) {
-                          handleSelect(searchQuery, results[0].path);
-                        } else {
-                          handleSelect(searchQuery);
-                        }
+                        void handleRecentSearch(searchQuery);
                       }}
                       className="hover:bg-accent text-foreground w-full rounded px-3 py-2 text-left text-sm transition-colors"
                     >

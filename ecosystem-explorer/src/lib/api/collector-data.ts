@@ -68,7 +68,7 @@ export async function loadAllComponents(version: string): Promise<CollectorCompo
   const manifest = await loadVersionManifest(version);
   const componentIds = Object.keys(manifest.components);
 
-  return Promise.all(
+  const results = await Promise.allSettled(
     componentIds.map(async (id) => {
       // Parse id from format "distribution-name"
       const parts = id.split("-");
@@ -77,4 +77,6 @@ export async function loadAllComponents(version: string): Promise<CollectorCompo
       return loadComponent(distribution, name, version, manifest);
     })
   );
+
+  return results.flatMap((result) => (result.status === "fulfilled" ? [result.value] : []));
 }

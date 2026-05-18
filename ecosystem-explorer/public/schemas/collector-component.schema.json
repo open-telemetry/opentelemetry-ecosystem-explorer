@@ -16,7 +16,13 @@
     },
     "type": {
       "description": "The functional type of the component.",
-      "enum": ["connector", "exporter", "extension", "processor", "receiver"],
+      "enum": [
+        "connector",
+        "exporter",
+        "extension",
+        "processor",
+        "receiver"
+      ],
       "type": "string"
     },
     "distribution": {
@@ -25,11 +31,17 @@
     },
     "display_name": {
       "description": "Human-readable name of the component.",
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "description": {
       "description": "Brief description of the component's functionality.",
-      "type": ["null", "string"]
+      "type": [
+        "null",
+        "string"
+      ]
     },
     "repository": {
       "description": "Link to the component's source code or documentation.",
@@ -84,7 +96,14 @@
               }
             }
           },
-          "propertyOrder": ["alpha", "beta", "stable", "deprecated", "unmaintained", "development"]
+          "propertyOrder": [
+            "alpha",
+            "beta",
+            "stable",
+            "deprecated",
+            "unmaintained",
+            "development"
+          ]
         },
         "distributions": {
           "type": "array",
@@ -108,11 +127,23 @@
               }
             }
           },
-          "propertyOrder": ["active", "emeritus"]
+          "propertyOrder": [
+            "active",
+            "emeritus"
+          ]
         }
       },
-      "propertyOrder": ["class", "stability", "distributions", "codeowners"],
-      "required": ["class", "distributions", "stability"]
+      "propertyOrder": [
+        "class",
+        "stability",
+        "distributions",
+        "codeowners"
+      ],
+      "required": [
+        "class",
+        "distributions",
+        "stability"
+      ]
     }
   },
   "propertyOrder": [
@@ -126,6 +157,12 @@
     "repository",
     "status"
   ],
-  "required": ["distribution", "ecosystem", "id", "name", "type"],
+  "required": [
+    "distribution",
+    "ecosystem",
+    "id",
+    "name",
+    "type"
+  ],
   "$schema": "https://json-schema.org/draft-07/schema#"
 }

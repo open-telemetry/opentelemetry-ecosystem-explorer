@@ -95,11 +95,13 @@ export async function loadAllInstrumentations(version: string): Promise<Instrume
 
   const allIds = [...libraryIds, ...customIds];
 
-  return Promise.all(
+  const results = await Promise.allSettled(
     allIds.map(async (id) => {
       return loadInstrumentation(id, version, manifest);
     })
   );
+
+  return results.flatMap((result) => (result.status === "fulfilled" ? [result.value] : []));
 }
 
 export async function loadLibraryReadme(

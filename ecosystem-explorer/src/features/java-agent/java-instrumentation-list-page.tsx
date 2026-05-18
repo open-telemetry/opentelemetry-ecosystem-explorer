@@ -28,6 +28,7 @@ import { VersionSelector } from "@/features/java-agent/components/version-select
 import { getInstrumentationDisplayName } from "./utils/format";
 import { groupInstrumentationsByDisplayName } from "./utils/group-instrumentations";
 import { PageContainer } from "@/components/layout/page-container";
+import { getInstrumentationSearchTerms, matchesSearch } from "@/lib/search";
 
 export function JavaInstrumentationListPage() {
   const { version: versionParam } = useParams<{ version?: string }>();
@@ -81,15 +82,12 @@ export function JavaInstrumentationListPage() {
 
     return instrumentations.filter((instr) => {
       if (filters.search) {
-        const searchLower = filters.search.toLowerCase();
-        const name = getInstrumentationDisplayName(instr).toLowerCase();
-        const rawName = instr.name.toLowerCase();
-        const description = (instr.description || "").toLowerCase();
-
         if (
-          !name.includes(searchLower) &&
-          !rawName.includes(searchLower) &&
-          !description.includes(searchLower)
+          !matchesSearch(
+            filters.search,
+            getInstrumentationDisplayName(instr),
+            ...getInstrumentationSearchTerms(instr)
+          )
         ) {
           return false;
         }
