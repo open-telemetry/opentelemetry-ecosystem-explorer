@@ -12,11 +12,3 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-"""Explorer Database Builder - Content addressed database builder."""
-
-import importlib.metadata
-
-try:
-    __version__ = importlib.metadata.version("explorer-db-builder")
-except importlib.metadata.PackageNotFoundError:
-    __version__ = "0.0.0-dev"

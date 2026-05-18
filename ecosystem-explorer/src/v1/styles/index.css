@@ -20,11 +20,13 @@
  * - tokens.css       — v1-only surface-token overrides, scoped via `.v1-app`
  * - navbar.css       — v1 navbar (`.td-navbar`) — mirrors opentelemetry.io
  * - theme-toggle.css — v1 theme toggle dropdown — mirrors opentelemetry.io
+ * - sub-nav.css      — v1 breadcrumb sub-nav row beneath the navbar
  *
- * Navbar and theme-toggle styles use class selectors (`.td-navbar`,
+ * All v1 styles use class selectors (`.td-navbar`, `.td-subnav`,
  * `.td-light-dark-menu__*`) and only match elements rendered by `<V1App />`,
  * so they're inert in the legacy bundle even when both branches ship.
  */
 @import "./tokens.css";
 @import "./navbar.css";
 @import "./theme-toggle.css";
+@import "./sub-nav.css";
