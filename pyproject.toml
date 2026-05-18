@@ -10,6 +10,7 @@ dependencies = [
     "configuration-watcher",
     "java-instrumentation-watcher",
     "explorer-db-builder",
+    "v1-registry-sync",
 ]
 
 [tool.uv.workspace]
@@ -22,6 +23,7 @@ collector-watcher = { workspace = true }
 configuration-watcher = { workspace = true }
 java-instrumentation-watcher = { workspace = true }
 explorer-db-builder = { workspace = true }
+v1-registry-sync = { workspace = true }
 
 [dependency-groups]
 dev = [
