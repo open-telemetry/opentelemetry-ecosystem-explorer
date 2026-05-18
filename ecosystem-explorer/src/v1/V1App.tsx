@@ -15,16 +15,16 @@
  */
 import { lazy, Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
-import { Footer } from "@/components/layout/footer";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { isEnabled } from "@/lib/feature-flags";
+import { CncfCallout } from "@/v1/components/layout/cncf-callout";
+import { FooterV1 } from "@/v1/components/layout/footer";
 import { NavBar } from "@/v1/components/layout/nav-bar";
 import "@/v1/styles/index.css";
 
 /*
  * V1 sub-app entry. Reached via the V1_REDESIGN boundary read in `src/App.tsx`.
- * Owns its own `<Routes>` and v1 chrome. The legacy `<Footer />` is reused as a
- * temporary placeholder until PR 6 ships `<FooterV1 />` + `<CncfCallout />`.
+ * Owns its own `<Routes>` and v1 chrome (navbar, CNCF callout, footer).
  *
  * The `.v1-app` wrapper class scopes v1-specific surface-token overrides defined
  * in `src/v1/styles/tokens.css` so they don't leak into the legacy app.
@@ -143,7 +143,8 @@ export function V1App() {
           </Suspense>
         </ErrorBoundary>
       </main>
-      <Footer />
+      <CncfCallout />
+      <FooterV1 />
     </div>
   );
 }
