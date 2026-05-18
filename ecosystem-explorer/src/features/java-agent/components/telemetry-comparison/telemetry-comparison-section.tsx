@@ -15,7 +15,7 @@
  */
 
 import { AlertCircle } from "lucide-react";
-import { Loader } from "@/components/ui/Loader";
+import { Loader } from "@/components/ui/loader";
 import type { VersionInfo } from "@/types/javaagent";
 import { useTelemetryComparison } from "../../hooks/use-telemetry-comparison";
 import { VersionSelectorPanel } from "./version-selector-panel";

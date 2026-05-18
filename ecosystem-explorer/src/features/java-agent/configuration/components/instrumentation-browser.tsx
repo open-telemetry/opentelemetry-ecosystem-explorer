@@ -15,7 +15,7 @@
  */
 import { useState, useCallback, useMemo, type JSX } from "react";
 import type { InstrumentationData, InstrumentationModule } from "@/types/javaagent";
-import { Loader } from "@/components/ui/Loader";
+import { Loader } from "@/components/ui/loader";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
 import {
   useCustomizationStatusMap,

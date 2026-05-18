@@ -16,21 +16,11 @@
 import { Loader2 } from "lucide-react";
 
 type LoaderProps = {
-  /**
-   * Size of the loader.
-   * "lg" is for full-page states and Suspense fallbacks.
-   * "sm" is for inline/compact states.
-   */
   size?: "sm" | "lg";
-  /** Optional additional CSS classes */
   className?: string;
-  /** Optional text to display alongside the loader */
   label?: string;
 };
 
-/**
- * A unified Loader component for consistent loading states across the application.
- */
 export function Loader({ size = "lg", className = "", label }: LoaderProps) {
   if (size === "sm") {
     return (
@@ -54,7 +44,6 @@ export function Loader({ size = "lg", className = "", label }: LoaderProps) {
       aria-busy="true"
     >
       <div className="relative">
-        {/* Glow effect */}
         <div className="bg-primary/20 absolute inset-0 animate-pulse rounded-full blur-2xl" />
 
         <div className="bg-card border-primary/10 relative inline-flex animate-pulse rounded-full border p-6 shadow-[0_0_50px_hsl(var(--primary-hsl)/0.15)]">

@@ -26,7 +26,7 @@ import {
   HelpCircle,
 } from "lucide-react";
 
-import { Loader } from "@/components/ui/Loader";
+import { Loader } from "@/components/ui/loader";
 
 import { BackButton } from "@/components/ui/back-button";
 import { Tabs, TabsContent } from "@/components/ui/tabs";

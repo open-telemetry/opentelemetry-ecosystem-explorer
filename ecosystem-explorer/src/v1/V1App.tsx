@@ -20,7 +20,7 @@ import { isEnabled } from "@/lib/feature-flags";
 import { CncfCallout } from "@/v1/components/layout/cncf-callout";
 import { FooterV1 } from "@/v1/components/layout/footer";
 import { NavBar } from "@/v1/components/layout/nav-bar";
-import { Loader } from "@/components/ui/Loader";
+import { Loader } from "@/components/ui/loader";
 import "@/v1/styles/index.css";
 
 /*

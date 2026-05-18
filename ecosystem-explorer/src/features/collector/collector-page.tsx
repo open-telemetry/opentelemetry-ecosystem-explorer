@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Box, ChevronDown, ChevronRight, Layers, Plug, Search, Send, Workflow } from "lucide-react";
-import { Loader } from "@/components/ui/Loader";
+import { Loader } from "@/components/ui/loader";
 import { useMemo, useState } from "react";
 import { Link, useSearchParams, useParams } from "react-router-dom";
 

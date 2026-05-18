@@ -15,7 +15,7 @@
  */
 import { useState, useMemo, useEffect } from "react";
 import { Search, Settings } from "lucide-react";
-import { Loader } from "@/components/ui/Loader";
+import { Loader } from "@/components/ui/loader";
 import { BackButton } from "@/components/ui/back-button";
 import { PageContainer } from "@/components/layout/page-container";
 import { Tabs } from "@/components/ui/tabs";
@@ -128,7 +128,7 @@ export function JavaConfigurationListPage() {
           <div className="mt-6">
             <div className="text-muted-foreground mb-4 text-sm">
               {isLoading
-                ? "..."
+                ? null
                 : error
                   ? "Unable to load configurations"
                   : `Found ${filteredConfigs.length} configurations`}
