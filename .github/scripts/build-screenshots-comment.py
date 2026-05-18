@@ -90,8 +90,13 @@ def render_diff_section(base_url: str, report_path: Path) -> str:
         name = entry["file"]
         ratio = entry.get("changedRatio", 0)
         pixels = entry.get("changedPixels", entry.get("reason", "—"))
-        link = f"{base_url}/diffs/main/{name}"
-        rows.append(f"| `{name}` | {pixels} | {ratio:.2%} | [diff]({link}) |")
+        # hasDiff is set by diff-screenshots.mjs. unreadable / dimension-mismatch
+        # entries have no diff PNG, so emitting a link would 404.
+        if entry.get("hasDiff"):
+            link_cell = f"[diff]({base_url}/diffs/main/{name})"
+        else:
+            link_cell = entry.get("reason", "—")
+        rows.append(f"| `{name}` | {pixels} | {ratio:.2%} | {link_cell} |")
     for name in new_files:
         rows.append(f"| `{name}` | new | — | — |")
     for name in missing:

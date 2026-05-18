@@ -115,7 +115,11 @@ jobs:
                 exit 1
               fi
             done < <(find /tmp/diff-artifact/diffs -type f -name "*.png" -print0)
-            find /tmp/diff-artifact/diffs -type f -name "*.png" -exec cp -- {} "${PR_NUMBER}/diffs/main/" \;
+            # Preserve relative subdirs: diff-screenshots.mjs writes diff PNGs
+            # at `<diffDir>/<rel>`, and the PR-comment link uses that same `<rel>`,
+            # so flattening here would 404 (or collide) for any nested diff path.
+            rsync -a --prune-empty-dirs --include='*/' --include='*.png' --exclude='*' \
+              /tmp/diff-artifact/diffs/ "${PR_NUMBER}/diffs/main/"
           fi
 
           git add -A -- "${PR_NUMBER}/"

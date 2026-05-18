@@ -92,12 +92,20 @@ function main() {
 
     const a = readPng(baselinePath);
     const b = readPng(currentPath);
+    // hasDiff is consumed by build-screenshots-comment.py to decide whether
+    // to render the [diff] link. unreadable / dimension-mismatch never emit
+    // a diff PNG, so the link would 404.
     if (!a || !b) {
-      report.changed.push({ file: rel, reason: "unreadable", changedRatio: 1 });
+      report.changed.push({ file: rel, reason: "unreadable", changedRatio: 1, hasDiff: false });
       continue;
     }
     if (a.width !== b.width || a.height !== b.height) {
-      report.changed.push({ file: rel, reason: "dimension-mismatch", changedRatio: 1 });
+      report.changed.push({
+        file: rel,
+        reason: "dimension-mismatch",
+        changedRatio: 1,
+        hasDiff: false,
+      });
       continue;
     }
 
@@ -115,7 +123,7 @@ function main() {
     const diffOut = path.join(diffDir, rel);
     fs.mkdirSync(path.dirname(diffOut), { recursive: true });
     fs.writeFileSync(diffOut, PNG.sync.write(diff));
-    report.changed.push({ file: rel, changedPixels, changedRatio });
+    report.changed.push({ file: rel, changedPixels, changedRatio, hasDiff: true });
   }
 
   for (const rel of baselineFiles) report.missing.push(rel);
