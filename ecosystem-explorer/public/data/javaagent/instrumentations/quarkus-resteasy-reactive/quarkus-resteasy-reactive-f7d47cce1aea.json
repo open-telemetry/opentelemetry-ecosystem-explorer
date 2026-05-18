@@ -1,9 +1,7 @@
 {
   "description": "This instrumentation enriches HTTP server spans with route information for Quarkus RESTEasy Reactive, it does not emit any telemetry on its own.",
   "display_name": "Quarkus RESTEasy Reactive",
-  "features": [
-    "HTTP_ROUTE"
-  ],
+  "features": ["HTTP_ROUTE"],
   "has_javaagent": true,
   "javaagent_target_versions": [
     "io.quarkus:quarkus-rest:[3.9.0,)",

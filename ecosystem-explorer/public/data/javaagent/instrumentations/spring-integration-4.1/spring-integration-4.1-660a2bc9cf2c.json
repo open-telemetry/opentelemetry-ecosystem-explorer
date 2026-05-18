@@ -32,9 +32,7 @@
     "name": "io.opentelemetry.spring-integration-4.1"
   },
   "source_path": "instrumentation/spring/spring-integration-4.1",
-  "tags": [
-    "spring"
-  ],
+  "tags": ["spring"],
   "telemetry": [
     {
       "spans": [

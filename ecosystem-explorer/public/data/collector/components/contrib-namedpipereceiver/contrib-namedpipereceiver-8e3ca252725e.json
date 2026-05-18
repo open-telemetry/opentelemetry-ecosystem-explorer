@@ -9,25 +9,14 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "sinkingpoint"
-      ],
-      "emeritus": [
-        "djaglowski"
-      ]
+      "active": ["sinkingpoint"],
+      "emeritus": ["djaglowski"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "logs"
-      ]
+      "alpha": ["logs"]
     },
-    "unsupported_platforms": [
-      "darwin",
-      "windows"
-    ]
+    "unsupported_platforms": ["darwin", "windows"]
   },
   "type": "receiver"
 }

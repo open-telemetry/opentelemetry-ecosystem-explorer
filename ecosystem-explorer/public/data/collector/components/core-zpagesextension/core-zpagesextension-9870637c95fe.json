@@ -8,15 +8,9 @@
   "repository": "opentelemetry-collector",
   "status": {
     "class": "extension",
-    "distributions": [
-      "contrib",
-      "core",
-      "k8s"
-    ],
+    "distributions": ["contrib", "core", "k8s"],
     "stability": {
-      "beta": [
-        "extension"
-      ]
+      "beta": ["extension"]
     }
   },
   "type": "extension"

@@ -9,17 +9,11 @@
   "status": {
     "class": "processor",
     "codeowners": {
-      "active": [
-        "crobert-1",
-        "povilasv",
-        "iblancasa"
-      ]
+      "active": ["crobert-1", "povilasv", "iblancasa"]
     },
     "distributions": [],
     "stability": {
-      "alpha": [
-        "traces"
-      ]
+      "alpha": ["traces"]
     }
   },
   "type": "processor"

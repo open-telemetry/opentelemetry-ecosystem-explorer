@@ -9,24 +9,13 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "dmitryax",
-        "crobert-1"
-      ],
-      "emeritus": [
-        "pmcollins"
-      ]
+      "active": ["dmitryax", "crobert-1"],
+      "emeritus": ["pmcollins"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "metrics"
-      ],
-      "development": [
-        "logs"
-      ]
+      "alpha": ["metrics"],
+      "development": ["logs"]
     }
   },
   "type": "receiver"

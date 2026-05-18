@@ -70,8 +70,10 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
     const trimmedQuery = debouncedQuery.trim();
 
     if (!trimmedQuery) {
-      setSearchResults([]);
-      setIsSearching(false);
+      // When query is empty we show recent searches (controlled by `showRecent`).
+      // Avoid calling setState synchronously inside the effect to satisfy
+      // `react-hooks/set-state-in-effect` lint rule; stale `searchResults` are
+      // ignored while `showRecent` is true.
       return;
     }
 
@@ -170,9 +172,7 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
         {/* Suggestions or recent searches */}
         <div className="max-h-96 overflow-y-auto">
           {isSearching && !showRecent ? (
-            <div className="text-muted-foreground px-4 py-8 text-center text-sm">
-              Searching...
-            </div>
+            <div className="text-muted-foreground px-4 py-8 text-center text-sm">Searching...</div>
           ) : searchResults.length > 0 && !showRecent ? (
             <>
               <div className="text-muted-foreground px-4 py-2 text-xs font-semibold">Results</div>

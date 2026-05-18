@@ -67,7 +67,9 @@ describe("SearchOverlay", () => {
 
     await user.type(screen.getByRole("textbox", { name: "Search" }), "kafka");
 
-    await waitFor(() => expect(screen.getByRole("link", { name: /kafka client/i })).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByRole("link", { name: /kafka client/i })).toBeInTheDocument()
+    );
 
     await user.click(screen.getByRole("link", { name: /kafka client/i }));
 

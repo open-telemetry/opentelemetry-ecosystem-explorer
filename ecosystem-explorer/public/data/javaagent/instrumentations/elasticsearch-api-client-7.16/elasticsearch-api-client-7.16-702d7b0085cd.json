@@ -12,9 +12,7 @@
     "name": "io.opentelemetry.elasticsearch-api-client-7.16"
   },
   "source_path": "instrumentation/elasticsearch/elasticsearch-api-client-7.16",
-  "tags": [
-    "elasticsearch"
-  ],
+  "tags": ["elasticsearch"],
   "telemetry": [
     {
       "spans": [

@@ -1,13 +1,9 @@
 {
   "description": "This instrumentation enriches HTTP server spans with route information for Vert.x Web, it does not emit any telemetry on its own.",
   "display_name": "Vert.x Web",
-  "features": [
-    "HTTP_ROUTE"
-  ],
+  "features": ["HTTP_ROUTE"],
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "io.vertx:vertx-web:[3.0.0,)"
-  ],
+  "javaagent_target_versions": ["io.vertx:vertx-web:[3.0.0,)"],
   "library_link": "https://vertx.io/docs/vertx-web/java/",
   "name": "vertx-web-3.0",
   "scope": {

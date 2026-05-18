@@ -9,21 +9,11 @@
   "status": {
     "class": "processor",
     "codeowners": {
-      "active": [
-        "boostchicken"
-      ]
+      "active": ["boostchicken"]
     },
-    "distributions": [
-      "contrib",
-      "core",
-      "k8s"
-    ],
+    "distributions": ["contrib", "core", "k8s"],
     "stability": {
-      "beta": [
-        "logs",
-        "metrics",
-        "traces"
-      ]
+      "beta": ["logs", "metrics", "traces"]
     }
   },
   "type": "processor"

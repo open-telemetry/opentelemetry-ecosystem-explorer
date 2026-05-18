@@ -9,11 +9,7 @@
   "status": {
     "class": "extension",
     "codeowners": {
-      "active": [
-        "rnishtala-sumo",
-        "pankaj101A",
-        "jagan2221"
-      ],
+      "active": ["rnishtala-sumo", "pankaj101A", "jagan2221"],
       "emeritus": [
         "aboguszewski-sumo",
         "kasia-kujawa",
@@ -26,9 +22,7 @@
     },
     "distributions": [],
     "stability": {
-      "alpha": [
-        "extension"
-      ]
+      "alpha": ["extension"]
     }
   },
   "type": "extension"

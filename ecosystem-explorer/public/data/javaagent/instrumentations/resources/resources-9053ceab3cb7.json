@@ -7,7 +7,5 @@
     "name": "io.opentelemetry.resources"
   },
   "source_path": "instrumentation/resources",
-  "tags": [
-    "resources"
-  ]
+  "tags": ["resources"]
 }

@@ -2,22 +2,15 @@
   "description": "This instrumentation enables database client spans and database client metrics for Redisson Redis client operations.",
   "display_name": "Redisson",
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "org.redisson:redisson:[3.0.0,3.17.0)"
-  ],
+  "javaagent_target_versions": ["org.redisson:redisson:[3.0.0,3.17.0)"],
   "library_link": "https://github.com/redisson/redisson",
   "name": "redisson-3.0",
   "scope": {
     "name": "io.opentelemetry.redisson-3.0"
   },
-  "semantic_conventions": [
-    "DATABASE_CLIENT_SPANS",
-    "DATABASE_CLIENT_METRICS"
-  ],
+  "semantic_conventions": ["DATABASE_CLIENT_SPANS", "DATABASE_CLIENT_METRICS"],
   "source_path": "instrumentation/redisson/redisson-3.0",
-  "tags": [
-    "redisson"
-  ],
+  "tags": ["redisson"],
   "telemetry": [
     {
       "spans": [

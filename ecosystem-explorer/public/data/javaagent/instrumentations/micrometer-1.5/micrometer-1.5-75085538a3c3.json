@@ -24,9 +24,7 @@
   "display_name": "Micrometer",
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": [
-    "io.micrometer:micrometer-core:[1.5.0,)"
-  ],
+  "javaagent_target_versions": ["io.micrometer:micrometer-core:[1.5.0,)"],
   "library_link": "https://micrometer.io/",
   "name": "micrometer-1.5",
   "scope": {

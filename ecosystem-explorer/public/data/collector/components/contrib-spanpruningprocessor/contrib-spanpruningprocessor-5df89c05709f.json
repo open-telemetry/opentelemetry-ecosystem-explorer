@@ -9,18 +9,11 @@
   "status": {
     "class": "processor",
     "codeowners": {
-      "active": [
-        "portertech",
-        "csmarchbanks"
-      ]
+      "active": ["portertech", "csmarchbanks"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "traces"
-      ]
+      "alpha": ["traces"]
     }
   },
   "type": "processor"

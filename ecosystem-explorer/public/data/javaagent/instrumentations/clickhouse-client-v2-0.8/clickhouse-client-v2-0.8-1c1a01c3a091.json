@@ -10,18 +10,13 @@
   "description": "This instrumentation enables database client spans and database client metrics for the ClickHouse Java Client.",
   "display_name": "ClickHouse Java Client",
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "com.clickhouse:client-v2:[0.6.4,)"
-  ],
+  "javaagent_target_versions": ["com.clickhouse:client-v2:[0.6.4,)"],
   "library_link": "https://github.com/ClickHouse/clickhouse-java",
   "name": "clickhouse-client-v2-0.8",
   "scope": {
     "name": "io.opentelemetry.clickhouse-client-v2-0.8"
   },
-  "semantic_conventions": [
-    "DATABASE_CLIENT_SPANS",
-    "DATABASE_CLIENT_METRICS"
-  ],
+  "semantic_conventions": ["DATABASE_CLIENT_SPANS", "DATABASE_CLIENT_METRICS"],
   "source_path": "instrumentation/clickhouse/clickhouse-client-v2-0.8",
   "telemetry": [
     {

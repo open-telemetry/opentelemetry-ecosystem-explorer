@@ -15,14 +15,9 @@
   "scope": {
     "name": "io.opentelemetry.aws-lambda-events-3.11"
   },
-  "semantic_conventions": [
-    "FAAS_SERVER_SPANS",
-    "MESSAGING_SPANS"
-  ],
+  "semantic_conventions": ["FAAS_SERVER_SPANS", "MESSAGING_SPANS"],
   "source_path": "instrumentation/aws-lambda/aws-lambda-events-3.11",
-  "tags": [
-    "aws"
-  ],
+  "tags": ["aws"],
   "telemetry": [
     {
       "spans": [

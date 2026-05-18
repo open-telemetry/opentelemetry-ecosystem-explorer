@@ -9,20 +9,11 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": [
-        "dehaansa",
-        "rlankfo",
-        "mar4uk"
-      ]
+      "active": ["dehaansa", "rlankfo", "mar4uk"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "logs",
-        "traces"
-      ]
+      "alpha": ["logs", "traces"]
     }
   },
   "type": "exporter"

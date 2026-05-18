@@ -9,19 +9,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "Aneurysm9",
-        "axw"
-      ]
+      "active": ["Aneurysm9", "axw"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "logs",
-        "metrics"
-      ]
+      "alpha": ["logs", "metrics"]
     }
   },
   "type": "receiver"

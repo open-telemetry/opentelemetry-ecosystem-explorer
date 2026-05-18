@@ -2,14 +2,7 @@
   "attributes": {
     "status_code": {
       "description": "Status code category, 1xx, 2xx, 3xx, 4xx, 5xx or other",
-      "enum": [
-        "1xx",
-        "2xx",
-        "3xx",
-        "4xx",
-        "5xx",
-        "other"
-      ],
+      "enum": ["1xx", "2xx", "3xx", "4xx", "5xx", "other"],
       "type": "string"
     }
   },
@@ -272,9 +265,7 @@
       "unit": "{requests}"
     },
     "haproxy.requests.total": {
-      "attributes": [
-        "status_code"
-      ],
+      "attributes": ["status_code"],
       "description": "Total number of HTTP requests received. Corresponds to HAProxy's `req_tot`, `hrsp_1xx`, `hrsp_2xx`, `hrsp_3xx`, `hrsp_4xx`, `hrsp_5xx` and `hrsp_other` metrics.",
       "enabled": true,
       "stability": "development",
@@ -399,18 +390,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "atoulme",
-        "MovieStoreGuy"
-      ]
+      "active": ["atoulme", "MovieStoreGuy"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "beta": [
-        "metrics"
-      ]
+      "beta": ["metrics"]
     }
   },
   "type": "receiver"

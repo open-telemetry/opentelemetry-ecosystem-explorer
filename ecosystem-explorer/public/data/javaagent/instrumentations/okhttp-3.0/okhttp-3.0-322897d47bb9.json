@@ -41,19 +41,14 @@
   "display_name": "OkHttp",
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": [
-    "com.squareup.okhttp3:okhttp:[3.0,)"
-  ],
+  "javaagent_target_versions": ["com.squareup.okhttp3:okhttp:[3.0,)"],
   "library_link": "https://square.github.io/okhttp/",
   "name": "okhttp-3.0",
   "scope": {
     "name": "io.opentelemetry.okhttp-3.0",
     "schema_url": "https://opentelemetry.io/schemas/1.37.0"
   },
-  "semantic_conventions": [
-    "HTTP_CLIENT_SPANS",
-    "HTTP_CLIENT_METRICS"
-  ],
+  "semantic_conventions": ["HTTP_CLIENT_SPANS", "HTTP_CLIENT_METRICS"],
   "source_path": "instrumentation/okhttp/okhttp-3.0",
   "telemetry": [
     {

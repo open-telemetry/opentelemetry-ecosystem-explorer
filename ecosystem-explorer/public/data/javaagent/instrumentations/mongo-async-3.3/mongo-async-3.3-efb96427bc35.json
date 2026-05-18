@@ -16,18 +16,13 @@
   "description": "This instrumentation enables database client spans and database client metrics for the MongoDB async Java driver.",
   "display_name": "MongoDB Driver (Async)",
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "org.mongodb:mongodb-driver-async:[3.3,)"
-  ],
+  "javaagent_target_versions": ["org.mongodb:mongodb-driver-async:[3.3,)"],
   "library_link": "https://www.mongodb.com/docs/drivers/java-drivers/",
   "name": "mongo-async-3.3",
   "scope": {
     "name": "io.opentelemetry.mongo-async-3.3"
   },
-  "semantic_conventions": [
-    "DATABASE_CLIENT_SPANS",
-    "DATABASE_CLIENT_METRICS"
-  ],
+  "semantic_conventions": ["DATABASE_CLIENT_SPANS", "DATABASE_CLIENT_METRICS"],
   "source_path": "instrumentation/mongo/mongo-async-3.3",
   "telemetry": [
     {

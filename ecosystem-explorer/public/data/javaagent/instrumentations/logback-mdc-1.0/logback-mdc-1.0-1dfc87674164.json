@@ -35,9 +35,7 @@
   "display_name": "Logback",
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": [
-    "ch.qos.logback:logback-classic:[1.0.0,1.2.3]"
-  ],
+  "javaagent_target_versions": ["ch.qos.logback:logback-classic:[1.0.0,1.2.3]"],
   "library_link": "https://logback.qos.ch/",
   "name": "logback-mdc-1.0",
   "scope": {

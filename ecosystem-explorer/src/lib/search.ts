@@ -15,7 +15,10 @@
  */
 
 import { loadAllComponents, loadVersions as loadCollectorVersions } from "@/lib/api/collector-data";
-import { loadAllInstrumentations, loadVersions as loadJavaAgentVersions } from "@/lib/api/javaagent-data";
+import {
+  loadAllInstrumentations,
+  loadVersions as loadJavaAgentVersions,
+} from "@/lib/api/javaagent-data";
 import type { CollectorComponent } from "@/types/collector";
 import type { InstrumentationData } from "@/types/javaagent";
 
@@ -84,7 +87,10 @@ function normalizeText(value: string): string {
   return value.trim().toLowerCase();
 }
 
-function addSearchTerm(terms: Set<string>, value: string | number | boolean | null | undefined): void {
+function addSearchTerm(
+  terms: Set<string>,
+  value: string | number | boolean | null | undefined
+): void {
   if (value === null || value === undefined) {
     return;
   }
@@ -162,7 +168,8 @@ function getMatchRank(result: SearchResult, normalizedQuery: string): number {
 
 function sortResults(results: SearchResult[], normalizedQuery: string): SearchResult[] {
   return results.sort((left, right) => {
-    const rankDifference = getMatchRank(left, normalizedQuery) - getMatchRank(right, normalizedQuery);
+    const rankDifference =
+      getMatchRank(left, normalizedQuery) - getMatchRank(right, normalizedQuery);
     if (rankDifference !== 0) {
       return rankDifference;
     }
@@ -222,7 +229,9 @@ async function loadJavaAgentSearchResults(): Promise<SearchResult[]> {
   }
 
   const instrumentations = await loadAllInstrumentations(latestVersion);
-  return instrumentations.map((instrumentation) => toJavaAgentResult(instrumentation, latestVersion));
+  return instrumentations.map((instrumentation) =>
+    toJavaAgentResult(instrumentation, latestVersion)
+  );
 }
 
 async function loadCollectorSearchResults(): Promise<SearchResult[]> {

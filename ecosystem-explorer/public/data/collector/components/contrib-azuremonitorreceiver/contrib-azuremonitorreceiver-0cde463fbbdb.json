@@ -9,21 +9,12 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "celian-garcia",
-        "ishleenk17"
-      ],
-      "emeritus": [
-        "nslaughter"
-      ]
+      "active": ["celian-garcia", "ishleenk17"],
+      "emeritus": ["nslaughter"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "metrics"
-      ]
+      "alpha": ["metrics"]
     }
   },
   "type": "receiver"

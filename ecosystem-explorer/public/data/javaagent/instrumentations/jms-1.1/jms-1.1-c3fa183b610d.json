@@ -26,9 +26,7 @@
   "scope": {
     "name": "io.opentelemetry.jms-1.1"
   },
-  "semantic_conventions": [
-    "MESSAGING_SPANS"
-  ],
+  "semantic_conventions": ["MESSAGING_SPANS"],
   "source_path": "instrumentation/jms/jms-1.1",
   "telemetry": [
     {

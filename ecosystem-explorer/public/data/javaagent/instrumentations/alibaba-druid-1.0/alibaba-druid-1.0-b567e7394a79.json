@@ -11,17 +11,13 @@
   "display_name": "Alibaba Druid",
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": [
-    "com.alibaba:druid:(,)"
-  ],
+  "javaagent_target_versions": ["com.alibaba:druid:(,)"],
   "library_link": "https://github.com/alibaba/druid",
   "name": "alibaba-druid-1.0",
   "scope": {
     "name": "io.opentelemetry.alibaba-druid-1.0"
   },
-  "semantic_conventions": [
-    "DATABASE_POOL_METRICS"
-  ],
+  "semantic_conventions": ["DATABASE_POOL_METRICS"],
   "source_path": "instrumentation/alibaba-druid-1.0",
   "telemetry": [
     {

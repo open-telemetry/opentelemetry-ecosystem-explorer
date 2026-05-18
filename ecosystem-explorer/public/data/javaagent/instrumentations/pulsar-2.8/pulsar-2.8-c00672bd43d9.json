@@ -22,21 +22,15 @@
   "description": "This instrumentation enables messaging spans for Apache Pulsar message producers and consumers.",
   "display_name": "Apache Pulsar Client",
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "org.apache.pulsar:pulsar-client:[2.8.0,)"
-  ],
+  "javaagent_target_versions": ["org.apache.pulsar:pulsar-client:[2.8.0,)"],
   "library_link": "https://pulsar.apache.org/",
   "name": "pulsar-2.8",
   "scope": {
     "name": "io.opentelemetry.pulsar-2.8"
   },
-  "semantic_conventions": [
-    "MESSAGING_SPANS"
-  ],
+  "semantic_conventions": ["MESSAGING_SPANS"],
   "source_path": "instrumentation/pulsar/pulsar-2.8",
-  "tags": [
-    "pulsar"
-  ],
+  "tags": ["pulsar"],
   "telemetry": [
     {
       "metrics": [

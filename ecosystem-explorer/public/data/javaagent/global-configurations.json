@@ -4,29 +4,21 @@
     "description": "Enables experimental span attributes `job.system`, `scheduling.apache-elasticjob.job.name`, `scheduling.apache-elasticjob.task.id`, `scheduling.apache-elasticjob.sharding.item.index`, `scheduling.apache-elasticjob.sharding.total.count`, `scheduling.apache-elasticjob.sharding.item.parameter`, and `scheduling.apache-elasticjob.job.type`.",
     "name": "otel.instrumentation.apache-elasticjob.experimental-span-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "apache-elasticjob-3.0"
-    ]
+    "instrumentations": ["apache-elasticjob-3.0"]
   },
   {
     "default": false,
     "description": "Enables experimental `apache-shenyu.meta.` prefixed span attributes `app-name`, `service-name`, `context-path`, `param-types`, `id`, `method-name`, `rpc-type`, `path` and `rpc-ext`.",
     "name": "otel.instrumentation.apache-shenyu.experimental-span-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "apache-shenyu-2.4"
-    ]
+    "instrumentations": ["apache-shenyu-2.4"]
   },
   {
     "default": 10000,
     "description": "Flush timeout in milliseconds.",
     "name": "otel.instrumentation.aws-lambda.flush-timeout",
     "type": "int",
-    "instrumentations": [
-      "aws-lambda-core-1.0",
-      "aws-lambda-events-3.11",
-      "aws-lambda-events-2.2"
-    ]
+    "instrumentations": ["aws-lambda-core-1.0", "aws-lambda-events-3.11", "aws-lambda-events-2.2"]
   },
   {
     "declarative_name": "java.aws_sdk.record_individual_http_error/development",
@@ -34,9 +26,7 @@
     "description": "Determines whether errors returned by each individual HTTP request should be recorded as events for the SDK span.",
     "name": "otel.instrumentation.aws-sdk.experimental-record-individual-http-error",
     "type": "boolean",
-    "instrumentations": [
-      "aws-sdk-2.2"
-    ]
+    "instrumentations": ["aws-sdk-2.2"]
   },
   {
     "declarative_name": "java.aws_sdk.experimental_span_attributes/development",
@@ -44,10 +34,7 @@
     "description": "Enables experimental span attributes `aws.agent`, `aws.lambda.function.arn` and `aws.lambda.function.name` for AWS SDK instrumentation.",
     "name": "otel.instrumentation.aws-sdk.experimental-span-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "aws-sdk-2.2",
-      "aws-sdk-1.11"
-    ]
+    "instrumentations": ["aws-sdk-2.2", "aws-sdk-1.11"]
   },
   {
     "declarative_name": "java.aws_sdk.use_propagator_for_messaging/development",
@@ -55,9 +42,7 @@
     "description": "Determines whether the configured TextMapPropagator should be used to inject into supported messaging attributes (for SQS).",
     "name": "otel.instrumentation.aws-sdk.experimental-use-propagator-for-messaging",
     "type": "boolean",
-    "instrumentations": [
-      "aws-sdk-2.2"
-    ]
+    "instrumentations": ["aws-sdk-2.2"]
   },
   {
     "declarative_name": "java.camel.experimental_span_attributes/development",
@@ -65,9 +50,7 @@
     "description": "Enable the capture of experimental `camel.uri`, `camel.kafka.partitionKey`, `camel.kafka.key` and `camel.kafka.offset` span attributes.",
     "name": "otel.instrumentation.camel.experimental-span-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "camel-2.20"
-    ]
+    "instrumentations": ["camel-2.20"]
   },
   {
     "declarative_name": "java.cassandra.query_sanitization.enabled",
@@ -75,9 +58,7 @@
     "description": "Enables query sanitization for Cassandra queries. Takes precedence over otel.instrumentation.common.db.query-sanitization.enabled.",
     "name": "otel.instrumentation.cassandra.query-sanitization.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "cassandra-3.0"
-    ]
+    "instrumentations": ["cassandra-3.0"]
   },
   {
     "default": true,
@@ -147,27 +128,21 @@
     "description": "Enables capturing the enduser.id attribute.",
     "name": "otel.instrumentation.common.enduser.id.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "spring-security-config-6.0"
-    ]
+    "instrumentations": ["spring-security-config-6.0"]
   },
   {
     "default": false,
     "description": "Enables capturing the enduser.role attribute.",
     "name": "otel.instrumentation.common.enduser.role.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "spring-security-config-6.0"
-    ]
+    "instrumentations": ["spring-security-config-6.0"]
   },
   {
     "default": false,
     "description": "Enables capturing the enduser.scope attribute.",
     "name": "otel.instrumentation.common.enduser.scope.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "spring-security-config-6.0"
-    ]
+    "instrumentations": ["spring-security-config-6.0"]
   },
   {
     "default": false,
@@ -277,18 +252,14 @@
     "description": "List of messaging headers to capture.",
     "name": "otel.instrumentation.common.messaging.capture-headers",
     "type": "list",
-    "instrumentations": [
-      "rabbitmq-2.7"
-    ]
+    "instrumentations": ["rabbitmq-2.7"]
   },
   {
     "default": false,
     "description": "Enables the creation of consumer spans on messaging receive operations. These spans will measure the time between receiving a message and the consumer processing that message.",
     "name": "otel.instrumentation.common.messaging.experimental.receive-telemetry.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "rabbitmq-2.7"
-    ]
+    "instrumentations": ["rabbitmq-2.7"]
   },
   {
     "default": "",
@@ -345,10 +316,7 @@
     "description": "Enables experimental span attributes `couchbase.operation_id` and `couchbase.local.address`. Different operation types receive different experimental attributes.",
     "name": "otel.instrumentation.couchbase.experimental-span-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "couchbase-2.6",
-      "couchbase-2.0"
-    ]
+    "instrumentations": ["couchbase-2.6", "couchbase-2.0"]
   },
   {
     "declarative_name": "java.dropwizard_metrics.enabled",
@@ -356,9 +324,7 @@
     "description": "Enables the dropwizard metrics instrumentation.",
     "name": "otel.instrumentation.dropwizard-metrics.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "dropwizard-metrics-4.0"
-    ]
+    "instrumentations": ["dropwizard-metrics-4.0"]
   },
   {
     "declarative_name": "java.elasticsearch.capture_search_query",
@@ -388,15 +354,10 @@
     "declarative_name": "java.executors.include",
     "default": "",
     "description": "List of Executor subclasses to be instrumented.",
-    "examples": [
-      "com.example.CustomExecutor",
-      "com.example.ExecutorOne,com.example.ExecutorTwo"
-    ],
+    "examples": ["com.example.CustomExecutor", "com.example.ExecutorOne,com.example.ExecutorTwo"],
     "name": "otel.instrumentation.executors.include",
     "type": "list",
-    "instrumentations": [
-      "executors"
-    ]
+    "instrumentations": ["executors"]
   },
   {
     "declarative_name": "java.executors.include_all",
@@ -404,9 +365,7 @@
     "description": "Whether to instrument all classes that implement the Executor interface.",
     "name": "otel.instrumentation.executors.include-all",
     "type": "boolean",
-    "instrumentations": [
-      "executors"
-    ]
+    "instrumentations": ["executors"]
   },
   {
     "declarative_name": "java.external_annotations.exclude_methods",
@@ -418,23 +377,16 @@
     ],
     "name": "otel.instrumentation.external-annotations.exclude-methods",
     "type": "string",
-    "instrumentations": [
-      "external-annotations"
-    ]
+    "instrumentations": ["external-annotations"]
   },
   {
     "declarative_name": "java.external_annotations.include",
     "default": "",
     "description": "Configuration for trace annotations, in the form of a pattern that matches `'package.Annotation$Name;*'`.",
-    "examples": [
-      "com.example.Trace",
-      "com.example.Trace;com.example.OtherTrace"
-    ],
+    "examples": ["com.example.Trace", "com.example.Trace;com.example.OtherTrace"],
     "name": "otel.instrumentation.external-annotations.include",
     "type": "string",
-    "instrumentations": [
-      "external-annotations"
-    ]
+    "instrumentations": ["external-annotations"]
   },
   {
     "declarative_name": "java.common.gen_ai.capture_message_content",
@@ -442,20 +394,14 @@
     "description": "Determines whether Generative AI events include full content of user and assistant messages. Note that full content can have data privacy and size concerns and care should be taken when enabling this",
     "name": "otel.instrumentation.genai.capture-message-content",
     "type": "boolean",
-    "instrumentations": [
-      "aws-sdk-2.2",
-      "openai-java-1.1"
-    ]
+    "instrumentations": ["aws-sdk-2.2", "openai-java-1.1"]
   },
   {
     "default": false,
     "description": "Whether GraphQL operation name is added to the span name. WARNING: The GraphQL operation name is provided by the client and can have high cardinality. Use only when the server is not exposed to malicious clients.",
     "name": "otel.instrumentation.graphql.add-operation-name-to-span-name.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "graphql-java-12.0",
-      "graphql-java-20.0"
-    ]
+    "instrumentations": ["graphql-java-12.0", "graphql-java-20.0"]
   },
   {
     "declarative_name": "java.graphql.capture_query",
@@ -463,10 +409,7 @@
     "description": "Whether to capture the query in `graphql.document` span attribute.",
     "name": "otel.instrumentation.graphql.capture-query",
     "type": "boolean",
-    "instrumentations": [
-      "graphql-java-12.0",
-      "graphql-java-20.0"
-    ]
+    "instrumentations": ["graphql-java-12.0", "graphql-java-20.0"]
   },
   {
     "declarative_name": "java.graphql.data_fetcher.enabled",
@@ -474,9 +417,7 @@
     "description": "Enables span generation for data fetchers.",
     "name": "otel.instrumentation.graphql.data-fetcher.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "graphql-java-20.0"
-    ]
+    "instrumentations": ["graphql-java-20.0"]
   },
   {
     "declarative_name": "java.graphql.operation_name_in_span_name.enabled",
@@ -484,10 +425,7 @@
     "description": "Whether GraphQL operation name is added to the span name. WARNING: The GraphQL operation name is provided by the client and can have high cardinality. Use only when the server is not exposed to malicious clients.",
     "name": "otel.instrumentation.graphql.operation-name-in-span-name.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "graphql-java-12.0",
-      "graphql-java-20.0"
-    ]
+    "instrumentations": ["graphql-java-12.0", "graphql-java-20.0"]
   },
   {
     "declarative_name": "java.graphql.query_sanitization.enabled",
@@ -495,20 +433,14 @@
     "description": "Enables sanitization of sensitive information from queries so they aren't added as span attributes.",
     "name": "otel.instrumentation.graphql.query-sanitization.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "graphql-java-12.0",
-      "graphql-java-20.0"
-    ]
+    "instrumentations": ["graphql-java-12.0", "graphql-java-20.0"]
   },
   {
     "default": true,
     "description": "Enables sanitization of sensitive information from queries so they aren't added as span attributes.",
     "name": "otel.instrumentation.graphql.query-sanitizer.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "graphql-java-12.0",
-      "graphql-java-20.0"
-    ]
+    "instrumentations": ["graphql-java-12.0", "graphql-java-20.0"]
   },
   {
     "declarative_name": "java.graphql.trivial_data_fetcher.enabled",
@@ -516,23 +448,16 @@
     "description": "Whether to create spans for trivial data fetchers. A trivial data fetcher is one that simply maps data from an object to a field.",
     "name": "otel.instrumentation.graphql.trivial-data-fetcher.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "graphql-java-20.0"
-    ]
+    "instrumentations": ["graphql-java-20.0"]
   },
   {
     "declarative_name": "java.grpc.capture_metadata.client.request",
     "default": "",
     "description": "A comma-separated list of request metadata keys. gRPC client instrumentation will capture metadata values corresponding to configured keys as span attributes.",
-    "examples": [
-      "custom-request-header",
-      "my-metadata-key,another-metadata-key"
-    ],
+    "examples": ["custom-request-header", "my-metadata-key,another-metadata-key"],
     "name": "otel.instrumentation.grpc.capture-metadata.client.request",
     "type": "list",
-    "instrumentations": [
-      "grpc-1.6"
-    ]
+    "instrumentations": ["grpc-1.6"]
   },
   {
     "declarative_name": "java.grpc.capture_metadata.server.request",
@@ -540,9 +465,7 @@
     "description": "A comma-separated list of request metadata keys. gRPC server instrumentation will capture metadata values corresponding to configured keys as span attributes.",
     "name": "otel.instrumentation.grpc.capture-metadata.server.request",
     "type": "list",
-    "instrumentations": [
-      "grpc-1.6"
-    ]
+    "instrumentations": ["grpc-1.6"]
   },
   {
     "declarative_name": "java.grpc.emit_message_events",
@@ -550,9 +473,7 @@
     "description": "Determines whether to emit a span event for each individual message received and sent.",
     "name": "otel.instrumentation.grpc.emit-message-events",
     "type": "boolean",
-    "instrumentations": [
-      "grpc-1.6"
-    ]
+    "instrumentations": ["grpc-1.6"]
   },
   {
     "declarative_name": "java.grpc.experimental_span_attributes/development",
@@ -560,9 +481,7 @@
     "description": "Enable the capture of experimental span attributes `grpc.received.message_count`, `grpc.sent.message_count` and `grpc.canceled`.",
     "name": "otel.instrumentation.grpc.experimental-span-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "grpc-1.6"
-    ]
+    "instrumentations": ["grpc-1.6"]
   },
   {
     "declarative_name": "java.guava.experimental_span_attributes/development",
@@ -570,9 +489,7 @@
     "description": "Enables experimental span attribute `guava.canceled` for cancelled operations.",
     "name": "otel.instrumentation.guava.experimental-span-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "guava-10.0"
-    ]
+    "instrumentations": ["guava-10.0"]
   },
   {
     "declarative_name": "java.hibernate.experimental_span_attributes/development",
@@ -913,9 +830,7 @@
     "description": "Enables capturing the experimental `hystrix.command`, `hystrix.circuit_open` and `hystrix.group` span attributes.",
     "name": "otel.instrumentation.hystrix.experimental-span-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "hystrix-1.4"
-    ]
+    "instrumentations": ["hystrix-1.4"]
   },
   {
     "declarative_name": "java.java_util_logging.experimental_log_attributes/development",
@@ -923,9 +838,7 @@
     "description": "Enables capturing the experimental `thread.name` and `thread.id` log attributes.",
     "name": "otel.instrumentation.java-util-logging.experimental-log-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "java-util-logging"
-    ]
+    "instrumentations": ["java-util-logging"]
   },
   {
     "declarative_name": "java.jaxrs.experimental_span_attributes/development",
@@ -950,9 +863,7 @@
     "description": "Enables the capture of experimental log attributes, including thread name and thread ID.",
     "name": "otel.instrumentation.jboss-logmanager.experimental-log-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "jboss-logmanager-appender-1.1"
-    ]
+    "instrumentations": ["jboss-logmanager-appender-1.1"]
   },
   {
     "declarative_name": "java.jboss_logmanager.capture_event_name/development",
@@ -960,86 +871,65 @@
     "description": "Enables the capture of the event name from the MDC attribute \"event.name\" and sets it as the log record's event name.",
     "name": "otel.instrumentation.jboss-logmanager.experimental.capture-event-name",
     "type": "boolean",
-    "instrumentations": [
-      "jboss-logmanager-appender-1.1"
-    ]
+    "instrumentations": ["jboss-logmanager-appender-1.1"]
   },
   {
     "declarative_name": "java.jboss_logmanager.capture_mdc_attributes/development",
     "default": "",
     "description": "Controls which MDC attributes to capture. Use \"*\" to capture all MDC attributes or provide a comma-separated list of specific keys.",
-    "examples": [
-      "custom-mdc-key",
-      "key1,key2,key3"
-    ],
+    "examples": ["custom-mdc-key", "key1,key2,key3"],
     "name": "otel.instrumentation.jboss-logmanager.experimental.capture-mdc-attributes",
     "type": "list",
-    "instrumentations": [
-      "jboss-logmanager-appender-1.1"
-    ]
+    "instrumentations": ["jboss-logmanager-appender-1.1"]
   },
   {
     "default": false,
     "description": "Enables instrumentation of JDBC datasource connections.",
     "name": "otel.instrumentation.jdbc-datasource.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "jdbc"
-    ]
+    "instrumentations": ["jdbc"]
   },
   {
     "default": false,
     "description": "Sets whether the query parameters should be captured as span attributes named <code>db.query.parameter.&lt;key&gt;</code>. Enabling this option disables the statement sanitization.<p>WARNING: captured query parameters may contain sensitive information such as passwords, personally identifiable information or protected health info.",
     "name": "otel.instrumentation.jdbc.experimental.capture-query-parameters",
     "type": "boolean",
-    "instrumentations": [
-      "jdbc"
-    ]
+    "instrumentations": ["jdbc"]
   },
   {
     "default": false,
     "description": "Enables augmenting queries with a comment containing the tracing information. See [sqlcommenter](https://google.github.io/sqlcommenter/) for more info. WARNING: augmenting queries with tracing context will make query texts unique, which may have adverse impact on database performance. Consult with database experts before enabling.",
     "name": "otel.instrumentation.jdbc.experimental.sqlcommenter.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "jdbc"
-    ]
+    "instrumentations": ["jdbc"]
   },
   {
     "default": false,
     "description": "Enables experimental instrumentation to create spans for COMMIT and ROLLBACK operations.",
     "name": "otel.instrumentation.jdbc.experimental.transaction.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "jdbc"
-    ]
+    "instrumentations": ["jdbc"]
   },
   {
     "default": true,
     "description": "Enables query sanitization for database queries. Takes precedence over otel.instrumentation.common.db.query-sanitization.enabled.",
     "name": "otel.instrumentation.jdbc.query-sanitization.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "jdbc"
-    ]
+    "instrumentations": ["jdbc"]
   },
   {
     "default": true,
     "description": "Enables statement sanitization for database queries. Takes precedent to otel.instrumentation.common.db-statement-sanitizer.enabled.",
     "name": "otel.instrumentation.jdbc.statement-sanitizer.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "jdbc"
-    ]
+    "instrumentations": ["jdbc"]
   },
   {
     "default": false,
     "description": "Enables experimental span attributes `jsp.forwardOrigin`, `jsp.requestURL`, `jsp.compiler`, and `jsp.classFQCN`.",
     "name": "otel.instrumentation.jsp.experimental-span-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "jsp-2.3"
-    ]
+    "instrumentations": ["jsp-2.3"]
   },
   {
     "declarative_name": "java.kafka.experimental_span_attributes/development",
@@ -1061,116 +951,84 @@
     "description": "Enable context propagation for Kafka message producers.",
     "name": "otel.instrumentation.kafka.producer-propagation.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "kafka-clients-0.11",
-      "vertx-kafka-client-3.6"
-    ]
+    "instrumentations": ["kafka-clients-0.11", "vertx-kafka-client-3.6"]
   },
   {
     "default": false,
     "description": "Enables experimental span attributes `kubernetes-client.namespace` and `kubernetes-client.name` for Kubernetes API requests.",
     "name": "otel.instrumentation.kubernetes-client.experimental-span-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "kubernetes-client-7.0"
-    ]
+    "instrumentations": ["kubernetes-client-7.0"]
   },
   {
     "default": false,
     "description": "Enables connection telemetry spans for Redis connections.",
     "name": "otel.instrumentation.lettuce.connection-telemetry.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "lettuce-5.0",
-      "lettuce-4.0"
-    ]
+    "instrumentations": ["lettuce-5.0", "lettuce-4.0"]
   },
   {
     "default": false,
     "description": "Enables experimental span attributes `lettuce.command.cancelled` and `lettuce.command.results.count`.",
     "name": "otel.instrumentation.lettuce.experimental-span-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "lettuce-5.0",
-      "lettuce-4.0"
-    ]
+    "instrumentations": ["lettuce-5.0", "lettuce-4.0"]
   },
   {
     "default": false,
     "description": "Enables capturing `redis.encode.start` and `redis.encode.end` span events.",
     "name": "otel.instrumentation.lettuce.experimental.command-encoding-events.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "lettuce-5.1"
-    ]
+    "instrumentations": ["lettuce-5.1"]
   },
   {
     "default": false,
     "description": "Enables the capture of experimental log attributes, including thread name and thread ID.",
     "name": "otel.instrumentation.log4j-appender.experimental-log-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "log4j-appender-1.2",
-      "log4j-appender-2.17"
-    ]
+    "instrumentations": ["log4j-appender-1.2", "log4j-appender-2.17"]
   },
   {
     "default": false,
     "description": "Enables the capture of code location attributes, including file path, class name, method name, and line number.",
     "name": "otel.instrumentation.log4j-appender.experimental.capture-code-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "log4j-appender-1.2",
-      "log4j-appender-2.17"
-    ]
+    "instrumentations": ["log4j-appender-1.2", "log4j-appender-2.17"]
   },
   {
     "default": false,
     "description": "Enables the capture of the event name from the MDC attribute \"event.name\" and sets it as the log record's event name.",
     "name": "otel.instrumentation.log4j-appender.experimental.capture-event-name",
     "type": "boolean",
-    "instrumentations": [
-      "log4j-appender-1.2",
-      "log4j-appender-2.17"
-    ]
+    "instrumentations": ["log4j-appender-1.2", "log4j-appender-2.17"]
   },
   {
     "default": false,
     "description": "Enables the capture of attributes from Log4j MapMessage instances.",
     "name": "otel.instrumentation.log4j-appender.experimental.capture-map-message-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "log4j-appender-2.17"
-    ]
+    "instrumentations": ["log4j-appender-2.17"]
   },
   {
     "default": false,
     "description": "Enables the capture of the Log4j marker attribute.",
     "name": "otel.instrumentation.log4j-appender.experimental.capture-marker-attribute",
     "type": "boolean",
-    "instrumentations": [
-      "log4j-appender-2.17"
-    ]
+    "instrumentations": ["log4j-appender-2.17"]
   },
   {
     "default": "",
     "description": "Controls which MDC attributes to capture. Use \"*\" to capture all MDC attributes or provide a comma-separated list of specific keys.",
     "name": "otel.instrumentation.log4j-appender.experimental.capture-mdc-attributes",
     "type": "list",
-    "instrumentations": [
-      "log4j-appender-1.2",
-      "log4j-appender-2.17"
-    ]
+    "instrumentations": ["log4j-appender-1.2", "log4j-appender-2.17"]
   },
   {
     "default": false,
     "description": "Enables adding baggage entries to the Log4j ThreadContext, prefixed with \"baggage.\".",
     "name": "otel.instrumentation.log4j-context-data.add-baggage",
     "type": "boolean",
-    "instrumentations": [
-      "log4j-context-data-2.7",
-      "log4j-context-data-2.17"
-    ]
+    "instrumentations": ["log4j-context-data-2.7", "log4j-context-data-2.17"]
   },
   {
     "declarative_name": "java.logback_appender.experimental_log_attributes/development",
@@ -1178,9 +1036,7 @@
     "description": "Enables the capture of experimental log attributes, including thread name and thread ID.",
     "name": "otel.instrumentation.logback-appender.experimental-log-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "logback-appender-1.0"
-    ]
+    "instrumentations": ["logback-appender-1.0"]
   },
   {
     "declarative_name": "java.logback_appender.capture_arguments/development",
@@ -1188,9 +1044,7 @@
     "description": "Enables the capture of log message arguments as separate attributes.",
     "name": "otel.instrumentation.logback-appender.experimental.capture-arguments",
     "type": "boolean",
-    "instrumentations": [
-      "logback-appender-1.0"
-    ]
+    "instrumentations": ["logback-appender-1.0"]
   },
   {
     "declarative_name": "java.logback_appender.capture_code_attributes/development",
@@ -1198,9 +1052,7 @@
     "description": "Enables the capture of code location attributes, including file path, class name, method name, and line number.",
     "name": "otel.instrumentation.logback-appender.experimental.capture-code-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "logback-appender-1.0"
-    ]
+    "instrumentations": ["logback-appender-1.0"]
   },
   {
     "declarative_name": "java.logback_appender.capture_event_name/development",
@@ -1208,9 +1060,7 @@
     "description": "Enables the capture of the event name from the MDC attribute \"event.name\" and sets it as the log record's event name.",
     "name": "otel.instrumentation.logback-appender.experimental.capture-event-name",
     "type": "boolean",
-    "instrumentations": [
-      "logback-appender-1.0"
-    ]
+    "instrumentations": ["logback-appender-1.0"]
   },
   {
     "declarative_name": "java.logback_appender.capture_key_value_pair_attributes/development",
@@ -1218,9 +1068,7 @@
     "description": "Enables the capture of attributes from Logback key-value pairs.",
     "name": "otel.instrumentation.logback-appender.experimental.capture-key-value-pair-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "logback-appender-1.0"
-    ]
+    "instrumentations": ["logback-appender-1.0"]
   },
   {
     "declarative_name": "java.logback_appender.capture_logger_context_attributes/development",
@@ -1228,9 +1076,7 @@
     "description": "Enables the capture of attributes from the Logback logger context.",
     "name": "otel.instrumentation.logback-appender.experimental.capture-logger-context-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "logback-appender-1.0"
-    ]
+    "instrumentations": ["logback-appender-1.0"]
   },
   {
     "declarative_name": "java.logback_appender.capture_logstash_marker_attributes/development",
@@ -1238,9 +1084,7 @@
     "description": "Enables the capture of attributes from Logstash markers.",
     "name": "otel.instrumentation.logback-appender.experimental.capture-logstash-marker-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "logback-appender-1.0"
-    ]
+    "instrumentations": ["logback-appender-1.0"]
   },
   {
     "declarative_name": "java.logback_appender.capture_logstash_structured_arguments/development",
@@ -1248,9 +1092,7 @@
     "description": "Enables the capture of attributes from Logstash structured arguments.",
     "name": "otel.instrumentation.logback-appender.experimental.capture-logstash-structured-arguments",
     "type": "boolean",
-    "instrumentations": [
-      "logback-appender-1.0"
-    ]
+    "instrumentations": ["logback-appender-1.0"]
   },
   {
     "declarative_name": "java.logback_appender.capture_marker_attribute/development",
@@ -1258,9 +1100,7 @@
     "description": "Enables the capture of the Logback marker attribute.",
     "name": "otel.instrumentation.logback-appender.experimental.capture-marker-attribute",
     "type": "boolean",
-    "instrumentations": [
-      "logback-appender-1.0"
-    ]
+    "instrumentations": ["logback-appender-1.0"]
   },
   {
     "declarative_name": "java.logback_appender.capture_mdc_attributes/development",
@@ -1268,9 +1108,7 @@
     "description": "Controls which MDC attributes to capture. Use \"*\" to capture all MDC attributes or provide a comma-separated list of specific keys.",
     "name": "otel.instrumentation.logback-appender.experimental.capture-mdc-attributes",
     "type": "list",
-    "instrumentations": [
-      "logback-appender-1.0"
-    ]
+    "instrumentations": ["logback-appender-1.0"]
   },
   {
     "declarative_name": "java.logback_appender.capture_template/development",
@@ -1278,18 +1116,14 @@
     "description": "Enables the capture of the log message template before parameter substitution.",
     "name": "otel.instrumentation.logback-appender.experimental.capture-template",
     "type": "boolean",
-    "instrumentations": [
-      "logback-appender-1.0"
-    ]
+    "instrumentations": ["logback-appender-1.0"]
   },
   {
     "default": false,
     "description": "Enables adding baggage entries to the Logback MDC, prefixed with \"baggage.\".",
     "name": "otel.instrumentation.logback-mdc.add-baggage",
     "type": "boolean",
-    "instrumentations": [
-      "logback-mdc-1.0"
-    ]
+    "instrumentations": ["logback-mdc-1.0"]
   },
   {
     "declarative_name": "java.common.messaging.capture_headers/development",
@@ -1346,241 +1180,175 @@
     "description": "Sets the base time unit for the OpenTelemetry MeterRegistry. Supported values: ns, us, ms, s, min, h, d.",
     "name": "otel.instrumentation.micrometer.base-time-unit",
     "type": "string",
-    "instrumentations": [
-      "micrometer-1.5"
-    ]
+    "instrumentations": ["micrometer-1.5"]
   },
   {
     "default": false,
     "description": "Enables gauge-based Micrometer histograms for DistributionSummary and Timer instruments.",
     "name": "otel.instrumentation.micrometer.histogram-gauges.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "micrometer-1.5"
-    ]
+    "instrumentations": ["micrometer-1.5"]
   },
   {
     "default": false,
     "description": "Simulates the behavior of Micrometer's PrometheusMeterRegistry. The instruments will be renamed to match Micrometer instrument naming, and the base time unit will be set to seconds.",
     "name": "otel.instrumentation.micrometer.prometheus-mode.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "micrometer-1.5"
-    ]
+    "instrumentations": ["micrometer-1.5"]
   },
   {
     "default": true,
     "description": "Enables query sanitization for MongoDB queries. Takes precedence over otel.instrumentation.common.db.query-sanitization.enabled.",
     "name": "otel.instrumentation.mongo.query-sanitization.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "mongo-4.0",
-      "mongo-async-3.3",
-      "mongo-3.1",
-      "mongo-3.7"
-    ]
+    "instrumentations": ["mongo-4.0", "mongo-async-3.3", "mongo-3.1", "mongo-3.7"]
   },
   {
     "default": true,
     "description": "Enables statement sanitization for MongoDB queries. Takes precedence over otel.instrumentation.common.db-statement-sanitizer.enabled.",
     "name": "otel.instrumentation.mongo.statement-sanitizer.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "mongo-4.0",
-      "mongo-async-3.3",
-      "mongo-3.1",
-      "mongo-3.7"
-    ]
+    "instrumentations": ["mongo-4.0", "mongo-async-3.3", "mongo-3.1", "mongo-3.7"]
   },
   {
     "default": false,
     "description": "Enable the creation of Connect and DNS spans.",
     "name": "otel.instrumentation.netty.connection-telemetry.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "netty-4.0",
-      "netty-4.1"
-    ]
+    "instrumentations": ["netty-4.0", "netty-4.1"]
   },
   {
     "default": false,
     "description": "Enable SSL telemetry.",
     "name": "otel.instrumentation.netty.ssl-telemetry.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "netty-4.0",
-      "netty-4.1"
-    ]
+    "instrumentations": ["netty-4.0", "netty-4.1"]
   },
   {
     "default": false,
     "description": "Enable the experimental `runtime.java.memory` and `runtime.java.cpu_time` metrics.",
     "name": "otel.instrumentation.oshi.experimental-metrics.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "oshi"
-    ]
+    "instrumentations": ["oshi"]
   },
   {
     "default": false,
     "description": "Enables experimental span attributes `job.system`, `scheduling.powerjob.job.id`, `scheduling.powerjob.job.param`, `scheduling.powerjob.job.instance.param`, and `scheduling.powerjob.job.type`.",
     "name": "otel.instrumentation.powerjob.experimental-span-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "powerjob-4.0"
-    ]
+    "instrumentations": ["powerjob-4.0"]
   },
   {
     "default": false,
     "description": "Enables the experimental span attribute `messaging.pulsar.message.type` for producer spans.",
     "name": "otel.instrumentation.pulsar.experimental-span-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "pulsar-2.8",
-      "spring-pulsar-1.0"
-    ]
+    "instrumentations": ["pulsar-2.8", "spring-pulsar-1.0"]
   },
   {
     "default": false,
     "description": "Enables the experimental `job.system` span attribute.",
     "name": "otel.instrumentation.quartz.experimental-span-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "quartz-2.0"
-    ]
+    "instrumentations": ["quartz-2.0"]
   },
   {
     "default": false,
     "description": "Enables augmenting queries with a comment containing the tracing information. See [sqlcommenter](https://google.github.io/sqlcommenter/) for more info. WARNING: augmenting queries with tracing context will make query texts unique, which may have adverse impact on database performance.",
     "name": "otel.instrumentation.r2dbc.experimental.sqlcommenter.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "r2dbc-1.0"
-    ]
+    "instrumentations": ["r2dbc-1.0"]
   },
   {
     "default": true,
     "description": "Enables query sanitization for database queries. Takes precedence over otel.instrumentation.common.db.query-sanitization.enabled.",
     "name": "otel.instrumentation.r2dbc.query-sanitization.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "r2dbc-1.0"
-    ]
+    "instrumentations": ["r2dbc-1.0"]
   },
   {
     "default": true,
     "description": "Enables statement sanitization for database queries. Takes precedence over otel.instrumentation.common.db-statement-sanitizer.enabled.",
     "name": "otel.instrumentation.r2dbc.statement-sanitizer.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "r2dbc-1.0"
-    ]
+    "instrumentations": ["r2dbc-1.0"]
   },
   {
     "default": false,
     "description": "Enables experimental span attributes `rabbitmq.command`, `rabbitmq.delivery_mode`, `rabbitmq.queue`, and `rabbitmq.record.queue_time_ms`.",
     "name": "otel.instrumentation.rabbitmq.experimental-span-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "rabbitmq-2.7"
-    ]
+    "instrumentations": ["rabbitmq-2.7"]
   },
   {
     "default": false,
     "description": "Enables the creation of Connect and DNS spans.",
     "name": "otel.instrumentation.reactor-netty.connection-telemetry.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "reactor-netty-1.0"
-    ]
+    "instrumentations": ["reactor-netty-1.0"]
   },
   {
     "default": false,
     "description": "Enables the capture of the experimental `reactor.canceled` attribute on spans when reactive streams are cancelled.",
     "name": "otel.instrumentation.reactor.experimental-span-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "reactor-3.1"
-    ]
+    "instrumentations": ["reactor-3.1"]
   },
   {
     "default": false,
     "description": "Enables capturing experimental span attributes `messaging.rocketmq.message.tag`, `messaging.rocketmq.broker_address`, `messaging.rocketmq.send_result`, `messaging.rocketmq.queue_id`, and `messaging.rocketmq.queue_offset`.",
     "name": "otel.instrumentation.rocketmq-client.experimental-span-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "rocketmq-client-4.8"
-    ]
+    "instrumentations": ["rocketmq-client-4.8"]
   },
   {
     "default": false,
     "description": "Enables the capture of experimental JVM runtime metrics.",
     "name": "otel.instrumentation.runtime-telemetry.emit-experimental-metrics",
     "type": "boolean",
-    "instrumentations": [
-      "runtime-telemetry"
-    ]
+    "instrumentations": ["runtime-telemetry"]
   },
   {
     "default": false,
     "description": "Enables creating events for JAR libraries used by the application.",
     "name": "otel.instrumentation.runtime-telemetry.experimental.package-emitter.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "runtime-telemetry"
-    ]
+    "instrumentations": ["runtime-telemetry"]
   },
   {
     "default": 10,
     "description": "The number of JAR files processed per second by the package emitter.",
     "name": "otel.instrumentation.runtime-telemetry.experimental.package-emitter.jars-per-second",
     "type": "int",
-    "instrumentations": [
-      "runtime-telemetry"
-    ]
+    "instrumentations": ["runtime-telemetry"]
   },
   {
     "default": false,
     "description": "Prefers JFR over JMX for metrics where both collection methods are available (Java 17+).",
     "name": "otel.instrumentation.runtime-telemetry.experimental.prefer-jfr",
     "type": "boolean",
-    "instrumentations": [
-      "runtime-telemetry"
-    ]
+    "instrumentations": ["runtime-telemetry"]
   },
   {
     "default": false,
     "description": "Enables the experimental span attribute `rxjava.canceled`.",
     "name": "otel.instrumentation.rxjava.experimental-span-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "rxjava-2.0",
-      "rxjava-3.0",
-      "rxjava-3.1.1"
-    ]
+    "instrumentations": ["rxjava-2.0", "rxjava-3.0", "rxjava-3.1.1"]
   },
   {
     "default": true,
     "description": "Adds the trace ID and span ID as a request attributes for downstream servlet access.",
     "name": "otel.instrumentation.servlet.add-trace-id-request-attribute",
     "type": "boolean",
-    "instrumentations": [
-      "servlet-2.2",
-      "servlet-3.0",
-      "servlet-5.0"
-    ]
+    "instrumentations": ["servlet-2.2", "servlet-3.0", "servlet-5.0"]
   },
   {
     "default": "",
     "description": "List of request parameter names to capture as span attributes.",
     "name": "otel.instrumentation.servlet.capture-request-parameters",
     "type": "list",
-    "instrumentations": [
-      "servlet-2.2",
-      "tomcat-10.0",
-      "servlet-3.0",
-      "servlet-5.0"
-    ]
+    "instrumentations": ["servlet-2.2", "tomcat-10.0", "servlet-3.0", "servlet-5.0"]
   },
   {
     "default": false,
@@ -1602,13 +1370,7 @@
     "description": "List of request parameter names to capture as span attributes.",
     "name": "otel.instrumentation.servlet.experimental.capture-request-parameters",
     "type": "list",
-    "instrumentations": [
-      "servlet-2.2",
-      "liberty-20.0",
-      "servlet-3.0",
-      "tomcat-7.0",
-      "servlet-5.0"
-    ],
+    "instrumentations": ["servlet-2.2", "liberty-20.0", "servlet-3.0", "tomcat-7.0", "servlet-5.0"],
     "declarative_name": "java.servlet.capture_request_parameters/development"
   },
   {
@@ -1616,142 +1378,104 @@
     "description": "Enables adding the trace ID and span ID as request attributes for downstream servlet access.",
     "name": "otel.instrumentation.servlet.experimental.trace-id-request-attribute.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "servlet-2.2",
-      "servlet-3.0",
-      "servlet-5.0"
-    ]
+    "instrumentations": ["servlet-2.2", "servlet-3.0", "servlet-5.0"]
   },
   {
     "default": false,
     "description": "Adds the experimental attribute `job.system` to spans.",
     "name": "otel.instrumentation.spring-batch.experimental-span-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "spring-batch-3.0"
-    ]
+    "instrumentations": ["spring-batch-3.0"]
   },
   {
     "default": false,
     "description": "When enabled, a new root span will be created for each chunk processing. Please note that this may lead to a high number of spans being created.",
     "name": "otel.instrumentation.spring-batch.experimental.chunk.new-trace",
     "type": "boolean",
-    "instrumentations": [
-      "spring-batch-3.0"
-    ]
+    "instrumentations": ["spring-batch-3.0"]
   },
   {
     "default": false,
     "description": "When enabled, spans will be created for each item processed. Please note that this may lead to a high number of spans being created.",
     "name": "otel.instrumentation.spring-batch.item.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "spring-batch-3.0"
-    ]
+    "instrumentations": ["spring-batch-3.0"]
   },
   {
     "default": false,
     "description": "Enables experimental `spring-cloud-gateway.route` attributes (e.g., `spring-cloud-gateway.route.id`, `spring-cloud-gateway.route.uri`, etc.) on spans.",
     "name": "otel.instrumentation.spring-cloud-gateway.experimental-span-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "spring-cloud-gateway-webmvc-4.3",
-      "spring-cloud-gateway-2.0"
-    ]
+    "instrumentations": ["spring-cloud-gateway-webmvc-4.3", "spring-cloud-gateway-2.0"]
   },
   {
     "default": "*",
     "description": "A list of Spring channel name patterns that will be intercepted.",
     "name": "otel.instrumentation.spring-integration.global-channel-interceptor-patterns",
     "type": "list",
-    "instrumentations": [
-      "spring-integration-4.1"
-    ]
+    "instrumentations": ["spring-integration-4.1"]
   },
   {
     "default": false,
     "description": "Create producer spans when messages are sent to an output channel. Enable when you're using a messaging library that doesn't have its own instrumentation for generating producer spans. Note that the detection of output channels only works for Spring Cloud Stream `DirectWithAttributesChannel`.",
     "name": "otel.instrumentation.spring-integration.producer.enabled",
     "type": "boolean",
-    "instrumentations": [
-      "spring-integration-4.1"
-    ]
+    "instrumentations": ["spring-integration-4.1"]
   },
   {
     "default": false,
     "description": "Adds the experimental span attribute `job.system` with the value `spring_scheduling`.",
     "name": "otel.instrumentation.spring-scheduling.experimental-span-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "spring-scheduling-3.1"
-    ]
+    "instrumentations": ["spring-scheduling-3.1"]
   },
   {
     "default": "ROLE_",
     "description": "Prefix of granted authorities identifying roles to capture in the `enduser.role` semantic attribute.",
     "name": "otel.instrumentation.spring-security.enduser.role.granted-authority-prefix",
     "type": "string",
-    "instrumentations": [
-      "spring-security-config-6.0"
-    ]
+    "instrumentations": ["spring-security-config-6.0"]
   },
   {
     "default": "SCOPE_",
     "description": "Prefix of granted authorities identifying scopes to capture in the `enduser.scopes` semantic attribute.",
     "name": "otel.instrumentation.spring-security.scope.role.granted-authority-prefix",
     "type": "string",
-    "instrumentations": [
-      "spring-security-config-6.0"
-    ]
+    "instrumentations": ["spring-security-config-6.0"]
   },
   {
     "default": false,
     "description": "Enables the capture of experimental span attributes `spring-webmvc.view.name` and `spring-webmvc.view.type`.",
     "name": "otel.instrumentation.spring-webmvc.experimental-span-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "spring-webmvc-3.1",
-      "spring-webmvc-6.0"
-    ]
+    "instrumentations": ["spring-webmvc-3.1", "spring-webmvc-6.0"]
   },
   {
     "default": false,
     "description": "Enables experimental span attributes `spymemcached.result` and `spymemcached.command.cancelled`.",
     "name": "otel.instrumentation.spymemcached.experimental-span-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "spymemcached-2.12"
-    ]
+    "instrumentations": ["spymemcached-2.12"]
   },
   {
     "default": false,
     "description": "Enables experimental span attributes `twilio.type`, `twilio.account`, `twilio.sid`, and `twilio.status`.",
     "name": "otel.instrumentation.twilio.experimental-span-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "twilio-6.6"
-    ]
+    "instrumentations": ["twilio-6.6"]
   },
   {
     "default": false,
     "description": "Enables experimental span attributes `job.system`, `scheduling.xxl-job.glue.type`, and `scheduling.xxl-job.job.id`.",
     "name": "otel.instrumentation.xxl-job.experimental-span-attributes",
     "type": "boolean",
-    "instrumentations": [
-      "xxl-job-1.9.2",
-      "xxl-job-2.1.2",
-      "xxl-job-2.3.0"
-    ]
+    "instrumentations": ["xxl-job-1.9.2", "xxl-job-2.1.2", "xxl-job-2.3.0"]
   },
   {
     "default": "",
     "description": "Opt-in to emit stable semantic conventions instead of the old experimental semantic conventions. Accepts a comma-separated list of semantic convention groups (e.g., `database`, `http`, `messaging`). Use `<group>/dup` to emit both old and new conventions simultaneously. Stable semantic conventions will become the default in version 3.0 of the agent.",
     "name": "otel.semconv-stability.opt-in",
     "type": "list",
-    "instrumentations": [
-      "alibaba-druid-1.0",
-      "apache-dbcp-2.0",
-      "tomcat-jdbc"
-    ]
+    "instrumentations": ["alibaba-druid-1.0", "apache-dbcp-2.0", "tomcat-jdbc"]
   }
 ]

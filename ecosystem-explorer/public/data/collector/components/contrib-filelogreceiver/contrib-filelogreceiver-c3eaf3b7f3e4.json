@@ -9,25 +9,13 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "andrzej-stencel",
-        "paulojmdias",
-        "VihasMakwana",
-        "braydonk"
-      ],
-      "emeritus": [
-        "djaglowski"
-      ],
+      "active": ["andrzej-stencel", "paulojmdias", "VihasMakwana", "braydonk"],
+      "emeritus": ["djaglowski"],
       "seeking_new": true
     },
-    "distributions": [
-      "contrib",
-      "k8s"
-    ],
+    "distributions": ["contrib", "k8s"],
     "stability": {
-      "beta": [
-        "logs"
-      ]
+      "beta": ["logs"]
     }
   },
   "type": "receiver"

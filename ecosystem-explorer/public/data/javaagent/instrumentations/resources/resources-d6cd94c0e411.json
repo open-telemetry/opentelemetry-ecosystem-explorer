@@ -1,9 +1,7 @@
 {
   "description": "This instrumentation automatically detects and populates OpenTelemetry resource attributes for the host, OS, process, and container environment. It does not emit any telemetry on its own.",
   "display_name": "Resource Detectors",
-  "features": [
-    "RESOURCE_DETECTOR"
-  ],
+  "features": ["RESOURCE_DETECTOR"],
   "has_standalone_library": true,
   "name": "resources",
   "scope": {

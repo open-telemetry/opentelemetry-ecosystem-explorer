@@ -9,18 +9,11 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "evan-bradley",
-        "zirain"
-      ]
+      "active": ["evan-bradley", "zirain"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "logs"
-      ]
+      "alpha": ["logs"]
     }
   },
   "type": "receiver"

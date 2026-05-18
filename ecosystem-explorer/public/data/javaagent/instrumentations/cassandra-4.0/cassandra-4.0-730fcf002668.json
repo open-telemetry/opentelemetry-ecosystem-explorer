@@ -10,22 +10,15 @@
   "description": "This instrumentation enables database client spans and database client metrics for the DataStax Cassandra Driver.",
   "display_name": "Cassandra Driver",
   "has_javaagent": true,
-  "javaagent_target_versions": [
-    "com.datastax.oss:java-driver-core:[4.0,4.4)"
-  ],
+  "javaagent_target_versions": ["com.datastax.oss:java-driver-core:[4.0,4.4)"],
   "library_link": "https://github.com/apache/cassandra-java-driver",
   "name": "cassandra-4.0",
   "scope": {
     "name": "io.opentelemetry.cassandra-4.0"
   },
-  "semantic_conventions": [
-    "DATABASE_CLIENT_SPANS",
-    "DATABASE_CLIENT_METRICS"
-  ],
+  "semantic_conventions": ["DATABASE_CLIENT_SPANS", "DATABASE_CLIENT_METRICS"],
   "source_path": "instrumentation/cassandra/cassandra-4.0",
-  "tags": [
-    "cassandra"
-  ],
+  "tags": ["cassandra"],
   "telemetry": [
     {
       "spans": [

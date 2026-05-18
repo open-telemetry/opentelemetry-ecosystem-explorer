@@ -8,9 +8,7 @@
     "name": "io.opentelemetry.iceberg-1.8"
   },
   "source_path": "instrumentation/iceberg-1.8",
-  "tags": [
-    "iceberg"
-  ],
+  "tags": ["iceberg"],
   "telemetry": [
     {
       "metrics": [

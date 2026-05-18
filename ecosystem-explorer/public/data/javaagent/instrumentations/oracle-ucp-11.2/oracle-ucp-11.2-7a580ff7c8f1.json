@@ -3,21 +3,15 @@
   "display_name": "Oracle UCP",
   "has_javaagent": true,
   "has_standalone_library": true,
-  "javaagent_target_versions": [
-    "com.oracle.database.jdbc:ucp:[,)"
-  ],
+  "javaagent_target_versions": ["com.oracle.database.jdbc:ucp:[,)"],
   "library_link": "https://docs.oracle.com/database/121/JJUCP/",
   "name": "oracle-ucp-11.2",
   "scope": {
     "name": "io.opentelemetry.oracle-ucp-11.2"
   },
-  "semantic_conventions": [
-    "DATABASE_POOL_METRICS"
-  ],
+  "semantic_conventions": ["DATABASE_POOL_METRICS"],
   "source_path": "instrumentation/oracle-ucp-11.2",
-  "tags": [
-    "oracle"
-  ],
+  "tags": ["oracle"],
   "telemetry": [
     {
       "metrics": [

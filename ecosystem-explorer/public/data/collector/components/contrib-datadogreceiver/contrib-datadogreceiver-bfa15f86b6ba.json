@@ -9,23 +9,12 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "boostchicken",
-        "MovieStoreGuy"
-      ],
-      "emeritus": [
-        "gouthamve"
-      ]
+      "active": ["boostchicken", "MovieStoreGuy"],
+      "emeritus": ["gouthamve"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "logs",
-        "metrics",
-        "traces"
-      ]
+      "alpha": ["logs", "metrics", "traces"]
     }
   },
   "type": "receiver"

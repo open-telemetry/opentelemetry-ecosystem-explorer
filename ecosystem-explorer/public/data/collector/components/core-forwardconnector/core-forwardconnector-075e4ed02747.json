@@ -8,20 +8,10 @@
   "repository": "opentelemetry-collector",
   "status": {
     "class": "connector",
-    "distributions": [
-      "contrib",
-      "core",
-      "k8s"
-    ],
+    "distributions": ["contrib", "core", "k8s"],
     "stability": {
-      "alpha": [
-        "profiles_to_profiles"
-      ],
-      "beta": [
-        "logs_to_logs",
-        "metrics_to_metrics",
-        "traces_to_traces"
-      ]
+      "alpha": ["profiles_to_profiles"],
+      "beta": ["logs_to_logs", "metrics_to_metrics", "traces_to_traces"]
     }
   },
   "type": "connector"

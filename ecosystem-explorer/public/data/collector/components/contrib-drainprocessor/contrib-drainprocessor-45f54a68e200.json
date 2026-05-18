@@ -9,19 +9,11 @@
   "status": {
     "class": "processor",
     "codeowners": {
-      "active": [
-        "MikeGoldsmith",
-        "atoulme",
-        "martinjt"
-      ]
+      "active": ["MikeGoldsmith", "atoulme", "martinjt"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "logs"
-      ]
+      "alpha": ["logs"]
     }
   },
   "type": "processor"

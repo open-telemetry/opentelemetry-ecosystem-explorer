@@ -9,17 +9,11 @@
   "status": {
     "class": "extension",
     "codeowners": {
-      "active": [
-        "JaredTan95"
-      ]
+      "active": ["JaredTan95"]
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "extension"
-      ]
+      "alpha": ["extension"]
     }
   },
   "type": "extension"

@@ -9,21 +9,13 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": [
-        "VihasMakwana"
-      ],
-      "emeritus": [
-        "djaglowski"
-      ],
+      "active": ["VihasMakwana"],
+      "emeritus": ["djaglowski"],
       "seeking_new": true
     },
-    "distributions": [
-      "contrib"
-    ],
+    "distributions": ["contrib"],
     "stability": {
-      "alpha": [
-        "logs"
-      ]
+      "alpha": ["logs"]
     }
   },
   "type": "receiver"

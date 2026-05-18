@@ -1,9 +1,7 @@
 {
   "description": "This standalone instrumentation enables HTTP server spans and HTTP server metrics for the Ktor server.",
   "display_name": "Ktor",
-  "features": [
-    "HTTP_ROUTE"
-  ],
+  "features": ["HTTP_ROUTE"],
   "has_standalone_library": true,
   "library_link": "https://ktor.io/",
   "name": "ktor-1.0",
@@ -11,14 +9,9 @@
     "name": "io.opentelemetry.ktor-1.0",
     "schema_url": "https://opentelemetry.io/schemas/1.37.0"
   },
-  "semantic_conventions": [
-    "HTTP_SERVER_SPANS",
-    "HTTP_SERVER_METRICS"
-  ],
+  "semantic_conventions": ["HTTP_SERVER_SPANS", "HTTP_SERVER_METRICS"],
   "source_path": "instrumentation/ktor/ktor-1.0",
-  "tags": [
-    "ktor"
-  ],
+  "tags": ["ktor"],
   "telemetry": [
     {
       "metrics": [
