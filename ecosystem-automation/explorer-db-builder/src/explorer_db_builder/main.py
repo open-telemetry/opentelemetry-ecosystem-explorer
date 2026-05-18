@@ -139,9 +139,33 @@ def run_javaagent_builder(
         versions = get_release_versions(inventory_manager)
         logger.info(f"Processing {len(versions)} release versions")
 
+        # Pre-load README maps for all versions to enable augmentation and backfilling
+        readme_maps = {v: inventory_manager.load_library_readme_map(v) for v in versions}
+
+        # Publish all READMEs to the database
+        for version, readme_map in readme_maps.items():
+            for library_name, markdown_hash in readme_map.items():
+                content = inventory_manager.load_library_readme_content(version, library_name, markdown_hash)
+                if content is not None:
+                    db_writer.write_markdown(library_name, markdown_hash, content)
+
+        def load_and_augment_inventory(version: Version) -> dict:
+            inventory = inventory_manager.load_versioned_inventory(version)
+            readme_map = readme_maps.get(version, {})
+
+            # Augment libraries and custom instrumentations with markdown_hash
+            for key in ["libraries", "custom"]:
+                if key in inventory:
+                    for item in inventory[key]:
+                        name = item.get("name")
+                        if name and name in readme_map:
+                            item["markdown_hash"] = readme_map[name]
+
+            return inventory
+
         backfilled_libraries = backfill_metadata(
             versions,
-            inventory_manager.load_versioned_inventory,
+            load_and_augment_inventory,
             item_key="libraries",
         )
         backfilled_inventories = backfill_metadata(

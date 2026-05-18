@@ -102,6 +102,25 @@ export async function loadAllInstrumentations(version: string): Promise<Instrume
   );
 }
 
+export async function loadLibraryReadme(
+  libraryName: string,
+  markdownHash: string
+): Promise<string> {
+  const baseUrl = import.meta.env.BASE_URL || "";
+  const normalizedBase = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
+  const url = `${normalizedBase}/${BASE_DIR}/markdown/${libraryName}-${markdownHash}.md`;
+  const data = await fetchWithCache<string>(
+    `readme-${libraryName}-${markdownHash}`,
+    url,
+    STORES.METADATA,
+    { format: "text" }
+  );
+  if (data === null) {
+    throw new Error(`README for ${libraryName} returned null unexpectedly`);
+  }
+  return data;
+}
+
 export async function loadGlobalConfigurations(): Promise<GlobalConfiguration[]> {
   const data = await fetchWithCache<GlobalConfiguration[]>(
     "global-configurations",

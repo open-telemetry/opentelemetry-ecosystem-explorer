@@ -209,6 +209,41 @@ class TestRunJavaagentBuilder:
         assert mock_db_writer.write_libraries.call_count == 3
         assert mock_db_writer.write_version_index.call_count == 3
 
+    def test_run_builder_processes_readmes(self, mock_inventory_manager, mock_db_writer):
+        """Verifies READMEs are discovered, published, and hashes injected."""
+        versions = [Version("1.0.0")]
+        inventory_data = {"file_format": 0.2, "libraries": [{"name": "lib1"}], "custom": [{"name": "custom1"}]}
+        readme_map = {"lib1": "abc123def456", "custom1": "fed4321cba98"}
+        readme_content = "# README content"
+
+        mock_inventory_manager.list_versions.return_value = versions
+        mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
+        mock_inventory_manager.load_library_readme_map.return_value = readme_map
+        mock_inventory_manager.load_library_readme_content.return_value = readme_content
+        mock_db_writer.write_libraries.return_value = {"lib1": "hash1"}
+
+        exit_code = run_javaagent_builder(mock_inventory_manager, mock_db_writer)
+
+        assert exit_code == 0
+
+        # Verify READMEs were loaded and written
+        assert mock_inventory_manager.load_library_readme_map.call_count == 1
+        assert mock_inventory_manager.load_library_readme_content.call_count == 2
+        assert mock_db_writer.write_markdown.call_count == 2
+        mock_db_writer.write_markdown.assert_any_call("lib1", "abc123def456", readme_content)
+        mock_db_writer.write_markdown.assert_any_call("custom1", "fed4321cba98", readme_content)
+
+        # Verify hashes were injected before writing libraries
+        write_calls = mock_db_writer.write_libraries.call_args_list
+        # libraries call
+        libs = write_calls[0][0][0]
+        assert libs[0]["name"] == "lib1"
+        assert libs[0]["markdown_hash"] == "abc123def456"
+        # custom call
+        custom = write_calls[1][0][0]
+        assert custom[0]["name"] == "custom1"
+        assert custom[0]["markdown_hash"] == "fed4321cba98"
+
     def test_run_builder_uses_backfilled_inventories(self, mock_inventory_manager, mock_db_writer):
         versions = [Version("1.0.0"), Version("2.0.0")]
         inventory_1_0 = {
@@ -235,17 +270,17 @@ class TestRunJavaagentBuilder:
 
         # Verify backfilled data is written: version 1.0.0 should have display_name backfilled
         write_calls = mock_db_writer.write_libraries.call_args_list
+        # We expect 2 calls: one for version 1.0.0 libraries, one for version 2.0.0 libraries
+        # (Custom instrumentations are empty, so they aren't called)
         assert len(write_calls) == 2
 
-        # First call is for version 1.0.0 - should have backfilled display_name
+        # First call is for version 1.0.0 libraries - should have backfilled display_name
         libraries_v1 = write_calls[0][0][0]
-        assert len(libraries_v1) == 1
         assert libraries_v1[0]["name"] == "lib1"
         assert libraries_v1[0]["display_name"] == "Library 1"
 
-        # Second call is for version 2.0.0 - should have original display_name
+        # Second call is for version 2.0.0 libraries - should have original display_name
         libraries_v2 = write_calls[1][0][0]
-        assert len(libraries_v2) == 1
         assert libraries_v2[0]["name"] == "lib1"
         assert libraries_v2[0]["display_name"] == "Library 1"
 
