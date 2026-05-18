@@ -52,16 +52,10 @@ vi.mock("@/hooks/use-configuration-builder", () => ({
   }),
 }));
 
-const useLatestJavaAgentVersionMock = vi.fn();
-vi.mock("@/hooks/use-latest-java-agent-version", () => ({
-  useLatestJavaAgentVersion: () => useLatestJavaAgentVersionMock(),
-}));
-
 const downloadSpy = vi.spyOn(downloadModule, "downloadText").mockImplementation(() => {});
 
 describe("PreviewCard", () => {
   beforeEach(() => {
-    useLatestJavaAgentVersionMock.mockReturnValue("2.27.0");
     downloadSpy.mockClear();
   });
 
@@ -71,7 +65,7 @@ describe("PreviewCard", () => {
   });
 
   it("renders the Output Preview title and action buttons", () => {
-    render(<PreviewCard schema={schema} />);
+    render(<PreviewCard schema={schema} javaAgentVersion="2.27.0" />);
     expect(screen.getByText("Output Preview")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /copy/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /download/i })).toBeInTheDocument();
@@ -80,25 +74,25 @@ describe("PreviewCard", () => {
   });
 
   it("triggers enableAllSections on Add all click", () => {
-    render(<PreviewCard schema={schema} />);
+    render(<PreviewCard schema={schema} javaAgentVersion="2.27.0" />);
     fireEvent.click(screen.getByRole("button", { name: /add all/i }));
     expect(enableAllSections).toHaveBeenCalledTimes(1);
   });
 
   it("Reset calls resetToDefaults (no confirm when state is clean)", () => {
-    render(<PreviewCard schema={schema} />);
+    render(<PreviewCard schema={schema} javaAgentVersion="2.27.0" />);
     fireEvent.click(screen.getByRole("button", { name: /reset/i }));
     expect(resetToDefaults).toHaveBeenCalledTimes(1);
   });
 
   it("triggers validateAll on Copy click regardless of clipboard availability", () => {
-    render(<PreviewCard schema={schema} />);
+    render(<PreviewCard schema={schema} javaAgentVersion="2.27.0" />);
     fireEvent.click(screen.getByRole("button", { name: /copy/i }));
     expect(validateAll).toHaveBeenCalledTimes(1);
   });
 
   it("renders the YAML output via YamlCodeBlock with token spans", () => {
-    const { container } = render(<PreviewCard schema={schema} />);
+    const { container } = render(<PreviewCard schema={schema} javaAgentVersion="2.27.0" />);
     const pre = container.querySelector("pre");
     expect(pre).not.toBeNull();
     expect(pre?.querySelectorAll("span.y-key").length).toBeGreaterThan(0);
@@ -107,7 +101,7 @@ describe("PreviewCard", () => {
   });
 
   it("includes the resolved Java agent version in the rendered YAML header", () => {
-    render(<PreviewCard schema={schema} />);
+    render(<PreviewCard schema={schema} javaAgentVersion="2.27.0" />);
     const codeBlock = screen.getByLabelText("Output Preview").querySelector("pre");
     expect(codeBlock).not.toBeNull();
     expect(codeBlock?.textContent).toContain("Schema version: 1.0.0");
@@ -115,15 +109,20 @@ describe("PreviewCard", () => {
   });
 
   it("renders the header without the agent line while the version is still loading", () => {
-    useLatestJavaAgentVersionMock.mockReturnValue(undefined);
-    render(<PreviewCard schema={schema} />);
+    render(<PreviewCard schema={schema} javaAgentVersion="" />);
     const codeBlock = screen.getByLabelText("Output Preview").querySelector("pre");
     expect(codeBlock?.textContent).toContain("Schema version: 1.0.0");
     expect(codeBlock?.textContent).not.toContain("Java agent:");
   });
 
+  it("reflects a non-latest Java agent version selection in the YAML header", () => {
+    render(<PreviewCard schema={schema} javaAgentVersion="2.26.1" />);
+    const codeBlock = screen.getByLabelText("Output Preview").querySelector("pre");
+    expect(codeBlock?.textContent).toContain("Java agent: 2.26.1");
+  });
+
   it("downloads the YAML with the schema-versioned filename and agent-stamped content", () => {
-    render(<PreviewCard schema={schema} />);
+    render(<PreviewCard schema={schema} javaAgentVersion="2.27.0" />);
     fireEvent.click(screen.getByRole("button", { name: /download/i }));
     expect(downloadSpy).toHaveBeenCalledTimes(1);
     const [filename, body, mime] = downloadSpy.mock.calls[0];
