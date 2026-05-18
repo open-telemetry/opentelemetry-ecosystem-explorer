@@ -65,7 +65,7 @@ jobs:
         run: mkdir -p screenshots
 
       - name: Take screenshots
-        run: node scripts/take-screenshots.mjs
+        run: bun run screenshots:capture
 
       - name: Upload screenshots artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -93,9 +93,14 @@ jobs:
 
       - name: Compute pixel diff vs main baseline
         if: steps.baseline.outputs.exists == 'true'
+        # `|| true` is intentional: the diff is informational and surfaces in
+        # the PR comment built by screenshots-commit.yml. Reviewers judge
+        # visual deltas; CI does not gate on them. diff-screenshots.mjs still
+        # exits non-zero when budgets are exceeded so the JSON report stays
+        # accurate locally — we just don't want that to fail the job.
         run: |
           mkdir -p /tmp/diffs
-          node scripts/diff-screenshots.mjs /tmp/baseline/main screenshots /tmp/diffs \
+          bun run screenshots:diff /tmp/baseline/main screenshots /tmp/diffs \
             > /tmp/diff-report.json \
             || true
           if command -v jq > /dev/null; then

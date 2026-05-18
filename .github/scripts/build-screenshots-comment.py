@@ -120,7 +120,11 @@ def main() -> None:
     run_id = os.environ["WORKFLOW_RUN_ID"]
     repo = os.environ["REPO"]
     output_path = Path(os.environ["OUTPUT_PATH"])
-    diff_report_path = Path(os.environ.get("DIFF_REPORT_PATH", ""))
+    # Treat unset/empty DIFF_REPORT_PATH as missing. Path("") would resolve
+    # to Path("."), which is always truthy and would cause render_diff_section
+    # to try reading the current directory as JSON.
+    diff_report_raw = os.environ.get("DIFF_REPORT_PATH")
+    diff_report_path = Path(diff_report_raw) if diff_report_raw else None
 
     short_sha = head_sha[:7]
     commit_url = f"https://github.com/{head_repo}/commit/{head_sha}"

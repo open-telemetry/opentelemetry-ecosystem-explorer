@@ -61,7 +61,7 @@ jobs:
         working-directory: ecosystem-explorer
         run: |
           mkdir -p screenshots
-          node scripts/take-screenshots.mjs
+          bun run screenshots:capture
 
       - name: Stash baseline outside the working tree
         run: |

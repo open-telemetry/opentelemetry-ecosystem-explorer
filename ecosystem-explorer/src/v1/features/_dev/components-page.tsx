@@ -71,13 +71,18 @@ function Section({
 }
 
 export function DevComponentsPage() {
+  // Wrapper is a <section>, not <main>: V1App.tsx and LegacyApp.tsx already
+  // render a <main> around every route, and nested landmarks would fail axe.
   return (
-    <main
+    <section
       data-testid="dev-components-page"
+      aria-labelledby="dev-components-heading"
       className="bg-background mx-auto max-w-5xl space-y-8 px-6 py-12"
     >
       <header className="space-y-2">
-        <h1 className="text-foreground text-2xl font-bold">Component showcase</h1>
+        <h1 id="dev-components-heading" className="text-foreground text-2xl font-bold">
+          Component showcase
+        </h1>
         <p className="text-muted-foreground text-sm">
           Dev-only surface that renders every v1 primitive in its canonical states. Captured by the
           screenshot workflow for visual regression and a11y baselines.
@@ -112,6 +117,6 @@ export function DevComponentsPage() {
       >
         <StabilityBadge stability="development" />
       </Section>
-    </main>
+    </section>
   );
 }
