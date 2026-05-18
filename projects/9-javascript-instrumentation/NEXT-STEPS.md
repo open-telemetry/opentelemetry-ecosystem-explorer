@@ -7,8 +7,6 @@ status: in-progress
 last_updated: "2026-05-17"
 ---
 
-# Roadmap - JavaScript Instrumentation Research
-
 ## Done
 
 - [x] Cloned js-contrib repo and audited all 47 packages
@@ -19,13 +17,17 @@ last_updated: "2026-05-17"
 
 ## In progress
 
-- [ ] Deeper pass on the 8 packages with structured telemetry, can their data be parsed reliably despite heading differences?
+- [ ] Deeper pass on the 8 packages with structured telemetry, can their data be parsed reliably
+      despite heading differences?
 - [ ] Draft Phase 1 watcher architecture
 
 ## Open questions
 
-1. Should the watcher use a sparse Git clone or GitHub API calls? (Git clone is faster for bulk reads, API is simpler for CI)
-2. What is the minimum viable schema for Phase 1 - which fields must be present before the Explorer can show a JS package page?
-3. Is there appetite in the js-contrib community to standardize telemetry documentation format or add metadata.yaml files?
+1. Should the watcher use a sparse Git clone or GitHub API calls? (Git clone is faster for bulk
+   reads, API is simpler for CI)
+2. What is the minimum viable schema for Phase 1 - which fields must be present before the Explorer
+   can show a JS package page?
+3. Is there appetite in the js-contrib community to standardize telemetry documentation format or
+   add metadata.yaml files?
 4. How should the Explorer handle the 6 packages with no supported versions heading?
 5. Should unmaintained packages (empty owner arrays) be included in the registry or excluded?

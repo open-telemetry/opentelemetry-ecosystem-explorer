@@ -7,9 +7,8 @@ status: in-progress
 last_updated: "2026-05-17"
 ---
 
-# Research - JavaScript Instrumentation Metadata
-
-Research into how JavaScript instrumentation metadata can be collected and stored in the Ecosystem Explorer registry.
+Research into how JavaScript instrumentation metadata can be collected and stored in the Ecosystem
+Explorer registry.
 
 ## What lives here
 
@@ -20,9 +19,11 @@ Research into how JavaScript instrumentation metadata can be collected and store
 
 ## Goal
 
-Produce a proposal for how to obtain and store JavaScript instrumentation metadata, identifying what can be automated today and what requires upstream work.
+Produce a proposal for how to obtain and store JavaScript instrumentation metadata, identifying what
+can be automated today and what requires upstream work.
 
 ## Related
 
 - Issue: [#9](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/9)
-- Upstream repo: [opentelemetry-js-contrib](https://github.com/open-telemetry/opentelemetry-js-contrib)
+- Upstream repo:
+  [opentelemetry-js-contrib](https://github.com/open-telemetry/opentelemetry-js-contrib)
