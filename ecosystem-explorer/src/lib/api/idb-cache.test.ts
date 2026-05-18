@@ -15,7 +15,15 @@
  */
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import "fake-indexeddb/auto";
-import { initDB, getCached, setCached, clearAllCached, closeDB, STORES } from "./idb-cache";
+import {
+  initDB,
+  getCached,
+  setCached,
+  clearAllCached,
+  closeDB,
+  pruneOldEntries,
+  STORES,
+} from "./idb-cache";
 
 describe("idb-cache", () => {
   beforeEach(async () => {
@@ -100,7 +108,7 @@ describe("idb-cache", () => {
       expect(result).toEqual(data);
     });
 
-    it("should return null and delete entries older than 24 hours", async () => {
+    it("should return null for entries older than 24 hours but keep them for stale fallback", async () => {
       const key = "stale-key";
       const data = { value: "stale" };
       const now = Date.now();
@@ -110,10 +118,23 @@ describe("idb-cache", () => {
       const result = await getCached<typeof data>(key, STORES.METADATA);
 
       expect(result).toBeNull();
-      // Confirm it was deleted from the store
+      // Entry must be KEPT (not deleted) to support stale-cache fallback
       const db = await initDB();
       const raw = await db.get(STORES.METADATA, key);
-      expect(raw).toBeUndefined();
+      expect(raw).toBeDefined();
+      expect(raw.data).toEqual(data);
+    });
+
+    it("should return stale data when allowExpired is true", async () => {
+      const key = "stale-key";
+      const data = { value: "stale" };
+      const now = Date.now();
+
+      await setCached(key, data, STORES.METADATA);
+      vi.setSystemTime(now + 25 * 60 * 60 * 1000);
+      const result = await getCached<typeof data>(key, STORES.METADATA, { allowExpired: true });
+
+      expect(result).toEqual(data);
     });
 
     it("should return null for non-existent keys", async () => {
@@ -168,6 +189,50 @@ describe("idb-cache", () => {
       ).resolves.not.toThrow();
       const result = await getCached("test", STORES.INSTRUMENTATIONS);
       expect(result).toEqual({ data: "value" });
+    });
+  });
+
+  describe("pruneOldEntries", () => {
+    it("should remove entries not accessed within the threshold", async () => {
+      const now = Date.now();
+
+      await setCached("new-key", { data: "new" }, STORES.METADATA);
+
+      vi.setSystemTime(now - 10 * 24 * 60 * 60 * 1000); // 10 days ago
+      await setCached("stale-key", { data: "stale" }, STORES.METADATA);
+
+      vi.setSystemTime(now);
+      await pruneOldEntries(7);
+
+      const newResult = await getCached("new-key", STORES.METADATA);
+      expect(newResult).not.toBeNull();
+
+      const db = await initDB();
+      expect(await db.get(STORES.METADATA, "stale-key")).toBeUndefined();
+    });
+
+    it("should NOT prune more than once per 24 hours", async () => {
+      const startTime = Date.now();
+
+      vi.setSystemTime(startTime - 10 * 24 * 60 * 60 * 1000);
+      await setCached("old-1", { d: 1 }, STORES.METADATA);
+      vi.setSystemTime(startTime);
+      await pruneOldEntries(7);
+
+      const db = await initDB();
+      expect(await db.get(STORES.METADATA, "old-1")).toBeUndefined();
+
+      // Immediately after: guard should block second prune
+      vi.setSystemTime(startTime - 10 * 24 * 60 * 60 * 1000);
+      await setCached("old-2", { d: 2 }, STORES.METADATA);
+      vi.setSystemTime(startTime + 1000);
+      await pruneOldEntries(7);
+      expect(await db.get(STORES.METADATA, "old-2")).toBeDefined();
+
+      // 25 hours later: guard expires, prune runs again
+      vi.setSystemTime(startTime + 25 * 60 * 60 * 1000);
+      await pruneOldEntries(7);
+      expect(await db.get(STORES.METADATA, "old-2")).toBeUndefined();
     });
   });
 });

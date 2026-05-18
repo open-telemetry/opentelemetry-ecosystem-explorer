@@ -46,7 +46,7 @@ export function PreviewCard({ schema }: PreviewCardProps): JSX.Element {
   return (
     <section
       aria-label="Output Preview"
-      className="border-border/50 bg-card/40 space-y-3 rounded-xl border p-5 lg:sticky lg:top-24"
+      className="border-border/50 bg-card/40 space-y-3 rounded-xl border p-5 lg:sticky lg:top-20 lg:self-start"
     >
       <header className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="text-foreground text-sm font-medium">Output Preview</h3>
