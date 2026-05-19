@@ -4,7 +4,7 @@ issue: 84
 type: index
 phase: meta
 status: planning
-last_updated: "2026-05-13"
+last_updated: "2026-05-19"
 ---
 
 > [!NOTE]
@@ -78,10 +78,10 @@ open questions.
 
 | Phase | File                                                   | Status      |
 | ----- | ------------------------------------------------------ | ----------- |
-| 1     | [`00-foundation.md`](./00-foundation.md)               | planning    |
-| 1     | [`00-foundation-audit.md`](./00-foundation-audit.md)   | planning    |
-| 1     | [`v1-routing-pivot.md`](./v1-routing-pivot.md)         | in-progress |
-| 2     | [`01-home-page.md`](./01-home-page.md)                 | planning    |
+| 1     | [`00-foundation.md`](./00-foundation.md)               | complete    |
+| 1     | [`00-foundation-audit.md`](./00-foundation-audit.md)   | complete    |
+| 1     | [`v1-routing-pivot.md`](./v1-routing-pivot.md)         | complete    |
+| 2     | [`01-home-page.md`](./01-home-page.md)                 | in-progress |
 | 3     | [`02-ecosystem-landing.md`](./02-ecosystem-landing.md) | planning    |
 | 4     | [`03-list-page.md`](./03-list-page.md)                 | planning    |
 | 5     | [`04-detail-page.md`](./04-detail-page.md)             | planning    |

@@ -3,8 +3,8 @@ title: "Phase 2 — Home page"
 issue: 84
 type: plan
 phase: 2
-status: planning
-last_updated: "2026-05-06"
+status: in-progress
+last_updated: "2026-05-19"
 ---
 
 > [!NOTE]
@@ -93,6 +93,78 @@ A returning user should land directly on the ⌘K search or the recent activity 
 9. **Tests** — visual regression on hero + stats; unit tests on ⌘K binding; integration test that
    clicking a stat link goes to the right route.
 
+### PR 1 — implementation notes (locked 2026-05-19)
+
+PR 1 ships the `<CoverBlock>` primitive, a `<HomeV1 />` shell that composes CoverBlock plus
+skeleton-box placeholders for the four sections PRs 2-6 will fill, and the `/` route swap in
+`V1App.tsx`. Branch: `feat/84-phase2-pr1-cover-block`, off current `main` (post-#487). Re-derives
+from `feat/84-tmp-full-layout` rather than cherry-picking the bundled commit.
+
+Locked decisions (per the 2026-05-19 grilling session — full rationale in
+[`NEXT-STEPS.md`](./NEXT-STEPS.md) decision log):
+
+**Component shape**
+
+- `<CoverBlock>` is reusable across home and Phase 3 ecosystem-landing. Props: `logo`, `eyebrow`,
+  `title`, `lead`, `ctas`, `aside`, `children`, `headingId`, `className`. `<HomeV1 />` mounts one
+  CoverBlock with home-specific content + skeletons for the four sections below.
+- CTAs locked verbatim: primary `"Browse components"` → `/collector`; secondary
+  `"Read the overview"` → `https://opentelemetry.io/docs/what-is-opentelemetry/` with
+  `target="_blank"` `rel="noopener"`.
+- Title gradient via `background-clip: text` on `.td-cover-block__title-accent`, running
+  `--otel-blue-hsl` → `--otel-orange-hsl` directly (cover-block is always dark; the theme-flipping
+  `--hero-accent-*` aliases would invert the gradient pointlessly).
+
+**Background visual**
+
+- Full opentelemetry.io-style hero treatment: linear gradient base (`--cover-block-bg-from-hsl` →
+  `--cover-block-bg-to-hsl`) + two radial glows (orange + purple via `--otel-orange-hsl` /
+  `--otel-purple-hsl`) + inline-SVG grid-pattern overlay. All pure CSS, no asset dependency. Closes
+  the open question on hero background image (struck below).
+
+**Placeholders**
+
+- Skeleton-box treatment for the four PR 2-6 slots inside `<HomeV1 />` (aria-labels: `stats`,
+  `ecosystems`, `signals`, `recent-activity`) and for the `<GlobalSearch>` slot inside CoverBlock.
+- Skeleton-everywhere is the locked default for PR-staged placeholders across this redesign — gives
+  reviewers a non-broken preview.
+
+**CSS file scope**
+
+- Two new partials added in PR 1: `src/v1/styles/cover-block.css` (reusable hero rules) +
+  `src/v1/styles/home.css` (HomeV1 wrapper + skeleton rules). Both `@import`-ed into
+  `src/v1/styles/index.css`. PRs 2-6 grow `home.css` as real components replace skeletons.
+
+**Token consolidation (the "concise and in-sync" sweep)**
+
+- Add `--otel-purple-hsl: 230 38% 49%` to `src/styles/tokens.css` as a primitive alongside the
+  existing `--otel-blue-hsl` / `--otel-orange-hsl`.
+- Refactor `src/v1/styles/cncf-callout.css` line 28: hardcoded `#4f62ad` →
+  `hsl(var(--otel-purple-hsl))`.
+- New `--stats-band-bg-hsl` references `var(--otel-purple-hsl)` rather than duplicating the raw HSL
+  value.
+- CoverBlock self-scopes dark via `--cover-block-*` tokens (not `--background-hsl`). Light-theme
+  `.v1-app` override block explicitly **redeclares** all `--cover-block-*` and `--stats-band-*`
+  tokens with the same values as the dark block — symmetric contract, no implicit fallthrough.
+
+**Route swap**
+
+- `V1App.tsx` route table flips `/` from legacy `<HomePage />` to `<HomeV1 />`. Production unchanged
+  (`V1_REDESIGN` off on main branch deploys); v1 preview shows hero + 4 skeletons.
+
+**Showcase + tests + baseline**
+
+- `/_dev/components` (from #487) gets two `<CoverBlock>` variants: title-only and title+aside
+  (exercises the `aside` slot used by Phase 3 ecosystem-landing). `<HomeV1 />` not added to showcase
+  — covered by real `/` snapshot.
+- Test coverage hybrid: full semantic assertions on `<CoverBlock>` (h1, `aria-labelledby`, slot
+  rendering, modifier classes, `className` passthrough); structural assertions on `<HomeV1 />`
+  (composition + skeleton order + aria-labels).
+- Visual-regression baseline updates automatically on merge via `screenshots-baseline.yml`. PR
+  description calls out expected diffs at `/` (route swap) and `/_dev/components` (CoverBlock
+  added). CI gating behaviour on over-budget diffs verified during implementation; threshold tuned
+  if needed.
+
 ## Acceptance criteria
 
 - Above-the-fold (hero + search) is fully usable with no scroll on a 1280×800 viewport.
@@ -112,5 +184,3 @@ A returning user should land directly on the ⌘K search or the recent activity 
   (The brief proposes cross-ecosystem; we should confirm scope before building the index.)
 - Is there an existing `activity.json` or similar in `ecosystem-automation`, or do we need to
   generate one as part of this project?
-- Hero bg image: lifted from opentelemetry.io's home, our own version, or pure CSS gradient (current
-  mockup)?
