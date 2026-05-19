@@ -29,6 +29,11 @@ const FEATURE_FLAGS = [
 
   // V1 Redesign - Still in development - https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/84
   "V1_REDESIGN",
+
+  // Dev-only component showcase at /_dev/components. Off in production; the
+  // screenshot CI builds enable it so the visual-regression and a11y baseline
+  // can cover the design-system primitives in isolation.
+  "DEV_SHOWCASE",
 ] as const;
 
 const FEATURE_FLAG_PREFIX = "VITE_FEATURE_FLAG_";
