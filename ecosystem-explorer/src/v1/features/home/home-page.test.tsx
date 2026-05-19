@@ -57,13 +57,23 @@ describe("HomeV1 (composition)", () => {
 
     // CoverBlock itself renders a <section> (aria-labelledby, no aria-label),
     // so it isn't picked up here — these are the four PR 2-6 placeholder slots.
-    expect(sections).toEqual(["stats", "ecosystems", "signals", "recent-activity"]);
+    expect(sections).toEqual([
+      "Ecosystem statistics",
+      "Featured ecosystems",
+      "Browse by signal",
+      "Recent activity",
+    ]);
   });
 
   it("renders exactly one skeleton element inside each of the four placeholder sections", () => {
     const { container } = render(<HomeV1 />);
 
-    for (const label of ["stats", "ecosystems", "signals", "recent-activity"]) {
+    for (const label of [
+      "Ecosystem statistics",
+      "Featured ecosystems",
+      "Browse by signal",
+      "Recent activity",
+    ]) {
       const section = container.querySelector(`section[aria-label="${label}"]`);
       expect(section, `section[aria-label="${label}"] should exist`).not.toBeNull();
       const skeletons = section!.querySelectorAll(".td-home__skeleton");

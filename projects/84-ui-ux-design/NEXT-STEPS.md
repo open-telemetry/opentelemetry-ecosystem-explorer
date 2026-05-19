@@ -179,6 +179,33 @@ data-pipeline PR before 04b can ship.
 
 ---
 
+## Follow-ups (deferred from /simplify pass on Phase 2 PR 1, 2026-05-19)
+
+Surfaced during the /simplify review of `feat/84-phase2-pr1-cover-block`. Each is non-blocking; fold
+into the natural next PR rather than expanding PR 1's scope.
+
+- **Shared focus-ring rule.** `buttons.css` and `footer.css` both define orange-token focus rings
+  with slightly different offsets. When Phase 2 PR 2 lands `<GlobalSearch>` (which needs the same
+  ring), introduce a `:where(.td-btn, .td-footer__links-item a, .td-search__submit):focus-visible`
+  rule (or a `.td-focus-ring` mixin) so this is the last drift.
+- **Tighten tests against BEM-internal class names.** `cover-block.test.tsx` and
+  `home-page.test.tsx` query by `.td-cover-block__logo`, `.td-home__skeleton--search`, etc.
+  Acceptable today because the screenshot baseline hooks on the same selectors, but once that
+  contract is documented, prefer `getByRole`/`getByText` queries or `data-*` attributes for
+  slot-presence assertions.
+- **`Section` `bare` flag in showcase.** `_dev/components-page.tsx`'s `Section` helper grew a
+  boolean prop to skip the pill frame for CoverBlock variants. Split into `PillSection` /
+  `BareSection` (or inline the bare branch at the two call sites) when the next variant lands.
+- **Trim PR-numbered narration in code comments.** Several leading comments in `cover-block.tsx`,
+  `home-page.tsx`, `home.css`, `cover-block.css`, and `components-page.tsx` reference "PRs 2-6 will
+  fill" / "Phase 3 reuses". Rotates fast. Clean up at Phase 2 close-out.
+- **`font-size: 16px` pixel-anchor repetition.** Every v1 chrome partial (navbar/theme-toggle/
+  sub-nav/cover-block/cncf-callout/footer) opens with `font-size: 16px` and the same comment. Hoist
+  into a single `.v1-app { font-size: 16px }` rule and drop the per-partial overrides when someone
+  touches the chrome stylesheet next.
+
+---
+
 ## Decisions blocking progress
 
 Foundation-scoped decisions (#1, #2, #3, #5, #6) were locked on 2026-05-06 — see the Decision log at

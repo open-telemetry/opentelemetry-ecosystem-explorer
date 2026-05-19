@@ -130,16 +130,20 @@ Locked decisions (per the 2026-05-19 grilling session — full rationale in
 
 #### Placeholders
 
-- Skeleton-box treatment for the four PR 2-6 slots inside `<HomeV1 />` (aria-labels: `stats`,
-  `ecosystems`, `signals`, `recent-activity`) and for the `<GlobalSearch>` slot inside CoverBlock.
+- Skeleton-box treatment for the four PR 2-6 slots inside `<HomeV1 />` (aria-labels:
+  `"Ecosystem statistics"`, `"Featured ecosystems"`, `"Browse by signal"`, `"Recent activity"` -
+  human-readable for screen readers; the matching modifier classes use slug forms `--stats`,
+  `--ecosystems`, `--signals`, `--recent-activity`) and for the `<GlobalSearch>` slot inside
+  CoverBlock.
 - Skeleton-everywhere is the locked default for PR-staged placeholders across this redesign — gives
   reviewers a non-broken preview.
 
 #### CSS file scope
 
-- Two new partials added in PR 1: `src/v1/styles/cover-block.css` (reusable hero rules) +
-  `src/v1/styles/home.css` (HomeV1 wrapper + skeleton rules). Both `@import`-ed into
-  `src/v1/styles/index.css`. PRs 2-6 grow `home.css` as real components replace skeletons.
+- Three new partials added in PR 1: `src/v1/styles/cover-block.css` (reusable hero rules),
+  `src/v1/styles/buttons.css` (the `.td-btn` primitive used by CoverBlock CTAs and future
+  consumers), and `src/v1/styles/home.css` (HomeV1 wrapper + skeleton rules). All three `@import`-ed
+  into `src/v1/styles/index.css`. PRs 2-6 grow `home.css` as real components replace skeletons.
 
 #### Token consolidation (the "concise and in-sync" sweep)
 

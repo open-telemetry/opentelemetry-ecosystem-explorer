@@ -82,6 +82,20 @@ function Section({
   );
 }
 
+// Showcase CTAs are identical across the two CoverBlock variants below
+// (dead-click stubs for visual exercise only). Hoisted so future styling
+// or accessibility tweaks touch one place.
+const showcaseCtas = (
+  <>
+    <button type="button" className="td-btn td-btn--primary">
+      Primary CTA
+    </button>
+    <button type="button" className="td-btn td-btn--outline-light">
+      Secondary CTA
+    </button>
+  </>
+);
+
 export function DevComponentsPage() {
   // Wrapper is a <section>, not <main>: V1App.tsx and LegacyApp.tsx already
   // render a <main> around every route, and nested landmarks would fail axe.
@@ -92,7 +106,7 @@ export function DevComponentsPage() {
       className="bg-background mx-auto max-w-5xl space-y-8 px-6 py-12"
     >
       <header className="space-y-2">
-        <h1 id="dev-components-heading" className="text-foreground text-2xl font-bold">
+        <h1 id="dev-components-heading" className="text-foreground text-2xl font-semibold">
           Component showcase
         </h1>
         <p className="text-muted-foreground text-sm">
@@ -132,16 +146,7 @@ export function DevComponentsPage() {
             </>
           }
           lead="Title-only variant — used by the home page hero."
-          ctas={
-            <>
-              <a className="td-btn td-btn--primary" href="#">
-                Primary CTA
-              </a>
-              <a className="td-btn td-btn--outline-light" href="#">
-                Secondary CTA
-              </a>
-            </>
-          }
+          ctas={showcaseCtas}
         />
       </Section>
 
@@ -154,16 +159,7 @@ export function DevComponentsPage() {
             </>
           }
           lead="Title + aside variant — exercises the `td-cover-block--split` modifier."
-          ctas={
-            <>
-              <a className="td-btn td-btn--primary" href="#">
-                Primary CTA
-              </a>
-              <a className="td-btn td-btn--outline-light" href="#">
-                Secondary CTA
-              </a>
-            </>
-          }
+          ctas={showcaseCtas}
           aside={
             <div className="td-cover-block__release-card-placeholder">
               Aside slot (Phase 3 ecosystem-landing renders &lt;ReleaseCard /&gt; here)

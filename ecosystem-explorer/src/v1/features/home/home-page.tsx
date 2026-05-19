@@ -58,19 +58,19 @@ export function HomeV1() {
         <div className="td-home__skeleton td-home__skeleton--search" aria-hidden="true" />
       </CoverBlock>
 
-      <section aria-label="stats">
+      <section aria-label="Ecosystem statistics">
         <div className="td-home__skeleton td-home__skeleton--stats" aria-hidden="true" />
       </section>
 
-      <section aria-label="ecosystems">
+      <section aria-label="Featured ecosystems">
         <div className="td-home__skeleton td-home__skeleton--ecosystems" aria-hidden="true" />
       </section>
 
-      <section aria-label="signals">
+      <section aria-label="Browse by signal">
         <div className="td-home__skeleton td-home__skeleton--signals" aria-hidden="true" />
       </section>
 
-      <section aria-label="recent-activity">
+      <section aria-label="Recent activity">
         <div className="td-home__skeleton td-home__skeleton--recent-activity" aria-hidden="true" />
       </section>
     </div>

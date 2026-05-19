@@ -21,6 +21,7 @@
  * - navbar.css       — v1 navbar (`.td-navbar`) — mirrors opentelemetry.io
  * - theme-toggle.css — v1 theme toggle dropdown — mirrors opentelemetry.io
  * - sub-nav.css      — v1 breadcrumb sub-nav row beneath the navbar
+ * - buttons.css      — v1 `.td-btn` primitive (primary, outline-light variants)
  * - cover-block.css  — v1 hero shell (`.td-cover-block`) — mirrors opentelemetry.io
  * - home.css         — v1 home page sections (stats band, skeleton sections)
  * - cncf-callout.css — sitewide CNCF band above the footer
@@ -35,6 +36,7 @@
 @import "./navbar.css";
 @import "./theme-toggle.css";
 @import "./sub-nav.css";
+@import "./buttons.css";
 @import "./cover-block.css";
 @import "./home.css";
 @import "./cncf-callout.css";
