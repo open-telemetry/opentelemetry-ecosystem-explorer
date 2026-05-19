@@ -41,11 +41,30 @@
   .v1-app {
     --background-hsl: 210 11% 15%; /* #212529 */
     --foreground-hsl: 210 11% 88%; /* #dee2e6 */
+
+    /*
+     * Cover-block + stats-band stay dark across themes by design
+     * (per the v1 mockup + opentelemetry.io hero treatment). The light-theme
+     * override below redeclares these with the same values — symmetric
+     * contract, no implicit fallthrough.
+     */
+    --cover-block-bg-from-hsl: 232 31% 15%; /* #1a1d33 */
+    --cover-block-bg-to-hsl: 222 25% 6%; /* #0b0d12 */
+    --cover-block-fg-hsl: 0 0% 100%;
+    --stats-band-bg-hsl: var(--otel-purple-hsl);
+    --stats-band-fg-hsl: 0 0% 100%;
   }
 
   [data-theme="light"].v1-app,
   [data-theme="light"] .v1-app {
     --background-hsl: 0 0% 100%;
     --foreground-hsl: 210 11% 15%;
+
+    /* Cover-block + stats-band stay dark across themes (per mockup + opentelemetry.io). */
+    --cover-block-bg-from-hsl: 232 31% 15%; /* #1a1d33 */
+    --cover-block-bg-to-hsl: 222 25% 6%; /* #0b0d12 */
+    --cover-block-fg-hsl: 0 0% 100%;
+    --stats-band-bg-hsl: var(--otel-purple-hsl);
+    --stats-band-fg-hsl: 0 0% 100%;
   }
 }

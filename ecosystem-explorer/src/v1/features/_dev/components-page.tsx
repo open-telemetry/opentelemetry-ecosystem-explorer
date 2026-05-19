@@ -29,6 +29,7 @@
 import { GlowBadge } from "@/components/ui/glow-badge";
 import { StabilityBadge } from "@/components/ui/stability-badge";
 import { type Stability, StatusPill } from "@/components/ui/status-pill";
+import { CoverBlock } from "@/v1/components/home/cover-block";
 
 const STABILITIES: Stability[] = [
   "development",
@@ -53,19 +54,30 @@ function Section({
   id,
   title,
   children,
+  bare = false,
 }: {
   id: string;
   title: string;
   children: React.ReactNode;
+  /**
+   * When true, omits the inline flex-wrap wrapper used for pill primitives.
+   * Use for full-width primitives (e.g. CoverBlock) that bring their own
+   * layout and shouldn't be constrained by the showcase frame.
+   */
+  bare?: boolean;
 }) {
   return (
     <section aria-labelledby={`${id}-heading`} className="space-y-3">
       <h2 id={`${id}-heading`} className="text-foreground text-lg font-semibold">
         {title}
       </h2>
-      <div className="bg-card/40 border-border/40 flex flex-wrap items-center gap-3 rounded-md border p-4">
-        {children}
-      </div>
+      {bare ? (
+        children
+      ) : (
+        <div className="bg-card/40 border-border/40 flex flex-wrap items-center gap-3 rounded-md border p-4">
+          {children}
+        </div>
+      )}
     </section>
   );
 }
@@ -109,6 +121,55 @@ export function DevComponentsPage() {
             {v}
           </GlowBadge>
         ))}
+      </Section>
+
+      <Section id="cover-block-title-only" title="CoverBlock (title-only variant)" bare>
+        <CoverBlock
+          headingId="cover-block-showcase-title-only"
+          title={
+            <>
+              Showcase <span className="td-cover-block__title-accent">Cover Block</span>
+            </>
+          }
+          lead="Title-only variant — used by the home page hero."
+          ctas={
+            <>
+              <a className="td-btn td-btn--primary" href="#">
+                Primary CTA
+              </a>
+              <a className="td-btn td-btn--outline-light" href="#">
+                Secondary CTA
+              </a>
+            </>
+          }
+        />
+      </Section>
+
+      <Section id="cover-block-with-aside" title="CoverBlock (title + aside, split layout)" bare>
+        <CoverBlock
+          headingId="cover-block-showcase-with-aside"
+          title={
+            <>
+              Showcase <span className="td-cover-block__title-accent">Cover Block</span>
+            </>
+          }
+          lead="Title + aside variant — exercises the `td-cover-block--split` modifier."
+          ctas={
+            <>
+              <a className="td-btn td-btn--primary" href="#">
+                Primary CTA
+              </a>
+              <a className="td-btn td-btn--outline-light" href="#">
+                Secondary CTA
+              </a>
+            </>
+          }
+          aside={
+            <div className="td-cover-block__release-card-placeholder">
+              Aside slot (Phase 3 ecosystem-landing renders &lt;ReleaseCard /&gt; here)
+            </div>
+          }
+        />
       </Section>
 
       <Section

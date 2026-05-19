@@ -1,0 +1,84 @@
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * Home (v1) — wrapper + skeleton-box placeholders for the four sections
+ * PRs 2-6 will replace (StatsBand, EcosystemsGrid, SignalsRow,
+ * RecentActivityRail) and for the GlobalSearch slot inside CoverBlock.
+ *
+ * Skeleton rules are intentionally low-fidelity: subtle neutral fill that
+ * adapts to either theme, with per-slot heights that approximate the real
+ * component footprint so the page reads as "this will be filled in"
+ * instead of "this is broken". As each real component lands, drop or
+ * scope its `--<slot>` modifier rules here; the base `.td-home__skeleton`
+ * rule can stay as a reusable utility for future staged work.
+ *
+ * Cover-block surface rules live in `cover-block.css` (Agent B). The real
+ * components' surface rules (`.td-stats-band`, `.td-ecosystems-grid`,
+ * `.td-signals-row`, `.td-recent-activity`) land in PRs 2-6.
+ */
+
+.td-home {
+  display: block;
+}
+
+/* ---------- Section containers (placeholder rhythm) ---------- */
+
+.td-home > section[aria-label] {
+  padding: 4rem 1.5rem;
+}
+
+.td-home > section[aria-label] > .td-home__skeleton {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ---------- Skeleton base ---------- */
+
+.td-home__skeleton {
+  background-color: hsl(var(--foreground-hsl) / 0.06);
+  border-radius: 0.5rem;
+  width: 100%;
+}
+
+/* ---------- Slot modifiers ---------- */
+
+/* GlobalSearch slot — sits inside the dark cover-block surface, so it
+   needs a slightly lighter fill to read against `--cover-block-bg-*`. */
+.td-home__skeleton--search {
+  max-width: 600px;
+  height: 3rem;
+  margin: 2rem auto 0;
+  background-color: hsl(var(--cover-block-fg-hsl) / 0.1);
+}
+
+/* StatsBand slot — purple-tinted to preview the real band's surface. */
+.td-home__skeleton--stats {
+  height: 12rem;
+  background-color: hsl(var(--stats-band-bg-hsl) / 0.3);
+}
+
+.td-home__skeleton--ecosystems {
+  height: 24rem;
+}
+
+.td-home__skeleton--signals {
+  height: 16rem;
+}
+
+.td-home__skeleton--recent-activity {
+  height: 16rem;
+}

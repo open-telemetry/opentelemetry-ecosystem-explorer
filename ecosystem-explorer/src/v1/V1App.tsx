@@ -39,7 +39,7 @@ import "@/v1/styles/index.css";
  */
 
 const HomePage = lazy(() =>
-  import("@/features/home/home-page").then((m) => ({ default: m.HomePage }))
+  import("@/v1/features/home/home-page").then((m) => ({ default: m.HomeV1 }))
 );
 const JavaAgentPage = lazy(() =>
   import("@/features/java-agent/java-agent-page").then((m) => ({ default: m.JavaAgentPage }))

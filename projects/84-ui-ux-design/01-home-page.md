@@ -41,8 +41,9 @@ A returning user should land directly on the ⌘K search or the recent activity 
 
 ## Scope (in)
 
-- **Hero (cover-block)**: dark-overlay background with radial gradient + grid pattern, OTel logo
-  mark, gradient headline ("OpenTelemetry **Ecosystem Explorer**"), short description, primary CTA
+- **Hero (cover-block)**: dark-overlay background with radial gradient + grid pattern, animated
+  `<Compass>` visual (the OtelLogo already lives in the navbar — no need to repeat the brand mark),
+  gradient headline ("OpenTelemetry **Ecosystem Explorer**"), short description, primary CTA
   (`btn-lg` orange), secondary CTA (outline-light "Read overview").
 - **Global search**: glass-effect ⌘K-able input below the hero; placeholder hints ("Search 1,005+
   components, instrumentations, vendors…"); chip suggestions below.
@@ -103,11 +104,16 @@ from `feat/84-tmp-full-layout` rather than cherry-picking the bundled commit.
 Locked decisions (per the 2026-05-19 grilling session — full rationale in
 [`NEXT-STEPS.md`](./NEXT-STEPS.md) decision log):
 
-**Component shape**
+#### Component shape
 
 - `<CoverBlock>` is reusable across home and Phase 3 ecosystem-landing. Props: `logo`, `eyebrow`,
   `title`, `lead`, `ctas`, `aside`, `children`, `headingId`, `className`. `<HomeV1 />` mounts one
   CoverBlock with home-specific content + skeletons for the four sections below.
+- Hero visual: animated `<Compass>` from `@/components/icons/compass` in the `logo` slot — the
+  OtelLogo already lives in the navbar, so the hero uses the compass for visual interest instead of
+  repeating the brand mark. Cover-block locally pins `--hero-accent-hsl` to `var(--otel-orange-hsl)`
+  (and `--hero-accent-alt-hsl` to blue) so the compass stays orange-dominant in both themes (the
+  global hero-accent tokens flip per theme; the cover-block is always orange-dominant by design).
 - CTAs locked verbatim: primary `"Browse components"` → `/collector`; secondary
   `"Read the overview"` → `https://opentelemetry.io/docs/what-is-opentelemetry/` with
   `target="_blank"` `rel="noopener"`.
@@ -115,27 +121,27 @@ Locked decisions (per the 2026-05-19 grilling session — full rationale in
   `--otel-blue-hsl` → `--otel-orange-hsl` directly (cover-block is always dark; the theme-flipping
   `--hero-accent-*` aliases would invert the gradient pointlessly).
 
-**Background visual**
+#### Background visual
 
 - Full opentelemetry.io-style hero treatment: linear gradient base (`--cover-block-bg-from-hsl` →
   `--cover-block-bg-to-hsl`) + two radial glows (orange + purple via `--otel-orange-hsl` /
   `--otel-purple-hsl`) + inline-SVG grid-pattern overlay. All pure CSS, no asset dependency. Closes
   the open question on hero background image (struck below).
 
-**Placeholders**
+#### Placeholders
 
 - Skeleton-box treatment for the four PR 2-6 slots inside `<HomeV1 />` (aria-labels: `stats`,
   `ecosystems`, `signals`, `recent-activity`) and for the `<GlobalSearch>` slot inside CoverBlock.
 - Skeleton-everywhere is the locked default for PR-staged placeholders across this redesign — gives
   reviewers a non-broken preview.
 
-**CSS file scope**
+#### CSS file scope
 
 - Two new partials added in PR 1: `src/v1/styles/cover-block.css` (reusable hero rules) +
   `src/v1/styles/home.css` (HomeV1 wrapper + skeleton rules). Both `@import`-ed into
   `src/v1/styles/index.css`. PRs 2-6 grow `home.css` as real components replace skeletons.
 
-**Token consolidation (the "concise and in-sync" sweep)**
+#### Token consolidation (the "concise and in-sync" sweep)
 
 - Add `--otel-purple-hsl: 230 38% 49%` to `src/styles/tokens.css` as a primitive alongside the
   existing `--otel-blue-hsl` / `--otel-orange-hsl`.
@@ -147,12 +153,12 @@ Locked decisions (per the 2026-05-19 grilling session — full rationale in
   `.v1-app` override block explicitly **redeclares** all `--cover-block-*` and `--stats-band-*`
   tokens with the same values as the dark block — symmetric contract, no implicit fallthrough.
 
-**Route swap**
+#### Route swap
 
 - `V1App.tsx` route table flips `/` from legacy `<HomePage />` to `<HomeV1 />`. Production unchanged
   (`V1_REDESIGN` off on main branch deploys); v1 preview shows hero + 4 skeletons.
 
-**Showcase + tests + baseline**
+#### Showcase, tests, and baseline
 
 - `/_dev/components` (from #487) gets two `<CoverBlock>` variants: title-only and title+aside
   (exercises the `aside` slot used by Phase 3 ecosystem-landing). `<HomeV1 />` not added to showcase
