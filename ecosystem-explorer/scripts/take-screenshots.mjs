@@ -17,12 +17,43 @@
 import fs from "fs";
 import http from "http";
 import path from "path";
+import { AxeBuilder } from "@axe-core/playwright";
 import { chromium } from "playwright";
 
 const DIST_DIR = path.resolve("dist");
 const SCREENSHOTS_DIR = path.resolve("screenshots");
+const A11Y_DIR = path.resolve("a11y");
 const PORT = 4173;
 const BASE_URL = `http://localhost:${PORT}`;
+
+// Track total a11y violations across the run for a summary at the end.
+const a11ySummary = { runs: 0, violations: 0 };
+
+/*
+ * Run axe-core against the current page state and write the report to
+ * `a11y/{name}-{theme}.json`. Runs once per (page × theme); viewports don't
+ * change accessibility semantics, so re-running per viewport would just
+ * duplicate the report.
+ */
+async function recordA11y(page, name, theme) {
+  if (!fs.existsSync(A11Y_DIR)) fs.mkdirSync(A11Y_DIR, { recursive: true });
+  const results = await new AxeBuilder({ page }).analyze();
+  const report = {
+    name,
+    theme,
+    url: page.url(),
+    timestamp: new Date().toISOString(),
+    violations: results.violations,
+    incomplete: results.incomplete,
+    passes: results.passes.length,
+  };
+  fs.writeFileSync(path.join(A11Y_DIR, `${name}-${theme}.json`), JSON.stringify(report, null, 2));
+  a11ySummary.runs += 1;
+  a11ySummary.violations += results.violations.length;
+  if (results.violations.length > 0) {
+    console.log(`    a11y: ${results.violations.length} violation(s) on ${name} / ${theme}`);
+  }
+}
 
 // Resolve latest versions at runtime from the generated data files.
 // This prevents the script from going stale when new versions are released.
@@ -177,12 +208,15 @@ async function takeScreenshots() {
           logTime(`  ${theme} / ${viewport.name} (${viewport.width}×${viewport.height})...`);
           await page.setViewportSize({ width: viewport.width, height: viewport.height });
           const p = (name) => path.join(SCREENSHOTS_DIR, `${viewport.name}-${theme}-${name}.png`);
+          // axe-core runs once per (page × theme) — viewports don't change a11y semantics.
+          const isFirstViewport = viewport === VIEWPORTS[0];
 
           // 1. Home page
           await page.goto(BASE_URL, { waitUntil: "domcontentloaded", timeout: 10000 });
           await page.waitForSelector("h1", { state: "visible", timeout: 5000 });
           await assertNoError(page, BASE_URL);
           await page.screenshot({ path: p("home") });
+          if (isFirstViewport) await recordA11y(page, "home", theme);
 
           // 2. Java agent instrumentation list
           await page.goto(`${BASE_URL}/java-agent/instrumentation`, {
@@ -192,6 +226,7 @@ async function takeScreenshots() {
           await settle(page);
           await assertNoError(page, `${BASE_URL}/java-agent/instrumentation`);
           await page.screenshot({ path: p("instrumentation-list") });
+          if (isFirstViewport) await recordA11y(page, "instrumentation-list", theme);
 
           // 3. Java agent instrumentation detail - Details tab
           const detailUrl = `${BASE_URL}/java-agent/instrumentation/${DETAIL_VERSION}/${DETAIL_NAME}`;
@@ -199,16 +234,19 @@ async function takeScreenshots() {
           await settle(page);
           await assertNoError(page, detailUrl);
           await page.screenshot({ path: p("detail-details"), fullPage: true });
+          if (isFirstViewport) await recordA11y(page, "detail-details", theme);
 
           // 4. Telemetry tab (skipped gracefully if tabs aren't present in this branch)
           await clickTab(page, "Telemetry");
           await assertNoError(page, detailUrl);
           await page.screenshot({ path: p("detail-telemetry"), fullPage: true });
+          if (isFirstViewport) await recordA11y(page, "detail-telemetry", theme);
 
           // 5. Configuration tab (skipped gracefully if tabs aren't present in this branch)
           await clickTab(page, "Configuration");
           await assertNoError(page, detailUrl);
           await page.screenshot({ path: p("detail-configuration"), fullPage: true });
+          if (isFirstViewport) await recordA11y(page, "detail-configuration", theme);
 
           // 6. Collector list
           await page.goto(`${BASE_URL}/collector/components`, {
@@ -218,6 +256,7 @@ async function takeScreenshots() {
           await settle(page);
           await assertNoError(page, `${BASE_URL}/collector/components`);
           await page.screenshot({ path: p("collector-list") });
+          if (isFirstViewport) await recordA11y(page, "collector-list", theme);
 
           // 7. Collector detail
           const collectorDetailUrl = `${BASE_URL}/collector/components/${COLLECTOR_DISTRIBUTION}/${COLLECTOR_DETAIL_NAME}`;
@@ -228,6 +267,17 @@ async function takeScreenshots() {
           await settle(page);
           await assertNoError(page, collectorDetailUrl);
           await page.screenshot({ path: p("collector-detail"), fullPage: true });
+          if (isFirstViewport) await recordA11y(page, "collector-detail", theme);
+
+          // 8. Dev component showcase — single page mounting every v1 primitive
+          //    in its canonical states. Captured so a11y + pixel-diff can baseline
+          //    the design-system surface independently of feature pages.
+          const devUrl = `${BASE_URL}/_dev/components`;
+          await page.goto(devUrl, { waitUntil: "domcontentloaded", timeout: 10000 });
+          await settle(page);
+          await assertNoError(page, devUrl);
+          await page.screenshot({ path: p("dev-components"), fullPage: true });
+          if (isFirstViewport) await recordA11y(page, "dev-components", theme);
 
           logTime(`  ${theme} / ${viewport.name} done`);
         }
@@ -237,6 +287,11 @@ async function takeScreenshots() {
     }
 
     logTime("All screenshots completed successfully!");
+    console.log(
+      `a11y: ${a11ySummary.runs} page-theme combinations scanned, ` +
+        `${a11ySummary.violations} total violation(s) across the run. ` +
+        `Reports in ${path.relative(process.cwd(), A11Y_DIR)}/.`
+    );
   } catch (error) {
     console.error("Error during screenshot process:", error);
     throw error;
