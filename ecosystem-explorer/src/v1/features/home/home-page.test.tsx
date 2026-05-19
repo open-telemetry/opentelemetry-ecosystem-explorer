@@ -57,37 +57,35 @@ describe("HomeV1 (composition)", () => {
     expect(secondary).toHaveAttribute("rel", "noopener noreferrer");
   });
 
-  it("renders the four placeholder sections in the locked order", () => {
+  it("renders the remaining placeholder sections in the locked order", () => {
     const { container } = renderHome();
 
     const sections = Array.from(container.querySelectorAll("section[aria-label]")).map((el) =>
       el.getAttribute("aria-label")
     );
 
-    // CoverBlock itself renders a <section> (aria-labelledby, no aria-label),
-    // so it isn't picked up here — these are the four PR 2-6 placeholder slots.
-    expect(sections).toEqual([
-      "Ecosystem statistics",
-      "Featured ecosystems",
-      "Browse by signal",
-      "Recent activity",
-    ]);
+    // CoverBlock and StatsBand render <section>s with aria-labelledby (not
+    // aria-label), so they aren't picked up here — these are the three PR 4-6
+    // placeholder slots that remain.
+    expect(sections).toEqual(["Featured ecosystems", "Browse by signal", "Recent activity"]);
   });
 
-  it("renders exactly one skeleton element inside each of the four placeholder sections", () => {
+  it("renders exactly one skeleton element inside each of the remaining placeholder sections", () => {
     const { container } = renderHome();
 
-    for (const label of [
-      "Ecosystem statistics",
-      "Featured ecosystems",
-      "Browse by signal",
-      "Recent activity",
-    ]) {
+    for (const label of ["Featured ecosystems", "Browse by signal", "Recent activity"]) {
       const section = container.querySelector(`section[aria-label="${label}"]`);
       expect(section, `section[aria-label="${label}"] should exist`).not.toBeNull();
       const skeletons = section!.querySelectorAll(".td-home__skeleton");
       expect(skeletons, `section[aria-label="${label}"] skeleton count`).toHaveLength(1);
     }
+  });
+
+  it("renders the StatsBand below the CoverBlock", () => {
+    const { container } = renderHome();
+    const band = container.querySelector(".td-stats-band");
+    expect(band).not.toBeNull();
+    expect(band).toHaveAttribute("aria-labelledby", "stats-band-title");
   });
 
   it("renders the GlobalSearch skeleton inside the CoverBlock with aria-hidden", () => {
