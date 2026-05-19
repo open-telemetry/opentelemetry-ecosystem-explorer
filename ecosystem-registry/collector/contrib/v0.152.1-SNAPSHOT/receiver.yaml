@@ -10681,6 +10681,15 @@ components:
         description: Name of the client program or tool that initiated the Oracle
           database session.
         type: string
+      oracledb.query.started:
+        description: The timestamp when the SQL statement started execution, in ISO
+          8601 format (UTC).
+        type: string
+      oracledb.query.wait_time:
+        description: The wait time in seconds. If the session is currently waiting,
+          the value is the time spent waiting in the current wait. Returns 0 if the
+          session is not currently waiting.
+        type: double
       oracledb.query_plan:
         description: The query execution plan used by the SQL Server.
         type: string
@@ -10693,6 +10702,13 @@ components:
         type: string
       oracledb.serial:
         description: Serial number associated with a session.
+        type: string
+      oracledb.session.duration:
+        description: The total time in seconds that the session has been connected.
+        type: double
+      oracledb.session.started:
+        description: The timestamp when the session logged on, in ISO 8601 format
+          (UTC).
         type: string
       oracledb.sid:
         description: ID of the Oracle Server session.
@@ -16027,6 +16043,10 @@ components:
         type: string
       sqlserver.procedure_name:
         description: The name of the stored procedure, if any
+        type: string
+      sqlserver.query.last_started:
+        description: Timestamp of when the SQL query last started executing (ISO 8601
+          format).
         type: string
       sqlserver.query_hash:
         description: Binary hash value calculated on the query and used to identify

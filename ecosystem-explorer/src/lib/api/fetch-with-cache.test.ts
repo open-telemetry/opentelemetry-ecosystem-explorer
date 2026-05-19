@@ -72,7 +72,7 @@ describe("fetchWithCache", () => {
     });
 
     await expect(fetchWithCache("key", "/url", idbCache.STORES.METADATA)).rejects.toThrow(
-      "Failed to load key: 404 Not Found"
+      "Failed to load key from /url: 404 Not Found"
     );
   });
 
