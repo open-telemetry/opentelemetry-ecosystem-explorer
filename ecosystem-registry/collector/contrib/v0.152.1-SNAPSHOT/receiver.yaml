@@ -17983,7 +17983,7 @@ components:
     status:
       class: receiver
       stability:
-        development:
+        alpha:
         - metrics
       distributions:
       - contrib
