@@ -65,6 +65,9 @@ const ConfigurationBuilderPage = lazy(() =>
 const AboutPage = lazy(() =>
   import("@/features/about/about-page").then((m) => ({ default: m.AboutPage }))
 );
+const DevComponentsPage = lazy(() =>
+  import("@/v1/features/_dev/components-page").then((m) => ({ default: m.DevComponentsPage }))
+);
 
 /*
  * Pre-pivot router subtree, reached when `isEnabled("V1_REDESIGN")` is false in
@@ -124,6 +127,9 @@ export function LegacyApp() {
                 </>
               )}
               <Route path="/about" element={<AboutPage />} />
+              {isEnabled("DEV_SHOWCASE") && (
+                <Route path="/_dev/components" element={<DevComponentsPage />} />
+              )}
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </Suspense>
