@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect } from "vitest";
 import { HomeV1 } from "./home-page";
 
+function renderHome() {
+  return render(
+    <MemoryRouter>
+      <HomeV1 />
+    </MemoryRouter>
+  );
+}
+
 describe("HomeV1 (composition)", () => {
   it("renders exactly one CoverBlock with title containing 'OpenTelemetry' and 'Ecosystem Explorer'", () => {
-    const { container } = render(<HomeV1 />);
+    const { container } = renderHome();
 
     const covers = container.querySelectorAll(".td-cover-block");
     expect(covers).toHaveLength(1);
@@ -30,14 +39,14 @@ describe("HomeV1 (composition)", () => {
   });
 
   it("renders the primary CTA with the locked text and href", () => {
-    render(<HomeV1 />);
+    renderHome();
 
     const primary = screen.getByRole("link", { name: "Browse components" });
     expect(primary).toHaveAttribute("href", "/collector");
   });
 
   it("renders the secondary CTA with the locked text, href, target, and rel", () => {
-    render(<HomeV1 />);
+    renderHome();
 
     const secondary = screen.getByRole("link", { name: "Read the overview" });
     expect(secondary).toHaveAttribute(
@@ -45,11 +54,11 @@ describe("HomeV1 (composition)", () => {
       "https://opentelemetry.io/docs/what-is-opentelemetry/"
     );
     expect(secondary).toHaveAttribute("target", "_blank");
-    expect(secondary).toHaveAttribute("rel", "noopener");
+    expect(secondary).toHaveAttribute("rel", "noopener noreferrer");
   });
 
   it("renders the four placeholder sections in the locked order", () => {
-    const { container } = render(<HomeV1 />);
+    const { container } = renderHome();
 
     const sections = Array.from(container.querySelectorAll("section[aria-label]")).map((el) =>
       el.getAttribute("aria-label")
@@ -66,7 +75,7 @@ describe("HomeV1 (composition)", () => {
   });
 
   it("renders exactly one skeleton element inside each of the four placeholder sections", () => {
-    const { container } = render(<HomeV1 />);
+    const { container } = renderHome();
 
     for (const label of [
       "Ecosystem statistics",
@@ -82,7 +91,7 @@ describe("HomeV1 (composition)", () => {
   });
 
   it("renders the GlobalSearch skeleton inside the CoverBlock with aria-hidden", () => {
-    const { container } = render(<HomeV1 />);
+    const { container } = renderHome();
 
     const cover = container.querySelector(".td-cover-block");
     expect(cover).not.toBeNull();

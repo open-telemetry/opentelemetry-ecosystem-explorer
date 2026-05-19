@@ -301,8 +301,9 @@ is inert in the legacy bundle.
 
 - Explorer-original chrome — no upstream opentelemetry.io equivalent.
 - Sits between `<main>` and `<FooterV1 />` on every v1 route.
-- Surface is OTel purple (`#4f62ad`) per the design brief — `td-box--secondary`. (Phase 2 PR 1
-  refactors this to `hsl(var(--otel-purple-hsl))` once the primitive lands in `tokens.css`.)
+- Surface is OTel purple via `hsl(var(--otel-purple-hsl))` per the design brief —
+  `td-box--secondary`. The `--otel-purple-hsl` primitive is theme-invariant and lives in
+  `src/styles/tokens.css`.
 - Centered single-column layout: lead text → CNCF wordmark.
 - CNCF wordmark is `<CncfLogo />` in `src/v1/components/icons/`, inlining the upstream
   `static/img/logos/cncf-white.svg`.

@@ -22,9 +22,10 @@
  *
  * Surface: gradient between `--cover-block-bg-from-hsl` and
  * `--cover-block-bg-to-hsl`, decorated with two radial glows
- * (`--otel-orange-hsl` + `--otel-purple-hsl`) and a subtle inline-SVG grid
- * pattern. Foreground uses `--cover-block-fg-hsl`. Tokens are owned by
- * `src/styles/tokens.css` / `src/v1/styles/tokens.css`.
+ * (`--otel-orange-hsl` + `--otel-purple-hsl`) and a subtle grid drawn with
+ * repeating linear-gradients on `::after`. Foreground uses
+ * `--cover-block-fg-hsl`. Tokens are owned by `src/styles/tokens.css` /
+ * `src/v1/styles/tokens.css`.
  *
  * Slot order: logo → eyebrow → h1 → lead → ctas → children. The `aside`
  * slot, when present, sits next to the content column on desktop (2-col)

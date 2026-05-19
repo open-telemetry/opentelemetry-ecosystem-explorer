@@ -26,7 +26,7 @@
  * scope its `--<slot>` modifier rules here; the base `.td-home__skeleton`
  * rule can stay as a reusable utility for future staged work.
  *
- * Cover-block surface rules live in `cover-block.css` (Agent B). The real
+ * Cover-block surface rules live in `cover-block.css`. The real
  * components' surface rules (`.td-stats-band`, `.td-ecosystems-grid`,
  * `.td-signals-row`, `.td-recent-activity`) land in PRs 2-6.
  */

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Link } from "react-router-dom";
+
 import { Compass } from "@/components/icons/compass";
 import { CoverBlock } from "@/v1/components/home/cover-block";
 
@@ -41,14 +43,14 @@ export function HomeV1() {
         lead="Navigate every receiver, processor, exporter, and instrumentation across the OpenTelemetry project — searchable, comparable, version-aware."
         ctas={
           <>
-            <a className="td-btn td-btn--primary" href="/collector">
+            <Link className="td-btn td-btn--primary" to="/collector">
               Browse components
-            </a>
+            </Link>
             <a
               className="td-btn td-btn--outline-light"
               href="https://opentelemetry.io/docs/what-is-opentelemetry/"
               target="_blank"
-              rel="noopener"
+              rel="noopener noreferrer"
             >
               Read the overview
             </a>
