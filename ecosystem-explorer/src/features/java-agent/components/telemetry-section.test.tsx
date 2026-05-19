@@ -436,7 +436,7 @@ describe("TelemetrySection", () => {
 
       expect(screen.getByTestId("attribute-table")).toBeInTheDocument();
 
-      const metricHeader = screen.getByText("http.server.duration").parentElement!;
+      const metricHeader = screen.getByRole("button", { name: /http\.server\.duration/i });
       await user.click(metricHeader);
 
       expect(screen.queryByTestId("attribute-table")).not.toBeInTheDocument();
@@ -458,7 +458,7 @@ describe("TelemetrySection", () => {
 
       expect(screen.getByTestId("attribute-table")).toBeInTheDocument();
 
-      const spanHeader = screen.getByText("CLIENT Span").parentElement!;
+      const spanHeader = screen.getByRole("button", { name: /CLIENT Span/i });
       await user.click(spanHeader);
 
       expect(screen.queryByTestId("attribute-table")).not.toBeInTheDocument();
@@ -480,7 +480,7 @@ describe("TelemetrySection", () => {
 
       expect(screen.getByTestId("attribute-table")).toBeInTheDocument();
 
-      const metricHeader = screen.getByText("http.server.duration").parentElement!;
+      const metricHeader = screen.getByRole("button", { name: /http\.server\.duration/i });
       metricHeader.focus();
       await user.keyboard("{Enter}");
 

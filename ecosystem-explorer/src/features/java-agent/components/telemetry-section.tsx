@@ -25,6 +25,51 @@ interface TelemetrySectionProps {
   telemetry: Telemetry[];
 }
 
+interface ExpandCollapseToggleProps {
+  expandedCount: number;
+  totalCount: number;
+  onExpandAll: () => void;
+  onCollapseAll: () => void;
+}
+
+function ExpandCollapseToggle({
+  expandedCount,
+  totalCount,
+  onExpandAll,
+  onCollapseAll,
+}: ExpandCollapseToggleProps) {
+  return (
+    <div className="mt-4 flex justify-center">
+      <div className="border-border/50 bg-muted/80 inline-flex items-center rounded-xl border p-1 shadow-sm backdrop-blur-sm">
+        <button
+          type="button"
+          onClick={onExpandAll}
+          className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${
+            expandedCount === totalCount && totalCount > 0
+              ? "border-secondary/40 bg-secondary/12 text-secondary border shadow-sm"
+              : "text-muted-foreground hover:text-foreground border border-transparent"
+          }`}
+        >
+          <Maximize2 className="h-3 w-3" />
+          Expand All
+        </button>
+        <button
+          type="button"
+          onClick={onCollapseAll}
+          className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${
+            expandedCount === 0
+              ? "border-secondary/40 bg-secondary/12 text-secondary border shadow-sm"
+              : "text-muted-foreground hover:text-foreground border border-transparent"
+          }`}
+        >
+          <Minimize2 className="h-3 w-3" />
+          Collapse All
+        </button>
+      </div>
+    </div>
+  );
+}
+
 export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
   const [selectedWhen, setSelectedWhen] = useState(telemetry[0]?.when ?? "default");
 
@@ -36,23 +81,29 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
 
   const currentTelemetry = telemetry.find((t) => t.when === effectiveSelectedWhen) ?? telemetry[0];
 
+  const getExpandedMetricIds = (current: Telemetry | undefined) =>
+    new Set(current?.metrics?.map((_, i) => i.toString()) || []);
+
+  const getExpandedSpanIds = (current: Telemetry | undefined) =>
+    new Set(current?.spans?.map((span, i) => `${span.span_kind}-${i}`) || []);
+
   const [expandedMetrics, setExpandedMetrics] = useState<Set<string>>(
-    new Set(currentTelemetry?.metrics?.map((m) => m.name) || [])
+    getExpandedMetricIds(currentTelemetry)
   );
   const [expandedSpans, setExpandedSpans] = useState<Set<string>>(
-    new Set(currentTelemetry?.spans?.map((_, i) => i.toString()) || [])
+    getExpandedSpanIds(currentTelemetry)
   );
 
   // Synchronize expanded state when telemetry changes without using useEffect
   const [prevTelemetry, setPrevTelemetry] = useState(currentTelemetry);
   if (currentTelemetry !== prevTelemetry) {
     setPrevTelemetry(currentTelemetry);
-    setExpandedMetrics(new Set(currentTelemetry?.metrics?.map((m) => m.name) || []));
-    setExpandedSpans(new Set(currentTelemetry?.spans?.map((_, i) => i.toString()) || []));
+    setExpandedMetrics(getExpandedMetricIds(currentTelemetry));
+    setExpandedSpans(getExpandedSpanIds(currentTelemetry));
   }
 
   const expandAllMetrics = () => {
-    setExpandedMetrics(new Set(currentTelemetry?.metrics?.map((m) => m.name) || []));
+    setExpandedMetrics(getExpandedMetricIds(currentTelemetry));
   };
 
   const collapseAllMetrics = () => {
@@ -60,32 +111,32 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
   };
 
   const expandAllSpans = () => {
-    setExpandedSpans(new Set(currentTelemetry?.spans?.map((_, i) => i.toString()) || []));
+    setExpandedSpans(getExpandedSpanIds(currentTelemetry));
   };
 
   const collapseAllSpans = () => {
     setExpandedSpans(new Set());
   };
 
-  const toggleMetric = (name: string) => {
+  const toggleMetric = (id: string) => {
     setExpandedMetrics((prev) => {
       const next = new Set(prev);
-      if (next.has(name)) {
-        next.delete(name);
+      if (next.has(id)) {
+        next.delete(id);
       } else {
-        next.add(name);
+        next.add(id);
       }
       return next;
     });
   };
 
-  const toggleSpan = (index: string) => {
+  const toggleSpan = (id: string) => {
     setExpandedSpans((prev) => {
       const next = new Set(prev);
-      if (next.has(index)) {
-        next.delete(index);
+      if (next.has(id)) {
+        next.delete(id);
       } else {
-        next.add(index);
+        next.add(id);
       }
       return next;
     });
@@ -111,57 +162,30 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
         {hasMetrics && (
           <div className="space-y-6">
             <SectionDivider className="mb-0">Metrics</SectionDivider>
-            <div className="mt-4 flex justify-center">
-              <div className="border-border/50 bg-muted/80 inline-flex items-center rounded-xl border p-1 shadow-sm backdrop-blur-sm">
-                <button
-                  type="button"
-                  onClick={expandAllMetrics}
-                  className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${
-                    expandedMetrics.size === (currentTelemetry.metrics?.length || 0)
-                      ? "border-secondary/40 bg-secondary/12 text-secondary border shadow-sm"
-                      : "text-muted-foreground hover:text-foreground border border-transparent"
-                  }`}
-                >
-                  <Maximize2 className="h-3 w-3" />
-                  Expand All
-                </button>
-                <button
-                  type="button"
-                  onClick={collapseAllMetrics}
-                  className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${
-                    expandedMetrics.size === 0
-                      ? "border-secondary/40 bg-secondary/12 text-secondary border shadow-sm"
-                      : "text-muted-foreground hover:text-foreground border border-transparent"
-                  }`}
-                >
-                  <Minimize2 className="h-3 w-3" />
-                  Collapse All
-                </button>
-              </div>
-            </div>
+            <ExpandCollapseToggle
+              expandedCount={expandedMetrics.size}
+              totalCount={currentTelemetry.metrics?.length || 0}
+              onExpandAll={expandAllMetrics}
+              onCollapseAll={collapseAllMetrics}
+            />
 
             <div className={hasBothMetricsAndSpans ? "space-y-4" : "mx-auto max-w-3xl space-y-4"}>
               {currentTelemetry.metrics &&
-                currentTelemetry.metrics.map((metric) => {
-                  const isExpanded = expandedMetrics.has(metric.name);
+                currentTelemetry.metrics.map((metric, index) => {
+                  const metricId = index.toString();
+                  const isExpanded = expandedMetrics.has(metricId);
                   return (
                     <div
-                      key={metric.name}
+                      key={`${metric.name}-${index}`}
                       className="border-border/30 bg-card/30 rounded-2xl border transition-all duration-200"
                     >
-                      <div
-                        role="button"
-                        tabIndex={0}
-                        onClick={() => toggleMetric(metric.name)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            toggleMetric(metric.name);
-                          }
-                        }}
-                        className="flex cursor-pointer items-center justify-between gap-4 p-4 transition-colors hover:bg-white/[0.02] sm:px-6 sm:py-5"
+                      <button
+                        type="button"
+                        onClick={() => toggleMetric(metricId)}
+                        aria-expanded={isExpanded}
+                        className="flex w-full cursor-pointer items-center justify-between gap-4 p-4 transition-colors hover:bg-white/[0.02] sm:px-6 sm:py-5"
                       >
-                        <code className="text-foreground min-w-0 flex-1 font-mono text-sm font-semibold break-all sm:text-base">
+                        <code className="text-foreground min-w-0 flex-1 text-left font-mono text-sm font-semibold break-all sm:text-base">
                           {metric.name}
                         </code>
                         <div className="flex shrink-0 items-center gap-3">
@@ -174,7 +198,7 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                             <ChevronDown className="text-muted-foreground/50 h-4 w-4 transition-transform duration-200" />
                           )}
                         </div>
-                      </div>
+                      </button>
 
                       {isExpanded && (
                         <div className="border-border/20 border-t p-4 pt-6 sm:p-6 sm:pt-8 md:p-10 md:pt-10">
@@ -217,57 +241,30 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
         {hasSpans && (
           <div className="space-y-6">
             <SectionDivider className="mb-0">Spans</SectionDivider>
-            <div className="mt-4 flex justify-center">
-              <div className="border-border/50 bg-muted/80 inline-flex items-center rounded-xl border p-1 shadow-sm backdrop-blur-sm">
-                <button
-                  type="button"
-                  onClick={expandAllSpans}
-                  className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${
-                    expandedSpans.size === (currentTelemetry.spans?.length || 0)
-                      ? "border-secondary/40 bg-secondary/12 text-secondary border shadow-sm"
-                      : "text-muted-foreground hover:text-foreground border border-transparent"
-                  }`}
-                >
-                  <Maximize2 className="h-3 w-3" />
-                  Expand All
-                </button>
-                <button
-                  type="button"
-                  onClick={collapseAllSpans}
-                  className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${
-                    expandedSpans.size === 0
-                      ? "border-secondary/40 bg-secondary/12 text-secondary border shadow-sm"
-                      : "text-muted-foreground hover:text-foreground border border-transparent"
-                  }`}
-                >
-                  <Minimize2 className="h-3 w-3" />
-                  Collapse All
-                </button>
-              </div>
-            </div>
+            <ExpandCollapseToggle
+              expandedCount={expandedSpans.size}
+              totalCount={currentTelemetry.spans?.length || 0}
+              onExpandAll={expandAllSpans}
+              onCollapseAll={collapseAllSpans}
+            />
 
             <div className={hasBothMetricsAndSpans ? "space-y-4" : "mx-auto max-w-3xl space-y-4"}>
               {currentTelemetry.spans &&
                 currentTelemetry.spans.map((span, index) => {
-                  const isExpanded = expandedSpans.has(index.toString());
+                  const spanId = `${span.span_kind}-${index}`;
+                  const isExpanded = expandedSpans.has(spanId);
                   return (
                     <div
-                      key={`${span.span_kind}-${index}`}
+                      key={spanId}
                       className="border-border/30 bg-card/30 rounded-2xl border transition-all duration-200"
                     >
-                      <div
-                        role="button"
-                        tabIndex={0}
-                        onClick={() => toggleSpan(index.toString())}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter" || e.key === " ") {
-                            e.preventDefault();
-                            toggleSpan(index.toString());
-                          }
-                        }}
-                        className="flex cursor-pointer items-center justify-between gap-4 p-4 transition-colors hover:bg-white/[0.02] sm:px-6 sm:py-5"
+                      <button
+                        type="button"
+                        onClick={() => toggleSpan(spanId)}
+                        aria-expanded={isExpanded}
+                        className="flex w-full cursor-pointer items-center justify-between gap-4 p-4 transition-colors hover:bg-white/[0.02] sm:px-6 sm:py-5"
                       >
-                        <h3 className="text-foreground flex-1 text-sm font-bold sm:text-base md:text-lg">
+                        <h3 className="text-foreground flex-1 text-left text-sm font-bold sm:text-base md:text-lg">
                           {span.span_kind} Span
                         </h3>
                         <div className="flex flex-shrink-0 items-center gap-3">
@@ -280,7 +277,7 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                             <ChevronDown className="text-muted-foreground/50 h-4 w-4 transition-transform duration-200" />
                           )}
                         </div>
-                      </div>
+                      </button>
 
                       {isExpanded && (
                         <div className="border-border/20 border-t p-4 pt-6 sm:p-6 sm:pt-8 md:p-10 md:pt-10">
