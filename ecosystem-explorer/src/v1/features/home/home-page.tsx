@@ -18,15 +18,16 @@ import { Link } from "react-router-dom";
 
 import { Compass } from "@/components/icons/compass";
 import { CoverBlock } from "@/v1/components/home/cover-block";
+import { EcosystemsGrid } from "@/v1/components/home/ecosystems-grid";
 import { StatsBand } from "@/v1/components/home/stats-band";
 
 /**
  * Home page (v1) — composes the v1 chrome with home-specific sections.
  *
- * StatsBand is real; the remaining three sections below the hero
- * (EcosystemsGrid, SignalsRow, RecentActivityRail) are still skeleton-box
- * placeholders that PRs 4-6 replace. The GlobalSearch slot inside CoverBlock
- * is also a skeleton until PR 2.
+ * StatsBand and EcosystemsGrid are real; the remaining two sections below
+ * (SignalsRow, RecentActivityRail) are still skeleton-box placeholders that
+ * PRs 5-6 replace. The GlobalSearch slot inside CoverBlock is also a skeleton
+ * until PR 2.
  *
  * The CncfCallout and FooterV1 are mounted by `<V1App />`, not here —
  * HomeV1 only owns the page-content slot.
@@ -63,9 +64,7 @@ export function HomeV1() {
 
       <StatsBand />
 
-      <section aria-label="Featured ecosystems">
-        <div className="td-home__skeleton td-home__skeleton--ecosystems" aria-hidden="true" />
-      </section>
+      <EcosystemsGrid />
 
       <section aria-label="Browse by signal">
         <div className="td-home__skeleton td-home__skeleton--signals" aria-hidden="true" />
