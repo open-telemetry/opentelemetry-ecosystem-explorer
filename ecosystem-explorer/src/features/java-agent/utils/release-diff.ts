@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
-import type { InstrumentationData, TelemetryDiffResult } from "@/types/javaagent";
-import { compareTelemetry } from "./telemetry-diff";
+import type {
+  InstrumentationData,
+  TelemetryDiffResult,
+  MetricDiff,
+  SpanDiff,
+} from "@/types/javaagent";
+import { compareTelemetry, getAvailableWhenConditions } from "./telemetry-diff";
 
 export interface InstrumentationDiff {
   id: string;
@@ -79,22 +84,62 @@ export function compareReleases(
 
     if (!fromInstr && toInstr) {
       added++;
+      const whens = getAvailableWhenConditions(null, toInstr);
+      const metrics: MetricDiff[] = [];
+      const spans: SpanDiff[] = [];
+      for (const w of whens) {
+        const d = compareTelemetry(null, toInstr, w);
+        metrics.push(...d.metrics);
+        spans.push(...d.spans);
+      }
+      const telemetryDiff = { metrics, spans };
+
+      const configAdded = (toInstr.configurations || []).map((c) => c.name);
       instrumentations.push({
         id: name,
         displayName: toInstr.display_name || name,
         status: "added",
-        telemetryDiff: compareTelemetry(null, toInstr),
+        telemetryDiff,
+        configDiff: {
+          added: configAdded,
+          removed: [],
+          changed: [],
+        },
       });
     } else if (fromInstr && !toInstr) {
       removed++;
+      const whens = getAvailableWhenConditions(fromInstr, null);
+      const metrics: MetricDiff[] = [];
+      const spans: SpanDiff[] = [];
+      for (const w of whens) {
+        const d = compareTelemetry(fromInstr, null, w);
+        metrics.push(...d.metrics);
+        spans.push(...d.spans);
+      }
+      const telemetryDiff = { metrics, spans };
+
+      const configRemoved = (fromInstr.configurations || []).map((c) => c.name);
       instrumentations.push({
         id: name,
         displayName: fromInstr.display_name || name,
         status: "removed",
-        telemetryDiff: compareTelemetry(fromInstr, null),
+        telemetryDiff,
+        configDiff: {
+          added: [],
+          removed: configRemoved,
+          changed: [],
+        },
       });
     } else if (fromInstr && toInstr) {
-      const telemetryDiff = compareTelemetry(fromInstr, toInstr);
+      const whens = getAvailableWhenConditions(fromInstr, toInstr);
+      const metrics: MetricDiff[] = [];
+      const spans: SpanDiff[] = [];
+      for (const w of whens) {
+        const d = compareTelemetry(fromInstr, toInstr, w);
+        metrics.push(...d.metrics);
+        spans.push(...d.spans);
+      }
+      const telemetryDiff = { metrics, spans };
 
       const fromConfigs = new Map((fromInstr.configurations || []).map((c) => [c.name, c]));
       const toConfigs = new Map((toInstr.configurations || []).map((c) => [c.name, c]));
@@ -111,7 +156,9 @@ export function compareReleases(
           if (
             fromConfig?.description !== config.description ||
             fromConfig?.type !== config.type ||
-            fromConfig?.default !== config.default
+            fromConfig?.default !== config.default ||
+            fromConfig?.declarative_name !== config.declarative_name ||
+            JSON.stringify(fromConfig?.example) !== JSON.stringify(config.example)
           ) {
             configChanged.push(name);
           }
@@ -153,15 +200,20 @@ export function compareReleases(
 
   const metricToInstrumentations = new Map<string, { description: string; emittedBy: string[] }>();
   for (const instr of toData) {
-    const defaultTelemetry = instr.telemetry?.find((t) => t.when === "default");
-    if (defaultTelemetry?.metrics) {
-      for (const metric of defaultTelemetry.metrics) {
-        const existing = metricToInstrumentations.get(metric.name) || {
-          description: metric.description,
-          emittedBy: [],
-        };
-        existing.emittedBy.push(instr.display_name || instr.name);
-        metricToInstrumentations.set(metric.name, existing);
+    if (instr.telemetry) {
+      for (const telemetry of instr.telemetry) {
+        if (telemetry.metrics) {
+          for (const metric of telemetry.metrics) {
+            const existing = metricToInstrumentations.get(metric.name) || {
+              description: metric.description,
+              emittedBy: [],
+            };
+            if (!existing.emittedBy.includes(instr.display_name || instr.name)) {
+              existing.emittedBy.push(instr.display_name || instr.name);
+            }
+            metricToInstrumentations.set(metric.name, existing);
+          }
+        }
       }
     }
   }

@@ -52,7 +52,13 @@ export function JavaReleaseComparisonPage() {
     }
   }, [versions, fromVersion, toVersion, searchParams, setSearchParams]);
 
-  const { diff, loading: diffLoading, error } = useReleaseComparison(fromVersion, toVersion);
+  const validVersionStrings = useMemo(() => versions.map((v) => v.version), [versions]);
+
+  const {
+    diff,
+    loading: diffLoading,
+    error,
+  } = useReleaseComparison(fromVersion, toVersion, validVersionStrings);
 
   const handleFromVersionChange = (version: string) => {
     setSearchParams({ from: version, to: toVersion });
@@ -135,7 +141,7 @@ export function JavaReleaseComparisonPage() {
           </div>
         )}
 
-        {(versionsLoading || diffLoading) && fromVersion !== toVersion && (
+        {(versionsLoading || diffLoading) && fromVersion !== toVersion && !isInvalidComparison && (
           <div className="flex min-h-[400px] items-center justify-center">
             <div className="flex flex-col items-center gap-4">
               <Loader2 className="text-primary h-12 w-12 animate-spin" />
@@ -149,7 +155,7 @@ export function JavaReleaseComparisonPage() {
           </div>
         )}
 
-        {error && (
+        {error && !isInvalidComparison && (
           <div className="rounded-lg border border-red-400/30 bg-red-400/10 p-6 text-red-400">
             <div className="flex items-center gap-3">
               <AlertCircle className="h-5 w-5" />
@@ -158,7 +164,7 @@ export function JavaReleaseComparisonPage() {
           </div>
         )}
 
-        {diff && fromVersion !== toVersion && !diffLoading && (
+        {diff && fromVersion !== toVersion && !diffLoading && !isInvalidComparison && (
           <div className="animate-in fade-in space-y-12 duration-500">
             <div className="border-border/30 bg-card/40 flex flex-col gap-8 rounded-2xl border p-8 backdrop-blur-sm">
               <div className="flex items-center justify-center gap-12">

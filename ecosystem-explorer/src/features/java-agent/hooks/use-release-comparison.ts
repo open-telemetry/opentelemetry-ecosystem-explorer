@@ -25,7 +25,11 @@ import { compareReleases, type ReleaseDiff } from "../utils/release-diff";
  * @param toVersion The target version for comparison
  * @returns An object containing the diff results, loading state, and any error encountered
  */
-export function useReleaseComparison(fromVersion: string, toVersion: string) {
+export function useReleaseComparison(
+  fromVersion: string,
+  toVersion: string,
+  validVersions: string[] = []
+) {
   const [diff, setDiff] = useState<ReleaseDiff | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -34,14 +38,33 @@ export function useReleaseComparison(fromVersion: string, toVersion: string) {
     let cancelled = false;
 
     async function loadComparison() {
-      if (!fromVersion || !toVersion) return;
+      if (!fromVersion || !toVersion) {
+        setDiff(null);
+        setLoading(false);
+        setError(null);
+        return;
+      }
       if (fromVersion === toVersion) {
         setDiff(null);
+        setLoading(false);
+        setError(null);
         return;
+      }
+
+      if (validVersions.length > 0) {
+        const fromIndex = validVersions.indexOf(fromVersion);
+        const toIndex = validVersions.indexOf(toVersion);
+        if (fromIndex === -1 || toIndex === -1 || fromIndex <= toIndex) {
+          setDiff(null);
+          setLoading(false);
+          setError(null);
+          return;
+        }
       }
 
       setLoading(true);
       setError(null);
+      setDiff(null); // Clear previous diff to avoid showing stale data
 
       try {
         const [fromData, toData] = await Promise.all([
@@ -60,6 +83,7 @@ export function useReleaseComparison(fromVersion: string, toVersion: string) {
         setLoading(false);
       } catch (err) {
         if (!cancelled) {
+          setDiff(null);
           setError(err instanceof Error ? err : new Error(String(err)));
           setLoading(false);
         }
@@ -71,7 +95,7 @@ export function useReleaseComparison(fromVersion: string, toVersion: string) {
     return () => {
       cancelled = true;
     };
-  }, [fromVersion, toVersion]);
+  }, [fromVersion, toVersion, validVersions]);
 
   return { diff, loading, error };
 }

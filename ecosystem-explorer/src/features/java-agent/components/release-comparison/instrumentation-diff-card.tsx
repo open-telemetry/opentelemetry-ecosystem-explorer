@@ -20,6 +20,28 @@ import type { InstrumentationDiff } from "../../utils/release-diff";
 import { DiffResultsSection } from "../telemetry-comparison/diff-results-section";
 import { GlowBadge } from "@/components/ui/glow-badge";
 
+const STATUS_CONFIG: Record<
+  InstrumentationDiff["status"],
+  { className: string; icon: React.ReactNode }
+> = {
+  added: {
+    className: "border-green-400/30 bg-green-400/10 text-green-400",
+    icon: <Plus className="h-4 w-4" />,
+  },
+  removed: {
+    className: "border-red-400/30 bg-red-400/10 text-red-400",
+    icon: <Minus className="h-4 w-4" />,
+  },
+  changed: {
+    className: "border-blue-400/30 bg-blue-400/10 text-blue-400",
+    icon: <RefreshCcw className="h-4 w-4" />,
+  },
+  unchanged: {
+    className: "border-border/50 bg-muted/20 text-muted-foreground",
+    icon: <div className="h-2 w-2 rounded-full bg-current" />,
+  },
+};
+
 interface InstrumentationDiffCardProps {
   diff: InstrumentationDiff;
 }
@@ -36,6 +58,8 @@ export function InstrumentationDiffCard({ diff }: InstrumentationDiffCardProps) 
     (diff.configDiff?.removed.length || 0) +
     (diff.configDiff?.changed.length || 0);
 
+  const statusInfo = STATUS_CONFIG[diff.status];
+
   return (
     <div className="border-border/30 bg-card/20 overflow-hidden rounded-xl border transition-all duration-200">
       <button
@@ -45,20 +69,9 @@ export function InstrumentationDiffCard({ diff }: InstrumentationDiffCardProps) 
       >
         <div className="flex items-center gap-4">
           <div
-            className={`flex h-8 w-8 items-center justify-center rounded-lg border ${
-              diff.status === "added"
-                ? "border-green-400/30 bg-green-400/10 text-green-400"
-                : diff.status === "removed"
-                  ? "border-red-400/30 bg-red-400/10 text-red-400"
-                  : diff.status === "changed"
-                    ? "border-blue-400/30 bg-blue-400/10 text-blue-400"
-                    : "border-border/50 bg-muted/20 text-muted-foreground"
-            }`}
+            className={`flex h-8 w-8 items-center justify-center rounded-lg border ${statusInfo.className}`}
           >
-            {diff.status === "added" && <Plus className="h-4 w-4" />}
-            {diff.status === "removed" && <Minus className="h-4 w-4" />}
-            {diff.status === "changed" && <RefreshCcw className="h-4 w-4" />}
-            {diff.status === "unchanged" && <div className="h-2 w-2 rounded-full bg-current" />}
+            {statusInfo.icon}
           </div>
           <div>
             <h3 className="text-sm font-semibold">{diff.displayName}</h3>
