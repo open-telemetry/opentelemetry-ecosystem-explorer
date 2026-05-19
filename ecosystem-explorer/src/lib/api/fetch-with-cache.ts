@@ -68,8 +68,15 @@ async function fetchWithRetry(
 
 export interface FetchWithCacheOptions<T = unknown> {
   allow404?: boolean;
+  format?: "json" | "text";
   retryCount?: number;
   retryDelayMs?: number;
+  /**
+   * Optional validator for cached data. When provided, cached data that fails
+   * validation is ignored for the current request and a fresh network request
+   * is made. This prevents stale or logically-empty cached responses (e.g.
+   * `{ versions: [] }`) from being served to the caller.
+   */
   validate?: (data: T) => boolean;
 }
 
@@ -127,7 +134,9 @@ export async function fetchWithCache<T>(
             return staleData;
           }
         }
-        throw new Error(`Failed to load ${cacheKey}: ${response.status} ${response.statusText}`);
+        throw new Error(
+          `Failed to load ${cacheKey} from ${url}: ${response.status} ${response.statusText}`
+        );
       }
 
       // SPA 200 fallback: CDNs can return 200 + HTML during deployment propagation.
@@ -152,7 +161,8 @@ export async function fetchWithCache<T>(
         throw new Error(`Failed to load ${cacheKey}: unexpected content-type "${contentType}"`);
       }
 
-      const data = await response.json();
+      const format = options?.format ?? "json";
+      const data = format === "json" ? await response.json() : await response.text();
       if (isIDBAvailable()) {
         try {
           await setCached(cacheKey, data, storeType);

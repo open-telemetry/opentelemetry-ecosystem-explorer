@@ -133,7 +133,7 @@ describe("configuration-data", () => {
       });
 
       await expect(configData.loadConfigSchema("1.0.0")).rejects.toThrow(
-        "Failed to load config-schema-1.0.0: 500 Internal Server Error"
+        "Failed to load config-schema-1.0.0 from /data/configuration/versions/1.0.0.json: 500 Internal Server Error"
       );
     });
   });
