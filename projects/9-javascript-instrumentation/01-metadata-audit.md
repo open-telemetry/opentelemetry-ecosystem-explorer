@@ -148,5 +148,5 @@ The registry layout should be per package:
 
 ```text
 ecosystem-registry/javascript/instrumentation-express/v0.66.0/instrumentation.yaml
-ecosystem-registry/javascript/instrumentation-mongoose/v0.64.0/instrumentation.yaml
+ecosystem-registry/javascript/instrumentation-mongoose/v0.64.0.yaml
 ```
