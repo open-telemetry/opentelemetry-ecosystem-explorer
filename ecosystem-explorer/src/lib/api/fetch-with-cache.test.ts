@@ -72,7 +72,7 @@ describe("fetchWithCache", () => {
     });
 
     await expect(fetchWithCache("key", "/url", idbCache.STORES.METADATA)).rejects.toThrow(
-      "Failed to load key: 404 Not Found"
+      "Failed to load key from /url: 404 Not Found"
     );
   });
 
@@ -205,5 +205,23 @@ describe("fetchWithCache", () => {
       expect(result).toEqual(freshData);
       expect(global.fetch).toHaveBeenCalledWith("/url");
     });
+  });
+
+  it("serves stale cache when response is 200 but content-type is text/html", async () => {
+    const staleData = { test: "stale-html-fallback" };
+    vi.spyOn(idbCache, "getCached").mockImplementation(async (_key, _store, options) => {
+      if (options?.allowExpired) return staleData;
+      return null;
+    });
+
+    globalThis.fetch = vi.fn().mockResolvedValue(
+      new Response("<!doctype html><html></html>", {
+        status: 200,
+        headers: { "content-type": "text/html" },
+      })
+    ) as unknown as typeof fetch;
+
+    const result = await fetchWithCache("test-html", "/data.json", STORES.CONFIGURATION);
+    expect(result).toEqual(staleData);
   });
 });

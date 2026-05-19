@@ -30,21 +30,20 @@ beforeEach(() => {
   cleanup();
 });
 
-describe("ConfigurationBuilderPage — card click behavior", () => {
+describe("ConfigurationBuilderPage card click behavior", () => {
   it("clicking an input inside an expanded card does not steal focus or scroll", async () => {
     renderPage();
     const user = userEvent.setup();
 
     // Wait for the page to settle. Resource is auto-enabled by the starter
-    // and its service.name Value union renders a text input inline.
+    // and its attributes_list text input renders inline.
     await screen.findByRole("switch", { name: /Enable Resource/i }, { timeout: 10_000 });
 
     const resourceSection = document.querySelector<HTMLElement>('[data-section-key="resource"]');
     expect(resourceSection).not.toBeNull();
     const resource = within(resourceSection as HTMLElement);
 
-    // The Value union for service.name is defaultExpanded with the Text
-    // variant selected; its text input is in the DOM straight away.
+    // The attributes_list text input is in the DOM as soon as Resource expands.
     await waitFor(() => {
       expect(resource.queryAllByRole("textbox").length).toBeGreaterThan(0);
     });
