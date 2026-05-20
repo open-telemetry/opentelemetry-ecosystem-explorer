@@ -188,7 +188,7 @@ def run_javaagent_builder(
         logger.info(f"  Files written: {stats['files_written']}")
         logger.info(f"  Total size: {stats['total_bytes']:,} bytes ({total_mb:.2f} MB)")
         logger.info("")
-        logger.info("✓ Database build completed successfully")
+        logger.info("[*] Database build completed successfully")
         return 0
 
     except ValueError as e:

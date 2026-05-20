@@ -9,6 +9,7 @@ dependencies = [
     "collector-watcher",
     "configuration-watcher",
     "java-instrumentation-watcher",
+    "dotnet-instrumentation-watcher",
     "explorer-db-builder",
     "v1-registry-sync",
 ]
@@ -22,6 +23,7 @@ members = [
 collector-watcher = { workspace = true }
 configuration-watcher = { workspace = true }
 java-instrumentation-watcher = { workspace = true }
+dotnet-instrumentation-watcher = { workspace = true }
 explorer-db-builder = { workspace = true }
 v1-registry-sync = { workspace = true }
 
@@ -41,5 +43,6 @@ target-version = "py311"
 select = ["E", "F", "I", "N", "W"]
 
 [tool.pytest.ini_options]
+addopts = "--import-mode=importlib"
 testpaths = ["ecosystem-automation"]
 python_files = ["test_*.py", "*_test.py"]
