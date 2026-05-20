@@ -353,10 +353,14 @@ class InventoryManager:
             new_deprecated: New deprecated components by type
         """
         for component_type, components in new_deprecated.items():
-            existing_names = {comp["name"] for comp in deprecations[distribution][component_type]}
+            existing_keys = {
+                (comp["name"], comp.get("subtype"))
+                for comp in deprecations[distribution][component_type]
+            }
 
             for component in components:
-                if component["name"] not in existing_names:
+                key = (component["name"], component.get("subtype"))
+                if key not in existing_keys:
                     deprecations[distribution][component_type].append(component)
                     logger.info(
                         f"Added deprecated {component_type}: {component['name']} "

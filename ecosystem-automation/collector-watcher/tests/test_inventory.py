@@ -607,3 +607,110 @@ def test_add_deprecated_components_multiple_distributions(temp_inventory_dir):
     assert deprecations["core"]["receiver"][0]["name"] == "corereceiver"
     assert len(deprecations["contrib"]["exporter"]) == 1
     assert deprecations["contrib"]["exporter"][0]["name"] == "contribexporter"
+
+
+def test_add_deprecated_components_same_name_different_subtype(temp_inventory_dir):
+    """A component removed under a second subtype should be added even when the
+    same name is already present in the index under a different subtype."""
+    manager = InventoryManager(str(temp_inventory_dir))
+
+    deprecations = {
+        "core": {
+            "receiver": [],
+            "processor": [],
+            "exporter": [],
+            "connector": [],
+            "extension": [
+                {
+                    "name": "zipkin",
+                    "last_version": "v0.139.0",
+                    "deprecated_in_version": "v0.140.0",
+                    "source_repo": "contrib",
+                    "distributions": ["contrib"],
+                    "subtype": "encoding",
+                }
+            ],
+        },
+        "contrib": {
+            "receiver": [],
+            "processor": [],
+            "exporter": [],
+            "connector": [],
+            "extension": [],
+        },
+    }
+
+    new_deprecated = {
+        "receiver": [],
+        "processor": [],
+        "exporter": [],
+        "connector": [],
+        "extension": [
+            {
+                "name": "zipkin",
+                "last_version": "v0.140.0",
+                "deprecated_in_version": "v0.141.0",
+                "source_repo": "contrib",
+                "distributions": ["contrib"],
+                "subtype": "storage",
+            }
+        ],
+    }
+
+    manager.add_deprecated_components(deprecations, "core", new_deprecated)
+
+    assert len(deprecations["core"]["extension"]) == 2
+    subtypes = {comp["subtype"] for comp in deprecations["core"]["extension"]}
+    assert subtypes == {"encoding", "storage"}
+
+
+def test_add_deprecated_components_no_duplicate_same_name_and_subtype(temp_inventory_dir):
+    """A component with the same name AND subtype must not be added twice."""
+    manager = InventoryManager(str(temp_inventory_dir))
+
+    deprecations = {
+        "core": {
+            "receiver": [],
+            "processor": [],
+            "exporter": [],
+            "connector": [],
+            "extension": [
+                {
+                    "name": "zipkin",
+                    "last_version": "v0.139.0",
+                    "deprecated_in_version": "v0.140.0",
+                    "source_repo": "contrib",
+                    "distributions": ["contrib"],
+                    "subtype": "encoding",
+                }
+            ],
+        },
+        "contrib": {
+            "receiver": [],
+            "processor": [],
+            "exporter": [],
+            "connector": [],
+            "extension": [],
+        },
+    }
+
+    new_deprecated = {
+        "receiver": [],
+        "processor": [],
+        "exporter": [],
+        "connector": [],
+        "extension": [
+            {
+                "name": "zipkin",
+                "last_version": "v0.139.0",
+                "deprecated_in_version": "v0.140.0",
+                "source_repo": "contrib",
+                "distributions": ["contrib"],
+                "subtype": "encoding",
+            }
+        ],
+    }
+
+    manager.add_deprecated_components(deprecations, "core", new_deprecated)
+
+    assert len(deprecations["core"]["extension"]) == 1
