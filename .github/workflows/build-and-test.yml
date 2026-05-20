@@ -76,6 +76,11 @@ jobs:
           cd ecosystem-automation/explorer-db-builder
           uv run pytest tests/ --cov=explorer_db_builder --cov-report=term-missing --cov-report=json
 
+      - name: Run dotnet-instrumentation-watcher tests
+        run: |
+          cd ecosystem-automation/dotnet-instrumentation-watcher
+          uv run pytest tests/ --cov=dotnet_instrumentation_watcher --cov-report=term-missing --cov-report=json
+
   test-ecosystem-explorer:
     runs-on: ubuntu-latest
     defaults:
