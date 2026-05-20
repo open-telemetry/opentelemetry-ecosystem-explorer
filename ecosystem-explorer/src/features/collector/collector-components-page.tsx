@@ -89,10 +89,7 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
   const distributionQuery = searchParams.get("distribution");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const typeFilter = useMemo(
-    () => getTypeFilter(typeQuery),
-    [typeQuery]
-  );
+  const typeFilter = useMemo(() => getTypeFilter(typeQuery), [typeQuery]);
 
   const distributionFilter = useMemo(
     () => getDistributionFilter(distributionQuery),
@@ -132,7 +129,11 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
   }, [components, distributionFilter, searchQuery, typeFilter]);
 
   const handleVersionChange = (val: string) => {
-    navigate(`/collector/components/${val}`);
+    const currentSearch = searchParams.toString();
+    navigate({
+      pathname: `/collector/components/${val}`,
+      search: currentSearch ? `?${currentSearch}` : "",
+    });
   };
 
   const handleTypeFilterChange = (newType: string) => {
@@ -143,6 +144,16 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
       params.set("type", newType);
     }
     setSearchParams(params);
+  };
+
+  const getDetailLink = (component: { distribution: string; name: string }) => {
+    const params = new URLSearchParams(searchParams);
+    params.set("version", currentVersion);
+
+    return {
+      pathname: `/collector/components/${component.distribution}/${component.name}`,
+      search: `?${params.toString()}`,
+    };
   };
 
   const handleDistributionFilterChange = (newDistribution: string) => {
@@ -287,7 +298,7 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
               filteredComponents.map((comp) => (
                 <Link
                   key={comp.id}
-                  to={`/collector/components/${currentVersion}/${comp.id}`}
+                  to={getDetailLink(comp)}
                   className="group focus-visible:ring-primary block rounded-xl outline-none focus-visible:ring-2"
                 >
                   <DetailCard

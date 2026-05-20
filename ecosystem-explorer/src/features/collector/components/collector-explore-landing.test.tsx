@@ -13,18 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { CollectorExploreLanding } from "./collector-explore-landing";
-import { loadVersions } from "@/lib/api/collector-data";
+import { useCollectorIndex, useCollectorVersions } from "@/hooks/use-collector-data";
+import type { CollectorIndex } from "@/types/collector";
 
-vi.mock("@/lib/api/collector-data", () => ({
-  loadVersions: vi.fn(),
+vi.mock("@/hooks/use-collector-data", () => ({
+  useCollectorIndex: vi.fn(),
+  useCollectorVersions: vi.fn(),
 }));
 
 const collectorIndex = {
+  ecosystem: "collector",
+  taxonomy: {
+    distributions: ["core", "contrib"],
+    types: ["receiver", "processor", "exporter", "extension", "connector"],
+  },
   components: [
     {
       id: "core-receiver-otlpreceiver",
@@ -72,47 +79,36 @@ const collectorIndex = {
       stability: "stable",
     },
   ],
-};
-
-function mockCollectorIndexResponse(response: Response) {
-  vi.stubGlobal("fetch", vi.fn<typeof fetch>(async () => response));
-}
+} satisfies CollectorIndex;
 
 describe("CollectorExploreLanding", () => {
   beforeEach(() => {
-    vi.mocked(loadVersions).mockResolvedValue({
-      versions: [
-        { version: "0.150.0", is_latest: true },
-        { version: "0.149.0", is_latest: false },
-      ],
+    vi.clearAllMocks();
+    vi.mocked(useCollectorIndex).mockReturnValue({
+      data: collectorIndex,
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: {
+        versions: [
+          { version: "0.150.0", is_latest: true },
+          { version: "0.149.0", is_latest: false },
+        ],
+      },
+      loading: false,
+      error: null,
     });
   });
 
-  afterEach(() => {
-    vi.unstubAllGlobals();
-    vi.clearAllMocks();
-  });
-
-  it("renders counts, links, and the latest version from Collector data", async () => {
-    mockCollectorIndexResponse(
-      new Response(JSON.stringify(collectorIndex), {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      })
-    );
-
+  it("renders counts, links, and the latest version from Collector data", () => {
     render(
       <MemoryRouter>
         <CollectorExploreLanding />
       </MemoryRouter>
     );
 
-    expect(screen.getByText("Loading Collector ecosystem data...")).toBeInTheDocument();
-
-    await waitFor(() => {
-      expect(screen.getByRole("heading", { name: "Component Types" })).toBeInTheDocument();
-    });
-
+    expect(screen.getByRole("heading", { name: "Component Types" })).toBeInTheDocument();
     expect(screen.getByText("Latest Collector data: v0.150.0")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Explore Components/i })).toHaveAttribute(
       "href",
@@ -137,8 +133,28 @@ describe("CollectorExploreLanding", () => {
     );
   });
 
+  it("renders a loading state while Collector data is loading", () => {
+    vi.mocked(useCollectorIndex).mockReturnValue({
+      data: null,
+      loading: true,
+      error: null,
+    });
+
+    render(
+      <MemoryRouter>
+        <CollectorExploreLanding />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText("Loading Collector ecosystem data...")).toBeInTheDocument();
+  });
+
   it("renders an error state when the Collector index request fails", async () => {
-    mockCollectorIndexResponse(new Response("Not found", { status: 404 }));
+    vi.mocked(useCollectorIndex).mockReturnValue({
+      data: null,
+      loading: false,
+      error: new Error("Collector index request failed with 404."),
+    });
 
     render(
       <MemoryRouter>

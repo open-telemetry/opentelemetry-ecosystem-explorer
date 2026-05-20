@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import {
   AlertCircle,
@@ -27,7 +27,8 @@ import {
   Workflow,
 } from "lucide-react";
 
-import { loadVersions } from "@/lib/api/collector-data";
+import { useCollectorIndex, useCollectorVersions } from "@/hooks/use-collector-data";
+import type { IndexComponent } from "@/types/collector";
 
 const COMPONENT_TYPES = [
   {
@@ -52,7 +53,8 @@ const COMPONENT_TYPES = [
   {
     type: "extension",
     label: "Extension",
-    description: "Provide additional capabilities like health checks, profiling, and authentication",
+    description:
+      "Provide additional capabilities like health checks, profiling, and authentication",
     icon: Plug,
   },
   {
@@ -106,27 +108,12 @@ const RESOURCES = [
 type CollectorComponentType = (typeof COMPONENT_TYPES)[number]["type"];
 type CollectorDistribution = (typeof DISTRIBUTIONS)[number]["distribution"];
 
-interface CollectorIndexComponent {
-  id: string;
-  name: string;
-  display_name?: string | null;
-  description?: string | null;
-  distribution: CollectorDistribution;
-  type: CollectorComponentType;
-  stability?: string | null;
-}
-
 interface CollectorLandingStats {
   byDistribution: Record<CollectorDistribution, number>;
   byType: Record<CollectorComponentType, number>;
   latestVersion: string | null;
   total: number;
 }
-
-type CollectorLandingState =
-  | { status: "loading" }
-  | { status: "error"; error: Error }
-  | { status: "ready"; stats: CollectorLandingStats };
 
 function emptyTypeCounts(): Record<CollectorComponentType, number> {
   return {
@@ -145,115 +132,77 @@ function emptyDistributionCounts(): Record<CollectorDistribution, number> {
   };
 }
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
-}
-
 function isComponentType(value: unknown): value is CollectorComponentType {
   return typeof value === "string" && COMPONENT_TYPES.some(({ type }) => type === value);
 }
 
 function isDistribution(value: unknown): value is CollectorDistribution {
   return (
-    typeof value === "string" &&
-    DISTRIBUTIONS.some(({ distribution }) => distribution === value)
+    typeof value === "string" && DISTRIBUTIONS.some(({ distribution }) => distribution === value)
   );
 }
 
-function isCollectorIndexComponent(value: unknown): value is CollectorIndexComponent {
-  if (!isRecord(value)) {
-    return false;
-  }
-
-  return (
-    typeof value.id === "string" &&
-    typeof value.name === "string" &&
-    isComponentType(value.type) &&
-    isDistribution(value.distribution)
-  );
-}
-
-function readCollectorComponents(payload: unknown): CollectorIndexComponent[] {
-  const componentEntries = Array.isArray(payload)
-    ? payload
-    : isRecord(payload) && Array.isArray(payload.components)
-      ? payload.components
-      : null;
-
-  if (!componentEntries) {
-    throw new Error("Collector index did not include a components array.");
-  }
-
-  return componentEntries.map((entry) => {
-    if (!isCollectorIndexComponent(entry)) {
-      throw new Error("Collector index contains an invalid component entry.");
-    }
-    return entry;
-  });
-}
-
-async function loadCollectorLandingStats(): Promise<CollectorLandingStats> {
-  const [indexResponse, versionData] = await Promise.all([
-    fetch("/data/collector/index.json"),
-    loadVersions(),
-  ]);
-
-  if (!indexResponse.ok) {
-    throw new Error(`Collector index request failed with ${indexResponse.status}.`);
-  }
-
-  const payload: unknown = await indexResponse.json();
-  const components = readCollectorComponents(payload);
+function buildCollectorLandingStats(
+  components: IndexComponent[],
+  latestVersion: string | null
+): CollectorLandingStats {
   const byType = emptyTypeCounts();
   const byDistribution = emptyDistributionCounts();
 
   for (const component of components) {
-    byType[component.type] += 1;
-    byDistribution[component.distribution] += 1;
+    if (isComponentType(component.type)) {
+      byType[component.type] += 1;
+    }
+    if (isDistribution(component.distribution)) {
+      byDistribution[component.distribution] += 1;
+    }
   }
 
   return {
     byDistribution,
     byType,
-    latestVersion:
-      versionData.versions.find((version) => version.is_latest)?.version ??
-      versionData.versions[0]?.version ??
-      null,
+    latestVersion,
     total: components.length,
   };
 }
 
 export function CollectorExploreLanding() {
-  const [state, setState] = useState<CollectorLandingState>({ status: "loading" });
+  const { data: collectorIndex, loading: indexLoading, error: indexError } = useCollectorIndex();
+  const {
+    data: versionData,
+    loading: versionsLoading,
+    error: versionsError,
+  } = useCollectorVersions();
   const numberFormatter = useMemo(() => new Intl.NumberFormat(), []);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadStats() {
-      try {
-        const stats = await loadCollectorLandingStats();
-        if (!cancelled) {
-          setState({ status: "ready", stats });
-        }
-      } catch (error) {
-        if (!cancelled) {
-          setState({
-            status: "error",
-            error: error instanceof Error ? error : new Error(String(error)),
-          });
-        }
-      }
+  const stats = useMemo(() => {
+    if (!collectorIndex || !versionData) {
+      return null;
     }
 
-    loadStats();
+    return buildCollectorLandingStats(
+      collectorIndex.components,
+      versionData.versions.find((version) => version.is_latest)?.version ??
+        versionData.versions[0]?.version ??
+        null
+    );
+  }, [collectorIndex, versionData]);
 
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const error = indexError ?? versionsError;
 
-  if (state.status === "loading") {
+  if (error) {
+    return (
+      <section
+        role="alert"
+        className="border-border/60 bg-card/80 flex min-h-72 flex-col items-center justify-center rounded-lg border p-8 text-center"
+      >
+        <AlertCircle className="text-primary h-10 w-10" aria-hidden="true" />
+        <h2 className="text-foreground mt-4 text-lg font-semibold">Error loading Collector data</h2>
+        <p className="text-muted-foreground mt-2 max-w-xl text-sm">{error.message}</p>
+      </section>
+    );
+  }
+
+  if (indexLoading || versionsLoading || !stats) {
     return (
       <section
         aria-live="polite"
@@ -266,21 +215,6 @@ export function CollectorExploreLanding() {
       </section>
     );
   }
-
-  if (state.status === "error") {
-    return (
-      <section
-        role="alert"
-        className="border-border/60 bg-card/80 flex min-h-72 flex-col items-center justify-center rounded-lg border p-8 text-center"
-      >
-        <AlertCircle className="text-primary h-10 w-10" aria-hidden="true" />
-        <h2 className="text-foreground mt-4 text-lg font-semibold">Error loading Collector data</h2>
-        <p className="text-muted-foreground mt-2 max-w-xl text-sm">{state.error.message}</p>
-      </section>
-    );
-  }
-
-  const { stats } = state;
 
   return (
     <section className="bg-background relative px-0 py-2">
@@ -324,7 +258,7 @@ export function CollectorExploreLanding() {
                 to={`/collector/components?type=${type}`}
                 className="group focus-visible:ring-primary block rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
               >
-                <article className="border-border/60 bg-card/80 hover:border-primary/40 h-full rounded-lg border p-6 transition-all duration-200 hover:-translate-y-0.5 hover:bg-card">
+                <article className="border-border/60 bg-card/80 hover:border-primary/40 hover:bg-card h-full rounded-lg border p-6 transition-all duration-200 hover:-translate-y-0.5">
                   <div className="flex h-full flex-col gap-4">
                     <div className="flex items-start justify-between gap-4">
                       <div className="bg-primary/10 text-primary flex h-11 w-11 items-center justify-center rounded-lg">

@@ -29,6 +29,11 @@ const JavaAgentPage = lazy(() =>
 const CollectorPage = lazy(() =>
   import("@/features/collector/collector-page").then((m) => ({ default: m.CollectorPage }))
 );
+const CollectorComponentsPage = lazy(() =>
+  import("@/features/collector/collector-components-page").then((m) => ({
+    default: m.CollectorComponentsPage,
+  }))
+);
 const CollectorDetailPage = lazy(() =>
   import("@/features/collector/collector-detail-page").then((m) => ({
     default: m.CollectorDetailPage,
@@ -116,10 +121,14 @@ export function LegacyApp() {
                 path="/java-agent/configuration/builder"
                 element={<ConfigurationBuilderPage />}
               />
-              <Route path="/collector" element={<CollectorPage />} />
               {isEnabled("COLLECTOR_PAGE") && (
                 <>
-                  <Route path="/collector/components" element={<CollectorPage />} />
+                  <Route path="/collector" element={<CollectorPage />} />
+                  <Route path="/collector/components" element={<CollectorComponentsPage />} />
+                  <Route
+                    path="/collector/components/:version"
+                    element={<CollectorComponentsPage />}
+                  />
                   <Route
                     path="/collector/components/:distribution/:name"
                     element={<CollectorDetailPage />}
