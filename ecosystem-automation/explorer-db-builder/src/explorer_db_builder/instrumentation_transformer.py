@@ -91,7 +91,7 @@ def _transform_0_1_to_0_2(inventory_data: dict[str, Any]) -> dict[str, Any]:
     Returns:
         Transformed inventory data in format 0.2
     """
-    if "libraries" not in inventory_data:
+    if "libraries" not in inventory_data or inventory_data["libraries"] is None:
         raise KeyError("Inventory data missing 'libraries' key")
 
     transformed_data = inventory_data.copy()
@@ -143,6 +143,7 @@ def _transform_0_2_to_0_3(inventory_data: dict[str, Any]) -> dict[str, Any]:
     Returns:
         Transformed inventory data in format 0.3
     """
+
     transformed_data = inventory_data.copy()
 
     if inventory_data.get("libraries") is not None:

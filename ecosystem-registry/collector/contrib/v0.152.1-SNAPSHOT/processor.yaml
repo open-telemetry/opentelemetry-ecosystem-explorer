@@ -589,7 +589,7 @@ components:
         - pmcollins
 - name: resourcedetectionprocessor
   metadata:
-    type: resourcedetection
+    type: resource_detection
     display_name: Resource Detection Processor
     status:
       class: processor
