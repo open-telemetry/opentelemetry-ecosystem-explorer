@@ -1,0 +1,26 @@
+{
+  "configurations": [
+    {
+      "declarative_name": "java.opentelemetry_instrumentation_annotations.exclude_methods",
+      "default": "",
+      "description": "All methods to be excluded from auto-instrumentation by annotation-based advices.",
+      "examples": [
+        "com.example.MyClass[method1,method2]",
+        "com.example.MyClass[method1];com.example.OtherClass[method2]"
+      ],
+      "name": "otel.instrumentation.opentelemetry-instrumentation-annotations.exclude-methods",
+      "type": "string"
+    }
+  ],
+  "description": "Instruments methods annotated with OpenTelemetry instrumentation annotations, such as @WithSpan and @SpanAttribute.",
+  "display_name": "OpenTelemetry Instrumentation Annotations",
+  "has_javaagent": true,
+  "javaagent_target_versions": [
+    "io.opentelemetry:opentelemetry-instrumentation-annotations:(,)"
+  ],
+  "name": "opentelemetry-instrumentation-annotations-1.16",
+  "scope": {
+    "name": "io.opentelemetry.opentelemetry-instrumentation-annotations-1.16"
+  },
+  "source_path": "instrumentation/opentelemetry-instrumentation-annotations-1.16"
+}
