@@ -176,7 +176,6 @@ function InstrumentationTabContent({
       version={schemaVersion}
       starter={starter}
     >
-      <PruneInstrumentationsForAgentVersion javaAgentVersion={javaAgentVersion} />
       <InstrumentationTabBody
         activeTab={activeTab}
         schema={schema}
@@ -214,7 +213,7 @@ function InstrumentationTabBody({
   const sectionsContainerRef = useRef<HTMLDivElement>(null);
   const { activeKey, scrollToSection } = useActiveSection(sectionKeys, sectionsContainerRef);
 
-  const { state, setEnabled } = useConfigurationBuilder();
+  const { state, setEnabled, pruneInstrumentations } = useConfigurationBuilder();
 
   const instrumentationsState = useInstrumentations(javaAgentVersion);
   const modules = useMemo(
@@ -223,6 +222,11 @@ function InstrumentationTabBody({
   );
   const customizedSet = useCustomizedModules(modules);
   const customizationCount = customizedSet.size;
+
+  useEffect(() => {
+    if (!instrumentationsState.data) return;
+    pruneInstrumentations(modules.map((m) => m.name));
+  }, [instrumentationsState.data, modules, pruneInstrumentations]);
 
   const devSection = state.values[INSTRUMENTATION_DEV_KEY];
   const hasDevContent = useMemo(() => hasMeaningfulLeaf(devSection), [devSection]);
