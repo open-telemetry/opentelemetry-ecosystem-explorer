@@ -25,10 +25,12 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   baseline:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main
