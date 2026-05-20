@@ -6,9 +6,11 @@ requires-python = ">=3.11"
 members = [
     "collector-watcher",
     "configuration-watcher",
+    "dotnet-instrumentation-watcher",
     "explorer-db-builder",
     "java-instrumentation-watcher",
     "opentelemetry-ecosystem-explorer",
+    "v1-registry-sync",
     "watcher-common",
 ]
 
@@ -429,6 +431,34 @@ wheels = [
 ]
 
 [[package]]
+name = "dotnet-instrumentation-watcher"
+version = "0.1.0"
+source = { editable = "ecosystem-automation/dotnet-instrumentation-watcher" }
+dependencies = [
+    { name = "pyyaml" },
+    { name = "requests" },
+    { name = "semantic-version" },
+    { name = "watcher-common" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "pytest" },
+    { name = "pytest-cov" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
+    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.1.0" },
+    { name = "pyyaml", specifier = ">=6.0.1" },
+    { name = "requests", specifier = ">=2.31.0" },
+    { name = "semantic-version", specifier = ">=2.10.0" },
+    { name = "watcher-common", editable = "ecosystem-automation/watcher-common" },
+]
+provides-extras = ["dev"]
+
+[[package]]
 name = "explorer-db-builder"
 version = "0.1.0"
 source = { editable = "ecosystem-automation/explorer-db-builder" }
@@ -562,8 +592,10 @@ source = { virtual = "." }
 dependencies = [
     { name = "collector-watcher" },
     { name = "configuration-watcher" },
+    { name = "dotnet-instrumentation-watcher" },
     { name = "explorer-db-builder" },
     { name = "java-instrumentation-watcher" },
+    { name = "v1-registry-sync" },
 ]
 
 [package.dev-dependencies]
@@ -578,8 +610,10 @@ dev = [
 requires-dist = [
     { name = "collector-watcher", editable = "ecosystem-automation/collector-watcher" },
     { name = "configuration-watcher", editable = "ecosystem-automation/configuration-watcher" },
+    { name = "dotnet-instrumentation-watcher", editable = "ecosystem-automation/dotnet-instrumentation-watcher" },
     { name = "explorer-db-builder", editable = "ecosystem-automation/explorer-db-builder" },
     { name = "java-instrumentation-watcher", editable = "ecosystem-automation/java-instrumentation-watcher" },
+    { name = "v1-registry-sync", editable = "ecosystem-automation/v1-registry-sync" },
 ]
 
 [package.metadata.requires-dev]
@@ -943,6 +977,28 @@ sdist = { url = "https://files.pythonhosted.org/packages/c7/24/5f1b3bdffd70275f6
 wheels = [
     { url = "https://files.pythonhosted.org/packages/39/08/aaaad47bc4e9dc8c725e68f9d04865dbcb2052843ff09c97b08904852d84/urllib3-2.6.3-py3-none-any.whl", hash = "sha256:bf272323e553dfb2e87d9bfd225ca7b0f467b919d7bbd355436d3fd37cb0acd4", size = 131584, upload-time = "2026-01-07T16:24:42.685Z" },
 ]
+
+[[package]]
+name = "v1-registry-sync"
+version = "0.1.0"
+source = { editable = "ecosystem-automation/v1-registry-sync" }
+dependencies = [
+    { name = "collector-watcher" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "pytest" },
+    { name = "pytest-cov" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "collector-watcher", editable = "ecosystem-automation/collector-watcher" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
+    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.1.0" },
+]
+provides-extras = ["dev"]
 
 [[package]]
 name = "virtualenv"
