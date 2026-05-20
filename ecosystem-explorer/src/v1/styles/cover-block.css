@@ -1,0 +1,200 @@
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * CoverBlock — always-dark hero surface shared by `<HomeV1 />` (Phase 2)
+ * and the ecosystem landing pages (Phase 3).
+ *
+ * Surface is built from three layered passes, all pure CSS:
+ *   1. Linear-gradient base between `--cover-block-bg-from-hsl` and
+ *      `--cover-block-bg-to-hsl` (the section's own `background`).
+ *   2. Two radial glows (`--otel-orange-hsl` + `--otel-purple-hsl`) painted
+ *      via `::before`. Alpha is intentionally low so the band stays usable
+ *      under text.
+ *   3. A subtle white grid via `::after` (repeating-linear-gradient on both
+ *      axes) — supplies the opentelemetry.io grid-overlay treatment without
+ *      an asset dependency.
+ *
+ * The `--cover-block--split` modifier turns the content column into a
+ * 2-column grid with the `aside` slot on the right (stacks under on mobile).
+ *
+ * Pixel-anchored at 16px-rem like the rest of v1 chrome — the explorer's
+ * global font-size is 14px and we want this hero to read at upstream sizing.
+ */
+
+.td-cover-block {
+  font-size: 16px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(
+    135deg,
+    hsl(var(--cover-block-bg-from-hsl)) 0%,
+    hsl(var(--cover-block-bg-to-hsl)) 100%
+  );
+  color: hsl(var(--cover-block-fg-hsl));
+  padding: 5rem 1.5rem 4rem;
+  text-align: center;
+
+  /*
+   * Hero accent tokens are theme-flipping globally (dark = orange, light = blue
+   * for the legacy compass-on-page-bg). Cover-block is always dark and
+   * orange-dominant by design, so we pin the accent tokens locally — any
+   * descendant that reads `--hero-accent-*` (e.g. `<Compass>`) renders
+   * orange-dominant inside the hero regardless of the global theme.
+   */
+  --hero-accent-hsl: var(--otel-orange-hsl);
+  --hero-accent-alt-hsl: var(--otel-blue-hsl);
+}
+
+.td-cover-block::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(ellipse at 20% 30%, hsl(var(--otel-orange-hsl) / 0.18), transparent 50%),
+    radial-gradient(ellipse at 80% 70%, hsl(var(--otel-purple-hsl) / 0.3), transparent 50%);
+  pointer-events: none;
+}
+
+.td-cover-block::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+
+.td-cover-block__inner {
+  position: relative;
+  z-index: 1;
+  max-width: 768px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.td-cover-block__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.td-cover-block__logo {
+  width: 96px;
+  height: 96px;
+  color: hsl(var(--cover-block-fg-hsl));
+}
+
+@media (min-width: 768px) {
+  .td-cover-block__logo {
+    width: 128px;
+    height: 128px;
+  }
+}
+
+/*
+ * Size whatever the logo slot receives (svg, or a wrapping div like
+ * Compass) to fill the wrapper. `> *` covers both shapes.
+ */
+.td-cover-block__logo > * {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.td-cover-block__eyebrow {
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: hsl(var(--cover-block-fg-hsl) / 0.75);
+}
+
+.td-cover-block__title {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.15;
+  margin: 0;
+}
+
+.td-cover-block__title-accent {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--otel-blue-hsl)) 0%,
+    hsl(var(--otel-orange-hsl)) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+.td-cover-block__lead {
+  font-size: 1.125rem;
+  line-height: 1.5;
+  margin: 0;
+  max-width: 40rem;
+  color: hsl(var(--cover-block-fg-hsl) / 0.85);
+}
+
+.td-cover-block__ctas {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.td-cover-block__aside {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* ---------- Split modifier (2-col on desktop, stacked on mobile) ---------- */
+
+.td-cover-block--split .td-cover-block__inner {
+  max-width: 1100px;
+}
+
+@media (min-width: 768px) {
+  .td-cover-block--split .td-cover-block__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 3rem;
+    text-align: start;
+  }
+
+  .td-cover-block--split .td-cover-block__content {
+    align-items: flex-start;
+    text-align: start;
+  }
+
+  .td-cover-block--split .td-cover-block__ctas {
+    justify-content: flex-start;
+  }
+
+  .td-cover-block--split .td-cover-block__aside {
+    justify-content: flex-end;
+  }
+}
