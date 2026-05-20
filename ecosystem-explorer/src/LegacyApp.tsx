@@ -121,9 +121,9 @@ export function LegacyApp() {
                 path="/java-agent/configuration/builder"
                 element={<ConfigurationBuilderPage />}
               />
+              <Route path="/collector" element={<CollectorPage />} />
               {isEnabled("COLLECTOR_PAGE") && (
                 <>
-                  <Route path="/collector" element={<CollectorPage />} />
                   <Route path="/collector/components" element={<CollectorComponentsPage />} />
                   <Route
                     path="/collector/components/:version"

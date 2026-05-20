@@ -16,7 +16,11 @@
 import { PageContainer } from "@/components/layout/page-container";
 import { BackButton } from "@/components/ui/back-button";
 import { CollectorExploreLanding } from "@/features/collector/components/collector-explore-landing.tsx";
+import { isEnabled } from "@/lib/feature-flags";
+
 export function CollectorPage() {
+  const collectorPageEnabled = isEnabled("COLLECTOR_PAGE");
+
   return (
     <PageContainer>
       <div className="space-y-6">
@@ -32,7 +36,16 @@ export function CollectorPage() {
             data.
           </p>
         </div>
-        <CollectorExploreLanding />
+        {collectorPageEnabled ? (
+          <CollectorExploreLanding />
+        ) : (
+          <section className="border-border/60 bg-card/80 rounded-lg border p-8 text-center">
+            <h2 className="text-foreground text-2xl font-bold">Collector explorer unavailable</h2>
+            <p className="text-muted-foreground mx-auto mt-3 max-w-2xl leading-relaxed">
+              The Collector ecosystem explorer is not enabled for this deployment.
+            </p>
+          </section>
+        )}
       </div>
     </PageContainer>
   );
