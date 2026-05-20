@@ -61,14 +61,14 @@ describe("StatsBand", () => {
 
   it("links Collector Components internally to /collector (no target=_blank)", () => {
     renderBand();
-    const link = screen.getByRole("link", { name: "200+" });
+    const link = screen.getByRole("link", { name: "Collector Components: 200+" });
     expect(link).toHaveAttribute("href", "/collector");
     expect(link).not.toHaveAttribute("target");
   });
 
   it("links external stats to opentelemetry.io with target=_blank and rel=noopener noreferrer", () => {
     renderBand();
-    const languages = screen.getByRole("link", { name: "12+" });
+    const languages = screen.getByRole("link", { name: "Languages: 12+" });
     expect(languages).toHaveAttribute("href", "https://opentelemetry.io/docs/languages/");
     expect(languages).toHaveAttribute("target", "_blank");
     expect(languages).toHaveAttribute("rel", "noopener noreferrer");
