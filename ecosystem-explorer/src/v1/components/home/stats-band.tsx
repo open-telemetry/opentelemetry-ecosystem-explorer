@@ -51,11 +51,18 @@ export function StatsBand({
             <div key={stat.label} className="td-stats-band__item">
               <div className="td-stats-band__number">
                 {stat.external ? (
-                  <a href={stat.href} target="_blank" rel="noopener noreferrer">
+                  <a
+                    href={stat.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`${stat.label}: ${stat.value}`}
+                  >
                     {stat.value}
                   </a>
                 ) : (
-                  <Link to={stat.href}>{stat.value}</Link>
+                  <Link to={stat.href} aria-label={`${stat.label}: ${stat.value}`}>
+                    {stat.value}
+                  </Link>
                 )}
               </div>
               <div className="td-stats-band__label">{stat.label}</div>
