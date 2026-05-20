@@ -85,6 +85,8 @@ jobs:
           GH_TOKEN: ${{ steps.otelbot-token.outputs.token }}
           COMMIT_SHA: ${{ github.sha }}
         run: |
+          git reset --hard HEAD
+          git clean -fd --quiet
           if git ls-remote --exit-code --heads origin otelbot/screenshots > /dev/null 2>&1; then
             git fetch origin otelbot/screenshots
             git checkout -B otelbot/screenshots FETCH_HEAD
