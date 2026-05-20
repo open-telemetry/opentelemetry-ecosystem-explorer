@@ -17,7 +17,7 @@ import { useMemo, type JSX } from "react";
 import { Download, RefreshCcw, ListPlus, Maximize2 } from "lucide-react";
 import type { ConfigNode } from "@/types/configuration";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
-import { generateYaml } from "@/lib/yaml-generator";
+import { generateYamlSections, structuredToString } from "@/lib/yaml-generator";
 import { downloadText } from "@/lib/download-text";
 import { CopyButton } from "@/components/ui/copy-button";
 import {
@@ -81,14 +81,26 @@ function PreviewActions({ yaml, filename, onValidate }: PreviewActionsProps) {
 interface PreviewCardProps {
   schema: ConfigNode;
   javaAgentVersion: string;
+  activePreviewKey: string | null;
+  activeTab: string;
 }
 
-export function PreviewCard({ schema, javaAgentVersion }: PreviewCardProps): JSX.Element {
+export function PreviewCard({
+  schema,
+  javaAgentVersion,
+  activePreviewKey,
+  activeTab,
+}: PreviewCardProps): JSX.Element {
   const { state, enableAllSections, resetToDefaults, validateAll } = useConfigurationBuilder();
-  const yaml = useMemo(
-    () => generateYaml(state, schema, { javaAgentVersion: javaAgentVersion || undefined }),
+
+  const structured = useMemo(
+    () => generateYamlSections(state, schema, { javaAgentVersion: javaAgentVersion || undefined }),
     [state, schema, javaAgentVersion]
   );
+
+  const yaml = useMemo(() => structuredToString(structured), [structured]);
+
+  const activeKey = activeTab === "sdk" && activePreviewKey === "general" ? null : activePreviewKey;
 
   const handleReset = () => {
     if (state.isDirty) {
@@ -145,7 +157,8 @@ export function PreviewCard({ schema, javaAgentVersion }: PreviewCardProps): JSX
         </div>
       </header>
       <YamlCodeBlock
-        code={yaml}
+        structured={structured}
+        activePreviewKey={activeKey}
         className="bg-background/60 text-foreground max-h-[calc(100vh-8rem)] overflow-auto rounded-md p-4 font-mono text-xs"
       />
     </section>

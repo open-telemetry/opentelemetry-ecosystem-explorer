@@ -14,31 +14,105 @@
  * limitations under the License.
  */
 import { Fragment, useMemo, type JSX } from "react";
-import { tokenize } from "@/lib/yaml-highlight";
+import { tokenize, type Token } from "@/lib/yaml-highlight";
+import type { StructuredYaml } from "@/lib/yaml-generator";
 
 interface YamlCodeBlockProps {
-  code: string;
+  structured?: StructuredYaml;
+  // Plain-string fallback kept for ConfigurationCard, which renders individual config snippets.
+  code?: string;
+  activePreviewKey?: string | null;
   className?: string;
 }
 
-export function YamlCodeBlock({ code, className }: YamlCodeBlockProps): JSX.Element {
-  const lines = useMemo(() => tokenize(code), [code]);
+export function YamlCodeBlock({
+  structured,
+  code,
+  activePreviewKey = null,
+  className,
+}: YamlCodeBlockProps): JSX.Element {
+  const finalStructured = useMemo<StructuredYaml>(() => {
+    if (structured) return structured;
+    if (code !== undefined) {
+      return {
+        header: "",
+        fileFormat: "",
+        sections: [{ key: "legacy", content: code }],
+      };
+    }
+    return { header: "", fileFormat: "", sections: [] };
+  }, [structured, code]);
+
+  const headerLines = useMemo(() => tokenize(finalStructured.header), [finalStructured.header]);
+  const fileFormatLines = useMemo(
+    () => tokenize(finalStructured.fileFormat),
+    [finalStructured.fileFormat]
+  );
+
+  const sectionsWithTokens = useMemo(() => {
+    return finalStructured.sections.map((sec) => ({
+      key: sec.key,
+      lines: tokenize(sec.content),
+    }));
+  }, [finalStructured.sections]);
+
+  const isSectionActive = (secKey: string) => {
+    if (activePreviewKey === secKey) return true;
+    if (secKey === "instrumentation/development") {
+      return activePreviewKey === "general" || activePreviewKey === "instrumentations";
+    }
+    return false;
+  };
+
+  const renderLines = (lines: Token[][]) => {
+    return lines.map((tokens, i) => (
+      <Fragment key={i}>
+        {tokens.map((t, j) =>
+          t.kind === "ws" ? (
+            t.text
+          ) : (
+            <span key={j} className={`y-${t.kind}`}>
+              {t.text}
+            </span>
+          )
+        )}
+        {i < lines.length - 1 ? "\n" : ""}
+      </Fragment>
+    ));
+  };
+
   return (
     <pre className={className}>
-      {lines.map((tokens, i) => (
-        <Fragment key={i}>
-          {tokens.map((t, j) =>
-            t.kind === "ws" ? (
-              t.text
-            ) : (
-              <span key={j} className={`y-${t.kind}`}>
-                {t.text}
-              </span>
-            )
-          )}
-          {i < lines.length - 1 ? "\n" : ""}
-        </Fragment>
-      ))}
+      {headerLines.length > 0 && (
+        <div className="opacity-80">
+          {renderLines(headerLines)}
+          {"\n"}
+        </div>
+      )}
+
+      {fileFormatLines.length > 0 && (
+        <div>
+          {renderLines(fileFormatLines)}
+          {"\n"}
+        </div>
+      )}
+
+      {sectionsWithTokens.map((sec) => {
+        const isActive = isSectionActive(sec.key);
+        return (
+          <div
+            key={sec.key}
+            data-section-key={sec.key}
+            className={`my-1 rounded-sm border-l-2 py-1 pl-3 transition-all duration-300 ${
+              isActive
+                ? "bg-primary/5 border-primary shadow-[0_0_12px_rgba(var(--primary-hsl),0.05)]"
+                : "border-transparent bg-transparent"
+            }`}
+          >
+            {renderLines(sec.lines)}
+          </div>
+        );
+      })}
     </pre>
   );
 }

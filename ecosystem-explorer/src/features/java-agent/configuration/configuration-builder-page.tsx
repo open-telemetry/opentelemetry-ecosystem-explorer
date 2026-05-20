@@ -98,6 +98,17 @@ function SdkTabContent({
   javaAgentVersion,
   activeTab,
 }: SdkTabContentProps) {
+  const [activePreviewKey, setActivePreviewKey] = useState<string | null>(null);
+
+  const handleInteraction = (e: React.BaseSyntheticEvent) => {
+    const key = (e.target as HTMLElement)
+      .closest("[data-section-key]")
+      ?.getAttribute("data-section-key");
+    if (key) {
+      setActivePreviewKey(key);
+    }
+  };
+
   const { groupChildren, leafChildren } = useMemo(() => {
     const visible = schema.children.filter((c) => !SDK_HIDDEN_KEYS.has(c.key));
     return {
@@ -132,7 +143,12 @@ function SdkTabContent({
           activeKey={activeKey}
           onSectionClick={scrollToSection}
         />
-        <div ref={sectionsContainerRef} className="space-y-4">
+        <div
+          ref={sectionsContainerRef}
+          className="space-y-4"
+          onFocusCapture={handleInteraction}
+          onPointerDown={handleInteraction}
+        >
           {hasGeneralLeaves && (
             <GeneralSectionCard label={GENERAL_SECTION_LABEL}>{leafChildren}</GeneralSectionCard>
           )}
@@ -140,7 +156,12 @@ function SdkTabContent({
             <SchemaRenderer key={child.key} node={child} depth={0} path={child.key} />
           ))}
         </div>
-        <PreviewCard schema={schema} javaAgentVersion={javaAgentVersion} />
+        <PreviewCard
+          schema={schema}
+          javaAgentVersion={javaAgentVersion}
+          activePreviewKey={activePreviewKey}
+          activeTab={activeTab}
+        />
       </div>
     </ConfigurationBuilderProvider>
   );
@@ -199,6 +220,17 @@ function InstrumentationTabBody({
   generalNode,
   javaAgentVersion,
 }: InstrumentationTabBodyProps) {
+  const [activePreviewKey, setActivePreviewKey] = useState<string | null>(null);
+
+  const handleInteraction = (e: React.BaseSyntheticEvent) => {
+    const key = (e.target as HTMLElement)
+      .closest("[data-section-key]")
+      ?.getAttribute("data-section-key");
+    if (key) {
+      setActivePreviewKey(key);
+    }
+  };
+
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 
@@ -262,7 +294,12 @@ function InstrumentationTabBody({
         onStatusFilterChange={setStatusFilter}
         customizationCount={customizationCount}
       />
-      <div ref={sectionsContainerRef} className="space-y-4">
+      <div
+        ref={sectionsContainerRef}
+        className="space-y-4"
+        onFocusCapture={handleInteraction}
+        onPointerDown={handleInteraction}
+      >
         <GeneralSectionCard
           label={GENERAL_SETTINGS_LABEL}
           sectionKey={GENERAL_SECTION_KEY}
@@ -281,7 +318,12 @@ function InstrumentationTabBody({
           onJumpToGeneral={scrollToSection}
         />
       </div>
-      <PreviewCard schema={schema} javaAgentVersion={javaAgentVersion} />
+      <PreviewCard
+        schema={schema}
+        javaAgentVersion={javaAgentVersion}
+        activePreviewKey={activePreviewKey}
+        activeTab={activeTab}
+      />
     </div>
   );
 }

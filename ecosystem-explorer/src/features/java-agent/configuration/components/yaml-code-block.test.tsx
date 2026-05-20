@@ -17,27 +17,46 @@ import { describe, it, expect } from "vitest";
 import { render } from "@testing-library/react";
 import { YamlCodeBlock } from "./yaml-code-block";
 
+const makeStructured = (header = "", fileFormat = "", key = "test", content = "") => ({
+  header,
+  fileFormat,
+  sections: content ? [{ key, content }] : [],
+});
+
 describe("YamlCodeBlock", () => {
   it("renders the code inside a <pre>", () => {
-    const { container } = render(<YamlCodeBlock code='key: "v"' />);
+    const structured = makeStructured("", "", "test", 'key: "v"');
+    const { container } = render(<YamlCodeBlock structured={structured} activePreviewKey={null} />);
     expect(container.querySelector("pre")).not.toBeNull();
   });
 
   it("preserves the original text content character-for-character", () => {
-    const code = '# c\nkey: "v"\n  - name: x\n';
-    const { container } = render(<YamlCodeBlock code={code} />);
-    expect(container.querySelector("pre")?.textContent).toBe(code);
+    const header = "# c\n";
+    const fileFormat = 'file_format: "1.0"\n';
+    const content = 'key: "v"\n  - name: x\n';
+    const structured = makeStructured(header, fileFormat, "test", content);
+    const { container } = render(<YamlCodeBlock structured={structured} activePreviewKey={null} />);
+
+    const preContent = container.querySelector("pre")?.textContent;
+    expect(preContent).toContain("# c");
+    expect(preContent).toContain('file_format: "1.0"');
+    expect(preContent).toContain('key: "v"');
+    expect(preContent).toContain("- name: x");
   });
 
   it("emits y-key, y-punct, y-string spans for a key/value pair", () => {
-    const { container } = render(<YamlCodeBlock code='endpoint: "https://x"' />);
+    const structured = makeStructured("", "", "test", 'endpoint: "https://x"');
+    const { container } = render(<YamlCodeBlock structured={structured} activePreviewKey={null} />);
     expect(container.querySelector("span.y-key")?.textContent).toBe("endpoint");
     expect(container.querySelector("span.y-punct")?.textContent).toBe(":");
     expect(container.querySelector("span.y-string")?.textContent).toBe('"https://x"');
   });
 
   it("forwards className to the <pre> element", () => {
-    const { container } = render(<YamlCodeBlock code="" className="custom-x" />);
+    const structured = makeStructured();
+    const { container } = render(
+      <YamlCodeBlock structured={structured} activePreviewKey={null} className="custom-x" />
+    );
     expect(container.querySelector("pre")?.className).toContain("custom-x");
   });
 });
