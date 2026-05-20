@@ -87,7 +87,8 @@ describe("PreviewCard", () => {
 
   it("triggers validateAll on Copy click regardless of clipboard availability", () => {
     render(<PreviewCard schema={schema} javaAgentVersion="2.27.0" />);
-    fireEvent.click(screen.getByRole("button", { name: /copy/i }));
+    const previewContainer = screen.getByLabelText("Output Preview");
+    fireEvent.click(within(previewContainer).getByRole("button", { name: /copy/i }));
     expect(validateAll).toHaveBeenCalledTimes(1);
   });
 
@@ -123,7 +124,8 @@ describe("PreviewCard", () => {
 
   it("downloads the YAML with the schema-versioned filename and agent-stamped content", () => {
     render(<PreviewCard schema={schema} javaAgentVersion="2.27.0" />);
-    fireEvent.click(screen.getAllByRole("button", { name: /download/i })[0]);
+    const previewContainer = screen.getByLabelText("Output Preview");
+    fireEvent.click(within(previewContainer).getByRole("button", { name: /download/i }));
     expect(downloadSpy).toHaveBeenCalledTimes(1);
     const [filename, body, mime] = downloadSpy.mock.calls[0];
     expect(filename).toBe("otel-config-1.0.0.yaml");
@@ -150,6 +152,13 @@ describe("PreviewCard", () => {
         "Complete generated YAML configuration for your OpenTelemetry Java Agent."
       )
     ).toBeInTheDocument();
+
+    // Verify content parity between inline preview and dialog
+    const previewContainer = screen.getByLabelText("Output Preview");
+    const inlinePre = previewContainer.querySelector("pre");
+    const dialogPre = dialog.querySelector("pre");
+    expect(dialogPre).not.toBeNull();
+    expect(dialogPre?.textContent).toBe(inlinePre?.textContent);
 
     validateAll.mockClear();
     const modalCopyBtn = within(dialog).getByRole("button", { name: /copy/i });
