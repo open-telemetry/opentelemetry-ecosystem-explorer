@@ -304,9 +304,7 @@ export function ConfigurationBuilderPage() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-3xl font-semibold md:text-4xl">
-                Configuration Builder
-              </h1>
+              <h1 className="text-3xl font-semibold md:text-4xl">Configuration Builder</h1>
               <BetaBadge />
             </div>
             <p className="text-muted-foreground text-base">
