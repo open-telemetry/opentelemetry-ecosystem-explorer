@@ -59,22 +59,24 @@ describe("ConfigurationBuilderPage version selectors", () => {
     const agent = await findAgentSelector();
 
     await openInstrumentationTab(user);
-    const reactorRow = (await screen.findByTestId(
-      "instrumentation-row-reactor",
+    await screen.findByTestId("instrumentation-row-reactor", {}, { timeout: 10_000 });
+    const preview = (await screen.findByLabelText(
+      "Output Preview",
       {},
       { timeout: 10_000 }
     )) as HTMLElement;
-    expect(within(reactorRow).getByText("2 versions")).toBeInTheDocument();
+    expect(preview.textContent).toContain(`Java agent: ${latestAgentVersion}`);
 
     await user.selectOptions(agent, otherAgentVersion);
 
     await waitFor(
       () => {
-        const updated = screen.getByTestId("instrumentation-row-reactor");
-        expect(within(updated).queryByText("2 versions")).toBeNull();
+        expect(preview.textContent).toContain(`Java agent: ${otherAgentVersion}`);
       },
       { timeout: 10_000 }
     );
+    expect(preview.textContent).not.toContain(`Java agent: ${latestAgentVersion}`);
+    await screen.findByTestId("instrumentation-row-reactor", {}, { timeout: 10_000 });
   });
 
   it("updates the YAML preview header from the SDK tab when the Agent version changes", async () => {
