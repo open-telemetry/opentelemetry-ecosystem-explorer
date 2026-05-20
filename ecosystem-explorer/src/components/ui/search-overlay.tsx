@@ -228,7 +228,7 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
             </>
           ) : query.trim() ? (
             <div className="text-muted-foreground px-4 py-8 text-center text-sm">
-              No results for "{debouncedQuery}"
+              No results for "{query.trim()}"
             </div>
           ) : (
             <div className="text-muted-foreground px-4 py-8 text-center text-sm">
