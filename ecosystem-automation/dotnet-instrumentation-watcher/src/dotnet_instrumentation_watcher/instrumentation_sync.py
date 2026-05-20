@@ -35,7 +35,7 @@ class InstrumentationSync:
     ):
         """
         Args:
-            client: GitHub API client for fetching data
+            client: NuGet API client for fetching data
             inventory_manager: Inventory manager for storing data
         """
         self.client = client
@@ -122,9 +122,8 @@ class InstrumentationSync:
         snapshot_version = Version(
             major=latest_version.major,
             minor=latest_version.minor,
-            patch=latest_version.patch,
-            prerelease=latest_version.prerelease,
-            build=("SNAPSHOT",),
+            patch=latest_version.patch + 1,
+            prerelease=("SNAPSHOT",),
         )
 
         logger.info("  Fetching instrumentation list from NuGet...")

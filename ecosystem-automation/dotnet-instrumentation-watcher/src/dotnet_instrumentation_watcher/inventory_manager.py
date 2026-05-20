@@ -80,10 +80,7 @@ class InventoryManager(BaseInventoryManager):
         file_path = version_dir / self.FILE_NAME
 
         if not file_path.exists():
-            return {
-                "file_format": 0.1,
-                "libraries": [],
-            }
+            return {"modules": []}
 
         with open(file_path) as f:
             data = yaml.safe_load(f) or {}

@@ -62,6 +62,6 @@ def test_update_snapshot(mock_client, mock_inventory):
     sync = InstrumentationSync(mock_client, mock_inventory)
     result = sync.update_snapshot()
 
-    assert result == Version("1.2.3+SNAPSHOT")
+    assert result == Version("1.2.4-SNAPSHOT")
     mock_inventory.cleanup_snapshots.assert_called_once()
     mock_inventory.save_versioned_inventory.assert_called_once()
