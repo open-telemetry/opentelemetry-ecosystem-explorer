@@ -68,6 +68,18 @@ jobs:
       - name: Use CLA approved github bot
         run: .github/scripts/use-cla-approved-bot.sh
 
+      - name: Build comment body
+        env:
+          PR_NUMBER: ${{ steps.metadata.outputs.pr_number }}
+          HEAD_REF: ${{ steps.metadata.outputs.head_ref }}
+          HEAD_REPO: ${{ steps.metadata.outputs.head_repo }}
+          HEAD_SHA: ${{ steps.metadata.outputs.head_sha }}
+          WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
+          REPO: ${{ github.repository }}
+          OUTPUT_PATH: /tmp/comment_body.txt
+          DIFF_REPORT_PATH: /tmp/diff-artifact/diff-report.json
+        run: python3 .github/scripts/build-screenshots-comment.py
+
       - name: Commit screenshots to otelbot/screenshots branch
         env:
           PR_NUMBER: ${{ steps.metadata.outputs.pr_number }}
@@ -125,18 +137,6 @@ jobs:
           git add -A -- "${PR_NUMBER}/"
           git diff --quiet --exit-code --cached || git commit -m "docs: update screenshots for PR #${PR_NUMBER}"
           git push origin otelbot/screenshots
-
-      - name: Build comment body
-        env:
-          PR_NUMBER: ${{ steps.metadata.outputs.pr_number }}
-          HEAD_REF: ${{ steps.metadata.outputs.head_ref }}
-          HEAD_REPO: ${{ steps.metadata.outputs.head_repo }}
-          HEAD_SHA: ${{ steps.metadata.outputs.head_sha }}
-          WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
-          REPO: ${{ github.repository }}
-          OUTPUT_PATH: /tmp/comment_body.txt
-          DIFF_REPORT_PATH: /tmp/diff-artifact/diff-report.json
-        run: python3 .github/scripts/build-screenshots-comment.py
 
       - name: Get otelbot token
         uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1

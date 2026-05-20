@@ -46,6 +46,7 @@
     /* Brand primitives — stable, never reassigned */
     --otel-blue-hsl: 228 37% 49%;
     --otel-orange-hsl: 41 100% 48%;
+    --otel-purple-hsl: 230 38% 49%;
 
     /* Semantic role tokens */
     --primary-hsl: var(--otel-blue-hsl); /* structural / navbar / buttons */
@@ -77,6 +78,7 @@
     /* Brand primitives — identical across themes */
     --otel-blue-hsl: 228 37% 49%;
     --otel-orange-hsl: 41 100% 48%;
+    --otel-purple-hsl: 230 38% 49%;
 
     /* Semantic role tokens */
     --primary-hsl: var(--otel-blue-hsl);

@@ -3,13 +3,30 @@ title: "Phase 1 — Foundation"
 issue: 84
 type: plan
 phase: 1
-status: planning
-last_updated: "2026-05-13"
+status: complete
+last_updated: "2026-05-19"
 ---
 
 > [!NOTE]
 >
 > This file was drafted in collaboration with Claude Opus 4.7. Corrections are welcome.
+
+## Status (2026-05-19)
+
+**Phase 1 complete.** PRs 0-7 are all merged on `main` and
+[#370](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/370) is closed. The
+v1 chrome (theme system, NavBar, SubNav, StatusPill, TypeStripe, FooterV1, CncfCallout) is shipping
+under the `V1_REDESIGN` flag, and `/_dev/components` is wired up for the visual-regression and a11y
+baseline (#487).
+
+PR 8 (cleanup) is the **end-of-redesign cleanup** that bundles all phases' cleanups — it is **not**
+Phase-1-scoped and lands after Phase 5. See [`v1-routing-pivot.md`](./v1-routing-pivot.md) "Cutover
+model" for what PR 8 includes.
+
+The plan and acceptance criteria below are kept as a historical record of what Phase 1 promised.
+Per-PR decisions and scope drift (e.g., the 2026-05-11 navbar minimalisation) are captured inline in
+[`NEXT-STEPS.md`](./NEXT-STEPS.md)'s decision log; the audit in
+[`00-foundation-audit.md`](./00-foundation-audit.md) captures the as-built delta against this plan.
 
 ## Project 00 — Foundation
 
@@ -20,7 +37,8 @@ Tracks: [#84](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer
 References: [`ecosystem-explorer-v1-mockups.html`](./ecosystem-explorer-v1-mockups.html) ·
 [`ecosystem-explorer-v1-design-brief.md`](./ecosystem-explorer-v1-design-brief.md) ·
 [`v1-routing-pivot.md`](./v1-routing-pivot.md) ·
-[`ecosystem-explorer/DESIGN.md`](../../ecosystem-explorer/DESIGN.md)
+[`ecosystem-explorer/DESIGN_V1.md`](../../ecosystem-explorer/DESIGN_V1.md) (as-built v1 system) ·
+[`ecosystem-explorer/DESIGN.md`](../../ecosystem-explorer/DESIGN.md) (legacy, frozen until PR 8)
 
 ---
 
@@ -43,9 +61,12 @@ without writing any of that themselves.
   `prefers-color-scheme` for the "auto" option, with a navbar toggle. No flash of wrong theme on
   first paint.
 - CSS custom properties exposed for both themes (see DESIGN.md "CSS Custom Properties" section).
-- `<NavBar />` component matching opentelemetry.io: always-dark, full-width, sticky. Includes logo
-  lockup, primary nav (Docs · Ecosystem · Status · Community · Training · Blog · **Explorer**),
-  search input (placeholder Ask AI / ⌘K), theme toggle.
+- `<NavBar />` component matching opentelemetry.io's **styling** (always-dark, full-width,
+  fixed-position, pixel-anchored to opentelemetry.io's `_navbar.scss`). Link list is
+  **explorer-specific** and intentionally diverges from opentelemetry.io's nav — v1 shipped with a
+  minimal single "Docs" link + `OtelLogo` brand lockup + `<ThemeToggle />`; future link additions
+  are explorer-scoped and tracked separately, not against opentelemetry.io drift. Search input
+  deferred (see decision log entry 2026-05-11).
 - `<SubNav />` component for the explorer (breadcrumb-only on home, breadcrumb + page actions on
   inner pages).
 - `<Footer />` component matching opentelemetry.io's two-cluster Font Awesome layout with centered
@@ -76,9 +97,10 @@ without writing any of that themselves.
 2. **Theme toggle** — implement a no-flash theme initializer (matches opentelemetry.io's
    `data-theme-init` script) that runs before paint, plus a navbar toggle that cycles light → dark →
    auto and writes to `localStorage["td-color-theme"]`.
-3. **NavBar component** — port the navbar HTML/CSS from the mockup into a real component. Confirm
-   logo lockup matches opentelemetry.io (linked SVG at
-   `/img/logos/opentelemetry-horizontal-color.svg` or our local copy). Sticky, full-width. Lives in
+3. **NavBar component** — port opentelemetry.io's navbar **styles** (always-dark surface, hover
+   underline, sticky/fixed positioning, pixel metrics) into a real component. Link list is
+   explorer-specific and may diverge from opentelemetry.io — keep the styles in sync, the links are
+   ours. Logo lockup uses the local `OtelLogo` component (per the 2026-05-06 decision). Lives in
    `src/v1/components/layout/`.
 4. **SubNav component** — breadcrumb + optional right-aligned actions slot. Lives in
    `src/v1/components/layout/`.
@@ -95,8 +117,11 @@ without writing any of that themselves.
 8. **Type-stripe primitive** — exports both a CSS class set and a small
    `<TypeStripe type="receiver|..." />` component for use at the left edge of rows and cards.
 9. **Card primitive** — `<Card>` with optional `typeStripe` prop, hover state, dark/light surfaces.
-10. **DESIGN.md update** — document the new tokens and component slots so future contributors hit
-    the ground running.
+10. **Design system documentation** — document the new v1 tokens and component slots so future
+    contributors hit the ground running. Lives at `ecosystem-explorer/DESIGN_V1.md` (added on the
+    Phase 2 PR 1 prep branch, 2026-05-19). Cannot edit `DESIGN.md` directly — the legacy site is
+    still live in production until PR 8 cleanup, at which point `DESIGN_V1.md` is renamed to
+    `DESIGN.md` and the legacy doc is deleted.
 11. **Visual regression baseline** — Playwright snapshots of NavBar + Footer + StatusPill + Card in
     both themes. Locks the look before later projects start moving things.
 
