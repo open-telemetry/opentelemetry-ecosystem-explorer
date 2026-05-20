@@ -12,11 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-"""OpenTelemetry .NET instrumentation metadata automation."""
+"""Allow running dotnet_instrumentation_watcher as a module with python -m dotnet_instrumentation_watcher."""
 
-import importlib.metadata
+from .main import main
 
-try:
-    __version__ = importlib.metadata.version("dotnet-instrumentation-watcher")
-except importlib.metadata.PackageNotFoundError:
-    __version__ = "0.0.0-dev"
+if __name__ == "__main__":
+    main()
