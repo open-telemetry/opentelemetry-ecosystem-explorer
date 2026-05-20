@@ -118,6 +118,39 @@ describe("ConfigurationBuilderPage version selectors", () => {
     expect(resourceToggle).toHaveAttribute("aria-checked", "false");
   });
 
+  it("prunes instrumentation customizations referencing modules absent from the selected Agent version", async () => {
+    if (!otherAgentVersion) return;
+    renderPage();
+    const user = userEvent.setup();
+    const agent = await findAgentSelector();
+
+    await openInstrumentationTab(user);
+    const thriftRow = (await screen.findByTestId(
+      "instrumentation-row-thrift",
+      {},
+      { timeout: 10_000 }
+    )) as HTMLElement;
+    const customize = within(thriftRow).getByRole("button", { name: /Customize thrift/i });
+    await user.click(customize);
+    const preview = (await screen.findByLabelText(
+      "Output Preview",
+      {},
+      { timeout: 10_000 }
+    )) as HTMLElement;
+    await waitFor(() => expect(preview.textContent).toMatch(/- thrift\b/));
+
+    await user.selectOptions(agent, otherAgentVersion);
+
+    await waitFor(
+      () => {
+        expect(preview.textContent).toContain(`Java agent: ${otherAgentVersion}`);
+        expect(preview.textContent).not.toMatch(/- thrift\b/);
+        expect(preview.textContent).not.toMatch(/^distribution:/m);
+      },
+      { timeout: 10_000 }
+    );
+  });
+
   it("does not persist the Agent selection: remount resets to latest with empty localStorage", async () => {
     if (!otherAgentVersion) return;
     const { unmount } = renderPage();
