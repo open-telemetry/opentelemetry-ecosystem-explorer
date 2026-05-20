@@ -52,11 +52,11 @@ class DeprecationDetector:
             previous_set = self._build_component_set(previous_components.get(component_type, []))
             current_set = self._build_component_set(current_components.get(component_type, []))
 
-            removed_names = previous_set - current_set
+            removed_keys = previous_set - current_set
 
             deprecated_list = []
             for component in previous_components.get(component_type, []):
-                if component["name"] in removed_names:
+                if (component["name"], component.get("subtype")) in removed_keys:
                     deprecated_component = self._create_deprecated_component(
                         component, previous_version, current_version
                     )
@@ -67,9 +67,9 @@ class DeprecationDetector:
         return deprecated_components
 
     @staticmethod
-    def _build_component_set(components: list[dict[str, Any]]) -> set[str]:
-        """Build a set of component names."""
-        return {component["name"] for component in components}
+    def _build_component_set(components: list[dict[str, Any]]) -> set[tuple[str, str | None]]:
+        """Build a set of (name, subtype) tuples to uniquely identify components."""
+        return {(component["name"], component.get("subtype")) for component in components}
 
     @staticmethod
     def _create_deprecated_component(
