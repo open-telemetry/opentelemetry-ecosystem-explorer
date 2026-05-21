@@ -32,6 +32,7 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
   const [query, setQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
   const [recentSearches, setRecentSearches] = useState<string[]>(() => {
     const stored = localStorage.getItem(RECENT_SEARCHES_KEY);
     if (!stored) {
@@ -46,6 +47,7 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
   });
   const searchTimerRef = useRef<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const itemRefs = useRef<Array<HTMLElement | null>>([]);
 
   // Focus input on mount
   useEffect(() => {
@@ -103,6 +105,44 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
 
   // Show recent searches if empty query, otherwise show search results
   const showRecent = !query.trim();
+  const visibleItems = showRecent
+    ? recentSearches.map((searchQuery) => ({
+        kind: "recent" as const,
+        key: searchQuery,
+        label: searchQuery,
+      }))
+    : searchResults.map((result) => ({
+        kind: "result" as const,
+        key: result.path,
+        label: result.title,
+        result,
+      }));
+
+  useEffect(() => {
+    setActiveIndex(0);
+    itemRefs.current = [];
+  }, [query, searchResults, recentSearches, showRecent]);
+
+  useEffect(() => {
+    const activeItem = itemRefs.current[activeIndex];
+    if (activeItem) {
+      activeItem.scrollIntoView({ block: "nearest" });
+    }
+  }, [activeIndex]);
+
+  const selectVisibleItem = (index: number) => {
+    const item = visibleItems[index];
+    if (!item) {
+      return;
+    }
+
+    if (item.kind === "recent") {
+      void handleRecentSearch(item.label);
+      return;
+    }
+
+    handleSelect(item.label, item.result.path);
+  };
 
   return (
     <>
@@ -154,8 +194,24 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
               }, 250);
             }}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && query.trim()) {
-                handleSelect(query);
+              if ((e.key === "ArrowDown" || e.key === "ArrowUp") && visibleItems.length > 0) {
+                e.preventDefault();
+
+                setActiveIndex((currentIndex) => {
+                  const nextIndex =
+                    e.key === "ArrowDown"
+                      ? (currentIndex + 1) % visibleItems.length
+                      : (currentIndex - 1 + visibleItems.length) % visibleItems.length;
+
+                  return nextIndex;
+                });
+              } else if (e.key === "Enter") {
+                if (visibleItems.length > 0) {
+                  e.preventDefault();
+                  selectVisibleItem(activeIndex);
+                } else if (query.trim()) {
+                  handleSelect(query);
+                }
               } else if (e.key === "Escape") {
                 onClose();
               }
@@ -182,12 +238,20 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
             <>
               <div className="text-muted-foreground px-4 py-2 text-xs font-semibold">Results</div>
               <ul className="space-y-1 px-2 py-2">
-                {searchResults.map((result) => (
+                {searchResults.map((result, index) => (
                   <li key={result.path}>
                     <Link
                       to={result.path}
-                      onClick={() => handleSelect(result.title)}
-                      className="hover:bg-accent text-foreground flex w-full items-center justify-between rounded px-3 py-2 text-left text-sm transition-colors"
+                      onClick={() => handleSelect(result.title, result.path)}
+                      onMouseEnter={() => setActiveIndex(index)}
+                      ref={(node) => {
+                        itemRefs.current[index] = node;
+                      }}
+                      className={`text-foreground flex w-full items-center justify-between rounded px-3 py-2 text-left text-sm transition-colors ${
+                        activeIndex === index
+                          ? "bg-accent"
+                          : "hover:bg-accent/70"
+                      }`}
                     >
                       <div>
                         <div className="font-medium">{result.title}</div>
@@ -205,13 +269,19 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
                 Recent Searches
               </div>
               <ul className="space-y-1 px-2 py-2">
-                {recentSearches.map((searchQuery) => (
+                {recentSearches.map((searchQuery, index) => (
                   <li key={searchQuery}>
                     <button
                       onClick={() => {
                         void handleRecentSearch(searchQuery);
                       }}
-                      className="hover:bg-accent text-foreground w-full rounded px-3 py-2 text-left text-sm transition-colors"
+                      onMouseEnter={() => setActiveIndex(index)}
+                      ref={(node) => {
+                        itemRefs.current[index] = node;
+                      }}
+                      className={`text-foreground w-full rounded px-3 py-2 text-left text-sm transition-colors ${
+                        activeIndex === index ? "bg-accent" : "hover:bg-accent/70"
+                      }`}
                     >
                       <Search className="text-muted-foreground mr-2 inline h-4 w-4" />
                       {searchQuery}
