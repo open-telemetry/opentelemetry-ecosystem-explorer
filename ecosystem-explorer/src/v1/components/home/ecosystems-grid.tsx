@@ -166,11 +166,7 @@ export function EcosystemsGrid({
           ))}
 
           {comingSoon.map((eco) => (
-            <div
-              key={eco.id}
-              className="td-ecosystem-card td-ecosystem-card--placeholder"
-              aria-label={`${eco.name} — coming soon`}
-            >
+            <div key={eco.id} className="td-ecosystem-card td-ecosystem-card--placeholder">
               {PLACEHOLDER_ICON}
               <div className="td-ecosystem-card__name td-ecosystem-card__name--placeholder">
                 {eco.name}
