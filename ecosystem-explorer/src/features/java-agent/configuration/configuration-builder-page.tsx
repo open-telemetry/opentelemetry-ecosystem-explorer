@@ -352,42 +352,48 @@ export function ConfigurationBuilderPage() {
             ) : null}
           </div>
         </div>
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsContent value="sdk">
-            {!schemaVersion || schema.loading || starter.loading ? (
-              <p className="text-muted-foreground mt-4 text-sm">Loading schema…</p>
-            ) : schema.error ? (
-              <p className="mt-4 text-sm text-red-400">Failed to load schema.</p>
-            ) : starter.error ? (
-              <p className="mt-4 text-sm text-red-400">Failed to load starter template.</p>
-            ) : root ? (
-              <SdkTabContent
-                schema={root}
-                starter={starter.data}
-                schemaVersion={schemaVersion}
-                javaAgentVersion={javaAgentVersion}
-                activeTab={activeTab}
-              />
-            ) : null}
-          </TabsContent>
-          <TabsContent value="instrumentation">
-            {!schemaVersion || schema.loading || starter.loading ? (
-              <p className="text-muted-foreground mt-4 text-sm">Loading schema…</p>
-            ) : schema.error ? (
-              <p className="mt-4 text-sm text-red-400">Failed to load schema.</p>
-            ) : starter.error ? (
-              <p className="mt-4 text-sm text-red-400">Failed to load starter template.</p>
-            ) : root ? (
-              <InstrumentationTabContent
-                schema={root}
-                starter={starter.data}
-                schemaVersion={schemaVersion}
-                javaAgentVersion={javaAgentVersion}
-                activeTab={activeTab}
-              />
-            ) : null}
-          </TabsContent>
-        </Tabs>
+        {schemaVersionsState.loading ? (
+          <p className="text-muted-foreground mt-4 text-sm">Loading versions…</p>
+        ) : schemaVersionsState.error ? (
+          <p className="mt-4 text-sm text-red-400">Failed to load available versions.</p>
+        ) : (
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsContent value="sdk">
+              {!schemaVersion || schema.loading || starter.loading ? (
+                <p className="text-muted-foreground mt-4 text-sm">Loading schema…</p>
+              ) : schema.error ? (
+                <p className="mt-4 text-sm text-red-400">Failed to load schema.</p>
+              ) : starter.error ? (
+                <p className="mt-4 text-sm text-red-400">Failed to load starter template.</p>
+              ) : root ? (
+                <SdkTabContent
+                  schema={root}
+                  starter={starter.data}
+                  schemaVersion={schemaVersion}
+                  javaAgentVersion={javaAgentVersion}
+                  activeTab={activeTab}
+                />
+              ) : null}
+            </TabsContent>
+            <TabsContent value="instrumentation">
+              {!schemaVersion || schema.loading || starter.loading ? (
+                <p className="text-muted-foreground mt-4 text-sm">Loading schema…</p>
+              ) : schema.error ? (
+                <p className="mt-4 text-sm text-red-400">Failed to load schema.</p>
+              ) : starter.error ? (
+                <p className="mt-4 text-sm text-red-400">Failed to load starter template.</p>
+              ) : root ? (
+                <InstrumentationTabContent
+                  schema={root}
+                  starter={starter.data}
+                  schemaVersion={schemaVersion}
+                  javaAgentVersion={javaAgentVersion}
+                  activeTab={activeTab}
+                />
+              ) : null}
+            </TabsContent>
+          </Tabs>
+        )}
       </div>
     </PageContainer>
   );

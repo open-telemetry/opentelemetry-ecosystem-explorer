@@ -3,8 +3,8 @@ title: "Phase 1 — Foundation: Codebase audit"
 issue: 84
 type: audit
 phase: 1
-status: planning
-last_updated: "2026-05-13"
+status: complete
+last_updated: "2026-05-19"
 ---
 
 > [!NOTE]

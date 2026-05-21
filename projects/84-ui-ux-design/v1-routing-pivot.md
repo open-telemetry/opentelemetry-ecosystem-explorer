@@ -3,8 +3,8 @@ title: "Pivot — V1_REDESIGN flag-sprawl → src/v1/ router-boundary"
 issue: 84
 type: brief
 phase: 1
-status: in-progress
-last_updated: "2026-05-13"
+status: complete
+last_updated: "2026-05-19"
 ---
 
 > [!NOTE]
