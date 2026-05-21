@@ -15,34 +15,30 @@
  */
 
 /*
- * EcosystemsGrid — two large active cards (Collector, Java Agent) followed
- * by four dashed "coming soon" placeholders for Python / Go / JS / .NET.
- *
- * Numbers are the canonical 2026-05-19 values from
- * `projects/84-ui-ux-design/ecosystem-explorer-v1-mockups.html`. They can be
- * swapped to live counts (`loadAllComponents()` / `loadAllInstrumentations()`)
- * in a follow-up once the data layer exposes synchronous counts; for now
- * they're hardcoded so this PR doesn't drag the data layer along.
- *
- * Icon color/background is driven by per-ecosystem CSS modifiers in
- * `ecosystems-grid.css` so the OTel-purple and OTel-orange tokens stay the
- * single source of truth (no inline hex).
+ * EcosystemsGrid — two active cards (Collector, Java Agent) plus four
+ * dashed "coming soon" placeholders. Counts are the canonical 2026-05-19
+ * values from `projects/84-ui-ux-design/ecosystem-explorer-v1-mockups.html`;
+ * they stay hardcoded until the data layer exposes synchronous totals.
  */
 
 import type { ReactNode } from "react";
-import { Boxes, Coffee, Network } from "lucide-react";
+import { Boxes, Network } from "lucide-react";
 import { Link } from "react-router-dom";
 
+import { JavaIcon } from "@/components/icons/java-icon";
 import { type Stability, StatusPill } from "@/components/ui/status-pill";
 
+export type ActiveEcosystemId = "collector" | "java-agent";
+export type ComingSoonEcosystemId = "python" | "go" | "js" | "dotnet";
+
 export interface ActiveEcosystem {
-  id: string;
+  id: ActiveEcosystemId;
   name: string;
   tagline: string;
   description: string;
   stability: Stability;
   components: string;
-  unit: string;
+  unit: "components" | "instrumentations";
   version: string;
   weeklyDelta: string;
   href: string;
@@ -50,9 +46,8 @@ export interface ActiveEcosystem {
 }
 
 export interface ComingSoonEcosystem {
-  id: string;
+  id: ComingSoonEcosystemId;
   name: string;
-  icon: ReactNode;
 }
 
 const DEFAULT_ACTIVE: ActiveEcosystem[] = [
@@ -82,31 +77,17 @@ const DEFAULT_ACTIVE: ActiveEcosystem[] = [
     version: "v2.10.0",
     weeklyDelta: "8",
     href: "/java-agent",
-    icon: <Coffee className="td-ecosystem-card__icon-svg" aria-hidden />,
+    icon: <JavaIcon className="td-ecosystem-card__icon-svg" />,
   },
 ];
 
+const PLACEHOLDER_ICON = <Boxes className="td-ecosystem-card__placeholder-icon" aria-hidden />;
+
 const DEFAULT_COMING_SOON: ComingSoonEcosystem[] = [
-  {
-    id: "python",
-    name: "Python SDK",
-    icon: <Boxes className="td-ecosystem-card__placeholder-icon" aria-hidden />,
-  },
-  {
-    id: "go",
-    name: "Go SDK",
-    icon: <Boxes className="td-ecosystem-card__placeholder-icon" aria-hidden />,
-  },
-  {
-    id: "js",
-    name: "JS / Node",
-    icon: <Boxes className="td-ecosystem-card__placeholder-icon" aria-hidden />,
-  },
-  {
-    id: "dotnet",
-    name: ".NET",
-    icon: <Boxes className="td-ecosystem-card__placeholder-icon" aria-hidden />,
-  },
+  { id: "python", name: "Python SDK" },
+  { id: "go", name: "Go SDK" },
+  { id: "js", name: "JS / Node" },
+  { id: "dotnet", name: ".NET" },
 ];
 
 export interface EcosystemsGridProps {
@@ -168,18 +149,18 @@ export function EcosystemsGrid({
               </div>
               <p className="td-ecosystem-card__description">{eco.description}</p>
               <div className="td-ecosystem-card__metrics">
-                <span>
-                  <span className="td-ecosystem-card__metric-value">{eco.components}</span>{" "}
-                  <span className="td-ecosystem-card__metric-label">{eco.unit}</span>
-                </span>
-                <span>
-                  <span className="td-ecosystem-card__metric-value">{eco.version}</span>{" "}
-                  <span className="td-ecosystem-card__metric-label">latest</span>
-                </span>
-                <span>
-                  <span className="td-ecosystem-card__metric-value">{eco.weeklyDelta}</span>{" "}
-                  <span className="td-ecosystem-card__metric-label">updated this week</span>
-                </span>
+                {(
+                  [
+                    [eco.components, eco.unit],
+                    [eco.version, "latest"],
+                    [eco.weeklyDelta, "updated this week"],
+                  ] as const
+                ).map(([value, label]) => (
+                  <span key={label}>
+                    <span className="td-ecosystem-card__metric-value">{value}</span>{" "}
+                    <span className="td-ecosystem-card__metric-label">{label}</span>
+                  </span>
+                ))}
               </div>
             </Link>
           ))}
@@ -190,7 +171,7 @@ export function EcosystemsGrid({
               className="td-ecosystem-card td-ecosystem-card--placeholder"
               aria-label={`${eco.name} — coming soon`}
             >
-              {eco.icon}
+              {PLACEHOLDER_ICON}
               <div className="td-ecosystem-card__name td-ecosystem-card__name--placeholder">
                 {eco.name}
               </div>

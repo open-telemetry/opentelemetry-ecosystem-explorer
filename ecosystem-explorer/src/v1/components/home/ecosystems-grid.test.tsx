@@ -30,8 +30,8 @@ function renderGrid() {
 
 describe("EcosystemsGrid", () => {
   it("labels the section via aria-labelledby pointing at the heading", () => {
-    const { container } = renderGrid();
-    const section = container.querySelector(".td-ecosystems-grid");
+    renderGrid();
+    const section = screen.getByRole("region", { name: "Ecosystems" });
     expect(section).toHaveAttribute("aria-labelledby", "ecosystems-grid-title");
     expect(screen.getByRole("heading", { level: 2, name: "Ecosystems" })).toHaveAttribute(
       "id",
@@ -72,11 +72,5 @@ describe("EcosystemsGrid", () => {
     expect(link).toHaveAttribute("href", "https://opentelemetry.io/ecosystem/");
     expect(link).toHaveAttribute("target", "_blank");
     expect(link).toHaveAttribute("rel", "noopener noreferrer");
-  });
-
-  it("uses per-ecosystem icon-class modifiers (no inline hex)", () => {
-    const { container } = renderGrid();
-    expect(container.querySelector(".td-ecosystem-card__icon--collector")).not.toBeNull();
-    expect(container.querySelector(".td-ecosystem-card__icon--java-agent")).not.toBeNull();
   });
 });

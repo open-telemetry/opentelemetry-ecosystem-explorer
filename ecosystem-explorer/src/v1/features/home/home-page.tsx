@@ -23,14 +23,8 @@ import { StatsBand } from "@/v1/components/home/stats-band";
 
 /**
  * Home page (v1) — composes the v1 chrome with home-specific sections.
- *
- * StatsBand and EcosystemsGrid are real; the remaining two sections below
- * (SignalsRow, RecentActivityRail) are still skeleton-box placeholders that
- * PRs 5-6 replace. The GlobalSearch slot inside CoverBlock is also a skeleton
- * until PR 2.
- *
- * The CncfCallout and FooterV1 are mounted by `<V1App />`, not here —
- * HomeV1 only owns the page-content slot.
+ * Sections that haven't shipped yet render as skeleton-box placeholders.
+ * The CncfCallout and FooterV1 are mounted by `<V1App />`, not here.
  */
 export function HomeV1() {
   return (

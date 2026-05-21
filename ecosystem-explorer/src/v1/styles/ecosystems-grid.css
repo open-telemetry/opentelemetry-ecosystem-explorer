@@ -99,10 +99,10 @@
   }
 }
 
-.td-ecosystem-card:hover,
-.td-ecosystem-card:focus-visible {
+a.td-ecosystem-card:hover,
+a.td-ecosystem-card:focus-visible {
   border-color: hsl(var(--primary-hsl) / 0.5);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px hsl(var(--primary-hsl) / 0.12);
   transform: translateY(-1px);
 }
 
@@ -113,12 +113,6 @@
   justify-content: center;
   min-height: 120px;
   cursor: default;
-}
-
-.td-ecosystem-card--placeholder:hover {
-  transform: none;
-  box-shadow: none;
-  border-color: hsl(var(--border-hsl));
 }
 
 .td-ecosystem-card__head {
@@ -154,9 +148,10 @@
   color: hsl(var(--otel-purple-hsl));
 }
 
+/* Java Agent card uses the branded <JavaIcon> SVG, which carries its own
+   orange fill — only the neutral tinted tile is needed here. */
 .td-ecosystem-card__icon--java-agent {
-  background-color: hsl(var(--otel-orange-hsl) / 0.18);
-  color: hsl(var(--otel-orange-hsl));
+  background-color: hsl(var(--otel-orange-hsl) / 0.12);
 }
 
 .td-ecosystem-card__name {
