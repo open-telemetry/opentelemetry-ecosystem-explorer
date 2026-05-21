@@ -47,13 +47,13 @@ You can also reach out in either `#otel-ecosystem-explorer` or `#otel-comms` cha
 - [Jay DeLuca](https://github.com/jaydeluca), Grafana Labs
 - [Severin Neumann](https://github.com/svrnm), Causely
 - [Pablo Baeyans](https://github.com/mx-psi), Datadog
+- [Vitor Vasconcellos](https://github.com/vitorvasc)
 
 For more information about the maintainer role, see the
 [community repository](https://github.com/open-telemetry/community/blob/main/guides/contributor/membership.md#maintainer).
 
 ## Approvers
 
-- [Vitor Vasconcellos](https://github.com/vitorvasc)
 - [Marylia Gutierrez](https://github.com/maryliag), Grafana Labs
 - [Luca Cavenaghi](https://github.com/lucacavenaghi97), Akamas Labs
 
