@@ -63,6 +63,7 @@ export interface ConfigurationBuilderActionsContextValue {
   setValue: (path: string, value: ConfigValue) => void;
   setValueByPath: (path: Path, value: ConfigValue) => void;
   setCustomization: (module: string, status: "enabled" | "disabled" | "none") => void;
+  pruneInstrumentations: (validModules: readonly string[]) => void;
   setEnabled: (section: string, enabled: boolean) => void;
   selectPlugin: (path: string, pluginKey: string) => void;
   addListItem: (path: string) => void;
@@ -170,6 +171,10 @@ export function useConfigurationBuilderState(
     },
     []
   );
+
+  const pruneInstrumentations = useCallback((validModules: readonly string[]) => {
+    dispatch({ type: "PRUNE_INSTRUMENTATIONS", validModules });
+  }, []);
 
   const setEnabled = useCallback((section: string, enabled: boolean) => {
     let defaults: ConfigValues | undefined;
@@ -300,6 +305,7 @@ export function useConfigurationBuilderState(
       setValue,
       setValueByPath,
       setCustomization,
+      pruneInstrumentations,
       setEnabled,
       selectPlugin,
       addListItem,

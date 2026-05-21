@@ -5575,7 +5575,7 @@ components:
     metrics:
       httpcheck.client.connection.duration:
         description: Time spent establishing TCP connection to the endpoint.
-        unit: ms
+        unit: ns
         enabled: false
         gauge:
           value_type: int
@@ -5585,7 +5585,7 @@ components:
         stability: development
       httpcheck.client.request.duration:
         description: Time spent sending the HTTP request to the endpoint.
-        unit: ms
+        unit: ns
         enabled: false
         gauge:
           value_type: int
@@ -5594,7 +5594,7 @@ components:
         stability: development
       httpcheck.dns.lookup.duration:
         description: Time spent performing DNS lookup for the endpoint.
-        unit: ms
+        unit: ns
         enabled: false
         gauge:
           value_type: int
@@ -5624,7 +5624,7 @@ components:
         stability: development
       httpcheck.response.duration:
         description: Time spent receiving the HTTP response from the endpoint.
-        unit: ms
+        unit: ns
         enabled: false
         gauge:
           value_type: int
@@ -5671,7 +5671,7 @@ components:
         stability: development
       httpcheck.tls.handshake.duration:
         description: Time spent performing TLS handshake with the endpoint.
-        unit: ms
+        unit: ns
         enabled: false
         gauge:
           value_type: int
@@ -17983,7 +17983,7 @@ components:
     status:
       class: receiver
       stability:
-        development:
+        alpha:
         - metrics
       distributions:
       - contrib

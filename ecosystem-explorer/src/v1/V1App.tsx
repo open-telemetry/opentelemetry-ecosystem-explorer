@@ -39,7 +39,7 @@ import "@/v1/styles/index.css";
  */
 
 const HomePage = lazy(() =>
-  import("@/features/home/home-page").then((m) => ({ default: m.HomePage }))
+  import("@/v1/features/home/home-page").then((m) => ({ default: m.HomeV1 }))
 );
 const JavaAgentPage = lazy(() =>
   import("@/features/java-agent/java-agent-page").then((m) => ({ default: m.JavaAgentPage }))
@@ -82,6 +82,9 @@ const ConfigurationBuilderPage = lazy(() =>
 );
 const AboutPage = lazy(() =>
   import("@/features/about/about-page").then((m) => ({ default: m.AboutPage }))
+);
+const DevComponentsPage = lazy(() =>
+  import("@/v1/features/_dev/components-page").then((m) => ({ default: m.DevComponentsPage }))
 );
 
 export function V1App() {
@@ -132,6 +135,9 @@ export function V1App() {
                 </>
               )}
               <Route path="/about" element={<AboutPage />} />
+              {isEnabled("DEV_SHOWCASE") && (
+                <Route path="/_dev/components" element={<DevComponentsPage />} />
+              )}
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </Suspense>
