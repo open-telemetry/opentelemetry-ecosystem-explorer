@@ -440,3 +440,55 @@ class TestIntegration:
         # Verify structure
         assert (temp_db_dir / "versions" / "1.0.0-index.json").exists()
         assert (temp_db_dir / "versions" / "2.0.0-index.json").exists()
+
+
+class TestWriteMarkdown:
+    """Tests for markdown file writing."""
+
+    def test_write_markdown_success(self, db_writer, temp_db_dir):
+        library_name = "test-lib"
+        markdown_hash = "abc123def456"
+        content = "# Test README"
+
+        db_writer.write_markdown(library_name, markdown_hash, content)
+
+        # Verify file creation
+        markdown_file = temp_db_dir / "markdown" / f"{library_name}-{markdown_hash}.md"
+        assert markdown_file.exists()
+        assert markdown_file.read_text(encoding="utf-8") == content
+
+        # Verify stats
+        assert db_writer.files_written == 1
+        assert db_writer.total_bytes == len(content.encode("utf-8"))
+
+    def test_write_markdown_deduplication(self, db_writer, temp_db_dir, caplog):
+        import logging
+
+        caplog.set_level(logging.DEBUG)
+
+        library_name = "test-lib"
+        markdown_hash = "abc123def456"
+        content = "# Test README"
+
+        # Write first time
+        db_writer.write_markdown(library_name, markdown_hash, content)
+        assert db_writer.files_written == 1
+
+        # Write second time (same content)
+        db_writer.write_markdown(library_name, markdown_hash, content)
+
+        # Stats should not increase
+        assert db_writer.files_written == 1
+        assert "already exists, skipping write" in caplog.text
+
+    def test_write_markdown_error_handling(self, db_writer):
+        from unittest.mock import patch
+
+        with patch("builtins.open", side_effect=OSError("Disk full")):
+            with patch("explorer_db_builder.database_writer.logger") as mock_logger:
+                db_writer.write_markdown("error-lib", "hash", "content")
+
+                # Verify error was logged
+                mock_logger.error.assert_called()
+                args, _ = mock_logger.error.call_args
+                assert "Failed to write markdown" in args[0]

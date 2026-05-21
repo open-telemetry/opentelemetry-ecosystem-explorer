@@ -33,6 +33,36 @@ export const INITIAL_STATE: ConfigurationBuilderState = {
   listItemIds: {},
 };
 
+const INSTRUMENTATION_PATH = ["distribution", "javaagent", "instrumentation"];
+
+function readInstrumentationLists(values: ConfigValues): {
+  enabled: string[];
+  disabled: string[];
+} {
+  const current = getByPath(values, INSTRUMENTATION_PATH);
+  const inst = isPlainObject(current) ? current : {};
+  return {
+    enabled: Array.isArray(inst.enabled) ? (inst.enabled as string[]) : [],
+    disabled: Array.isArray(inst.disabled) ? (inst.disabled as string[]) : [],
+  };
+}
+
+function withInstrumentationLists(
+  values: ConfigValues,
+  nextEnabled: string[],
+  nextDisabled: string[]
+): ConfigValues {
+  if (nextEnabled.length === 0 && nextDisabled.length === 0) {
+    const { distribution: _omit, ...rest } = values;
+    void _omit;
+    return rest;
+  }
+  const inst: ConfigValues = {};
+  if (nextEnabled.length > 0) inst.enabled = nextEnabled;
+  if (nextDisabled.length > 0) inst.disabled = nextDisabled;
+  return setByPath(values, INSTRUMENTATION_PATH, inst);
+}
+
 export function configurationBuilderReducer(
   state: ConfigurationBuilderState,
   action: ConfigurationBuilderAction
@@ -171,16 +201,25 @@ export function configurationBuilderReducer(
       return { ...state, values: newValues, enabledSections: newEnabled, isDirty: true };
     }
 
+    case "PRUNE_INSTRUMENTATIONS": {
+      const { enabled, disabled } = readInstrumentationLists(state.values);
+      if (enabled.length === 0 && disabled.length === 0) return state;
+      const valid = new Set(action.validModules);
+      const nextEnabled = enabled.filter((m) => valid.has(m));
+      const nextDisabled = disabled.filter((m) => valid.has(m));
+      if (nextEnabled.length === enabled.length && nextDisabled.length === disabled.length) {
+        return state;
+      }
+      return {
+        ...state,
+        values: withInstrumentationLists(state.values, nextEnabled, nextDisabled),
+      };
+    }
+
     case "SET_CUSTOMIZATION": {
-      const path = ["distribution", "javaagent", "instrumentation"];
-      const current = getByPath(state.values, path);
-      const inst = isPlainObject(current) ? current : {};
-      const enabledArr = Array.isArray(inst.enabled) ? (inst.enabled as string[]) : [];
-      const disabledArr = Array.isArray(inst.disabled) ? (inst.disabled as string[]) : [];
-
-      const remainingEnabled = enabledArr.filter((m) => m !== action.module);
-      const remainingDisabled = disabledArr.filter((m) => m !== action.module);
-
+      const { enabled, disabled } = readInstrumentationLists(state.values);
+      const remainingEnabled = enabled.filter((m) => m !== action.module);
+      const remainingDisabled = disabled.filter((m) => m !== action.module);
       let nextEnabled = remainingEnabled;
       let nextDisabled = remainingDisabled;
       if (action.status === "enabled") {
@@ -188,20 +227,9 @@ export function configurationBuilderReducer(
       } else if (action.status === "disabled") {
         nextDisabled = [...remainingDisabled, action.module].sort();
       }
-
-      if (nextEnabled.length === 0 && nextDisabled.length === 0) {
-        const { distribution: _omit, ...rest } = state.values;
-        void _omit;
-        return { ...state, values: rest, isDirty: true };
-      }
-
-      const newInstrumentation: ConfigValues = {};
-      if (nextEnabled.length > 0) newInstrumentation.enabled = nextEnabled;
-      if (nextDisabled.length > 0) newInstrumentation.disabled = nextDisabled;
-
       return {
         ...state,
-        values: setByPath(state.values, path, newInstrumentation),
+        values: withInstrumentationLists(state.values, nextEnabled, nextDisabled),
         isDirty: true,
       };
     }

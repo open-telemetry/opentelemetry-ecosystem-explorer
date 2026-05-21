@@ -252,3 +252,97 @@ def test_create_deprecated_component(detector, previous_version, current_version
     assert deprecated["source_repo"] == "core"
     assert deprecated["distributions"] == ["core"]
     assert deprecated["subtype"] is None
+
+
+def test_detect_deprecated_subtype_removal(detector, previous_version, current_version):
+    """A component removed from one subtype should be detected even if the same
+    name still exists under a different subtype."""
+    previous = {
+        "receiver": [],
+        "processor": [],
+        "exporter": [],
+        "connector": [],
+        "extension": [
+            {
+                "name": "zipkin",
+                "source_repo": "contrib",
+                "distributions": ["contrib"],
+                "subtype": "encoding",
+            },
+            {
+                "name": "zipkin",
+                "source_repo": "contrib",
+                "distributions": ["contrib"],
+                "subtype": "storage",
+            },
+        ],
+    }
+
+    current = {
+        "receiver": [],
+        "processor": [],
+        "exporter": [],
+        "connector": [],
+        "extension": [
+            {
+                "name": "zipkin",
+                "source_repo": "contrib",
+                "distributions": ["contrib"],
+                "subtype": "storage",
+            },
+        ],
+    }
+
+    deprecated = detector.detect_deprecated(
+        previous_version=previous_version,
+        previous_components=previous,
+        current_version=current_version,
+        current_components=current,
+    )
+
+    assert len(deprecated["extension"]) == 1
+    assert deprecated["extension"][0]["name"] == "zipkin"
+    assert deprecated["extension"][0]["subtype"] == "encoding"
+
+
+def test_detect_deprecated_same_name_different_subtype_no_false_positive(detector, previous_version, current_version):
+    """When a component exists under the same name but its subtype changes,
+    only the removed subtype entry should be flagged, not the surviving one."""
+    previous = {
+        "receiver": [],
+        "processor": [],
+        "exporter": [],
+        "connector": [],
+        "extension": [
+            {
+                "name": "otlp",
+                "source_repo": "core",
+                "distributions": ["core"],
+                "subtype": "encoding",
+            },
+        ],
+    }
+
+    current = {
+        "receiver": [],
+        "processor": [],
+        "exporter": [],
+        "connector": [],
+        "extension": [
+            {
+                "name": "otlp",
+                "source_repo": "core",
+                "distributions": ["core"],
+                "subtype": "encoding",
+            },
+        ],
+    }
+
+    deprecated = detector.detect_deprecated(
+        previous_version=previous_version,
+        previous_components=previous,
+        current_version=current_version,
+        current_components=current,
+    )
+
+    assert len(deprecated["extension"]) == 0

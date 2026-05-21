@@ -17,7 +17,6 @@ import { useMemo, type JSX } from "react";
 import { Download, RefreshCcw, ListPlus } from "lucide-react";
 import type { ConfigNode } from "@/types/configuration";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
-import { useLatestJavaAgentVersion } from "@/hooks/use-latest-java-agent-version";
 import { generateYaml } from "@/lib/yaml-generator";
 import { downloadText } from "@/lib/download-text";
 import { CopyButton } from "@/components/ui/copy-button";
@@ -25,13 +24,13 @@ import { YamlCodeBlock } from "./yaml-code-block";
 
 interface PreviewCardProps {
   schema: ConfigNode;
+  javaAgentVersion: string;
 }
 
-export function PreviewCard({ schema }: PreviewCardProps): JSX.Element {
+export function PreviewCard({ schema, javaAgentVersion }: PreviewCardProps): JSX.Element {
   const { state, enableAllSections, resetToDefaults, validateAll } = useConfigurationBuilder();
-  const javaAgentVersion = useLatestJavaAgentVersion();
   const yaml = useMemo(
-    () => generateYaml(state, schema, { javaAgentVersion }),
+    () => generateYaml(state, schema, { javaAgentVersion: javaAgentVersion || undefined }),
     [state, schema, javaAgentVersion]
   );
 
@@ -46,7 +45,7 @@ export function PreviewCard({ schema }: PreviewCardProps): JSX.Element {
   return (
     <section
       aria-label="Output Preview"
-      className="border-border/50 bg-card/40 space-y-3 rounded-xl border p-5 lg:sticky lg:top-24"
+      className="border-border/50 bg-card/40 space-y-3 rounded-xl border p-5 lg:sticky lg:top-20 lg:self-start"
     >
       <header className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="text-foreground text-sm font-medium">Output Preview</h3>
