@@ -42,13 +42,13 @@ const SIGNALS: Signal[] = [
   {
     id: "metrics",
     name: "Metrics",
-    description: "Measurements over time · 218",
+    description: "Measurements over time · 218 components",
     href: "/collector/components?signal=metrics",
   },
   {
     id: "logs",
     name: "Logs",
-    description: "Timestamped records · 147",
+    description: "Timestamped records · 147 components",
     href: "/collector/components?signal=logs",
   },
   {
