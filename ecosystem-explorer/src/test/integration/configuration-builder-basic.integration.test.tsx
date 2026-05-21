@@ -67,14 +67,15 @@ describe("ConfigurationBuilderPage basic", () => {
     expect(screen.queryByText("Distribution", { exact: true })).toBeNull();
   });
 
-  it("renders the page title", async () => {
+  it("renders the gradient page title", async () => {
     renderPage();
     const title = await screen.findByRole(
       "heading",
       { name: /Configuration Builder/i, level: 1 },
       { timeout: 10_000 }
     );
-    expect(title).toBeInTheDocument();
+    const span = title.querySelector("span.bg-gradient-to-r");
+    expect(span).not.toBeNull();
   });
 
   it("renders the SDK/Instrumentation tabs inside the sidebar", async () => {
