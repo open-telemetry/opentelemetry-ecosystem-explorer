@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle, Loader2, X } from "lucide-react";
 import { BackButton } from "@/components/ui/back-button";
 import { useVersions, useInstrumentations } from "@/hooks/use-javaagent-data";
 import {
@@ -21,8 +21,7 @@ import {
   InstrumentationFilterBar,
 } from "@/features/java-agent/components/instrumentation-filter-bar.tsx";
 import { useMemo, useState, useEffect } from "react";
-import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { X } from "lucide-react";
+import { useParams, useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { InstrumentationGroupCard } from "@/features/java-agent/components/instrumentation-group-card.tsx";
 import { VersionSelector } from "@/features/java-agent/components/version-selector";
 import { getInstrumentationDisplayName } from "./utils/format";
@@ -32,12 +31,13 @@ import { PageContainer } from "@/components/layout/page-container";
 export function JavaInstrumentationListPage() {
   const { version: versionParam } = useParams<{ version?: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const { data: versionsData, loading: versionsLoading, error: versionsError } = useVersions();
 
   const latestVersion = versionsData?.versions.find((v) => v.is_latest)?.version ?? "";
 
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const invalidVersion = searchParams.get("redirectedFrom");
   const [bannerDismissed, setBannerDismissed] = useState(false);
 
@@ -46,19 +46,21 @@ export function JavaInstrumentationListPage() {
     versionParam === "latest" ||
     (!!versionsData && versionsData.versions.some((v) => v.version === versionParam));
 
-  // Redirect /java-agent/instrumentation (no version) or /latest to the actual latest version
-  // Also redirect invalid versions to latest and show a dismissible inline alert
+  // Redirect: no-version/latest → latest (preserving query params so shared filter URLs survive).
+  // Invalid version → latest with redirectedFrom banner.
   useEffect(() => {
     if (versionsData && latestVersion) {
       if (!versionParam || versionParam === "latest") {
-        navigate(`/java-agent/instrumentation/${latestVersion}`, { replace: true });
+        navigate(`/java-agent/instrumentation/${latestVersion}${location.search}`, {
+          replace: true,
+        });
       } else if (!isVersionValid) {
         navigate(`/java-agent/instrumentation/${latestVersion}?redirectedFrom=${versionParam}`, {
           replace: true,
         });
       }
     }
-  }, [versionParam, versionsData, latestVersion, navigate, isVersionValid]);
+  }, [versionParam, versionsData, latestVersion, navigate, isVersionValid, location.search]);
 
   const resolvedVersion = versionParam && versionParam !== "latest" ? versionParam : "";
 
@@ -68,13 +70,95 @@ export function JavaInstrumentationListPage() {
     error,
   } = useInstrumentations(resolvedVersion);
 
-  const [filters, setFilters] = useState<FilterState>({
-    search: "",
-    telemetry: new Set(),
-    target: new Set(),
-    semantic: [],
-    features: [],
-  });
+  const urlSearch = searchParams.get("search") ?? "";
+
+  // Local state for the search input — updates immediately on every keystroke,
+  // avoiding the URL round-trip lag that causes flicker on CTRL+A + type.
+  const [localSearch, setLocalSearch] = useState(urlSearch);
+
+  // Detect external URL changes (back/forward) and sync the input using
+  // React's documented derived state during render pattern.
+  const [syncedUrlSearch, setSyncedUrlSearch] = useState(urlSearch);
+  if (syncedUrlSearch !== urlSearch) {
+    setSyncedUrlSearch(urlSearch);
+    setLocalSearch(urlSearch);
+  }
+
+  const filters: FilterState = useMemo(() => {
+    const telemetryParam = searchParams.get("telemetry");
+    const typeParam = searchParams.get("type");
+    const semanticParam = searchParams.get("semantic");
+    const featuresParam = searchParams.get("features");
+
+    const telemetry = new Set<"spans" | "metrics">();
+    if (telemetryParam) {
+      telemetryParam.split(",").forEach((v) => {
+        if (v === "spans" || v === "metrics") telemetry.add(v);
+      });
+    }
+
+    const target = new Set<"javaagent" | "library">();
+    if (typeParam) {
+      typeParam.split(",").forEach((v) => {
+        if (v === "javaagent" || v === "library") target.add(v);
+      });
+    }
+
+    const semantic = semanticParam ? semanticParam.split(",").filter(Boolean) : [];
+    const features = featuresParam ? featuresParam.split(",").filter(Boolean) : [];
+
+    return { search: localSearch, telemetry, target, semantic, features };
+  }, [searchParams, localSearch]);
+
+  const handleFiltersChange = (newFilters: FilterState) => {
+    // Update local search state immediately so the input never lags behind keystrokes.
+    setLocalSearch(newFilters.search);
+
+    // Use replace for high-frequency search typing to avoid polluting browser history.
+    // Use push (replace: false) for discrete toggle changes so back button works.
+    const setsUnchanged =
+      newFilters.telemetry.size === filters.telemetry.size &&
+      newFilters.target.size === filters.target.size &&
+      newFilters.semantic.length === filters.semantic.length &&
+      newFilters.features.length === filters.features.length &&
+      [...newFilters.telemetry].every((v) => filters.telemetry.has(v)) &&
+      [...newFilters.target].every((v) => filters.target.has(v)) &&
+      newFilters.semantic.every((v, i) => filters.semantic[i] === v) &&
+      newFilters.features.every((v, i) => filters.features[i] === v);
+
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        if (newFilters.search) {
+          next.set("search", newFilters.search);
+        } else {
+          next.delete("search");
+        }
+        if (newFilters.telemetry.size > 0) {
+          next.set("telemetry", [...newFilters.telemetry].join(","));
+        } else {
+          next.delete("telemetry");
+        }
+        if (newFilters.target.size > 0) {
+          next.set("type", [...newFilters.target].join(","));
+        } else {
+          next.delete("type");
+        }
+        if (newFilters.semantic.length > 0) {
+          next.set("semantic", newFilters.semantic.join(","));
+        } else {
+          next.delete("semantic");
+        }
+        if (newFilters.features.length > 0) {
+          next.set("features", newFilters.features.join(","));
+        } else {
+          next.delete("features");
+        }
+        return next;
+      },
+      { replace: setsUnchanged }
+    );
+  };
 
   const filteredInstrumentations = useMemo(() => {
     if (!instrumentations) return [];
@@ -125,9 +209,7 @@ export function JavaInstrumentationListPage() {
       }
 
       if (filters.features.length > 0) {
-        const hasMatch = filters.features.some((f) => {
-          return instr.features?.includes(f);
-        });
+        const hasMatch = filters.features.some((f) => instr.features?.includes(f));
         if (!hasMatch) return false;
       }
 
@@ -153,7 +235,10 @@ export function JavaInstrumentationListPage() {
   );
 
   const handleVersionChange = (newVersion: string) => {
-    navigate(`/java-agent/instrumentation/${newVersion}`);
+    const params = new URLSearchParams(location.search);
+    params.delete("redirectedFrom");
+    const query = params.toString();
+    navigate(`/java-agent/instrumentation/${newVersion}${query ? `?${query}` : ""}`);
   };
 
   return (
@@ -201,7 +286,7 @@ export function JavaInstrumentationListPage() {
 
         <InstrumentationFilterBar
           filters={filters}
-          onFiltersChange={setFilters}
+          onFiltersChange={handleFiltersChange}
           instrumentations={instrumentations ?? []}
         />
 
