@@ -1,6 +1,9 @@
 name: Survey on Merged PR by Non-Member
 
 on:
+  # Using 'pull_request_target' for permission to `gh pr comment`.
+  # https://docs.zizmor.sh/audits/#dangerous-triggers
+  # zizmor: ignore[dangerous-triggers]
   pull_request_target:
     types: [closed]
 
@@ -23,11 +26,16 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.pull_request.merged == true
     steps:
-      - uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         id: otelbot-token
         with:
           app-id: ${{ vars.OTELBOT_APP_ID }}
           private-key: ${{ secrets.OTELBOT_PRIVATE_KEY }}
+          # Restrict token to least-privilege scopes needed by this workflow:
+          # - pull-requests: write   → post the survey comment via `gh pr comment`
+          # - members: read          → check org membership via `gh api orgs/$ORG/members/$USERNAME`
+          permission-pull-requests: write
+          permission-members: read
 
       - name: Add survey comment if author is not a member or bot
         run: |
