@@ -57,28 +57,24 @@ describe("HomeV1 (composition)", () => {
     expect(secondary).toHaveAttribute("rel", "noopener noreferrer");
   });
 
-  it("renders the remaining placeholder sections in the locked order", () => {
+  it("renders only the recent-activity placeholder section", () => {
     const { container } = renderHome();
 
     const sections = Array.from(container.querySelectorAll("section[aria-label]")).map((el) =>
       el.getAttribute("aria-label")
     );
 
-    // CoverBlock, StatsBand, and EcosystemsGrid render <section>s with
-    // aria-labelledby (not aria-label), so they aren't picked up here —
-    // these are the two PR 5-6 placeholder slots that remain.
-    expect(sections).toEqual(["Browse by signal", "Recent activity"]);
+    // Shipped sections use aria-labelledby; only the recent-activity
+    // skeleton wrapper still uses aria-label.
+    expect(sections).toEqual(["Recent activity"]);
   });
 
-  it("renders exactly one skeleton element inside each of the remaining placeholder sections", () => {
+  it("renders exactly one skeleton element inside the recent-activity section", () => {
     const { container } = renderHome();
-
-    for (const label of ["Browse by signal", "Recent activity"]) {
-      const section = container.querySelector(`section[aria-label="${label}"]`);
-      expect(section, `section[aria-label="${label}"] should exist`).not.toBeNull();
-      const skeletons = section!.querySelectorAll(".td-home__skeleton");
-      expect(skeletons, `section[aria-label="${label}"] skeleton count`).toHaveLength(1);
-    }
+    const section = container.querySelector('section[aria-label="Recent activity"]');
+    expect(section).not.toBeNull();
+    const skeletons = section!.querySelectorAll(".td-home__skeleton");
+    expect(skeletons).toHaveLength(1);
   });
 
   it("renders the StatsBand below the CoverBlock", () => {
@@ -93,6 +89,13 @@ describe("HomeV1 (composition)", () => {
     const grid = container.querySelector(".td-ecosystems-grid");
     expect(grid).not.toBeNull();
     expect(grid).toHaveAttribute("aria-labelledby", "ecosystems-grid-title");
+  });
+
+  it("renders the SignalsRow below the EcosystemsGrid", () => {
+    const { container } = renderHome();
+    const row = container.querySelector(".td-signals-row");
+    expect(row).not.toBeNull();
+    expect(row).toHaveAttribute("aria-labelledby", "signals-row-title");
   });
 
   it("renders the GlobalSearch skeleton inside the CoverBlock with aria-hidden", () => {
