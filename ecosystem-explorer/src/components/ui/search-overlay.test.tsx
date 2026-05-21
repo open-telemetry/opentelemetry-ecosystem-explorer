@@ -118,9 +118,7 @@ describe("SearchOverlay", () => {
 
     await user.keyboard("{ArrowDown}");
 
-    expect(screen.getByRole("link", { name: /http client/i })).toHaveClass(
-      "bg-black/10"
-    );
+    expect(screen.getByRole("link", { name: /http client/i })).toHaveClass("bg-black/10");
 
     await user.keyboard("{Enter}");
 
