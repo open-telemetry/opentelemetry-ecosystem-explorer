@@ -30,6 +30,7 @@ import { GlowBadge } from "@/components/ui/glow-badge";
 import { StabilityBadge } from "@/components/ui/stability-badge";
 import { type Stability, StatusPill } from "@/components/ui/status-pill";
 import { CoverBlock } from "@/v1/components/home/cover-block";
+import { StatsBand } from "@/v1/components/home/stats-band";
 
 const STABILITIES: Stability[] = [
   "development",
@@ -166,6 +167,10 @@ export function DevComponentsPage() {
             </div>
           }
         />
+      </Section>
+
+      <Section id="stats-band" title="StatsBand (OTel-purple counter strip)" bare>
+        <StatsBand headingId="stats-band-showcase-title" />
       </Section>
 
       <Section

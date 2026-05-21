@@ -70,6 +70,19 @@ const INSTRUMENTATIONS_SECTION_KEY = "instrumentations";
 const INSTRUMENTATIONS_SECTION_LABEL = "Instrumentations";
 const GENERAL_SETTINGS_LABEL = "General settings";
 
+// Drops instrumentation customizations that reference modules not present in the
+// selected agent version. Without this, switching from a newer agent (where a
+// module exists) to an older one would leak orphan entries into the YAML output.
+function PruneInstrumentationsForAgentVersion({ javaAgentVersion }: { javaAgentVersion: string }) {
+  const { pruneInstrumentations } = useConfigurationBuilder();
+  const { data } = useInstrumentations(javaAgentVersion);
+  useEffect(() => {
+    if (!data) return;
+    pruneInstrumentations(groupByModule(data).map((m) => m.name));
+  }, [data, pruneInstrumentations]);
+  return null;
+}
+
 interface SdkTabContentProps {
   schema: GroupNode;
   starter: ReturnType<typeof useConfigStarter>["data"];
@@ -111,6 +124,7 @@ function SdkTabContent({
       version={schemaVersion}
       starter={starter}
     >
+      <PruneInstrumentationsForAgentVersion javaAgentVersion={javaAgentVersion} />
       <div className={BUILDER_GRID}>
         <ConfigurationTocSidebar
           activeTab={activeTab}
@@ -120,7 +134,7 @@ function SdkTabContent({
         />
         <div ref={sectionsContainerRef} className="space-y-4">
           {hasGeneralLeaves && (
-            <GeneralSectionCard label={GENERAL_SECTION_LABEL} children={leafChildren} />
+            <GeneralSectionCard label={GENERAL_SECTION_LABEL}>{leafChildren}</GeneralSectionCard>
           )}
           {groupChildren.map((child) => (
             <SchemaRenderer key={child.key} node={child} depth={0} path={child.key} />
@@ -199,7 +213,7 @@ function InstrumentationTabBody({
   const sectionsContainerRef = useRef<HTMLDivElement>(null);
   const { activeKey, scrollToSection } = useActiveSection(sectionKeys, sectionsContainerRef);
 
-  const { state, setEnabled } = useConfigurationBuilder();
+  const { state, setEnabled, pruneInstrumentations } = useConfigurationBuilder();
 
   const instrumentationsState = useInstrumentations(javaAgentVersion);
   const modules = useMemo(
@@ -208,6 +222,11 @@ function InstrumentationTabBody({
   );
   const customizedSet = useCustomizedModules(modules);
   const customizationCount = customizedSet.size;
+
+  useEffect(() => {
+    if (!instrumentationsState.data) return;
+    pruneInstrumentations(modules.map((m) => m.name));
+  }, [instrumentationsState.data, modules, pruneInstrumentations]);
 
   const devSection = state.values[INSTRUMENTATION_DEV_KEY];
   const hasDevContent = useMemo(() => hasMeaningfulLeaf(devSection), [devSection]);
@@ -247,11 +266,12 @@ function InstrumentationTabBody({
         <GeneralSectionCard
           label={GENERAL_SETTINGS_LABEL}
           sectionKey={GENERAL_SECTION_KEY}
-          children={generalNode?.children ?? []}
           pathPrefix={`${INSTRUMENTATION_DEV_KEY}.${GENERAL_SUBKEY}`}
           defaultExpanded={true}
           emptyMessage="The schema for this version does not expose general instrumentation settings."
-        />
+        >
+          {generalNode?.children ?? []}
+        </GeneralSectionCard>
         <InstrumentationBrowser
           instrumentations={instrumentationsState.data}
           loading={instrumentationsState.loading}
@@ -303,7 +323,7 @@ export function ConfigurationBuilderPage() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-3xl font-bold md:text-4xl">
+              <h1 className="text-3xl font-semibold md:text-4xl">
                 <span className="from-otel-orange to-otel-blue bg-gradient-to-r bg-clip-text text-transparent">
                   Configuration Builder
                 </span>
