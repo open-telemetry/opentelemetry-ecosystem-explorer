@@ -98,7 +98,7 @@ describe("SearchOverlay", () => {
     ]);
 
     render(
-      <MemoryRouter initialEntries={['/']}>
+      <MemoryRouter initialEntries={["/"]}>
         <Routes>
           <Route path="/" element={<SearchOverlay onClose={vi.fn()} />} />
           <Route
@@ -112,7 +112,9 @@ describe("SearchOverlay", () => {
     const input = screen.getByRole("textbox", { name: "Search" });
     await user.type(input, "client");
 
-    await waitFor(() => expect(screen.getByRole("link", { name: /kafka client/i })).toBeInTheDocument());
+    await waitFor(() =>
+      expect(screen.getByRole("link", { name: /kafka client/i })).toBeInTheDocument()
+    );
 
     await user.keyboard("{ArrowDown}");
 
@@ -140,7 +142,7 @@ describe("SearchOverlay", () => {
     ]);
 
     render(
-      <MemoryRouter initialEntries={['/']}>
+      <MemoryRouter initialEntries={["/"]}>
         <Routes>
           <Route path="/" element={<SearchOverlay onClose={vi.fn()} />} />
           <Route

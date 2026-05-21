@@ -90,6 +90,7 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
   };
 
   const handleClearRecent = () => {
+    setActiveIndex(0);
     setRecentSearches([]);
     localStorage.removeItem(RECENT_SEARCHES_KEY);
   };
@@ -118,17 +119,15 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
         result,
       }));
 
-  useEffect(() => {
-    setActiveIndex(0);
-    itemRefs.current = [];
-  }, [query, searchResults, recentSearches, showRecent]);
+  const safeActiveIndex =
+    visibleItems.length > 0 ? Math.min(activeIndex, visibleItems.length - 1) : 0;
 
   useEffect(() => {
-    const activeItem = itemRefs.current[activeIndex];
+    const activeItem = itemRefs.current[safeActiveIndex];
     if (activeItem) {
       activeItem.scrollIntoView({ block: "nearest" });
     }
-  }, [activeIndex]);
+  }, [safeActiveIndex]);
 
   const selectVisibleItem = (index: number) => {
     const item = visibleItems[index];
@@ -176,17 +175,21 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
                 // Clear search results when input is empty.
                 setSearchResults([]);
                 setIsSearching(false);
+                setActiveIndex(0);
                 return;
               }
 
+              setActiveIndex(0);
               searchTimerRef.current = window.setTimeout(() => {
                 setIsSearching(true);
                 void performSearch(trimmed)
                   .then((results) => {
                     setSearchResults(results);
+                    setActiveIndex(0);
                   })
                   .catch(() => {
                     setSearchResults([]);
+                    setActiveIndex(0);
                   })
                   .finally(() => {
                     setIsSearching(false);
@@ -208,7 +211,7 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
               } else if (e.key === "Enter") {
                 if (visibleItems.length > 0) {
                   e.preventDefault();
-                  selectVisibleItem(activeIndex);
+                  selectVisibleItem(safeActiveIndex);
                 } else if (query.trim()) {
                   handleSelect(query);
                 }
@@ -248,9 +251,7 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
                         itemRefs.current[index] = node;
                       }}
                       className={`text-foreground flex w-full items-center justify-between rounded px-3 py-2 text-left text-sm transition-colors ${
-                        activeIndex === index
-                          ? "bg-accent"
-                          : "hover:bg-accent/70"
+                        safeActiveIndex === index ? "bg-accent" : "hover:bg-accent/70"
                       }`}
                     >
                       <div>
@@ -280,7 +281,7 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
                         itemRefs.current[index] = node;
                       }}
                       className={`text-foreground w-full rounded px-3 py-2 text-left text-sm transition-colors ${
-                        activeIndex === index ? "bg-accent" : "hover:bg-accent/70"
+                        safeActiveIndex === index ? "bg-accent" : "hover:bg-accent/70"
                       }`}
                     >
                       <Search className="text-muted-foreground mr-2 inline h-4 w-4" />
