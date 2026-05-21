@@ -235,7 +235,10 @@ export function JavaInstrumentationListPage() {
   );
 
   const handleVersionChange = (newVersion: string) => {
-    navigate(`/java-agent/instrumentation/${newVersion}`);
+    const params = new URLSearchParams(location.search);
+    params.delete("redirectedFrom");
+    const query = params.toString();
+    navigate(`/java-agent/instrumentation/${newVersion}${query ? `?${query}` : ""}`);
   };
 
   return (
