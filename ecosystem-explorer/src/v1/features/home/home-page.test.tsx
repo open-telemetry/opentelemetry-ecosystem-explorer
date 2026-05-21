@@ -64,9 +64,8 @@ describe("HomeV1 (composition)", () => {
       el.getAttribute("aria-label")
     );
 
-    // CoverBlock, StatsBand, EcosystemsGrid, and SignalsRow all render
-    // <section>s with aria-labelledby (not aria-label). Only the PR 6
-    // RecentActivityRail slot still uses an aria-label skeleton wrapper.
+    // Shipped sections use aria-labelledby; only the recent-activity
+    // skeleton wrapper still uses aria-label.
     expect(sections).toEqual(["Recent activity"]);
   });
 

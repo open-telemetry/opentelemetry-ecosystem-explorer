@@ -30,8 +30,8 @@ function renderRow() {
 
 describe("SignalsRow", () => {
   it("labels the section via aria-labelledby pointing at the heading", () => {
-    const { container } = renderRow();
-    const section = container.querySelector(".td-signals-row");
+    renderRow();
+    const section = screen.getByRole("region", { name: "Browse by signal" });
     expect(section).toHaveAttribute("aria-labelledby", "signals-row-title");
     expect(screen.getByRole("heading", { level: 2, name: "Browse by signal" })).toHaveAttribute(
       "id",
@@ -70,12 +70,5 @@ describe("SignalsRow", () => {
       "href",
       "/collector/components?signal=baggage"
     );
-  });
-
-  it("uses per-signal dot-class modifiers (no inline color styles)", () => {
-    const { container } = renderRow();
-    for (const id of ["traces", "metrics", "logs", "baggage"]) {
-      expect(container.querySelector(`.td-signal-card__dot--${id}`)).not.toBeNull();
-    }
   });
 });

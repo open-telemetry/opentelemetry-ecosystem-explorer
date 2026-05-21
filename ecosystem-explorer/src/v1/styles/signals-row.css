@@ -20,9 +20,9 @@
  * accent indicators (not brand surfaces), so the inline HSL values here are
  * the source of truth. Brand tokens (`--otel-*-hsl`) would homogenize them.
  *
- * When PR 6 introduces the `td-two-col` wrapper for SignalsRow +
- * RecentActivityRail, the outer `.td-signals-row` surface rules below
- * collapse into the shared `td-box--muted` wrapper that owns both.
+ * Hover treatment (translateY(-2px) + muted bg) is deliberately lighter
+ * than EcosystemsGrid's (primary-tinted shadow + border-color shift) —
+ * SignalsRow cards are accent navigators, not the hero card group.
  */
 
 .td-signals-row {

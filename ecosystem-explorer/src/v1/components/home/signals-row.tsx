@@ -15,22 +15,12 @@
  */
 
 /*
- * SignalsRow — four signal cards (Traces / Metrics / Logs / Baggage) that
- * match opentelemetry.io's canonical signal taxonomy (deliberately NOT
- * "Profiles" — see `projects/84-ui-ux-design/01-home-page.md` task 5).
- *
- * Each card links to a placeholder cross-ecosystem signal-filter URL
- * (`/collector/components?signal=<id>`). The destination list-page wires the
- * URL contract in Phase 4; until then the list page can ignore the query
- * safely.
- *
- * Dot colors are driven by per-signal CSS modifiers in `signals-row.css` so
- * the JSX side stays declarative (no inline hex/hsl).
- *
- * Note for PR 6 (RecentActivityRail): when the recent-activity rail lands,
- * SignalsRow and RecentActivityRail will be co-mounted inside a shared
- * `td-two-col` wrapper. PR 5 ships SignalsRow as its own labelled section
- * (matching StatsBand/EcosystemsGrid); PR 6 owns the restructure.
+ * SignalsRow — four signal cards (Traces / Metrics / Logs / Baggage)
+ * matching opentelemetry.io's canonical signal taxonomy (deliberately NOT
+ * "Profiles"). Each card links to a cross-ecosystem signal-filter URL
+ * (`/collector/components?signal=<id>`); the destination list page treats
+ * the query benignly until Phase 4 wires it. Dot colors are driven by
+ * per-signal CSS modifiers in `signals-row.css`.
  */
 
 import { Link } from "react-router-dom";
