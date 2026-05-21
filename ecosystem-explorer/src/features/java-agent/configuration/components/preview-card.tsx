@@ -34,12 +34,17 @@ interface HeaderActionButtonProps extends React.ButtonHTMLAttributes<HTMLButtonE
   label: string;
 }
 
-function HeaderActionButton({ icon: Icon, label, ...props }: HeaderActionButtonProps) {
+function HeaderActionButton({
+  icon: Icon,
+  label,
+  className = "",
+  ...props
+}: HeaderActionButtonProps) {
   return (
     <button
-      type="button"
-      className="border-border/60 bg-card text-foreground hover:bg-card/80 focus-visible:ring-primary inline-flex cursor-pointer items-center gap-1 rounded-md border px-3 py-1.5 text-xs focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
       {...props}
+      type="button"
+      className={`border-border/60 bg-card text-foreground hover:bg-card/80 focus-visible:ring-primary inline-flex cursor-pointer items-center gap-1 rounded-md border px-3 py-1.5 text-xs focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none ${className}`}
     >
       <Icon className="h-3 w-3" aria-hidden="true" />
       {label}
@@ -118,7 +123,7 @@ export function PreviewCard({ schema, javaAgentVersion }: PreviewCardProps): JSX
                 <Maximize2 className="h-3.5 w-3.5" aria-hidden="true" />
               </button>
             </DialogTrigger>
-            <DialogContent className="flex max-h-[85vh] w-[90vw] max-w-4xl flex-col gap-4">
+            <DialogContent className="flex max-h-[85dvh] w-[90vw] max-w-4xl flex-col gap-4">
               <header className="border-border/30 flex flex-wrap items-center justify-between gap-4 border-b pr-8 pb-3">
                 <div className="space-y-1">
                   <DialogTitle className="text-xl font-semibold">

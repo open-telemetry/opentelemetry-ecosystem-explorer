@@ -38,10 +38,8 @@ DialogOverlay.displayName = RadixDialog.Overlay.displayName;
 
 const DialogContent = forwardRef<
   ComponentRef<typeof RadixDialog.Content>,
-  ComponentPropsWithoutRef<typeof RadixDialog.Content> & {
-    showCloseButton?: boolean;
-  }
->(({ className = "", children, showCloseButton = true, ...props }, ref) => (
+  ComponentPropsWithoutRef<typeof RadixDialog.Content>
+>(({ className = "", children, ...props }, ref) => (
   <DialogPortal>
     <DialogOverlay />
     <RadixDialog.Content
@@ -50,12 +48,10 @@ const DialogContent = forwardRef<
       {...props}
     >
       {children}
-      {showCloseButton && (
-        <RadixDialog.Close className="ring-offset-background focus:ring-primary absolute top-2 right-2 inline-flex cursor-pointer items-center justify-center rounded-sm p-2 opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:pointer-events-none">
-          <X className="h-4 w-4" />
-          <span className="sr-only">Close</span>
-        </RadixDialog.Close>
-      )}
+      <RadixDialog.Close className="ring-offset-background focus:ring-primary absolute top-2 right-2 inline-flex cursor-pointer items-center justify-center rounded-sm p-2 opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:pointer-events-none">
+        <X className="h-4 w-4" />
+        <span className="sr-only">Close</span>
+      </RadixDialog.Close>
     </RadixDialog.Content>
   </DialogPortal>
 ));

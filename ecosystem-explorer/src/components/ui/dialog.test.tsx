@@ -15,10 +15,10 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription } from "./dialog";
 
-describe("Dialog Wrapper", () => {
+describe("Dialog", () => {
   it("renders trigger and displays dialog content when clicked", () => {
     render(
       <Dialog>
@@ -43,7 +43,7 @@ describe("Dialog Wrapper", () => {
     expect(screen.getByText("Dialog Description")).toBeInTheDocument();
   });
 
-  it("closes dialog content when close button is clicked", () => {
+  it("closes dialog content when close button is clicked", async () => {
     render(
       <Dialog defaultOpen={true}>
         <DialogContent>
@@ -59,6 +59,8 @@ describe("Dialog Wrapper", () => {
     const closeBtn = screen.getByRole("button", { name: "Close" });
     fireEvent.click(closeBtn);
 
-    expect(screen.queryByText("Dialog Content Body")).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByText("Dialog Content Body")).not.toBeInTheDocument();
+    });
   });
 });
