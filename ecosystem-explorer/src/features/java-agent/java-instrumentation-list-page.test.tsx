@@ -15,7 +15,7 @@
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
 import { JavaInstrumentationListPage } from "./java-instrumentation-list-page";
 import type { InstrumentationData } from "@/types/javaagent";
@@ -31,6 +31,11 @@ vi.mock("@/components/ui/back-button", () => ({
 
 import { useVersions, useInstrumentations } from "@/hooks/use-javaagent-data";
 
+function LocationDisplay() {
+  const location = useLocation();
+  return <div data-testid="location">{location.pathname + location.search}</div>;
+}
+
 function renderPage(initialPath = "/java-agent/instrumentation/2.0.0") {
   return render(
     <MemoryRouter initialEntries={[initialPath]}>
@@ -41,94 +46,185 @@ function renderPage(initialPath = "/java-agent/instrumentation/2.0.0") {
           element={<JavaInstrumentationListPage />}
         />
       </Routes>
+      <LocationDisplay />
     </MemoryRouter>
   );
 }
 
-describe("JavaInstrumentationListPage - Filtering", () => {
-  const mockInstrumentations: InstrumentationData[] = [
-    {
-      name: "http-client",
-      display_name: "HTTP Client",
-      description: "Instrumentation for HTTP clients",
-      scope: { name: "http" },
-      has_javaagent: true,
-      javaagent_target_versions: ["1.0.0"],
-      telemetry: [{ when: "always", spans: [{ span_kind: "CLIENT" }] }],
-      semantic_conventions: ["http"],
-      features: ["stable"],
-    },
-    {
-      name: "jdbc",
-      display_name: "JDBC",
-      description: "Database instrumentation for JDBC",
-      scope: { name: "jdbc" },
-      has_standalone_library: true,
-      telemetry: [
-        {
-          when: "always",
-          metrics: [
-            {
-              name: "db.connections",
-              description: "DB connections",
-              instrument: "counter",
-              data_type: "LONG_SUM",
-              unit: "1",
-            },
-          ],
-        },
-      ],
-      semantic_conventions: ["db"],
-    },
-    {
-      name: "kafka-client",
-      display_name: "Kafka Client",
-      description: "Messaging instrumentation for Kafka",
-      scope: { name: "kafka" },
-      has_javaagent: true,
-      javaagent_target_versions: ["1.0.0"],
-      has_standalone_library: true,
-      telemetry: [
-        {
-          when: "always",
-          spans: [{ span_kind: "PRODUCER" }],
-          metrics: [
-            {
-              name: "kafka.messages",
-              description: "Messages sent",
-              data_type: "COUNTER",
-              instrument: "counter",
-              unit: "1",
-            },
-          ],
-        },
-      ],
-      semantic_conventions: ["messaging"],
-      features: ["stable"],
-    },
-    {
-      name: "spring-web",
-      display_name: "Spring Web",
-      description: "Instrumentation for Spring Web applications",
-      scope: { name: "spring" },
-      has_javaagent: true,
-      javaagent_target_versions: ["1.0.0"],
-      features: ["experimental"],
-    },
-  ];
+const mockVersions = {
+  data: {
+    versions: [
+      { version: "2.0.0", is_latest: true },
+      { version: "1.9.0", is_latest: false },
+    ],
+  },
+  loading: false,
+  error: null,
+};
 
-  beforeEach(() => {
-    vi.mocked(useVersions).mockReturnValue({
-      data: {
-        versions: [
-          { version: "2.0.0", is_latest: true },
-          { version: "1.9.0", is_latest: false },
+const mockInstrumentations: InstrumentationData[] = [
+  {
+    name: "http-client",
+    display_name: "HTTP Client",
+    description: "Instrumentation for HTTP clients",
+    scope: { name: "http" },
+    has_javaagent: true,
+    javaagent_target_versions: ["1.0.0"],
+    telemetry: [{ when: "always", spans: [{ span_kind: "CLIENT" }] }],
+    semantic_conventions: ["http"],
+    features: ["stable"],
+  },
+  {
+    name: "jdbc",
+    display_name: "JDBC",
+    description: "Database instrumentation for JDBC",
+    scope: { name: "jdbc" },
+    has_standalone_library: true,
+    telemetry: [
+      {
+        when: "always",
+        metrics: [
+          {
+            name: "db.connections",
+            description: "DB connections",
+            instrument: "counter",
+            data_type: "LONG_SUM",
+            unit: "1",
+          },
         ],
       },
+    ],
+    semantic_conventions: ["db"],
+  },
+  {
+    name: "kafka-client",
+    display_name: "Kafka Client",
+    description: "Messaging instrumentation for Kafka",
+    scope: { name: "kafka" },
+    has_javaagent: true,
+    javaagent_target_versions: ["1.0.0"],
+    has_standalone_library: true,
+    telemetry: [
+      {
+        when: "always",
+        spans: [{ span_kind: "PRODUCER" }],
+        metrics: [
+          {
+            name: "kafka.messages",
+            description: "Messages sent",
+            data_type: "COUNTER",
+            instrument: "counter",
+            unit: "1",
+          },
+        ],
+      },
+    ],
+    semantic_conventions: ["messaging"],
+    features: ["stable"],
+  },
+  {
+    name: "spring-web",
+    display_name: "Spring Web",
+    description: "Instrumentation for Spring Web applications",
+    scope: { name: "spring" },
+    has_javaagent: true,
+    javaagent_target_versions: ["1.0.0"],
+    features: ["experimental"],
+  },
+];
+
+describe("JavaInstrumentationListPage - URL Persistence", () => {
+  beforeEach(() => {
+    vi.mocked(useVersions).mockReturnValue(mockVersions);
+    vi.mocked(useInstrumentations).mockReturnValue({
+      data: mockInstrumentations,
       loading: false,
       error: null,
     });
+  });
 
+  it("reads search query from URL on mount", async () => {
+    renderPage("/java-agent/instrumentation/2.0.0?search=kafka");
+
+    await waitFor(() => {
+      expect(screen.getByText("Kafka Client")).toBeInTheDocument();
+      expect(screen.queryByText("HTTP Client")).not.toBeInTheDocument();
+    });
+
+    const searchInput = screen.getByPlaceholderText("Search instrumentations...");
+    expect(searchInput).toHaveValue("kafka");
+  });
+
+  it("writes search query to URL when user types", async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    const searchInput = await screen.findByPlaceholderText("Search instrumentations...");
+    await user.type(searchInput, "http");
+
+    await waitFor(() => {
+      expect(screen.getByTestId("location").textContent).toContain("search=http");
+    });
+  });
+
+  it("reads telemetry filter from URL on mount", async () => {
+    renderPage("/java-agent/instrumentation/2.0.0?telemetry=spans");
+
+    await waitFor(() => {
+      expect(screen.getByText("HTTP Client")).toBeInTheDocument();
+      expect(screen.getByText("Kafka Client")).toBeInTheDocument();
+      expect(screen.queryByText("JDBC")).not.toBeInTheDocument();
+    });
+  });
+
+  it("writes telemetry filter to URL when toggled", async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    const spansButton = await screen.findByRole("button", { name: "Spans" });
+    await user.click(spansButton);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("location").textContent).toContain("telemetry=spans");
+    });
+  });
+
+  it("reads type filter from URL on mount", async () => {
+    renderPage("/java-agent/instrumentation/2.0.0?type=javaagent");
+
+    await waitFor(() => {
+      expect(screen.getByText("HTTP Client")).toBeInTheDocument();
+      expect(screen.queryByText("JDBC")).not.toBeInTheDocument();
+    });
+  });
+
+  it("writes type filter to URL when toggled", async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    const javaAgentButton = await screen.findByRole("button", { name: "Java Agent" });
+    await user.click(javaAgentButton);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("location").textContent).toContain("type=javaagent");
+    });
+  });
+
+  it("preserves existing search params when redirecting no-version to latest", async () => {
+    renderPage("/java-agent/instrumentation/latest?search=kafka&telemetry=spans");
+
+    await waitFor(() => {
+      const loc = screen.getByTestId("location").textContent ?? "";
+      expect(loc).toContain("2.0.0");
+      expect(loc).toContain("search=kafka");
+      expect(loc).toContain("telemetry=spans");
+    });
+  });
+});
+
+describe("JavaInstrumentationListPage - Filtering", () => {
+  beforeEach(() => {
+    vi.mocked(useVersions).mockReturnValue(mockVersions);
     vi.mocked(useInstrumentations).mockReturnValue({
       data: mockInstrumentations,
       loading: false,

@@ -15,9 +15,9 @@
  */
 
 /*
- * Home (v1) — wrapper + skeleton-box placeholders for the four sections
- * PRs 2-6 will replace (StatsBand, EcosystemsGrid, SignalsRow,
- * RecentActivityRail) and for the GlobalSearch slot inside CoverBlock.
+ * Home (v1) — wrapper + skeleton-box placeholders for the sections PRs 4-6
+ * will replace (EcosystemsGrid, SignalsRow, RecentActivityRail) and for the
+ * GlobalSearch slot inside CoverBlock.
  *
  * Skeleton rules are intentionally low-fidelity: subtle neutral fill that
  * adapts to either theme, with per-slot heights that approximate the real
@@ -26,9 +26,10 @@
  * scope its `--<slot>` modifier rules here; the base `.td-home__skeleton`
  * rule can stay as a reusable utility for future staged work.
  *
- * Cover-block surface rules live in `cover-block.css`. The real
- * components' surface rules (`.td-stats-band`, `.td-ecosystems-grid`,
- * `.td-signals-row`, `.td-recent-activity`) land in PRs 2-6.
+ * Cover-block surface rules live in `cover-block.css`; stats-band rules in
+ * `stats-band.css`. The remaining components' surface rules
+ * (`.td-ecosystems-grid`, `.td-signals-row`, `.td-recent-activity`) land in
+ * PRs 4-6.
  */
 
 .td-home {
@@ -63,12 +64,6 @@
   height: 3rem;
   margin: 2rem auto 0;
   background-color: hsl(var(--cover-block-fg-hsl) / 0.1);
-}
-
-/* StatsBand slot — purple-tinted to preview the real band's surface. */
-.td-home__skeleton--stats {
-  height: 12rem;
-  background-color: hsl(var(--stats-band-bg-hsl) / 0.3);
 }
 
 .td-home__skeleton--ecosystems {

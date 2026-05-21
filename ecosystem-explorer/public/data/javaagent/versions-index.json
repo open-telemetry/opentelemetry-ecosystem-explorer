@@ -2,6 +2,10 @@
   "versions": [
     {
       "is_latest": true,
+      "version": "2.28.0"
+    },
+    {
+      "is_latest": false,
       "version": "2.27.0"
     },
     {

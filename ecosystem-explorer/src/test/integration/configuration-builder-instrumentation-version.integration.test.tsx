@@ -13,17 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import schemaVersionsIndex from "../../../public/data/configuration/versions-index.json";
 import javaAgentVersionsIndex from "../../../public/data/javaagent/versions-index.json";
+import { normalizeRegistryName } from "@/lib/normalize-instrumentation";
 import { installFetchInterceptor, uninstallFetchInterceptor } from "./helpers/fetch-interceptor";
 import { renderBuilderPage as renderPage } from "./helpers/render-builder-page";
 
 const latestSchemaVersion = schemaVersionsIndex.versions.find((v) => v.is_latest)!.version;
 const latestAgentVersion = javaAgentVersionsIndex.versions.find((v) => v.is_latest)!.version;
 const otherAgentVersion = javaAgentVersionsIndex.versions.find((v) => !v.is_latest)?.version;
+
+const MANIFESTS_DIR = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "../../../public/data/javaagent/versions"
+);
+
+function moduleNamesFor(version: string): Set<string> {
+  const manifest = JSON.parse(
+    fs.readFileSync(path.join(MANIFESTS_DIR, `${version}-index.json`), "utf-8")
+  ) as { instrumentations: Record<string, string> };
+  return new Set(Object.keys(manifest.instrumentations).map(normalizeRegistryName));
+}
+
+// Pick a module present in the latest agent version but absent in `otherAgentVersion`,
+// so the prune test exercises the actual code path regardless of which versions ship.
+const moduleOnlyInLatest = (() => {
+  if (!otherAgentVersion) return undefined;
+  const latest = moduleNamesFor(latestAgentVersion);
+  const other = moduleNamesFor(otherAgentVersion);
+  return [...latest].find((m) => !other.has(m));
+})();
 
 beforeAll(() => installFetchInterceptor());
 afterAll(() => uninstallFetchInterceptor());
@@ -59,22 +84,24 @@ describe("ConfigurationBuilderPage version selectors", () => {
     const agent = await findAgentSelector();
 
     await openInstrumentationTab(user);
-    const reactorRow = (await screen.findByTestId(
-      "instrumentation-row-reactor",
+    await screen.findByTestId("instrumentation-row-reactor", {}, { timeout: 10_000 });
+    const preview = (await screen.findByLabelText(
+      "Output Preview",
       {},
       { timeout: 10_000 }
     )) as HTMLElement;
-    expect(within(reactorRow).getByText("2 versions")).toBeInTheDocument();
+    expect(preview.textContent).toContain(`Java agent: ${latestAgentVersion}`);
 
     await user.selectOptions(agent, otherAgentVersion);
 
     await waitFor(
       () => {
-        const updated = screen.getByTestId("instrumentation-row-reactor");
-        expect(within(updated).queryByText("2 versions")).toBeNull();
+        expect(preview.textContent).toContain(`Java agent: ${otherAgentVersion}`);
       },
       { timeout: 10_000 }
     );
+    expect(preview.textContent).not.toContain(`Java agent: ${latestAgentVersion}`);
+    await screen.findByTestId("instrumentation-row-reactor", {}, { timeout: 10_000 });
   });
 
   it("updates the YAML preview header from the SDK tab when the Agent version changes", async () => {
@@ -114,6 +141,43 @@ describe("ConfigurationBuilderPage version selectors", () => {
     await user.selectOptions(agent, otherAgentVersion);
 
     expect(resourceToggle).toHaveAttribute("aria-checked", "false");
+  });
+
+  it("prunes instrumentation customizations referencing modules absent from the selected Agent version", async () => {
+    if (!otherAgentVersion || !moduleOnlyInLatest) return;
+    const orphan = moduleOnlyInLatest;
+    const orphanLineRe = new RegExp(`- ${orphan}\\b`);
+    renderPage();
+    const user = userEvent.setup();
+    const agent = await findAgentSelector();
+
+    await openInstrumentationTab(user);
+    const row = (await screen.findByTestId(
+      `instrumentation-row-${orphan}`,
+      {},
+      { timeout: 10_000 }
+    )) as HTMLElement;
+    const customize = within(row).getByRole("button", {
+      name: new RegExp(`Customize ${orphan}`, "i"),
+    });
+    await user.click(customize);
+    const preview = (await screen.findByLabelText(
+      "Output Preview",
+      {},
+      { timeout: 10_000 }
+    )) as HTMLElement;
+    await waitFor(() => expect(preview.textContent).toMatch(orphanLineRe));
+
+    await user.selectOptions(agent, otherAgentVersion);
+
+    await waitFor(
+      () => {
+        expect(preview.textContent).toContain(`Java agent: ${otherAgentVersion}`);
+        expect(preview.textContent).not.toMatch(orphanLineRe);
+        expect(preview.textContent).not.toMatch(/^distribution:/m);
+      },
+      { timeout: 10_000 }
+    );
   });
 
   it("does not persist the Agent selection: remount resets to latest with empty localStorage", async () => {

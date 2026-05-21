@@ -23,7 +23,8 @@
  * - sub-nav.css      — v1 breadcrumb sub-nav row beneath the navbar
  * - buttons.css      — v1 `.td-btn` primitive (primary, outline-light variants)
  * - cover-block.css  — v1 hero shell (`.td-cover-block`) — mirrors opentelemetry.io
- * - home.css         — v1 home page sections (stats band, skeleton sections)
+ * - stats-band.css   — v1 home stats band (`.td-stats-band`) — OTel-purple counter strip
+ * - home.css         — v1 home page wrapper + remaining skeleton placeholders
  * - cncf-callout.css — sitewide CNCF band above the footer
  * - footer.css       — v1 footer (`.td-footer`) — mirrors opentelemetry.io
  *
@@ -38,6 +39,7 @@
 @import "./sub-nav.css";
 @import "./buttons.css";
 @import "./cover-block.css";
+@import "./stats-band.css";
 @import "./home.css";
 @import "./cncf-callout.css";
 @import "./footer.css";
