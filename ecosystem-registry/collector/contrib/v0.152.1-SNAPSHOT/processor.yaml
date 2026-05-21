@@ -2,7 +2,7 @@ distribution: contrib
 version: 0.152.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: processor
-schema_hash: 8ef455c6e37c
+schema_hash: fade993781ea
 components:
 - name: attributesprocessor
   metadata:
