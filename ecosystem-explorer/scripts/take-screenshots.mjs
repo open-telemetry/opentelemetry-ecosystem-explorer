@@ -214,8 +214,9 @@ async function takeScreenshots() {
           // 1. Home page
           await page.goto(BASE_URL, { waitUntil: "domcontentloaded", timeout: 10000 });
           await page.waitForSelector("h1", { state: "visible", timeout: 5000 });
+          await settle(page);
           await assertNoError(page, BASE_URL);
-          await page.screenshot({ path: p("home") });
+          await page.screenshot({ path: p("home"), fullPage: true });
           if (isFirstViewport) await recordA11y(page, "home", theme);
 
           // 2. Java agent instrumentation list
@@ -225,7 +226,7 @@ async function takeScreenshots() {
           });
           await settle(page);
           await assertNoError(page, `${BASE_URL}/java-agent/instrumentation`);
-          await page.screenshot({ path: p("instrumentation-list") });
+          await page.screenshot({ path: p("instrumentation-list"), fullPage: true });
           if (isFirstViewport) await recordA11y(page, "instrumentation-list", theme);
 
           // 3. Java agent instrumentation detail - Details tab
@@ -255,7 +256,7 @@ async function takeScreenshots() {
           });
           await settle(page);
           await assertNoError(page, `${BASE_URL}/collector/components`);
-          await page.screenshot({ path: p("collector-list") });
+          await page.screenshot({ path: p("collector-list"), fullPage: true });
           if (isFirstViewport) await recordA11y(page, "collector-list", theme);
 
           // 7. Collector detail

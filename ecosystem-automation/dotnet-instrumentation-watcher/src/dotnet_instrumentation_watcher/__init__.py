@@ -12,4 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-"""Dotnet Instrumentation Watcher package."""
+"""OpenTelemetry .NET instrumentation metadata automation."""
+
+import importlib.metadata
+
+try:
+    __version__ = importlib.metadata.version("dotnet-instrumentation-watcher")
+except importlib.metadata.PackageNotFoundError:
+    __version__ = "0.0.0-dev"
