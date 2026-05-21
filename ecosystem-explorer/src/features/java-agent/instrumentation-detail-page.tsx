@@ -94,7 +94,8 @@ export function InstrumentationDetailPage() {
     shouldFetchInstrumentation ? (version ?? "") : ""
   );
 
-  const loading = versionsLoading || instrumentationLoading || (version === "latest" && !versionsError);
+  const loading =
+    versionsLoading || instrumentationLoading || (version === "latest" && !versionsError);
 
   useEffect(() => {
     if (version === "latest" && versionsData) {
