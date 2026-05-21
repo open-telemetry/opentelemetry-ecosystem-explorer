@@ -72,7 +72,7 @@ export function SignalsRow({ headingId = "signals-row-title" }: SignalsRowProps)
           Browse by signal
         </h2>
         <p className="td-signals-row__lead">
-          Cuts across ecosystems — matches opentelemetry.io&apos;s canonical signal taxonomy.
+          Cuts across ecosystems, matching opentelemetry.io&apos;s canonical signal taxonomy.
         </p>
         <div className="td-signals-row__cards">
           {SIGNALS.map((s) => (

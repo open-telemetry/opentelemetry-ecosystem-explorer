@@ -20,6 +20,13 @@ import { describe, it, expect } from "vitest";
 
 import { SignalsRow } from "./signals-row";
 
+const SIGNAL_LINK_NAMES: readonly { display: string; pattern: RegExp }[] = [
+  { display: "Traces", pattern: /Traces/i },
+  { display: "Metrics", pattern: /Metrics/i },
+  { display: "Logs", pattern: /Logs/i },
+  { display: "Baggage", pattern: /Baggage/i },
+];
+
 function renderRow() {
   return render(
     <MemoryRouter>
@@ -41,8 +48,8 @@ describe("SignalsRow", () => {
 
   it("renders the four canonical OpenTelemetry signals (Traces / Metrics / Logs / Baggage)", () => {
     renderRow();
-    for (const name of ["Traces", "Metrics", "Logs", "Baggage"]) {
-      expect(screen.getByRole("link", { name: new RegExp(name, "i") })).toBeInTheDocument();
+    for (const { pattern } of SIGNAL_LINK_NAMES) {
+      expect(screen.getByRole("link", { name: pattern })).toBeInTheDocument();
     }
   });
 
