@@ -251,7 +251,9 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
                         itemRefs.current[index] = node;
                       }}
                       className={`text-foreground flex w-full items-center justify-between rounded px-3 py-2 text-left text-sm transition-colors ${
-                        safeActiveIndex === index ? "bg-accent" : "hover:bg-accent/70"
+                        safeActiveIndex === index
+                          ? "bg-black/10 dark:bg-white/10"
+                          : "hover:bg-black/5 dark:hover:bg-white/10"
                       }`}
                     >
                       <div>
@@ -281,7 +283,9 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
                         itemRefs.current[index] = node;
                       }}
                       className={`text-foreground w-full rounded px-3 py-2 text-left text-sm transition-colors ${
-                        safeActiveIndex === index ? "bg-accent" : "hover:bg-accent/70"
+                        safeActiveIndex === index
+                          ? "bg-black/10 dark:bg-white/10"
+                          : "hover:bg-black/5 dark:hover:bg-white/10"
                       }`}
                     >
                       <Search className="text-muted-foreground mr-2 inline h-4 w-4" />

@@ -118,7 +118,9 @@ describe("SearchOverlay", () => {
 
     await user.keyboard("{ArrowDown}");
 
-    expect(screen.getByRole("link", { name: /http client/i })).toHaveClass("bg-accent");
+    expect(screen.getByRole("link", { name: /http client/i })).toHaveClass(
+      "bg-black/10"
+    );
 
     await user.keyboard("{Enter}");
 
@@ -155,7 +157,7 @@ describe("SearchOverlay", () => {
 
     const recentHttp = screen.getByRole("button", { name: /http/i });
     fireEvent.mouseEnter(recentHttp);
-    expect(recentHttp).toHaveClass("bg-accent");
+    expect(recentHttp).toHaveClass("bg-black/10");
 
     await user.click(recentHttp);
 
