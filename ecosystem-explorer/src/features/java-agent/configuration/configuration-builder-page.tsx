@@ -134,7 +134,7 @@ function SdkTabContent({
         />
         <div ref={sectionsContainerRef} className="space-y-4">
           {hasGeneralLeaves && (
-            <GeneralSectionCard label={GENERAL_SECTION_LABEL} children={leafChildren} />
+            <GeneralSectionCard label={GENERAL_SECTION_LABEL}>{leafChildren}</GeneralSectionCard>
           )}
           {groupChildren.map((child) => (
             <SchemaRenderer key={child.key} node={child} depth={0} path={child.key} />
@@ -266,11 +266,12 @@ function InstrumentationTabBody({
         <GeneralSectionCard
           label={GENERAL_SETTINGS_LABEL}
           sectionKey={GENERAL_SECTION_KEY}
-          children={generalNode?.children ?? []}
           pathPrefix={`${INSTRUMENTATION_DEV_KEY}.${GENERAL_SUBKEY}`}
           defaultExpanded={true}
           emptyMessage="The schema for this version does not expose general instrumentation settings."
-        />
+        >
+          {generalNode?.children ?? []}
+        </GeneralSectionCard>
         <InstrumentationBrowser
           instrumentations={instrumentationsState.data}
           loading={instrumentationsState.loading}
@@ -322,7 +323,7 @@ export function ConfigurationBuilderPage() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-3xl font-bold md:text-4xl">
+              <h1 className="text-3xl font-semibold md:text-4xl">
                 <span className="from-otel-orange to-otel-blue bg-gradient-to-r bg-clip-text text-transparent">
                   Configuration Builder
                 </span>
