@@ -9,11 +9,22 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": ["tigrannajaryan", "MovieStoreGuy", "dmitryax", "atoulme", "pjanotti", "crobert-1"]
+      "active": [
+        "tigrannajaryan",
+        "MovieStoreGuy",
+        "dmitryax",
+        "atoulme",
+        "pjanotti",
+        "crobert-1"
+      ]
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "alpha": ["metrics"]
+      "alpha": [
+        "metrics"
+      ]
     }
   },
   "type": "receiver"

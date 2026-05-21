@@ -1,0 +1,19 @@
+{
+  "description": "This instrumentation enables a Micrometer MeterRegistry that bridges Micrometer metrics to the OpenTelemetry Metrics SDK. It is disabled by default because it may produce metrics that overlap with metrics already captured by other instrumentations.",
+  "disabled_by_default": true,
+  "display_name": "Micrometer",
+  "has_javaagent": true,
+  "has_standalone_library": true,
+  "javaagent_target_versions": [
+    "io.micrometer:micrometer-core:[1.5.0,)"
+  ],
+  "library_link": "https://micrometer.io/",
+  "name": "micrometer-1.5",
+  "scope": {
+    "name": "io.opentelemetry.micrometer-1.5"
+  },
+  "source_path": "instrumentation/micrometer/micrometer-1.5",
+  "tags": [
+    "micrometer"
+  ]
+}

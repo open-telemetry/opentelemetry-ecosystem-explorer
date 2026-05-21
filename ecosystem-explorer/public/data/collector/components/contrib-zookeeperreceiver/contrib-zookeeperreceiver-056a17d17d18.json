@@ -9,13 +9,22 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": ["antonblock", "akats7"],
-      "emeritus": ["djaglowski"],
+      "active": [
+        "antonblock",
+        "akats7"
+      ],
+      "emeritus": [
+        "djaglowski"
+      ],
       "seeking_new": true
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "alpha": ["metrics"]
+      "alpha": [
+        "metrics"
+      ]
     }
   },
   "type": "receiver"

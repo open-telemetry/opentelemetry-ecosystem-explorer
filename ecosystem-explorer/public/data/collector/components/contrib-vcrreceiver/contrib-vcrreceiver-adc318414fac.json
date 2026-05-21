@@ -9,10 +9,19 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": ["atoulme", "robertgustafsonsplunk", "garrett-splunk"]
+      "active": [
+        "atoulme",
+        "robertgustafsonsplunk",
+        "garrett-splunk"
+      ]
     },
     "stability": {
-      "development": ["logs", "metrics", "profiles", "traces"]
+      "development": [
+        "logs",
+        "metrics",
+        "profiles",
+        "traces"
+      ]
     }
   },
   "type": "receiver"

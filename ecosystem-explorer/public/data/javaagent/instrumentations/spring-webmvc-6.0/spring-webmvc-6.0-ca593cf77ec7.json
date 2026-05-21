@@ -1,0 +1,83 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables the capture of experimental span attributes `spring-webmvc.view.name` and `spring-webmvc.view.type`.",
+      "name": "otel.instrumentation.spring-webmvc.experimental-span-attributes",
+      "type": "boolean"
+    },
+    {
+      "default": false,
+      "description": "Enables the creation of experimental controller spans.",
+      "name": "otel.instrumentation.common.experimental.controller-telemetry.enabled",
+      "type": "boolean"
+    },
+    {
+      "default": false,
+      "description": "Enables the creation of experimental view spans.",
+      "name": "otel.instrumentation.common.experimental.view-telemetry.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enriches HTTP server spans with route information for Spring WebMVC 6.0+. It also enables controller spans (controller spans are disabled by default) and view spans (view spans are disabled by default).",
+  "display_name": "Spring WebMVC",
+  "features": [
+    "HTTP_ROUTE",
+    "CONTROLLER_SPANS",
+    "VIEW_SPANS"
+  ],
+  "has_javaagent": true,
+  "has_standalone_library": true,
+  "javaagent_target_versions": [
+    "org.springframework:spring-webmvc:[6.0.0,)"
+  ],
+  "library_link": "https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/mvc/package-summary.html",
+  "minimum_java_version": 17,
+  "name": "spring-webmvc-6.0",
+  "scope": {
+    "name": "io.opentelemetry.spring-webmvc-6.0"
+  },
+  "source_path": "instrumentation/spring/spring-webmvc/spring-webmvc-6.0",
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "code.function",
+              "type": "STRING"
+            },
+            {
+              "name": "code.namespace",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "code.function",
+              "type": "STRING"
+            },
+            {
+              "name": "code.namespace",
+              "type": "STRING"
+            },
+            {
+              "name": "spring-webmvc.view.type",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "otel.instrumentation.spring-webmvc.experimental-span-attributes=true"
+    }
+  ]
+}

@@ -9,11 +9,19 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": ["alexvanboxel"]
+      "active": [
+        "alexvanboxel"
+      ]
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "beta": ["logs", "metrics", "traces"]
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
     }
   },
   "type": "receiver"

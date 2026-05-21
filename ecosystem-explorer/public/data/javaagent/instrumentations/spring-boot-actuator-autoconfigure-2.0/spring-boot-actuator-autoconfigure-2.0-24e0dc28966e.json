@@ -12,5 +12,7 @@
     "name": "io.opentelemetry.spring-boot-actuator-autoconfigure-2.0"
   },
   "source_path": "instrumentation/spring/spring-boot-actuator-autoconfigure-2.0",
-  "tags": ["spring"]
+  "tags": [
+    "spring"
+  ]
 }

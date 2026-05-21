@@ -9,13 +9,20 @@
   "status": {
     "class": "connector",
     "codeowners": {
-      "active": ["rlankfo", "jcreixell"],
+      "active": [
+        "rlankfo",
+        "jcreixell"
+      ],
       "emeritus": [],
       "seeking_new": false
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "alpha": ["traces_to_metrics"]
+      "alpha": [
+        "traces_to_metrics"
+      ]
     }
   },
   "type": "connector"

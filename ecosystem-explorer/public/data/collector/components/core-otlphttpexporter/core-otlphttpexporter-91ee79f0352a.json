@@ -8,10 +8,21 @@
   "repository": "opentelemetry-collector",
   "status": {
     "class": "exporter",
-    "distributions": ["contrib", "core", "k8s", "otlp"],
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s",
+      "otlp"
+    ],
     "stability": {
-      "alpha": ["profiles"],
-      "stable": ["logs", "metrics", "traces"]
+      "alpha": [
+        "profiles"
+      ],
+      "stable": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
     }
   },
   "type": "exporter"

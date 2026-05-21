@@ -9,14 +9,25 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": ["dashpole", "alxbl", "pjanotti"],
+      "active": [
+        "dashpole",
+        "alxbl",
+        "pjanotti"
+      ],
       "seeking_new": true
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "beta": ["metrics"]
+      "beta": [
+        "metrics"
+      ]
     },
-    "unsupported_platforms": ["darwin", "linux"]
+    "unsupported_platforms": [
+      "darwin",
+      "linux"
+    ]
   },
   "type": "receiver"
 }

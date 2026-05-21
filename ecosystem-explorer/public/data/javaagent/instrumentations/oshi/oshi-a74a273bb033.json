@@ -1,0 +1,289 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enable the experimental `runtime.java.memory` and `runtime.java.cpu_time` metrics.",
+      "name": "otel.instrumentation.oshi.experimental-metrics.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "When the OSHI library is detected on the classpath, this instrumentation enables system metrics for memory, disk, and network operations.",
+  "display_name": "OSHI",
+  "has_javaagent": true,
+  "has_standalone_library": true,
+  "javaagent_target_versions": [
+    "com.github.oshi:oshi-core:[5.3.1,)"
+  ],
+  "library_link": "https://github.com/oshi/oshi/",
+  "name": "oshi",
+  "scope": {
+    "name": "io.opentelemetry.oshi"
+  },
+  "semantic_conventions": [
+    "SYSTEM_METRICS"
+  ],
+  "source_path": "instrumentation/oshi",
+  "tags": [
+    "oshi"
+  ],
+  "telemetry": [
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "device",
+              "type": "STRING"
+            },
+            {
+              "name": "direction",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "System disk IO",
+          "instrument": "counter",
+          "name": "system.disk.io",
+          "unit": "By"
+        },
+        {
+          "attributes": [
+            {
+              "name": "device",
+              "type": "STRING"
+            },
+            {
+              "name": "direction",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "System disk operations",
+          "instrument": "counter",
+          "name": "system.disk.operations",
+          "unit": "{operations}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "state",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "System memory usage",
+          "instrument": "updowncounter",
+          "name": "system.memory.usage",
+          "unit": "By"
+        },
+        {
+          "attributes": [
+            {
+              "name": "state",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "DOUBLE_GAUGE",
+          "description": "System memory utilization",
+          "instrument": "gauge",
+          "name": "system.memory.utilization",
+          "unit": "1"
+        },
+        {
+          "attributes": [
+            {
+              "name": "device",
+              "type": "STRING"
+            },
+            {
+              "name": "direction",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "System network errors",
+          "instrument": "counter",
+          "name": "system.network.errors",
+          "unit": "{errors}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "device",
+              "type": "STRING"
+            },
+            {
+              "name": "direction",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "System network IO",
+          "instrument": "counter",
+          "name": "system.network.io",
+          "unit": "By"
+        },
+        {
+          "attributes": [
+            {
+              "name": "device",
+              "type": "STRING"
+            },
+            {
+              "name": "direction",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "System network packets",
+          "instrument": "counter",
+          "name": "system.network.packets",
+          "unit": "{packets}"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "type",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_GAUGE",
+          "description": "Runtime Java CPU time",
+          "instrument": "gauge",
+          "name": "runtime.java.cpu_time",
+          "unit": "ms"
+        },
+        {
+          "attributes": [
+            {
+              "name": "type",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "Runtime Java memory",
+          "instrument": "updowncounter",
+          "name": "runtime.java.memory",
+          "unit": "By"
+        },
+        {
+          "attributes": [
+            {
+              "name": "device",
+              "type": "STRING"
+            },
+            {
+              "name": "direction",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "System disk IO",
+          "instrument": "counter",
+          "name": "system.disk.io",
+          "unit": "By"
+        },
+        {
+          "attributes": [
+            {
+              "name": "device",
+              "type": "STRING"
+            },
+            {
+              "name": "direction",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "System disk operations",
+          "instrument": "counter",
+          "name": "system.disk.operations",
+          "unit": "{operations}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "state",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "System memory usage",
+          "instrument": "updowncounter",
+          "name": "system.memory.usage",
+          "unit": "By"
+        },
+        {
+          "attributes": [
+            {
+              "name": "state",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "DOUBLE_GAUGE",
+          "description": "System memory utilization",
+          "instrument": "gauge",
+          "name": "system.memory.utilization",
+          "unit": "1"
+        },
+        {
+          "attributes": [
+            {
+              "name": "device",
+              "type": "STRING"
+            },
+            {
+              "name": "direction",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "System network errors",
+          "instrument": "counter",
+          "name": "system.network.errors",
+          "unit": "{errors}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "device",
+              "type": "STRING"
+            },
+            {
+              "name": "direction",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "System network IO",
+          "instrument": "counter",
+          "name": "system.network.io",
+          "unit": "By"
+        },
+        {
+          "attributes": [
+            {
+              "name": "device",
+              "type": "STRING"
+            },
+            {
+              "name": "direction",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "System network packets",
+          "instrument": "counter",
+          "name": "system.network.packets",
+          "unit": "{packets}"
+        }
+      ],
+      "when": "otel.instrumentation.oshi.experimental-metrics.enabled=true"
+    }
+  ]
+}

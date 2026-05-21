@@ -9,11 +9,16 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": ["AkhigbeEromo"]
+      "active": [
+        "AkhigbeEromo"
+      ]
     },
     "distributions": [],
     "stability": {
-      "development": ["logs", "metrics"]
+      "development": [
+        "logs",
+        "metrics"
+      ]
     }
   },
   "type": "exporter"

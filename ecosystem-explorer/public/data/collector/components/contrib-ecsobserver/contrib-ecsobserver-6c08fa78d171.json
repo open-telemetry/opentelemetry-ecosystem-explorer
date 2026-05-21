@@ -9,12 +9,20 @@
   "status": {
     "class": "extension",
     "codeowners": {
-      "active": ["dmitryax"],
-      "emeritus": ["rmfitzpatrick"]
+      "active": [
+        "dmitryax"
+      ],
+      "emeritus": [
+        "rmfitzpatrick"
+      ]
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "beta": ["extension"]
+      "beta": [
+        "extension"
+      ]
     }
   },
   "type": "extension"

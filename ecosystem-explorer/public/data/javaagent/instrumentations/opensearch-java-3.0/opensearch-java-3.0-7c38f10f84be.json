@@ -2,16 +2,23 @@
   "description": "This instrumentation enables database client spans and database client metrics for the OpenSearch Java client.",
   "display_name": "OpenSearch Java Client",
   "has_javaagent": true,
-  "javaagent_target_versions": ["org.opensearch.client:opensearch-java:[3.0,)"],
+  "javaagent_target_versions": [
+    "org.opensearch.client:opensearch-java:[3.0,)"
+  ],
   "library_link": "https://docs.opensearch.org/latest/clients/java/",
   "minimum_java_version": 11,
   "name": "opensearch-java-3.0",
   "scope": {
     "name": "io.opentelemetry.opensearch-java-3.0"
   },
-  "semantic_conventions": ["DATABASE_CLIENT_SPANS", "DATABASE_CLIENT_METRICS"],
+  "semantic_conventions": [
+    "DATABASE_CLIENT_SPANS",
+    "DATABASE_CLIENT_METRICS"
+  ],
   "source_path": "instrumentation/opensearch/opensearch-java-3.0",
-  "tags": ["opensearch"],
+  "tags": [
+    "opensearch"
+  ],
   "telemetry": [
     {
       "spans": [

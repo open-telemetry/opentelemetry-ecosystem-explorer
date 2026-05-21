@@ -17,9 +17,14 @@
   ],
   "description": "This instrumentation enriches HTTP server spans with route information, and enables controller spans for JAX-RS methods when using Jersey (controller spans are disabled by default).",
   "display_name": "Eclipse Jersey JAX-RS 3.x",
-  "features": ["HTTP_ROUTE", "CONTROLLER_SPANS"],
+  "features": [
+    "HTTP_ROUTE",
+    "CONTROLLER_SPANS"
+  ],
   "has_javaagent": true,
-  "javaagent_target_versions": ["org.glassfish.jersey.core:jersey-server:[3.0.0,)"],
+  "javaagent_target_versions": [
+    "org.glassfish.jersey.core:jersey-server:[3.0.0,)"
+  ],
   "library_link": "https://eclipse-ee4j.github.io/jersey/",
   "minimum_java_version": 11,
   "name": "jaxrs-3.0-jersey-3.0",

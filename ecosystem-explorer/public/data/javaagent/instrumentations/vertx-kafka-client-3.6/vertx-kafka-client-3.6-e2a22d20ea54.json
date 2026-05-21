@@ -1,0 +1,142 @@
+{
+  "configurations": [
+    {
+      "default": true,
+      "description": "Enable context propagation for Kafka message producers.",
+      "name": "otel.instrumentation.kafka.producer-propagation.enabled",
+      "type": "boolean"
+    },
+    {
+      "default": false,
+      "description": "Enables the capture of the experimental consumer attribute `kafka.record.queue_time_ms` and `messaging.kafka.bootstrap.servers`.",
+      "name": "otel.instrumentation.kafka.experimental-span-attributes",
+      "type": "boolean"
+    },
+    {
+      "default": "",
+      "description": "A comma-separated list of header names to capture as span attributes.",
+      "name": "otel.instrumentation.messaging.experimental.capture-headers",
+      "type": "list"
+    },
+    {
+      "default": false,
+      "description": "Enables experimental receive telemetry, which will cause consumers to start a new trace, with only a span link connecting it to the producer trace.",
+      "name": "otel.instrumentation.messaging.experimental.receive-telemetry.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enables messaging spans for Kafka consumers using the Vert.x Kafka Client library.",
+  "disabled_by_default": true,
+  "display_name": "Vert.x Kafka Client",
+  "has_javaagent": true,
+  "javaagent_target_versions": [
+    "io.vertx:vertx-kafka-client:[3.5.1,)"
+  ],
+  "library_link": "https://vertx.io/docs/vertx-kafka-client/java/",
+  "name": "vertx-kafka-client-3.6",
+  "scope": {
+    "name": "io.opentelemetry.vertx-kafka-client-3.6"
+  },
+  "semantic_conventions": [
+    "MESSAGING_SPANS"
+  ],
+  "source_path": "instrumentation/vertx/vertx-kafka-client-3.6",
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "messaging.batch.message_count",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.client_id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.partition.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.kafka.message.key",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.kafka.message.offset",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.message.body.size",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CONSUMER"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "kafka.record.queue_time_ms",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.batch.message_count",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.client_id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.partition.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.kafka.message.key",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.kafka.message.offset",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.message.body.size",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CONSUMER"
+        }
+      ],
+      "when": "otel.instrumentation.kafka.experimental-span-attributes=true"
+    }
+  ]
+}

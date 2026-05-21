@@ -2,15 +2,22 @@
   "description": "This instrumentation enables RPC client spans and RPC server spans for Java RMI (Remote Method Invocation).",
   "display_name": "RMI (Remote Method Invocation)",
   "has_javaagent": true,
-  "javaagent_target_versions": ["Java 8+"],
+  "javaagent_target_versions": [
+    "Java 8+"
+  ],
   "library_link": "https://docs.oracle.com/en/java/javase/17/docs/api/java.rmi/java/rmi/package-summary.html",
   "name": "rmi",
   "scope": {
     "name": "io.opentelemetry.rmi"
   },
-  "semantic_conventions": ["RPC_CLIENT_SPANS", "RPC_SERVER_SPANS"],
+  "semantic_conventions": [
+    "RPC_CLIENT_SPANS",
+    "RPC_SERVER_SPANS"
+  ],
   "source_path": "instrumentation/rmi",
-  "tags": ["rmi"],
+  "tags": [
+    "rmi"
+  ],
   "telemetry": [
     {
       "spans": [

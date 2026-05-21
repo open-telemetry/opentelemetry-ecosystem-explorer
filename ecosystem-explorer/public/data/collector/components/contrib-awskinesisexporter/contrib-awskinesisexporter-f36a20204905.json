@@ -9,11 +9,20 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": ["Aneurysm9", "MovieStoreGuy"]
+      "active": [
+        "Aneurysm9",
+        "MovieStoreGuy"
+      ]
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "beta": ["logs", "metrics", "traces"]
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
     }
   },
   "type": "exporter"

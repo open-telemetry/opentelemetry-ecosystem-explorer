@@ -9,10 +9,18 @@
   "status": {
     "class": "processor",
     "codeowners": {
-      "active": ["andrzej-stencel", "kaisecheng", "edmocosta"]
+      "active": [
+        "andrzej-stencel",
+        "kaisecheng",
+        "edmocosta"
+      ]
     },
     "stability": {
-      "development": ["logs", "metrics", "traces"]
+      "development": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
     }
   },
   "type": "processor"

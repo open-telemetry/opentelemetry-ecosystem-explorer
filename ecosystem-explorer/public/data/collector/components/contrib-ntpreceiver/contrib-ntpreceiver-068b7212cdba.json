@@ -20,12 +20,19 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": ["atoulme", "paulojmdias"],
+      "active": [
+        "atoulme",
+        "paulojmdias"
+      ],
       "seeking_new": true
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "beta": ["metrics"]
+      "beta": [
+        "metrics"
+      ]
     }
   },
   "type": "receiver"

@@ -9,12 +9,24 @@
   "status": {
     "class": "processor",
     "codeowners": {
-      "active": ["dmitryax"]
+      "active": [
+        "dmitryax"
+      ]
     },
-    "distributions": ["contrib", "core", "k8s"],
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
     "stability": {
-      "beta": ["logs", "metrics", "traces"],
-      "development": ["profiles"]
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ],
+      "development": [
+        "profiles"
+      ]
     }
   },
   "type": "processor"

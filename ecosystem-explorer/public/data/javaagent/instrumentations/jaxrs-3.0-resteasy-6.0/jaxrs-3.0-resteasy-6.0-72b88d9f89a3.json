@@ -17,9 +17,14 @@
   ],
   "description": "This instrumentation enriches HTTP server spans with route information, and enables controller spans for JAX-RS methods when using RESTEasy (controller spans are disabled by default).",
   "display_name": "JBoss RESTEasy JAX-RS 3.x",
-  "features": ["HTTP_ROUTE", "CONTROLLER_SPANS"],
+  "features": [
+    "HTTP_ROUTE",
+    "CONTROLLER_SPANS"
+  ],
   "has_javaagent": true,
-  "javaagent_target_versions": ["org.jboss.resteasy:resteasy-core:[6.0.0.Final,)"],
+  "javaagent_target_versions": [
+    "org.jboss.resteasy:resteasy-core:[6.0.0.Final,)"
+  ],
   "library_link": "https://resteasy.dev/",
   "minimum_java_version": 11,
   "name": "jaxrs-3.0-resteasy-6.0",
@@ -27,7 +32,9 @@
     "name": "io.opentelemetry.jaxrs-3.0-resteasy-6.0"
   },
   "source_path": "instrumentation/jaxrs/jaxrs-3.0/jaxrs-3.0-resteasy-6.0",
-  "tags": ["jaxrs"],
+  "tags": [
+    "jaxrs"
+  ],
   "telemetry": [
     {
       "spans": [

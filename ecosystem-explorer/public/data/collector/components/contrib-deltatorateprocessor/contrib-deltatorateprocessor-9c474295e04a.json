@@ -9,11 +9,18 @@
   "status": {
     "class": "processor",
     "codeowners": {
-      "active": ["Aneurysm9"]
+      "active": [
+        "Aneurysm9"
+      ]
     },
-    "distributions": ["contrib", "k8s"],
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
     "stability": {
-      "alpha": ["metrics"]
+      "alpha": [
+        "metrics"
+      ]
     }
   },
   "type": "processor"

@@ -9,10 +9,17 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": ["braydonk", "colelaven", "dpaasman00", "mrsillydog"]
+      "active": [
+        "braydonk",
+        "colelaven",
+        "dpaasman00",
+        "mrsillydog"
+      ]
     },
     "stability": {
-      "development": ["logs"]
+      "development": [
+        "logs"
+      ]
     }
   },
   "type": "exporter"

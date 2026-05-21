@@ -9,11 +9,20 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": ["atoulme", "dmitryax"]
+      "active": [
+        "atoulme",
+        "dmitryax"
+      ]
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "beta": ["logs", "metrics", "traces"]
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
     }
   },
   "type": "exporter"

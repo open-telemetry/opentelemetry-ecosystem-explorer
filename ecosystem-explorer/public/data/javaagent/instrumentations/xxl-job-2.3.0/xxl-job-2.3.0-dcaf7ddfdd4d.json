@@ -1,0 +1,75 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables experimental span attributes `job.system`, `scheduling.xxl-job.glue.type`, and `scheduling.xxl-job.job.id`.",
+      "name": "otel.instrumentation.xxl-job.experimental-span-attributes",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enables spans for XXL-Job task executions.",
+  "display_name": "XXL-Job",
+  "has_javaagent": true,
+  "javaagent_target_versions": [
+    "com.xuxueli:xxl-job-core:[2.3.0,)"
+  ],
+  "library_link": "https://github.com/xuxueli/xxl-job",
+  "name": "xxl-job-2.3.0",
+  "scope": {
+    "name": "io.opentelemetry.xxl-job-2.3.0"
+  },
+  "source_path": "instrumentation/xxl-job/xxl-job-2.3.0",
+  "tags": [
+    "xxl"
+  ],
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "code.function",
+              "type": "STRING"
+            },
+            {
+              "name": "code.namespace",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "code.function",
+              "type": "STRING"
+            },
+            {
+              "name": "code.namespace",
+              "type": "STRING"
+            },
+            {
+              "name": "job.system",
+              "type": "STRING"
+            },
+            {
+              "name": "scheduling.xxl-job.glue.type",
+              "type": "STRING"
+            },
+            {
+              "name": "scheduling.xxl-job.job.id",
+              "type": "LONG"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "otel.instrumentation.xxl-job.experimental-span-attributes=true"
+    }
+  ]
+}

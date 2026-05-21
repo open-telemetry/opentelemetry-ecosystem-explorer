@@ -17,7 +17,10 @@
   ],
   "description": "This instrumentation enriches HTTP server spans with route information, and enables controller spans for JAX-RS methods when using Apache CXF (controller spans are disabled by default).",
   "display_name": "Apache CXF JAX-RS 2.x",
-  "features": ["HTTP_ROUTE", "CONTROLLER_SPANS"],
+  "features": [
+    "HTTP_ROUTE",
+    "CONTROLLER_SPANS"
+  ],
   "has_javaagent": true,
   "javaagent_target_versions": [
     "org.apache.tomee:openejb-cxf-rs:(8,)",

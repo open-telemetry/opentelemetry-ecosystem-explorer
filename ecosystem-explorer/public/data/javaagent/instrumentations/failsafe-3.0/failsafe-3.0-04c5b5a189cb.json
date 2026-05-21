@@ -8,7 +8,9 @@
     "name": "io.opentelemetry.failsafe-3.0"
   },
   "source_path": "instrumentation/failsafe-3.0",
-  "tags": ["failsafe"],
+  "tags": [
+    "failsafe"
+  ],
   "telemetry": [
     {
       "metrics": [

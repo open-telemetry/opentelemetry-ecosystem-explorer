@@ -1,0 +1,176 @@
+{
+  "configurations": [
+    {
+      "default": "",
+      "description": "Opt-in to emit stable semantic conventions instead of the old experimental semantic conventions. Accepts a comma-separated list of semantic convention groups (e.g., `database`, `http`, `messaging`). Use `<group>/dup` to emit both old and new conventions simultaneously. Stable semantic conventions will become the default in version 3.0 of the agent.",
+      "name": "otel.semconv-stability.opt-in",
+      "type": "list"
+    }
+  ],
+  "description": "The Alibaba Druid instrumentation generates database connection pool metrics for druid data sources.",
+  "display_name": "Alibaba Druid",
+  "has_javaagent": true,
+  "has_standalone_library": true,
+  "javaagent_target_versions": [
+    "com.alibaba:druid:(,)"
+  ],
+  "library_link": "https://github.com/alibaba/druid",
+  "name": "alibaba-druid-1.0",
+  "scope": {
+    "name": "io.opentelemetry.alibaba-druid-1.0"
+  },
+  "semantic_conventions": [
+    "DATABASE_POOL_METRICS"
+  ],
+  "source_path": "instrumentation/alibaba-druid-1.0",
+  "telemetry": [
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "pool.name",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The maximum number of idle open connections allowed.",
+          "instrument": "updowncounter",
+          "name": "db.client.connections.idle.max",
+          "unit": "{connections}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "pool.name",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The minimum number of idle open connections allowed.",
+          "instrument": "updowncounter",
+          "name": "db.client.connections.idle.min",
+          "unit": "{connections}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "pool.name",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The maximum number of open connections allowed.",
+          "instrument": "updowncounter",
+          "name": "db.client.connections.max",
+          "unit": "{connections}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "pool.name",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The number of pending requests for an open connection, cumulative for the entire pool.",
+          "instrument": "updowncounter",
+          "name": "db.client.connections.pending_requests",
+          "unit": "{requests}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "pool.name",
+              "type": "STRING"
+            },
+            {
+              "name": "state",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The number of connections that are currently in state described by the state attribute.",
+          "instrument": "updowncounter",
+          "name": "db.client.connections.usage",
+          "unit": "{connections}"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "db.client.connection.pool.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.client.connection.state",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The number of connections that are currently in state described by the state attribute.",
+          "instrument": "updowncounter",
+          "name": "db.client.connection.count",
+          "unit": "{connection}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "db.client.connection.pool.name",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The maximum number of idle open connections allowed.",
+          "instrument": "updowncounter",
+          "name": "db.client.connection.idle.max",
+          "unit": "{connection}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "db.client.connection.pool.name",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The minimum number of idle open connections allowed.",
+          "instrument": "updowncounter",
+          "name": "db.client.connection.idle.min",
+          "unit": "{connection}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "db.client.connection.pool.name",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The maximum number of open connections allowed.",
+          "instrument": "updowncounter",
+          "name": "db.client.connection.max",
+          "unit": "{connection}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "db.client.connection.pool.name",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The number of current pending requests for an open connection.",
+          "instrument": "updowncounter",
+          "name": "db.client.connection.pending_requests",
+          "unit": "{request}"
+        }
+      ],
+      "when": "otel.semconv-stability.opt-in=database"
+    }
+  ]
+}

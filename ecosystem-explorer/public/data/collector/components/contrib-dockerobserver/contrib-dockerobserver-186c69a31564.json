@@ -9,11 +9,17 @@
   "status": {
     "class": "extension",
     "codeowners": {
-      "active": ["MovieStoreGuy"]
+      "active": [
+        "MovieStoreGuy"
+      ]
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "beta": ["extension"]
+      "beta": [
+        "extension"
+      ]
     }
   },
   "type": "extension"

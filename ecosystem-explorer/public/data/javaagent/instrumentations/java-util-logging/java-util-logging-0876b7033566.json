@@ -10,7 +10,9 @@
   ],
   "description": "This instrumentation bridges Java Util Logging (JUL) log records to OpenTelemetry logs.",
   "display_name": "Java Util Logging (JUL)",
-  "features": ["LOGGING_BRIDGE"],
+  "features": [
+    "LOGGING_BRIDGE"
+  ],
   "has_javaagent": true,
   "library_link": "https://docs.oracle.com/en/java/javase/11/docs/api/java.logging/java/util/logging/package-summary.html",
   "name": "java-util-logging",

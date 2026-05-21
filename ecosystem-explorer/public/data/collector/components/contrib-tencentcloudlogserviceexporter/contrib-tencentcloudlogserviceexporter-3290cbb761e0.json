@@ -9,12 +9,20 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": ["wgliang"],
-      "emeritus": ["yiyang5055"]
+      "active": [
+        "wgliang"
+      ],
+      "emeritus": [
+        "yiyang5055"
+      ]
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "beta": ["logs"]
+      "beta": [
+        "logs"
+      ]
     }
   },
   "type": "exporter"

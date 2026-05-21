@@ -2,7 +2,10 @@
   "attributes": {
     "cluster_state": {
       "description": "State of the cluster",
-      "enum": ["fail", "ok"],
+      "enum": [
+        "fail",
+        "ok"
+      ],
       "type": "string"
     },
     "cmd": {
@@ -15,17 +18,28 @@
     },
     "mode": {
       "description": "Redis server mode",
-      "enum": ["cluster", "sentinel", "standalone"],
+      "enum": [
+        "cluster",
+        "sentinel",
+        "standalone"
+      ],
       "type": "string"
     },
     "percentile": {
       "description": "Percentile",
-      "enum": ["p50", "p99", "p99.9"],
+      "enum": [
+        "p50",
+        "p99",
+        "p99.9"
+      ],
       "type": "string"
     },
     "role": {
       "description": "Redis node's role",
-      "enum": ["primary", "replica"],
+      "enum": [
+        "primary",
+        "replica"
+      ],
       "type": "string"
     },
     "state": {
@@ -171,7 +185,9 @@
       "unit": "{slot}"
     },
     "redis.cluster.state": {
-      "attributes": ["cluster_state"],
+      "attributes": [
+        "cluster_state"
+      ],
       "description": "State of the cluster",
       "enabled": false,
       "gauge": {
@@ -212,7 +228,9 @@
       "unit": "s"
     },
     "redis.cmd.calls": {
-      "attributes": ["cmd"],
+      "attributes": [
+        "cmd"
+      ],
       "description": "Total number of calls for a command",
       "enabled": false,
       "stability": "development",
@@ -224,7 +242,10 @@
       "unit": "{call}"
     },
     "redis.cmd.latency": {
-      "attributes": ["cmd", "percentile"],
+      "attributes": [
+        "cmd",
+        "percentile"
+      ],
       "description": "Command execution latency",
       "enabled": false,
       "gauge": {
@@ -234,7 +255,9 @@
       "unit": "s"
     },
     "redis.cmd.usec": {
-      "attributes": ["cmd"],
+      "attributes": [
+        "cmd"
+      ],
       "description": "Total time for all executions of this command",
       "enabled": false,
       "stability": "development",
@@ -288,7 +311,9 @@
       "unit": "{connection}"
     },
     "redis.cpu.time": {
-      "attributes": ["state"],
+      "attributes": [
+        "state"
+      ],
       "description": "System CPU consumed by the Redis server in seconds since server start",
       "enabled": true,
       "stability": "development",
@@ -300,7 +325,9 @@
       "unit": "s"
     },
     "redis.db.avg_ttl": {
-      "attributes": ["db"],
+      "attributes": [
+        "db"
+      ],
       "description": "Average keyspace keys TTL",
       "enabled": true,
       "gauge": {
@@ -310,7 +337,9 @@
       "unit": "ms"
     },
     "redis.db.expires": {
-      "attributes": ["db"],
+      "attributes": [
+        "db"
+      ],
       "description": "Number of keyspace keys with an expiration",
       "enabled": true,
       "gauge": {
@@ -320,7 +349,9 @@
       "unit": "{key}"
     },
     "redis.db.keys": {
-      "attributes": ["db"],
+      "attributes": [
+        "db"
+      ],
       "description": "Number of keyspace keys",
       "enabled": true,
       "gauge": {
@@ -459,7 +490,9 @@
       "unit": "By"
     },
     "redis.mode": {
-      "attributes": ["mode"],
+      "attributes": [
+        "mode"
+      ],
       "description": "Redis server mode",
       "enabled": false,
       "gauge": {
@@ -529,7 +562,9 @@
       "unit": "By"
     },
     "redis.role": {
-      "attributes": ["role"],
+      "attributes": [
+        "role"
+      ],
       "description": "Redis node's role",
       "enabled": false,
       "stability": "development",
@@ -635,11 +670,18 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": ["dmitryax", "hughesjj"]
+      "active": [
+        "dmitryax",
+        "hughesjj"
+      ]
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "beta": ["metrics"]
+      "beta": [
+        "metrics"
+      ]
     }
   },
   "type": "receiver"

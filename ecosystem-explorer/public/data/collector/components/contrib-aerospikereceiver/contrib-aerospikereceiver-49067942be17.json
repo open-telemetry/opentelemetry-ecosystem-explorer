@@ -2,31 +2,51 @@
   "attributes": {
     "connection_op": {
       "description": "Operation performed with a connection (open or close)",
-      "enum": ["close", "open"],
+      "enum": [
+        "close",
+        "open"
+      ],
       "name_override": "operation",
       "type": "string"
     },
     "connection_type": {
       "description": "Type of connection to an Aerospike node",
-      "enum": ["client", "fabric", "heartbeat"],
+      "enum": [
+        "client",
+        "fabric",
+        "heartbeat"
+      ],
       "name_override": "type",
       "type": "string"
     },
     "index_type": {
       "description": "Type of index the operation was performed on",
-      "enum": ["primary", "secondary"],
+      "enum": [
+        "primary",
+        "secondary"
+      ],
       "name_override": "index",
       "type": "string"
     },
     "namespace_component": {
       "description": "Individual component of a namespace",
-      "enum": ["data", "index", "secondary_index", "set_index"],
+      "enum": [
+        "data",
+        "index",
+        "secondary_index",
+        "set_index"
+      ],
       "name_override": "component",
       "type": "string"
     },
     "query_result": {
       "description": "Result of a query operation performed on a namespace",
-      "enum": ["abort", "complete", "error", "timeout"],
+      "enum": [
+        "abort",
+        "complete",
+        "error",
+        "timeout"
+      ],
       "name_override": "result",
       "type": "string"
     },
@@ -46,25 +66,45 @@
     },
     "scan_result": {
       "description": "Result of a scan operation performed on a namespace",
-      "enum": ["abort", "complete", "error"],
+      "enum": [
+        "abort",
+        "complete",
+        "error"
+      ],
       "name_override": "result",
       "type": "string"
     },
     "scan_type": {
       "description": "Type of scan operation performed on a namespace",
-      "enum": ["aggregation", "basic", "ops_background", "udf_background"],
+      "enum": [
+        "aggregation",
+        "basic",
+        "ops_background",
+        "udf_background"
+      ],
       "name_override": "type",
       "type": "string"
     },
     "transaction_result": {
       "description": "Result of a transaction performed on a namespace",
-      "enum": ["error", "filtered_out", "not_found", "success", "timeout"],
+      "enum": [
+        "error",
+        "filtered_out",
+        "not_found",
+        "success",
+        "timeout"
+      ],
       "name_override": "result",
       "type": "string"
     },
     "transaction_type": {
       "description": "Type of transaction performed on a namespace",
-      "enum": ["delete", "read", "udf", "write"],
+      "enum": [
+        "delete",
+        "read",
+        "udf",
+        "write"
+      ],
       "name_override": "type",
       "type": "string"
     }
@@ -144,7 +184,9 @@
       "unit": "%"
     },
     "aerospike.namespace.memory.usage": {
-      "attributes": ["namespace_component"],
+      "attributes": [
+        "namespace_component"
+      ],
       "description": "Memory currently used by each component of the namespace",
       "enabled": true,
       "stability": "development",
@@ -157,7 +199,11 @@
       "unit": "By"
     },
     "aerospike.namespace.query.count": {
-      "attributes": ["index_type", "query_result", "query_type"],
+      "attributes": [
+        "index_type",
+        "query_result",
+        "query_type"
+      ],
       "description": "Number of query operations performed on the namespace",
       "enabled": true,
       "stability": "development",
@@ -170,7 +216,10 @@
       "unit": "{queries}"
     },
     "aerospike.namespace.scan.count": {
-      "attributes": ["scan_result", "scan_type"],
+      "attributes": [
+        "scan_result",
+        "scan_type"
+      ],
       "description": "Number of scan operations performed on the namespace",
       "enabled": true,
       "stability": "development",
@@ -183,7 +232,10 @@
       "unit": "{scans}"
     },
     "aerospike.namespace.transaction.count": {
-      "attributes": ["transaction_result", "transaction_type"],
+      "attributes": [
+        "transaction_result",
+        "transaction_type"
+      ],
       "description": "Number of transactions performed on the namespace",
       "enabled": true,
       "stability": "development",
@@ -196,7 +248,10 @@
       "unit": "{transactions}"
     },
     "aerospike.node.connection.count": {
-      "attributes": ["connection_op", "connection_type"],
+      "attributes": [
+        "connection_op",
+        "connection_type"
+      ],
       "description": "Number of connections opened and closed to the node",
       "enabled": true,
       "stability": "development",
@@ -209,7 +264,9 @@
       "unit": "{connections}"
     },
     "aerospike.node.connection.open": {
-      "attributes": ["connection_type"],
+      "attributes": [
+        "connection_type"
+      ],
       "description": "Current number of open connections to the node",
       "enabled": true,
       "stability": "development",
@@ -249,12 +306,18 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": ["antonblock"],
+      "active": [
+        "antonblock"
+      ],
       "seeking_new": true
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "alpha": ["metrics"]
+      "alpha": [
+        "metrics"
+      ]
     }
   },
   "type": "receiver"

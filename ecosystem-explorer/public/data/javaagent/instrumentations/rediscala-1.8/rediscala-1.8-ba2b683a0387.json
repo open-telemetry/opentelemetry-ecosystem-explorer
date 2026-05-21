@@ -16,7 +16,10 @@
   "scope": {
     "name": "io.opentelemetry.rediscala-1.8"
   },
-  "semantic_conventions": ["DATABASE_CLIENT_SPANS", "DATABASE_CLIENT_METRICS"],
+  "semantic_conventions": [
+    "DATABASE_CLIENT_SPANS",
+    "DATABASE_CLIENT_METRICS"
+  ],
   "source_path": "instrumentation/rediscala-1.8",
   "telemetry": [
     {

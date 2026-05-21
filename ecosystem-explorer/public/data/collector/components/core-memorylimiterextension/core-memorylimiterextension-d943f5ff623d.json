@@ -10,7 +10,9 @@
     "class": "extension",
     "distributions": [],
     "stability": {
-      "development": ["extension"]
+      "development": [
+        "extension"
+      ]
     }
   },
   "type": "extension"

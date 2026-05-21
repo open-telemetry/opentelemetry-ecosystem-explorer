@@ -9,14 +9,26 @@
   "status": {
     "class": "processor",
     "codeowners": {
-      "active": ["jmacd"],
-      "emeritus": ["jpkrohling"],
+      "active": [
+        "jmacd"
+      ],
+      "emeritus": [
+        "jpkrohling"
+      ],
       "seeking_new": true
     },
-    "distributions": ["contrib", "core", "k8s"],
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
     "stability": {
-      "alpha": ["logs"],
-      "beta": ["traces"]
+      "alpha": [
+        "logs"
+      ],
+      "beta": [
+        "traces"
+      ]
     }
   },
   "type": "processor"

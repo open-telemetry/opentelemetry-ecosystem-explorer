@@ -9,11 +9,21 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": ["boostchicken", "gouthamve", "MovieStoreGuy"]
+      "active": [
+        "boostchicken",
+        "gouthamve",
+        "MovieStoreGuy"
+      ]
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "alpha": ["logs", "metrics", "traces"]
+      "alpha": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
     }
   },
   "type": "receiver"

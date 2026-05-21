@@ -1,17 +1,25 @@
 {
   "description": "Couchbase instrumentation is owned by the Couchbase project for versions 3+. This instrumentation automatically configures the instrumentation provided by the Couchbase library.",
   "display_name": "Couchbase Client",
-  "features": ["AUTO_INSTRUMENTATION_SHIM"],
+  "features": [
+    "AUTO_INSTRUMENTATION_SHIM"
+  ],
   "has_javaagent": true,
-  "javaagent_target_versions": ["com.couchbase.client:java-client:[3.1.6,3.2.0)"],
+  "javaagent_target_versions": [
+    "com.couchbase.client:java-client:[3.1.6,3.2.0)"
+  ],
   "library_link": "https://github.com/couchbase/couchbase-java-client",
   "name": "couchbase-3.1.6",
   "scope": {
     "name": "io.opentelemetry.couchbase-3.1.6"
   },
-  "semantic_conventions": ["DATABASE_CLIENT_SPANS"],
+  "semantic_conventions": [
+    "DATABASE_CLIENT_SPANS"
+  ],
   "source_path": "instrumentation/couchbase/couchbase-3.1.6",
-  "tags": ["couchbase"],
+  "tags": [
+    "couchbase"
+  ],
   "telemetry": [
     {
       "spans": [

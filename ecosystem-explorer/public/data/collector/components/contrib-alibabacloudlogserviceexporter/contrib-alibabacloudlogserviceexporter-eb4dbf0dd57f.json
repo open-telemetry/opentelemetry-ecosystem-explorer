@@ -9,11 +9,21 @@
   "status": {
     "class": "exporter",
     "codeowners": {
-      "active": ["shabicheng", "kongluoxing", "qiansheng91"]
+      "active": [
+        "shabicheng",
+        "kongluoxing",
+        "qiansheng91"
+      ]
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "unmaintained": ["logs", "metrics", "traces"]
+      "unmaintained": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
     }
   },
   "type": "exporter"

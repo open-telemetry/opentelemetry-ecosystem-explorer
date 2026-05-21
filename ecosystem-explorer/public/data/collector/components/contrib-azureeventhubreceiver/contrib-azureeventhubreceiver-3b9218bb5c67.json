@@ -9,13 +9,25 @@
   "status": {
     "class": "receiver",
     "codeowners": {
-      "active": ["atoulme", "cparkins", "dyl10s"],
-      "emeritus": ["djaglowski"],
+      "active": [
+        "atoulme",
+        "cparkins",
+        "dyl10s"
+      ],
+      "emeritus": [
+        "djaglowski"
+      ],
       "seeking_new": true
     },
-    "distributions": ["contrib"],
+    "distributions": [
+      "contrib"
+    ],
     "stability": {
-      "beta": ["logs", "metrics", "traces"]
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
     }
   },
   "type": "receiver"

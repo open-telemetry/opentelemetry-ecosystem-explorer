@@ -1,7 +1,9 @@
 {
   "description": "This instrumentation does not emit telemetry on its own. Instead, it extracts the HTTP route and attaches it to HTTP server spans and HTTP server metrics.",
   "display_name": "ZIO HTTP",
-  "features": ["HTTP_ROUTE"],
+  "features": [
+    "HTTP_ROUTE"
+  ],
   "has_javaagent": true,
   "javaagent_target_versions": [
     "dev.zio:zio-http_2.12:[3.0.0,)",
@@ -15,5 +17,7 @@
     "name": "io.opentelemetry.zio-http-3.0"
   },
   "source_path": "instrumentation/zio/zio-http-3.0",
-  "tags": ["zio"]
+  "tags": [
+    "zio"
+  ]
 }

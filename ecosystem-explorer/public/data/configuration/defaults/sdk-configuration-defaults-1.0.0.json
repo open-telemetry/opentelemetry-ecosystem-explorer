@@ -10,7 +10,12 @@
     "resource": {
       "attributes_list": "${OTEL_RESOURCE_ATTRIBUTES}",
       "detection/development": {
-        "detectors": [{ "service": {} }, { "host": {} }, { "process": {} }, { "container": {} }]
+        "detectors": [
+          { "service": {} },
+          { "host": {} },
+          { "process": {} },
+          { "container": {} }
+        ]
       }
     },
     "propagator": {

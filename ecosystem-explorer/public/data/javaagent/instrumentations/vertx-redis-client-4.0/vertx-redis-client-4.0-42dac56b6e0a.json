@@ -1,0 +1,165 @@
+{
+  "configurations": [
+    {
+      "default": true,
+      "description": "Enables query sanitization for database queries.",
+      "name": "otel.instrumentation.common.db.query-sanitization.enabled",
+      "type": "boolean"
+    },
+    {
+      "default": "",
+      "description": "Used to specify a mapping from host names or IP addresses to peer services.",
+      "name": "otel.instrumentation.common.peer-service-mapping",
+      "type": "map"
+    }
+  ],
+  "description": "This instrumentation enables database client spans and database client metrics for Redis operations using the Vert.x Redis Client library.",
+  "display_name": "Vert.x Redis Client",
+  "has_javaagent": true,
+  "javaagent_target_versions": [
+    "io.vertx:vertx-redis-client:[4.0.0,)"
+  ],
+  "library_link": "https://vertx.io/docs/vertx-redis-client/java/",
+  "name": "vertx-redis-client-4.0",
+  "scope": {
+    "name": "io.opentelemetry.vertx-redis-client-4.0"
+  },
+  "semantic_conventions": [
+    "DATABASE_CLIENT_SPANS",
+    "DATABASE_CLIENT_METRICS"
+  ],
+  "source_path": "instrumentation/vertx/vertx-redis-client-4.0",
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "db.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "db.redis.database_index",
+              "type": "LONG"
+            },
+            {
+              "name": "db.statement",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.address",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.port",
+              "type": "LONG"
+            },
+            {
+              "name": "peer.service",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "span_kind": "CLIENT"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "db.namespace",
+              "type": "STRING"
+            },
+            {
+              "name": "db.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system.name",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.address",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.port",
+              "type": "LONG"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "data_type": "HISTOGRAM",
+          "description": "Duration of database client operations.",
+          "instrument": "histogram",
+          "name": "db.client.operation.duration",
+          "unit": "s"
+        }
+      ],
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "db.namespace",
+              "type": "STRING"
+            },
+            {
+              "name": "db.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.query.text",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system.name",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.address",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.port",
+              "type": "LONG"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            },
+            {
+              "name": "service.peer.name",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CLIENT"
+        }
+      ],
+      "when": "otel.semconv-stability.opt-in=database,service.peer"
+    }
+  ]
+}
