@@ -25,13 +25,13 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: read
+  contents: read # Checkout main to capture baseline screenshots
 
 jobs:
   baseline:
     name: Capture baseline screenshots
     permissions:
-      contents: write
+      contents: write # Push baseline screenshots to the otelbot/screenshots branch
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main

@@ -11,7 +11,7 @@ on:
     types: [closed]
 
 permissions:
-  contents: read
+  contents: read # Default minimum; job-level write scope is set on the cleanup job
 
 concurrency:
   group: screenshots-${{ github.event.pull_request.number }}
@@ -21,7 +21,7 @@ jobs:
   cleanup:
     name: Clean up PR screenshots
     permissions:
-      contents: write
+      contents: write # Delete a PR's screenshot subtree from the otelbot/screenshots branch
     # Disabled to avoid breaking images on older PRs. Flip to `true` to re-enable deletion.
     if: false
     runs-on: ubuntu-latest

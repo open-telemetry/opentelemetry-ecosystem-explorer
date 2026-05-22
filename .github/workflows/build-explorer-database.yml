@@ -23,14 +23,14 @@ on:
         default: "all"
 
 permissions:
-  contents: read
+  contents: read # Default minimum; the build-database job declares its own elevated scopes
 
 jobs:
   build-database:
     name: Build explorer database
     permissions:
-      contents: write
-      pull-requests: write
+      contents: write # Push generated database to the otelbot/automated-explorer-database-update branch
+      pull-requests: write # Create or update the automated database-update PR
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
