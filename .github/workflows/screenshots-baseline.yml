@@ -25,12 +25,13 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: read
+  contents: read # Checkout main to capture baseline screenshots
 
 jobs:
   baseline:
+    name: Capture baseline screenshots
     permissions:
-      contents: write
+      contents: write # Push baseline screenshots to the otelbot/screenshots branch
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main
@@ -71,11 +72,13 @@ jobs:
           cp ecosystem-explorer/screenshots/*.png /tmp/baseline/
 
       - name: Get otelbot token
-        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         id: otelbot-token
         with:
           app-id: ${{ vars.OTELBOT_APP_ID }}
           private-key: ${{ secrets.OTELBOT_PRIVATE_KEY }}
+          repositories: ${{ github.event.repository.name }}
+          permission-contents: write
 
       - name: Use CLA approved github bot
         run: .github/scripts/use-cla-approved-bot.sh

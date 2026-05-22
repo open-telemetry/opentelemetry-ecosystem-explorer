@@ -15,10 +15,11 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: read # Checkout fork PR code to capture screenshots; no write access on purpose (fork-safe)
 
 jobs:
   capture:
+    name: Capture PR screenshots
     if: contains(github.event.pull_request.labels.*.name, 'add-screenshots')
     runs-on: ubuntu-latest
     defaults:
