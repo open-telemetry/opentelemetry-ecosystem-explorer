@@ -9,6 +9,12 @@ on:
 permissions:
   contents: read # Default minimum; jobs declare their own elevated scopes below
 
+concurrency:
+  # Single in-flight run since all schedules target the shared
+  # otelbot/automated-inventory-update branch.
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
 jobs:
   synchronize-inventory:
     name: Synchronize registry inventory

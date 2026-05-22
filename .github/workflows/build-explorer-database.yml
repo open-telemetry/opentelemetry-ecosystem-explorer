@@ -25,6 +25,12 @@ on:
 permissions:
   contents: read # Default minimum; the build-database job declares its own elevated scopes
 
+concurrency:
+  # Serialize per ecosystem since each one targets its own
+  # otelbot/automated-explorer-database-update-<ecosystem> branch.
+  group: ${{ github.workflow }}-${{ inputs.ecosystem }}
+  cancel-in-progress: false
+
 jobs:
   build-database:
     name: Build explorer database
