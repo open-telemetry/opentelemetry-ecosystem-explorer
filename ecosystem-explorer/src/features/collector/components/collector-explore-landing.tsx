@@ -219,31 +219,6 @@ export function CollectorExploreLanding() {
   return (
     <section className="bg-background relative px-0 py-2">
       <div className="mx-auto max-w-6xl space-y-10">
-        <section className="border-border/60 bg-card/80 rounded-lg border p-8 md:p-10">
-          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-            <div className="max-w-3xl space-y-3">
-              <h2 className="text-foreground text-2xl font-bold md:text-3xl">
-                OpenTelemetry Collector
-              </h2>
-              <p className="text-muted-foreground text-base leading-relaxed md:text-lg">
-                A vendor-agnostic implementation for receiving, processing, and exporting telemetry
-                data.
-              </p>
-              {stats.latestVersion && (
-                <p className="text-muted-foreground text-sm font-medium">
-                  Latest Collector data: v{stats.latestVersion}
-                </p>
-              )}
-            </div>
-            <Link
-              to="/collector/components"
-              className="border-primary/40 bg-primary/10 text-foreground hover:bg-primary/20 focus-visible:ring-primary inline-flex items-center justify-center gap-2 rounded-md border px-4 py-2.5 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
-            >
-              Explore Components
-              <ArrowRight className="h-4 w-4" aria-hidden="true" />
-            </Link>
-          </div>
-        </section>
 
         <section aria-labelledby="collector-component-types" className="space-y-4">
           <div>
