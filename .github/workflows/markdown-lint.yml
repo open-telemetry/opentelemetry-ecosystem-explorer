@@ -15,7 +15,7 @@ permissions:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }} # Cancel in-progress runs on the same PR to avoid duplicate comments, but allow multiple runs on main for pushes and scheduled runs
 
 jobs:
   lint:
