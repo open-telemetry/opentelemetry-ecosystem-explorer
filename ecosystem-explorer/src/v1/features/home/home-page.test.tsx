@@ -57,37 +57,45 @@ describe("HomeV1 (composition)", () => {
     expect(secondary).toHaveAttribute("rel", "noopener noreferrer");
   });
 
-  it("renders the four placeholder sections in the locked order", () => {
+  it("renders only the recent-activity placeholder section", () => {
     const { container } = renderHome();
 
     const sections = Array.from(container.querySelectorAll("section[aria-label]")).map((el) =>
       el.getAttribute("aria-label")
     );
 
-    // CoverBlock itself renders a <section> (aria-labelledby, no aria-label),
-    // so it isn't picked up here — these are the four PR 2-6 placeholder slots.
-    expect(sections).toEqual([
-      "Ecosystem statistics",
-      "Featured ecosystems",
-      "Browse by signal",
-      "Recent activity",
-    ]);
+    // Shipped sections use aria-labelledby; only the recent-activity
+    // skeleton wrapper still uses aria-label.
+    expect(sections).toEqual(["Recent activity"]);
   });
 
-  it("renders exactly one skeleton element inside each of the four placeholder sections", () => {
+  it("renders exactly one skeleton element inside the recent-activity section", () => {
     const { container } = renderHome();
+    const section = container.querySelector('section[aria-label="Recent activity"]');
+    expect(section).not.toBeNull();
+    const skeletons = section!.querySelectorAll(".td-home__skeleton");
+    expect(skeletons).toHaveLength(1);
+  });
 
-    for (const label of [
-      "Ecosystem statistics",
-      "Featured ecosystems",
-      "Browse by signal",
-      "Recent activity",
-    ]) {
-      const section = container.querySelector(`section[aria-label="${label}"]`);
-      expect(section, `section[aria-label="${label}"] should exist`).not.toBeNull();
-      const skeletons = section!.querySelectorAll(".td-home__skeleton");
-      expect(skeletons, `section[aria-label="${label}"] skeleton count`).toHaveLength(1);
-    }
+  it("renders the StatsBand below the CoverBlock", () => {
+    const { container } = renderHome();
+    const band = container.querySelector(".td-stats-band");
+    expect(band).not.toBeNull();
+    expect(band).toHaveAttribute("aria-labelledby", "stats-band-title");
+  });
+
+  it("renders the EcosystemsGrid below the StatsBand", () => {
+    const { container } = renderHome();
+    const grid = container.querySelector(".td-ecosystems-grid");
+    expect(grid).not.toBeNull();
+    expect(grid).toHaveAttribute("aria-labelledby", "ecosystems-grid-title");
+  });
+
+  it("renders the SignalsRow below the EcosystemsGrid", () => {
+    const { container } = renderHome();
+    const row = container.querySelector(".td-signals-row");
+    expect(row).not.toBeNull();
+    expect(row).toHaveAttribute("aria-labelledby", "signals-row-title");
   });
 
   it("renders the GlobalSearch skeleton inside the CoverBlock with aria-hidden", () => {

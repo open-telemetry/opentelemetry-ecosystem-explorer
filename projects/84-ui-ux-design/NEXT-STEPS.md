@@ -4,7 +4,7 @@ issue: 84
 type: roadmap
 phase: meta
 status: planning
-last_updated: "2026-05-19"
+last_updated: "2026-05-21"
 ---
 
 ## Next steps
@@ -66,6 +66,15 @@ This is a _living_ document. Update it as decisions land and PRs ship. Cross-ref
   onto current `main` on 2026-05-19; each PR re-derives small reviewable slices off it rather than
   cherry-picking the bundled commit. PR 8 (cleanup) is deferred to end-of-redesign per the routing
   pivot — it bundles all phases' cleanups and is **not** Phase-1-scoped.
+- **2026-05-21 snapshot:** Phase 2 PR 1 (#517, CoverBlock + HomeV1 shell) and PR 3 (#524, StatsBand
+  with canonical home stats) are both merged on `main`. PR 4 (EcosystemsGrid) is rebased onto
+  current `main` on `feat/84-phase2-pr4-ecosystems-grid` — single commit, typecheck + 916 tests
+  green, ready to push. PR 2 (GlobalSearch) is being shipped out of numeric order — the home page's
+  GlobalSearch slot stays a skeleton until then.
+- **2026-05-21 snapshot:** Phase 2 PR 4 (#541, EcosystemsGrid) merged on `main`. PR 5 (SignalsRow)
+  rebased onto current `main` on `feat/84-phase2-pr5-signals-row` — single commit, typecheck + 928
+  tests green, ready to push. After PR 5 ships, only PR 2 (GlobalSearch) and PR 6
+  (RecentActivityRail) remain in Phase 2.
 
 ---
 
@@ -75,10 +84,14 @@ In order:
 
 - [x] PR 1 (#377), PR 2 (#453), PR 2b (#470), PR 3 (#482), PR 4 (#455), PR 5 (#483), PR 6 (#484), PR
       7 (#487) — all merged on `main`. Phase 1 complete; #370 closed.
-- [ ] **Open Phase 2 PR 1** — `feat(v1): CoverBlock + HomeV1 shell (Phase 2 - Home page PR 1)`. Adds
-      `<CoverBlock>` + a `<HomeV1 />` shell with placeholder sections for PRs 2-6 + the `/` route
-      swap in `V1App.tsx`. Branch off current `main`; re-derive from `feat/84-tmp-full-layout`
-      rather than cherry-pick.
+- [x] Phase 2 PR 1 (#517) — `feat(v1): CoverBlock + HomeV1 shell`. Merged.
+- [x] Phase 2 PR 3 (#524) — `feat(v1): StatsBand + canonical home stats`. Merged 2026-05-21.
+- [x] Phase 2 PR 4 (#541) — `feat(v1): EcosystemsGrid`. Merged 2026-05-21.
+- [ ] **Push Phase 2 PR 5** — `feat(v1): SignalsRow (Phase 2 - Home page PR 5)`. Branch
+      `feat/84-phase2-pr5-signals-row` rebased on current `main`; needs
+      `git push -u origin feat/84-phase2-pr5-signals-row` then a PR opened against `main`.
+- [ ] Phase 2 PR 2 (GlobalSearch) and PR 6 (RecentActivityRail) — still to be derived from
+      `feat/84-tmp-full-layout`.
 
 ---
 
@@ -291,5 +304,7 @@ Surface early so it's not blocking when PR 04b is ready.
 | 2026-05-19 | PR 1 of Phase 2: `V1App.tsx` route table swap from legacy `<HomePage />` to `<HomeV1 />` for path `/` ships in PR 1 — preview deploys show hero + 4 skeleton sections.                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Route swap is in the locked #371 PR 1 scope. Skeleton placeholders (Q1, Q2) were chosen specifically to make this acceptable in preview. Production stays on legacy `<HomePage />` because `V1_REDESIGN` is off on `main` branch deploys.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | 2026-05-19 | PR 1 of Phase 2: visual-regression baseline impact accepted — PR 1's `/` and `/_dev/components` diffs surface in the PR comment via the #487 workflow; baseline updates automatically on merge via `screenshots-baseline.yml`.                                                                                                                                                                                                                                                                                                                                                                                                        | No workflow modifications needed; the system from #487 is built for this exact case. Over-budget visual diffs are **informational, not CI-gating** — confirmed by Vitor 2026-05-19. Threshold tuning not required for PR 1.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | 2026-05-19 | PR 1 of Phase 2 also consolidates OTel purple as a primitive token: `--otel-purple-hsl: 230 38% 49%` added to `src/styles/tokens.css`; `cncf-callout.css` line 28 refactored from hardcoded `#4f62ad` to `hsl(var(--otel-purple-hsl))`; rebased `--stats-band-bg-hsl` references `var(--otel-purple-hsl)` rather than duplicating the raw value.                                                                                                                                                                                                                                                                                      | "Concise and in-sync" sweep. CNCF callout was the only place purple was used and it was a hardcoded hex; new v1 tokens reuse the primitive. CoverBlock self-scopes dark via `--cover-block-*` tokens (not `--background-hsl`); the light-theme `.v1-app` override block explicitly redeclares all `--cover-block-*` and `--stats-band-*` tokens with the same values as the dark block — symmetric contract, no implicit fallthrough.                                                                                                                                                                                                                                                                                                                                                                |
+| 2026-05-21 | Phase 2 PR 3 (#524, StatsBand) merged on `main`. PR 4 (EcosystemsGrid) rebased onto current `main` via `git rebase --onto main 7da2b4e feat/84-phase2-pr4-ecosystems-grid` — drops the stale local copy of PR 3 (`7da2b4e`) and replays only the EcosystemsGrid commit. Clean rebase, no conflicts. Typecheck clean; all 916 vitest tests pass.                                                                                                                                                                                                                                                                                       | Stacked branch `feat/84-phase2-pr5-signals-row` still points at the pre-rebase PR 4 SHA (`50c70a2`) and will need its own `git rebase --onto main 50c70a2 feat/84-phase2-pr5-signals-row` once PR 4 merges. Out-of-numeric-order shipping continues: PR 2 (GlobalSearch) and PR 6 (RecentActivityRail) are still pending re-derivation from `feat/84-tmp-full-layout`.                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| 2026-05-21 | Phase 2 PR 4 (#541, EcosystemsGrid) merged on `main`. PR 5 (SignalsRow) rebased onto current `main` via `git rebase --onto main 50c70a2 feat/84-phase2-pr5-signals-row` — drops the stale stacked copies of PRs 3 and 4 and replays only the SignalsRow commit. Two comment-only conflicts in `home-page.tsx` and `home.css` resolved by adopting PR 4's simplify-trimmed comment style. Typecheck clean; all 928 vitest tests pass.                                                                                                                                                                                                  | After PR 5 ships, only PR 2 (GlobalSearch) and PR 6 (RecentActivityRail) remain in Phase 2; both still need re-derivation from `feat/84-tmp-full-layout`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 
 Add a row whenever a decision lands. Keeps the doc honest.

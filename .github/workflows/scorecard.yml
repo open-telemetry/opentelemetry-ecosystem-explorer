@@ -12,6 +12,7 @@ permissions: read-all
 
 jobs:
   analysis:
+    name: Scorecard analysis
     if:
       github.event_name != 'schedule' || github.repository ==
       'open-telemetry/opentelemetry-ecosystem-explorer'
