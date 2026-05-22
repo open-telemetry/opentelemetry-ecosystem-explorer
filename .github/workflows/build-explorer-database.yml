@@ -83,13 +83,13 @@ jobs:
         if: inputs.build_mode == 'incremental'
         env:
           ECOSYSTEM: ${{ inputs.ecosystem }}
-        run: uv run explorer-db-builder --ecosystem $ECOSYSTEM
+        run: uv run explorer-db-builder --ecosystem "$ECOSYSTEM"
 
       - name: Build explorer database (clean)
         if: inputs.build_mode == 'clean'
         env:
           ECOSYSTEM: ${{ inputs.ecosystem }}
-        run: uv run explorer-db-builder --ecosystem $ECOSYSTEM --clean
+        run: uv run explorer-db-builder --ecosystem "$ECOSYSTEM" --clean
 
       - name: Set up Bun
         if: inputs.ecosystem == 'all' || inputs.ecosystem == 'javaagent'
