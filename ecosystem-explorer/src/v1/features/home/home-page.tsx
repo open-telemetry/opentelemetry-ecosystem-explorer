@@ -19,11 +19,12 @@ import { Link } from "react-router-dom";
 import { Compass } from "@/components/icons/compass";
 import { CoverBlock } from "@/v1/components/home/cover-block";
 import { EcosystemsGrid } from "@/v1/components/home/ecosystems-grid";
+import { SignalsRow } from "@/v1/components/home/signals-row";
 import { StatsBand } from "@/v1/components/home/stats-band";
 
 /**
  * Home page (v1) — composes the v1 chrome with home-specific sections.
- * Sections that haven't shipped yet render as skeleton-box placeholders.
+ * Only the recent-activity slot is still a skeleton-box placeholder.
  * The CncfCallout and FooterV1 are mounted by `<V1App />`, not here.
  */
 export function HomeV1() {
@@ -60,9 +61,7 @@ export function HomeV1() {
 
       <EcosystemsGrid />
 
-      <section aria-label="Browse by signal">
-        <div className="td-home__skeleton td-home__skeleton--signals" aria-hidden="true" />
-      </section>
+      <SignalsRow />
 
       <section aria-label="Recent activity">
         <div className="td-home__skeleton td-home__skeleton--recent-activity" aria-hidden="true" />

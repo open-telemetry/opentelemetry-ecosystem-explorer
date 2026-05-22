@@ -15,16 +15,17 @@
  */
 
 /*
- * Home (v1) — wrapper + skeleton-box placeholders for sections that haven't
- * shipped yet. Rules are intentionally low-fidelity: subtle neutral fill
- * that adapts to either theme, with per-slot heights approximating the real
- * component footprint so the page reads as "this will be filled in" instead
- * of "this is broken". As each real component lands, drop its `--<slot>`
- * modifier rule here; the base `.td-home__skeleton` rule stays as a
- * reusable utility.
+ * Home (v1) — wrapper + skeleton-box placeholders for the recent-activity
+ * slot and the GlobalSearch slot inside CoverBlock. Rules are intentionally
+ * low-fidelity: subtle neutral fill that adapts to either theme, with
+ * per-slot heights approximating the real component footprint so the page
+ * reads as "this will be filled in" instead of "this is broken". As each
+ * real component lands, drop its `--<slot>` modifier rule here; the base
+ * `.td-home__skeleton` rule stays as a reusable utility.
  *
  * Each shipped section's surface rules live in its own partial (e.g.
- * `cover-block.css`, `stats-band.css`, `ecosystems-grid.css`).
+ * `cover-block.css`, `stats-band.css`, `ecosystems-grid.css`,
+ * `signals-row.css`).
  */
 
 .td-home {
@@ -59,10 +60,6 @@
   height: 3rem;
   margin: 2rem auto 0;
   background-color: hsl(var(--cover-block-fg-hsl) / 0.1);
-}
-
-.td-home__skeleton--signals {
-  height: 16rem;
 }
 
 .td-home__skeleton--recent-activity {

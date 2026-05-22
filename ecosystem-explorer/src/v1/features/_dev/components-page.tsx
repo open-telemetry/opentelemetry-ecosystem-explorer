@@ -31,6 +31,7 @@ import { StabilityBadge } from "@/components/ui/stability-badge";
 import { type Stability, StatusPill } from "@/components/ui/status-pill";
 import { CoverBlock } from "@/v1/components/home/cover-block";
 import { EcosystemsGrid } from "@/v1/components/home/ecosystems-grid";
+import { SignalsRow } from "@/v1/components/home/signals-row";
 import { StatsBand } from "@/v1/components/home/stats-band";
 
 const STABILITIES: Stability[] = [
@@ -180,6 +181,10 @@ export function DevComponentsPage() {
         bare
       >
         <EcosystemsGrid headingId="ecosystems-grid-showcase-title" />
+      </Section>
+
+      <Section id="signals-row" title="SignalsRow (Traces / Metrics / Logs / Baggage)" bare>
+        <SignalsRow headingId="signals-row-showcase-title" />
       </Section>
 
       <Section
