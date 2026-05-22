@@ -18,10 +18,8 @@ jobs:
       'open-telemetry/opentelemetry-ecosystem-explorer'
     runs-on: ubuntu-latest
     permissions:
-      # Needed for Code scanning upload
-      security-events: write
-      # Needed for GitHub OIDC token if publish_results is true
-      id-token: write
+      security-events: write # Needed for Code scanning upload
+      id-token: write # Needed for GitHub OIDC token if publish_results is true
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
