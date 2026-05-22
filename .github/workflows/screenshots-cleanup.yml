@@ -36,13 +36,13 @@ jobs:
           permission-contents: write
 
       - name: Checkout repository
-        # Persisted credentials are required so the later `git push origin
-        # otelbot/screenshots` step can authenticate.
-        # zizmor: ignore[artipacked]
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           token: ${{ steps.otelbot-token.outputs.token }}
           fetch-depth: 0
+          # Persisted credentials are required so the later `git push origin
+          # otelbot/screenshots` step can authenticate.
+          persist-credentials: true
 
       - name: Use CLA approved github bot
         run: .github/scripts/use-cla-approved-bot.sh
