@@ -19,6 +19,7 @@ permissions:
 
 jobs:
   capture:
+    name: Capture PR screenshots
     if: contains(github.event.pull_request.labels.*.name, 'add-screenshots')
     runs-on: ubuntu-latest
     defaults:

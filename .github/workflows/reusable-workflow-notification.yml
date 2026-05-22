@@ -19,6 +19,7 @@ permissions:
 
 jobs:
   workflow-notification:
+    name: Open or update failure-notification issue
     permissions:
       contents: read
       issues: write

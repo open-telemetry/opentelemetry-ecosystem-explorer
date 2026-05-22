@@ -19,6 +19,7 @@ concurrency:
 
 jobs:
   cleanup:
+    name: Clean up PR screenshots
     permissions:
       contents: write
     # Disabled to avoid breaking images on older PRs. Flip to `true` to re-enable deletion.

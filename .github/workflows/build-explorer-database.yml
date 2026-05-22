@@ -27,6 +27,7 @@ permissions:
 
 jobs:
   build-database:
+    name: Build explorer database
     permissions:
       contents: write
       pull-requests: write

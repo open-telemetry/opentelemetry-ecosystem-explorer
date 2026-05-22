@@ -20,6 +20,7 @@ permissions:
 
 jobs:
   commit:
+    name: Commit screenshots and comment on PR
     permissions:
       actions: read
       contents: write

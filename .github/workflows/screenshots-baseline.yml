@@ -29,6 +29,7 @@ permissions:
 
 jobs:
   baseline:
+    name: Capture baseline screenshots
     permissions:
       contents: write
     runs-on: ubuntu-latest
