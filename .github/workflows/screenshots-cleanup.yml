@@ -6,6 +6,12 @@ name: PR Screenshots - Cleanup
 # No PR code is checked out here — only the upstream otelbot/screenshots branch.
 
 on:
+  # Needs pull_request_target for contents: write to push to the
+  # otelbot/screenshots branch on fork PR close events. Safe because
+  # no PR code is checked out — only the trusted base branch and the
+  # internal otelbot/screenshots branch ever execute here.
+  # https://docs.zizmor.sh/audits/#dangerous-triggers
+  # zizmor: ignore[dangerous-triggers]
   pull_request_target:
     branches: [main]
     types: [closed]
