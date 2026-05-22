@@ -32,8 +32,10 @@ jobs:
 
       - name: Detect repository type (if on a fork we use different git config)
         id: repo_check
+        env:
+          REPO: ${{ github.repository }}
         run: |
-          if [ "${{ github.repository }}" == "open-telemetry/opentelemetry-ecosystem-explorer" ]; then
+          if [ "$REPO" == "open-telemetry/opentelemetry-ecosystem-explorer" ]; then
             echo "is_primary=true" >> $GITHUB_OUTPUT
           else
             echo "is_primary=false" >> $GITHUB_OUTPUT
@@ -171,6 +173,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SCHEMA_DIFF: ${{ steps.detect_schema_drift.outputs.schema_diff }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
         run: |
           ISSUE_TITLE="[schema-drift] collector metadata-schema.yaml changed"
           EXISTING=$(gh issue list \
@@ -197,7 +201,7 @@ jobs:
           uv run collector-watcher --backfill
           \`\`\`
 
-          See [workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})."
+          See [workflow run](https://github.com/${REPO}/actions/runs/${RUN_ID})."
 
           if [ -n "$EXISTING" ]; then
             gh issue comment "$EXISTING" --body "$ISSUE_BODY"
