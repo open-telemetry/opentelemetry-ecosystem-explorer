@@ -11,7 +11,7 @@ on:
       - ".github/workflows/markdown-lint.yml"
 
 permissions:
-  contents: read
+  contents: read # Checkout the repository to lint Markdown files
 
 jobs:
   lint:

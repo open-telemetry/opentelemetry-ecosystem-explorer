@@ -8,7 +8,7 @@ on:
     types: [closed]
 
 permissions:
-  contents: read
+  contents: read # Default minimum; PR comment write scope is supplied via the otelbot App token
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}

@@ -16,15 +16,15 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: read # Default minimum; the commit job declares its own elevated scopes
 
 jobs:
   commit:
     permissions:
-      actions: read
-      contents: write
-      issues: write
-      pull-requests: write
+      actions: read # Download artifacts uploaded by the triggering workflow run
+      contents: write # Push screenshots to the otelbot/screenshots branch
+      issues: write # gh api /repos/.../issues/comments (PR comments use the issues API)
+      pull-requests: write # Post or update the screenshot diff comment on the PR
     if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:

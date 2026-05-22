@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: read # Default minimum; jobs declare their own elevated scopes below
 
 jobs:
   synchronize-inventory:
@@ -15,9 +15,9 @@ jobs:
       github.event_name != 'schedule' || github.repository ==
       'open-telemetry/opentelemetry-ecosystem-explorer'
     permissions:
-      contents: write
-      pull-requests: write
-      issues: write
+      contents: write # Push registry updates to the otelbot/automated-inventory-update branch
+      pull-requests: write # Create or update the automated inventory-update PR
+      issues: write # Open or comment on the schema-drift tracking issue
     runs-on: ubuntu-latest
     outputs:
       collector_result: ${{ steps.collector_watcher.outcome }}
@@ -263,8 +263,8 @@ jobs:
 
   notify-collector:
     permissions:
-      contents: read
-      issues: write
+      contents: read # Checkout reusable workflow source
+      issues: write # Open or comment on the collector-watcher failure-tracking issue
     needs: [synchronize-inventory]
     if: ${{ !cancelled() && needs.synchronize-inventory.result != 'skipped' }}
     uses: ./.github/workflows/reusable-workflow-notification.yml
@@ -274,8 +274,8 @@ jobs:
 
   notify-java:
     permissions:
-      contents: read
-      issues: write
+      contents: read # Checkout reusable workflow source
+      issues: write # Open or comment on the java-instrumentation-watcher failure-tracking issue
     needs: [synchronize-inventory]
     if: ${{ !cancelled() && needs.synchronize-inventory.result != 'skipped' }}
     uses: ./.github/workflows/reusable-workflow-notification.yml
@@ -285,8 +285,8 @@ jobs:
 
   notify-configuration:
     permissions:
-      contents: read
-      issues: write
+      contents: read # Checkout reusable workflow source
+      issues: write # Open or comment on the configuration-watcher failure-tracking issue
     needs: [synchronize-inventory]
     if: ${{ !cancelled() && needs.synchronize-inventory.result != 'skipped' }}
     uses: ./.github/workflows/reusable-workflow-notification.yml
@@ -296,8 +296,8 @@ jobs:
 
   notify-dotnet:
     permissions:
-      contents: read
-      issues: write
+      contents: read # Checkout reusable workflow source
+      issues: write # Open or comment on the dotnet-instrumentation-watcher failure-tracking issue
     needs: [synchronize-inventory]
     if: ${{ !cancelled() && needs.synchronize-inventory.result != 'skipped' }}
     uses: ./.github/workflows/reusable-workflow-notification.yml
