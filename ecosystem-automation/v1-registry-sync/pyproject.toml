@@ -10,6 +10,9 @@ dependencies = [
 [project.scripts]
 v1-registry-sync = "v1_registry_sync.main:main"
 
+[tool.uv.sources]
+collector-watcher = { workspace = true }
+
 [project.optional-dependencies]
 dev = [
     "pytest>=8.0.0",

@@ -1,13 +1,13 @@
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.1
+    rev: 18ba2d02dcafd1cc608bd83eff6c17fb0108ca71 # v0.9.1
     hooks:
       - id: ruff
         args: [--fix]
       - id: ruff-format
 
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.16.0
+    rev: 1d349044b9624661f5a0a7e13e0ca9801752022a # v0.16.0
     hooks:
       - id: markdownlint-cli2
         args: ["--fix"]

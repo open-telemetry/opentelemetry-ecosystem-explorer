@@ -40,7 +40,7 @@ line-length = 120
 target-version = "py311"
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "N", "W"]
+select = ["E", "F", "I", "N", "W", "S"]
 
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"
