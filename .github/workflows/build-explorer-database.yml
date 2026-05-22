@@ -25,6 +25,12 @@ on:
 permissions:
   contents: read # Default minimum; the build-database job declares its own elevated scopes
 
+concurrency:
+  # Serialize per ecosystem since each one targets its own
+  # otelbot/automated-explorer-database-update-<ecosystem> branch.
+  group: ${{ github.workflow }}-${{ inputs.ecosystem }}
+  cancel-in-progress: false
+
 jobs:
   build-database:
     name: Build explorer database
@@ -37,6 +43,9 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          # Persisted credentials are required so the later `git push -f origin
+          # HEAD:${BRANCH}` step can authenticate.
+          persist-credentials: true
 
       - name: Detect repository type (if on a fork we use different git config)
         id: repo_check
