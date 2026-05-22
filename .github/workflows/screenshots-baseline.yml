@@ -35,6 +35,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main
+        # Persisted credentials are required so the later `git push` to the
+        # otelbot/screenshots branch can authenticate.
+        # zizmor: ignore[artipacked]
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0

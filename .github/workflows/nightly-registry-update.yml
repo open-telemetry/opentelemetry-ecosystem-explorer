@@ -27,6 +27,9 @@ jobs:
       configuration_result: ${{ steps.configuration_watcher.outcome }}
     steps:
       - name: Checkout code
+        # Persisted credentials are required so the later `git push -f origin
+        # HEAD:${BRANCH}` step can authenticate.
+        # zizmor: ignore[artipacked]
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
