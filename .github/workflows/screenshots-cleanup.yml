@@ -6,12 +6,18 @@ name: PR Screenshots - Cleanup
 # No PR code is checked out here — only the upstream otelbot/screenshots branch.
 
 on:
+  # Needs pull_request_target for contents: write to push to the
+  # otelbot/screenshots branch on fork PR close events. Safe because
+  # no PR code is checked out — only the trusted base branch and the
+  # internal otelbot/screenshots branch ever execute here.
+  # https://docs.zizmor.sh/audits/#dangerous-triggers
+  # zizmor: ignore[dangerous-triggers]
   pull_request_target:
     branches: [main]
     types: [closed]
 
 permissions:
-  contents: write
+  contents: read # Default minimum; job-level write scope is set on the cleanup job
 
 concurrency:
   group: screenshots-${{ github.event.pull_request.number }}
@@ -19,22 +25,30 @@ concurrency:
 
 jobs:
   cleanup:
+    name: Clean up PR screenshots
+    permissions:
+      contents: write # Delete a PR's screenshot subtree from the otelbot/screenshots branch
     # Disabled to avoid breaking images on older PRs. Flip to `true` to re-enable deletion.
     if: false
     runs-on: ubuntu-latest
     steps:
       - name: Get otelbot token
-        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         id: otelbot-token
         with:
           app-id: ${{ vars.OTELBOT_APP_ID }}
           private-key: ${{ secrets.OTELBOT_PRIVATE_KEY }}
+          repositories: ${{ github.event.repository.name }}
+          permission-contents: write
 
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           token: ${{ steps.otelbot-token.outputs.token }}
           fetch-depth: 0
+          # Persisted credentials are required so the later `git push origin
+          # otelbot/screenshots` step can authenticate.
+          persist-credentials: true
 
       - name: Use CLA approved github bot
         run: .github/scripts/use-cla-approved-bot.sh

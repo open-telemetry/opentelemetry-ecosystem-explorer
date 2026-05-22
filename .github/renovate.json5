@@ -12,6 +12,12 @@
   },
 
   packageRules: [
+    // Pre-commit hooks (digest-pin to commit SHA for supply chain hardening)
+    {
+      matchManagers: ["pre-commit"],
+      pinDigests: true,
+    },
+
     // Dev dependencies (patch/minor)
     {
       matchDepTypes: ["devDependencies"],

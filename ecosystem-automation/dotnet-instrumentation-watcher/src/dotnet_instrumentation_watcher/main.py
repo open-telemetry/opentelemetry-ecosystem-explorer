@@ -67,10 +67,10 @@ def main():
         logger.info("Sync Summary")
         logger.info("=" * 60)
         if summary["new_release"]:
-            logger.info(f"[*] New release processed: {summary['new_release']}")
+            logger.info(f"✓ New release processed: {summary['new_release']}")
         else:
-            logger.info("[*] No new releases")
-        logger.info(f"[*] Snapshot updated: {summary['snapshot_updated']}")
+            logger.info("✓ No new releases")
+        logger.info(f"✓ Snapshot updated: {summary['snapshot_updated']}")
         logger.info("")
 
     except Exception as e:
