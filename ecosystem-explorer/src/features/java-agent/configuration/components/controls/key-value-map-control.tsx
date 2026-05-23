@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Plus, X } from "lucide-react";
 import type { KeyValueMapNode } from "@/types/configuration";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
@@ -37,11 +37,27 @@ function fromEntries(entries: Entry[]): Record<string, string> {
   return Object.fromEntries(entries.map(({ key, value }) => [key, value]));
 }
 
+function getDuplicateKeys(entries: Entry[]): Set<string> {
+  const seen = new Set<string>();
+  const duplicates = new Set<string>();
+  for (const entry of entries) {
+    if (entry.key === "") continue;
+    if (seen.has(entry.key)) {
+      duplicates.add(entry.key);
+    } else {
+      seen.add(entry.key);
+    }
+  }
+  return duplicates;
+}
+
 const INPUT_CLASS =
   "rounded-lg border border-border/60 bg-background/80 px-3 py-2 text-sm backdrop-blur-sm transition-all duration-200 placeholder:text-muted-foreground/50 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20";
 
+const INPUT_ERROR_CLASS =
+  "rounded-lg border border-red-500/60 bg-background/80 px-3 py-2 text-sm backdrop-blur-sm transition-all duration-200 placeholder:text-muted-foreground/50 focus:border-red-500/80 focus:outline-none focus:ring-2 focus:ring-red-500/20";
+
 export function KeyValueMapControl({ node, path, value, onChange }: KeyValueMapControlProps) {
-  const entries: Entry[] = value ? toEntries(value) : [];
   const isNull = node.nullable === true && value === null;
   const { state } = useConfigurationBuilder();
   const error = state.validationErrors[path] ?? null;
@@ -49,16 +65,35 @@ export function KeyValueMapControl({ node, path, value, onChange }: KeyValueMapC
   const addButtonRef = useRef<HTMLButtonElement>(null);
   const statusRef = useRef<HTMLSpanElement>(null);
 
+  // Track entries in local state so the UI can display duplicate rows before
+  // fromEntries silently drops them. lastSerializedEmit lets us distinguish
+  // our own onChange calls from external resets (e.g. Reset or Import YAML).
+  const [localEntries, setLocalEntries] = useState<Entry[]>(() => (value ? toEntries(value) : []));
+  const lastSerializedEmit = useRef<string>(JSON.stringify(value ?? {}));
+
+  useEffect(() => {
+    const serialized = JSON.stringify(value ?? {});
+    if (serialized !== lastSerializedEmit.current) {
+      lastSerializedEmit.current = serialized;
+      setLocalEntries(value ? toEntries(value) : []);
+    }
+  }, [value]);
+
+  const duplicateKeys = getDuplicateKeys(localEntries);
+
   const announce = useCallback((message: string) => {
     if (statusRef.current) statusRef.current.textContent = message;
   }, []);
 
   const emit = (next: Entry[]) => {
-    onChange(path, fromEntries(next));
+    const obj = fromEntries(next);
+    lastSerializedEmit.current = JSON.stringify(obj);
+    setLocalEntries(next);
+    onChange(path, obj);
   };
 
   const handleAdd = () => {
-    emit([...entries, { key: "", value: "" }]);
+    emit([...localEntries, { key: "", value: "" }]);
     requestAnimationFrame(() => {
       const items = listRef.current?.querySelectorAll("li");
       const lastItem = items?.item(items.length - 1);
@@ -68,7 +103,7 @@ export function KeyValueMapControl({ node, path, value, onChange }: KeyValueMapC
   };
 
   const handleRemove = (index: number) => {
-    emit(entries.filter((_, i) => i !== index));
+    emit(localEntries.filter((_, i) => i !== index));
     requestAnimationFrame(() => {
       const items = listRef.current?.querySelectorAll("li");
       if (items && items.length > 0) {
@@ -109,49 +144,66 @@ export function KeyValueMapControl({ node, path, value, onChange }: KeyValueMapC
         </FieldSection.Header>
         <FieldSection.Body>
           <span ref={statusRef} className="sr-only" aria-live="polite" />
-          {entries.length === 0 ? (
+          {localEntries.length === 0 ? (
             <FieldSection.Empty>No entries yet</FieldSection.Empty>
           ) : (
             <ul ref={listRef} className="space-y-2" aria-label={`${node.label} entries`}>
-              {entries.map((entry, index) => (
-                <li key={index} className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    aria-label={`Key ${index + 1}`}
-                    placeholder="key"
-                    value={entry.key}
-                    onChange={(e) => {
-                      const next = [...entries];
-                      next[index] = { ...next[index], key: e.target.value };
-                      emit(next);
-                    }}
-                    className={`w-2/5 ${INPUT_CLASS}`}
-                  />
-                  <span className="text-muted-foreground" aria-hidden="true">
-                    =
-                  </span>
-                  <input
-                    type="text"
-                    aria-label={`Value ${index + 1}`}
-                    placeholder="value"
-                    value={entry.value}
-                    onChange={(e) => {
-                      const next = [...entries];
-                      next[index] = { ...next[index], value: e.target.value };
-                      emit(next);
-                    }}
-                    className={`min-w-0 flex-1 ${INPUT_CLASS}`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleRemove(index)}
-                    aria-label={`Remove entry ${index + 1}`}
-                    className="border-border/60 bg-background/80 text-muted-foreground shrink-0 rounded-lg border p-2 transition-all hover:border-red-500/40 hover:text-red-400"
-                  >
-                    <X className="h-4 w-4" aria-hidden="true" />
-                  </button>
-                </li>
-              ))}
+              {localEntries.map((entry, index) => {
+                const isDuplicate = duplicateKeys.has(entry.key);
+                return (
+                  <li key={index} className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        aria-label={`Key ${index + 1}`}
+                        aria-invalid={isDuplicate}
+                        aria-describedby={isDuplicate ? `dup-key-${path}-${index}` : undefined}
+                        placeholder="key"
+                        value={entry.key}
+                        onChange={(e) => {
+                          const next = [...localEntries];
+                          next[index] = { ...next[index], key: e.target.value };
+                          emit(next);
+                        }}
+                        className={`w-2/5 ${isDuplicate ? INPUT_ERROR_CLASS : INPUT_CLASS}`}
+                      />
+                      <span className="text-muted-foreground" aria-hidden="true">
+                        =
+                      </span>
+                      <input
+                        type="text"
+                        aria-label={`Value ${index + 1}`}
+                        placeholder="value"
+                        value={entry.value}
+                        onChange={(e) => {
+                          const next = [...localEntries];
+                          next[index] = { ...next[index], value: e.target.value };
+                          emit(next);
+                        }}
+                        className={`min-w-0 flex-1 ${INPUT_CLASS}`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemove(index)}
+                        aria-label={`Remove entry ${index + 1}`}
+                        className="border-border/60 bg-background/80 text-muted-foreground shrink-0 rounded-lg border p-2 transition-all hover:border-red-500/40 hover:text-red-400"
+                      >
+                        <X className="h-4 w-4" aria-hidden="true" />
+                      </button>
+                    </div>
+                    {isDuplicate && (
+                      <p
+                        id={`dup-key-${path}-${index}`}
+                        role="alert"
+                        className="pl-1 text-xs text-red-400"
+                      >
+                        Duplicate key. Only the last entry with this key will appear in the
+                        generated YAML.
+                      </p>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           )}
         </FieldSection.Body>

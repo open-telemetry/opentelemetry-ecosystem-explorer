@@ -139,4 +139,68 @@ describe("KeyValueMapControl", () => {
     render(<KeyValueMapControl node={node} path={node.path} value={{}} onChange={vi.fn()} />);
     expect(screen.getByRole("alert")).toHaveTextContent("Required");
   });
+
+  it("shows a duplicate key warning when two entries share the same key", () => {
+    const onChange = vi.fn();
+    render(
+      <KeyValueMapControl node={node} path={node.path} value={{ host: "a" }} onChange={onChange} />
+    );
+
+    // Add a second entry
+    fireEvent.click(screen.getByRole("button", { name: "Add entry to Resource Attributes" }));
+
+    // Type the same key into the second entry's key input
+    const keyInputs = screen.getAllByPlaceholderText("key");
+    fireEvent.change(keyInputs[1], { target: { value: "host" } });
+
+    const warnings = screen.getAllByRole("alert");
+    expect(warnings.length).toBeGreaterThanOrEqual(1);
+    expect(warnings[0]).toHaveTextContent("Duplicate key");
+  });
+
+  it("marks duplicate key inputs as aria-invalid", () => {
+    const onChange = vi.fn();
+    render(
+      <KeyValueMapControl node={node} path={node.path} value={{ host: "a" }} onChange={onChange} />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Add entry to Resource Attributes" }));
+    const keyInputs = screen.getAllByPlaceholderText("key");
+    fireEvent.change(keyInputs[1], { target: { value: "host" } });
+
+    const invalidInputs = screen
+      .getAllByRole("textbox")
+      .filter((el) => el.getAttribute("aria-invalid") === "true");
+    expect(invalidInputs.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("clears the duplicate warning when the conflicting key is renamed", () => {
+    const onChange = vi.fn();
+    render(
+      <KeyValueMapControl node={node} path={node.path} value={{ host: "a" }} onChange={onChange} />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Add entry to Resource Attributes" }));
+    const keyInputs = screen.getAllByPlaceholderText("key");
+    fireEvent.change(keyInputs[1], { target: { value: "host" } });
+    expect(screen.getAllByRole("alert").length).toBeGreaterThanOrEqual(1);
+
+    // Rename the duplicate to a unique key
+    fireEvent.change(keyInputs[1], { target: { value: "port" } });
+    const alerts = screen.queryAllByRole("alert");
+    const dupWarnings = alerts.filter((el) => el.textContent?.includes("Duplicate key"));
+    expect(dupWarnings).toHaveLength(0);
+  });
+
+  it("does not show a warning for empty keys", () => {
+    render(<KeyValueMapControl node={node} path={node.path} value={{}} onChange={vi.fn()} />);
+
+    // Add two entries with empty keys
+    fireEvent.click(screen.getByRole("button", { name: "Add entry to Resource Attributes" }));
+    fireEvent.click(screen.getByRole("button", { name: "Add entry to Resource Attributes" }));
+
+    const alerts = screen.queryAllByRole("alert");
+    const dupWarnings = alerts.filter((el) => el.textContent?.includes("Duplicate key"));
+    expect(dupWarnings).toHaveLength(0);
+  });
 });
