@@ -64,4 +64,27 @@ describe("ConfigurationBuilderPage card click behavior", () => {
     await user.type(target, "my-service");
     expect(target).toHaveValue("my-service");
   });
+
+  it("interacting with a section card highlights the corresponding YAML section in the preview", async () => {
+    renderPage();
+    const user = userEvent.setup();
+
+    // Wait for the page to settle. Resource is auto-enabled by the starter
+    await screen.findByRole("switch", { name: /Enable Resource/i }, { timeout: 10_000 });
+
+    const resourceSection = document.querySelector<HTMLElement>('[data-section-key="resource"]');
+    expect(resourceSection).not.toBeNull();
+
+    // Interact with it (e.g. click the card itself)
+    await user.click(resourceSection!);
+
+    // Wait for the YAML preview to re-render with the active class
+    await waitFor(() => {
+      const resourceYamlSection = document.querySelector<HTMLElement>(
+        '[data-yaml-section="resource"]'
+      );
+      expect(resourceYamlSection).not.toBeNull();
+      expect(resourceYamlSection?.className).toContain("bg-primary/5");
+    });
+  });
 });

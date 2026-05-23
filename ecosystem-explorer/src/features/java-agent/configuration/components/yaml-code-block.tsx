@@ -56,14 +56,7 @@ export function YamlCodeBlock({
     }));
   }, [finalStructured.sections]);
 
-  const isSectionActive = (secKey: string) => {
-    if (activePreviewKey === secKey) return true;
-    if (secKey === "instrumentation/development") {
-      return activePreviewKey === "general" || activePreviewKey === "instrumentations";
-    }
-    return false;
-  };
-
+  const isSectionActive = (secKey: string) => activePreviewKey === secKey;
   const renderLines = (lines: Token[][]) => {
     return lines.map((tokens, i) => (
       <Fragment key={i}>
@@ -84,33 +77,37 @@ export function YamlCodeBlock({
   return (
     <pre className={className}>
       {headerLines.length > 0 && (
-        <div className="opacity-80">
+        <span className="block">
           {renderLines(headerLines)}
           {"\n"}
-        </div>
+        </span>
       )}
 
       {fileFormatLines.length > 0 && (
-        <div>
+        <span className="block">
           {renderLines(fileFormatLines)}
           {"\n"}
-        </div>
+        </span>
       )}
 
       {sectionsWithTokens.map((sec) => {
+        if (sec.key === "legacy") {
+          return <Fragment key={sec.key}>{renderLines(sec.lines)}</Fragment>;
+        }
+
         const isActive = isSectionActive(sec.key);
         return (
-          <div
+          <span
             key={sec.key}
-            data-section-key={sec.key}
-            className={`my-1 rounded-sm border-l-2 py-1 pl-3 transition-all duration-300 ${
+            data-yaml-section={sec.key}
+            className={`my-1 block rounded-sm border-l-2 py-1 pl-3 transition-all duration-300 ${
               isActive
                 ? "bg-primary/5 border-primary shadow-[0_0_12px_rgba(var(--primary-hsl),0.05)]"
                 : "border-transparent bg-transparent"
             }`}
           >
             {renderLines(sec.lines)}
-          </div>
+          </span>
         );
       })}
     </pre>

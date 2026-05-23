@@ -30,7 +30,7 @@ describe("YamlCodeBlock", () => {
     expect(container.querySelector("pre")).not.toBeNull();
   });
 
-  it("preserves the original text content character-for-character", () => {
+  it("renders the provided text content sections", () => {
     const header = "# c\n";
     const fileFormat = 'file_format: "1.0"\n';
     const content = 'key: "v"\n  - name: x\n';
@@ -50,6 +50,30 @@ describe("YamlCodeBlock", () => {
     expect(container.querySelector("span.y-key")?.textContent).toBe("endpoint");
     expect(container.querySelector("span.y-punct")?.textContent).toBe(":");
     expect(container.querySelector("span.y-string")?.textContent).toBe('"https://x"');
+  });
+  it("applies active styles when activePreviewKey matches a section", () => {
+    const structured = {
+      header: "",
+      fileFormat: "",
+      sections: [
+        { key: "general", content: "general: true\n" },
+        { key: "instrumentations", content: "instrumentations:\n  jdbc: true\n" },
+      ],
+    };
+    const { container } = render(
+      <YamlCodeBlock structured={structured} activePreviewKey="general" />
+    );
+
+    const generalSection = container.querySelector('[data-yaml-section="general"]');
+    const instrumentationsSection = container.querySelector(
+      '[data-yaml-section="instrumentations"]'
+    );
+
+    expect(generalSection?.className).toContain("bg-primary/5");
+    expect(generalSection?.className).toContain("border-primary");
+
+    expect(instrumentationsSection?.className).not.toContain("bg-primary/5");
+    expect(instrumentationsSection?.className).toContain("border-transparent");
   });
 
   it("forwards className to the <pre> element", () => {

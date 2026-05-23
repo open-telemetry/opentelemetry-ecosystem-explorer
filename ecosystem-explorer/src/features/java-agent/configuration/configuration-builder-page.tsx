@@ -104,7 +104,7 @@ function SdkTabContent({
     const key = (e.target as HTMLElement)
       .closest("[data-section-key]")
       ?.getAttribute("data-section-key");
-    if (key) {
+    if (key && key !== activePreviewKey) {
       setActivePreviewKey(key);
     }
   };
@@ -220,17 +220,6 @@ function InstrumentationTabBody({
   generalNode,
   javaAgentVersion,
 }: InstrumentationTabBodyProps) {
-  const [activePreviewKey, setActivePreviewKey] = useState<string | null>(null);
-
-  const handleInteraction = (e: React.BaseSyntheticEvent) => {
-    const key = (e.target as HTMLElement)
-      .closest("[data-section-key]")
-      ?.getAttribute("data-section-key");
-    if (key) {
-      setActivePreviewKey(key);
-    }
-  };
-
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 
@@ -294,12 +283,7 @@ function InstrumentationTabBody({
         onStatusFilterChange={setStatusFilter}
         customizationCount={customizationCount}
       />
-      <div
-        ref={sectionsContainerRef}
-        className="space-y-4"
-        onFocusCapture={handleInteraction}
-        onPointerDown={handleInteraction}
-      >
+      <div ref={sectionsContainerRef} className="space-y-4">
         <GeneralSectionCard
           label={GENERAL_SETTINGS_LABEL}
           sectionKey={GENERAL_SECTION_KEY}
@@ -321,7 +305,8 @@ function InstrumentationTabBody({
       <PreviewCard
         schema={schema}
         javaAgentVersion={javaAgentVersion}
-        activePreviewKey={activePreviewKey}
+        // Highlighting is currently SDK-only. See #500 for the Instrumentation tab extension.
+        activePreviewKey={null}
         activeTab={activeTab}
       />
     </div>
