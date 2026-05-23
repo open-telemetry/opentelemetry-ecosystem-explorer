@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, it, expect, vi, beforeEach, afterAll } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, within } from "@testing-library/react";
 import * as downloadModule from "@/lib/download-text";
 import { PreviewCard } from "./preview-card";
 import type { ConfigNode } from "@/types/configuration";
@@ -87,7 +87,8 @@ describe("PreviewCard", () => {
 
   it("triggers validateAll on Copy click regardless of clipboard availability", () => {
     render(<PreviewCard schema={schema} javaAgentVersion="2.27.0" />);
-    fireEvent.click(screen.getByRole("button", { name: /copy/i }));
+    const previewContainer = screen.getByLabelText("Output Preview");
+    fireEvent.click(within(previewContainer).getByRole("button", { name: /copy/i }));
     expect(validateAll).toHaveBeenCalledTimes(1);
   });
 
@@ -123,12 +124,54 @@ describe("PreviewCard", () => {
 
   it("downloads the YAML with the schema-versioned filename and agent-stamped content", () => {
     render(<PreviewCard schema={schema} javaAgentVersion="2.27.0" />);
-    fireEvent.click(screen.getByRole("button", { name: /download/i }));
+    const previewContainer = screen.getByLabelText("Output Preview");
+    fireEvent.click(within(previewContainer).getByRole("button", { name: /download/i }));
     expect(downloadSpy).toHaveBeenCalledTimes(1);
     const [filename, body, mime] = downloadSpy.mock.calls[0];
     expect(filename).toBe("otel-config-1.0.0.yaml");
     expect(body).toContain("Schema version: 1.0.0");
     expect(body).toContain("Java agent: 2.27.0");
     expect(mime).toBe("text/yaml");
+  });
+
+  it("renders expand preview button and opens dialog with controls when clicked", () => {
+    render(<PreviewCard schema={schema} javaAgentVersion="2.27.0" />);
+
+    const expandBtn = screen.getByRole("button", { name: /expand yaml preview/i });
+    expect(expandBtn).toBeInTheDocument();
+
+    expect(screen.queryByText("YAML Configuration Preview")).not.toBeInTheDocument();
+
+    fireEvent.click(expandBtn);
+
+    const dialog = screen.getByRole("dialog");
+    expect(dialog).toBeInTheDocument();
+    expect(within(dialog).getByText("YAML Configuration Preview")).toBeInTheDocument();
+    expect(
+      within(dialog).getByText(
+        "Complete generated YAML configuration for your OpenTelemetry Java Agent."
+      )
+    ).toBeInTheDocument();
+
+    // Verify content parity between inline preview and dialog
+    const previewContainer = screen.getByLabelText("Output Preview");
+    const inlinePre = previewContainer.querySelector("pre");
+    const dialogPre = dialog.querySelector("pre");
+    expect(dialogPre).not.toBeNull();
+    expect(dialogPre?.textContent).toBe(inlinePre?.textContent);
+
+    validateAll.mockClear();
+    const modalCopyBtn = within(dialog).getByRole("button", { name: /copy/i });
+    expect(modalCopyBtn).toBeInTheDocument();
+    fireEvent.click(modalCopyBtn);
+    expect(validateAll).toHaveBeenCalledTimes(1);
+
+    downloadSpy.mockClear();
+    validateAll.mockClear();
+    const modalDownloadBtn = within(dialog).getByRole("button", { name: /download/i });
+    expect(modalDownloadBtn).toBeInTheDocument();
+    fireEvent.click(modalDownloadBtn);
+    expect(validateAll).toHaveBeenCalledTimes(1);
+    expect(downloadSpy).toHaveBeenCalledTimes(1);
   });
 });
