@@ -219,12 +219,17 @@ export function CollectorExploreLanding() {
   return (
     <section className="bg-background relative px-0 py-2">
       <div className="mx-auto max-w-6xl space-y-10">
-
         <section aria-labelledby="collector-component-types" className="space-y-4">
-          <div>
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 id="collector-component-types" className="text-foreground text-2xl font-bold">
               Component Types
             </h2>
+            {stats.latestVersion && (
+              <p className="text-muted-foreground text-sm font-medium">
+                Latest data version{" "}
+                <span className="text-foreground font-semibold">v{stats.latestVersion}</span>
+              </p>
+            )}
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {COMPONENT_TYPES.map(({ type, label, description, icon: Icon }) => (

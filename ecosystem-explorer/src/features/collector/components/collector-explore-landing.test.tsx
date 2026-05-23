@@ -109,11 +109,8 @@ describe("CollectorExploreLanding", () => {
     );
 
     expect(screen.getByRole("heading", { name: "Component Types" })).toBeInTheDocument();
-    expect(screen.getByText("Latest Collector data: v0.150.0")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Explore Components/i })).toHaveAttribute(
-      "href",
-      "/collector/components"
-    );
+    expect(screen.getByText(/latest data version/i)).toBeInTheDocument();
+    expect(screen.getByText(/v0\.150\.0/i)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /Receiver/i })).toHaveAttribute(
       "href",
       "/collector/components?type=receiver"
@@ -121,6 +118,10 @@ describe("CollectorExploreLanding", () => {
     expect(screen.getByRole("link", { name: /View Core Components/i })).toHaveAttribute(
       "href",
       "/collector/components?distribution=core"
+    );
+    expect(screen.getByRole("link", { name: /View Contrib Components/i })).toHaveAttribute(
+      "href",
+      "/collector/components?distribution=contrib"
     );
 
     const stats = screen.getByLabelText("Collector summary statistics");
