@@ -100,10 +100,17 @@ function SdkTabContent({
 }: SdkTabContentProps) {
   const [activePreviewKey, setActivePreviewKey] = useState<string | null>(null);
 
+  // Leaf keys take precedence over the enclosing section key. The General card uses
+  // a synthetic section key ("general") that doesn't map to any top-level YAML key,
+  // so its individual leaf fields (`disabled`, `log_level`, ...) tag themselves with
+  // `data-yaml-section-key` so their real YAML key can be highlighted instead.
   const handleInteraction = (e: React.BaseSyntheticEvent) => {
-    const key = (e.target as HTMLElement)
-      .closest("[data-section-key]")
-      ?.getAttribute("data-section-key");
+    const target = e.target as HTMLElement;
+    const leafKey = target
+      .closest("[data-yaml-section-key]")
+      ?.getAttribute("data-yaml-section-key");
+    const sectionKey = target.closest("[data-section-key]")?.getAttribute("data-section-key");
+    const key = leafKey ?? sectionKey;
     if (key && key !== activePreviewKey) {
       setActivePreviewKey(key);
     }
@@ -160,7 +167,6 @@ function SdkTabContent({
           schema={schema}
           javaAgentVersion={javaAgentVersion}
           activePreviewKey={activePreviewKey}
-          activeTab={activeTab}
         />
       </div>
     </ConfigurationBuilderProvider>
@@ -307,7 +313,6 @@ function InstrumentationTabBody({
         javaAgentVersion={javaAgentVersion}
         // Highlighting is currently SDK-only. See #500 for the Instrumentation tab extension.
         activePreviewKey={null}
-        activeTab={activeTab}
       />
     </div>
   );

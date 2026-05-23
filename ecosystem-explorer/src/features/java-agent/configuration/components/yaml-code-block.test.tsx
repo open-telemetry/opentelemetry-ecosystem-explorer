@@ -69,11 +69,11 @@ describe("YamlCodeBlock", () => {
       '[data-yaml-section="instrumentations"]'
     );
 
-    expect(generalSection?.className).toContain("bg-primary/5");
-    expect(generalSection?.className).toContain("border-primary");
+    expect(generalSection?.className).toContain("bg-otel-orange/10");
+    expect(generalSection?.className).toContain("border-l-otel-orange");
 
-    expect(instrumentationsSection?.className).not.toContain("bg-primary/5");
-    expect(instrumentationsSection?.className).toContain("border-transparent");
+    expect(instrumentationsSection?.className).not.toContain("bg-otel-orange/10");
+    expect(instrumentationsSection?.className).toContain("border-l-transparent");
   });
 
   it("forwards className to the <pre> element", () => {

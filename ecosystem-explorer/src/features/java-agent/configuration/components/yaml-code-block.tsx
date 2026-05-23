@@ -100,10 +100,10 @@ export function YamlCodeBlock({
           <span
             key={sec.key}
             data-yaml-section={sec.key}
-            className={`my-1 block rounded-sm border-l-2 py-1 pl-3 transition-all duration-300 ${
+            className={`block min-w-max rounded-sm border-l pl-2 transition-colors duration-200 motion-reduce:transition-none ${
               isActive
-                ? "bg-primary/5 border-primary shadow-[0_0_12px_rgba(var(--primary-hsl),0.05)]"
-                : "border-transparent bg-transparent"
+                ? "border-l-otel-orange bg-otel-orange/10"
+                : "border-l-transparent bg-transparent"
             }`}
           >
             {renderLines(sec.lines)}

@@ -82,14 +82,12 @@ interface PreviewCardProps {
   schema: ConfigNode;
   javaAgentVersion: string;
   activePreviewKey: string | null;
-  activeTab: string;
 }
 
 export function PreviewCard({
   schema,
   javaAgentVersion,
   activePreviewKey,
-  activeTab,
 }: PreviewCardProps): JSX.Element {
   const { state, enableAllSections, resetToDefaults, validateAll } = useConfigurationBuilder();
 
@@ -99,8 +97,6 @@ export function PreviewCard({
   );
 
   const yaml = useMemo(() => structuredToString(structured), [structured]);
-
-  const activeKey = activeTab === "sdk" && activePreviewKey === "general" ? null : activePreviewKey;
 
   const handleReset = () => {
     if (state.isDirty) {
@@ -158,9 +154,12 @@ export function PreviewCard({
       </header>
       <YamlCodeBlock
         structured={structured}
-        activePreviewKey={activeKey}
+        activePreviewKey={activePreviewKey}
         className="bg-background/60 text-foreground max-h-[calc(100vh-8rem)] overflow-auto rounded-md p-4 font-mono text-xs"
       />
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {activePreviewKey ? `Highlighting ${activePreviewKey} section` : ""}
+      </div>
     </section>
   );
 }
