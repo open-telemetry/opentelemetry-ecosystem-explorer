@@ -49,8 +49,16 @@ vi.mock("@/hooks/use-configuration-builder", () => ({
     setEnabled: vi.fn(),
     selectPlugin: vi.fn(),
     validateAll: (...a: unknown[]) => validateAll(...a),
+    loadFromYaml: vi.fn(),
   }),
 }));
+
+HTMLDialogElement.prototype.showModal = vi.fn(function (this: HTMLDialogElement) {
+  this.setAttribute("open", "");
+});
+HTMLDialogElement.prototype.close = vi.fn(function (this: HTMLDialogElement) {
+  this.removeAttribute("open");
+});
 
 const downloadSpy = vi.spyOn(downloadModule, "downloadText").mockImplementation(() => {});
 
@@ -69,6 +77,7 @@ describe("PreviewCard", () => {
     expect(screen.getByText("Output Preview")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /copy/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /download/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /import/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /reset/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /add all/i })).toBeInTheDocument();
   });

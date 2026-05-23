@@ -28,6 +28,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { YamlCodeBlock } from "./yaml-code-block";
+import { ImportYamlButton } from "./import-yaml-button";
 
 interface HeaderActionButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   icon: React.ComponentType<{ className?: string; "aria-hidden"?: boolean | "true" | "false" }>;
@@ -109,6 +110,7 @@ export function PreviewCard({ schema, javaAgentVersion }: PreviewCardProps): JSX
         <h3 className="text-foreground text-sm font-medium">Output Preview</h3>
         <div className="flex flex-wrap items-center gap-2">
           <PreviewActions yaml={yaml} filename={filename} onValidate={validateAll} />
+          <ImportYamlButton />
           <span className="bg-border/60 mx-1 h-4 w-px" aria-hidden="true" />
           <HeaderActionButton icon={ListPlus} label="Add all" onClick={enableAllSections} />
           <HeaderActionButton icon={RefreshCcw} label="Reset" onClick={handleReset} />
