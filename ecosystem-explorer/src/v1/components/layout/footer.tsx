@@ -29,12 +29,12 @@
  */
 
 import { AreaChart, Book, Hammer, Image, LineChart, Mail, Megaphone, Video } from "lucide-react";
-import { BlueskyIcon } from "@/v1/components/icons/bluesky-icon";
-import { GitHubIcon } from "@/v1/components/icons/github-icon";
-import { MastodonIcon } from "@/v1/components/icons/mastodon-icon";
-import { SlackIcon } from "@/v1/components/icons/slack-icon";
-import { StackOverflowIcon } from "@/v1/components/icons/stack-overflow-icon";
-import { TrademarkIcon } from "@/v1/components/icons/trademark-icon";
+import { BlueskyIcon } from "../icons/bluesky-icon";
+import { GitHubIcon } from "../icons/github-icon";
+import { MastodonIcon } from "../icons/mastodon-icon";
+import { SlackIcon } from "../icons/slack-icon";
+import { StackOverflowIcon } from "../icons/stack-overflow-icon";
+import { TrademarkIcon } from "../icons/trademark-icon";
 
 type FooterLink = {
   name: string;
