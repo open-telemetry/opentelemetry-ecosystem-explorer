@@ -58,6 +58,11 @@ const expectedRightLinks = [
   { name: "Site-build info", url: "/site/" },
 ];
 
+const expectedExternalLinks = [
+  ...expectedLeftLinks.filter((link) => link.name !== "Mastodon"),
+  ...expectedRightLinks.filter((link) => link.url.startsWith("https://")),
+];
+
 describe("FooterV1", () => {
   it("renders all 7 user (left-cluster) links with the correct hrefs and aria-labels", () => {
     renderFooter();
@@ -76,6 +81,18 @@ describe("FooterV1", () => {
       const a = screen.getByRole("link", { name: link.name });
       expect(a).toHaveAttribute("href", link.url);
       expect(a).toHaveAttribute("title", link.name);
+    }
+  });
+
+  it('applies target="_blank" and rel="noopener noreferrer" to every external footer link', () => {
+    renderFooter();
+
+    for (const link of expectedExternalLinks) {
+      const a = screen.getByRole("link", { name: link.name });
+      expect(a).toHaveAttribute("target", "_blank");
+      const rel = a.getAttribute("rel") ?? "";
+      expect(rel).toMatch(/\bnoopener\b/);
+      expect(rel).toMatch(/\bnoreferrer\b/);
     }
   });
 
