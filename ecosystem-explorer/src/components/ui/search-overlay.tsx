@@ -49,7 +49,6 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const itemRefs = useRef<Array<HTMLElement | null>>([]);
 
-  // Focus input on mount
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus();
@@ -66,8 +65,6 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
     localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(updated));
   };
 
-  // Use a debounced search triggered from the input handler instead of an
-  // effect so we avoid calling setState synchronously inside `useEffect`.
   useEffect(() => {
     return () => {
       if (searchTimerRef.current) {
@@ -76,7 +73,6 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
     };
   }, []);
 
-  // Handle search selection
   const handleSelect = (q: string, path?: string) => {
     recordSearch(q);
 
@@ -104,7 +100,6 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
     }
   };
 
-  // Show recent searches if empty query, otherwise show search results
   const showRecent = !query.trim();
   const visibleItems = showRecent
     ? recentSearches.map((searchQuery) => ({
@@ -145,16 +140,13 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
 
   return (
     <>
-      {/* Backdrop */}
       <div
         className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      {/* Overlay panel */}
       <div className="border-border/20 bg-background fixed inset-x-0 top-16 z-50 mx-auto max-w-2xl rounded-lg border shadow-lg">
-        {/* Search input */}
         <div className="border-border/20 flex items-center gap-3 border-b px-4 py-3">
           <Search className="text-muted-foreground h-5 w-5" />
           <input
@@ -172,7 +164,6 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
 
               const trimmed = val.trim();
               if (!trimmed) {
-                // Clear search results when input is empty.
                 setSearchResults([]);
                 setIsSearching(false);
                 setActiveIndex(0);
@@ -233,7 +224,6 @@ export function SearchOverlay({ onClose, onSelect }: SearchOverlayProps) {
           )}
         </div>
 
-        {/* Suggestions or recent searches */}
         <div className="max-h-96 overflow-y-auto">
           {isSearching && !showRecent ? (
             <div className="text-muted-foreground px-4 py-8 text-center text-sm">Searching...</div>

@@ -17,12 +17,8 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { describe, expect, it, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { SearchOverlay } from "./search-overlay";
-
-vi.mock("@/hooks/useDebouncedValue", () => ({
-  useDebouncedValue: (value: string) => value,
-}));
 
 vi.mock("@/lib/search", async () => {
   const actual = await vi.importActual<typeof import("@/lib/search")>("@/lib/search");
