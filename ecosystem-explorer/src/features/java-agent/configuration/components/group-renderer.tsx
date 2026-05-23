@@ -59,11 +59,11 @@ export function GroupRenderer({
   const { bulkAction, overrides, setOverride } = useSectionExpansion();
   const sectionKey = node.key;
   const bulkOpen =
-    isTopLevel && sectionKey in overrides
+    sectionKey in overrides
       ? overrides[sectionKey]
-      : isTopLevel && bulkAction === "expand" && enabled
+      : bulkAction === "expand" && (isTopLevel ? enabled : true)
         ? true
-        : isTopLevel && bulkAction === "collapse"
+        : bulkAction === "collapse"
           ? false
           : null;
   const resolvedExpanded = bulkOpen !== null ? bulkOpen : expanded;

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { useState, useCallback, useMemo, type JSX } from "react";
-import type { InstrumentationListEntry, InstrumentationModule } from "@/types/javaagent";
+import { useSectionExpansion } from "./section-expansion-context";
+import type { InstrumentationData, InstrumentationModule } from "@/types/javaagent";
 import { Loader } from "@/components/ui/loader";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
 import {
@@ -54,16 +55,42 @@ export function InstrumentationBrowser({
   const customizedSet = useCustomizedModules(modules);
   const customizationCount = customizedSet.size;
 
+  const { bulkAction, overrides, setOverride } = useSectionExpansion();
+
   const [expandedSet, setExpandedSet] = useState<Set<string>>(() => new Set());
 
-  const toggleExpand = useCallback((name: string) => {
-    setExpandedSet((prev) => {
-      const next = new Set(prev);
-      if (next.has(name)) next.delete(name);
-      else next.add(name);
-      return next;
-    });
-  }, []);
+  const resolvedExpandedSet = useMemo(() => {
+    if (bulkAction === "expand") {
+      const all = new Set(modules.map((m) => m.name));
+      // apply individual overrides on top
+      for (const [key, val] of Object.entries(overrides)) {
+        if (!val) all.delete(key);
+      }
+      return all;
+    }
+    if (bulkAction === "collapse") {
+      const overrideExpanded = new Set<string>();
+      for (const [key, val] of Object.entries(overrides)) {
+        if (val) overrideExpanded.add(key);
+      }
+      return overrideExpanded;
+    }
+    return expandedSet;
+  }, [bulkAction, overrides, modules, expandedSet]);
+
+  const toggleExpand = useCallback(
+    (name: string) => {
+      const currentlyExpanded = resolvedExpandedSet.has(name);
+      setOverride(name, !currentlyExpanded);
+      setExpandedSet((prev) => {
+        const next = new Set(prev);
+        if (next.has(name)) next.delete(name);
+        else next.add(name);
+        return next;
+      });
+    },
+    [resolvedExpandedSet, setOverride]
+  );
 
   const trimmedSearch = search.trim();
   const filtered = useMemo(() => {
@@ -119,7 +146,7 @@ export function InstrumentationBrowser({
           total={modules.length}
           filtered={filtered}
           customizationMap={customizationMap}
-          expandedSet={expandedSet}
+          expandedSet={resolvedExpandedSet}
           search={trimmedSearch}
           statusFilter={statusFilter}
           customizationCount={customizationCount}
