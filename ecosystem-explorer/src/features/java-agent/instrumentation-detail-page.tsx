@@ -73,7 +73,7 @@ function isSafeUrl(url: string): boolean {
 
 export function InstrumentationDetailPage() {
   const [searchParams] = useSearchParams();
-  const { name } = useParams<{ version: string; name: string }>();
+  const { param } = useParams<{ param: string }>();
 
   const navigate = useNavigate();
   const [showComparison, setShowComparison] = useState(false);
@@ -94,7 +94,7 @@ export function InstrumentationDetailPage() {
     loading: instrumentationLoading,
     error,
   } = useInstrumentation(
-    shouldFetchInstrumentation ? (name ?? "") : "",
+    shouldFetchInstrumentation ? (param ?? "") : "",
     shouldFetchInstrumentation ? (version as string) : ""
   );
 
@@ -103,17 +103,17 @@ export function InstrumentationDetailPage() {
 
   useEffect(() => {
     if (version === "latest" && versionsData) {
-      if (latestVersion && name) {
-        navigate(`/java-agent/instrumentation/${name}`, { replace: true });
+      if (latestVersion && param) {
+        navigate(`/java-agent/instrumentation/${param}`, { replace: true });
       }
     }
-  }, [version, name, versionsData, navigate, latestVersion]);
+  }, [version, param, versionsData, navigate, latestVersion]);
 
   const handleVersionChange = (newVersion: string) => {
     navigate(
       newVersion != latestVersion
-        ? `/java-agent/instrumentation/${name}?version=${newVersion}`
-        : `/java-agent/instrumentation/${name}`
+        ? `/java-agent/instrumentation/${param}?version=${newVersion}`
+        : `/java-agent/instrumentation/${param}`
     );
   };
 

@@ -66,7 +66,7 @@ function renderWithRouter(initialPath: string) {
   return render(
     <MemoryRouter initialEntries={[initialPath]}>
       <Routes>
-        <Route path="/java-agent/instrumentation/:name" element={<InstrumentationDetailPage />} />
+        <Route path="/java-agent/instrumentation/:param" element={<InstrumentationDetailPage />} />
       </Routes>
     </MemoryRouter>
   );
