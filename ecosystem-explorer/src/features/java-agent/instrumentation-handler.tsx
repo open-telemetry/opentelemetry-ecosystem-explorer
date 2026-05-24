@@ -19,10 +19,10 @@ import { InstrumentationDetailPage } from "./instrumentation-detail-page";
 export function InstrumentationHandler() {
   const { param } = useParams<{ param: string }>();
 
-  const isVersion = /^\d+\.\d+\.\d+$/.test(param as string);
+  const isVersion = /^\d+\.\d+\.\d+$/.test(param as string) || param == "latest";
 
   if (isVersion) {
-    return <Navigate to={`/java-agent/instrumentation?version=${param}`} />;
+    return <Navigate to={`/java-agent/instrumentation?version=${param}`} replace />;
   }
   return <InstrumentationDetailPage />;
 }

@@ -19,8 +19,8 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { isEnabled } from "@/lib/feature-flags";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
-import { InstrumentationHandler } from "./features/java-agent/instrumentation-handler";
-import { LegacyNameVersionRedirect } from "./features/java-agent/legacy-name-version-redirect";
+import { InstrumentationHandler } from "@/features/java-agent/instrumentation-handler";
+import { LegacyNameVersionRedirect } from "@/features/java-agent/legacy-name-version-redirect";
 
 const HomePage = lazy(() =>
   import("@/features/home/home-page").then((m) => ({ default: m.HomePage }))

@@ -51,18 +51,18 @@ export function JavaInstrumentationListPage() {
   // Invalid version → latest with redirectedFrom banner.
   useEffect(() => {
     if (versionsData && latestVersion) {
+      const params = new URLSearchParams(location.search);
+      params.delete("version");
+
+      const query = params.toString();
+
+      console.log(query);
       if (!versionParam || versionParam === "latest") {
-        const params = new URLSearchParams(location.search);
-
-        params.delete("version");
-
-        const query = params.toString();
-
         navigate(`/java-agent/instrumentation${query ? `?${query}` : ""}`, {
           replace: true,
         });
       } else if (!isVersionValid) {
-        navigate(`/java-agent/instrumentation?redirectedFrom=${versionParam}`, {
+        navigate(`/java-agent/instrumentation?${query}&redirectedFrom=${versionParam}`, {
           replace: true,
         });
       }

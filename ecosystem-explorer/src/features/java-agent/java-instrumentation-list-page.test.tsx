@@ -41,7 +41,6 @@ function renderPage(initialPath = "/java-agent/instrumentation") {
     <MemoryRouter initialEntries={[initialPath]}>
       <Routes>
         <Route path="/java-agent/instrumentation" element={<JavaInstrumentationListPage />} />
-        <Route path="/java-agent/instrumentation" element={<JavaInstrumentationListPage />} />
       </Routes>
       <LocationDisplay />
     </MemoryRouter>
@@ -208,7 +207,7 @@ describe("JavaInstrumentationListPage - URL Persistence", () => {
   });
 
   it("preserves existing search params when redirecting no-version to latest", async () => {
-    renderPage("/java-agent/instrumentation/latest?search=kafka&telemetry=spans");
+    renderPage("/java-agent/instrumentation?version=latest&search=kafka&telemetry=spans");
 
     await waitFor(() => {
       const loc = screen.getByTestId("location").textContent ?? "";

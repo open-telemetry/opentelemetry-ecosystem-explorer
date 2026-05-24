@@ -187,7 +187,7 @@ export function InstrumentationDetailPage() {
                 </p>
                 {latestVersion && param && (
                   <Link
-                    to={`/java-agent/instrumentation/${latestVersion}/${param}`}
+                    to={`/java-agent/instrumentation/${param}?version=${latestVersion}`}
                     className="inline-flex items-center gap-1.5 text-sm text-yellow-600 underline hover:no-underline dark:text-yellow-400"
                   >
                     View {param} under the latest version ({latestVersion})
