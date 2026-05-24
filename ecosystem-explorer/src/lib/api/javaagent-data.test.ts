@@ -384,6 +384,9 @@ describe("javaagent-data", () => {
   describe("loadLibraryReadme", () => {
     it("should load library README markdown", async () => {
       const content = "# My Library README";
+      vi.spyOn(idbCache, "getCached").mockResolvedValue(null);
+      vi.spyOn(idbCache, "setCached").mockResolvedValue();
+
       (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
         ok: true,
         text: async () => content,
@@ -398,6 +401,8 @@ describe("javaagent-data", () => {
     });
 
     it("should propagate fetch errors when loading README", async () => {
+      vi.spyOn(idbCache, "getCached").mockResolvedValue(null);
+
       (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
         ok: false,
         status: 404,

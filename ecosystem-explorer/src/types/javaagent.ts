@@ -147,6 +147,8 @@ export interface Metric {
   unit: string;
   /** Attributes associated with the metric. */
   attributes?: Attribute[];
+  /** Semantic convention versions this metric is compliant with. */
+  semconv_compliance?: string[];
 }
 
 /**
@@ -157,6 +159,8 @@ export interface Span {
   span_kind: "CLIENT" | "SERVER" | "PRODUCER" | "CONSUMER" | "INTERNAL";
   /** Attributes associated with the span. */
   attributes?: Attribute[];
+  /** Semantic convention versions this span is compliant with. */
+  semconv_compliance?: string[];
 }
 
 /**

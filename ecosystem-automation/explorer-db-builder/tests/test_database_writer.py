@@ -493,7 +493,6 @@ class TestIntegration:
         assert (temp_db_dir / "versions" / "1.0.0-index.json").exists()
         assert (temp_db_dir / "versions" / "2.0.0-index.json").exists()
 
-
 class TestWriteMarkdown:
     """Tests for markdown file writing."""
 
@@ -544,6 +543,18 @@ class TestWriteMarkdown:
                 mock_logger.error.assert_called()
                 args, _ = mock_logger.error.call_args
                 assert "Failed to write markdown" in args[0]
+
+
+    def test_write_markdown_sanitization(self, db_writer, temp_db_dir):
+        content = "content"
+        # Test path traversal attempt in library name
+        db_writer.write_markdown("../invalid/path", "hash", content)
+
+        # Should be sanitized to .._invalid_path-hash.md
+        # re.sub(r"[^a-zA-Z0-9._\-]", "_", "../invalid/path") -> ".._invalid_path"
+        expected_path = temp_db_dir / "markdown" / ".._invalid_path-hash.md"
+        assert expected_path.exists()
+        assert not (temp_db_dir / "invalid").exists()
 
 
 @pytest.fixture

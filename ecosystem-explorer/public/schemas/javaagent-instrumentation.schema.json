@@ -192,6 +192,13 @@
                     "propertyOrder": ["name", "type"],
                     "required": ["name", "type"]
                   }
+                },
+                "semconv_compliance": {
+                  "description": "Semantic convention versions this metric is compliant with.",
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
                 }
               },
               "propertyOrder": [
@@ -200,7 +207,8 @@
                 "instrument",
                 "data_type",
                 "unit",
-                "attributes"
+                "attributes",
+                "semconv_compliance"
               ],
               "required": ["data_type", "description", "instrument", "name", "unit"]
             }
@@ -246,9 +254,16 @@
                     "propertyOrder": ["name", "type"],
                     "required": ["name", "type"]
                   }
+                },
+                "semconv_compliance": {
+                  "description": "Semantic convention versions this span is compliant with.",
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
                 }
               },
-              "propertyOrder": ["span_kind", "attributes"],
+              "propertyOrder": ["span_kind", "attributes", "semconv_compliance"],
               "required": ["span_kind"]
             }
           }
