@@ -16,7 +16,7 @@
 import { describe, it, expect } from "vitest";
 import type { ConfigNode } from "@/types/configuration";
 import type { ConfigurationBuilderState } from "@/types/configuration-builder";
-import { generateYaml } from "./yaml-generator";
+import { generateYaml, generateYamlSections } from "./yaml-generator";
 
 const emptySchema: ConfigNode = {
   controlType: "group",
@@ -610,5 +610,33 @@ describe("generateYaml", () => {
     const output = generateYaml(state, schema, { header: "" });
     expect(output).toContain("service_name: demo");
     expect(output).toContain("endpoint: http://localhost:4318");
+  });
+
+  describe("generateYamlSections", () => {
+    it("returns structured sections mapping to expected keys and content", () => {
+      const state: ConfigurationBuilderState = {
+        version: "1.0.1",
+        values: {
+          tracer_provider: { sampler: "always_on" },
+          resource: { service_name: "demo" },
+        },
+        enabledSections: {
+          tracer_provider: true,
+          resource: true,
+        },
+        validationErrors: {},
+        isDirty: false,
+      };
+
+      const result = generateYamlSections(state, fixtureSchema, { header: "# test header" });
+
+      expect(result.header).toBe("# test header");
+      expect(result.fileFormat).toContain('file_format: "1.0"');
+      expect(result.sections).toHaveLength(2);
+      expect(result.sections[0].key).toBe("resource");
+      expect(result.sections[0].content).toContain("service_name: demo");
+      expect(result.sections[1].key).toBe("tracer_provider");
+      expect(result.sections[1].content).toContain("sampler: always_on");
+    });
   });
 });

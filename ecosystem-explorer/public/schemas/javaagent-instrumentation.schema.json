@@ -257,6 +257,7 @@
         "required": ["when"]
       }
     },
+
     "_is_custom": {
       "description": "Whether this is a custom (non-upstream) instrumentation.",
       "type": "boolean"
