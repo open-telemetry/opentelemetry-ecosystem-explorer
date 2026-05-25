@@ -23,6 +23,22 @@ import { RecentActivityRail } from "@/v1/components/home/recent-activity-rail";
 import { SignalsRow } from "@/v1/components/home/signals-row";
 import { StatsBand } from "@/v1/components/home/stats-band";
 
+const COVER_CTAS = (
+  <>
+    <Link className="td-btn td-btn--primary" to="/collector">
+      Browse components
+    </Link>
+    <a
+      className="td-btn td-btn--outline-light"
+      href="https://opentelemetry.io/docs/what-is-opentelemetry/"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Read the overview
+    </a>
+  </>
+);
+
 /**
  * Home page (v1) — composes the v1 chrome with home-specific sections.
  * Only the GlobalSearch slot inside CoverBlock is still a skeleton.
@@ -39,21 +55,7 @@ export function HomeV1() {
           </>
         }
         lead="Navigate every receiver, processor, exporter, and instrumentation across the OpenTelemetry project — searchable, comparable, version-aware."
-        ctas={
-          <>
-            <Link className="td-btn td-btn--primary" to="/collector">
-              Browse components
-            </Link>
-            <a
-              className="td-btn td-btn--outline-light"
-              href="https://opentelemetry.io/docs/what-is-opentelemetry/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Read the overview
-            </a>
-          </>
-        }
+        ctas={COVER_CTAS}
       >
         <div className="td-home__skeleton td-home__skeleton--search" aria-hidden="true" />
       </CoverBlock>

@@ -23,7 +23,7 @@
 
 import { ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useActivityFeed, type ActivityItem } from "@/v1/hooks/use-activity-feed";
+import { useActivityFeed, type ActivityStability } from "@/v1/hooks/use-activity-feed";
 
 function formatRelative(occurredAt: string, now: Date = new Date()): string {
   const then = new Date(occurredAt);
@@ -41,21 +41,18 @@ function formatRelative(occurredAt: string, now: Date = new Date()): string {
   return `${months} month${months === 1 ? "" : "s"} ago`;
 }
 
-function pillClass(stability: ActivityItem["stability"]): string {
-  switch (stability) {
-    case "stable":
-    case "new":
-      return "td-pill td-pill--stable";
-    case "beta":
-      return "td-pill td-pill--beta";
-    case "alpha":
-      return "td-pill td-pill--alpha";
-    case "deprecated":
-    case "unmaintained":
-      return "td-pill td-pill--deprecated";
-    default:
-      return "td-pill td-pill--neutral";
-  }
+const PILL_VARIANT: Record<ActivityStability, string> = {
+  stable: "td-pill--stable",
+  new: "td-pill--stable",
+  beta: "td-pill--beta",
+  alpha: "td-pill--alpha",
+  deprecated: "td-pill--deprecated",
+  unmaintained: "td-pill--unmaintained",
+  development: "td-pill--development",
+};
+
+function pillClass(stability: ActivityStability): string {
+  return `td-pill ${PILL_VARIANT[stability]}`;
 }
 
 export interface RecentActivityRailProps {
