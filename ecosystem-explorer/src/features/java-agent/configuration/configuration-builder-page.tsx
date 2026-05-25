@@ -151,7 +151,7 @@ function SdkTabContent({
           activeKey={activeKey}
           onSectionClick={scrollToSection}
         />
-        <div ref={sectionsContainerRef} className="space-y-4">
+        <div ref={sectionsContainerRef} className="space-y-4" onClick={handleInteraction}>
           {hasGeneralLeaves && (
             <GeneralSectionCard label={GENERAL_SECTION_LABEL}>{leafChildren}</GeneralSectionCard>
           )}
