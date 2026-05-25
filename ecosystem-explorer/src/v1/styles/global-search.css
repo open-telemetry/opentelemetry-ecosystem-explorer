@@ -1,0 +1,211 @@
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* ---------- GlobalSearch ----------
+ *
+ * Glass-effect search input shown inside the dark `<CoverBlock>` on `<HomeV1 />`.
+ * Tokens kept v1-local because the input only renders against the cover-block's
+ * dark surface; the results dropdown drops out of that surface and uses
+ * theme-aware card tokens (`--card-hsl`, `--border-hsl`, `--muted-foreground-hsl`).
+ */
+
+.td-search {
+  position: relative;
+  width: min(100%, 600px);
+  margin: 0 auto;
+}
+
+.td-search__input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  backdrop-filter: blur(8px);
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.td-search__input-wrapper:focus-within {
+  border-color: hsl(var(--otel-orange-hsl));
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.td-search__icon {
+  width: 1.125rem;
+  height: 1.125rem;
+  color: rgba(255, 255, 255, 0.7);
+  flex-shrink: 0;
+}
+
+.td-search__input {
+  flex: 1;
+  min-width: 0;
+  font-size: 1rem;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #fff;
+  padding: 0.5rem 0;
+}
+
+.td-search__input::placeholder {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.td-search__kbd {
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 0.125rem 0.4rem;
+  border-radius: 0.25rem;
+  white-space: nowrap;
+}
+
+.td-search__suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.td-search__suggest-label {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.875rem;
+}
+
+.td-search__suggest-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 999px;
+  background-color: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  cursor: pointer;
+}
+
+.td-search__suggest-chip:hover,
+.td-search__suggest-chip:focus-visible {
+  background-color: hsl(var(--otel-orange-hsl) / 0.25);
+  border-color: hsl(var(--otel-orange-hsl) / 0.6);
+  color: #fff;
+}
+
+.td-search__results {
+  position: absolute;
+  inset-inline: 0;
+  top: calc(100% + 0.5rem);
+  background-color: hsl(var(--card-hsl));
+  color: hsl(var(--foreground-hsl));
+  border: 1px solid hsl(var(--border-hsl));
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  z-index: 20;
+  max-height: min(60vh, 36rem);
+  overflow-y: auto;
+}
+
+.td-search__result-empty {
+  padding: 1rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground-hsl));
+}
+
+/* Keep-stale-while-loading: dims the prior result set when a new query is
+   in flight, instead of blanking to "Searching…". */
+.td-search__result-list--stale {
+  opacity: 0.6;
+  transition: opacity 0.15s ease;
+}
+
+.td-search__result-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  column-gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  font-size: 0.875rem;
+  text-decoration: none;
+  color: inherit;
+  border-bottom: 1px solid hsl(var(--border-hsl) / 0.5);
+  border-left: 3px solid transparent;
+}
+
+.td-search__result-item:last-child {
+  border-bottom: none;
+}
+
+.td-search__result-item:hover,
+.td-search__result-item--active {
+  background-color: hsl(var(--card-secondary-hsl, var(--muted-hsl)));
+  border-left-color: hsl(var(--otel-orange-hsl));
+}
+
+.td-search__result-pill {
+  display: flex;
+  align-items: center;
+  text-transform: lowercase;
+}
+
+.td-search__result-body {
+  min-width: 0; /* let ellipsis kick in inside the grid cell */
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.td-search__result-title {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.td-search__result-description {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: hsl(var(--muted-foreground-hsl));
+  font-size: 0.8125rem;
+  line-height: 1.35;
+}
+
+.td-search__result-meta {
+  color: hsl(var(--muted-foreground-hsl));
+  font-size: 0.75rem;
+  text-transform: lowercase;
+}
+
+.td-search__result-footer {
+  margin: 0;
+  padding: 0.5rem 0.75rem;
+  border-top: 1px solid hsl(var(--border-hsl) / 0.5);
+  text-align: center;
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground-hsl));
+}

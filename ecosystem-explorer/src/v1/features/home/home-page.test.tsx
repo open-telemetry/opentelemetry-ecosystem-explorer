@@ -98,14 +98,14 @@ describe("HomeV1 (composition)", () => {
     expect(row).toHaveAttribute("aria-labelledby", "signals-row-title");
   });
 
-  it("renders the GlobalSearch skeleton inside the CoverBlock with aria-hidden", () => {
+  it("renders the GlobalSearch combobox inside the CoverBlock", () => {
     const { container } = renderHome();
 
     const cover = container.querySelector(".td-cover-block");
     expect(cover).not.toBeNull();
 
-    const searchSkeleton = cover!.querySelector(".td-home__skeleton--search");
-    expect(searchSkeleton).not.toBeNull();
-    expect(searchSkeleton).toHaveAttribute("aria-hidden", "true");
+    const combobox = cover!.querySelector('[role="combobox"]');
+    expect(combobox).not.toBeNull();
+    expect(combobox).toHaveAttribute("aria-label", "Search the ecosystem");
   });
 });

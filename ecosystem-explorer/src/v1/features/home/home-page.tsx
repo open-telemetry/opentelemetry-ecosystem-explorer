@@ -19,6 +19,7 @@ import { Link } from "react-router-dom";
 import { Compass } from "@/components/icons/compass";
 import { CoverBlock } from "@/v1/components/home/cover-block";
 import { EcosystemsGrid } from "@/v1/components/home/ecosystems-grid";
+import { GlobalSearch } from "@/v1/components/home/global-search";
 import { SignalsRow } from "@/v1/components/home/signals-row";
 import { StatsBand } from "@/v1/components/home/stats-band";
 
@@ -54,7 +55,7 @@ export function HomeV1() {
           </>
         }
       >
-        <div className="td-home__skeleton td-home__skeleton--search" aria-hidden="true" />
+        <GlobalSearch />
       </CoverBlock>
 
       <StatsBand />
