@@ -1,0 +1,41 @@
+name: Bug Report
+description: Something is not working correctly
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before filing, check the [open issues](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues)
+        to see if this has already been reported.
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: false
+  - type: input
+    id: page
+    attributes:
+      label: Affected page
+      placeholder: "path to the affected page"
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence (screenshots, logs)  of the occuring bug
+      description: Drag and drop images or files directly into this field.
+    validations:
+      required: false

@@ -2,7 +2,7 @@ distribution: contrib
 version: 0.152.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: connector
-schema_hash: fade993781ea
+schema_hash: 4dbd47fa25e7
 components:
 - name: countconnector
   metadata:

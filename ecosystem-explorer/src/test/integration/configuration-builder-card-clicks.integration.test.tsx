@@ -64,4 +64,58 @@ describe("ConfigurationBuilderPage card click behavior", () => {
     await user.type(target, "my-service");
     expect(target).toHaveValue("my-service");
   });
+
+  it("interacting with a section card highlights the corresponding YAML section in the preview", async () => {
+    renderPage();
+    const user = userEvent.setup();
+
+    // Wait for the page to settle. Resource is auto-enabled by the starter
+    await screen.findByRole("switch", { name: /Enable Resource/i }, { timeout: 10_000 });
+
+    const resourceSection = document.querySelector<HTMLElement>('[data-section-key="resource"]');
+    expect(resourceSection).not.toBeNull();
+
+    // Interact with it (e.g. click the card itself)
+    await user.click(resourceSection!);
+
+    // Wait for the YAML preview to re-render with the active class
+    await waitFor(() => {
+      const resourceYamlSection = document.querySelector<HTMLElement>(
+        '[data-yaml-section="resource"]'
+      );
+      expect(resourceYamlSection).not.toBeNull();
+      expect(resourceYamlSection?.className).toContain("bg-otel-orange/10");
+    });
+  });
+
+  it("interacting with a leaf field inside the General card highlights the matching YAML block", async () => {
+    renderPage();
+    const user = userEvent.setup();
+
+    // Wait for the page to settle.
+    await screen.findByRole("switch", { name: /Enable Resource/i }, { timeout: 10_000 });
+
+    // Expand the General card first so its leaf wrappers are in the DOM.
+    await user.click(screen.getByRole("button", { name: /Expand General/i }));
+
+    const disabledLeaf = await waitFor(() => {
+      const el = document.querySelector<HTMLElement>('[data-yaml-section-key="disabled"]');
+      expect(el).not.toBeNull();
+      return el as HTMLElement;
+    });
+
+    // Enable the `disabled` leaf so it shows up in the YAML output.
+    await user.click(within(disabledLeaf).getByRole("button", { name: /Expand Disabled/i }));
+    const disabledToggle = within(disabledLeaf).getByRole("switch", { name: /Disabled/i });
+    await user.click(disabledToggle);
+
+    // Assert the highlight tracks the leaf key, not the synthetic "general" section.
+    await waitFor(() => {
+      const disabledYamlBlock = document.querySelector<HTMLElement>(
+        '[data-yaml-section="disabled"]'
+      );
+      expect(disabledYamlBlock).not.toBeNull();
+      expect(disabledYamlBlock?.className).toContain("bg-otel-orange/10");
+    });
+  });
 });
