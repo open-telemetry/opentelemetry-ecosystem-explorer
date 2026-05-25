@@ -73,7 +73,7 @@ export function MultiInstrumentationGroupCard({
                 }`}
               />
               <h3 className="truncate text-lg leading-tight font-semibold">{group.displayName}</h3>
-              <span className="bg-secondary/15 text-secondary flex-shrink-0 rounded-full px-2.5 py-1 text-xs font-medium">
+              <span className="bg-secondary/15 text-secondary flex-shrink-0 rounded-md px-2.5 py-1 text-xs font-medium">
                 {group.instrumentations.length} versions
               </span>
             </div>

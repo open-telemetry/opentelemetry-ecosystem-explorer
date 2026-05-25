@@ -157,7 +157,7 @@ jobs:
           app-id: ${{ vars.OTELBOT_APP_ID }}
           private-key: ${{ secrets.OTELBOT_PRIVATE_KEY }}
           repositories: ${{ github.event.repository.name }}
-          permission-issues: write
+          permission-pull-requests: write
 
       - name: Post or update PR comment
         env:

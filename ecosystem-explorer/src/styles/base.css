@@ -1,7 +1,9 @@
 /* Global element resets and defaults. */
 
-* {
-  border-color: hsl(var(--border-hsl));
+@layer base {
+  * {
+    border-color: hsl(var(--border-hsl));
+  }
 }
 
 body {
