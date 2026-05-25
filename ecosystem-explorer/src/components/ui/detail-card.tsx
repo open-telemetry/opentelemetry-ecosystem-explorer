@@ -67,8 +67,7 @@ export function DetailCard({
         </div>
       )}
 
-     
-      <div className="relative z-10 flex-1 w-full">{children}</div>
+      <div className="relative z-10 w-full flex-1">{children}</div>
     </div>
   );
 }
