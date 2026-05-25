@@ -17,6 +17,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { BackButton } from "@/components/ui/back-button";
 import { BetaBadge } from "@/components/ui/beta-badge";
 import { PageContainer } from "@/components/layout/page-container";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { VersionSelector } from "@/features/java-agent/components/version-selector";
 import {
@@ -224,7 +231,6 @@ function InstrumentationTabBody({
 }: InstrumentationTabBodyProps) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
-  const [tocOpen, setTocOpen] = useState(false);
 
   const tocSections: TocSection[] = useMemo(
     () => [
@@ -276,63 +282,51 @@ function InstrumentationTabBody({
   return (
     <>
       <div className="mb-3 flex justify-end lg:hidden">
-        <button
-          type="button"
-          aria-expanded={tocOpen}
-          onClick={() => setTocOpen(true)}
-          className="border-border/60 bg-card/70 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm shadow-sm backdrop-blur"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-4 w-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 6h16M4 12h16M4 18h16"
-            />
-          </svg>
-          Navigation
-        </button>
-      </div>
-      {tocOpen && (
-        <div className="fixed inset-0 z-50 flex lg:hidden">
-          <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-[1px]"
-            onClick={() => setTocOpen(false)}
-          />
-          <div className="border-border/60 bg-background relative z-50 ml-auto h-full w-full max-w-sm overflow-y-auto border-l p-4 shadow-2xl">
-            <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-lg font-medium">Navigation</h3>
-              <button
-                type="button"
-                onClick={() => setTocOpen(false)}
-                className="text-muted-foreground"
+        <Dialog>
+          <DialogTrigger asChild>
+            <button
+              type="button"
+              className="border-border/60 bg-card/70 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm shadow-sm backdrop-blur"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                Close
-              </button>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              </svg>
+              Navigation
+            </button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-sm">
+            <DialogTitle>Navigation</DialogTitle>
+            <DialogDescription>
+              Browse configuration sections, search instrumentations, and filter customized entries.
+            </DialogDescription>
+            <div className="mt-4 max-h-[70dvh] overflow-y-auto pr-1">
+              <ConfigurationTocSidebar
+                activeTab={activeTab}
+                sections={tocSections}
+                activeKey={activeKey}
+                onSectionClick={scrollToSection}
+                search={search}
+                onSearchChange={setSearch}
+                statusFilter={statusFilter}
+                onStatusFilterChange={setStatusFilter}
+                customizationCount={customizationCount}
+                className="border-0 p-0"
+              />
             </div>
-            <ConfigurationTocSidebar
-              activeTab={activeTab}
-              sections={tocSections}
-              activeKey={activeKey}
-              onSectionClick={(k: string) => {
-                scrollToSection(k);
-                setTocOpen(false);
-              }}
-              search={search}
-              onSearchChange={setSearch}
-              statusFilter={statusFilter}
-              onStatusFilterChange={setStatusFilter}
-              customizationCount={customizationCount}
-            />
-          </div>
-        </div>
-      )}
+          </DialogContent>
+        </Dialog>
+      </div>
 
       <div className={BUILDER_GRID}>
         <ConfigurationTocSidebar
@@ -345,6 +339,7 @@ function InstrumentationTabBody({
           statusFilter={statusFilter}
           onStatusFilterChange={setStatusFilter}
           customizationCount={customizationCount}
+          className="hidden lg:block"
         />
         <div ref={sectionsContainerRef} className="space-y-4">
           <GeneralSectionCard

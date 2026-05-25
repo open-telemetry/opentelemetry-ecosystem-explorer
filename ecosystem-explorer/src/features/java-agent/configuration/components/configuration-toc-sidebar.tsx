@@ -29,6 +29,7 @@ export interface ConfigurationTocSidebarProps {
   sections: TocSection[];
   activeKey: string | null;
   onSectionClick: (key: string) => void;
+  className?: string;
   /** Only meaningful when activeTab === "instrumentation". */
   search?: string;
   onSearchChange?: (value: string) => void;
@@ -59,6 +60,7 @@ export function ConfigurationTocSidebar({
   statusFilter = "all",
   onStatusFilterChange,
   customizationCount = 0,
+  className = "",
 }: ConfigurationTocSidebarProps): JSX.Element {
   const isInstrumentation = activeTab === "instrumentation";
   const showTocNav = activeTab === "sdk" || isInstrumentation;
@@ -66,7 +68,9 @@ export function ConfigurationTocSidebar({
   const isCustomizedActive = statusFilter === "customized";
 
   return (
-    <aside className="hidden w-full lg:sticky lg:top-20 lg:block lg:max-h-[calc(100vh-5rem)] lg:self-start lg:overflow-auto">
+    <aside
+      className={`w-full lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:self-start lg:overflow-auto ${className}`}
+    >
       <SegmentedTabList tabs={TABS} value={activeTab} fullWidth />
       {isInstrumentation && (
         <div className="mt-3">
