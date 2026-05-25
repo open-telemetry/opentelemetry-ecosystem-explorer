@@ -17,9 +17,11 @@
 /* ---------- GlobalSearch ----------
  *
  * Glass-effect search input shown inside the dark `<CoverBlock>` on `<HomeV1 />`.
- * Tokens kept v1-local because the input only renders against the cover-block's
- * dark surface; the results dropdown drops out of that surface and uses
- * theme-aware card tokens (`--card-hsl`, `--border-hsl`, `--muted-foreground-hsl`).
+ * Surface colors route through the `--cover-block-fg-hsl` token (same pattern
+ * `buttons.css` uses for `td-btn--outline-light`) so the glass effect stays
+ * consistent if the cover-block palette ever changes. The results dropdown
+ * drops out of that surface and uses theme-aware card tokens
+ * (`--card-hsl`, `--border-hsl`, `--muted-foreground-hsl`).
  */
 
 .td-search {
@@ -32,8 +34,8 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: hsl(var(--cover-block-fg-hsl) / 0.08);
+  border: 1px solid hsl(var(--cover-block-fg-hsl) / 0.15);
   border-radius: 0.5rem;
   padding: 0.5rem 0.75rem;
   backdrop-filter: blur(8px);
@@ -44,13 +46,13 @@
 
 .td-search__input-wrapper:focus-within {
   border-color: hsl(var(--otel-orange-hsl));
-  background: rgba(255, 255, 255, 0.12);
+  background: hsl(var(--cover-block-fg-hsl) / 0.12);
 }
 
 .td-search__icon {
   width: 1.125rem;
   height: 1.125rem;
-  color: rgba(255, 255, 255, 0.7);
+  color: hsl(var(--cover-block-fg-hsl) / 0.7);
   flex-shrink: 0;
 }
 
@@ -61,19 +63,19 @@
   border: none;
   outline: none;
   background: transparent;
-  color: #fff;
+  color: hsl(var(--cover-block-fg-hsl));
   padding: 0.5rem 0;
 }
 
 .td-search__input::placeholder {
-  color: rgba(255, 255, 255, 0.55);
+  color: hsl(var(--cover-block-fg-hsl) / 0.55);
 }
 
 .td-search__kbd {
   font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff;
+  background: hsl(var(--cover-block-fg-hsl) / 0.1);
+  border: 1px solid hsl(var(--cover-block-fg-hsl) / 0.2);
+  color: hsl(var(--cover-block-fg-hsl));
   font-size: 0.75rem;
   padding: 0.125rem 0.4rem;
   border-radius: 0.25rem;
@@ -89,7 +91,7 @@
 }
 
 .td-search__suggest-label {
-  color: rgba(255, 255, 255, 0.6);
+  color: hsl(var(--cover-block-fg-hsl) / 0.6);
   font-size: 0.875rem;
 }
 
@@ -100,10 +102,10 @@
   font-size: 0.75rem;
   font-weight: 600;
   border-radius: 999px;
-  background-color: rgba(255, 255, 255, 0.12);
-  color: #fff;
+  background-color: hsl(var(--cover-block-fg-hsl) / 0.12);
+  color: hsl(var(--cover-block-fg-hsl));
   text-decoration: none;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid hsl(var(--cover-block-fg-hsl) / 0.15);
   cursor: pointer;
 }
 
@@ -111,7 +113,7 @@
 .td-search__suggest-chip:focus-visible {
   background-color: hsl(var(--otel-orange-hsl) / 0.25);
   border-color: hsl(var(--otel-orange-hsl) / 0.6);
-  color: #fff;
+  color: hsl(var(--cover-block-fg-hsl));
 }
 
 .td-search__results {

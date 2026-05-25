@@ -197,7 +197,7 @@ export function DevComponentsPage() {
             on the real home page GlobalSearch lives inside <CoverBlock>. */}
         <div
           style={{
-            background: "hsl(var(--cover-block-bg-from-hsl, 222 47% 11%))",
+            background: "hsl(var(--cover-block-bg-from-hsl))",
             padding: "2rem 1.5rem",
           }}
         >
