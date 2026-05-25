@@ -66,7 +66,7 @@ export function ConfigurationTocSidebar({
   const isCustomizedActive = statusFilter === "customized";
 
   return (
-    <aside className="hidden lg:block lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:self-start lg:overflow-auto w-full">
+    <aside className="hidden w-full lg:sticky lg:top-20 lg:block lg:max-h-[calc(100vh-5rem)] lg:self-start lg:overflow-auto">
       <SegmentedTabList tabs={TABS} value={activeTab} fullWidth />
       {isInstrumentation && (
         <div className="mt-3">

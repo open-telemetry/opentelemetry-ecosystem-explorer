@@ -145,7 +145,12 @@ function SdkTabContent({
       <PruneInstrumentationsForAgentVersion javaAgentVersion={javaAgentVersion} />
 
       <div className={BUILDER_GRID}>
-        <ConfigurationTocSidebar activeTab={activeTab} sections={tocSections} activeKey={activeKey} onSectionClick={scrollToSection} />
+        <ConfigurationTocSidebar
+          activeTab={activeTab}
+          sections={tocSections}
+          activeKey={activeKey}
+          onSectionClick={scrollToSection}
+        />
         <div ref={sectionsContainerRef} className="space-y-4">
           {hasGeneralLeaves && (
             <GeneralSectionCard label={GENERAL_SECTION_LABEL}>{leafChildren}</GeneralSectionCard>
@@ -275,21 +280,39 @@ function InstrumentationTabBody({
           type="button"
           aria-expanded={tocOpen}
           onClick={() => setTocOpen(true)}
-          className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-card/70 px-3 py-1.5 text-sm shadow-sm backdrop-blur"
+          className="border-border/60 bg-card/70 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm shadow-sm backdrop-blur"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 6h16M4 12h16M4 18h16"
+            />
           </svg>
           Navigation
         </button>
       </div>
       {tocOpen && (
         <div className="fixed inset-0 z-50 flex lg:hidden">
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-[1px]" onClick={() => setTocOpen(false)} />
-          <div className="relative z-50 ml-auto h-full w-full max-w-sm overflow-y-auto border-l border-border/60 bg-background p-4 shadow-2xl">
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-[1px]"
+            onClick={() => setTocOpen(false)}
+          />
+          <div className="border-border/60 bg-background relative z-50 ml-auto h-full w-full max-w-sm overflow-y-auto border-l p-4 shadow-2xl">
             <div className="mb-3 flex items-center justify-between">
               <h3 className="text-lg font-medium">Navigation</h3>
-              <button type="button" onClick={() => setTocOpen(false)} className="text-muted-foreground">
+              <button
+                type="button"
+                onClick={() => setTocOpen(false)}
+                className="text-muted-foreground"
+              >
                 Close
               </button>
             </div>
@@ -312,43 +335,38 @@ function InstrumentationTabBody({
       )}
 
       <div className={BUILDER_GRID}>
-      <ConfigurationTocSidebar
-        activeTab={activeTab}
-        sections={tocSections}
-        activeKey={activeKey}
-        onSectionClick={scrollToSection}
-        search={search}
-        onSearchChange={setSearch}
-        statusFilter={statusFilter}
-        onStatusFilterChange={setStatusFilter}
-        customizationCount={customizationCount}
-      />
-      <div ref={sectionsContainerRef} className="space-y-4">
-        <GeneralSectionCard
-          label={GENERAL_SETTINGS_LABEL}
-          sectionKey={GENERAL_SECTION_KEY}
-          pathPrefix={`${INSTRUMENTATION_DEV_KEY}.${GENERAL_SUBKEY}`}
-          defaultExpanded={true}
-          emptyMessage="The schema for this version does not expose general instrumentation settings."
-        >
-          {generalNode?.children ?? []}
-        </GeneralSectionCard>
-        <InstrumentationBrowser
-          instrumentations={instrumentationsState.data}
-          loading={instrumentationsState.loading}
-          error={instrumentationsState.error}
+        <ConfigurationTocSidebar
+          activeTab={activeTab}
+          sections={tocSections}
+          activeKey={activeKey}
+          onSectionClick={scrollToSection}
           search={search}
+          onSearchChange={setSearch}
           statusFilter={statusFilter}
-          onJumpToGeneral={scrollToSection}
+          onStatusFilterChange={setStatusFilter}
+          customizationCount={customizationCount}
         />
+        <div ref={sectionsContainerRef} className="space-y-4">
+          <GeneralSectionCard
+            label={GENERAL_SETTINGS_LABEL}
+            sectionKey={GENERAL_SECTION_KEY}
+            pathPrefix={`${INSTRUMENTATION_DEV_KEY}.${GENERAL_SUBKEY}`}
+            defaultExpanded={true}
+            emptyMessage="The schema for this version does not expose general instrumentation settings."
+          >
+            {generalNode?.children ?? []}
+          </GeneralSectionCard>
+          <InstrumentationBrowser
+            instrumentations={instrumentationsState.data}
+            loading={instrumentationsState.loading}
+            error={instrumentationsState.error}
+            search={search}
+            statusFilter={statusFilter}
+            onJumpToGeneral={scrollToSection}
+          />
+        </div>
+        <PreviewCard schema={schema} javaAgentVersion={javaAgentVersion} activePreviewKey={null} />
       </div>
-      <PreviewCard
-        schema={schema}
-        javaAgentVersion={javaAgentVersion}
-        // Highlighting is currently SDK-only. See #500 for the Instrumentation tab extension.
-        activePreviewKey={null}
-      />
-    </div>
     </>
   );
 }
