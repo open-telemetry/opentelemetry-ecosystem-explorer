@@ -52,7 +52,7 @@ export function ConfigurationCard({ config, format, instrumentations }: Configur
   return (
     <DetailCard withHoverEffect>
       {/* Grid pattern background */}
-      <div className="absolute -inset-6 opacity-[0.15] -z-10 pointer-events-none">
+      <div className="pointer-events-none absolute -inset-6 -z-10 opacity-[0.15]">
         <div
           className="h-full w-full"
           style={{
