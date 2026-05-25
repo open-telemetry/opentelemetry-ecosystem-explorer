@@ -31,12 +31,12 @@
  */
 
 import type { Stability } from "@/components/ui/status-pill";
-import { loadAllComponents, loadVersions as loadCollectorVersions } from "@/lib/api/collector-data";
+import { loadIndex, loadVersions as loadCollectorVersions } from "@/lib/api/collector-data";
 import {
   loadAllInstrumentations,
   loadVersions as loadJavaAgentVersions,
 } from "@/lib/api/javaagent-data";
-import type { CollectorComponent, ComponentStatus } from "@/types/collector";
+import type { CollectorComponent, IndexComponent } from "@/types/collector";
 import type { InstrumentationData } from "@/types/javaagent";
 
 export type SearchResultEcosystem = "collector" | "java-agent" | "page";
@@ -56,40 +56,14 @@ export interface SearchResult {
    */
   componentType?: CollectorComponent["type"];
   /**
-   * Resolved stability for the trailing pill. Collector components collapse
-   * their per-signal `status.stability` map to the *highest* stability across
-   * signals (see `highestStability`). Java Agent instrumentations don't track
-   * stability — the field is omitted and the pill doesn't render.
+   * Resolved stability for the trailing pill. Comes straight from the
+   * Collector component index (`stability` is pre-resolved upstream). Java
+   * Agent instrumentations don't track stability, so the field is omitted
+   * and the pill doesn't render.
    */
   stability?: Stability;
   /** Indexed version (omitted on pages). */
   version?: string;
-}
-
-/**
- * Order from "best" (most positive signal) to "worst" (least positive).
- * Used to collapse a Collector component's per-signal stability map to a
- * single value for the dropdown pill — the row shows the strongest
- * stability the component has in *any* signal.
- */
-const STABILITY_RANK: readonly Stability[] = [
-  "stable",
-  "beta",
-  "alpha",
-  "development",
-  "deprecated",
-  "unmaintained",
-];
-
-function highestStability(
-  stabilityMap: ComponentStatus["stability"] | undefined
-): Stability | undefined {
-  if (!stabilityMap) return undefined;
-  for (const candidate of STABILITY_RANK) {
-    const signals = stabilityMap[candidate];
-    if (signals && signals.length > 0) return candidate;
-  }
-  return undefined;
 }
 
 const pageSearchResults: SearchResult[] = [
@@ -277,7 +251,7 @@ function toJavaAgentResult(
 }
 
 function toCollectorResult(
-  component: CollectorComponent,
+  component: IndexComponent,
   version: string,
   resultType: SearchResult["type"] = "item"
 ): SearchResult {
@@ -290,8 +264,11 @@ function toCollectorResult(
       (value): value is string => Boolean(value)
     ),
     ecosystem: "collector",
-    componentType: component.type,
-    stability: highestStability(component.status?.stability),
+    // IndexComponent.type is `string` for forward-compat; SearchResult narrows
+    // to the CollectorComponent union. Cast is safe because the generated
+    // index emits values from that union.
+    componentType: component.type as CollectorComponent["type"],
+    stability: component.stability ?? undefined,
     version,
   };
 }
@@ -308,12 +285,16 @@ async function loadJavaAgentSearchResults(): Promise<SearchResult[]> {
 }
 
 async function loadCollectorSearchResults(): Promise<SearchResult[]> {
-  const versionsIndex = await loadCollectorVersions();
+  // One fetch for /data/collector/index.json + one for versions-index.json,
+  // instead of fanning out to one fetch per component. The index already
+  // carries name/distribution/type/display_name/description/stability — all
+  // SearchResult needs. Per-component JSONs are loaded lazily by the
+  // detail page on click.
+  const [versionsIndex, index] = await Promise.all([loadCollectorVersions(), loadIndex()]);
   const latestVersion = versionsIndex.versions.find((version) => version.is_latest)?.version;
   if (!latestVersion) return [];
 
-  const components = await loadAllComponents(latestVersion);
-  return components.map((component) => toCollectorResult(component, latestVersion));
+  return index.components.map((component) => toCollectorResult(component, latestVersion));
 }
 
 async function buildSearchIndex(): Promise<SearchResult[]> {

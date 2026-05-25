@@ -23,7 +23,7 @@ vi.mock("@/lib/api/javaagent-data", () => ({
 
 vi.mock("@/lib/api/collector-data", () => ({
   loadVersions: vi.fn(),
-  loadAllComponents: vi.fn(),
+  loadIndex: vi.fn(),
 }));
 
 describe("search", () => {
@@ -58,22 +58,21 @@ describe("search", () => {
     vi.mocked(collectorData.loadVersions).mockResolvedValue({
       versions: [{ version: "2.0.0", is_latest: true }],
     });
-    vi.mocked(collectorData.loadAllComponents).mockResolvedValue([
-      {
-        id: "core-receiver-otlp",
-        name: "otlp",
-        ecosystem: "collector",
-        type: "receiver",
-        distribution: "core",
-        display_name: "OTLP Receiver",
-        description: "Receives telemetry over OTLP",
-        status: {
-          class: "receiver",
-          stability: { stable: ["traces", "metrics"], beta: ["logs"] },
-          distributions: ["core"],
+    vi.mocked(collectorData.loadIndex).mockResolvedValue({
+      ecosystem: "collector",
+      taxonomy: { distributions: ["core"], types: ["receiver"] },
+      components: [
+        {
+          id: "core-receiver-otlp",
+          name: "otlp",
+          distribution: "core",
+          type: "receiver",
+          display_name: "OTLP Receiver",
+          description: "Receives telemetry over OTLP",
+          stability: "stable",
         },
-      },
-    ]);
+      ],
+    });
 
     const { search } = await import("./search");
 
@@ -105,7 +104,7 @@ describe("search", () => {
       type: "item",
       ecosystem: "collector",
       componentType: "receiver",
-      stability: "stable", // highest across signals (stable in traces/metrics beats beta in logs)
+      stability: "stable",
       version: "2.0.0",
     });
 
@@ -121,7 +120,7 @@ describe("search", () => {
     expect(pageHit?.componentType).toBeUndefined();
   });
 
-  it("collapses a collector's per-signal stability map to the highest stability", async () => {
+  it("returns undefined stability when the collector index omits it", async () => {
     const javaagentData = await import("@/lib/api/javaagent-data");
     const collectorData = await import("@/lib/api/collector-data");
 
@@ -129,27 +128,26 @@ describe("search", () => {
     vi.mocked(collectorData.loadVersions).mockResolvedValue({
       versions: [{ version: "9.9.9", is_latest: true }],
     });
-    vi.mocked(collectorData.loadAllComponents).mockResolvedValue([
-      {
-        id: "core-receiver-mixed",
-        name: "mixed",
-        ecosystem: "collector",
-        type: "receiver",
-        distribution: "core",
-        display_name: "Mixed Stability Receiver",
-        description: "Has different stability per signal",
-        status: {
-          class: "receiver",
-          // No "stable" entry; highest present is "beta".
-          stability: { beta: ["metrics"], alpha: ["traces"], deprecated: ["logs"] },
-          distributions: ["core"],
+    vi.mocked(collectorData.loadIndex).mockResolvedValue({
+      ecosystem: "collector",
+      taxonomy: { distributions: ["core"], types: ["receiver"] },
+      components: [
+        {
+          id: "core-receiver-untagged",
+          name: "untagged",
+          distribution: "core",
+          type: "receiver",
+          display_name: "Untagged Receiver",
+          description: "No stability in the index",
+          stability: null,
         },
-      },
-    ]);
+      ],
+    });
 
     const { search } = await import("./search");
-    const results = await search("mixed");
-    expect(results[0]?.stability).toBe("beta");
+    const results = await search("untagged");
+    expect(results[0]?.stability).toBeUndefined();
+    expect(results[0]?.path).toBe("/collector/components/core/untagged?version=9.9.9");
   });
 
   it("returns an empty array for blank queries", async () => {
