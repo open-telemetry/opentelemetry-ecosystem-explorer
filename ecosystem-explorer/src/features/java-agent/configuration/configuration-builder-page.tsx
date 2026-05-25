@@ -188,6 +188,7 @@ function InstrumentationTabContent({
   javaAgentVersion,
   activeTab,
 }: InstrumentationTabContentProps) {
+
   const generalNode = useMemo<GroupNode | null>(() => {
     const devNode = schema.children.find((c) => c.key === INSTRUMENTATION_DEV_KEY);
     if (!devNode || devNode.controlType !== "group") return null;
@@ -226,9 +227,27 @@ function InstrumentationTabBody({
   generalNode,
   javaAgentVersion,
 }: InstrumentationTabBodyProps) {
+  const [activePreviewKey, setActivePreviewKey] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 
+  const handleInteraction = (e: React.BaseSyntheticEvent) => {
+    const target = e.target as HTMLElement;
+
+    const leafKey = target
+      .closest("[data-yaml-section-key]")
+      ?.getAttribute("data-yaml-section-key");
+
+    const sectionKey = target
+      .closest("[data-section-key]")
+      ?.getAttribute("data-section-key");
+
+    const key = leafKey ?? sectionKey;
+
+    if (key && key !== activePreviewKey) {
+      setActivePreviewKey(key);
+    }
+  };
   const tocSections: TocSection[] = useMemo(
     () => [
       { key: GENERAL_SECTION_KEY, label: GENERAL_SETTINGS_LABEL },
@@ -289,7 +308,12 @@ function InstrumentationTabBody({
         onStatusFilterChange={setStatusFilter}
         customizationCount={customizationCount}
       />
-      <div ref={sectionsContainerRef} className="space-y-4">
+      <div
+  ref={sectionsContainerRef}
+  className="space-y-4"
+  onFocusCapture={handleInteraction}
+  onPointerDown={handleInteraction}
+>
         <GeneralSectionCard
           label={GENERAL_SETTINGS_LABEL}
           sectionKey={GENERAL_SECTION_KEY}
@@ -309,11 +333,10 @@ function InstrumentationTabBody({
         />
       </div>
       <PreviewCard
-        schema={schema}
-        javaAgentVersion={javaAgentVersion}
-        // Highlighting is currently SDK-only. See #500 for the Instrumentation tab extension.
-        activePreviewKey={null}
-      />
+  schema={schema}
+  javaAgentVersion={javaAgentVersion}
+  activePreviewKey={activePreviewKey}
+/>
     </div>
   );
 }
