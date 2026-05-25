@@ -188,7 +188,6 @@ function InstrumentationTabContent({
   javaAgentVersion,
   activeTab,
 }: InstrumentationTabContentProps) {
-
   const generalNode = useMemo<GroupNode | null>(() => {
     const devNode = schema.children.find((c) => c.key === INSTRUMENTATION_DEV_KEY);
     if (!devNode || devNode.controlType !== "group") return null;
@@ -238,9 +237,7 @@ function InstrumentationTabBody({
       .closest("[data-yaml-section-key]")
       ?.getAttribute("data-yaml-section-key");
 
-    const sectionKey = target
-      .closest("[data-section-key]")
-      ?.getAttribute("data-section-key");
+    const sectionKey = target.closest("[data-section-key]")?.getAttribute("data-section-key");
 
     const key = leafKey ?? sectionKey;
 
@@ -309,11 +306,11 @@ function InstrumentationTabBody({
         customizationCount={customizationCount}
       />
       <div
-  ref={sectionsContainerRef}
-  className="space-y-4"
-  onFocusCapture={handleInteraction}
-  onPointerDown={handleInteraction}
->
+        ref={sectionsContainerRef}
+        className="space-y-4"
+        onFocusCapture={handleInteraction}
+        onPointerDown={handleInteraction}
+      >
         <GeneralSectionCard
           label={GENERAL_SETTINGS_LABEL}
           sectionKey={GENERAL_SECTION_KEY}
@@ -333,10 +330,10 @@ function InstrumentationTabBody({
         />
       </div>
       <PreviewCard
-  schema={schema}
-  javaAgentVersion={javaAgentVersion}
-  activePreviewKey={activePreviewKey}
-/>
+        schema={schema}
+        javaAgentVersion={javaAgentVersion}
+        activePreviewKey={activePreviewKey}
+      />
     </div>
   );
 }

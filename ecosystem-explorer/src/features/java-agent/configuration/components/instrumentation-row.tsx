@@ -59,13 +59,13 @@ export function InstrumentationRow({
     : "border-border/60 bg-background/30 hover:bg-background/50";
 
   return (
-  <div
-    data-testid={`instrumentation-row-${module.name}`}
-    data-expanded={String(isExpanded)}
-    data-section-key="instrumentations"
-    data-yaml-section-key={`instrumentation/development.java.${dashedName}`}
-    className={`rounded-md border transition-colors ${containerClass}`}
-  >
+    <div
+      data-testid={`instrumentation-row-${module.name}`}
+      data-expanded={String(isExpanded)}
+      data-section-key="instrumentations"
+      data-yaml-section-key={`instrumentation/development.java.${dashedName}`}
+      className={`rounded-md border transition-colors ${containerClass}`}
+    >
       <div className="flex flex-col gap-2 px-3 py-2 sm:flex-row sm:items-center sm:gap-3">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
