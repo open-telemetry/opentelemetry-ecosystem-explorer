@@ -4,7 +4,27 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="help" type="text/plain" href="/llms.txt" />
+    <link rel="alternate" type="text/plain" href="/llms.txt" />
     <title>OpenTelemetry Ecosystem Explorer</title>
+    <script>
+      (function () {
+        function fromSystem() {
+          try {
+            return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+          } catch (e) {
+            return "dark";
+          }
+        }
+        try {
+          var stored = localStorage.getItem("td-color-theme");
+          var resolved = stored === "light" || stored === "dark" ? stored : fromSystem();
+          document.documentElement.dataset.theme = resolved;
+        } catch (e) {
+          document.documentElement.dataset.theme = fromSystem();
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

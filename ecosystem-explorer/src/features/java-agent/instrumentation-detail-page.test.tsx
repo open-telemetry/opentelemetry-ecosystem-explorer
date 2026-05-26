@@ -180,6 +180,20 @@ describe("InstrumentationDetailPage", () => {
     expect(mockNavigate).toHaveBeenCalledWith("/java-agent/instrumentation/1.9.0/jdbc");
   });
 
+  it("shows loading spinner on latest URL after versions load, never shows error card", () => {
+    vi.mocked(useInstrumentation).mockReturnValue({
+      data: null,
+      loading: false,
+      error: null,
+    });
+
+    renderWithRouter("/java-agent/instrumentation/latest/jdbc");
+
+    expect(screen.getByText("Loading instrumentation...")).toBeInTheDocument();
+    expect(screen.queryByText("Instrumentation not found")).not.toBeInTheDocument();
+    expect(screen.queryByText("Error loading instrumentation")).not.toBeInTheDocument();
+  });
+
   it("does not fetch instrumentation when version is 'latest'", () => {
     vi.mocked(useInstrumentation).mockReturnValue({
       data: null,

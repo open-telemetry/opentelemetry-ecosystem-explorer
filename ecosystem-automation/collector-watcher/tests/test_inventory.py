@@ -84,6 +84,39 @@ def test_save_versioned_inventory(temp_inventory_dir, sample_components, sample_
     assert len(loaded["components"]) == 2
 
 
+def test_save_versioned_inventory_includes_schema_hash(temp_inventory_dir, sample_components, sample_version):
+    manager = InventoryManager(str(temp_inventory_dir))
+
+    manager.save_versioned_inventory(
+        distribution="core",
+        version=sample_version,
+        components=sample_components,
+        repository="opentelemetry-collector",
+        schema_hash="abc123def456",
+    )
+
+    with open(temp_inventory_dir / "core" / "v0.112.0" / "receiver.yaml") as f:
+        loaded = yaml.safe_load(f)
+
+    assert loaded["schema_hash"] == "abc123def456"
+
+
+def test_save_versioned_inventory_default_schema_hash(temp_inventory_dir, sample_components, sample_version):
+    manager = InventoryManager(str(temp_inventory_dir))
+
+    manager.save_versioned_inventory(
+        distribution="core",
+        version=sample_version,
+        components=sample_components,
+        repository="opentelemetry-collector",
+    )
+
+    with open(temp_inventory_dir / "core" / "v0.112.0" / "receiver.yaml") as f:
+        loaded = yaml.safe_load(f)
+
+    assert loaded["schema_hash"] == "unknown"
+
+
 def test_load_versioned_inventory(temp_inventory_dir, sample_components, sample_version):
     manager = InventoryManager(str(temp_inventory_dir))
 
@@ -92,6 +125,7 @@ def test_load_versioned_inventory(temp_inventory_dir, sample_components, sample_
         version=sample_version,
         components=sample_components,
         repository="opentelemetry-collector-contrib",
+        schema_hash="aabbccddeeff",
     )
 
     loaded = manager.load_versioned_inventory("contrib", sample_version)
@@ -99,7 +133,36 @@ def test_load_versioned_inventory(temp_inventory_dir, sample_components, sample_
     assert loaded["distribution"] == "contrib"
     assert loaded["version"] == "0.112.0"
     assert loaded["repository"] == "opentelemetry-collector-contrib"
+    assert loaded["schema_hash"] == "aabbccddeeff"
     assert loaded["components"] == sample_components
+
+
+def test_load_versioned_inventory_backward_compat_missing_schema_hash(
+    temp_inventory_dir, sample_components, sample_version
+):
+    """Files written before schema_hash was added should load with 'unknown'."""
+    manager = InventoryManager(str(temp_inventory_dir))
+
+    # Write a YAML file without schema_hash to simulate old registry files
+    version_dir = temp_inventory_dir / "core" / "v0.112.0"
+    version_dir.mkdir(parents=True)
+    legacy_data = {
+        "distribution": "core",
+        "version": "0.112.0",
+        "repository": "opentelemetry-collector",
+        "component_type": "receiver",
+        "components": [],
+    }
+    with open(version_dir / "receiver.yaml", "w") as f:
+        yaml.dump(legacy_data, f)
+    # Write stubs for the other component types
+    for ct in ["connector", "exporter", "extension", "processor"]:
+        stub = {**legacy_data, "component_type": ct}
+        with open(version_dir / f"{ct}.yaml", "w") as f:
+            yaml.dump(stub, f)
+
+    loaded = manager.load_versioned_inventory("core", sample_version)
+    assert loaded["schema_hash"] == "unknown"
 
 
 def test_load_nonexistent_versioned_inventory(temp_inventory_dir, sample_version):
@@ -109,7 +172,110 @@ def test_load_nonexistent_versioned_inventory(temp_inventory_dir, sample_version
 
     assert loaded["distribution"] == "contrib"
     assert loaded["version"] == "0.112.0"
+    assert loaded["schema_hash"] == "unknown"
     assert loaded["components"] == {}
+
+
+def test_meta_schemas_dir_helper(temp_inventory_dir):
+    manager = InventoryManager(str(temp_inventory_dir))
+    expected = temp_inventory_dir / "meta" / "schemas"
+    assert manager.meta_schemas_dir() == expected
+
+
+def test_prune_orphan_schemas_removes_unreferenced_files(temp_inventory_dir, sample_components, sample_version):
+    """Schema files in meta/schemas not referenced by any component YAML are deleted."""
+    manager = InventoryManager(str(temp_inventory_dir))
+
+    # Register one inventory referencing schema_hash "abc123def456"
+    manager.save_versioned_inventory(
+        distribution="core",
+        version=sample_version,
+        components=sample_components,
+        repository="opentelemetry-collector",
+        schema_hash="abc123def456",
+    )
+
+    # Plant two schema files: one referenced, one orphan
+    schemas_dir = manager.meta_schemas_dir()
+    schemas_dir.mkdir(parents=True)
+    (schemas_dir / "abc123def456.yaml").write_text("type: object\n")
+    (schemas_dir / "deadbeefcafe.yaml").write_text("type: orphan\n")
+
+    removed = manager.prune_orphan_schemas()
+
+    assert removed == 1
+    assert (schemas_dir / "abc123def456.yaml").exists()
+    assert not (schemas_dir / "deadbeefcafe.yaml").exists()
+
+
+def test_prune_orphan_schemas_noop_when_meta_dir_absent(temp_inventory_dir):
+    manager = InventoryManager(str(temp_inventory_dir))
+    assert manager.prune_orphan_schemas() == 0
+
+
+def test_prune_orphan_schemas_treats_unknown_as_unreferenced(temp_inventory_dir, sample_components, sample_version):
+    """A 'unknown' schema_hash does not protect any file from pruning."""
+    manager = InventoryManager(str(temp_inventory_dir))
+
+    manager.save_versioned_inventory(
+        distribution="core",
+        version=sample_version,
+        components=sample_components,
+        repository="opentelemetry-collector",
+        schema_hash="unknown",
+    )
+
+    schemas_dir = manager.meta_schemas_dir()
+    schemas_dir.mkdir(parents=True)
+    (schemas_dir / "abc123def456.yaml").write_text("type: object\n")
+
+    removed = manager.prune_orphan_schemas()
+
+    assert removed == 1
+    assert not (schemas_dir / "abc123def456.yaml").exists()
+
+
+def test_delete_version_prunes_orphan_schemas(temp_inventory_dir, sample_components, sample_version):
+    """Deleting the last version that referenced a schema removes the schema file."""
+    manager = InventoryManager(str(temp_inventory_dir))
+
+    manager.save_versioned_inventory(
+        distribution="core",
+        version=sample_version,
+        components=sample_components,
+        repository="opentelemetry-collector",
+        schema_hash="abc123def456",
+    )
+
+    schemas_dir = manager.meta_schemas_dir()
+    schemas_dir.mkdir(parents=True)
+    (schemas_dir / "abc123def456.yaml").write_text("type: object\n")
+
+    manager.delete_version("core", sample_version)
+
+    assert not (schemas_dir / "abc123def456.yaml").exists()
+
+
+def test_cleanup_snapshots_prunes_orphan_schemas(temp_inventory_dir, sample_components):
+    """Removing the only snapshot that referenced a schema removes the schema file."""
+    manager = InventoryManager(str(temp_inventory_dir))
+
+    snapshot = Version(major=0, minor=113, patch=0, prerelease=("SNAPSHOT",))
+    manager.save_versioned_inventory(
+        distribution="core",
+        version=snapshot,
+        components=sample_components,
+        repository="opentelemetry-collector",
+        schema_hash="abc123def456",
+    )
+
+    schemas_dir = manager.meta_schemas_dir()
+    schemas_dir.mkdir(parents=True)
+    (schemas_dir / "abc123def456.yaml").write_text("type: object\n")
+
+    manager.cleanup_snapshots("core")
+
+    assert not (schemas_dir / "abc123def456.yaml").exists()
 
 
 def test_list_versions(temp_inventory_dir, sample_components):

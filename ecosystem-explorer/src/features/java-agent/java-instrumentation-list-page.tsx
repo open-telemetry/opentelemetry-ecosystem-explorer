@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { AlertCircle, Loader2, X } from "lucide-react";
 import { BackButton } from "@/components/ui/back-button";
 import { useVersions, useInstrumentations } from "@/hooks/use-javaagent-data";
 import { useLazyPagination } from "@/hooks/use-lazy-pagination";
@@ -21,7 +22,7 @@ import {
   InstrumentationFilterBar,
 } from "@/features/java-agent/components/instrumentation-filter-bar.tsx";
 import { useMemo, useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { InstrumentationGroupCard } from "@/features/java-agent/components/instrumentation-group-card.tsx";
 import { VersionSelector } from "@/features/java-agent/components/version-selector";
 import { getInstrumentationDisplayName } from "./utils/format";
@@ -31,19 +32,36 @@ import { PageContainer } from "@/components/layout/page-container";
 export function JavaInstrumentationListPage() {
   const { version: versionParam } = useParams<{ version?: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const { data: versionsData, loading: versionsLoading } = useVersions();
+  const { data: versionsData, loading: versionsLoading, error: versionsError } = useVersions();
 
   const latestVersion = versionsData?.versions.find((v) => v.is_latest)?.version ?? "";
 
-  // Redirect /java-agent/instrumentation (no version) or /latest to the actual latest version
+  const [searchParams, setSearchParams] = useSearchParams();
+  const invalidVersion = searchParams.get("redirectedFrom");
+  const [bannerDismissed, setBannerDismissed] = useState(false);
+
+  const isVersionValid =
+    !versionParam ||
+    versionParam === "latest" ||
+    (!!versionsData && versionsData.versions.some((v) => v.version === versionParam));
+
+  // Redirect: no-version/latest → latest (preserving query params so shared filter URLs survive).
+  // Invalid version → latest with redirectedFrom banner.
   useEffect(() => {
     if (versionsData && latestVersion) {
       if (!versionParam || versionParam === "latest") {
-        navigate(`/java-agent/instrumentation/${latestVersion}`, { replace: true });
+        navigate(`/java-agent/instrumentation/${latestVersion}${location.search}`, {
+          replace: true,
+        });
+      } else if (!isVersionValid) {
+        navigate(`/java-agent/instrumentation/${latestVersion}?redirectedFrom=${versionParam}`, {
+          replace: true,
+        });
       }
     }
-  }, [versionParam, versionsData, latestVersion, navigate]);
+  }, [versionParam, versionsData, latestVersion, navigate, isVersionValid, location.search]);
 
   const resolvedVersion = versionParam && versionParam !== "latest" ? versionParam : "";
 
@@ -53,11 +71,95 @@ export function JavaInstrumentationListPage() {
     error,
   } = useInstrumentations(resolvedVersion);
 
-  const [filters, setFilters] = useState<FilterState>({
-    search: "",
-    telemetry: new Set(),
-    target: new Set(),
-  });
+  const urlSearch = searchParams.get("search") ?? "";
+
+  // Local state for the search input — updates immediately on every keystroke,
+  // avoiding the URL round-trip lag that causes flicker on CTRL+A + type.
+  const [localSearch, setLocalSearch] = useState(urlSearch);
+
+  // Detect external URL changes (back/forward) and sync the input using
+  // React's documented derived state during render pattern.
+  const [syncedUrlSearch, setSyncedUrlSearch] = useState(urlSearch);
+  if (syncedUrlSearch !== urlSearch) {
+    setSyncedUrlSearch(urlSearch);
+    setLocalSearch(urlSearch);
+  }
+
+  const filters: FilterState = useMemo(() => {
+    const telemetryParam = searchParams.get("telemetry");
+    const typeParam = searchParams.get("type");
+    const semanticParam = searchParams.get("semantic");
+    const featuresParam = searchParams.get("features");
+
+    const telemetry = new Set<"spans" | "metrics">();
+    if (telemetryParam) {
+      telemetryParam.split(",").forEach((v) => {
+        if (v === "spans" || v === "metrics") telemetry.add(v);
+      });
+    }
+
+    const target = new Set<"javaagent" | "library">();
+    if (typeParam) {
+      typeParam.split(",").forEach((v) => {
+        if (v === "javaagent" || v === "library") target.add(v);
+      });
+    }
+
+    const semantic = semanticParam ? semanticParam.split(",").filter(Boolean) : [];
+    const features = featuresParam ? featuresParam.split(",").filter(Boolean) : [];
+
+    return { search: localSearch, telemetry, target, semantic, features };
+  }, [searchParams, localSearch]);
+
+  const handleFiltersChange = (newFilters: FilterState) => {
+    // Update local search state immediately so the input never lags behind keystrokes.
+    setLocalSearch(newFilters.search);
+
+    // Use replace for high-frequency search typing to avoid polluting browser history.
+    // Use push (replace: false) for discrete toggle changes so back button works.
+    const setsUnchanged =
+      newFilters.telemetry.size === filters.telemetry.size &&
+      newFilters.target.size === filters.target.size &&
+      newFilters.semantic.length === filters.semantic.length &&
+      newFilters.features.length === filters.features.length &&
+      [...newFilters.telemetry].every((v) => filters.telemetry.has(v)) &&
+      [...newFilters.target].every((v) => filters.target.has(v)) &&
+      newFilters.semantic.every((v, i) => filters.semantic[i] === v) &&
+      newFilters.features.every((v, i) => filters.features[i] === v);
+
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        if (newFilters.search) {
+          next.set("search", newFilters.search);
+        } else {
+          next.delete("search");
+        }
+        if (newFilters.telemetry.size > 0) {
+          next.set("telemetry", [...newFilters.telemetry].join(","));
+        } else {
+          next.delete("telemetry");
+        }
+        if (newFilters.target.size > 0) {
+          next.set("type", [...newFilters.target].join(","));
+        } else {
+          next.delete("type");
+        }
+        if (newFilters.semantic.length > 0) {
+          next.set("semantic", newFilters.semantic.join(","));
+        } else {
+          next.delete("semantic");
+        }
+        if (newFilters.features.length > 0) {
+          next.set("features", newFilters.features.join(","));
+        } else {
+          next.delete("features");
+        }
+        return next;
+      },
+      { replace: setsUnchanged }
+    );
+  };
 
   const filteredInstrumentations = useMemo(() => {
     if (!instrumentations) return [];
@@ -66,9 +168,14 @@ export function JavaInstrumentationListPage() {
       if (filters.search) {
         const searchLower = filters.search.toLowerCase();
         const name = getInstrumentationDisplayName(instr).toLowerCase();
+        const rawName = instr.name.toLowerCase();
         const description = (instr.description || "").toLowerCase();
 
-        if (!name.includes(searchLower) && !description.includes(searchLower)) {
+        if (
+          !name.includes(searchLower) &&
+          !rawName.includes(searchLower) &&
+          !description.includes(searchLower)
+        ) {
           return false;
         }
       }
@@ -95,6 +202,16 @@ export function JavaInstrumentationListPage() {
         if (filters.target.has("library") && !hasLibrary) {
           return false;
         }
+      }
+
+      if (filters.semantic.length > 0) {
+        const hasMatch = filters.semantic.some((s) => instr.semantic_conventions?.includes(s));
+        if (!hasMatch) return false;
+      }
+
+      if (filters.features.length > 0) {
+        const hasMatch = filters.features.some((f) => instr.features?.includes(f));
+        if (!hasMatch) return false;
       }
 
       return true;
@@ -158,88 +275,76 @@ export function JavaInstrumentationListPage() {
   );
 
   const handleVersionChange = (newVersion: string) => {
-    navigate(`/java-agent/instrumentation/${newVersion}`);
+    const params = new URLSearchParams(location.search);
+    params.delete("redirectedFrom");
+    const query = params.toString();
+    navigate(`/java-agent/instrumentation/${newVersion}${query ? `?${query}` : ""}`);
   };
-
-  if (versionsLoading || instrumentationsLoading) {
-    return (
-      <PageContainer>
-        <div className="flex min-h-[400px] items-center justify-center">
-          <div className="space-y-2 text-center">
-            <div className="text-lg font-medium">Loading instrumentations...</div>
-            <div className="text-muted-foreground text-sm">This may take a moment</div>
-          </div>
-        </div>
-      </PageContainer>
-    );
-  }
-
-  if (error) {
-    return (
-      <PageContainer>
-        <div className="rounded-lg border border-red-500/50 bg-red-500/10 p-6 text-red-600 dark:text-red-400">
-          <h3 className="mb-2 font-semibold">Error loading instrumentations</h3>
-          <p className="text-sm">{error.message}</p>
-        </div>
-      </PageContainer>
-    );
-  }
-
-  if (!resolvedVersion) {
-    return (
-      <PageContainer>
-        <div className="rounded-lg border border-yellow-500/50 bg-yellow-500/10 p-6 text-yellow-600 dark:text-yellow-400">
-          <h3 className="mb-2 font-semibold">No version available</h3>
-        </div>
-      </PageContainer>
-    );
-  }
 
   return (
     <PageContainer>
       <div className="space-y-4">
         <BackButton />
 
+        {invalidVersion && !bannerDismissed && (
+          <div className="flex items-start justify-between gap-2 rounded-lg border border-yellow-500/50 bg-yellow-500/10 px-4 py-3 text-sm text-yellow-700 dark:text-yellow-400">
+            <p>
+              Version &quot;{invalidVersion}&quot; was not found. Showing the latest version (
+              {latestVersion}) instead.
+            </p>
+            <button
+              onClick={() => setBannerDismissed(true)}
+              aria-label="Dismiss"
+              className="mt-0.5 shrink-0 hover:opacity-70"
+            >
+              <X className="h-4 w-4" aria-hidden="true" />
+            </button>
+          </div>
+        )}
+
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-3">
             <h1 className="text-3xl font-bold md:text-4xl">
-              <span className="bg-gradient-to-r from-[hsl(var(--secondary-hsl))] to-[hsl(var(--primary-hsl))] bg-clip-text text-transparent">
+              <span className="from-otel-orange to-otel-blue bg-gradient-to-r bg-clip-text text-transparent">
                 OpenTelemetry Java Agent
               </span>
             </h1>
-            <p className="text-muted-foreground text-base">
-              Explore {instrumentations?.length ?? 0} available instrumentations.
-            </p>
-          </div>
-
-          {versionsData && versionsData.versions.length > 0 && (
-            <VersionSelector
-              versions={versionsData.versions}
-              currentVersion={resolvedVersion}
-              onVersionChange={handleVersionChange}
-            />
-          )}
-        </div>
-
-        <InstrumentationFilterBar filters={filters} onFiltersChange={setFilters} />
-
-        <div className="border-border/50 flex items-center justify-between border-b pb-4">
-          <div className="text-muted-foreground text-sm">
-            Showing {filteredInstrumentations.length} of {instrumentations?.length ?? 0}{" "}
-            instrumentations
-          </div>
-        </div>
-
-        {filteredInstrumentations.length === 0 ? (
-          <div className="border-border/50 bg-card/30 flex min-h-[300px] items-center justify-center rounded-lg border">
-            <div className="text-center">
+            {instrumentations != null && (
               <p className="text-muted-foreground text-base">
-                No instrumentations found matching your filters.
+                Explore {instrumentations.length} available instrumentations.
               </p>
-              <p className="text-muted-foreground/70 mt-2 text-sm">
-                Try adjusting your search or filter criteria
-              </p>
+            )}
+          </div>
+
+          <VersionSelector
+            versions={versionsData?.versions ?? []}
+            currentVersion={resolvedVersion}
+            onVersionChange={handleVersionChange}
+            disabled={versionsLoading}
+          />
+        </div>
+
+        <InstrumentationFilterBar
+          filters={filters}
+          onFiltersChange={handleFiltersChange}
+          instrumentations={instrumentations ?? []}
+        />
+
+        {versionsError || error ? (
+          <div className="flex flex-col items-center justify-center space-y-4 py-32 text-center text-red-500">
+            <AlertCircle className="mx-auto h-12 w-12 opacity-50" aria-hidden="true" />
+            <h3 className="text-xl font-semibold">Error loading data</h3>
+            {(versionsError ?? error)?.message && (
+              <p className="text-muted-foreground text-sm">{(versionsError ?? error)!.message}</p>
+            )}
+            <p className="text-muted-foreground">Please try refreshing the page.</p>
+          </div>
+        ) : versionsLoading || instrumentationsLoading || (!resolvedVersion && !versionsError) ? (
+          <div className="flex flex-col items-center justify-center space-y-4 py-32">
+            <div className="inline-flex animate-pulse rounded-full p-4 shadow-[0_0_60px_hsl(var(--primary-hsl)/0.2)]">
+              <Loader2 className="text-primary h-10 w-10 animate-spin" aria-hidden="true" />
             </div>
+            <p className="text-muted-foreground text-sm font-medium">Loading instrumentations...</p>
           </div>
         ) : (
           <div className="space-y-12">
@@ -263,18 +368,22 @@ export function JavaInstrumentationListPage() {
                     className="h-px"
                   />
                 )}
+          <>
+            <div className="border-border/50 flex items-center justify-between border-b pb-4">
+              <div className="text-muted-foreground text-sm">
+                Showing {filteredInstrumentations.length} of {instrumentations?.length ?? 0}{" "}
+                instrumentations
               </div>
-            )}
+            </div>
 
-            {customGroups.length > 0 && (
-              <div className="space-y-6">
-                <div className="border-border/50 border-b pb-2">
-                  <h2 className="text-foreground text-2xl font-semibold tracking-tight">
-                    Custom Instrumentations
-                  </h2>
-                  <p className="text-muted-foreground mt-1 text-sm">
-                    Non-library instrumentations such as methods, JMX metrics, and external
-                    annotations.
+            {filteredInstrumentations.length === 0 ? (
+              <div className="border-border/50 bg-card/30 flex min-h-[300px] items-center justify-center rounded-lg border">
+                <div className="text-center">
+                  <p className="text-muted-foreground text-base">
+                    No instrumentations found matching your filters.
+                  </p>
+                  <p className="text-muted-foreground/70 mt-2 text-sm">
+                    Try adjusting your search or filter criteria
                   </p>
                 </div>
                 <div className="space-y-4">
@@ -298,8 +407,47 @@ export function JavaInstrumentationListPage() {
                   )}
                 </div>
               </div>
+            ) : (
+              <div className="space-y-12">
+                {libraryGroups.length > 0 && (
+                  <div className="grid gap-6 md:grid-cols-2">
+                    {libraryGroups.map((group) => (
+                      <InstrumentationGroupCard
+                        key={group.displayName}
+                        group={group}
+                        activeFilters={filters}
+                        version={resolvedVersion}
+                      />
+                    ))}
+                  </div>
+                )}
+
+                {customGroups.length > 0 && (
+                  <div className="space-y-6">
+                    <div className="border-border/50 border-b pb-2">
+                      <h2 className="text-foreground text-2xl font-semibold tracking-tight">
+                        Custom Instrumentations
+                      </h2>
+                      <p className="text-muted-foreground mt-1 text-sm">
+                        Non-library instrumentations such as methods, JMX metrics, and external
+                        annotations.
+                      </p>
+                    </div>
+                    <div className="grid gap-6 md:grid-cols-2">
+                      {customGroups.map((group) => (
+                        <InstrumentationGroupCard
+                          key={group.displayName}
+                          group={group}
+                          activeFilters={filters}
+                          version={resolvedVersion}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
-          </div>
+          </>
         )}
       </div>
     </PageContainer>

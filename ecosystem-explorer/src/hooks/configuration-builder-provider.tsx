@@ -20,6 +20,8 @@ import {
   ConfigStateContext,
   ConfigDispatchContext,
 } from "./use-configuration-builder";
+import { StarterPathsContext } from "@/features/java-agent/configuration/components/configuration-ui-context";
+import { collectStarterPaths } from "@/lib/collect-starter-paths";
 
 interface ConfigurationBuilderProviderProps {
   schema: ConfigNode;
@@ -36,10 +38,19 @@ export function ConfigurationBuilderProvider({
 }: ConfigurationBuilderProviderProps) {
   const { state, actions } = useConfigurationBuilderState(schema, version, starter);
   const stateValue = useMemo(() => ({ state }), [state]);
+  const starterPaths = useMemo(
+    () =>
+      starter?.values
+        ? collectStarterPaths(starter.values as Record<string, unknown>)
+        : new Set<string>(),
+    [starter]
+  );
 
   return (
     <ConfigStateContext.Provider value={stateValue}>
-      <ConfigDispatchContext.Provider value={actions}>{children}</ConfigDispatchContext.Provider>
+      <ConfigDispatchContext.Provider value={actions}>
+        <StarterPathsContext.Provider value={starterPaths}>{children}</StarterPathsContext.Provider>
+      </ConfigDispatchContext.Provider>
     </ConfigStateContext.Provider>
   );
 }

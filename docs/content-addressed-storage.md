@@ -75,9 +75,10 @@ Hash in filename guarantees immutable content:
 }
 ```
 
-Caching: `versions-index.json` is updated when new versions are added and should be served with a short TTL (for example
-`Cache-Control: public, max-age=60`) so clients quickly observe new versions. Clients are expected to fetch the current
-versions index before requesting any specific version manifests.
+Caching: `versions-index.json` is updated when new versions are added and should be served with a
+short TTL (for example `Cache-Control: public, max-age=60`) so clients quickly observe new versions.
+Clients are expected to fetch the current versions index before requesting any specific version
+manifests.
 
 ### Version Manifest
 

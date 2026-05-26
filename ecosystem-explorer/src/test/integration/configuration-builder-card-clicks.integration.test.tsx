@@ -30,61 +30,29 @@ beforeEach(() => {
   cleanup();
 });
 
-describe("ConfigurationBuilderPage — card click behavior", () => {
+describe("ConfigurationBuilderPage card click behavior", () => {
   it("clicking an input inside an expanded card does not steal focus or scroll", async () => {
     renderPage();
     const user = userEvent.setup();
 
-    // Enable Logger Provider so its body renders, mirroring the user's bug
-    // report path of clicking inside an expanded section card.
-    const loggerSwitch = await screen.findByRole(
-      "switch",
-      { name: /Enable Logger Provider/i },
-      { timeout: 10_000 }
-    );
-    if (loggerSwitch.getAttribute("aria-checked") !== "true") {
-      await user.click(loggerSwitch);
-    }
+    // Wait for the page to settle. Resource is auto-enabled by the starter
+    // and its attributes_list text input renders inline.
+    await screen.findByRole("switch", { name: /Enable Resource/i }, { timeout: 10_000 });
 
-    // Scope all subsequent queries to the Logger Provider card.
-    const loggerSection = document.querySelector<HTMLElement>(
-      '[data-section-key="logger_provider"]'
-    );
-    expect(loggerSection).not.toBeNull();
-    const logger = within(loggerSection as HTMLElement);
+    const resourceSection = document.querySelector<HTMLElement>('[data-section-key="resource"]');
+    expect(resourceSection).not.toBeNull();
+    const resource = within(resourceSection as HTMLElement);
 
-    // Expand the Logger Configurator group so its leaf controls render.
-    await user.click(logger.getByRole("button", { name: "Expand Logger Configurator" }));
-
-    // Wait for at least one nested expand button or input to materialize.
+    // The attributes_list text input is in the DOM as soon as Resource expands.
     await waitFor(() => {
-      expect(logger.queryAllByRole("button").length).toBeGreaterThan(2);
+      expect(resource.queryAllByRole("textbox").length).toBeGreaterThan(0);
     });
-
-    // Expand the Loggers list inside Logger Configurator if present (the
-    // schema may evolve; pick whichever expand chevron leads to a textbox).
-    // Items are rendered headless after deriveListItemLabel landed, so the
-    // form fields are inline as soon as Add fires — no per-item Expand step.
-    const expandLoggers = logger.queryAllByRole("button", { name: "Expand Loggers" });
-    if (expandLoggers.length > 0) {
-      await user.click(expandLoggers[0]);
-      const addLoggers = logger.queryAllByRole("button", { name: "Add item to Loggers" });
-      if (addLoggers.length > 0) {
-        await user.click(addLoggers[0]);
-        await waitFor(() => {
-          expect(logger.queryAllByRole("textbox").length).toBeGreaterThan(0);
-        });
-      }
-    }
 
     // Force scrollY > 0 so a "jump to top" would be detectable.
     Object.defineProperty(window, "scrollY", { configurable: true, value: 400 });
     const scrollYBefore = window.scrollY;
 
-    const textInputs = logger.getAllByRole("textbox");
-    expect(textInputs.length).toBeGreaterThan(0);
-    const target = textInputs[0];
-
+    const target = resource.getAllByRole("textbox")[0];
     await user.click(target);
 
     // 1. The input keeps focus (was not stolen by the section element).
@@ -92,7 +60,62 @@ describe("ConfigurationBuilderPage — card click behavior", () => {
     // 2. No code path adjusted scroll position.
     expect(window.scrollY).toBe(scrollYBefore);
     // 3. Typing actually lands characters.
-    await user.type(target, "my-logger");
-    expect(target).toHaveValue("my-logger");
+    await user.clear(target);
+    await user.type(target, "my-service");
+    expect(target).toHaveValue("my-service");
+  });
+
+  it("interacting with a section card highlights the corresponding YAML section in the preview", async () => {
+    renderPage();
+    const user = userEvent.setup();
+
+    // Wait for the page to settle. Resource is auto-enabled by the starter
+    await screen.findByRole("switch", { name: /Enable Resource/i }, { timeout: 10_000 });
+
+    const resourceSection = document.querySelector<HTMLElement>('[data-section-key="resource"]');
+    expect(resourceSection).not.toBeNull();
+
+    // Interact with it (e.g. click the card itself)
+    await user.click(resourceSection!);
+
+    // Wait for the YAML preview to re-render with the active class
+    await waitFor(() => {
+      const resourceYamlSection = document.querySelector<HTMLElement>(
+        '[data-yaml-section="resource"]'
+      );
+      expect(resourceYamlSection).not.toBeNull();
+      expect(resourceYamlSection?.className).toContain("bg-otel-orange/10");
+    });
+  });
+
+  it("interacting with a leaf field inside the General card highlights the matching YAML block", async () => {
+    renderPage();
+    const user = userEvent.setup();
+
+    // Wait for the page to settle.
+    await screen.findByRole("switch", { name: /Enable Resource/i }, { timeout: 10_000 });
+
+    // Expand the General card first so its leaf wrappers are in the DOM.
+    await user.click(screen.getByRole("button", { name: /Expand General/i }));
+
+    const disabledLeaf = await waitFor(() => {
+      const el = document.querySelector<HTMLElement>('[data-yaml-section-key="disabled"]');
+      expect(el).not.toBeNull();
+      return el as HTMLElement;
+    });
+
+    // Enable the `disabled` leaf so it shows up in the YAML output.
+    await user.click(within(disabledLeaf).getByRole("button", { name: /Expand Disabled/i }));
+    const disabledToggle = within(disabledLeaf).getByRole("switch", { name: /Disabled/i });
+    await user.click(disabledToggle);
+
+    // Assert the highlight tracks the leaf key, not the synthetic "general" section.
+    await waitFor(() => {
+      const disabledYamlBlock = document.querySelector<HTMLElement>(
+        '[data-yaml-section="disabled"]'
+      );
+      expect(disabledYamlBlock).not.toBeNull();
+      expect(disabledYamlBlock?.className).toContain("bg-otel-orange/10");
+    });
   });
 });

@@ -36,6 +36,12 @@ export function AgentExploreLanding() {
             href="/java-agent/configuration"
             icon={<ConfigurationIcon className="h-20 w-20" />}
           />
+          <NavigationCard
+            title="Configuration Builder"
+            description="Build and customize a declarative configuration file for the Java Agent."
+            href="/java-agent/configuration/builder"
+            icon={<ConfigurationIcon className="h-20 w-20" />}
+          />
           {isEnabled("JAVA_RELEASE_COMPARISON") && (
             <NavigationCard
               title="Releases"

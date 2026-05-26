@@ -35,7 +35,9 @@ export function groupByModule(entries: InstrumentationData[]): InstrumentationMo
 
   const modules: InstrumentationModule[] = [];
   for (const [name, bucket] of buckets) {
-    const coveredEntries = [...bucket].sort((a, b) => a.name.localeCompare(b.name));
+    const coveredEntries = [...bucket].sort((a, b) =>
+      a.name.localeCompare(b.name, undefined, { numeric: true })
+    );
     const defaultDisabled = coveredEntries.every((e) => e.disabled_by_default === true);
     modules.push({ name, defaultDisabled, coveredEntries });
   }

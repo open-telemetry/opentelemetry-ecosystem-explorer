@@ -21,6 +21,7 @@ from unittest.mock import Mock, patch
 
 import git
 import pytest
+import yaml
 from collector_watcher.collector_sync import CollectorSync
 from collector_watcher.inventory_manager import InventoryManager
 from semantic_version import Version
@@ -124,6 +125,113 @@ def test_save_version(collector_sync, sample_components, temp_inventory_dir):
     assert (version_dir / "receiver.yaml").exists()
     assert (version_dir / "processor.yaml").exists()
     assert (version_dir / "exporter.yaml").exists()
+
+
+def test_save_version_writes_schema_hash_unknown_when_schema_absent(
+    collector_sync, sample_components, temp_inventory_dir
+):
+    """When the upstream repo has no metadata-schema.yaml, schema_hash is 'unknown'."""
+    version = Version("0.112.0")
+    collector_sync.save_version("core", version, sample_components)
+
+    version_dir = temp_inventory_dir / "core" / "v0.112.0"
+    with open(version_dir / "receiver.yaml") as f:
+        data = yaml.safe_load(f)
+    assert data["schema_hash"] == "unknown"
+
+
+def test_save_version_writes_schema_hash_when_schema_present(
+    collector_sync, sample_components, temp_inventory_dir, temp_git_repos
+):
+    """When the upstream repo has metadata-schema.yaml, schema_hash is a 12-char hex."""
+    # Plant a fake schema file in the repo the sync uses for "core"
+    schema_dir = Path(temp_git_repos["core"]) / "cmd" / "mdatagen"
+    schema_dir.mkdir(parents=True, exist_ok=True)
+    (schema_dir / "metadata-schema.yaml").write_text("type: object\n")
+
+    version = Version("0.112.0")
+    collector_sync.save_version("core", version, sample_components)
+
+    version_dir = temp_inventory_dir / "core" / "v0.112.0"
+    with open(version_dir / "receiver.yaml") as f:
+        data = yaml.safe_load(f)
+
+    schema_hash = data["schema_hash"]
+    assert schema_hash != "unknown"
+    assert len(schema_hash) == 12
+    assert all(c in "0123456789abcdef" for c in schema_hash)
+
+
+def test_save_version_contrib_reads_schema_hash_from_core(
+    collector_sync, sample_components, temp_inventory_dir, temp_git_repos
+):
+    """Contrib has no mdatagen — its schema_hash must come from the core repo."""
+    # Plant a schema file in core only. Contrib intentionally has none.
+    schema_dir = Path(temp_git_repos["core"]) / "cmd" / "mdatagen"
+    schema_dir.mkdir(parents=True, exist_ok=True)
+    (schema_dir / "metadata-schema.yaml").write_text("type: object\n")
+
+    version = Version("0.112.0")
+    collector_sync.save_version("core", version, sample_components)
+    collector_sync.save_version("contrib", version, sample_components)
+
+    with open(temp_inventory_dir / "core" / "v0.112.0" / "receiver.yaml") as f:
+        core_hash = yaml.safe_load(f)["schema_hash"]
+    with open(temp_inventory_dir / "contrib" / "v0.112.0" / "receiver.yaml") as f:
+        contrib_hash = yaml.safe_load(f)["schema_hash"]
+
+    assert contrib_hash != "unknown"
+    assert contrib_hash == core_hash
+
+
+def test_save_version_stores_schema_in_cas_when_present(
+    collector_sync, sample_components, temp_inventory_dir, temp_git_repos
+):
+    """The schema is stored at meta/schemas/{hash}.yaml, not under a distribution directory."""
+    schema_dir = Path(temp_git_repos["core"]) / "cmd" / "mdatagen"
+    schema_dir.mkdir(parents=True, exist_ok=True)
+    (schema_dir / "metadata-schema.yaml").write_text("type: object\n")
+
+    version = Version("0.112.0")
+    collector_sync.save_version("core", version, sample_components)
+
+    with open(temp_inventory_dir / "core" / "v0.112.0" / "receiver.yaml") as f:
+        schema_hash = yaml.safe_load(f)["schema_hash"]
+
+    schemas_dir = temp_inventory_dir / "meta" / "schemas"
+    stored = schemas_dir / f"{schema_hash}.yaml"
+    assert stored.exists()
+    assert stored.read_text() == "type: object\n"
+
+    # Schema is NOT duplicated inside the distribution directory
+    assert not (temp_inventory_dir / "core" / "v0.112.0" / "metadata-schema.yaml").exists()
+
+
+def test_save_version_cas_dedupes_across_distributions(
+    collector_sync, sample_components, temp_inventory_dir, temp_git_repos
+):
+    """Saving core and contrib at the same schema content yields a single CAS file."""
+    schema_dir = Path(temp_git_repos["core"]) / "cmd" / "mdatagen"
+    schema_dir.mkdir(parents=True, exist_ok=True)
+    (schema_dir / "metadata-schema.yaml").write_text("type: object\n")
+
+    version = Version("0.112.0")
+    collector_sync.save_version("contrib", version, sample_components)
+    collector_sync.save_version("core", version, sample_components)
+
+    schemas_dir = temp_inventory_dir / "meta" / "schemas"
+    stored_files = list(schemas_dir.glob("*.yaml"))
+    assert len(stored_files) == 1
+
+
+def test_save_version_does_not_create_schema_file_when_absent(collector_sync, sample_components, temp_inventory_dir):
+    """When core has no schema, nothing is written to meta/schemas/ and schema_hash is 'unknown'."""
+    version = Version("0.112.0")
+    collector_sync.save_version("core", version, sample_components)
+
+    schemas_dir = temp_inventory_dir / "meta" / "schemas"
+    assert not schemas_dir.exists() or not any(schemas_dir.iterdir())
+    assert not (temp_inventory_dir / "core" / "v0.112.0" / "metadata-schema.yaml").exists()
 
 
 def test_process_latest_release_already_exists(collector_sync, sample_components, temp_inventory_dir):

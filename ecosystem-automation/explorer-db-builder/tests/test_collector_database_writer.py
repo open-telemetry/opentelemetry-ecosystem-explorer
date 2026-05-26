@@ -36,7 +36,7 @@ def db_writer(temp_db_dir):
 def sample_components():
     return [
         {
-            "id": "contrib-receiver-otlp",
+            "id": "contrib-otlp",
             "ecosystem": "collector",
             "distribution": "contrib",
             "type": "receiver",
@@ -47,7 +47,7 @@ def sample_components():
             "status": {"class": "receiver", "stability": {"beta": ["traces"]}},
         },
         {
-            "id": "core-processor-batch",
+            "id": "core-batch",
             "ecosystem": "collector",
             "distribution": "core",
             "type": "processor",
@@ -65,9 +65,9 @@ class TestWriteComponents:
         component_map = db_writer.write_components(sample_components)
 
         assert len(component_map) == 2
-        assert "contrib-receiver-otlp" in component_map
-        assert "core-processor-batch" in component_map
-        assert len(component_map["contrib-receiver-otlp"]) == 12
+        assert "contrib-otlp" in component_map
+        assert "core-batch" in component_map
+        assert len(component_map["contrib-otlp"]) == 12
 
         for comp_id, comp_hash in component_map.items():
             expected = temp_db_dir / "components" / comp_id / f"{comp_id}-{comp_hash}.json"
@@ -76,7 +76,7 @@ class TestWriteComponents:
     def test_write_components_content(self, db_writer, sample_components, temp_db_dir):
         component_map = db_writer.write_components(sample_components)
 
-        comp_id = "contrib-receiver-otlp"
+        comp_id = "contrib-otlp"
         comp_hash = component_map[comp_id]
         path = temp_db_dir / "components" / comp_id / f"{comp_id}-{comp_hash}.json"
         with open(path) as f:
@@ -126,7 +126,7 @@ class TestWriteComponents:
 class TestWriteVersionIndex:
     def test_write_version_index_success(self, db_writer, temp_db_dir):
         version = Version("0.150.0")
-        component_map = {"contrib-receiver-otlp": "abc123456789"}
+        component_map = {"contrib-otlp": "abc123456789"}
 
         db_writer.write_version_index(version, component_map)
 
@@ -204,7 +204,7 @@ class TestWriteIndex:
         index_components = data["components"]
         assert len(index_components) == 2
 
-        otlp = next(c for c in index_components if c["id"] == "contrib-receiver-otlp")
+        otlp = next(c for c in index_components if c["id"] == "contrib-otlp")
         assert otlp["display_name"] == "OTLP Receiver"
         assert otlp["stability"] == "beta"
         # heavy fields absent

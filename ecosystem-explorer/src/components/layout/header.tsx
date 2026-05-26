@@ -37,6 +37,12 @@ export function Header() {
           >
             Collector
           </Link>
+          <Link
+            to="/about"
+            className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+          >
+            About
+          </Link>
         </nav>
       </div>
     </header>
