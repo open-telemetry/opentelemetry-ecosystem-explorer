@@ -15,6 +15,7 @@
  */
 import { BackButton } from "@/components/ui/back-button";
 import { useVersions, useInstrumentations } from "@/hooks/use-javaagent-data";
+import { useLazyPagination } from "@/hooks/use-lazy-pagination";
 import {
   type FilterState,
   InstrumentationFilterBar,
@@ -117,6 +118,45 @@ export function JavaInstrumentationListPage() {
     [customInstrumentations]
   );
 
+  const resetKey = useMemo(
+    () =>
+      JSON.stringify({
+        v: resolvedVersion,
+        s: filters.search,
+        t: [...filters.telemetry].sort(),
+        g: [...filters.target].sort(),
+      }),
+    [resolvedVersion, filters]
+  );
+
+  const {
+    visibleCount: libraryVisibleCount,
+    setSentinel: setLibrarySentinel,
+    hasMore: libraryHasMore,
+  } = useLazyPagination({
+    totalCount: libraryGroups.length,
+    resetKey,
+  });
+
+  const {
+    visibleCount: customVisibleCount,
+    setSentinel: setCustomSentinel,
+    hasMore: customHasMore,
+  } = useLazyPagination({
+    totalCount: customGroups.length,
+    resetKey,
+  });
+
+  const visibleLibraryGroups = useMemo(
+    () => libraryGroups.slice(0, libraryVisibleCount),
+    [libraryGroups, libraryVisibleCount]
+  );
+
+  const visibleCustomGroups = useMemo(
+    () => customGroups.slice(0, customVisibleCount),
+    [customGroups, customVisibleCount]
+  );
+
   const handleVersionChange = (newVersion: string) => {
     navigate(`/java-agent/instrumentation/${newVersion}`);
   };
@@ -204,15 +244,25 @@ export function JavaInstrumentationListPage() {
         ) : (
           <div className="space-y-12">
             {libraryGroups.length > 0 && (
-              <div className="grid gap-6 md:grid-cols-2">
-                {libraryGroups.map((group) => (
-                  <InstrumentationGroupCard
-                    key={group.displayName}
-                    group={group}
-                    activeFilters={filters}
-                    version={resolvedVersion}
+              <div className="space-y-4">
+                <div className="grid gap-6 md:grid-cols-2">
+                  {visibleLibraryGroups.map((group) => (
+                    <InstrumentationGroupCard
+                      key={group.displayName}
+                      group={group}
+                      activeFilters={filters}
+                      version={resolvedVersion}
+                    />
+                  ))}
+                </div>
+                {libraryHasMore && (
+                  <div
+                    ref={setLibrarySentinel}
+                    aria-hidden
+                    data-testid="library-sentinel"
+                    className="h-px"
                   />
-                ))}
+                )}
               </div>
             )}
 
@@ -227,15 +277,25 @@ export function JavaInstrumentationListPage() {
                     annotations.
                   </p>
                 </div>
-                <div className="grid gap-6 md:grid-cols-2">
-                  {customGroups.map((group) => (
-                    <InstrumentationGroupCard
-                      key={group.displayName}
-                      group={group}
-                      activeFilters={filters}
-                      version={resolvedVersion}
+                <div className="space-y-4">
+                  <div className="grid gap-6 md:grid-cols-2">
+                    {visibleCustomGroups.map((group) => (
+                      <InstrumentationGroupCard
+                        key={group.displayName}
+                        group={group}
+                        activeFilters={filters}
+                        version={resolvedVersion}
+                      />
+                    ))}
+                  </div>
+                  {customHasMore && (
+                    <div
+                      ref={setCustomSentinel}
+                      aria-hidden
+                      data-testid="custom-sentinel"
+                      className="h-px"
                     />
-                  ))}
+                  )}
                 </div>
               </div>
             )}
