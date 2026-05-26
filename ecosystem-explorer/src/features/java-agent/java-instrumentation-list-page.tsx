@@ -242,6 +242,8 @@ export function JavaInstrumentationListPage() {
         s: filters.search,
         t: [...filters.telemetry].sort(),
         g: [...filters.target].sort(),
+        sc: filters.semantic,
+        f: filters.features,
       }),
     [resolvedVersion, filters]
   );
@@ -347,27 +349,6 @@ export function JavaInstrumentationListPage() {
             <p className="text-muted-foreground text-sm font-medium">Loading instrumentations...</p>
           </div>
         ) : (
-          <div className="space-y-12">
-            {libraryGroups.length > 0 && (
-              <div className="space-y-4">
-                <div className="grid gap-6 md:grid-cols-2">
-                  {visibleLibraryGroups.map((group) => (
-                    <InstrumentationGroupCard
-                      key={group.displayName}
-                      group={group}
-                      activeFilters={filters}
-                      version={resolvedVersion}
-                    />
-                  ))}
-                </div>
-                {libraryHasMore && (
-                  <div
-                    ref={setLibrarySentinel}
-                    aria-hidden
-                    data-testid="library-sentinel"
-                    className="h-px"
-                  />
-                )}
           <>
             <div className="border-border/50 flex items-center justify-between border-b pb-4">
               <div className="text-muted-foreground text-sm">
@@ -386,39 +367,29 @@ export function JavaInstrumentationListPage() {
                     Try adjusting your search or filter criteria
                   </p>
                 </div>
-                <div className="space-y-4">
-                  <div className="grid gap-6 md:grid-cols-2">
-                    {visibleCustomGroups.map((group) => (
-                      <InstrumentationGroupCard
-                        key={group.displayName}
-                        group={group}
-                        activeFilters={filters}
-                        version={resolvedVersion}
-                      />
-                    ))}
-                  </div>
-                  {customHasMore && (
-                    <div
-                      ref={setCustomSentinel}
-                      aria-hidden
-                      data-testid="custom-sentinel"
-                      className="h-px"
-                    />
-                  )}
-                </div>
               </div>
             ) : (
               <div className="space-y-12">
                 {libraryGroups.length > 0 && (
-                  <div className="grid gap-6 md:grid-cols-2">
-                    {libraryGroups.map((group) => (
-                      <InstrumentationGroupCard
-                        key={group.displayName}
-                        group={group}
-                        activeFilters={filters}
-                        version={resolvedVersion}
+                  <div className="space-y-4">
+                    <div className="grid gap-6 md:grid-cols-2">
+                      {visibleLibraryGroups.map((group) => (
+                        <InstrumentationGroupCard
+                          key={group.displayName}
+                          group={group}
+                          activeFilters={filters}
+                          version={resolvedVersion}
+                        />
+                      ))}
+                    </div>
+                    {libraryHasMore && (
+                      <div
+                        ref={setLibrarySentinel}
+                        aria-hidden
+                        data-testid="library-sentinel"
+                        className="h-px"
                       />
-                    ))}
+                    )}
                   </div>
                 )}
 
@@ -433,15 +404,25 @@ export function JavaInstrumentationListPage() {
                         annotations.
                       </p>
                     </div>
-                    <div className="grid gap-6 md:grid-cols-2">
-                      {customGroups.map((group) => (
-                        <InstrumentationGroupCard
-                          key={group.displayName}
-                          group={group}
-                          activeFilters={filters}
-                          version={resolvedVersion}
+                    <div className="space-y-4">
+                      <div className="grid gap-6 md:grid-cols-2">
+                        {visibleCustomGroups.map((group) => (
+                          <InstrumentationGroupCard
+                            key={group.displayName}
+                            group={group}
+                            activeFilters={filters}
+                            version={resolvedVersion}
+                          />
+                        ))}
+                      </div>
+                      {customHasMore && (
+                        <div
+                          ref={setCustomSentinel}
+                          aria-hidden
+                          data-testid="custom-sentinel"
+                          className="h-px"
                         />
-                      ))}
+                      )}
                     </div>
                   </div>
                 )}
