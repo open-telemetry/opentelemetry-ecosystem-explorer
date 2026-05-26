@@ -189,6 +189,35 @@ describe("useLazyPagination", () => {
     expect(result.current.visibleCount).toBe(24);
   });
 
+  it("keeps the observer alive when totalCount grows from 0 (data-arrival race)", () => {
+    // Regression: loadMore identity changes when totalCount goes 0 -> N. A
+    // cleanup effect with [loadMore] deps previously disconnected the observer
+    // right after setSentinel had created it, leaving the sentinel mounted
+    // but un-observed.
+    const { result, rerender } = renderHook(
+      ({ totalCount }: { totalCount: number }) =>
+        useLazyPagination({ totalCount, pageSize: 24, resetKey: "k" }),
+      { initialProps: { totalCount: 0 } }
+    );
+
+    rerender({ totalCount: 80 });
+
+    act(() => {
+      const node = document.createElement("div");
+      result.current.setSentinel(node);
+    });
+
+    expect(instances).toHaveLength(1);
+    expect(instances[0].observed).toHaveLength(1);
+
+    act(() => {
+      instances[instances.length - 1].trigger(true);
+    });
+
+    expect(result.current.visibleCount).toBe(48);
+    expect(result.current.hasMore).toBe(true);
+  });
+
   it("falls back to rendering everything when IntersectionObserver is unavailable", () => {
     uninstallIO();
     const { result } = renderHook(() =>

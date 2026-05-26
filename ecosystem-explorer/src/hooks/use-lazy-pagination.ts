@@ -69,6 +69,18 @@ export function useLazyPagination({
     });
   }, [pageSize, totalCount]);
 
+  // Mirror the latest loadMore into a ref so the IO callback (created once,
+  // captured at first sentinel attach) always sees the up-to-date version.
+  // Without this, an observer created when totalCount=0 would keep its stale
+  // closure forever and never advance visibleCount.
+  const loadMoreRef = useRef(loadMore);
+  useEffect(() => {
+    loadMoreRef.current = loadMore;
+  }, [loadMore]);
+
+  // Stable callback: depends only on rootMargin (which is stable for the
+  // component's lifetime in practice). Keeping this stable means React only
+  // attaches the ref once, so the observer isn't churned across renders.
   const setSentinel = useCallback(
     (node: HTMLElement | null) => {
       if (!ioSupported()) return;
@@ -85,7 +97,7 @@ export function useLazyPagination({
           (entries) => {
             for (const entry of entries) {
               if (entry.isIntersecting) {
-                loadMore();
+                loadMoreRef.current();
                 break;
               }
             }
@@ -97,11 +109,15 @@ export function useLazyPagination({
       observerRef.current.observe(node);
       observedNodeRef.current = node;
     },
-    [loadMore, rootMargin]
+    [rootMargin]
   );
 
-  // Disconnect on unmount; also resets when loadMore identity changes so a new
-  // observer is lazily recreated against the latest totalCount/pageSize.
+  // Tear down the observer only on unmount. It used to also depend on
+  // [loadMore, rootMargin], which caused a fatal race: when totalCount went
+  // from 0 -> N (data arrival), loadMore identity changed, this cleanup ran
+  // AFTER setSentinel had just attached an observer in the same commit, and
+  // the freshly created observer was disconnected. The sentinel then stayed
+  // mounted but unobserved — scrolling did nothing.
   useEffect(() => {
     return () => {
       if (observerRef.current) {
@@ -110,7 +126,7 @@ export function useLazyPagination({
         observedNodeRef.current = null;
       }
     };
-  }, [loadMore, rootMargin]);
+  }, []);
 
   return {
     visibleCount,
