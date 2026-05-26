@@ -57,7 +57,6 @@ export function JavaInstrumentationListPage() {
 
       const query = params.toString();
 
-      console.log(query);
       if (!versionParam || versionParam === "latest") {
         navigate(`/java-agent/instrumentation${query ? `?${query}` : ""}`, {
           replace: true,
@@ -394,7 +393,7 @@ export function JavaInstrumentationListPage() {
                           key={group.displayName}
                           group={group}
                           activeFilters={filters}
-                          version={resolvedVersion}
+                          version={versionParam}
                         />
                       ))}
                     </div>
@@ -404,13 +403,6 @@ export function JavaInstrumentationListPage() {
                         aria-hidden
                         data-testid="library-sentinel"
                         className="h-px"
-                  <div className="grid gap-6 md:grid-cols-2">
-                    {libraryGroups.map((group) => (
-                      <InstrumentationGroupCard
-                        key={group.displayName}
-                        group={group}
-                        activeFilters={filters}
-                        version={versionParam}
                       />
                     )}
                   </div>
@@ -434,7 +426,7 @@ export function JavaInstrumentationListPage() {
                             key={group.displayName}
                             group={group}
                             activeFilters={filters}
-                            version={resolvedVersion}
+                            version={versionParam}
                           />
                         ))}
                       </div>
@@ -444,13 +436,6 @@ export function JavaInstrumentationListPage() {
                           aria-hidden
                           data-testid="custom-sentinel"
                           className="h-px"
-                    <div className="grid gap-6 md:grid-cols-2">
-                      {customGroups.map((group) => (
-                        <InstrumentationGroupCard
-                          key={group.displayName}
-                          group={group}
-                          activeFilters={filters}
-                          version={versionParam}
                         />
                       )}
                     </div>
