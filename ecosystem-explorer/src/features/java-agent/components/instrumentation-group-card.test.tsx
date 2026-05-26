@@ -255,7 +255,7 @@ describe("InstrumentationGroupCard", () => {
       });
       expect(link40).toHaveAttribute(
         "href",
-        "/java-agent/instrumentation/2.26.1/apache-httpclient-4.0"
+        "/java-agent/instrumentation/apache-httpclient-4.0?version=2.26.1"
       );
 
       const link50 = screen.getByRole("link", {
@@ -263,7 +263,7 @@ describe("InstrumentationGroupCard", () => {
       });
       expect(link50).toHaveAttribute(
         "href",
-        "/java-agent/instrumentation/2.26.1/apache-httpclient-5.0"
+        "/java-agent/instrumentation/apache-httpclient-5.0?version=2.26.1"
       );
     });
 

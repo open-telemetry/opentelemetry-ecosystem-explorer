@@ -29,7 +29,7 @@ import { GlowBadge } from "@/components/ui/glow-badge";
 interface InstrumentationCardProps {
   instrumentation: InstrumentationData;
   activeFilters?: FilterState;
-  version: string;
+  version: string | null;
 }
 
 export function InstrumentationCard({
@@ -39,7 +39,11 @@ export function InstrumentationCard({
 }: InstrumentationCardProps) {
   const displayName = getInstrumentationDisplayName(instrumentation);
   const badgeInfo = getBadgeInfo(instrumentation);
-  const detailUrl = `/java-agent/instrumentation/${version}/${instrumentation.name}`;
+
+  const detailUrl =
+    version && version !== "latest"
+      ? `/java-agent/instrumentation/${instrumentation.name}?version=${version}`
+      : `/java-agent/instrumentation/${instrumentation.name}`;
 
   return (
     <Link

@@ -19,6 +19,8 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { isEnabled } from "@/lib/feature-flags";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
+import { InstrumentationHandler } from "@/features/java-agent/instrumentation-handler";
+import { LegacyNameVersionRedirect } from "@/features/java-agent/legacy-name-version-redirect";
 
 const HomePage = lazy(() =>
   import("@/features/home/home-page").then((m) => ({ default: m.HomePage }))
@@ -57,11 +59,7 @@ const JavaReleaseComparisonPage = lazy(() =>
     default: m.JavaReleaseComparisonPage,
   }))
 );
-const InstrumentationDetailPage = lazy(() =>
-  import("@/features/java-agent/instrumentation-detail-page").then((m) => ({
-    default: m.InstrumentationDetailPage,
-  }))
-);
+
 const ConfigurationBuilderPage = lazy(() =>
   import("@/features/java-agent/configuration/configuration-builder-page").then((m) => ({
     default: m.ConfigurationBuilderPage,
@@ -105,13 +103,14 @@ export function LegacyApp() {
               <Route path="/" element={<HomePage />} />
               <Route path="/java-agent" element={<JavaAgentPage />} />
               <Route path="/java-agent/instrumentation" element={<JavaInstrumentationListPage />} />
+
               <Route
-                path="/java-agent/instrumentation/:version"
-                element={<JavaInstrumentationListPage />}
+                path="/java-agent/instrumentation/:param"
+                element={<InstrumentationHandler />}
               />
               <Route
                 path="/java-agent/instrumentation/:version/:name"
-                element={<InstrumentationDetailPage />}
+                element={<LegacyNameVersionRedirect />}
               />
               <Route path="/java-agent/configuration" element={<JavaConfigurationListPage />} />
               {isEnabled("JAVA_RELEASE_COMPARISON") && (
