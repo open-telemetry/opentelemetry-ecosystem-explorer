@@ -250,6 +250,9 @@ describe("InstrumentationCard", () => {
     const link = screen.getByRole("link", {
       name: "View details for Test Instrumentation",
     });
-    expect(link).toHaveAttribute("href", "/java-agent/instrumentation/2.0.0/test-instrumentation");
+    expect(link).toHaveAttribute(
+      "href",
+      "/java-agent/instrumentation/test-instrumentation?version=2.0.0"
+    );
   });
 });

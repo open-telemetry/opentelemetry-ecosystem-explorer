@@ -21,7 +21,7 @@ import {
   InstrumentationFilterBar,
 } from "@/features/java-agent/components/instrumentation-filter-bar.tsx";
 import { useMemo, useState, useEffect } from "react";
-import { useParams, useNavigate, useSearchParams, useLocation } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { InstrumentationGroupCard } from "@/features/java-agent/components/instrumentation-group-card.tsx";
 import { VersionSelector } from "@/features/java-agent/components/version-selector";
 import { getInstrumentationDisplayName } from "./utils/format";
@@ -29,7 +29,8 @@ import { groupInstrumentationsByDisplayName } from "./utils/group-instrumentatio
 import { PageContainer } from "@/components/layout/page-container";
 
 export function JavaInstrumentationListPage() {
-  const { version: versionParam } = useParams<{ version?: string }>();
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -37,7 +38,7 @@ export function JavaInstrumentationListPage() {
 
   const latestVersion = versionsData?.versions.find((v) => v.is_latest)?.version ?? "";
 
-  const [searchParams, setSearchParams] = useSearchParams();
+  const versionParam = searchParams.get("version");
   const invalidVersion = searchParams.get("redirectedFrom");
   const [bannerDismissed, setBannerDismissed] = useState(false);
 
@@ -50,19 +51,25 @@ export function JavaInstrumentationListPage() {
   // Invalid version → latest with redirectedFrom banner.
   useEffect(() => {
     if (versionsData && latestVersion) {
+      const params = new URLSearchParams(location.search);
+      params.delete("version");
+
+      const query = params.toString();
+
+      console.log(query);
       if (!versionParam || versionParam === "latest") {
-        navigate(`/java-agent/instrumentation/${latestVersion}${location.search}`, {
+        navigate(`/java-agent/instrumentation${query ? `?${query}` : ""}`, {
           replace: true,
         });
       } else if (!isVersionValid) {
-        navigate(`/java-agent/instrumentation/${latestVersion}?redirectedFrom=${versionParam}`, {
+        navigate(`/java-agent/instrumentation?${query}&redirectedFrom=${versionParam}`, {
           replace: true,
         });
       }
     }
   }, [versionParam, versionsData, latestVersion, navigate, isVersionValid, location.search]);
 
-  const resolvedVersion = versionParam && versionParam !== "latest" ? versionParam : "";
+  const resolvedVersion = versionParam ?? latestVersion;
 
   const {
     data: instrumentations,
@@ -236,9 +243,18 @@ export function JavaInstrumentationListPage() {
 
   const handleVersionChange = (newVersion: string) => {
     const params = new URLSearchParams(location.search);
+
     params.delete("redirectedFrom");
+
+    if (newVersion === latestVersion || newVersion === "latest") {
+      params.delete("version");
+    } else {
+      params.set("version", newVersion);
+    }
+
     const query = params.toString();
-    navigate(`/java-agent/instrumentation/${newVersion}${query ? `?${query}` : ""}`);
+
+    navigate(`/java-agent/instrumentation${query ? `?${query}` : ""}`);
   };
 
   return (
@@ -335,7 +351,7 @@ export function JavaInstrumentationListPage() {
                         key={group.displayName}
                         group={group}
                         activeFilters={filters}
-                        version={resolvedVersion}
+                        version={versionParam}
                       />
                     ))}
                   </div>
@@ -358,7 +374,7 @@ export function JavaInstrumentationListPage() {
                           key={group.displayName}
                           group={group}
                           activeFilters={filters}
-                          version={resolvedVersion}
+                          version={versionParam}
                         />
                       ))}
                     </div>

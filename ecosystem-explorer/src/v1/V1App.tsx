@@ -21,6 +21,8 @@ import { CncfCallout } from "@/v1/components/layout/cncf-callout";
 import { FooterV1 } from "@/v1/components/layout/footer";
 import { NavBar } from "@/v1/components/layout/nav-bar";
 import "@/v1/styles/index.css";
+import { InstrumentationHandler } from "@/features/java-agent/instrumentation-handler";
+import { LegacyNameVersionRedirect } from "@/features/java-agent/legacy-name-version-redirect";
 
 /*
  * V1 sub-app entry. Reached via the V1_REDESIGN boundary read in `src/App.tsx`.
@@ -75,11 +77,7 @@ const JavaReleaseComparisonPage = lazy(() =>
     default: m.JavaReleaseComparisonPage,
   }))
 );
-const InstrumentationDetailPage = lazy(() =>
-  import("@/features/java-agent/instrumentation-detail-page").then((m) => ({
-    default: m.InstrumentationDetailPage,
-  }))
-);
+
 const ConfigurationBuilderPage = lazy(() =>
   import("@/features/java-agent/configuration/configuration-builder-page").then((m) => ({
     default: m.ConfigurationBuilderPage,
@@ -113,14 +111,16 @@ export function V1App() {
               <Route path="/" element={<HomePage />} />
               <Route path="/java-agent" element={<JavaAgentPage />} />
               <Route path="/java-agent/instrumentation" element={<JavaInstrumentationListPage />} />
+
               <Route
-                path="/java-agent/instrumentation/:version"
-                element={<JavaInstrumentationListPage />}
+                path="/java-agent/instrumentation/:param"
+                element={<InstrumentationHandler />}
               />
               <Route
                 path="/java-agent/instrumentation/:version/:name"
-                element={<InstrumentationDetailPage />}
+                element={<LegacyNameVersionRedirect />}
               />
+
               <Route path="/java-agent/configuration" element={<JavaConfigurationListPage />} />
               {isEnabled("JAVA_RELEASE_COMPARISON") && (
                 <Route path="/java-agent/releases" element={<JavaReleaseComparisonPage />} />
