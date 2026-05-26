@@ -32,12 +32,9 @@ afterAll(() => uninstallFetchInterceptor());
 
 function renderPage() {
   return render(
-    <MemoryRouter initialEntries={[`/java-agent/instrumentation/${latestVersion}`]}>
+    <MemoryRouter initialEntries={[`/java-agent/instrumentation?version=${latestVersion}`]}>
       <Routes>
-        <Route
-          path="/java-agent/instrumentation/:version"
-          element={<JavaInstrumentationListPage />}
-        />
+        <Route path="/java-agent/instrumentation" element={<JavaInstrumentationListPage />} />
       </Routes>
     </MemoryRouter>
   );
