@@ -1,0 +1,119 @@
+{
+  "description": "The Oracle Universal Connection Pool (UCP) instrumentation enables database connection pool metrics for Oracle UCP data sources.",
+  "display_name": "Oracle UCP",
+  "has_javaagent": true,
+  "has_standalone_library": true,
+  "javaagent_target_versions": [
+    "com.oracle.database.jdbc:ucp:[,)"
+  ],
+  "library_link": "https://docs.oracle.com/database/121/JJUCP/",
+  "name": "oracle-ucp-11.2",
+  "scope": {
+    "name": "io.opentelemetry.oracle-ucp-11.2"
+  },
+  "semantic_conventions": [
+    "DATABASE_POOL_METRICS"
+  ],
+  "source_path": "instrumentation/oracle-ucp-11.2",
+  "tags": [
+    "oracle"
+  ],
+  "telemetry": [
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "pool.name",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The maximum number of open connections allowed.",
+          "instrument": "updowncounter",
+          "name": "db.client.connections.max",
+          "unit": "{connections}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "pool.name",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The number of pending requests for an open connection, cumulative for the entire pool.",
+          "instrument": "updowncounter",
+          "name": "db.client.connections.pending_requests",
+          "unit": "{requests}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "pool.name",
+              "type": "STRING"
+            },
+            {
+              "name": "state",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The number of connections that are currently in state described by the state attribute.",
+          "instrument": "updowncounter",
+          "name": "db.client.connections.usage",
+          "unit": "{connections}"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "db.client.connection.pool.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.client.connection.state",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The number of connections that are currently in state described by the state attribute.",
+          "instrument": "updowncounter",
+          "name": "db.client.connection.count",
+          "unit": "{connection}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "db.client.connection.pool.name",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The maximum number of open connections allowed.",
+          "instrument": "updowncounter",
+          "name": "db.client.connection.max",
+          "unit": "{connection}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "db.client.connection.pool.name",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The number of current pending requests for an open connection.",
+          "instrument": "updowncounter",
+          "name": "db.client.connection.pending_requests",
+          "unit": "{request}"
+        }
+      ],
+      "when": "otel.semconv-stability.opt-in=database"
+    }
+  ]
+}

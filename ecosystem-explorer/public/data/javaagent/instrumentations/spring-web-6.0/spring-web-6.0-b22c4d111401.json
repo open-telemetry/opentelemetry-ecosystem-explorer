@@ -1,0 +1,26 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables the capture of experimental HTTP client telemetry, including URL template as the span name.",
+      "name": "otel.instrumentation.http.client.emit-experimental-telemetry",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enriches HTTP client spans with URL template information for Spring's RestTemplate 6.0+.",
+  "display_name": "Spring Web",
+  "features": [
+    "HTTP_ROUTE"
+  ],
+  "has_javaagent": true,
+  "javaagent_target_versions": [
+    "org.springframework:spring-web:[6.0.0,)"
+  ],
+  "library_link": "https://github.com/spring-projects/spring-framework",
+  "minimum_java_version": 17,
+  "name": "spring-web-6.0",
+  "scope": {
+    "name": "io.opentelemetry.spring-web-6.0"
+  },
+  "source_path": "instrumentation/spring/spring-web/spring-web-6.0"
+}

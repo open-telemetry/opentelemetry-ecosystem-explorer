@@ -324,6 +324,18 @@ describe("JavaInstrumentationListPage - Filtering", () => {
     expect(screen.getByText("Showing 1 of 1 instrumentations")).toBeInTheDocument();
   });
 
+  it("searches instrumentation metadata beyond the name and description", async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    const searchInput = await screen.findByPlaceholderText("Search instrumentations...");
+    await user.type(searchInput, "experimental");
+
+    expect(screen.getByText("Spring Web")).toBeInTheDocument();
+    expect(screen.queryByText("HTTP Client")).not.toBeInTheDocument();
+    expect(screen.getByText("Showing 1 of 4 instrumentations")).toBeInTheDocument();
+  });
+
   it("filters by spans telemetry", async () => {
     const user = userEvent.setup();
     renderPage();

@@ -281,6 +281,42 @@ describe("javaagent-data", () => {
       expect(result).toContainEqual({ ...springData, _is_custom: false });
     });
 
+    it("should skip instrumentations that fail to load and keep the rest", async () => {
+      const akkaData = {
+        ...mockInstrumentationData,
+        name: "akka-actor",
+        scope: { name: "io.opentelemetry.akka-actor" },
+      };
+
+      vi.spyOn(idbCache, "getCached").mockImplementation(async (key: string) => {
+        if (key === "manifest-2.10.0") return mockVersionManifest;
+        if (key === "instrumentation-abc123") return akkaData;
+        return null;
+      });
+
+      vi.spyOn(idbCache, "setCached").mockResolvedValue();
+
+      (global.fetch as ReturnType<typeof vi.fn>).mockImplementation(async (url: string) => {
+        if (url === "/data/javaagent/instrumentations/spring-webmvc/spring-webmvc-def456.json") {
+          return {
+            ok: false,
+            status: 404,
+            statusText: "Not Found",
+          } as Response;
+        }
+
+        return {
+          ok: true,
+          json: async () => akkaData,
+        } as Response;
+      });
+
+      const result = await javaagentData.loadAllInstrumentations("2.10.0");
+
+      expect(result).toHaveLength(1);
+      expect(result).toContainEqual({ ...akkaData, _is_custom: false });
+    });
+
     it("should only load manifest once for all instrumentations", async () => {
       const akkaData = {
         ...mockInstrumentationData,
