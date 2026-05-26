@@ -41,8 +41,8 @@ function installIOMock() {
         trigger: (intersecting = true) => {
           this.callback(
             this.observed.map(
-              (el) => ({ isIntersecting: intersecting, target: el }) as IntersectionObserverEntry,
-            ),
+              (el) => ({ isIntersecting: intersecting, target: el }) as IntersectionObserverEntry
+            )
           );
         },
       };
@@ -64,18 +64,21 @@ function installIOMock() {
     rootMargin = "";
     thresholds = [];
   }
-  (globalThis as unknown as { IntersectionObserver: typeof IntersectionObserver }).IntersectionObserver =
-    MockIO as unknown as typeof IntersectionObserver;
+  (
+    globalThis as unknown as { IntersectionObserver: typeof IntersectionObserver }
+  ).IntersectionObserver = MockIO as unknown as typeof IntersectionObserver;
 }
 
 function uninstallIO() {
-  (globalThis as unknown as { IntersectionObserver?: typeof IntersectionObserver }).IntersectionObserver =
-    undefined;
+  (
+    globalThis as unknown as { IntersectionObserver?: typeof IntersectionObserver }
+  ).IntersectionObserver = undefined;
 }
 
 function restoreIO() {
-  (globalThis as unknown as { IntersectionObserver?: typeof IntersectionObserver }).IntersectionObserver =
-    originalIO;
+  (
+    globalThis as unknown as { IntersectionObserver?: typeof IntersectionObserver }
+  ).IntersectionObserver = originalIO;
 }
 
 describe("useLazyPagination", () => {
@@ -90,7 +93,7 @@ describe("useLazyPagination", () => {
 
   it("returns pageSize as visibleCount when totalCount exceeds pageSize", () => {
     const { result } = renderHook(() =>
-      useLazyPagination({ totalCount: 100, pageSize: 24, resetKey: "k1" }),
+      useLazyPagination({ totalCount: 100, pageSize: 24, resetKey: "k1" })
     );
     expect(result.current.visibleCount).toBe(24);
     expect(result.current.hasMore).toBe(true);
@@ -98,7 +101,7 @@ describe("useLazyPagination", () => {
 
   it("returns totalCount when it is less than or equal to pageSize", () => {
     const { result } = renderHook(() =>
-      useLazyPagination({ totalCount: 5, pageSize: 24, resetKey: "k1" }),
+      useLazyPagination({ totalCount: 5, pageSize: 24, resetKey: "k1" })
     );
     expect(result.current.visibleCount).toBe(5);
     expect(result.current.hasMore).toBe(false);
@@ -106,7 +109,7 @@ describe("useLazyPagination", () => {
 
   it("loads the next page when the sentinel intersects", () => {
     const { result } = renderHook(() =>
-      useLazyPagination({ totalCount: 100, pageSize: 24, resetKey: "k1" }),
+      useLazyPagination({ totalCount: 100, pageSize: 24, resetKey: "k1" })
     );
 
     act(() => {
@@ -124,7 +127,7 @@ describe("useLazyPagination", () => {
 
   it("clamps visibleCount to totalCount across multiple intersections", () => {
     const { result } = renderHook(() =>
-      useLazyPagination({ totalCount: 50, pageSize: 24, resetKey: "k1" }),
+      useLazyPagination({ totalCount: 50, pageSize: 24, resetKey: "k1" })
     );
 
     act(() => {
@@ -151,7 +154,7 @@ describe("useLazyPagination", () => {
 
   it("does not advance when the entry is not intersecting", () => {
     const { result } = renderHook(() =>
-      useLazyPagination({ totalCount: 100, pageSize: 24, resetKey: "k1" }),
+      useLazyPagination({ totalCount: 100, pageSize: 24, resetKey: "k1" })
     );
 
     act(() => {
@@ -170,7 +173,7 @@ describe("useLazyPagination", () => {
     const { result, rerender } = renderHook(
       ({ key }: { key: string }) =>
         useLazyPagination({ totalCount: 100, pageSize: 24, resetKey: key }),
-      { initialProps: { key: "k1" } },
+      { initialProps: { key: "k1" } }
     );
 
     act(() => {
@@ -189,7 +192,7 @@ describe("useLazyPagination", () => {
   it("falls back to rendering everything when IntersectionObserver is unavailable", () => {
     uninstallIO();
     const { result } = renderHook(() =>
-      useLazyPagination({ totalCount: 100, pageSize: 24, resetKey: "k1" }),
+      useLazyPagination({ totalCount: 100, pageSize: 24, resetKey: "k1" })
     );
     expect(result.current.visibleCount).toBe(100);
     expect(result.current.hasMore).toBe(false);

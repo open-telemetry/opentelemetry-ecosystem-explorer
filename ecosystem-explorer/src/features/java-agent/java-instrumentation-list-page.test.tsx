@@ -566,8 +566,8 @@ describe("JavaInstrumentationListPage - Pagination", () => {
           trigger: () => {
             this.cb(
               this.observed.map(
-                (el) => ({ isIntersecting: true, target: el }) as IntersectionObserverEntry,
-              ),
+                (el) => ({ isIntersecting: true, target: el }) as IntersectionObserverEntry
+              )
             );
           },
         });

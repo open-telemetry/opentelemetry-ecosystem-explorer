@@ -45,9 +45,7 @@ export function useLazyPagination({
   resetKey = "",
   rootMargin = DEFAULT_ROOT_MARGIN,
 }: UseLazyPaginationOptions): UseLazyPaginationResult {
-  const [visibleCount, setVisibleCount] = useState(() =>
-    initialVisibleCount(totalCount, pageSize),
-  );
+  const [visibleCount, setVisibleCount] = useState(() => initialVisibleCount(totalCount, pageSize));
 
   // Reset visibleCount when any input that determines the page window changes.
   // Done during render (not in an effect) so consumers never see a stale slice.
@@ -92,14 +90,14 @@ export function useLazyPagination({
               }
             }
           },
-          { rootMargin },
+          { rootMargin }
         );
       }
 
       observerRef.current.observe(node);
       observedNodeRef.current = node;
     },
-    [loadMore, rootMargin],
+    [loadMore, rootMargin]
   );
 
   // Disconnect on unmount; also resets when loadMore identity changes so a new
