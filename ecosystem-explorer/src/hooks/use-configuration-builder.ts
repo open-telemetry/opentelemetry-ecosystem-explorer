@@ -53,7 +53,7 @@ import {
   validateAll as validateAllNodes,
 } from "@/lib/config-validation";
 
-const STORAGE_KEY = "otel-config-builder-state-v2";
+const STORAGE_KEY = "otel-config-builder-state-v3";
 
 export interface ConfigurationBuilderStateContextValue {
   state: ConfigurationBuilderState;
@@ -62,7 +62,8 @@ export interface ConfigurationBuilderStateContextValue {
 export interface ConfigurationBuilderActionsContextValue {
   setValue: (path: string, value: ConfigValue) => void;
   setValueByPath: (path: Path, value: ConfigValue) => void;
-  setOverride: (module: string, status: "enabled" | "disabled" | "none") => void;
+  setCustomization: (module: string, status: "enabled" | "disabled" | "none") => void;
+  pruneInstrumentations: (validModules: readonly string[]) => void;
   setEnabled: (section: string, enabled: boolean) => void;
   selectPlugin: (path: string, pluginKey: string) => void;
   addListItem: (path: string) => void;
@@ -164,8 +165,15 @@ export function useConfigurationBuilderState(
     dispatch({ type: "SET_VALUE", path, value });
   }, []);
 
-  const setOverride = useCallback((module: string, status: "enabled" | "disabled" | "none") => {
-    dispatch({ type: "SET_OVERRIDE", module, status });
+  const setCustomization = useCallback(
+    (module: string, status: "enabled" | "disabled" | "none") => {
+      dispatch({ type: "SET_CUSTOMIZATION", module, status });
+    },
+    []
+  );
+
+  const pruneInstrumentations = useCallback((validModules: readonly string[]) => {
+    dispatch({ type: "PRUNE_INSTRUMENTATIONS", validModules });
   }, []);
 
   const setEnabled = useCallback((section: string, enabled: boolean) => {
@@ -296,7 +304,8 @@ export function useConfigurationBuilderState(
     () => ({
       setValue,
       setValueByPath,
-      setOverride,
+      setCustomization,
+      pruneInstrumentations,
       setEnabled,
       selectPlugin,
       addListItem,

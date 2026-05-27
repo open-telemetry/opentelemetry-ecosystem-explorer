@@ -1,12 +1,13 @@
 # Design System
 
-This document outlines the design principles, patterns, and tokens used in the OpenTelemetry Ecosystem Explorer. It
-serves as a guide for AI agents and developers working on UI elements to ensure visual consistency and quality.
+This document outlines the design principles, patterns, and tokens used in the OpenTelemetry
+Ecosystem Explorer. It serves as a guide for AI agents and developers working on UI elements to
+ensure visual consistency and quality.
 
 ## Overview
 
-The Ecosystem Explorer uses a **dark-first design system** optimized for readability and visual hierarchy. The design
-emphasizes:
+The Ecosystem Explorer uses a **dark-first design system** optimized for readability and visual
+hierarchy. The design emphasizes:
 
 - **Depth through subtlety** - Layered backgrounds, soft shadows, and ambient glows
 - **Clarity first** - Clear information hierarchy through color, spacing, and typography
@@ -59,7 +60,8 @@ Optimized for extended viewing in low-light environments:
 
 ### HSL Token Reference
 
-All colors are defined using HSL values in `src/themes.ts`. They are applied via CSS custom properties:
+All colors are defined using HSL values in `src/themes.ts`. They are applied via CSS custom
+properties:
 
 ```css
 --color-primary: 38 95% 52%; /* Vibrant orange */
@@ -222,8 +224,7 @@ Small badges used to display types, categories, or status indicators:
 - `text-xs font-bold` - Small, bold text for compact display
 - `rounded px-2 py-1` - Consistent padding and border radius
 
-**Color variants:**
-For semantic meaning with glowing effects, use GlowBadge component:
+**Color variants:** For semantic meaning with glowing effects, use GlowBadge component:
 
 - `variant="success"` - Green for metrics
 - `variant="info"` - Blue for spans
@@ -356,8 +357,7 @@ ease-in      /* Element exiting (200ms) */
 <div className="transition-transform duration-200 hover:scale-105">{content}</div>
 ```
 
-**Staggered children:**
-Use increasing delay values:
+**Staggered children:** Use increasing delay values:
 
 ```tsx
 <div className="animate-in fade-in duration-300 delay-0">{child1}</div>
@@ -441,7 +441,8 @@ Apply at low opacity (10-20%) for subtle texture.
 
 ## Accessibility
 
-All components must follow accessibility best practices as outlined in `AGENTS.md`. Key requirements:
+All components must follow accessibility best practices as outlined in `AGENTS.md`. Key
+requirements:
 
 - Semantic HTML elements
 - ARIA labels for icon-only buttons
@@ -515,7 +516,8 @@ Refer to `AGENTS.md` for complete accessibility guidelines and code examples.
 
 - **Tailwind CSS v4** - Utility-first CSS framework
 - **Radix UI** - Accessible component primitives
-- **Color contrast checker** - Browser DevTools or [WebAIM](https://webaim.org/resources/contrastchecker/)
+- **Color contrast checker** - Browser DevTools or
+  [WebAIM](https://webaim.org/resources/contrastchecker/)
 - **HSL color picker** - For creating consistent color variants
 
 ---

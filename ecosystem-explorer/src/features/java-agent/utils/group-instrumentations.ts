@@ -48,7 +48,9 @@ export function groupInstrumentationsByDisplayName(
   for (const [displayName, members] of groupMap) {
     groups.push({
       displayName,
-      instrumentations: members.sort((a, b) => a.name.localeCompare(b.name)),
+      instrumentations: members.sort((a, b) =>
+        a.name.localeCompare(b.name, undefined, { numeric: true })
+      ),
     });
   }
 

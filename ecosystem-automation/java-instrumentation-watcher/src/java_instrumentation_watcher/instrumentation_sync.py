@@ -182,9 +182,7 @@ class InstrumentationSync:
             libraries = libraries_raw
 
         name_by_source = {
-            lib["source_path"]: lib["name"]
-            for lib in libraries
-            if lib.get("source_path") and lib.get("name")
+            lib["source_path"]: lib["name"] for lib in libraries if lib.get("source_path") and lib.get("name")
         }
 
         fetched: list[tuple[str, str]] = []

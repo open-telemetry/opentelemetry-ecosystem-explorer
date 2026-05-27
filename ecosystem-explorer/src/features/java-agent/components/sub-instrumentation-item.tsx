@@ -22,7 +22,7 @@ import { renderWithInlineCode } from "@/lib/render-inline-code";
 
 interface SubInstrumentationItemProps {
   instrumentation: InstrumentationData;
-  version: string;
+  version: string | null;
   activeFilters?: FilterState;
 }
 
@@ -32,12 +32,15 @@ export function SubInstrumentationItem({
   activeFilters,
 }: SubInstrumentationItemProps) {
   const badges = getBadgeInfo(instrumentation);
-  const detailUrl = `/java-agent/instrumentation/${version}/${instrumentation.name}`;
+  const detailUrl =
+    version && version !== "latest"
+      ? `/java-agent/instrumentation/${instrumentation.name}?version=${version}`
+      : `/java-agent/instrumentation/${instrumentation.name}`;
 
   return (
     <Link
       to={detailUrl}
-      className="border-primary/30 bg-background/50 hover:bg-card-secondary/50 hover:border-primary/60 block rounded-md border-l-2 p-3 transition-colors"
+      className="border-secondary/30 bg-background/50 hover:bg-card-secondary/50 hover:border-secondary/60 block rounded-md border-l-2 p-3 transition-colors"
       aria-label={`View details for ${instrumentation.name}`}
     >
       <div className="flex items-center justify-between gap-2">

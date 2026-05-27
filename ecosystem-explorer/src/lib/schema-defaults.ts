@@ -102,6 +102,7 @@ export function findNodeByPath(
 
   for (const segment of segments) {
     if (!current) return undefined;
+    if (current.controlType === "circular_ref") return current;
     if (typeof segment === "number") {
       if (current.controlType === "list") {
         current = (current as ListNode).itemSchema;

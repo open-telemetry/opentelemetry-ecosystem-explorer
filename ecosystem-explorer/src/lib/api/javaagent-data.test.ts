@@ -47,9 +47,10 @@ describe("javaagent-data", () => {
     },
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.resetAllMocks();
     global.fetch = vi.fn();
+    await idbCache.clearAllCached();
     idbCache.closeDB();
   });
 
@@ -102,7 +103,7 @@ describe("javaagent-data", () => {
       });
 
       await expect(javaagentData.loadVersions()).rejects.toThrow(
-        "Failed to load versions-index: 404 Not Found"
+        /Failed to load versions-index from .*: 404 Not Found/
       );
     });
 
@@ -112,6 +113,26 @@ describe("javaagent-data", () => {
       (global.fetch as ReturnType<typeof vi.fn>).mockRejectedValue(new Error("Network error"));
 
       await expect(javaagentData.loadVersions()).rejects.toThrow("Network error");
+    });
+
+    it("should bypass cache and re-fetch when cached versions list is empty", async () => {
+      const staleData: VersionsIndex = { versions: [] };
+      const freshData: VersionsIndex = {
+        versions: [{ version: "2.10.0", is_latest: true }],
+      };
+
+      vi.spyOn(idbCache, "getCached").mockResolvedValue(staleData);
+      vi.spyOn(idbCache, "setCached").mockResolvedValue();
+
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ok: true,
+        json: async () => freshData,
+      });
+
+      const result = await javaagentData.loadVersions();
+
+      expect(result).toEqual(freshData);
+      expect(global.fetch).toHaveBeenCalledWith("/data/javaagent/versions-index.json");
     });
 
     it("should deduplicate concurrent requests to the same resource", async () => {
@@ -129,9 +150,8 @@ describe("javaagent-data", () => {
       const request2 = javaagentData.loadVersions();
       const request3 = javaagentData.loadVersions();
 
-      await vi.waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledTimes(1);
-      });
+      await Promise.resolve(); // Allow microtasks to run
+      expect(global.fetch).toHaveBeenCalledTimes(1);
 
       fetchResolve!({
         ok: true,
@@ -295,6 +315,62 @@ describe("javaagent-data", () => {
       const result = await javaagentData.loadAllInstrumentations("2.10.0");
 
       expect(result).toEqual([]);
+    });
+  });
+
+  describe("loadLibraryReadme", () => {
+    it("should load library README markdown", async () => {
+      const content = "# My Library README";
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ok: true,
+        text: async () => content,
+      });
+
+      const result = await javaagentData.loadLibraryReadme("mylib", "abc123def456");
+
+      expect(result).toBe(content);
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining("/markdown/mylib-abc123def456.md")
+      );
+    });
+
+    it("should propagate fetch errors when loading README", async () => {
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ok: false,
+        status: 404,
+        statusText: "Not Found",
+      });
+
+      await expect(javaagentData.loadLibraryReadme("mylib", "abc123def456")).rejects.toThrow(
+        /Failed to load readme-mylib-abc123def456 from.*: 404 Not Found/
+      );
+    });
+  });
+
+  describe("loadGlobalConfigurations", () => {
+    it("should load global configurations", async () => {
+      const config = { some: "config" };
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ok: true,
+        json: async () => config,
+      });
+
+      const result = await javaagentData.loadGlobalConfigurations();
+
+      expect(result).toEqual(config);
+      expect(global.fetch).toHaveBeenCalledWith("/data/javaagent/global-configurations.json");
+    });
+
+    it("should throw error when global configurations fetch fails", async () => {
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ok: false,
+        status: 500,
+        statusText: "Server Error",
+      });
+
+      await expect(javaagentData.loadGlobalConfigurations()).rejects.toThrow(
+        /Failed to load global-configurations from .*: 500 Server Error/
+      );
     });
   });
 });

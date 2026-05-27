@@ -24,7 +24,7 @@ export function JavaAgentPage() {
         <BackButton />
         <div>
           <h1 className="mb-2 text-3xl font-bold md:text-4xl">
-            <span className="bg-gradient-to-r from-[hsl(var(--secondary-hsl))] to-[hsl(var(--primary-hsl))] bg-clip-text text-transparent">
+            <span className="from-otel-orange to-otel-blue bg-gradient-to-r bg-clip-text text-transparent">
               OpenTelemetry Java Agent
             </span>
           </h1>

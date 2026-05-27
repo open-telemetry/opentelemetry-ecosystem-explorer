@@ -1,8 +1,8 @@
 # Registry Structure
 
 The ecosystem-registry stores raw, normalized metadata in aggregated YAML files, maintaining
-complete historical records across versions. This data is later transformed into
-content-addressed JSON for the web application.
+complete historical records across versions. This data is later transformed into content-addressed
+JSON for the web application.
 
 ## Directory Structure
 
@@ -38,7 +38,8 @@ ecosystem-registry/
 ## Key Principles
 
 - **Aggregated YAML files**: One file per component type per version (human-readable, git-friendly)
-- **Version-scoped**: Each version has a complete, independent snapshot that can be regenerated from source
+- **Version-scoped**: Each version has a complete, independent snapshot that can be regenerated from
+  source
 
 ## Java Agent Structure
 
@@ -192,13 +193,10 @@ components:
 
 ### Release Versions
 
-**Format**: `v2.24.0`, `v0.145.0`
-**Directory**: `{ecosystem}/{version}/`
-**Characteristics**: Immutable, represents official release
+**Format**: `v2.24.0`, `v0.145.0` **Directory**: `{ecosystem}/{version}/` **Characteristics**:
+Immutable, represents official release
 
 ### Snapshot Versions
 
-**Format**: `v2.24.1-SNAPSHOT`
-**Directory**: `{ecosystem}/{version}-SNAPSHOT/`
-**Characteristics**: Extracted from `main` branch, shows work-in-progress
-**Updates**: Nightly via GitHub Actions
+**Format**: `v2.24.1-SNAPSHOT` **Directory**: `{ecosystem}/{version}-SNAPSHOT/` **Characteristics**:
+Extracted from `main` branch, shows work-in-progress **Updates**: Nightly via GitHub Actions

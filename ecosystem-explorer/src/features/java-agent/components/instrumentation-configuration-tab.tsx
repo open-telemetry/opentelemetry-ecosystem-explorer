@@ -65,7 +65,7 @@ export function InstrumentationConfigurationTab({
       value={format}
       onValueChange={(v) => setFormat(v as ConfigurationFormat)}
     >
-      <SegmentedTabList tabs={FORMAT_TABS} value={format} />
+      <SegmentedTabList tabs={FORMAT_TABS} value={format} fullWidth />
       <TabsContent value="declarative">{grid("declarative")}</TabsContent>
       <TabsContent value="system-property">{grid("system-property")}</TabsContent>
     </Tabs>

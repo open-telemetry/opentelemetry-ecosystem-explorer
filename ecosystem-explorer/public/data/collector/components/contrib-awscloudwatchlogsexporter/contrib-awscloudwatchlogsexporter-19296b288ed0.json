@@ -1,0 +1,32 @@
+{
+  "description": null,
+  "display_name": "AWS CloudWatch Logs Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-awscloudwatchlogsexporter",
+  "name": "awscloudwatchlogsexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "yaten2302"
+      ],
+      "emeritus": [
+        "bryan-aguilar",
+        "boostchicken",
+        "rapphil"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs"
+      ]
+    }
+  },
+  "type": "exporter"
+}

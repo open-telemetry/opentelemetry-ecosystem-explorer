@@ -23,6 +23,27 @@ describe("configurationBuilderReducer", () => {
     version: "1.0.0",
   };
 
+  const INSTRUMENTATION_PATH = ["distribution", "javaagent", "instrumentation"] as const;
+
+  function getInst(s: ReturnType<typeof configurationBuilderReducer>) {
+    let cur: unknown = s.values;
+    for (const seg of INSTRUMENTATION_PATH) {
+      if (!cur || typeof cur !== "object") return undefined;
+      cur = (cur as Record<string, unknown>)[seg];
+    }
+    return cur as { enabled?: string[]; disabled?: string[] } | undefined;
+  }
+
+  function stateWithInstrumentationLists(enabled: string[], disabled: string[]) {
+    const inst: Record<string, string[]> = {};
+    if (enabled.length > 0) inst.enabled = enabled;
+    if (disabled.length > 0) inst.disabled = disabled;
+    return {
+      ...baseState,
+      values: { distribution: { javaagent: { instrumentation: inst } } },
+    };
+  }
+
   describe("SET_VALUE", () => {
     it("should set a top-level value", () => {
       const result = configurationBuilderReducer(baseState, {
@@ -337,27 +358,15 @@ describe("configurationBuilderReducer", () => {
     });
   });
 
-  describe("SET_OVERRIDE", () => {
-    const PATH = ["distribution", "javaagent", "instrumentation"] as const;
-    const initial = { ...INITIAL_STATE, version: "1.0.0" };
-
-    function getInst(s: ReturnType<typeof configurationBuilderReducer>) {
-      let cur: unknown = s.values;
-      for (const seg of PATH) {
-        if (!cur || typeof cur !== "object") return undefined;
-        cur = (cur as Record<string, unknown>)[seg];
-      }
-      return cur as { enabled?: string[]; disabled?: string[] } | undefined;
-    }
-
+  describe("SET_CUSTOMIZATION", () => {
     it("adds a module to disabled[] sorted alphabetically", () => {
-      let s = configurationBuilderReducer(initial, {
-        type: "SET_OVERRIDE",
+      let s = configurationBuilderReducer(baseState, {
+        type: "SET_CUSTOMIZATION",
         module: "kafka_clients",
         status: "disabled",
       });
       s = configurationBuilderReducer(s, {
-        type: "SET_OVERRIDE",
+        type: "SET_CUSTOMIZATION",
         module: "cassandra",
         status: "disabled",
       });
@@ -366,13 +375,13 @@ describe("configurationBuilderReducer", () => {
     });
 
     it("moves a module between arrays atomically (no duplicates)", () => {
-      let s = configurationBuilderReducer(initial, {
-        type: "SET_OVERRIDE",
+      let s = configurationBuilderReducer(baseState, {
+        type: "SET_CUSTOMIZATION",
         module: "cassandra",
         status: "disabled",
       });
       s = configurationBuilderReducer(s, {
-        type: "SET_OVERRIDE",
+        type: "SET_CUSTOMIZATION",
         module: "cassandra",
         status: "enabled",
       });
@@ -381,13 +390,13 @@ describe("configurationBuilderReducer", () => {
     });
 
     it("removes a module from both arrays when status is none", () => {
-      let s = configurationBuilderReducer(initial, {
-        type: "SET_OVERRIDE",
+      let s = configurationBuilderReducer(baseState, {
+        type: "SET_CUSTOMIZATION",
         module: "cassandra",
         status: "disabled",
       });
       s = configurationBuilderReducer(s, {
-        type: "SET_OVERRIDE",
+        type: "SET_CUSTOMIZATION",
         module: "cassandra",
         status: "none",
       });
@@ -395,18 +404,9 @@ describe("configurationBuilderReducer", () => {
     });
 
     it("recovers from corrupt initial state (module in both arrays)", () => {
-      const corrupt = {
-        ...initial,
-        values: {
-          distribution: {
-            javaagent: {
-              instrumentation: { enabled: ["cassandra"], disabled: ["cassandra"] },
-            },
-          },
-        },
-      };
+      const corrupt = stateWithInstrumentationLists(["cassandra"], ["cassandra"]);
       const s = configurationBuilderReducer(corrupt, {
-        type: "SET_OVERRIDE",
+        type: "SET_CUSTOMIZATION",
         module: "cassandra",
         status: "disabled",
       });
@@ -415,10 +415,66 @@ describe("configurationBuilderReducer", () => {
     });
 
     it("sets isDirty", () => {
-      const s = configurationBuilderReducer(initial, {
-        type: "SET_OVERRIDE",
+      const s = configurationBuilderReducer(baseState, {
+        type: "SET_CUSTOMIZATION",
         module: "cassandra",
         status: "disabled",
+      });
+      expect(s.isDirty).toBe(true);
+    });
+  });
+
+  describe("PRUNE_INSTRUMENTATIONS", () => {
+    it("drops customizations for modules absent from the valid set", () => {
+      const before = stateWithInstrumentationLists(["reactor"], ["thrift", "cassandra"]);
+      const s = configurationBuilderReducer(before, {
+        type: "PRUNE_INSTRUMENTATIONS",
+        validModules: ["reactor", "cassandra"],
+      });
+      expect(getInst(s)?.enabled).toEqual(["reactor"]);
+      expect(getInst(s)?.disabled).toEqual(["cassandra"]);
+    });
+
+    it("removes the whole distribution branch when nothing valid remains", () => {
+      const before = stateWithInstrumentationLists([], ["thrift", "jaxws_2_0_cxf_3_0"]);
+      const s = configurationBuilderReducer(before, {
+        type: "PRUNE_INSTRUMENTATIONS",
+        validModules: ["reactor", "cassandra"],
+      });
+      expect(s.values["distribution"]).toBeUndefined();
+    });
+
+    it("returns the same state reference when nothing needs pruning", () => {
+      const before = stateWithInstrumentationLists(["reactor"], ["cassandra"]);
+      const s = configurationBuilderReducer(before, {
+        type: "PRUNE_INSTRUMENTATIONS",
+        validModules: ["reactor", "cassandra", "thrift"],
+      });
+      expect(s).toBe(before);
+    });
+
+    it("is a no-op when no instrumentation customizations are present", () => {
+      const s = configurationBuilderReducer(baseState, {
+        type: "PRUNE_INSTRUMENTATIONS",
+        validModules: ["reactor"],
+      });
+      expect(s).toBe(baseState);
+    });
+
+    it("does not mark the state dirty (the prune is system-driven, not user-driven)", () => {
+      const before = stateWithInstrumentationLists([], ["thrift"]);
+      const s = configurationBuilderReducer(before, {
+        type: "PRUNE_INSTRUMENTATIONS",
+        validModules: ["reactor"],
+      });
+      expect(s.isDirty).toBe(false);
+    });
+
+    it("preserves an existing dirty flag", () => {
+      const before = { ...stateWithInstrumentationLists([], ["thrift"]), isDirty: true };
+      const s = configurationBuilderReducer(before, {
+        type: "PRUNE_INSTRUMENTATIONS",
+        validModules: ["reactor"],
       });
       expect(s.isDirty).toBe(true);
     });

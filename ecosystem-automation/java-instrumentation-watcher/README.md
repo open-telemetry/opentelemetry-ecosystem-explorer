@@ -1,13 +1,15 @@
 # Java Instrumentation Watcher
 
-Automation tool for synchronizing OpenTelemetry Java Agent instrumentation metadata to the ecosystem registry.
+Automation tool for synchronizing OpenTelemetry Java Agent instrumentation metadata to the ecosystem
+registry.
 
 The Metadata target source is:  
 <https://github.com/open-telemetry/opentelemetry-java-instrumentation/blob/main/docs/instrumentation-list.yaml>
 
 ## Methodology
 
-On a scheduled basis, the tool fetches the OpenTelemetry Java Agent instrumentation metadata to detect any changes.
+On a scheduled basis, the tool fetches the OpenTelemetry Java Agent instrumentation metadata to
+detect any changes.
 
 Process:
 
@@ -28,7 +30,8 @@ The tool uses a version-aware parser system to handle different `file_format` ve
 - **Library flattening**: Nested library structures are converted to a flat list with tags
   - Input: `libraries: { groupName: [lib1, lib2] }`
   - Output: `libraries: [lib1{tags: ["groupName"]}, lib2{tags: ["groupName"]}]`
-- **Version detection**: Automatically detects `file_format` from YAML and applies the appropriate parser
+- **Version detection**: Automatically detects `file_format` from YAML and applies the appropriate
+  parser
 
 ### Adding New Version Parsers
 

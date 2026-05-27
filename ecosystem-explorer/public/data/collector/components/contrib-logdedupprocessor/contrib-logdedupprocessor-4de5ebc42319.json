@@ -1,0 +1,30 @@
+{
+  "description": "The Log DeDuplication Processor is used to deduplicate logs by detecting identical logs over a range of time and emitting a single log with the count of logs that were deduplicated.",
+  "display_name": "Log DeDuplication Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-logdedupprocessor",
+  "name": "logdedupprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "MikeGoldsmith"
+      ],
+      "emeritus": [
+        "djaglowski"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "logs"
+      ]
+    }
+  },
+  "type": "processor"
+}

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
   Info,
@@ -72,36 +72,49 @@ function isSafeUrl(url: string): boolean {
 }
 
 export function InstrumentationDetailPage() {
-  const { version, name } = useParams<{ version: string; name: string }>();
+  const [searchParams] = useSearchParams();
+  const { param } = useParams<{ param: string }>();
+
   const navigate = useNavigate();
   const [showComparison, setShowComparison] = useState(false);
   const [activeTab, setActiveTab] = useState("details");
 
-  const { data: versionsData, loading: versionsLoading } = useVersions();
+  const { data: versionsData, loading: versionsLoading, error: versionsError } = useVersions();
 
-  const shouldFetchInstrumentation = version !== "latest";
+  const latestVersion = versionsData?.versions.find((v) => v.is_latest)?.version;
+  const version = searchParams.get("version") || latestVersion;
+  const isVersionValid =
+    version === "latest" ||
+    !versionsData ||
+    versionsData.versions.some((v) => v.version === version);
+
+  const shouldFetchInstrumentation = version !== "latest" && isVersionValid;
   const {
     data: instrumentation,
     loading: instrumentationLoading,
     error,
   } = useInstrumentation(
-    shouldFetchInstrumentation ? (name ?? "") : "",
-    shouldFetchInstrumentation ? (version ?? "") : ""
+    shouldFetchInstrumentation ? (param ?? "") : "",
+    shouldFetchInstrumentation ? (version as string) : ""
   );
 
-  const loading = versionsLoading || instrumentationLoading;
+  const loading =
+    versionsLoading || instrumentationLoading || (version === "latest" && !versionsError);
 
   useEffect(() => {
     if (version === "latest" && versionsData) {
-      const latestVersion = versionsData.versions.find((v) => v.is_latest)?.version;
-      if (latestVersion && name) {
-        navigate(`/java-agent/instrumentation/${latestVersion}/${name}`, { replace: true });
+      if (latestVersion && param) {
+        navigate(`/java-agent/instrumentation/${param}`, { replace: true });
       }
     }
-  }, [version, name, versionsData, navigate]);
+  }, [version, param, versionsData, navigate, latestVersion]);
 
   const handleVersionChange = (newVersion: string) => {
-    navigate(`/java-agent/instrumentation/${newVersion}/${name}`);
+    navigate(
+      newVersion != latestVersion
+        ? `/java-agent/instrumentation/${param}?version=${newVersion}`
+        : `/java-agent/instrumentation/${param}`
+    );
   };
 
   if (loading) {
@@ -112,16 +125,77 @@ export function InstrumentationDetailPage() {
             <div
               className="inline-flex animate-pulse rounded-full p-4"
               style={{
-                boxShadow: "0 0 60px hsl(var(--primary-hsl) / 0.2)",
+                boxShadow: "0 0 60px hsl(var(--otel-orange-hsl) / 0.2)",
               }}
             >
-              <Loader2 className="text-primary h-12 w-12 animate-spin" aria-hidden="true" />
+              <Loader2 className="text-secondary h-12 w-12 animate-spin" aria-hidden="true" />
             </div>
             <div className="mt-6 space-y-2">
               <div className="text-lg font-medium">Loading instrumentation...</div>
               <div className="text-muted-foreground text-sm">This may take a moment</div>
             </div>
           </div>
+        </div>
+      </PageContainer>
+    );
+  }
+
+  if (versionsError) {
+    return (
+      <PageContainer>
+        <BackButton />
+        <div className="mt-3">
+          <DetailCard className="border-red-500/50 bg-red-500/5">
+            <div className="flex gap-4">
+              <AlertCircle
+                className="h-6 w-6 flex-shrink-0 text-red-600 dark:text-red-400"
+                aria-hidden="true"
+              />
+              <div className="flex-1 space-y-2">
+                <h3 className="font-semibold text-red-600 dark:text-red-400">
+                  Error loading versions
+                </h3>
+                <p className="text-sm text-red-600/90 dark:text-red-400/90">
+                  {versionsError.message}
+                </p>
+              </div>
+            </div>
+          </DetailCard>
+        </div>
+      </PageContainer>
+    );
+  }
+
+  if (!isVersionValid && versionsData) {
+    return (
+      <PageContainer>
+        <BackButton />
+        <div className="mt-3">
+          <DetailCard className="border-yellow-500/50 bg-yellow-500/5">
+            <div className="flex gap-4">
+              <AlertCircle
+                className="h-6 w-6 flex-shrink-0 text-yellow-600 dark:text-yellow-400"
+                aria-hidden="true"
+              />
+              <div className="flex-1 space-y-3">
+                <h3 className="font-semibold text-yellow-600 dark:text-yellow-400">
+                  Version not found
+                </h3>
+                <p className="text-sm text-yellow-600/90 dark:text-yellow-400/90">
+                  Version <code className="rounded bg-yellow-500/10 px-1 py-0.5">{version}</code>{" "}
+                  does not exist.
+                </p>
+                {latestVersion && param && (
+                  <Link
+                    to={`/java-agent/instrumentation/${param}?version=${latestVersion}`}
+                    className="inline-flex items-center gap-1.5 text-sm text-yellow-600 underline hover:no-underline dark:text-yellow-400"
+                  >
+                    View {param} under the latest version ({latestVersion})
+                  </Link>
+                )}
+              </div>
+            </div>
+          </DetailCard>
         </div>
       </PageContainer>
     );
@@ -162,12 +236,12 @@ export function InstrumentationDetailPage() {
       <BackButton />
 
       <div className="mt-3 space-y-6">
-        <header className="border-border/60 bg-card/80 relative overflow-hidden rounded-lg border p-8">
+        <header className="border-border/60 bg-card/80 relative overflow-hidden rounded-lg border p-5 sm:p-8">
           <div
             className="absolute inset-0"
             style={{
               background:
-                "radial-gradient(circle at top right, hsl(var(--primary-hsl) / 0.06) 0%, hsl(var(--secondary-hsl) / 0.03) 40%, transparent 70%)",
+                "radial-gradient(circle at top right, hsl(var(--otel-blue-hsl) / 0.06) 0%, hsl(var(--otel-orange-hsl) / 0.03) 40%, transparent 70%)",
             }}
           />
 
@@ -183,10 +257,10 @@ export function InstrumentationDetailPage() {
           </div>
 
           <div className="relative z-10 space-y-4">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1 space-y-3">
-                <h1 className="text-3xl leading-tight font-bold md:text-4xl">
-                  <span className="bg-gradient-to-r from-[hsl(var(--secondary-hsl))] to-[hsl(var(--primary-hsl))] bg-clip-text text-transparent">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0 flex-1 space-y-2">
+                <h1 className="text-2xl leading-tight font-bold sm:text-3xl md:text-4xl">
+                  <span className="from-otel-orange to-otel-blue bg-gradient-to-r bg-clip-text text-transparent">
                     {displayName}
                   </span>
                 </h1>
@@ -198,8 +272,7 @@ export function InstrumentationDetailPage() {
                   </p>
                 )}
               </div>
-
-              <div className="flex flex-shrink-0 items-center gap-3">
+              <div className="flex flex-shrink-0 flex-wrap items-center gap-3">
                 {versionsData &&
                   versionsData.versions.length > 0 &&
                   version &&
@@ -232,7 +305,7 @@ export function InstrumentationDetailPage() {
             <svg viewBox="0 0 64 64" className="h-full w-full">
               <path
                 d="M64 64 L64 32 L48 32 L48 48 L32 48 L32 64 Z"
-                style={{ fill: "hsl(var(--secondary-hsl) / 0.5)" }}
+                style={{ fill: "hsl(var(--otel-orange-hsl) / 0.5)" }}
               />
             </svg>
           </div>
@@ -251,8 +324,9 @@ export function InstrumentationDetailPage() {
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="relative z-10">
-            <div className="px-6 pt-4 pb-0">
+            <div className="px-4 pt-4 pb-0 sm:px-6">
               <SegmentedTabList
+                fullWidth
                 value={activeTab}
                 tabs={[
                   {
@@ -274,7 +348,7 @@ export function InstrumentationDetailPage() {
               />
             </div>
 
-            <TabsContent value="details" className="mt-0 p-6">
+            <TabsContent value="details" className="mt-0 p-4 sm:p-6">
               <div className="space-y-8">
                 {((instrumentation.features && instrumentation.features.length > 0) ||
                   (instrumentation.semantic_conventions &&
@@ -292,7 +366,7 @@ export function InstrumentationDetailPage() {
                                 return (
                                   <li key={feature} className="flex items-start gap-2 text-sm">
                                     <Check
-                                      className="text-primary mt-0.5 h-4 w-4 flex-shrink-0"
+                                      className="text-secondary mt-0.5 h-4 w-4 flex-shrink-0"
                                       aria-hidden="true"
                                     />
                                     <div>
@@ -330,7 +404,7 @@ export function InstrumentationDetailPage() {
                                         href={info.url}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="border-primary/40 bg-primary/10 text-primary hover:bg-primary/20 rounded-md border px-3 py-1 text-sm transition-colors"
+                                        className="border-secondary/40 bg-secondary/10 text-secondary hover:bg-secondary/20 rounded-md border px-3 py-1 text-sm transition-colors"
                                       >
                                         {info.label}
                                       </a>
@@ -442,7 +516,7 @@ export function InstrumentationDetailPage() {
                         <DetailCard withHoverEffect>
                           <div className="flex items-start gap-3">
                             <ExternalLink
-                              className="text-primary mt-0.5 h-5 w-5 flex-shrink-0"
+                              className="text-secondary mt-0.5 h-5 w-5 flex-shrink-0"
                               aria-hidden="true"
                             />
                             <div className="flex-1 space-y-1">
@@ -453,7 +527,7 @@ export function InstrumentationDetailPage() {
                                 href={instrumentation.library_link}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="text-primary text-sm break-all hover:underline"
+                                className="text-secondary text-sm break-all hover:underline"
                               >
                                 {instrumentation.library_link}
                               </a>
@@ -467,7 +541,7 @@ export function InstrumentationDetailPage() {
                           <DetailCard withHoverEffect>
                             <div className="flex items-start gap-3">
                               <Code
-                                className="text-primary mt-0.5 h-5 w-5 flex-shrink-0"
+                                className="text-secondary mt-0.5 h-5 w-5 flex-shrink-0"
                                 aria-hidden="true"
                               />
                               <div className="flex-1 space-y-1">
@@ -478,7 +552,7 @@ export function InstrumentationDetailPage() {
                                   href={buildSourceUrl(instrumentation.source_path)}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-primary text-sm break-all hover:underline"
+                                  className="text-secondary text-sm break-all hover:underline"
                                 >
                                   {instrumentation.source_path}
                                 </a>
@@ -492,19 +566,19 @@ export function InstrumentationDetailPage() {
               </div>
             </TabsContent>
 
-            <TabsContent value="telemetry" className="mt-0 p-6">
+            <TabsContent value="telemetry" className="mt-0 p-4 sm:p-6">
               {instrumentation.telemetry && instrumentation.telemetry.length > 0 ? (
                 <div className="space-y-8">
                   <div className="flex justify-center">
                     <div
-                      className="border-border inline-flex rounded-lg border bg-transparent p-1"
+                      className="border-border inline-flex w-full rounded-lg border bg-transparent p-1 sm:w-auto"
                       role="group"
                     >
                       <button
                         type="button"
                         onClick={() => setShowComparison(false)}
                         aria-pressed={!showComparison}
-                        className={`rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 ease-in-out ${
+                        className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 ease-in-out sm:flex-none ${
                           !showComparison
                             ? "bg-card text-foreground shadow-sm"
                             : "text-muted-foreground hover:text-foreground"
@@ -516,7 +590,7 @@ export function InstrumentationDetailPage() {
                         type="button"
                         onClick={() => setShowComparison(true)}
                         aria-pressed={showComparison}
-                        className={`rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 ease-in-out ${
+                        className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 ease-in-out sm:flex-none ${
                           showComparison
                             ? "bg-card text-foreground shadow-sm"
                             : "text-muted-foreground hover:text-foreground"
@@ -554,7 +628,7 @@ export function InstrumentationDetailPage() {
               )}
             </TabsContent>
 
-            <TabsContent value="configuration" className="mt-0 p-6">
+            <TabsContent value="configuration" className="mt-0 p-4 sm:p-6">
               <InstrumentationConfigurationTab
                 configurations={instrumentation.configurations ?? []}
               />

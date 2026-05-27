@@ -72,7 +72,7 @@ describe("fetchWithCache", () => {
     });
 
     await expect(fetchWithCache("key", "/url", idbCache.STORES.METADATA)).rejects.toThrow(
-      "Failed to load key: 404 Not Found"
+      "Failed to load key from /url: 404 Not Found"
     );
   });
 
@@ -150,5 +150,78 @@ describe("fetchWithCache", () => {
     await expect(
       fetchWithCache("test-500-soft", "/broken.json", STORES.CONFIGURATION, { allow404: true })
     ).rejects.toThrow(/500/);
+  });
+
+  describe("validate option", () => {
+    it("returns cached data when validate passes", async () => {
+      const data = { versions: [{ version: "1.0.0", is_latest: true }] };
+      vi.spyOn(idbCache, "getCached").mockResolvedValue(data);
+
+      const result = await fetchWithCache("key", "/url", STORES.METADATA, {
+        validate: (d: unknown) =>
+          Array.isArray((d as typeof data).versions) && (d as typeof data).versions.length > 0,
+      });
+
+      expect(result).toEqual(data);
+      expect(global.fetch).not.toHaveBeenCalled();
+    });
+
+    it("bypasses cache and re-fetches when validate fails", async () => {
+      const staleData = { versions: [] };
+      const freshData = { versions: [{ version: "1.0.0", is_latest: true }] };
+
+      vi.spyOn(idbCache, "getCached").mockResolvedValue(staleData);
+      vi.spyOn(idbCache, "setCached").mockResolvedValue();
+
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ok: true,
+        json: async () => freshData,
+      });
+
+      const result = await fetchWithCache("key", "/url", STORES.METADATA, {
+        validate: (d: unknown) =>
+          Array.isArray((d as typeof staleData).versions) &&
+          (d as typeof staleData).versions.length > 0,
+      });
+
+      expect(result).toEqual(freshData);
+      expect(global.fetch).toHaveBeenCalledWith("/url");
+    });
+
+    it("fetches from network when no cached data exists and validate is provided", async () => {
+      const freshData = { versions: [{ version: "2.0.0", is_latest: true }] };
+      vi.spyOn(idbCache, "getCached").mockResolvedValue(null);
+      vi.spyOn(idbCache, "setCached").mockResolvedValue();
+
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ok: true,
+        json: async () => freshData,
+      });
+
+      const result = await fetchWithCache("key", "/url", STORES.METADATA, {
+        validate: (d: unknown) => Array.isArray((d as typeof freshData).versions),
+      });
+
+      expect(result).toEqual(freshData);
+      expect(global.fetch).toHaveBeenCalledWith("/url");
+    });
+  });
+
+  it("serves stale cache when response is 200 but content-type is text/html", async () => {
+    const staleData = { test: "stale-html-fallback" };
+    vi.spyOn(idbCache, "getCached").mockImplementation(async (_key, _store, options) => {
+      if (options?.allowExpired) return staleData;
+      return null;
+    });
+
+    globalThis.fetch = vi.fn().mockResolvedValue(
+      new Response("<!doctype html><html></html>", {
+        status: 200,
+        headers: { "content-type": "text/html" },
+      })
+    ) as unknown as typeof fetch;
+
+    const result = await fetchWithCache("test-html", "/data.json", STORES.CONFIGURATION);
+    expect(result).toEqual(staleData);
   });
 });

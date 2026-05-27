@@ -1,0 +1,95 @@
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * Home (v1) — wrapper + shared `td-box`/`td-two-col` chrome + skeleton-box
+ * placeholder for the GlobalSearch slot inside CoverBlock. Skeleton rules
+ * are intentionally low-fidelity: subtle neutral fill that adapts to either
+ * theme, with per-slot heights approximating the real component footprint
+ * so the page reads as "this will be filled in" instead of "this is broken".
+ * As each real component lands, drop its `--<slot>` modifier rule here; the
+ * base `.td-home__skeleton` rule stays as a reusable utility.
+ *
+ * Each shipped section's surface rules live in its own partial (e.g.
+ * `cover-block.css`, `stats-band.css`, `ecosystems-grid.css`,
+ * `signals-row.css`, `recent-activity-rail.css`).
+ */
+
+.td-home {
+  display: block;
+}
+
+/* ---------- Section containers (placeholder rhythm) ---------- */
+
+.td-home > section[aria-label] {
+  padding: 4rem 1.5rem;
+}
+
+.td-home > section[aria-label] > .td-home__skeleton {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ---------- Skeleton base ---------- */
+
+.td-home__skeleton {
+  background-color: hsl(var(--foreground-hsl) / 0.06);
+  border-radius: 0.5rem;
+  width: 100%;
+}
+
+/* ---------- Slot modifiers ---------- */
+
+/* GlobalSearch slot — sits inside the dark cover-block surface, so it
+   needs a slightly lighter fill to read against `--cover-block-bg-*`. */
+.td-home__skeleton--search {
+  max-width: 600px;
+  height: 3rem;
+  margin: 2rem auto 0;
+  background-color: hsl(var(--cover-block-fg-hsl) / 0.1);
+}
+
+/* ---------- Shared section box (wraps SignalsRow + RecentActivityRail) ---------- */
+
+.td-box {
+  padding: 4rem 1.5rem;
+}
+
+.td-box--muted {
+  background-color: hsl(var(--card-hsl));
+  color: hsl(var(--foreground-hsl));
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+.td-box__container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* ---------- Two-column grid (SignalsRow / RecentActivityRail co-mount) ---------- */
+
+.td-two-col {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 992px) {
+  .td-two-col {
+    grid-template-columns: 1fr 1fr;
+  }
+}

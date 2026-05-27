@@ -16,6 +16,7 @@
 
 import json
 import logging
+import re
 import shutil
 from pathlib import Path
 from typing import Any
@@ -46,6 +47,10 @@ class DatabaseWriter:
         self.files_written = 0
         self.total_bytes = 0
 
+    def _sanitize_name(self, name: str) -> str:
+        """Sanitizes a name for use as a filename to prevent path traversal."""
+        return re.sub(r"[^a-zA-Z0-9._\-]", "_", name)
+
     def _get_file_path(self, library_name: str, library_hash: str) -> Path:
         """Get the file path for a library with the given name and hash.
 
@@ -58,9 +63,10 @@ class DatabaseWriter:
         Returns:
             Path to the library JSON file
         """
-        instrumentations_dir = self.database_dir / "instrumentations" / library_name
+        safe_name = self._sanitize_name(library_name)
+        instrumentations_dir = self.database_dir / "instrumentations" / safe_name
         instrumentations_dir.mkdir(parents=True, exist_ok=True)
-        return instrumentations_dir / f"{library_name}-{library_hash}.json"
+        return instrumentations_dir / f"{safe_name}-{library_hash}.json"
 
     def write_libraries(self, libraries: list[dict[str, Any]]) -> dict[str, str]:
         """Write library data to content-addressed files.
@@ -202,6 +208,35 @@ class DatabaseWriter:
         except OSError as e:
             logger.error(f"Failed to write version list: {e}")
             raise
+
+    def write_markdown(self, library_name: str, markdown_hash: str, content: str) -> None:
+        """Write markdown file to the database.
+
+        Args:
+            library_name: Name of the library
+            markdown_hash: Hash of the markdown content
+            content: Markdown content string
+        """
+        markdown_dir = self.database_dir / "markdown"
+        markdown_dir.mkdir(parents=True, exist_ok=True)
+
+        safe_name = self._sanitize_name(library_name)
+        file_path = markdown_dir / f"{safe_name}-{markdown_hash}.md"
+
+        if file_path.exists():
+            logger.debug(f"Markdown for '{safe_name}' with hash {markdown_hash} already exists, skipping write")
+            return
+
+        try:
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write(content)
+            file_size = len(content.encode("utf-8"))
+            self.files_written += 1
+            self.total_bytes += file_size
+            logger.debug(f"Wrote markdown for '{safe_name}' with hash {markdown_hash}")
+        except OSError as e:
+            logger.error(f"Failed to write markdown for '{safe_name}': {e}")
+            # README publishing failures must never fail DB generation as per requirements
 
     def get_stats(self) -> dict[str, Any]:
         """Get statistics about files written during this session.

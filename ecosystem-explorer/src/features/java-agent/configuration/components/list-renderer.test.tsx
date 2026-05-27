@@ -16,6 +16,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { ListRenderer } from "./list-renderer";
+import { useListItemContext } from "./configuration-ui-context";
 import type { ListNode } from "@/types/configuration";
 
 const addListItem = vi.fn();
@@ -39,11 +40,18 @@ vi.mock("@/hooks/use-configuration-builder", () => ({
 }));
 
 vi.mock("./schema-renderer", () => ({
-  SchemaRenderer: ({ path, headless }: { path: string; headless?: boolean }) => (
-    <span data-testid="child-path" data-headless={String(!!headless)}>
-      {path}
-    </span>
-  ),
+  SchemaRenderer: ({ path, headless }: { path: string; headless?: boolean }) => {
+    const inListItem = useListItemContext();
+    return (
+      <span
+        data-testid="child-path"
+        data-headless={String(!!headless)}
+        data-in-list-item={String(inListItem)}
+      >
+        {path}
+      </span>
+    );
+  },
 }));
 
 const listNode: ListNode = {
@@ -123,5 +131,53 @@ describe("ListRenderer", () => {
     render(<ListRenderer node={node} depth={1} path="tp.processors" />);
     expect(screen.getByText("Configure processors.")).toBeInTheDocument();
     expect(screen.getAllByText("Configure processors.")).toHaveLength(1);
+  });
+
+  it("renders each item as a rounded card", () => {
+    const { container } = renderAndExpand();
+    const itemCards = container.querySelectorAll<HTMLElement>("li.rounded-lg");
+    expect(itemCards.length).toBe(1);
+  });
+
+  it("propagates inListItem=true via ListItemContext", () => {
+    renderAndExpand();
+    expect(screen.getByTestId("child-path").getAttribute("data-in-list-item")).toBe("true");
+  });
+
+  it("when itemSchema is plugin_select, drops the per-item header row (tablist serves as header)", () => {
+    const pluginListNode: ListNode = {
+      controlType: "list",
+      key: "processors",
+      label: "Processors",
+      path: "tp.processors",
+      itemSchema: {
+        controlType: "plugin_select",
+        key: "item",
+        label: "Item",
+        path: "tp.processors.item",
+        allowCustom: false,
+        options: [
+          {
+            controlType: "group",
+            key: "batch",
+            label: "Batch",
+            path: "tp.processors.item.batch",
+            children: [],
+          },
+        ],
+      },
+    };
+    const { container } = render(
+      <ListRenderer node={pluginListNode} depth={1} path="tp.processors" />
+    );
+    fireEvent.click(screen.getByRole("button", { name: /Expand Processors/ }));
+    // No "Item 1" / "Processor 1" header label — the tablist (mocked SchemaRenderer here) is the only header.
+    expect(screen.queryByText(/^Item 1$|^Processor 1$/)).toBeNull();
+    // Remove button still present, positioned absolute top-right.
+    const removeBtn = screen.getByRole("button", { name: /remove item 1/i });
+    expect(removeBtn.parentElement?.className).toMatch(/absolute/);
+    // Item card has relative class so the absolute remove button anchors to it.
+    const itemCard = container.querySelector<HTMLElement>("li.rounded-lg");
+    expect(itemCard?.className).toMatch(/relative/);
   });
 });
