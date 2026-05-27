@@ -57,19 +57,6 @@ describe("StatusPill", () => {
     }
   );
 
-  it("renders all six stability levels with title-case labels", () => {
-    render(
-      <>
-        {VARIANTS.map(({ stability }) => (
-          <StatusPill key={stability} stability={stability} />
-        ))}
-      </>
-    );
-    for (const { label } of VARIANTS) {
-      expect(screen.getByText(label)).toBeInTheDocument();
-    }
-  });
-
   it("renders deprecated and unmaintained with distinct labels but the same red classes", () => {
     render(
       <>
