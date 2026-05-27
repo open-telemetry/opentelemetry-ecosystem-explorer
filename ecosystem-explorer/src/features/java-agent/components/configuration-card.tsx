@@ -69,7 +69,7 @@ export function ConfigurationCard({ config, format, instrumentations }: Configur
             <div data-testid="config-name" className="min-w-0 flex-1">
               <YamlCodeBlock
                 code={yamlCode}
-                className="bg-background/60 text-foreground rounded-md p-3 font-mono text-xs"
+                className="bg-background/60 text-foreground rounded-md p-3 font-mono text-xs whitespace-pre-wrap break-words"
               />
             </div>
           ) : (
