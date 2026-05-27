@@ -59,7 +59,7 @@ const INPUT_ERROR_CLASS =
 
 export function KeyValueMapControl({ node, path, value, onChange }: KeyValueMapControlProps) {
   const isNull = node.nullable === true && value === null;
-  const { state } = useConfigurationBuilder();
+  const { state, setFieldError, clearValidationError } = useConfigurationBuilder();
   const error = state.validationErrors[path] ?? null;
   const listRef = useRef<HTMLUListElement>(null);
   const addButtonRef = useRef<HTMLButtonElement>(null);
@@ -87,6 +87,11 @@ export function KeyValueMapControl({ node, path, value, onChange }: KeyValueMapC
 
   const emit = (next: Entry[]) => {
     const obj = fromEntries(next);
+    if (getDuplicateKeys(next).size > 0) {
+      setFieldError(path, "Duplicate key: only the last value for each key is kept.");
+    } else {
+      clearValidationError(path);
+    }
     lastSerializedEmit.current = JSON.stringify(obj);
     setLocalEntries(next);
     onChange(path, obj);
@@ -151,56 +156,43 @@ export function KeyValueMapControl({ node, path, value, onChange }: KeyValueMapC
               {localEntries.map((entry, index) => {
                 const isDuplicate = duplicateKeys.has(entry.key);
                 return (
-                  <li key={index} className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="text"
-                        aria-label={`Key ${index + 1}`}
-                        aria-invalid={isDuplicate}
-                        aria-describedby={isDuplicate ? `dup-key-${path}-${index}` : undefined}
-                        placeholder="key"
-                        value={entry.key}
-                        onChange={(e) => {
-                          const next = [...localEntries];
-                          next[index] = { ...next[index], key: e.target.value };
-                          emit(next);
-                        }}
-                        className={`w-2/5 ${isDuplicate ? INPUT_ERROR_CLASS : INPUT_CLASS}`}
-                      />
-                      <span className="text-muted-foreground" aria-hidden="true">
-                        =
-                      </span>
-                      <input
-                        type="text"
-                        aria-label={`Value ${index + 1}`}
-                        placeholder="value"
-                        value={entry.value}
-                        onChange={(e) => {
-                          const next = [...localEntries];
-                          next[index] = { ...next[index], value: e.target.value };
-                          emit(next);
-                        }}
-                        className={`min-w-0 flex-1 ${INPUT_CLASS}`}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleRemove(index)}
-                        aria-label={`Remove entry ${index + 1}`}
-                        className="border-border/60 bg-background/80 text-muted-foreground shrink-0 rounded-lg border p-2 transition-all hover:border-red-500/40 hover:text-red-400"
-                      >
-                        <X className="h-4 w-4" aria-hidden="true" />
-                      </button>
-                    </div>
-                    {isDuplicate && (
-                      <p
-                        id={`dup-key-${path}-${index}`}
-                        role="alert"
-                        className="pl-1 text-xs text-red-400"
-                      >
-                        Duplicate key. Only the last entry with this key will appear in the
-                        generated YAML.
-                      </p>
-                    )}
+                  <li key={index} className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      aria-label={`Key ${index + 1}`}
+                      aria-invalid={isDuplicate}
+                      placeholder="key"
+                      value={entry.key}
+                      onChange={(e) => {
+                        const next = [...localEntries];
+                        next[index] = { ...next[index], key: e.target.value };
+                        emit(next);
+                      }}
+                      className={`w-2/5 ${isDuplicate ? INPUT_ERROR_CLASS : INPUT_CLASS}`}
+                    />
+                    <span className="text-muted-foreground" aria-hidden="true">
+                      =
+                    </span>
+                    <input
+                      type="text"
+                      aria-label={`Value ${index + 1}`}
+                      placeholder="value"
+                      value={entry.value}
+                      onChange={(e) => {
+                        const next = [...localEntries];
+                        next[index] = { ...next[index], value: e.target.value };
+                        emit(next);
+                      }}
+                      className={`min-w-0 flex-1 ${INPUT_CLASS}`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemove(index)}
+                      aria-label={`Remove entry ${index + 1}`}
+                      className="border-border/60 bg-background/80 text-muted-foreground shrink-0 rounded-lg border p-2 transition-all hover:border-red-500/40 hover:text-red-400"
+                    >
+                      <X className="h-4 w-4" aria-hidden="true" />
+                    </button>
                   </li>
                 );
               })}

@@ -19,6 +19,8 @@ import { KeyValueMapControl } from "./key-value-map-control";
 import type { KeyValueMapNode } from "@/types/configuration";
 
 const validateField = vi.fn();
+const setFieldError = vi.fn();
+const clearValidationError = vi.fn();
 let mockValidationErrors: Record<string, string> = {};
 
 vi.mock("@/hooks/use-configuration-builder", () => ({
@@ -31,6 +33,8 @@ vi.mock("@/hooks/use-configuration-builder", () => ({
       isDirty: false,
     },
     validateField,
+    setFieldError,
+    clearValidationError,
     setValue: vi.fn(),
   }),
 }));
@@ -45,6 +49,8 @@ const node: KeyValueMapNode = {
 describe("KeyValueMapControl", () => {
   beforeEach(() => {
     validateField.mockReset();
+    setFieldError.mockReset();
+    clearValidationError.mockReset();
     mockValidationErrors = {};
   });
 
@@ -140,22 +146,21 @@ describe("KeyValueMapControl", () => {
     expect(screen.getByRole("alert")).toHaveTextContent("Required");
   });
 
-  it("shows a duplicate key warning when two entries share the same key", () => {
+  it("calls setFieldError when two entries share the same key", () => {
     const onChange = vi.fn();
     render(
       <KeyValueMapControl node={node} path={node.path} value={{ host: "a" }} onChange={onChange} />
     );
 
-    // Add a second entry
     fireEvent.click(screen.getByRole("button", { name: "Add entry to Resource Attributes" }));
 
-    // Type the same key into the second entry's key input
     const keyInputs = screen.getAllByPlaceholderText("key");
     fireEvent.change(keyInputs[1], { target: { value: "host" } });
 
-    const warnings = screen.getAllByRole("alert");
-    expect(warnings.length).toBeGreaterThanOrEqual(1);
-    expect(warnings[0]).toHaveTextContent("Duplicate key");
+    expect(setFieldError).toHaveBeenCalledWith(
+      node.path,
+      "Duplicate key: only the last value for each key is kept."
+    );
   });
 
   it("marks duplicate key inputs as aria-invalid", () => {
@@ -174,7 +179,7 @@ describe("KeyValueMapControl", () => {
     expect(invalidInputs.length).toBeGreaterThanOrEqual(2);
   });
 
-  it("clears the duplicate warning when the conflicting key is renamed", () => {
+  it("calls clearValidationError when the conflicting key is renamed", () => {
     const onChange = vi.fn();
     render(
       <KeyValueMapControl node={node} path={node.path} value={{ host: "a" }} onChange={onChange} />
@@ -183,24 +188,22 @@ describe("KeyValueMapControl", () => {
     fireEvent.click(screen.getByRole("button", { name: "Add entry to Resource Attributes" }));
     const keyInputs = screen.getAllByPlaceholderText("key");
     fireEvent.change(keyInputs[1], { target: { value: "host" } });
-    expect(screen.getAllByRole("alert").length).toBeGreaterThanOrEqual(1);
+    expect(setFieldError).toHaveBeenCalled();
 
-    // Rename the duplicate to a unique key
+    clearValidationError.mockClear();
+    setFieldError.mockClear();
     fireEvent.change(keyInputs[1], { target: { value: "port" } });
-    const alerts = screen.queryAllByRole("alert");
-    const dupWarnings = alerts.filter((el) => el.textContent?.includes("Duplicate key"));
-    expect(dupWarnings).toHaveLength(0);
+
+    expect(clearValidationError).toHaveBeenCalledWith(node.path);
+    expect(setFieldError).not.toHaveBeenCalled();
   });
 
-  it("does not show a warning for empty keys", () => {
+  it("does not call setFieldError for empty keys", () => {
     render(<KeyValueMapControl node={node} path={node.path} value={{}} onChange={vi.fn()} />);
 
-    // Add two entries with empty keys
     fireEvent.click(screen.getByRole("button", { name: "Add entry to Resource Attributes" }));
     fireEvent.click(screen.getByRole("button", { name: "Add entry to Resource Attributes" }));
 
-    const alerts = screen.queryAllByRole("alert");
-    const dupWarnings = alerts.filter((el) => el.textContent?.includes("Duplicate key"));
-    expect(dupWarnings).toHaveLength(0);
+    expect(setFieldError).not.toHaveBeenCalled();
   });
 });

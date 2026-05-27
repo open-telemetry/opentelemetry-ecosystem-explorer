@@ -76,6 +76,7 @@ export interface ConfigurationBuilderActionsContextValue {
   validateField: (path: string) => string | null;
   validateAll: () => ValidationResult;
   clearValidationError: (path: string) => void;
+  setFieldError: (path: string, error: string) => void;
 }
 
 export const ConfigStateContext = createContext<ConfigurationBuilderStateContextValue | null>(null);
@@ -300,6 +301,11 @@ export function useConfigurationBuilderState(
     dispatch({ type: "SET_FIELD_ERROR", path: pathKey, error: null });
   }, []);
 
+  const setFieldError = useCallback((path: string, error: string) => {
+    const pathKey = serializePath(parsePath(path));
+    dispatch({ type: "SET_FIELD_ERROR", path: pathKey, error });
+  }, []);
+
   const actions = useMemo(
     () => ({
       setValue,
@@ -318,6 +324,7 @@ export function useConfigurationBuilderState(
       validateField: validateFieldAction,
       validateAll: validateAllAction,
       clearValidationError,
+      setFieldError,
     }),
     // all callbacks are stable; resetToDefaults reads starter via ref
     // eslint-disable-next-line react-hooks/exhaustive-deps
