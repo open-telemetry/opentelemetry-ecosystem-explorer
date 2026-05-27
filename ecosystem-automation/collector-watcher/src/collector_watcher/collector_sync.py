@@ -15,6 +15,7 @@
 """Collector metadata synchronization to registry."""
 
 import logging
+from pathlib import Path
 from typing import Any
 
 from semantic_version import Version
@@ -23,6 +24,7 @@ from watcher_common.version_detector import VersionDetector
 from .component_scanner import ComponentScanner
 from .deprecation_detector import DeprecationDetector
 from .inventory_manager import InventoryManager
+from .schema_copier import CollectorSchemaCopier
 from .type_defs import DistributionName
 
 logger = logging.getLogger(__name__)
@@ -163,19 +165,40 @@ class CollectorSync:
         """
         Save scanned components for a specific version.
 
+        Stores the upstream schema in content-addressable storage at
+        ``meta/schemas/{hash}.yaml`` (deduplicated across versions and
+        distributions) and records that hash in every component YAML for
+        drift detection and parser routing.
+
+        Schema is always read from the core repo: ``mdatagen`` lives only in
+        ``opentelemetry-collector``, and the schema is identical across
+        distributions, so contrib carries the same ``schema_hash`` as core.
+
+        Registry layout after this call:
+            ecosystem-registry/collector/
+                {distribution}/v{version}/*.yaml   (component data, each with schema_hash)
+                meta/schemas/{hash}.yaml           (one file per distinct schema)
+
         Args:
             distribution: Distribution name
             version: Version being saved
             components: Scanned components
         """
+        copier = CollectorSchemaCopier()
+        core_repo_path = Path(self.repos["core"])
+        stored_hash = copier.store_schema(core_repo_path, self.inventory_manager.meta_schemas_dir())
+        schema_hash = stored_hash if stored_hash is not None else "unknown"
+
         repository = self.get_repository_name(distribution)
         self.inventory_manager.save_versioned_inventory(
             distribution=distribution,
             version=version,
             components=components,
             repository=repository,
+            schema_hash=schema_hash,
         )
-        logger.info("  Saved %s %s", distribution, version)
+
+        logger.info("  Saved %s %s (schema_hash=%s)", distribution, version, schema_hash)
 
     def initialize_previous_version(self, distribution: DistributionName) -> None:
         """

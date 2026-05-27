@@ -30,13 +30,6 @@
       "description": "Minimum Java version required by this instrumentation.",
       "type": "number"
     },
-    "tags": {
-      "description": "Searchable tags associated with this instrumentation.",
-      "type": "array",
-      "items": {
-        "type": "string"
-      }
-    },
     "semantic_conventions": {
       "description": "List of semantic conventions followed by this instrumentation.",
       "type": "array",
@@ -264,6 +257,7 @@
         "required": ["when"]
       }
     },
+
     "_is_custom": {
       "description": "Whether this is a custom (non-upstream) instrumentation.",
       "type": "boolean"
@@ -277,7 +271,6 @@
     "library_link",
     "source_path",
     "minimum_java_version",
-    "tags",
     "semantic_conventions",
     "features",
     "scope",

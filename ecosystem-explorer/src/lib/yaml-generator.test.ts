@@ -16,7 +16,7 @@
 import { describe, it, expect } from "vitest";
 import type { ConfigNode } from "@/types/configuration";
 import type { ConfigurationBuilderState } from "@/types/configuration-builder";
-import { generateYaml } from "./yaml-generator";
+import { generateYaml, generateYamlSections } from "./yaml-generator";
 
 const emptySchema: ConfigNode = {
   controlType: "group",
@@ -35,14 +35,21 @@ const emptyState: ConfigurationBuilderState = {
 };
 
 describe("generateYaml", () => {
-  it("generates default header and respects override", () => {
+  it("generates default header with schema version, file-loader hint, and respects override", () => {
     const defaultOutput = generateYaml(emptyState, emptySchema);
-    expect(defaultOutput).toContain("# OpenTelemetry SDK Configuration");
     expect(defaultOutput).toContain("# Schema version: 1.0.0");
+    expect(defaultOutput).toContain("#   -Dotel.config.file=/path/to/otel-config.yaml");
+    expect(defaultOutput).not.toContain("Java agent:");
 
     const overridden = generateYaml(emptyState, emptySchema, { header: "# custom" });
     expect(overridden.startsWith("# custom\n")).toBe(true);
     expect(overridden).not.toContain("# OpenTelemetry SDK Configuration");
+  });
+
+  it("includes the Java agent version when supplied via options", () => {
+    const output = generateYaml(emptyState, emptySchema, { javaAgentVersion: "2.27.0" });
+    expect(output).toContain("# Schema version: 1.0.0");
+    expect(output).toContain("Java agent: 2.27.0");
   });
 
   const fixtureSchema: ConfigNode = {
@@ -109,6 +116,8 @@ describe("generateYaml", () => {
 
     expect(output).toContain('file_format: "1.0"');
     expect(output).not.toContain("file_format: 1.0.1");
+    expect(output).not.toMatch(/^#[^\n]*\n[^\n]*file_format:/m);
+    expect(output).not.toContain("# File Format");
 
     const fileFormatIdx = output.indexOf("file_format:");
     const loggerIdx = output.indexOf("logger_provider:");
@@ -120,9 +129,9 @@ describe("generateYaml", () => {
     expect(resourceIdx).toBeGreaterThan(loggerIdx);
     expect(tracerIdx).toBeGreaterThan(resourceIdx);
 
-    expect(output).toContain("# Logger Provider — Configure logger provider.");
-    expect(output).toContain("# Resource — Configure resource for all signals.");
-    expect(output).toContain("# Tracer Provider — Configure tracer provider.");
+    expect(output).toContain("# Logger Provider: Configure logger provider.");
+    expect(output).toContain("# Resource: Configure resource for all signals.");
+    expect(output).toContain("# Tracer Provider: Configure tracer provider.");
 
     expect(output).not.toContain("legacy_thing");
   });
@@ -601,5 +610,33 @@ describe("generateYaml", () => {
     const output = generateYaml(state, schema, { header: "" });
     expect(output).toContain("service_name: demo");
     expect(output).toContain("endpoint: http://localhost:4318");
+  });
+
+  describe("generateYamlSections", () => {
+    it("returns structured sections mapping to expected keys and content", () => {
+      const state: ConfigurationBuilderState = {
+        version: "1.0.1",
+        values: {
+          tracer_provider: { sampler: "always_on" },
+          resource: { service_name: "demo" },
+        },
+        enabledSections: {
+          tracer_provider: true,
+          resource: true,
+        },
+        validationErrors: {},
+        isDirty: false,
+      };
+
+      const result = generateYamlSections(state, fixtureSchema, { header: "# test header" });
+
+      expect(result.header).toBe("# test header");
+      expect(result.fileFormat).toContain('file_format: "1.0"');
+      expect(result.sections).toHaveLength(2);
+      expect(result.sections[0].key).toBe("resource");
+      expect(result.sections[0].content).toContain("service_name: demo");
+      expect(result.sections[1].key).toBe("tracer_provider");
+      expect(result.sections[1].content).toContain("sampler: always_on");
+    });
   });
 });

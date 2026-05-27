@@ -61,7 +61,7 @@ class TestTransformCollectorComponents:
 
         assert len(result) == 1
         component = result[0]
-        assert component["id"] == "contrib-receiver-otlpreceiver"
+        assert component["id"] == "contrib-otlpreceiver"
         assert component["ecosystem"] == "collector"
         assert component["distribution"] == "contrib"
         assert component["type"] == "receiver"
@@ -150,7 +150,7 @@ class TestTransformCollectorComponents:
 
         result = transform_collector_components(inventory, "core")
 
-        assert result[0]["id"] == "core-receiver-nopreceiver"
+        assert result[0]["id"] == "core-nopreceiver"
 
     def test_skips_non_dict_components(self, caplog):
         inventory = _make_inventory(
@@ -210,7 +210,7 @@ class TestTransformCollectorComponents:
 
         assert len(result) == 2
         ids = {c["id"] for c in result}
-        assert ids == {"contrib-receiver-receiver_a", "contrib-receiver-receiver_b"}
+        assert ids == {"contrib-receiver_a", "contrib-receiver_b"}
 
     def test_repository_from_inventory(self):
         inventory = _make_inventory(
@@ -232,7 +232,7 @@ class TestTransformCollectorComponents:
 class TestMakeIndexComponent:
     def test_extracts_lightweight_fields(self):
         component = {
-            "id": "contrib-receiver-otlp",
+            "id": "contrib-otlp",
             "ecosystem": "collector",
             "distribution": "contrib",
             "type": "receiver",
@@ -249,7 +249,7 @@ class TestMakeIndexComponent:
 
         result = make_index_component(component)
 
-        assert result["id"] == "contrib-receiver-otlp"
+        assert result["id"] == "contrib-otlp"
         assert result["name"] == "otlpreceiver"
         assert result["distribution"] == "contrib"
         assert result["type"] == "receiver"

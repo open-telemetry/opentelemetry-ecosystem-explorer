@@ -31,7 +31,7 @@ export function NotFoundPage() {
 
       <Link
         to="/"
-        className="bg-primary/10 border-primary/40 text-foreground hover:bg-primary/20 rounded-lg border px-6 py-3 transition-colors"
+        className="bg-secondary/10 border-secondary/40 text-foreground hover:bg-secondary/20 rounded-lg border px-6 py-3 transition-colors"
       >
         Return to Home
       </Link>

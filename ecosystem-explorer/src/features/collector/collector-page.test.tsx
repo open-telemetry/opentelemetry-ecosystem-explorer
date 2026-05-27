@@ -15,8 +15,12 @@
  */
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { CollectorPage } from "@/features/collector/collector-page.tsx";
+
+vi.mock("@/features/collector/components/collector-explore-landing.tsx", () => ({
+  CollectorExploreLanding: () => <div>Collector explore landing</div>,
+}));
 
 describe("CollectorPage", () => {
   it("renders the page title", () => {
@@ -25,8 +29,9 @@ describe("CollectorPage", () => {
         <CollectorPage />
       </MemoryRouter>
     );
+
     const heading = screen.getByRole("heading", { level: 1 });
-    expect(heading).toHaveTextContent(/Collector/);
-    expect(heading).toHaveTextContent(/Components/);
+    expect(heading).toHaveTextContent("OpenTelemetry Collector");
+    expect(screen.getByText("Collector explore landing")).toBeInTheDocument();
   });
 });

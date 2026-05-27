@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { Info, ExternalLink, AlertCircle, Loader2, Check } from "lucide-react";
 import { GitHubIcon } from "@/components/icons/github-icon";
 
@@ -25,7 +25,7 @@ import { GlowBadge } from "@/components/ui/glow-badge";
 import { DetailCard } from "@/components/ui/detail-card";
 import { SectionHeader } from "@/components/ui/section-header";
 import { PageContainer } from "@/components/layout/page-container";
-import { useCollectorComponent } from "@/hooks/use-collector-data";
+import { useCollectorComponent, useCollectorVersions } from "@/hooks/use-collector-data";
 
 const COMPONENT_TYPE_DESCRIPTIONS: Record<string, string> = {
   receiver: "Receivers collect telemetry data from various sources and formats.",
@@ -126,18 +126,30 @@ const getBadgeVariant = (level: string): "success" | "info" | "warning" | "muted
 };
 
 export function CollectorDetailPage() {
-  const { version, id } = useParams<{ version: string; id: string }>();
+  const { distribution, name } = useParams<{ distribution: string; name: string }>();
+
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { data: component, loading, error } = useCollectorComponent(id ?? "", version ?? "");
+  const { data: versionData } = useCollectorVersions();
+
+  const version =
+    searchParams.get("version") || versionData?.versions.find((v) => v.is_latest)?.version || "";
+
+  const versionLoading = !version;
+  const {
+    data: component,
+    loading,
+    error,
+  } = useCollectorComponent(distribution ?? "", name ?? "", version);
   const [activeTab, setActiveTab] = useState("details");
 
-  if (loading) {
+  if (loading || versionLoading) {
     return (
       <PageContainer>
         <div className="flex min-h-[400px] items-center justify-center">
           <div className="text-center">
-            <div className="inline-flex animate-pulse rounded-full p-4 shadow-[0_0_60px_hsl(var(--primary-hsl)/0.2)]">
-              <Loader2 className="text-primary h-12 w-12 animate-spin" aria-hidden="true" />
+            <div className="inline-flex animate-pulse rounded-full p-4 shadow-[0_0_60px_hsl(var(--otel-orange-hsl)/0.2)]">
+              <Loader2 className="text-secondary h-12 w-12 animate-spin" aria-hidden="true" />
             </div>
             <div className="mt-6 space-y-2">
               <div className="text-foreground text-lg font-medium">Loading component...</div>
@@ -203,7 +215,7 @@ export function CollectorDetailPage() {
 
       <div className="mt-3 space-y-6">
         <header className="border-border/60 bg-card/80 relative overflow-hidden rounded-lg border p-8">
-          <div className="bg-gradient-radial from-primary/5 via-secondary/2 absolute inset-0 to-transparent opacity-50" />
+          <div className="bg-gradient-radial from-otel-blue/5 via-otel-orange/2 absolute inset-0 to-transparent opacity-50" />
 
           <div className="absolute inset-0 opacity-5">
             <div className="h-full w-full bg-[linear-gradient(hsl(var(--border-hsl))_1px,transparent_1px),linear-gradient(90deg,hsl(var(--border-hsl))_1px,transparent_1px)] bg-[size:32px_32px]" />
@@ -221,7 +233,7 @@ export function CollectorDetailPage() {
                   </GlowBadge>
                 </div>
                 <h1 className="text-3xl leading-tight font-bold md:text-4xl">
-                  <span className="from-secondary to-primary bg-gradient-to-r bg-clip-text text-transparent">
+                  <span className="from-otel-orange to-otel-blue bg-gradient-to-r bg-clip-text text-transparent">
                     {component.display_name || component.name}
                   </span>
                 </h1>
@@ -274,7 +286,7 @@ export function CollectorDetailPage() {
                       </h4>
                       <div className="mt-1 flex items-start gap-2 text-sm">
                         <Check
-                          className="text-primary mt-0.5 h-4 w-4 flex-shrink-0"
+                          className="text-secondary mt-0.5 h-4 w-4 flex-shrink-0"
                           aria-hidden="true"
                         />
                         <div>
@@ -315,7 +327,7 @@ export function CollectorDetailPage() {
                       rel="noopener noreferrer"
                       className="border-border/50 hover:bg-muted/50 group flex items-center gap-3 rounded-lg border p-3 transition-colors"
                     >
-                      <GitHubIcon className="text-primary h-5 w-5 transition-transform group-hover:scale-110" />
+                      <GitHubIcon className="text-secondary h-5 w-5 transition-transform group-hover:scale-110" />
                       <div>
                         <p className="text-sm font-medium">Source Code</p>
                         <p className="text-muted-foreground text-xs">View on GitHub</p>

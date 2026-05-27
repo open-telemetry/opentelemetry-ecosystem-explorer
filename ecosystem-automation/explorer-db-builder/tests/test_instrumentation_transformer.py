@@ -256,3 +256,10 @@ class TestTransform01To02:
 
         with pytest.raises(KeyError, match="missing 'libraries' key"):
             _transform_0_1_to_0_2(data)
+
+    def test_libraries_key_is_none_raises_error(self):
+        """libraries key present but None also raises KeyError."""
+        data = {"file_format": 0.1, "libraries": None}
+
+        with pytest.raises(KeyError, match="missing 'libraries' key"):
+            _transform_0_1_to_0_2(data)

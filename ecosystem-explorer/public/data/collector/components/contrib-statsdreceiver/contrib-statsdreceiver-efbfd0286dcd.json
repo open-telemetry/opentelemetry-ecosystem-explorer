@@ -1,0 +1,27 @@
+{
+  "description": "StatsD receiver for ingesting StatsD messages(https://github.com/statsd/statsd/blob/master/docs/metric_types.md) into the OpenTelemetry Collector. Note: This receiver does not support horizontally scaled collector deployments. It is intended to run in agent mode, where a single collector instance receives StatsD input.",
+  "display_name": "StatsD Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-statsdreceiver",
+  "name": "statsdreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "jmacd",
+        "dmitryax"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver"
+}

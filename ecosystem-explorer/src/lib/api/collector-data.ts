@@ -13,7 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { CollectorComponent, VersionManifest, VersionsIndex } from "@/types/collector";
+import type {
+  CollectorComponent,
+  CollectorIndex,
+  VersionManifest,
+  VersionsIndex,
+} from "@/types/collector";
 import { STORES } from "./idb-cache";
 import { fetchWithCache } from "./fetch-with-cache";
 
@@ -29,6 +34,16 @@ export async function loadVersions(): Promise<VersionsIndex> {
   return data;
 }
 
+export async function loadIndex(): Promise<CollectorIndex> {
+  const data = await fetchWithCache<CollectorIndex>(
+    "collector-component-index",
+    `${BASE_PATH}/index.json`,
+    STORES.METADATA
+  );
+  if (!data) throw new Error("Collector component index returned null unexpectedly");
+  return data;
+}
+
 export async function loadVersionManifest(version: string): Promise<VersionManifest> {
   const data = await fetchWithCache<VersionManifest>(
     `collector-manifest-${version}`,
@@ -41,10 +56,12 @@ export async function loadVersionManifest(version: string): Promise<VersionManif
 }
 
 export async function loadComponent(
-  id: string,
+  distribution: string,
+  name: string,
   version: string,
   manifest?: VersionManifest
 ): Promise<CollectorComponent> {
+  const id = `${distribution}-${name}`;
   const resolvedManifest = manifest ?? (await loadVersionManifest(version));
   const hash = resolvedManifest.components[id];
 
@@ -68,7 +85,11 @@ export async function loadAllComponents(version: string): Promise<CollectorCompo
 
   return Promise.all(
     componentIds.map(async (id) => {
-      return loadComponent(id, version, manifest);
+      // Parse id from format "distribution-name"
+      const parts = id.split("-");
+      const distribution = parts[0]; // "contrib" or "core"
+      const name = parts.slice(1).join("-"); // Everything after first dash
+      return loadComponent(distribution, name, version, manifest);
     })
   );
 }

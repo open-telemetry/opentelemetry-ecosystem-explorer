@@ -18,13 +18,18 @@ import type { InstrumentationData } from "@/types/javaagent";
 import type { FilterState } from "./instrumentation-filter-bar";
 import { getBadgeInfo } from "../utils/badge-info";
 import { TargetBadges, TelemetryBadges } from "./instrumentation-badges";
-import { getInstrumentationDisplayName } from "../utils/format";
+import {
+  getInstrumentationDisplayName,
+  getSemanticConventionInfo,
+  getFeatureInfo,
+} from "../utils/format";
 import { renderWithInlineCode } from "@/lib/render-inline-code";
+import { GlowBadge } from "@/components/ui/glow-badge";
 
 interface InstrumentationCardProps {
   instrumentation: InstrumentationData;
   activeFilters?: FilterState;
-  version: string;
+  version: string | null;
 }
 
 export function InstrumentationCard({
@@ -34,12 +39,16 @@ export function InstrumentationCard({
 }: InstrumentationCardProps) {
   const displayName = getInstrumentationDisplayName(instrumentation);
   const badgeInfo = getBadgeInfo(instrumentation);
-  const detailUrl = `/java-agent/instrumentation/${version}/${instrumentation.name}`;
+
+  const detailUrl =
+    version && version !== "latest"
+      ? `/java-agent/instrumentation/${instrumentation.name}?version=${version}`
+      : `/java-agent/instrumentation/${instrumentation.name}`;
 
   return (
     <Link
       to={detailUrl}
-      className="group border-border bg-card hover:border-primary/40 hover:bg-card-secondary relative flex h-full flex-col overflow-hidden rounded-lg border p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_30px_hsl(var(--primary-hsl)/0.12)]"
+      className="group border-border bg-card hover:border-secondary/40 hover:bg-card-secondary relative flex h-full flex-col overflow-hidden rounded-lg border p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_30px_hsl(var(--otel-orange-hsl)/0.12)]"
       aria-label={`View details for ${displayName}`}
     >
       {/* Grid pattern background */}
@@ -60,6 +69,7 @@ export function InstrumentationCard({
           <h3 className="flex-1 text-lg leading-tight font-semibold">{displayName}</h3>
           <div className="flex flex-shrink-0 gap-1">
             <TargetBadges badges={badgeInfo} activeFilters={activeFilters} />
+            <TelemetryBadges badges={badgeInfo} activeFilters={activeFilters} />
           </div>
         </div>
 
@@ -69,8 +79,49 @@ export function InstrumentationCard({
           </p>
         )}
 
-        <div className="flex flex-wrap items-center gap-2">
-          <TelemetryBadges badges={badgeInfo} activeFilters={activeFilters} />
+        <div className="space-y-2">
+          {instrumentation.semantic_conventions &&
+            instrumentation.semantic_conventions.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2">
+                {instrumentation.semantic_conventions.map((s) => {
+                  const isActive =
+                    !activeFilters ||
+                    activeFilters.semantic.length === 0 ||
+                    activeFilters.semantic.includes(s);
+                  const info = getSemanticConventionInfo(s);
+                  return (
+                    <GlowBadge
+                      key={s}
+                      variant="accent"
+                      className={`px-1.5 py-0 ${isActive ? "" : "opacity-40 grayscale"}`}
+                    >
+                      {info?.label ?? s}
+                    </GlowBadge>
+                  );
+                })}
+              </div>
+            )}
+
+          {instrumentation.features && instrumentation.features.length > 0 && (
+            <div className="flex flex-wrap items-center gap-2">
+              {instrumentation.features.map((f) => {
+                const isActive =
+                  !activeFilters ||
+                  activeFilters.features.length === 0 ||
+                  activeFilters.features.includes(f);
+                const info = getFeatureInfo(f);
+                return (
+                  <GlowBadge
+                    key={f}
+                    variant="info"
+                    className={`px-1.5 py-0 ${isActive ? "" : "opacity-40 grayscale"}`}
+                  >
+                    {info?.label ?? f}
+                  </GlowBadge>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </Link>

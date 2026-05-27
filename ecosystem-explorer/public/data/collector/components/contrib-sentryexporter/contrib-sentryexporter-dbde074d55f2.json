@@ -1,0 +1,28 @@
+{
+  "description": null,
+  "display_name": "Sentry Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-sentryexporter",
+  "name": "sentryexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "AbhiPrasad",
+        "giortzisg"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "traces"
+      ]
+    }
+  },
+  "type": "exporter"
+}

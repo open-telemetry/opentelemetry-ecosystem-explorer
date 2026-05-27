@@ -1,0 +1,29 @@
+{
+  "description": "Receives trace data and metric data in [SkyWalking](https://skywalking.apache.org/) format.",
+  "display_name": "SkyWalking Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-skywalkingreceiver",
+  "name": "skywalkingreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "JaredTan95"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "traces"
+      ],
+      "development": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver"
+}
