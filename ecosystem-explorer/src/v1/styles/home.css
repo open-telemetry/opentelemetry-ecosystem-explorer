@@ -15,17 +15,17 @@
  */
 
 /*
- * Home (v1) — wrapper + skeleton-box placeholders for the recent-activity
- * slot and the GlobalSearch slot inside CoverBlock. Rules are intentionally
- * low-fidelity: subtle neutral fill that adapts to either theme, with
- * per-slot heights approximating the real component footprint so the page
- * reads as "this will be filled in" instead of "this is broken". As each
- * real component lands, drop its `--<slot>` modifier rule here; the base
- * `.td-home__skeleton` rule stays as a reusable utility.
+ * Home (v1) — wrapper + shared `td-box`/`td-two-col` chrome + skeleton-box
+ * placeholder for the GlobalSearch slot inside CoverBlock. Skeleton rules
+ * are intentionally low-fidelity: subtle neutral fill that adapts to either
+ * theme, with per-slot heights approximating the real component footprint
+ * so the page reads as "this will be filled in" instead of "this is broken".
+ * As each real component lands, drop its `--<slot>` modifier rule here; the
+ * base `.td-home__skeleton` rule stays as a reusable utility.
  *
  * Each shipped section's surface rules live in its own partial (e.g.
  * `cover-block.css`, `stats-band.css`, `ecosystems-grid.css`,
- * `signals-row.css`).
+ * `signals-row.css`, `recent-activity-rail.css`).
  */
 
 .td-home {
@@ -62,6 +62,34 @@
   background-color: hsl(var(--cover-block-fg-hsl) / 0.1);
 }
 
-.td-home__skeleton--recent-activity {
-  height: 16rem;
+/* ---------- Shared section box (wraps SignalsRow + RecentActivityRail) ---------- */
+
+.td-box {
+  padding: 4rem 1.5rem;
+}
+
+.td-box--muted {
+  background-color: hsl(var(--card-hsl));
+  color: hsl(var(--foreground-hsl));
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+}
+
+.td-box__container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* ---------- Two-column grid (SignalsRow / RecentActivityRail co-mount) ---------- */
+
+.td-two-col {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 992px) {
+  .td-two-col {
+    grid-template-columns: 1fr 1fr;
+  }
 }

@@ -17,14 +17,15 @@
 import shutil
 import tempfile
 from pathlib import Path
+from subprocess import CalledProcessError
 from unittest.mock import Mock, patch
 
-import git
 import pytest
 import yaml
 from collector_watcher.collector_sync import CollectorSync
 from collector_watcher.inventory_manager import InventoryManager
 from semantic_version import Version
+from watcher_common.testing import init_repo, run_git
 
 
 @pytest.fixture
@@ -42,30 +43,29 @@ def temp_git_repos(tmp_path):
     for dist in ["core", "contrib"]:
         repo_path = tmp_path / dist
         repo_path.mkdir()
-
-        repo = git.Repo.init(repo_path)
+        init_repo(repo_path)
 
         test_file = repo_path / "test.txt"
         test_file.write_text("initial content")
-        repo.index.add(["test.txt"])
-        repo.index.commit("Initial commit")
+        run_git(repo_path, "add", "test.txt")
+        run_git(repo_path, "commit", "-m", "Initial commit")
 
         try:
-            repo.git.checkout("-b", "main")
-        except git.exc.GitCommandError:
-            repo.git.checkout("main")
+            run_git(repo_path, "checkout", "-b", "main")
+        except CalledProcessError:
+            run_git(repo_path, "checkout", "main")
 
-        repo.create_tag("v0.110.0")
+        run_git(repo_path, "tag", "v0.110.0")
 
         test_file.write_text("update 1")
-        repo.index.add(["test.txt"])
-        repo.index.commit("Update 1")
-        repo.create_tag("v0.111.0")
+        run_git(repo_path, "add", "test.txt")
+        run_git(repo_path, "commit", "-m", "Update 1")
+        run_git(repo_path, "tag", "v0.111.0")
 
         test_file.write_text("update 2")
-        repo.index.add(["test.txt"])
-        repo.index.commit("Update 2")
-        repo.create_tag("v0.112.0")
+        run_git(repo_path, "add", "test.txt")
+        run_git(repo_path, "commit", "-m", "Update 2")
+        run_git(repo_path, "tag", "v0.112.0")
 
         repos[dist] = str(repo_path)
 

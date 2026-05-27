@@ -1,0 +1,50 @@
+{
+  "generatedAt": "2026-05-21T00:00:00Z",
+  "items": [
+    {
+      "id": "kafka-receiver-beta",
+      "title": "Kafka Receiver promoted to beta",
+      "stability": "beta",
+      "ecosystem": "collector",
+      "version": "v0.150.0",
+      "occurredAt": "2026-05-19T00:00:00Z",
+      "href": "/collector/components"
+    },
+    {
+      "id": "splunk-hec-exporter-added",
+      "title": "Splunk HEC Exporter added",
+      "stability": "stable",
+      "ecosystem": "collector-contrib",
+      "version": "v0.150.0",
+      "occurredAt": "2026-05-17T00:00:00Z",
+      "href": "/collector/components"
+    },
+    {
+      "id": "spring-webflux-instrumentation",
+      "title": "Spring WebFlux instrumentation reaches stable",
+      "stability": "stable",
+      "ecosystem": "java-agent",
+      "version": "v2.28.0",
+      "occurredAt": "2026-05-14T00:00:00Z",
+      "href": "/java-agent"
+    },
+    {
+      "id": "dotnet-azure-functions",
+      "title": "Azure Functions instrumentation entered beta",
+      "stability": "beta",
+      "ecosystem": "dotnet",
+      "version": "v1.10.0",
+      "occurredAt": "2026-05-10T00:00:00Z",
+      "href": "/"
+    },
+    {
+      "id": "deprecated-zipkin-exporter",
+      "title": "Zipkin Exporter marked deprecated",
+      "stability": "deprecated",
+      "ecosystem": "collector",
+      "version": "v0.149.0",
+      "occurredAt": "2026-04-30T00:00:00Z",
+      "href": "/collector/components"
+    }
+  ]
+}
