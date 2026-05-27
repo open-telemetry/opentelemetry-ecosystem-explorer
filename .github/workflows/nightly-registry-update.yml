@@ -7,17 +7,24 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: read # Default minimum; jobs declare their own elevated scopes below
+
+concurrency:
+  # Single in-flight run since all schedules target the shared
+  # otelbot/automated-inventory-update branch.
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
 
 jobs:
   synchronize-inventory:
+    name: Synchronize registry inventory
     if:
       github.event_name != 'schedule' || github.repository ==
       'open-telemetry/opentelemetry-ecosystem-explorer'
     permissions:
-      contents: write
-      pull-requests: write
-      issues: write
+      contents: write # Push registry updates to the otelbot/automated-inventory-update branch
+      pull-requests: write # Create or update the automated inventory-update PR
+      issues: write # Open or comment on the schema-drift tracking issue
     runs-on: ubuntu-latest
     outputs:
       collector_result: ${{ steps.collector_watcher.outcome }}
@@ -29,11 +36,16 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          # Persisted credentials are required so the later `git push -f origin
+          # HEAD:${BRANCH}` step can authenticate.
+          persist-credentials: true
 
       - name: Detect repository type (if on a fork we use different git config)
         id: repo_check
+        env:
+          REPO: ${{ github.repository }}
         run: |
-          if [ "${{ github.repository }}" == "open-telemetry/opentelemetry-ecosystem-explorer" ]; then
+          if [ "$REPO" == "open-telemetry/opentelemetry-ecosystem-explorer" ]; then
             echo "is_primary=true" >> $GITHUB_OUTPUT
           else
             echo "is_primary=false" >> $GITHUB_OUTPUT
@@ -44,12 +56,14 @@ jobs:
         run: |
           .github/scripts/use-cla-approved-bot.sh
 
-      - uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         if: steps.repo_check.outputs.is_primary == 'true'
         id: otelbot-token
         with:
           app-id: ${{ vars.OTELBOT_APP_ID }}
           private-key: ${{ secrets.OTELBOT_PRIVATE_KEY }}
+          repositories: ${{ github.event.repository.name }}
+          permission-pull-requests: write
 
       - name: Configure git (forked repository)
         if: steps.repo_check.outputs.is_primary == 'false'
@@ -76,7 +90,7 @@ jobs:
           python-version-file: ".python-version"
 
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --locked
 
       - name: Run collector-watcher
         id: collector_watcher
@@ -171,6 +185,8 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SCHEMA_DIFF: ${{ steps.detect_schema_drift.outputs.schema_diff }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
         run: |
           ISSUE_TITLE="[schema-drift] collector metadata-schema.yaml changed"
           EXISTING=$(gh issue list \
@@ -197,7 +213,7 @@ jobs:
           uv run collector-watcher --backfill
           \`\`\`
 
-          See [workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})."
+          See [workflow run](https://github.com/${REPO}/actions/runs/${RUN_ID})."
 
           if [ -n "$EXISTING" ]; then
             gh issue comment "$EXISTING" --body "$ISSUE_BODY"
@@ -262,9 +278,10 @@ jobs:
           fi
 
   notify-collector:
+    name: Notify on collector-watcher failure
     permissions:
-      contents: read
-      issues: write
+      contents: read # Checkout reusable workflow source
+      issues: write # Open or comment on the collector-watcher failure-tracking issue
     needs: [synchronize-inventory]
     if: ${{ !cancelled() && needs.synchronize-inventory.result != 'skipped' }}
     uses: ./.github/workflows/reusable-workflow-notification.yml
@@ -273,9 +290,10 @@ jobs:
       watcher-name: "collector-watcher"
 
   notify-java:
+    name: Notify on java-instrumentation-watcher failure
     permissions:
-      contents: read
-      issues: write
+      contents: read # Checkout reusable workflow source
+      issues: write # Open or comment on the java-instrumentation-watcher failure-tracking issue
     needs: [synchronize-inventory]
     if: ${{ !cancelled() && needs.synchronize-inventory.result != 'skipped' }}
     uses: ./.github/workflows/reusable-workflow-notification.yml
@@ -284,9 +302,10 @@ jobs:
       watcher-name: "java-instrumentation-watcher"
 
   notify-configuration:
+    name: Notify on configuration-watcher failure
     permissions:
-      contents: read
-      issues: write
+      contents: read # Checkout reusable workflow source
+      issues: write # Open or comment on the configuration-watcher failure-tracking issue
     needs: [synchronize-inventory]
     if: ${{ !cancelled() && needs.synchronize-inventory.result != 'skipped' }}
     uses: ./.github/workflows/reusable-workflow-notification.yml
@@ -295,9 +314,10 @@ jobs:
       watcher-name: "configuration-watcher"
 
   notify-dotnet:
+    name: Notify on dotnet-instrumentation-watcher failure
     permissions:
-      contents: read
-      issues: write
+      contents: read # Checkout reusable workflow source
+      issues: write # Open or comment on the dotnet-instrumentation-watcher failure-tracking issue
     needs: [synchronize-inventory]
     if: ${{ !cancelled() && needs.synchronize-inventory.result != 'skipped' }}
     uses: ./.github/workflows/reusable-workflow-notification.yml

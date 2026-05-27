@@ -66,10 +66,7 @@ function renderWithRouter(initialPath: string) {
   return render(
     <MemoryRouter initialEntries={[initialPath]}>
       <Routes>
-        <Route
-          path="/java-agent/instrumentation/:version/:name"
-          element={<InstrumentationDetailPage />}
-        />
+        <Route path="/java-agent/instrumentation/:param" element={<InstrumentationDetailPage />} />
       </Routes>
     </MemoryRouter>
   );
@@ -95,7 +92,7 @@ describe("InstrumentationDetailPage", () => {
       error: null,
     });
 
-    renderWithRouter("/java-agent/instrumentation/2.0.0/jdbc");
+    renderWithRouter("/java-agent/instrumentation/jdbc");
 
     expect(screen.getByText("Loading instrumentation...")).toBeInTheDocument();
   });
@@ -107,7 +104,7 @@ describe("InstrumentationDetailPage", () => {
       error: new Error("Failed to fetch instrumentation data"),
     });
 
-    renderWithRouter("/java-agent/instrumentation/2.0.0/jdbc");
+    renderWithRouter("/java-agent/instrumentation/jdbc");
 
     expect(screen.getByText("Error loading instrumentation")).toBeInTheDocument();
     expect(screen.getByText("Failed to fetch instrumentation data")).toBeInTheDocument();
@@ -120,7 +117,7 @@ describe("InstrumentationDetailPage", () => {
       error: null,
     });
 
-    renderWithRouter("/java-agent/instrumentation/2.0.0/jdbc");
+    renderWithRouter("/java-agent/instrumentation/jdbc");
 
     expect(screen.getByText("Error loading instrumentation")).toBeInTheDocument();
     expect(screen.getByText("Instrumentation not found")).toBeInTheDocument();
@@ -133,7 +130,7 @@ describe("InstrumentationDetailPage", () => {
       error: null,
     });
 
-    renderWithRouter("/java-agent/instrumentation/2.0.0/jdbc");
+    renderWithRouter("/java-agent/instrumentation/jdbc");
 
     const header = screen.getByRole("banner");
 
@@ -157,7 +154,7 @@ describe("InstrumentationDetailPage", () => {
       error: null,
     });
 
-    renderWithRouter("/java-agent/instrumentation/2.0.0/jdbc");
+    renderWithRouter("/java-agent/instrumentation/jdbc");
 
     const select = screen.getByRole("combobox", { name: /version/i });
     expect(select).toBeInTheDocument();
@@ -172,12 +169,12 @@ describe("InstrumentationDetailPage", () => {
       error: null,
     });
 
-    renderWithRouter("/java-agent/instrumentation/2.0.0/jdbc");
+    renderWithRouter("/java-agent/instrumentation/jdbc");
 
     const select = screen.getByRole("combobox", { name: /version/i });
     fireEvent.change(select, { target: { value: "1.9.0" } });
 
-    expect(mockNavigate).toHaveBeenCalledWith("/java-agent/instrumentation/1.9.0/jdbc");
+    expect(mockNavigate).toHaveBeenCalledWith("/java-agent/instrumentation/jdbc?version=1.9.0");
   });
 
   it("shows loading spinner on latest URL after versions load, never shows error card", () => {
@@ -187,7 +184,7 @@ describe("InstrumentationDetailPage", () => {
       error: null,
     });
 
-    renderWithRouter("/java-agent/instrumentation/latest/jdbc");
+    renderWithRouter("/java-agent/instrumentation/jdbc?version=latest");
 
     expect(screen.getByText("Loading instrumentation...")).toBeInTheDocument();
     expect(screen.queryByText("Instrumentation not found")).not.toBeInTheDocument();
@@ -201,7 +198,7 @@ describe("InstrumentationDetailPage", () => {
       error: null,
     });
 
-    renderWithRouter("/java-agent/instrumentation/latest/jdbc");
+    renderWithRouter("/java-agent/instrumentation/jdbc?version=latest");
 
     expect(useInstrumentation).toHaveBeenCalledWith("", "");
   });
@@ -213,9 +210,9 @@ describe("InstrumentationDetailPage", () => {
       error: null,
     });
 
-    renderWithRouter("/java-agent/instrumentation/latest/jdbc");
+    renderWithRouter("/java-agent/instrumentation/jdbc?version=latest");
 
-    expect(mockNavigate).toHaveBeenCalledWith("/java-agent/instrumentation/2.0.0/jdbc", {
+    expect(mockNavigate).toHaveBeenCalledWith("/java-agent/instrumentation/jdbc", {
       replace: true,
     });
   });
@@ -227,7 +224,7 @@ describe("InstrumentationDetailPage", () => {
       error: null,
     });
 
-    renderWithRouter("/java-agent/instrumentation/2.0.0/jdbc");
+    renderWithRouter("/java-agent/instrumentation/jdbc");
 
     expect(screen.getByRole("heading", { name: "Semantic Conventions" })).toBeInTheDocument();
 
@@ -254,7 +251,7 @@ describe("InstrumentationDetailPage", () => {
       error: null,
     });
 
-    renderWithRouter("/java-agent/instrumentation/2.0.0/jdbc");
+    renderWithRouter("/java-agent/instrumentation/jdbc");
 
     expect(screen.getByText("UNKNOWN_CONVENTION")).toBeInTheDocument();
   });

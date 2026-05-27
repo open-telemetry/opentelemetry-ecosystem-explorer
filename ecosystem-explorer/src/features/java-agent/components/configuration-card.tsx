@@ -51,6 +51,18 @@ export function ConfigurationCard({ config, format, instrumentations }: Configur
 
   return (
     <DetailCard withHoverEffect>
+      {/* Grid pattern background */}
+      <div className="pointer-events-none absolute -inset-6 -z-10 opacity-[0.15]">
+        <div
+          className="h-full w-full"
+          style={{
+            backgroundImage:
+              "linear-gradient(hsl(var(--border-hsl)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--border-hsl)) 1px, transparent 1px)",
+            backgroundSize: "20px 20px",
+          }}
+        />
+      </div>
+
       <div className="space-y-3">
         <div className="flex items-start justify-between gap-3">
           {showDeclarative ? (

@@ -24,7 +24,10 @@
  * - buttons.css      — v1 `.td-btn` primitive (primary, outline-light variants)
  * - cover-block.css  — v1 hero shell (`.td-cover-block`) — mirrors opentelemetry.io
  * - stats-band.css   — v1 home stats band (`.td-stats-band`) — OTel-purple counter strip
- * - home.css         — v1 home page wrapper + remaining skeleton placeholders
+ * - ecosystems-grid.css — v1 home ecosystems grid (`.td-ecosystems-grid`)
+ * - signals-row.css  — v1 home signals row (`.td-signals-row`) — Traces/Metrics/Logs/Baggage
+ * - recent-activity-rail.css — v1 home recent-activity rail (`.td-activity-*`, `.td-pill*`)
+ * - home.css         — v1 home page wrapper + shared `td-box`/`td-two-col` + GlobalSearch skeleton
  * - cncf-callout.css — sitewide CNCF band above the footer
  * - footer.css       — v1 footer (`.td-footer`) — mirrors opentelemetry.io
  *
@@ -40,6 +43,9 @@
 @import "./buttons.css";
 @import "./cover-block.css";
 @import "./stats-band.css";
+@import "./ecosystems-grid.css";
+@import "./signals-row.css";
+@import "./recent-activity-rail.css";
 @import "./home.css";
 @import "./cncf-callout.css";
 @import "./footer.css";

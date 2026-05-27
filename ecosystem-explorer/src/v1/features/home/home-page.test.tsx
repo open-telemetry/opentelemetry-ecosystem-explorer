@@ -15,7 +15,7 @@
  */
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { describe, it, expect } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { HomeV1 } from "./home-page";
 
 function renderHome() {
@@ -27,6 +27,23 @@ function renderHome() {
 }
 
 describe("HomeV1 (composition)", () => {
+  beforeEach(() => {
+    // Stub the feed fetch so RecentActivityRail renders the empty-list path
+    // deterministically (no network access from jsdom).
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({ generatedAt: "2026-05-13T00:00:00Z", items: [] }),
+      })
+    );
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    vi.unstubAllGlobals();
+  });
+
   it("renders exactly one CoverBlock with title containing 'OpenTelemetry' and 'Ecosystem Explorer'", () => {
     const { container } = renderHome();
 
@@ -57,28 +74,16 @@ describe("HomeV1 (composition)", () => {
     expect(secondary).toHaveAttribute("rel", "noopener noreferrer");
   });
 
-  it("renders the remaining placeholder sections in the locked order", () => {
+  it("co-mounts SignalsRow and RecentActivityRail inside a single labelled box", () => {
     const { container } = renderHome();
 
     const sections = Array.from(container.querySelectorAll("section[aria-label]")).map((el) =>
       el.getAttribute("aria-label")
     );
 
-    // CoverBlock and StatsBand render <section>s with aria-labelledby (not
-    // aria-label), so they aren't picked up here — these are the three PR 4-6
-    // placeholder slots that remain.
-    expect(sections).toEqual(["Featured ecosystems", "Browse by signal", "Recent activity"]);
-  });
-
-  it("renders exactly one skeleton element inside each of the remaining placeholder sections", () => {
-    const { container } = renderHome();
-
-    for (const label of ["Featured ecosystems", "Browse by signal", "Recent activity"]) {
-      const section = container.querySelector(`section[aria-label="${label}"]`);
-      expect(section, `section[aria-label="${label}"] should exist`).not.toBeNull();
-      const skeletons = section!.querySelectorAll(".td-home__skeleton");
-      expect(skeletons, `section[aria-label="${label}"] skeleton count`).toHaveLength(1);
-    }
+    // Shipped section wrappers above used aria-labelledby; the muted box
+    // co-mounting SignalsRow + RecentActivityRail is the only aria-label one.
+    expect(sections).toEqual(["Signals and recent activity"]);
   });
 
   it("renders the StatsBand below the CoverBlock", () => {
@@ -86,6 +91,25 @@ describe("HomeV1 (composition)", () => {
     const band = container.querySelector(".td-stats-band");
     expect(band).not.toBeNull();
     expect(band).toHaveAttribute("aria-labelledby", "stats-band-title");
+  });
+
+  it("renders the EcosystemsGrid below the StatsBand", () => {
+    const { container } = renderHome();
+    const grid = container.querySelector(".td-ecosystems-grid");
+    expect(grid).not.toBeNull();
+    expect(grid).toHaveAttribute("aria-labelledby", "ecosystems-grid-title");
+  });
+
+  it("renders the SignalsRow below the EcosystemsGrid", () => {
+    const { container } = renderHome();
+    const row = container.querySelector(".td-signals-row");
+    expect(row).not.toBeNull();
+    expect(row).toHaveAttribute("aria-labelledby", "signals-row-title");
+  });
+
+  it("renders the RecentActivityRail next to the SignalsRow inside the muted box", () => {
+    renderHome();
+    expect(screen.getByRole("heading", { level: 3, name: /Recent activity/i })).toBeInTheDocument();
   });
 
   it("renders the GlobalSearch skeleton inside the CoverBlock with aria-hidden", () => {

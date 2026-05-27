@@ -133,29 +133,42 @@ function stripEmpties(value: ConfigValue): StrippedResult {
   return EMPTY;
 }
 
-export function generateYaml(
+export interface YamlSection {
+  key: string;
+  content: string;
+}
+
+export interface StructuredYaml {
+  header: string;
+  fileFormat: string;
+  sections: YamlSection[];
+}
+
+export function generateYamlSections(
   state: ConfigurationBuilderState,
   schema: ConfigNode,
   options?: GenerateYamlOptions
-): string {
+): StructuredYaml {
   const header = options?.header ?? defaultHeader(state.version, options?.javaAgentVersion);
 
   if (schema.controlType !== "group") {
-    const parts = [header, "# Schema is not a group; cannot generate sections.", ""].filter(
-      (p) => p !== ""
-    );
-    return parts.join("\n") + "\n";
+    const fallbackContent = "# Schema is not a group; cannot generate sections.\n";
+    return {
+      header,
+      fileFormat: "",
+      sections: [{ key: "error", content: fallbackContent }],
+    };
   }
 
   const children = schema.children;
-
-  const fileFormatBlock = dumpYaml({ file_format: toFileFormatVersion(state.version) });
+  const fileFormatVersion = toFileFormatVersion(state.version);
+  const fileFormat = dumpYaml({ file_format: fileFormatVersion });
 
   const others = children
     .filter((c) => c.key !== "file_format")
     .sort((a, b) => a.key.localeCompare(b.key));
 
-  const sectionBlocks: string[] = [];
+  const sections: YamlSection[] = [];
   for (const child of others) {
     if (child.controlType === "group") {
       if (state.enabledSections[child.key] !== true) continue;
@@ -171,19 +184,39 @@ export function generateYaml(
         }
       }
       const body = stripped === EMPTY ? {} : (stripped as ConfigValue);
-      const block = sectionComment(child, child.key) + dumpYaml({ [child.key]: body });
-      sectionBlocks.push(block);
+      const content = sectionComment(child, child.key) + dumpYaml({ [child.key]: body });
+      sections.push({ key: child.key, content });
       continue;
     }
     const raw = state.values[child.key];
     if (raw === undefined) continue;
     const stripped = stripEmpties(raw);
     if (stripped === EMPTY) continue;
-    const block =
+    const content =
       sectionComment(child, child.key) + dumpYaml({ [child.key]: stripped as ConfigValue });
-    sectionBlocks.push(block);
+    sections.push({ key: child.key, content });
   }
 
-  const parts = [header, fileFormatBlock, ...sectionBlocks].filter((p) => p !== "");
+  return {
+    header,
+    fileFormat,
+    sections,
+  };
+}
+
+export function structuredToString(structured: StructuredYaml): string {
+  const parts = [
+    structured.header,
+    structured.fileFormat,
+    ...structured.sections.map((s) => s.content),
+  ].filter((p) => p !== "");
   return parts.join("\n") + "\n";
+}
+
+export function generateYaml(
+  state: ConfigurationBuilderState,
+  schema: ConfigNode,
+  options?: GenerateYamlOptions
+): string {
+  return structuredToString(generateYamlSections(state, schema, options));
 }

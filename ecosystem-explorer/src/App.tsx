@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { isEnabled } from "@/lib/feature-flags";
 import { BrowserRouter } from "react-router-dom";
 import { LegacyApp } from "@/LegacyApp";
 import { V1App } from "@/v1";
-import { isEnabled } from "@/lib/feature-flags";
 
 /*
  * Single V1_REDESIGN boundary read. See

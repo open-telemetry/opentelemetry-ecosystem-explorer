@@ -63,12 +63,13 @@ export function GeneralSectionCard({
           ) : (
             <div className="space-y-3 pl-3">
               {children.map((child) => (
-                <SchemaRenderer
-                  key={child.key}
-                  node={child}
-                  depth={1}
-                  path={pathPrefix ? `${pathPrefix}.${child.key}` : child.key}
-                />
+                <div key={child.key} data-yaml-section-key={child.key}>
+                  <SchemaRenderer
+                    node={child}
+                    depth={1}
+                    path={pathPrefix ? `${pathPrefix}.${child.key}` : child.key}
+                  />
+                </div>
               ))}
             </div>
           )}
