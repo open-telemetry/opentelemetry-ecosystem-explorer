@@ -119,7 +119,12 @@ export function PreviewCard({
       <header className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="text-foreground text-sm font-medium">Output Preview</h3>
         <div className="flex flex-wrap items-center gap-2">
-          <PreviewActions yaml={yaml} filename={filename} onValidate={validateAll} hasErrors={hasErrors} />
+          <PreviewActions
+            yaml={yaml}
+            filename={filename}
+            onValidate={validateAll}
+            hasErrors={hasErrors}
+          />
           <span className="bg-border/60 mx-1 h-4 w-px" aria-hidden="true" />
           <HeaderActionButton icon={ListPlus} label="Add all" onClick={enableAllSections} />
           <HeaderActionButton icon={RefreshCcw} label="Reset" onClick={handleReset} />
@@ -145,7 +150,12 @@ export function PreviewCard({
                   </DialogDescription>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <PreviewActions yaml={yaml} filename={filename} onValidate={validateAll} hasErrors={hasErrors} />
+                  <PreviewActions
+                    yaml={yaml}
+                    filename={filename}
+                    onValidate={validateAll}
+                    hasErrors={hasErrors}
+                  />
                 </div>
               </header>
               <div className="bg-background/60 border-border/30 min-h-0 flex-1 overflow-auto rounded-md border p-4">

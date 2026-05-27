@@ -139,7 +139,9 @@ describe("PreviewCard", () => {
   });
 
   it("disables the Download button and prevents download when validation errors are present", () => {
-    mockValidationErrors = { "resource.attributes": "Duplicate key: only the last value for each key is kept." };
+    mockValidationErrors = {
+      "resource.attributes": "Duplicate key: only the last value for each key is kept.",
+    };
     render(<PreviewCard schema={schema} javaAgentVersion="2.27.0" activePreviewKey={null} />);
     const previewContainer = screen.getByLabelText("Output Preview");
     const downloadBtn = within(previewContainer).getByRole("button", { name: /download/i });
