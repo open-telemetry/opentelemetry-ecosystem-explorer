@@ -6,9 +6,9 @@
     "name": "otel.experimental.javascript-snippet",
     "type": "string",
     "instrumentations": [
+      "servlet-5.0",
       "servlet-2.2",
-      "servlet-3.0",
-      "servlet-5.0"
+      "servlet-3.0"
     ]
   },
   {
@@ -38,9 +38,9 @@
     "name": "otel.instrumentation.aws-lambda.flush-timeout",
     "type": "int",
     "instrumentations": [
+      "aws-lambda-events-2.2",
       "aws-lambda-core-1.0",
-      "aws-lambda-events-3.11",
-      "aws-lambda-events-2.2"
+      "aws-lambda-events-3.11"
     ]
   },
   {
@@ -56,12 +56,12 @@
   {
     "declarative_name": "java.aws_sdk.experimental_span_attributes/development",
     "default": false,
-    "description": "Enables experimental span attributes `aws.agent`, `aws.lambda.function.arn` and `aws.lambda.function.name` for AWS SDK instrumentation.",
+    "description": "Enables the experimental span attributes `aws.agent`, `aws.queue.name`, `aws.lambda.function.arn` and `aws.lambda.function.name` for AWS SDK instrumentation.",
     "name": "otel.instrumentation.aws-sdk.experimental-span-attributes",
     "type": "boolean",
     "instrumentations": [
-      "aws-sdk-2.2",
-      "aws-sdk-1.11"
+      "aws-sdk-1.11",
+      "aws-sdk-2.2"
     ]
   },
   {
@@ -101,29 +101,29 @@
     "name": "otel.instrumentation.common.db-statement-sanitizer.enabled",
     "type": "boolean",
     "instrumentations": [
-      "mongo-4.0",
-      "jedis-4.0",
-      "couchbase-2.6",
-      "mongo-async-3.3",
-      "vertx-sql-client-5.0",
-      "couchbase-2.0",
-      "geode-1.4",
+      "r2dbc-1.0",
+      "clickhouse-client-v1-0.5",
+      "cassandra-4.4",
       "mongo-3.1",
+      "couchbase-2.6",
+      "clickhouse-client-v2-0.8",
+      "cassandra-3.0",
+      "jdbc",
+      "jedis-4.0",
+      "influxdb-2.4",
       "jedis-3.0",
       "jedis-1.4",
-      "mongo-3.7",
-      "lettuce-5.1",
-      "cassandra-4.4",
-      "lettuce-5.0",
-      "influxdb-2.4",
-      "vertx-redis-client-4.0",
-      "clickhouse-client-v2-0.8",
-      "jdbc",
-      "r2dbc-1.0",
-      "cassandra-3.0",
-      "clickhouse-client-v1-0.5",
       "cassandra-4.0",
-      "vertx-sql-client-4.0"
+      "mongo-async-3.3",
+      "lettuce-5.0",
+      "vertx-redis-client-4.0",
+      "lettuce-5.1",
+      "vertx-sql-client-5.0",
+      "vertx-sql-client-4.0",
+      "mongo-3.7",
+      "couchbase-2.0",
+      "mongo-4.0",
+      "geode-1.4"
     ]
   },
   {
@@ -133,29 +133,29 @@
     "name": "otel.instrumentation.common.db.query-sanitization.enabled",
     "type": "boolean",
     "instrumentations": [
-      "mongo-4.0",
-      "jedis-4.0",
-      "couchbase-2.6",
-      "mongo-async-3.3",
-      "vertx-sql-client-5.0",
-      "couchbase-2.0",
-      "geode-1.4",
+      "r2dbc-1.0",
+      "clickhouse-client-v1-0.5",
+      "cassandra-4.4",
       "mongo-3.1",
+      "couchbase-2.6",
+      "clickhouse-client-v2-0.8",
+      "cassandra-3.0",
+      "jdbc",
+      "jedis-4.0",
+      "influxdb-2.4",
       "jedis-3.0",
       "jedis-1.4",
-      "mongo-3.7",
-      "lettuce-5.1",
-      "cassandra-4.4",
-      "lettuce-5.0",
-      "influxdb-2.4",
-      "vertx-redis-client-4.0",
-      "clickhouse-client-v2-0.8",
-      "jdbc",
-      "r2dbc-1.0",
-      "cassandra-3.0",
-      "clickhouse-client-v1-0.5",
       "cassandra-4.0",
-      "vertx-sql-client-4.0"
+      "mongo-async-3.3",
+      "lettuce-5.0",
+      "vertx-redis-client-4.0",
+      "lettuce-5.1",
+      "vertx-sql-client-5.0",
+      "vertx-sql-client-4.0",
+      "mongo-3.7",
+      "couchbase-2.0",
+      "mongo-4.0",
+      "geode-1.4"
     ]
   },
   {
@@ -189,48 +189,48 @@
     ]
   },
   {
+    "declarative_name": "java.common.controller_telemetry/development.enabled",
     "default": false,
     "description": "Enables the creation of experimental controller spans.",
     "name": "otel.instrumentation.common.experimental.controller-telemetry.enabled",
     "type": "boolean",
     "instrumentations": [
-      "jaxws-metro-2.2",
-      "jaxrs-1.0",
-      "jaxrs-3.0-resteasy-6.0",
-      "struts-7.0",
-      "grails-3.0",
-      "play-mvc-2.4",
-      "jaxws-jws-api-1.1",
+      "jaxrs-2.0-annotations",
+      "play-mvc-2.6",
       "jaxws-2.0-metro-2.2",
-      "jaxws-cxf-3.0",
-      "ratpack-1.4",
-      "jfinal-3.2",
+      "grails-3.0",
+      "jsf-mojarra-1.2",
+      "jaxrs-3.0-jersey-3.0",
+      "finatra-2.9",
+      "jaxrs-3.0-resteasy-6.0",
+      "tapestry-5.4",
+      "vaadin-14.2",
+      "spring-webflux-5.0",
+      "jaxrs-2.0-cxf-3.2",
+      "jaxws-jws-api-1.1",
+      "jaxrs-2.0-resteasy-3.1",
       "jaxws-2.0-axis2-1.6",
+      "jsf-myfaces-3.0",
+      "jaxrs-3.0-annotations",
+      "play-mvc-2.4",
+      "jaxrs-1.0",
+      "jaxws-2.0-cxf-3.0",
+      "jsf-mojarra-3.0",
+      "ratpack-1.7",
+      "spring-webmvc-6.0",
+      "spring-ws-2.0",
+      "jaxws-cxf-3.0",
+      "jaxws-2.0",
+      "spring-webmvc-3.1",
+      "jsf-myfaces-1.2",
       "jaxrs-2.0-jersey-2.0",
       "struts-2.3",
-      "jaxrs-2.0-annotations",
-      "spring-webmvc-3.1",
-      "tapestry-5.4",
-      "jsf-mojarra-3.0",
-      "vaadin-14.2",
-      "jsf-mojarra-1.2",
-      "spring-ws-2.0",
-      "spring-webmvc-6.0",
-      "jaxws-2.0-cxf-3.0",
-      "ratpack-1.7",
-      "play-mvc-2.6",
-      "jaxrs-3.0-annotations",
-      "jsf-myfaces-1.2",
-      "jaxrs-2.0-cxf-3.2",
-      "jsf-myfaces-3.0",
-      "jaxrs-3.0-jersey-3.0",
-      "jaxws-2.0",
-      "jaxrs-2.0-resteasy-3.1",
-      "spring-webflux-5.0",
+      "struts-7.0",
+      "jaxws-metro-2.2",
       "jaxrs-2.0-resteasy-3.0",
-      "finatra-2.9"
-    ],
-    "declarative_name": "java.common.controller_telemetry/development.enabled"
+      "jfinal-3.2",
+      "ratpack-1.4"
+    ]
   },
   {
     "declarative_name": "java.common.view_telemetry/development.enabled",
@@ -239,10 +239,10 @@
     "name": "otel.instrumentation.common.experimental.view-telemetry.enabled",
     "type": "boolean",
     "instrumentations": [
+      "spring-webmvc-6.0",
       "jsp-2.3",
       "spring-webmvc-3.1",
-      "dropwizard-views-0.7",
-      "spring-webmvc-6.0"
+      "dropwizard-views-0.7"
     ]
   },
   {
@@ -253,8 +253,8 @@
     "type": "string",
     "instrumentations": [
       "log4j-context-data-2.7",
-      "logback-mdc-1.0",
       "log4j-context-data-2.17",
+      "logback-mdc-1.0",
       "log4j-mdc-1.2"
     ]
   },
@@ -266,8 +266,8 @@
     "type": "string",
     "instrumentations": [
       "log4j-context-data-2.7",
-      "logback-mdc-1.0",
       "log4j-context-data-2.17",
+      "logback-mdc-1.0",
       "log4j-mdc-1.2"
     ]
   },
@@ -279,8 +279,8 @@
     "type": "string",
     "instrumentations": [
       "log4j-context-data-2.7",
-      "logback-mdc-1.0",
       "log4j-context-data-2.17",
+      "logback-mdc-1.0",
       "log4j-mdc-1.2"
     ]
   },
@@ -292,8 +292,8 @@
     "type": "list",
     "instrumentations": [
       "log4j-context-data-2.7",
-      "logback-mdc-1.0",
       "log4j-context-data-2.17",
+      "logback-mdc-1.0",
       "log4j-mdc-1.2"
     ]
   },
@@ -316,54 +316,54 @@
     ]
   },
   {
+    "declarative_name": "java.common.peer_service_mapping",
     "default": "",
     "description": "Used to specify a mapping from host names or IP addresses to peer services.",
     "name": "otel.instrumentation.common.peer-service-mapping",
     "type": "map",
     "instrumentations": [
-      "http-url-connection",
+      "jetty-httpclient-12.0",
+      "r2dbc-1.0",
       "apache-httpclient-5.0",
-      "google-http-client-1.19",
-      "netty-4.0",
-      "java-http-client",
-      "netty-4.1",
-      "jodd-http-4.2",
-      "akka-http-10.0",
       "vertx-http-client-3.0",
-      "ktor-3.0",
+      "play-ws-2.0",
+      "async-http-client-1.8",
+      "vertx-http-client-5.0",
+      "java-http-server",
+      "apache-httpclient-4.0",
+      "netty-4.0",
+      "lettuce-4.0",
+      "jdbc",
+      "ktor-2.0",
+      "play-ws-1.0",
+      "play-ws-2.1",
+      "akka-http-10.0",
       "jedis-3.0",
       "jedis-1.4",
-      "netty-3.8",
-      "apache-httpclient-2.0",
-      "jetty-httpclient-12.0",
-      "vertx-http-client-4.0",
-      "armeria-1.3",
-      "lettuce-5.0",
-      "pekko-http-1.0",
-      "reactor-netty-1.0",
-      "vertx-redis-client-4.0",
-      "jdbc",
-      "java-http-server",
-      "async-http-client-2.0",
-      "r2dbc-1.0",
-      "vertx-http-client-5.0",
-      "play-ws-1.0",
-      "jetty-httpclient-9.2",
-      "lettuce-4.0",
-      "okhttp-3.0",
-      "ratpack-1.7",
-      "apache-httpclient-4.0",
-      "async-http-client-1.9",
-      "async-http-client-1.8",
-      "apache-dubbo-2.7",
       "apache-httpasyncclient-4.1",
-      "play-ws-2.0",
       "okhttp-2.2",
-      "play-ws-2.1",
+      "lettuce-5.0",
+      "ratpack-1.7",
+      "async-http-client-2.0",
+      "vertx-redis-client-4.0",
+      "apache-dubbo-2.7",
+      "jodd-http-4.2",
+      "java-http-client",
+      "ktor-3.0",
+      "apache-httpclient-2.0",
+      "netty-4.1",
       "kubernetes-client-7.0",
-      "ktor-2.0"
-    ],
-    "declarative_name": "java.common.peer_service_mapping"
+      "netty-3.8",
+      "jetty-httpclient-9.2",
+      "reactor-netty-1.0",
+      "armeria-1.3",
+      "okhttp-3.0",
+      "http-url-connection",
+      "async-http-client-1.9",
+      "google-http-client-1.19",
+      "pekko-http-1.0",
+      "vertx-http-client-4.0"
+    ]
   },
   {
     "declarative_name": "java.couchbase.experimental_span_attributes/development",
@@ -393,20 +393,20 @@
     "name": "otel.instrumentation.elasticsearch.capture-search-query",
     "type": "boolean",
     "instrumentations": [
-      "elasticsearch-rest-6.4",
       "elasticsearch-rest-7.0",
-      "elasticsearch-rest-5.0"
+      "elasticsearch-rest-5.0",
+      "elasticsearch-rest-6.4"
     ]
   },
   {
     "declarative_name": "java.elasticsearch.experimental_span_attributes/development",
     "default": false,
-    "description": "Enable the capture of `elasticsearch.action`, `elasticsearch.id`, `elasticsearch.request`, `elasticsearch.request.indices`, `elasticsearch.request.search.types`, `elasticsearch.request.write.type`, `elasticsearch.request.write.version`, `elasticsearch.response.status`, `elasticsearch.shard.broadcast.failed`, `elasticsearch.shard.broadcast.successful`, `elasticsearch.shard.broadcast.total`, `elasticsearch.shard.replication.failed`, `elasticsearch.shard.replication.successful`, `elasticsearch.shard.replication.total`, `elasticsearch.type`, and `elasticsearch.version` experimental span attributes.",
+    "description": "Enable the capture of the experimental span attributes `elasticsearch.action`, `elasticsearch.id`, `elasticsearch.request`, `elasticsearch.request.indices`, `elasticsearch.request.write.routing`, `elasticsearch.request.write.type`, `elasticsearch.response.status`, `elasticsearch.shard.replication.failed`, `elasticsearch.shard.replication.successful`, `elasticsearch.shard.replication.total`, `elasticsearch.type`, and `elasticsearch.version`.",
     "name": "otel.instrumentation.elasticsearch.experimental-span-attributes",
     "type": "boolean",
     "instrumentations": [
-      "elasticsearch-transport-5.3",
       "elasticsearch-transport-5.0",
+      "elasticsearch-transport-5.3",
       "elasticsearch-transport-6.0"
     ]
   },
@@ -451,13 +451,13 @@
   {
     "declarative_name": "java.external_annotations.include",
     "default": "",
-    "description": "Configuration for trace annotations, in the form of a pattern that matches `'package.Annotation$Name;*'`.",
+    "description": "Semicolon-separated list of annotation class names to instrument.",
     "examples": [
       "com.example.Trace",
       "com.example.Trace;com.example.OtherTrace"
     ],
     "name": "otel.instrumentation.external-annotations.include",
-    "type": "string",
+    "type": "list",
     "instrumentations": [
       "external-annotations"
     ]
@@ -465,12 +465,12 @@
   {
     "declarative_name": "java.common.gen_ai.capture_message_content",
     "default": false,
-    "description": "Determines whether Generative AI events include full content of user and assistant messages. Note that full content can have data privacy and size concerns and care should be taken when enabling this",
+    "description": "Enables including the full content of user and assistant messages in emitted log events. Note that full content can have data privacy and size concerns, and care should be taken when enabling this.",
     "name": "otel.instrumentation.genai.capture-message-content",
     "type": "boolean",
     "instrumentations": [
-      "aws-sdk-2.2",
-      "openai-java-1.1"
+      "openai-java-1.1",
+      "aws-sdk-2.2"
     ]
   },
   {
@@ -479,8 +479,8 @@
     "name": "otel.instrumentation.graphql.add-operation-name-to-span-name.enabled",
     "type": "boolean",
     "instrumentations": [
-      "graphql-java-12.0",
-      "graphql-java-20.0"
+      "graphql-java-20.0",
+      "graphql-java-12.0"
     ]
   },
   {
@@ -490,8 +490,8 @@
     "name": "otel.instrumentation.graphql.capture-query",
     "type": "boolean",
     "instrumentations": [
-      "graphql-java-12.0",
-      "graphql-java-20.0"
+      "graphql-java-20.0",
+      "graphql-java-12.0"
     ]
   },
   {
@@ -511,8 +511,8 @@
     "name": "otel.instrumentation.graphql.operation-name-in-span-name.enabled",
     "type": "boolean",
     "instrumentations": [
-      "graphql-java-12.0",
-      "graphql-java-20.0"
+      "graphql-java-20.0",
+      "graphql-java-12.0"
     ]
   },
   {
@@ -522,8 +522,8 @@
     "name": "otel.instrumentation.graphql.query-sanitization.enabled",
     "type": "boolean",
     "instrumentations": [
-      "graphql-java-12.0",
-      "graphql-java-20.0"
+      "graphql-java-20.0",
+      "graphql-java-12.0"
     ]
   },
   {
@@ -532,8 +532,8 @@
     "name": "otel.instrumentation.graphql.query-sanitizer.enabled",
     "type": "boolean",
     "instrumentations": [
-      "graphql-java-12.0",
-      "graphql-java-20.0"
+      "graphql-java-20.0",
+      "graphql-java-12.0"
     ]
   },
   {
@@ -607,10 +607,10 @@
     "name": "otel.instrumentation.hibernate.experimental-span-attributes",
     "type": "boolean",
     "instrumentations": [
-      "hibernate-procedure-call-4.3",
       "hibernate-6.0",
+      "hibernate-4.0",
       "hibernate-3.3",
-      "hibernate-4.0"
+      "hibernate-procedure-call-4.3"
     ]
   },
   {
@@ -620,38 +620,38 @@
     "name": "otel.instrumentation.http.client.capture-request-headers",
     "type": "list",
     "instrumentations": [
-      "http-url-connection",
-      "apache-httpclient-5.0",
-      "google-http-client-1.19",
-      "netty-4.0",
-      "java-http-client",
-      "netty-4.1",
-      "jodd-http-4.2",
-      "akka-http-10.0",
-      "vertx-http-client-3.0",
-      "ktor-3.0",
-      "netty-3.8",
-      "apache-httpclient-2.0",
       "jetty-httpclient-12.0",
-      "vertx-http-client-4.0",
-      "armeria-1.3",
-      "pekko-http-1.0",
-      "reactor-netty-1.0",
-      "async-http-client-2.0",
-      "vertx-http-client-5.0",
-      "play-ws-1.0",
-      "jetty-httpclient-9.2",
-      "okhttp-3.0",
-      "ratpack-1.7",
-      "apache-httpclient-4.0",
-      "async-http-client-1.9",
-      "async-http-client-1.8",
-      "apache-httpasyncclient-4.1",
+      "apache-httpclient-5.0",
+      "vertx-http-client-3.0",
       "play-ws-2.0",
-      "okhttp-2.2",
+      "async-http-client-1.8",
+      "vertx-http-client-5.0",
+      "apache-httpclient-4.0",
+      "netty-4.0",
+      "ktor-2.0",
+      "play-ws-1.0",
       "play-ws-2.1",
+      "akka-http-10.0",
+      "apache-httpasyncclient-4.1",
+      "okhttp-2.2",
+      "ratpack-1.7",
+      "async-http-client-2.0",
+      "jodd-http-4.2",
+      "java-http-client",
+      "ktor-3.0",
+      "apache-httpclient-2.0",
+      "netty-4.1",
       "kubernetes-client-7.0",
-      "ktor-2.0"
+      "netty-3.8",
+      "jetty-httpclient-9.2",
+      "reactor-netty-1.0",
+      "armeria-1.3",
+      "okhttp-3.0",
+      "http-url-connection",
+      "async-http-client-1.9",
+      "google-http-client-1.19",
+      "pekko-http-1.0",
+      "vertx-http-client-4.0"
     ]
   },
   {
@@ -661,38 +661,38 @@
     "name": "otel.instrumentation.http.client.capture-response-headers",
     "type": "list",
     "instrumentations": [
-      "http-url-connection",
-      "apache-httpclient-5.0",
-      "google-http-client-1.19",
-      "netty-4.0",
-      "java-http-client",
-      "netty-4.1",
-      "jodd-http-4.2",
-      "akka-http-10.0",
-      "vertx-http-client-3.0",
-      "ktor-3.0",
-      "netty-3.8",
-      "apache-httpclient-2.0",
       "jetty-httpclient-12.0",
-      "vertx-http-client-4.0",
-      "armeria-1.3",
-      "pekko-http-1.0",
-      "reactor-netty-1.0",
-      "async-http-client-2.0",
-      "vertx-http-client-5.0",
-      "play-ws-1.0",
-      "jetty-httpclient-9.2",
-      "okhttp-3.0",
-      "ratpack-1.7",
-      "apache-httpclient-4.0",
-      "async-http-client-1.9",
-      "async-http-client-1.8",
-      "apache-httpasyncclient-4.1",
+      "apache-httpclient-5.0",
+      "vertx-http-client-3.0",
       "play-ws-2.0",
-      "okhttp-2.2",
+      "async-http-client-1.8",
+      "vertx-http-client-5.0",
+      "apache-httpclient-4.0",
+      "netty-4.0",
+      "ktor-2.0",
+      "play-ws-1.0",
       "play-ws-2.1",
+      "akka-http-10.0",
+      "apache-httpasyncclient-4.1",
+      "okhttp-2.2",
+      "ratpack-1.7",
+      "async-http-client-2.0",
+      "jodd-http-4.2",
+      "java-http-client",
+      "ktor-3.0",
+      "apache-httpclient-2.0",
+      "netty-4.1",
       "kubernetes-client-7.0",
-      "ktor-2.0"
+      "netty-3.8",
+      "jetty-httpclient-9.2",
+      "reactor-netty-1.0",
+      "armeria-1.3",
+      "okhttp-3.0",
+      "http-url-connection",
+      "async-http-client-1.9",
+      "google-http-client-1.19",
+      "pekko-http-1.0",
+      "vertx-http-client-4.0"
     ]
   },
   {
@@ -702,39 +702,39 @@
     "name": "otel.instrumentation.http.client.emit-experimental-telemetry",
     "type": "boolean",
     "instrumentations": [
-      "http-url-connection",
-      "apache-httpclient-5.0",
-      "google-http-client-1.19",
-      "netty-4.0",
-      "java-http-client",
-      "netty-4.1",
-      "jodd-http-4.2",
-      "akka-http-10.0",
-      "vertx-http-client-3.0",
-      "ktor-3.0",
-      "netty-3.8",
-      "apache-httpclient-2.0",
       "jetty-httpclient-12.0",
-      "vertx-http-client-4.0",
-      "armeria-1.3",
-      "pekko-http-1.0",
-      "reactor-netty-1.0",
-      "async-http-client-2.0",
-      "spring-web-6.0",
-      "vertx-http-client-5.0",
-      "play-ws-1.0",
-      "jetty-httpclient-9.2",
-      "okhttp-3.0",
-      "ratpack-1.7",
-      "apache-httpclient-4.0",
-      "async-http-client-1.9",
-      "async-http-client-1.8",
-      "apache-httpasyncclient-4.1",
+      "apache-httpclient-5.0",
+      "vertx-http-client-3.0",
       "play-ws-2.0",
-      "okhttp-2.2",
+      "async-http-client-1.8",
+      "vertx-http-client-5.0",
+      "apache-httpclient-4.0",
+      "netty-4.0",
+      "ktor-2.0",
+      "play-ws-1.0",
       "play-ws-2.1",
+      "akka-http-10.0",
+      "apache-httpasyncclient-4.1",
+      "okhttp-2.2",
+      "ratpack-1.7",
+      "async-http-client-2.0",
+      "jodd-http-4.2",
+      "spring-web-6.0",
+      "java-http-client",
+      "ktor-3.0",
+      "apache-httpclient-2.0",
+      "netty-4.1",
       "kubernetes-client-7.0",
-      "ktor-2.0"
+      "netty-3.8",
+      "jetty-httpclient-9.2",
+      "reactor-netty-1.0",
+      "armeria-1.3",
+      "okhttp-3.0",
+      "http-url-connection",
+      "async-http-client-1.9",
+      "google-http-client-1.19",
+      "pekko-http-1.0",
+      "vertx-http-client-4.0"
     ]
   },
   {
@@ -744,38 +744,38 @@
     "name": "otel.instrumentation.http.client.experimental.redact-query-parameters",
     "type": "boolean",
     "instrumentations": [
-      "http-url-connection",
-      "apache-httpclient-5.0",
-      "google-http-client-1.19",
-      "netty-4.0",
-      "java-http-client",
-      "netty-4.1",
-      "jodd-http-4.2",
-      "akka-http-10.0",
-      "vertx-http-client-3.0",
-      "ktor-3.0",
-      "netty-3.8",
-      "apache-httpclient-2.0",
       "jetty-httpclient-12.0",
-      "vertx-http-client-4.0",
-      "armeria-1.3",
-      "pekko-http-1.0",
-      "reactor-netty-1.0",
-      "async-http-client-2.0",
-      "vertx-http-client-5.0",
-      "play-ws-1.0",
-      "jetty-httpclient-9.2",
-      "okhttp-3.0",
-      "ratpack-1.7",
-      "apache-httpclient-4.0",
-      "async-http-client-1.9",
-      "async-http-client-1.8",
-      "apache-httpasyncclient-4.1",
+      "apache-httpclient-5.0",
+      "vertx-http-client-3.0",
       "play-ws-2.0",
-      "okhttp-2.2",
+      "async-http-client-1.8",
+      "vertx-http-client-5.0",
+      "apache-httpclient-4.0",
+      "netty-4.0",
+      "ktor-2.0",
+      "play-ws-1.0",
       "play-ws-2.1",
+      "akka-http-10.0",
+      "apache-httpasyncclient-4.1",
+      "okhttp-2.2",
+      "ratpack-1.7",
+      "async-http-client-2.0",
+      "jodd-http-4.2",
+      "java-http-client",
+      "ktor-3.0",
+      "apache-httpclient-2.0",
+      "netty-4.1",
       "kubernetes-client-7.0",
-      "ktor-2.0"
+      "netty-3.8",
+      "jetty-httpclient-9.2",
+      "reactor-netty-1.0",
+      "armeria-1.3",
+      "okhttp-3.0",
+      "http-url-connection",
+      "async-http-client-1.9",
+      "google-http-client-1.19",
+      "pekko-http-1.0",
+      "vertx-http-client-4.0"
     ]
   },
   {
@@ -785,57 +785,57 @@
     "name": "otel.instrumentation.http.known-methods",
     "type": "list",
     "instrumentations": [
-      "http-url-connection",
-      "apache-httpclient-5.0",
-      "google-http-client-1.19",
-      "netty-4.0",
-      "java-http-client",
-      "elasticsearch-rest-6.4",
-      "netty-4.1",
-      "jodd-http-4.2",
-      "akka-http-10.0",
-      "vertx-http-client-3.0",
-      "ktor-3.0",
-      "elasticsearch-rest-7.0",
-      "liberty-20.0",
-      "tomcat-10.0",
-      "netty-3.8",
-      "apache-httpclient-2.0",
-      "jetty-8.0",
       "jetty-httpclient-12.0",
-      "vertx-http-client-4.0",
-      "armeria-1.3",
-      "pekko-http-1.0",
-      "reactor-netty-1.0",
+      "apache-httpclient-5.0",
+      "elasticsearch-rest-7.0",
+      "vertx-http-client-3.0",
+      "liberty-dispatcher-20.0",
+      "play-ws-2.0",
+      "async-http-client-1.8",
       "undertow-1.4",
-      "java-http-server",
-      "async-http-client-2.0",
-      "grizzly-2.3",
+      "elasticsearch-transport-5.0",
       "vertx-http-client-5.0",
       "jetty-12.0",
-      "play-ws-1.0",
-      "elasticsearch-transport-5.0",
-      "helidon-4.3",
-      "jetty-httpclient-9.2",
-      "tomcat-7.0",
-      "okhttp-3.0",
-      "ratpack-1.7",
-      "restlet-1.1",
+      "java-http-server",
       "apache-httpclient-4.0",
-      "async-http-client-1.9",
-      "elasticsearch-rest-5.0",
-      "async-http-client-1.8",
-      "restlet-2.0",
-      "apache-httpasyncclient-4.1",
-      "play-ws-2.0",
-      "okhttp-2.2",
-      "jetty-11.0",
-      "liberty-dispatcher-20.0",
-      "play-ws-2.1",
-      "kubernetes-client-7.0",
-      "aws-lambda-events-2.2",
+      "netty-4.0",
       "ktor-2.0",
-      "activej-http-6.0"
+      "play-ws-1.0",
+      "restlet-1.1",
+      "jetty-11.0",
+      "play-ws-2.1",
+      "tomcat-7.0",
+      "elasticsearch-rest-5.0",
+      "elasticsearch-rest-6.4",
+      "akka-http-10.0",
+      "apache-httpasyncclient-4.1",
+      "tomcat-10.0",
+      "okhttp-2.2",
+      "ratpack-1.7",
+      "grizzly-2.3",
+      "async-http-client-2.0",
+      "jodd-http-4.2",
+      "liberty-20.0",
+      "java-http-client",
+      "aws-lambda-events-2.2",
+      "restlet-2.0",
+      "ktor-3.0",
+      "activej-http-6.0",
+      "apache-httpclient-2.0",
+      "netty-4.1",
+      "kubernetes-client-7.0",
+      "netty-3.8",
+      "jetty-httpclient-9.2",
+      "reactor-netty-1.0",
+      "armeria-1.3",
+      "okhttp-3.0",
+      "http-url-connection",
+      "async-http-client-1.9",
+      "google-http-client-1.19",
+      "helidon-4.3",
+      "pekko-http-1.0",
+      "vertx-http-client-4.0",
+      "jetty-8.0"
     ]
   },
   {
@@ -845,29 +845,29 @@
     "name": "otel.instrumentation.http.server.capture-request-headers",
     "type": "list",
     "instrumentations": [
-      "netty-4.0",
-      "netty-4.1",
-      "akka-http-10.0",
-      "ktor-3.0",
-      "liberty-20.0",
-      "tomcat-10.0",
-      "netty-3.8",
-      "jetty-8.0",
-      "armeria-1.3",
-      "pekko-http-1.0",
-      "undertow-1.4",
-      "java-http-server",
-      "grizzly-2.3",
-      "jetty-12.0",
-      "helidon-4.3",
-      "tomcat-7.0",
-      "ratpack-1.7",
-      "restlet-1.1",
-      "restlet-2.0",
-      "jetty-11.0",
       "liberty-dispatcher-20.0",
+      "undertow-1.4",
+      "jetty-12.0",
+      "java-http-server",
+      "netty-4.0",
       "ktor-2.0",
-      "activej-http-6.0"
+      "restlet-1.1",
+      "jetty-11.0",
+      "tomcat-7.0",
+      "akka-http-10.0",
+      "tomcat-10.0",
+      "ratpack-1.7",
+      "grizzly-2.3",
+      "liberty-20.0",
+      "restlet-2.0",
+      "ktor-3.0",
+      "activej-http-6.0",
+      "netty-4.1",
+      "netty-3.8",
+      "armeria-1.3",
+      "helidon-4.3",
+      "pekko-http-1.0",
+      "jetty-8.0"
     ]
   },
   {
@@ -877,29 +877,29 @@
     "name": "otel.instrumentation.http.server.capture-response-headers",
     "type": "list",
     "instrumentations": [
-      "netty-4.0",
-      "netty-4.1",
-      "akka-http-10.0",
-      "ktor-3.0",
-      "liberty-20.0",
-      "tomcat-10.0",
-      "netty-3.8",
-      "jetty-8.0",
-      "armeria-1.3",
-      "pekko-http-1.0",
-      "undertow-1.4",
-      "java-http-server",
-      "grizzly-2.3",
-      "jetty-12.0",
-      "helidon-4.3",
-      "tomcat-7.0",
-      "ratpack-1.7",
-      "restlet-1.1",
-      "restlet-2.0",
-      "jetty-11.0",
       "liberty-dispatcher-20.0",
+      "undertow-1.4",
+      "jetty-12.0",
+      "java-http-server",
+      "netty-4.0",
       "ktor-2.0",
-      "activej-http-6.0"
+      "restlet-1.1",
+      "jetty-11.0",
+      "tomcat-7.0",
+      "akka-http-10.0",
+      "tomcat-10.0",
+      "ratpack-1.7",
+      "grizzly-2.3",
+      "liberty-20.0",
+      "restlet-2.0",
+      "ktor-3.0",
+      "activej-http-6.0",
+      "netty-4.1",
+      "netty-3.8",
+      "armeria-1.3",
+      "helidon-4.3",
+      "pekko-http-1.0",
+      "jetty-8.0"
     ]
   },
   {
@@ -909,29 +909,29 @@
     "name": "otel.instrumentation.http.server.emit-experimental-telemetry",
     "type": "boolean",
     "instrumentations": [
-      "netty-4.0",
-      "netty-4.1",
-      "akka-http-10.0",
-      "ktor-3.0",
-      "liberty-20.0",
-      "tomcat-10.0",
-      "netty-3.8",
-      "jetty-8.0",
-      "armeria-1.3",
-      "pekko-http-1.0",
-      "undertow-1.4",
-      "java-http-server",
-      "grizzly-2.3",
-      "jetty-12.0",
-      "helidon-4.3",
-      "tomcat-7.0",
-      "ratpack-1.7",
-      "restlet-1.1",
-      "restlet-2.0",
-      "jetty-11.0",
       "liberty-dispatcher-20.0",
+      "undertow-1.4",
+      "jetty-12.0",
+      "java-http-server",
+      "netty-4.0",
       "ktor-2.0",
-      "activej-http-6.0"
+      "restlet-1.1",
+      "jetty-11.0",
+      "tomcat-7.0",
+      "akka-http-10.0",
+      "tomcat-10.0",
+      "ratpack-1.7",
+      "grizzly-2.3",
+      "liberty-20.0",
+      "restlet-2.0",
+      "ktor-3.0",
+      "activej-http-6.0",
+      "netty-4.1",
+      "netty-3.8",
+      "armeria-1.3",
+      "helidon-4.3",
+      "pekko-http-1.0",
+      "jetty-8.0"
     ]
   },
   {
@@ -961,13 +961,13 @@
     "name": "otel.instrumentation.jaxrs.experimental-span-attributes",
     "type": "boolean",
     "instrumentations": [
-      "jaxrs-3.0-resteasy-6.0",
-      "jaxrs-2.0-jersey-2.0",
       "jaxrs-2.0-annotations",
-      "jaxrs-3.0-annotations",
-      "jaxrs-2.0-cxf-3.2",
       "jaxrs-3.0-jersey-3.0",
+      "jaxrs-3.0-resteasy-6.0",
+      "jaxrs-2.0-cxf-3.2",
       "jaxrs-2.0-resteasy-3.1",
+      "jaxrs-3.0-annotations",
+      "jaxrs-2.0-jersey-2.0",
       "jaxrs-2.0-resteasy-3.0"
     ]
   },
@@ -1077,15 +1077,15 @@
   {
     "declarative_name": "java.kafka.experimental_span_attributes/development",
     "default": false,
-    "description": "Enables the capture of the experimental consumer attributes `kafka.record.queue_time_ms` and `messaging.kafka.bootstrap.servers`.",
+    "description": "Enables the capture of the experimental consumer attribute `kafka.record.queue_time_ms`.",
     "name": "otel.instrumentation.kafka.experimental-span-attributes",
     "type": "boolean",
     "instrumentations": [
-      "kafka-clients-0.11",
-      "vertx-kafka-client-3.6",
-      "spring-kafka-2.7",
       "kafka-streams-0.11",
-      "reactor-kafka-1.0"
+      "kafka-clients-0.11",
+      "spring-kafka-2.7",
+      "reactor-kafka-1.0",
+      "vertx-kafka-client-3.6"
     ]
   },
   {
@@ -1116,19 +1116,19 @@
     "name": "otel.instrumentation.lettuce.connection-telemetry.enabled",
     "type": "boolean",
     "instrumentations": [
-      "lettuce-5.0",
-      "lettuce-4.0"
+      "lettuce-4.0",
+      "lettuce-5.0"
     ]
   },
   {
     "declarative_name": "java.lettuce.experimental_span_attributes/development",
     "default": false,
-    "description": "Enables experimental span attributes `lettuce.command.cancelled` and `lettuce.command.results.count`.",
+    "description": "Enables experimental span attribute `lettuce.command.cancelled`.",
     "name": "otel.instrumentation.lettuce.experimental-span-attributes",
     "type": "boolean",
     "instrumentations": [
-      "lettuce-5.0",
-      "lettuce-4.0"
+      "lettuce-4.0",
+      "lettuce-5.0"
     ]
   },
   {
@@ -1346,53 +1346,53 @@
   {
     "declarative_name": "java.common.messaging.capture_headers/development",
     "default": "",
-    "description": "Enables capturing messaging headers as span attributes. Provide a comma-separated list of header names to capture.",
+    "description": "List of messaging headers to capture.",
     "name": "otel.instrumentation.messaging.experimental.capture-headers",
     "type": "list",
     "instrumentations": [
-      "jms-3.0",
-      "spring-jms-2.0",
-      "spring-rabbit-1.0",
-      "aws-sdk-2.2",
       "rabbitmq-2.7",
-      "nats-2.17",
-      "kafka-clients-0.11",
-      "spring-jms-6.0",
-      "pulsar-2.8",
-      "aws-sdk-1.11",
-      "vertx-kafka-client-3.6",
-      "rocketmq-client-5.0",
-      "spring-kafka-2.7",
-      "jms-1.1",
       "rocketmq-client-4.8",
+      "jms-1.1",
+      "pulsar-2.8",
       "kafka-streams-0.11",
-      "spring-pulsar-1.0",
+      "aws-sdk-1.11",
+      "spring-rabbit-1.0",
+      "spring-jms-2.0",
       "spring-integration-4.1",
-      "reactor-kafka-1.0"
+      "jms-3.0",
+      "spring-pulsar-1.0",
+      "kafka-clients-0.11",
+      "spring-kafka-2.7",
+      "rocketmq-client-5.0",
+      "reactor-kafka-1.0",
+      "aws-sdk-2.2",
+      "vertx-kafka-client-3.6",
+      "spring-jms-6.0",
+      "nats-2.17"
     ]
   },
   {
     "declarative_name": "java.common.messaging.receive_telemetry/development.enabled",
     "default": false,
-    "description": "Enables experimental receive telemetry, which will cause consumers to start a new trace, with only a span link connecting it to the producer trace.",
+    "description": "Enables the creation of consumer spans on messaging receive operations. These spans will measure the time between receiving a message and the consumer processing that message.",
     "name": "otel.instrumentation.messaging.experimental.receive-telemetry.enabled",
     "type": "boolean",
     "instrumentations": [
-      "jms-3.0",
-      "spring-jms-2.0",
-      "aws-sdk-2.2",
       "rabbitmq-2.7",
-      "kafka-clients-0.11",
-      "spring-jms-6.0",
-      "pulsar-2.8",
-      "aws-sdk-1.11",
-      "vertx-kafka-client-3.6",
-      "rocketmq-client-5.0",
-      "spring-kafka-2.7",
       "jms-1.1",
+      "pulsar-2.8",
       "kafka-streams-0.11",
+      "aws-sdk-1.11",
+      "spring-jms-2.0",
+      "jms-3.0",
       "spring-pulsar-1.0",
-      "reactor-kafka-1.0"
+      "kafka-clients-0.11",
+      "spring-kafka-2.7",
+      "rocketmq-client-5.0",
+      "reactor-kafka-1.0",
+      "aws-sdk-2.2",
+      "vertx-kafka-client-3.6",
+      "spring-jms-6.0"
     ]
   },
   {
@@ -1450,10 +1450,10 @@
     "name": "otel.instrumentation.mongo.query-sanitization.enabled",
     "type": "boolean",
     "instrumentations": [
-      "mongo-4.0",
-      "mongo-async-3.3",
       "mongo-3.1",
-      "mongo-3.7"
+      "mongo-async-3.3",
+      "mongo-3.7",
+      "mongo-4.0"
     ]
   },
   {
@@ -1462,10 +1462,10 @@
     "name": "otel.instrumentation.mongo.statement-sanitizer.enabled",
     "type": "boolean",
     "instrumentations": [
-      "mongo-4.0",
-      "mongo-async-3.3",
       "mongo-3.1",
-      "mongo-3.7"
+      "mongo-async-3.3",
+      "mongo-3.7",
+      "mongo-4.0"
     ]
   },
   {
@@ -1695,8 +1695,8 @@
     "name": "otel.instrumentation.rxjava.experimental-span-attributes",
     "type": "boolean",
     "instrumentations": [
-      "rxjava-2.0",
       "rxjava-3.0",
+      "rxjava-2.0",
       "rxjava-3.1.1"
     ]
   },
@@ -1707,38 +1707,38 @@
     "name": "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
     "type": "list",
     "instrumentations": [
-      "http-url-connection",
-      "apache-httpclient-5.0",
-      "google-http-client-1.19",
-      "netty-4.0",
-      "java-http-client",
-      "netty-4.1",
-      "jodd-http-4.2",
-      "akka-http-10.0",
-      "vertx-http-client-3.0",
-      "ktor-3.0",
-      "netty-3.8",
-      "apache-httpclient-2.0",
       "jetty-httpclient-12.0",
-      "vertx-http-client-4.0",
-      "armeria-1.3",
-      "pekko-http-1.0",
-      "reactor-netty-1.0",
-      "async-http-client-2.0",
-      "vertx-http-client-5.0",
-      "play-ws-1.0",
-      "jetty-httpclient-9.2",
-      "okhttp-3.0",
-      "ratpack-1.7",
-      "apache-httpclient-4.0",
-      "async-http-client-1.9",
-      "async-http-client-1.8",
-      "apache-httpasyncclient-4.1",
+      "apache-httpclient-5.0",
+      "vertx-http-client-3.0",
       "play-ws-2.0",
-      "okhttp-2.2",
+      "async-http-client-1.8",
+      "vertx-http-client-5.0",
+      "apache-httpclient-4.0",
+      "netty-4.0",
+      "ktor-2.0",
+      "play-ws-1.0",
       "play-ws-2.1",
+      "akka-http-10.0",
+      "apache-httpasyncclient-4.1",
+      "okhttp-2.2",
+      "ratpack-1.7",
+      "async-http-client-2.0",
+      "jodd-http-4.2",
+      "java-http-client",
+      "ktor-3.0",
+      "apache-httpclient-2.0",
+      "netty-4.1",
       "kubernetes-client-7.0",
-      "ktor-2.0"
+      "netty-3.8",
+      "jetty-httpclient-9.2",
+      "reactor-netty-1.0",
+      "armeria-1.3",
+      "okhttp-3.0",
+      "http-url-connection",
+      "async-http-client-1.9",
+      "google-http-client-1.19",
+      "pekko-http-1.0",
+      "vertx-http-client-4.0"
     ]
   },
   {
@@ -1747,9 +1747,9 @@
     "name": "otel.instrumentation.servlet.add-trace-id-request-attribute",
     "type": "boolean",
     "instrumentations": [
+      "servlet-5.0",
       "servlet-2.2",
-      "servlet-3.0",
-      "servlet-5.0"
+      "servlet-3.0"
     ]
   },
   {
@@ -1758,10 +1758,10 @@
     "name": "otel.instrumentation.servlet.capture-request-parameters",
     "type": "list",
     "instrumentations": [
-      "servlet-2.2",
+      "servlet-5.0",
       "tomcat-10.0",
-      "servlet-3.0",
-      "servlet-5.0"
+      "servlet-2.2",
+      "servlet-3.0"
     ]
   },
   {
@@ -1771,12 +1771,12 @@
     "name": "otel.instrumentation.servlet.experimental-span-attributes",
     "type": "boolean",
     "instrumentations": [
+      "servlet-5.0",
+      "tomcat-7.0",
+      "tomcat-10.0",
       "servlet-2.2",
       "liberty-20.0",
-      "tomcat-10.0",
-      "servlet-3.0",
-      "tomcat-7.0",
-      "servlet-5.0"
+      "servlet-3.0"
     ]
   },
   {
@@ -1786,12 +1786,12 @@
     "name": "otel.instrumentation.servlet.experimental.capture-request-parameters",
     "type": "list",
     "instrumentations": [
+      "servlet-5.0",
+      "tomcat-7.0",
+      "tomcat-10.0",
       "servlet-2.2",
       "liberty-20.0",
-      "tomcat-10.0",
-      "servlet-3.0",
-      "tomcat-7.0",
-      "servlet-5.0"
+      "servlet-3.0"
     ]
   },
   {
@@ -1801,9 +1801,9 @@
     "name": "otel.instrumentation.servlet.experimental.trace-id-request-attribute.enabled",
     "type": "boolean",
     "instrumentations": [
+      "servlet-5.0",
       "servlet-2.2",
-      "servlet-3.0",
-      "servlet-5.0"
+      "servlet-3.0"
     ]
   },
   {
@@ -1843,8 +1843,8 @@
     "name": "otel.instrumentation.spring-cloud-gateway.experimental-span-attributes",
     "type": "boolean",
     "instrumentations": [
-      "spring-cloud-gateway-webmvc-4.3",
-      "spring-cloud-gateway-2.0"
+      "spring-cloud-gateway-2.0",
+      "spring-cloud-gateway-webmvc-4.3"
     ]
   },
   {
@@ -1913,8 +1913,8 @@
     "name": "otel.instrumentation.spring-webmvc.experimental-span-attributes",
     "type": "boolean",
     "instrumentations": [
-      "spring-webmvc-3.1",
-      "spring-webmvc-6.0"
+      "spring-webmvc-6.0",
+      "spring-webmvc-3.1"
     ]
   },
   {
@@ -1930,7 +1930,7 @@
   {
     "declarative_name": "java.twilio.experimental_span_attributes/development",
     "default": false,
-    "description": "Enables experimental span attributes `twilio.type`, `twilio.account`, `twilio.sid`, `twilio.parentSid`, and `twilio.status`.",
+    "description": "Enables experimental span attributes `twilio.type`, `twilio.account`, `twilio.sid`, and `twilio.status`.",
     "name": "otel.instrumentation.twilio.experimental-span-attributes",
     "type": "boolean",
     "instrumentations": [
@@ -1944,9 +1944,9 @@
     "name": "otel.instrumentation.xxl-job.experimental-span-attributes",
     "type": "boolean",
     "instrumentations": [
-      "xxl-job-1.9.2",
+      "xxl-job-2.3.0",
       "xxl-job-2.1.2",
-      "xxl-job-2.3.0"
+      "xxl-job-1.9.2"
     ]
   },
   {
@@ -1996,9 +1996,9 @@
     "name": "otel.semconv-stability.opt-in",
     "type": "list",
     "instrumentations": [
-      "alibaba-druid-1.0",
+      "tomcat-jdbc",
       "apache-dbcp-2.0",
-      "tomcat-jdbc"
+      "alibaba-druid-1.0"
     ]
   }
 ]
