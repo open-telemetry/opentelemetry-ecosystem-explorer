@@ -1,0 +1,44 @@
+name: Feature Request
+description: Propose a new feature or enhancement
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For significant features, consider starting a
+        [discussion](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/discussions)
+        first to get early feedback before writing a detailed proposal.
+  - type: textarea
+    id: component
+    attributes:
+      label: Component / area
+      description: Which part of the project does this feature relate to?
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem this solves
+      description: What user need or gap does this address? A user-story format works well — "As a [type of user], I want [goal] so that [benefit]."
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: What does "done" look like? List the observable behaviors or conditions that would confirm this feature is complete.
+    validations:
+      required: false
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add any references that might help us develop this feature.
+    validations:
+      required: false
