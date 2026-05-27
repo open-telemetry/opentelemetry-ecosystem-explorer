@@ -42,6 +42,16 @@ target-version = "py311"
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "S"]
 
+[tool.ruff.lint.per-file-ignores]
+# These files invoke git via subprocess with statically-typed, internally-controlled
+# arguments; S603 produces only false positives for them.
+"ecosystem-automation/watcher-common/src/watcher_common/repository_manager.py" = ["S603"]
+"ecosystem-automation/watcher-common/src/watcher_common/version_detector.py" = ["S603"]
+"ecosystem-automation/watcher-common/src/watcher_common/testing.py" = ["S603"]
+"ecosystem-automation/configuration-watcher/src/configuration_watcher/repository_manager.py" = ["S603"]
+# pytest uses assert as its primary assertion mechanism; S101 is not meaningful here.
+"ecosystem-automation/**/tests/*.py" = ["S101"]
+
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"
 testpaths = ["ecosystem-automation"]

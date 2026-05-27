@@ -18,6 +18,7 @@ import shutil
 import subprocess
 import tempfile
 from pathlib import Path
+from subprocess import CalledProcessError
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -27,6 +28,8 @@ from collector_watcher.repository_manager import (
     RepositoryManager,
 )
 from semantic_version import Version
+from watcher_common.repository_manager import _GIT
+from watcher_common.testing import git_commit, init_repo, run_git
 
 
 @pytest.fixture
@@ -42,40 +45,16 @@ def mock_repo():
     temp_path = tempfile.mkdtemp()
     repo_path = Path(temp_path)
 
-    subprocess.run(["git", "init"], cwd=repo_path, check=True, capture_output=True)
-    subprocess.run(
-        ["git", "config", "user.email", "test@example.com"],
-        cwd=repo_path,
-        check=True,
-        capture_output=True,
-    )
-    subprocess.run(
-        ["git", "config", "user.name", "Test User"],
-        cwd=repo_path,
-        check=True,
-        capture_output=True,
-    )
+    init_repo(repo_path)
 
-    # Create a commit
     (repo_path / "README.md").write_text("Test repo")
-    subprocess.run(["git", "add", "."], cwd=repo_path, check=True, capture_output=True)
-    subprocess.run(
-        ["git", "commit", "-m", "Initial commit"],
-        cwd=repo_path,
-        check=True,
-        capture_output=True,
-    )
+    run_git(repo_path, "add", ".")
+    git_commit(repo_path, "Initial commit")
 
-    # Rename master to main if needed
     try:
-        subprocess.run(
-            ["git", "branch", "-M", "main"],
-            cwd=repo_path,
-            check=True,
-            capture_output=True,
-        )
-    except subprocess.CalledProcessError:
-        pass
+        run_git(repo_path, "checkout", "-b", "main")
+    except CalledProcessError:
+        run_git(repo_path, "checkout", "main")
 
     yield repo_path
     shutil.rmtree(temp_path, ignore_errors=True)
@@ -124,7 +103,7 @@ class TestRepositoryManager:
         manager._clone_repository(REPO_URLS["core"], target_path)
 
         mock_run.assert_called_once_with(
-            ["git", "clone", REPO_URLS["core"], str(target_path)],
+            [_GIT, "clone", REPO_URLS["core"], str(target_path)],
             check=True,
             capture_output=True,
             text=True,
@@ -148,8 +127,8 @@ class TestRepositoryManager:
         manager._pull_latest(temp_dir)
 
         assert mock_run.call_count == 2
-        assert mock_run.call_args_list[0][0][0] == ["git", "checkout", "main"]
-        assert mock_run.call_args_list[1][0][0] == ["git", "pull"]
+        assert mock_run.call_args_list[0][0][0] == [_GIT, "checkout", "main"]
+        assert mock_run.call_args_list[1][0][0] == [_GIT, "pull"]
 
     @patch("watcher_common.repository_manager.subprocess.run")
     def test_pull_latest_failure_raises_runtime_error(self, mock_run, temp_dir):
@@ -168,8 +147,8 @@ class TestRepositoryManager:
         manager._checkout_version(temp_dir, version)
 
         assert mock_run.call_count == 2
-        assert mock_run.call_args_list[0][0][0] == ["git", "fetch", "--tags"]
-        assert mock_run.call_args_list[1][0][0] == ["git", "checkout", "v1.0.0"]
+        assert mock_run.call_args_list[0][0][0] == [_GIT, "fetch", "--tags"]
+        assert mock_run.call_args_list[1][0][0] == [_GIT, "checkout", "v1.0.0"]
 
     @patch("watcher_common.repository_manager.subprocess.run")
     def test_checkout_version_failure_raises_runtime_error(self, mock_run, temp_dir):
@@ -212,7 +191,7 @@ class TestRepositoryManager:
         assert path == expected_path
         # Should have called git clone
         mock_run.assert_called_once()
-        assert mock_run.call_args[0][0][0] == "git"
+        assert mock_run.call_args[0][0][0] == _GIT
         assert mock_run.call_args[0][0][1] == "clone"
 
     @patch("watcher_common.repository_manager.subprocess.run")
