@@ -110,10 +110,26 @@ describe("Header", () => {
     await user.click(screen.getByRole("button", { name: /open menu/i }));
     expect(screen.getByRole("navigation", { name: /mobile main/i })).toBeInTheDocument();
 
-    const javaAgentLink = screen.getAllByRole("link", { name: /java agent/i }).find(
-      (el) => el.closest("nav[aria-label='Mobile main']")
-    );
+    const javaAgentLink = screen
+      .getAllByRole("link", { name: /java agent/i })
+      .find((el) => el.closest("nav[aria-label='Mobile main']"));
     await user.click(javaAgentLink!);
+
+    expect(screen.queryByRole("navigation", { name: /mobile main/i })).not.toBeInTheDocument();
+  });
+
+  it("closes mobile menu when the backdrop is clicked", async () => {
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter>
+        <Header />
+      </MemoryRouter>
+    );
+
+    await user.click(screen.getByRole("button", { name: /open menu/i }));
+    expect(screen.getByRole("navigation", { name: /mobile main/i })).toBeInTheDocument();
+
+    await user.click(screen.getByTestId("mobile-nav-backdrop"));
 
     expect(screen.queryByRole("navigation", { name: /mobile main/i })).not.toBeInTheDocument();
   });
