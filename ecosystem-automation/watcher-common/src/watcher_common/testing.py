@@ -50,4 +50,4 @@ def init_repo(path: Path) -> None:
 
 def git_commit(path: Path, message: str) -> None:
     """Create a commit with *message* in *path*."""
-    run_git(path, "commit", "-m", message)
+    run_git(path, "commit", "--no-verify", "--no-gpg-sign", "-m", message)
