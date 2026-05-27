@@ -64,7 +64,7 @@ export function ConfigurationCard({ config, format, instrumentations }: Configur
       </div>
 
       <div className="space-y-3">
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           {showDeclarative ? (
             <div data-testid="config-name" className="min-w-0 flex-1">
               <YamlCodeBlock
@@ -75,12 +75,12 @@ export function ConfigurationCard({ config, format, instrumentations }: Configur
           ) : (
             <code
               data-testid="config-name"
-              className="text-primary flex-1 font-mono text-sm break-all"
+              className="text-primary min-w-0 flex-1 font-mono text-sm break-all"
             >
               {flatName}
             </code>
           )}
-          <div className="flex shrink-0 flex-wrap items-center gap-1">
+          <div className="flex w-full flex-wrap items-center gap-1 sm:w-auto sm:justify-end">
             <GlowBadge variant="info" withGlow>
               {config.type}
             </GlowBadge>
