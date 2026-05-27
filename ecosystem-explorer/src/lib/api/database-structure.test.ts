@@ -13,12 +13,53 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
-import { installFetchInterceptor, uninstallFetchInterceptor } from "./helpers/fetch-interceptor";
-import { loadVersions, loadVersionManifest, loadInstrumentation } from "@/lib/api/javaagent-data";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
+import { loadVersions, loadVersionManifest, loadInstrumentation } from "./javaagent-data";
 
-beforeAll(() => installFetchInterceptor());
-afterAll(() => uninstallFetchInterceptor());
+// Resolve the public/ directory relative to this test file.
+// api/ (1) → lib/ (2) → src/ (3) → ecosystem-explorer/ then /public
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const PUBLIC_DIR = path.resolve(__dirname, "../../../public");
+
+// Serve /data/* requests directly from the filesystem so this test validates
+// the actual shape of the data files in public/. IDB is not available in jsdom
+// (isIDBAvailable() returns false), so fetchWithCache skips the cache entirely
+// and calls fetch on every request — no fake-indexeddb/auto needed.
+//
+// console.error is silenced here because idb-cache will log "Failed to prune
+// old cache entries" / "IndexedDB is not available" on every loadVersions()
+// call. Those failures are expected and irrelevant to what this test validates.
+beforeAll(() => {
+  vi.spyOn(console, "error").mockImplementation(() => {});
+
+  vi.stubGlobal("fetch", async (input: RequestInfo | URL): Promise<Response> => {
+    const url = input instanceof Request ? input.url : String(input);
+    if (!url.startsWith("/data/")) {
+      throw new Error(
+        `[database-structure test] Unexpected fetch to "${url}". ` +
+          "Only /data/* paths are expected here."
+      );
+    }
+    const filePath = path.join(PUBLIC_DIR, url);
+    try {
+      const content = fs.readFileSync(filePath, "utf-8");
+      return new Response(content, {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    } catch {
+      return new Response(null, { status: 404, statusText: "Not Found" });
+    }
+  });
+});
+
+afterAll(() => {
+  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
+});
 
 describe("database structure", () => {
   describe("versions-index", () => {
