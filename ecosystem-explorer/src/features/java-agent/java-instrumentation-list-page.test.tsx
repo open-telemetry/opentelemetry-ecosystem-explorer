@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
-import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
-import userEvent from "@testing-library/user-event";
-import { JavaInstrumentationListPage } from "./java-instrumentation-list-page";
 import type { InstrumentationData } from "@/types/javaagent";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { JavaInstrumentationListPage } from "./java-instrumentation-list-page";
 
 vi.mock("@/hooks/use-javaagent-data", () => ({
   useVersions: vi.fn(),
@@ -29,22 +29,18 @@ vi.mock("@/components/ui/back-button", () => ({
   BackButton: () => <button>Back</button>,
 }));
 
-import { useVersions, useInstrumentations } from "@/hooks/use-javaagent-data";
+import { useInstrumentations, useVersions } from "@/hooks/use-javaagent-data";
 
 function LocationDisplay() {
   const location = useLocation();
   return <div data-testid="location">{location.pathname + location.search}</div>;
 }
 
-function renderPage(initialPath = "/java-agent/instrumentation/2.0.0") {
+function renderPage(initialPath = "/java-agent/instrumentation") {
   return render(
     <MemoryRouter initialEntries={[initialPath]}>
       <Routes>
         <Route path="/java-agent/instrumentation" element={<JavaInstrumentationListPage />} />
-        <Route
-          path="/java-agent/instrumentation/:version"
-          element={<JavaInstrumentationListPage />}
-        />
       </Routes>
       <LocationDisplay />
     </MemoryRouter>
@@ -144,7 +140,7 @@ describe("JavaInstrumentationListPage - URL Persistence", () => {
   });
 
   it("reads search query from URL on mount", async () => {
-    renderPage("/java-agent/instrumentation/2.0.0?search=kafka");
+    renderPage("/java-agent/instrumentation?search=kafka");
 
     await waitFor(() => {
       expect(screen.getByText("Kafka Client")).toBeInTheDocument();
@@ -168,7 +164,7 @@ describe("JavaInstrumentationListPage - URL Persistence", () => {
   });
 
   it("reads telemetry filter from URL on mount", async () => {
-    renderPage("/java-agent/instrumentation/2.0.0?telemetry=spans");
+    renderPage("/java-agent/instrumentation?telemetry=spans");
 
     await waitFor(() => {
       expect(screen.getByText("HTTP Client")).toBeInTheDocument();
@@ -190,7 +186,7 @@ describe("JavaInstrumentationListPage - URL Persistence", () => {
   });
 
   it("reads type filter from URL on mount", async () => {
-    renderPage("/java-agent/instrumentation/2.0.0?type=javaagent");
+    renderPage("/java-agent/instrumentation?type=javaagent");
 
     await waitFor(() => {
       expect(screen.getByText("HTTP Client")).toBeInTheDocument();
@@ -211,11 +207,11 @@ describe("JavaInstrumentationListPage - URL Persistence", () => {
   });
 
   it("preserves existing search params when redirecting no-version to latest", async () => {
-    renderPage("/java-agent/instrumentation/latest?search=kafka&telemetry=spans");
+    renderPage("/java-agent/instrumentation?version=latest&search=kafka&telemetry=spans");
 
     await waitFor(() => {
       const loc = screen.getByTestId("location").textContent ?? "";
-      expect(loc).toContain("2.0.0");
+      expect(loc).not.toContain("2.0.0");
       expect(loc).toContain("search=kafka");
       expect(loc).toContain("telemetry=spans");
     });
