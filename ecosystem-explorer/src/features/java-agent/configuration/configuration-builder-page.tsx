@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Loader } from "@/components/ui/loader";
 import { BackButton } from "@/components/ui/back-button";
 import { BetaBadge } from "@/components/ui/beta-badge";
 import { PageContainer } from "@/components/layout/page-container";
@@ -405,14 +406,18 @@ export function ConfigurationBuilderPage() {
           </div>
         </div>
         {schemaVersionsState.loading ? (
-          <p className="text-muted-foreground mt-4 text-sm">Loading versions…</p>
+          <Loader size="lg" label="Loading versions…" className="mt-4" />
         ) : schemaVersionsState.error ? (
           <p className="mt-4 text-sm text-red-400">Failed to load available versions.</p>
         ) : (
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsContent value="sdk">
-              {!schemaVersion || schema.loading || starter.loading ? (
-                <p className="text-muted-foreground mt-4 text-sm">Loading schema…</p>
+              {!schemaVersion || schema.loading || starter.loading || (!schema.error && !root) ? (
+                <Loader
+                  size={root ? "sm" : "lg"}
+                  label="Loading schema…"
+                  className={root ? "mt-4" : undefined}
+                />
               ) : schema.error ? (
                 <p className="mt-4 text-sm text-red-400">Failed to load schema.</p>
               ) : starter.error ? (
@@ -428,8 +433,12 @@ export function ConfigurationBuilderPage() {
               ) : null}
             </TabsContent>
             <TabsContent value="instrumentation">
-              {!schemaVersion || schema.loading || starter.loading ? (
-                <p className="text-muted-foreground mt-4 text-sm">Loading schema…</p>
+              {!schemaVersion || schema.loading || starter.loading || (!schema.error && !root) ? (
+                <Loader
+                  size={root ? "sm" : "lg"}
+                  label="Loading schema…"
+                  className={root ? "mt-4" : undefined}
+                />
               ) : schema.error ? (
                 <p className="mt-4 text-sm text-red-400">Failed to load schema.</p>
               ) : starter.error ? (

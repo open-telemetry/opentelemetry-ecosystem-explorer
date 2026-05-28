@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {
   Info,
@@ -23,9 +23,10 @@ import {
   Code,
   Check,
   AlertCircle,
-  Loader2,
   HelpCircle,
 } from "lucide-react";
+
+import { Loader } from "@/components/ui/loader";
 
 import { BackButton } from "@/components/ui/back-button";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
@@ -72,13 +73,17 @@ function isSafeUrl(url: string): boolean {
 }
 
 export function InstrumentationDetailPage() {
-  const { version, name } = useParams<{ version: string; name: string }>();
+  const [searchParams] = useSearchParams();
+  const { param } = useParams<{ param: string }>();
+
   const navigate = useNavigate();
   const [showComparison, setShowComparison] = useState(false);
   const [activeTab, setActiveTab] = useState("details");
 
   const { data: versionsData, loading: versionsLoading, error: versionsError } = useVersions();
 
+  const latestVersion = versionsData?.versions.find((v) => v.is_latest)?.version;
+  const version = searchParams.get("version") || latestVersion;
   const isVersionValid =
     version === "latest" ||
     !versionsData ||
@@ -90,8 +95,8 @@ export function InstrumentationDetailPage() {
     loading: instrumentationLoading,
     error,
   } = useInstrumentation(
-    shouldFetchInstrumentation ? (name ?? "") : "",
-    shouldFetchInstrumentation ? (version ?? "") : ""
+    shouldFetchInstrumentation ? (param ?? "") : "",
+    shouldFetchInstrumentation ? (version as string) : ""
   );
 
   const loading =
@@ -99,36 +104,24 @@ export function InstrumentationDetailPage() {
 
   useEffect(() => {
     if (version === "latest" && versionsData) {
-      const latestVersion = versionsData.versions.find((v) => v.is_latest)?.version;
-      if (latestVersion && name) {
-        navigate(`/java-agent/instrumentation/${latestVersion}/${name}`, { replace: true });
+      if (latestVersion && param) {
+        navigate(`/java-agent/instrumentation/${param}`, { replace: true });
       }
     }
-  }, [version, name, versionsData, navigate]);
+  }, [version, param, versionsData, navigate, latestVersion]);
 
   const handleVersionChange = (newVersion: string) => {
-    navigate(`/java-agent/instrumentation/${newVersion}/${name}`);
+    navigate(
+      newVersion != latestVersion
+        ? `/java-agent/instrumentation/${param}?version=${newVersion}`
+        : `/java-agent/instrumentation/${param}`
+    );
   };
 
   if (loading) {
     return (
       <PageContainer>
-        <div className="flex min-h-[400px] items-center justify-center">
-          <div className="text-center">
-            <div
-              className="inline-flex animate-pulse rounded-full p-4"
-              style={{
-                boxShadow: "0 0 60px hsl(var(--otel-orange-hsl) / 0.2)",
-              }}
-            >
-              <Loader2 className="text-secondary h-12 w-12 animate-spin" aria-hidden="true" />
-            </div>
-            <div className="mt-6 space-y-2">
-              <div className="text-lg font-medium">Loading instrumentation...</div>
-              <div className="text-muted-foreground text-sm">This may take a moment</div>
-            </div>
-          </div>
-        </div>
+        <Loader label="Loading instrumentation..." />
       </PageContainer>
     );
   }
@@ -160,7 +153,6 @@ export function InstrumentationDetailPage() {
   }
 
   if (!isVersionValid && versionsData) {
-    const latestVersion = versionsData.versions.find((v) => v.is_latest)?.version;
     return (
       <PageContainer>
         <BackButton />
@@ -179,12 +171,12 @@ export function InstrumentationDetailPage() {
                   Version <code className="rounded bg-yellow-500/10 px-1 py-0.5">{version}</code>{" "}
                   does not exist.
                 </p>
-                {latestVersion && name && (
+                {latestVersion && param && (
                   <Link
-                    to={`/java-agent/instrumentation/${latestVersion}/${name}`}
+                    to={`/java-agent/instrumentation/${param}?version=${latestVersion}`}
                     className="inline-flex items-center gap-1.5 text-sm text-yellow-600 underline hover:no-underline dark:text-yellow-400"
                   >
-                    View {name} under the latest version ({latestVersion})
+                    View {param} under the latest version ({latestVersion})
                   </Link>
                 )}
               </div>

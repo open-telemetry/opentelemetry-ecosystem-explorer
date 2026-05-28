@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 import "@testing-library/jest-dom";
-import { beforeEach, vi } from "vitest";
+import { beforeAll, vi } from "vitest";
 
 /*
  * jsdom doesn't ship `window.matchMedia`, but `ThemeProvider` calls it on
  * mount (via `useSyncExternalStore`) to resolve `auto` mode. Provide a stub
  * globally so tests that render anything under the provider don't have to
  * wire it up themselves. `matches: true` defaults to "system prefers dark".
+ *
+ * beforeAll is correct here: the stub is a constant value that never needs
+ * resetting between tests in the same file.
  */
-beforeEach(() => {
+beforeAll(() => {
   vi.stubGlobal("matchMedia", () => ({
     matches: true,
     addEventListener: vi.fn(),

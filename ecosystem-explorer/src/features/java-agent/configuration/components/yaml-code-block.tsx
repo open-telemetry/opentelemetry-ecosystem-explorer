@@ -75,7 +75,9 @@ export function YamlCodeBlock({
   };
 
   return (
-    <pre className={className}>
+    <pre
+      className={`max-w-full overflow-x-auto [overflow-wrap:anywhere] break-words whitespace-pre-wrap ${className ?? ""}`}
+    >
       {headerLines.length > 0 && (
         <span className="block">
           {renderLines(headerLines)}

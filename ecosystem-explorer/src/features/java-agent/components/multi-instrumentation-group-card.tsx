@@ -25,7 +25,7 @@ import { renderWithInlineCode } from "@/lib/render-inline-code";
 interface MultiInstrumentationGroupCardProps {
   group: InstrumentationGroup;
   activeFilters?: FilterState;
-  version: string;
+  version: string | null;
 }
 
 export function MultiInstrumentationGroupCard({
