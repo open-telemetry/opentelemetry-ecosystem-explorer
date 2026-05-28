@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AlertCircle, Loader2, X } from "lucide-react";
+import { AlertCircle, X } from "lucide-react";
+import { Loader } from "@/components/ui/loader";
 import { BackButton } from "@/components/ui/back-button";
 import { useVersions, useInstrumentations } from "@/hooks/use-javaagent-data";
 import {
@@ -316,12 +317,7 @@ export function JavaInstrumentationListPage() {
             <p className="text-muted-foreground">Please try refreshing the page.</p>
           </div>
         ) : versionsLoading || instrumentationsLoading || (!resolvedVersion && !versionsError) ? (
-          <div className="flex flex-col items-center justify-center space-y-4 py-32">
-            <div className="inline-flex animate-pulse rounded-full p-4 shadow-[0_0_60px_hsl(var(--primary-hsl)/0.2)]">
-              <Loader2 className="text-primary h-10 w-10 animate-spin" aria-hidden="true" />
-            </div>
-            <p className="text-muted-foreground text-sm font-medium">Loading instrumentations...</p>
-          </div>
+          <Loader label="Loading instrumentations..." />
         ) : (
           <>
             <div className="border-border/50 flex items-center justify-between border-b pb-4">

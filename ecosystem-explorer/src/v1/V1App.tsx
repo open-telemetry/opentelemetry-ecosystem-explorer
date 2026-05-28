@@ -20,6 +20,7 @@ import { isEnabled } from "@/lib/feature-flags";
 import { CncfCallout } from "@/v1/components/layout/cncf-callout";
 import { FooterV1 } from "@/v1/components/layout/footer";
 import { NavBar } from "@/v1/components/layout/nav-bar";
+import { Loader } from "@/components/ui/loader";
 import "@/v1/styles/index.css";
 import { InstrumentationHandler } from "@/features/java-agent/instrumentation-handler";
 import { LegacyNameVersionRedirect } from "@/features/java-agent/legacy-name-version-redirect";
@@ -96,17 +97,7 @@ export function V1App() {
       <NavBar />
       <main className="flex-1 pt-16">
         <ErrorBoundary>
-          <Suspense
-            fallback={
-              <div
-                className="flex min-h-[400px] items-center justify-center"
-                role="status"
-                aria-live="polite"
-              >
-                <div className="text-muted-foreground text-sm font-medium">Loading…</div>
-              </div>
-            }
-          >
+          <Suspense fallback={<Loader label="Loading…" />}>
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/java-agent" element={<JavaAgentPage />} />

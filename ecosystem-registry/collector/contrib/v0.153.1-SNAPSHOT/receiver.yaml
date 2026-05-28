@@ -742,7 +742,7 @@ components:
         type: string
 - name: apachesparkreceiver
   metadata:
-    type: apachespark
+    type: apache_spark
     display_name: Apache Spark Receiver
     description: The Apache Spark Receiver fetches metrics for an Apache Spark cluster
       through the Apache Spark REST API - specifically, the `/metrics/json`, `/api/v1/applications/[app-id]/stages`,
