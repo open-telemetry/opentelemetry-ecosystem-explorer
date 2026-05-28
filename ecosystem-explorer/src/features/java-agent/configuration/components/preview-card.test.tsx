@@ -49,6 +49,7 @@ vi.mock("@/hooks/use-configuration-builder", () => ({
     setEnabled: vi.fn(),
     selectPlugin: vi.fn(),
     validateAll: (...a: unknown[]) => validateAll(...a),
+    loadFromYaml: vi.fn().mockResolvedValue(undefined),
   }),
 }));
 
@@ -134,6 +135,19 @@ describe("PreviewCard", () => {
     expect(body).toContain("Schema version: 1.0.0");
     expect(body).toContain("Java agent: 2.27.0");
     expect(mime).toBe("text/yaml");
+  });
+
+  it("renders the Import button in the preview card header", () => {
+    render(<PreviewCard schema={schema} javaAgentVersion="2.27.0" activePreviewKey={null} />);
+    expect(screen.getByRole("button", { name: /import/i })).toBeInTheDocument();
+  });
+
+  it("opens the Import YAML dialog when the Import button is clicked", () => {
+    render(<PreviewCard schema={schema} javaAgentVersion="2.27.0" activePreviewKey={null} />);
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /import/i }));
+    expect(screen.getByRole("dialog")).toBeInTheDocument();
+    expect(screen.getByText("Import YAML Configuration")).toBeInTheDocument();
   });
 
   it("renders expand preview button and opens dialog with controls when clicked", () => {
