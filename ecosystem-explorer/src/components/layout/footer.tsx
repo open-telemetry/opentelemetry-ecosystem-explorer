@@ -17,16 +17,16 @@ import { Map, Info } from "lucide-react";
 import { Link } from "react-router-dom";
 import { GitHubIcon } from "@/components/icons/github-icon";
 import { OtelLogo } from "@/components/icons/otel-logo";
-import { useTheme } from "@/theme-context";
 
 export function Footer() {
-  const { resolved } = useTheme();
   // Allow forcing the mobile layout for preview using ?mobilePreview=1
   const params = typeof window !== "undefined" ? new URLSearchParams(window.location.search) : null;
   const isPreviewMobile = params?.get("mobilePreview") === "1";
+  const resolvedTheme =
+    typeof document !== "undefined" ? document.documentElement.dataset.theme : undefined;
 
   if (isPreviewMobile) {
-    const isLight = resolved === "light";
+    const isLight = resolvedTheme === "light";
     const cardClass = isLight
       ? "w-full rounded-2xl bg-white border border-border/10 p-6"
       : "w-full rounded-2xl bg-muted/10 border border-border/20 p-6";
@@ -39,18 +39,25 @@ export function Footer() {
 
     return (
       <footer className="border-border/30 bg-background shrink-0 border-t px-4 py-6">
-        <div className="mx-auto max-w-md flex flex-col items-center gap-3">
+        <div className="mx-auto flex max-w-md flex-col items-center gap-3">
           <div className={cardClass}>
             <div className="flex flex-col items-center gap-4">
               <div className="flex items-center gap-3">
-                <div className={`rounded-full ${isLight ? "bg-muted/5" : "bg-muted/20"} p-2 flex items-center justify-center`}>
+                <div
+                  className={`rounded-full ${isLight ? "bg-muted/5" : "bg-muted/20"} flex items-center justify-center p-2`}
+                >
                   <OtelLogo className="text-primary h-6 w-6" />
                 </div>
-                <span className="text-sm text-muted-foreground">OpenTelemetry Ecosystem Explorer</span>
+                <span className="text-muted-foreground text-sm">
+                  OpenTelemetry Ecosystem Explorer
+                </span>
               </div>
 
-              <div className="flex items-center justify-center gap-8 text-sm text-muted-foreground">
-                <Link to="/about" className="group hover:text-foreground flex items-center gap-2 transition-colors">
+              <div className="text-muted-foreground flex items-center justify-center gap-8 text-sm">
+                <Link
+                  to="/about"
+                  className="group hover:text-foreground flex items-center gap-2 transition-colors"
+                >
                   <span className={iconBgClass}>
                     <Info className="h-4 w-4" aria-hidden />
                   </span>
@@ -84,7 +91,9 @@ export function Footer() {
                 </a>
               </div>
 
-              <p className="mt-3 text-center text-xs text-muted-foreground">&copy; 2026–Present OpenTelemetry Authors</p>
+              <p className="text-muted-foreground mt-3 text-center text-xs">
+                &copy; 2026–Present OpenTelemetry Authors
+              </p>
             </div>
           </div>
         </div>
