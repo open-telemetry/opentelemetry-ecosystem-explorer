@@ -89,9 +89,7 @@ export function ImportYamlDialog(): JSX.Element {
       await loadFromYaml(yaml.trim());
       setOpen(false);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to import the YAML configuration."
-      );
+      setError(err instanceof Error ? err.message : "Failed to import the YAML configuration.");
     } finally {
       setIsLoading(false);
     }
@@ -118,7 +116,7 @@ export function ImportYamlDialog(): JSX.Element {
           <p
             role="alert"
             id="import-yaml-error"
-            className="border-red-500/30 bg-red-500/10 rounded-md border px-3 py-2 text-sm text-red-400"
+            className="rounded-md border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-400"
           >
             {error}
           </p>
@@ -142,7 +140,7 @@ export function ImportYamlDialog(): JSX.Element {
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="border-border/60 text-muted-foreground hover:text-foreground inline-flex cursor-pointer items-center gap-1 rounded-md border px-2 py-1 text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
+                className="border-border/60 text-muted-foreground hover:text-foreground inline-flex cursor-pointer items-center gap-1 rounded-md border px-2 py-1 text-xs transition-colors focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none"
               >
                 <Upload className="h-3 w-3" aria-hidden="true" />
                 Upload file
@@ -160,7 +158,7 @@ export function ImportYamlDialog(): JSX.Element {
             spellCheck={false}
             aria-invalid={error !== null}
             aria-describedby={error ? "import-yaml-error" : undefined}
-            className="bg-background/60 border-border/30 text-foreground placeholder:text-muted-foreground/50 focus:ring-primary/20 min-h-[240px] flex-1 resize-none rounded-md border p-3 font-mono text-xs focus:outline-none focus:ring-2"
+            className="bg-background/60 border-border/30 text-foreground placeholder:text-muted-foreground/50 focus:ring-primary/20 min-h-[240px] flex-1 resize-none rounded-md border p-3 font-mono text-xs focus:ring-2 focus:outline-none"
           />
         </div>
 
@@ -168,7 +166,7 @@ export function ImportYamlDialog(): JSX.Element {
           <button
             type="button"
             onClick={() => handleOpenChange(false)}
-            className="border-border/60 bg-card text-foreground hover:bg-card/80 inline-flex cursor-pointer items-center rounded-md border px-3 py-1.5 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
+            className="border-border/60 bg-card text-foreground hover:bg-card/80 inline-flex cursor-pointer items-center rounded-md border px-3 py-1.5 text-xs focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none"
           >
             Cancel
           </button>
@@ -176,7 +174,7 @@ export function ImportYamlDialog(): JSX.Element {
             type="button"
             onClick={handleImport}
             disabled={isLoading}
-            className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex cursor-pointer items-center rounded-md px-3 py-1.5 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-1"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex cursor-pointer items-center rounded-md px-3 py-1.5 text-xs font-medium focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isLoading ? "Importing…" : "Import"}
           </button>
