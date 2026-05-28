@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Loader } from "@/components/ui/loader";
 import { BackButton } from "@/components/ui/back-button";
 import { BetaBadge } from "@/components/ui/beta-badge";
 import { PageContainer } from "@/components/layout/page-container";
@@ -98,6 +99,24 @@ function SdkTabContent({
   javaAgentVersion,
   activeTab,
 }: SdkTabContentProps) {
+  const [activePreviewKey, setActivePreviewKey] = useState<string | null>(null);
+
+  // Leaf keys take precedence over the enclosing section key. The General card uses
+  // a synthetic section key ("general") that doesn't map to any top-level YAML key,
+  // so its individual leaf fields (`disabled`, `log_level`, ...) tag themselves with
+  // `data-yaml-section-key` so their real YAML key can be highlighted instead.
+  const handleInteraction = (e: React.BaseSyntheticEvent) => {
+    const target = e.target as HTMLElement;
+    const leafKey = target
+      .closest("[data-yaml-section-key]")
+      ?.getAttribute("data-yaml-section-key");
+    const sectionKey = target.closest("[data-section-key]")?.getAttribute("data-section-key");
+    const key = leafKey ?? sectionKey;
+    if (key && key !== activePreviewKey) {
+      setActivePreviewKey(key);
+    }
+  };
+
   const { groupChildren, leafChildren } = useMemo(() => {
     const visible = schema.children.filter((c) => !SDK_HIDDEN_KEYS.has(c.key));
     return {
@@ -132,7 +151,12 @@ function SdkTabContent({
           activeKey={activeKey}
           onSectionClick={scrollToSection}
         />
-        <div ref={sectionsContainerRef} className="space-y-4">
+        <div
+          ref={sectionsContainerRef}
+          className="space-y-4"
+          onFocusCapture={handleInteraction}
+          onPointerDown={handleInteraction}
+        >
           {hasGeneralLeaves && (
             <GeneralSectionCard label={GENERAL_SECTION_LABEL}>{leafChildren}</GeneralSectionCard>
           )}
@@ -140,7 +164,11 @@ function SdkTabContent({
             <SchemaRenderer key={child.key} node={child} depth={0} path={child.key} />
           ))}
         </div>
-        <PreviewCard schema={schema} javaAgentVersion={javaAgentVersion} />
+        <PreviewCard
+          schema={schema}
+          javaAgentVersion={javaAgentVersion}
+          activePreviewKey={activePreviewKey}
+        />
       </div>
     </ConfigurationBuilderProvider>
   );
@@ -281,7 +309,12 @@ function InstrumentationTabBody({
           onJumpToGeneral={scrollToSection}
         />
       </div>
-      <PreviewCard schema={schema} javaAgentVersion={javaAgentVersion} />
+      <PreviewCard
+        schema={schema}
+        javaAgentVersion={javaAgentVersion}
+        // Highlighting is currently SDK-only. See #500 for the Instrumentation tab extension.
+        activePreviewKey={null}
+      />
     </div>
   );
 }
@@ -373,14 +406,18 @@ export function ConfigurationBuilderPage() {
           </div>
         </div>
         {schemaVersionsState.loading ? (
-          <p className="text-muted-foreground mt-4 text-sm">Loading versions…</p>
+          <Loader size="lg" label="Loading versions…" className="mt-4" />
         ) : schemaVersionsState.error ? (
           <p className="mt-4 text-sm text-red-400">Failed to load available versions.</p>
         ) : (
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsContent value="sdk">
-              {!schemaVersion || schema.loading || starter.loading ? (
-                <p className="text-muted-foreground mt-4 text-sm">Loading schema…</p>
+              {!schemaVersion || schema.loading || starter.loading || (!schema.error && !root) ? (
+                <Loader
+                  size={root ? "sm" : "lg"}
+                  label="Loading schema…"
+                  className={root ? "mt-4" : undefined}
+                />
               ) : schema.error ? (
                 <p className="mt-4 text-sm text-red-400">Failed to load schema.</p>
               ) : starter.error ? (
@@ -396,8 +433,12 @@ export function ConfigurationBuilderPage() {
               ) : null}
             </TabsContent>
             <TabsContent value="instrumentation">
-              {!schemaVersion || schema.loading || starter.loading ? (
-                <p className="text-muted-foreground mt-4 text-sm">Loading schema…</p>
+              {!schemaVersion || schema.loading || starter.loading || (!schema.error && !root) ? (
+                <Loader
+                  size={root ? "sm" : "lg"}
+                  label="Loading schema…"
+                  className={root ? "mt-4" : undefined}
+                />
               ) : schema.error ? (
                 <p className="mt-4 text-sm text-red-400">Failed to load schema.</p>
               ) : starter.error ? (
