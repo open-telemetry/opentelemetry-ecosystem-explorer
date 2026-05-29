@@ -707,7 +707,7 @@ components:
         - ArthurSens
 - name: prometheusremotewriteexporter
   metadata:
-    type: prometheusremotewrite
+    type: prometheus_remote_write
     display_name: Prometheus Remote Write Exporter
     status:
       class: exporter

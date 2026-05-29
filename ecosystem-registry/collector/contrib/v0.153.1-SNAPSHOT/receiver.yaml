@@ -11279,7 +11279,7 @@ components:
         - moh-osman3
 - name: otlpjsonfilereceiver
   metadata:
-    type: otlpjsonfile
+    type: otlp_json_file
     display_name: OTLP JSON File Receiver
     description: This receiver will read pipeline data from JSON files. The data is
       written in [Protobuf JSON encoding](https://developers.google.com/protocol-buffers/docs/proto3#json)
