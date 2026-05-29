@@ -16,13 +16,17 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export const DEFAULT_PAGE_SIZE = 24;
-const DEFAULT_ROOT_MARGIN = "200px";
+
+// Eager pre-fetch margin so loading starts before the user reaches the very
+// bottom of the visible list. Treated as immutable; not exposed in the public
+// options because making it dynamic would require disconnecting/recreating the
+// IntersectionObserver, and no caller currently needs that.
+const ROOT_MARGIN = "200px";
 
 export interface UseLazyPaginationOptions {
   totalCount: number;
   pageSize?: number;
   resetKey?: string;
-  rootMargin?: string;
 }
 
 export interface UseLazyPaginationResult {
@@ -35,89 +39,84 @@ function ioSupported(): boolean {
   return typeof IntersectionObserver !== "undefined";
 }
 
-function initialVisibleCount(totalCount: number, pageSize: number): number {
-  return ioSupported() ? Math.min(pageSize, totalCount) : totalCount;
+interface Tracker {
+  key: string;
+  pages: number;
 }
 
 export function useLazyPagination({
   totalCount,
   pageSize = DEFAULT_PAGE_SIZE,
   resetKey = "",
-  rootMargin = DEFAULT_ROOT_MARGIN,
 }: UseLazyPaginationOptions): UseLazyPaginationResult {
-  const [visibleCount, setVisibleCount] = useState(() => initialVisibleCount(totalCount, pageSize));
+  // The tracker persists how many pages have been loaded for a given resetKey.
+  // When `resetKey` no longer matches the stored key, derived state simply
+  // treats the stored page count as stale (effective value = 1). This avoids
+  // any setState during render — the rule called out in
+  // .github/instructions/typescript-frontend.instructions.md.
+  const [tracker, setTracker] = useState<Tracker>({ key: resetKey, pages: 1 });
 
-  // Reset visibleCount when any input that determines the page window changes.
-  // Done during render (not in an effect) so consumers never see a stale slice.
-  const [resetSignature, setResetSignature] = useState({ resetKey, totalCount, pageSize });
-  if (
-    resetSignature.resetKey !== resetKey ||
-    resetSignature.totalCount !== totalCount ||
-    resetSignature.pageSize !== pageSize
-  ) {
-    setResetSignature({ resetKey, totalCount, pageSize });
-    setVisibleCount(initialVisibleCount(totalCount, pageSize));
-  }
+  const matchesCurrentKey = tracker.key === resetKey;
+  const effectivePages = matchesCurrentKey ? tracker.pages : 1;
 
-  const observerRef = useRef<IntersectionObserver | null>(null);
-  const observedNodeRef = useRef<HTMLElement | null>(null);
+  const visibleCount = ioSupported() ? Math.min(effectivePages * pageSize, totalCount) : totalCount;
 
   const loadMore = useCallback(() => {
-    setVisibleCount((current) => {
-      if (current >= totalCount) return current;
-      return Math.min(current + pageSize, totalCount);
+    setTracker((prev) => {
+      // When resetKey has just changed and we haven't synced the tracker yet,
+      // treat current pages as 1 (the first page is already showing) and
+      // advance from there. The result is always anchored to the live key.
+      const prevPages = prev.key === resetKey ? prev.pages : 1;
+      return { key: resetKey, pages: prevPages + 1 };
     });
-  }, [pageSize, totalCount]);
+  }, [resetKey]);
 
-  // Mirror the latest loadMore into a ref so the IO callback (created once,
-  // captured at first sentinel attach) always sees the up-to-date version.
-  // Without this, an observer created when totalCount=0 would keep its stale
-  // closure forever and never advance visibleCount.
+  // Mirror the latest loadMore into a ref so the IO callback (captured once at
+  // first sentinel attach) always sees the up-to-date closure. Without this,
+  // an observer created when resetKey="A" would keep calling the loadMore from
+  // that closure forever.
   const loadMoreRef = useRef(loadMore);
   useEffect(() => {
     loadMoreRef.current = loadMore;
   }, [loadMore]);
 
-  // Stable callback: depends only on rootMargin (which is stable for the
-  // component's lifetime in practice). Keeping this stable means React only
-  // attaches the ref once, so the observer isn't churned across renders.
-  const setSentinel = useCallback(
-    (node: HTMLElement | null) => {
-      if (!ioSupported()) return;
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const observedNodeRef = useRef<HTMLElement | null>(null);
 
-      if (observerRef.current && observedNodeRef.current) {
-        observerRef.current.unobserve(observedNodeRef.current);
-        observedNodeRef.current = null;
-      }
+  // Stable callback: no dependencies. React attaches/detaches the sentinel ref
+  // exactly once for the component lifetime, so the observer is created once.
+  const setSentinel = useCallback((node: HTMLElement | null) => {
+    if (!ioSupported()) return;
 
-      if (!node) return;
+    if (observerRef.current && observedNodeRef.current) {
+      observerRef.current.unobserve(observedNodeRef.current);
+      observedNodeRef.current = null;
+    }
 
-      if (!observerRef.current) {
-        observerRef.current = new IntersectionObserver(
-          (entries) => {
-            for (const entry of entries) {
-              if (entry.isIntersecting) {
-                loadMoreRef.current();
-                break;
-              }
+    if (!node) return;
+
+    if (!observerRef.current) {
+      observerRef.current = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              loadMoreRef.current();
+              break;
             }
-          },
-          { rootMargin }
-        );
-      }
+          }
+        },
+        { rootMargin: ROOT_MARGIN }
+      );
+    }
 
-      observerRef.current.observe(node);
-      observedNodeRef.current = node;
-    },
-    [rootMargin]
-  );
+    observerRef.current.observe(node);
+    observedNodeRef.current = node;
+  }, []);
 
-  // Tear down the observer only on unmount. It used to also depend on
-  // [loadMore, rootMargin], which caused a fatal race: when totalCount went
-  // from 0 -> N (data arrival), loadMore identity changed, this cleanup ran
-  // AFTER setSentinel had just attached an observer in the same commit, and
-  // the freshly created observer was disconnected. The sentinel then stayed
-  // mounted but unobserved — scrolling did nothing.
+  // Disconnect on unmount only. Earlier versions also depended on
+  // [loadMore, rootMargin] — that caused a race where an observer freshly
+  // attached in the same commit got immediately torn down when totalCount went
+  // from 0 to N (data arrival).
   useEffect(() => {
     return () => {
       if (observerRef.current) {
