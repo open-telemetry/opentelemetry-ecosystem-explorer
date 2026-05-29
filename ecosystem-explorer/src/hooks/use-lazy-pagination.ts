@@ -50,39 +50,7 @@ export function useLazyPagination({
 }: UseLazyPaginationOptions): UseLazyPaginationResult {
   const [visibleCount, setVisibleCount] = useState(() => initialVisibleCount(totalCount, pageSize));
 
-  // Reset visibleCount when any input that determines the page window changes.
-  // Use a ref + effect to perform the reset and safely recreate the observer
-  // outside of render, avoiding races where a still-intersecting sentinel
-  // immediately advances pagination after a reset.
-  const prevSignatureRef = useRef({ resetKey, totalCount, pageSize });
-  useEffect(() => {
-    const prev = prevSignatureRef.current;
-    if (prev.resetKey !== resetKey || prev.totalCount !== totalCount || prev.pageSize !== pageSize) {
-      prevSignatureRef.current = { resetKey, totalCount, pageSize };
-      setVisibleCount(initialVisibleCount(totalCount, pageSize));
-
-      // If an observer is currently attached, recreate it so any currently
-      // intersecting state is cleared. This prevents an immediate loadMore()
-      // from firing as a side-effect of a pagination reset.
-      if (ioSupported() && observerRef.current && observedNodeRef.current) {
-        try {
-          observerRef.current.disconnect();
-        } catch {}
-        observerRef.current = new IntersectionObserver(
-          (entries) => {
-            for (const entry of entries) {
-              if (entry.isIntersecting) {
-                loadMoreRef.current();
-                break;
-              }
-            }
-          },
-          { rootMargin: ROOT_MARGIN }
-        );
-        observerRef.current.observe(observedNodeRef.current);
-      }
-    }
-  }, [resetKey, totalCount, pageSize]);
+  // visibleCount initialised above.
 
   const loadMore = useCallback(() => {
     setVisibleCount((current) => {
@@ -102,6 +70,42 @@ export function useLazyPagination({
 
   const observerRef = useRef<IntersectionObserver | null>(null);
   const observedNodeRef = useRef<HTMLElement | null>(null);
+
+  // Reset visibleCount when any input that determines the page window changes.
+  // Use a ref + effect to perform the reset and safely recreate the observer
+  // outside of render, avoiding races where a still-intersecting sentinel
+  // immediately advances pagination after a reset.
+  const prevSignatureRef = useRef({ resetKey, totalCount, pageSize });
+  useEffect(() => {
+    const prev = prevSignatureRef.current;
+    if (prev.resetKey !== resetKey || prev.totalCount !== totalCount || prev.pageSize !== pageSize) {
+      prevSignatureRef.current = { resetKey, totalCount, pageSize };
+      setVisibleCount(initialVisibleCount(totalCount, pageSize));
+
+      // If an observer is currently attached, recreate it so any currently
+      // intersecting state is cleared. This prevents an immediate loadMore()
+      // from firing as a side-effect of a pagination reset.
+      if (ioSupported() && observerRef.current && observedNodeRef.current) {
+        try {
+          observerRef.current.disconnect();
+        } catch (e) {
+          // ignore errors from disconnect in exotic environments
+        }
+        observerRef.current = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                loadMoreRef.current();
+                break;
+              }
+            }
+          },
+          { rootMargin: ROOT_MARGIN }
+        );
+        observerRef.current.observe(observedNodeRef.current as Element);
+      }
+    }
+  }, [resetKey, totalCount, pageSize]);
 
   // Stable callback: no dependencies. React attaches/detaches the sentinel ref
   // exactly once for the component lifetime, so the observer is created once.
