@@ -88,7 +88,7 @@ export function useLazyPagination({
       if (ioSupported() && observerRef.current && observedNodeRef.current) {
         try {
           observerRef.current.disconnect();
-        } catch (e) {
+        } catch (_) {
           // ignore errors from disconnect in exotic environments
         }
         observerRef.current = new IntersectionObserver(
