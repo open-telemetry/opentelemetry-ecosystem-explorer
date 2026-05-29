@@ -78,7 +78,11 @@ export function useLazyPagination({
   const prevSignatureRef = useRef({ resetKey, totalCount, pageSize });
   useEffect(() => {
     const prev = prevSignatureRef.current;
-    if (prev.resetKey !== resetKey || prev.totalCount !== totalCount || prev.pageSize !== pageSize) {
+    if (
+      prev.resetKey !== resetKey ||
+      prev.totalCount !== totalCount ||
+      prev.pageSize !== pageSize
+    ) {
       prevSignatureRef.current = { resetKey, totalCount, pageSize };
       setVisibleCount(initialVisibleCount(totalCount, pageSize));
 
