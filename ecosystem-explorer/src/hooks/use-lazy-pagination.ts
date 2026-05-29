@@ -39,9 +39,8 @@ function ioSupported(): boolean {
   return typeof IntersectionObserver !== "undefined";
 }
 
-interface Tracker {
-  key: string;
-  pages: number;
+function initialVisibleCount(totalCount: number, pageSize: number): number {
+  return ioSupported() ? Math.min(pageSize, totalCount) : totalCount;
 }
 
 export function useLazyPagination({
@@ -49,32 +48,53 @@ export function useLazyPagination({
   pageSize = DEFAULT_PAGE_SIZE,
   resetKey = "",
 }: UseLazyPaginationOptions): UseLazyPaginationResult {
-  // The tracker persists how many pages have been loaded for a given resetKey.
-  // When `resetKey` no longer matches the stored key, derived state simply
-  // treats the stored page count as stale (effective value = 1). This avoids
-  // any setState during render — the rule called out in
-  // .github/instructions/typescript-frontend.instructions.md.
-  const [tracker, setTracker] = useState<Tracker>({ key: resetKey, pages: 1 });
+  const [visibleCount, setVisibleCount] = useState(() => initialVisibleCount(totalCount, pageSize));
 
-  const matchesCurrentKey = tracker.key === resetKey;
-  const effectivePages = matchesCurrentKey ? tracker.pages : 1;
+  // Reset visibleCount when any input that determines the page window changes.
+  // Use a ref + effect to perform the reset and safely recreate the observer
+  // outside of render, avoiding races where a still-intersecting sentinel
+  // immediately advances pagination after a reset.
+  const prevSignatureRef = useRef({ resetKey, totalCount, pageSize });
+  useEffect(() => {
+    const prev = prevSignatureRef.current;
+    if (prev.resetKey !== resetKey || prev.totalCount !== totalCount || prev.pageSize !== pageSize) {
+      prevSignatureRef.current = { resetKey, totalCount, pageSize };
+      setVisibleCount(initialVisibleCount(totalCount, pageSize));
 
-  const visibleCount = ioSupported() ? Math.min(effectivePages * pageSize, totalCount) : totalCount;
+      // If an observer is currently attached, recreate it so any currently
+      // intersecting state is cleared. This prevents an immediate loadMore()
+      // from firing as a side-effect of a pagination reset.
+      if (ioSupported() && observerRef.current && observedNodeRef.current) {
+        try {
+          observerRef.current.disconnect();
+        } catch {}
+        observerRef.current = new IntersectionObserver(
+          (entries) => {
+            for (const entry of entries) {
+              if (entry.isIntersecting) {
+                loadMoreRef.current();
+                break;
+              }
+            }
+          },
+          { rootMargin: ROOT_MARGIN }
+        );
+        observerRef.current.observe(observedNodeRef.current);
+      }
+    }
+  }, [resetKey, totalCount, pageSize]);
 
   const loadMore = useCallback(() => {
-    setTracker((prev) => {
-      // When resetKey has just changed and we haven't synced the tracker yet,
-      // treat current pages as 1 (the first page is already showing) and
-      // advance from there. The result is always anchored to the live key.
-      const prevPages = prev.key === resetKey ? prev.pages : 1;
-      return { key: resetKey, pages: prevPages + 1 };
+    setVisibleCount((current) => {
+      if (current >= totalCount) return current;
+      return Math.min(current + pageSize, totalCount);
     });
-  }, [resetKey]);
+  }, [pageSize, totalCount]);
 
   // Mirror the latest loadMore into a ref so the IO callback (captured once at
   // first sentinel attach) always sees the up-to-date closure. Without this,
-  // an observer created when resetKey="A" would keep calling the loadMore from
-  // that closure forever.
+  // an observer created when totalCount=0 would keep calling a loadMore that
+  // can never advance past 0.
   const loadMoreRef = useRef(loadMore);
   useEffect(() => {
     loadMoreRef.current = loadMore;
