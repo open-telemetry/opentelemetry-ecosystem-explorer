@@ -184,7 +184,7 @@ modules:
 - name: OpenTelemetry.Instrumentation.StackExchangeRedis
   description: StackExchange.Redis instrumentation for OpenTelemetry .NET.
   type: instrumentation
-  version: 1.15.1-beta.1
+  version: 1.15.1-beta.2
 - name: OpenTelemetry.Instrumentation.Wcf
   description: OpenTelemetry instrumentation for WCF.
   type: instrumentation

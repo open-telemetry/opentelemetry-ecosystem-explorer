@@ -20,12 +20,29 @@ import { Compass } from "@/components/icons/compass";
 import { CoverBlock } from "@/v1/components/home/cover-block";
 import { EcosystemsGrid } from "@/v1/components/home/ecosystems-grid";
 import { GlobalSearch } from "@/v1/components/home/global-search";
+import { RecentActivityRail } from "@/v1/components/home/recent-activity-rail";
 import { SignalsRow } from "@/v1/components/home/signals-row";
 import { StatsBand } from "@/v1/components/home/stats-band";
 
+const COVER_CTAS = (
+  <>
+    <Link className="td-btn td-btn--primary" to="/collector">
+      Browse components
+    </Link>
+    <a
+      className="td-btn td-btn--outline-light"
+      href="https://opentelemetry.io/docs/what-is-opentelemetry/"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Read the overview
+    </a>
+  </>
+);
+
 /**
  * Home page (v1) — composes the v1 chrome with home-specific sections.
- * Only the recent-activity slot is still a skeleton-box placeholder.
+ * Only the GlobalSearch slot inside CoverBlock is still a skeleton.
  * The CncfCallout and FooterV1 are mounted by `<V1App />`, not here.
  */
 export function HomeV1() {
@@ -39,21 +56,7 @@ export function HomeV1() {
           </>
         }
         lead="Navigate every receiver, processor, exporter, and instrumentation across the OpenTelemetry project — searchable, comparable, version-aware."
-        ctas={
-          <>
-            <Link className="td-btn td-btn--primary" to="/collector">
-              Browse components
-            </Link>
-            <a
-              className="td-btn td-btn--outline-light"
-              href="https://opentelemetry.io/docs/what-is-opentelemetry/"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Read the overview
-            </a>
-          </>
-        }
+        ctas={COVER_CTAS}
       >
         <GlobalSearch />
       </CoverBlock>
@@ -62,10 +65,13 @@ export function HomeV1() {
 
       <EcosystemsGrid />
 
-      <SignalsRow />
-
-      <section aria-label="Recent activity">
-        <div className="td-home__skeleton td-home__skeleton--recent-activity" aria-hidden="true" />
+      <section className="td-box td-box--muted" aria-label="Signals and recent activity">
+        <div className="td-box__container">
+          <div className="td-two-col">
+            <SignalsRow />
+            <RecentActivityRail />
+          </div>
+        </div>
       </section>
     </div>
   );

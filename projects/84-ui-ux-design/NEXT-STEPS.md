@@ -4,7 +4,7 @@ issue: 84
 type: roadmap
 phase: meta
 status: planning
-last_updated: "2026-05-25"
+last_updated: "2026-05-30"
 ---
 
 ## Next steps
@@ -78,6 +78,12 @@ This is a _living_ document. Update it as decisions land and PRs ship. Cross-ref
 - **2026-05-22 snapshot:** Phase 2 PR 5 (#544, SignalsRow) merged on `main`. PR 6
   (RecentActivityRail) re-derived from `feat/84-tmp-full-layout` on
   `feat/84-phase2-pr6-recent-activity-rail`; pushed as #555 and is in code review.
+- **2026-05-30 snapshot:** Phase 2 PR 6 (#555, RecentActivityRail) merged on `main`. Only PR 2
+  (GlobalSearch) remains in Phase 2. PR 2's branch `feat/84-phase2-pr2-global-search` merged current
+  `main` to resolve conflicts: 5 code/CSS conflicts (home page, its test, the `/_dev/components`
+  showcase, `index.css`, `home.css`) were all "both features added" cases where GlobalSearch and the
+  now-merged RecentActivityRail had to coexist — resolved to keep both. Typecheck, lint, and
+  integration tests green post-merge.
 - **2026-05-25 snapshot:** Phase 2 PR 2 (GlobalSearch) re-derived from `feat/84-tmp-full-layout` on
   a fresh branch `feat/84-phase2-pr2-global-search` off current `main` (origin/main at `6d512e3`).
   Faithful port of the reference component + 6 tests; `.td-search*` CSS extracted into its own
@@ -114,10 +120,10 @@ In order:
 - [x] Phase 2 PR 3 (#524) — `feat(v1): StatsBand + canonical home stats`. Merged 2026-05-21.
 - [x] Phase 2 PR 4 (#541) — `feat(v1): EcosystemsGrid`. Merged 2026-05-21.
 - [x] Phase 2 PR 5 (#544) — `feat(v1): SignalsRow`. Merged 2026-05-21.
-- [ ] Phase 2 PR 6 (#555) — `feat(v1): RecentActivityRail`. Open, in code review.
-- [ ] **Push Phase 2 PR 2** — `feat(v1): GlobalSearch (Phase 2 - Home page PR 2)`. Branch
-      `feat/84-phase2-pr2-global-search` off current `main`; needs
-      `git push -u origin feat/84-phase2-pr2-global-search` then a PR opened against `main`.
+- [x] Phase 2 PR 6 (#555) — `feat(v1): RecentActivityRail`. Merged 2026-05-30.
+- [ ] **Merge Phase 2 PR 2** — `feat(v1): GlobalSearch (Phase 2 - Home page PR 2)`. Branch
+      `feat/84-phase2-pr2-global-search` pushed as a PR against `main`; `main` merged in to resolve
+      conflicts (GlobalSearch + RecentActivityRail coexistence). Last PR remaining in Phase 2.
 
 ---
 
@@ -351,5 +357,6 @@ Surface early so it's not blocking when PR 04b is ready.
 | 2026-05-21 | Phase 2 PR 4 (#541, EcosystemsGrid) merged on `main`. PR 5 (SignalsRow) rebased onto current `main` via `git rebase --onto main 50c70a2 feat/84-phase2-pr5-signals-row` — drops the stale stacked copies of PRs 3 and 4 and replays only the SignalsRow commit. Two comment-only conflicts in `home-page.tsx` and `home.css` resolved by adopting PR 4's simplify-trimmed comment style. Typecheck clean; all 928 vitest tests pass.                                                                                                                                                                                                                                                                                                      | After PR 5 ships, only PR 2 (GlobalSearch) and PR 6 (RecentActivityRail) remain in Phase 2; both still need re-derivation from `feat/84-tmp-full-layout`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | 2026-05-25 | Phase 2 PR 2 (GlobalSearch) re-derived from `feat/84-tmp-full-layout` on `feat/84-phase2-pr2-global-search` off current `main`. Faithful port of the component + 6 tests; `.td-search*` rules extracted into their own `src/v1/styles/global-search.css` partial (the reference bundled them into `home.css`; PR 6's per-component-partial convention wins). `<GlobalSearch />` replaces the skeleton inside `<CoverBlock>`; obsolete `.td-home__skeleton--search` rule removed. Hardcoded `#f5a800` literals from the reference swapped for `hsl(var(--otel-orange-hsl))` per AGENTS.md "no hex literals" rule. Typecheck + 938 tests green.                                                                                             | Ansita20's PR #496 (`feat/search-header` on her fork) is **not** related to Phase 2 PR 2: it closes #495, ships a search engine + a legacy-header `<SearchOverlay>`, and doesn't touch the v1 `<CoverBlock>` slot. Prior NEXT-STEPS snapshots that said "PR 2 in flight on `feat/search-header`" were wrong and have been corrected. The engine slice (`src/lib/search.ts`, `useDebouncedValue`) from #496 is potentially reusable when the v1 GlobalSearch swaps from stub results to a real cross-ecosystem index — that decision is deferred.                                                                                                                                                                                                                                                     |
 | 2026-05-25 | Phase 2 PR 2 scope expanded to ship the real search engine, overruling the "stub backend, real engine is a follow-up" Out-of-Scope line in `01-home-page.md`. Ported `src/lib/search.ts` (page registry + Java Agent + Collector index, ranked substring matcher, lazy-memoized) and `src/hooks/use-debounced-value.ts` from PR #496 with attribution to @Ansita20. Added v1-scoped `src/v1/hooks/use-search.ts` returning `DataState<SearchResult[]>` per the typescript-frontend "wrap fetching in a custom hook" rule. `<GlobalSearch>` now debounces input by 200ms, drives results through the hook, navigates via `<Link>` instead of `<a href>`, and renders explicit loading / empty / error states. Typecheck + 947 tests green. | Supersedes the prior 2026-05-25 row in this log. PR 2 now supersedes #496 entirely: the engine + debounce hook ship here, the legacy-header `<SearchOverlay>` is dropped (the v1 `<CoverBlock>` slot is the v1 search surface), and the 26K-line accidental registry-data sweep on #496 is discarded. Close #496 with a pointer to this PR after merge. The `01-home-page.md` Out-of-Scope line about the stub backend should be struck during the end-of-redesign cleanup pass.                                                                                                                                                                                                                                                                                                                     |
+| 2026-05-30 | Phase 2 PR 6 (#555, RecentActivityRail) merged on `main`. PR 2 (GlobalSearch, `feat/84-phase2-pr2-global-search`) merged current `main` in to clear conflicts surfaced once #555 landed. Five code/CSS conflicts resolved by keeping both features: `home-page.tsx` + `home-page.test.tsx` mount and test GlobalSearch and RecentActivityRail together; `_dev/components-page.tsx` showcases both; `index.css` imports both partials; `home.css` keeps the shared `td-box`/`td-two-col` chrome and drops the now-obsolete `--search` and `--recent-activity` skeleton rules (both slots are real components now). Typecheck + lint + integration tests green post-merge.                                                                  | Conflicts were all "both sides added a sibling home-page section" — GlobalSearch (this PR) vs RecentActivityRail (#555). No logic changes, just coexistence. PR 2 is the last open Phase 2 PR; once it merges, Phase 2 (home page) is complete. The pre-existing java-agent pagination test flake (intermittent ~5s timeout, passes on retry and on clean `main`) is unrelated to this merge.                                                                                                                                                                                                                                                                                                                                                                                                        |
 
 Add a row whenever a decision lands. Keeps the doc honest.

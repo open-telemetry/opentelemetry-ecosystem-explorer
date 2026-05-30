@@ -32,6 +32,7 @@ import { type Stability, StatusPill } from "@/components/ui/status-pill";
 import { CoverBlock } from "@/v1/components/home/cover-block";
 import { EcosystemsGrid } from "@/v1/components/home/ecosystems-grid";
 import { GlobalSearch } from "@/v1/components/home/global-search";
+import { RecentActivityRail } from "@/v1/components/home/recent-activity-rail";
 import { SignalsRow } from "@/v1/components/home/signals-row";
 import { StatsBand } from "@/v1/components/home/stats-band";
 
@@ -203,6 +204,14 @@ export function DevComponentsPage() {
         >
           <GlobalSearch />
         </div>
+      </Section>
+
+      <Section
+        id="recent-activity-rail"
+        title="RecentActivityRail (consumes /data/activity/feed.json)"
+        bare
+      >
+        <RecentActivityRail />
       </Section>
 
       <Section
