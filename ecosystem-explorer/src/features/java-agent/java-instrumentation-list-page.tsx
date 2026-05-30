@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AlertCircle, Loader2, X } from "lucide-react";
+import { AlertCircle, X } from "lucide-react";
+import { Loader } from "@/components/ui/loader";
 import { BackButton } from "@/components/ui/back-button";
 import { useVersions, useInstrumentations } from "@/hooks/use-javaagent-data";
+import { useLazyPagination } from "@/hooks/use-lazy-pagination";
 import {
   type FilterState,
   InstrumentationFilterBar,
@@ -56,7 +58,6 @@ export function JavaInstrumentationListPage() {
 
       const query = params.toString();
 
-      console.log(query);
       if (!versionParam || versionParam === "latest") {
         navigate(`/java-agent/instrumentation${query ? `?${query}` : ""}`, {
           replace: true,
@@ -241,6 +242,47 @@ export function JavaInstrumentationListPage() {
     [customInstrumentations]
   );
 
+  const resetKey = useMemo(
+    () =>
+      JSON.stringify({
+        v: resolvedVersion,
+        s: filters.search,
+        t: [...filters.telemetry].sort(),
+        g: [...filters.target].sort(),
+        sc: filters.semantic,
+        f: filters.features,
+      }),
+    [resolvedVersion, filters]
+  );
+
+  const {
+    visibleCount: libraryVisibleCount,
+    setSentinel: setLibrarySentinel,
+    hasMore: libraryHasMore,
+  } = useLazyPagination({
+    totalCount: libraryGroups.length,
+    resetKey,
+  });
+
+  const {
+    visibleCount: customVisibleCount,
+    setSentinel: setCustomSentinel,
+    hasMore: customHasMore,
+  } = useLazyPagination({
+    totalCount: customGroups.length,
+    resetKey,
+  });
+
+  const visibleLibraryGroups = useMemo(
+    () => libraryGroups.slice(0, libraryVisibleCount),
+    [libraryGroups, libraryVisibleCount]
+  );
+
+  const visibleCustomGroups = useMemo(
+    () => customGroups.slice(0, customVisibleCount),
+    [customGroups, customVisibleCount]
+  );
+
   const handleVersionChange = (newVersion: string) => {
     const params = new URLSearchParams(location.search);
 
@@ -316,12 +358,7 @@ export function JavaInstrumentationListPage() {
             <p className="text-muted-foreground">Please try refreshing the page.</p>
           </div>
         ) : versionsLoading || instrumentationsLoading || (!resolvedVersion && !versionsError) ? (
-          <div className="flex flex-col items-center justify-center space-y-4 py-32">
-            <div className="inline-flex animate-pulse rounded-full p-4 shadow-[0_0_60px_hsl(var(--primary-hsl)/0.2)]">
-              <Loader2 className="text-primary h-10 w-10 animate-spin" aria-hidden="true" />
-            </div>
-            <p className="text-muted-foreground text-sm font-medium">Loading instrumentations...</p>
-          </div>
+          <Loader label="Loading instrumentations..." />
         ) : (
           <>
             <div className="border-border/50 flex items-center justify-between border-b pb-4">
@@ -345,15 +382,25 @@ export function JavaInstrumentationListPage() {
             ) : (
               <div className="space-y-12">
                 {libraryGroups.length > 0 && (
-                  <div className="grid gap-6 md:grid-cols-2">
-                    {libraryGroups.map((group) => (
-                      <InstrumentationGroupCard
-                        key={group.displayName}
-                        group={group}
-                        activeFilters={filters}
-                        version={versionParam}
+                  <div className="space-y-4">
+                    <div className="grid gap-6 md:grid-cols-2">
+                      {visibleLibraryGroups.map((group) => (
+                        <InstrumentationGroupCard
+                          key={group.displayName}
+                          group={group}
+                          activeFilters={filters}
+                          version={versionParam}
+                        />
+                      ))}
+                    </div>
+                    {libraryHasMore && (
+                      <div
+                        ref={setLibrarySentinel}
+                        aria-hidden
+                        data-testid="library-sentinel"
+                        className="h-px"
                       />
-                    ))}
+                    )}
                   </div>
                 )}
 
@@ -368,15 +415,25 @@ export function JavaInstrumentationListPage() {
                         annotations.
                       </p>
                     </div>
-                    <div className="grid gap-6 md:grid-cols-2">
-                      {customGroups.map((group) => (
-                        <InstrumentationGroupCard
-                          key={group.displayName}
-                          group={group}
-                          activeFilters={filters}
-                          version={versionParam}
+                    <div className="space-y-4">
+                      <div className="grid gap-6 md:grid-cols-2">
+                        {visibleCustomGroups.map((group) => (
+                          <InstrumentationGroupCard
+                            key={group.displayName}
+                            group={group}
+                            activeFilters={filters}
+                            version={versionParam}
+                          />
+                        ))}
+                      </div>
+                      {customHasMore && (
+                        <div
+                          ref={setCustomSentinel}
+                          aria-hidden
+                          data-testid="custom-sentinel"
+                          className="h-px"
                         />
-                      ))}
+                      )}
                     </div>
                   </div>
                 )}
