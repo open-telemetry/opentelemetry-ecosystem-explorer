@@ -62,8 +62,8 @@ export function InstrumentationRow({
     <div
       data-testid={`instrumentation-row-${module.name}`}
       data-expanded={String(isExpanded)}
-      data-section-key="instrumentations"
       className={`rounded-md border transition-colors ${containerClass}`}
+    >
     >
       <div className="flex flex-col gap-2 px-3 py-2 sm:flex-row sm:items-center sm:gap-3">
         <div className="min-w-0 flex-1">
