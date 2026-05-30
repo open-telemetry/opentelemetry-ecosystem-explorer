@@ -742,7 +742,7 @@ components:
         type: string
 - name: apachesparkreceiver
   metadata:
-    type: apachespark
+    type: apache_spark
     display_name: Apache Spark Receiver
     description: The Apache Spark Receiver fetches metrics for an Apache Spark cluster
       through the Apache Spark REST API - specifically, the `/metrics/json`, `/api/v1/applications/[app-id]/stages`,
@@ -11279,7 +11279,7 @@ components:
         - moh-osman3
 - name: otlpjsonfilereceiver
   metadata:
-    type: otlpjsonfile
+    type: otlp_json_file
     display_name: OTLP JSON File Receiver
     description: This receiver will read pipeline data from JSON files. The data is
       written in [Protobuf JSON encoding](https://developers.google.com/protocol-buffers/docs/proto3#json)
