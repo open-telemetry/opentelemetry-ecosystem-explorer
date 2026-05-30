@@ -17,6 +17,7 @@ ecosystem-explorer/
       javaagent/
         index.json                  # Lightweight index for javaagent (browsing/search)
         versions-index.json         # List of available javaagent versions
+        global-configurations.json  # Aggregated, deduplicated config options across all versions
         versions/
           2.24.0-index.json         # Version manifest: {component-id: content-hash}
           2.23.0-index.json
