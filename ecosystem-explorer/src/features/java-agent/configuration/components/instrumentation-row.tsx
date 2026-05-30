@@ -62,8 +62,8 @@ export function InstrumentationRow({
     <div
       data-testid={`instrumentation-row-${module.name}`}
       data-expanded={String(isExpanded)}
+      data-yaml-section-key="distribution"
       className={`rounded-md border transition-colors ${containerClass}`}
-    >
     >
       <div className="flex flex-col gap-2 px-3 py-2 sm:flex-row sm:items-center sm:gap-3">
         <div className="min-w-0 flex-1">
@@ -90,7 +90,7 @@ export function InstrumentationRow({
           ) : null}
         </div>
 
-        <div className="flex items-center gap-2 sm:contents" data-yaml-section-key="distribution">
+        <div className="flex items-center gap-2 sm:contents">
           {isCustomized ? (
             <CustomizationToggle enabled={customizationEnabled} onChange={onSetEnabled} />
           ) : (
