@@ -128,7 +128,7 @@ modules:
 - name: OpenTelemetry.Instrumentation.ConfluentKafka
   description: Confluent.Kafka instrumentation for OpenTelemetry .NET.
   type: instrumentation
-  version: 0.1.0-alpha.6
+  version: 0.1.0-alpha.7
 - name: OpenTelemetry.Instrumentation.ElasticsearchClient
   description: Elasticsearch instrumentation for OpenTelemetry .NET.
   type: instrumentation
@@ -184,7 +184,7 @@ modules:
 - name: OpenTelemetry.Instrumentation.StackExchangeRedis
   description: StackExchange.Redis instrumentation for OpenTelemetry .NET.
   type: instrumentation
-  version: 1.15.1-beta.1
+  version: 1.15.1-beta.2
 - name: OpenTelemetry.Instrumentation.Wcf
   description: OpenTelemetry instrumentation for WCF.
   type: instrumentation

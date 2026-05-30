@@ -20,10 +20,13 @@ environment variables or default locations.
 
 import logging
 import os
+import shutil
 import subprocess
 from pathlib import Path
 
 from semantic_version import Version
+
+_GIT = shutil.which("git") or "git"
 
 logger = logging.getLogger(__name__)
 
@@ -86,7 +89,7 @@ class BaseRepositoryManager:
 
         try:
             subprocess.run(
-                ["git", "clone", url, str(target_path)],
+                [_GIT, "clone", url, str(target_path)],
                 check=True,
                 capture_output=True,
                 text=True,
@@ -107,14 +110,14 @@ class BaseRepositoryManager:
         """
         try:
             subprocess.run(
-                ["git", "checkout", "main"],
+                [_GIT, "checkout", "main"],
                 cwd=repo_path,
                 check=True,
                 capture_output=True,
                 text=True,
             )
             subprocess.run(
-                ["git", "pull"],
+                [_GIT, "pull"],
                 cwd=repo_path,
                 check=True,
                 capture_output=True,
@@ -139,14 +142,14 @@ class BaseRepositoryManager:
         tag = f"v{version}"
         try:
             subprocess.run(
-                ["git", "fetch", "--tags"],
+                [_GIT, "fetch", "--tags"],
                 cwd=repo_path,
                 check=True,
                 capture_output=True,
                 text=True,
             )
             subprocess.run(
-                ["git", "checkout", tag],
+                [_GIT, "checkout", tag],
                 cwd=repo_path,
                 check=True,
                 capture_output=True,

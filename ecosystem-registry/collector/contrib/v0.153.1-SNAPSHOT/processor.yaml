@@ -72,6 +72,21 @@ components:
       codeowners:
         active:
         - TylerHelmuth
+    attributes:
+      metric_type:
+        description: The pdata metric type of the datapoint.
+        type: string
+        enum:
+        - exponential_histogram
+        - histogram
+        - sum
+      reason:
+        description: The reason a datapoint was dropped instead of converted.
+        type: string
+        enum:
+        - bucket_mismatch
+        - initial
+        - reset
 - name: deltatocumulativeprocessor
   metadata:
     type: deltatocumulative

@@ -32,7 +32,7 @@ implementation("io.opentelemetry.instrumentation:opentelemetry-oshi:OPENTELEMETR
 
 ```java
 import io.opentelemetry.api.OpenTelemetry;
-import io.opentelemetry.instrumentation.oshi.SystemMetrics;
+import io.opentelemetry.instrumentation.oshi.v5_0.SystemMetrics;
 import java.util.List;
 
 // Get an OpenTelemetry instance
