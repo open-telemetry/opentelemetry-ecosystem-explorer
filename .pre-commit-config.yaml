@@ -55,6 +55,14 @@ repos:
         files: ^ecosystem-explorer/.*\.(ts|tsx)$
         stages: [pre-commit]
 
+      - id: generate-schemas
+        name: generate JSON schemas (ecosystem-explorer)
+        entry: bash -c 'cd ecosystem-explorer && bun run generate-schemas'
+        language: system
+        pass_filenames: false
+        files: ^ecosystem-explorer/(src/types/(collector|javaagent)\.ts|scripts/generate-schemas\.mjs)$
+        stages: [pre-commit]
+
       - id: add-copyright-headers
         name: add copyright headers
         entry: uv run python scripts/add_copyright.py
