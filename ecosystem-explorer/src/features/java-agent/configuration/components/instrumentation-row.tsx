@@ -62,6 +62,7 @@ export function InstrumentationRow({
     <div
       data-testid={`instrumentation-row-${module.name}`}
       data-expanded={String(isExpanded)}
+      data-yaml-section-key="distribution"
       className={`rounded-md border transition-colors ${containerClass}`}
     >
       <div className="flex flex-col gap-2 px-3 py-2 sm:flex-row sm:items-center sm:gap-3">
@@ -134,7 +135,10 @@ export function InstrumentationRow({
       </div>
 
       {isExpanded ? (
-        <div className="border-border/40 border-t px-3 py-3">
+        <div
+          className="border-border/40 border-t px-3 py-3"
+          data-yaml-section-key="instrumentation/development"
+        >
           <InstrumentationConfigForm module={module} onJumpToGeneral={onJumpToGeneral} />
         </div>
       ) : null}

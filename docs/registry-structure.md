@@ -10,28 +10,48 @@ JSON for the web application.
 ecosystem-registry/
 ├── java/
 │   └── javaagent/
-│       ├── v2.24.0/
-│       │   └── instrumentation.yaml      # All instrumentations for this version
-│       └── v2.24.1-SNAPSHOT/
-│           └── instrumentation.yaml
+│       ├── v2.28.0/
+│       │   ├── instrumentation.yaml      # All instrumentations for this version
+│       │   └── library_readmes/          # Per-library README markdown (content-addressed)
+│       └── v2.28.1-SNAPSHOT/
+│           ├── instrumentation.yaml
+│           └── library_readmes/
+├── dotnet/
+│   ├── v1.15.3/
+│   │   └── instrumentation.yaml          # All .NET instrumentations/exporters/extensions
+│   └── v1.15.4-SNAPSHOT/
+│       └── instrumentation.yaml
+├── configuration/
+│   ├── v1.0.0/
+│   │   ├── opentelemetry_configuration.yaml   # Root declarative-config schema
+│   │   ├── common.yaml                        # Shared schema fragments
+│   │   ├── tracer_provider.yaml               # Per-section schemas
+│   │   ├── meter_provider.yaml
+│   │   ├── ...                                # logger_provider, propagator, resource, etc.
+│   │   └── meta_schema_language_*.yaml        # Per-language meta-schema variants
+│   └── v1.0.1-SNAPSHOT/
+│       └── ...
 └── collector/
+    ├── deprecations.yaml                # Cross-version deprecation baseline
+    ├── meta/
+    │   └── schemas/                     # Content-addressed metadata-schema snapshots
     ├── core/
-    │   ├── v0.145.0/
+    │   ├── v0.153.0/
     │   │   ├── receiver.yaml            # All core receivers
     │   │   ├── processor.yaml           # All core processors
     │   │   ├── exporter.yaml            # All core exporters
     │   │   ├── connector.yaml           # All core connectors
     │   │   └── extension.yaml           # All core extensions
-    │   └── v0.145.1-SNAPSHOT/
+    │   └── v0.153.1-SNAPSHOT/
     │       └── ...
     └── contrib/
-        ├── v0.145.0/
+        ├── v0.153.0/
         │   ├── receiver.yaml            # All contrib receivers
         │   ├── processor.yaml
         │   ├── exporter.yaml
         │   ├── connector.yaml
         │   └── extension.yaml
-        └── v0.145.1-SNAPSHOT/
+        └── v0.153.1-SNAPSHOT/
             └── ...
 ```
 
@@ -49,10 +69,15 @@ ecosystem-registry/
 java/
 └── javaagent/
     └── {version}/
-        └── instrumentation.yaml
+        ├── instrumentation.yaml
+        └── library_readmes/
+            └── {name}-{hash}.md
 ```
 
-**One aggregated file** per version containing all instrumentations.
+**One aggregated file** per version containing all instrumentations, plus a `library_readmes/`
+directory holding the upstream `library/README.md` for each instrumentation that ships one. The
+README files are content-addressed (`{name}-{hash}.md`) so identical content is shared across
+versions.
 
 ### File Format
 
@@ -105,7 +130,7 @@ libraries:
     display_name: AWS SDK 2.2
     # ... (next instrumentation)
 
-  # ... (continues for all ~232 instrumentations)
+  # ... (continues for every instrumentation in this version)
 ```
 
 **Key Features**:
@@ -113,7 +138,48 @@ libraries:
 - `libraries`: Array of all instrumentations
 - Complete metadata for each instrumentation in a single file
 
+## .NET Structure
+
+### .NET Version Directory Layout
+
+```text
+dotnet/
+└── {version}/
+    └── instrumentation.yaml
+```
+
+**One aggregated file** per version containing all .NET automatic-instrumentation components
+(instrumentations, exporters, and extensions). Unlike Java, there is no distribution sub-directory.
+
+## Configuration Structure
+
+The declarative configuration schema is split into one YAML file per schema section.
+
+### Configuration Version Directory Layout
+
+```text
+configuration/
+└── {version}/
+    ├── opentelemetry_configuration.yaml   # Root schema
+    ├── common.yaml                        # Shared fragments
+    ├── tracer_provider.yaml
+    ├── meter_provider.yaml
+    ├── logger_provider.yaml
+    ├── propagator.yaml
+    ├── resource.yaml
+    ├── instrumentation.yaml
+    └── meta_schema_language_{cpp,go,java,js,php}.yaml
+```
+
+Versions track the upstream `opentelemetry-configuration` schema releases (e.g. `v1.0.0`). As with
+the other non-collector ecosystems there is no distribution sub-directory.
+
 ## Collector Structure
+
+In addition to the per-distribution version directories below, the collector registry keeps two
+shared artifacts at the `collector/` root: `deprecations.yaml` (the cross-version deprecation
+baseline maintained by the watcher) and `meta/schemas/` (content-addressed snapshots of the upstream
+`metadata-schema.yaml`).
 
 ### Distribution Directory Layout
 

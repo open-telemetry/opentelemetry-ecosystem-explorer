@@ -257,7 +257,10 @@
         "required": ["when"]
       }
     },
-
+    "markdown_hash": {
+      "description": "Content hash of the library README markdown file.",
+      "type": "string"
+    },
     "_is_custom": {
       "description": "Whether this is a custom (non-upstream) instrumentation.",
       "type": "boolean"
@@ -279,6 +282,7 @@
     "javaagent_target_versions",
     "configurations",
     "telemetry",
+    "markdown_hash",
     "_is_custom"
   ],
   "required": ["name", "scope"],

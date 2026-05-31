@@ -23,6 +23,7 @@ from java_instrumentation_watcher.inventory_manager import InventoryManager
 from semantic_version import Version
 
 from explorer_db_builder.collector_builder import run_collector_builder
+from explorer_db_builder.configuration_aggregator import build_global_configurations
 from explorer_db_builder.configuration_builder import run_configuration_builder
 from explorer_db_builder.database_writer import DatabaseWriter
 from explorer_db_builder.instrumentation_transformer import transform_instrumentation_format
@@ -179,6 +180,9 @@ def run_javaagent_builder(
             process_version(version, inventory_manager, db_writer, inventory=inventory)
 
         db_writer.write_version_list(versions)
+
+        global_configurations = build_global_configurations([backfilled_inventories[v] for v in versions])
+        db_writer.write_global_configurations(global_configurations)
 
         stats = db_writer.get_stats()
         total_mb = stats["total_bytes"] / (1024 * 1024)

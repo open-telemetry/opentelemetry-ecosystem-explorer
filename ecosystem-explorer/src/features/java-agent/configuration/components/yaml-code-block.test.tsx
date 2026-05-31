@@ -76,6 +76,35 @@ describe("YamlCodeBlock", () => {
     expect(instrumentationsSection?.className).toContain("border-l-transparent");
   });
 
+  it("activates a section when activePreviewKey is a nested key under it", () => {
+    const structured = {
+      header: "",
+      fileFormat: "",
+      sections: [
+        { key: "distribution", content: "distribution:\n  javaagent: {}\n" },
+        {
+          key: "instrumentation/development",
+          content: "instrumentation/development:\n  general:\n    http:\n      semconv: stable\n",
+        },
+      ],
+    };
+    const { container } = render(
+      <YamlCodeBlock
+        structured={structured}
+        activePreviewKey="instrumentation/development.general.http"
+      />
+    );
+
+    const devSection = container.querySelector('[data-yaml-section="instrumentation/development"]');
+    const distributionSection = container.querySelector('[data-yaml-section="distribution"]');
+
+    expect(devSection?.className).toContain("bg-otel-orange/10");
+    expect(devSection?.className).toContain("border-l-otel-orange");
+
+    expect(distributionSection?.className).not.toContain("bg-otel-orange/10");
+    expect(distributionSection?.className).toContain("border-l-transparent");
+  });
+
   it("forwards className to the <pre> element", () => {
     const structured = makeStructured();
     const { container } = render(

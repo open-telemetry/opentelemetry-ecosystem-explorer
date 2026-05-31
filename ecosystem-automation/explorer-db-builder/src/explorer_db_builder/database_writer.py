@@ -209,6 +209,31 @@ class DatabaseWriter:
             logger.error(f"Failed to write version list: {e}")
             raise
 
+    def write_global_configurations(self, configurations: list[dict[str, Any]]) -> None:
+        """Write the aggregated global configurations file.
+
+        Args:
+            configurations: Global configuration dicts, already sorted by name with sorted
+                            "instrumentations" lists.
+
+        Raises:
+            OSError: If file writing fails.
+        """
+        self.database_dir.mkdir(parents=True, exist_ok=True)
+
+        output_file = self.database_dir / "global-configurations.json"
+        try:
+            content = json.dumps(configurations, indent=2, sort_keys=True)
+            with open(output_file, "w", encoding="utf-8") as f:
+                f.write(content)
+            file_size = len(content.encode("utf-8"))
+            self.files_written += 1
+            self.total_bytes += file_size
+            logger.info(f"Wrote global configurations with {len(configurations)} entries")
+        except OSError as e:
+            logger.error(f"Failed to write global configurations: {e}")
+            raise
+
     def write_markdown(self, library_name: str, markdown_hash: str, content: str) -> None:
         """Write markdown file to the database.
 
