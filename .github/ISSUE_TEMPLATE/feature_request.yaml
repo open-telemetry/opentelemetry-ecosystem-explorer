@@ -5,9 +5,8 @@ body:
   - type: markdown
     attributes:
       value: |
-        For significant features, consider starting a
-        [discussion](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/discussions)
-        first to get early feedback before writing a detailed proposal.
+        For significant features, consider starting a [discussion](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/discussions) first to get early feedback before writing a detailed proposal.
+        It is best to wait until a new feature has been labeled with "contribution welcome" before beginning work and submitting a PR.
   - type: textarea
     id: component
     attributes:
