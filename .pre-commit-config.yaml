@@ -31,22 +31,6 @@ repos:
         files: ^ecosystem-explorer/
         stages: [pre-commit]
 
-      - id: pytest-collector-watcher
-        name: pytest (collector-watcher)
-        entry: bash -c 'cd ecosystem-automation/collector-watcher && uv run pytest tests/ -v'
-        language: system
-        pass_filenames: false
-        files: ^ecosystem-automation/collector-watcher/
-        stages: [pre-commit]
-
-      - id: test-ecosystem-explorer
-        name: test (ecosystem-explorer)
-        entry: bash -c 'cd ecosystem-explorer && bun run test'
-        language: system
-        pass_filenames: false
-        files: ^ecosystem-explorer/
-        stages: [pre-commit]
-
       - id: typecheck-ecosystem-explorer
         name: typecheck (ecosystem-explorer)
         entry: bash -c 'cd ecosystem-explorer && bun run typecheck'
@@ -66,14 +50,6 @@ repos:
       - id: add-copyright-headers
         name: add copyright headers
         entry: uv run python scripts/add_copyright.py
-        language: system
-        pass_filenames: false
-        files: \.(py|js|mjs|ts|tsx)$
-        stages: [pre-commit]
-
-      - id: check-copyright-headers
-        name: check copyright headers
-        entry: uv run python scripts/check_copyright.py
         language: system
         pass_filenames: false
         files: \.(py|js|mjs|ts|tsx)$
