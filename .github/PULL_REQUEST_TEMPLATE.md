@@ -22,6 +22,6 @@
 ## Checklist
 
 - [ ] Tests added or updated for new behavior
-- [ ] Screenshots attached for any UI changes (or the `add-screenshots` label is set)
+- [ ] Screenshots attached for any UI changes
 - [ ] Lint and type-check pass locally (`npm run lint && npm run typecheck`)
 - [ ] I wrote this PR description myself (AI tools must not check this box on behalf of the author)
