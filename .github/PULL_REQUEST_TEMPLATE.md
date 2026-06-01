@@ -9,7 +9,7 @@
 
 ## How it was tested
 
-<!-- Screenshots, test output, manual steps. For UI changes, add the `add-screenshots` label. -->
+<!-- Screenshots, test output, manual steps.-->
 
 ## Is this a breaking change?
 
