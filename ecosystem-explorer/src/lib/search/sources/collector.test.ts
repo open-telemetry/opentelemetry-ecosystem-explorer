@@ -55,7 +55,10 @@ describe("toCollectorResult", () => {
   });
 
   it("falls back to the component name when display_name is absent", () => {
-    const result = toCollectorResult(makeComponent({ display_name: null, name: "zipkin" }), "2.0.0");
+    const result = toCollectorResult(
+      makeComponent({ display_name: null, name: "zipkin" }),
+      "2.0.0"
+    );
 
     expect(result.title).toBe("zipkin");
   });

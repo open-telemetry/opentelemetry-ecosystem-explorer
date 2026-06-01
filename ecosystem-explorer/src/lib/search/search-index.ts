@@ -35,9 +35,7 @@ async function buildSearchIndex(): Promise<SearchResult[]> {
   // and flips the cache off (below), so a partial outage (one ecosystem down)
   // isn't cached for the session — the next `search()` rebuilds and retries
   // instead of serving a permanently-degraded index.
-  const loaded = await Promise.all(
-    SEARCH_SOURCES.map((source) => source.load().catch(() => null))
-  );
+  const loaded = await Promise.all(SEARCH_SOURCES.map((source) => source.load().catch(() => null)));
 
   if (loaded.some((results) => results === null)) {
     searchIndexPromise = null;
