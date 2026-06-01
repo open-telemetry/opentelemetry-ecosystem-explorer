@@ -18,7 +18,9 @@ body:
     id: problem
     attributes:
       label: Problem this solves
-      description: What user need or gap does this address? A user-story format works well — "As a [type of user], I want [goal] so that [benefit]."
+      description:
+        What user need or gap does this address? A user-story format works well — "As a [type of
+        user], I want [goal] so that [benefit]."
     validations:
       required: true
   - type: textarea
@@ -31,7 +33,9 @@ body:
     id: acceptance
     attributes:
       label: Acceptance criteria
-      description: What does "done" look like? List the observable behaviors or conditions that would confirm this feature is complete.
+      description:
+        What does "done" look like? List the observable behaviors or conditions that would confirm
+        this feature is complete.
     validations:
       required: false
   - type: textarea
