@@ -1,6 +1,6 @@
 ## What changed
 
-<!-- Describe the change. One paragraph is fine. -->
+<!-- Describe the change. One paragraph is fine, please do not be overly verbose. -->
 
 ## Why
 
