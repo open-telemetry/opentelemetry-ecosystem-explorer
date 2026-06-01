@@ -103,7 +103,7 @@
             "description": "The default value if not specified.",
             "type": ["string", "number", "boolean"]
           },
-          "example": {
+          "examples": {
             "description": "Example values for this configuration option.",
             "type": "array",
             "items": {
@@ -111,7 +111,7 @@
             }
           }
         },
-        "propertyOrder": ["name", "declarative_name", "description", "type", "default", "example"],
+        "propertyOrder": ["name", "declarative_name", "description", "type", "default", "examples"],
         "required": ["default", "description", "name", "type"]
       }
     },
