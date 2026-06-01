@@ -20,7 +20,7 @@ import sys
 from typing import Optional
 
 from semantic_version import Version
-from watcher_common.inventory_manager import JavaagentInventoryManager
+from watcher_common.inventory_manager import JavaagentInventoryManager  # decoupled from java-instrumentation-watcher
 
 from explorer_db_builder.collector_builder import run_collector_builder
 from explorer_db_builder.configuration_aggregator import build_global_configurations
