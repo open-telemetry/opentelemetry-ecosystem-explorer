@@ -47,3 +47,26 @@ class InventoryManager(BaseInventoryManager):
             shutil.rmtree(version_dir)
         shutil.copytree(source_dir, version_dir)
         logger.info("Saved schemas for v%s to %s", version, version_dir)
+
+    def cleanup_snapshots_except(self, keep: Version) -> int:
+        """
+        Remove all snapshot versions except the given one.
+
+        Snapshot cleanup must run only after a replacement snapshot has been written, so this
+        preserves `keep` (the freshly written snapshot) while removing any stale ones.
+
+        Args:
+            keep: Snapshot version to preserve
+
+        Returns:
+            Number of snapshot versions removed
+        """
+        removed = 0
+        for snapshot in self.list_snapshot_versions():
+            if snapshot == keep:
+                continue
+            snapshot_dir = self.get_version_dir(snapshot)
+            if snapshot_dir.exists():
+                shutil.rmtree(snapshot_dir)
+                removed += 1
+        return removed
