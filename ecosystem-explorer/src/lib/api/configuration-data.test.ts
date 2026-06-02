@@ -78,6 +78,22 @@ describe("configuration-data", () => {
       expect(result).toEqual(mockVersionsIndex);
       expect(global.fetch).not.toHaveBeenCalled();
     });
+
+    it("should bypass cache and re-fetch when cached versions list is empty", async () => {
+      const staleData: ConfigVersionsIndex = { versions: [] };
+      vi.spyOn(idbCache, "getCached").mockResolvedValue(staleData);
+      vi.spyOn(idbCache, "setCached").mockResolvedValue();
+
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ok: true,
+        json: async () => mockVersionsIndex,
+      });
+
+      const result = await configData.loadConfigVersions();
+
+      expect(result).toEqual(mockVersionsIndex);
+      expect(global.fetch).toHaveBeenCalledWith("/data/configuration/versions-index.json");
+    });
   });
 
   describe("loadConfigSchema", () => {
