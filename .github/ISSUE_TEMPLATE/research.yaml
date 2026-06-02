@@ -19,7 +19,9 @@ body:
     id: desired
     attributes:
       label: What should be created?
-      description: What do you expect to be created? (as an example, take a look at the available resources at the website).
+      description:
+        What do you expect to be created? (as an example, take a look at the available resources at
+        the website).
     validations:
       required: true
   - type: textarea
