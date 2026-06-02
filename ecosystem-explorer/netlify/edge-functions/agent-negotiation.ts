@@ -16,6 +16,37 @@
 
 import type { Context } from "@netlify/edge-functions";
 
+const notFound = () => new Response("Not Found", { status: 404 });
+
+// Rewrites to a static asset and normalizes its Content-Type. Returns null when
+// the rewrite resolves to the SPA HTML shell (the catch-all redirect serves
+// /index.html with status 200 for unknown paths), so the caller can 404.
+// Any non-200 status is returned untouched: a 304 from a conditional
+// (If-None-Match) request must stay a 304 — collapsing it to 404 is what broke
+// data loading on revalidation. The same applies to 3xx, 206, and real errors.
+async function serveAsset(
+  context: Context,
+  path: string,
+  contentType: string,
+  extraHeaders?: Record<string, string>
+): Promise<Response | null> {
+  const response = await context.rewrite(path);
+  if (response.status !== 200) {
+    return response;
+  }
+
+  const originContentType = response.headers.get("content-type") ?? "";
+  if (originContentType.includes("text/html")) {
+    return null;
+  }
+
+  response.headers.set("Content-Type", contentType);
+  for (const [key, value] of Object.entries(extraHeaders ?? {})) {
+    response.headers.set(key, value);
+  }
+  return response;
+}
+
 export default async (request: Request, context: Context) => {
   const url = new URL(request.url);
   const { pathname } = url;
@@ -24,17 +55,10 @@ export default async (request: Request, context: Context) => {
 
   // Documentation root files
   if (pathname === "/llms.txt" || pathname === "/llms-full.txt") {
-    const response = await context.rewrite(pathname);
-    if (response.status === 200) {
-      const contentType = response.headers.get("content-type");
-      if (contentType && contentType.includes("text/html")) {
-        return new Response("Not Found", { status: 404 });
-      }
-      response.headers.set("Content-Type", "text/plain; charset=UTF-8");
-      response.headers.set("Vary", "Accept");
-      return response;
-    }
-    return new Response("Not Found", { status: 404 });
+    return (
+      (await serveAsset(context, pathname, "text/plain; charset=UTF-8", { Vary: "Accept" })) ??
+      notFound()
+    );
   }
 
   // Content negotiation for AI agents
@@ -49,22 +73,16 @@ export default async (request: Request, context: Context) => {
     }
 
     if (mdPath) {
-      const response = await context.rewrite(mdPath);
-      if (response.status === 200) {
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.includes("text/html")) {
-          return new Response("Not Found", { status: 404 });
-        }
-        const finalContentType = mdPath.endsWith(".md")
-          ? "text/markdown; charset=UTF-8"
-          : "text/plain; charset=UTF-8";
-        response.headers.set("Content-Type", finalContentType);
-        response.headers.set("Vary", "Accept");
+      const finalContentType = mdPath.endsWith(".md")
+        ? "text/markdown; charset=UTF-8"
+        : "text/plain; charset=UTF-8";
+      const response = await serveAsset(context, mdPath, finalContentType, { Vary: "Accept" });
+      if (response) {
         return response;
       }
     }
     // Strict 404 for unrecognized Markdown requests (Copilot feedback)
-    return new Response("Not Found", { status: 404 });
+    return notFound();
   }
 
   // Explicit agent documentation routes
@@ -82,47 +100,24 @@ export default async (request: Request, context: Context) => {
   const resolvedPath = agentPathMap[pathname] || pathname;
   if (resolvedPath.endsWith(".md") || resolvedPath.startsWith("/agent/")) {
     if (resolvedPath.endsWith(".md")) {
-      const response = await context.rewrite(resolvedPath);
-      if (response.status === 200) {
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.includes("text/html")) {
-          return new Response("Not Found", { status: 404 });
-        }
-        response.headers.set("Content-Type", "text/markdown; charset=UTF-8");
+      const response = await serveAsset(context, resolvedPath, "text/markdown; charset=UTF-8");
+      if (response) {
         return response;
       }
     }
-    return new Response("Not Found", { status: 404 });
+    return notFound();
   }
 
   // JSON schemas and metadata
   if (pathname.startsWith("/schemas/") || pathname.startsWith("/data/")) {
-    const response = await context.rewrite(pathname);
-    if (response.status === 200) {
-      const contentType = response.headers.get("content-type");
-      if (contentType && contentType.includes("text/html")) {
-        return new Response("Not Found", { status: 404 });
-      }
-      const finalContentType = pathname.endsWith(".json") ? "application/json" : "text/plain";
-      response.headers.set("Content-Type", finalContentType);
-      return response;
-    }
-    return new Response("Not Found", { status: 404 });
+    const finalContentType = pathname.endsWith(".json") ? "application/json" : "text/plain";
+    return (await serveAsset(context, pathname, finalContentType)) ?? notFound();
   }
 
   // Sitemap and Robots
   if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
-    const response = await context.rewrite(pathname);
-    if (response.status === 200) {
-      const contentType = response.headers.get("content-type");
-      if (contentType && contentType.includes("text/html")) {
-        return new Response("Not Found", { status: 404 });
-      }
-      const finalContentType = pathname.endsWith(".xml") ? "application/xml" : "text/plain";
-      response.headers.set("Content-Type", finalContentType);
-      return response;
-    }
-    return new Response("Not Found", { status: 404 });
+    const finalContentType = pathname.endsWith(".xml") ? "application/xml" : "text/plain";
+    return (await serveAsset(context, pathname, finalContentType)) ?? notFound();
   }
 
   return undefined;

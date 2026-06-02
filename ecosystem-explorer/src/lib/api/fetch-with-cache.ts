@@ -54,9 +54,16 @@ async function fetchWithRetry(
   let lastError: unknown;
   for (let i = 0; i < maxAttempts; i++) {
     try {
-      // HTTP responses (ok or non-ok) are returned immediately - no retry.
+      const response = await fetch(url);
+      // A 404 can be a false negative: a conditional (If-None-Match) request
+      // whose 304 was mistranslated to 404 upstream. Retry once with no cache
+      // (cache:"reload" sends no validators) so a genuine 404 still surfaces.
+      if (response.status === 404) {
+        return await fetch(url, { cache: "reload" });
+      }
+      // Other HTTP responses (ok or non-ok) are returned immediately - no retry.
       // Only real network failures (catch block) trigger retries.
-      return await fetch(url);
+      return response;
     } catch (error) {
       lastError = error;
       if (i === maxAttempts - 1) throw error;
