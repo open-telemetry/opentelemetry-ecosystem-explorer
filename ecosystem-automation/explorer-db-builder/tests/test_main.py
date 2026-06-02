@@ -280,6 +280,28 @@ class TestRunJavaagentBuilder:
         assert custom[0]["name"] == "custom1"
         assert custom[0]["markdown_hash"] == "fed4321cba98"
 
+    def test_run_builder_none_instrumentation_side_does_not_crash(self, mock_inventory_manager, mock_db_writer):
+        """An explicit None on one side (malformed/partial inventory) is normalized to a list
+        during README augmentation instead of raising TypeError while iterating."""
+        versions = [Version("1.0.0")]
+        inventory_data = {"file_format": 0.2, "libraries": None, "custom": [{"name": "custom1"}]}
+        readme_map = {"custom1": "abc123def456"}
+
+        mock_inventory_manager.list_versions.return_value = versions
+        mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
+        mock_inventory_manager.load_library_readme_map.return_value = readme_map
+        mock_inventory_manager.load_library_readme_content.return_value = "# README content"
+        mock_db_writer.write_libraries.return_value = {"custom1": "hash1"}
+
+        exit_code = run_javaagent_builder(mock_inventory_manager, mock_db_writer)
+
+        assert exit_code == 0
+        # The custom side still gets its markdown_hash augmented despite libraries being None.
+        write_calls = mock_db_writer.write_libraries.call_args_list
+        custom = write_calls[0][0][0]
+        assert custom[0]["name"] == "custom1"
+        assert custom[0]["markdown_hash"] == "abc123def456"
+
     def test_run_builder_uses_backfilled_inventories(self, mock_inventory_manager, mock_db_writer):
         versions = [Version("1.0.0"), Version("2.0.0")]
         inventory_1_0 = {

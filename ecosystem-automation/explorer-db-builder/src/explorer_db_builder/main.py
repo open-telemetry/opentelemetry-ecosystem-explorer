@@ -92,7 +92,8 @@ def process_version(
         followed by custom), so the caller can build the lightweight index.
 
     Raises:
-        ValueError: If no libraries found for the version or unsupported format
+        ValueError: If neither libraries nor custom instrumentations are found
+            for the version, or if the inventory has an unsupported file format
         KeyError: If inventory data is malformed
     """
     logger.info(f"Processing Java Agent version: {version}")
@@ -163,13 +164,20 @@ def run_javaagent_builder(
             inventory = inventory_manager.load_versioned_inventory(version)
             readme_map = readme_maps.get(version, {})
 
-            # Augment libraries and custom instrumentations with markdown_hash
+            # Normalize an explicit "libraries": None / "custom": None (malformed or
+            # partial inventory, since YAML `libraries:` parses as None) to [] up front.
+            # This both lets the augmentation loop below iterate safely and keeps the
+            # downstream backfill/process_version steps from raising TypeError on None.
             for key in ["libraries", "custom"]:
-                if key in inventory:
-                    for item in inventory[key]:
-                        name = item.get("name")
-                        if name and name in readme_map:
-                            item["markdown_hash"] = readme_map[name]
+                if inventory.get(key) is None and key in inventory:
+                    inventory[key] = []
+
+            # Augment libraries and custom instrumentations with markdown_hash.
+            for key in ["libraries", "custom"]:
+                for item in inventory.get(key, []):
+                    name = item.get("name")
+                    if name and name in readme_map:
+                        item["markdown_hash"] = readme_map[name]
 
             return inventory
 
