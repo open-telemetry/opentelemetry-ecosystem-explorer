@@ -21,8 +21,17 @@ import type {
 } from "@/types/javaagent";
 import { STORES, pruneOldEntries } from "./idb-cache";
 import { fetchWithCache, resolveDataPath } from "./fetch-with-cache";
+import { mapWithConcurrency } from "@/lib/map-with-concurrency";
 
 const BASE_DIR = "data/javaagent";
+
+// Cap on concurrent instrumentation fetches in loadAllInstrumentations. A
+// version manifest lists ~250 instrumentations, so an unbounded fan-out would
+// queue that many requests at once on a cold cache. 8 keeps a small buffer over
+// the browser's ~6-per-host HTTP/1.1 connection cap without flooding the
+// IndexedDB cache layer. Remove once a /data/javaagent/index.json endpoint
+// lets us load everything in one request (tracked in projects/84-ui-ux-design).
+const MAX_INSTRUMENTATION_FETCH_CONCURRENCY = 8;
 
 export interface GlobalConfiguration extends Configuration {
   instrumentations?: string[];
@@ -95,10 +104,11 @@ export async function loadAllInstrumentations(version: string): Promise<Instrume
 
   const allIds = [...libraryIds, ...customIds];
 
-  return Promise.all(
-    allIds.map(async (id) => {
-      return loadInstrumentation(id, version, manifest);
-    })
+  // Bounded fan-out: one fetch per instrumentation, but at most
+  // MAX_INSTRUMENTATION_FETCH_CONCURRENCY in flight at a time. Order is
+  // preserved, so callers see the same result as the prior Promise.all.
+  return mapWithConcurrency(allIds, MAX_INSTRUMENTATION_FETCH_CONCURRENCY, (id) =>
+    loadInstrumentation(id, version, manifest)
   );
 }
 
