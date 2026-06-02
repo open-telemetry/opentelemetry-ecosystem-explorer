@@ -94,4 +94,15 @@ describe("mapWithConcurrency", () => {
     expect(maxActive).toBe(1);
     expect(results).toEqual([1, 2, 3]);
   });
+
+  it("treats a NaN limit as sequential instead of silently skipping all work", async () => {
+    const items = [1, 2, 3];
+    let calls = 0;
+    const results = await mapWithConcurrency(items, Number.NaN, async (item) => {
+      calls++;
+      return item * 2;
+    });
+    expect(calls).toBe(3);
+    expect(results).toEqual([2, 4, 6]);
+  });
 });

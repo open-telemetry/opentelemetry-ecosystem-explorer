@@ -29,10 +29,13 @@ export async function mapWithConcurrency<T, R>(
   fn: (item: T, index: number) => Promise<R>
 ): Promise<R[]> {
   const results = new Array<R>(items.length);
-  // A pool larger than the work-list just leaves some workers idle; clamp to
-  // >= 1 so a non-positive limit degrades to sequential rather than spinning up
-  // zero workers (which would never drain the queue).
-  const poolSize = Math.max(1, Math.min(limit, items.length));
+  // Normalize first: a NaN, non-finite, or <= 0 limit degrades to sequential
+  // (pool of 1) rather than producing zero workers, which would silently skip
+  // all work and leave a holey results array. A pool larger than the work-list
+  // just leaves some workers idle, so cap at items.length (0 workers for empty
+  // input correctly yields an empty result).
+  const safeLimit = Number.isFinite(limit) ? Math.max(1, Math.trunc(limit)) : 1;
+  const poolSize = Math.min(safeLimit, items.length);
 
   // Shared cursor. `cursor++` is read-then-increment in a single synchronous
   // step before any await, so no two workers ever claim the same index despite
