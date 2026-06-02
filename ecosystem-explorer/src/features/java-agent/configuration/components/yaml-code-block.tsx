@@ -48,7 +48,6 @@ export function YamlCodeBlock({
     () => tokenize(finalStructured.fileFormat),
     [finalStructured.fileFormat]
   );
-
   const sectionsWithTokens = useMemo(() => {
     return finalStructured.sections.map((sec) => ({
       key: sec.key,
@@ -56,7 +55,9 @@ export function YamlCodeBlock({
     }));
   }, [finalStructured.sections]);
 
-  const isSectionActive = (secKey: string) => activePreviewKey === secKey;
+  const isSectionActive = (secKey: string) => {
+    return activePreviewKey === secKey || activePreviewKey?.startsWith(`${secKey}.`);
+  };
   const renderLines = (lines: Token[][]) => {
     return lines.map((tokens, i) => (
       <Fragment key={i}>

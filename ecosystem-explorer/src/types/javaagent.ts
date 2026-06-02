@@ -93,7 +93,7 @@ export interface Configuration {
   /** The default value if not specified. */
   default: string | boolean | number;
   /** Example values for this configuration option. */
-  example?: string[];
+  examples?: string[];
 }
 
 /**
