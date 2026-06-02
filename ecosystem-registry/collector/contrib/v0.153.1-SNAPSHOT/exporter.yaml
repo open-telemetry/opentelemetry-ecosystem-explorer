@@ -474,20 +474,6 @@ components:
         - jsuereth
         - psx95
         - ridwanmsharif
-- name: googlesecopsexporter
-  metadata:
-    type: google_secops
-    status:
-      class: exporter
-      stability:
-        development:
-        - logs
-      codeowners:
-        active:
-        - braydonk
-        - colelaven
-        - dpaasman00
-        - mrsillydog
 - name: honeycombmarkerexporter
   metadata:
     type: honeycomb_marker
@@ -802,6 +788,7 @@ components:
         beta:
         - logs
         - metrics
+        deprecated:
         - traces
       distributions:
       - contrib

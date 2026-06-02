@@ -322,7 +322,7 @@ cd ecosystem-explorer
 bun install
 bun run build
 bunx playwright install --with-deps chromium
-node scripts/take-screenshots.mjs
+bun run screenshots:capture
 # Screenshots are saved to ecosystem-explorer/screenshots/
 ```
 

@@ -100,10 +100,10 @@ export function ConfigurationCard({ config, format, instrumentations }: Configur
           <code className="flex-1 text-xs break-all">{defaultValue}</code>
         </div>
 
-        {config.example && config.example.length > 0 && (
+        {config.examples && config.examples.length > 0 && (
           <div className="space-y-1">
             <span className="text-muted-foreground text-xs font-medium">Examples:</span>
-            {config.example.map((ex, i) => (
+            {config.examples.map((ex, i) => (
               <div key={i} className="border-border/30 bg-muted/30 rounded-lg border px-3 py-2">
                 <code className="text-xs break-all">{ex}</code>
               </div>

@@ -146,3 +146,35 @@ class TestConfigurationSync:
         result = config_sync.backfill()
 
         assert len(result["versions_processed"]) >= 1
+
+
+class TestEmptyCopySafety:
+    """A copy that yields zero schema files must fail loudly and never destroy existing data."""
+
+    def test_process_latest_release_raises_on_empty_copy(self, config_sync, monkeypatch):
+        monkeypatch.setattr(config_sync.schema_copier, "copy_schemas", lambda *a, **k: [])
+
+        with pytest.raises(ValueError):
+            config_sync.process_latest_release()
+
+    def test_update_snapshot_preserves_existing_on_empty_copy(self, config_sync, monkeypatch):
+        config_sync.update_snapshot()
+        existing = config_sync.inventory_manager.list_snapshot_versions()
+        assert existing
+
+        monkeypatch.setattr(config_sync.schema_copier, "copy_schemas", lambda *a, **k: [])
+        with pytest.raises(ValueError):
+            config_sync.update_snapshot()
+
+        for snapshot in existing:
+            assert config_sync.inventory_manager.version_exists(snapshot)
+
+    def test_backfill_preserves_existing_version_on_empty_copy(self, config_sync, monkeypatch):
+        config_sync.sync()
+        assert config_sync.inventory_manager.version_exists(Version("1.0.0"))
+
+        monkeypatch.setattr(config_sync.schema_copier, "copy_schemas", lambda *a, **k: [])
+        with pytest.raises(ValueError):
+            config_sync.backfill([Version("1.0.0")])
+
+        assert config_sync.inventory_manager.version_exists(Version("1.0.0"))

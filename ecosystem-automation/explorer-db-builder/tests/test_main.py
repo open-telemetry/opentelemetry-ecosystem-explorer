@@ -14,9 +14,11 @@
 #
 """Tests for main entry point."""
 
+import json
 from unittest.mock import MagicMock, patch
 
 import pytest
+from explorer_db_builder.database_writer import DatabaseWriter
 from explorer_db_builder.main import (
     get_release_versions,
     process_version,
@@ -347,6 +349,33 @@ class TestRunJavaagentBuilder:
 
         assert call_order[0] == "clean"
         assert call_order[1] == "list_versions"
+
+    def test_aggregates_global_configurations(self, tmp_path):
+        """run_javaagent_builder writes global-configurations.json with newest-version-wins."""
+        inventory_manager = MagicMock()
+        inventory_manager.list_versions.return_value = [Version("2.1.0"), Version("2.0.0")]
+        inventory_manager.load_library_readme_map.return_value = {}
+        inventory_manager.load_versioned_inventory.side_effect = lambda v: {
+            Version("2.1.0"): {
+                "file_format": 0.5,
+                "libraries": [{"name": "jdbc", "configurations": [{"name": "otel.x", "type": "list"}]}],
+            },
+            Version("2.0.0"): {
+                "file_format": 0.5,
+                "libraries": [{"name": "jdbc", "configurations": [{"name": "otel.x", "type": "string"}]}],
+            },
+        }[v]
+
+        db_writer = DatabaseWriter(database_dir=str(tmp_path))
+
+        exit_code = run_javaagent_builder(inventory_manager, db_writer)
+
+        assert exit_code == 0
+        data = json.loads((tmp_path / "global-configurations.json").read_text(encoding="utf-8"))
+        assert [c["name"] for c in data] == ["otel.x"]
+        # newest version (2.1.0) wins the type conflict
+        assert data[0]["type"] == "list"
+        assert data[0]["instrumentations"] == ["jdbc"]
 
 
 class TestMain:

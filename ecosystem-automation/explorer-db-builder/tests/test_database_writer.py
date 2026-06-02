@@ -593,3 +593,32 @@ class TestWriteIndex:
         db_writer.write_index(sample_index_instrumentations)
         assert db_writer.files_written == 1
         assert db_writer.total_bytes > 0
+
+
+class TestWriteGlobalConfigurations:
+    def test_writes_deterministic_file(self, db_writer, temp_db_dir):
+        """Serialization is exactly json.dumps(indent=2, sort_keys=True) with no trailing newline."""
+        configurations = [
+            {"name": "otel.a", "type": "list", "instrumentations": ["jdbc"]},
+            {"name": "otel.b", "type": "string", "instrumentations": ["servlet-5.0"]},
+        ]
+
+        db_writer.write_global_configurations(configurations)
+
+        raw = (temp_db_dir / "global-configurations.json").read_text(encoding="utf-8")
+        assert raw == json.dumps(configurations, indent=2, sort_keys=True)
+        assert not raw.endswith("\n")
+
+    def test_counts_bytes_in_stats(self, db_writer):
+        """The write increments files_written and total_bytes."""
+        db_writer.write_global_configurations([{"name": "otel.a", "instrumentations": []}])
+
+        stats = db_writer.get_stats()
+        assert stats["files_written"] == 1
+        assert stats["total_bytes"] > 0
+
+    def test_empty_list_writes_empty_array(self, db_writer, temp_db_dir):
+        """An empty configuration list still writes a valid empty-array file."""
+        db_writer.write_global_configurations([])
+
+        assert json.loads((temp_db_dir / "global-configurations.json").read_text(encoding="utf-8")) == []
