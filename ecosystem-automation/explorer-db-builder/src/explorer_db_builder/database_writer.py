@@ -24,6 +24,7 @@ from typing import Any
 from semantic_version import Version
 
 from explorer_db_builder.content_hashing import content_hash
+from explorer_db_builder.instrumentation_transformer import make_index_instrumentation
 
 logger = logging.getLogger(__name__)
 
@@ -237,6 +238,43 @@ class DatabaseWriter:
         except OSError as e:
             logger.error(f"Failed to write markdown for '{safe_name}': {e}")
             # README publishing failures must never fail DB generation as per requirements
+
+    def write_index(self, latest_instrumentations: list[dict[str, Any]]) -> None:
+        """Write the javaagent index.json: a flat, lightweight list of the latest
+        version's instrumentations for browsing and client-side search.
+
+        Full instrumentation detail stays in the content-addressed component
+        files; this index only carries the fields the browse/search UI needs up
+        front, so the frontend can render the catalog from a single request
+        instead of fanning out one fetch per instrumentation.
+
+        Args:
+            latest_instrumentations: Full canonical instrumentation dicts from
+                the latest release version. Items without a "name" are skipped.
+        """
+        self.database_dir.mkdir(parents=True, exist_ok=True)
+
+        components = [
+            make_index_instrumentation(instrumentation)
+            for instrumentation in latest_instrumentations
+            if isinstance(instrumentation, dict) and instrumentation.get("name")
+        ]
+        # Stable ordering keeps the output deterministic (schema discipline).
+        components.sort(key=lambda component: component["name"])
+
+        index_data: dict[str, Any] = {"ecosystem": "javaagent", "components": components}
+        index_file = self.database_dir / "index.json"
+
+        try:
+            content = json.dumps(index_data, indent=2, sort_keys=True)
+            with open(index_file, "w", encoding="utf-8") as f:
+                f.write(content)
+            self.files_written += 1
+            self.total_bytes += len(content.encode("utf-8"))
+            logger.info("Wrote javaagent index with %d instrumentations", len(components))
+        except OSError as e:
+            logger.error("Failed to write index.json: %s", e)
+            raise
 
     def get_stats(self) -> dict[str, Any]:
         """Get statistics about files written during this session.

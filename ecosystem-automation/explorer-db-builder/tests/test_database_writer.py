@@ -492,3 +492,104 @@ class TestWriteMarkdown:
                 mock_logger.error.assert_called()
                 args, _ = mock_logger.error.call_args
                 assert "Failed to write markdown" in args[0]
+
+
+@pytest.fixture
+def sample_index_instrumentations():
+    return [
+        {
+            "name": "spring-webmvc-6.0",
+            "display_name": "Spring Web MVC",
+            "description": "Spring Web MVC instrumentation",
+            "has_standalone_library": True,
+            "telemetry": [{"when": "default", "spans": [{"span_kind": "SERVER"}]}],
+            # Heavy fields that must NOT leak into the index:
+            "configurations": [{"name": "otel.x", "type": "boolean"}],
+            "scope": {"name": "io.opentelemetry.spring-webmvc-6.0"},
+        },
+        {
+            "name": "akka-http-10.0",
+            "display_name": "Akka HTTP",
+            "description": "Akka HTTP instrumentation",
+            "has_standalone_library": False,
+            # No telemetry key -> has_telemetry should be False.
+        },
+    ]
+
+
+class TestWriteIndex:
+    def test_write_index_creates_file(self, db_writer, sample_index_instrumentations, temp_db_dir):
+        db_writer.write_index(sample_index_instrumentations)
+        assert (temp_db_dir / "index.json").exists()
+
+    def test_write_index_shape(self, db_writer, sample_index_instrumentations, temp_db_dir):
+        db_writer.write_index(sample_index_instrumentations)
+        with open(temp_db_dir / "index.json") as f:
+            data = json.load(f)
+
+        assert data["ecosystem"] == "javaagent"
+        assert isinstance(data["components"], list)
+        assert len(data["components"]) == 2
+
+    def test_write_index_sorted_by_name(self, db_writer, sample_index_instrumentations, temp_db_dir):
+        db_writer.write_index(sample_index_instrumentations)
+        with open(temp_db_dir / "index.json") as f:
+            data = json.load(f)
+
+        names = [c["name"] for c in data["components"]]
+        assert names == ["akka-http-10.0", "spring-webmvc-6.0"]
+
+    def test_write_index_lightweight_fields_only(self, db_writer, sample_index_instrumentations, temp_db_dir):
+        db_writer.write_index(sample_index_instrumentations)
+        with open(temp_db_dir / "index.json") as f:
+            data = json.load(f)
+
+        spring = next(c for c in data["components"] if c["name"] == "spring-webmvc-6.0")
+        assert set(spring.keys()) == {
+            "name",
+            "display_name",
+            "description",
+            "has_telemetry",
+            "has_standalone_library",
+        }
+        # Heavy fields must not be present in the index entry.
+        assert "configurations" not in spring
+        assert "scope" not in spring
+
+    def test_write_index_derives_booleans(self, db_writer, sample_index_instrumentations, temp_db_dir):
+        db_writer.write_index(sample_index_instrumentations)
+        with open(temp_db_dir / "index.json") as f:
+            data = json.load(f)
+
+        spring = next(c for c in data["components"] if c["name"] == "spring-webmvc-6.0")
+        akka = next(c for c in data["components"] if c["name"] == "akka-http-10.0")
+
+        assert spring["has_telemetry"] is True
+        assert spring["has_standalone_library"] is True
+        assert akka["has_telemetry"] is False
+        assert akka["has_standalone_library"] is False
+
+    def test_write_index_skips_items_without_name(self, db_writer, temp_db_dir):
+        db_writer.write_index(
+            [
+                {"name": "valid-1.0", "display_name": "Valid"},
+                {"display_name": "no name here"},
+                "not a dict",
+            ]
+        )
+        with open(temp_db_dir / "index.json") as f:
+            data = json.load(f)
+
+        assert [c["name"] for c in data["components"]] == ["valid-1.0"]
+
+    def test_write_index_empty_list(self, db_writer, temp_db_dir):
+        db_writer.write_index([])
+        with open(temp_db_dir / "index.json") as f:
+            data = json.load(f)
+
+        assert data == {"ecosystem": "javaagent", "components": []}
+
+    def test_write_index_updates_stats(self, db_writer, sample_index_instrumentations):
+        db_writer.write_index(sample_index_instrumentations)
+        assert db_writer.files_written == 1
+        assert db_writer.total_bytes > 0

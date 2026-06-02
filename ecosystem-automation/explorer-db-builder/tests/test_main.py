@@ -209,6 +209,27 @@ class TestRunJavaagentBuilder:
         assert mock_db_writer.write_libraries.call_count == 3
         assert mock_db_writer.write_version_index.call_count == 3
 
+    def test_run_builder_writes_index_from_latest_version(self, mock_inventory_manager, mock_db_writer):
+        """write_index is called once with the latest version's instrumentations."""
+        versions = [Version("3.0.0"), Version("2.0.0")]
+        # Each version carries a distinct library so we can tell which one fed the index.
+        inventories = {
+            Version("3.0.0"): {"file_format": 0.2, "libraries": [{"name": "latest-lib"}]},
+            Version("2.0.0"): {"file_format": 0.2, "libraries": [{"name": "older-lib"}]},
+        }
+
+        mock_inventory_manager.list_versions.return_value = versions
+        mock_inventory_manager.load_versioned_inventory.side_effect = lambda v: inventories[v]
+        mock_db_writer.write_libraries.return_value = {"x": "hash"}
+
+        exit_code = run_javaagent_builder(mock_inventory_manager, mock_db_writer)
+
+        assert exit_code == 0
+        mock_db_writer.write_index.assert_called_once()
+        (indexed_instrumentations,), _ = mock_db_writer.write_index.call_args
+        # versions[0] (3.0.0) is latest, so its library is the one indexed.
+        assert [i["name"] for i in indexed_instrumentations] == ["latest-lib"]
+
     def test_run_builder_processes_readmes(self, mock_inventory_manager, mock_db_writer):
         """Verifies READMEs are discovered, published, and hashes injected."""
         versions = [Version("1.0.0")]

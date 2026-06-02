@@ -74,7 +74,7 @@ def process_version(
     inventory_manager: InventoryManager,
     db_writer: DatabaseWriter,
     inventory: Optional[dict] = None,
-) -> None:
+) -> list[dict]:
     """Process a single version and write its data to the database.
 
     Handles both old (0.1) and new (0.2) file formats by transforming
@@ -85,6 +85,10 @@ def process_version(
         inventory_manager: Manager for accessing inventory data
         db_writer: Writer for database operations
         inventory: Optional pre-loaded inventory (e.g., backfilled data)
+
+    Returns:
+        The full instrumentation dicts written for this version (libraries
+        followed by custom), so the caller can build the lightweight index.
 
     Raises:
         ValueError: If no libraries found for the version or unsupported format
@@ -112,6 +116,8 @@ def process_version(
     custom_map = db_writer.write_libraries(custom) if custom else {}
 
     db_writer.write_version_index(version, library_map, custom_map)
+
+    return [*libraries, *custom]
 
 
 def run_javaagent_builder(
@@ -174,11 +180,19 @@ def run_javaagent_builder(
             item_key="custom",
         )
 
+        # versions[0] is the latest release (the same version write_version_list
+        # flags as is_latest), so the first processed version's instrumentations
+        # feed the lightweight index.
+        latest_instrumentations: list[dict] = []
         for version in versions:
             inventory = backfilled_inventories.get(version)
-            process_version(version, inventory_manager, db_writer, inventory=inventory)
+            instrumentations = process_version(version, inventory_manager, db_writer, inventory=inventory)
+            if not latest_instrumentations:
+                latest_instrumentations = instrumentations
 
         db_writer.write_version_list(versions)
+        if latest_instrumentations:
+            db_writer.write_index(latest_instrumentations)
 
         stats = db_writer.get_stats()
         total_mb = stats["total_bytes"] / (1024 * 1024)
