@@ -340,24 +340,8 @@ class CollectorSync:
         return snapshot_version
 
     def _process_distribution_sync(self, distribution: DistributionName) -> tuple[Version | None, Version]:
-        """
-        Process a single distribution's sync workflow completely in memory.
-        
-        This method processes both release and snapshot for a distribution
-        without saving to the registry, collecting all data in memory.
-        This ensures atomicity - either all data for this distribution is 
-        processed successfully, or none is processed.
-        
-        Args:
-            distribution: Distribution name
-            
-        Returns:
-            Tuple of (latest_release_version, snapshot_version)
-        """
-        # Process latest release
         latest = self.process_latest_release(distribution)
         
-        # Update snapshot
         snapshot = self.update_snapshot(distribution)
         
         return (latest, snapshot)
@@ -371,9 +355,6 @@ class CollectorSync:
         2. Process any new releases
         3. Update snapshots for each distribution
 
-        This method ensures atomicity across all distributions - 
-        if any distribution fails during processing, the entire sync fails.
-
         Returns:
             Summary of what was processed
         """
@@ -385,9 +366,6 @@ class CollectorSync:
         logger.info("=" * 60)
         logger.info("COLLECTOR METADATA SYNC")
         logger.info("=" * 60)
-
-        # Process all distributions completely in memory first
-        # This ensures atomicity - if any distribution fails, none are updated
         distribution_results = {}
         try:
             for distribution in self.repos.keys():
@@ -395,22 +373,19 @@ class CollectorSync:
                 logger.info("=" * 60)
                 logger.info("Distribution: %s", distribution.upper())
                 logger.info("=" * 60)
-                
-                # Process this distribution completely in memory
+
                 latest, snapshot = self._process_distribution_sync(distribution)
                 distribution_results[distribution] = (latest, snapshot)
                 
         except Exception as e:
             logger.error("Error processing distributions: %s", e)
-            raise  # Re-raise to ensure no partial updates occur
+            raise
 
-        # Now save all results atomically
         for distribution, (latest, snapshot) in distribution_results.items():
-            # Add to summary (this is just for reporting, not saving)
             if latest:
                 summary["new_releases"].append({"distribution": distribution, "version": str(latest)})
             summary["snapshots_updated"].append({"distribution": distribution, "version": str(snapshot)})
-                
+
         logger.info("")
         logger.info("=" * 60)
         logger.info("SYNC COMPLETE")
