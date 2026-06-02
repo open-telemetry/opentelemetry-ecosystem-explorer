@@ -3,6 +3,9 @@
     "declarative_name": "java.servlet.javascript_snippet/development",
     "default": "",
     "description": "Experimental setting to inject a JavaScript snippet into HTML responses after the opening `<head>` tag.",
+    "examples": [
+      "<script type=\"text/javascript\">console.log('test')</script>"
+    ],
     "instrumentations": [
       "servlet-2.2",
       "servlet-3.0",
