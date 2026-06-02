@@ -12,7 +12,7 @@ body:
   - type: textarea
     id: questions
     attributes:
-      label: Key questions to answer
+      label: Key questions that will be answered once the resource is created.
     validations:
       required: true
   - type: textarea
@@ -25,4 +25,4 @@ body:
   - type: textarea
     id: prior
     attributes:
-      label: Prior research or references
+      label: References (issues, articles, PRs, projects, etc.)
