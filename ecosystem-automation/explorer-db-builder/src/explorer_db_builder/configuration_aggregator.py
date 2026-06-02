@@ -20,10 +20,10 @@ DatabaseWriter writes the file.
 
 from typing import Any
 
-# Scalar fields filled from older versions when missing on the newest (seed) entry. "example" is
-# singular on purpose: the data uses "examples" (plural), so this fill is a no-op and "examples" is
-# reconciled across versions upstream by metadata_backfiller.
-_MERGE_FIELDS = ("declarative_name", "description", "default", "type", "example")
+# Fields filled from other occurrences (older versions or sibling instrumentations sharing the same
+# config name) when missing on the newest (seed) entry. "examples" is included so a seed entry that
+# lacks examples inherits them from a sibling/older occurrence rather than dropping them.
+_MERGE_FIELDS = ("declarative_name", "description", "default", "type", "examples")
 
 
 def _collect_items(inventory: dict[str, Any]) -> list[dict[str, Any]]:
