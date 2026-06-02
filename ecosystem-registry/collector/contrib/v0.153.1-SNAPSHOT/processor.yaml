@@ -178,9 +178,10 @@ components:
     status:
       class: processor
       stability:
-        development:
+        alpha:
         - traces
-      distributions: []
+      distributions:
+      - contrib
       codeowners:
         active:
         - TylerHelmuth
