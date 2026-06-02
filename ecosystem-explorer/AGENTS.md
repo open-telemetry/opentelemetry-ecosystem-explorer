@@ -31,9 +31,13 @@ All commands run from `ecosystem-explorer/` with `bun`:
 
 The `@/` import alias maps to `src/`. Always use `@/` for intra-`src` imports.
 
-Routes are registered centrally in `App.tsx`. To add a feature route: create a `*-page.tsx` under
-`src/features/{feature}/`, then register a `<Route>` in `App.tsx`. The header and footer wrap all
-routes globally, so do not duplicate them per page.
+`App.tsx` reads the `V1_REDESIGN` flag once and renders one of two sub-apps under a shared
+`<BrowserRouter>`: `LegacyApp.tsx` (default) or `src/v1/V1App.tsx` (v1 redesign). Each sub-app owns
+its own `<Routes>` table and its own chrome — legacy uses `Header`/`Footer`, v1 uses
+`NavBar`/`CncfCallout`/`FooterV1`. The two route tables mirror each other verbatim. To add a feature
+route: create a `*-page.tsx` under `src/features/{feature}/`, then register the **same** `<Route>`
+in **both** `LegacyApp.tsx` and `V1App.tsx` to keep them in sync. The chrome wraps all routes
+globally, so do not duplicate it per page.
 
 ## Testing
 

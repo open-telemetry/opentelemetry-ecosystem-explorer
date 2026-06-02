@@ -21,8 +21,17 @@ import type {
 } from "@/types/collector";
 import { STORES } from "./idb-cache";
 import { fetchWithCache } from "./fetch-with-cache";
+import { mapWithConcurrency } from "@/lib/map-with-concurrency";
 
 const BASE_PATH = "/data/collector";
+
+// Cap on concurrent component fetches in loadAllComponents. A version manifest
+// lists ~265 components, so an unbounded fan-out would queue that many requests
+// at once on a cold cache. 8 keeps a small buffer over the browser's
+// ~6-per-host HTTP/1.1 connection cap without flooding the IndexedDB cache
+// layer. The collector search source avoids this fan-out via loadIndex(); this
+// cap covers the remaining caller, the collector list-page hook.
+const MAX_COMPONENT_FETCH_CONCURRENCY = 8;
 
 export async function loadVersions(): Promise<VersionsIndex> {
   const data = await fetchWithCache<VersionsIndex>(
@@ -83,13 +92,14 @@ export async function loadAllComponents(version: string): Promise<CollectorCompo
   const manifest = await loadVersionManifest(version);
   const componentIds = Object.keys(manifest.components);
 
-  return Promise.all(
-    componentIds.map(async (id) => {
-      // Parse id from format "distribution-name"
-      const parts = id.split("-");
-      const distribution = parts[0]; // "contrib" or "core"
-      const name = parts.slice(1).join("-"); // Everything after first dash
-      return loadComponent(distribution, name, version, manifest);
-    })
-  );
+  // Bounded fan-out: one fetch per component, but at most
+  // MAX_COMPONENT_FETCH_CONCURRENCY in flight at a time. Order is preserved, so
+  // callers see the same result as the prior Promise.all.
+  return mapWithConcurrency(componentIds, MAX_COMPONENT_FETCH_CONCURRENCY, (id) => {
+    // Parse id from format "distribution-name"
+    const parts = id.split("-");
+    const distribution = parts[0]; // "contrib" or "core"
+    const name = parts.slice(1).join("-"); // Everything after first dash
+    return loadComponent(distribution, name, version, manifest);
+  });
 }

@@ -23,6 +23,7 @@ from java_instrumentation_watcher.inventory_manager import InventoryManager
 from semantic_version import Version
 
 from explorer_db_builder.collector_builder import run_collector_builder
+from explorer_db_builder.configuration_aggregator import build_global_configurations
 from explorer_db_builder.configuration_builder import run_configuration_builder
 from explorer_db_builder.database_writer import DatabaseWriter
 from explorer_db_builder.instrumentation_transformer import transform_instrumentation_format
@@ -74,7 +75,7 @@ def process_version(
     inventory_manager: InventoryManager,
     db_writer: DatabaseWriter,
     inventory: Optional[dict] = None,
-) -> None:
+) -> list[dict]:
     """Process a single version and write its data to the database.
 
     Handles both old (0.1) and new (0.2) file formats by transforming
@@ -86,8 +87,13 @@ def process_version(
         db_writer: Writer for database operations
         inventory: Optional pre-loaded inventory (e.g., backfilled data)
 
+    Returns:
+        The full instrumentation dicts written for this version (libraries
+        followed by custom), so the caller can build the lightweight index.
+
     Raises:
-        ValueError: If no libraries found for the version or unsupported format
+        ValueError: If neither libraries nor custom instrumentations are found
+            for the version, or if the inventory has an unsupported file format
         KeyError: If inventory data is malformed
     """
     logger.info(f"Processing Java Agent version: {version}")
@@ -100,8 +106,11 @@ def process_version(
     if "libraries" not in transformed_inventory and "custom" not in transformed_inventory:
         raise KeyError(f"Inventory for version {version} missing 'libraries' and 'custom' keys")
 
-    libraries = transformed_inventory.get("libraries", [])
-    custom = transformed_inventory.get("custom", [])
+    # `or []` (not a .get default) so an explicit "libraries": None in malformed or
+    # partially-backfilled inventory normalizes to a list. Otherwise the
+    # `[*libraries, *custom]` return below would raise TypeError unpacking None.
+    libraries = transformed_inventory.get("libraries") or []
+    custom = transformed_inventory.get("custom") or []
 
     if not libraries and not custom:
         raise ValueError(f"No instrumentations found in inventory for version {version}")
@@ -112,6 +121,8 @@ def process_version(
     custom_map = db_writer.write_libraries(custom) if custom else {}
 
     db_writer.write_version_index(version, library_map, custom_map)
+
+    return [*libraries, *custom]
 
 
 def run_javaagent_builder(
@@ -153,13 +164,20 @@ def run_javaagent_builder(
             inventory = inventory_manager.load_versioned_inventory(version)
             readme_map = readme_maps.get(version, {})
 
-            # Augment libraries and custom instrumentations with markdown_hash
+            # Normalize an explicit "libraries": None / "custom": None (malformed or
+            # partial inventory, since YAML `libraries:` parses as None) to [] up front.
+            # This both lets the augmentation loop below iterate safely and keeps the
+            # downstream backfill/process_version steps from raising TypeError on None.
             for key in ["libraries", "custom"]:
-                if key in inventory:
-                    for item in inventory[key]:
-                        name = item.get("name")
-                        if name and name in readme_map:
-                            item["markdown_hash"] = readme_map[name]
+                if inventory.get(key) is None and key in inventory:
+                    inventory[key] = []
+
+            # Augment libraries and custom instrumentations with markdown_hash.
+            for key in ["libraries", "custom"]:
+                for item in inventory.get(key, []):
+                    name = item.get("name")
+                    if name and name in readme_map:
+                        item["markdown_hash"] = readme_map[name]
 
             return inventory
 
@@ -174,11 +192,21 @@ def run_javaagent_builder(
             item_key="custom",
         )
 
+        # versions[0] is the latest release (the same version write_version_list
+        # flags as is_latest), so the first processed version's instrumentations
+        # feed the lightweight index.
+        latest_instrumentations: list[dict] = []
         for version in versions:
             inventory = backfilled_inventories.get(version)
-            process_version(version, inventory_manager, db_writer, inventory=inventory)
+            instrumentations = process_version(version, inventory_manager, db_writer, inventory=inventory)
+            if not latest_instrumentations:
+                latest_instrumentations = instrumentations
 
         db_writer.write_version_list(versions)
+        db_writer.write_index(latest_instrumentations)
+
+        global_configurations = build_global_configurations([backfilled_inventories[v] for v in versions])
+        db_writer.write_global_configurations(global_configurations)
 
         stats = db_writer.get_stats()
         total_mb = stats["total_bytes"] / (1024 * 1024)

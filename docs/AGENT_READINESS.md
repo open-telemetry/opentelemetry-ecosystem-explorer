@@ -37,13 +37,18 @@ All structured metadata follows strict JSON schemas:
 
 - **Source of Truth**: The TypeScript interfaces in `ecosystem-explorer/src/types/` (e.g.,
   `CollectorComponent`, `InstrumentationData`).
-- **Automation**: The `bun run generate-schemas` script (invoked during `build`) uses
-  `typescript-json-schema` to emit the latest schemas to `public/schemas/`.
-- **Syncing**: This ensures that any change to the frontend's data model is immediately reflected in
-  the schemas consumed by agents.
+- **Automation**: The `bun run generate-schemas` script uses `typescript-json-schema` to emit the
+  schemas to `public/schemas/` and Prettier-formats them. It is the single regeneration path, shared
+  by `build`, a pre-commit hook, and CI.
+- **Syncing**: A pre-commit hook regenerates the schemas whenever the source types or the generator
+  change, and the `Schemas up to date` CI job fails if the committed schemas drift from the types,
+  so any change to the frontend's data model stays reflected in the schemas consumed by agents.
 
 ### Verification
 
+- **Sync Enforcement**: A pre-commit hook and the `Schemas up to date` CI job (in
+  `build-and-test.yml`) regenerate the schemas and fail on any drift from the TypeScript types,
+  keeping the committed files in sync.
 - **Build-time Check**: The documentation generation script (`generate-agent-docs.mjs`) references
   these schemas and includes them in the `llms.txt` index.
 - **Header Enforcement**: Netlify Edge Functions ensure these schemas are served with the correct

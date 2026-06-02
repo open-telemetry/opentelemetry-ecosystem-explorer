@@ -24,6 +24,7 @@ import javaAgentVersionsIndex from "../../../public/data/javaagent/versions-inde
 import { normalizeRegistryName } from "@/lib/normalize-instrumentation";
 import { installFetchInterceptor, uninstallFetchInterceptor } from "./helpers/fetch-interceptor";
 import { renderBuilderPage as renderPage } from "./helpers/render-builder-page";
+import { openInstrumentationTab } from "./helpers/open-instrumentation-tab";
 
 const latestSchemaVersion = schemaVersionsIndex.versions.find((v) => v.is_latest)!.version;
 const latestAgentVersion = javaAgentVersionsIndex.versions.find((v) => v.is_latest)!.version;
@@ -56,12 +57,6 @@ beforeEach(() => localStorage.clear());
 
 async function findAgentSelector(): Promise<HTMLSelectElement> {
   return (await screen.findByLabelText("Agent", {}, { timeout: 10_000 })) as HTMLSelectElement;
-}
-
-async function openInstrumentationTab(user: ReturnType<typeof userEvent.setup>) {
-  await screen.findByRole("switch", { name: /Enable Resource/i }, { timeout: 10_000 });
-  const sidebar = screen.getByRole("complementary");
-  await user.click(within(sidebar).getByRole("tab", { name: /Instrumentation/i }));
 }
 
 describe("ConfigurationBuilderPage version selectors", () => {

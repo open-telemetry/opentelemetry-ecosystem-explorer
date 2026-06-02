@@ -62,15 +62,14 @@ export function GeneralSectionCard({
             <p className="text-muted-foreground text-sm">{emptyMessage}</p>
           ) : (
             <div className="space-y-3 pl-3">
-              {children.map((child) => (
-                <div key={child.key} data-yaml-section-key={child.key}>
-                  <SchemaRenderer
-                    node={child}
-                    depth={1}
-                    path={pathPrefix ? `${pathPrefix}.${child.key}` : child.key}
-                  />
-                </div>
-              ))}
+              {children.map((child) => {
+                const path = pathPrefix ? `${pathPrefix}.${child.key}` : child.key;
+                return (
+                  <div key={child.key} data-yaml-section-key={path}>
+                    <SchemaRenderer node={child} depth={1} path={path} />
+                  </div>
+                );
+              })}
             </div>
           )}
         </FieldSection.Body>

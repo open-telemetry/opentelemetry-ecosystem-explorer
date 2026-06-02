@@ -239,6 +239,29 @@ class TestBackfillMetadata:
         assert result[Version("1.1.0")]["libraries"][0]["display_name"] == "Test Library"
         assert result[Version("1.2.0")]["libraries"][0]["display_name"] == "Test Library"
 
+    def test_present_but_none_item_list_does_not_crash(self):
+        """A present-but-None item list (malformed/partial inventory, since YAML
+        `libraries:` parses as None) is normalized to [] instead of raising TypeError
+        while iterating in _build_timelines / backfill_metadata."""
+        versions = [Version("1.1.0"), Version("1.2.0")]
+
+        inventories = {
+            Version("1.1.0"): {"file_format": 0.2, "libraries": None},
+            Version("1.2.0"): {
+                "file_format": 0.2,
+                "libraries": [{"name": "test-lib", "display_name": "Test Library"}],
+            },
+        }
+
+        def load_fn(version):
+            return inventories[version]
+
+        result = backfill_metadata(versions, load_fn)
+
+        # The None version yields an empty list; the populated version is unaffected.
+        assert result[Version("1.1.0")]["libraries"] == []
+        assert result[Version("1.2.0")]["libraries"][0]["display_name"] == "Test Library"
+
     def test_backfill_has_javaagent_boolean(self):
         """Backfills the has_javaagent boolean (including False) from later versions."""
         versions = [Version("1.1.0"), Version("1.2.0"), Version("1.3.0")]
