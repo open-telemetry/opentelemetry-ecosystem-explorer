@@ -141,6 +141,19 @@ class TestProcessVersion:
         with pytest.raises(ValueError, match="No instrumentations found"):
             process_version(version, mock_inventory_manager, mock_db_writer)
 
+    def test_process_version_none_one_side_does_not_crash(self, mock_inventory_manager, mock_db_writer):
+        """An explicit None on one side (malformed/partial inventory) normalizes to a
+        list instead of raising TypeError when unpacking into the returned list."""
+        version = Version("2.0.0")
+        inventory_data = {"file_format": 0.2, "libraries": None, "custom": [{"name": "custom1"}]}
+
+        mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
+        mock_db_writer.write_libraries.return_value = {"custom1": "hash1"}
+
+        result = process_version(version, mock_inventory_manager, mock_db_writer)
+
+        assert [i["name"] for i in result] == ["custom1"]
+
 
 class TestRunJavaagentBuilder:
     def test_run_builder_success(self, mock_inventory_manager, mock_db_writer):

@@ -105,8 +105,11 @@ def process_version(
     if "libraries" not in transformed_inventory and "custom" not in transformed_inventory:
         raise KeyError(f"Inventory for version {version} missing 'libraries' and 'custom' keys")
 
-    libraries = transformed_inventory.get("libraries", [])
-    custom = transformed_inventory.get("custom", [])
+    # `or []` (not a .get default) so an explicit "libraries": None in malformed or
+    # partially-backfilled inventory normalizes to a list. Otherwise the
+    # `[*libraries, *custom]` return below would raise TypeError unpacking None.
+    libraries = transformed_inventory.get("libraries") or []
+    custom = transformed_inventory.get("custom") or []
 
     if not libraries and not custom:
         raise ValueError(f"No instrumentations found in inventory for version {version}")
@@ -192,8 +195,7 @@ def run_javaagent_builder(
                 latest_instrumentations = instrumentations
 
         db_writer.write_version_list(versions)
-        if latest_instrumentations:
-            db_writer.write_index(latest_instrumentations)
+        db_writer.write_index(latest_instrumentations)
 
         global_configurations = build_global_configurations([backfilled_inventories[v] for v in versions])
         db_writer.write_global_configurations(global_configurations)
