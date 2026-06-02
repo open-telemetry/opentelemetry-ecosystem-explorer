@@ -169,6 +169,10 @@ modules:
   description: OpenTelemetry Quartz.NET Instrumentation.
   type: instrumentation
   version: 1.15.1-beta.1
+- name: OpenTelemetry.Instrumentation.Remoting
+  description: .NET Remoting instrumentation for OpenTelemetry.
+  type: instrumentation
+  version: 0.1.0-alpha.1
 - name: OpenTelemetry.Instrumentation.Runtime
   description: .NET runtime instrumentation for OpenTelemetry .NET.
   type: instrumentation
