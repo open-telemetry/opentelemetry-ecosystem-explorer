@@ -16,15 +16,33 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { OtelLogo } from "@/components/icons/otel-logo";
+import { isEnabled } from "@/lib/feature-flags";
 
 const NAV_ITEMS = [
-  { to: "/java-agent", label: "Java Agent" },
-  { to: "/collector", label: "Collector" },
-  { to: "/about", label: "About" },
+  { to: "/java-agent", labelKey: "header.nav.javaAgent" },
+  { to: "/collector", labelKey: "header.nav.collector" },
+  { to: "/about", labelKey: "header.nav.about" },
 ] as const;
 
+function LanguageSwitcher() {
+  const { i18n, t } = useTranslation("layout");
+  return (
+    <select
+      value={i18n.resolvedLanguage ?? "en"}
+      onChange={(e) => i18n.changeLanguage(e.target.value)}
+      className="border-border/40 bg-background text-muted-foreground hover:text-foreground cursor-pointer rounded border px-2 py-1 text-xs transition-colors"
+      aria-label={t("header.languageSwitcher")}
+    >
+      <option value="en">English</option>
+      <option value="es">Español</option>
+    </select>
+  );
+}
+
 export function Header() {
+  const { t } = useTranslation("layout");
   const location = useLocation();
 
   // Storing the pathname the menu was opened on (rather than a plain boolean)
@@ -43,18 +61,19 @@ export function Header() {
         <div className="mx-auto flex h-full max-w-screen-2xl items-center justify-between px-6">
           <Link to="/" className="flex items-center gap-3">
             <OtelLogo className="text-primary h-6 w-6" />
-            <span className="text-foreground font-semibold">OTel Explorer</span>
+            <span className="text-foreground font-semibold">{t("header.title")}</span>
           </Link>
           <nav aria-label="Main" className="hidden items-center gap-8 md:flex">
-            {NAV_ITEMS.map(({ to, label }) => (
+            {NAV_ITEMS.map((item) => (
               <Link
-                key={to}
-                to={to}
+                key={item.to}
+                to={item.to}
                 className="text-muted-foreground hover:text-foreground text-sm transition-colors"
               >
-                {label}
+                {t(item.labelKey)}
               </Link>
             ))}
+            {isEnabled("I18N") && <LanguageSwitcher />}
           </nav>
           <button
             type="button"
@@ -74,16 +93,21 @@ export function Header() {
           className="border-border/30 bg-background/95 border-b px-6 py-4 md:hidden"
         >
           <ul className="flex flex-col gap-4">
-            {NAV_ITEMS.map(({ to, label }) => (
-              <li key={to}>
+            {NAV_ITEMS.map((item) => (
+              <li key={item.to}>
                 <Link
-                  to={to}
+                  to={item.to}
                   className="text-muted-foreground hover:text-foreground text-sm transition-colors"
                 >
-                  {label}
+                  {t(item.labelKey)}
                 </Link>
               </li>
             ))}
+            {isEnabled("I18N") && (
+              <li>
+                <LanguageSwitcher />
+              </li>
+            )}
           </ul>
         </nav>
       </header>

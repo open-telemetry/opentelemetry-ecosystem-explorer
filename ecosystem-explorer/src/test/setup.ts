@@ -15,6 +15,26 @@
  */
 import "@testing-library/jest-dom";
 import { beforeAll, vi } from "vitest";
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
+
+import commonEn from "../../public/locales/en/common.json";
+import layoutEn from "../../public/locales/en/layout.json";
+import homeEn from "../../public/locales/en/home.json";
+
+i18n.use(initReactI18next).init({
+  lng: "en",
+  fallbackLng: "en",
+  ns: ["common", "layout", "home"],
+  defaultNS: "common",
+  resources: {
+    en: {
+      common: commonEn,
+      layout: layoutEn,
+      home: homeEn,
+    },
+  },
+});
 
 /*
  * jsdom doesn't ship `window.matchMedia`, but `ThemeProvider` calls it on
