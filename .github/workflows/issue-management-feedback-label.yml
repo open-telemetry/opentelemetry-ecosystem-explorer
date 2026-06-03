@@ -18,8 +18,7 @@ jobs:
     name: Remove labels
     permissions:
       contents: read # checkout is not needed, but keep read as the safe default baseline
-      issues: write # to remove labels from issues
-      pull-requests: write # to remove labels from PRs (issue_comment fires for both)
+      issues: write # to remove labels; PR labels are also managed via the Issues API
     if: >
       contains(github.event.issue.labels.*.name, 'needs author feedback') &&
       github.event.comment.user.login == github.event.issue.user.login
@@ -28,7 +27,9 @@ jobs:
       - name: Remove labels
         env:
           ISSUE_NUMBER: ${{ github.event.issue.number }}
+          GH_REPO: ${{ github.repository }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh issue edit --remove-label "needs author feedback" $ISSUE_NUMBER
-          gh issue edit --remove-label "stale" $ISSUE_NUMBER
+          gh issue edit "$ISSUE_NUMBER" \
+            --remove-label "needs author feedback" \
+            --remove-label "stale"
