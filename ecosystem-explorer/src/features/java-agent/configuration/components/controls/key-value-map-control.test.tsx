@@ -180,6 +180,9 @@ describe("KeyValueMapControl", () => {
   });
 
   it("calls clearValidationError when the conflicting key is renamed", () => {
+    mockValidationErrors = {
+      [node.path]: "Duplicate key: only the last value for each key is kept.",
+    };
     const onChange = vi.fn();
     render(
       <KeyValueMapControl node={node} path={node.path} value={{ host: "a" }} onChange={onChange} />
@@ -196,6 +199,19 @@ describe("KeyValueMapControl", () => {
 
     expect(clearValidationError).toHaveBeenCalledWith(node.path);
     expect(setFieldError).not.toHaveBeenCalled();
+  });
+
+  it("does not clear an unrelated validation error when editing a non-duplicate row", () => {
+    mockValidationErrors = { [node.path]: "Required" };
+    render(
+      <KeyValueMapControl node={node} path={node.path} value={{ host: "a" }} onChange={vi.fn()} />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Add entry to Resource Attributes" }));
+    const keyInputs = screen.getAllByPlaceholderText("key");
+    fireEvent.change(keyInputs[1], { target: { value: "port" } });
+
+    expect(clearValidationError).not.toHaveBeenCalled();
   });
 
   it("does not call setFieldError for empty keys", () => {

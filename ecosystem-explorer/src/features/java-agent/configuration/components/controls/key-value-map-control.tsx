@@ -57,6 +57,8 @@ const INPUT_CLASS =
 const INPUT_ERROR_CLASS =
   "rounded-lg border border-red-500/60 bg-background/80 px-3 py-2 text-sm backdrop-blur-sm transition-all duration-200 placeholder:text-muted-foreground/50 focus:border-red-500/80 focus:outline-none focus:ring-2 focus:ring-red-500/20";
 
+const DUPLICATE_KEY_ERROR = "Duplicate key: only the last value for each key is kept.";
+
 export function KeyValueMapControl({ node, path, value, onChange }: KeyValueMapControlProps) {
   const isNull = node.nullable === true && value === null;
   const { state, setFieldError, clearValidationError } = useConfigurationBuilder();
@@ -88,8 +90,8 @@ export function KeyValueMapControl({ node, path, value, onChange }: KeyValueMapC
   const emit = (next: Entry[]) => {
     const obj = fromEntries(next);
     if (getDuplicateKeys(next).size > 0) {
-      setFieldError(path, "Duplicate key: only the last value for each key is kept.");
-    } else {
+      setFieldError(path, DUPLICATE_KEY_ERROR);
+    } else if (state.validationErrors[path] === DUPLICATE_KEY_ERROR) {
       clearValidationError(path);
     }
     lastSerializedEmit.current = JSON.stringify(obj);
