@@ -21,7 +21,10 @@ only for `scripts/take-screenshots.mjs`. Design system: `ecosystem-explorer/DESI
 `@/` alias maps to `src/`. Sibling `./` imports are common and fine. Flag deep relatives
 (`../../lib/...`); ask for `@/`.
 
-Routes register in `App.tsx`. Flag `<Route>` elsewhere or pages re-rendering header/footer locally.
+`App.tsx` reads `V1_REDESIGN` once and renders `LegacyApp.tsx` or `src/v1/V1App.tsx`; each owns its
+own `<Routes>` table and chrome. New routes must be added to **both** route tables to keep them in
+sync. Flag `<Route>` registered elsewhere, route tables that drift between the two sub-apps, or
+pages re-rendering header/footer locally.
 
 ## Comments and styling
 

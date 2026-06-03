@@ -339,6 +339,13 @@ class CollectorSync:
 
         return snapshot_version
 
+    def _process_distribution_sync(self, distribution: DistributionName) -> tuple[Version | None, Version]:
+        latest = self.process_latest_release(distribution)
+        
+        snapshot = self.update_snapshot(distribution)
+        
+        return (latest, snapshot)
+
     def sync(self) -> dict[str, Any]:
         """
         Synchronize collector metadata to the registry.
@@ -359,18 +366,24 @@ class CollectorSync:
         logger.info("=" * 60)
         logger.info("COLLECTOR METADATA SYNC")
         logger.info("=" * 60)
+        distribution_results = {}
+        try:
+            for distribution in self.repos.keys():
+                logger.info("")
+                logger.info("=" * 60)
+                logger.info("Distribution: %s", distribution.upper())
+                logger.info("=" * 60)
 
-        for distribution in self.repos.keys():
-            logger.info("")
-            logger.info("=" * 60)
-            logger.info("Distribution: %s", distribution.upper())
-            logger.info("=" * 60)
+                latest, snapshot = self._process_distribution_sync(distribution)
+                distribution_results[distribution] = (latest, snapshot)
+                
+        except Exception as e:
+            logger.error("Error processing distributions: %s", e)
+            raise
 
-            latest = self.process_latest_release(distribution)
+        for distribution, (latest, snapshot) in distribution_results.items():
             if latest:
                 summary["new_releases"].append({"distribution": distribution, "version": str(latest)})
-
-            snapshot = self.update_snapshot(distribution)
             summary["snapshots_updated"].append({"distribution": distribution, "version": str(snapshot)})
 
         logger.info("")

@@ -4023,7 +4023,7 @@ components:
         type: string
 - name: envoyalsreceiver
   metadata:
-    type: envoyals
+    type: envoy_als
     display_name: Envoy ALS (Access Log Service) Receiver
     description: This is a receiver for the [Envoy gRPC ALS](https://www.envoyproxy.io/docs/envoy/latest/api-v3/extensions/access_loggers/grpc/v3/als.proto#envoy-v3-api-msg-extensions-access-loggers-grpc-v3-httpgrpcaccesslogconfig)
       sink.
@@ -10567,6 +10567,38 @@ components:
         description: The database management system (DBMS) product as identified by
           the client instrumentation.
         type: string
+      destination.type:
+        description: Type of the SQL*Net destination endpoint (client application
+          or remote database link).
+        type: string
+        enum:
+        - client
+        - dblink
+      disk.io.block_size:
+        description: Multi-block vs single-block (all) I/O request grouping.
+        type: string
+        enum:
+        - all
+        - multi
+      disk.io.direction:
+        description: Direction of the storage I/O operation.
+        type: string
+        enum:
+        - read
+        - write
+      disk.io.type:
+        description: Whether the I/O bytes are buffered (cache-mediated) or total
+          (raw transfer count).
+        type: string
+        enum:
+        - buffered
+        - total
+      network.io.direction:
+        description: Direction of the SQL*Net network transfer.
+        type: string
+        enum:
+        - receive
+        - transmit
       network.peer.address:
         description: IP address of the peer client.
         type: string
@@ -10764,6 +10796,12 @@ components:
         description: The total time (in seconds) a query spent waiting for user I/O
           operations—such as reading or writing data to disk or network file systems
           (reporting delta).
+        type: double
+      oracledb.wait.count:
+        description: Total number of waits for the wait event across all sessions.
+        type: int
+      oracledb.wait.duration:
+        description: Total time waited in seconds for the wait event.
         type: double
       oracledb.wait_class:
         description: The category of wait events a query or session is currently experiencing
@@ -11043,6 +11081,47 @@ components:
           value_type: int
           input_type: string
         stability: development
+      oracledb.physical_io.cache_writes:
+        description: Number of physical writes from the buffer cache to disk by DBWR.
+          Sourced from v$sysstat name physical writes from cache.
+        unit: '{writes}'
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+          input_type: string
+        stability: development
+      oracledb.physical_io.requests:
+        description: Number of physical I/O requests issued to storage. Sourced from
+          v$sysstat names physical read/write total IO requests (disk.io.block_size=all)
+          and physical read/write total multi block requests (disk.io.block_size=multi).
+        unit: '{requests}'
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+          input_type: string
+        attributes:
+        - disk.io.block_size
+        - disk.io.direction
+        stability: development
+      oracledb.physical_io.transferred:
+        description: Total physical I/O bytes transferred between Oracle and storage.
+          Sums across all data files. Sourced from v$sysstat names physical read/write
+          bytes (disk.io.type=buffered) and physical read/write total bytes (disk.io.type=total).
+        unit: By
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+          input_type: string
+        attributes:
+        - disk.io.direction
+        - disk.io.type
+        stability: development
       oracledb.physical_read_io_requests:
         description: Number of read requests for application activity
         unit: '{requests}'
@@ -11154,6 +11233,20 @@ components:
         attributes:
         - session_status
         - session_type
+        stability: development
+      oracledb.sqlnet.io.transferred:
+        description: Bytes transferred via SQL*Net between Oracle and clients/dblinks.
+          Sourced from v$sysstat names bytes received/sent via SQL*Net from/to client/dblink.
+        unit: By
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+          input_type: string
+        attributes:
+        - destination.type
+        - network.io.direction
         stability: development
       oracledb.storage.usage:
         description: Used database storage size from dba_data_files and dba_free_space.
@@ -11279,7 +11372,7 @@ components:
         - moh-osman3
 - name: otlpjsonfilereceiver
   metadata:
-    type: otlpjsonfile
+    type: otlp_json_file
     display_name: OTLP JSON File Receiver
     description: This receiver will read pipeline data from JSON files. The data is
       written in [Protobuf JSON encoding](https://developers.google.com/protocol-buffers/docs/proto3#json)
@@ -15965,6 +16058,12 @@ components:
         - StefanKurek
         seeking_new: true
     attributes:
+      cache.state:
+        description: The state of the cache objects.
+        type: string
+        enum:
+        - in_use
+        - total
       client.address:
         description: Hostname or address of the client.
         type: string
@@ -16003,6 +16102,17 @@ components:
       logical_filename:
         description: The logical filename of the file being monitored.
         type: string
+      memory.pool:
+        description: The functional area of SQL Server memory.
+        type: string
+        enum:
+        - connection
+        - granted_workspace
+        - max_workspace
+        - optimizer
+        - sql_cache
+        - target
+        - total
       network.peer.address:
         description: IP address of the peer client.
         type: string
@@ -16016,6 +16126,17 @@ components:
         enum:
         - read
         - write
+      page.pool:
+        description: The type of page pool in the SQL Server buffer manager.
+        type: string
+        enum:
+        - cache
+        - database
+        - free
+        - reserved
+        - stolen
+        - target
+        - total
       performance_counter.object_name:
         description: Category to which this counter belongs
         type: string
@@ -16187,6 +16308,12 @@ components:
         enum:
         - free
         - used
+      transition.direction:
+        description: The direction of a superlatch transition.
+        type: string
+        enum:
+        - demotion
+        - promotion
       user.name:
         description: Login name associated with the SQL Server session.
         type: string
@@ -16348,6 +16475,49 @@ components:
           value_type: double
         attributes: []
         stability: development
+      sqlserver.latch.superlatch.count:
+        description: Number of superlatches currently active.
+        unit: '{superlatch}'
+        enabled: false
+        gauge:
+          value_type: int
+        attributes: []
+        stability: development
+      sqlserver.latch.superlatch.transition.rate:
+        description: Rate of superlatch promotions or demotions.
+        unit: '{transition}/s'
+        enabled: false
+        gauge:
+          value_type: double
+        attributes:
+        - transition.direction
+        stability: development
+      sqlserver.latch.wait.rate:
+        description: Number of latch waits per second.
+        unit: '{wait}/s'
+        enabled: false
+        gauge:
+          value_type: double
+        attributes: []
+        stability: development
+      sqlserver.latch.wait_time.avg:
+        description: Average latch wait time.
+        unit: s
+        enabled: false
+        gauge:
+          value_type: double
+        attributes: []
+        stability: development
+      sqlserver.latch.wait_time.total:
+        description: Total latch wait time.
+        unit: s
+        enabled: false
+        sum:
+          monotonic: true
+          aggregation_temporality: cumulative
+          value_type: double
+        attributes: []
+        stability: development
       sqlserver.lock.timeout.rate:
         description: Total number of lock timeouts.
         unit: “{timeouts}/s”
@@ -16395,9 +16565,27 @@ components:
           value_type: double
         attributes: []
         stability: development
+      sqlserver.memory.area:
+        description: Amount of memory used by the SQL Server memory pool.
+        unit: By
+        enabled: false
+        gauge:
+          value_type: int
+        attributes:
+        - memory.pool
+        stability: development
+      sqlserver.memory.cache.object.count:
+        description: Number of cache objects in the SQL Server cache.
+        unit: '{object}'
+        enabled: false
+        gauge:
+          value_type: int
+        attributes:
+        - cache.state
+        stability: development
       sqlserver.memory.grants.pending.count:
         description: Total number of memory grants pending.
-        unit: “{grants}”
+        unit: '{grants}'
         enabled: false
         sum:
           aggregation_temporality: cumulative
@@ -16405,9 +16593,18 @@ components:
           value_type: int
         attributes: []
         stability: development
+      sqlserver.memory.page.count:
+        description: Number of pages in the SQL Server buffer pool.
+        unit: '{page}'
+        enabled: false
+        gauge:
+          value_type: int
+        attributes:
+        - page.pool
+        stability: development
       sqlserver.memory.usage:
         description: Total memory in use.
-        unit: “KB”
+        unit: KB
         enabled: false
         sum:
           aggregation_temporality: cumulative
@@ -17949,7 +18146,7 @@ components:
         - samiura
 - name: webhookeventreceiver
   metadata:
-    type: webhookevent
+    type: webhook_event
     display_name: Webhook Event Receiver
     description: The Webhook Event Receiver is a push based event collector component
       meant to act as a generally available receiver for any webhook style data source.

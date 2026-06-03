@@ -178,3 +178,27 @@ def _transform_0_3_to_0_5(inventory_data: dict[str, Any]) -> dict[str, Any]:
     transformed_data["file_format"] = 0.5
     logger.info("Transformed inventory from format 0.3 to 0.5")
     return transformed_data
+
+
+def make_index_instrumentation(instrumentation: dict[str, Any]) -> dict[str, Any]:
+    """Extract lightweight metadata for the javaagent index.json.
+
+    The index powers initial page load, browsing, and client-side filtering
+    without fetching every full instrumentation file. Full detail stays in the
+    content-addressed component files and is loaded on demand.
+
+    Args:
+        instrumentation: Full canonical instrumentation dict (must have "name").
+
+    Returns:
+        Minimal dict suitable for the index components list.
+    """
+    telemetry = instrumentation.get("telemetry")
+    return {
+        "name": instrumentation["name"],
+        "display_name": instrumentation.get("display_name"),
+        "description": instrumentation.get("description"),
+        # Booleans the browse/search UI filters on without loading full detail.
+        "has_telemetry": bool(telemetry),
+        "has_standalone_library": bool(instrumentation.get("has_standalone_library")),
+    }
