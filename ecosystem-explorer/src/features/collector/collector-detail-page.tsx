@@ -15,6 +15,7 @@
  */
 import { useState } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Info, ExternalLink, AlertCircle, Check, Users } from "lucide-react";
 import { Loader } from "@/components/ui/loader";
 import { GitHubIcon } from "@/components/icons/github-icon";
@@ -28,17 +29,8 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { PageContainer } from "@/components/layout/page-container";
 import { useCollectorComponent, useCollectorVersions } from "@/hooks/use-collector-data";
 
-const COMPONENT_TYPE_DESCRIPTIONS: Record<string, string> = {
-  receiver: "Receivers collect telemetry data from various sources and formats.",
-  processor:
-    "Processors transform, filter, or enrich telemetry data between receivers and exporters.",
-  exporter: "Exporters send telemetry data to one or more backends or destinations.",
-  extension:
-    "Extensions provide additional capabilities to the collector without processing telemetry data.",
-  connector: "Connectors act as both an exporter and a receiver, joining two pipelines together.",
-};
-
 export function CollectorDetailPage() {
+  const { t } = useTranslation("collector");
   const { distribution, name } = useParams<{ distribution: string; name: string }>();
 
   const [searchParams] = useSearchParams();
@@ -56,22 +48,13 @@ export function CollectorDetailPage() {
   } = useCollectorComponent(distribution ?? "", name ?? "", version);
   const [activeTab, setActiveTab] = useState("details");
 
-  const getStabilityLabel = (level: string) => {
-    const labels: Record<string, string> = {
-      alpha: "Alpha",
-      beta: "Beta",
-      stable: "Stable",
-      deprecated: "Deprecated",
-      unmaintained: "Unmaintained",
-      development: "In Development",
-    };
-    return labels[level.toLowerCase()] || level;
-  };
+  const getStabilityLabel = (level: string) =>
+    t(`detail.stabilityLabels.${level.toLowerCase()}`, { defaultValue: level });
 
   if (loading || versionLoading) {
     return (
       <PageContainer>
-        <Loader label="Loading component..." />
+        <Loader label={t("detail.loading.title")} />
       </PageContainer>
     );
   }
@@ -89,16 +72,16 @@ export function CollectorDetailPage() {
               />
               <div className="flex-1 space-y-2">
                 <h3 className="font-semibold text-red-600 dark:text-red-400">
-                  Error loading component
+                  {t("detail.error.title")}
                 </h3>
                 <p className="text-sm text-red-600/90 dark:text-red-400/90">
-                  {error?.message || "Component not found"}
+                  {error?.message || t("detail.error.fallback")}
                 </p>
                 <button
                   onClick={() => navigate(-1)}
                   className="text-sm font-medium text-red-600 hover:underline dark:text-red-400"
                 >
-                  Go back
+                  {t("detail.error.goBack")}
                 </button>
               </div>
             </div>
@@ -160,17 +143,17 @@ export function CollectorDetailPage() {
                 tabs={[
                   {
                     value: "details",
-                    label: "Details",
+                    label: t("detail.tabs.details"),
                     icon: <Info className="h-4 w-4" aria-hidden="true" />,
                   },
                   {
                     value: "status",
-                    label: "Stability",
+                    label: t("detail.tabs.stability"),
                     icon: <Check className="h-4 w-4" aria-hidden="true" />,
                   },
                   {
                     value: "owners",
-                    label: "Ownership",
+                    label: t("detail.tabs.ownership"),
                     icon: <Users className="h-4 w-4" aria-hidden="true" />,
                   },
                 ]}
@@ -182,11 +165,11 @@ export function CollectorDetailPage() {
                 <DetailCard withGrid>
                   <div className="space-y-4">
                     <h3 className="border-border/50 mb-4 border-b pb-2 text-lg font-semibold">
-                      Component Info
+                      {t("detail.sections.componentInfo")}
                     </h3>
                     <div>
                       <h4 className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-                        Type
+                        {t("detail.labels.type")}
                       </h4>
                       <div className="mt-1 flex items-start gap-2 text-sm">
                         <Check
@@ -195,9 +178,11 @@ export function CollectorDetailPage() {
                         />
                         <div>
                           <span className="font-medium capitalize">{component.type}</span>
-                          {COMPONENT_TYPE_DESCRIPTIONS[component.type] && (
+                          {t(`detail.typeDescriptions.${component.type}`, {
+                            defaultValue: "",
+                          }) && (
                             <p className="text-muted-foreground mt-0.5 text-xs">
-                              {COMPONENT_TYPE_DESCRIPTIONS[component.type]}
+                              {t(`detail.typeDescriptions.${component.type}`)}
                             </p>
                           )}
                         </div>
@@ -205,13 +190,13 @@ export function CollectorDetailPage() {
                     </div>
                     <div>
                       <h4 className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-                        Version
+                        {t("detail.labels.version")}
                       </h4>
                       <p className="mt-1 text-sm font-medium">{version}</p>
                     </div>
                     <div>
                       <h4 className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-                        Distribution
+                        {t("detail.labels.distribution")}
                       </h4>
                       <p className="mt-1 text-sm font-medium capitalize">
                         {component.distribution}
@@ -223,7 +208,7 @@ export function CollectorDetailPage() {
                 <DetailCard>
                   <div className="space-y-4">
                     <h3 className="border-border/50 mb-4 border-b pb-2 text-lg font-semibold">
-                      Links & Resources
+                      {t("detail.sections.linksResources")}
                     </h3>
                     <a
                       href={`https://github.com/open-telemetry/${component.repository}/tree/main/${component.type}/${component.name}`}
@@ -233,8 +218,10 @@ export function CollectorDetailPage() {
                     >
                       <GitHubIcon className="text-secondary h-5 w-5 transition-transform group-hover:scale-110" />
                       <div>
-                        <p className="text-sm font-medium">Source Code</p>
-                        <p className="text-muted-foreground text-xs">View on GitHub</p>
+                        <p className="text-sm font-medium">{t("detail.links.sourceCode")}</p>
+                        <p className="text-muted-foreground text-xs">
+                          {t("detail.links.viewOnGithub")}
+                        </p>
                       </div>
                       <ExternalLink className="text-muted-foreground ml-auto h-4 w-4" />
                     </a>
@@ -246,7 +233,7 @@ export function CollectorDetailPage() {
             <TabsContent value="status" className="mt-0 p-6">
               {component.status ? (
                 <div className="space-y-6">
-                  <SectionHeader>Stability Levels</SectionHeader>
+                  <SectionHeader>{t("detail.sections.stabilityLevels")}</SectionHeader>
                   <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {Object.entries(component.status.stability).map(([level, signals]) => (
                       <DetailCard key={level} withHoverEffect>
@@ -274,7 +261,7 @@ export function CollectorDetailPage() {
                     ))}
                   </div>
 
-                  <SectionHeader>Distribution Availability</SectionHeader>
+                  <SectionHeader>{t("detail.sections.distributionAvailability")}</SectionHeader>
                   <div className="flex flex-wrap gap-2">
                     {component.status.distributions.map((dist) => (
                       <GlowBadge key={dist} variant="muted" className="capitalize">
@@ -286,9 +273,7 @@ export function CollectorDetailPage() {
               ) : (
                 <div className="py-12 text-center">
                   <AlertCircle className="text-muted-foreground/30 mx-auto h-12 w-12" />
-                  <p className="text-muted-foreground mt-4">
-                    No stability information available for this version.
-                  </p>
+                  <p className="text-muted-foreground mt-4">{t("detail.noStability")}</p>
                 </div>
               )}
             </TabsContent>
@@ -297,7 +282,7 @@ export function CollectorDetailPage() {
               {component.status?.codeowners?.active &&
               component.status.codeowners.active.length > 0 ? (
                 <div className="space-y-6">
-                  <SectionHeader>Code Owners</SectionHeader>
+                  <SectionHeader>{t("detail.sections.codeOwners")}</SectionHeader>
                   <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                     {component.status.codeowners.active.map((owner: string) => (
                       <DetailCard key={owner} withHoverEffect>
@@ -313,7 +298,7 @@ export function CollectorDetailPage() {
                               rel="noopener noreferrer"
                               className="text-primary text-xs hover:underline"
                             >
-                              View profile
+                              {t("detail.links.viewProfile")}
                             </a>
                           </div>
                         </div>
@@ -324,9 +309,7 @@ export function CollectorDetailPage() {
               ) : (
                 <div className="py-12 text-center">
                   <Users className="text-muted-foreground/30 mx-auto h-12 w-12" />
-                  <p className="text-muted-foreground mt-4">
-                    No code owner information found for this component.
-                  </p>
+                  <p className="text-muted-foreground mt-4">{t("detail.noOwners")}</p>
                 </div>
               )}
             </TabsContent>

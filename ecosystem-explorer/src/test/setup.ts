@@ -21,17 +21,19 @@ import { initReactI18next } from "react-i18next";
 import commonEn from "../../public/locales/en/common.json";
 import layoutEn from "../../public/locales/en/layout.json";
 import homeEn from "../../public/locales/en/home.json";
+import collectorEn from "../../public/locales/en/collector.json";
 
 i18n.use(initReactI18next).init({
   lng: "en",
   fallbackLng: "en",
-  ns: ["common", "layout", "home"],
+  ns: ["common", "layout", "home", "collector"],
   defaultNS: "common",
   resources: {
     en: {
       common: commonEn,
       layout: layoutEn,
       home: homeEn,
+      collector: collectorEn,
     },
   },
 });
