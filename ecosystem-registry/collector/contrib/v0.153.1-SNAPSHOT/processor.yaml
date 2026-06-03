@@ -185,6 +185,7 @@ components:
       codeowners:
         active:
         - TylerHelmuth
+        - kylehounslow
 - name: geoipprocessor
   metadata:
     type: geoip
