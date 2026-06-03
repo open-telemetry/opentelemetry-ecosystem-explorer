@@ -6,11 +6,17 @@ on:
     - cron: "23 * * * *"
   workflow_dispatch:
 
+# Only one stale sweep should run at a time; cancel a queued run if a newer one starts.
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
 jobs:
   stale:
+    name: Run stale action
     permissions:
       contents: read
       actions: write # because actions/stale deletes its old cache before saving new one

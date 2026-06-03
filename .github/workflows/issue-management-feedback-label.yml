@@ -5,15 +5,21 @@ on:
   issue_comment:
     types: [created]
 
+# Serialize label edits per issue so concurrent comments don't race on the same labels.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
 permissions:
   contents: read
 
 jobs:
   issue_comment:
+    name: Remove labels
     permissions:
-      contents: read
-      issues: write
-      pull-requests: write
+      contents: read # checkout is not needed, but keep read as the safe default baseline
+      issues: write # to remove labels from issues
+      pull-requests: write # to remove labels from PRs (issue_comment fires for both)
     if: >
       contains(github.event.issue.labels.*.name, 'needs author feedback') &&
       github.event.comment.user.login == github.event.issue.user.login
