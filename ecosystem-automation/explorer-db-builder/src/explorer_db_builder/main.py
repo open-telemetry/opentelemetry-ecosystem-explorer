@@ -19,8 +19,8 @@ import logging
 import sys
 from typing import Optional
 
-from java_instrumentation_watcher.inventory_manager import InventoryManager
 from semantic_version import Version
+from watcher_common.inventory_manager import JavaagentInventoryManager
 
 from explorer_db_builder.collector_builder import run_collector_builder
 from explorer_db_builder.configuration_aggregator import build_global_configurations
@@ -46,7 +46,7 @@ def configure_logging(level: int = logging.INFO) -> None:
     )
 
 
-def get_release_versions(inventory_manager: InventoryManager) -> list[Version]:
+def get_release_versions(inventory_manager: JavaagentInventoryManager) -> list[Version]:
     """Get list of release versions from the inventory.
 
     Filters out prerelease versions, returning only stable releases.
@@ -73,7 +73,7 @@ def get_release_versions(inventory_manager: InventoryManager) -> list[Version]:
 
 def process_version(
     version: Version,
-    inventory_manager: InventoryManager,
+    inventory_manager: JavaagentInventoryManager,
     db_writer: DatabaseWriter,
     inventory: Optional[dict] = None,
 ) -> list[dict]:
@@ -127,7 +127,7 @@ def process_version(
 
 
 def run_javaagent_builder(
-    inventory_manager: Optional[InventoryManager] = None,
+    inventory_manager: Optional[JavaagentInventoryManager] = None,
     db_writer: Optional[DatabaseWriter] = None,
     clean: bool = False,
 ) -> int:
@@ -142,7 +142,7 @@ def run_javaagent_builder(
         Exit code (0 for success, 1 for failure)
     """
     try:
-        inventory_manager = inventory_manager or InventoryManager()
+        inventory_manager = inventory_manager or JavaagentInventoryManager()
         db_writer = db_writer or DatabaseWriter()
 
         if clean:
