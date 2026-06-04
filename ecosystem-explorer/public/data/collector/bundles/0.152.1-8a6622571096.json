@@ -1,0 +1,146 @@
+[
+  {
+    "description": null,
+    "display_name": "Forward Connector",
+    "distribution": "core",
+    "id": "core-forwardconnector",
+    "name": "forwardconnector",
+    "stability": "beta",
+    "type": "connector"
+  },
+  {
+    "description": null,
+    "display_name": null,
+    "distribution": "core",
+    "id": "core-xconnector",
+    "name": "xconnector",
+    "stability": "alpha",
+    "type": "connector"
+  },
+  {
+    "description": null,
+    "display_name": "Debug Exporter",
+    "distribution": "core",
+    "id": "core-debugexporter",
+    "name": "debugexporter",
+    "stability": "alpha",
+    "type": "exporter"
+  },
+  {
+    "description": null,
+    "display_name": "No-op Exporter",
+    "distribution": "core",
+    "id": "core-nopexporter",
+    "name": "nopexporter",
+    "stability": "beta",
+    "type": "exporter"
+  },
+  {
+    "description": null,
+    "display_name": "OTLP gRPC Exporter",
+    "distribution": "core",
+    "id": "core-otlpexporter",
+    "name": "otlpexporter",
+    "stability": "stable",
+    "type": "exporter"
+  },
+  {
+    "description": null,
+    "display_name": "OTLP HTTP Exporter",
+    "distribution": "core",
+    "id": "core-otlphttpexporter",
+    "name": "otlphttpexporter",
+    "stability": "stable",
+    "type": "exporter"
+  },
+  {
+    "description": null,
+    "display_name": null,
+    "distribution": "core",
+    "id": "core-xexporter",
+    "name": "xexporter",
+    "stability": "alpha",
+    "type": "exporter"
+  },
+  {
+    "description": null,
+    "display_name": "Memory Limiter Extension",
+    "distribution": "core",
+    "id": "core-memorylimiterextension",
+    "name": "memorylimiterextension",
+    "stability": "development",
+    "type": "extension"
+  },
+  {
+    "description": null,
+    "display_name": null,
+    "distribution": "core",
+    "id": "core-xextension",
+    "name": "xextension",
+    "stability": "alpha",
+    "type": "extension"
+  },
+  {
+    "description": null,
+    "display_name": "zPages Extension",
+    "distribution": "core",
+    "id": "core-zpagesextension",
+    "name": "zpagesextension",
+    "stability": "beta",
+    "type": "extension"
+  },
+  {
+    "description": null,
+    "display_name": "Batch Processor",
+    "distribution": "core",
+    "id": "core-batchprocessor",
+    "name": "batchprocessor",
+    "stability": "beta",
+    "type": "processor"
+  },
+  {
+    "description": null,
+    "display_name": "Memory Limiter Processor",
+    "distribution": "core",
+    "id": "core-memorylimiterprocessor",
+    "name": "memorylimiterprocessor",
+    "stability": "beta",
+    "type": "processor"
+  },
+  {
+    "description": null,
+    "display_name": null,
+    "distribution": "core",
+    "id": "core-xprocessor",
+    "name": "xprocessor",
+    "stability": "alpha",
+    "type": "processor"
+  },
+  {
+    "description": null,
+    "display_name": "No-op Receiver",
+    "distribution": "core",
+    "id": "core-nopreceiver",
+    "name": "nopreceiver",
+    "stability": "beta",
+    "type": "receiver"
+  },
+  {
+    "description": null,
+    "display_name": "OTLP Receiver",
+    "distribution": "core",
+    "id": "core-otlpreceiver",
+    "name": "otlpreceiver",
+    "stability": "stable",
+    "type": "receiver"
+  },
+  {
+    "description": null,
+    "display_name": null,
+    "distribution": "core",
+    "id": "core-xreceiver",
+    "name": "xreceiver",
+    "stability": "alpha",
+    "type": "receiver"
+  }
+]

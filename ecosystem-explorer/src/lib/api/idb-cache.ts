@@ -16,7 +16,7 @@
 import { openDB, type IDBPDatabase } from "idb";
 
 const DB_NAME = "otel-explorer-cache";
-const DB_VERSION = 12;
+const DB_VERSION = 13;
 const CACHE_EXPIRATION_MS = 24 * 60 * 60 * 1000;
 const PRUNE_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const PRUNE_KEY = "__internal_last_pruned_at";
