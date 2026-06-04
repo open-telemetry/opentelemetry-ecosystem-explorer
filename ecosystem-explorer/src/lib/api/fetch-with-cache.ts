@@ -171,6 +171,10 @@ export async function fetchWithCache<T>(
       const format = options?.format ?? "json";
       const data = format === "json" ? await response.json() : await response.text();
       if (isIDBAvailable()) {
+        // Validate fresh data before caching
+        if (options?.validate && !options.validate(data)) {
+          throw new Error(`Failed to validate fresh response for ${cacheKey}`);
+        }
         try {
           await setCached(cacheKey, data, storeType);
         } catch {

@@ -135,7 +135,8 @@ export async function loadGlobalConfigurations(): Promise<GlobalConfiguration[]>
   const data = await fetchWithCache<GlobalConfiguration[]>(
     "global-configurations",
     resolveDataPath(BASE_DIR, "global-configurations.json"),
-    STORES.GLOBAL_CONFIGURATIONS
+    STORES.GLOBAL_CONFIGURATIONS,
+    { validate: (d) => Array.isArray(d) }
   );
   if (!data) throw new Error("Global configurations returned null unexpectedly");
   return data;
