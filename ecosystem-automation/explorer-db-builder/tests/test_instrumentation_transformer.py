@@ -17,8 +17,48 @@
 import pytest
 from explorer_db_builder.instrumentation_transformer import (
     _transform_0_1_to_0_2,
+    make_list_instrumentation,
     transform_instrumentation_format,
 )
+
+
+class TestMakeListInstrumentation:
+    def test_collapses_telemetry_to_flags_and_drops_heavy_fields(self):
+        instrumentation = {
+            "name": "akka-actor-2.3",
+            "display_name": "Akka Actor",
+            "description": "Akka actor instrumentation",
+            "scope": {"name": "io.opentelemetry.akka-actor-2.3"},
+            "has_javaagent": True,
+            "has_standalone_library": False,
+            "semantic_conventions": ["messaging"],
+            "features": ["context-propagation"],
+            "telemetry": [{"when": "always", "spans": [{"span_kind": "CLIENT"}], "metrics": []}],
+            "configurations": [{"name": "otel.x", "description": "d", "type": "boolean", "default": True}],
+        }
+
+        entry = make_list_instrumentation(instrumentation, is_custom=False)
+
+        # Presence flags precomputed from telemetry; heavy arrays dropped.
+        assert entry["has_spans"] is True
+        assert entry["has_metrics"] is False
+        assert "telemetry" not in entry
+        assert "configurations" not in entry
+        assert entry["_is_custom"] is False
+        # Fields the list page reads are preserved.
+        assert entry["name"] == "akka-actor-2.3"
+        assert entry["semantic_conventions"] == ["messaging"]
+        assert entry["scope"] == {"name": "io.opentelemetry.akka-actor-2.3"}
+
+    def test_marks_custom_and_omits_absent_optional_fields(self):
+        entry = make_list_instrumentation({"name": "my-custom"}, is_custom=True)
+
+        assert entry["_is_custom"] is True
+        assert entry["has_spans"] is False
+        assert entry["has_metrics"] is False
+        # Absent optional fields are omitted so the content hash stays stable.
+        assert "display_name" not in entry
+        assert "semantic_conventions" not in entry
 
 
 class TestTransformInstrumentationFormat:

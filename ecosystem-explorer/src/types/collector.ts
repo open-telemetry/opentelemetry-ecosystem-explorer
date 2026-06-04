@@ -21,6 +21,13 @@ export interface VersionsIndex {
 export interface VersionInfo {
   version: string;
   is_latest: boolean;
+  /**
+   * Content hash of the consolidated per-version list bundle, when available.
+   * The list page fetches `bundles/{version}-{bundle_hash}.json` in one request
+   * instead of fanning out per component. Optional so old cached indexes (and
+   * missing bundles) degrade gracefully to the per-component fan-out.
+   */
+  bundle_hash?: string;
 }
 
 export interface VersionManifest {

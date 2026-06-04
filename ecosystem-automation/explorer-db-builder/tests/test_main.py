@@ -108,11 +108,21 @@ class TestProcessVersion:
         # write_libraries will be called twice (libraries, custom)
         mock_db_writer.write_libraries.side_effect = [library_map, custom_map]
 
-        process_version(version, mock_inventory_manager, mock_db_writer)
+        mock_db_writer.write_version_bundle.return_value = "bundlehash"
+
+        instrumentations, bundle_hash = process_version(version, mock_inventory_manager, mock_db_writer)
 
         mock_inventory_manager.load_versioned_inventory.assert_called_once_with(version)
         assert mock_db_writer.write_libraries.call_count == 2
         mock_db_writer.write_version_index.assert_called_once_with(version, library_map, custom_map)
+        # A consolidated per-version bundle is written and its hash returned.
+        assert bundle_hash == "bundlehash"
+        mock_db_writer.write_version_bundle.assert_called_once()
+        bundle_items = mock_db_writer.write_version_bundle.call_args.args[1]
+        # Slim entries: telemetry/configurations dropped, _is_custom set, custom last.
+        assert [e["name"] for e in bundle_items] == ["lib1", "lib2", "custom1"]
+        assert [e["_is_custom"] for e in bundle_items] == [False, False, True]
+        assert all("telemetry" not in e and "configurations" not in e for e in bundle_items)
 
     def test_process_version_missing_libraries_key(self, mock_inventory_manager, mock_db_writer):
         version = Version("2.0.0")
@@ -150,9 +160,9 @@ class TestProcessVersion:
         mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
         mock_db_writer.write_libraries.return_value = {"custom1": "hash1"}
 
-        result = process_version(version, mock_inventory_manager, mock_db_writer)
+        instrumentations, _bundle_hash = process_version(version, mock_inventory_manager, mock_db_writer)
 
-        assert [i["name"] for i in result] == ["custom1"]
+        assert [i["name"] for i in instrumentations] == ["custom1"]
 
 
 class TestRunJavaagentBuilder:
@@ -165,12 +175,16 @@ class TestRunJavaagentBuilder:
         mock_inventory_manager.list_versions.return_value = versions
         mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
         mock_db_writer.write_libraries.return_value = library_map
+        mock_db_writer.write_version_bundle.side_effect = ["hash-2.0.0", "hash-1.0.0"]
 
         exit_code = run_javaagent_builder(mock_inventory_manager, mock_db_writer)
 
         assert exit_code == 0
         assert mock_db_writer.write_version_list.called
-        mock_db_writer.write_version_list.assert_called_once_with(versions)
+        # write_version_list now also receives the per-version bundle hash map.
+        mock_db_writer.write_version_list.assert_called_once_with(
+            versions, {versions[0]: "hash-2.0.0", versions[1]: "hash-1.0.0"}
+        )
 
     def test_run_builder_value_error(self, mock_inventory_manager, mock_db_writer):
         mock_inventory_manager.list_versions.return_value = []

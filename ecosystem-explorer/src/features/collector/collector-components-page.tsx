@@ -369,19 +369,14 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
                       </p>
 
                       <div className="border-border/10 flex items-center gap-2 border-t pt-2">
-                        {comp.status?.stability &&
-                          Object.keys(comp.status.stability).length > 0 && (
-                            <GlowBadge
-                              variant={
-                                Object.keys(comp.status.stability)[0] === "stable"
-                                  ? "success"
-                                  : "info"
-                              }
-                              className="px-2 py-0 text-[9px]"
-                            >
-                              {Object.keys(comp.status.stability)[0]}
-                            </GlowBadge>
-                          )}
+                        {comp.stability && (
+                          <GlowBadge
+                            variant={comp.stability === "stable" ? "success" : "info"}
+                            className="px-2 py-0 text-[9px]"
+                          >
+                            {comp.stability}
+                          </GlowBadge>
+                        )}
                       </div>
                     </div>
                   </DetailCard>

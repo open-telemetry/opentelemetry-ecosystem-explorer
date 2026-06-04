@@ -171,7 +171,57 @@ class DatabaseWriter:
             logger.error(f"Failed to write version index for {version}: {e}")
             raise
 
-    def write_version_list(self, versions: list[Version]) -> None:
+    def write_version_bundle(self, version: Version, instrumentations: list[dict[str, Any]]) -> str:
+        """Write a consolidated per-version bundle of slim instrumentation entries.
+
+        The frontend's list view loads every instrumentation for a version at
+        once. Rather than fan out one request per instrumentation, it fetches
+        this single content-addressed bundle. The per-instrumentation files in
+        ``instrumentations/`` remain for detail/deep-link pages.
+
+        Entries are the slim shape produced by ``make_list_instrumentation`` (the
+        fields the list/catalog page reads, with ``has_spans``/``has_metrics``
+        precomputed in place of the heavy ``telemetry`` array) — not full detail.
+
+        Args:
+            version: The semantic version the bundle is for.
+            instrumentations: Slim instrumentation entries (libraries then
+                custom) with ``_is_custom`` already set on each.
+
+        Returns:
+            The 12-char content hash, for inclusion in versions-index.json.
+
+        Raises:
+            ValueError: If instrumentations is empty.
+            OSError: If file writing fails.
+        """
+        if not instrumentations:
+            raise ValueError("Bundle instrumentations cannot be empty")
+
+        bundle_hash = content_hash(instrumentations)
+
+        bundles_dir = self.database_dir / "bundles"
+        bundles_dir.mkdir(parents=True, exist_ok=True)
+        bundle_file = bundles_dir / f"{version}-{bundle_hash}.json"
+
+        if bundle_file.exists():
+            logger.debug(f"Bundle for {version} with hash {bundle_hash} already exists, skipping write")
+            return bundle_hash
+
+        try:
+            content = json.dumps(instrumentations, indent=2, sort_keys=True)
+            with open(bundle_file, "w", encoding="utf-8") as f:
+                f.write(content)
+            self.files_written += 1
+            self.total_bytes += len(content.encode("utf-8"))
+            logger.info(f"Wrote version bundle for {version} with {len(instrumentations)} instrumentations")
+        except OSError as e:
+            logger.error(f"Failed to write version bundle for {version}: {e}")
+            raise
+
+        return bundle_hash
+
+    def write_version_list(self, versions: list[Version], bundle_hashes: dict[Version, str] | None = None) -> None:
         """Write the master version list index.
 
         Creates a top-level index file listing all available versions,
@@ -180,6 +230,12 @@ class DatabaseWriter:
         Args:
             versions: List of semantic versions, should be sorted with
                      latest first
+            bundle_hashes: Optional map of version to its consolidated bundle
+                hash. When present, each version entry carries a ``bundle_hash``
+                the frontend uses to fetch the single per-version bundle. The
+                field is omitted for versions without a hash so old clients and
+                missing bundles degrade gracefully to the per-instrumentation
+                fan-out.
 
         Raises:
             ValueError: If versions list is empty
@@ -194,7 +250,11 @@ class DatabaseWriter:
         version_list_data: list[dict[str, Any]] = []
 
         for version in versions:
-            version_list_data.append({"version": str(version), "is_latest": version == versions[0]})
+            entry: dict[str, Any] = {"version": str(version), "is_latest": version == versions[0]}
+            bundle_hash = (bundle_hashes or {}).get(version)
+            if bundle_hash:
+                entry["bundle_hash"] = bundle_hash
+            version_list_data.append(entry)
 
         final_data = {"versions": version_list_data}
 

@@ -202,3 +202,45 @@ def make_index_instrumentation(instrumentation: dict[str, Any]) -> dict[str, Any
         "has_telemetry": bool(telemetry),
         "has_standalone_library": bool(instrumentation.get("has_standalone_library")),
     }
+
+
+def make_list_instrumentation(instrumentation: dict[str, Any], *, is_custom: bool) -> dict[str, Any]:
+    """Project a full instrumentation down to the slim shape the list/catalog page reads.
+
+    The list page consumes every instrumentation for a version at once. Rather
+    than fan out one fetch per instrumentation (or ship the full detail), it
+    loads a single consolidated bundle of these slim entries. The page reads
+    ``telemetry`` only to decide whether to show spans/metrics badges and to
+    drive the spans/metrics filter, never the span/metric detail — so we
+    precompute ``has_spans``/``has_metrics`` and drop the heavy ``telemetry`` and
+    ``configurations`` arrays entirely. Full detail stays in the
+    content-addressed component files, loaded on demand by detail pages.
+
+    ``scope`` is carried through because the frontend ``InstrumentationData``
+    contract requires it; it is small. ``_is_custom`` is injected here (the one
+    place) so list rows match what the singular detail loader produces.
+
+    Args:
+        instrumentation: Full canonical instrumentation dict (must have "name").
+        is_custom: Whether this is a custom (non-upstream) instrumentation.
+
+    Returns:
+        Slim instrumentation dict for the per-version list bundle.
+    """
+    telemetry = instrumentation.get("telemetry") or []
+    entry: dict[str, Any] = {
+        "name": instrumentation["name"],
+        "scope": instrumentation.get("scope"),
+        "display_name": instrumentation.get("display_name"),
+        "description": instrumentation.get("description"),
+        "has_javaagent": instrumentation.get("has_javaagent"),
+        "has_standalone_library": instrumentation.get("has_standalone_library"),
+        "semantic_conventions": instrumentation.get("semantic_conventions"),
+        "features": instrumentation.get("features"),
+        "has_spans": any((t.get("spans") or []) for t in telemetry),
+        "has_metrics": any((t.get("metrics") or []) for t in telemetry),
+        "_is_custom": is_custom,
+    }
+    # Drop keys that are absent in the source so the bundle stays compact and the
+    # content hash is stable regardless of which optional fields a version omits.
+    return {k: v for k, v in entry.items() if v is not None}

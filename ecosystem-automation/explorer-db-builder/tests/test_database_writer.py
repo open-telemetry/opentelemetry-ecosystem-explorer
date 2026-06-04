@@ -289,7 +289,59 @@ class TestWriteVersionList:
         db_writer.write_version_list([Version("1.0.0")])
 
         assert temp_db_dir.exists()
-        assert temp_db_dir.is_dir()
+
+    def test_write_version_list_includes_bundle_hash_when_provided(self, db_writer, temp_db_dir):
+        versions = [Version("2.0.0"), Version("1.0.0")]
+
+        db_writer.write_version_list(versions, {Version("2.0.0"): "hashA", Version("1.0.0"): "hashB"})
+
+        with open(temp_db_dir / "versions-index.json", "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        assert data["versions"][0]["bundle_hash"] == "hashA"
+        assert data["versions"][1]["bundle_hash"] == "hashB"
+
+    def test_write_version_list_omits_bundle_hash_when_absent(self, db_writer, temp_db_dir):
+        # No map (old behavior) and a partial map both omit the field cleanly.
+        db_writer.write_version_list([Version("2.0.0"), Version("1.0.0")], {Version("2.0.0"): "hashA"})
+
+        with open(temp_db_dir / "versions-index.json", "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        assert data["versions"][0]["bundle_hash"] == "hashA"
+        assert "bundle_hash" not in data["versions"][1]
+
+
+class TestWriteVersionBundle:
+    def test_writes_bundle_and_returns_hash(self, db_writer, temp_db_dir):
+        entries = [
+            {"name": "lib1", "has_spans": True, "has_metrics": False, "_is_custom": False},
+            {"name": "lib2", "has_spans": False, "has_metrics": True, "_is_custom": False},
+        ]
+
+        bundle_hash = db_writer.write_version_bundle(Version("2.0.0"), entries)
+
+        assert isinstance(bundle_hash, str)
+        assert len(bundle_hash) == 12
+        bundle_file = temp_db_dir / "bundles" / f"2.0.0-{bundle_hash}.json"
+        assert bundle_file.exists()
+        with open(bundle_file, "r", encoding="utf-8") as f:
+            assert json.load(f) == entries
+
+    def test_is_idempotent(self, db_writer):
+        entries = [{"name": "lib1", "has_spans": True, "has_metrics": False, "_is_custom": False}]
+
+        first = db_writer.write_version_bundle(Version("2.0.0"), entries)
+        files_after_first = db_writer.files_written
+        second = db_writer.write_version_bundle(Version("2.0.0"), entries)
+
+        assert first == second
+        # The second write is skipped because the content-addressed file exists.
+        assert db_writer.files_written == files_after_first
+
+    def test_empty_raises(self, db_writer):
+        with pytest.raises(ValueError, match="Bundle instrumentations cannot be empty"):
+            db_writer.write_version_bundle(Version("2.0.0"), [])
 
 
 class TestGetStats:
