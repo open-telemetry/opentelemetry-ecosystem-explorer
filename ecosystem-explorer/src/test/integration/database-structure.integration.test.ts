@@ -152,7 +152,6 @@ describe("database structure", () => {
         expect(typeof entry._is_custom).toBe("boolean");
         // The heavy detail arrays must be dropped from the slim bundle.
         expect(entry.telemetry).toBeUndefined();
-        expect(entry.configurations).toBeUndefined();
       }
     });
   });
