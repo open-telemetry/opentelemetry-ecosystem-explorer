@@ -26,6 +26,7 @@ from explorer_db_builder.collector_builder import run_collector_builder
 from explorer_db_builder.configuration_aggregator import build_global_configurations
 from explorer_db_builder.configuration_builder import run_configuration_builder
 from explorer_db_builder.database_writer import DatabaseWriter
+from explorer_db_builder.declarative_name_corrections import apply_declarative_name_corrections
 from explorer_db_builder.instrumentation_transformer import transform_instrumentation_format
 from explorer_db_builder.metadata_backfiller import backfill_metadata
 
@@ -163,6 +164,10 @@ def run_javaagent_builder(
         def load_and_augment_inventory(version: Version) -> dict:
             inventory = inventory_manager.load_versioned_inventory(version)
             readme_map = readme_maps.get(version, {})
+
+            # Correct known-bad declarative_name values before backfill and aggregation so the
+            # fix lands in both the per-version files and global-configurations.json.
+            apply_declarative_name_corrections(inventory)
 
             # Normalize an explicit "libraries": None / "custom": None (malformed or
             # partial inventory, since YAML `libraries:` parses as None) to [] up front.
