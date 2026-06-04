@@ -2,6 +2,18 @@
   "versions": [
     {
       "is_latest": true,
+      "version": "0.153.0"
+    },
+    {
+      "is_latest": false,
+      "version": "0.152.1"
+    },
+    {
+      "is_latest": false,
+      "version": "0.152.0"
+    },
+    {
+      "is_latest": false,
       "version": "0.151.0"
     },
     {
