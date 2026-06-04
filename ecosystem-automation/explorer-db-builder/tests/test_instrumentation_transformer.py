@@ -23,7 +23,7 @@ from explorer_db_builder.instrumentation_transformer import (
 
 
 class TestMakeListInstrumentation:
-    def test_collapses_telemetry_to_flags_and_drops_heavy_fields(self):
+    def test_collapses_telemetry_to_flags_and_drops_heavy_telemetry(self):
         instrumentation = {
             "name": "akka-actor-2.3",
             "display_name": "Akka Actor",
@@ -34,21 +34,48 @@ class TestMakeListInstrumentation:
             "semantic_conventions": ["messaging"],
             "features": ["context-propagation"],
             "telemetry": [{"when": "always", "spans": [{"span_kind": "CLIENT"}], "metrics": []}],
-            "configurations": [{"name": "otel.x", "description": "d", "type": "boolean", "default": True}],
         }
 
         entry = make_list_instrumentation(instrumentation, is_custom=False)
 
-        # Presence flags precomputed from telemetry; heavy arrays dropped.
+        # Presence flags precomputed from telemetry; the heavy telemetry array dropped.
         assert entry["has_spans"] is True
         assert entry["has_metrics"] is False
         assert "telemetry" not in entry
-        assert "configurations" not in entry
         assert entry["_is_custom"] is False
         # Fields the list page reads are preserved.
         assert entry["name"] == "akka-actor-2.3"
         assert entry["semantic_conventions"] == ["messaging"]
         assert entry["scope"] == {"name": "io.opentelemetry.akka-actor-2.3"}
+
+    def test_preserves_configurations_for_config_builder(self):
+        # The Configuration Builder reads `configurations` off the slim list
+        # entries to render per-module options. Dropping them showed "No
+        # configurable options for this module" for every module once a bundle
+        # existed (CI missed it because committed data has no bundle_hash yet).
+        configs = [
+            {
+                "name": "otel.x",
+                "declarative_name": "java.x",
+                "description": "d",
+                "type": "boolean",
+                "default": True,
+            }
+        ]
+        entry = make_list_instrumentation({"name": "akka-actor-2.3", "configurations": configs}, is_custom=False)
+
+        assert entry["configurations"] == configs
+
+    def test_preserves_disabled_by_default_for_config_builder(self):
+        # The Configuration Builder derives each module's default enabled/disabled
+        # state (and the initial customization toggle) from `disabled_by_default`.
+        # Dropping it flipped default-disabled modules (e.g. dropwizard_metrics)
+        # to "enabled by default" and inverted the YAML toggle.
+        entry = make_list_instrumentation(
+            {"name": "dropwizard-metrics-1.5", "disabled_by_default": True}, is_custom=False
+        )
+
+        assert entry["disabled_by_default"] is True
 
     def test_marks_custom_and_omits_absent_optional_fields(self):
         entry = make_list_instrumentation({"name": "my-custom"}, is_custom=True)
@@ -59,6 +86,8 @@ class TestMakeListInstrumentation:
         # Absent optional fields are omitted so the content hash stays stable.
         assert "display_name" not in entry
         assert "semantic_conventions" not in entry
+        assert "configurations" not in entry
+        assert "disabled_by_default" not in entry
 
 
 class TestTransformInstrumentationFormat:

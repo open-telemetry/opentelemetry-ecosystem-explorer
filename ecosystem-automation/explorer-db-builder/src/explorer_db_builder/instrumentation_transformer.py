@@ -212,9 +212,15 @@ def make_list_instrumentation(instrumentation: dict[str, Any], *, is_custom: boo
     loads a single consolidated bundle of these slim entries. The page reads
     ``telemetry`` only to decide whether to show spans/metrics badges and to
     drive the spans/metrics filter, never the span/metric detail — so we
-    precompute ``has_spans``/``has_metrics`` and drop the heavy ``telemetry`` and
-    ``configurations`` arrays entirely. Full detail stays in the
-    content-addressed component files, loaded on demand by detail pages.
+    precompute ``has_spans``/``has_metrics`` and drop the heavy ``telemetry``
+    array entirely. Full detail stays in the content-addressed component files,
+    loaded on demand by detail pages.
+
+    ``configurations`` and ``disabled_by_default`` are carried through because
+    the same bundle feeds the Configuration Builder (via ``loadAllInstrumentations``):
+    it renders per-module options from ``configurations`` and derives each
+    module's default enabled/disabled state (and the initial customization
+    toggle) from ``disabled_by_default``.
 
     ``scope`` is carried through because the frontend ``InstrumentationData``
     contract requires it; it is small. ``_is_custom`` is injected here (the one
@@ -237,6 +243,8 @@ def make_list_instrumentation(instrumentation: dict[str, Any], *, is_custom: boo
         "has_standalone_library": instrumentation.get("has_standalone_library"),
         "semantic_conventions": instrumentation.get("semantic_conventions"),
         "features": instrumentation.get("features"),
+        "configurations": instrumentation.get("configurations"),
+        "disabled_by_default": instrumentation.get("disabled_by_default"),
         "has_spans": any((t.get("spans") or []) for t in telemetry),
         "has_metrics": any((t.get("metrics") or []) for t in telemetry),
         "_is_custom": is_custom,
