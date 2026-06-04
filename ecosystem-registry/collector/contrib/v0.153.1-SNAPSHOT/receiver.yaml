@@ -10724,6 +10724,9 @@ components:
         description: The number of times a query requested to write data to disk (reporting
           delta).
         type: int
+      oracledb.plan.last_load:
+        description: 'Plan load time in the server''s local timezone. Format: YYYY-MM-DD/HH:MM:SS'
+        type: string
       oracledb.plan_hash_value:
         description: Binary hash value calculated on the query execution plan and
           used to identify similar query execution plans, reported in the HEX format.
@@ -18211,7 +18214,7 @@ components:
       - linux
 - name: windowsservicereceiver
   metadata:
-    type: windowsservice
+    type: windows_service
     display_name: Windows Service Receiver
     description: The Windows Service Receiver is a receiver for scraping information
       about the state of services running on a Windows machine.
