@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useTranslation } from "react-i18next";
 import type { CircularRefNode } from "@/types/configuration";
 
 interface CircularRefPlaceholderProps {
@@ -20,13 +21,11 @@ interface CircularRefPlaceholderProps {
 }
 
 export function CircularRefPlaceholder({ node }: CircularRefPlaceholderProps) {
+  const { t } = useTranslation("java-agent");
   return (
     <div className="border-border/40 bg-background/40 text-muted-foreground rounded-md border px-4 py-2 text-sm">
       <strong className="text-foreground font-medium">{node.label}</strong>
-      <span>
-        {" "}
-        — Circular reference to {node.refType}. Configure this under its canonical section.
-      </span>
+      <span> — {t("builder.circularRef", { type: node.refType })}</span>
     </div>
   );
 }

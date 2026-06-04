@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { getTelemetryFilterClasses, getTargetFilterClasses } from "../styles/filter-styles";
 import { Tooltip } from "@/components/ui/tooltip";
 import { SearchableMultiSelect, SelectedChips } from "@/components/ui/searchable-multi-select";
@@ -41,6 +42,7 @@ export function InstrumentationFilterBar({
   onFiltersChange,
   instrumentations,
 }: InstrumentationFilterBarProps) {
+  const { t } = useTranslation("java-agent");
   const toggleTelemetry = (type: "spans" | "metrics") => {
     const newTelemetry = new Set(filters.telemetry);
     if (newTelemetry.has(type)) {
@@ -120,20 +122,20 @@ export function InstrumentationFilterBar({
               }
               className="text-primary text-sm font-semibold hover:underline"
             >
-              Clear all
+              {t("filter.reset")}
             </button>
           </div>
         )}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <div className="space-y-2">
             <label htmlFor="search" className="text-muted-foreground text-sm font-medium">
-              Search
+              {t("filter.search.label")}
             </label>
             <div className="relative">
               <input
                 id="search"
                 type="text"
-                placeholder="Search instrumentations..."
+                placeholder={t("filter.search.placeholder")}
                 value={filters.search}
                 onChange={(e) => onFiltersChange({ ...filters, search: e.target.value })}
                 className="border-border/60 bg-background/80 placeholder:text-muted-foreground/50 focus:border-primary/50 focus:ring-primary/20 flex h-[42px] w-full rounded-lg border px-4 py-2 text-sm backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none"
@@ -142,8 +144,8 @@ export function InstrumentationFilterBar({
           </div>
 
           <SearchableMultiSelect
-            label="Semantic Conventions"
-            placeholder="Filter by convention..."
+            label={t("filter.semanticConventions.label")}
+            placeholder={t("filter.semanticConventions.placeholder")}
             options={semanticOptions}
             selected={filters.semantic}
             onChange={(selected) => onFiltersChange({ ...filters, semantic: selected })}
@@ -151,8 +153,8 @@ export function InstrumentationFilterBar({
           />
 
           <SearchableMultiSelect
-            label="Features"
-            placeholder="Filter by feature..."
+            label={t("filter.features.label")}
+            placeholder={t("filter.features.placeholder")}
             options={featureOptions}
             selected={filters.features}
             onChange={(selected) => onFiltersChange({ ...filters, features: selected })}
@@ -162,7 +164,9 @@ export function InstrumentationFilterBar({
 
         <div className="grid gap-6 md:grid-cols-2">
           <div className="space-y-3">
-            <div className="text-muted-foreground text-sm font-medium">Telemetry</div>
+            <div className="text-muted-foreground text-sm font-medium">
+              {t("filter.telemetry.label")}
+            </div>
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => toggleTelemetry("spans")}
@@ -172,7 +176,7 @@ export function InstrumentationFilterBar({
                   filters.telemetry.has("spans")
                 )}`}
               >
-                Spans
+                {t("filter.spans")}
               </button>
               <button
                 onClick={() => toggleTelemetry("metrics")}
@@ -182,15 +186,17 @@ export function InstrumentationFilterBar({
                   filters.telemetry.has("metrics")
                 )}`}
               >
-                Metrics
+                {t("filter.metrics")}
               </button>
             </div>
           </div>
 
           <div className="space-y-3">
-            <div className="text-muted-foreground text-sm font-medium">Type</div>
+            <div className="text-muted-foreground text-sm font-medium">
+              {t("filter.type.label")}
+            </div>
             <div className="flex flex-wrap gap-2">
-              <Tooltip content="Standard instrumentation that runs alongside the application using a Java agent.">
+              <Tooltip content={t("badges.agent.tooltip")}>
                 <button
                   onClick={() => toggleTarget("javaagent")}
                   aria-pressed={filters.target.has("javaagent")}
@@ -199,10 +205,10 @@ export function InstrumentationFilterBar({
                     filters.target.has("javaagent")
                   )}`}
                 >
-                  Java Agent
+                  {t("filter.javaAgent")}
                 </button>
               </Tooltip>
-              <Tooltip content="Standalone libraries are installed manually and for use without the agent.">
+              <Tooltip content={t("badges.library.tooltip")}>
                 <button
                   onClick={() => toggleTarget("library")}
                   aria-pressed={filters.target.has("library")}
@@ -211,7 +217,7 @@ export function InstrumentationFilterBar({
                     filters.target.has("library")
                   )}`}
                 >
-                  Standalone
+                  {t("filter.standalone")}
                 </button>
               </Tooltip>
             </div>

@@ -15,6 +15,7 @@
  */
 import { useState } from "react";
 import type { JSX } from "react";
+import { useTranslation } from "react-i18next";
 import type { ConfigNode, UnionNode } from "@/types/configuration";
 import type { ConfigValue } from "@/types/configuration-builder";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
@@ -118,6 +119,7 @@ const TAB_ACTIVE = "border-primary text-primary";
 const TAB_INACTIVE = "border-transparent text-muted-foreground hover:text-foreground";
 
 export function UnionRenderer({ node, depth, path }: UnionRendererProps): JSX.Element {
+  const { t } = useTranslation("java-agent");
   const { state, setValue } = useConfigurationBuilder();
   const current = getByPath(state.values, parsePath(path));
 
@@ -142,7 +144,7 @@ export function UnionRenderer({ node, depth, path }: UnionRendererProps): JSX.El
   const tablist = showChooser ? (
     <div
       role="tablist"
-      aria-label={`${node.label} variant`}
+      aria-label={t("builder.unionRenderer.tablistAriaLabel", { label: node.label })}
       className="border-border/60 flex flex-wrap items-center gap-x-1 border-b"
     >
       {effectiveVariants.map((v) => {

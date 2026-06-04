@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { useRef, type JSX } from "react";
+import { useTranslation } from "react-i18next";
 import { Plus, RotateCcw, X } from "lucide-react";
 import type { Configuration } from "@/types/javaagent";
 import type { ConfigValue, ConfigValues } from "@/types/configuration-builder";
@@ -238,6 +239,7 @@ export function InstrumentationConfigField({
   config,
   onJumpToGeneral,
 }: InstrumentationConfigFieldProps): JSX.Element {
+  const { t } = useTranslation("java-agent");
   const { entry, scope, path } = config;
   const declarativeName = entry.declarative_name ?? "";
   const isReadOnly = scope === "general";
@@ -311,17 +313,17 @@ export function InstrumentationConfigField({
             onClick={() => onJumpToGeneral("general")}
             className="border-border/60 text-foreground hover:bg-card/80 inline-flex items-center gap-1 rounded-md border border-dashed px-2 py-1 text-xs"
           >
-            Edit in General Settings ↑
+            {t("builder.field.editInGeneral")}
           </button>
         ) : isCustomized ? (
           <button
             type="button"
             onClick={handleReset}
             className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 rounded-md p-1 text-xs"
-            aria-label={`Reset ${declarativeName}`}
+            aria-label={t("builder.field.resetTooltip", { name: declarativeName })}
           >
             <RotateCcw className="h-3 w-3" aria-hidden="true" />
-            Reset
+            {t("builder.controls.reset")}
           </button>
         ) : (
           <button
@@ -330,7 +332,7 @@ export function InstrumentationConfigField({
             className="border-border/60 text-foreground hover:bg-card/80 inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs"
           >
             <Plus className="h-3 w-3" aria-hidden="true" />
-            Customize
+            {t("builder.field.customize")}
           </button>
         )}
       </div>
@@ -378,17 +380,18 @@ function fieldClass(scope: AggregatedConfig["scope"]): string {
 }
 
 function ScopePill({ scope }: { scope: AggregatedConfig["scope"] }) {
+  const { t } = useTranslation("java-agent");
   if (scope === "general") {
     return (
       <span className="inline-flex items-center rounded-full border border-purple-400/40 bg-purple-400/10 px-2 py-0.5 text-[10px] leading-none text-purple-300">
-        general · shared
+        {t("builder.field.pills.general")}
       </span>
     );
   }
   if (scope === "common") {
     return (
       <span className="inline-flex items-center rounded-full border border-amber-400/40 bg-amber-400/10 px-2 py-0.5 text-[10px] leading-none text-amber-300">
-        java.common · shared
+        {t("builder.field.pills.common")}
       </span>
     );
   }
@@ -396,18 +399,20 @@ function ScopePill({ scope }: { scope: AggregatedConfig["scope"] }) {
 }
 
 function ExperimentalPill() {
+  const { t } = useTranslation("java-agent");
   return (
     <span className="inline-flex items-center rounded-full border border-red-400/40 bg-red-400/10 px-2 py-0.5 text-[10px] leading-none text-red-300">
-      experimental
+      {t("builder.field.pills.experimental")}
     </span>
   );
 }
 
 function MismatchPill({ type }: { type: Configuration["type"] }) {
+  const { t } = useTranslation("java-agent");
   const article = type === "int" || type === "double" ? "a number" : `a ${type}`;
   return (
     <span className="inline-flex items-center rounded-full border border-yellow-400/40 bg-yellow-400/10 px-2 py-0.5 text-[10px] leading-none text-yellow-300">
-      imported value not {article}
+      {t("builder.field.pills.mismatch", { article })}
     </span>
   );
 }
@@ -419,10 +424,11 @@ function DefaultPreview({
   type: Configuration["type"];
   raw: string | boolean | number;
 }) {
+  const { t } = useTranslation("java-agent");
   const text = type === "list" || type === "map" ? "" : String(raw);
   return (
     <span className="text-muted-foreground text-xs italic">
-      default: <code className="font-mono">{text === "" ? "(empty)" : text}</code>
+      {t("builder.field.defaultPreview", { value: text === "" ? "(empty)" : text })}
     </span>
   );
 }

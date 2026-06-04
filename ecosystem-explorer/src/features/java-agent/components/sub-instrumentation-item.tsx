@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import type { InstrumentationData } from "@/types/javaagent";
 import type { FilterState } from "./instrumentation-filter-bar";
 import { getBadgeInfo } from "../utils/badge-info";
@@ -31,6 +32,7 @@ export function SubInstrumentationItem({
   version,
   activeFilters,
 }: SubInstrumentationItemProps) {
+  const { t } = useTranslation("java-agent");
   const badges = getBadgeInfo(instrumentation);
   const detailUrl =
     version && version !== "latest"
@@ -41,7 +43,7 @@ export function SubInstrumentationItem({
     <Link
       to={detailUrl}
       className="border-secondary/30 bg-background/50 hover:bg-card-secondary/50 hover:border-secondary/60 block rounded-md border-l-2 p-3 transition-colors"
-      aria-label={`View details for ${instrumentation.name}`}
+      aria-label={t("subItem.viewDetails", { name: instrumentation.name })}
     >
       <div className="flex items-center justify-between gap-2">
         <div className="min-w-0">

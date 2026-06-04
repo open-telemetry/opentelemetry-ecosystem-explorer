@@ -18,6 +18,7 @@ import { Search, Settings } from "lucide-react";
 import { Loader } from "@/components/ui/loader";
 import { BackButton } from "@/components/ui/back-button";
 import { PageContainer } from "@/components/layout/page-container";
+import { useTranslation } from "react-i18next";
 import { Tabs } from "@/components/ui/tabs";
 import { SegmentedTabList } from "@/components/ui/segmented-tabs";
 import { ConfigurationCard, type ConfigurationFormat } from "./components/configuration-card";
@@ -55,6 +56,7 @@ function useGlobalConfigurations() {
 }
 
 export function JavaConfigurationListPage() {
+  const { t } = useTranslation("java-agent");
   const [format, setFormat] = useState<ConfigurationFormat>("declarative");
   const [searchQuery, setSearchQuery] = useState("");
   const { data: allConfigurations, isLoading, error } = useGlobalConfigurations();
@@ -92,12 +94,11 @@ export function JavaConfigurationListPage() {
               <div className="min-w-0 flex-1 space-y-2">
                 <h1 className="text-2xl leading-tight font-bold sm:text-3xl md:text-4xl">
                   <span className="bg-gradient-to-r from-[hsl(var(--secondary-hsl))] to-[hsl(var(--primary-hsl))] bg-clip-text text-transparent">
-                    Configuration Options Explorer
+                    {t("configList.title")}
                   </span>
                 </h1>
                 <p className="text-muted-foreground max-w-4xl text-base leading-relaxed">
-                  Explore all configuration options across instrumentations. Search by normal name,
-                  declarative representation, or description.
+                  {t("configList.description")}
                 </p>
               </div>
             </div>
@@ -110,8 +111,8 @@ export function JavaConfigurationListPage() {
               <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
               <input
                 type="text"
-                aria-label="Search configurations"
-                placeholder="Search configurations, descriptions, or instrumentations..."
+                aria-label={t("configList.search.ariaLabel")}
+                placeholder={t("configList.search.placeholder")}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="border-border bg-background focus:border-primary focus:ring-primary w-full rounded-md border py-2 pr-4 pl-10 text-sm focus:ring-1 focus:outline-none"
@@ -128,14 +129,14 @@ export function JavaConfigurationListPage() {
           <div className="mt-6">
             <div className="text-muted-foreground mb-4 text-sm">
               {isLoading
-                ? null
+                ? t("configList.results.loading")
                 : error
-                  ? "Unable to load configurations"
-                  : `Found ${filteredConfigs.length} configurations`}
+                  ? t("configList.results.error")
+                  : t("configList.results.found", { count: filteredConfigs.length })}
             </div>
 
             {isLoading ? (
-              <Loader label="Loading configurations..." />
+              <Loader label={t("configList.loading")} />
             ) : error ? (
               <div className="flex min-h-[300px] items-center justify-center rounded-lg border border-dashed">
                 <div className="mx-auto max-w-md px-4 text-center">
@@ -151,7 +152,7 @@ export function JavaConfigurationListPage() {
                     aria-hidden="true"
                   />
                   <p className="text-muted-foreground mt-4 text-sm">
-                    No configurations found matching your search.
+                    {t("configList.results.empty")}
                   </p>
                 </div>
               </div>

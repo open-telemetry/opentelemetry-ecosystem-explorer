@@ -15,6 +15,7 @@
  */
 
 import { Plus, Minus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { AttributeChanges } from "@/types/javaagent";
 
 interface AttributeDiffTableProps {
@@ -22,6 +23,7 @@ interface AttributeDiffTableProps {
 }
 
 export function AttributeDiffTable({ changes }: AttributeDiffTableProps) {
+  const { t } = useTranslation("java-agent");
   const hasChanges =
     changes.added.length > 0 || changes.removed.length > 0 || changes.changed.length > 0;
 
@@ -31,26 +33,26 @@ export function AttributeDiffTable({ changes }: AttributeDiffTableProps) {
 
   return (
     <div className="border-border/30 overflow-hidden rounded-lg border">
-      <table aria-label="Attribute changes" className="w-full border-collapse">
+      <table aria-label={t("diffAttributeTable.ariaLabel")} className="w-full border-collapse">
         <thead>
           <tr className="bg-white/5">
             <th
               scope="col"
               className="text-muted-foreground p-3 text-left text-[10px] font-bold tracking-widest uppercase"
             >
-              Status
+              {t("diffAttributeTable.columns.status")}
             </th>
             <th
               scope="col"
               className="text-muted-foreground p-3 text-left text-[10px] font-bold tracking-widest uppercase"
             >
-              Key
+              {t("diffAttributeTable.columns.key")}
             </th>
             <th
               scope="col"
               className="text-muted-foreground p-3 text-left text-[10px] font-bold tracking-widest uppercase"
             >
-              Type
+              {t("diffAttributeTable.columns.type")}
             </th>
           </tr>
         </thead>
@@ -61,7 +63,9 @@ export function AttributeDiffTable({ changes }: AttributeDiffTableProps) {
               <td className="p-4">
                 <div className="flex items-center gap-2">
                   <Plus className="h-3 w-3 text-green-400" aria-hidden="true" />
-                  <span className="text-xs font-medium text-green-400">Added</span>
+                  <span className="text-xs font-medium text-green-400">
+                    {t("diffAttributeTable.status.added")}
+                  </span>
                 </div>
               </td>
               <td className="p-4 font-mono text-sm md:text-[12px]">{attr.name}</td>
@@ -82,7 +86,9 @@ export function AttributeDiffTable({ changes }: AttributeDiffTableProps) {
               <td className="p-4">
                 <div className="flex items-center gap-2">
                   <Minus className="h-3 w-3 text-red-400" aria-hidden="true" />
-                  <span className="text-xs font-medium text-red-400">Removed</span>
+                  <span className="text-xs font-medium text-red-400">
+                    {t("diffAttributeTable.status.removed")}
+                  </span>
                 </div>
               </td>
               <td className="p-4 font-mono text-sm line-through opacity-60 md:text-[12px]">
@@ -108,7 +114,9 @@ export function AttributeDiffTable({ changes }: AttributeDiffTableProps) {
             >
               <td className="p-4">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium text-amber-400">Modified</span>
+                  <span className="text-xs font-medium text-amber-400">
+                    {t("diffAttributeTable.status.modified")}
+                  </span>
                 </div>
               </td>
               <td className="p-4 font-mono text-sm md:text-[12px]">{change.name}</td>

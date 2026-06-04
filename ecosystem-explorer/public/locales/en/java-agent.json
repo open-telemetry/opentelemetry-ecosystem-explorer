@@ -1,0 +1,463 @@
+{
+  "page": {
+    "title": "OpenTelemetry Java Agent",
+    "description": "Explore auto-instrumentation for Java applications. Discover supported libraries, configuration options, and emitted telemetry."
+  },
+  "landing": {
+    "instrumentation": {
+      "title": "Instrumentation Libraries",
+      "description": "Explore auto-instrumentation for Java applications. Discover supported libraries, configuration options, and emitted telemetry."
+    },
+    "configuration": {
+      "title": "Configuration Options",
+      "description": "Discover options for configuring the Java Agent and instrumentation."
+    },
+    "builder": {
+      "title": "Configuration Builder",
+      "description": "Build and customize a declarative configuration file for the Java Agent."
+    },
+    "releases": {
+      "title": "Releases",
+      "description": "Compare Java Agent versions to see changes in telemetry and configuration."
+    }
+  },
+  "list": {
+    "title": "OpenTelemetry Java Agent",
+    "description_one": "Explore {{count}} available instrumentation.",
+    "description_other": "Explore {{count}} available instrumentations.",
+    "invalidVersion": "Version \"{{version}}\" was not found. Showing the latest version ({{latest}}) instead.",
+    "dismiss": "Dismiss",
+    "loading": "Loading instrumentations...",
+    "error": {
+      "title": "Error loading data",
+      "description": "Please try refreshing the page."
+    },
+    "results": {
+      "showing": "Showing {{shown}} of {{total}} instrumentations",
+      "empty": "No instrumentations found matching your filters.",
+      "emptySuggestion": "Try adjusting your search or filter criteria"
+    },
+    "customSection": {
+      "title": "Custom Instrumentations",
+      "description": "Non-library instrumentations such as methods, JMX metrics, and external annotations."
+    }
+  },
+  "detail": {
+    "loading": {
+      "title": "Loading instrumentation...",
+      "description": "This may take a moment"
+    },
+    "error": {
+      "versionsError": "Error loading versions",
+      "versionNotFound": "Version not found",
+      "versionDoesNotExist": "Version does not exist.",
+      "viewLatest": "View {{name}} under the latest version ({{latestVersion}})",
+      "title": "Error loading instrumentation",
+      "notFound": "Instrumentation not found"
+    },
+    "badges": {
+      "disabledByDefault": "Disabled by Default",
+      "enabledByDefault": "Enabled by Default"
+    },
+    "tabs": {
+      "details": "Details",
+      "telemetry": "Telemetry",
+      "configuration": "Configuration"
+    },
+    "sections": {
+      "capabilities": "Capabilities",
+      "requirements": "Requirements",
+      "scope": "Instrumentation Scope",
+      "links": "Links & Resources"
+    },
+    "fields": {
+      "features": "Features",
+      "semanticConventions": "Semantic Conventions",
+      "minimumJavaVersion": "Minimum Java Version",
+      "targetVersions": "Target Versions",
+      "scopeName": "Scope Name",
+      "schemaUrl": "Schema URL",
+      "libraryLink": "Library Link",
+      "sourcePath": "Source Path"
+    },
+    "tooltips": {
+      "targetVersions": "The versions of the target library that this instrumentation supports.",
+      "scope": "An instrumentation scope is metadata indicating the identity of what produced a piece of telemetry.",
+      "moreInfoAriaLabel": "More information about {{field}}"
+    },
+    "view": {
+      "current": "Current View",
+      "comparison": "Version Comparison"
+    },
+    "telemetry": {
+      "empty": "No telemetry information available."
+    }
+  },
+  "releaseComparison": {
+    "title": "Release Comparison",
+    "description": "Compare Java Agent releases to discover new features and changes in telemetry.",
+    "placeholder": {
+      "title": "Under Development",
+      "description": "The Java Agent Release Comparison tool is currently being built. Check back soon to compare telemetry changes across versions."
+    }
+  },
+  "configList": {
+    "title": "Configuration Options Explorer",
+    "description": "Explore all configuration options across instrumentations. Search by normal name, declarative representation, or description.",
+    "search": {
+      "ariaLabel": "Search configurations",
+      "placeholder": "Search configurations, descriptions, or instrumentations..."
+    },
+    "loading": "Loading configurations...",
+    "results": {
+      "loading": "Loading...",
+      "error": "Unable to load configurations",
+      "found_one": "Found {{count}} configuration",
+      "found_other": "Found {{count}} configurations",
+      "empty": "No configurations found matching your search."
+    }
+  },
+  "filter": {
+    "search": {
+      "label": "Search",
+      "placeholder": "Search instrumentations..."
+    },
+    "reset": "Clear all",
+    "semanticConventions": {
+      "label": "Semantic Conventions",
+      "placeholder": "Filter by convention..."
+    },
+    "features": {
+      "label": "Features",
+      "placeholder": "Filter by feature..."
+    },
+    "telemetry": {
+      "label": "Telemetry"
+    },
+    "type": {
+      "label": "Type"
+    },
+    "spans": "Spans",
+    "metrics": "Metrics",
+    "javaAgent": "Java Agent",
+    "standalone": "Standalone"
+  },
+  "badges": {
+    "agent": {
+      "label": "Agent",
+      "tooltip": "Standard instrumentation that runs alongside the application using a Java agent.",
+      "ariaLabel": "Has Java Agent target"
+    },
+    "library": {
+      "label": "Library",
+      "tooltip": "Standalone libraries are installed manually and for use without the agent.",
+      "ariaLabel": "Has standalone library target"
+    },
+    "spans": {
+      "label": "Spans",
+      "tooltip": "Produces span telemetry for distributed tracing.",
+      "ariaLabel": "Has span telemetry"
+    },
+    "metrics": {
+      "label": "Metrics",
+      "tooltip": "Produces metric telemetry for monitoring.",
+      "ariaLabel": "Has metric telemetry"
+    }
+  },
+  "attributeTable": {
+    "ariaLabel": "Attributes",
+    "columns": {
+      "key": "Key",
+      "type": "Type"
+    }
+  },
+  "configCard": {
+    "default": "Default:",
+    "examples": "Examples:",
+    "usageCount_one": "{{count}} Instrumentation using this configuration",
+    "usageCount_other": "{{count}} Instrumentations using this configuration"
+  },
+  "configSelector": {
+    "banner": "Telemetry varies by configuration",
+    "label": "Configuration"
+  },
+  "versionSelector": {
+    "label": "Version"
+  },
+  "multiGroupCard": {
+    "versions_one": "{{count}} version",
+    "versions_other": "{{count}} versions"
+  },
+  "subItem": {
+    "viewDetails": "View details for {{name}}"
+  },
+  "telemetrySection": {
+    "expandAll": "Expand All",
+    "collapseAll": "Collapse All",
+    "metrics": "Metrics",
+    "spans": "Spans",
+    "unit": "Unit",
+    "attributes": "Attributes",
+    "spanTitle": "{{kind}} Span",
+    "empty": "No metrics or spans defined for this configuration."
+  },
+  "versionSelectorPanel": {
+    "banner": "Compare telemetry between two releases",
+    "from": "From",
+    "to": "To",
+    "configuration": "Configuration",
+    "defaultOption": "Default"
+  },
+  "telemetryComparison": {
+    "loading": "Loading comparison data...",
+    "error": {
+      "title": "Comparison Error"
+    },
+    "warnings": {
+      "availability": {
+        "title": "Version Availability Note",
+        "fromNotFound": "The instrumentation was not available in version {{fromVersion}}. All telemetry from the \"to\" version is shown as added.",
+        "toNotFound": "The instrumentation was not available in version {{toVersion}}. All telemetry from the \"from\" version is shown as removed."
+      },
+      "sameVersion": {
+        "title": "Same Version Selected",
+        "message": "Please select different versions to compare telemetry."
+      }
+    }
+  },
+  "diffResults": {
+    "addedRemovedHeader": "Telemetry Added/Removed",
+    "changedHeader": "Telemetry Changed",
+    "metrics": "Metrics",
+    "spans": "Spans",
+    "empty": {
+      "title": "No differences found",
+      "description": "Telemetry is identical for {{condition}} between the selected versions."
+    }
+  },
+  "diffCard": {
+    "status": {
+      "added": "Added",
+      "removed": "Removed",
+      "changed": "Changed"
+    },
+    "unit": "Unit",
+    "attributeChanges": "Attribute Changes",
+    "descriptionChanged": "Description Changed",
+    "typeChanged": "Type Changed",
+    "metricRemoved": "This metric is no longer emitted in the comparison version.",
+    "spanRemoved": "This span is no longer emitted in the comparison version.",
+    "spanAdded": "This span is newly emitted in the comparison version."
+  },
+  "diffAttributeTable": {
+    "ariaLabel": "Attribute changes",
+    "columns": {
+      "status": "Status",
+      "key": "Key",
+      "type": "Type"
+    },
+    "status": {
+      "added": "Added",
+      "removed": "Removed",
+      "modified": "Modified"
+    }
+  },
+  "configInstrumentation": {
+    "noOptions": "No configuration options available."
+  },
+  "builder": {
+    "title": "Configuration Builder",
+    "description": "Build and customize your OpenTelemetry Java Agent configuration.",
+    "links": {
+      "declarativeConfig": "Learn more about declarative configuration",
+      "reportIssue": "Report an issue"
+    },
+    "loading": {
+      "versions": "Loading versions…",
+      "schema": "Loading schema…"
+    },
+    "error": {
+      "versions": "Failed to load available versions.",
+      "schema": "Failed to load schema.",
+      "template": "Failed to load starter template."
+    },
+    "general": {
+      "label": "General",
+      "empty": "The schema for this version does not expose general instrumentation settings."
+    },
+    "preview": {
+      "title": "Output Preview",
+      "download": "Download",
+      "addAll": "Add all",
+      "reset": "Reset",
+      "expandAriaLabel": "Expand YAML preview",
+      "dialogTitle": "YAML Configuration Preview",
+      "dialogDescription": "Complete generated YAML configuration for your OpenTelemetry Java Agent."
+    },
+    "sidebar": {
+      "tabs": {
+        "sdk": "SDK",
+        "instrumentation": "Instrumentation"
+      },
+      "search": {
+        "ariaLabel": "Search instrumentations",
+        "placeholder": "Search instrumentations…"
+      },
+      "status": "Status",
+      "customized": "Customized",
+      "onThisPage": "On this page",
+      "navAriaLabel": "Configuration sections"
+    },
+    "browser": {
+      "title": "Instrumentations",
+      "count_one": "· {{count}} module",
+      "count_other": "· {{count}} modules",
+      "customized_one": "· {{count}} customized",
+      "customized_other": "· {{count}} customized",
+      "loading": "Loading instrumentations…",
+      "error": "Failed to load instrumentations.",
+      "readout": {
+        "search": "Search “{{search}}” · {{shown}} of {{total}}",
+        "customized": "Customized · {{count}} of {{total}}",
+        "noFilter_one": "No filter · {{count}} module",
+        "noFilter_other": "No filter · {{count}} modules"
+      },
+      "empty": {
+        "search": "No instrumentations match “{{search}}”. Clear the search to show all {{total}}.",
+        "customized": "You haven’t customized any instrumentation yet. Click “+ Customize” on a row to add one.",
+        "empty": "No instrumentations available."
+      }
+    },
+    "row": {
+      "versions_one": "{{count}} version",
+      "versions_other": "{{count}} versions",
+      "custom": "custom",
+      "covers": "covers {{versions}}",
+      "removeTooltip": "Remove customization for {{name}}",
+      "toggleDetailsTooltip": "Toggle details for {{name}}",
+      "customize": "Customize",
+      "customizeAriaLabel": "Customize {{name}}",
+      "customizationState": "Customization state",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "enabledByDefault": "enabled by default",
+      "disabledByDefault": "disabled by default"
+    },
+    "form": {
+      "empty": "No configurable options for this module."
+    },
+    "field": {
+      "editInGeneral": "Edit in General Settings ↑",
+      "resetTooltip": "Reset {{name}}",
+      "customize": "Customize",
+      "pills": {
+        "general": "general · shared",
+        "common": "java.common · shared",
+        "experimental": "experimental",
+        "mismatch": "imported value not {{article}}"
+      },
+      "defaultPreview": "default: {{value}}"
+    },
+    "controls": {
+      "default": "default",
+      "reset": "Reset",
+      "fieldDefault": "Default:",
+      "itemAdded": "Item added",
+      "itemRemoved": "Item removed",
+      "entryAdded": "Entry added",
+      "entryRemoved": "Entry removed"
+    },
+    "keyValueMap": {
+      "add": "Add",
+      "addTooltip": "Add entry to {{label}}",
+      "removeTooltip": "Remove entry {{index}}",
+      "empty": "No entries yet",
+      "tableAriaLabel": "{{label}} entries",
+      "keyLabel": "Key {{index}}",
+      "keyPlaceholder": "key",
+      "valueLabel": "Value {{index}}",
+      "valuePlaceholder": "value"
+    },
+    "primitiveList": {
+      "add": "Add",
+      "addTooltip": "Add item to {{label}}",
+      "empty": "No items yet"
+    },
+    "fieldSection": {
+      "expandTooltip": "Expand {{label}}",
+      "collapseTooltip": "Collapse {{label}}",
+      "empty": "No items yet"
+    },
+    "groupRenderer": {
+      "enableTooltip": "Enable {{label}}"
+    },
+    "listRenderer": {
+      "add": "Add",
+      "addTooltip": "Add item to {{label}}",
+      "removeTooltip": "Remove item {{index}}",
+      "default": "(default)"
+    },
+    "pluginSelect": {
+      "tablistAriaLabel": "{{label}} variant",
+      "inputAriaLabel": "Custom plugin name",
+      "inputPlaceholder": "custom-plugin-name",
+      "cancel": "Cancel",
+      "done": "Done",
+      "customEmpty": "Custom plugin. Configure its body manually by importing YAML or leave it as an empty block."
+    },
+    "unionRenderer": {
+      "tablistAriaLabel": "{{label}} variant"
+    },
+    "circularRef": "Circular reference to {{type}}. Configure this under its canonical section."
+  },
+  "format": {
+    "semconv": {
+      "HTTP_CLIENT_SPANS": "HTTP Client Spans",
+      "HTTP_SERVER_SPANS": "HTTP Server Spans",
+      "HTTP_CLIENT_METRICS": "HTTP Client Metrics",
+      "HTTP_SERVER_METRICS": "HTTP Server Metrics",
+      "DATABASE_CLIENT_SPANS": "Database Client Spans",
+      "DATABASE_CLIENT_METRICS": "Database Client Metrics",
+      "DATABASE_POOL_METRICS": "Database Pool Metrics",
+      "MESSAGING_SPANS": "Messaging Spans",
+      "RPC_CLIENT_SPANS": "RPC Client Spans",
+      "RPC_SERVER_SPANS": "RPC Server Spans",
+      "RPC_CLIENT_METRICS": "RPC Client Metrics",
+      "RPC_SERVER_METRICS": "RPC Server Metrics",
+      "FAAS_SERVER_SPANS": "FaaS Server Spans",
+      "GRAPHQL_SERVER_SPANS": "GraphQL Server Spans",
+      "GENAI_CLIENT_SPANS": "GenAI Client Spans",
+      "GENAI_CLIENT_METRICS": "GenAI Client Metrics"
+    },
+    "feature": {
+      "HTTP_ROUTE": {
+        "label": "HTTP Route",
+        "description": "Enriches HTTP spans with route information."
+      },
+      "CONTEXT_PROPAGATION": {
+        "label": "Context Propagation",
+        "description": "Propagates context inter-process (via headers in HTTP, gRPC, and messaging) and inter-thread (executors, actors, and reactive streams)."
+      },
+      "AUTO_INSTRUMENTATION_SHIM": {
+        "label": "Auto Instrumentation Shim",
+        "description": "Adapts or bridges instrumentation from upstream libraries or frameworks."
+      },
+      "CONTROLLER_SPANS": {
+        "label": "Controller Spans",
+        "description": "Generates spans for controller/handler methods in web frameworks. Disabled by default and experimental."
+      },
+      "VIEW_SPANS": {
+        "label": "View Spans",
+        "description": "Generates spans for view rendering such as templates or JSP. Disabled by default and experimental."
+      },
+      "LOGGING_BRIDGE": {
+        "label": "Logging Bridge",
+        "description": "Bridges logging framework events to the OpenTelemetry Logs API, emitting log records from standard logging frameworks."
+      },
+      "RESOURCE_DETECTOR": {
+        "label": "Resource Detector",
+        "description": "Sets resource attributes based on certain conditions."
+      }
+    }
+  }
+}
