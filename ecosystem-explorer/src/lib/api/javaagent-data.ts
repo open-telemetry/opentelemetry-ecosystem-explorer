@@ -138,7 +138,7 @@ export async function loadGlobalConfigurations(): Promise<GlobalConfiguration[]>
     "global-configurations",
     resolveDataPath(BASE_DIR, "global-configurations.json"),
     STORES.GLOBAL_CONFIGURATIONS,
-    { validate: (d) => Array.isArray(d) }
+    { validate: (d) => d !== null }
   );
   if (!data) throw new Error("Global configurations returned null unexpectedly");
   return data;
