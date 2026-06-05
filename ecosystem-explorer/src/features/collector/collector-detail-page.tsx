@@ -40,32 +40,32 @@ const COMPONENT_TYPE_DESCRIPTIONS: Record<string, string> = {
 const STABILITY_DEFINITIONS: Record<string, { label: string; desc: string; color: string }> = {
   development: {
     label: "Development",
-    desc: "Not ready for general use. May have bugs or lack documentation.",
+    desc: "Not all pieces of the component are in place yet. The component should not be used in production.",
     color: "text-blue-500",
   },
   alpha: {
     label: "Alpha",
-    desc: "Ready for testing and early feedback. Not recommended for production.",
+    desc: "The component is ready to be used for limited non-critical workloads and the authors of this component would welcome your feedback.",
     color: "text-purple-500",
   },
   beta: {
     label: "Beta",
-    desc: "Ready for production use. Features are largely stable, though minor changes might occur.",
+    desc: "Same as Alpha, but the configuration options are deemed stable. Suitable for broader usage.",
     color: "text-green-500",
   },
   stable: {
     label: "Stable",
-    desc: "Fully supported for production use. Backwards compatibility is guaranteed.",
+    desc: "The component is ready for general availability. Breaking changes are not expected to happen without prior notice.",
     color: "text-emerald-600 dark:text-emerald-500",
   },
   deprecated: {
     label: "Deprecated",
-    desc: "Scheduled for removal. Should no longer be used.",
+    desc: "The component is planned to be removed in a future version and no further support will be provided.",
     color: "text-red-500",
   },
   unmaintained: {
     label: "Unmaintained",
-    desc: "No longer actively maintained or supported.",
+    desc: "The component is no longer actively maintained. New issues will likely not be worked on.",
     color: "text-red-600",
   },
 };
