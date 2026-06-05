@@ -285,7 +285,7 @@
       "distribution": "contrib",
       "id": "contrib-alibabacloudlogserviceexporter",
       "name": "alibabacloudlogserviceexporter",
-      "stability": "unmaintained",
+      "stability": "beta",
       "type": "exporter"
     },
     {
@@ -938,6 +938,15 @@
     },
     {
       "description": null,
+      "display_name": "MCP Server",
+      "distribution": "contrib",
+      "id": "contrib-mcp",
+      "name": "mcp",
+      "stability": "development",
+      "type": "extension"
+    },
+    {
+      "description": null,
       "display_name": "OAuth2 Client Credentials Authenticator Extension",
       "distribution": "contrib",
       "id": "contrib-oauth2clientauthextension",
@@ -996,7 +1005,7 @@
       "distribution": "contrib",
       "id": "contrib-kafkatopicsobserver",
       "name": "kafkatopicsobserver",
-      "stability": "alpha",
+      "stability": "deprecated",
       "type": "extension"
     },
     {
@@ -1099,6 +1108,15 @@
       "type": "processor"
     },
     {
+      "description": null,
+      "display_name": null,
+      "distribution": "contrib",
+      "id": "contrib-cardinalityguardianprocessor",
+      "name": "cardinalityguardianprocessor",
+      "stability": "development",
+      "type": "processor"
+    },
+    {
       "description": "The Coralogix processor adds attributes to spans that enable features in Coralogix.",
       "display_name": "Coralogix Processor",
       "distribution": "contrib",
@@ -1150,6 +1168,15 @@
       "id": "contrib-filterprocessor",
       "name": "filterprocessor",
       "stability": "alpha",
+      "type": "processor"
+    },
+    {
+      "description": null,
+      "display_name": "GenAI Normalizer Processor",
+      "distribution": "contrib",
+      "id": "contrib-genainormalizerprocessor",
+      "name": "genainormalizerprocessor",
+      "stability": "development",
       "type": "processor"
     },
     {
@@ -1311,7 +1338,7 @@
       "distribution": "contrib",
       "id": "contrib-schemaprocessor",
       "name": "schemaprocessor",
-      "stability": "development",
+      "stability": "alpha",
       "type": "processor"
     },
     {
@@ -2355,7 +2382,7 @@
       "distribution": "contrib",
       "id": "contrib-windowsservicereceiver",
       "name": "windowsservicereceiver",
-      "stability": "development",
+      "stability": "alpha",
       "type": "receiver"
     },
     {

@@ -254,8 +254,41 @@ describe("javaagent-data", () => {
     });
   });
 
-  describe("loadAllInstrumentations", () => {
-    it("should load all instrumentations from manifest", async () => {
+  describe("loadAllInstrumentations (bundle path)", () => {
+    // versions-index advertising a bundle hash for 2.10.0.
+    const versionsIndexWithBundle: VersionsIndex = {
+      versions: [
+        { version: "2.10.0", is_latest: true, bundle_hash: "bundlehash" },
+        { version: "2.9.0", is_latest: false },
+      ],
+    };
+
+    it("loads the single per-version bundle when the index advertises a bundle hash", async () => {
+      const bundle = [
+        { ...mockInstrumentationData, name: "akka-actor", has_spans: true, _is_custom: false },
+      ];
+      const getCachedSpy = vi
+        .spyOn(idbCache, "getCached")
+        .mockImplementation(async (key: string) => {
+          if (key === "versions-index") return versionsIndexWithBundle;
+          if (key === "bundle-2.10.0-bundlehash") return bundle;
+          return null;
+        });
+
+      const result = await javaagentData.loadAllInstrumentations("2.10.0");
+
+      expect(result).toEqual(bundle);
+      expect(getCachedSpy).toHaveBeenCalledWith(
+        "bundle-2.10.0-bundlehash",
+        idbCache.STORES.INSTRUMENTATIONS
+      );
+      // The manifest fan-out must not run when the bundle succeeds.
+      const manifestCalls = getCachedSpy.mock.calls.filter((call) => call[0] === "manifest-2.10.0");
+      expect(manifestCalls).toHaveLength(0);
+      expect(global.fetch).not.toHaveBeenCalled();
+    });
+
+    it("falls back to the fan-out when the bundle fetch fails", async () => {
       const akkaData = {
         ...mockInstrumentationData,
         name: "akka-actor",
@@ -266,8 +299,44 @@ describe("javaagent-data", () => {
         name: "spring-webmvc",
         scope: { name: "io.opentelemetry.spring-webmvc" },
       };
-
       vi.spyOn(idbCache, "getCached").mockImplementation(async (key: string) => {
+        if (key === "versions-index") return versionsIndexWithBundle;
+        // Bundle not cached; the network fetch (below) 404s, forcing fallback.
+        if (key === "manifest-2.10.0") return mockVersionManifest;
+        if (key === "instrumentation-abc123") return akkaData;
+        if (key === "instrumentation-def456") return springData;
+        return null;
+      });
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ok: false,
+        status: 404,
+        statusText: "Not Found",
+      });
+
+      const result = await javaagentData.loadAllInstrumentations("2.10.0");
+
+      expect(result).toHaveLength(2);
+      expect(result).toContainEqual({ ...akkaData, _is_custom: false });
+      expect(result).toContainEqual({ ...springData, _is_custom: false });
+    });
+  });
+
+  describe("loadAllInstrumentations (fan-out fallback)", () => {
+    // versions-index WITHOUT a bundle hash forces the per-instrumentation fan-out.
+    const akkaData = {
+      ...mockInstrumentationData,
+      name: "akka-actor",
+      scope: { name: "io.opentelemetry.akka-actor" },
+    };
+    const springData = {
+      ...mockInstrumentationData,
+      name: "spring-webmvc",
+      scope: { name: "io.opentelemetry.spring-webmvc" },
+    };
+
+    it("should load all instrumentations from manifest", async () => {
+      vi.spyOn(idbCache, "getCached").mockImplementation(async (key: string) => {
+        if (key === "versions-index") return mockVersionsIndex;
         if (key === "manifest-2.10.0") return mockVersionManifest;
         if (key === "instrumentation-abc123") return akkaData;
         if (key === "instrumentation-def456") return springData;
@@ -282,20 +351,10 @@ describe("javaagent-data", () => {
     });
 
     it("should only load manifest once for all instrumentations", async () => {
-      const akkaData = {
-        ...mockInstrumentationData,
-        name: "akka-actor",
-        scope: { name: "io.opentelemetry.akka-actor" },
-      };
-      const springData = {
-        ...mockInstrumentationData,
-        name: "spring-webmvc",
-        scope: { name: "io.opentelemetry.spring-webmvc" },
-      };
-
       const getCachedSpy = vi
         .spyOn(idbCache, "getCached")
         .mockImplementation(async (key: string) => {
+          if (key === "versions-index") return mockVersionsIndex;
           if (key === "manifest-2.10.0") return mockVersionManifest;
           if (key === "instrumentation-abc123") return akkaData;
           if (key === "instrumentation-def456") return springData;
@@ -310,7 +369,11 @@ describe("javaagent-data", () => {
 
     it("should handle empty manifest", async () => {
       const emptyManifest: VersionManifest = { version: "2.10.0", instrumentations: {} };
-      vi.spyOn(idbCache, "getCached").mockResolvedValue(emptyManifest);
+      vi.spyOn(idbCache, "getCached").mockImplementation(async (key: string) => {
+        if (key === "versions-index") return mockVersionsIndex;
+        if (key === "manifest-2.10.0") return emptyManifest;
+        return null;
+      });
 
       const result = await javaagentData.loadAllInstrumentations("2.10.0");
 

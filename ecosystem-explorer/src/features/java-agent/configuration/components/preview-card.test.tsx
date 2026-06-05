@@ -31,6 +31,7 @@ const enableAllSections = vi.fn();
 const resetToDefaults = vi.fn();
 const validateAll = vi.fn();
 const confirmSpy = vi.fn(() => true);
+let mockValidationErrors: Record<string, string> = {};
 
 vi.stubGlobal("confirm", confirmSpy);
 
@@ -39,7 +40,7 @@ vi.mock("@/hooks/use-configuration-builder", () => ({
     state: {
       values: {},
       enabledSections: {},
-      validationErrors: {},
+      validationErrors: mockValidationErrors,
       version: "1.0.0",
       isDirty: false,
     },
@@ -57,6 +58,7 @@ const downloadSpy = vi.spyOn(downloadModule, "downloadText").mockImplementation(
 describe("PreviewCard", () => {
   beforeEach(() => {
     downloadSpy.mockClear();
+    mockValidationErrors = {};
   });
 
   afterAll(() => {
@@ -134,6 +136,18 @@ describe("PreviewCard", () => {
     expect(body).toContain("Schema version: 1.0.0");
     expect(body).toContain("Java agent: 2.27.0");
     expect(mime).toBe("text/yaml");
+  });
+
+  it("disables the Download button and prevents download when validation errors are present", () => {
+    mockValidationErrors = {
+      "resource.attributes": "Duplicate key: only the last value for each key is kept.",
+    };
+    render(<PreviewCard schema={schema} javaAgentVersion="2.27.0" activePreviewKey={null} />);
+    const previewContainer = screen.getByLabelText("Output Preview");
+    const downloadBtn = within(previewContainer).getByRole("button", { name: /download/i });
+    expect(downloadBtn).toBeDisabled();
+    fireEvent.click(downloadBtn);
+    expect(downloadSpy).not.toHaveBeenCalled();
   });
 
   it("renders expand preview button and opens dialog with controls when clicked", () => {

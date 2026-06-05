@@ -138,7 +138,9 @@ const instrumentations = useInstrumentations(version);
 
 ## Theme System
 
-Theme colors are defined in `src/themes.ts` and applied via CSS custom properties. Use them in your
+Color tokens are defined as CSS custom properties in `src/styles/tokens.css` (the source of truth),
+with `src/themes.ts` providing a typed reference for use in TypeScript. Tokens follow an `--*-hsl`
+naming convention and are split per `[data-theme="dark"]` / `[data-theme="light"]`. Use them in your
 components:
 
 **In JSX with Tailwind classes:**
@@ -153,13 +155,13 @@ components:
 **With inline styles:**
 
 ```tsx
-<div style={{ color: "hsl(var(--color-primary))" }}>Custom styled element</div>
+<div style={{ color: "hsl(var(--primary-hsl))" }}>Custom styled element</div>
 ```
 
 **Available colors:**
 
-- `primary` - Vibrant orange accent
-- `secondary` - Bright blue accent
+- `primary` - OTel blue (structural / navbar / buttons); maps to `--otel-blue-hsl`
+- `secondary` - OTel orange (accents / hover / CTAs); maps to `--otel-orange-hsl`
 - `background` - Main background
 - `foreground` - Main text
 - `card` - Card backgrounds

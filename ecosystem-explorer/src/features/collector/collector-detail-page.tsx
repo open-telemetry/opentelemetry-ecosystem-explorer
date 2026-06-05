@@ -145,17 +145,7 @@ export function CollectorDetailPage() {
   if (loading || versionLoading) {
     return (
       <PageContainer>
-        <div className="flex min-h-[400px] items-center justify-center">
-          <div className="text-center">
-            <div className="inline-flex animate-pulse rounded-full p-4 shadow-[0_0_60px_hsl(var(--otel-orange-hsl)/0.2)]">
-              <Loader2 className="text-secondary h-12 w-12 animate-spin" aria-hidden="true" />
-            </div>
-            <div className="mt-6 space-y-2">
-              <div className="text-foreground text-lg font-medium">Loading component...</div>
-              <div className="text-muted-foreground text-sm">This may take a moment</div>
-            </div>
-          </div>
-        </div>
+        <Loader label="Loading component..." />
       </PageContainer>
     );
   }

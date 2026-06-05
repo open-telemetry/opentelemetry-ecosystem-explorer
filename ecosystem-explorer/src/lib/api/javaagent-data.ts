@@ -21,8 +21,18 @@ import type {
 } from "@/types/javaagent";
 import { STORES, pruneOldEntries } from "./idb-cache";
 import { fetchWithCache, resolveDataPath } from "./fetch-with-cache";
+import { mapWithConcurrency } from "@/lib/map-with-concurrency";
 
 const BASE_DIR = "data/javaagent";
+
+// Cap on concurrent instrumentation fetches in the loadAllInstrumentations
+// fan-out FALLBACK. The primary path now loads a single consolidated per-version
+// bundle (see loadInstrumentationBundle); this fan-out only runs for old cached
+// indexes without a bundle hash, missing bundles, or bundle errors. A version
+// manifest lists ~250 instrumentations, so an unbounded fan-out would queue that
+// many requests at once on a cold cache. 8 keeps a small buffer over the
+// browser's ~6-per-host HTTP/1.1 connection cap without flooding IndexedDB.
+const MAX_INSTRUMENTATION_FETCH_CONCURRENCY = 8;
 
 export interface GlobalConfiguration extends Configuration {
   instrumentations?: string[];
@@ -88,17 +98,53 @@ export async function loadInstrumentation(
   return { ...data, _is_custom: isCustom };
 }
 
+/**
+ * Loads the consolidated per-version list bundle in a single request. The bundle
+ * is the slim shape the list page reads (telemetry collapsed to
+ * has_spans/has_metrics flags); detail pages still load full per-instrumentation
+ * files on demand. The bundle is content-addressed (hash in the URL and cache
+ * key), so it is immutable — a rebuilt bundle is a fresh cache key.
+ */
+export async function loadInstrumentationBundle(
+  version: string,
+  bundleHash: string
+): Promise<InstrumentationData[]> {
+  const data = await fetchWithCache<InstrumentationData[]>(
+    `bundle-${version}-${bundleHash}`,
+    resolveDataPath(BASE_DIR, "bundles", `${version}-${bundleHash}.json`),
+    STORES.INSTRUMENTATIONS,
+    { validate: (d) => Array.isArray(d) && d.length > 0 }
+  );
+  if (!data) throw new Error(`Instrumentation bundle for ${version} returned null unexpectedly`);
+  return data;
+}
+
 export async function loadAllInstrumentations(version: string): Promise<InstrumentationData[]> {
+  // Primary path: one request for the whole version via the consolidated bundle,
+  // when the versions index advertises a bundle hash. Falls back to the
+  // per-instrumentation fan-out for old cached indexes (no bundle hash), a
+  // missing bundle (CDN propagation skew), or any bundle load error.
+  try {
+    const { versions } = await loadVersions();
+    const bundleHash = versions.find((v) => v.version === version)?.bundle_hash;
+    if (bundleHash) {
+      return await loadInstrumentationBundle(version, bundleHash);
+    }
+  } catch (error) {
+    console.warn("Instrumentation bundle load failed, falling back to fan-out", { version, error });
+  }
+
   const manifest = await loadVersionManifest(version);
   const libraryIds = Object.keys(manifest.instrumentations || {});
   const customIds = Object.keys(manifest.custom_instrumentations || {});
 
   const allIds = [...libraryIds, ...customIds];
 
-  return Promise.all(
-    allIds.map(async (id) => {
-      return loadInstrumentation(id, version, manifest);
-    })
+  // Bounded fan-out: one fetch per instrumentation, but at most
+  // MAX_INSTRUMENTATION_FETCH_CONCURRENCY in flight at a time. Order is
+  // preserved, so callers see the same result as the prior Promise.all.
+  return mapWithConcurrency(allIds, MAX_INSTRUMENTATION_FETCH_CONCURRENCY, (id) =>
+    loadInstrumentation(id, version, manifest)
   );
 }
 

@@ -23,9 +23,10 @@ import {
   Code,
   Check,
   AlertCircle,
-  Loader2,
   HelpCircle,
 } from "lucide-react";
+
+import { Loader } from "@/components/ui/loader";
 
 import { BackButton } from "@/components/ui/back-button";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
@@ -120,22 +121,7 @@ export function InstrumentationDetailPage() {
   if (loading) {
     return (
       <PageContainer>
-        <div className="flex min-h-[400px] items-center justify-center">
-          <div className="text-center">
-            <div
-              className="inline-flex animate-pulse rounded-full p-4"
-              style={{
-                boxShadow: "0 0 60px hsl(var(--otel-orange-hsl) / 0.2)",
-              }}
-            >
-              <Loader2 className="text-secondary h-12 w-12 animate-spin" aria-hidden="true" />
-            </div>
-            <div className="mt-6 space-y-2">
-              <div className="text-lg font-medium">Loading instrumentation...</div>
-              <div className="text-muted-foreground text-sm">This may take a moment</div>
-            </div>
-          </div>
-        </div>
+        <Loader label="Loading instrumentation..." />
       </PageContainer>
     );
   }

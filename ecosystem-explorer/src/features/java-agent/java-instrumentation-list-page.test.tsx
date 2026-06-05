@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { InstrumentationData } from "@/types/javaagent";
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import userEvent from "@testing-library/user-event";
+import type { InstrumentationData } from "@/types/javaagent";
 import { JavaInstrumentationListPage } from "./java-instrumentation-list-page";
 
 vi.mock("@/hooks/use-javaagent-data", () => ({
@@ -517,5 +517,196 @@ describe("JavaInstrumentationListPage - Filtering", () => {
     expect(screen.getByText("HTTP Client")).toBeInTheDocument();
     expect(screen.queryByText("Kafka Client")).not.toBeInTheDocument();
     expect(screen.queryByText("JDBC")).not.toBeInTheDocument();
+  });
+});
+
+describe("JavaInstrumentationListPage - Pagination", () => {
+  type IOCallback = (entries: IntersectionObserverEntry[]) => void;
+  interface IOInstance {
+    observed: Element[];
+    trigger: () => void;
+  }
+  let instances: IOInstance[] = [];
+  const originalIO = globalThis.IntersectionObserver;
+
+  function makeInstrumentations(count: number, prefix = "lib"): InstrumentationData[] {
+    return Array.from({ length: count }, (_, i) => {
+      const idx = String(i).padStart(3, "0");
+      return {
+        name: `${prefix}-${idx}`,
+        display_name: `${prefix === "lib" ? "Library" : "Custom"} ${idx}`,
+        description: `Auto-generated instrumentation ${idx}`,
+        scope: { name: `${prefix}-${idx}` },
+        has_javaagent: true,
+        ...(prefix === "custom" ? { _is_custom: true } : {}),
+      } as InstrumentationData;
+    });
+  }
+
+  function lastInstance(): IOInstance {
+    return instances[instances.length - 1];
+  }
+
+  beforeEach(() => {
+    instances = [];
+    class MockIO {
+      private cb: IOCallback;
+      observed: Element[] = [];
+      constructor(cb: IOCallback) {
+        this.cb = cb;
+        instances.push({
+          observed: this.observed,
+          trigger: () => {
+            this.cb(
+              this.observed.map(
+                (el) => ({ isIntersecting: true, target: el }) as IntersectionObserverEntry
+              )
+            );
+          },
+        });
+      }
+      observe(el: Element) {
+        this.observed.push(el);
+      }
+      unobserve(el: Element) {
+        this.observed = this.observed.filter((o) => o !== el);
+      }
+      disconnect() {
+        this.observed = [];
+      }
+      takeRecords() {
+        return [] as IntersectionObserverEntry[];
+      }
+      root = null;
+      rootMargin = "";
+      thresholds = [];
+    }
+    (
+      globalThis as unknown as { IntersectionObserver: typeof IntersectionObserver }
+    ).IntersectionObserver = MockIO as unknown as typeof IntersectionObserver;
+
+    vi.mocked(useVersions).mockReturnValue({
+      data: {
+        versions: [
+          { version: "2.0.0", is_latest: true },
+          { version: "1.9.0", is_latest: false },
+        ],
+      },
+      loading: false,
+      error: null,
+    });
+  });
+
+  afterEach(() => {
+    (
+      globalThis as unknown as { IntersectionObserver: typeof IntersectionObserver }
+    ).IntersectionObserver = originalIO;
+  });
+
+  it("renders only the first 24 library groups initially when more exist", async () => {
+    vi.mocked(useInstrumentations).mockReturnValue({
+      data: makeInstrumentations(30),
+      loading: false,
+      error: null,
+    });
+
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByText("Library 000")).toBeInTheDocument();
+    });
+
+    expect(screen.getByText("Library 023")).toBeInTheDocument();
+    expect(screen.queryByText("Library 024")).not.toBeInTheDocument();
+    expect(screen.queryByText("Library 029")).not.toBeInTheDocument();
+    expect(screen.getByTestId("library-sentinel")).toBeInTheDocument();
+    expect(screen.getByText("Showing 30 of 30 instrumentations")).toBeInTheDocument();
+  });
+
+  it("loads the next page of library groups when the sentinel intersects", async () => {
+    vi.mocked(useInstrumentations).mockReturnValue({
+      data: makeInstrumentations(30),
+      loading: false,
+      error: null,
+    });
+
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByText("Library 023")).toBeInTheDocument();
+    });
+
+    act(() => {
+      lastInstance().trigger();
+    });
+
+    expect(screen.getByText("Library 024")).toBeInTheDocument();
+    expect(screen.getByText("Library 029")).toBeInTheDocument();
+    expect(screen.queryByTestId("library-sentinel")).not.toBeInTheDocument();
+  });
+
+  it("paginates the custom section independently of the library section", async () => {
+    vi.mocked(useInstrumentations).mockReturnValue({
+      data: [...makeInstrumentations(30, "lib"), ...makeInstrumentations(30, "custom")],
+      loading: false,
+      error: null,
+    });
+
+    renderPage();
+
+    await waitFor(() => {
+      expect(screen.getByText("Library 000")).toBeInTheDocument();
+    });
+
+    expect(screen.getByText("Custom 023")).toBeInTheDocument();
+    expect(screen.queryByText("Custom 024")).not.toBeInTheDocument();
+    expect(screen.getByTestId("library-sentinel")).toBeInTheDocument();
+    expect(screen.getByTestId("custom-sentinel")).toBeInTheDocument();
+  });
+
+  it("does not render a sentinel when filtered results fit in one page", async () => {
+    const user = userEvent.setup();
+    vi.mocked(useInstrumentations).mockReturnValue({
+      data: makeInstrumentations(30),
+      loading: false,
+      error: null,
+    });
+
+    renderPage();
+
+    await screen.findByText("Library 000");
+    expect(screen.getByTestId("library-sentinel")).toBeInTheDocument();
+
+    const searchInput = await screen.findByPlaceholderText("Search instrumentations...");
+    await user.type(searchInput, "Library 001");
+
+    expect(screen.getByText("Library 001")).toBeInTheDocument();
+    expect(screen.queryByTestId("library-sentinel")).not.toBeInTheDocument();
+    expect(screen.getByText("Showing 1 of 30 instrumentations")).toBeInTheDocument();
+  });
+
+  it("resets pagination when filters change", async () => {
+    const user = userEvent.setup();
+    vi.mocked(useInstrumentations).mockReturnValue({
+      data: makeInstrumentations(30),
+      loading: false,
+      error: null,
+    });
+
+    renderPage();
+
+    await screen.findByText("Library 023");
+    act(() => {
+      lastInstance().trigger();
+    });
+    expect(screen.getByText("Library 029")).toBeInTheDocument();
+
+    const searchInput = await screen.findByPlaceholderText("Search instrumentations...");
+    await user.type(searchInput, "Library");
+    await user.clear(searchInput);
+
+    expect(screen.getByText("Library 023")).toBeInTheDocument();
+    expect(screen.queryByText("Library 024")).not.toBeInTheDocument();
+    expect(screen.getByTestId("library-sentinel")).toBeInTheDocument();
   });
 });

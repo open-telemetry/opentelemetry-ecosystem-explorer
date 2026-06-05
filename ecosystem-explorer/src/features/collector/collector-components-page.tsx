@@ -88,7 +88,14 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const typeQuery = searchParams.get("type");
   const distributionQuery = searchParams.get("distribution");
-  const [searchQuery, setSearchQuery] = useState("");
+  const urlSearch = searchParams.get("search") ?? "";
+  const [searchQuery, setSearchQuery] = useState(urlSearch);
+
+  const [syncedUrlSearch, setSyncedUrlSearch] = useState(urlSearch);
+  if (syncedUrlSearch !== urlSearch) {
+    setSyncedUrlSearch(urlSearch);
+    setSearchQuery(urlSearch);
+  }
 
   const typeFilter = useMemo(() => getTypeFilter(typeQuery), [typeQuery]);
 
@@ -188,7 +195,22 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
                 placeholder="Filter by name or description..."
                 className="border-border/60 bg-background/80 focus:border-primary/50 focus:ring-primary/20 w-full rounded-lg border py-2.5 pr-4 pl-10 text-sm backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setSearchQuery(value);
+                  setSearchParams(
+                    (prev) => {
+                      const next = new URLSearchParams(prev);
+                      if (value) {
+                        next.set("search", value);
+                      } else {
+                        next.delete("search");
+                      }
+                      return next;
+                    },
+                    { replace: true }
+                  );
+                }}
               />
             </div>
           </div>
@@ -347,19 +369,14 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
                       </p>
 
                       <div className="border-border/10 flex items-center gap-2 border-t pt-2">
-                        {comp.status?.stability &&
-                          Object.keys(comp.status.stability).length > 0 && (
-                            <GlowBadge
-                              variant={
-                                Object.keys(comp.status.stability)[0] === "stable"
-                                  ? "success"
-                                  : "info"
-                              }
-                              className="px-2 py-0 text-[9px]"
-                            >
-                              {Object.keys(comp.status.stability)[0]}
-                            </GlowBadge>
-                          )}
+                        {comp.stability && (
+                          <GlowBadge
+                            variant={comp.stability === "stable" ? "success" : "info"}
+                            className="px-2 py-0 text-[9px]"
+                          >
+                            {comp.stability}
+                          </GlowBadge>
+                        )}
                       </div>
                     </div>
                   </DetailCard>

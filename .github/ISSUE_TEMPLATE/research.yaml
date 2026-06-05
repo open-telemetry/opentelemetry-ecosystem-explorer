@@ -1,0 +1,30 @@
+name: Ecosystem Research
+description: Propose or track research into a new ecosystem area or topic
+labels: ["Research", "needs-triage"]
+body:
+  - type: textarea
+    id: scope
+    attributes:
+      label: What ecosystem area?
+      description: Language, component type, project name, etc.
+    validations:
+      required: true
+  - type: textarea
+    id: questions
+    attributes:
+      label: Key questions that will be answered once the resource is created.
+    validations:
+      required: true
+  - type: textarea
+    id: desired
+    attributes:
+      label: What should be created?
+      description:
+        What do you expect to be created? (as an example, take a look at the available resources at
+        the website).
+    validations:
+      required: true
+  - type: textarea
+    id: prior
+    attributes:
+      label: References (issues, articles, PRs, projects, etc.)

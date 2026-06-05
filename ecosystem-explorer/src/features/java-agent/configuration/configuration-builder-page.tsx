@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Loader } from "@/components/ui/loader";
 import { BackButton } from "@/components/ui/back-button";
 import { BetaBadge } from "@/components/ui/beta-badge";
 import { PageContainer } from "@/components/layout/page-container";
@@ -226,9 +227,25 @@ function InstrumentationTabBody({
   generalNode,
   javaAgentVersion,
 }: InstrumentationTabBodyProps) {
+  const [activePreviewKey, setActivePreviewKey] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
 
+  const handleInteraction = (e: React.BaseSyntheticEvent) => {
+    const target = e.target as HTMLElement;
+
+    const leafKey = target
+      .closest("[data-yaml-section-key]")
+      ?.getAttribute("data-yaml-section-key");
+
+    const sectionKey = target.closest("[data-section-key]")?.getAttribute("data-section-key");
+
+    const key = leafKey ?? sectionKey;
+
+    if (key && key !== activePreviewKey) {
+      setActivePreviewKey(key);
+    }
+  };
   const tocSections: TocSection[] = useMemo(
     () => [
       { key: GENERAL_SECTION_KEY, label: GENERAL_SETTINGS_LABEL },
@@ -289,7 +306,12 @@ function InstrumentationTabBody({
         onStatusFilterChange={setStatusFilter}
         customizationCount={customizationCount}
       />
-      <div ref={sectionsContainerRef} className="space-y-4">
+      <div
+        ref={sectionsContainerRef}
+        className="space-y-4"
+        onFocusCapture={handleInteraction}
+        onPointerDown={handleInteraction}
+      >
         <GeneralSectionCard
           label={GENERAL_SETTINGS_LABEL}
           sectionKey={GENERAL_SECTION_KEY}
@@ -311,8 +333,7 @@ function InstrumentationTabBody({
       <PreviewCard
         schema={schema}
         javaAgentVersion={javaAgentVersion}
-        // Highlighting is currently SDK-only. See #500 for the Instrumentation tab extension.
-        activePreviewKey={null}
+        activePreviewKey={activePreviewKey}
       />
     </div>
   );
@@ -405,14 +426,18 @@ export function ConfigurationBuilderPage() {
           </div>
         </div>
         {schemaVersionsState.loading ? (
-          <p className="text-muted-foreground mt-4 text-sm">Loading versions…</p>
+          <Loader size="lg" label="Loading versions…" className="mt-4" />
         ) : schemaVersionsState.error ? (
           <p className="mt-4 text-sm text-red-400">Failed to load available versions.</p>
         ) : (
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsContent value="sdk">
-              {!schemaVersion || schema.loading || starter.loading ? (
-                <p className="text-muted-foreground mt-4 text-sm">Loading schema…</p>
+              {!schemaVersion || schema.loading || starter.loading || (!schema.error && !root) ? (
+                <Loader
+                  size={root ? "sm" : "lg"}
+                  label="Loading schema…"
+                  className={root ? "mt-4" : undefined}
+                />
               ) : schema.error ? (
                 <p className="mt-4 text-sm text-red-400">Failed to load schema.</p>
               ) : starter.error ? (
@@ -428,8 +453,12 @@ export function ConfigurationBuilderPage() {
               ) : null}
             </TabsContent>
             <TabsContent value="instrumentation">
-              {!schemaVersion || schema.loading || starter.loading ? (
-                <p className="text-muted-foreground mt-4 text-sm">Loading schema…</p>
+              {!schemaVersion || schema.loading || starter.loading || (!schema.error && !root) ? (
+                <Loader
+                  size={root ? "sm" : "lg"}
+                  label="Loading schema…"
+                  className={root ? "mt-4" : undefined}
+                />
               ) : schema.error ? (
                 <p className="mt-4 text-sm text-red-400">Failed to load schema.</p>
               ) : starter.error ? (

@@ -178,3 +178,77 @@ def _transform_0_3_to_0_5(inventory_data: dict[str, Any]) -> dict[str, Any]:
     transformed_data["file_format"] = 0.5
     logger.info("Transformed inventory from format 0.3 to 0.5")
     return transformed_data
+
+
+def make_index_instrumentation(instrumentation: dict[str, Any]) -> dict[str, Any]:
+    """Extract lightweight metadata for the javaagent index.json.
+
+    The index powers initial page load, browsing, and client-side filtering
+    without fetching every full instrumentation file. Full detail stays in the
+    content-addressed component files and is loaded on demand.
+
+    Args:
+        instrumentation: Full canonical instrumentation dict (must have "name").
+
+    Returns:
+        Minimal dict suitable for the index components list.
+    """
+    telemetry = instrumentation.get("telemetry")
+    return {
+        "name": instrumentation["name"],
+        "display_name": instrumentation.get("display_name"),
+        "description": instrumentation.get("description"),
+        # Booleans the browse/search UI filters on without loading full detail.
+        "has_telemetry": bool(telemetry),
+        "has_standalone_library": bool(instrumentation.get("has_standalone_library")),
+    }
+
+
+def make_list_instrumentation(instrumentation: dict[str, Any], *, is_custom: bool) -> dict[str, Any]:
+    """Project a full instrumentation down to the slim shape the list/catalog page reads.
+
+    The list page consumes every instrumentation for a version at once. Rather
+    than fan out one fetch per instrumentation (or ship the full detail), it
+    loads a single consolidated bundle of these slim entries. The page reads
+    ``telemetry`` only to decide whether to show spans/metrics badges and to
+    drive the spans/metrics filter, never the span/metric detail — so we
+    precompute ``has_spans``/``has_metrics`` and drop the heavy ``telemetry``
+    array entirely. Full detail stays in the content-addressed component files,
+    loaded on demand by detail pages.
+
+    ``configurations`` and ``disabled_by_default`` are carried through because
+    the same bundle feeds the Configuration Builder (via ``loadAllInstrumentations``):
+    it renders per-module options from ``configurations`` and derives each
+    module's default enabled/disabled state (and the initial customization
+    toggle) from ``disabled_by_default``.
+
+    ``scope`` is carried through because the frontend ``InstrumentationData``
+    contract requires it; it is small. ``_is_custom`` is injected here (the one
+    place) so list rows match what the singular detail loader produces.
+
+    Args:
+        instrumentation: Full canonical instrumentation dict (must have "name").
+        is_custom: Whether this is a custom (non-upstream) instrumentation.
+
+    Returns:
+        Slim instrumentation dict for the per-version list bundle.
+    """
+    telemetry = instrumentation.get("telemetry") or []
+    entry: dict[str, Any] = {
+        "name": instrumentation["name"],
+        "scope": instrumentation.get("scope"),
+        "display_name": instrumentation.get("display_name"),
+        "description": instrumentation.get("description"),
+        "has_javaagent": instrumentation.get("has_javaagent"),
+        "has_standalone_library": instrumentation.get("has_standalone_library"),
+        "semantic_conventions": instrumentation.get("semantic_conventions"),
+        "features": instrumentation.get("features"),
+        "configurations": instrumentation.get("configurations"),
+        "disabled_by_default": instrumentation.get("disabled_by_default"),
+        "has_spans": any((t.get("spans") or []) for t in telemetry),
+        "has_metrics": any((t.get("metrics") or []) for t in telemetry),
+        "_is_custom": is_custom,
+    }
+    # Drop keys that are absent in the source so the bundle stays compact and the
+    # content hash is stable regardless of which optional fields a version omits.
+    return {k: v for k, v in entry.items() if v is not None}

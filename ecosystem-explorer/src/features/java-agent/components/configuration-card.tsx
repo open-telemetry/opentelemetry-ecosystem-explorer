@@ -64,23 +64,23 @@ export function ConfigurationCard({ config, format, instrumentations }: Configur
       </div>
 
       <div className="space-y-3">
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           {showDeclarative ? (
             <div data-testid="config-name" className="min-w-0 flex-1">
               <YamlCodeBlock
                 code={yamlCode}
-                className="bg-background/60 text-foreground rounded-md p-3 font-mono text-xs"
+                className="bg-background/60 text-foreground rounded-md p-3 font-mono text-xs break-words whitespace-pre-wrap"
               />
             </div>
           ) : (
             <code
               data-testid="config-name"
-              className="text-primary flex-1 font-mono text-sm break-all"
+              className="text-primary min-w-0 flex-1 font-mono text-sm break-all"
             >
               {flatName}
             </code>
           )}
-          <div className="flex shrink-0 flex-wrap items-center gap-1">
+          <div className="flex w-full flex-wrap items-center gap-1 sm:w-auto sm:justify-end">
             <GlowBadge variant="info" withGlow>
               {config.type}
             </GlowBadge>
@@ -100,10 +100,10 @@ export function ConfigurationCard({ config, format, instrumentations }: Configur
           <code className="flex-1 text-xs break-all">{defaultValue}</code>
         </div>
 
-        {config.example && config.example.length > 0 && (
+        {config.examples && config.examples.length > 0 && (
           <div className="space-y-1">
             <span className="text-muted-foreground text-xs font-medium">Examples:</span>
-            {config.example.map((ex, i) => (
+            {config.examples.map((ex, i) => (
               <div key={i} className="border-border/30 bg-muted/30 rounded-lg border px-3 py-2">
                 <code className="text-xs break-all">{ex}</code>
               </div>
