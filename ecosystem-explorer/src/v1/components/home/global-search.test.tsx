@@ -63,8 +63,12 @@ describe("GlobalSearch", () => {
     renderSearch();
     const input = screen.getByRole("combobox", { name: /search the ecosystem/i });
     expect(input).toBeInTheDocument();
-    // Asserts against the canonical stat value rather than a hardcoded number,
-    // so the test tracks home-stats.ts instead of breaking when the count moves.
+    // Guard the source first: an empty value would degrade the placeholder to
+    // "Search  components" yet still satisfy the stringContaining check below,
+    // so assert independently that the stat actually carries a number.
+    expect(INTEGRATIONS_STAT_VALUE).toMatch(/^\d[\d,]*\+?$/);
+    // Then assert the placeholder is wired to that canonical value rather than a
+    // hardcoded number, so the test tracks home-stats.ts when the count moves.
     expect(input).toHaveAttribute(
       "placeholder",
       expect.stringContaining(`Search ${INTEGRATIONS_STAT_VALUE} components`)
