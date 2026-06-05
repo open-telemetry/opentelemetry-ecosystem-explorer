@@ -15,7 +15,8 @@
  */
 import { useState } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
-import { Info, ExternalLink, AlertCircle, Loader2, Check } from "lucide-react";
+import { Info, ExternalLink, AlertCircle, Check } from "lucide-react";
+import { Loader } from "@/components/ui/loader";
 import { GitHubIcon } from "@/components/icons/github-icon";
 import { BackButton } from "@/components/ui/back-button";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
