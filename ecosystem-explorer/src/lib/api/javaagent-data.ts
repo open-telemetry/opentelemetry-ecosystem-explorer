@@ -179,4 +179,3 @@ export async function loadGlobalConfigurations(): Promise<GlobalConfiguration[]>
   if (!data) throw new Error("Global configurations returned null unexpectedly");
   return data;
 }
-
