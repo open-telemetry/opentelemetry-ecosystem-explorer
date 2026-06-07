@@ -99,6 +99,53 @@ export function useInstrumentations(version: string): DataState<InstrumentationD
   return state;
 }
 
+export function useLibraryReadme(
+  name: string,
+  markdownHash: string | null | undefined
+): DataState<string> {
+  const [state, setState] = useState<DataState<string>>({
+    data: null,
+    loading: false,
+    error: null,
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadData() {
+      if (!name || !markdownHash) {
+        setState({ data: null, loading: false, error: null });
+        return;
+      }
+
+      setState({ data: null, loading: true, error: null });
+
+      try {
+        const data = await javaagentData.loadLibraryReadme(name, markdownHash);
+        if (!cancelled) {
+          setState({ data, loading: false, error: null });
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setState({
+            data: null,
+            loading: false,
+            error: error instanceof Error ? error : new Error(String(error)),
+          });
+        }
+      }
+    }
+
+    loadData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [name, markdownHash]);
+
+  return state;
+}
+
 export function useInstrumentation(name: string, version: string): DataState<InstrumentationData> {
   const [state, setState] = useState<DataState<InstrumentationData>>({
     data: null,
