@@ -412,7 +412,7 @@ describe("javaagent-data", () => {
 
   describe("loadGlobalConfigurations", () => {
     it("should load global configurations", async () => {
-      const config = { some: "config" };
+      const config = [{ some: "config" }];
       (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
         ok: true,
         json: async () => config,
