@@ -1,0 +1,17 @@
+name: otelhttp
+display_name: HTTP
+description: ""
+source_path: instrumentation/net/http/otelhttp
+scope:
+  name: go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp
+module:
+  path: go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp
+  version: v0.68.0
+target_module: net/http
+go_min_version: 1.25.3
+library_link: https://pkg.go.dev/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp
+instrumentation_type: wrapper
+installation:
+  type: wrapper
+  description: ""
+stability: experimental
