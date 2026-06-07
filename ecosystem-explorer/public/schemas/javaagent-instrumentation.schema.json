@@ -103,7 +103,7 @@
             "description": "The default value if not specified.",
             "type": ["string", "number", "boolean"]
           },
-          "example": {
+          "examples": {
             "description": "Example values for this configuration option.",
             "type": "array",
             "items": {
@@ -111,7 +111,7 @@
             }
           }
         },
-        "propertyOrder": ["name", "declarative_name", "description", "type", "default", "example"],
+        "propertyOrder": ["name", "declarative_name", "description", "type", "default", "examples"],
         "required": ["default", "description", "name", "type"]
       }
     },
@@ -257,9 +257,20 @@
         "required": ["when"]
       }
     },
-
+    "markdown_hash": {
+      "description": "Content hash of the library README markdown file.",
+      "type": "string"
+    },
     "_is_custom": {
       "description": "Whether this is a custom (non-upstream) instrumentation.",
+      "type": "boolean"
+    },
+    "has_spans": {
+      "description": "Precomputed presence flag: whether any telemetry block emits spans. Present\nonly in slim per-version list-bundle entries (which drop the heavy\n`telemetry` array); undefined in full detail files, where presence is\nderived from `telemetry`. See `getBadgeInfo`.",
+      "type": "boolean"
+    },
+    "has_metrics": {
+      "description": "Precomputed presence flag: whether any telemetry block emits metrics. See `has_spans`.",
       "type": "boolean"
     }
   },
@@ -279,7 +290,10 @@
     "javaagent_target_versions",
     "configurations",
     "telemetry",
-    "_is_custom"
+    "markdown_hash",
+    "_is_custom",
+    "has_spans",
+    "has_metrics"
   ],
   "required": ["name", "scope"],
   "$schema": "https://json-schema.org/draft-07/schema#"

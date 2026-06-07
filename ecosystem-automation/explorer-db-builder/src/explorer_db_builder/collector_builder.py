@@ -21,7 +21,7 @@ from collector_watcher.inventory_manager import InventoryManager
 from semantic_version import Version
 
 from explorer_db_builder.collector_database_writer import CollectorDatabaseWriter
-from explorer_db_builder.collector_transformer import transform_collector_components
+from explorer_db_builder.collector_transformer import make_index_component, transform_collector_components
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +61,7 @@ def _process_version(
     version: Version,
     inventory_manager: InventoryManager,
     db_writer: CollectorDatabaseWriter,
-) -> tuple[dict[str, str], list[dict]]:
+) -> tuple[dict[str, str], list[dict], str]:
     """Load, transform, and write all components for a single version.
 
     Loads data from every distribution and merges into one flat component list.
@@ -72,9 +72,11 @@ def _process_version(
         db_writer: Destination writer.
 
     Returns:
-        Tuple of (component_map, components) where component_map is
-        {component_id: hash} and components is the flat list of canonical dicts.
-        Both are empty if no components were found.
+        Tuple of (component_map, components, bundle_hash) where component_map is
+        {component_id: hash}, components is the flat list of full canonical dicts
+        (for the latest-version index), and bundle_hash identifies the
+        consolidated per-version bundle. component_map/components are empty and
+        bundle_hash is "" if no components were found.
     """
     logger.info("Processing collector version: %s", version)
     all_components = []
@@ -89,11 +91,16 @@ def _process_version(
 
     if not all_components:
         logger.warning("No components found for version %s, skipping", version)
-        return {}, []
+        return {}, [], ""
 
     component_map = db_writer.write_components(all_components)
     db_writer.write_version_index(version, component_map)
-    return component_map, all_components
+
+    # Consolidated per-version bundle the list view loads in a single request.
+    # Slim (make_index_component) shape; full detail stays in components/.
+    bundle_items = [make_index_component(c) for c in all_components]
+    bundle_hash = db_writer.write_version_bundle(version, bundle_items)
+    return component_map, all_components, bundle_hash
 
 
 def run_collector_builder(
@@ -123,20 +130,22 @@ def run_collector_builder(
 
         processed_versions: list[Version] = []
         latest_components: list[dict] = []
+        bundle_hashes: dict[Version, str] = {}
 
         for version in versions:
-            component_map, components = _process_version(version, inventory_manager, db_writer)
+            component_map, components, bundle_hash = _process_version(version, inventory_manager, db_writer)
             if not component_map:
                 continue
 
             processed_versions.append(version)
+            bundle_hashes[version] = bundle_hash
             if not latest_components:
                 latest_components = components
 
         if not processed_versions:
             raise ValueError("No collector versions were successfully processed")
 
-        db_writer.write_version_list(processed_versions)
+        db_writer.write_version_list(processed_versions, bundle_hashes)
         db_writer.write_index(latest_components)
 
         stats = db_writer.get_stats()

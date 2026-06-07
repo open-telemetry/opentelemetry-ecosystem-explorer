@@ -4,6 +4,11 @@ This document outlines the design principles, patterns, and tokens used in the O
 Ecosystem Explorer. It serves as a guide for AI agents and developers working on UI elements to
 ensure visual consistency and quality.
 
+> **Note:** This describes the **legacy** dark-first explorer (the current default UI). A redesign
+> is underway behind the `V1_REDESIGN` feature flag — see `DESIGN_V1.md` for the v1 design system,
+> which will eventually replace this document. The two share the same brand primitives
+> (`--otel-blue-hsl` / `--otel-orange-hsl`) defined in `src/styles/tokens.css`.
+
 ## Overview
 
 The Ecosystem Explorer uses a **dark-first design system** optimized for readability and visual
@@ -31,8 +36,8 @@ Create visual depth without overwhelming the interface:
 
 Information hierarchy guides users naturally:
 
-- Primary actions use the vibrant orange (`--color-primary`)
-- Secondary information uses the blue accent (`--color-secondary`)
+- Primary actions use the OTel blue (`--primary-hsl`)
+- Secondary information uses the orange accent (`--secondary-hsl`)
 - Background elements recede through lower contrast
 - Whitespace provides visual breathing room
 
@@ -49,8 +54,8 @@ All animations follow a unified timing system:
 
 Optimized for extended viewing in low-light environments:
 
-- Deep navy base (`--color-background`)
-- Bright, high-contrast text (`--color-foreground`)
+- Deep navy base (`--background-hsl`)
+- Bright, high-contrast text (`--foreground-hsl`)
 - Reduced blue light through warm accent colors
 - Subtle glows instead of harsh borders
 
@@ -60,31 +65,40 @@ Optimized for extended viewing in low-light environments:
 
 ### HSL Token Reference
 
-All colors are defined using HSL values in `src/themes.ts`. They are applied via CSS custom
-properties:
+All colors are defined as HSL values in `src/styles/tokens.css` (the source of truth), with
+`src/themes.ts` providing a typed reference. They use an `--*-hsl` naming convention. A two-tier
+brand system keeps named primitives stable while semantic role tokens decide which hue plays a
+structural vs. accent role (dark-theme values shown):
 
 ```css
---color-primary: 38 95% 52%; /* Vibrant orange */
---color-secondary: 228 60% 55%; /* Brighter blue */
---color-background: 232 38% 15%; /* Deep navy */
---color-foreground: 210 45% 99%; /* Bright white with blue hint */
---color-card: 232 35% 19%; /* Card background */
---color-card-secondary: 232 32% 23%; /* Card hover state */
---color-muted: 232 30% 17%; /* Darker background for code/badges */
---color-muted-foreground: 220 22% 65%; /* Muted text */
---color-border: 232 28% 26%; /* Borders */
+/* Brand primitives — stable, never reassigned */
+--otel-blue-hsl: 228 37% 49%;
+--otel-orange-hsl: 41 100% 48%;
+
+/* Semantic role tokens */
+--primary-hsl: var(--otel-blue-hsl); /* structural / navbar / buttons */
+--secondary-hsl: var(--otel-orange-hsl); /* accents / hover / CTAs */
+
+/* Surfaces */
+--background-hsl: 232 38% 15%; /* Deep navy */
+--foreground-hsl: 210 17% 98%; /* Bright white with blue hint */
+--card-hsl: 232 35% 19%; /* Card background */
+--card-secondary-hsl: 232 32% 23%; /* Card hover state */
+--muted-hsl: 232 28% 22%; /* Darker background for code/badges */
+--muted-foreground-hsl: 220 14% 65%; /* Muted text */
+--border-hsl: 232 22% 28%; /* Borders */
 ```
 
 ### Usage Guidelines
 
-#### Primary (Orange)
+#### Primary (Blue)
 
 - Primary CTAs and important actions
 - Links and interactive elements
 - Accent highlights and focus states
 - Sparingly used to draw attention
 
-#### Secondary (Blue)
+#### Secondary (Orange)
 
 - Secondary actions and information
 - Decorative accents and gradients

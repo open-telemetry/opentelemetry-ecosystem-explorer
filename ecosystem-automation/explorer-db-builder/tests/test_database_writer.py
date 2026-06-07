@@ -289,7 +289,59 @@ class TestWriteVersionList:
         db_writer.write_version_list([Version("1.0.0")])
 
         assert temp_db_dir.exists()
-        assert temp_db_dir.is_dir()
+
+    def test_write_version_list_includes_bundle_hash_when_provided(self, db_writer, temp_db_dir):
+        versions = [Version("2.0.0"), Version("1.0.0")]
+
+        db_writer.write_version_list(versions, {Version("2.0.0"): "hashA", Version("1.0.0"): "hashB"})
+
+        with open(temp_db_dir / "versions-index.json", "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        assert data["versions"][0]["bundle_hash"] == "hashA"
+        assert data["versions"][1]["bundle_hash"] == "hashB"
+
+    def test_write_version_list_omits_bundle_hash_when_absent(self, db_writer, temp_db_dir):
+        # No map (old behavior) and a partial map both omit the field cleanly.
+        db_writer.write_version_list([Version("2.0.0"), Version("1.0.0")], {Version("2.0.0"): "hashA"})
+
+        with open(temp_db_dir / "versions-index.json", "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        assert data["versions"][0]["bundle_hash"] == "hashA"
+        assert "bundle_hash" not in data["versions"][1]
+
+
+class TestWriteVersionBundle:
+    def test_writes_bundle_and_returns_hash(self, db_writer, temp_db_dir):
+        entries = [
+            {"name": "lib1", "has_spans": True, "has_metrics": False, "_is_custom": False},
+            {"name": "lib2", "has_spans": False, "has_metrics": True, "_is_custom": False},
+        ]
+
+        bundle_hash = db_writer.write_version_bundle(Version("2.0.0"), entries)
+
+        assert isinstance(bundle_hash, str)
+        assert len(bundle_hash) == 12
+        bundle_file = temp_db_dir / "bundles" / f"2.0.0-{bundle_hash}.json"
+        assert bundle_file.exists()
+        with open(bundle_file, "r", encoding="utf-8") as f:
+            assert json.load(f) == entries
+
+    def test_is_idempotent(self, db_writer):
+        entries = [{"name": "lib1", "has_spans": True, "has_metrics": False, "_is_custom": False}]
+
+        first = db_writer.write_version_bundle(Version("2.0.0"), entries)
+        files_after_first = db_writer.files_written
+        second = db_writer.write_version_bundle(Version("2.0.0"), entries)
+
+        assert first == second
+        # The second write is skipped because the content-addressed file exists.
+        assert db_writer.files_written == files_after_first
+
+    def test_empty_raises(self, db_writer):
+        with pytest.raises(ValueError, match="Bundle instrumentations cannot be empty"):
+            db_writer.write_version_bundle(Version("2.0.0"), [])
 
 
 class TestGetStats:
@@ -492,6 +544,107 @@ class TestWriteMarkdown:
                 mock_logger.error.assert_called()
                 args, _ = mock_logger.error.call_args
                 assert "Failed to write markdown" in args[0]
+
+
+@pytest.fixture
+def sample_index_instrumentations():
+    return [
+        {
+            "name": "spring-webmvc-6.0",
+            "display_name": "Spring Web MVC",
+            "description": "Spring Web MVC instrumentation",
+            "has_standalone_library": True,
+            "telemetry": [{"when": "default", "spans": [{"span_kind": "SERVER"}]}],
+            # Heavy fields that must NOT leak into the index:
+            "configurations": [{"name": "otel.x", "type": "boolean"}],
+            "scope": {"name": "io.opentelemetry.spring-webmvc-6.0"},
+        },
+        {
+            "name": "akka-http-10.0",
+            "display_name": "Akka HTTP",
+            "description": "Akka HTTP instrumentation",
+            "has_standalone_library": False,
+            # No telemetry key -> has_telemetry should be False.
+        },
+    ]
+
+
+class TestWriteIndex:
+    def test_write_index_creates_file(self, db_writer, sample_index_instrumentations, temp_db_dir):
+        db_writer.write_index(sample_index_instrumentations)
+        assert (temp_db_dir / "index.json").exists()
+
+    def test_write_index_shape(self, db_writer, sample_index_instrumentations, temp_db_dir):
+        db_writer.write_index(sample_index_instrumentations)
+        with open(temp_db_dir / "index.json") as f:
+            data = json.load(f)
+
+        assert data["ecosystem"] == "javaagent"
+        assert isinstance(data["components"], list)
+        assert len(data["components"]) == 2
+
+    def test_write_index_sorted_by_name(self, db_writer, sample_index_instrumentations, temp_db_dir):
+        db_writer.write_index(sample_index_instrumentations)
+        with open(temp_db_dir / "index.json") as f:
+            data = json.load(f)
+
+        names = [c["name"] for c in data["components"]]
+        assert names == ["akka-http-10.0", "spring-webmvc-6.0"]
+
+    def test_write_index_lightweight_fields_only(self, db_writer, sample_index_instrumentations, temp_db_dir):
+        db_writer.write_index(sample_index_instrumentations)
+        with open(temp_db_dir / "index.json") as f:
+            data = json.load(f)
+
+        spring = next(c for c in data["components"] if c["name"] == "spring-webmvc-6.0")
+        assert set(spring.keys()) == {
+            "name",
+            "display_name",
+            "description",
+            "has_telemetry",
+            "has_standalone_library",
+        }
+        # Heavy fields must not be present in the index entry.
+        assert "configurations" not in spring
+        assert "scope" not in spring
+
+    def test_write_index_derives_booleans(self, db_writer, sample_index_instrumentations, temp_db_dir):
+        db_writer.write_index(sample_index_instrumentations)
+        with open(temp_db_dir / "index.json") as f:
+            data = json.load(f)
+
+        spring = next(c for c in data["components"] if c["name"] == "spring-webmvc-6.0")
+        akka = next(c for c in data["components"] if c["name"] == "akka-http-10.0")
+
+        assert spring["has_telemetry"] is True
+        assert spring["has_standalone_library"] is True
+        assert akka["has_telemetry"] is False
+        assert akka["has_standalone_library"] is False
+
+    def test_write_index_skips_items_without_name(self, db_writer, temp_db_dir):
+        db_writer.write_index(
+            [
+                {"name": "valid-1.0", "display_name": "Valid"},
+                {"display_name": "no name here"},
+                "not a dict",
+            ]
+        )
+        with open(temp_db_dir / "index.json") as f:
+            data = json.load(f)
+
+        assert [c["name"] for c in data["components"]] == ["valid-1.0"]
+
+    def test_write_index_empty_list(self, db_writer, temp_db_dir):
+        db_writer.write_index([])
+        with open(temp_db_dir / "index.json") as f:
+            data = json.load(f)
+
+        assert data == {"ecosystem": "javaagent", "components": []}
+
+    def test_write_index_updates_stats(self, db_writer, sample_index_instrumentations):
+        db_writer.write_index(sample_index_instrumentations)
+        assert db_writer.files_written == 1
+        assert db_writer.total_bytes > 0
 
 
 class TestWriteGlobalConfigurations:

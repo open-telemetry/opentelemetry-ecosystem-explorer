@@ -23,12 +23,28 @@ export interface BadgeInfo {
 }
 
 /**
+ * Whether an instrumentation emits spans. Prefers the precomputed `has_spans`
+ * flag carried by slim list-bundle entries; falls back to scanning `telemetry`
+ * for full detail objects (which omit the flag).
+ */
+function hasSpans(instr: InstrumentationData): boolean {
+  return instr.has_spans ?? instr.telemetry?.some((t) => t.spans && t.spans.length > 0) ?? false;
+}
+
+/** Whether an instrumentation emits metrics. See {@link hasSpans}. */
+function hasMetrics(instr: InstrumentationData): boolean {
+  return (
+    instr.has_metrics ?? instr.telemetry?.some((t) => t.metrics && t.metrics.length > 0) ?? false
+  );
+}
+
+/**
  * Computes badge presence flags for a single instrumentation.
  */
 export function getBadgeInfo(instrumentation: InstrumentationData): BadgeInfo {
   return {
-    hasSpans: instrumentation.telemetry?.some((t) => t.spans && t.spans.length > 0) ?? false,
-    hasMetrics: instrumentation.telemetry?.some((t) => t.metrics && t.metrics.length > 0) ?? false,
+    hasSpans: hasSpans(instrumentation),
+    hasMetrics: hasMetrics(instrumentation),
     hasJavaAgentTarget: instrumentation.has_javaagent === true,
     hasLibraryTarget: instrumentation.has_standalone_library === true,
   };
@@ -40,12 +56,8 @@ export function getBadgeInfo(instrumentation: InstrumentationData): BadgeInfo {
  */
 export function getAggregatedBadgeInfo(instrumentations: InstrumentationData[]): BadgeInfo {
   return {
-    hasSpans: instrumentations.some(
-      (instr) => instr.telemetry?.some((t) => t.spans && t.spans.length > 0) ?? false
-    ),
-    hasMetrics: instrumentations.some(
-      (instr) => instr.telemetry?.some((t) => t.metrics && t.metrics.length > 0) ?? false
-    ),
+    hasSpans: instrumentations.some(hasSpans),
+    hasMetrics: instrumentations.some(hasMetrics),
     hasJavaAgentTarget: instrumentations.some((instr) => instr.has_javaagent === true),
     hasLibraryTarget: instrumentations.some((instr) => instr.has_standalone_library === true),
   };

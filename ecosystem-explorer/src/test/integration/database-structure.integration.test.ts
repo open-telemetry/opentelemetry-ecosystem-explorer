@@ -15,7 +15,12 @@
  */
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { installFetchInterceptor, uninstallFetchInterceptor } from "./helpers/fetch-interceptor";
-import { loadVersions, loadVersionManifest, loadInstrumentation } from "@/lib/api/javaagent-data";
+import {
+  loadVersions,
+  loadVersionManifest,
+  loadInstrumentation,
+  loadInstrumentationBundle,
+} from "@/lib/api/javaagent-data";
 
 beforeAll(() => installFetchInterceptor());
 afterAll(() => uninstallFetchInterceptor());
@@ -100,6 +105,54 @@ describe("database structure", () => {
       const instrumentation = await loadInstrumentation(firstId, latestVersion, manifest);
 
       expect(instrumentation.name).toBe(firstId);
+    });
+  });
+
+  describe("version list bundle", () => {
+    // Bundles are produced by the Build Explorer Database workflow, not committed
+    // alongside the frontend code. When the committed data predates that run (no
+    // bundle_hash yet), these tests skip rather than fail; they validate the
+    // artifact once it is present.
+    it("every version entry advertises a non-empty bundle hash", async (ctx) => {
+      const { versions } = await loadVersions();
+      if (!versions.some((v) => v.bundle_hash)) ctx.skip();
+      for (const v of versions) {
+        expect(typeof v.bundle_hash).toBe("string");
+        expect(v.bundle_hash!.length).toBeGreaterThan(0);
+      }
+    });
+
+    it("the latest bundle loads, is non-empty, and matches the manifest count", async (ctx) => {
+      const { versions } = await loadVersions();
+      const latest = versions.find((v) => v.is_latest)!;
+      if (!latest.bundle_hash) ctx.skip();
+      const manifest = await loadVersionManifest(latest.version);
+
+      const bundle = await loadInstrumentationBundle(latest.version, latest.bundle_hash!);
+
+      const manifestCount =
+        Object.keys(manifest.instrumentations).length +
+        Object.keys(manifest.custom_instrumentations ?? {}).length;
+      expect(bundle.length).toBe(manifestCount);
+    });
+
+    it("bundle entries carry precomputed telemetry flags and the custom flag", async (ctx) => {
+      const { versions } = await loadVersions();
+      const latest = versions.find((v) => v.is_latest)!;
+      if (!latest.bundle_hash) ctx.skip();
+
+      const bundle = await loadInstrumentationBundle(latest.version, latest.bundle_hash!);
+
+      for (const entry of bundle) {
+        expect(typeof entry.name).toBe("string");
+        expect(entry.name.length).toBeGreaterThan(0);
+        // Slim entries precompute presence flags in place of the heavy telemetry array.
+        expect(typeof entry.has_spans).toBe("boolean");
+        expect(typeof entry.has_metrics).toBe("boolean");
+        expect(typeof entry._is_custom).toBe("boolean");
+        // The heavy detail arrays must be dropped from the slim bundle.
+        expect(entry.telemetry).toBeUndefined();
+      }
     });
   });
 });

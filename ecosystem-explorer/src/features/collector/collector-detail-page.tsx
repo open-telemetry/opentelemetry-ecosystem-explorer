@@ -15,10 +15,9 @@
  */
 import { useState } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
-import { Info, ExternalLink, AlertCircle, Check, Users } from "lucide-react";
+import { Info, ExternalLink, AlertCircle, Check } from "lucide-react";
 import { Loader } from "@/components/ui/loader";
 import { GitHubIcon } from "@/components/icons/github-icon";
-
 import { BackButton } from "@/components/ui/back-button";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { SegmentedTabList } from "@/components/ui/segmented-tabs";
@@ -38,6 +37,94 @@ const COMPONENT_TYPE_DESCRIPTIONS: Record<string, string> = {
   connector: "Connectors act as both an exporter and a receiver, joining two pipelines together.",
 };
 
+const STABILITY_DEFINITIONS: Record<string, { label: string; desc: string; color: string }> = {
+  development: {
+    label: "Development",
+    desc: "Not all pieces of the component are in place yet. The component should not be used in production.",
+    color: "text-blue-500",
+  },
+  alpha: {
+    label: "Alpha",
+    desc: "The component is ready to be used for limited non-critical workloads and the authors of this component would welcome your feedback.",
+    color: "text-purple-500",
+  },
+  beta: {
+    label: "Beta",
+    desc: "Same as Alpha, but the configuration options are deemed stable. Suitable for broader usage.",
+    color: "text-green-500",
+  },
+  stable: {
+    label: "Stable",
+    desc: "The component is ready for general availability. Breaking changes are not expected to happen without prior notice.",
+    color: "text-emerald-600 dark:text-emerald-500",
+  },
+  deprecated: {
+    label: "Deprecated",
+    desc: "The component is planned to be removed in a future version and no further support will be provided.",
+    color: "text-red-500",
+  },
+  unmaintained: {
+    label: "Unmaintained",
+    desc: "The component is no longer actively maintained. New issues will likely not be worked on.",
+    color: "text-red-600",
+  },
+};
+
+const getDistributionInfo = (distroName: string) => {
+  const lower = distroName.toLowerCase();
+  if (lower.includes("contrib")) {
+    return {
+      name: "OpenTelemetry Collector Contrib",
+      desc: "The community-driven distribution containing third-party plugins, specialized receivers, and experimental components.",
+      cmdLabel: "# Docker",
+      cmd: "docker pull otel/opentelemetry-collector-contrib:latest",
+      url: "https://github.com/open-telemetry/opentelemetry-collector-contrib",
+    };
+  }
+  if (lower.includes("core")) {
+    return {
+      name: "OpenTelemetry Collector Core",
+      desc: "The core distribution containing only the most essential, officially supported telemetry components.",
+      cmdLabel: "# Docker",
+      cmd: "docker pull otel/opentelemetry-collector:latest",
+      url: "https://github.com/open-telemetry/opentelemetry-collector",
+    };
+  }
+
+  if (lower === "k8s" || lower.includes("kubernetes")) {
+    return {
+      name: "OpenTelemetry Operator for Kubernetes",
+      desc: "The official Kubernetes Operator designed to manage and provision the OpenTelemetry Collector.",
+      cmdLabel: "# kubectl",
+      cmd: "kubectl apply -f https://github.com/open-telemetry/opentelemetry-operator/releases/latest/download/opentelemetry-operator.yaml",
+      url: "https://github.com/open-telemetry/opentelemetry-operator",
+    };
+  }
+
+  return {
+    name: distroName,
+    desc: "A specialized OpenTelemetry distribution.",
+    cmdLabel: null,
+    cmd: null,
+    url: "https://opentelemetry.io/docs/collector/installation/",
+  };
+};
+
+const getBadgeVariant = (level: string): "success" | "info" | "warning" | "muted" => {
+  const lower = level.toLowerCase();
+  if (lower === "stable") return "success";
+  if (lower === "beta") return "info";
+  if (
+    lower === "alpha" ||
+    lower === "development" ||
+    lower === "deprecated" ||
+    lower === "unmaintained"
+  ) {
+    return "warning";
+  }
+  return "muted";
+};
+
 export function CollectorDetailPage() {
   const { distribution, name } = useParams<{ distribution: string; name: string }>();
 
@@ -55,18 +142,6 @@ export function CollectorDetailPage() {
     error,
   } = useCollectorComponent(distribution ?? "", name ?? "", version);
   const [activeTab, setActiveTab] = useState("details");
-
-  const getStabilityLabel = (level: string) => {
-    const labels: Record<string, string> = {
-      alpha: "Alpha",
-      beta: "Beta",
-      stable: "Stable",
-      deprecated: "Deprecated",
-      unmaintained: "Unmaintained",
-      development: "In Development",
-    };
-    return labels[level.toLowerCase()] || level;
-  };
 
   if (loading || versionLoading) {
     return (
@@ -107,6 +182,22 @@ export function CollectorDetailPage() {
       </PageContainer>
     );
   }
+
+  const dynamicSignals = component.status?.stability
+    ? Array.from(new Set(Object.values(component.status.stability).flat() as string[]))
+    : [];
+
+  const getSignalStability = (signalName: string) => {
+    if (!component.status?.stability) return null;
+    for (const [level, signals] of Object.entries(component.status.stability)) {
+      if ((signals as string[]).includes(signalName)) return level;
+    }
+    return null;
+  };
+
+  const activeStabilityLevels = component.status?.stability
+    ? Object.keys(component.status.stability)
+    : [];
 
   return (
     <PageContainer>
@@ -167,11 +258,6 @@ export function CollectorDetailPage() {
                     value: "status",
                     label: "Stability",
                     icon: <Check className="h-4 w-4" aria-hidden="true" />,
-                  },
-                  {
-                    value: "owners",
-                    label: "Ownership",
-                    icon: <Users className="h-4 w-4" aria-hidden="true" />,
                   },
                 ]}
               />
@@ -245,87 +331,144 @@ export function CollectorDetailPage() {
 
             <TabsContent value="status" className="mt-0 p-6">
               {component.status ? (
-                <div className="space-y-6">
-                  <SectionHeader>Stability Levels</SectionHeader>
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {Object.entries(component.status.stability).map(([level, signals]) => (
-                      <DetailCard key={level} withHoverEffect>
-                        <div className="space-y-3">
-                          <GlowBadge
-                            variant={
-                              level === "stable" ? "success" : level === "beta" ? "info" : "warning"
-                            }
-                            className="text-xs capitalize"
-                          >
-                            {getStabilityLabel(level)}
-                          </GlowBadge>
-                          <div className="flex flex-wrap gap-2">
-                            {signals.map((signal) => (
-                              <span
+                <div className="space-y-10">
+                  <div className="space-y-6">
+                    <SectionHeader>Stability Levels</SectionHeader>
+                    <div className="border-border/60 bg-card overflow-x-auto rounded-lg border shadow-sm">
+                      <table className="w-full text-left text-sm">
+                        <thead className="bg-muted/30">
+                          <tr>
+                            {dynamicSignals.map((signal) => (
+                              <th
                                 key={signal}
-                                className="bg-muted/50 rounded px-2 py-1 text-sm font-medium"
+                                scope="col"
+                                className="border-border/60 text-muted-foreground border-b p-4 font-semibold capitalize"
                               >
-                                {signal}
-                              </span>
+                                {signal.replace(/_/g, " ")}
+                              </th>
                             ))}
-                          </div>
-                        </div>
-                      </DetailCard>
-                    ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr className="divide-border/30 divide-x">
+                            {dynamicSignals.map((signal) => {
+                              const level = getSignalStability(signal);
+                              return (
+                                <td key={signal} className="p-4 align-top">
+                                  {level ? (
+                                    <GlowBadge
+                                      variant={getBadgeVariant(level)}
+                                      className="text-xs capitalize"
+                                    >
+                                      {level}
+                                    </GlowBadge>
+                                  ) : (
+                                    <span className="text-muted-foreground/50 font-mono">-</span>
+                                  )}
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
 
-                  <SectionHeader>Distribution Availability</SectionHeader>
-                  <div className="flex flex-wrap gap-2">
-                    {component.status.distributions.map((dist) => (
-                      <GlowBadge key={dist} variant="muted" className="capitalize">
-                        {dist}
-                      </GlowBadge>
-                    ))}
-                  </div>
+                  {activeStabilityLevels.length > 0 && (
+                    <div className="space-y-4">
+                      <h4 className="text-lg font-semibold">Stability Legend</h4>
+                      <div className="grid gap-4 md:grid-cols-2">
+                        {activeStabilityLevels.map((level) => {
+                          const def = STABILITY_DEFINITIONS[level.toLowerCase()];
+                          if (!def) return null;
+                          return (
+                            <div
+                              key={level}
+                              className="border-border/50 bg-card hover:bg-muted/20 rounded-lg border p-4 shadow-sm transition-colors"
+                            >
+                              <GlowBadge
+                                variant={getBadgeVariant(level)}
+                                className="w-fit text-xs capitalize"
+                              >
+                                {level}
+                              </GlowBadge>
+                              <p className="text-muted-foreground mt-2 text-sm">{def.desc}</p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Distribution Information */}
+                  {component.status.distributions && component.status.distributions.length > 0 ? (
+                    <div className="space-y-6">
+                      <div>
+                        <SectionHeader>Distribution Availability</SectionHeader>
+                        <p className="text-muted-foreground mt-2 text-sm">
+                          This component is packaged within the following distributions:
+                        </p>
+                      </div>
+
+                      <div className="grid gap-6 md:grid-cols-2">
+                        {component.status.distributions.map((dist) => {
+                          const distInfo = getDistributionInfo(dist);
+                          return (
+                            <div
+                              key={dist}
+                              className="border-border/60 bg-card flex flex-col justify-between rounded-lg border p-5 shadow-sm"
+                            >
+                              <div>
+                                <h3 className="mb-2 text-lg font-bold capitalize">
+                                  {distInfo.name}
+                                </h3>
+                                <p className="text-muted-foreground mb-4 text-sm">
+                                  {distInfo.desc}
+                                </p>
+                              </div>
+
+                              <div className="mt-auto space-y-3">
+                                {distInfo.cmd && (
+                                  <div className="bg-muted text-foreground overflow-x-auto rounded-md p-3 font-mono text-xs">
+                                    <span className="text-muted-foreground">
+                                      {distInfo.cmdLabel}
+                                    </span>
+                                    <br />
+                                    {distInfo.cmd}
+                                  </div>
+                                )}
+                                {distInfo.url && (
+                                  <a
+                                    href={distInfo.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-primary inline-flex items-center gap-1 text-sm font-medium hover:underline"
+                                  >
+                                    View Documentation <ExternalLink className="h-3 w-3" />
+                                  </a>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-6">
+                      <SectionHeader>Distribution Availability</SectionHeader>
+                      <div className="border-border/60 bg-card flex items-center justify-center rounded-lg border p-8 shadow-sm">
+                        <p className="text-muted-foreground text-sm">
+                          No distribution information is currently available for this component.
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="py-12 text-center">
                   <AlertCircle className="text-muted-foreground/30 mx-auto h-12 w-12" />
                   <p className="text-muted-foreground mt-4">
                     No stability information available for this version.
-                  </p>
-                </div>
-              )}
-            </TabsContent>
-
-            <TabsContent value="owners" className="mt-0 p-6">
-              {component.status?.codeowners?.active &&
-              component.status.codeowners.active.length > 0 ? (
-                <div className="space-y-6">
-                  <SectionHeader>Code Owners</SectionHeader>
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {component.status.codeowners.active.map((owner: string) => (
-                      <DetailCard key={owner} withHoverEffect>
-                        <div className="flex items-center gap-3">
-                          <div className="bg-secondary/10 flex h-10 w-10 items-center justify-center rounded-full">
-                            <GitHubIcon className="text-secondary h-5 w-5" />
-                          </div>
-                          <div>
-                            <p className="text-sm font-semibold">{owner}</p>
-                            <a
-                              href={`https://github.com/${owner.replace("@", "")}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-primary text-xs hover:underline"
-                            >
-                              View profile
-                            </a>
-                          </div>
-                        </div>
-                      </DetailCard>
-                    ))}
-                  </div>
-                </div>
-              ) : (
-                <div className="py-12 text-center">
-                  <Users className="text-muted-foreground/30 mx-auto h-12 w-12" />
-                  <p className="text-muted-foreground mt-4">
-                    No code owner information found for this component.
                   </p>
                 </div>
               )}

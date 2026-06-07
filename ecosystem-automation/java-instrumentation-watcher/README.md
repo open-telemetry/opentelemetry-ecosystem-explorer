@@ -17,10 +17,14 @@ Process:
 - Download the `instrumentation-list.yaml` file for the release
 - Parse and normalize the data using version-specific parsers
 - Create or update versioned snapshots of instrumentation metadata in YAML format
+- Discover and fetch each instrumentation's upstream `library/README.md` and store it in the
+  version's `library_readmes/` directory (content-addressed)
 - Update snapshot from the `main` branch
 
-It maintains a versioned inventory of instrumentation snapshots in YAML format in the
-`ecosystem-registry/java/javaagent` directory.
+It maintains a versioned inventory of instrumentation snapshots in the
+`ecosystem-registry/java/javaagent` directory. Each version directory contains the aggregated
+`instrumentation.yaml` plus a `library_readmes/` subdirectory of content-addressed README markdown
+files (one per instrumentation that ships a README upstream).
 
 ### Data Processing
 

@@ -169,6 +169,49 @@ class TestWriteVersionList:
         with pytest.raises(ValueError, match="Versions list cannot be empty"):
             db_writer.write_version_list([])
 
+    def test_write_version_list_includes_bundle_hash_when_provided(self, db_writer, temp_db_dir):
+        versions = [Version("0.150.0"), Version("0.149.0")]
+        db_writer.write_version_list(versions, {Version("0.150.0"): "hashA", Version("0.149.0"): "hashB"})
+
+        with open(temp_db_dir / "versions-index.json") as f:
+            data = json.load(f)
+
+        assert data["versions"][0]["bundle_hash"] == "hashA"
+        assert data["versions"][1]["bundle_hash"] == "hashB"
+
+    def test_write_version_list_omits_bundle_hash_when_absent(self, db_writer, temp_db_dir):
+        db_writer.write_version_list([Version("0.150.0"), Version("0.149.0")], {Version("0.150.0"): "hashA"})
+
+        with open(temp_db_dir / "versions-index.json") as f:
+            data = json.load(f)
+
+        assert data["versions"][0]["bundle_hash"] == "hashA"
+        assert "bundle_hash" not in data["versions"][1]
+
+
+class TestWriteVersionBundle:
+    def test_writes_bundle_and_returns_hash(self, db_writer, temp_db_dir, sample_components):
+        bundle_hash = db_writer.write_version_bundle(Version("0.150.0"), sample_components)
+
+        assert isinstance(bundle_hash, str)
+        assert len(bundle_hash) == 12
+        bundle_file = temp_db_dir / "bundles" / f"0.150.0-{bundle_hash}.json"
+        assert bundle_file.exists()
+        with open(bundle_file) as f:
+            assert json.load(f) == sample_components
+
+    def test_is_idempotent(self, db_writer, sample_components):
+        first = db_writer.write_version_bundle(Version("0.150.0"), sample_components)
+        files_after_first = db_writer.files_written
+        second = db_writer.write_version_bundle(Version("0.150.0"), sample_components)
+
+        assert first == second
+        assert db_writer.files_written == files_after_first
+
+    def test_empty_raises(self, db_writer):
+        with pytest.raises(ValueError, match="Bundle components cannot be empty"):
+            db_writer.write_version_bundle(Version("0.150.0"), [])
+
 
 class TestWriteIndex:
     def test_write_index_success(self, db_writer, sample_components, temp_db_dir):

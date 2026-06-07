@@ -44,7 +44,7 @@ function HeaderActionButton({
     <button
       {...props}
       type="button"
-      className={`border-border/60 bg-card text-foreground hover:bg-card/80 focus-visible:ring-primary inline-flex cursor-pointer items-center gap-1 rounded-md border px-3 py-1.5 text-xs focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none ${className}`}
+      className={`border-border/60 bg-card text-foreground hover:bg-card/80 focus-visible:ring-primary inline-flex cursor-pointer items-center gap-1 rounded-md border px-3 py-1.5 text-xs focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
     >
       <Icon className="h-3 w-3" aria-hidden="true" />
       {label}
@@ -56,9 +56,10 @@ interface PreviewActionsProps {
   yaml: string;
   filename: string;
   onValidate: () => void;
+  hasErrors: boolean;
 }
 
-function PreviewActions({ yaml, filename, onValidate }: PreviewActionsProps) {
+function PreviewActions({ yaml, filename, onValidate, hasErrors }: PreviewActionsProps) {
   return (
     <>
       <CopyButton
@@ -69,9 +70,11 @@ function PreviewActions({ yaml, filename, onValidate }: PreviewActionsProps) {
       <HeaderActionButton
         icon={Download}
         label="Download"
+        disabled={hasErrors}
+        title={hasErrors ? "Fix validation errors before downloading" : undefined}
         onClick={() => {
           onValidate();
-          downloadText(filename, yaml, "text/yaml");
+          if (!hasErrors) downloadText(filename, yaml, "text/yaml");
         }}
       />
     </>
@@ -90,7 +93,7 @@ export function PreviewCard({
   activePreviewKey,
 }: PreviewCardProps): JSX.Element {
   const { state, enableAllSections, resetToDefaults, validateAll } = useConfigurationBuilder();
-
+  const hasErrors = Object.keys(state.validationErrors).length > 0;
   const structured = useMemo(
     () => generateYamlSections(state, schema, { javaAgentVersion: javaAgentVersion || undefined }),
     [state, schema, javaAgentVersion]
@@ -116,7 +119,12 @@ export function PreviewCard({
       <header className="flex flex-wrap items-center justify-between gap-3">
         <h3 className="text-foreground text-sm font-medium">Output Preview</h3>
         <div className="flex flex-wrap items-center gap-2">
-          <PreviewActions yaml={yaml} filename={filename} onValidate={validateAll} />
+          <PreviewActions
+            yaml={yaml}
+            filename={filename}
+            onValidate={validateAll}
+            hasErrors={hasErrors}
+          />
           <span className="bg-border/60 mx-1 h-4 w-px" aria-hidden="true" />
           <HeaderActionButton icon={ListPlus} label="Add all" onClick={enableAllSections} />
           <HeaderActionButton icon={RefreshCcw} label="Reset" onClick={handleReset} />
@@ -142,7 +150,12 @@ export function PreviewCard({
                   </DialogDescription>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <PreviewActions yaml={yaml} filename={filename} onValidate={validateAll} />
+                  <PreviewActions
+                    yaml={yaml}
+                    filename={filename}
+                    onValidate={validateAll}
+                    hasErrors={hasErrors}
+                  />
                 </div>
               </header>
               <div className="bg-background/60 border-border/30 min-h-0 flex-1 overflow-auto rounded-md border p-4">

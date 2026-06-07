@@ -22,19 +22,26 @@ with offline support through IndexedDB caching.
 
 Persistent storage across browser sessions using `idb` library wrapper.
 
-**Stores**:
+**Stores** (defined in `src/lib/api/idb-cache.ts`):
 
-- `metadata`: Versions and manifests
-- `instrumentations`: Full instrumentation data
+- `metadata`: Versions and manifests (also holds internal bookkeeping such as the last-prune marker)
+- `instrumentations`: Full content-addressed component data (Java Agent instrumentations and
+  Collector components)
+- `configuration`: Declarative configuration schema data
+- `global-configurations`: Aggregated, deduplicated configuration options across all versions
 
 **Entry Format**:
 
 ```typescript
 interface CacheEntry<T> {
+  key: string;
   data: T;
-  cachedAt: number; // For future TTL
+  cachedAt: number; // Used for the 24h TTL and pruning
+  lastAccessedAt?: number;
 }
 ```
+
+Entries expire after 24 hours (`CACHE_EXPIRATION_MS`) and are pruned on a 24-hour interval.
 
 ### Request Flow
 

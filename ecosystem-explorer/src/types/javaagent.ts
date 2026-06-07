@@ -20,6 +20,13 @@ export interface VersionsIndex {
 export interface VersionInfo {
   version: string;
   is_latest: boolean;
+  /**
+   * Content hash of the consolidated per-version list bundle, when available.
+   * The list page fetches `bundles/{version}-{bundle_hash}.json` in one request
+   * instead of fanning out per instrumentation. Optional so old cached indexes
+   * (and missing bundles) degrade gracefully to the per-instrumentation fan-out.
+   */
+  bundle_hash?: string;
 }
 
 export interface VersionManifest {
@@ -66,6 +73,15 @@ export interface InstrumentationData {
   markdown_hash?: string;
   /** Whether this is a custom (non-upstream) instrumentation. */
   _is_custom?: boolean;
+  /**
+   * Precomputed presence flag: whether any telemetry block emits spans. Present
+   * only in slim per-version list-bundle entries (which drop the heavy
+   * `telemetry` array); undefined in full detail files, where presence is
+   * derived from `telemetry`. See `getBadgeInfo`.
+   */
+  has_spans?: boolean;
+  /** Precomputed presence flag: whether any telemetry block emits metrics. See `has_spans`. */
+  has_metrics?: boolean;
 }
 
 /**
@@ -93,7 +109,7 @@ export interface Configuration {
   /** The default value if not specified. */
   default: string | boolean | number;
   /** Example values for this configuration option. */
-  example?: string[];
+  examples?: string[];
 }
 
 /**

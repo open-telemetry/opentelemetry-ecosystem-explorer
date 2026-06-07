@@ -207,6 +207,44 @@ describe("fetchWithCache", () => {
     });
   });
 
+  it("recovers from a transient 404 via an unconditional cache-busting reload", async () => {
+    vi.spyOn(idbCache, "getCached").mockResolvedValue(null);
+    vi.spyOn(idbCache, "setCached").mockResolvedValue();
+
+    const data = { test: "fresh-after-reload" };
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(new Response("not found", { status: 404, statusText: "Not Found" }))
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify(data), {
+          status: 200,
+          headers: { "content-type": "application/json" },
+        })
+      );
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
+
+    const result = await fetchWithCache("test-transient-404", "/url", STORES.CONFIGURATION);
+
+    expect(result).toEqual(data);
+    expect(fetchMock).toHaveBeenNthCalledWith(1, "/url");
+    expect(fetchMock).toHaveBeenNthCalledWith(2, "/url", { cache: "reload" });
+  });
+
+  it("surfaces a genuine 404 when the cache-busting reload also returns 404", async () => {
+    vi.spyOn(idbCache, "getCached").mockResolvedValue(null);
+
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValue(new Response("nope", { status: 404, statusText: "Not Found" }));
+    globalThis.fetch = fetchMock as unknown as typeof fetch;
+
+    await expect(fetchWithCache("test-genuine-404", "/url", STORES.CONFIGURATION)).rejects.toThrow(
+      /404/
+    );
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenNthCalledWith(2, "/url", { cache: "reload" });
+  });
+
   it("serves stale cache when response is 200 but content-type is text/html", async () => {
     const staleData = { test: "stale-html-fallback" };
     vi.spyOn(idbCache, "getCached").mockImplementation(async (_key, _store, options) => {

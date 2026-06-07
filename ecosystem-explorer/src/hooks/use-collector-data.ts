@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 import { useState, useEffect } from "react";
-import type { VersionsIndex, CollectorComponent, CollectorIndex } from "@/types/collector";
+import type {
+  VersionsIndex,
+  CollectorComponent,
+  CollectorIndex,
+  IndexComponent,
+} from "@/types/collector";
 import type { DataState } from "./data-state";
 import * as collectorData from "@/lib/api/collector-data";
 
@@ -92,8 +97,8 @@ export function useCollectorIndex(): DataState<CollectorIndex> {
   return state;
 }
 
-export function useCollectorComponents(version: string): DataState<CollectorComponent[]> {
-  const [state, setState] = useState<DataState<CollectorComponent[]>>({
+export function useCollectorComponents(version: string): DataState<IndexComponent[]> {
+  const [state, setState] = useState<DataState<IndexComponent[]>>({
     data: null,
     loading: true,
     error: null,
