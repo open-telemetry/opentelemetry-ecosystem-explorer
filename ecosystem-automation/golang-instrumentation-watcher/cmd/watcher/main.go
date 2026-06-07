@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -13,6 +14,23 @@ import (
 
 const mainBranch = "main"
 
+// repoRoot walks up from dir until it finds a directory that contains an
+// "ecosystem-registry" subdirectory, which is the monorepo root. Returns an
+// error if no such ancestor is found.
+func repoRoot(dir string) (string, error) {
+	current := dir
+	for {
+		if _, err := os.Stat(filepath.Join(current, "ecosystem-registry")); err == nil {
+			return current, nil
+		}
+		parent := filepath.Dir(current)
+		if parent == current {
+			return "", fmt.Errorf("could not locate repo root (no ecosystem-registry/ ancestor of %s)", dir)
+		}
+		current = parent
+	}
+}
+
 func main() {
 	log := conf.NewLog()
 	env := conf.NewEnv()
@@ -23,10 +41,16 @@ func main() {
 		os.Exit(1)
 	}
 
+	root, err := repoRoot(workDir)
+	if err != nil {
+		log.WithErrorMsg(err, "failed to locate repo root")
+		os.Exit(1)
+	}
+
 	var (
 		baseDir      = flag.String("base-dir", workDir, "directory under which the upstream repos are cloned (.repo)")
 		registryDir  = flag.String("registry-dir", filepath.Join(workDir, "registry"), "directory to write the Weaver registry output")
-		inventoryDir = flag.String("inventory-dir", filepath.Join("ecosystem-registry", "go", "contrib"), "directory to write the versioned instrumentation inventory")
+		inventoryDir = flag.String("inventory-dir", filepath.Join(root, "ecosystem-registry", "go", "contrib"), "directory to write the versioned instrumentation inventory")
 	)
 	flag.Parse()
 
