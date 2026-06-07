@@ -1,11 +1,13 @@
 package instrumentation
 
 import (
+	"bytes"
 	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/open-telemetry/opentelemetry-ecosystem-explorer/golang-instrumentation-watcher/repo"
+	"gopkg.in/yaml.v3"
 )
 
 func TestMain(m *testing.M) {
@@ -294,4 +296,31 @@ func TestFullScanValidation(t *testing.T) {
 
 		t.Logf("Total libraries scanned: %d", len(result.Libraries))
 	})
+}
+
+// TestScanRepoDeterministic guards the content-addressed contract: repeated
+// scans of the same checkout must serialize byte-for-byte identically, despite
+// the map-based extractors whose iteration order is randomized.
+func TestScanRepoDeterministic(t *testing.T) {
+	repoPath := getRepoPath(t)
+	a, err := yaml.Marshal(mustScan(t, repoPath))
+	if err != nil {
+		t.Fatal(err)
+	}
+	b, err := yaml.Marshal(mustScan(t, repoPath))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(a, b) {
+		t.Error("ScanRepo output is not deterministic across runs")
+	}
+}
+
+func mustScan(t *testing.T, repoPath string) *ScanResult {
+	t.Helper()
+	result, err := ScanRepo(repo.RepoContrib, repoPath)
+	if err != nil {
+		t.Fatalf("ScanRepo() error = %v", err)
+	}
+	return result
 }

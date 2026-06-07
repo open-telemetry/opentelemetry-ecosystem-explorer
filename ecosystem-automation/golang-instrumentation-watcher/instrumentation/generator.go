@@ -1,8 +1,10 @@
 package instrumentation
 
 import (
+	"cmp"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"gopkg.in/yaml.v3"
@@ -90,6 +92,7 @@ func extractAttributeGroups(groups []Group) []AttributeDef {
 	for _, attr := range attributeMap {
 		attrs = append(attrs, attr)
 	}
+	slices.SortFunc(attrs, func(a, b AttributeDef) int { return cmp.Compare(a.ID, b.ID) })
 
 	return attrs
 }

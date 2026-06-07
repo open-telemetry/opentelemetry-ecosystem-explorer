@@ -1,8 +1,10 @@
 package instrumentation
 
 import (
+	"cmp"
 	"fmt"
 	"go/ast"
+	"slices"
 	"strings"
 
 	"golang.org/x/tools/go/packages"
@@ -75,6 +77,8 @@ func extractSemanticConventions(pkg *packages.Package) []string {
 			}
 		}
 	}
+	// pkg.Imports is a map, so sort for deterministic output.
+	slices.Sort(conventions)
 
 	return conventions
 }
@@ -215,12 +219,30 @@ func extractSpans(pkg *packages.Package) []Span {
 		}
 	}
 
-	var spans []Span
+	spans := make([]Span, 0, len(spanMap))
 	for _, span := range spanMap {
+		slices.SortFunc(span.Attributes, compareAttribute)
 		spans = append(spans, *span)
 	}
+	slices.SortFunc(spans, func(a, b Span) int { return cmp.Compare(a.Kind, b.Kind) })
 
 	return spans
+}
+
+// compareAttribute orders attributes by their most specific identifier so
+// telemetry arrays serialize deterministically (map-derived order is random).
+func compareAttribute(a, b Attribute) int {
+	return cmp.Compare(attributeKey(a), attributeKey(b))
+}
+
+func attributeKey(a Attribute) string {
+	if a.Name != "" {
+		return a.Name
+	}
+	if a.Ref != "" {
+		return a.Ref
+	}
+	return a.ID
 }
 
 func detectSpanKindsInPackage(pkg *packages.Package) map[SpanKind]bool {
@@ -505,10 +527,12 @@ func extractMetrics(pkg *packages.Package) []Metric {
 		}
 	}
 
-	var metrics []Metric
+	metrics := make([]Metric, 0, len(metricMap))
 	for _, metric := range metricMap {
+		slices.SortFunc(metric.Attributes, compareAttribute)
 		metrics = append(metrics, *metric)
 	}
+	slices.SortFunc(metrics, func(a, b Metric) int { return cmp.Compare(a.Name, b.Name) })
 
 	return metrics
 }
@@ -726,10 +750,12 @@ func convertTelemetryToGroups(pkgPath string, telemetry []Telemetry) []Group {
 		}
 	}
 
-	var groups []Group
+	groups := make([]Group, 0, len(groupMap))
 	for _, group := range groupMap {
+		slices.SortFunc(group.Attributes, func(a, b AttributeRef) int { return cmp.Compare(a.Ref, b.Ref) })
 		groups = append(groups, *group)
 	}
+	slices.SortFunc(groups, func(a, b Group) int { return cmp.Compare(a.ID, b.ID) })
 
 	return groups
 }

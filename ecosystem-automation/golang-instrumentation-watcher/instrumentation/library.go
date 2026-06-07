@@ -1,7 +1,9 @@
 package instrumentation
 
 import (
+	"cmp"
 	"path/filepath"
+	"slices"
 
 	"github.com/open-telemetry/opentelemetry-ecosystem-explorer/golang-instrumentation-watcher/metadata"
 	"github.com/open-telemetry/opentelemetry-ecosystem-explorer/golang-instrumentation-watcher/repo"
@@ -62,8 +64,14 @@ func ScanRepo(repoName, repoPath string) (*ScanResult, error) {
 
 	groups := make([]Group, 0, len(groupMap))
 	for _, group := range groupMap {
+		slices.SortFunc(group.Attributes, func(a, b AttributeRef) int { return cmp.Compare(a.Ref, b.Ref) })
 		groups = append(groups, *group)
 	}
+
+	// Sort the top-level arrays so the inventory and registry are byte-stable;
+	// per-library telemetry is already ordered by the analyzer.
+	slices.SortFunc(libraries, func(a, b Library) int { return cmp.Compare(a.Name, b.Name) })
+	slices.SortFunc(groups, func(a, b Group) int { return cmp.Compare(a.ID, b.ID) })
 
 	return &ScanResult{Libraries: libraries, Groups: groups}, nil
 }
