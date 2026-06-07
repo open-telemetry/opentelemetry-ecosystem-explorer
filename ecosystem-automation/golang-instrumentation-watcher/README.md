@@ -24,18 +24,22 @@ metadata combined with telemetry extracted from static analysis:
 ```yaml
 file_format: 0.1
 libraries:
-  - name: gin
+  - name: instrumentation-github.com-gin-gonic-gin-otelgin
     display_name: Gin
     module:
-      path: github.com/gin-gonic/gin
-      version: v1.10.0
-    instrumentation_type: library
-    stability: development
+      path: go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin
+      version: v0.62.0
+    instrumentation_type: wrapper
+    stability: experimental
     semantic_conventions:
       - http
     telemetry:
       - # spans/metrics + attributes extracted via Go AST
 ```
+
+`name` is the repo-relative module path (slashes normalized to hyphens) so it
+is globally unique even when two modules share a leaf directory (e.g. the v1 and
+v2 `otelmongo` drivers); `display_name` keeps the short, human-facing form.
 
 A **Weaver registry** (`registry/signals.yaml` + `attributes.yaml`) is also
 generated as an optional dev/validation artifact (`make dev` →

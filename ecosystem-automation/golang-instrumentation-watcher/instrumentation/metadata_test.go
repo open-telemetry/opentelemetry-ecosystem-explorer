@@ -37,7 +37,7 @@ func TestDeriveMetadata(t *testing.T) {
 	}{
 		{
 			req:         ContribRequire{Path: "go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp", Version: "v0.68.0", GoVersion: "1.21"},
-			wantName:    "otelhttp",
+			wantName:    "instrumentation-net-http-otelhttp",
 			wantType:    metadata.InstrTypeWrapper,
 			wantInstall: metadata.InstallTypeWrapper,
 			wantTarget:  "net/http",
@@ -46,7 +46,7 @@ func TestDeriveMetadata(t *testing.T) {
 		},
 		{
 			req:         ContribRequire{Path: "go.opentelemetry.io/contrib/bridges/otelslog", Version: "v0.9.0", GoVersion: "1.21"},
-			wantName:    "otelslog",
+			wantName:    "bridges-otelslog",
 			wantType:    metadata.InstrTypeBridge,
 			wantInstall: metadata.InstallTypeImport,
 			wantTarget:  "log/slog",
@@ -55,13 +55,24 @@ func TestDeriveMetadata(t *testing.T) {
 		},
 		{
 			req:         ContribRequire{Path: "go.opentelemetry.io/contrib/exporters/autoexport", Version: "v0.1.0"},
-			wantName:    "autoexport",
+			wantName:    "exporters-autoexport",
 			wantType:    metadata.InstrTypeExporter,
 			wantInstall: metadata.InstallTypeImport,
 		},
+		// Uniqueness: both mongo modules share the leaf "otelmongo" but derive
+		// distinct Names from their full source paths.
+		{
+			req:      ContribRequire{Path: "go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo"},
+			wantName: "instrumentation-go.mongodb.org-mongo-driver-mongo-otelmongo",
+		},
+		{
+			req:      ContribRequire{Path: "go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/v2/mongo/otelmongo"},
+			wantName: "instrumentation-go.mongodb.org-mongo-driver-v2-mongo-otelmongo",
+		},
 	}
 
-	for _, tc := range cases {
+	for i := range cases {
+		tc := cases[i]
 		m := DeriveMetadata(tc.req)
 		if m.Name != tc.wantName {
 			t.Errorf("Name: got %q, want %q", m.Name, tc.wantName)
@@ -87,5 +98,17 @@ func TestDeriveMetadata(t *testing.T) {
 		if m.Module.Version != tc.req.Version {
 			t.Errorf("%s Module.Version: got %q, want %q", tc.wantName, m.Module.Version, tc.req.Version)
 		}
+	}
+}
+
+func TestMongoNameUniqueness(t *testing.T) {
+	v1 := DeriveMetadata(ContribRequire{Path: "go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo"})
+	v2 := DeriveMetadata(ContribRequire{Path: "go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/v2/mongo/otelmongo"})
+
+	if v1.Name == v2.Name {
+		t.Errorf("otelmongo v1 and v2 have the same Name %q; names must be unique", v1.Name)
+	}
+	if v1.DisplayName != v2.DisplayName {
+		t.Errorf("DisplayName differs: v1=%q v2=%q; display_name should be the same human-friendly leaf", v1.DisplayName, v2.DisplayName)
 	}
 }

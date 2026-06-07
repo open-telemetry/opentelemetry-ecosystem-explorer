@@ -61,15 +61,22 @@ func ParseModule(goModPath string) (ContribRequire, error) {
 }
 
 func DeriveMetadata(r ContribRequire) *metadata.Metadata {
-	name := filepath.Base(r.Path)
+	// sourcePath is the repo-relative path after the module root prefix, e.g.
+	// "instrumentation/net/http/otelhttp" or "bridges/otelslog". We use it as
+	// the stable, globally-unique Name (slashes → hyphens) so that modules
+	// sharing a leaf directory—like the two otelmongo variants—remain distinct.
+	// DisplayName keeps the short leaf form for human-facing output.
+	sourcePath := strings.TrimPrefix(r.Path, "go.opentelemetry.io/contrib/")
+	name := strings.ReplaceAll(sourcePath, "/", "-")
+	leaf := filepath.Base(r.Path)
 	instrType := inferInstrType(r.Path)
 	return &metadata.Metadata{
 		Name:                name,
-		DisplayName:         inferDisplayName(name),
-		SourcePath:          strings.TrimPrefix(r.Path, "go.opentelemetry.io/contrib/"),
+		DisplayName:         inferDisplayName(leaf),
+		SourcePath:          sourcePath,
 		Scope:               metadata.Scope{Name: r.Path},
 		Module:              metadata.Module{Path: r.Path, Version: r.Version},
-		TargetModule:        inferTarget(r.Path, name),
+		TargetModule:        inferTarget(r.Path, leaf),
 		GoMinVersion:        r.GoVersion,
 		LibraryLink:         "https://pkg.go.dev/" + r.Path,
 		InstrumentationType: instrType,

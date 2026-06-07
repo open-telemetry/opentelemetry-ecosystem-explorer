@@ -38,8 +38,8 @@ func TestAnalyzeLibrary(t *testing.T) {
 			t.Fatal("analyzeLibrary() returned nil library for a contrib module")
 		}
 
-		if lib.Name != "otelwidget" {
-			t.Errorf("Name = %q, want otelwidget", lib.Name)
+		if lib.Name != "instrumentation-example.com-widget-otelwidget" {
+			t.Errorf("Name = %q, want instrumentation-example.com-widget-otelwidget", lib.Name)
 		}
 		if lib.DisplayName != "otelwidget" {
 			t.Errorf("DisplayName = %q, want otelwidget", lib.DisplayName)
