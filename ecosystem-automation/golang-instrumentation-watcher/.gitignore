@@ -27,6 +27,7 @@ semantic-conventions*
 
 # build
 # instrumentation-list.yaml
+registry/
 
 # llms
 CLAUDE.md
