@@ -268,4 +268,30 @@ func TestFullScanValidation(t *testing.T) {
 			}
 		}
 	})
+
+	t.Run("scan covers instrumentation and bridges", func(t *testing.T) {
+		repoPath := getRepoPath(t)
+		result, err := ScanRepo(repo.RepoContrib, repoPath)
+		if err != nil {
+			t.Fatalf("ScanRepo() error = %v", err)
+		}
+
+		// instrumentation(14) + bridges(5) = 19 libraries (minus any that lack
+		// a contrib module path). Pipeline-config dirs (exporters, propagators,
+		// samplers, detectors, processors) are intentionally out of scope.
+		if got := len(result.Libraries); got < 19 {
+			t.Errorf("Library count = %d, want at least 19 (instrumentation+bridges)", got)
+		}
+
+		// All library Names must be globally unique.
+		seen := make(map[string]string)
+		for _, lib := range result.Libraries {
+			if prev, ok := seen[lib.Name]; ok {
+				t.Errorf("Duplicate Name %q: module %s and %s", lib.Name, prev, lib.Module.Path)
+			}
+			seen[lib.Name] = lib.Module.Path
+		}
+
+		t.Logf("Total libraries scanned: %d", len(result.Libraries))
+	})
 }

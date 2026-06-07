@@ -31,7 +31,14 @@ func ScanRepo(repoName, repoPath string) (*ScanResult, error) {
 	case repo.RepoGo:
 		scanPaths = []string{repoPath}
 	default:
-		scanPaths = []string{filepath.Join(repoPath, "instrumentation")}
+		// Only the subtrees that instrument a developer's code: instrumentation
+		// wrappers (gin, grpc, http…) and bridges (zap, logrus…). The other
+		// go-contrib components (exporters, propagators, samplers, detectors,
+		// processors) configure the SDK pipeline rather than instrument a target
+		// library, so they have no target_module and are out of scope here.
+		for _, sub := range []string{"instrumentation", "bridges"} {
+			scanPaths = append(scanPaths, filepath.Join(repoPath, sub))
+		}
 	}
 
 	var libraries []Library
