@@ -76,6 +76,6 @@
     "typescript-eslint": "8.59.3",
     "typescript-json-schema": "0.67.2",
     "vite": "8.0.16",
-    "vitest": "4.1.6"
+    "vitest": "4.1.8"
   }
 }
