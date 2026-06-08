@@ -212,4 +212,38 @@ describe("GlobalSearch", () => {
       expect(screen.getByText(/Couldn't reach the search index/i)).toBeInTheDocument()
     );
   });
+
+  it("only wires aria-controls/aria-activedescendant while the listbox is rendered", async () => {
+    mockedSearch.mockResolvedValueOnce([makeResult()]);
+    renderSearch();
+    const input = screen.getByRole("combobox");
+
+    // Closed: no listbox in the DOM, so neither relationship attribute is set.
+    expect(input).not.toHaveAttribute("aria-controls");
+    expect(input).not.toHaveAttribute("aria-activedescendant");
+
+    fireEvent.change(input, { target: { value: "kafka" } });
+    const option = await screen.findByRole("option", { name: /Kafka Receiver/i });
+
+    // Open with results: the listbox holds only options, and the combobox
+    // points at it plus the active option.
+    const listbox = screen.getByRole("listbox");
+    expect(within(listbox).getAllByRole("option")).toHaveLength(1);
+    expect(input).toHaveAttribute("aria-controls", listbox.id);
+    expect(input).toHaveAttribute("aria-activedescendant", option.id);
+  });
+
+  it("drops aria-controls/aria-activedescendant when an open search yields no matches", async () => {
+    renderSearch();
+    const input = screen.getByRole("combobox");
+    fireEvent.change(input, { target: { value: "zzz_nothing_matches" } });
+    await waitFor(() =>
+      expect(screen.getByText(/No matches for "zzz_nothing_matches"/i)).toBeInTheDocument()
+    );
+
+    // Dropdown is open but there is no listbox to reference.
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+    expect(input).not.toHaveAttribute("aria-controls");
+    expect(input).not.toHaveAttribute("aria-activedescendant");
+  });
 });

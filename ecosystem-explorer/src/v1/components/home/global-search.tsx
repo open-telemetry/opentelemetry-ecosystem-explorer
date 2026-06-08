@@ -199,7 +199,12 @@ export function GlobalSearch({ placeholder = DEFAULT_PLACEHOLDER, onSelect }: Gl
     }
   };
 
-  const activeOptionId = hasVisibleResults
+  // Only expose the combobox→option relationship while the listbox is
+  // actually in the DOM. Pointing `aria-activedescendant`/`aria-controls` at
+  // option/listbox ids that aren't rendered (dropdown closed, or open but
+  // loading/empty/errored) breaks the combobox pattern for assistive tech.
+  const listboxRendered = showDropdown && hasVisibleResults;
+  const activeOptionId = listboxRendered
     ? `${idPrefix}-option-${safeHighlightedIndex}`
     : undefined;
   // Keep-stale-while-loading: when a new query is in flight but prior results
@@ -218,7 +223,7 @@ export function GlobalSearch({ placeholder = DEFAULT_PLACEHOLDER, onSelect }: Gl
           role="combobox"
           aria-label="Search the ecosystem"
           aria-expanded={showDropdown}
-          aria-controls={`${idPrefix}-results`}
+          aria-controls={listboxRendered ? `${idPrefix}-results` : undefined}
           aria-activedescendant={activeOptionId}
           aria-busy={loading}
           autoComplete="off"
@@ -238,7 +243,10 @@ export function GlobalSearch({ placeholder = DEFAULT_PLACEHOLDER, onSelect }: Gl
       </div>
 
       {showDropdown && (
-        <div id={`${idPrefix}-results`} role="listbox" className="td-search__results">
+        // Plain panel — `role="listbox"` lives on the inner options-only list
+        // below so the status/empty/error `<p>`s and the overflow footer never
+        // sit inside the listbox (a listbox may contain only options).
+        <div className="td-search__results">
           {error ? (
             <p className="td-search__result-empty" role="status">
               Couldn't reach the search index right now. Please try again.
@@ -254,6 +262,9 @@ export function GlobalSearch({ placeholder = DEFAULT_PLACEHOLDER, onSelect }: Gl
           ) : (
             <>
               <div
+                id={`${idPrefix}-results`}
+                role="listbox"
+                aria-label="Search results"
                 className={
                   "td-search__result-list" +
                   (isStaleLoading ? " td-search__result-list--stale" : "")
