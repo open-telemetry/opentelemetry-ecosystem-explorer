@@ -1,0 +1,948 @@
+file_format: 0.1
+libraries:
+  - name: bridges-otellogr
+    display_name: logr
+    description: ""
+    source_path: bridges/otellogr
+    scope:
+      name: go.opentelemetry.io/contrib/bridges/otellogr
+    module:
+      path: go.opentelemetry.io/contrib/bridges/otellogr
+      version: ""
+    target_module: github.com/go-logr/logr
+    go_min_version: 1.25.0
+    library_link: https://pkg.go.dev/go.opentelemetry.io/contrib/bridges/otellogr
+    instrumentation_type: bridge
+    installation:
+      type: import
+      description: ""
+    stability: experimental
+  - name: bridges-otellogrus
+    display_name: logrus
+    description: ""
+    source_path: bridges/otellogrus
+    scope:
+      name: go.opentelemetry.io/contrib/bridges/otellogrus
+    module:
+      path: go.opentelemetry.io/contrib/bridges/otellogrus
+      version: ""
+    target_module: github.com/sirupsen/logrus
+    go_min_version: 1.25.0
+    library_link: https://pkg.go.dev/go.opentelemetry.io/contrib/bridges/otellogrus
+    instrumentation_type: bridge
+    installation:
+      type: import
+      description: ""
+    stability: experimental
+  - name: bridges-otelslog
+    display_name: slog
+    description: ""
+    source_path: bridges/otelslog
+    scope:
+      name: go.opentelemetry.io/contrib/bridges/otelslog
+    module:
+      path: go.opentelemetry.io/contrib/bridges/otelslog
+      version: ""
+    target_module: log/slog
+    go_min_version: 1.25.0
+    library_link: https://pkg.go.dev/go.opentelemetry.io/contrib/bridges/otelslog
+    instrumentation_type: bridge
+    installation:
+      type: import
+      description: ""
+    semantic_conventions:
+      - go.opentelemetry.io/otel/semconv/v1.41.0
+    stability: experimental
+  - name: bridges-otelzap
+    display_name: zap
+    description: ""
+    source_path: bridges/otelzap
+    scope:
+      name: go.opentelemetry.io/contrib/bridges/otelzap
+    module:
+      path: go.opentelemetry.io/contrib/bridges/otelzap
+      version: ""
+    target_module: go.uber.org/zap
+    go_min_version: 1.25.0
+    library_link: https://pkg.go.dev/go.opentelemetry.io/contrib/bridges/otelzap
+    instrumentation_type: bridge
+    installation:
+      type: import
+      description: ""
+    semantic_conventions:
+      - go.opentelemetry.io/otel/semconv/v1.41.0
+    stability: experimental
+  - name: bridges-prometheus
+    display_name: prometheus
+    description: ""
+    source_path: bridges/prometheus
+    scope:
+      name: go.opentelemetry.io/contrib/bridges/prometheus
+    module:
+      path: go.opentelemetry.io/contrib/bridges/prometheus
+      version: ""
+    go_min_version: 1.25.0
+    library_link: https://pkg.go.dev/go.opentelemetry.io/contrib/bridges/prometheus
+    instrumentation_type: bridge
+    installation:
+      type: import
+      description: ""
+    stability: experimental
+  - name: instrumentation-github.com-aws-aws-lambda-go-otellambda
+    display_name: Lambda
+    description: ""
+    source_path: instrumentation/github.com/aws/aws-lambda-go/otellambda
+    scope:
+      name: go.opentelemetry.io/contrib/instrumentation/github.com/aws/aws-lambda-go/otellambda
+    module:
+      path: go.opentelemetry.io/contrib/instrumentation/github.com/aws/aws-lambda-go/otellambda
+      version: ""
+    target_module: github.com/aws/aws-lambda-go
+    go_min_version: 1.25.0
+    library_link: https://pkg.go.dev/go.opentelemetry.io/contrib/instrumentation/github.com/aws/aws-lambda-go/otellambda
+    instrumentation_type: wrapper
+    installation:
+      type: wrapper
+      description: ""
+    semantic_conventions:
+      - FAAS_SPANS
+    stability: experimental
+    telemetry:
+      - when: default
+        spans:
+          - kind: server
+            attributes:
+              - name: cloud.resource_id
+                type: string
+              - name: faas.invocation_id
+                type: string
+  - name: instrumentation-github.com-aws-aws-lambda-go-otellambda-xrayconfig
+    display_name: X-Ray Config
+    description: ""
+    source_path: instrumentation/github.com/aws/aws-lambda-go/otellambda/xrayconfig
+    scope:
+      name: go.opentelemetry.io/contrib/instrumentation/github.com/aws/aws-lambda-go/otellambda/xrayconfig
+    module:
+      path: go.opentelemetry.io/contrib/instrumentation/github.com/aws/aws-lambda-go/otellambda/xrayconfig
+      version: ""
+    target_module: github.com/aws/aws-lambda-go/otellambda
+    go_min_version: 1.25.0
+    library_link: https://pkg.go.dev/go.opentelemetry.io/contrib/instrumentation/github.com/aws/aws-lambda-go/otellambda/xrayconfig
+    instrumentation_type: wrapper
+    installation:
+      type: wrapper
+      description: ""
+    stability: experimental
+  - name: instrumentation-github.com-aws-aws-sdk-go-v2-otelaws
+    display_name: AWS
+    description: ""
+    source_path: instrumentation/github.com/aws/aws-sdk-go-v2/otelaws
+    scope:
+      name: go.opentelemetry.io/contrib/instrumentation/github.com/aws/aws-sdk-go-v2/otelaws
+    module:
+      path: go.opentelemetry.io/contrib/instrumentation/github.com/aws/aws-sdk-go-v2/otelaws
+      version: ""
+    target_module: github.com/aws/aws-sdk-go-v2
+    go_min_version: 1.25.0
+    library_link: https://pkg.go.dev/go.opentelemetry.io/contrib/instrumentation/github.com/aws/aws-sdk-go-v2/otelaws
+    instrumentation_type: wrapper
+    installation:
+      type: wrapper
+      description: ""
+    semantic_conventions:
+      - FAAS_SPANS
+    stability: experimental
+    telemetry:
+      - when: default
+        spans:
+          - kind: client
+            attributes:
+              - name: rpc.method
+                type: string
+              - name: rpc.service
+                type: string
+              - name: rpc.system
+                type: string
+              - name: server.address
+                type: string
+              - name: server.port
+                type: int
+  - name: instrumentation-github.com-emicklei-go-restful-otelrestful
+    display_name: RESTful
+    description: ""
+    source_path: instrumentation/github.com/emicklei/go-restful/otelrestful
+    scope:
+      name: go.opentelemetry.io/contrib/instrumentation/github.com/emicklei/go-restful/otelrestful
+    module:
+      path: go.opentelemetry.io/contrib/instrumentation/github.com/emicklei/go-restful/otelrestful
+      version: ""
+    target_module: github.com/emicklei/go-restful
+    go_min_version: 1.25.0
+    library_link: https://pkg.go.dev/go.opentelemetry.io/contrib/instrumentation/github.com/emicklei/go-restful/otelrestful
+    instrumentation_type: wrapper
+    installation:
+      type: wrapper
+      description: ""
+    semantic_conventions:
+      - HTTP_SERVER_SPANS
+      - HTTP_SERVER_METRICS
+    stability: experimental
+    telemetry:
+      - when: default
+        spans:
+          - kind: server
+            attributes:
+              - name: client.address
+                type: string
+              - name: http.request.method
+                type: string
+              - name: http.response.status_code
+                type: int
+              - name: http.route
+                type: string
+              - name: network.peer.address
+                type: string
+              - name: network.protocol.name
+                type: string
+              - name: network.protocol.version
+                type: string
+              - name: server.address
+                type: string
+              - name: server.port
+                type: int
+              - name: url.path
+                type: string
+              - name: url.scheme
+                type: string
+              - name: user_agent.original
+                type: string
+        metrics:
+          - name: http.server.request.body.size
+            type: histogram
+            unit: By
+            attributes:
+              - name: http.request.method
+                type: string
+              - name: http.response.status_code
+                type: int
+              - name: http.route
+                type: string
+              - name: network.protocol.version
+                type: string
+              - name: url.scheme
+                type: string
+          - name: http.server.request.duration
+            type: histogram
+            unit: s
+            attributes:
+              - name: http.request.method
+                type: string
+              - name: http.response.status_code
+                type: int
+              - name: http.route
+                type: string
+              - name: network.protocol.version
+                type: string
+              - name: url.scheme
+                type: string
+          - name: http.server.response.body.size
+            type: histogram
+            unit: By
+            attributes:
+              - name: http.request.method
+                type: string
+              - name: http.response.status_code
+                type: int
+              - name: http.route
+                type: string
+              - name: network.protocol.version
+                type: string
+              - name: url.scheme
+                type: string
+  - name: instrumentation-github.com-gin-gonic-gin-otelgin
+    display_name: Gin
+    description: ""
+    source_path: instrumentation/github.com/gin-gonic/gin/otelgin
+    scope:
+      name: go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin
+    module:
+      path: go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin
+      version: ""
+    target_module: github.com/gin-gonic/gin
+    go_min_version: 1.25.0
+    library_link: https://pkg.go.dev/go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin
+    instrumentation_type: wrapper
+    installation:
+      type: wrapper
+      description: ""
+    semantic_conventions:
+      - HTTP_SERVER_SPANS
+      - HTTP_SERVER_METRICS
+    stability: experimental
+    telemetry:
+      - when: default
+        spans:
+          - kind: server
+            attributes:
+              - name: client.address
+                type: string
+              - name: http.request.method
+                type: string
+              - name: http.response.status_code
+                type: int
+              - name: http.route
+                type: string
+              - name: network.peer.address
+                type: string
+              - name: network.protocol.name
+                type: string
+              - name: network.protocol.version
+                type: string
+              - name: server.address
+                type: string
+              - name: server.port
+                type: int
+              - name: url.path
+                type: string
+              - name: url.scheme
+                type: string
+              - name: user_agent.original
+                type: string
+        metrics:
+          - name: http.server.request.body.size
+            type: histogram
+            unit: By
+            attributes:
+              - name: http.request.method
+                type: string
+              - name: http.response.status_code
+                type: int
+              - name: http.route
+                type: string
+              - name: network.protocol.version
+                type: string
+              - name: url.scheme
+                type: string
+          - name: http.server.request.duration
+            type: histogram
+            unit: s
+            attributes:
+              - name: http.request.method
+                type: string
+              - name: http.response.status_code
+                type: int
+              - name: http.route
+                type: string
+              - name: network.protocol.version
+                type: string
+              - name: url.scheme
+                type: string
+          - name: http.server.response.body.size
+            type: histogram
+            unit: By
+            attributes:
+              - name: http.request.method
+                type: string
+              - name: http.response.status_code
+                type: int
+              - name: http.route
+                type: string
+              - name: network.protocol.version
+                type: string
+              - name: url.scheme
+                type: string
+  - name: instrumentation-github.com-gorilla-mux-otelmux
+    display_name: Mux
+    description: ""
+    source_path: instrumentation/github.com/gorilla/mux/otelmux
+    scope:
+      name: go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux
+    module:
+      path: go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux
+      version: ""
+    target_module: github.com/gorilla/mux
+    go_min_version: 1.25.0
+    library_link: https://pkg.go.dev/go.opentelemetry.io/contrib/instrumentation/github.com/gorilla/mux/otelmux
+    instrumentation_type: wrapper
+    installation:
+      type: wrapper
+      description: ""
+    semantic_conventions:
+      - HTTP_SERVER_SPANS
+      - HTTP_SERVER_METRICS
+    stability: experimental
+    telemetry:
+      - when: default
+        spans:
+          - kind: server
+            attributes:
+              - name: client.address
+                type: string
+              - name: http.request.method
+                type: string
+              - name: http.response.status_code
+                type: int
+              - name: http.route
+                type: string
+              - name: network.peer.address
+                type: string
+              - name: network.protocol.name
+                type: string
+              - name: network.protocol.version
+                type: string
+              - name: server.address
+                type: string
+              - name: server.port
+                type: int
+              - name: url.path
+                type: string
+              - name: url.scheme
+                type: string
+              - name: user_agent.original
+                type: string
+        metrics:
+          - name: http.server.request.body.size
+            type: histogram
+            unit: By
+            attributes:
+              - name: http.request.method
+                type: string
+              - name: http.response.status_code
+                type: int
+              - name: http.route
+                type: string
+              - name: network.protocol.version
+                type: string
+              - name: url.scheme
+                type: string
+          - name: http.server.request.duration
+            type: histogram
+            unit: s
+            attributes:
+              - name: http.request.method
+                type: string
+              - name: http.response.status_code
+                type: int
+              - name: http.route
+                type: string
+              - name: network.protocol.version
+                type: string
+              - name: url.scheme
+                type: string
+          - name: http.server.response.body.size
+            type: histogram
+            unit: By
+            attributes:
+              - name: http.request.method
+                type: string
+              - name: http.response.status_code
+                type: int
+              - name: http.route
+                type: string
+              - name: network.protocol.version
+                type: string
+              - name: url.scheme
+                type: string
+  - name: instrumentation-github.com-labstack-echo-otelecho
+    display_name: Echo
+    description: ""
+    source_path: instrumentation/github.com/labstack/echo/otelecho
+    scope:
+      name: go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho
+    module:
+      path: go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho
+      version: ""
+    target_module: github.com/labstack/echo
+    go_min_version: 1.25.0
+    library_link: https://pkg.go.dev/go.opentelemetry.io/contrib/instrumentation/github.com/labstack/echo/otelecho
+    instrumentation_type: wrapper
+    installation:
+      type: wrapper
+      description: ""
+    semantic_conventions:
+      - HTTP_SERVER_SPANS
+      - HTTP_SERVER_METRICS
+    stability: experimental
+    telemetry:
+      - when: default
+        spans:
+          - kind: server
+            attributes:
+              - name: client.address
+                type: string
+              - name: echo.error
+                type: string
+              - name: http.request.method
+                type: string
+              - name: http.response.status_code
+                type: int
+              - name: http.route
+                type: string
+              - name: network.peer.address
+                type: string
+              - name: network.protocol.name
+                type: string
+              - name: network.protocol.version
+                type: string
+              - name: server.address
+                type: string
+              - name: server.port
+                type: int
+              - name: url.path
+                type: string
+              - name: url.scheme
+                type: string
+              - name: user_agent.original
+                type: string
+        metrics:
+          - name: http.server.request.body.size
+            type: histogram
+            unit: By
+            attributes:
+              - name: http.request.method
+                type: string
+              - name: http.response.status_code
+                type: int
+              - name: http.route
+                type: string
+              - name: network.protocol.version
+                type: string
+              - name: url.scheme
+                type: string
+          - name: http.server.request.duration
+            type: histogram
+            unit: s
+            attributes:
+              - name: http.request.method
+                type: string
+              - name: http.response.status_code
+                type: int
+              - name: http.route
+                type: string
+              - name: network.protocol.version
+                type: string
+              - name: url.scheme
+                type: string
+          - name: http.server.response.body.size
+            type: histogram
+            unit: By
+            attributes:
+              - name: http.request.method
+                type: string
+              - name: http.response.status_code
+                type: int
+              - name: http.route
+                type: string
+              - name: network.protocol.version
+                type: string
+              - name: url.scheme
+                type: string
+  - name: instrumentation-go.mongodb.org-mongo-driver-mongo-otelmongo
+    display_name: MongoDB
+    description: ""
+    source_path: instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo
+    scope:
+      name: go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo
+    module:
+      path: go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo
+      version: ""
+    target_module: go.mongodb.org/mongo-driver/mongo
+    go_min_version: 1.25.0
+    library_link: https://pkg.go.dev/go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/mongo/otelmongo
+    instrumentation_type: wrapper
+    installation:
+      type: wrapper
+      description: ""
+    semantic_conventions:
+      - DATABASE_CLIENT_SPANS
+    stability: experimental
+    telemetry:
+      - when: default
+        spans:
+          - kind: client
+            attributes:
+              - name: db.collection.name
+                type: string
+              - name: db.operation.name
+                type: string
+              - name: db.query.text
+                type: string
+              - name: db.system
+                type: string
+              - name: server.address
+                type: string
+              - name: server.port
+                type: int
+  - name: instrumentation-go.mongodb.org-mongo-driver-v2-mongo-otelmongo
+    display_name: MongoDB
+    description: ""
+    source_path: instrumentation/go.mongodb.org/mongo-driver/v2/mongo/otelmongo
+    scope:
+      name: go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/v2/mongo/otelmongo
+    module:
+      path: go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/v2/mongo/otelmongo
+      version: ""
+    target_module: go.mongodb.org/mongo-driver/v2/mongo
+    go_min_version: 1.25.0
+    library_link: https://pkg.go.dev/go.opentelemetry.io/contrib/instrumentation/go.mongodb.org/mongo-driver/v2/mongo/otelmongo
+    instrumentation_type: wrapper
+    installation:
+      type: wrapper
+      description: ""
+    semantic_conventions:
+      - DATABASE_CLIENT_SPANS
+    stability: experimental
+    telemetry:
+      - when: default
+        spans:
+          - kind: client
+            attributes:
+              - name: db.collection.name
+                type: string
+              - name: db.operation.name
+                type: string
+              - name: db.query.text
+                type: string
+              - name: db.system
+                type: string
+              - name: server.address
+                type: string
+              - name: server.port
+                type: int
+  - name: instrumentation-google.golang.org-grpc-otelgrpc
+    display_name: gRPC
+    description: ""
+    source_path: instrumentation/google.golang.org/grpc/otelgrpc
+    scope:
+      name: go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc
+    module:
+      path: go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc
+      version: ""
+    target_module: google.golang.org/grpc
+    go_min_version: 1.25.0
+    library_link: https://pkg.go.dev/go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc
+    instrumentation_type: wrapper
+    installation:
+      type: wrapper
+      description: ""
+    semantic_conventions:
+      - RPC_SERVER_SPANS
+      - RPC_CLIENT_SPANS
+    stability: experimental
+    telemetry:
+      - when: default
+        spans:
+          - kind: server
+            attributes:
+              - name: rpc.method
+                type: string
+              - name: rpc.service
+                type: string
+              - name: rpc.system
+                type: string
+              - name: server.address
+                type: string
+              - name: server.port
+                type: int
+        metrics:
+          - name: rpc.server.duration
+            type: histogram
+            unit: ms
+            attributes:
+              - name: rpc.method
+                type: string
+              - name: rpc.service
+                type: string
+              - name: rpc.system
+                type: string
+          - name: rpc.server.request.size
+            type: histogram
+            unit: By
+            attributes:
+              - name: rpc.method
+                type: string
+              - name: rpc.service
+                type: string
+              - name: rpc.system
+                type: string
+          - name: rpc.server.response.size
+            type: histogram
+            unit: By
+            attributes:
+              - name: rpc.method
+                type: string
+              - name: rpc.service
+                type: string
+              - name: rpc.system
+                type: string
+  - name: instrumentation-host
+    display_name: Host
+    description: ""
+    source_path: instrumentation/host
+    scope:
+      name: go.opentelemetry.io/contrib/instrumentation/host
+    module:
+      path: go.opentelemetry.io/contrib/instrumentation/host
+      version: ""
+    go_min_version: 1.25.0
+    library_link: https://pkg.go.dev/go.opentelemetry.io/contrib/instrumentation/host
+    instrumentation_type: wrapper
+    installation:
+      type: wrapper
+      description: ""
+    semantic_conventions:
+      - go.opentelemetry.io/otel/semconv/v1.41.0/processconv
+      - go.opentelemetry.io/otel/semconv/v1.41.0/systemconv
+    stability: experimental
+    telemetry:
+      - when: default
+        metrics:
+          - name: process.cpu.time
+            type: counter
+            unit: s
+            attributes:
+              - name: state
+                type: string
+          - name: system.cpu.time
+            type: counter
+            unit: s
+            attributes:
+              - name: state
+                type: string
+          - name: system.memory.usage
+            type: gauge
+            unit: By
+            attributes:
+              - name: state
+                type: string
+          - name: system.memory.utilization
+            type: gauge
+            unit: "1"
+            attributes:
+              - name: state
+                type: string
+          - name: system.network.io
+            type: counter
+            unit: By
+            attributes:
+              - name: direction
+                type: string
+  - name: instrumentation-net-http-httptrace-otelhttptrace
+    display_name: HTTP Trace
+    description: ""
+    source_path: instrumentation/net/http/httptrace/otelhttptrace
+    scope:
+      name: go.opentelemetry.io/contrib/instrumentation/net/http/httptrace/otelhttptrace
+    module:
+      path: go.opentelemetry.io/contrib/instrumentation/net/http/httptrace/otelhttptrace
+      version: ""
+    target_module: net/http/httptrace
+    go_min_version: 1.25.0
+    library_link: https://pkg.go.dev/go.opentelemetry.io/contrib/instrumentation/net/http/httptrace/otelhttptrace
+    instrumentation_type: wrapper
+    installation:
+      type: wrapper
+      description: ""
+    semantic_conventions:
+      - HTTP_CLIENT_SPANS
+      - HTTP_SERVER_METRICS
+    stability: experimental
+    telemetry:
+      - when: default
+        spans:
+          - kind: client
+            attributes:
+              - name: http.request.method
+                type: string
+              - name: http.response.status_code
+                type: int
+              - name: network.protocol.name
+                type: string
+              - name: network.protocol.version
+                type: string
+              - name: server.address
+                type: string
+              - name: server.port
+                type: int
+              - name: url.full
+                type: string
+        metrics:
+          - name: http.server.request.body.size
+            type: histogram
+            unit: By
+            attributes:
+              - name: http.request.method
+                type: string
+              - name: http.response.status_code
+                type: int
+              - name: http.route
+                type: string
+              - name: network.protocol.version
+                type: string
+              - name: url.scheme
+                type: string
+          - name: http.server.request.duration
+            type: histogram
+            unit: s
+            attributes:
+              - name: http.request.method
+                type: string
+              - name: http.response.status_code
+                type: int
+              - name: http.route
+                type: string
+              - name: network.protocol.version
+                type: string
+              - name: url.scheme
+                type: string
+          - name: http.server.response.body.size
+            type: histogram
+            unit: By
+            attributes:
+              - name: http.request.method
+                type: string
+              - name: http.response.status_code
+                type: int
+              - name: http.route
+                type: string
+              - name: network.protocol.version
+                type: string
+              - name: url.scheme
+                type: string
+  - name: instrumentation-net-http-otelhttp
+    display_name: HTTP
+    description: ""
+    source_path: instrumentation/net/http/otelhttp
+    scope:
+      name: go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp
+    module:
+      path: go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp
+      version: ""
+    target_module: net/http
+    go_min_version: 1.25.0
+    library_link: https://pkg.go.dev/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp
+    instrumentation_type: wrapper
+    installation:
+      type: wrapper
+      description: ""
+    semantic_conventions:
+      - HTTP_CLIENT_SPANS
+      - HTTP_SERVER_METRICS
+    stability: experimental
+    telemetry:
+      - when: default
+        spans:
+          - kind: server
+            attributes:
+              - name: client.address
+                type: string
+              - name: http.request.method
+                type: string
+              - name: http.response.status_code
+                type: int
+              - name: http.route
+                type: string
+              - name: network.peer.address
+                type: string
+              - name: network.protocol.name
+                type: string
+              - name: network.protocol.version
+                type: string
+              - name: server.address
+                type: string
+              - name: server.port
+                type: int
+              - name: url.path
+                type: string
+              - name: url.scheme
+                type: string
+              - name: user_agent.original
+                type: string
+        metrics:
+          - name: http.server.request.body.size
+            type: histogram
+            unit: By
+            attributes:
+              - name: http.request.method
+                type: string
+              - name: http.response.status_code
+                type: int
+              - name: http.route
+                type: string
+              - name: network.protocol.version
+                type: string
+              - name: url.scheme
+                type: string
+          - name: http.server.request.duration
+            type: histogram
+            unit: s
+            attributes:
+              - name: http.request.method
+                type: string
+              - name: http.response.status_code
+                type: int
+              - name: http.route
+                type: string
+              - name: network.protocol.version
+                type: string
+              - name: url.scheme
+                type: string
+          - name: http.server.response.body.size
+            type: histogram
+            unit: By
+            attributes:
+              - name: http.request.method
+                type: string
+              - name: http.response.status_code
+                type: int
+              - name: http.route
+                type: string
+              - name: network.protocol.version
+                type: string
+              - name: url.scheme
+                type: string
+  - name: instrumentation-runtime
+    display_name: Runtime
+    description: ""
+    source_path: instrumentation/runtime
+    scope:
+      name: go.opentelemetry.io/contrib/instrumentation/runtime
+    module:
+      path: go.opentelemetry.io/contrib/instrumentation/runtime
+      version: ""
+    go_min_version: 1.25.0
+    library_link: https://pkg.go.dev/go.opentelemetry.io/contrib/instrumentation/runtime
+    instrumentation_type: wrapper
+    installation:
+      type: wrapper
+      description: ""
+    semantic_conventions:
+      - go.opentelemetry.io/otel/semconv/v1.41.0/goconv
+    stability: experimental
+    telemetry:
+      - when: default
+        metrics:
+          - name: go.config.gogc
+            type: gauge
+            unit: '%'
+          - name: go.goroutine.count
+            type: gauge
+            unit: '{goroutine}'
+          - name: go.memory.allocated
+            type: counter
+            unit: By
+          - name: go.memory.allocations
+            type: counter
+            unit: '{allocation}'
+          - name: go.memory.gc.goal
+            type: gauge
+            unit: By
+          - name: go.memory.limit
+            type: gauge
+            unit: By
+          - name: go.memory.used
+            type: gauge
+            unit: By
+          - name: go.processor.limit
+            type: gauge
+            unit: '{thread}'
