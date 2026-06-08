@@ -60,7 +60,7 @@ flowchart TD
 ## How fields are derived
 
 | Metadata field | Derived from |
-|---|---|
+| --- | --- |
 | `name` | Last path segment of the module path |
 | `display_name` | `displayNameMap` in `parser.go`, keyed on name minus `otel` prefix |
 | `module.path` | The `require` entry path |

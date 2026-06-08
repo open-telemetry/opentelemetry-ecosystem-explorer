@@ -14,7 +14,7 @@ the **opentelemetry-go** core libraries.
 The watcher produces a **versioned instrumentation inventory** under the
 registry-consumer layout, mirroring the other ecosystem watchers:
 
-```
+```text
 ecosystem-registry/go/contrib/v{version}/instrumentation.yaml
 ```
 
@@ -52,6 +52,7 @@ Per
 a watcher must fulfill five critical functions. How this watcher maps to each:
 
 ### 1. Version Management
+
 - **Detect releases** — monitor opentelemetry-go-contrib for new release tags
   and trigger extraction. _(planned: tag selection in `tags.go`; today the repo
   is cloned/checked out at `main`)_
@@ -62,6 +63,7 @@ a watcher must fulfill five critical functions. How this watcher maps to each:
   (`inventory.NextSnapshot`, `Manager.CleanupSnapshots`).
 
 ### 2. Schema Evolution
+
 - **Source schema changes** — metadata is derived from each module's own
   `module` directive in the checked-out tag; parsers can be versioned without
   mutating existing ones.
@@ -72,6 +74,7 @@ a watcher must fulfill five critical functions. How this watcher maps to each:
   than inferred, since the watcher controls the emitted shape.
 
 ### 3. Change Detection
+
 - **Schema changes** — inventories are versioned and content-addressable, so
   extractions can be diffed across versions. _(planned: automatic GitHub issue
   creation on field changes)_
@@ -79,6 +82,7 @@ a watcher must fulfill five critical functions. How this watcher maps to each:
   instrumentation are emitted; records without a valid module path are skipped.
 
 ### 4. Data Regeneration
+
 - **Backfill historical versions** — iterate release tags and generate a
   versioned inventory per tag. _(planned alongside tag checkout)_
 - **Regenerate on demand** — `make sync` re-runs the full pipeline; the version
@@ -86,6 +90,7 @@ a watcher must fulfill five critical functions. How this watcher maps to each:
   snapshot is always refreshed.
 
 ### 5. Deterministic Output
+
 - **Consistent ordering** — inventories are serialized with stable YAML
   encoding and a fixed indent.
 - **Reproducible transformations** — no timestamps are written into content;
@@ -143,7 +148,8 @@ instrumentation.
 
 ## Related Projects
 
-- [OpenTelemetry Ecosystem Explorer](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer) - Registry and consumer pipeline
+- [OpenTelemetry Ecosystem Explorer](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer) —
+  Registry and consumer pipeline
 - [OpenTelemetry Weaver](https://github.com/open-telemetry/weaver) - Schema tooling
 - [OpenTelemetry Go Contrib](https://github.com/open-telemetry/opentelemetry-go-contrib) - Instrumentation source
 
