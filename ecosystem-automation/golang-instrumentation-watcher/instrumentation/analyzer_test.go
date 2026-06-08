@@ -54,11 +54,14 @@ go 1.24
 
 import (
 	"context"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 )
 
 func InstrumentRequest(ctx context.Context, tracer trace.Tracer) {
-	ctx, span := tracer.Start(ctx, "http.request", trace.WithSpanKind(trace.SpanKindServer))
+	ctx, span := tracer.Start(ctx, "http.request",
+		trace.WithSpanKind(trace.SpanKindServer),
+		trace.WithAttributes(attribute.String("http.method", "GET")))
 	defer span.End()
 }
 `
@@ -644,6 +647,60 @@ require go.opentelemetry.io/otel v1.38.0
 		}
 		if !foundHistogramUnit {
 			t.Error("Expected request.duration metric with unit 'ms' not found")
+		}
+	})
+}
+
+func TestExtractSpansFiltersEmptyAttributes(t *testing.T) {
+	t.Run("extractSpans - drops spans with no attributes", func(t *testing.T) {
+		tmpDir := t.TempDir()
+
+		content := `package otelgrpc
+
+import (
+	"context"
+	"go.opentelemetry.io/otel/trace"
+)
+
+func instrumentServer(ctx context.Context, tracer trace.Tracer) {
+	_, span := tracer.Start(ctx, "server.request", trace.WithSpanKind(trace.SpanKindServer))
+	defer span.End()
+}
+
+func helper(ctx context.Context, tracer trace.Tracer) {
+	_, span := tracer.Start(ctx, "internal.op", trace.WithSpanKind(trace.SpanKindInternal))
+	defer span.End()
+}
+`
+		filePath := filepath.Join(tmpDir, "test.go")
+		if err := os.WriteFile(filePath, []byte(content), 0644); err != nil {
+			t.Fatal(err)
+		}
+
+		goModContent := `module go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc
+
+go 1.24
+
+require go.opentelemetry.io/otel v1.38.0
+`
+		goModPath := filepath.Join(tmpDir, "go.mod")
+		if err := os.WriteFile(goModPath, []byte(goModContent), 0644); err != nil {
+			t.Fatal(err)
+		}
+
+		analysis, err := AnalyzePackage(tmpDir)
+		if err != nil {
+			t.Fatalf("AnalyzePackage() error = %v", err)
+		}
+
+		if len(analysis.Telemetry) == 0 {
+			t.Fatal("expected telemetry, got none")
+		}
+
+		for _, span := range analysis.Telemetry[0].Spans {
+			if len(span.Attributes) == 0 {
+				t.Errorf("span kind=%v has no attributes but was emitted; should be filtered", span.Kind)
+			}
 		}
 	})
 }

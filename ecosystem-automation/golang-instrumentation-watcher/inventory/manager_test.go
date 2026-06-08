@@ -211,6 +211,107 @@ func TestVersionExistsRequiresFile(t *testing.T) {
 	}
 }
 
+func TestInventoryYAMLValidation(t *testing.T) {
+	m := NewManager(t.TempDir())
+
+	libs := []instrumentation.Library{
+		{
+			Metadata: metadata.Metadata{Name: "otelfoo"},
+			Telemetry: []instrumentation.Telemetry{
+				{
+					When: "default",
+					Spans: []instrumentation.Span{
+						{
+							Kind: instrumentation.SpanKindServer,
+							Attributes: []instrumentation.Attribute{
+								{Name: "server.port", Type: instrumentation.AttributeTypeLong},
+								{Name: "http.route", Type: instrumentation.AttributeTypeString},
+							},
+						},
+						{
+							Kind: instrumentation.SpanKindClient,
+							Attributes: []instrumentation.Attribute{
+								{Name: "url.full", Type: instrumentation.AttributeTypeString},
+							},
+						},
+					},
+					Metrics: []instrumentation.Metric{
+						{
+							Name: "http.server.request.duration",
+							Type: instrumentation.MetricTypeHistogram,
+							Unit: "s",
+							Attributes: []instrumentation.Attribute{
+								{Name: "http.request.method", Type: instrumentation.AttributeTypeString},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	if err := m.Save("v1.0.0", libs); err != nil {
+		t.Fatalf("Save() error = %v", err)
+	}
+
+	path := filepath.Join(m.VersionDir("v1.0.0"), "instrumentation.yaml")
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("ReadFile() error = %v", err)
+	}
+
+	var raw any
+	if err := yaml.Unmarshal(data, &raw); err != nil {
+		t.Fatalf("YAML is not valid: %v\n%s", err, data)
+	}
+
+	loaded, err := m.Load("v1.0.0")
+	if err != nil {
+		t.Fatalf("Load() error = %v", err)
+	}
+
+	if len(loaded.Libraries) != 1 {
+		t.Fatalf("libraries = %d, want 1", len(loaded.Libraries))
+	}
+
+	tel := loaded.Libraries[0].Telemetry[0]
+
+	if len(tel.Spans) != 2 {
+		t.Fatalf("spans = %d, want 2", len(tel.Spans))
+	}
+	for _, span := range tel.Spans {
+		if span.Kind == "" {
+			t.Error("span has empty kind")
+		}
+		for _, attr := range span.Attributes {
+			if attr.Name == "" {
+				t.Errorf("attribute in span %v has empty name", span.Kind)
+			}
+			if attr.Type == "" {
+				t.Errorf("attribute %v in span %v has empty type", attr.Name, span.Kind)
+			}
+		}
+	}
+
+	if len(tel.Metrics) != 1 {
+		t.Fatalf("metrics = %d, want 1", len(tel.Metrics))
+	}
+	if tel.Metrics[0].Name != "http.server.request.duration" {
+		t.Errorf("metric name = %v, want http.server.request.duration", tel.Metrics[0].Name)
+	}
+	if tel.Metrics[0].Type != instrumentation.MetricTypeHistogram {
+		t.Errorf("metric type = %v, want histogram", tel.Metrics[0].Type)
+	}
+	for _, attr := range tel.Metrics[0].Attributes {
+		if attr.Name == "" {
+			t.Error("metric attribute has empty name")
+		}
+		if attr.Type == "" {
+			t.Errorf("metric attribute %v has empty type", attr.Name)
+		}
+	}
+}
+
 func TestDeleteVersion(t *testing.T) {
 	m := NewManager(t.TempDir())
 	saveVersions(t, m, "v2.10.0")

@@ -221,6 +221,9 @@ func extractSpans(pkg *packages.Package) []Span {
 
 	spans := make([]Span, 0, len(spanMap))
 	for _, span := range spanMap {
+		if len(span.Attributes) == 0 {
+			continue
+		}
 		slices.SortFunc(span.Attributes, compareAttribute)
 		spans = append(spans, *span)
 	}
