@@ -67,6 +67,10 @@ vuln: ## 🛡️  Scan for vulnerabilities
 .PHONY: pre-commit
 pre-commit: fmt tidy lint test ## ✅ Run all checks
 
+.PHONY: snapshot
+snapshot: ## 📸 Generate and post watcher output snapshot as a PR comment
+	go run ./cmd/snapshot/ | ./scripts/upsert-pr-comment.sh
+
 .PHONY: install
 install: ## 📦 Install dependencies
 	@which weaver > /dev/null || ( \
