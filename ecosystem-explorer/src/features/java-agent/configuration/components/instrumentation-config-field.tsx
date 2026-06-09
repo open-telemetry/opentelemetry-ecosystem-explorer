@@ -225,6 +225,92 @@ function KeyValueMapRenderer({
   );
 }
 
+function StructuredListRenderer({
+  value,
+  onChange,
+  ariaLabel,
+  disabled,
+  showAdd,
+  schema,
+}: ControlRendererProps & { schema: NonNullable<Configuration["declarative_schema"]> }) {
+  const items = Array.isArray(value) ? (value as ConfigValues[]) : [];
+  const properties = Object.entries(schema.properties);
+
+  return (
+    <div className="w-full max-w-xl space-y-2" aria-label={ariaLabel}>
+      {items.map((item, idx) => (
+        <div key={idx} className="border-border/40 space-y-1.5 rounded-md border p-3">
+          <div className="flex items-center justify-between">
+            <span className="text-muted-foreground text-xs italic">Item {idx + 1}</span>
+            {!disabled && (
+              <button
+                type="button"
+                onClick={() => onChange(items.filter((_, i) => i !== idx) as ConfigValue)}
+                className="text-muted-foreground rounded p-1 hover:text-red-400"
+                aria-label={`Remove item ${idx + 1}`}
+              >
+                <X className="h-3 w-3" aria-hidden="true" />
+              </button>
+            )}
+          </div>
+          {properties.map(([key, prop]) => (
+            <div key={key} className="flex flex-col gap-1">
+              <label className="text-foreground text-xs font-medium">
+                {key.replace(/_/g, " ")}
+              </label>
+              {prop.type === "boolean" ? (
+                <SwitchPill
+                  checked={Boolean((item as ConfigValues)[key])}
+                  onClick={() => {
+                    if (disabled) return;
+                    const next = [...items];
+                    next[idx] = { ...item, [key]: !(item as ConfigValues)[key] };
+                    onChange(next as ConfigValue);
+                  }}
+                  ariaLabel={`${ariaLabel} item ${idx + 1} ${key}`}
+                />
+              ) : (
+                <input
+                  type="text"
+                  aria-label={`${ariaLabel} item ${idx + 1} ${key}`}
+                  disabled={disabled}
+                  value={
+                    typeof (item as ConfigValues)[key] === "string"
+                      ? ((item as ConfigValues)[key] as string)
+                      : ""
+                  }
+                  onChange={(e) => {
+                    const next = [...items];
+                    next[idx] = { ...item, [key]: e.target.value };
+                    onChange(next as ConfigValue);
+                  }}
+                  className={LIST_INPUT_CLASS}
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      ))}
+      {showAdd && !disabled && (
+        <button
+          type="button"
+          onClick={() => {
+            const blank: Record<string, unknown> = {};
+            for (const [key, prop] of properties) {
+              blank[key] = prop.type === "boolean" ? (prop.default ?? false) : "";
+            }
+            onChange([...items, blank as ConfigValues] as ConfigValue);
+          }}
+          className="border-border/60 text-foreground hover:bg-card/80 inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs"
+        >
+          <Plus className="h-3 w-3" aria-hidden="true" />
+          Add entry
+        </button>
+      )}
+    </div>
+  );
+}
+
 const RENDER_BY_TYPE: Record<Configuration["type"], ControlRenderer> = {
   boolean: BooleanRenderer,
   string: StringRenderer,
@@ -251,8 +337,11 @@ export function InstrumentationConfigField({
   const parentPath = path.slice(0, -1).join(".");
   const leafKey = String(path[path.length - 1]);
 
+  const isStructuredList =
+    entry.declarative_type === "structured_list" && entry.declarative_schema != null;
+
   const handleCustomization = () => {
-    setValueByPath(path, parseDefault(entry.type, entry.default));
+    setValueByPath(path, isStructuredList ? [] : parseDefault(entry.type, entry.default));
   };
 
   const handleReset = () => {
@@ -263,7 +352,9 @@ export function InstrumentationConfigField({
     setValueByPath(path, next);
   };
 
-  const Render = RENDER_BY_TYPE[entry.type];
+  const Render: ControlRenderer = isStructuredList
+    ? (props) => <StructuredListRenderer {...props} schema={entry.declarative_schema!} />
+    : RENDER_BY_TYPE[entry.type];
 
   return (
     <div
@@ -350,7 +441,7 @@ function valueMatchesType(value: ConfigValue | undefined, type: Configuration["t
     case "list":
       return Array.isArray(value);
     case "map":
-      return isPlainObject(value);
+      return isPlainObject(value) || Array.isArray(value);
   }
 }
 

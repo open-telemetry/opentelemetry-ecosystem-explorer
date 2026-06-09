@@ -110,6 +110,14 @@ export interface Configuration {
   default: string | boolean | number;
   /** Example values for this configuration option. */
   examples?: string[];
+  /** When set to "structured_list", each entry is an object described by declarative_schema. */
+  declarative_type?: "structured_list";
+  /** Per-item schema used when declarative_type is "structured_list". */
+  declarative_schema?: {
+    type: "object";
+    required?: string[];
+    properties: Record<string, { type: string; description?: string; default?: unknown }>;
+  };
 }
 
 /**

@@ -166,12 +166,11 @@ def _map_node(
         ]
 
     elif control_type == "list":
-        
         if node.get("declarative_type") == "structured_list":
             items = node.get("declarative_schema", {})
         else:
             items = node.get("items", {})
-            
+
         if isinstance(items, dict):
             result["itemSchema"] = _map_node(items, "item", path, set())
 

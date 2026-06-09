@@ -76,9 +76,9 @@ def apply_declarative_name_corrections(inventory: dict[str, Any]) -> dict[str, A
                             },
                             "service_name": {
                                 "type": "string",
-                                "description": "Peer service name to record for matching peers."
-                            }
-                        }
+                                "description": "Peer service name to record for matching peers.",
+                            },
+                        },
                     }
                 elif current_name and current_name.endswith("url_template_rules"):
                     config["declarative_type"] = "structured_list"
@@ -88,18 +88,18 @@ def apply_declarative_name_corrections(inventory: dict[str, Any]) -> dict[str, A
                         "properties": {
                             "pattern": {
                                 "type": "string",
-                                "description": "Regular expression matched against the request URL."
+                                "description": "Regular expression matched against the request URL.",
                             },
                             "template": {
                                 "type": "string",
-                                "description": "Template used to derive the low-cardinality route."
+                                "description": "Template used to derive the low-cardinality route.",
                             },
                             "override": {
                                 "type": "boolean",
                                 "default": False,
-                                "description": "Whether this rule overrides an already-applied template."
-                            }
-                        }
+                                "description": "Whether this rule overrides an already-applied template.",
+                            },
+                        },
                     }
 
     return inventory
