@@ -352,9 +352,7 @@ export function InstrumentationConfigField({
     setValueByPath(path, next);
   };
 
-  const Render: ControlRenderer = isStructuredList
-    ? (props) => <StructuredListRenderer {...props} schema={entry.declarative_schema!} />
-    : RENDER_BY_TYPE[entry.type];
+  const Render = RENDER_BY_TYPE[entry.type];
 
   return (
     <div
@@ -375,23 +373,47 @@ export function InstrumentationConfigField({
 
       <div className="mt-2 flex flex-wrap items-center gap-2">
         {isReadOnly ? (
-          <Render
-            value={currentValue ?? defaultRenderValue(entry.type)}
-            onChange={() => {}}
-            onClear={() => {}}
-            ariaLabel={declarativeName}
-            disabled={true}
-            showAdd={false}
-          />
+          isStructuredList ? (
+            <StructuredListRenderer
+              value={currentValue ?? []}
+              onChange={() => {}}
+              onClear={() => {}}
+              ariaLabel={declarativeName}
+              disabled={true}
+              showAdd={false}
+              schema={entry.declarative_schema!}
+            />
+          ) : Render ? (
+            <Render
+              value={currentValue ?? defaultRenderValue(entry.type)}
+              onChange={() => {}}
+              onClear={() => {}}
+              ariaLabel={declarativeName}
+              disabled={true}
+              showAdd={false}
+            />
+          ) : null
         ) : isCustomized ? (
-          <Render
-            value={currentValue as ConfigValue}
-            onChange={handleChange}
-            onClear={handleReset}
-            ariaLabel={declarativeName}
-            disabled={false}
-            showAdd={true}
-          />
+          isStructuredList ? (
+            <StructuredListRenderer
+              value={currentValue as ConfigValue}
+              onChange={handleChange}
+              onClear={handleReset}
+              ariaLabel={declarativeName}
+              disabled={false}
+              showAdd={true}
+              schema={entry.declarative_schema!}
+            />
+          ) : Render ? (
+            <Render
+              value={currentValue as ConfigValue}
+              onChange={handleChange}
+              onClear={handleReset}
+              ariaLabel={declarativeName}
+              disabled={false}
+              showAdd={true}
+            />
+          ) : null
         ) : (
           <DefaultPreview type={entry.type} raw={entry.default} />
         )}
