@@ -18,4 +18,26 @@
       pinDigests: true,
     },
   ],
+
+  // The Bun version is consolidated into `.bun-version` (read by all workflows
+  // via setup-bun's `bun-version-file`) plus a mirrored literal in netlify.toml
+  // (Netlify can't read a version file). These custom managers keep both bumped from oven-sh/bun releases (tagged `bun-v<semver>`).
+  customManagers: [
+    {
+      customType: "regex",
+      managerFilePatterns: ["/^\\.bun-version$/"],
+      matchStrings: ["(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+      depNameTemplate: "oven-sh/bun",
+      datasourceTemplate: "github-releases",
+      extractVersionTemplate: "^bun-v(?<version>.+)$",
+    },
+    {
+      customType: "regex",
+      managerFilePatterns: ["/(^|/)netlify\\.toml$/"],
+      matchStrings: ["BUN_VERSION\\s*=\\s*\"(?<currentValue>[^\"]+)\""],
+      depNameTemplate: "oven-sh/bun",
+      datasourceTemplate: "github-releases",
+      extractVersionTemplate: "^bun-v(?<version>.+)$",
+    },
+  ],
 }
