@@ -34,7 +34,7 @@
     {
       customType: "regex",
       managerFilePatterns: ["/(^|/)netlify\\.toml$/"],
-      matchStrings: ["BUN_VERSION\\s*=\\s*\"(?<currentValue>[^\"]+)\""],
+      matchStrings: ['BUN_VERSION\\s*=\\s*"(?<currentValue>[^"]+)"'],
       depNameTemplate: "oven-sh/bun",
       datasourceTemplate: "github-releases",
       extractVersionTemplate: "^bun-v(?<version>.+)$",
