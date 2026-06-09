@@ -25,7 +25,7 @@
   customManagers: [
     {
       customType: "regex",
-      managerFilePatterns: ["/^\\.bun-version$/"],
+      fileMatch: ["^\\.bun-version$"],
       matchStrings: ["(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
       depNameTemplate: "oven-sh/bun",
       datasourceTemplate: "github-releases",
