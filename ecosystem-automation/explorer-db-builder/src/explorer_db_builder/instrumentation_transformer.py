@@ -180,6 +180,87 @@ def _transform_0_3_to_0_5(inventory_data: dict[str, Any]) -> dict[str, Any]:
     return transformed_data
 
 
+def _collect_search_terms(instrumentation: dict[str, Any]) -> list[str]:
+    """Flatten every searchable string off a full instrumentation into a sorted,
+    deduped list for the index.json ``search_terms`` field.
+
+    Global search reads this precomputed list instead of the full detail file
+    (which the slim index does not carry). The field coverage mirrors the
+    frontend's historical ``getInstrumentationSearchTerms``: library_link,
+    source_path, minimum_java_version, scope, semantic_conventions, features,
+    javaagent_target_versions, the configuration sub-fields, and the telemetry
+    metric/span tree. ``name``/``display_name``/``description`` are intentionally
+    excluded: the frontend always indexes those three as the result
+    title/description/keywords, so duplicating them here would only bloat the
+    content hash. Configuration sub-fields ARE included so search keeps the
+    pre-#645 parity (dropping them was a silent regression); delete the
+    ``configurations`` loop below if a compact index is ever wanted.
+
+    Determinism (schema discipline): returns ``sorted(set(...))`` so the content
+    hash is stable regardless of source array order or duplicate values; no
+    timestamps.
+
+    Args:
+        instrumentation: Full canonical instrumentation dict.
+
+    Returns:
+        Sorted, deduped list of non-empty search term strings (possibly empty).
+    """
+    terms: set[str] = set()
+
+    def add(value: Any) -> None:
+        # Only scalar leaves are searchable; skip None and containers, stringify
+        # scalars (e.g. minimum_java_version), and drop blanks.
+        if value is None or isinstance(value, (dict, list)):
+            return
+        text = str(value).strip()
+        if text:
+            terms.add(text)
+
+    add(instrumentation.get("library_link"))
+    add(instrumentation.get("source_path"))
+    add(instrumentation.get("minimum_java_version"))
+
+    scope = instrumentation.get("scope") or {}
+    add(scope.get("name"))
+    add(scope.get("schema_url"))
+
+    for value in instrumentation.get("semantic_conventions") or []:
+        add(value)
+    for value in instrumentation.get("features") or []:
+        add(value)
+    for value in instrumentation.get("javaagent_target_versions") or []:
+        add(value)
+
+    for configuration in instrumentation.get("configurations") or []:
+        add(configuration.get("name"))
+        add(configuration.get("declarative_name"))
+        add(configuration.get("description"))
+        add(configuration.get("type"))
+        add(configuration.get("default"))
+        for example in configuration.get("examples") or []:
+            add(example)
+
+    for telemetry in instrumentation.get("telemetry") or []:
+        add(telemetry.get("when"))
+        for metric in telemetry.get("metrics") or []:
+            add(metric.get("name"))
+            add(metric.get("description"))
+            add(metric.get("instrument"))
+            add(metric.get("data_type"))
+            add(metric.get("unit"))
+            for attribute in metric.get("attributes") or []:
+                add(attribute.get("name"))
+                add(attribute.get("type"))
+        for span in telemetry.get("spans") or []:
+            add(span.get("span_kind"))
+            for attribute in span.get("attributes") or []:
+                add(attribute.get("name"))
+                add(attribute.get("type"))
+
+    return sorted(terms)
+
+
 def make_index_instrumentation(instrumentation: dict[str, Any]) -> dict[str, Any]:
     """Extract lightweight metadata for the javaagent index.json.
 
@@ -201,6 +282,9 @@ def make_index_instrumentation(instrumentation: dict[str, Any]) -> dict[str, Any
         # Booleans the browse/search UI filters on without loading full detail.
         "has_telemetry": bool(telemetry),
         "has_standalone_library": bool(instrumentation.get("has_standalone_library")),
+        # Precomputed global-search terms (sorted, deduped) so the frontend search
+        # source reads the slim index instead of fanning out to full detail.
+        "search_terms": _collect_search_terms(instrumentation),
     }
 
 

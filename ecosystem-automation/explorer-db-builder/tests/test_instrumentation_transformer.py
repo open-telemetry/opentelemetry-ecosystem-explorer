@@ -16,7 +16,9 @@
 
 import pytest
 from explorer_db_builder.instrumentation_transformer import (
+    _collect_search_terms,
     _transform_0_1_to_0_2,
+    make_index_instrumentation,
     make_list_instrumentation,
     transform_instrumentation_format,
 )
@@ -88,6 +90,119 @@ class TestMakeListInstrumentation:
         assert "semantic_conventions" not in entry
         assert "configurations" not in entry
         assert "disabled_by_default" not in entry
+
+
+class TestMakeIndexInstrumentation:
+    @staticmethod
+    def _full_instrumentation() -> dict:
+        return {
+            "name": "kafka-clients-2.6",
+            "display_name": "Kafka Clients",
+            "description": "Kafka client instrumentation",
+            "has_standalone_library": True,
+            "library_link": "https://kafka.apache.org",
+            "source_path": "instrumentation/kafka/kafka-clients-2.6",
+            "minimum_java_version": 8,
+            "scope": {"name": "io.opentelemetry.kafka-clients-2.6", "schema_url": "https://x/1.0"},
+            "semantic_conventions": ["messaging"],
+            "features": ["TRACING", "METRICS"],
+            "javaagent_target_versions": ["org.apache.kafka:kafka-clients:[2.6,)"],
+            "configurations": [
+                {
+                    "name": "otel.instrumentation.kafka.experimental-span-attributes",
+                    "declarative_name": "experimental_span_attributes",
+                    "description": "Enable experimental span attributes",
+                    "type": "boolean",
+                    "default": False,
+                    "examples": ["true"],
+                }
+            ],
+            "telemetry": [
+                {
+                    "when": "on publish",
+                    "metrics": [
+                        {
+                            "name": "messaging.publish.duration",
+                            "description": "Publish duration.",
+                            "instrument": "histogram",
+                            "data_type": "HISTOGRAM",
+                            "unit": "s",
+                            "attributes": [{"name": "messaging.system", "type": "STRING"}],
+                        }
+                    ],
+                    "spans": [
+                        {"span_kind": "PRODUCER", "attributes": [{"name": "messaging.system", "type": "STRING"}]}
+                    ],
+                }
+            ],
+        }
+
+    def test_collects_every_searchable_field(self):
+        terms = _collect_search_terms(self._full_instrumentation())
+        for expected in [
+            "https://kafka.apache.org",
+            "instrumentation/kafka/kafka-clients-2.6",
+            "8",
+            "io.opentelemetry.kafka-clients-2.6",
+            "https://x/1.0",
+            "messaging",
+            "TRACING",
+            "METRICS",
+            "org.apache.kafka:kafka-clients:[2.6,)",
+            "experimental_span_attributes",  # configuration sub-field (pre-#645 parity)
+            "on publish",
+            "messaging.publish.duration",
+            "Publish duration.",
+            "histogram",
+            "HISTOGRAM",
+            "s",
+            "messaging.system",
+            "STRING",
+            "PRODUCER",
+        ]:
+            assert expected in terms
+
+    def test_excludes_name_display_name_description(self):
+        # The frontend re-indexes these three directly; duplicating them here
+        # would only bloat the content hash.
+        terms = _collect_search_terms(self._full_instrumentation())
+        assert "kafka-clients-2.6" not in terms
+        assert "Kafka Clients" not in terms
+        assert "Kafka client instrumentation" not in terms
+
+    def test_sorted_deduped_and_deterministic(self):
+        a = self._full_instrumentation()
+        b = self._full_instrumentation()
+        b["features"] = list(reversed(b["features"]))
+        b["telemetry"][0]["metrics"][0]["attributes"].append(
+            {"name": "messaging.system", "type": "STRING"}  # duplicate term
+        )
+        terms = _collect_search_terms(a)
+        assert terms == sorted(set(terms))
+        assert _collect_search_terms(a) == _collect_search_terms(b)
+
+    def test_null_safe_on_missing_optional_blocks(self):
+        # No scope, no telemetry, no version metadata -> empty list, never a crash.
+        assert _collect_search_terms({"name": "bare-1.0"}) == []
+        assert _collect_search_terms({"name": "x", "scope": None, "telemetry": None}) == []
+
+    def test_make_index_carries_lightweight_fields_and_search_terms(self):
+        entry = make_index_instrumentation(self._full_instrumentation())
+        assert entry["name"] == "kafka-clients-2.6"
+        assert entry["display_name"] == "Kafka Clients"
+        assert entry["description"] == "Kafka client instrumentation"
+        assert entry["has_telemetry"] is True
+        assert entry["has_standalone_library"] is True
+        assert "messaging.publish.duration" in entry["search_terms"]
+        # Heavy objects must not leak into the index entry.
+        assert "configurations" not in entry
+        assert "scope" not in entry
+        assert "telemetry" not in entry
+
+    def test_make_index_no_telemetry_yields_empty_search_terms(self):
+        entry = make_index_instrumentation({"name": "bare-1.0"})
+        assert entry["has_telemetry"] is False
+        assert entry["search_terms"] == []
 
 
 class TestTransformInstrumentationFormat:

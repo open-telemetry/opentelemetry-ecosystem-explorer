@@ -15,11 +15,11 @@
  */
 import { describe, it, expect } from "vitest";
 import { getBadgeInfo, getAggregatedBadgeInfo } from "./badge-info";
-import type { InstrumentationData } from "@/types/javaagent";
+import type { InstrumentationListEntry } from "@/types/javaagent";
 
 function makeInstr(
-  overrides: Partial<InstrumentationData> & { name: string }
-): InstrumentationData {
+  overrides: Partial<InstrumentationListEntry> & { name: string }
+): InstrumentationListEntry {
   return { scope: { name: "test" }, ...overrides };
 }
 
@@ -40,36 +40,13 @@ describe("getBadgeInfo", () => {
   });
 
   it("detects spans", () => {
-    const info = getBadgeInfo(
-      makeInstr({
-        name: "with-spans",
-        telemetry: [{ when: "always", spans: [{ span_kind: "CLIENT" }] }],
-      })
-    );
+    const info = getBadgeInfo(makeInstr({ name: "with-spans", has_spans: true }));
     expect(info.hasSpans).toBe(true);
     expect(info.hasMetrics).toBe(false);
   });
 
   it("detects metrics", () => {
-    const info = getBadgeInfo(
-      makeInstr({
-        name: "with-metrics",
-        telemetry: [
-          {
-            when: "always",
-            metrics: [
-              {
-                name: "m",
-                description: "d",
-                data_type: "COUNTER",
-                instrument: "counter",
-                unit: "1",
-              },
-            ],
-          },
-        ],
-      })
-    );
+    const info = getBadgeInfo(makeInstr({ name: "with-metrics", has_metrics: true }));
     expect(info.hasMetrics).toBe(true);
     expect(info.hasSpans).toBe(false);
   });
@@ -97,22 +74,8 @@ describe("getAggregatedBadgeInfo", () => {
 
   it("aggregates across multiple instrumentations", () => {
     const instrumentations = [
-      makeInstr({
-        name: "a",
-        telemetry: [{ when: "always", spans: [{ span_kind: "CLIENT" }] }],
-      }),
-      makeInstr({
-        name: "b",
-        has_standalone_library: true,
-        telemetry: [
-          {
-            when: "always",
-            metrics: [
-              { name: "m", description: "d", data_type: "COUNTER", instrument: "gauge", unit: "1" },
-            ],
-          },
-        ],
-      }),
+      makeInstr({ name: "a", has_spans: true }),
+      makeInstr({ name: "b", has_standalone_library: true, has_metrics: true }),
       makeInstr({ name: "c", has_javaagent: true }),
     ];
 

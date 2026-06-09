@@ -20,7 +20,7 @@ import { SearchableMultiSelect, SelectedChips } from "@/components/ui/searchable
 
 import { getSemanticConventionInfo, getFeatureInfo } from "../utils/format";
 
-import type { InstrumentationData } from "@/types/javaagent";
+import type { InstrumentationListEntry } from "@/types/javaagent";
 
 export interface FilterState {
   search: string;
@@ -33,7 +33,7 @@ export interface FilterState {
 interface InstrumentationFilterBarProps {
   filters: FilterState;
   onFiltersChange: (filters: FilterState) => void;
-  instrumentations: InstrumentationData[];
+  instrumentations: InstrumentationListEntry[];
 }
 
 export function InstrumentationFilterBar({

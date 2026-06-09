@@ -52,20 +52,7 @@ describe("InstrumentationGroupCard", () => {
           description: "Database instrumentation",
           scope: { name: "jdbc" },
           has_standalone_library: true,
-          telemetry: [
-            {
-              when: "always",
-              metrics: [
-                {
-                  name: "db.connections",
-                  description: "DB connections",
-                  data_type: "COUNTER",
-                  instrument: "gauge",
-                  unit: "1",
-                },
-              ],
-            },
-          ],
+          has_metrics: true,
         },
       ],
     };
@@ -100,8 +87,7 @@ describe("InstrumentationGroupCard", () => {
           description: "Instrumentation for Apache HttpClient version 4",
           scope: { name: "io.opentelemetry.apache-httpclient-4.0" },
           has_javaagent: true,
-          javaagent_target_versions: ["org.apache.httpcomponents:httpclient:[4.0,)"],
-          telemetry: [{ when: "default", spans: [{ span_kind: "CLIENT" }] }],
+          has_spans: true,
         },
         {
           name: "apache-httpclient-5.0",
@@ -109,23 +95,9 @@ describe("InstrumentationGroupCard", () => {
           description: "Instrumentation for Apache HttpClient version 5",
           scope: { name: "io.opentelemetry.apache-httpclient-5.0" },
           has_javaagent: true,
-          javaagent_target_versions: ["org.apache.httpcomponents.client5:httpclient5:[5.0,)"],
           has_standalone_library: true,
-          telemetry: [
-            {
-              when: "default",
-              spans: [{ span_kind: "CLIENT" }],
-              metrics: [
-                {
-                  name: "http.client.request.duration",
-                  description: "Duration of HTTP client requests",
-                  data_type: "HISTOGRAM",
-                  instrument: "histogram",
-                  unit: "s",
-                },
-              ],
-            },
-          ],
+          has_spans: true,
+          has_metrics: true,
         },
       ],
     };

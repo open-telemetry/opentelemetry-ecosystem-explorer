@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { InstrumentationData } from "@/types/javaagent";
+import type { InstrumentationListEntry } from "@/types/javaagent";
 import { getInstrumentationDisplayName } from "./format";
 
 export interface InstrumentationGroup {
   displayName: string;
-  instrumentations: InstrumentationData[];
+  instrumentations: InstrumentationListEntry[];
 }
 
 /**
@@ -30,9 +30,9 @@ export interface InstrumentationGroup {
  * each group are sorted alphabetically by their raw `name`.
  */
 export function groupInstrumentationsByDisplayName(
-  instrumentations: InstrumentationData[]
+  instrumentations: InstrumentationListEntry[]
 ): InstrumentationGroup[] {
-  const groupMap = new Map<string, InstrumentationData[]>();
+  const groupMap = new Map<string, InstrumentationListEntry[]>();
 
   for (const instr of instrumentations) {
     const displayName = getInstrumentationDisplayName(instr);

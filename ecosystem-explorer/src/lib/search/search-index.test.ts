@@ -18,7 +18,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("@/lib/api/javaagent-data", () => ({
   loadVersions: vi.fn(),
-  loadAllInstrumentations: vi.fn(),
+  loadIndex: vi.fn(),
 }));
 
 vi.mock("@/lib/api/collector-data", () => ({
@@ -38,14 +38,17 @@ describe("search (orchestration)", () => {
     vi.mocked(javaagentData.loadVersions).mockResolvedValue({
       versions: [{ version: "1.2.3", is_latest: true }],
     });
-    vi.mocked(javaagentData.loadAllInstrumentations).mockResolvedValue([
-      {
-        name: "kafka-client",
-        display_name: "Kafka Client",
-        description: "Messaging instrumentation for Kafka",
-        scope: { name: "kafka" },
-      },
-    ]);
+    vi.mocked(javaagentData.loadIndex).mockResolvedValue({
+      ecosystem: "javaagent",
+      components: [
+        {
+          name: "kafka-client",
+          display_name: "Kafka Client",
+          description: "Messaging instrumentation for Kafka",
+          search_terms: ["Messaging instrumentation for Kafka"],
+        },
+      ],
+    });
 
     vi.mocked(collectorData.loadVersions).mockResolvedValue({
       versions: [{ version: "2.0.0", is_latest: true }],
@@ -140,14 +143,17 @@ describe("search (orchestration)", () => {
     vi.mocked(javaagentData.loadVersions)
       .mockRejectedValueOnce(new Error("ja down"))
       .mockResolvedValue({ versions: [{ version: "1.2.3", is_latest: true }] });
-    vi.mocked(javaagentData.loadAllInstrumentations).mockResolvedValue([
-      {
-        name: "kafka-client",
-        display_name: "Kafka Client",
-        description: "Messaging instrumentation for Kafka",
-        scope: { name: "kafka" },
-      },
-    ]);
+    vi.mocked(javaagentData.loadIndex).mockResolvedValue({
+      ecosystem: "javaagent",
+      components: [
+        {
+          name: "kafka-client",
+          display_name: "Kafka Client",
+          description: "Messaging instrumentation for Kafka",
+          search_terms: ["Messaging instrumentation for Kafka"],
+        },
+      ],
+    });
 
     const { search } = await import("./search-index");
 

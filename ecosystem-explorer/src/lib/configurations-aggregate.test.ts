@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 import { describe, it, expect } from "vitest";
-import type { InstrumentationData, InstrumentationModule } from "@/types/javaagent";
+import type { InstrumentationListEntry, InstrumentationModule } from "@/types/javaagent";
 import { aggregateConfigurations } from "./configurations-aggregate";
 
 function makeEntry(
   name: string,
-  configs: InstrumentationData["configurations"]
-): InstrumentationData {
+  configs: InstrumentationListEntry["configurations"]
+): InstrumentationListEntry {
   return {
     name,
     scope: { name: `io.opentelemetry.${name}` },
@@ -28,7 +28,10 @@ function makeEntry(
   };
 }
 
-function makeModule(name: string, coveredEntries: InstrumentationData[]): InstrumentationModule {
+function makeModule(
+  name: string,
+  coveredEntries: InstrumentationListEntry[]
+): InstrumentationModule {
   return { name, defaultDisabled: false, coveredEntries };
 }
 
