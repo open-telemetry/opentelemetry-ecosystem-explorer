@@ -12,7 +12,7 @@ libraries:
   minimum_java_version: 17
   scope:
     name: io.opentelemetry.activej-http-6.0
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - io.activej:activej-http:[6.0,)
@@ -130,7 +130,7 @@ libraries:
   source_path: instrumentation/akka/akka-http-10.0
   scope:
     name: io.opentelemetry.akka-http-10.0
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - com.typesafe.akka:akka-http_2.11:[10,)
@@ -759,7 +759,7 @@ libraries:
   source_path: instrumentation/apache-httpasyncclient-4.1
   scope:
     name: io.opentelemetry.apache-httpasyncclient-4.1
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - org.apache.httpcomponents:httpasyncclient:[4.1,)
@@ -889,7 +889,7 @@ libraries:
   source_path: instrumentation/apache-httpclient/apache-httpclient-2.0
   scope:
     name: io.opentelemetry.apache-httpclient-2.0
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - commons-httpclient:commons-httpclient:[2.0,4.0)
@@ -1015,7 +1015,7 @@ libraries:
   source_path: instrumentation/apache-httpclient/apache-httpclient-4.0
   scope:
     name: io.opentelemetry.apache-httpclient-4.0
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - io.dropwizard:dropwizard-client:(,3.0.0)
@@ -1146,7 +1146,7 @@ libraries:
   source_path: instrumentation/apache-httpclient/apache-httpclient-4.3
   scope:
     name: io.opentelemetry.apache-httpclient-4.3
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_standalone_library: true
   telemetry:
   - when: default
@@ -1199,7 +1199,7 @@ libraries:
   source_path: instrumentation/apache-httpclient/apache-httpclient-5.0
   scope:
     name: io.opentelemetry.apache-httpclient-5.0
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - org.apache.httpcomponents.client5:httpclient5:[5.0,)
@@ -1329,7 +1329,7 @@ libraries:
   source_path: instrumentation/apache-httpclient/apache-httpclient-5.2
   scope:
     name: io.opentelemetry.apache-httpclient-5.2
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_standalone_library: true
   telemetry:
   - when: default
@@ -1408,7 +1408,7 @@ libraries:
   source_path: instrumentation/armeria/armeria-1.3
   scope:
     name: io.opentelemetry.armeria-1.3
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_standalone_library: true
   has_javaagent: true
   javaagent_target_versions:
@@ -1720,7 +1720,7 @@ libraries:
   source_path: instrumentation/async-http-client/async-http-client-1.8
   scope:
     name: io.opentelemetry.async-http-client-1.8
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - com.ning:async-http-client:[1.8.0,1.9.0)
@@ -1841,7 +1841,7 @@ libraries:
   source_path: instrumentation/async-http-client/async-http-client-1.9
   scope:
     name: io.opentelemetry.async-http-client-1.9
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - com.ning:async-http-client:[1.9.0,)
@@ -1963,7 +1963,7 @@ libraries:
   source_path: instrumentation/async-http-client/async-http-client-2.0
   scope:
     name: io.opentelemetry.async-http-client-2.0
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - org.asynchttpclient:async-http-client:[2.0.0,)
@@ -3230,8 +3230,6 @@ libraries:
         type: STRING
       - name: network.peer.port
         type: LONG
-      - name: network.type
-        type: STRING
       - name: server.address
         type: STRING
       - name: server.port
@@ -3340,8 +3338,6 @@ libraries:
         type: STRING
       - name: network.peer.port
         type: LONG
-      - name: network.type
-        type: STRING
       - name: server.address
         type: STRING
       - name: server.port
@@ -3458,8 +3454,6 @@ libraries:
         type: STRING
       - name: network.peer.port
         type: LONG
-      - name: network.type
-        type: STRING
       - name: server.address
         type: STRING
       - name: server.port
@@ -4823,7 +4817,7 @@ libraries:
   source_path: instrumentation/google-http-client-1.19
   scope:
     name: io.opentelemetry.google-http-client-1.19
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - com.google.http-client:google-http-client:[1.19.0,)
@@ -5049,7 +5043,7 @@ libraries:
   source_path: instrumentation/grizzly-2.3
   scope:
     name: io.opentelemetry.grizzly-2.3
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - org.glassfish.grizzly:grizzly-http:[2.3,)
@@ -5610,7 +5604,7 @@ libraries:
   minimum_java_version: 21
   scope:
     name: io.opentelemetry.helidon-4.3
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_standalone_library: true
   has_javaagent: true
   javaagent_target_versions:
@@ -5753,7 +5747,7 @@ libraries:
     name: io.opentelemetry.hibernate-6.0
   has_javaagent: true
   javaagent_target_versions:
-  - org.hibernate:hibernate-core:[6.0.0.Final,)
+  - org.hibernate.orm:hibernate-core:[6.0.0.Final,)
   configurations:
   - name: otel.instrumentation.hibernate.experimental-span-attributes
     declarative_name: java.hibernate.experimental_span_attributes/development
@@ -5979,7 +5973,7 @@ libraries:
   source_path: instrumentation/http-url-connection
   scope:
     name: io.opentelemetry.http-url-connection
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - Java 8+
@@ -6265,7 +6259,7 @@ libraries:
   minimum_java_version: 11
   scope:
     name: io.opentelemetry.java-http-client
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_standalone_library: true
   has_javaagent: true
   javaagent_target_versions:
@@ -6357,7 +6351,7 @@ libraries:
   source_path: instrumentation/java-http-server
   scope:
     name: io.opentelemetry.java-http-server
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_standalone_library: true
   has_javaagent: true
   javaagent_target_versions:
@@ -7423,7 +7417,7 @@ libraries:
   source_path: instrumentation/jetty/jetty-8.0
   scope:
     name: io.opentelemetry.jetty-8.0
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - org.eclipse.jetty:jetty-server:[8.0.0.v20110901,11)
@@ -7511,7 +7505,7 @@ libraries:
   minimum_java_version: 11
   scope:
     name: io.opentelemetry.jetty-11.0
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - org.eclipse.jetty:jetty-server:[11, 12)
@@ -7599,7 +7593,7 @@ libraries:
   minimum_java_version: 17
   scope:
     name: io.opentelemetry.jetty-12.0
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - org.eclipse.jetty:jetty-server:[12,)
@@ -7686,7 +7680,7 @@ libraries:
   source_path: instrumentation/jetty-httpclient/jetty-httpclient-9.2
   scope:
     name: io.opentelemetry.jetty-httpclient-9.2
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_standalone_library: true
   has_javaagent: true
   javaagent_target_versions:
@@ -7818,7 +7812,7 @@ libraries:
   minimum_java_version: 17
   scope:
     name: io.opentelemetry.jetty-httpclient-12.0
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_standalone_library: true
   has_javaagent: true
   javaagent_target_versions:
@@ -8086,7 +8080,7 @@ libraries:
   source_path: instrumentation/jodd-http-4.2
   scope:
     name: io.opentelemetry.jodd-http-4.2
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - org.jodd:jodd-http:[4.1.1,)
@@ -8603,7 +8597,8 @@ libraries:
 - name: kotlinx-coroutines-1.0
   display_name: Kotlin Coroutines
   description: This instrumentation enables context propagation for Kotlin coroutines
-    and adds support for @WithSpan annotations on Kotlin suspend functions.
+    and adds support for @WithSpan annotations on Kotlin suspend functions by default
+    unless v3 preview mode is enabled.
   library_link: https://github.com/Kotlin/kotlinx.coroutines
   features:
   - CONTEXT_PROPAGATION
@@ -8639,7 +8634,7 @@ libraries:
   source_path: instrumentation/ktor/ktor-1.0
   scope:
     name: io.opentelemetry.ktor-1.0
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_standalone_library: true
   telemetry:
   - when: default
@@ -8727,7 +8722,7 @@ libraries:
   source_path: instrumentation/ktor/ktor-2.0
   scope:
     name: io.opentelemetry.ktor-2.0
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_standalone_library: true
   has_javaagent: true
   javaagent_target_versions:
@@ -8908,7 +8903,7 @@ libraries:
   source_path: instrumentation/ktor/ktor-3.0
   scope:
     name: io.opentelemetry.ktor-3.0
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_standalone_library: true
   has_javaagent: true
   javaagent_target_versions:
@@ -9175,7 +9170,7 @@ libraries:
   source_path: instrumentation/kubernetes-client-7.0
   scope:
     name: io.opentelemetry.kubernetes-client-7.0
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - io.kubernetes:client-java-api:[7.0.0,)
@@ -10425,7 +10420,7 @@ libraries:
   source_path: instrumentation/netty/netty-3.8
   scope:
     name: io.opentelemetry.netty-3.8
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - io.netty:netty:[3.8.0.Final,4)
@@ -10583,7 +10578,7 @@ libraries:
   source_path: instrumentation/netty/netty-4.0
   scope:
     name: io.opentelemetry.netty-4.0
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - io.netty:netty-all:[4.0.0.Final,4.1.0.Final)
@@ -10753,7 +10748,7 @@ libraries:
   source_path: instrumentation/netty/netty-4.1
   scope:
     name: io.opentelemetry.netty-4.1
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_standalone_library: true
   has_javaagent: true
   javaagent_target_versions:
@@ -10920,7 +10915,7 @@ libraries:
   source_path: instrumentation/okhttp/okhttp-2.2
   scope:
     name: io.opentelemetry.okhttp-2.2
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - com.squareup.okhttp:okhttp:[2.2,3)
@@ -11050,7 +11045,7 @@ libraries:
   source_path: instrumentation/okhttp/okhttp-3.0
   scope:
     name: io.opentelemetry.okhttp-3.0
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_standalone_library: true
   has_javaagent: true
   javaagent_target_versions:
@@ -11507,7 +11502,7 @@ libraries:
       attributes:
       - name: db.client.connection.pool.name
         type: STRING
-- name: oshi
+- name: oshi-5.0
   display_name: OSHI
   description: When the OSHI library is detected on the classpath, this instrumentation
     enables system metrics for memory, disk, and network operations.
@@ -11722,7 +11717,7 @@ libraries:
   source_path: instrumentation/pekko/pekko-http-1.0
   scope:
     name: io.opentelemetry.pekko-http-1.0
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - com.softwaremill.sttp.tapir:tapir-pekko-http-server_2.12:[1.7,)
@@ -11930,7 +11925,7 @@ libraries:
   source_path: instrumentation/play/play-ws/play-ws-1.0
   scope:
     name: io.opentelemetry.play-ws-1.0
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - com.typesafe.play:play-ahc-ws-standalone_2.11:[1.0.0,2.0.0)
@@ -12022,7 +12017,7 @@ libraries:
   source_path: instrumentation/play/play-ws/play-ws-2.0
   scope:
     name: io.opentelemetry.play-ws-2.0
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - com.typesafe.play:play-ahc-ws-standalone_2.11:[2.0.0,]
@@ -12115,7 +12110,7 @@ libraries:
   source_path: instrumentation/play/play-ws/play-ws-2.1
   scope:
     name: io.opentelemetry.play-ws-2.1
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - com.typesafe.play:play-ahc-ws-standalone_2.12:[2.1.0,]
@@ -12789,7 +12784,7 @@ libraries:
   source_path: instrumentation/ratpack/ratpack-1.7
   scope:
     name: io.opentelemetry.ratpack-1.7
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_standalone_library: true
   has_javaagent: true
   javaagent_target_versions:
@@ -13101,7 +13096,7 @@ libraries:
   source_path: instrumentation/reactor/reactor-netty/reactor-netty-1.0
   scope:
     name: io.opentelemetry.reactor-netty-1.0
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - io.projectreactor.netty:reactor-netty-http:[1.0.0,)
@@ -13272,6 +13267,35 @@ libraries:
         type: LONG
       - name: network.type
         type: STRING
+  - when: otel.semconv-stability.opt-in=database
+    metrics:
+    - name: db.client.operation.duration
+      description: Duration of database client operations.
+      instrument: histogram
+      data_type: HISTOGRAM
+      unit: s
+      attributes:
+      - name: db.operation.name
+        type: STRING
+      - name: db.system.name
+        type: STRING
+      - name: network.peer.address
+        type: STRING
+      - name: network.peer.port
+        type: LONG
+    spans:
+    - span_kind: CLIENT
+      attributes:
+      - name: db.operation.name
+        type: STRING
+      - name: db.query.text
+        type: STRING
+      - name: db.system.name
+        type: STRING
+      - name: network.peer.address
+        type: STRING
+      - name: network.peer.port
+        type: LONG
 - name: redisson-3.17
   display_name: Redisson
   description: This instrumentation enables database client spans and database client
@@ -13356,7 +13380,7 @@ libraries:
   source_path: instrumentation/restlet/restlet-1.1
   scope:
     name: io.opentelemetry.restlet-1.1
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_standalone_library: true
   has_javaagent: true
   javaagent_target_versions:
@@ -13450,7 +13474,7 @@ libraries:
   source_path: instrumentation/restlet/restlet-2.0
   scope:
     name: io.opentelemetry.restlet-2.0
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_standalone_library: true
   has_javaagent: true
   javaagent_target_versions:
@@ -15035,7 +15059,7 @@ libraries:
   source_path: instrumentation/spring/spring-web/spring-web-3.1
   scope:
     name: io.opentelemetry.spring-web-3.1
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_standalone_library: true
   telemetry:
   - when: default
@@ -15133,7 +15157,7 @@ libraries:
   source_path: instrumentation/spring/spring-webflux/spring-webflux-5.0
   scope:
     name: io.opentelemetry.spring-webflux-5.0
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - io.projectreactor.ipc:reactor-netty:[0.7.0.RELEASE,)
@@ -15238,7 +15262,7 @@ libraries:
   source_path: instrumentation/spring/spring-webflux/spring-webflux-5.3
   scope:
     name: io.opentelemetry.spring-webflux-5.3
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_standalone_library: true
   telemetry:
   - when: default
@@ -15453,7 +15477,7 @@ libraries:
   source_path: instrumentation/spring/spring-webmvc/spring-webmvc-5.3
   scope:
     name: io.opentelemetry.spring-webmvc-5.3
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_standalone_library: true
   telemetry:
   - when: default
@@ -15785,7 +15809,7 @@ libraries:
   source_path: instrumentation/tomcat/tomcat-7.0
   scope:
     name: io.opentelemetry.tomcat-7.0
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - org.apache.tomcat.embed:tomcat-embed-core:[7.0.4, 10)
@@ -15889,7 +15913,7 @@ libraries:
   source_path: instrumentation/tomcat/tomcat-10.0
   scope:
     name: io.opentelemetry.tomcat-10.0
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - org.apache.tomcat.embed:tomcat-embed-core:[10,)
@@ -16141,7 +16165,7 @@ libraries:
   source_path: instrumentation/undertow-1.4
   scope:
     name: io.opentelemetry.undertow-1.4
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - io.undertow:undertow-core:[1.4.0.Final,)
@@ -16251,7 +16275,7 @@ libraries:
   source_path: instrumentation/vertx/vertx-http-client/vertx-http-client-3.0
   scope:
     name: io.opentelemetry.vertx-http-client-3.0
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - io.vertx:vertx-core:[3.0.0,4.0.0)
@@ -16369,7 +16393,7 @@ libraries:
   source_path: instrumentation/vertx/vertx-http-client/vertx-http-client-4.0
   scope:
     name: io.opentelemetry.vertx-http-client-4.0
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - io.vertx:vertx-core:[4.0.0,5)
@@ -16508,7 +16532,7 @@ libraries:
   minimum_java_version: 11
   scope:
     name: io.opentelemetry.vertx-http-client-5.0
-    schema_url: https://opentelemetry.io/schemas/1.37.0
+    schema_url: https://opentelemetry.io/schemas/1.41.0
   has_javaagent: true
   javaagent_target_versions:
   - io.vertx:vertx-core:[5.0.0,)
