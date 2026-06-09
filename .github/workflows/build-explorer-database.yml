@@ -50,31 +50,29 @@ jobs:
             echo "is_primary=false" >> $GITHUB_OUTPUT
           fi
 
-      # Mint the otelbot App token BEFORE checkout so it can be persisted as the
-      # git credential. Pushes authenticated with the App token trigger
-      # downstream workflows (e.g. CodeQL on the PR); pushes authenticated with
-      # the default GITHUB_TOKEN do not, which previously left automated-update
-      # PRs blocked waiting for code-scanning results after a branch update.
+      # Mint the otelbot App token for the PR operations below (create / edit /
+      # close-reopen). The otelbot App installed on this repo only holds
+      # `pull-requests: write` and has no `contents: write`, so it cannot push.
+      # The branch push therefore authenticates as GITHUB_TOKEN; we re-trigger
+      # the required checks afterwards by closing and reopening the PR with this
+      # App token (see the "Commit and push changes" step).
       - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         if: steps.repo_check.outputs.is_primary == 'true'
         id: otelbot-token
         with:
-          app-id: ${{ vars.OTELBOT_APP_ID }}
+          client-id: ${{ vars.OTELBOT_APP_ID }}
           private-key: ${{ secrets.OTELBOT_PRIVATE_KEY }}
           repositories: ${{ github.event.repository.name }}
-          permission-contents: write # Push the generated database to the update branch
-          permission-pull-requests: write # Create or update the automated PR
+          permission-pull-requests: write # Create / edit / reopen the automated PR
 
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          # On the primary repo, persist the otelbot App token so the later
-          # `git push -f origin HEAD:${BRANCH}` authenticates as the App and
-          # triggers downstream workflows. Forks have no App secret and fall
-          # back to GITHUB_TOKEN.
-          token:
-            ${{ steps.repo_check.outputs.is_primary == 'true' && steps.otelbot-token.outputs.token
-            || secrets.GITHUB_TOKEN }}
+          # Persist GITHUB_TOKEN as the git credential for the branch push. A
+          # push authenticated with GITHUB_TOKEN does not start workflows, so the
+          # "Commit and push changes" step re-triggers the required checks on the
+          # new head by closing/reopening the PR with the otelbot App token.
+          token: ${{ secrets.GITHUB_TOKEN }}
           persist-credentials: true
 
       - name: Configure git (primary repository)
@@ -182,6 +180,14 @@ jobs:
                 exit 1
               fi
               gh pr edit "$PR_NUMBER" --title "${PR_TITLE}" --body "${PR_BODY}"
+              # The force-push above is authenticated with GITHUB_TOKEN, which
+              # does not start workflows, so CodeQL never re-runs for the new
+              # head and the PR stays blocked on the "Code scanning results"
+              # merge rule. Closing and reopening the PR with the otelbot App
+              # token emits a `pull_request: reopened` event that re-runs the
+              # required checks against the updated head.
+              gh pr close "$PR_NUMBER"
+              gh pr reopen "$PR_NUMBER"
             else
               echo "Failed to create PR"
               cat pr-output.txt
