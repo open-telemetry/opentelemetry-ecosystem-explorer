@@ -201,7 +201,15 @@ describe("InstrumentationRow — expansion", () => {
   const baseModule = {
     name: "cassandra",
     defaultDisabled: false,
-    coveredEntries: [{ name: "cassandra-4.4", scope: { name: "io.opentelemetry.cassandra-4.4" } }],
+    coveredEntries: [
+      {
+        name: "cassandra-4.4",
+        scope: { name: "io.opentelemetry.cassandra-4.4" },
+        has_spans: false,
+        has_metrics: false,
+        _is_custom: false,
+      },
+    ],
   };
 
   it("calls onToggleExpand when the toggle button is clicked", async () => {

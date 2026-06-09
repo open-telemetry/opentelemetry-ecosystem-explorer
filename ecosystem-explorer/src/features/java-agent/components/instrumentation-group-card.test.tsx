@@ -53,6 +53,8 @@ describe("InstrumentationGroupCard", () => {
           scope: { name: "jdbc" },
           has_standalone_library: true,
           has_metrics: true,
+          has_spans: false,
+          _is_custom: false,
         },
       ],
     };
@@ -88,6 +90,8 @@ describe("InstrumentationGroupCard", () => {
           scope: { name: "io.opentelemetry.apache-httpclient-4.0" },
           has_javaagent: true,
           has_spans: true,
+          has_metrics: false,
+          _is_custom: false,
         },
         {
           name: "apache-httpclient-5.0",
@@ -98,6 +102,7 @@ describe("InstrumentationGroupCard", () => {
           has_standalone_library: true,
           has_spans: true,
           has_metrics: true,
+          _is_custom: false,
         },
       ],
     };
@@ -252,8 +257,20 @@ describe("InstrumentationGroupCard", () => {
     const bareGroup: InstrumentationGroup = {
       displayName: "Bare Group",
       instrumentations: [
-        { name: "bare-1.0", scope: { name: "bare" } },
-        { name: "bare-2.0", scope: { name: "bare" } },
+        {
+          name: "bare-1.0",
+          scope: { name: "bare" },
+          has_spans: false,
+          has_metrics: false,
+          _is_custom: false,
+        },
+        {
+          name: "bare-2.0",
+          scope: { name: "bare" },
+          has_spans: false,
+          has_metrics: false,
+          _is_custom: false,
+        },
       ],
     };
 

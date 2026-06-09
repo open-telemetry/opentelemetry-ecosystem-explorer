@@ -42,6 +42,9 @@ function makeModule(name: string, declarativeNames: string[]): InstrumentationMo
       {
         name: `${name}-x`,
         scope: { name: `io.opentelemetry.${name}` },
+        has_spans: false,
+        has_metrics: false,
+        _is_custom: false,
         configurations: declarativeNames.map((d) => ({
           name: "otel.x",
           declarative_name: d,

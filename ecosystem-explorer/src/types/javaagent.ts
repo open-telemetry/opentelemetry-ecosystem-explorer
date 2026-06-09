@@ -148,12 +148,19 @@ export interface InstrumentationListEntry {
   configurations?: Configuration[];
   /** Whether this instrumentation is disabled by default. */
   disabled_by_default?: boolean;
-  /** Precomputed: whether any telemetry block emits spans. */
-  has_spans?: boolean;
-  /** Precomputed: whether any telemetry block emits metrics. */
-  has_metrics?: boolean;
-  /** Whether this is a custom (non-upstream) instrumentation. */
-  _is_custom?: boolean;
+  /**
+   * Precomputed: whether any telemetry block emits spans. Required — both the
+   * bundle producer (`make_list_instrumentation`) and the fan-out projection
+   * (`toListEntry`) always set it, so consumers never handle `undefined`.
+   */
+  has_spans: boolean;
+  /** Precomputed: whether any telemetry block emits metrics. Always set; see `has_spans`. */
+  has_metrics: boolean;
+  /**
+   * Whether this is a custom (non-upstream) instrumentation. Required so the
+   * library/custom split (`!entry._is_custom`) can't silently misclassify.
+   */
+  _is_custom: boolean;
 }
 
 /**

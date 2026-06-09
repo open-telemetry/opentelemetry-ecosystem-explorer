@@ -25,6 +25,9 @@ function makeEntry(
     name,
     scope: { name: `io.opentelemetry.${name}` },
     configurations: configs,
+    has_spans: false,
+    has_metrics: false,
+    _is_custom: false,
   };
 }
 

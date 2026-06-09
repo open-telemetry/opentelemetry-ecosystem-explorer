@@ -20,7 +20,13 @@ import type { InstrumentationListEntry } from "@/types/javaagent";
 function makeInstr(
   overrides: Partial<InstrumentationListEntry> & { name: string }
 ): InstrumentationListEntry {
-  return { scope: { name: "test" }, ...overrides };
+  return {
+    scope: { name: "test" },
+    has_spans: false,
+    has_metrics: false,
+    _is_custom: false,
+    ...overrides,
+  };
 }
 
 describe("getBadgeInfo", () => {

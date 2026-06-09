@@ -262,6 +262,9 @@ describe("InstrumentationBrowser — expansion and customization filter", () => 
     {
       name: "cassandra-4.4",
       scope: { name: "io.opentelemetry.cassandra-4.4" },
+      has_spans: false,
+      has_metrics: false,
+      _is_custom: false,
       configurations: [
         {
           name: "x",
@@ -274,8 +277,20 @@ describe("InstrumentationBrowser — expansion and customization filter", () => 
     },
   ];
   const twoModules = [
-    { name: "cassandra-4.4", scope: { name: "io.opentelemetry.cassandra-4.4" } },
-    { name: "graphql-java-20.0", scope: { name: "io.opentelemetry.graphql-java-20.0" } },
+    {
+      name: "cassandra-4.4",
+      scope: { name: "io.opentelemetry.cassandra-4.4" },
+      has_spans: false,
+      has_metrics: false,
+      _is_custom: false,
+    },
+    {
+      name: "graphql-java-20.0",
+      scope: { name: "io.opentelemetry.graphql-java-20.0" },
+      has_spans: false,
+      has_metrics: false,
+      _is_custom: false,
+    },
   ];
 
   it("expands a row when its toggle button is clicked", async () => {

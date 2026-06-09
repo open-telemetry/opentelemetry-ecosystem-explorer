@@ -157,7 +157,7 @@ function toListEntry(instr: InstrumentationData): InstrumentationListEntry {
     disabled_by_default: instr.disabled_by_default,
     has_spans: instr.telemetry?.some((t) => (t.spans?.length ?? 0) > 0) ?? false,
     has_metrics: instr.telemetry?.some((t) => (t.metrics?.length ?? 0) > 0) ?? false,
-    _is_custom: instr._is_custom,
+    _is_custom: instr._is_custom ?? false,
   };
 }
 

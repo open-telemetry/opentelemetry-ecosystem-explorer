@@ -45,6 +45,9 @@ describe("InstrumentationCard", () => {
     scope: {
       name: "test",
     },
+    has_spans: false,
+    has_metrics: false,
+    _is_custom: false,
   };
 
   it("renders instrumentation display name", () => {
