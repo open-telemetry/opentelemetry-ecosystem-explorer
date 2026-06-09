@@ -15,6 +15,7 @@
  */
 import { useState } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Info, ExternalLink, AlertCircle, Check } from "lucide-react";
 import { Loader } from "@/components/ui/loader";
 import { GitHubIcon } from "@/components/icons/github-icon";
@@ -26,89 +27,6 @@ import { DetailCard } from "@/components/ui/detail-card";
 import { SectionHeader } from "@/components/ui/section-header";
 import { PageContainer } from "@/components/layout/page-container";
 import { useCollectorComponent, useCollectorVersions } from "@/hooks/use-collector-data";
-
-const COMPONENT_TYPE_DESCRIPTIONS: Record<string, string> = {
-  receiver: "Receivers collect telemetry data from various sources and formats.",
-  processor:
-    "Processors transform, filter, or enrich telemetry data between receivers and exporters.",
-  exporter: "Exporters send telemetry data to one or more backends or destinations.",
-  extension:
-    "Extensions provide additional capabilities to the collector without processing telemetry data.",
-  connector: "Connectors act as both an exporter and a receiver, joining two pipelines together.",
-};
-
-const STABILITY_DEFINITIONS: Record<string, { label: string; desc: string; color: string }> = {
-  development: {
-    label: "Development",
-    desc: "Not all pieces of the component are in place yet. The component should not be used in production.",
-    color: "text-blue-500",
-  },
-  alpha: {
-    label: "Alpha",
-    desc: "The component is ready to be used for limited non-critical workloads and the authors of this component would welcome your feedback.",
-    color: "text-purple-500",
-  },
-  beta: {
-    label: "Beta",
-    desc: "Same as Alpha, but the configuration options are deemed stable. Suitable for broader usage.",
-    color: "text-green-500",
-  },
-  stable: {
-    label: "Stable",
-    desc: "The component is ready for general availability. Breaking changes are not expected to happen without prior notice.",
-    color: "text-emerald-600 dark:text-emerald-500",
-  },
-  deprecated: {
-    label: "Deprecated",
-    desc: "The component is planned to be removed in a future version and no further support will be provided.",
-    color: "text-red-500",
-  },
-  unmaintained: {
-    label: "Unmaintained",
-    desc: "The component is no longer actively maintained. New issues will likely not be worked on.",
-    color: "text-red-600",
-  },
-};
-
-const getDistributionInfo = (distroName: string) => {
-  const lower = distroName.toLowerCase();
-  if (lower.includes("contrib")) {
-    return {
-      name: "OpenTelemetry Collector Contrib",
-      desc: "The community-driven distribution containing third-party plugins, specialized receivers, and experimental components.",
-      cmdLabel: "# Docker",
-      cmd: "docker pull otel/opentelemetry-collector-contrib:latest",
-      url: "https://github.com/open-telemetry/opentelemetry-collector-contrib",
-    };
-  }
-  if (lower.includes("core")) {
-    return {
-      name: "OpenTelemetry Collector Core",
-      desc: "The core distribution containing only the most essential, officially supported telemetry components.",
-      cmdLabel: "# Docker",
-      cmd: "docker pull otel/opentelemetry-collector:latest",
-      url: "https://github.com/open-telemetry/opentelemetry-collector",
-    };
-  }
-
-  if (lower === "k8s" || lower.includes("kubernetes")) {
-    return {
-      name: "OpenTelemetry Operator for Kubernetes",
-      desc: "The official Kubernetes Operator designed to manage and provision the OpenTelemetry Collector.",
-      cmdLabel: "# kubectl",
-      cmd: "kubectl apply -f https://github.com/open-telemetry/opentelemetry-operator/releases/latest/download/opentelemetry-operator.yaml",
-      url: "https://github.com/open-telemetry/opentelemetry-operator",
-    };
-  }
-
-  return {
-    name: distroName,
-    desc: "A specialized OpenTelemetry distribution.",
-    cmdLabel: null,
-    cmd: null,
-    url: "https://opentelemetry.io/docs/collector/installation/",
-  };
-};
 
 const getBadgeVariant = (level: string): "success" | "info" | "warning" | "muted" => {
   const lower = level.toLowerCase();
@@ -126,6 +44,7 @@ const getBadgeVariant = (level: string): "success" | "info" | "warning" | "muted
 };
 
 export function CollectorDetailPage() {
+  const { t } = useTranslation("collector");
   const { distribution, name } = useParams<{ distribution: string; name: string }>();
 
   const [searchParams] = useSearchParams();
@@ -143,10 +62,51 @@ export function CollectorDetailPage() {
   } = useCollectorComponent(distribution ?? "", name ?? "", version);
   const [activeTab, setActiveTab] = useState("details");
 
+  const getStabilityLabel = (level: string) =>
+    t(`detail.stabilityLabels.${level.toLowerCase()}`, { defaultValue: level });
+
+  const getDistributionInfo = (distroName: string) => {
+    const lower = distroName.toLowerCase();
+    if (lower.includes("contrib")) {
+      return {
+        name: t("detail.distributions.contrib.name"),
+        desc: t("detail.distributions.contrib.desc"),
+        cmdLabel: "# Docker",
+        cmd: "docker pull otel/opentelemetry-collector-contrib:latest",
+        url: "https://github.com/open-telemetry/opentelemetry-collector-contrib",
+      };
+    }
+    if (lower.includes("core")) {
+      return {
+        name: t("detail.distributions.core.name"),
+        desc: t("detail.distributions.core.desc"),
+        cmdLabel: "# Docker",
+        cmd: "docker pull otel/opentelemetry-collector:latest",
+        url: "https://github.com/open-telemetry/opentelemetry-collector",
+      };
+    }
+    if (lower === "k8s" || lower.includes("kubernetes")) {
+      return {
+        name: t("detail.distributions.k8s.name"),
+        desc: t("detail.distributions.k8s.desc"),
+        cmdLabel: "# kubectl",
+        cmd: "kubectl apply -f https://github.com/open-telemetry/opentelemetry-operator/releases/latest/download/opentelemetry-operator.yaml",
+        url: "https://github.com/open-telemetry/opentelemetry-operator",
+      };
+    }
+    return {
+      name: distroName,
+      desc: t("detail.distributions.generic.desc"),
+      cmdLabel: null,
+      cmd: null,
+      url: "https://opentelemetry.io/docs/collector/installation/",
+    };
+  };
+
   if (loading || versionLoading) {
     return (
       <PageContainer>
-        <Loader label="Loading component..." />
+        <Loader label={t("detail.loading.title")} />
       </PageContainer>
     );
   }
@@ -164,16 +124,16 @@ export function CollectorDetailPage() {
               />
               <div className="flex-1 space-y-2">
                 <h3 className="font-semibold text-red-600 dark:text-red-400">
-                  Error loading component
+                  {t("detail.error.title")}
                 </h3>
                 <p className="text-sm text-red-600/90 dark:text-red-400/90">
-                  {error?.message || "Component not found"}
+                  {error?.message || t("detail.error.fallback")}
                 </p>
                 <button
                   onClick={() => navigate(-1)}
                   className="text-sm font-medium text-red-600 hover:underline dark:text-red-400"
                 >
-                  Go back
+                  {t("detail.error.goBack")}
                 </button>
               </div>
             </div>
@@ -198,6 +158,8 @@ export function CollectorDetailPage() {
   const activeStabilityLevels = component.status?.stability
     ? Object.keys(component.status.stability)
     : [];
+
+  const typeDesc = t(`detail.typeDescriptions.${component.type}`, { defaultValue: "" });
 
   return (
     <PageContainer>
@@ -251,12 +213,12 @@ export function CollectorDetailPage() {
                 tabs={[
                   {
                     value: "details",
-                    label: "Details",
+                    label: t("detail.tabs.details"),
                     icon: <Info className="h-4 w-4" aria-hidden="true" />,
                   },
                   {
                     value: "status",
-                    label: "Stability",
+                    label: t("detail.tabs.stability"),
                     icon: <Check className="h-4 w-4" aria-hidden="true" />,
                   },
                 ]}
@@ -268,11 +230,11 @@ export function CollectorDetailPage() {
                 <DetailCard withGrid>
                   <div className="space-y-4">
                     <h3 className="border-border/50 mb-4 border-b pb-2 text-lg font-semibold">
-                      Component Info
+                      {t("detail.sections.componentInfo")}
                     </h3>
                     <div>
                       <h4 className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-                        Type
+                        {t("detail.labels.type")}
                       </h4>
                       <div className="mt-1 flex items-start gap-2 text-sm">
                         <Check
@@ -281,23 +243,21 @@ export function CollectorDetailPage() {
                         />
                         <div>
                           <span className="font-medium capitalize">{component.type}</span>
-                          {COMPONENT_TYPE_DESCRIPTIONS[component.type] && (
-                            <p className="text-muted-foreground mt-0.5 text-xs">
-                              {COMPONENT_TYPE_DESCRIPTIONS[component.type]}
-                            </p>
+                          {typeDesc && (
+                            <p className="text-muted-foreground mt-0.5 text-xs">{typeDesc}</p>
                           )}
                         </div>
                       </div>
                     </div>
                     <div>
                       <h4 className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-                        Version
+                        {t("detail.labels.version")}
                       </h4>
                       <p className="mt-1 text-sm font-medium">{version}</p>
                     </div>
                     <div>
                       <h4 className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-                        Distribution
+                        {t("detail.labels.distribution")}
                       </h4>
                       <p className="mt-1 text-sm font-medium capitalize">
                         {component.distribution}
@@ -309,7 +269,7 @@ export function CollectorDetailPage() {
                 <DetailCard>
                   <div className="space-y-4">
                     <h3 className="border-border/50 mb-4 border-b pb-2 text-lg font-semibold">
-                      Links & Resources
+                      {t("detail.sections.linksResources")}
                     </h3>
                     <a
                       href={`https://github.com/open-telemetry/${component.repository}/tree/main/${component.type}/${component.name}`}
@@ -319,8 +279,10 @@ export function CollectorDetailPage() {
                     >
                       <GitHubIcon className="text-secondary h-5 w-5 transition-transform group-hover:scale-110" />
                       <div>
-                        <p className="text-sm font-medium">Source Code</p>
-                        <p className="text-muted-foreground text-xs">View on GitHub</p>
+                        <p className="text-sm font-medium">{t("detail.links.sourceCode")}</p>
+                        <p className="text-muted-foreground text-xs">
+                          {t("detail.links.viewOnGithub")}
+                        </p>
                       </div>
                       <ExternalLink className="text-muted-foreground ml-auto h-4 w-4" />
                     </a>
@@ -333,7 +295,7 @@ export function CollectorDetailPage() {
               {component.status ? (
                 <div className="space-y-10">
                   <div className="space-y-6">
-                    <SectionHeader>Stability Levels</SectionHeader>
+                    <SectionHeader>{t("detail.sections.stabilityLevels")}</SectionHeader>
                     <div className="border-border/60 bg-card overflow-x-auto rounded-lg border shadow-sm">
                       <table className="w-full text-left text-sm">
                         <thead className="bg-muted/30">
@@ -360,7 +322,7 @@ export function CollectorDetailPage() {
                                       variant={getBadgeVariant(level)}
                                       className="text-xs capitalize"
                                     >
-                                      {level}
+                                      {getStabilityLabel(level)}
                                     </GlowBadge>
                                   ) : (
                                     <span className="text-muted-foreground/50 font-mono">-</span>
@@ -376,11 +338,15 @@ export function CollectorDetailPage() {
 
                   {activeStabilityLevels.length > 0 && (
                     <div className="space-y-4">
-                      <h4 className="text-lg font-semibold">Stability Legend</h4>
+                      <h4 className="text-lg font-semibold">
+                        {t("detail.sections.stabilityLegend")}
+                      </h4>
                       <div className="grid gap-4 md:grid-cols-2">
                         {activeStabilityLevels.map((level) => {
-                          const def = STABILITY_DEFINITIONS[level.toLowerCase()];
-                          if (!def) return null;
+                          const desc = t(`detail.stabilityDescriptions.${level.toLowerCase()}`, {
+                            defaultValue: "",
+                          });
+                          if (!desc) return null;
                           return (
                             <div
                               key={level}
@@ -390,9 +356,9 @@ export function CollectorDetailPage() {
                                 variant={getBadgeVariant(level)}
                                 className="w-fit text-xs capitalize"
                               >
-                                {level}
+                                {getStabilityLabel(level)}
                               </GlowBadge>
-                              <p className="text-muted-foreground mt-2 text-sm">{def.desc}</p>
+                              <p className="text-muted-foreground mt-2 text-sm">{desc}</p>
                             </div>
                           );
                         })}
@@ -404,9 +370,11 @@ export function CollectorDetailPage() {
                   {component.status.distributions && component.status.distributions.length > 0 ? (
                     <div className="space-y-6">
                       <div>
-                        <SectionHeader>Distribution Availability</SectionHeader>
+                        <SectionHeader>
+                          {t("detail.sections.distributionAvailability")}
+                        </SectionHeader>
                         <p className="text-muted-foreground mt-2 text-sm">
-                          This component is packaged within the following distributions:
+                          {t("detail.distributions.packaged")}
                         </p>
                       </div>
 
@@ -444,7 +412,8 @@ export function CollectorDetailPage() {
                                     rel="noopener noreferrer"
                                     className="text-primary inline-flex items-center gap-1 text-sm font-medium hover:underline"
                                   >
-                                    View Documentation <ExternalLink className="h-3 w-3" />
+                                    {t("detail.links.viewDocumentation")}{" "}
+                                    <ExternalLink className="h-3 w-3" />
                                   </a>
                                 )}
                               </div>
@@ -455,10 +424,10 @@ export function CollectorDetailPage() {
                     </div>
                   ) : (
                     <div className="space-y-6">
-                      <SectionHeader>Distribution Availability</SectionHeader>
+                      <SectionHeader>{t("detail.sections.distributionAvailability")}</SectionHeader>
                       <div className="border-border/60 bg-card flex items-center justify-center rounded-lg border p-8 shadow-sm">
                         <p className="text-muted-foreground text-sm">
-                          No distribution information is currently available for this component.
+                          {t("detail.distributions.noInfo")}
                         </p>
                       </div>
                     </div>
@@ -467,9 +436,7 @@ export function CollectorDetailPage() {
               ) : (
                 <div className="py-12 text-center">
                   <AlertCircle className="text-muted-foreground/30 mx-auto h-12 w-12" />
-                  <p className="text-muted-foreground mt-4">
-                    No stability information available for this version.
-                  </p>
+                  <p className="text-muted-foreground mt-4">{t("detail.noStability")}</p>
                 </div>
               )}
             </TabsContent>
