@@ -5,27 +5,20 @@
   internalChecksFilter: "strict",
   labels: ["dependencies"],
   schedule: ["before 8am on Monday"],
-
   lockFileMaintenance: {
     enabled: true,
     schedule: ["before 4am on Monday"],
   },
-
   packageRules: [
-    // Pre-commit hooks (digest-pin to commit SHA for supply chain hardening)
     {
       matchManagers: ["pre-commit"],
       pinDigests: true,
     },
   ],
-
-  // The Bun version is consolidated into `.bun-version` (read by all workflows
-  // via setup-bun's `bun-version-file`) plus a mirrored literal in netlify.toml
-  // (Netlify can't read a version file). These custom managers keep both bumped from oven-sh/bun releases (tagged `bun-v<semver>`).
   customManagers: [
     {
       customType: "regex",
-      fileMatch: ["^\\.bun-version$"],
+      managerFilePatterns: ["/^\\.bun-version$/"],
       matchStrings: ["(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
       depNameTemplate: "oven-sh/bun",
       datasourceTemplate: "github-releases",
@@ -33,7 +26,7 @@
     },
     {
       customType: "regex",
-      fileMatch: ["(^|/)netlify\\.toml$"],
+      managerFilePatterns: ["/(^|/)netlify\\.toml$/"],
       matchStrings: ['BUN_VERSION\\s*=\\s*"(?<currentValue>[^"]+)"'],
       depNameTemplate: "oven-sh/bun",
       datasourceTemplate: "github-releases",
