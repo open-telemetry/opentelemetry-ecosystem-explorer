@@ -53,7 +53,7 @@ def apply_declarative_name_corrections(inventory: dict[str, Any]) -> dict[str, A
                     continue
                 original_name = config.get("declarative_name")
                 corrected = DECLARATIVE_NAME_CORRECTIONS.get(original_name)
-                
+
                 if corrected is not None:
                     config["declarative_name"] = corrected
                     logger.debug(

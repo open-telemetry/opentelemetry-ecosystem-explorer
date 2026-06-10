@@ -116,7 +116,10 @@ export interface Configuration {
   declarative_schema?: {
     type: "object";
     required?: string[];
-    properties: Record<string, { type: string; description?: string; default?: unknown }>;
+    properties: Record<
+      string,
+      { type: "string" | "boolean" | "number" | "integer"; description?: string; default?: unknown }
+    >;
   };
 }
 

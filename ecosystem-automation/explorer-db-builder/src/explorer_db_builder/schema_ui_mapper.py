@@ -37,10 +37,6 @@ def _generate_label(key: str) -> str:
 
 def _classify_node(node: dict[str, Any]) -> str:
     """Classify a schema node into a UI control type."""
-
-    if node.get("declarative_type") == "structured_list":
-        return "list"
-
     if "$circular_ref" in node:
         return "circular_ref"
 
@@ -166,11 +162,7 @@ def _map_node(
         ]
 
     elif control_type == "list":
-        if node.get("declarative_type") == "structured_list":
-            items = node.get("declarative_schema", {})
-        else:
-            items = node.get("items", {})
-
+        items = node.get("items", {})
         if isinstance(items, dict):
             result["itemSchema"] = _map_node(items, "item", path, set())
 
