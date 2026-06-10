@@ -31,6 +31,7 @@
  * - release-card.css — v1 ecosystem-landing release card (`.td-release-card*`)
  * - home.css         — v1 home page wrapper + shared `td-box`/`td-two-col` chrome
  * - pipeline-anatomy.css — v1 ecosystem-landing pipeline strip (`.td-pipeline-anatomy*`, `.td-pipeline-stage*`)
+ * - quick-entry-row.css — v1 ecosystem-landing quick-entry row (`.td-quick-entry*`)
  * - cncf-callout.css — sitewide CNCF band above the footer
  * - footer.css       — v1 footer (`.td-footer`) — mirrors opentelemetry.io
  *
@@ -53,5 +54,6 @@
 @import "./release-card.css";
 @import "./home.css";
 @import "./pipeline-anatomy.css";
+@import "./quick-entry-row.css";
 @import "./cncf-callout.css";
 @import "./footer.css";

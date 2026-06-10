@@ -26,11 +26,14 @@
  * FooterV1 + CncfCallout), add its primitive to the relevant section.
  */
 
+import { GitCompare, LayoutGrid, Split } from "lucide-react";
+
 import { GlowBadge } from "@/components/ui/glow-badge";
 import { StabilityBadge } from "@/components/ui/stability-badge";
 import { type Stability, StatusPill } from "@/components/ui/status-pill";
 import { ReleaseCard } from "@/v1/components/ecosystem/release-card";
 import { type PipelineStage, PipelineAnatomy } from "@/v1/components/ecosystem/pipeline-anatomy";
+import { QuickEntryRow } from "@/v1/components/ecosystem/quick-entry-row";
 import { CoverBlock } from "@/v1/components/home/cover-block";
 import { EcosystemsGrid } from "@/v1/components/home/ecosystems-grid";
 import { GlobalSearch } from "@/v1/components/home/global-search";
@@ -339,6 +342,39 @@ export function DevComponentsPage() {
           lead="Semantic groupings rather than an ordered pipeline."
           stages={CATEGORY_STAGES}
           noFlow
+        />
+      </Section>
+
+      <Section
+        id="quick-entry-row"
+        title="QuickEntryRow (ecosystem-landing shortcut cards, internal + external)"
+        bare
+      >
+        <QuickEntryRow
+          items={[
+            {
+              id: "most-used",
+              title: "Most-used components",
+              description: "Jump to the components the ecosystem leans on most.",
+              href: "/collector/components?sort=updated",
+              icon: <LayoutGrid aria-hidden focusable="false" />,
+            },
+            {
+              id: "diff-versions",
+              title: "Diff across versions",
+              description: "Compare what changed between two registry snapshots.",
+              href: "/collector/components?compare=true",
+              icon: <GitCompare aria-hidden focusable="false" />,
+            },
+            {
+              id: "core-contrib",
+              title: "Core vs. Contrib",
+              description: "Understand the split between core and contrib distributions.",
+              href: "https://opentelemetry.io/",
+              external: true,
+              icon: <Split aria-hidden focusable="false" />,
+            },
+          ]}
         />
       </Section>
 

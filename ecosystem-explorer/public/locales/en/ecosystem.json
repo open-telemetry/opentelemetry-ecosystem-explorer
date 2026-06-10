@@ -12,5 +12,8 @@
   "pipelineAnatomy": {
     "defaultTitle": "Pipeline anatomy",
     "stageAriaLabel": "{{label}} — {{count}} components"
+  },
+  "quickEntry": {
+    "defaultTitle": "Quick entries"
   }
 }
