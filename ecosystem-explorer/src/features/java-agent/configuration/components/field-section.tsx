@@ -15,6 +15,7 @@
  */
 /* eslint-disable react-refresh/only-export-components -- compound component pattern: FieldSection is a compound (Object.assign) and useFieldSectionCanAdd is a thin context-reader hook, both legitimately co-located. */
 import { createContext, useContext, useId, useState, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronDown, ChevronRight } from "lucide-react";
 import type { ConfigNodeBase, Constraints } from "@/types/configuration";
 import type { ConfigValue } from "@/types/configuration-builder";
@@ -153,6 +154,7 @@ function Label() {
 }
 
 function Chevron() {
+  const { t } = useTranslation("java-agent");
   const { node, open, setOpen, bodyId } = useFieldSection();
   const Icon = open ? ChevronDown : ChevronRight;
   return (
@@ -160,7 +162,11 @@ function Chevron() {
       type="button"
       aria-expanded={open}
       aria-controls={bodyId}
-      aria-label={open ? `Collapse ${node.label}` : `Expand ${node.label}`}
+      aria-label={
+        open
+          ? t("builder.fieldSection.collapseTooltip", { label: node.label })
+          : t("builder.fieldSection.expandTooltip", { label: node.label })
+      }
       onClick={() => setOpen(!open)}
       className="text-muted-foreground hover:text-foreground"
     >
@@ -184,9 +190,10 @@ function Body({ children }: { children: ReactNode }) {
 }
 
 function Empty({ children }: { children?: ReactNode }) {
+  const { t } = useTranslation("java-agent");
   return (
     <p role="status" className="text-muted-foreground text-xs italic">
-      {children ?? "No items yet"}
+      {children ?? t("builder.fieldSection.empty")}
     </p>
   );
 }
