@@ -182,9 +182,16 @@
     "usageCount_one": "{{count}} Instrumentation using this configuration",
     "usageCount_other": "{{count}} Instrumentations using this configuration"
   },
+  "configTabs": {
+    "declarative": "Declarative",
+    "systemProperties": "System Properties",
+    "declarativeConfiguration": "Declarative Configuration",
+    "loadError": "Configuration data could not be loaded. Please try again later."
+  },
   "configSelector": {
     "banner": "Telemetry varies by configuration",
-    "label": "Configuration"
+    "label": "Configuration",
+    "defaultOption": "Default"
   },
   "versionSelector": {
     "label": "Version"
@@ -216,7 +223,8 @@
   "telemetryComparison": {
     "loading": "Loading comparison data...",
     "error": {
-      "title": "Comparison Error"
+      "title": "Comparison Error",
+      "bothVersionsFailed": "Both versions could not be loaded. The instrumentation may not exist in these versions."
     },
     "warnings": {
       "availability": {
@@ -368,10 +376,36 @@
       "default": "default",
       "reset": "Reset",
       "fieldDefault": "Default:",
+      "nullOptionDefault": "Default",
+      "usingDefault": "Using default",
       "itemAdded": "Item added",
       "itemRemoved": "Item removed",
       "entryAdded": "Entry added",
       "entryRemoved": "Entry removed"
+    },
+    "sections": {
+      "generalSettings": "General settings",
+      "instrumentations": "Instrumentations",
+      "schema": "Schema",
+      "agent": "Agent"
+    },
+    "schemaRenderer": {
+      "itemLabel": "Item"
+    },
+    "unionTypes": {
+      "textInput": "Text",
+      "numberInput": "Number",
+      "toggle": "Boolean",
+      "select": "Choice",
+      "flag": "Flag",
+      "stringList": "Text list",
+      "numberList": "Number list",
+      "list": "List",
+      "keyValueMap": "Map",
+      "group": "Group",
+      "union": "Variant",
+      "pluginSelect": "Plugin",
+      "circularRef": "Reference"
     },
     "keyValueMap": {
       "add": "Add",
@@ -410,7 +444,9 @@
       "inputPlaceholder": "custom-plugin-name",
       "cancel": "Cancel",
       "done": "Done",
-      "customEmpty": "Custom plugin. Configure its body manually by importing YAML or leave it as an empty block."
+      "customEmpty": "Custom plugin. Configure its body manually by importing YAML or leave it as an empty block.",
+      "customActive": "Custom: {{name}}",
+      "customEllipsis": "Custom…"
     },
     "unionRenderer": {
       "tablistAriaLabel": "{{label}} variant"

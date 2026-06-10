@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Info, ChevronDown } from "lucide-react";
-import { useTranslation } from "react-i18next";
+import { useTranslation, getI18n } from "react-i18next";
 import type { Telemetry } from "@/types/javaagent";
 
 interface ConfigurationSelectorProps {
@@ -24,7 +24,7 @@ interface ConfigurationSelectorProps {
 }
 
 function getConfigLabel(when: string): string {
-  if (when === "default") return "Default";
+  if (when === "default") return getI18n().t("configSelector.defaultOption", { ns: "java-agent" });
   return when;
 }
 

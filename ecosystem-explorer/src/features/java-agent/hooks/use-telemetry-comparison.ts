@@ -15,6 +15,7 @@
  */
 
 import { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import type { InstrumentationData, TelemetryDiffResult } from "@/types/javaagent";
 import * as javaagentData from "@/lib/api/javaagent-data";
 import { compareTelemetry, getAvailableWhenConditions } from "../utils/telemetry-diff";
@@ -39,6 +40,7 @@ export function useTelemetryComparison(
   initialFromVersion: string,
   initialToVersion: string
 ): UseTelemetryComparisonResult {
+  const { t } = useTranslation("java-agent");
   const [customFromVersion, setCustomFromVersion] = useState<string | null>(null);
   const [customToVersion, setCustomToVersion] = useState<string | null>(null);
   const [whenCondition, setWhenCondition] = useState<string>("default");
@@ -97,11 +99,7 @@ export function useTelemetryComparison(
         const toLoadFailed = toData.status === "rejected";
 
         if (fromLoadFailed && toLoadFailed) {
-          setError(
-            new Error(
-              "Both versions could not be loaded. The instrumentation may not exist in these versions."
-            )
-          );
+          setError(new Error(t("telemetryComparison.error.bothVersionsFailed")));
           setFromNotFound(true);
           setToNotFound(true);
           setDiffResult(null);
@@ -149,7 +147,7 @@ export function useTelemetryComparison(
     return () => {
       cancelled = true;
     };
-  }, [instrumentationName, fromVersion, toVersion]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [instrumentationName, fromVersion, toVersion, t]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!fromInstrRef.current && !toInstrRef.current) return;

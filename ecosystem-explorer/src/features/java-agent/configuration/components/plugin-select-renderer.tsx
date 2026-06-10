@@ -122,7 +122,9 @@ export function PluginSelectRenderer({
           }}
           className={`${TAB_BASE} ${customActive ? TAB_ACTIVE : TAB_INACTIVE}`}
         >
-          {isCustom && !customPickerOpen ? `Custom: ${selectedKey}` : "Custom…"}
+          {isCustom && !customPickerOpen
+            ? t("builder.pluginSelect.customActive", { name: selectedKey })
+            : t("builder.pluginSelect.customEllipsis")}
         </button>
       )}
     </div>

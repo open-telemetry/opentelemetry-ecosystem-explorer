@@ -29,12 +29,8 @@ interface GlobalConfiguration extends Configuration {
   instrumentations?: string[];
 }
 
-const FORMAT_TABS = [
-  { value: "system-property", label: "System Properties" },
-  { value: "declarative", label: "Declarative Configuration" },
-];
-
 function useGlobalConfigurations() {
+  const { t } = useTranslation("java-agent");
   const [data, setData] = useState<GlobalConfiguration[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -47,10 +43,10 @@ function useGlobalConfigurations() {
       })
       .catch((err: unknown) => {
         console.error("Failed to fetch configurations:", err);
-        setError("Configuration data could not be loaded. Please try again later.");
+        setError(t("configTabs.loadError"));
         setIsLoading(false);
       });
-  }, []);
+  }, [t]);
 
   return { data, isLoading, error };
 }
@@ -59,6 +55,10 @@ export function JavaConfigurationListPage() {
   const { t } = useTranslation("java-agent");
   const [format, setFormat] = useState<ConfigurationFormat>("declarative");
   const [searchQuery, setSearchQuery] = useState("");
+  const formatTabs = [
+    { value: "system-property", label: t("configTabs.systemProperties") },
+    { value: "declarative", label: t("configTabs.declarativeConfiguration") },
+  ];
   const { data: allConfigurations, isLoading, error } = useGlobalConfigurations();
 
   const filteredConfigs = useMemo(() => {
@@ -121,7 +121,7 @@ export function JavaConfigurationListPage() {
 
             <div className="w-full shrink-0 md:w-auto">
               <Tabs value={format} onValueChange={(v) => setFormat(v as ConfigurationFormat)}>
-                <SegmentedTabList tabs={FORMAT_TABS} value={format} fullWidth={false} />
+                <SegmentedTabList tabs={formatTabs} value={format} fullWidth={false} />
               </Tabs>
             </div>
           </div>

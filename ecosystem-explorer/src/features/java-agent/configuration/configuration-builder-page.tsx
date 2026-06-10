@@ -65,8 +65,6 @@ const BUILDER_GRID = "grid grid-cols-1 gap-6 lg:grid-cols-[256px_minmax(0,1fr)_4
 const INSTRUMENTATION_DEV_KEY = "instrumentation/development";
 const GENERAL_SUBKEY = "general";
 const INSTRUMENTATIONS_SECTION_KEY = "instrumentations";
-const INSTRUMENTATIONS_SECTION_LABEL = "Instrumentations";
-const GENERAL_SETTINGS_LABEL = "General settings";
 
 // Drops instrumentation customizations that reference modules not present in the
 // selected agent version. Without this, switching from a newer agent (where a
@@ -249,10 +247,10 @@ function InstrumentationTabBody({
   };
   const tocSections: TocSection[] = useMemo(
     () => [
-      { key: GENERAL_SECTION_KEY, label: GENERAL_SETTINGS_LABEL },
-      { key: INSTRUMENTATIONS_SECTION_KEY, label: INSTRUMENTATIONS_SECTION_LABEL },
+      { key: GENERAL_SECTION_KEY, label: t("builder.sections.generalSettings") },
+      { key: INSTRUMENTATIONS_SECTION_KEY, label: t("builder.sections.instrumentations") },
     ],
-    []
+    [t]
   );
   const sectionKeys = useMemo(() => tocSections.map((s) => s.key), [tocSections]);
   const sectionsContainerRef = useRef<HTMLDivElement>(null);
@@ -314,7 +312,7 @@ function InstrumentationTabBody({
         onPointerDown={handleInteraction}
       >
         <GeneralSectionCard
-          label={GENERAL_SETTINGS_LABEL}
+          label={t("builder.sections.generalSettings")}
           sectionKey={GENERAL_SECTION_KEY}
           pathPrefix={`${INSTRUMENTATION_DEV_KEY}.${GENERAL_SUBKEY}`}
           defaultExpanded={true}
@@ -412,7 +410,7 @@ export function ConfigurationBuilderPage() {
                 versions={schemaVersionsState.data.versions}
                 currentVersion={schemaVersion}
                 onVersionChange={setCurrentSchemaVersion}
-                label="Schema"
+                label={t("builder.sections.schema")}
                 id="schema-version-select"
               />
             ) : null}
@@ -421,7 +419,7 @@ export function ConfigurationBuilderPage() {
                 versions={javaAgentVersions}
                 currentVersion={javaAgentVersion}
                 onVersionChange={setCurrentJavaAgentVersion}
-                label="Agent"
+                label={t("builder.sections.agent")}
                 id="java-agent-version-select"
               />
             ) : null}

@@ -182,9 +182,16 @@
     "usageCount_one": "{{count}} instrumentación usando esta configuración",
     "usageCount_other": "{{count}} instrumentaciones usando esta configuración"
   },
+  "configTabs": {
+    "declarative": "Declarativo",
+    "systemProperties": "Propiedades del sistema",
+    "declarativeConfiguration": "Configuración declarativa",
+    "loadError": "No se pudieron cargar los datos de configuración. Intenta de nuevo más tarde."
+  },
   "configSelector": {
     "banner": "La telemetría varía según la configuración",
-    "label": "Configuración"
+    "label": "Configuración",
+    "defaultOption": "Predeterminado"
   },
   "versionSelector": {
     "label": "Versión"
@@ -216,7 +223,8 @@
   "telemetryComparison": {
     "loading": "Cargando datos de comparación...",
     "error": {
-      "title": "Error de comparación"
+      "title": "Error de comparación",
+      "bothVersionsFailed": "No se pudieron cargar ambas versiones. Es posible que la instrumentación no exista en estas versiones."
     },
     "warnings": {
       "availability": {
@@ -368,10 +376,36 @@
       "default": "predeterminado",
       "reset": "Restablecer",
       "fieldDefault": "Predeterminado:",
+      "nullOptionDefault": "Predeterminado",
+      "usingDefault": "Usando predeterminado",
       "itemAdded": "Elemento agregado",
       "itemRemoved": "Elemento eliminado",
       "entryAdded": "Entrada agregada",
       "entryRemoved": "Entrada eliminada"
+    },
+    "sections": {
+      "generalSettings": "Configuración general",
+      "instrumentations": "Instrumentaciones",
+      "schema": "Esquema",
+      "agent": "Agente"
+    },
+    "schemaRenderer": {
+      "itemLabel": "Elemento"
+    },
+    "unionTypes": {
+      "textInput": "Texto",
+      "numberInput": "Número",
+      "toggle": "Booleano",
+      "select": "Selección",
+      "flag": "Indicador",
+      "stringList": "Lista de texto",
+      "numberList": "Lista de números",
+      "list": "Lista",
+      "keyValueMap": "Mapa",
+      "group": "Grupo",
+      "union": "Variante",
+      "pluginSelect": "Plugin",
+      "circularRef": "Referencia"
     },
     "keyValueMap": {
       "add": "Agregar",
@@ -410,7 +444,9 @@
       "inputPlaceholder": "nombre-plugin-personalizado",
       "cancel": "Cancelar",
       "done": "Listo",
-      "customEmpty": "Plugin personalizado. Configura su cuerpo manualmente importando YAML o déjalo como un bloque vacío."
+      "customEmpty": "Plugin personalizado. Configura su cuerpo manualmente importando YAML o déjalo como un bloque vacío.",
+      "customActive": "Personalizado: {{name}}",
+      "customEllipsis": "Personalizado…"
     },
     "unionRenderer": {
       "tablistAriaLabel": "Variante {{label}}"

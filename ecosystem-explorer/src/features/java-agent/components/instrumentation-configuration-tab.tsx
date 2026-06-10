@@ -21,11 +21,6 @@ import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { SegmentedTabList } from "@/components/ui/segmented-tabs";
 import { ConfigurationCard, type ConfigurationFormat } from "./configuration-card";
 
-const FORMAT_TABS = [
-  { value: "declarative", label: "Declarative" },
-  { value: "system-property", label: "System Properties" },
-];
-
 interface InstrumentationConfigurationTabProps {
   configurations: Configuration[];
 }
@@ -35,6 +30,10 @@ export function InstrumentationConfigurationTab({
 }: InstrumentationConfigurationTabProps) {
   const { t } = useTranslation("java-agent");
   const [format, setFormat] = useState<ConfigurationFormat>("declarative");
+  const formatTabs = [
+    { value: "declarative", label: t("configTabs.declarative") },
+    { value: "system-property", label: t("configTabs.systemProperties") },
+  ];
 
   if (configurations.length === 0) {
     return (
@@ -69,7 +68,7 @@ export function InstrumentationConfigurationTab({
       value={format}
       onValueChange={(v) => setFormat(v as ConfigurationFormat)}
     >
-      <SegmentedTabList tabs={FORMAT_TABS} value={format} fullWidth />
+      <SegmentedTabList tabs={formatTabs} value={format} fullWidth />
       <TabsContent value="declarative">{grid("declarative")}</TabsContent>
       <TabsContent value="system-property">{grid("system-property")}</TabsContent>
     </Tabs>
