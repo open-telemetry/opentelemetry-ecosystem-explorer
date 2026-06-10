@@ -1,0 +1,126 @@
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* ---------- Pipeline anatomy ---------- */
+
+.td-pipeline-anatomy__title {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.td-pipeline-anatomy__lead {
+  margin: 0 0 1.5rem;
+  color: hsl(var(--muted-foreground-hsl));
+  max-width: 60ch;
+}
+
+.td-pipeline-anatomy__stages {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: stretch;
+}
+
+@media (min-width: 768px) {
+  .td-pipeline-anatomy__stages {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: stretch;
+  }
+}
+
+.td-pipeline-anatomy__stages--grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .td-pipeline-anatomy__stages--grid {
+    display: grid;
+  }
+}
+
+.td-pipeline-anatomy__chevron {
+  width: 1.25rem;
+  height: 1.25rem;
+  color: hsl(var(--muted-foreground-hsl));
+  align-self: center;
+  flex-shrink: 0;
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .td-pipeline-anatomy__chevron {
+    display: inline-block;
+  }
+}
+
+.td-pipeline-stage {
+  --td-stage-accent: hsl(var(--primary-hsl));
+  position: relative;
+  flex: 1 1 0;
+  min-width: 160px;
+  padding: 1rem 1rem 1rem 1.25rem;
+  background-color: hsl(var(--card-hsl));
+  border: 1px solid hsl(var(--border-hsl));
+  border-radius: 0.5rem;
+  text-decoration: none;
+  color: hsl(var(--foreground-hsl));
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  overflow: hidden;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.td-pipeline-stage:hover,
+.td-pipeline-stage:focus-visible {
+  border-color: var(--td-stage-accent);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  color: hsl(var(--foreground-hsl));
+}
+
+.td-pipeline-stage__edge {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background-color: var(--td-stage-accent);
+}
+
+.td-pipeline-stage__count {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--td-stage-accent);
+  line-height: 1;
+}
+
+.td-pipeline-stage__label {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.td-pipeline-stage__description {
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground-hsl));
+}

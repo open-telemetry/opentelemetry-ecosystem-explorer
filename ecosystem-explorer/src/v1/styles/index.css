@@ -30,6 +30,7 @@
  * - recent-activity-rail.css — v1 home recent-activity rail (`.td-activity-*`, `.td-pill*`)
  * - release-card.css — v1 ecosystem-landing release card (`.td-release-card*`)
  * - home.css         — v1 home page wrapper + shared `td-box`/`td-two-col` chrome
+ * - pipeline-anatomy.css — v1 ecosystem-landing pipeline strip (`.td-pipeline-anatomy*`, `.td-pipeline-stage*`)
  * - cncf-callout.css — sitewide CNCF band above the footer
  * - footer.css       — v1 footer (`.td-footer`) — mirrors opentelemetry.io
  *
@@ -51,5 +52,6 @@
 @import "./recent-activity-rail.css";
 @import "./release-card.css";
 @import "./home.css";
+@import "./pipeline-anatomy.css";
 @import "./cncf-callout.css";
 @import "./footer.css";

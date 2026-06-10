@@ -30,6 +30,7 @@ import { GlowBadge } from "@/components/ui/glow-badge";
 import { StabilityBadge } from "@/components/ui/stability-badge";
 import { type Stability, StatusPill } from "@/components/ui/status-pill";
 import { ReleaseCard } from "@/v1/components/ecosystem/release-card";
+import { type PipelineStage, PipelineAnatomy } from "@/v1/components/ecosystem/pipeline-anatomy";
 import { CoverBlock } from "@/v1/components/home/cover-block";
 import { EcosystemsGrid } from "@/v1/components/home/ecosystems-grid";
 import { GlobalSearch } from "@/v1/components/home/global-search";
@@ -44,6 +45,84 @@ const STABILITIES: Stability[] = [
   "stable",
   "deprecated",
   "unmaintained",
+];
+
+// Collector pipeline: five stages with type-stripe accent colors and
+// deep-links into the list page via the `?type=` URL contract.
+const COLLECTOR_STAGES: PipelineStage[] = [
+  {
+    id: "receiver",
+    label: "Receivers",
+    count: 98,
+    description: "Ingest data",
+    href: "/collector/components?type=receiver",
+    accentColor: "hsl(200 85% 45%)",
+  },
+  {
+    id: "processor",
+    label: "Processors",
+    count: 28,
+    description: "Transform data",
+    href: "/collector/components?type=processor",
+    accentColor: "hsl(265 70% 55%)",
+  },
+  {
+    id: "exporter",
+    label: "Exporters",
+    count: 64,
+    description: "Send data onward",
+    href: "/collector/components?type=exporter",
+    accentColor: "hsl(150 65% 40%)",
+  },
+  {
+    id: "connector",
+    label: "Connectors",
+    count: 12,
+    description: "Bridge pipelines",
+    href: "/collector/components?type=connector",
+    accentColor: "hsl(35 90% 50%)",
+  },
+  {
+    id: "extension",
+    label: "Extensions",
+    count: 21,
+    description: "Add capabilities",
+    href: "/collector/components?type=extension",
+    accentColor: "hsl(0 75% 55%)",
+  },
+];
+
+// Category grid: stages without chevrons (noFlow) — semantic groupings
+// rather than an ordered pipeline.
+const CATEGORY_STAGES: PipelineStage[] = [
+  {
+    id: "http",
+    label: "HTTP",
+    count: 14,
+    description: "Web frameworks & clients",
+    href: "/java-agent/components?category=http",
+  },
+  {
+    id: "database",
+    label: "Databases",
+    count: 22,
+    description: "JDBC & NoSQL drivers",
+    href: "/java-agent/components?category=database",
+  },
+  {
+    id: "messaging",
+    label: "Messaging",
+    count: 9,
+    description: "Queues & streams",
+    href: "/java-agent/components?category=messaging",
+  },
+  {
+    id: "rpc",
+    label: "RPC",
+    count: 6,
+    description: "gRPC & service calls",
+    href: "/java-agent/components?category=rpc",
+  },
 ];
 
 const GLOW_VARIANTS = [
@@ -236,6 +315,31 @@ export function DevComponentsPage() {
           />
           <ReleaseCard version={null} />
         </div>
+      </Section>
+
+      <Section
+        id="pipeline-anatomy-flow"
+        title="PipelineAnatomy (Collector pipeline — five stages with chevron flow)"
+        bare
+      >
+        <PipelineAnatomy
+          title="Pipeline anatomy"
+          lead="The flow of telemetry through a Collector — receivers ingest, processors transform, exporters emit."
+          stages={COLLECTOR_STAGES}
+        />
+      </Section>
+
+      <Section
+        id="pipeline-anatomy-grid"
+        title="PipelineAnatomy (category grid — noFlow, no chevrons)"
+        bare
+      >
+        <PipelineAnatomy
+          title="Instrumentation categories"
+          lead="Semantic groupings rather than an ordered pipeline."
+          stages={CATEGORY_STAGES}
+          noFlow
+        />
       </Section>
 
       <Section
