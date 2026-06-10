@@ -332,7 +332,7 @@ export function JavaInstrumentationListPage() {
             </h1>
             {instrumentations != null && (
               <p className="text-muted-foreground text-base">
-                Explore {instrumentations.length} available instrumentations.
+                {t("list.description", { count: instrumentations.length })}
               </p>
             )}
           </div>
