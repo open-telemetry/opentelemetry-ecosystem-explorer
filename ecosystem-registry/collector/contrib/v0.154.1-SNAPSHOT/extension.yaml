@@ -642,6 +642,7 @@ components:
         - portertech
         - evan-bradley
         - tigrannajaryan
+        - douglascamata
 - name: pprofextension
   metadata:
     type: pprof
