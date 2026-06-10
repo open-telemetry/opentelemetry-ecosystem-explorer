@@ -29,6 +29,7 @@
 import { GlowBadge } from "@/components/ui/glow-badge";
 import { StabilityBadge } from "@/components/ui/stability-badge";
 import { type Stability, StatusPill } from "@/components/ui/status-pill";
+import { ReleaseCard } from "@/v1/components/ecosystem/release-card";
 import { CoverBlock } from "@/v1/components/home/cover-block";
 import { EcosystemsGrid } from "@/v1/components/home/ecosystems-grid";
 import { GlobalSearch } from "@/v1/components/home/global-search";
@@ -212,6 +213,29 @@ export function DevComponentsPage() {
         bare
       >
         <RecentActivityRail />
+      </Section>
+
+      <Section id="release-card" title="ReleaseCard (full card + empty state)" bare>
+        {/* Wrapped in a dark surface so the glass-effect card reads correctly;
+            on the real ecosystem-landing page ReleaseCard lives inside the
+            <CoverBlock> aside slot. */}
+        <div
+          style={{
+            background: "hsl(var(--cover-block-bg-from-hsl))",
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "1.5rem",
+            padding: "2rem 1.5rem",
+          }}
+        >
+          <ReleaseCard
+            version="v0.150.0"
+            releaseDate="May 2026"
+            deltas={{ added: 4, changed: 12, deprecated: 2 }}
+            hrefChangelog="https://opentelemetry.io/"
+          />
+          <ReleaseCard version={null} />
+        </div>
       </Section>
 
       <Section

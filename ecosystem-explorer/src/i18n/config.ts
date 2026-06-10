@@ -31,7 +31,7 @@ if (isEnabled("I18N")) {
 i18nInstance.use(initReactI18next).init({
   ...(isEnabled("I18N") ? {} : { lng: "en" }),
   fallbackLng: "en",
-  ns: ["common", "layout", "home", "collector", "java-agent", "about"],
+  ns: ["common", "layout", "home", "collector", "java-agent", "about", "ecosystem"],
   defaultNS: "common",
   backend: { loadPath: "/locales/{{lng}}/{{ns}}.json" },
   interpolation: { escapeValue: false },
