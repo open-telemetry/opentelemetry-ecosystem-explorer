@@ -169,9 +169,9 @@ components:
         - evan-bradley
         - edmocosta
         - bogdandrutu
+        - mwear
         emeritus:
         - jpkrohling
-        - mwear
         seeking_new: true
 - name: servicegraphconnector
   metadata:
