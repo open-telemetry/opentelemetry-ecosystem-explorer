@@ -118,7 +118,7 @@ export interface Configuration {
     required?: string[];
     properties: Record<
       string,
-      { type: "string" | "boolean" | "number" | "integer"; description?: string; default?: unknown }
+      { type: "string" | "boolean"; description?: string; default?: string | boolean }
     >;
   };
 }
