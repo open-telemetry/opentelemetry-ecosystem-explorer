@@ -238,74 +238,65 @@ function StructuredListRenderer({
 
   return (
     <div className="w-full max-w-xl space-y-2" aria-label={ariaLabel}>
-      {items.map((item, idx) => {
-        const stableKey =
-          typeof (item as Record<string, unknown>)._id === "string"
-            ? ((item as Record<string, unknown>)._id as string)
-            : `item-${idx}-${JSON.stringify(item).length}`;
-
-        return (
-          <div key={stableKey} className="border-border/40 space-y-1.5 rounded-md border p-3">
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-xs italic">Item {idx + 1}</span>
-              {!disabled && (
-                <button
-                  type="button"
-                  onClick={() => onChange(items.filter((_, i) => i !== idx) as ConfigValue)}
-                  className="text-muted-foreground rounded p-1 hover:text-red-400"
-                  aria-label={`Remove item ${idx + 1}`}
-                >
-                  <X className="h-3 w-3" aria-hidden="true" />
-                </button>
+      {items.map((item, idx) => (
+        <div key={idx} className="border-border/40 space-y-1.5 rounded-md border p-3">
+          <div className="flex items-center justify-between">
+            <span className="text-muted-foreground text-xs italic">Item {idx + 1}</span>
+            {!disabled && (
+              <button
+                type="button"
+                onClick={() => onChange(items.filter((_, i) => i !== idx) as ConfigValue)}
+                className="text-muted-foreground rounded p-1 hover:text-red-400"
+                aria-label={`Remove item ${idx + 1}`}
+              >
+                <X className="h-3 w-3" aria-hidden="true" />
+              </button>
+            )}
+          </div>
+          {properties.map(([key, prop]) => (
+            <div key={key} className="flex flex-col gap-1">
+              <label className="text-foreground text-xs font-medium">
+                {key.replace(/_/g, " ")}
+              </label>
+              {prop.type === "boolean" ? (
+                <SwitchPill
+                  checked={Boolean((item as ConfigValues)[key])}
+                  onClick={() => {
+                    if (disabled) return;
+                    const next = [...items];
+                    next[idx] = { ...item, [key]: !(item as ConfigValues)[key] };
+                    onChange(next as ConfigValue);
+                  }}
+                  ariaLabel={`${ariaLabel} item ${idx + 1} ${key}`}
+                />
+              ) : (
+                <input
+                  type="text"
+                  aria-label={`${ariaLabel} item ${idx + 1} ${key}`}
+                  disabled={disabled}
+                  value={
+                    typeof (item as ConfigValues)[key] === "string" ||
+                    typeof (item as ConfigValues)[key] === "number"
+                      ? String((item as ConfigValues)[key])
+                      : ""
+                  }
+                  onChange={(e) => {
+                    const next = [...items];
+                    next[idx] = { ...item, [key]: e.target.value };
+                    onChange(next as ConfigValue);
+                  }}
+                  className={LIST_INPUT_CLASS}
+                />
               )}
             </div>
-            {properties.map(([key, prop]) => (
-              <div key={key} className="flex flex-col gap-1">
-                <label className="text-foreground text-xs font-medium">
-                  {key.replace(/_/g, " ")}
-                </label>
-                {prop.type === "boolean" ? (
-                  <SwitchPill
-                    checked={Boolean((item as ConfigValues)[key])}
-                    onClick={() => {
-                      if (disabled) return;
-                      const next = [...items];
-                      next[idx] = { ...item, [key]: !(item as ConfigValues)[key] };
-                      onChange(next as ConfigValue);
-                    }}
-                    ariaLabel={`${ariaLabel} item ${idx + 1} ${key}`}
-                  />
-                ) : (
-                  <input
-                    type="text"
-                    aria-label={`${ariaLabel} item ${idx + 1} ${key}`}
-                    disabled={disabled}
-                    value={
-                      typeof (item as ConfigValues)[key] === "string" ||
-                      typeof (item as ConfigValues)[key] === "number"
-                        ? String((item as ConfigValues)[key])
-                        : ""
-                    }
-                    onChange={(e) => {
-                      const next = [...items];
-                      next[idx] = { ...item, [key]: e.target.value };
-                      onChange(next as ConfigValue);
-                    }}
-                    className={LIST_INPUT_CLASS}
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-        );
-      })}
+          ))}
+        </div>
+      ))}
       {showAdd && !disabled && (
         <button
           type="button"
           onClick={() => {
-            const blank: Record<string, unknown> = {
-              _id: `new-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
-            };
+            const blank: Record<string, unknown> = {};
             for (const [key, prop] of properties) {
               if (prop.default !== undefined) {
                 blank[key] = prop.default;
