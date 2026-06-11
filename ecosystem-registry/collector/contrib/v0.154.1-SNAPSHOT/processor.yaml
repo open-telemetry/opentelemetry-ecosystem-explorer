@@ -45,9 +45,10 @@ components:
     status:
       class: processor
       stability:
-        development:
+        alpha:
         - metrics
-      distributions: []
+      distributions:
+      - contrib
       codeowners:
         active:
         - atoulme
