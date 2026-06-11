@@ -49,7 +49,10 @@ export function ReleaseCard({
 
   if (!version) {
     return (
-      <aside className={`td-release-card td-release-card--empty ${className ?? ""}`}>
+      <aside
+        className={`td-release-card td-release-card--empty ${className ?? ""}`}
+        aria-label={t("releaseCard.eyebrow")}
+      >
         <div className="td-release-card__eyebrow">{t("releaseCard.eyebrow")}</div>
         <p className="td-release-card__empty-msg">{t("releaseCard.empty")}</p>
       </aside>

@@ -6,7 +6,7 @@
     "added": "added",
     "changed": "changed",
     "deprecated": "deprecated",
-    "changelog": "View changelog →",
+    "changelog": "View changelog",
     "empty": "Release information is not yet available for this ecosystem."
   }
 }

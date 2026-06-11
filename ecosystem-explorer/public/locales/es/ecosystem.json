@@ -6,7 +6,7 @@
     "added": "añadidos",
     "changed": "modificados",
     "deprecated": "obsoletos",
-    "changelog": "Ver registro de cambios →",
+    "changelog": "Ver registro de cambios",
     "empty": "La información de la versión aún no está disponible para este ecosistema."
   }
 }

@@ -39,7 +39,7 @@
 .td-release-card__version {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #f5a800;
+  color: hsl(var(--otel-orange-hsl));
 }
 
 .td-release-card__date {
@@ -72,10 +72,15 @@
 
 .td-release-card__changelog {
   margin-top: 0.5rem;
-  color: #f5a800;
+  color: hsl(var(--otel-orange-hsl));
   font-weight: 600;
   font-size: 0.875rem;
   text-decoration: none;
+}
+
+/* Decorative trailing arrow — kept out of the link's accessible name. */
+.td-release-card__changelog::after {
+  content: " \2192";
 }
 
 .td-release-card__changelog:hover,
