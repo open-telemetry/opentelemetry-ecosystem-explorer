@@ -49,12 +49,6 @@
   gap: 0.75rem;
 }
 
-@media (min-width: 768px) {
-  .td-pipeline-anatomy__stages--grid {
-    display: grid;
-  }
-}
-
 .td-pipeline-anatomy__chevron {
   width: 1.25rem;
   height: 1.25rem;
