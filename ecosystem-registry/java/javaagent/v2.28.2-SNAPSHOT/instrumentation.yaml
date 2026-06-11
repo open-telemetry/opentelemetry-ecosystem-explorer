@@ -154,10 +154,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -586,10 +586,10 @@ libraries:
   - org.apache.dubbo:dubbo:[2.7,)
   configurations:
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   telemetry:
   - when: default
@@ -781,10 +781,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -911,10 +911,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -1038,10 +1038,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -1221,10 +1221,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -1431,10 +1431,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -1742,9 +1742,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -1863,10 +1864,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -1985,10 +1986,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -3788,6 +3789,13 @@ libraries:
   has_javaagent: true
   javaagent_target_versions:
   - com.couchbase.client:java-client:[3.1,3.1.6)
+  configurations:
+  - name: otel.instrumentation.couchbase.experimental-span-attributes
+    declarative_name: java.couchbase.experimental_span_attributes/development
+    description: Enables experimental span attributes emitted from the underlying
+      Couchbase library.
+    type: boolean
+    default: false
   telemetry:
   - when: default
     spans:
@@ -3821,6 +3829,48 @@ libraries:
         type: LONG
       - name: net.transport
         type: STRING
+  - when: otel.semconv-stability.opt-in=database
+    spans:
+    - span_kind: INTERNAL
+      attributes:
+      - name: db.collection.name
+        type: STRING
+      - name: db.namespace
+        type: STRING
+      - name: db.operation.name
+        type: STRING
+      - name: db.system.name
+        type: STRING
+      - name: network.peer.address
+        type: STRING
+      - name: network.peer.port
+        type: LONG
+  - when: otel.semconv-stability.opt-in=database,otel.instrumentation.couchbase.experimental-span-attributes=true
+    spans:
+    - span_kind: INTERNAL
+      attributes:
+      - name: db.collection.name
+        type: STRING
+      - name: db.couchbase.local_id
+        type: STRING
+      - name: db.couchbase.operation_id
+        type: LONG
+      - name: db.couchbase.scope
+        type: STRING
+      - name: db.couchbase.server_duration
+        type: LONG
+      - name: db.couchbase.service
+        type: STRING
+      - name: db.namespace
+        type: STRING
+      - name: db.operation.name
+        type: STRING
+      - name: db.system.name
+        type: STRING
+      - name: network.peer.address
+        type: STRING
+      - name: network.peer.port
+        type: LONG
 - name: couchbase-3.1.6
   display_name: Couchbase Client
   description: Couchbase instrumentation is owned by the Couchbase project for versions
@@ -3837,6 +3887,13 @@ libraries:
   has_javaagent: true
   javaagent_target_versions:
   - com.couchbase.client:java-client:[3.1.6,3.2.0)
+  configurations:
+  - name: otel.instrumentation.couchbase.experimental-span-attributes
+    declarative_name: java.couchbase.experimental_span_attributes/development
+    description: Enables experimental span attributes emitted from the underlying
+      Couchbase library.
+    type: boolean
+    default: false
   telemetry:
   - when: default
     spans:
@@ -3872,6 +3929,50 @@ libraries:
         type: LONG
       - name: net.transport
         type: STRING
+  - when: otel.semconv-stability.opt-in=database
+    spans:
+    - span_kind: INTERNAL
+      attributes:
+      - name: db.collection.name
+        type: STRING
+      - name: db.namespace
+        type: STRING
+      - name: db.operation.name
+        type: STRING
+      - name: db.system.name
+        type: STRING
+      - name: network.peer.address
+        type: STRING
+      - name: network.peer.port
+        type: LONG
+  - when: otel.semconv-stability.opt-in=database,otel.instrumentation.couchbase.experimental-span-attributes=true
+    spans:
+    - span_kind: INTERNAL
+      attributes:
+      - name: db.collection.name
+        type: STRING
+      - name: db.couchbase.local_id
+        type: STRING
+      - name: db.couchbase.operation_id
+        type: LONG
+      - name: db.couchbase.retries
+        type: LONG
+      - name: db.couchbase.scope
+        type: STRING
+      - name: db.couchbase.server_duration
+        type: LONG
+      - name: db.couchbase.service
+        type: STRING
+      - name: db.namespace
+        type: STRING
+      - name: db.operation.name
+        type: STRING
+      - name: db.system.name
+        type: STRING
+      - name: network.peer.address
+        type: STRING
+      - name: network.peer.port
+        type: LONG
 - name: couchbase-3.2
   display_name: Couchbase Client
   description: Couchbase instrumentation is owned by the Couchbase project for versions
@@ -3888,6 +3989,13 @@ libraries:
   has_javaagent: true
   javaagent_target_versions:
   - com.couchbase.client:java-client:[3.2.0,3.4.0)
+  configurations:
+  - name: otel.instrumentation.couchbase.experimental-span-attributes
+    declarative_name: java.couchbase.experimental_span_attributes/development
+    description: Enables experimental span attributes emitted from the underlying
+      Couchbase library.
+    type: boolean
+    default: false
   telemetry:
   - when: default
     spans:
@@ -3925,6 +4033,52 @@ libraries:
         type: LONG
       - name: net.transport
         type: STRING
+  - when: otel.semconv-stability.opt-in=database
+    spans:
+    - span_kind: INTERNAL
+      attributes:
+      - name: db.collection.name
+        type: STRING
+      - name: db.namespace
+        type: STRING
+      - name: db.operation.name
+        type: STRING
+      - name: db.system.name
+        type: STRING
+      - name: network.peer.address
+        type: STRING
+      - name: network.peer.port
+        type: LONG
+  - when: otel.semconv-stability.opt-in=database,otel.instrumentation.couchbase.experimental-span-attributes=true
+    spans:
+    - span_kind: INTERNAL
+      attributes:
+      - name: db.collection.name
+        type: STRING
+      - name: db.couchbase.document_id
+        type: STRING
+      - name: db.couchbase.local_id
+        type: STRING
+      - name: db.couchbase.operation_id
+        type: LONG
+      - name: db.couchbase.retries
+        type: LONG
+      - name: db.couchbase.scope
+        type: STRING
+      - name: db.couchbase.server_duration
+        type: LONG
+      - name: db.couchbase.service
+        type: STRING
+      - name: db.namespace
+        type: STRING
+      - name: db.operation.name
+        type: STRING
+      - name: db.system.name
+        type: STRING
+      - name: network.peer.address
+        type: STRING
+      - name: network.peer.port
+        type: LONG
 - name: couchbase-3.4
   display_name: Couchbase Client
   description: Couchbase instrumentation is owned by the Couchbase project for versions
@@ -3941,6 +4095,13 @@ libraries:
   has_javaagent: true
   javaagent_target_versions:
   - com.couchbase.client:java-client:[3.4.0,)
+  configurations:
+  - name: otel.instrumentation.couchbase.experimental-span-attributes
+    declarative_name: java.couchbase.experimental_span_attributes/development
+    description: Enables experimental span attributes emitted from the underlying
+      Couchbase library.
+    type: boolean
+    default: false
   telemetry:
   - when: default
     spans:
@@ -3978,6 +4139,52 @@ libraries:
         type: LONG
       - name: net.transport
         type: STRING
+  - when: otel.semconv-stability.opt-in=database
+    spans:
+    - span_kind: CLIENT
+      attributes:
+      - name: db.collection.name
+        type: STRING
+      - name: db.namespace
+        type: STRING
+      - name: db.operation.name
+        type: STRING
+      - name: db.system.name
+        type: STRING
+      - name: network.peer.address
+        type: STRING
+      - name: network.peer.port
+        type: LONG
+  - when: otel.semconv-stability.opt-in=database,otel.instrumentation.couchbase.experimental-span-attributes=true
+    spans:
+    - span_kind: CLIENT
+      attributes:
+      - name: db.collection.name
+        type: STRING
+      - name: db.couchbase.document_id
+        type: STRING
+      - name: db.couchbase.local_id
+        type: STRING
+      - name: db.couchbase.operation_id
+        type: LONG
+      - name: db.couchbase.retries
+        type: LONG
+      - name: db.couchbase.scope
+        type: STRING
+      - name: db.couchbase.server_duration
+        type: LONG
+      - name: db.couchbase.service
+        type: STRING
+      - name: db.namespace
+        type: STRING
+      - name: db.operation.name
+        type: STRING
+      - name: db.system.name
+        type: STRING
+      - name: network.peer.address
+        type: STRING
+      - name: network.peer.port
+        type: LONG
 - name: dropwizard-metrics-4.0
   display_name: Dropwizard Metrics
   description: 'The dropwizard-metrics instrumentation for the dropwizard/codahale
@@ -4839,10 +5046,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -5995,9 +6202,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -6282,10 +6490,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -6374,10 +6582,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.server.emit-experimental-telemetry
     declarative_name: java.common.http.server.emit_experimental_telemetry/development
@@ -7075,10 +7283,10 @@ libraries:
     type: boolean
     default: false
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.jdbc.experimental.capture-query-parameters
     declarative_name: java.jdbc.capture_query_parameters/development
@@ -7162,6 +7370,8 @@ libraries:
         type: STRING
       - name: db.system.name
         type: STRING
+      - name: error.type
+        type: STRING
       - name: server.address
         type: STRING
       - name: service.peer.name
@@ -7197,10 +7407,10 @@ libraries:
     type: boolean
     default: true
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   telemetry:
   - when: default
@@ -7271,10 +7481,10 @@ libraries:
     type: boolean
     default: true
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   telemetry:
   - when: default
@@ -7703,10 +7913,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -7835,10 +8045,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -8102,10 +8312,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -8763,10 +8973,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -8944,10 +9154,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -9198,10 +9408,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -9313,10 +9523,10 @@ libraries:
     type: boolean
     default: false
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   telemetry:
   - when: default
@@ -9408,10 +9618,10 @@ libraries:
     type: boolean
     default: true
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   telemetry:
   - when: default
@@ -10442,10 +10652,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -10601,10 +10811,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -10772,10 +10982,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -10937,10 +11147,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -11068,10 +11278,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -11744,10 +11954,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -11948,10 +12158,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -12041,10 +12251,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -12134,10 +12344,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -12534,10 +12744,10 @@ libraries:
     type: boolean
     default: false
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   telemetry:
   - when: default
@@ -12829,10 +13039,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -13119,10 +13329,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -16297,10 +16507,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -16415,10 +16625,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -16554,10 +16764,10 @@ libraries:
     type: list
     default: ''
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   - name: otel.instrumentation.http.client.emit-experimental-telemetry
     declarative_name: java.common.http.client.emit_experimental_telemetry/development
@@ -16764,10 +16974,10 @@ libraries:
     type: boolean
     default: true
   - name: otel.instrumentation.common.peer-service-mapping
-    declarative_name: java.common.peer_service_mapping
+    declarative_name: java.common.service_peer_mapping
     description: Used to specify a mapping from host names or IP addresses to peer
       services.
-    type: map
+    type: structured_list
     default: ''
   telemetry:
   - when: default
