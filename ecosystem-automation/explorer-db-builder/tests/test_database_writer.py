@@ -653,17 +653,18 @@ class TestWriteIndex:
         terms = spring["search_terms"]
         # Sorted + deduped: the determinism contract for the content hash.
         assert terms == sorted(set(terms))
-        # The exact fields the runtime search bug silently dropped now flow in.
-        assert "https://spring.io/projects/spring-framework" in terms  # library_link
-        assert "instrumentation/spring/spring-webmvc-6.0" in terms  # source_path
-        assert "17" in terms  # minimum_java_version, stringified
-        assert "org.springframework:spring-webmvc:[6.0,)" in terms  # target version
-        assert "http.server.request.duration" in terms  # telemetry metric name
-        assert "s" in terms  # metric unit
+        # Distinctive identifiers flow in.
         assert "io.opentelemetry.spring-webmvc-6.0" in terms  # scope.name
-        # name/display_name/description are NOT duplicated into search_terms
-        # (the frontend indexes those directly off the index entry).
-        assert "Spring Web MVC" not in terms
+        assert "org.springframework:spring-webmvc" in terms  # coordinate, range stripped
+        assert "otel.x" in terms  # config name
+        assert "http.server.request.duration" in terms  # metric name
+        assert "Duration of HTTP server requests." in terms  # metric description
+        # Noise and seeded fields stay out.
+        assert "https://spring.io/projects/spring-framework" not in terms  # library_link
+        assert "17" not in terms  # minimum_java_version
+        assert "s" not in terms  # metric unit
+        assert "org.springframework:spring-webmvc:[6.0,)" not in terms  # unstripped
+        assert "Spring Web MVC" not in terms  # display_name (frontend indexes it)
         # No-telemetry entry degrades to an empty list, never a crash or a None.
         assert akka["search_terms"] == []
 

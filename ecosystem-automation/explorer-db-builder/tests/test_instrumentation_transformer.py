@@ -17,6 +17,7 @@
 import pytest
 from explorer_db_builder.instrumentation_transformer import (
     _collect_search_terms,
+    _strip_version_range,
     _transform_0_1_to_0_2,
     make_index_instrumentation,
     make_list_instrumentation,
@@ -137,49 +138,59 @@ class TestMakeIndexInstrumentation:
             ],
         }
 
-    def test_collects_every_searchable_field(self):
+    def test_collects_distinctive_identifiers(self):
         terms = _collect_search_terms(self._full_instrumentation())
         for expected in [
-            "https://kafka.apache.org",
-            "instrumentation/kafka/kafka-clients-2.6",
-            "8",
-            "io.opentelemetry.kafka-clients-2.6",
-            "https://x/1.0",
-            "messaging",
+            "io.opentelemetry.kafka-clients-2.6",  # scope.name
+            "messaging",  # semantic convention
             "TRACING",
             "METRICS",
-            "org.apache.kafka:kafka-clients:[2.6,)",
-            "experimental_span_attributes",  # configuration sub-field (pre-#645 parity)
-            "on publish",
-            "messaging.publish.duration",
-            "Publish duration.",
-            "histogram",
-            "HISTOGRAM",
-            "s",
-            "messaging.system",
-            "STRING",
-            "PRODUCER",
+            "org.apache.kafka:kafka-clients",  # maven coordinate, version range stripped
+            "otel.instrumentation.kafka.experimental-span-attributes",  # config name
+            "experimental_span_attributes",  # config declarative_name
+            "Enable experimental span attributes",  # config description
+            "messaging.publish.duration",  # metric name
+            "Publish duration.",  # metric description
         ]:
             assert expected in terms
 
-    def test_excludes_name_display_name_description(self):
-        # The frontend re-indexes these three directly; duplicating them here
-        # would only bloat the content hash.
+    def test_excludes_low_signal_and_seeded_fields(self):
+        # Noise (attributes, instrument/unit/data_type, span kind, link/path) is
+        # dropped; name/display_name/description are re-indexed by the frontend.
         terms = _collect_search_terms(self._full_instrumentation())
-        assert "kafka-clients-2.6" not in terms
-        assert "Kafka Clients" not in terms
-        assert "Kafka client instrumentation" not in terms
+        for excluded in [
+            "https://kafka.apache.org",  # library_link
+            "instrumentation/kafka/kafka-clients-2.6",  # source_path
+            "8",  # minimum_java_version
+            "https://x/1.0",  # scope.schema_url
+            "on publish",  # telemetry.when
+            "histogram",  # metric instrument
+            "HISTOGRAM",  # metric data_type
+            "s",  # metric unit
+            "messaging.system",  # attribute name
+            "STRING",  # attribute type
+            "PRODUCER",  # span kind
+            "org.apache.kafka:kafka-clients:[2.6,)",  # unstripped coordinate
+            "kafka-clients-2.6",
+            "Kafka Clients",
+            "Kafka client instrumentation",
+        ]:
+            assert excluded not in terms
 
     def test_sorted_deduped_and_deterministic(self):
         a = self._full_instrumentation()
         b = self._full_instrumentation()
         b["features"] = list(reversed(b["features"]))
-        b["telemetry"][0]["metrics"][0]["attributes"].append(
-            {"name": "messaging.system", "type": "STRING"}  # duplicate term
-        )
+        # Two coordinates that strip to the same group:artifact must dedupe to one.
+        b["javaagent_target_versions"] = [
+            "org.apache.kafka:kafka-clients:[2.6,)",
+            "org.apache.kafka:kafka-clients:[3.0,)",
+        ]
         terms = _collect_search_terms(a)
         assert terms == sorted(set(terms))
-        assert _collect_search_terms(a) == _collect_search_terms(b)
+        b_terms = _collect_search_terms(b)
+        assert b_terms.count("org.apache.kafka:kafka-clients") == 1
+        assert _collect_search_terms(a) == b_terms
 
     def test_null_safe_on_missing_optional_blocks(self):
         # No scope, no telemetry, no version metadata -> empty list, never a crash.
@@ -203,6 +214,11 @@ class TestMakeIndexInstrumentation:
         entry = make_index_instrumentation({"name": "bare-1.0"})
         assert entry["has_telemetry"] is False
         assert entry["search_terms"] == []
+
+    def test_strip_version_range(self):
+        assert _strip_version_range("org.springframework:spring-webmvc:[6.0.0,)") == "org.springframework:spring-webmvc"
+        # Non-coordinate strings (no group:artifact:range shape) are unchanged.
+        assert _strip_version_range("Java 8+") == "Java 8+"
 
 
 class TestTransformInstrumentationFormat:

@@ -62,11 +62,8 @@ export interface InstrumentationIndexEntry {
   /** Whether this instrumentation also ships as a standalone library. */
   has_standalone_library?: boolean;
   /**
-   * Precomputed search terms (sorted, deduped): telemetry names/units,
-   * library_link, source_path, target versions, scope, semantic conventions,
-   * features, configuration fields. Absent in older committed `index.json` files
-   * (until the next automated rebuild); the search source always seeds
-   * name/display_name/description, so a missing field degrades gracefully.
+   * Precomputed search terms (sorted, deduped). Optional: absent in older
+   * committed indexes, where search degrades to name/display_name/description.
    */
   search_terms?: string[];
 }
@@ -122,10 +119,8 @@ export interface InstrumentationData {
 
 /**
  * The slim per-version list-bundle entry the catalog page and Configuration
- * Builder read. Mirrors the Python `make_list_instrumentation` shape: telemetry
- * is collapsed to `has_spans`/`has_metrics` and the heavy `telemetry` tree is
- * dropped. The fan-out fallback projects full detail down to this same shape.
- * Detail pages still load the full `InstrumentationData` on demand.
+ * Builder read. Telemetry is collapsed to `has_spans`/`has_metrics`; the fan-out
+ * fallback projects full detail down to this same shape.
  */
 export interface InstrumentationListEntry {
   /** The unique name of the instrumentation (e.g., akka-actor-2.3). */
@@ -148,18 +143,11 @@ export interface InstrumentationListEntry {
   configurations?: Configuration[];
   /** Whether this instrumentation is disabled by default. */
   disabled_by_default?: boolean;
-  /**
-   * Precomputed: whether any telemetry block emits spans. Required — both the
-   * bundle producer (`make_list_instrumentation`) and the fan-out projection
-   * (`toListEntry`) always set it, so consumers never handle `undefined`.
-   */
+  /** Whether any telemetry block emits spans. Required: always set by both paths. */
   has_spans: boolean;
-  /** Precomputed: whether any telemetry block emits metrics. Always set; see `has_spans`. */
+  /** Whether any telemetry block emits metrics. Required: always set by both paths. */
   has_metrics: boolean;
-  /**
-   * Whether this is a custom (non-upstream) instrumentation. Required so the
-   * library/custom split (`!entry._is_custom`) can't silently misclassify.
-   */
+  /** Whether this is a custom (non-upstream) instrumentation. Required: drives the library/custom split. */
   _is_custom: boolean;
 }
 

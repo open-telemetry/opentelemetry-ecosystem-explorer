@@ -160,9 +160,8 @@ describe("database structure", () => {
   });
 
   describe("instrumentation index (global search source)", () => {
-    // index.json is the sole input to the Java Agent global-search source. These
-    // tests run against committed data so a future builder change that drops or
-    // renames a field the search source depends on is caught here, not in prod.
+    // index.json is the sole input to the search source; tested against committed
+    // data so a future field drop is caught here, not in prod.
     it("loads a non-empty index whose entries have a string name", async () => {
       const index = await loadIndex();
 
@@ -181,9 +180,7 @@ describe("database structure", () => {
     it("every entry produces a search result whose keywords include the index name", async () => {
       const index = await loadIndex();
 
-      // Exercises the real search source over committed data, including the
-      // graceful path when an entry has no search_terms (keywords still seed
-      // name/display_name/description), so the search contract can't silently break.
+      // Exercises the real search source, including the no-search_terms graceful path.
       for (const entry of index.components) {
         const result = toJavaAgentResult(entry, "latest");
         expect(result.keywords).toContain(entry.name);

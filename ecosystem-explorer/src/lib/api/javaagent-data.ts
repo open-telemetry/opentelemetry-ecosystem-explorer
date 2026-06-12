@@ -73,11 +73,7 @@ export async function loadVersionManifest(version: string): Promise<VersionManif
   return data;
 }
 
-/**
- * Loads the javaagent `index.json`: the slim, search-oriented snapshot of the
- * latest version. Global search reads this in one request instead of fanning out
- * per instrumentation (mirrors the collector index path).
- */
+/** Loads the slim, search-oriented `index.json` in one request (mirrors the collector index path). */
 export async function loadIndex(): Promise<InstrumentationIndex> {
   const data = await fetchWithCache<InstrumentationIndex>(
     "javaagent-instrumentation-index",
@@ -137,11 +133,8 @@ export async function loadInstrumentationBundle(
 }
 
 /**
- * Projects a full instrumentation down to the slim list shape (matches the
- * Python `make_list_instrumentation`). `has_spans`/`has_metrics` are derived from
- * `telemetry` exactly as the builder does — the one place the full→slim collapse
- * happens client-side, so the fan-out fallback returns the same shape as the
- * precomputed bundle path.
+ * Projects full detail down to the slim list shape (matches `make_list_instrumentation`),
+ * so the fan-out fallback returns the same shape as the precomputed bundle.
  */
 function toListEntry(instr: InstrumentationData): InstrumentationListEntry {
   return {

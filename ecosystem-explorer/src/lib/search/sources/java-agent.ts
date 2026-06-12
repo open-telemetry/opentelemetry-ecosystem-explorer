@@ -29,12 +29,9 @@ function addSearchTerm(terms: Set<string>, value: string | null | undefined): vo
 }
 
 /**
- * Collects the searchable terms for a slim index entry. Always seeds
- * name/display_name/description (present even in older committed indexes), then
- * folds in the precomputed `search_terms` (telemetry names/units, library_link,
- * target versions, configuration fields, …). The seed-then-spread — not a branch
- * — makes the no-`search_terms` fallback a strict subset of the full path:
- * search degrades to the three always-present fields and never crashes.
+ * Searchable terms for a slim index entry: always seeds name/display_name/description,
+ * then folds in the precomputed `search_terms`. When `search_terms` is absent (older
+ * indexes), search degrades to the three seeds rather than failing.
  */
 export function getInstrumentationSearchTerms(entry: InstrumentationIndexEntry): string[] {
   const terms = new Set<string>();
@@ -70,10 +67,7 @@ export function toJavaAgentResult(
 }
 
 async function loadJavaAgentSearchResults(): Promise<SearchResult[]> {
-  // One fetch for /data/javaagent/index.json + one for versions-index.json,
-  // instead of fanning out per instrumentation (or loading the list bundle). The
-  // index carries display_name/description/has_standalone_library/search_terms —
-  // all SearchResult needs. Per-instrumentation JSONs load lazily on click.
+  // Two fetches (index.json + versions-index.json), no per-instrumentation fan-out.
   const [versionsIndex, index] = await Promise.all([loadJavaAgentVersions(), loadIndex()]);
   const latestVersion = versionsIndex.versions.find((version) => version.is_latest)?.version;
   if (!latestVersion) return [];
