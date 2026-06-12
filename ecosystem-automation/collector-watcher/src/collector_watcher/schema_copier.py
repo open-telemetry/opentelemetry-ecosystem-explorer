@@ -45,7 +45,8 @@ class CollectorSchemaCopier:
         The destination is ``schemas_dir / f"{schema_hash}.yaml"``. If a file
         with that name already exists (because the same schema content was
         stored previously), the copy is skipped — the existing file is the
-        canonical record. Returns the schema hash on success.
+        canonical record. Returns the schema hash on success. The schema hash
+        is computed from the normalized YAML content (ignoring comments and key order).
 
         Args:
             repo_path: Path to the checked-out collector repository.
@@ -75,8 +76,9 @@ class CollectorSchemaCopier:
 
     def compute_schema_hash(self, schema_path: Path) -> str:
         """
-        Compute the content hash of a schema file.
+        Compute the content hash of a schema file, ignoring comments and formatting.
 
+        The hash is computed from the normalized YAML representation of the schema.
         Returns ``UNKNOWN_HASH`` when the file is absent — used by component
         YAMLs scanned from older collector tags that pre-date the schema file.
 
