@@ -212,15 +212,12 @@ def test_compute_schema_hash_ignores_comments(fake_repo):
     schema_path = fake_repo / SCHEMA_RELATIVE_PATH
     copier = CollectorSchemaCopier()
 
-    # Base hash without comments
     h1 = copier.compute_schema_hash(schema_path)
 
-    # Add comments to the schema file
     content = schema_path.read_text(encoding="utf-8")
     content_with_comments = f"# This is a comment\n{content}\n# Another comment\n"
     schema_path.write_text(content_with_comments, encoding="utf-8")
 
-    # Hash should remain the same
     h2 = copier.compute_schema_hash(schema_path)
     assert h1 == h2
 
