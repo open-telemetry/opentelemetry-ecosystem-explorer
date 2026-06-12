@@ -25,6 +25,7 @@ import logging
 import shutil
 from pathlib import Path
 
+import yaml
 from watcher_common.content_hashing import compute_content_hash
 
 logger = logging.getLogger(__name__)
@@ -61,7 +62,7 @@ class CollectorSchemaCopier:
             logger.debug("Schema file not found in repo at %s, skipping store", src)
             return None
 
-        schema_hash = compute_content_hash(src.read_bytes())
+        schema_hash = self.compute_schema_hash(src)
         dst = schemas_dir / f"{schema_hash}.yaml"
         if dst.exists():
             logger.debug("Schema %s already stored at %s, skipping copy", schema_hash, dst)
@@ -87,4 +88,8 @@ class CollectorSchemaCopier:
         """
         if not schema_path.exists():
             return UNKNOWN_HASH
-        return compute_content_hash(schema_path.read_bytes())
+
+        with open(schema_path, "r", encoding="utf-8") as f:
+            data = yaml.safe_load(f)
+        normalized_yaml = yaml.safe_dump(data, sort_keys=True)
+        return compute_content_hash(normalized_yaml)
