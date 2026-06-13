@@ -16,22 +16,23 @@
 
 import { describe, expect, it } from "vitest";
 
-import type { InstrumentationData } from "@/types/javaagent";
+import type { InstrumentationIndexEntry } from "@/types/javaagent";
 import { toJavaAgentResult } from "./java-agent";
 
-function makeInstrumentation(overrides: Partial<InstrumentationData> = {}): InstrumentationData {
+function makeIndexEntry(
+  overrides: Partial<InstrumentationIndexEntry> = {}
+): InstrumentationIndexEntry {
   return {
     name: "kafka-client",
     display_name: "Kafka Client",
     description: "Messaging instrumentation for Kafka",
-    scope: { name: "kafka" },
     ...overrides,
   };
 }
 
 describe("toJavaAgentResult", () => {
   it("maps an instrumentation to a java-agent search result", () => {
-    const result = toJavaAgentResult(makeInstrumentation(), "1.2.3");
+    const result = toJavaAgentResult(makeIndexEntry(), "1.2.3");
 
     expect(result).toMatchObject({
       title: "Kafka Client",
@@ -46,27 +47,52 @@ describe("toJavaAgentResult", () => {
   });
 
   it("omits stability and surfaces no facet for agent-only instrumentations", () => {
-    const result = toJavaAgentResult(makeInstrumentation(), "1.2.3");
+    const result = toJavaAgentResult(makeIndexEntry(), "1.2.3");
 
     expect(result.stability).toBeUndefined();
     expect(result.facets).toEqual([]);
   });
 
   it("surfaces a standalone-library facet when the instrumentation ships as one", () => {
-    const result = toJavaAgentResult(
-      makeInstrumentation({ has_standalone_library: true }),
-      "1.2.3"
-    );
+    const result = toJavaAgentResult(makeIndexEntry({ has_standalone_library: true }), "1.2.3");
 
     expect(result.facets).toEqual(["standalone library"]);
   });
 
   it("falls back to the instrumentation name when display_name is absent", () => {
     const result = toJavaAgentResult(
-      makeInstrumentation({ display_name: undefined, name: "jdbc" }),
+      makeIndexEntry({ display_name: undefined, name: "jdbc" }),
       "2.0.0"
     );
 
     expect(result.title).toBe("jdbc");
+  });
+});
+
+describe("getInstrumentationSearchTerms via toJavaAgentResult", () => {
+  it("indexes precomputed search_terms as keywords", () => {
+    const result = toJavaAgentResult(
+      makeIndexEntry({
+        search_terms: ["messaging.publish.duration", "org.apache.kafka:kafka-clients:[2.6,)"],
+      }),
+      "1.2.3"
+    );
+    expect(result.keywords).toContain("messaging.publish.duration");
+    expect(result.keywords).toContain("org.apache.kafka:kafka-clients:[2.6,)");
+    expect(result.keywords).toContain("Kafka Client");
+  });
+
+  it("degrades to exactly name/display_name/description (+path) when search_terms is absent", () => {
+    const result = toJavaAgentResult(makeIndexEntry({ search_terms: undefined }), "1.2.3");
+    // Pin the full fallback keyword set: with no search_terms, only the three
+    // always-present fields are searchable (plus the path keyword). This nails
+    // the fallback boundary so any change to what is searchable-without-
+    // search_terms — e.g. silently dropping scope.name — is caught here.
+    expect(result.keywords).toEqual([
+      "kafka-client",
+      "Kafka Client",
+      "Messaging instrumentation for Kafka",
+      "/java-agent/instrumentation/1.2.3/kafka-client",
+    ]);
   });
 });

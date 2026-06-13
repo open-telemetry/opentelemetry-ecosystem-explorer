@@ -14,116 +14,65 @@
  * limitations under the License.
  */
 
-import {
-  loadAllInstrumentations,
-  loadVersions as loadJavaAgentVersions,
-} from "@/lib/api/javaagent-data";
-import type { InstrumentationData } from "@/types/javaagent";
+import { loadIndex, loadVersions as loadJavaAgentVersions } from "@/lib/api/javaagent-data";
+import type { InstrumentationIndexEntry } from "@/types/javaagent";
 import type { SearchResult, SearchSource } from "../types";
 
-function addSearchTerm(
-  terms: Set<string>,
-  value: string | number | boolean | null | undefined
-): void {
+function addSearchTerm(terms: Set<string>, value: string | null | undefined): void {
   if (value === null || value === undefined) {
     return;
   }
-  const normalizedValue = String(value).trim();
+  const normalizedValue = value.trim();
   if (normalizedValue) {
     terms.add(normalizedValue);
   }
 }
 
-/** Collects every searchable string off an instrumentation (name, scope, telemetry, …). */
-export function getInstrumentationSearchTerms(instrumentation: InstrumentationData): string[] {
+/**
+ * Searchable terms for a slim index entry: always seeds name/display_name/description,
+ * then folds in the precomputed `search_terms`. When `search_terms` is absent (older
+ * indexes), search degrades to the three seeds rather than failing.
+ */
+export function getInstrumentationSearchTerms(entry: InstrumentationIndexEntry): string[] {
   const terms = new Set<string>();
-
-  addSearchTerm(terms, instrumentation.name);
-  addSearchTerm(terms, instrumentation.display_name);
-  addSearchTerm(terms, instrumentation.description);
-  addSearchTerm(terms, instrumentation.library_link);
-  addSearchTerm(terms, instrumentation.source_path);
-  addSearchTerm(terms, instrumentation.minimum_java_version);
-  addSearchTerm(terms, instrumentation.scope.name);
-  addSearchTerm(terms, instrumentation.scope.schema_url);
-
-  instrumentation.semantic_conventions?.forEach((value) => addSearchTerm(terms, value));
-  instrumentation.features?.forEach((value) => addSearchTerm(terms, value));
-  instrumentation.javaagent_target_versions?.forEach((value) => addSearchTerm(terms, value));
-
-  instrumentation.configurations?.forEach((configuration) => {
-    addSearchTerm(terms, configuration.name);
-    addSearchTerm(terms, configuration.declarative_name);
-    addSearchTerm(terms, configuration.description);
-    addSearchTerm(terms, configuration.type);
-    addSearchTerm(terms, configuration.default);
-    configuration.examples?.forEach((value) => addSearchTerm(terms, value));
-  });
-
-  instrumentation.telemetry?.forEach((telemetry) => {
-    addSearchTerm(terms, telemetry.when);
-
-    telemetry.metrics?.forEach((metric) => {
-      addSearchTerm(terms, metric.name);
-      addSearchTerm(terms, metric.description);
-      addSearchTerm(terms, metric.instrument);
-      addSearchTerm(terms, metric.data_type);
-      addSearchTerm(terms, metric.unit);
-
-      metric.attributes?.forEach((attribute) => {
-        addSearchTerm(terms, attribute.name);
-        addSearchTerm(terms, attribute.type);
-      });
-    });
-
-    telemetry.spans?.forEach((span) => {
-      addSearchTerm(terms, span.span_kind);
-
-      span.attributes?.forEach((attribute) => {
-        addSearchTerm(terms, attribute.name);
-        addSearchTerm(terms, attribute.type);
-      });
-    });
-  });
-
+  addSearchTerm(terms, entry.name);
+  addSearchTerm(terms, entry.display_name);
+  addSearchTerm(terms, entry.description);
+  entry.search_terms?.forEach((value) => addSearchTerm(terms, value));
   return [...terms];
 }
 
-/** Maps a Java Agent instrumentation to a search result. Exported for unit tests. */
+/** Maps a Java Agent index entry to a search result. Exported for unit tests. */
 export function toJavaAgentResult(
-  instrumentation: InstrumentationData,
+  entry: InstrumentationIndexEntry,
   version: string,
   resultType: SearchResult["type"] = "item"
 ): SearchResult {
-  const title = instrumentation.display_name ?? instrumentation.name;
+  const path = `/java-agent/instrumentation/${version}/${entry.name}`;
   return {
-    title,
-    description: instrumentation.description ?? "OpenTelemetry Java Agent instrumentation",
-    path: `/java-agent/instrumentation/${version}/${instrumentation.name}`,
+    title: entry.display_name ?? entry.name,
+    description: entry.description ?? "OpenTelemetry Java Agent instrumentation",
+    path,
     type: resultType,
-    keywords: [
-      ...getInstrumentationSearchTerms(instrumentation),
-      `/java-agent/instrumentation/${version}/${instrumentation.name}`,
-    ],
+    // The full instrumentation path is indexed as a keyword so path queries match.
+    keywords: [...getInstrumentationSearchTerms(entry), path],
     ecosystem: "java-agent",
     version,
     // Most instrumentations run via the agent, so an "agent" facet would just
     // repeat the ecosystem pill. The non-obvious signal is whether one also
     // ships as a standalone library (usable without the agent) — surface only
     // that. Stability is omitted: Java Agent doesn't track it per-instrumentation.
-    facets: instrumentation.has_standalone_library ? ["standalone library"] : [],
+    facets: entry.has_standalone_library ? ["standalone library"] : [],
   };
 }
 
 async function loadJavaAgentSearchResults(): Promise<SearchResult[]> {
-  const versionsIndex = await loadJavaAgentVersions();
+  // Two fetches (index.json + versions-index.json), no per-instrumentation fan-out.
+  const [versionsIndex, index] = await Promise.all([loadJavaAgentVersions(), loadIndex()]);
   const latestVersion = versionsIndex.versions.find((version) => version.is_latest)?.version;
   if (!latestVersion) return [];
 
-  const instrumentations = await loadAllInstrumentations(latestVersion);
-  return instrumentations.map((instrumentation) =>
-    toJavaAgentResult(instrumentation, latestVersion)
-  );
+  return index.components.map((entry) => toJavaAgentResult(entry, latestVersion));
 }
 
 export const javaAgentSearchSource: SearchSource = {

@@ -17,7 +17,12 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import "fake-indexeddb/auto";
 import * as javaagentData from "./javaagent-data";
 import * as idbCache from "./idb-cache";
-import type { VersionsIndex, VersionManifest, InstrumentationData } from "@/types/javaagent";
+import type {
+  VersionsIndex,
+  VersionManifest,
+  InstrumentationData,
+  InstrumentationIndex,
+} from "@/types/javaagent";
 
 declare const global: typeof globalThis;
 
@@ -199,6 +204,55 @@ describe("javaagent-data", () => {
     });
   });
 
+  describe("loadIndex", () => {
+    const mockIndex: InstrumentationIndex = {
+      ecosystem: "javaagent",
+      components: [
+        {
+          name: "akka-actor-2.3",
+          display_name: "Akka Actor",
+          description: "Akka actor instrumentation",
+          has_telemetry: true,
+          has_standalone_library: false,
+          search_terms: ["io.opentelemetry.akka-actor-2.3"],
+        },
+      ],
+    };
+
+    it("should fetch and cache the index on cache miss", async () => {
+      const getCachedSpy = vi.spyOn(idbCache, "getCached").mockResolvedValue(null);
+      const setCachedSpy = vi.spyOn(idbCache, "setCached").mockResolvedValue();
+
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ok: true,
+        json: async () => mockIndex,
+      });
+
+      const result = await javaagentData.loadIndex();
+
+      expect(result).toEqual(mockIndex);
+      expect(getCachedSpy).toHaveBeenCalledWith(
+        "javaagent-instrumentation-index",
+        idbCache.STORES.METADATA
+      );
+      expect(global.fetch).toHaveBeenCalledWith("/data/javaagent/index.json");
+      expect(setCachedSpy).toHaveBeenCalledWith(
+        "javaagent-instrumentation-index",
+        mockIndex,
+        idbCache.STORES.METADATA
+      );
+    });
+
+    it("should return cached data on cache hit", async () => {
+      vi.spyOn(idbCache, "getCached").mockResolvedValue(mockIndex);
+
+      const result = await javaagentData.loadIndex();
+
+      expect(result).toEqual(mockIndex);
+      expect(global.fetch).not.toHaveBeenCalled();
+    });
+  });
+
   describe("loadInstrumentation", () => {
     it("should load instrumentation using manifest hash", async () => {
       const getCachedSpy = vi
@@ -316,8 +370,26 @@ describe("javaagent-data", () => {
       const result = await javaagentData.loadAllInstrumentations("2.10.0");
 
       expect(result).toHaveLength(2);
-      expect(result).toContainEqual({ ...akkaData, _is_custom: false });
-      expect(result).toContainEqual({ ...springData, _is_custom: false });
+      expect(result).toContainEqual(
+        expect.objectContaining({
+          name: "akka-actor",
+          scope: { name: "io.opentelemetry.akka-actor" },
+          display_name: "Akka Actor",
+          description: "Instrumentation for Akka Actor",
+          has_spans: false,
+          has_metrics: false,
+          _is_custom: false,
+        })
+      );
+      expect(result).toContainEqual(
+        expect.objectContaining({
+          name: "spring-webmvc",
+          scope: { name: "io.opentelemetry.spring-webmvc" },
+          has_spans: false,
+          has_metrics: false,
+          _is_custom: false,
+        })
+      );
     });
   });
 
@@ -346,8 +418,26 @@ describe("javaagent-data", () => {
       const result = await javaagentData.loadAllInstrumentations("2.10.0");
 
       expect(result).toHaveLength(2);
-      expect(result).toContainEqual({ ...akkaData, _is_custom: false });
-      expect(result).toContainEqual({ ...springData, _is_custom: false });
+      expect(result).toContainEqual(
+        expect.objectContaining({
+          name: "akka-actor",
+          scope: { name: "io.opentelemetry.akka-actor" },
+          display_name: "Akka Actor",
+          description: "Instrumentation for Akka Actor",
+          has_spans: false,
+          has_metrics: false,
+          _is_custom: false,
+        })
+      );
+      expect(result).toContainEqual(
+        expect.objectContaining({
+          name: "spring-webmvc",
+          scope: { name: "io.opentelemetry.spring-webmvc" },
+          has_spans: false,
+          has_metrics: false,
+          _is_custom: false,
+        })
+      );
     });
 
     it("should only load manifest once for all instrumentations", async () => {

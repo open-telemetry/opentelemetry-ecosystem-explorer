@@ -36,6 +36,39 @@ export interface VersionManifest {
 }
 
 /**
+ * The javaagent `index.json` envelope: a slim, search-oriented snapshot of the
+ * latest version's instrumentations. Mirrors `CollectorIndex`.
+ */
+export interface InstrumentationIndex {
+  /** The ecosystem identifier, always `"javaagent"`. */
+  ecosystem: string;
+  /** One slim entry per instrumentation in the latest version, sorted by name. */
+  components: InstrumentationIndexEntry[];
+}
+
+/**
+ * A slim per-instrumentation entry in `index.json`. Carries only what global
+ * search needs up front; full detail loads on demand. Mirrors `IndexComponent`.
+ */
+export interface InstrumentationIndexEntry {
+  /** The unique name of the instrumentation (e.g., akka-actor-2.3). */
+  name: string;
+  /** Human-readable name of the instrumentation. */
+  display_name?: string | null;
+  /** Brief description of what is being instrumented. */
+  description?: string | null;
+  /** Whether this instrumentation emits any telemetry. */
+  has_telemetry?: boolean;
+  /** Whether this instrumentation also ships as a standalone library. */
+  has_standalone_library?: boolean;
+  /**
+   * Precomputed search terms (sorted, deduped). Optional: absent in older
+   * committed indexes, where search degrades to name/display_name/description.
+   */
+  search_terms?: string[];
+}
+
+/**
  * Detailed metadata for an OpenTelemetry Java Agent instrumentation.
  */
 export interface InstrumentationData {
@@ -82,6 +115,40 @@ export interface InstrumentationData {
   has_spans?: boolean;
   /** Precomputed presence flag: whether any telemetry block emits metrics. See `has_spans`. */
   has_metrics?: boolean;
+}
+
+/**
+ * The slim per-version list-bundle entry the catalog page and Configuration
+ * Builder read. Telemetry is collapsed to `has_spans`/`has_metrics`; the fan-out
+ * fallback projects full detail down to this same shape.
+ */
+export interface InstrumentationListEntry {
+  /** The unique name of the instrumentation (e.g., akka-actor-2.3). */
+  name: string;
+  /** The OpenTelemetry instrumentation scope. */
+  scope: InstrumentationScope;
+  /** Human-readable name of the instrumentation. */
+  display_name?: string;
+  /** Brief description of what is being instrumented. */
+  description?: string;
+  /** Whether this instrumentation runs under the Java Agent. */
+  has_javaagent?: boolean;
+  /** Whether this instrumentation is available as a standalone library. */
+  has_standalone_library?: boolean;
+  /** Semantic conventions followed by this instrumentation. */
+  semantic_conventions?: string[];
+  /** Telemetry features provided (e.g., TRACING, METRICS). */
+  features?: string[];
+  /** Configuration options, consumed by the Configuration Builder. */
+  configurations?: Configuration[];
+  /** Whether this instrumentation is disabled by default. */
+  disabled_by_default?: boolean;
+  /** Whether any telemetry block emits spans. Required: always set by both paths. */
+  has_spans: boolean;
+  /** Whether any telemetry block emits metrics. Required: always set by both paths. */
+  has_metrics: boolean;
+  /** Whether this is a custom (non-upstream) instrumentation. Required: drives the library/custom split. */
+  _is_custom: boolean;
 }
 
 /**
@@ -224,5 +291,5 @@ export interface TelemetryDiffResult {
 export interface InstrumentationModule {
   name: string;
   defaultDisabled: boolean;
-  coveredEntries: InstrumentationData[];
+  coveredEntries: InstrumentationListEntry[];
 }

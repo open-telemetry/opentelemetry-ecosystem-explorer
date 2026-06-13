@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useState, useCallback, useMemo, type JSX } from "react";
-import type { InstrumentationData, InstrumentationModule } from "@/types/javaagent";
+import type { InstrumentationListEntry, InstrumentationModule } from "@/types/javaagent";
 import { Loader } from "@/components/ui/loader";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
 import {
@@ -27,7 +27,7 @@ import { SectionCardShell } from "./section-card-shell";
 import { InstrumentationRow } from "./instrumentation-row";
 
 export interface InstrumentationBrowserProps {
-  instrumentations: InstrumentationData[] | null;
+  instrumentations: InstrumentationListEntry[] | null;
   loading: boolean;
   error: Error | null;
   search: string;

@@ -16,7 +16,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { InstrumentationData } from "@/types/javaagent";
+import type { InstrumentationListEntry } from "@/types/javaagent";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
 import { useCustomizationStatusMap } from "@/hooks/use-customization-status";
 import { useCustomizedModules } from "@/hooks/use-customized-modules";
@@ -31,15 +31,18 @@ vi.mock("@/hooks/use-customized-modules", () => ({
 const mockedBuilder = vi.mocked(useConfigurationBuilder);
 const mockedCustomization = vi.mocked(useCustomizationStatusMap);
 
-function entry(name: string, opts: Partial<InstrumentationData> = {}): InstrumentationData {
+function entry(
+  name: string,
+  opts: Partial<InstrumentationListEntry> = {}
+): InstrumentationListEntry {
   return {
     name,
     scope: { name: `io.opentelemetry.${name}` },
     ...opts,
-  } as InstrumentationData;
+  } as InstrumentationListEntry;
 }
 
-const FIXTURE: InstrumentationData[] = [
+const FIXTURE: InstrumentationListEntry[] = [
   entry("cassandra-3.0", { description: "Cassandra Driver context propagation" }),
   entry("cassandra-4.0"),
   entry("cassandra-4.4"),
@@ -259,6 +262,9 @@ describe("InstrumentationBrowser — expansion and customization filter", () => 
     {
       name: "cassandra-4.4",
       scope: { name: "io.opentelemetry.cassandra-4.4" },
+      has_spans: false,
+      has_metrics: false,
+      _is_custom: false,
       configurations: [
         {
           name: "x",
@@ -271,8 +277,20 @@ describe("InstrumentationBrowser — expansion and customization filter", () => 
     },
   ];
   const twoModules = [
-    { name: "cassandra-4.4", scope: { name: "io.opentelemetry.cassandra-4.4" } },
-    { name: "graphql-java-20.0", scope: { name: "io.opentelemetry.graphql-java-20.0" } },
+    {
+      name: "cassandra-4.4",
+      scope: { name: "io.opentelemetry.cassandra-4.4" },
+      has_spans: false,
+      has_metrics: false,
+      _is_custom: false,
+    },
+    {
+      name: "graphql-java-20.0",
+      scope: { name: "io.opentelemetry.graphql-java-20.0" },
+      has_spans: false,
+      has_metrics: false,
+      _is_custom: false,
+    },
   ];
 
   it("expands a row when its toggle button is clicked", async () => {

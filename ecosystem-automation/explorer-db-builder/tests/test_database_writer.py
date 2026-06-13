@@ -554,7 +554,25 @@ def sample_index_instrumentations():
             "display_name": "Spring Web MVC",
             "description": "Spring Web MVC instrumentation",
             "has_standalone_library": True,
-            "telemetry": [{"when": "default", "spans": [{"span_kind": "SERVER"}]}],
+            "library_link": "https://spring.io/projects/spring-framework",
+            "source_path": "instrumentation/spring/spring-webmvc-6.0",
+            "minimum_java_version": 17,
+            "javaagent_target_versions": ["org.springframework:spring-webmvc:[6.0,)"],
+            "telemetry": [
+                {
+                    "when": "default",
+                    "spans": [{"span_kind": "SERVER"}],
+                    "metrics": [
+                        {
+                            "name": "http.server.request.duration",
+                            "description": "Duration of HTTP server requests.",
+                            "instrument": "histogram",
+                            "data_type": "HISTOGRAM",
+                            "unit": "s",
+                        }
+                    ],
+                }
+            ],
             # Heavy fields that must NOT leak into the index:
             "configurations": [{"name": "otel.x", "type": "boolean"}],
             "scope": {"name": "io.opentelemetry.spring-webmvc-6.0"},
@@ -564,7 +582,7 @@ def sample_index_instrumentations():
             "display_name": "Akka HTTP",
             "description": "Akka HTTP instrumentation",
             "has_standalone_library": False,
-            # No telemetry key -> has_telemetry should be False.
+            # No telemetry key -> has_telemetry should be False; search_terms empty.
         },
     ]
 
@@ -603,6 +621,7 @@ class TestWriteIndex:
             "description",
             "has_telemetry",
             "has_standalone_library",
+            "search_terms",
         }
         # Heavy fields must not be present in the index entry.
         assert "configurations" not in spring
@@ -620,6 +639,34 @@ class TestWriteIndex:
         assert spring["has_standalone_library"] is True
         assert akka["has_telemetry"] is False
         assert akka["has_standalone_library"] is False
+
+    def test_write_index_search_terms_sorted_deduped_and_populated(
+        self, db_writer, sample_index_instrumentations, temp_db_dir
+    ):
+        db_writer.write_index(sample_index_instrumentations)
+        with open(temp_db_dir / "index.json") as f:
+            data = json.load(f)
+
+        spring = next(c for c in data["components"] if c["name"] == "spring-webmvc-6.0")
+        akka = next(c for c in data["components"] if c["name"] == "akka-http-10.0")
+
+        terms = spring["search_terms"]
+        # Sorted + deduped: the determinism contract for the content hash.
+        assert terms == sorted(set(terms))
+        # Distinctive identifiers flow in.
+        assert "io.opentelemetry.spring-webmvc-6.0" in terms  # scope.name
+        assert "org.springframework:spring-webmvc" in terms  # coordinate, range stripped
+        assert "otel.x" in terms  # config name
+        assert "http.server.request.duration" in terms  # metric name
+        assert "Duration of HTTP server requests." in terms  # metric description
+        # Noise and seeded fields stay out.
+        assert "https://spring.io/projects/spring-framework" not in terms  # library_link
+        assert "17" not in terms  # minimum_java_version
+        assert "s" not in terms  # metric unit
+        assert "org.springframework:spring-webmvc:[6.0,)" not in terms  # unstripped
+        assert "Spring Web MVC" not in terms  # display_name (frontend indexes it)
+        # No-telemetry entry degrades to an empty list, never a crash or a None.
+        assert akka["search_terms"] == []
 
     def test_write_index_skips_items_without_name(self, db_writer, temp_db_dir):
         db_writer.write_index(
