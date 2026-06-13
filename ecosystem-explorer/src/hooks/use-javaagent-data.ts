@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 import { useState, useEffect } from "react";
-import type { VersionsIndex, InstrumentationData } from "@/types/javaagent";
+import type {
+  VersionsIndex,
+  InstrumentationData,
+  InstrumentationListEntry,
+} from "@/types/javaagent";
 import type { DataState } from "./data-state";
 import * as javaagentData from "@/lib/api/javaagent-data";
 
@@ -55,8 +59,8 @@ export function useVersions(): DataState<VersionsIndex> {
   return state;
 }
 
-export function useInstrumentations(version: string): DataState<InstrumentationData[]> {
-  const [state, setState] = useState<DataState<InstrumentationData[]>>({
+export function useInstrumentations(version: string): DataState<InstrumentationListEntry[]> {
+  const [state, setState] = useState<DataState<InstrumentationListEntry[]>>({
     data: null,
     loading: true,
     error: null,
@@ -95,6 +99,53 @@ export function useInstrumentations(version: string): DataState<InstrumentationD
       cancelled = true;
     };
   }, [version]);
+
+  return state;
+}
+
+export function useLibraryReadme(
+  name: string,
+  markdownHash: string | null | undefined
+): DataState<string> {
+  const [state, setState] = useState<DataState<string>>({
+    data: null,
+    loading: false,
+    error: null,
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadData() {
+      if (!name || !markdownHash) {
+        setState({ data: null, loading: false, error: null });
+        return;
+      }
+
+      setState({ data: null, loading: true, error: null });
+
+      try {
+        const data = await javaagentData.loadLibraryReadme(name, markdownHash);
+        if (!cancelled) {
+          setState({ data, loading: false, error: null });
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setState({
+            data: null,
+            loading: false,
+            error: error instanceof Error ? error : new Error(String(error)),
+          });
+        }
+      }
+    }
+
+    loadData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [name, markdownHash]);
 
   return state;
 }

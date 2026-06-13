@@ -19,6 +19,7 @@ import {
   Info,
   Activity,
   Settings,
+  BookOpen,
   ExternalLink,
   Code,
   Check,
@@ -46,6 +47,7 @@ import { VersionSelector } from "./components/version-selector";
 import { PageContainer } from "@/components/layout/page-container";
 import { Tooltip } from "@/components/ui/tooltip";
 import { InstrumentationConfigurationTab } from "./components/instrumentation-configuration-tab";
+import { StandaloneLibraryTab } from "./components/standalone-library-tab";
 import { renderWithInlineCode } from "@/lib/render-inline-code";
 
 function buildSourceUrl(sourcePath: string): string {
@@ -330,6 +332,15 @@ export function InstrumentationDetailPage() {
                     label: "Configuration",
                     icon: <Settings className="h-4 w-4" aria-hidden="true" />,
                   },
+                  ...(instrumentation.has_standalone_library && instrumentation.markdown_hash
+                    ? [
+                        {
+                          value: "standalone-library",
+                          label: "Standalone Library",
+                          icon: <BookOpen className="h-4 w-4" aria-hidden="true" />,
+                        },
+                      ]
+                    : []),
                 ]}
               />
             </div>
@@ -619,6 +630,14 @@ export function InstrumentationDetailPage() {
                 configurations={instrumentation.configurations ?? []}
               />
             </TabsContent>
+            {instrumentation.has_standalone_library && instrumentation.markdown_hash && (
+              <TabsContent value="standalone-library" className="mt-0 p-4 sm:p-6">
+                <StandaloneLibraryTab
+                  name={instrumentation.name}
+                  markdownHash={instrumentation.markdown_hash}
+                />
+              </TabsContent>
+            )}
           </Tabs>
         </div>
       </div>

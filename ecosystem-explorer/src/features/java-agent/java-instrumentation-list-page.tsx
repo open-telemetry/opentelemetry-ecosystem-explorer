@@ -188,17 +188,10 @@ export function JavaInstrumentationListPage() {
       }
 
       if (filters.telemetry.size > 0) {
-        // Prefer the precomputed flags from slim list-bundle entries; fall back
-        // to scanning telemetry for full detail objects (which omit the flags).
-        const hasSpans =
-          instr.has_spans ?? instr.telemetry?.some((t) => t.spans && t.spans.length > 0);
-        const hasMetrics =
-          instr.has_metrics ?? instr.telemetry?.some((t) => t.metrics && t.metrics.length > 0);
-
-        if (filters.telemetry.has("spans") && !hasSpans) {
+        if (filters.telemetry.has("spans") && !instr.has_spans) {
           return false;
         }
-        if (filters.telemetry.has("metrics") && !hasMetrics) {
+        if (filters.telemetry.has("metrics") && !instr.has_metrics) {
           return false;
         }
       }

@@ -135,7 +135,9 @@ export function getFeatureInfo(value: string): FeatureInfo | null {
   return FEATURE_MAP[value] ?? null;
 }
 
-export function getInstrumentationDisplayName(instrumentation: InstrumentationData): string {
+export function getInstrumentationDisplayName(
+  instrumentation: Pick<InstrumentationData, "name" | "display_name">
+): string {
   if (instrumentation.display_name) {
     return instrumentation.display_name;
   }

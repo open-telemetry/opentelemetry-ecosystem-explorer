@@ -6,11 +6,18 @@ command = """
     export VITE_FEATURE_FLAG_V1_REDESIGN=true
     export VITE_FEATURE_FLAG_DEV_SHOWCASE=true
   fi
-  npm run netlify-build:preview
+  bun run netlify-build:preview
 """
 
+# `.bun-version` (repo root) is the canonical Bun version — the workflows read it
+# via setup-bun's `bun-version-file`. Netlify cannot read a version file, so this
+# literal must mirror it; Renovate keeps both in sync (see .github/renovate.json5).
+[build.environment]
+BUN_VERSION = "1.3.14"
+BUN_FLAGS = "--frozen-lockfile"
+
 [context.production]
-command = "npm run netlify-build:production"
+command = "bun run netlify-build:production"
 
 [context.production.environment]
 VITE_FARO_URL = "https://faro-collector-prod-us-east-2.grafana.net/collect/e587d17d38a90612e9dbedd3a3146b77"
