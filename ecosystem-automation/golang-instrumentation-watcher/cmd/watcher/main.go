@@ -49,18 +49,17 @@ func main() {
 
 	var (
 		baseDir      = flag.String("base-dir", workDir, "directory under which the upstream repos are cloned (.repo)")
-		registryDir  = flag.String("registry-dir", filepath.Join(workDir, "registry"), "directory to write the Weaver registry output")
 		inventoryDir = flag.String("inventory-dir", filepath.Join(root, "ecosystem-registry", "go", "contrib"), "directory to write the versioned instrumentation inventory")
 	)
 	flag.Parse()
 
-	if err := run(log, *baseDir, *registryDir, *inventoryDir); err != nil {
+	if err := run(log, *baseDir, *inventoryDir); err != nil {
 		log.WithErrorMsg(err, "sync failed")
 		os.Exit(1)
 	}
 }
 
-func run(log *conf.Log, baseDir, registryDir, inventoryDir string) error {
+func run(log *conf.Log, baseDir, inventoryDir string) error {
 	log.Info("🔭OTel Ecosystem Explorer: Golang 🔭")
 
 	semconvPath, err := repo.CheckoutSemconv(baseDir)
@@ -83,18 +82,17 @@ func run(log *conf.Log, baseDir, registryDir, inventoryDir string) error {
 
 	if mgr.VersionExists(releaseTag) {
 		log.Info("Release already inventoried ⏭️", "version", releaseTag)
-	} else if err := syncVersion(log, baseDir, registryDir, mgr, releaseTag, releaseTag, false); err != nil {
+	} else if err := syncVersion(log, baseDir, mgr, releaseTag, releaseTag, false); err != nil {
 		return err
 	}
 
-	return syncVersion(log, baseDir, registryDir, mgr, mainBranch, snapshotVersion, true)
+	return syncVersion(log, baseDir, mgr, mainBranch, snapshotVersion, true)
 }
 
 // syncVersion checks the contrib repo out at ref, scans it into fused Library
 // records with per-module versions resolved from the tags at that commit, and
-// writes the versioned inventory. The Weaver dev registry is regenerated from
-// the same scan. Snapshot writes first clean up the prior snapshot.
-func syncVersion(log *conf.Log, baseDir, registryDir string, mgr *inventory.Manager, ref, version string, snapshot bool) error {
+// writes the versioned inventory. Snapshot writes first clean up the prior snapshot.
+func syncVersion(log *conf.Log, baseDir string, mgr *inventory.Manager, ref, version string, snapshot bool) error {
 	repoInfo, err := repo.CheckoutAt(baseDir, ref)
 	if err != nil {
 		return err
@@ -111,10 +109,6 @@ func syncVersion(log *conf.Log, baseDir, registryDir string, mgr *inventory.Mana
 	}
 	instrumentation.ApplyModuleVersions(result.Libraries, instrumentation.ModuleVersions(tags))
 
-	if err := instrumentation.Generate(registryDir, result.Groups); err != nil {
-		return err
-	}
-
 	if snapshot {
 		if _, err := mgr.CleanupSnapshots(); err != nil {
 			return err
@@ -129,7 +123,6 @@ func syncVersion(log *conf.Log, baseDir, registryDir string, mgr *inventory.Mana
 		"ref", ref,
 		"sha", repoInfo.SHA,
 		"libraries", len(result.Libraries),
-		"groups", len(result.Groups),
 	)
 	return nil
 }

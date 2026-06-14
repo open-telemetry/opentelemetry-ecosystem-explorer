@@ -13,6 +13,20 @@ import (
 
 const otelContribPrefix = "go.opentelemetry.io/contrib/"
 
+func encodeYAMLFile(path string, data interface{}) error {
+	file, err := os.Create(path)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	encoder := yaml.NewEncoder(file)
+	encoder.SetIndent(2)
+	defer encoder.Close()
+
+	return encoder.Encode(data)
+}
+
 var bridgeTargetMap = map[string]string{
 	"otelslog":   "log/slog",
 	"otellogr":   "github.com/go-logr/logr",

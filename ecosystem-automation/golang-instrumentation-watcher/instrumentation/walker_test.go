@@ -18,7 +18,7 @@ func TestWalk(t *testing.T) {
 
 		for _, dir := range dirs {
 			dirPath := filepath.Join(tmpDir, dir)
-			if err := os.MkdirAll(dirPath, perms); err != nil {
+			if err := os.MkdirAll(dirPath, 0755); err != nil {
 				t.Fatal(err)
 			}
 			goModPath := filepath.Join(dirPath, "go.mod")

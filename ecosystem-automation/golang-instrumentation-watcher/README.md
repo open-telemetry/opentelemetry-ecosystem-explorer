@@ -41,10 +41,6 @@ libraries:
 is globally unique even when two modules share a leaf directory (e.g. the v1 and
 v2 `otelmongo` drivers); `display_name` keeps the short, human-facing form.
 
-A **Weaver registry** (`registry/signals.yaml` + `attributes.yaml`) is also
-generated as an optional dev/validation artifact (`make dev` →
-`weaver registry check`), not as the canonical consumer output.
-
 ## Core Responsibilities
 
 Per
@@ -101,14 +97,8 @@ a watcher must fulfill five critical functions. How this watcher maps to each:
 ## Quick Start
 
 ```bash
-# Install the weaver CLI (used for the optional dev validation artifact)
-make install
-
 # Run the full watcher pipeline → versioned inventory
 make sync
-
-# Run the pipeline and validate the Weaver dev registry
-make dev
 ```
 
 ## How It Works
@@ -118,18 +108,14 @@ make dev
 3. For each library, **fuses** derived metadata (from the module directive) with
    telemetry extracted via Go AST static analysis into one `Library` record
 4. Writes the versioned inventory under `ecosystem-registry/go/contrib/`
-5. Also emits a Weaver registry and validates it with `weaver registry check`
 
 ## Commands
 
 ```bash
 make sync           # Run the full watcher pipeline → versioned inventory
-make dev            # Run the pipeline and validate the Weaver dev registry
 make build          # Build the watcher binary
-make weaver-check   # Validate the Weaver dev registry
-make weaver-stats   # Show Weaver registry statistics
 make test           # Run tests
-make lint           # Run linter (+ weaver check)
+make lint           # Run linter
 make pre-commit     # fmt, tidy, lint, test
 ```
 
@@ -141,7 +127,6 @@ instrumentation.
 - [x] opentelemetry-go-contrib instrumentation extraction
 - [x] Fused `Library` records (metadata + telemetry)
 - [x] Versioned inventory output with `-SNAPSHOT` lifecycle
-- [x] Weaver dev registry (signals.yaml + attributes.yaml)
 - [ ] Release-tag version management and historical backfill
 - [ ] Automated change detection (GitHub issues on schema drift)
 - [ ] opentelemetry-go core libraries
@@ -150,7 +135,6 @@ instrumentation.
 
 - [OpenTelemetry Ecosystem Explorer](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer) —
   Registry and consumer pipeline
-- [OpenTelemetry Weaver](https://github.com/open-telemetry/weaver) - Schema tooling
 - [OpenTelemetry Go Contrib](https://github.com/open-telemetry/opentelemetry-go-contrib) - Instrumentation source
 
 ## License

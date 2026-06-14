@@ -2,7 +2,6 @@ package instrumentation
 
 import (
 	"cmp"
-	"fmt"
 	"go/ast"
 	"slices"
 	"strings"
@@ -51,7 +50,6 @@ func AnalyzePackage(pkgPath string) (*PackageAnalysis, error) {
 
 	// Extract telemetry (spans, metrics) from tracer/meter usage
 	analysis.Telemetry = extractTelemetry(pkg)
-	analysis.Groups = convertTelemetryToGroups(pkg.PkgPath, analysis.Telemetry)
 
 	return analysis, nil
 }
@@ -61,7 +59,6 @@ type PackageAnalysis struct {
 	Description         string
 	SemanticConventions []string
 	Telemetry           []Telemetry
-	Groups              []Group
 }
 
 func extractSemanticConventions(pkg *packages.Package) []string {
@@ -689,100 +686,6 @@ func isHostPackage(pkgPath string) bool {
 	return strings.HasSuffix(pkgPath, "/instrumentation/host")
 }
 
-func makeSpanGroupID(pkgName string, kind SpanKind) string {
-	return fmt.Sprintf("%s.%s.span", pkgName, strings.ToLower(string(kind)))
-}
-
-func makeMetricGroupID(pkgName, metricName string) string {
-	return fmt.Sprintf("%s.metric.%s", pkgName, sanitizeMetricName(metricName))
-}
-
-func convertTelemetryToGroups(pkgPath string, telemetry []Telemetry) []Group {
-	groupMap := make(map[string]*Group)
-	pkgName := sanitizePackageName(pkgPath)
-
-	for _, tel := range telemetry {
-		for _, span := range tel.Spans {
-			attrs := convertAttributesToRefs(span.Attributes)
-			if len(attrs) == 0 {
-				continue
-			}
-
-			groupID := makeSpanGroupID(pkgName, span.Kind)
-			if existing, ok := groupMap[groupID]; ok {
-				attrMap := make(map[string]bool)
-				for _, attr := range existing.Attributes {
-					attrMap[attr.Ref] = true
-				}
-				for _, attr := range attrs {
-					if !attrMap[attr.Ref] {
-						existing.Attributes = append(existing.Attributes, attr)
-					}
-				}
-			} else {
-				groupMap[groupID] = &Group{
-					ID:         groupID,
-					Type:       "span",
-					Name:       pkgName + " " + strings.ToLower(string(span.Kind)) + " span",
-					Stability:  StabilityDevelopment,
-					Brief:      "Span for " + pkgName,
-					SpanKind:   span.Kind,
-					Attributes: attrs,
-				}
-			}
-		}
-
-		for _, metric := range tel.Metrics {
-			if _, ok := GetSemconvMetric(metric.Name); ok {
-				continue
-			}
-
-			groupID := makeMetricGroupID(pkgName, metric.Name)
-			if _, ok := groupMap[groupID]; !ok {
-				groupMap[groupID] = &Group{
-					ID:         groupID,
-					Type:       "metric",
-					MetricName: metric.Name,
-					Instrument: metric.Type,
-					Unit:       metric.Unit,
-					Stability:  StabilityDevelopment,
-					Brief:      "Metric " + metric.Name,
-					Attributes: convertAttributesToRefs(metric.Attributes),
-				}
-			}
-		}
-	}
-
-	groups := make([]Group, 0, len(groupMap))
-	for _, group := range groupMap {
-		slices.SortFunc(group.Attributes, func(a, b AttributeRef) int { return cmp.Compare(a.Ref, b.Ref) })
-		groups = append(groups, *group)
-	}
-	slices.SortFunc(groups, func(a, b Group) int { return cmp.Compare(a.ID, b.ID) })
-
-	return groups
-}
-
-func convertAttributesToRefs(attrs []Attribute) []AttributeRef {
-	var refs []AttributeRef
-	for _, attr := range attrs {
-		refs = append(refs, AttributeRef{
-			Ref:              attr.Name,
-			RequirementLevel: "recommended",
-		})
-	}
-	return refs
-}
-
-func sanitizePackageName(pkgPath string) string {
-	parts := strings.Split(pkgPath, "/")
-	name := parts[len(parts)-1]
-	return strings.TrimPrefix(name, "otel")
-}
-
-func sanitizeMetricName(metricName string) string {
-	return strings.ReplaceAll(metricName, ".", "_")
-}
 
 func getSemConvMetrics(pkgPath string) []Metric {
 	pkgLower := strings.ToLower(pkgPath)

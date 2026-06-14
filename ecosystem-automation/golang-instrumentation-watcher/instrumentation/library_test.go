@@ -30,7 +30,7 @@ func TestAnalyzeLibrary(t *testing.T) {
 		modulePath := "go.opentelemetry.io/contrib/instrumentation/example.com/widget/otelwidget"
 		goModPath := writeModule(t, modulePath)
 
-		lib, groups, err := analyzeLibrary(goModPath)
+		lib, err := analyzeLibrary(goModPath)
 		if err != nil {
 			t.Fatalf("analyzeLibrary() error = %v", err)
 		}
@@ -56,23 +56,17 @@ func TestAnalyzeLibrary(t *testing.T) {
 		if len(lib.Telemetry) != 0 {
 			t.Errorf("Telemetry = %d entries, want 0 for a fixture with no spans/metrics", len(lib.Telemetry))
 		}
-		if len(groups) != 0 {
-			t.Errorf("groups = %d, want 0 for a fixture with no telemetry", len(groups))
-		}
 	})
 
 	t.Run("skips modules outside the contrib tree", func(t *testing.T) {
 		goModPath := writeModule(t, "example.com/not/contrib/thing")
 
-		lib, groups, err := analyzeLibrary(goModPath)
+		lib, err := analyzeLibrary(goModPath)
 		if err != nil {
 			t.Fatalf("analyzeLibrary() error = %v", err)
 		}
 		if lib != nil {
 			t.Errorf("analyzeLibrary() = %+v, want nil for a non-contrib module", lib)
-		}
-		if groups != nil {
-			t.Errorf("groups = %v, want nil for a non-contrib module", groups)
 		}
 	})
 }
