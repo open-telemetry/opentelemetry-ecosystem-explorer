@@ -38,11 +38,6 @@ test: ## 🧪 Run all tests
 	echo "Coverage report saved to coverage.html" && \
 	rm -f coverage.out
 
-.PHONY: vuln
-vuln: ## 🛡️  Scan for vulnerabilities
-	go install golang.org/x/vuln/cmd/govulncheck@latest
-	govulncheck ./...
-
 .PHONY: pre-commit
 pre-commit: fmt tidy lint test ## ✅ Run all checks
 
