@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { getI18n } from "react-i18next";
 import type { InstrumentationData } from "@/types/javaagent";
 
 export interface SemanticConventionInfo {
@@ -20,75 +21,35 @@ export interface SemanticConventionInfo {
   url: string;
 }
 
-const SEMANTIC_CONVENTION_MAP: Record<string, SemanticConventionInfo> = {
-  HTTP_CLIENT_SPANS: {
-    label: "HTTP Client Spans",
-    url: "https://opentelemetry.io/docs/specs/semconv/http/http-spans/#http-client-span",
-  },
-  HTTP_SERVER_SPANS: {
-    label: "HTTP Server Spans",
-    url: "https://opentelemetry.io/docs/specs/semconv/http/http-spans/#http-server-span",
-  },
-  HTTP_CLIENT_METRICS: {
-    label: "HTTP Client Metrics",
-    url: "https://opentelemetry.io/docs/specs/semconv/http/http-metrics/#http-client",
-  },
-  HTTP_SERVER_METRICS: {
-    label: "HTTP Server Metrics",
-    url: "https://opentelemetry.io/docs/specs/semconv/http/http-metrics/#http-server",
-  },
-  DATABASE_CLIENT_SPANS: {
-    label: "Database Client Spans",
-    url: "https://opentelemetry.io/docs/specs/semconv/database/database-spans/",
-  },
-  DATABASE_CLIENT_METRICS: {
-    label: "Database Client Metrics",
-    url: "https://opentelemetry.io/docs/specs/semconv/database/database-metrics/",
-  },
-  DATABASE_POOL_METRICS: {
-    label: "Database Pool Metrics",
-    url: "https://opentelemetry.io/docs/specs/semconv/database/database-metrics/#connection-pools",
-  },
-  MESSAGING_SPANS: {
-    label: "Messaging Spans",
-    url: "https://opentelemetry.io/docs/specs/semconv/messaging/messaging-spans/",
-  },
-  RPC_CLIENT_SPANS: {
-    label: "RPC Client Spans",
-    url: "https://opentelemetry.io/docs/specs/semconv/rpc/rpc-spans/",
-  },
-  RPC_SERVER_SPANS: {
-    label: "RPC Server Spans",
-    url: "https://opentelemetry.io/docs/specs/semconv/rpc/rpc-spans/",
-  },
-  RPC_CLIENT_METRICS: {
-    label: "RPC Client Metrics",
-    url: "https://opentelemetry.io/docs/specs/semconv/rpc/rpc-metrics/",
-  },
-  RPC_SERVER_METRICS: {
-    label: "RPC Server Metrics",
-    url: "https://opentelemetry.io/docs/specs/semconv/rpc/rpc-metrics/",
-  },
-  FAAS_SERVER_SPANS: {
-    label: "FaaS Server Spans",
-    url: "https://opentelemetry.io/docs/specs/semconv/faas/faas-spans/",
-  },
-  GRAPHQL_SERVER_SPANS: {
-    label: "GraphQL Server Spans",
-    url: "https://opentelemetry.io/docs/specs/semconv/graphql/graphql-spans/",
-  },
-  GENAI_CLIENT_SPANS: {
-    label: "GenAI Client Spans",
-    url: "https://opentelemetry.io/docs/specs/semconv/gen-ai/gen-ai-spans/",
-  },
-  GENAI_CLIENT_METRICS: {
-    label: "GenAI Client Metrics",
-    url: "https://opentelemetry.io/docs/specs/semconv/gen-ai/gen-ai-metrics/",
-  },
+const SEMCONV_URLS: Record<string, string> = {
+  HTTP_CLIENT_SPANS:
+    "https://opentelemetry.io/docs/specs/semconv/http/http-spans/#http-client-span",
+  HTTP_SERVER_SPANS:
+    "https://opentelemetry.io/docs/specs/semconv/http/http-spans/#http-server-span",
+  HTTP_CLIENT_METRICS: "https://opentelemetry.io/docs/specs/semconv/http/http-metrics/#http-client",
+  HTTP_SERVER_METRICS: "https://opentelemetry.io/docs/specs/semconv/http/http-metrics/#http-server",
+  DATABASE_CLIENT_SPANS: "https://opentelemetry.io/docs/specs/semconv/database/database-spans/",
+  DATABASE_CLIENT_METRICS: "https://opentelemetry.io/docs/specs/semconv/database/database-metrics/",
+  DATABASE_POOL_METRICS:
+    "https://opentelemetry.io/docs/specs/semconv/database/database-metrics/#connection-pools",
+  MESSAGING_SPANS: "https://opentelemetry.io/docs/specs/semconv/messaging/messaging-spans/",
+  RPC_CLIENT_SPANS: "https://opentelemetry.io/docs/specs/semconv/rpc/rpc-spans/",
+  RPC_SERVER_SPANS: "https://opentelemetry.io/docs/specs/semconv/rpc/rpc-spans/",
+  RPC_CLIENT_METRICS: "https://opentelemetry.io/docs/specs/semconv/rpc/rpc-metrics/",
+  RPC_SERVER_METRICS: "https://opentelemetry.io/docs/specs/semconv/rpc/rpc-metrics/",
+  FAAS_SERVER_SPANS: "https://opentelemetry.io/docs/specs/semconv/faas/faas-spans/",
+  GRAPHQL_SERVER_SPANS: "https://opentelemetry.io/docs/specs/semconv/graphql/graphql-spans/",
+  GENAI_CLIENT_SPANS: "https://opentelemetry.io/docs/specs/semconv/gen-ai/gen-ai-spans/",
+  GENAI_CLIENT_METRICS: "https://opentelemetry.io/docs/specs/semconv/gen-ai/gen-ai-metrics/",
 };
 
 export function getSemanticConventionInfo(value: string): SemanticConventionInfo | null {
-  return SEMANTIC_CONVENTION_MAP[value] ?? null;
+  const url = SEMCONV_URLS[value];
+  if (!url) return null;
+  return {
+    label: getI18n().t(`format.semconv.${value}`, { ns: "java-agent" }),
+    url,
+  };
 }
 
 export interface FeatureInfo {
@@ -96,43 +57,22 @@ export interface FeatureInfo {
   description: string;
 }
 
-const FEATURE_MAP: Record<string, FeatureInfo> = {
-  HTTP_ROUTE: {
-    label: "HTTP Route",
-    description: "Enriches HTTP spans with route information.",
-  },
-  CONTEXT_PROPAGATION: {
-    label: "Context Propagation",
-    description:
-      "Propagates context inter-process (via headers in HTTP, gRPC, and messaging) and inter-thread (executors, actors, and reactive streams).",
-  },
-  AUTO_INSTRUMENTATION_SHIM: {
-    label: "Auto Instrumentation Shim",
-    description: "Adapts or bridges instrumentation from upstream libraries or frameworks.",
-  },
-  CONTROLLER_SPANS: {
-    label: "Controller Spans",
-    description:
-      "Generates spans for controller/handler methods in web frameworks. Disabled by default and experimental.",
-  },
-  VIEW_SPANS: {
-    label: "View Spans",
-    description:
-      "Generates spans for view rendering such as templates or JSP. Disabled by default and experimental.",
-  },
-  LOGGING_BRIDGE: {
-    label: "Logging Bridge",
-    description:
-      "Bridges logging framework events to the OpenTelemetry Logs API, emitting log records from standard logging frameworks.",
-  },
-  RESOURCE_DETECTOR: {
-    label: "Resource Detector",
-    description: "Sets resource attributes based on certain conditions.",
-  },
-};
+const FEATURE_KEYS = new Set([
+  "HTTP_ROUTE",
+  "CONTEXT_PROPAGATION",
+  "AUTO_INSTRUMENTATION_SHIM",
+  "CONTROLLER_SPANS",
+  "VIEW_SPANS",
+  "LOGGING_BRIDGE",
+  "RESOURCE_DETECTOR",
+]);
 
 export function getFeatureInfo(value: string): FeatureInfo | null {
-  return FEATURE_MAP[value] ?? null;
+  if (!FEATURE_KEYS.has(value)) return null;
+  return {
+    label: getI18n().t(`format.feature.${value}.label`, { ns: "java-agent" }),
+    description: getI18n().t(`format.feature.${value}.description`, { ns: "java-agent" }),
+  };
 }
 
 export function getInstrumentationDisplayName(

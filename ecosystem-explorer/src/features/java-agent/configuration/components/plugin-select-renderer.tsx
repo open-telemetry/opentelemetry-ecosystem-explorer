@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { useId, useRef, useState, type JSX, type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import type { PluginSelectNode, ConfigNode } from "@/types/configuration";
 import type { ConfigValue } from "@/types/configuration-builder";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
@@ -47,6 +48,7 @@ export function PluginSelectRenderer({
   depth,
   path,
 }: PluginSelectRendererProps): JSX.Element {
+  const { t } = useTranslation("java-agent");
   const { state, selectPlugin, setValue } = useConfigurationBuilder();
   const inListItem = useListItemContext();
   const starterPaths = useStarterPaths();
@@ -77,7 +79,7 @@ export function PluginSelectRenderer({
   const tablist: ReactNode = (
     <div
       role="tablist"
-      aria-label={`${node.label} variant`}
+      aria-label={t("builder.pluginSelect.tablistAriaLabel", { label: node.label })}
       className={`border-border/60 flex flex-wrap items-center gap-x-1 border-b ${inListItem ? "pr-10" : ""}`}
     >
       {tablistOwnsHeader && node.description && (
@@ -120,7 +122,9 @@ export function PluginSelectRenderer({
           }}
           className={`${TAB_BASE} ${customActive ? TAB_ACTIVE : TAB_INACTIVE}`}
         >
-          {isCustom && !customPickerOpen ? `Custom: ${selectedKey}` : "Custom…"}
+          {isCustom && !customPickerOpen
+            ? t("builder.pluginSelect.customActive", { name: selectedKey })
+            : t("builder.pluginSelect.customEllipsis")}
         </button>
       )}
     </div>
@@ -136,8 +140,8 @@ export function PluginSelectRenderer({
       <input
         type="text"
         autoFocus
-        aria-label="Custom plugin name"
-        placeholder="custom-plugin-name"
+        aria-label={t("builder.pluginSelect.inputAriaLabel")}
+        placeholder={t("builder.pluginSelect.inputPlaceholder")}
         value={customDraft}
         onChange={(e) => {
           const next = e.target.value;
@@ -160,14 +164,14 @@ export function PluginSelectRenderer({
         }}
         className="border-border/60 bg-card text-muted-foreground hover:bg-card/80 rounded-md border px-3 py-1.5 text-xs"
       >
-        Cancel
+        {t("builder.pluginSelect.cancel")}
       </button>
       <button
         type="button"
         onClick={closeCustomPicker}
         className="border-border/60 bg-card text-foreground hover:bg-card/80 rounded-md border px-3 py-1.5 text-xs"
       >
-        Done
+        {t("builder.pluginSelect.done")}
       </button>
     </div>
   ) : null;
@@ -186,9 +190,7 @@ export function PluginSelectRenderer({
     ) : null;
 
   const customBody: ReactNode = isCustom ? (
-    <p className="text-muted-foreground text-xs">
-      Custom plugin. Configure its body manually by importing YAML or leave it as an empty block.
-    </p>
+    <p className="text-muted-foreground text-xs">{t("builder.pluginSelect.customEmpty")}</p>
   ) : null;
 
   if (inListItem) {

@@ -17,6 +17,7 @@ import type { JSX, ComponentProps } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Loader2, AlertCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useLibraryReadme } from "@/hooks/use-javaagent-data";
 
 interface StandaloneLibraryTabProps {
@@ -60,13 +61,14 @@ export function StandaloneLibraryTab({
   name,
   markdownHash,
 }: StandaloneLibraryTabProps): JSX.Element {
+  const { t } = useTranslation("java-agent");
   const { data: markdown, loading, error } = useLibraryReadme(name, markdownHash);
 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
         <Loader2 className="text-primary h-6 w-6 animate-spin" aria-hidden="true" />
-        <span className="text-muted-foreground ml-2 text-sm">Loading library documentation...</span>
+        <span className="text-muted-foreground ml-2 text-sm">{t("standaloneLibrary.loading")}</span>
       </div>
     );
   }
@@ -75,9 +77,7 @@ export function StandaloneLibraryTab({
     return (
       <div className="flex flex-col items-center justify-center space-y-2 py-16 text-center">
         <AlertCircle className="text-muted-foreground h-8 w-8 opacity-50" aria-hidden="true" />
-        <p className="text-muted-foreground text-sm">
-          Library documentation is not available for this version.
-        </p>
+        <p className="text-muted-foreground text-sm">{t("standaloneLibrary.error")}</p>
       </div>
     );
   }

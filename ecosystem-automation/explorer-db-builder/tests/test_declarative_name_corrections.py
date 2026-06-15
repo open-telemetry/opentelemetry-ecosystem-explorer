@@ -110,3 +110,47 @@ class TestApplyDeclarativeNameCorrections:
         apply_declarative_name_corrections(inventory)
 
         assert "declarative_name" not in inventory["libraries"][0]["configurations"][0]
+
+    def test_injects_structured_list_schema_for_service_peer_mapping(self):
+        """java.common.service_peer_mapping receives a structured_list schema injection."""
+        inventory = {
+            "libraries": [
+                {
+                    "name": "some-lib",
+                    "configurations": [
+                        {"declarative_name": "java.common.service_peer_mapping"}
+                    ],
+                }
+            ]
+        }
+
+        apply_declarative_name_corrections(inventory)
+
+        config = inventory["libraries"][0]["configurations"][0]
+        assert config["declarative_type"] == "structured_list"
+        assert config["declarative_schema"]["type"] == "object"
+        assert "peer" in config["declarative_schema"]["required"]
+        assert "service_name" in config["declarative_schema"]["required"]
+
+    def test_injects_structured_list_schema_for_url_template_rules(self):
+        """url_template_rules receives a structured_list schema injection."""
+        inventory = {
+            "libraries": [
+                {
+                    "name": "some-lib",
+                    "configurations": [
+                        {"declarative_name": "some.prefix.url_template_rules"}
+                    ],
+                }
+            ]
+        }
+
+        apply_declarative_name_corrections(inventory)
+
+        config = inventory["libraries"][0]["configurations"][0]
+        assert config["declarative_type"] == "structured_list"
+        assert config["declarative_schema"]["type"] == "object"
+        assert "pattern" in config["declarative_schema"]["required"]
+        assert "template" in config["declarative_schema"]["required"]
+        assert "override" in config["declarative_schema"]["properties"]
+

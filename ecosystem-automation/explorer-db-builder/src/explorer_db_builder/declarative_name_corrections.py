@@ -51,15 +51,55 @@ def apply_declarative_name_corrections(inventory: dict[str, Any]) -> dict[str, A
             for config in item.get("configurations") or []:
                 if not isinstance(config, dict):
                     continue
-                current = config.get("declarative_name")
-                corrected = DECLARATIVE_NAME_CORRECTIONS.get(current)
+                original_name = config.get("declarative_name")
+                corrected = DECLARATIVE_NAME_CORRECTIONS.get(original_name)
+
                 if corrected is not None:
                     config["declarative_name"] = corrected
                     logger.debug(
                         "Corrected declarative_name %r -> %r for config %r",
-                        current,
+                        original_name,
                         corrected,
                         config.get("name"),
                     )
+
+                current_name = config.get("declarative_name")
+                if current_name == "java.common.service_peer_mapping":
+                    config["declarative_type"] = "structured_list"
+                    config["declarative_schema"] = {
+                        "type": "object",
+                        "required": ["peer", "service_name"],
+                        "properties": {
+                            "peer": {
+                                "type": "string",
+                                "description": "Host name or IP address to match against."
+                            },
+                            "service_name": {
+                                "type": "string",
+                                "description": "Peer service name to record for matching peers.",
+                            },
+                        },
+                    }
+                elif current_name and current_name.endswith("url_template_rules"):
+                    config["declarative_type"] = "structured_list"
+                    config["declarative_schema"] = {
+                        "type": "object",
+                        "required": ["pattern", "template"],
+                        "properties": {
+                            "pattern": {
+                                "type": "string",
+                                "description": "Regular expression matched against the request URL.",
+                            },
+                            "template": {
+                                "type": "string",
+                                "description": "Template used to derive the low-cardinality route.",
+                            },
+                            "override": {
+                                "type": "boolean",
+                                "default": False,
+                                "description": "Whether this rule overrides an already-applied template.",
+                            },
+                        },
+                    }
 
     return inventory

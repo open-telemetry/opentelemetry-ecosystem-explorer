@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useTranslation } from "react-i18next";
 import type { Constraints } from "@/types/configuration";
 
 interface FieldMetaNode {
@@ -54,6 +55,7 @@ function itemsChip(constraints: Constraints): string | null {
 }
 
 export function FieldMeta({ node }: FieldMetaProps) {
+  const { t } = useTranslation("java-agent");
   const chips: string[] = [];
   if (node.constraints) {
     const r = rangeChip(node.constraints);
@@ -78,7 +80,10 @@ export function FieldMeta({ node }: FieldMetaProps) {
       )}
       {hasDefault && (
         <p>
-          <span className="text-foreground/70 font-medium">Default:</span> {node.defaultBehavior}
+          <span className="text-foreground/70 font-medium">
+            {t("builder.controls.fieldDefault")}
+          </span>{" "}
+          {node.defaultBehavior}
         </p>
       )}
     </div>
