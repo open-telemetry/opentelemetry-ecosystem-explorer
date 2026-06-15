@@ -55,7 +55,6 @@ export function SectionExpansionProvider({ children }: { children: ReactNode }) 
   );
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 const NO_OP_CONTEXT: SectionExpansionContextValue = {
   expandAll: () => {},
   collapseAll: () => {},
@@ -63,7 +62,7 @@ const NO_OP_CONTEXT: SectionExpansionContextValue = {
   overrides: {},
   setOverride: () => {},
 };
-
+// eslint-disable-next-line react-refresh/only-export-components
 export function useSectionExpansion(): SectionExpansionContextValue {
   const ctx = useContext(SectionExpansionContext);
   return ctx ?? NO_OP_CONTEXT;
