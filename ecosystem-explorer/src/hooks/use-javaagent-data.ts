@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 import { useState, useEffect } from "react";
-import type { VersionsIndex, InstrumentationData } from "@/types/javaagent";
+import type {
+  VersionsIndex,
+  InstrumentationData,
+  InstrumentationListEntry,
+} from "@/types/javaagent";
 import type { DataState } from "./data-state";
 import * as javaagentData from "@/lib/api/javaagent-data";
 
@@ -55,8 +59,8 @@ export function useVersions(): DataState<VersionsIndex> {
   return state;
 }
 
-export function useInstrumentations(version: string): DataState<InstrumentationData[]> {
-  const [state, setState] = useState<DataState<InstrumentationData[]>>({
+export function useInstrumentations(version: string): DataState<InstrumentationListEntry[]> {
+  const [state, setState] = useState<DataState<InstrumentationListEntry[]>>({
     data: null,
     loading: true,
     error: null,

@@ -416,9 +416,9 @@ components:
       codeowners:
         active:
         - evan-bradley
+        - mwear
         emeritus:
         - jpkrohling
-        - mwear
         seeking_new: true
 - name: httpforwarderextension
   metadata:
@@ -643,6 +643,7 @@ components:
         - evan-bradley
         - tigrannajaryan
         - douglascamata
+        - dpaasman00
 - name: pprofextension
   metadata:
     type: pprof

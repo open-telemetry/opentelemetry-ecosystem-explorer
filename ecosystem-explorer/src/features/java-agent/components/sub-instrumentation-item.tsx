@@ -15,14 +15,14 @@
  */
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import type { InstrumentationData } from "@/types/javaagent";
+import type { InstrumentationListEntry } from "@/types/javaagent";
 import type { FilterState } from "./instrumentation-filter-bar";
 import { getBadgeInfo } from "../utils/badge-info";
 import { TargetBadges, TelemetryBadges } from "./instrumentation-badges";
 import { renderWithInlineCode } from "@/lib/render-inline-code";
 
 interface SubInstrumentationItemProps {
-  instrumentation: InstrumentationData;
+  instrumentation: InstrumentationListEntry;
   version: string | null;
   activeFilters?: FilterState;
 }

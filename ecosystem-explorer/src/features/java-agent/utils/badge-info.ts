@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { InstrumentationData } from "@/types/javaagent";
+import type { InstrumentationListEntry } from "@/types/javaagent";
 
 export interface BadgeInfo {
   hasSpans: boolean;
@@ -23,28 +23,14 @@ export interface BadgeInfo {
 }
 
 /**
- * Whether an instrumentation emits spans. Prefers the precomputed `has_spans`
- * flag carried by slim list-bundle entries; falls back to scanning `telemetry`
- * for full detail objects (which omit the flag).
+ * Computes badge presence flags for a single instrumentation. Slim list entries
+ * always carry the precomputed `has_spans`/`has_metrics` flags (the bundle and
+ * the fan-out projection both set them), so no telemetry scan is needed.
  */
-function hasSpans(instr: InstrumentationData): boolean {
-  return instr.has_spans ?? instr.telemetry?.some((t) => t.spans && t.spans.length > 0) ?? false;
-}
-
-/** Whether an instrumentation emits metrics. See {@link hasSpans}. */
-function hasMetrics(instr: InstrumentationData): boolean {
-  return (
-    instr.has_metrics ?? instr.telemetry?.some((t) => t.metrics && t.metrics.length > 0) ?? false
-  );
-}
-
-/**
- * Computes badge presence flags for a single instrumentation.
- */
-export function getBadgeInfo(instrumentation: InstrumentationData): BadgeInfo {
+export function getBadgeInfo(instrumentation: InstrumentationListEntry): BadgeInfo {
   return {
-    hasSpans: hasSpans(instrumentation),
-    hasMetrics: hasMetrics(instrumentation),
+    hasSpans: instrumentation.has_spans === true,
+    hasMetrics: instrumentation.has_metrics === true,
     hasJavaAgentTarget: instrumentation.has_javaagent === true,
     hasLibraryTarget: instrumentation.has_standalone_library === true,
   };
@@ -54,11 +40,11 @@ export function getBadgeInfo(instrumentation: InstrumentationData): BadgeInfo {
  * Computes aggregated badge presence flags across multiple instrumentations.
  * A badge is present if any instrumentation in the list has it.
  */
-export function getAggregatedBadgeInfo(instrumentations: InstrumentationData[]): BadgeInfo {
+export function getAggregatedBadgeInfo(instrumentations: InstrumentationListEntry[]): BadgeInfo {
   return {
-    hasSpans: instrumentations.some(hasSpans),
-    hasMetrics: instrumentations.some(hasMetrics),
-    hasJavaAgentTarget: instrumentations.some((instr) => instr.has_javaagent === true),
-    hasLibraryTarget: instrumentations.some((instr) => instr.has_standalone_library === true),
+    hasSpans: instrumentations.some((i) => i.has_spans === true),
+    hasMetrics: instrumentations.some((i) => i.has_metrics === true),
+    hasJavaAgentTarget: instrumentations.some((i) => i.has_javaagent === true),
+    hasLibraryTarget: instrumentations.some((i) => i.has_standalone_library === true),
   };
 }

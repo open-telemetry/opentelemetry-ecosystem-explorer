@@ -15,6 +15,8 @@
  */
 import type {
   InstrumentationData,
+  InstrumentationIndex,
+  InstrumentationListEntry,
   VersionManifest,
   VersionsIndex,
   Configuration,
@@ -71,6 +73,17 @@ export async function loadVersionManifest(version: string): Promise<VersionManif
   return data;
 }
 
+/** Loads the slim, search-oriented `index.json` in one request (mirrors the collector index path). */
+export async function loadIndex(): Promise<InstrumentationIndex> {
+  const data = await fetchWithCache<InstrumentationIndex>(
+    "javaagent-instrumentation-index",
+    resolveDataPath(BASE_DIR, "index.json"),
+    STORES.METADATA
+  );
+  if (!data) throw new Error("Java Agent instrumentation index returned null unexpectedly");
+  return data;
+}
+
 export async function loadInstrumentation(
   id: string,
   version: string,
@@ -108,8 +121,8 @@ export async function loadInstrumentation(
 export async function loadInstrumentationBundle(
   version: string,
   bundleHash: string
-): Promise<InstrumentationData[]> {
-  const data = await fetchWithCache<InstrumentationData[]>(
+): Promise<InstrumentationListEntry[]> {
+  const data = await fetchWithCache<InstrumentationListEntry[]>(
     `bundle-${version}-${bundleHash}`,
     resolveDataPath(BASE_DIR, "bundles", `${version}-${bundleHash}.json`),
     STORES.INSTRUMENTATIONS,
@@ -119,7 +132,31 @@ export async function loadInstrumentationBundle(
   return data;
 }
 
-export async function loadAllInstrumentations(version: string): Promise<InstrumentationData[]> {
+/**
+ * Projects full detail down to the slim list shape (matches `make_list_instrumentation`),
+ * so the fan-out fallback returns the same shape as the precomputed bundle.
+ */
+function toListEntry(instr: InstrumentationData): InstrumentationListEntry {
+  return {
+    name: instr.name,
+    scope: instr.scope,
+    display_name: instr.display_name,
+    description: instr.description,
+    has_javaagent: instr.has_javaagent,
+    has_standalone_library: instr.has_standalone_library,
+    semantic_conventions: instr.semantic_conventions,
+    features: instr.features,
+    configurations: instr.configurations,
+    disabled_by_default: instr.disabled_by_default,
+    has_spans: instr.telemetry?.some((t) => (t.spans?.length ?? 0) > 0) ?? false,
+    has_metrics: instr.telemetry?.some((t) => (t.metrics?.length ?? 0) > 0) ?? false,
+    _is_custom: instr._is_custom ?? false,
+  };
+}
+
+export async function loadAllInstrumentations(
+  version: string
+): Promise<InstrumentationListEntry[]> {
   // Primary path: one request for the whole version via the consolidated bundle,
   // when the versions index advertises a bundle hash. Falls back to the
   // per-instrumentation fan-out for old cached indexes (no bundle hash), a
@@ -142,10 +179,12 @@ export async function loadAllInstrumentations(version: string): Promise<Instrume
 
   // Bounded fan-out: one fetch per instrumentation, but at most
   // MAX_INSTRUMENTATION_FETCH_CONCURRENCY in flight at a time. Order is
-  // preserved, so callers see the same result as the prior Promise.all.
-  return mapWithConcurrency(allIds, MAX_INSTRUMENTATION_FETCH_CONCURRENCY, (id) =>
+  // preserved. Projected to the slim list shape so the return type matches the
+  // bundle path (mirrors collector's loadAllComponents).
+  const entries = await mapWithConcurrency(allIds, MAX_INSTRUMENTATION_FETCH_CONCURRENCY, (id) =>
     loadInstrumentation(id, version, manifest)
   );
+  return entries.map(toListEntry);
 }
 
 export async function loadLibraryReadme(
