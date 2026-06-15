@@ -368,7 +368,12 @@
         "general": "general · shared",
         "common": "java.common · shared",
         "experimental": "experimental",
-        "mismatch": "imported value not {{article}}"
+        "mismatch": "imported value type mismatch",
+        "mismatch_number": "imported value not a number",
+        "mismatch_string": "imported value not a string",
+        "mismatch_boolean": "imported value not a boolean",
+        "mismatch_list": "imported value not a list",
+        "mismatch_map": "imported value not a map"
       },
       "defaultPreview": "default: {{value}}"
     },

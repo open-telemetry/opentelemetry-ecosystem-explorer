@@ -532,10 +532,10 @@ function ExperimentalPill() {
 
 function MismatchPill({ type }: { type: Configuration["type"] }) {
   const { t } = useTranslation("java-agent");
-  const article = type === "int" || type === "double" ? "a number" : `a ${type}`;
+  const typeContext = type === "int" || type === "double" ? "number" : type;
   return (
     <span className="inline-flex items-center rounded-full border border-yellow-400/40 bg-yellow-400/10 px-2 py-0.5 text-[10px] leading-none text-yellow-300">
-      {t("builder.field.pills.mismatch", { article })}
+      {t("builder.field.pills.mismatch", { context: typeContext })}
     </span>
   );
 }
