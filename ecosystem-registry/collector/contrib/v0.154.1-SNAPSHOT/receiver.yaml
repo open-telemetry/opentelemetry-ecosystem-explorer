@@ -10572,6 +10572,11 @@ components:
       db.namespace:
         description: The database name.
         type: string
+      db.query.comment_tags:
+        description: Filtered SQL query comments extracted from leading block comments.
+          Contains comma-separated key=value pairs for keys specified in allowed_comment_keys
+          configuration. Used for correlation with APM traces.
+        type: string
       db.query.text:
         description: The text of the database query being executed.
         type: string
@@ -15403,7 +15408,7 @@ components:
         - mcardy
 - name: splunkenterprisereceiver
   metadata:
-    type: splunkenterprise
+    type: splunk_enterprise
     display_name: Splunk Enterprise Receiver
     description: The Splunk Enterprise Receiver is a pull based tool which enables
       the ingestion of performance metrics describing the operational status of a
