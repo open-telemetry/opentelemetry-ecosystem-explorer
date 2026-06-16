@@ -91,8 +91,7 @@ export function YamlCodeBlock({
       const sectionRect = activeSection.getBoundingClientRect();
 
       const isVisible =
-        sectionRect.top >= containerRect.top &&
-        sectionRect.bottom <= containerRect.bottom;
+        sectionRect.top >= containerRect.top && sectionRect.bottom <= containerRect.bottom;
 
       if (!isVisible) {
         activeSection.scrollIntoView({ block: "nearest", behavior: "smooth" });
