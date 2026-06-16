@@ -80,13 +80,13 @@ export function InstrumentationFilterBar({
   }, [instrumentations]);
 
   return (
-    <div className="border-border/60 bg-card/80 relative overflow-hidden rounded-lg border p-6">
+    <div className="border-border/60 bg-surface-card shadow-surface relative overflow-hidden rounded-lg border p-6">
       {/* Ambient radial gradient background */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(circle at top left, hsl(var(--otel-orange-hsl) / 0.08) 0%, hsl(var(--otel-blue-hsl) / 0.04) 40%, transparent 70%)",
+            "radial-gradient(circle at top left, hsl(var(--hero-accent-hsl) / 0.08) 0%, hsl(var(--hero-accent-alt-hsl) / 0.04) 40%, transparent 70%)",
         }}
       />
 

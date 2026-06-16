@@ -231,7 +231,7 @@ export function InstrumentationDetailPage() {
             className="absolute inset-0"
             style={{
               background:
-                "radial-gradient(circle at top right, hsl(var(--otel-blue-hsl) / 0.06) 0%, hsl(var(--otel-orange-hsl) / 0.03) 40%, transparent 70%)",
+                "radial-gradient(circle at top right, hsl(var(--hero-accent-hsl) / 0.06) 0%, hsl(var(--hero-accent-alt-hsl) / 0.03) 40%, transparent 70%)",
             }}
           />
 

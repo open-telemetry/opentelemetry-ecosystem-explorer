@@ -33,7 +33,7 @@ export function AttributeTable({ attributes }: AttributeTableProps) {
         className="w-full min-w-[260px] border-collapse"
       >
         <thead>
-          <tr className="bg-white/5">
+          <tr className="bg-muted/30">
             <th
               scope="col"
               className="text-muted-foreground p-2 text-left text-[10px] font-bold tracking-widest uppercase sm:p-3"
@@ -52,7 +52,7 @@ export function AttributeTable({ attributes }: AttributeTableProps) {
           {attributes.map((attr, index) => (
             <tr
               key={attr.name}
-              className={`attribute-row ${index % 2 === 1 ? "bg-white/[0.03]" : ""}`}
+              className={`attribute-row ${index % 2 === 1 ? "bg-muted/20" : ""}`}
             >
               <td className="p-2 font-mono text-xs sm:p-4 sm:text-sm">{attr.name}</td>
               <td className="p-2 sm:p-4">

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 import type { InstrumentationListEntry } from "@/types/javaagent";
 import type { FilterState } from "./instrumentation-filter-bar";
 import { getBadgeInfo } from "../utils/badge-info";
@@ -48,7 +49,7 @@ export function InstrumentationCard({
   return (
     <Link
       to={detailUrl}
-      className="group border-border bg-card hover:border-secondary/40 hover:bg-card-secondary relative flex h-full flex-col overflow-hidden rounded-lg border p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_30px_hsl(var(--otel-orange-hsl)/0.12)]"
+      className="group border-border bg-surface-card shadow-surface hover:border-secondary/40 hover:bg-card-secondary relative flex h-full flex-col overflow-hidden rounded-lg border p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_30px_hsl(var(--secondary-hsl)/0.12)]"
       aria-label={`View details for ${displayName}`}
     >
       {/* Grid pattern background */}
@@ -63,48 +64,59 @@ export function InstrumentationCard({
         />
       </div>
 
-      {/* Content */}
-      <div className="relative z-10 flex-1 space-y-4">
-        <div className="flex items-start justify-between gap-3">
-          <h3 className="flex-1 text-lg leading-tight font-semibold">{displayName}</h3>
-          <div className="flex flex-shrink-0 gap-1">
-            <TargetBadges badges={badgeInfo} activeFilters={activeFilters} />
-            <TelemetryBadges badges={badgeInfo} activeFilters={activeFilters} />
+      {/* Content structured into regions */}
+      <div className="relative z-10 flex h-full flex-col">
+        {/* Header Region */}
+        <div className="flex items-start justify-between gap-3 pb-3">
+          <h3 className="text-foreground group-hover:text-primary flex-1 text-xl font-bold leading-tight transition-colors">
+            {displayName}
+          </h3>
+          <div className="bg-primary/5 -translate-x-2 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100">
+            <ArrowRight className="text-primary h-4 w-4" />
           </div>
         </div>
 
+        {/* Body Region */}
         {instrumentation.description && (
-          <p className="text-muted-foreground line-clamp-3 text-sm leading-relaxed">
+          <p className="text-muted-foreground line-clamp-3 flex-1 text-sm leading-relaxed">
             {renderWithInlineCode(instrumentation.description)}
           </p>
         )}
 
-        <div className="space-y-2">
-          {instrumentation.semantic_conventions &&
-            instrumentation.semantic_conventions.length > 0 && (
-              <div className="flex flex-wrap items-center gap-2">
-                {instrumentation.semantic_conventions.map((s) => {
-                  const isActive =
-                    !activeFilters ||
-                    activeFilters.semantic.length === 0 ||
-                    activeFilters.semantic.includes(s);
-                  const info = getSemanticConventionInfo(s);
-                  return (
-                    <GlowBadge
-                      key={s}
-                      variant="accent"
-                      className={`px-1.5 py-0 ${isActive ? "" : "opacity-40 grayscale"}`}
-                    >
-                      {info?.label ?? s}
-                    </GlowBadge>
-                  );
-                })}
-              </div>
-            )}
+        {/* Footer Region: Badges and Metadata */}
+        <div className="border-border/40 mt-5 flex flex-col gap-3 border-t pt-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-muted-foreground/70 text-[10px] font-bold tracking-wider uppercase">
+              Signals
+            </span>
+            <TargetBadges badges={badgeInfo} activeFilters={activeFilters} />
+            <TelemetryBadges badges={badgeInfo} activeFilters={activeFilters} />
+          </div>
 
-          {instrumentation.features && instrumentation.features.length > 0 && (
+          {(instrumentation.semantic_conventions?.length || 0) > 0 ||
+          (instrumentation.features?.length || 0) > 0 ? (
             <div className="flex flex-wrap items-center gap-2">
-              {instrumentation.features.map((f) => {
+              <span className="text-muted-foreground/70 text-[10px] font-bold tracking-wider uppercase">
+                Tags
+              </span>
+              {instrumentation.semantic_conventions?.map((s) => {
+                const isActive =
+                  !activeFilters ||
+                  activeFilters.semantic.length === 0 ||
+                  activeFilters.semantic.includes(s);
+                const info = getSemanticConventionInfo(s);
+                return (
+                  <GlowBadge
+                    key={s}
+                    variant="accent"
+                    className={`px-1.5 py-0 ${isActive ? "" : "opacity-40 grayscale"}`}
+                  >
+                    {info?.label ?? s}
+                  </GlowBadge>
+                );
+              })}
+
+              {instrumentation.features?.map((f) => {
                 const isActive =
                   !activeFilters ||
                   activeFilters.features.length === 0 ||
@@ -121,7 +133,7 @@ export function InstrumentationCard({
                 );
               })}
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </Link>

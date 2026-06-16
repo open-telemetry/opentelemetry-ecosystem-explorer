@@ -46,7 +46,7 @@ export function MultiInstrumentationGroupCard({
   const description = group.instrumentations.find((i) => i.description)?.description;
 
   return (
-    <div className="group border-border bg-card hover:border-secondary/40 relative flex h-full flex-col overflow-hidden rounded-lg border transition-all duration-300 hover:shadow-[0_0_30px_hsl(var(--otel-orange-hsl)/0.12)]">
+    <div className="group border-border bg-card hover:border-secondary/40 relative flex h-full flex-col overflow-hidden rounded-lg border transition-all duration-300 hover:shadow-[0_0_30px_hsl(var(--secondary-hsl)/0.12)]">
       {/* Grid pattern background */}
       <div className="absolute inset-0 opacity-[0.15]">
         <div
@@ -65,8 +65,9 @@ export function MultiInstrumentationGroupCard({
         aria-expanded={expanded}
         aria-label={`${group.displayName} group with ${group.instrumentations.length} instrumentations`}
       >
-        <div className="space-y-4">
-          <div className="flex items-start justify-between gap-3">
+        <div className="flex h-full flex-col">
+          {/* Header Region */}
+          <div className="flex items-start justify-between gap-3 pb-3">
             <div className="flex min-w-0 items-center gap-3">
               <ChevronDown
                 aria-hidden="true"
@@ -74,25 +75,31 @@ export function MultiInstrumentationGroupCard({
                   expanded ? "rotate-0" : "-rotate-90"
                 }`}
               />
-              <h3 className="truncate text-lg leading-tight font-semibold">{group.displayName}</h3>
+              <h3 className="text-foreground group-hover:text-primary truncate text-xl font-bold leading-tight transition-colors">
+                {group.displayName}
+              </h3>
               <span className="bg-secondary/15 text-secondary flex-shrink-0 rounded-full px-2.5 py-1 text-xs font-medium">
                 {t("multiGroupCard.versions", { count: group.instrumentations.length })}
               </span>
             </div>
-
-            <div className="flex flex-shrink-0 gap-1">
-              <TargetBadges badges={badges} activeFilters={activeFilters} />
-            </div>
           </div>
 
+          {/* Body Region */}
           {description && (
             <p className="text-muted-foreground line-clamp-2 pl-8 text-sm leading-relaxed">
               {renderWithInlineCode(description)}
             </p>
           )}
 
-          <div className="flex flex-wrap items-center gap-2 pl-8">
-            <TelemetryBadges badges={badges} activeFilters={activeFilters} />
+          {/* Footer Region */}
+          <div className="border-border/40 mt-4 ml-8 flex flex-col gap-3 border-t pt-4">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-muted-foreground/70 text-[10px] font-bold tracking-wider uppercase">
+                Signals
+              </span>
+              <TargetBadges badges={badges} activeFilters={activeFilters} />
+              <TelemetryBadges badges={badges} activeFilters={activeFilters} />
+            </div>
           </div>
         </div>
       </button>
