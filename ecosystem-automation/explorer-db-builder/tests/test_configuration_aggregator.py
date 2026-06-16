@@ -182,7 +182,7 @@ class TestBuildGlobalConfigurationsEdgeCases:
 
         assert build_global_configurations(inventories) == []
 
-    def test_only_declared_scalar_fields_are_filled_from_older_versions(self):
+    def test_only_declared_fields_are_filled_from_older_versions(self):
         """Fields outside the merge set are NOT backfilled from older versions."""
         inventories = [
             _inventory(libraries=[{"name": "ext", "configurations": [_config("otel.c")]}]),
@@ -190,7 +190,7 @@ class TestBuildGlobalConfigurationsEdgeCases:
                 libraries=[
                     {
                         "name": "ext",
-                        "configurations": [_config("otel.c", description="d", examples="ex", extra="x")],
+                        "configurations": [_config("otel.c", description="d", extra="x")],
                     }
                 ]
             ),
@@ -200,9 +200,38 @@ class TestBuildGlobalConfigurationsEdgeCases:
 
         # description IS in the merge set, so it fills from the older version.
         assert result[0]["description"] == "d"
-        # examples / extra are NOT in the merge set, so they do not fill from older versions.
-        assert "examples" not in result[0]
+        # extra is NOT in the merge set, so it does not fill from older versions.
         assert "extra" not in result[0]
+
+    def test_examples_filled_from_older_version_when_missing_on_newest(self):
+        """examples is in the merge set, so a newest entry lacking it fills from an older version."""
+        inventories = [
+            _inventory(libraries=[{"name": "ext", "configurations": [_config("otel.c")]}]),
+            _inventory(libraries=[{"name": "ext", "configurations": [_config("otel.c", examples=["a", "b"])]}]),
+        ]
+
+        result = build_global_configurations(inventories)
+
+        assert result[0]["examples"] == ["a", "b"]
+
+    def test_examples_filled_from_sibling_instrumentation_in_same_version(self):
+        """A config name shared across instrumentations fills examples from a sibling when the
+        seed instrumentation lacks them."""
+        inventories = [
+            _inventory(
+                libraries=[
+                    # seed: first occurrence has no examples
+                    {"name": "servlet-2.2", "configurations": [_config("otel.shared")]},
+                    {"name": "servlet-3.0", "configurations": [_config("otel.shared", examples=["x"])]},
+                ]
+            )
+        ]
+
+        result = build_global_configurations(inventories)
+
+        assert len(result) == 1
+        assert result[0]["examples"] == ["x"]
+        assert result[0]["instrumentations"] == ["servlet-2.2", "servlet-3.0"]
 
     def test_seed_fields_outside_merge_set_are_preserved(self):
         """Fields on the newest (seed) entry that aren't in the merge set still survive to output."""

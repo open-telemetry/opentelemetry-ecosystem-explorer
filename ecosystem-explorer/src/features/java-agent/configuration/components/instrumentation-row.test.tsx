@@ -16,7 +16,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { InstrumentationData, InstrumentationModule } from "@/types/javaagent";
+import type { InstrumentationListEntry, InstrumentationModule } from "@/types/javaagent";
 import { InstrumentationRow } from "./instrumentation-row";
 
 vi.mock("./instrumentation-config-form", () => ({
@@ -25,17 +25,20 @@ vi.mock("./instrumentation-config-form", () => ({
   ),
 }));
 
-function entry(name: string, opts: Partial<InstrumentationData> = {}): InstrumentationData {
+function entry(
+  name: string,
+  opts: Partial<InstrumentationListEntry> = {}
+): InstrumentationListEntry {
   return {
     name,
     scope: { name: `io.opentelemetry.${name}` },
     ...opts,
-  } as InstrumentationData;
+  } as InstrumentationListEntry;
 }
 
 function moduleFixture(
   name: string,
-  coveredEntries: InstrumentationData[],
+  coveredEntries: InstrumentationListEntry[],
   defaultDisabled = false
 ): InstrumentationModule {
   return { name, defaultDisabled, coveredEntries };
@@ -198,7 +201,15 @@ describe("InstrumentationRow — expansion", () => {
   const baseModule = {
     name: "cassandra",
     defaultDisabled: false,
-    coveredEntries: [{ name: "cassandra-4.4", scope: { name: "io.opentelemetry.cassandra-4.4" } }],
+    coveredEntries: [
+      {
+        name: "cassandra-4.4",
+        scope: { name: "io.opentelemetry.cassandra-4.4" },
+        has_spans: false,
+        has_metrics: false,
+        _is_custom: false,
+      },
+    ],
   };
 
   it("calls onToggleExpand when the toggle button is clicked", async () => {

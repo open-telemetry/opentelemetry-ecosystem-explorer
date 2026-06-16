@@ -39,7 +39,11 @@ describe("HomeV1 (composition)", () => {
     );
   });
 
+  // GlobalSearch hydrates its initial query from sessionStorage. Cleared
+  // between tests so a typed-in query from a future test doesn't leak into
+  // the next renderHome() and trigger a real engine fetch.
   afterEach(() => {
+    window.sessionStorage.clear();
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
   });
@@ -112,14 +116,14 @@ describe("HomeV1 (composition)", () => {
     expect(screen.getByRole("heading", { level: 3, name: /Recent activity/i })).toBeInTheDocument();
   });
 
-  it("renders the GlobalSearch skeleton inside the CoverBlock with aria-hidden", () => {
+  it("renders the GlobalSearch combobox inside the CoverBlock", () => {
     const { container } = renderHome();
 
     const cover = container.querySelector(".td-cover-block");
     expect(cover).not.toBeNull();
 
-    const searchSkeleton = cover!.querySelector(".td-home__skeleton--search");
-    expect(searchSkeleton).not.toBeNull();
-    expect(searchSkeleton).toHaveAttribute("aria-hidden", "true");
+    const combobox = cover!.querySelector('[role="combobox"]');
+    expect(combobox).not.toBeNull();
+    expect(combobox).toHaveAttribute("aria-label", "Search the ecosystem");
   });
 });

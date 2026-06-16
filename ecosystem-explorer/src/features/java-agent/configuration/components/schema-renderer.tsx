@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { JSX } from "react";
+import { useTranslation } from "react-i18next";
 import type {
   ConfigNode,
   ConfigNodeBase,
@@ -64,6 +65,7 @@ export function SchemaRenderer({
   headless = false,
   inline = false,
 }: SchemaRendererProps): JSX.Element | null {
+  const { t } = useTranslation("java-agent");
   const { state, setValue } = useConfigurationBuilder();
   const starterPaths = useStarterPaths();
   const value = getByPath(state.values, parsePath(path));
@@ -161,7 +163,7 @@ export function SchemaRenderer({
       const itemSchema: TextInputNode = {
         controlType: "text_input",
         key: "item",
-        label: "Item",
+        label: t("builder.schemaRenderer.itemLabel"),
         path: `${path}.item`,
       };
       const synthetic: ListNode = { ...node, controlType: "list", itemSchema };
@@ -179,7 +181,7 @@ export function SchemaRenderer({
       const itemSchema: NumberInputNode = {
         controlType: "number_input",
         key: "item",
-        label: "Item",
+        label: t("builder.schemaRenderer.itemLabel"),
         path: `${path}.item`,
       };
       const synthetic: ListNode = { ...node, controlType: "list", itemSchema };

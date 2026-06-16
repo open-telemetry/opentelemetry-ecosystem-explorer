@@ -45,7 +45,13 @@ function makeModule(
 describe("InstrumentationConfigForm", () => {
   it("renders the empty-state copy when the module has no configurations array at all", () => {
     const mod = makeModule([
-      { name: "graphql-java-20.0", scope: { name: "io.opentelemetry.graphql-java-20.0" } },
+      {
+        name: "graphql-java-20.0",
+        scope: { name: "io.opentelemetry.graphql-java-20.0" },
+        has_spans: false,
+        has_metrics: false,
+        _is_custom: false,
+      },
     ]);
     render(<InstrumentationConfigForm module={mod} onJumpToGeneral={vi.fn()} />);
     expect(screen.getByText(/no configurable options/i)).toBeInTheDocument();
@@ -56,6 +62,9 @@ describe("InstrumentationConfigForm", () => {
       {
         name: "x-1",
         scope: { name: "io.opentelemetry.x-1" },
+        has_spans: false,
+        has_metrics: false,
+        _is_custom: false,
         configurations: [
           { name: "otel.env.only", description: "", type: "boolean", default: false },
         ],
@@ -70,6 +79,9 @@ describe("InstrumentationConfigForm", () => {
       {
         name: "graphql-java-20.0",
         scope: { name: "io.opentelemetry.graphql-java-20.0" },
+        has_spans: false,
+        has_metrics: false,
+        _is_custom: false,
         configurations: [
           {
             name: "owned-1",
@@ -110,6 +122,9 @@ describe("InstrumentationConfigForm", () => {
       {
         name: "graphql-java-20.0",
         scope: { name: "io.opentelemetry.graphql-java-20.0" },
+        has_spans: false,
+        has_metrics: false,
+        _is_custom: false,
         configurations: [
           {
             name: "general-1",

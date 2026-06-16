@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { useState, type JSX } from "react";
+import { useTranslation } from "react-i18next";
 import type { GroupNode } from "@/types/configuration";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
 import { getByPath, parsePath } from "@/lib/config-path";
@@ -43,6 +44,7 @@ export function GroupRenderer({
   path,
   headless = false,
 }: GroupRendererProps): JSX.Element {
+  const { t } = useTranslation("java-agent");
   const { state, setEnabled } = useConfigurationBuilder();
   const starterPaths = useStarterPaths();
   const isTopLevel = depth === 0;
@@ -87,7 +89,7 @@ export function GroupRenderer({
             <FieldSection.Action>
               <SwitchPill
                 checked={enabled}
-                ariaLabel={`Enable ${node.label}`}
+                ariaLabel={t("builder.groupRenderer.enableTooltip", { label: node.label })}
                 onClick={() => setEnabled(node.key, !enabled)}
               />
             </FieldSection.Action>

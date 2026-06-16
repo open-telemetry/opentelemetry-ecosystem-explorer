@@ -15,25 +15,28 @@
  */
 import { Map } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { GitHubIcon } from "@/components/icons/github-icon";
 import { OtelLogo } from "@/components/icons/otel-logo";
 
 export function Footer() {
+  const { t } = useTranslation("layout");
+
   return (
     <footer className="border-border/30 bg-background flex-shrink-0 border-t px-6 py-4">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-3">
         <div className="flex w-full flex-col items-center gap-3 md:grid md:grid-cols-3">
           <div className="text-muted-foreground flex items-center gap-2">
             <OtelLogo className="text-primary h-5 w-5" />
-            <span className="text-sm">OpenTelemetry Ecosystem Explorer</span>
+            <span className="text-sm">{t("footer.name")}</span>
           </div>
           <p className="text-muted-foreground hidden items-center justify-center gap-1.5 text-sm md:flex">
             <Map className="h-4 w-4" aria-hidden="true" />
-            Charting the observability landscape
+            {t("footer.tagline")}
           </p>
           <nav className="text-muted-foreground flex items-center justify-end gap-4 text-sm">
             <Link to="/about" className="hover:text-foreground transition-colors">
-              About
+              {t("footer.nav.about")}
             </Link>
             <a
               href="https://github.com/open-telemetry/opentelemetry-ecosystem-explorer"
@@ -43,7 +46,7 @@ export function Footer() {
               aria-label="GitHub repository"
             >
               <GitHubIcon className="h-4 w-4" aria-hidden="true" />
-              GitHub
+              {t("footer.nav.github")}
             </a>
             <a
               href="https://opentelemetry.io"
@@ -53,11 +56,11 @@ export function Footer() {
               aria-label="OpenTelemetry website"
             >
               <OtelLogo className="h-4 w-4" aria-hidden="true" />
-              opentelemetry.io
+              {t("footer.nav.otelWebsite")}
             </a>
           </nav>
         </div>
-        <p className="text-muted-foreground text-xs">&copy; 2026–Present OpenTelemetry Authors</p>
+        <p className="text-muted-foreground text-xs">{t("footer.copyright")}</p>
       </div>
     </footer>
   );

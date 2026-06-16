@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { ToggleNode } from "@/types/configuration";
+import { useTranslation } from "react-i18next";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
 import { SwitchPill } from "@/components/ui/switch-pill";
 import { parseBooleanDefault } from "@/lib/parse-default-behavior";
@@ -27,6 +28,7 @@ interface ToggleControlProps {
 }
 
 export function ToggleControl({ node, path, value, onChange }: ToggleControlProps) {
+  const { t } = useTranslation("java-agent");
   const isNull = node.nullable === true && value === null;
   const defaultBool = parseBooleanDefault(node.defaultBehavior);
   // The switch position is always the *resolved* value: the user's explicit
@@ -45,7 +47,7 @@ export function ToggleControl({ node, path, value, onChange }: ToggleControlProp
       inlineControl
       defaultPreview={{
         value: defaultBool,
-        description: node.defaultBehavior ?? "Using default",
+        description: node.defaultBehavior ?? t("builder.controls.usingDefault"),
       }}
     >
       <SwitchPill

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { useState, useCallback, useMemo, type JSX } from "react";
-import type { InstrumentationData, InstrumentationModule } from "@/types/javaagent";
+import { useTranslation } from "react-i18next";
+import type { InstrumentationListEntry, InstrumentationModule } from "@/types/javaagent";
 import { Loader } from "@/components/ui/loader";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
 import {
@@ -27,7 +28,7 @@ import { SectionCardShell } from "./section-card-shell";
 import { InstrumentationRow } from "./instrumentation-row";
 
 export interface InstrumentationBrowserProps {
-  instrumentations: InstrumentationData[] | null;
+  instrumentations: InstrumentationListEntry[] | null;
   loading: boolean;
   error: Error | null;
   search: string;
@@ -43,6 +44,7 @@ export function InstrumentationBrowser({
   statusFilter,
   onJumpToGeneral,
 }: InstrumentationBrowserProps): JSX.Element {
+  const { t } = useTranslation("java-agent");
   const { setCustomization } = useConfigurationBuilder();
   const customizationMap = useCustomizationStatusMap();
 
@@ -100,20 +102,22 @@ export function InstrumentationBrowser({
     <SectionCardShell sectionKey="instrumentations">
       <header className="flex flex-wrap items-baseline justify-between gap-2">
         <h3 className="text-foreground text-base font-semibold">
-          Instrumentations
+          {t("builder.browser.title")}
           {modules.length > 0 ? (
             <span className="text-muted-foreground ml-2 text-xs font-normal">
-              · {modules.length} modules
-              {customizationCount > 0 ? ` · ${customizationCount} customized` : ""}
+              {t("builder.browser.count", { count: modules.length })}
+              {customizationCount > 0
+                ? t("builder.browser.customized", { count: customizationCount })
+                : ""}
             </span>
           ) : null}
         </h3>
       </header>
 
       {loading ? (
-        <Loader size="sm" label="Loading instrumentations…" />
+        <Loader size="sm" label={t("builder.browser.loading")} />
       ) : error ? (
-        <p className="text-sm text-red-400">Failed to load instrumentations.</p>
+        <p className="text-sm text-red-400">{t("builder.browser.error")}</p>
       ) : (
         <Body
           total={modules.length}
@@ -163,10 +167,15 @@ function Body({
   onToggleExpand,
   onJumpToGeneral,
 }: BodyProps): JSX.Element {
+  const { t } = useTranslation("java-agent");
   return (
     <div className="space-y-3">
       <div className="border-border/40 bg-background/30 text-muted-foreground rounded-md border px-3 py-2 text-xs">
-        {readout(total, filtered.length, search, statusFilter, customizationCount)}
+        {search
+          ? t("builder.browser.readout.search", { search, shown: filtered.length, total })
+          : statusFilter === "customized"
+            ? t("builder.browser.readout.customized", { count: customizationCount, total })
+            : t("builder.browser.readout.noFilter", { count: total })}
       </div>
 
       {filtered.length === 0 ? (
@@ -205,34 +214,18 @@ function EmptyState({
   statusFilter: "all" | "customized";
   total: number;
 }): JSX.Element {
+  const { t } = useTranslation("java-agent");
   if (search) {
     return (
       <p className="text-muted-foreground text-sm">
-        No instrumentations match &ldquo;{search}&rdquo;. Clear the search to show all {total}.
+        {t("builder.browser.empty.search", { search, total })}
       </p>
     );
   }
   if (statusFilter === "customized") {
-    return (
-      <p className="text-muted-foreground text-sm">
-        You haven&rsquo;t customized any instrumentation yet. Click &ldquo;+ Customize&rdquo; on a
-        row to add one.
-      </p>
-    );
+    return <p className="text-muted-foreground text-sm">{t("builder.browser.empty.customized")}</p>;
   }
-  return <p className="text-muted-foreground text-sm">No instrumentations available.</p>;
-}
-
-function readout(
-  total: number,
-  shown: number,
-  search: string,
-  statusFilter: "all" | "customized",
-  customizationCount: number
-): string {
-  if (search) return `Search "${search}" · ${shown} of ${total}`;
-  if (statusFilter === "customized") return `Customized · ${customizationCount} of ${total}`;
-  return `No filter · ${total} modules`;
+  return <p className="text-muted-foreground text-sm">{t("builder.browser.empty.empty")}</p>;
 }
 
 function matchesQuery(m: InstrumentationModule, q: string): boolean {

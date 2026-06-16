@@ -15,6 +15,7 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { Copy } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface CopyButtonProps {
   text: string;
@@ -32,12 +33,13 @@ const DEFAULT_CLASS =
 
 export function CopyButton({
   text,
-  label = "Copy",
-  copiedLabel = "Copied",
+  label,
+  copiedLabel,
   className,
   onClick,
   onCopy,
 }: CopyButtonProps) {
+  const { t } = useTranslation("common");
   const [copied, setCopied] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -70,7 +72,7 @@ export function CopyButton({
     );
   };
 
-  const visibleLabel = copied ? copiedLabel : label;
+  const visibleLabel = copied ? (copiedLabel ?? t("copied")) : (label ?? t("copy"));
 
   return (
     <button

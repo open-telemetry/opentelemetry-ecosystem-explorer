@@ -26,8 +26,11 @@
  * - stats-band.css   — v1 home stats band (`.td-stats-band`) — OTel-purple counter strip
  * - ecosystems-grid.css — v1 home ecosystems grid (`.td-ecosystems-grid`)
  * - signals-row.css  — v1 home signals row (`.td-signals-row`) — Traces/Metrics/Logs/Baggage
+ * - global-search.css — v1 home global search input + dropdown (`.td-search*`)
  * - recent-activity-rail.css — v1 home recent-activity rail (`.td-activity-*`, `.td-pill*`)
- * - home.css         — v1 home page wrapper + shared `td-box`/`td-two-col` + GlobalSearch skeleton
+ * - release-card.css — v1 ecosystem-landing release card (`.td-release-card*`)
+ * - home.css         — v1 home page wrapper + shared `td-box`/`td-two-col` chrome
+ * - pipeline-anatomy.css — v1 ecosystem-landing pipeline strip (`.td-pipeline-anatomy*`, `.td-pipeline-stage*`)
  * - cncf-callout.css — sitewide CNCF band above the footer
  * - footer.css       — v1 footer (`.td-footer`) — mirrors opentelemetry.io
  *
@@ -45,7 +48,10 @@
 @import "./stats-band.css";
 @import "./ecosystems-grid.css";
 @import "./signals-row.css";
+@import "./global-search.css";
 @import "./recent-activity-rail.css";
+@import "./release-card.css";
 @import "./home.css";
+@import "./pipeline-anatomy.css";
 @import "./cncf-callout.css";
 @import "./footer.css";

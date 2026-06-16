@@ -20,6 +20,7 @@ import tempfile
 from pathlib import Path
 
 import pytest
+import yaml
 from collector_watcher.schema_copier import (
     SCHEMA_RELATIVE_PATH,
     UNKNOWN_HASH,
@@ -75,7 +76,10 @@ def test_store_schema_returns_hash_matching_content(fake_repo, schemas_dir):
     schema_hash = copier.store_schema(fake_repo, schemas_dir)
 
     src = fake_repo / SCHEMA_RELATIVE_PATH
-    expected = hashlib.sha256(src.read_bytes()).hexdigest()[:12]
+    with open(src, "r", encoding="utf-8") as f:
+        data = yaml.safe_load(f)
+    normalized = yaml.safe_dump(data, sort_keys=True)
+    expected = hashlib.sha256(normalized.encode("utf-8")).hexdigest()[:12]
     assert schema_hash == expected
 
 
@@ -169,7 +173,10 @@ def test_compute_schema_hash_matches_sha256(fake_repo):
     copier = CollectorSchemaCopier()
     result = copier.compute_schema_hash(schema_path)
 
-    expected = hashlib.sha256(schema_path.read_bytes()).hexdigest()[:12]
+    with open(schema_path, "r", encoding="utf-8") as f:
+        data = yaml.safe_load(f)
+    normalized = yaml.safe_dump(data, sort_keys=True)
+    expected = hashlib.sha256(normalized.encode("utf-8")).hexdigest()[:12]
     assert result == expected
 
 
@@ -199,6 +206,20 @@ def test_compute_schema_hash_returns_unknown_when_absent(temp_dir):
     result = copier.compute_schema_hash(missing)
 
     assert result == UNKNOWN_HASH
+
+
+def test_compute_schema_hash_ignores_comments(fake_repo):
+    schema_path = fake_repo / SCHEMA_RELATIVE_PATH
+    copier = CollectorSchemaCopier()
+
+    h1 = copier.compute_schema_hash(schema_path)
+
+    content = schema_path.read_text(encoding="utf-8")
+    content_with_comments = f"# This is a comment\n{content}\n# Another comment\n"
+    schema_path.write_text(content_with_comments, encoding="utf-8")
+
+    h2 = copier.compute_schema_hash(schema_path)
+    assert h1 == h2
 
 
 # ---------------------------------------------------------------------------

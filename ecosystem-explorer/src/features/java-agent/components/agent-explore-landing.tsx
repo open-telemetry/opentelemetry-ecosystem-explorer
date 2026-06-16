@@ -18,34 +18,36 @@ import { ConfigurationIcon } from "@/components/icons/configuration-icon";
 import { ReleaseIcon } from "@/components/icons/release-icon";
 import { NavigationCard } from "@/components/ui/navigation-card";
 import { isEnabled } from "@/lib/feature-flags";
+import { useTranslation } from "react-i18next";
 
 export function AgentExploreLanding() {
+  const { t } = useTranslation("java-agent");
   return (
     <section className="bg-background relative px-6 py-8">
       <div className="mx-auto max-w-6xl">
         <div className="grid gap-4 md:grid-cols-2">
           <NavigationCard
-            title="Instrumentation Libraries"
-            description="Explore auto-instrumentation for Java applications. Discover supported libraries, configuration options, and emitted telemetry."
+            title={t("landing.instrumentation.title")}
+            description={t("landing.instrumentation.description")}
             href="/java-agent/instrumentation"
             icon={<JavaInstrumentationIcon className="h-20 w-20" />}
           />
           <NavigationCard
-            title="Configuration Options"
-            description="Discover options for configuring the Java Agent and instrumentation."
+            title={t("landing.configuration.title")}
+            description={t("landing.configuration.description")}
             href="/java-agent/configuration"
             icon={<ConfigurationIcon className="h-20 w-20" />}
           />
           <NavigationCard
-            title="Configuration Builder"
-            description="Build and customize a declarative configuration file for the Java Agent."
+            title={t("landing.builder.title")}
+            description={t("landing.builder.description")}
             href="/java-agent/configuration/builder"
             icon={<ConfigurationIcon className="h-20 w-20" />}
           />
           {isEnabled("JAVA_RELEASE_COMPARISON") && (
             <NavigationCard
-              title="Releases"
-              description="Compare Java Agent versions to see changes in telemetry and configuration."
+              title={t("landing.releases.title")}
+              description={t("landing.releases.description")}
               href="/java-agent/releases"
               icon={<ReleaseIcon className="h-20 w-20" />}
             />

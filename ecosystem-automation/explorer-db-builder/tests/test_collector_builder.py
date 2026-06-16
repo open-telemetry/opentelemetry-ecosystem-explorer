@@ -220,6 +220,28 @@ class TestRunCollectorBuilder:
         assert "receiver" in data["taxonomy"]["types"]
         assert len(data["components"]) == 3
 
+    def test_creates_per_version_bundles_referenced_by_index(self, tmp_path):
+        manager = _make_mock_inventory_manager()
+        db_writer = CollectorDatabaseWriter(database_dir=str(tmp_path / "collector"))
+
+        run_collector_builder(inventory_manager=manager, db_writer=db_writer)
+
+        with open(tmp_path / "collector" / "versions-index.json") as f:
+            data = json.load(f)
+
+        latest = data["versions"][0]
+        assert latest["bundle_hash"]
+        bundle_file = tmp_path / "collector" / "bundles" / f"{latest['version']}-{latest['bundle_hash']}.json"
+        assert bundle_file.exists()
+        with open(bundle_file) as f:
+            bundle = json.load(f)
+        # Slim entries: index shape with derived stability, no nested status/attributes.
+        assert len(bundle) == 3
+        assert all(
+            set(entry.keys()) <= {"id", "name", "distribution", "type", "display_name", "description", "stability"}
+            for entry in bundle
+        )
+
     def test_clean_flag(self, tmp_path):
         manager = _make_mock_inventory_manager()
         out_dir = tmp_path / "collector"

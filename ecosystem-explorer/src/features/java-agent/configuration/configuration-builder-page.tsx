@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Loader } from "@/components/ui/loader";
 import { BackButton } from "@/components/ui/back-button";
 import { BetaBadge } from "@/components/ui/beta-badge";
@@ -39,11 +40,7 @@ import {
   type StatusFilter,
   type TocSection,
 } from "./components/configuration-toc-sidebar";
-import {
-  GeneralSectionCard,
-  GENERAL_SECTION_KEY,
-  GENERAL_SECTION_LABEL,
-} from "./components/general-section-card";
+import { GeneralSectionCard, GENERAL_SECTION_KEY } from "./components/general-section-card";
 import { InstrumentationBrowser } from "./components/instrumentation-browser";
 import { useActiveSection } from "./hooks/use-active-section";
 
@@ -68,8 +65,6 @@ const BUILDER_GRID = "grid grid-cols-1 gap-6 lg:grid-cols-[256px_minmax(0,1fr)_4
 const INSTRUMENTATION_DEV_KEY = "instrumentation/development";
 const GENERAL_SUBKEY = "general";
 const INSTRUMENTATIONS_SECTION_KEY = "instrumentations";
-const INSTRUMENTATIONS_SECTION_LABEL = "Instrumentations";
-const GENERAL_SETTINGS_LABEL = "General settings";
 
 // Drops instrumentation customizations that reference modules not present in the
 // selected agent version. Without this, switching from a newer agent (where a
@@ -99,6 +94,7 @@ function SdkTabContent({
   javaAgentVersion,
   activeTab,
 }: SdkTabContentProps) {
+  const { t } = useTranslation("java-agent");
   const [activePreviewKey, setActivePreviewKey] = useState<string | null>(null);
 
   // Leaf keys take precedence over the enclosing section key. The General card uses
@@ -129,9 +125,9 @@ function SdkTabContent({
   const tocSections: TocSection[] = useMemo(() => {
     const groups = groupChildren.map((c) => ({ key: c.key, label: c.label }));
     return hasGeneralLeaves
-      ? [{ key: GENERAL_SECTION_KEY, label: GENERAL_SECTION_LABEL }, ...groups]
+      ? [{ key: GENERAL_SECTION_KEY, label: t("builder.general.label") }, ...groups]
       : groups;
-  }, [groupChildren, hasGeneralLeaves]);
+  }, [groupChildren, hasGeneralLeaves, t]);
   const sectionKeys = useMemo(() => tocSections.map((s) => s.key), [tocSections]);
   const sectionsContainerRef = useRef<HTMLDivElement>(null);
   const { activeKey, scrollToSection } = useActiveSection(sectionKeys, sectionsContainerRef);
@@ -158,7 +154,9 @@ function SdkTabContent({
           onPointerDown={handleInteraction}
         >
           {hasGeneralLeaves && (
-            <GeneralSectionCard label={GENERAL_SECTION_LABEL}>{leafChildren}</GeneralSectionCard>
+            <GeneralSectionCard label={t("builder.general.label")}>
+              {leafChildren}
+            </GeneralSectionCard>
           )}
           {groupChildren.map((child) => (
             <SchemaRenderer key={child.key} node={child} depth={0} path={child.key} />
@@ -227,6 +225,7 @@ function InstrumentationTabBody({
   generalNode,
   javaAgentVersion,
 }: InstrumentationTabBodyProps) {
+  const { t } = useTranslation("java-agent");
   const [activePreviewKey, setActivePreviewKey] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
@@ -248,10 +247,10 @@ function InstrumentationTabBody({
   };
   const tocSections: TocSection[] = useMemo(
     () => [
-      { key: GENERAL_SECTION_KEY, label: GENERAL_SETTINGS_LABEL },
-      { key: INSTRUMENTATIONS_SECTION_KEY, label: INSTRUMENTATIONS_SECTION_LABEL },
+      { key: GENERAL_SECTION_KEY, label: t("builder.sections.generalSettings") },
+      { key: INSTRUMENTATIONS_SECTION_KEY, label: t("builder.sections.instrumentations") },
     ],
-    []
+    [t]
   );
   const sectionKeys = useMemo(() => tocSections.map((s) => s.key), [tocSections]);
   const sectionsContainerRef = useRef<HTMLDivElement>(null);
@@ -313,11 +312,11 @@ function InstrumentationTabBody({
         onPointerDown={handleInteraction}
       >
         <GeneralSectionCard
-          label={GENERAL_SETTINGS_LABEL}
+          label={t("builder.sections.generalSettings")}
           sectionKey={GENERAL_SECTION_KEY}
           pathPrefix={`${INSTRUMENTATION_DEV_KEY}.${GENERAL_SUBKEY}`}
           defaultExpanded={true}
-          emptyMessage="The schema for this version does not expose general instrumentation settings."
+          emptyMessage={t("builder.general.empty")}
         >
           {generalNode?.children ?? []}
         </GeneralSectionCard>
@@ -340,6 +339,7 @@ function InstrumentationTabBody({
 }
 
 export function ConfigurationBuilderPage() {
+  const { t } = useTranslation("java-agent");
   const schemaVersionsState = useConfigVersions();
   const latestSchemaVersion = useMemo(
     () =>
@@ -378,20 +378,20 @@ export function ConfigurationBuilderPage() {
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-3xl font-semibold md:text-4xl">
                 <span className="from-otel-orange to-otel-blue bg-gradient-to-r bg-clip-text text-transparent">
-                  Configuration Builder
+                  {t("builder.title")}
                 </span>
               </h1>
               <BetaBadge />
             </div>
             <p className="text-muted-foreground text-base">
-              Build and customize your OpenTelemetry Java Agent configuration.{" "}
+              {t("builder.description")}{" "}
               <a
                 href="https://opentelemetry.io/docs/zero-code/java/agent/declarative-configuration/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-foreground underline"
               >
-                Learn more about declarative configuration
+                {t("builder.links.declarativeConfig")}
               </a>{" "}
               ·{" "}
               <a
@@ -400,7 +400,7 @@ export function ConfigurationBuilderPage() {
                 rel="noopener noreferrer"
                 className="hover:text-foreground underline"
               >
-                Report an issue
+                {t("builder.links.reportIssue")}
               </a>
             </p>
           </div>
@@ -410,7 +410,7 @@ export function ConfigurationBuilderPage() {
                 versions={schemaVersionsState.data.versions}
                 currentVersion={schemaVersion}
                 onVersionChange={setCurrentSchemaVersion}
-                label="Schema"
+                label={t("builder.sections.schema")}
                 id="schema-version-select"
               />
             ) : null}
@@ -419,29 +419,29 @@ export function ConfigurationBuilderPage() {
                 versions={javaAgentVersions}
                 currentVersion={javaAgentVersion}
                 onVersionChange={setCurrentJavaAgentVersion}
-                label="Agent"
+                label={t("builder.sections.agent")}
                 id="java-agent-version-select"
               />
             ) : null}
           </div>
         </div>
         {schemaVersionsState.loading ? (
-          <Loader size="lg" label="Loading versions…" className="mt-4" />
+          <Loader size="lg" label={t("builder.loading.versions")} className="mt-4" />
         ) : schemaVersionsState.error ? (
-          <p className="mt-4 text-sm text-red-400">Failed to load available versions.</p>
+          <p className="mt-4 text-sm text-red-400">{t("builder.error.versions")}</p>
         ) : (
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsContent value="sdk">
               {!schemaVersion || schema.loading || starter.loading || (!schema.error && !root) ? (
                 <Loader
                   size={root ? "sm" : "lg"}
-                  label="Loading schema…"
+                  label={t("builder.loading.schema")}
                   className={root ? "mt-4" : undefined}
                 />
               ) : schema.error ? (
-                <p className="mt-4 text-sm text-red-400">Failed to load schema.</p>
+                <p className="mt-4 text-sm text-red-400">{t("builder.error.schema")}</p>
               ) : starter.error ? (
-                <p className="mt-4 text-sm text-red-400">Failed to load starter template.</p>
+                <p className="mt-4 text-sm text-red-400">{t("builder.error.template")}</p>
               ) : root ? (
                 <SdkTabContent
                   schema={root}
@@ -456,13 +456,13 @@ export function ConfigurationBuilderPage() {
               {!schemaVersion || schema.loading || starter.loading || (!schema.error && !root) ? (
                 <Loader
                   size={root ? "sm" : "lg"}
-                  label="Loading schema…"
+                  label={t("builder.loading.schema")}
                   className={root ? "mt-4" : undefined}
                 />
               ) : schema.error ? (
-                <p className="mt-4 text-sm text-red-400">Failed to load schema.</p>
+                <p className="mt-4 text-sm text-red-400">{t("builder.error.schema")}</p>
               ) : starter.error ? (
-                <p className="mt-4 text-sm text-red-400">Failed to load starter template.</p>
+                <p className="mt-4 text-sm text-red-400">{t("builder.error.template")}</p>
               ) : root ? (
                 <InstrumentationTabContent
                   schema={root}

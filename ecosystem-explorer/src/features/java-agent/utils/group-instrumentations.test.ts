@@ -15,12 +15,18 @@
  */
 import { describe, it, expect } from "vitest";
 import { groupInstrumentationsByDisplayName } from "./group-instrumentations";
-import type { InstrumentationData } from "@/types/javaagent";
+import type { InstrumentationListEntry } from "@/types/javaagent";
 
 function makeInstr(
-  overrides: Partial<InstrumentationData> & { name: string }
-): InstrumentationData {
-  return { scope: { name: "test" }, ...overrides };
+  overrides: Partial<InstrumentationListEntry> & { name: string }
+): InstrumentationListEntry {
+  return {
+    scope: { name: "test" },
+    has_spans: false,
+    has_metrics: false,
+    _is_custom: false,
+    ...overrides,
+  };
 }
 
 describe("groupInstrumentationsByDisplayName", () => {
@@ -29,7 +35,7 @@ describe("groupInstrumentationsByDisplayName", () => {
   });
 
   it("groups instrumentations with the same explicit display_name", () => {
-    const instrumentations: InstrumentationData[] = [
+    const instrumentations: InstrumentationListEntry[] = [
       makeInstr({ name: "apache-httpclient-4.0", display_name: "Apache HttpClient" }),
       makeInstr({ name: "apache-httpclient-5.0", display_name: "Apache HttpClient" }),
     ];
@@ -44,7 +50,7 @@ describe("groupInstrumentationsByDisplayName", () => {
   });
 
   it("groups instrumentations by fallback name when display_name is absent", () => {
-    const instrumentations: InstrumentationData[] = [
+    const instrumentations: InstrumentationListEntry[] = [
       makeInstr({ name: "spring-web-3.1" }),
       makeInstr({ name: "spring-web-6.0" }),
     ];
@@ -57,7 +63,7 @@ describe("groupInstrumentationsByDisplayName", () => {
   });
 
   it("keeps singletons as groups with one member", () => {
-    const instrumentations: InstrumentationData[] = [
+    const instrumentations: InstrumentationListEntry[] = [
       makeInstr({ name: "jdbc", display_name: "JDBC" }),
     ];
 
@@ -69,7 +75,7 @@ describe("groupInstrumentationsByDisplayName", () => {
   });
 
   it("does not group instrumentations with different display names", () => {
-    const instrumentations: InstrumentationData[] = [
+    const instrumentations: InstrumentationListEntry[] = [
       makeInstr({ name: "spring-web-3.1" }),
       makeInstr({ name: "spring-webmvc-3.1" }),
       makeInstr({ name: "spring-webflux-5.0" }),
@@ -85,7 +91,7 @@ describe("groupInstrumentationsByDisplayName", () => {
   });
 
   it("sorts groups alphabetically by display name", () => {
-    const instrumentations: InstrumentationData[] = [
+    const instrumentations: InstrumentationListEntry[] = [
       makeInstr({ name: "zookeeper", display_name: "Zookeeper" }),
       makeInstr({ name: "akka-actor-2.3", display_name: "Akka Actors" }),
       makeInstr({ name: "jdbc", display_name: "JDBC" }),
@@ -97,7 +103,7 @@ describe("groupInstrumentationsByDisplayName", () => {
   });
 
   it("sorts instrumentations within a group by numeric version order", () => {
-    const instrumentations: InstrumentationData[] = [
+    const instrumentations: InstrumentationListEntry[] = [
       makeInstr({ name: "mongo-4.0", display_name: "MongoDB Driver" }),
       makeInstr({ name: "mongo-3.1", display_name: "MongoDB Driver" }),
       makeInstr({ name: "mongo-3.7", display_name: "MongoDB Driver" }),
@@ -113,7 +119,7 @@ describe("groupInstrumentationsByDisplayName", () => {
   });
 
   it("sorts multi-digit version suffixes in numeric not lexicographic order", () => {
-    const instrumentations: InstrumentationData[] = [
+    const instrumentations: InstrumentationListEntry[] = [
       makeInstr({ name: "jetty-12.0", display_name: "Eclipse Jetty" }),
       makeInstr({ name: "jetty-8.0", display_name: "Eclipse Jetty" }),
       makeInstr({ name: "jetty-11.0", display_name: "Eclipse Jetty" }),
@@ -129,7 +135,7 @@ describe("groupInstrumentationsByDisplayName", () => {
   });
 
   it("handles mixed explicit and fallback names that resolve to the same display name", () => {
-    const instrumentations: InstrumentationData[] = [
+    const instrumentations: InstrumentationListEntry[] = [
       makeInstr({ name: "servlet-2.2", display_name: "Servlet" }),
       makeInstr({ name: "servlet-3.0", display_name: "Servlet" }),
       makeInstr({ name: "servlet-5.0", display_name: "Servlet" }),
@@ -143,7 +149,7 @@ describe("groupInstrumentationsByDisplayName", () => {
   });
 
   it("produces both groups and singletons in correct sorted order", () => {
-    const instrumentations: InstrumentationData[] = [
+    const instrumentations: InstrumentationListEntry[] = [
       makeInstr({ name: "netty-4.1", display_name: "Netty HTTP codec" }),
       makeInstr({ name: "jdbc", display_name: "JDBC" }),
       makeInstr({ name: "netty-4.0", display_name: "Netty HTTP codec" }),
@@ -162,15 +168,16 @@ describe("groupInstrumentationsByDisplayName", () => {
   });
 
   it("preserves all instrumentation data fields through grouping", () => {
-    const original: InstrumentationData = {
+    const original: InstrumentationListEntry = {
       name: "kafka-clients-0.11",
       display_name: "Apache Kafka Client",
       description: "Kafka instrumentation",
       scope: { name: "io.opentelemetry.kafka-clients-0.11" },
       has_javaagent: true,
-      javaagent_target_versions: ["Java 8+"],
       has_standalone_library: true,
-      telemetry: [{ when: "default", spans: [{ span_kind: "PRODUCER" }] }],
+      has_spans: true,
+      has_metrics: false,
+      _is_custom: false,
     };
 
     const groups = groupInstrumentationsByDisplayName([original]);

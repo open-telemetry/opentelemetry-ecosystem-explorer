@@ -3,6 +3,9 @@
     "declarative_name": "java.servlet.javascript_snippet/development",
     "default": "",
     "description": "Experimental setting to inject a JavaScript snippet into HTML responses after the opening `<head>` tag.",
+    "examples": [
+      "<script type=\"text/javascript\">console.log('test')</script>"
+    ],
     "instrumentations": [
       "servlet-2.2",
       "servlet-3.0",
@@ -316,7 +319,25 @@
     "type": "boolean"
   },
   {
-    "declarative_name": "java.common.peer_service_mapping",
+    "declarative_name": "java.common.service_peer_mapping",
+    "declarative_schema": {
+      "properties": {
+        "peer": {
+          "description": "Host name or IP address to match against.",
+          "type": "string"
+        },
+        "service_name": {
+          "description": "Peer service name to record for matching peers.",
+          "type": "string"
+        }
+      },
+      "required": [
+        "peer",
+        "service_name"
+      ],
+      "type": "object"
+    },
+    "declarative_type": "structured_list",
     "default": "",
     "description": "Used to specify a mapping from host names or IP addresses to peer services.",
     "instrumentations": [
