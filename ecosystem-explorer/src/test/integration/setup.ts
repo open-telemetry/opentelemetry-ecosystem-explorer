@@ -24,8 +24,9 @@ import { clearAllCached, closeDB } from "@/lib/api/idb-cache";
 
 // JSDOM does not implement Element.scrollIntoView; provide a stub so that
 // click handlers wired to scrollToSection don't throw during tests.
+import { vi } from "vitest";
 if (typeof Element !== "undefined" && !Element.prototype.scrollIntoView) {
-  Element.prototype.scrollIntoView = function () {};
+  Element.prototype.scrollIntoView = vi.fn();
 }
 
 beforeEach(async () => {
@@ -35,3 +36,4 @@ beforeEach(async () => {
   // the next initDB() call opens a fresh connection.
   closeDB();
 });
+import { vi } from "vitest";

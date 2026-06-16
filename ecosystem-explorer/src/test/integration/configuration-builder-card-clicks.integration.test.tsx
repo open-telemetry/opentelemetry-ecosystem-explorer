@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { describe, it, expect, beforeAll, beforeEach, afterAll } from "vitest";
+import { describe, it, expect, beforeAll, beforeEach, afterAll, vi } from "vitest";
 import { screen, within, cleanup, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { installFetchInterceptor, uninstallFetchInterceptor } from "./helpers/fetch-interceptor";
@@ -87,6 +87,77 @@ describe("ConfigurationBuilderPage card click behavior", () => {
       expect(resourceYamlSection).not.toBeNull();
       expect(resourceYamlSection?.className).toContain("bg-otel-orange/10");
     });
+  });
+
+  it("interacting with a section card scrolls the corresponding YAML section into view if it is not visible", async () => {
+    renderPage();
+    const user = userEvent.setup();
+
+    await screen.findByRole("switch", { name: /Enable Resource/i }, { timeout: 10_000 });
+
+    const resourceSection = document.querySelector<HTMLElement>('[data-section-key="resource"]');
+    expect(resourceSection).not.toBeNull();
+
+    // Mock getBoundingClientRect so the section appears off-screen
+    const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect;
+    Element.prototype.getBoundingClientRect = function () {
+      if (this.tagName === "PRE") {
+        return { top: 0, bottom: 500, left: 0, right: 500, width: 500, height: 500, x: 0, y: 0, toJSON: () => {} };
+      }
+      if (this.getAttribute("data-yaml-section") === "resource") {
+        return { top: 600, bottom: 700, left: 0, right: 500, width: 500, height: 100, x: 0, y: 0, toJSON: () => {} };
+      }
+      return originalGetBoundingClientRect.call(this);
+    };
+
+    const scrollIntoViewMock = vi.fn();
+    Element.prototype.scrollIntoView = scrollIntoViewMock;
+
+    await user.click(resourceSection!);
+
+    await waitFor(() => {
+      expect(scrollIntoViewMock).toHaveBeenCalledWith({ block: "nearest", behavior: "smooth" });
+    });
+
+    Element.prototype.getBoundingClientRect = originalGetBoundingClientRect;
+  });
+
+  it("interacting with a section card does not scroll the YAML section if it is already visible", async () => {
+    renderPage();
+    const user = userEvent.setup();
+
+    await screen.findByRole("switch", { name: /Enable Resource/i }, { timeout: 10_000 });
+
+    const resourceSection = document.querySelector<HTMLElement>('[data-section-key="resource"]');
+    expect(resourceSection).not.toBeNull();
+
+    // Mock getBoundingClientRect so the section appears on-screen
+    const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect;
+    Element.prototype.getBoundingClientRect = function () {
+      if (this.tagName === "PRE") {
+        return { top: 0, bottom: 500, left: 0, right: 500, width: 500, height: 500, x: 0, y: 0, toJSON: () => {} };
+      }
+      if (this.getAttribute("data-yaml-section") === "resource") {
+        return { top: 100, bottom: 200, left: 0, right: 500, width: 500, height: 100, x: 0, y: 0, toJSON: () => {} };
+      }
+      return originalGetBoundingClientRect.call(this);
+    };
+
+    const scrollIntoViewMock = vi.fn();
+    Element.prototype.scrollIntoView = scrollIntoViewMock;
+
+    await user.click(resourceSection!);
+
+    await waitFor(() => {
+      const resourceYamlSection = document.querySelector<HTMLElement>(
+        '[data-yaml-section="resource"]'
+      );
+      expect(resourceYamlSection?.className).toContain("bg-otel-orange/10");
+    });
+
+    expect(scrollIntoViewMock).not.toHaveBeenCalled();
+
+    Element.prototype.getBoundingClientRect = originalGetBoundingClientRect;
   });
 
   it("interacting with a leaf field inside the General card highlights the matching YAML block", async () => {
