@@ -28,6 +28,7 @@
  * - signals-row.css  — v1 home signals row (`.td-signals-row`) — Traces/Metrics/Logs/Baggage
  * - global-search.css — v1 home global search input + dropdown (`.td-search*`)
  * - recent-activity-rail.css — v1 home recent-activity rail (`.td-activity-*`, `.td-pill*`)
+ * - release-card.css — v1 ecosystem-landing release card (`.td-release-card*`)
  * - home.css         — v1 home page wrapper + shared `td-box`/`td-two-col` chrome
  * - cncf-callout.css — sitewide CNCF band above the footer
  * - footer.css       — v1 footer (`.td-footer`) — mirrors opentelemetry.io
@@ -48,6 +49,7 @@
 @import "./signals-row.css";
 @import "./global-search.css";
 @import "./recent-activity-rail.css";
+@import "./release-card.css";
 @import "./home.css";
 @import "./cncf-callout.css";
 @import "./footer.css";

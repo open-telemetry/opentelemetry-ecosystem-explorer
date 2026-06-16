@@ -402,6 +402,7 @@ components:
       codeowners:
         active:
         - evan-bradley
+        - mwear
         seeking_new: true
 - name: healthcheckv2extension
   metadata:
