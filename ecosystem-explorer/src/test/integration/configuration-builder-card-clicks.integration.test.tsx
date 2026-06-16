@@ -100,26 +100,50 @@ describe("ConfigurationBuilderPage card click behavior", () => {
 
     // Mock getBoundingClientRect so the section appears off-screen
     const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect;
+    const originalScrollIntoView = Element.prototype.scrollIntoView;
+    const scrollIntoViewMock = vi.fn();
+
     Element.prototype.getBoundingClientRect = function () {
       if (this.tagName === "PRE") {
-        return { top: 0, bottom: 500, left: 0, right: 500, width: 500, height: 500, x: 0, y: 0, toJSON: () => {} };
+        return {
+          top: 0,
+          bottom: 500,
+          left: 0,
+          right: 500,
+          width: 500,
+          height: 500,
+          x: 0,
+          y: 0,
+          toJSON: () => {},
+        };
       }
       if (this.getAttribute("data-yaml-section") === "resource") {
-        return { top: 600, bottom: 700, left: 0, right: 500, width: 500, height: 100, x: 0, y: 0, toJSON: () => {} };
+        return {
+          top: 600,
+          bottom: 700,
+          left: 0,
+          right: 500,
+          width: 500,
+          height: 100,
+          x: 0,
+          y: 0,
+          toJSON: () => {},
+        };
       }
       return originalGetBoundingClientRect.call(this);
     };
-
-    const scrollIntoViewMock = vi.fn();
     Element.prototype.scrollIntoView = scrollIntoViewMock;
 
-    await user.click(resourceSection!);
+    try {
+      await user.click(resourceSection!);
 
-    await waitFor(() => {
-      expect(scrollIntoViewMock).toHaveBeenCalledWith({ block: "nearest", behavior: "smooth" });
-    });
-
-    Element.prototype.getBoundingClientRect = originalGetBoundingClientRect;
+      await waitFor(() => {
+        expect(scrollIntoViewMock).toHaveBeenCalledWith({ block: "nearest", behavior: "smooth" });
+      });
+    } finally {
+      Element.prototype.getBoundingClientRect = originalGetBoundingClientRect;
+      Element.prototype.scrollIntoView = originalScrollIntoView;
+    }
   });
 
   it("interacting with a section card does not scroll the YAML section if it is already visible", async () => {
@@ -133,31 +157,55 @@ describe("ConfigurationBuilderPage card click behavior", () => {
 
     // Mock getBoundingClientRect so the section appears on-screen
     const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect;
+    const originalScrollIntoView = Element.prototype.scrollIntoView;
+    const scrollIntoViewMock = vi.fn();
+
     Element.prototype.getBoundingClientRect = function () {
       if (this.tagName === "PRE") {
-        return { top: 0, bottom: 500, left: 0, right: 500, width: 500, height: 500, x: 0, y: 0, toJSON: () => {} };
+        return {
+          top: 0,
+          bottom: 500,
+          left: 0,
+          right: 500,
+          width: 500,
+          height: 500,
+          x: 0,
+          y: 0,
+          toJSON: () => {},
+        };
       }
       if (this.getAttribute("data-yaml-section") === "resource") {
-        return { top: 100, bottom: 200, left: 0, right: 500, width: 500, height: 100, x: 0, y: 0, toJSON: () => {} };
+        return {
+          top: 100,
+          bottom: 200,
+          left: 0,
+          right: 500,
+          width: 500,
+          height: 100,
+          x: 0,
+          y: 0,
+          toJSON: () => {},
+        };
       }
       return originalGetBoundingClientRect.call(this);
     };
-
-    const scrollIntoViewMock = vi.fn();
     Element.prototype.scrollIntoView = scrollIntoViewMock;
 
-    await user.click(resourceSection!);
+    try {
+      await user.click(resourceSection!);
 
-    await waitFor(() => {
-      const resourceYamlSection = document.querySelector<HTMLElement>(
-        '[data-yaml-section="resource"]'
-      );
-      expect(resourceYamlSection?.className).toContain("bg-otel-orange/10");
-    });
+      await waitFor(() => {
+        const resourceYamlSection = document.querySelector<HTMLElement>(
+          '[data-yaml-section="resource"]'
+        );
+        expect(resourceYamlSection?.className).toContain("bg-otel-orange/10");
+      });
 
-    expect(scrollIntoViewMock).not.toHaveBeenCalled();
-
-    Element.prototype.getBoundingClientRect = originalGetBoundingClientRect;
+      expect(scrollIntoViewMock).not.toHaveBeenCalled();
+    } finally {
+      Element.prototype.getBoundingClientRect = originalGetBoundingClientRect;
+      Element.prototype.scrollIntoView = originalScrollIntoView;
+    }
   });
 
   it("interacting with a leaf field inside the General card highlights the matching YAML block", async () => {
