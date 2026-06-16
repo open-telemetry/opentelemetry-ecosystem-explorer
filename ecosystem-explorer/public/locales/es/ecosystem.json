@@ -8,5 +8,9 @@
     "deprecated": "obsoletos",
     "changelog": "Ver registro de cambios",
     "empty": "La información de la versión aún no está disponible para este ecosistema."
+  },
+  "pipelineAnatomy": {
+    "defaultTitle": "Anatomía del pipeline",
+    "stageAriaLabel": "{{label}} — {{count}} componentes"
   }
 }
