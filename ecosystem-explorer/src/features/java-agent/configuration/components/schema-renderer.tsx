@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, type JSX } from "react";
+import type { JSX } from "react";
 import { useTranslation } from "react-i18next";
 import type {
   ConfigNode,
@@ -39,7 +39,7 @@ import { UnionRenderer } from "./union-renderer";
 import { CircularRefPlaceholder } from "./circular-ref-placeholder";
 import { FieldSection } from "./field-section";
 import { useStarterPaths } from "./configuration-ui-context";
-import { useSectionExpansion } from "./section-expansion-context";
+import { useCollapsibleExpansion } from "./section-expansion-context";
 
 export interface SchemaRendererProps {
   node: ConfigNode;
@@ -70,29 +70,10 @@ function WrappedLeaf({
   defaultExp: boolean;
   children: JSX.Element;
 }) {
-  const { bulkAction, overrides, setOverride } = useSectionExpansion();
-  const [expanded, setExpanded] = useState(defaultExp);
-
-  const bulkOpen =
-    path in overrides
-      ? overrides[path]
-      : bulkAction === "expand"
-        ? true
-        : bulkAction === "collapse"
-          ? false
-          : null;
-  const resolvedExpanded = bulkOpen !== null ? bulkOpen : expanded;
+  const { open, onOpenChange } = useCollapsibleExpansion(path, defaultExp);
 
   return (
-    <FieldSection
-      node={node}
-      level="field"
-      open={resolvedExpanded}
-      onOpenChange={(next) => {
-        setExpanded(next);
-        setOverride(path, next);
-      }}
-    >
+    <FieldSection node={node} level="field" open={open} onOpenChange={onOpenChange}>
       <FieldSection.Header>
         <FieldSection.Chevron />
         <FieldSection.Label />

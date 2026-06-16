@@ -23,6 +23,7 @@ import { SchemaRenderer } from "./schema-renderer";
 import { parsePath, getByPath } from "@/lib/config-path";
 import { FieldSection } from "./field-section";
 import { ListItemContext, useListItemContext, useStarterPaths } from "./configuration-ui-context";
+import { useCollapsibleExpansion } from "./section-expansion-context";
 
 export interface PluginSelectRendererProps {
   node: PluginSelectNode;
@@ -66,6 +67,7 @@ export function PluginSelectRenderer({
   const customTabId = useId();
   const customPanelId = useId();
   const customActive = isCustom || customPickerOpen;
+  const { open, onOpenChange } = useCollapsibleExpansion(path, starterPaths.has(path));
 
   function closeCustomPicker() {
     setCustomPickerOpen(false);
@@ -216,7 +218,7 @@ export function PluginSelectRenderer({
   }
 
   return (
-    <FieldSection node={node} level="field" defaultExpanded={starterPaths.has(path)}>
+    <FieldSection node={node} level="field" open={open} onOpenChange={onOpenChange}>
       <FieldSection.Header>
         <FieldSection.Chevron />
         <FieldSection.Label />

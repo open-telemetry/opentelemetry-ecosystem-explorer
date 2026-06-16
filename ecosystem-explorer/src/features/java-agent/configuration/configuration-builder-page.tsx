@@ -15,6 +15,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { ChevronsDownUp, ChevronsUpDown } from "lucide-react";
 import { Loader } from "@/components/ui/loader";
 import { BackButton } from "@/components/ui/back-button";
 import { BetaBadge } from "@/components/ui/beta-badge";
@@ -83,25 +84,19 @@ function PruneInstrumentationsForAgentVersion({ javaAgentVersion }: { javaAgentV
   return null;
 }
 
+const EXPAND_TOOLBAR_BUTTON =
+  "border-border/60 bg-card text-foreground hover:bg-card/80 focus-visible:ring-primary inline-flex cursor-pointer items-center gap-1 rounded-md border px-3 py-1.5 text-xs focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none";
+
 function ExpandCollapseToolbar() {
   const { expandAll, collapseAll } = useSectionExpansion();
   return (
     <div className="flex items-center gap-2">
-      <button
-        type="button"
-        onClick={expandAll}
-        className="text-muted-foreground hover:text-foreground text-xs font-medium underline-offset-2 hover:underline"
-      >
+      <button type="button" onClick={expandAll} className={EXPAND_TOOLBAR_BUTTON}>
+        <ChevronsUpDown className="h-3 w-3" aria-hidden="true" />
         Expand all
       </button>
-      <span className="text-border" aria-hidden="true">
-        |
-      </span>
-      <button
-        type="button"
-        onClick={collapseAll}
-        className="text-muted-foreground hover:text-foreground text-xs font-medium underline-offset-2 hover:underline"
-      >
+      <button type="button" onClick={collapseAll} className={EXPAND_TOOLBAR_BUTTON}>
+        <ChevronsDownUp className="h-3 w-3" aria-hidden="true" />
         Collapse all
       </button>
     </div>

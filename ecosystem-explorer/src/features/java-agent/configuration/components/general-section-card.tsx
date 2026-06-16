@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, type JSX } from "react";
+import type { JSX } from "react";
 import type { ConfigNode } from "@/types/configuration";
 import { SchemaRenderer } from "./schema-renderer";
 import { SectionCardShell } from "./section-card-shell";
 import { FieldSection } from "./field-section";
-import { useSectionExpansion } from "./section-expansion-context";
+import { useCollapsibleExpansion } from "./section-expansion-context";
 
 export const GENERAL_SECTION_KEY = "general";
 export const GENERAL_SECTION_LABEL = "General";
@@ -40,17 +40,7 @@ export function GeneralSectionCard({
   sectionKey = GENERAL_SECTION_KEY,
   emptyMessage,
 }: GeneralSectionCardProps): JSX.Element {
-  const [expanded, setExpanded] = useState(defaultExpanded);
-  const { bulkAction, overrides, setOverride } = useSectionExpansion();
-  const bulkOpen =
-    sectionKey in overrides
-      ? overrides[sectionKey]
-      : bulkAction === "expand"
-        ? true
-        : bulkAction === "collapse"
-          ? false
-          : null;
-  const resolvedExpanded = bulkOpen !== null ? bulkOpen : expanded;
+  const { open, onOpenChange } = useCollapsibleExpansion(sectionKey, defaultExpanded);
 
   const headerNode = {
     controlType: "group" as const,
@@ -64,11 +54,8 @@ export function GeneralSectionCard({
         node={headerNode}
         level="section"
         asGroup={false}
-        open={resolvedExpanded}
-        onOpenChange={(next) => {
-          setOverride(sectionKey, next);
-          setExpanded(next);
-        }}
+        open={open}
+        onOpenChange={onOpenChange}
       >
         <FieldSection.Header>
           <FieldSection.Chevron />

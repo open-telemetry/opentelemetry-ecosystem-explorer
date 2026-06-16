@@ -67,3 +67,37 @@ export function useSectionExpansion(): SectionExpansionContextValue {
   const ctx = useContext(SectionExpansionContext);
   return ctx ?? NO_OP_CONTEXT;
 }
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function resolveBulkOpen(
+  ctx: Pick<SectionExpansionContextValue, "bulkAction" | "overrides">,
+  key: string,
+  eligibleForBulkExpand = true
+): boolean | null {
+  if (key in ctx.overrides) return ctx.overrides[key];
+  if (ctx.bulkAction === "expand" && eligibleForBulkExpand) return true;
+  if (ctx.bulkAction === "collapse") return false;
+  return null;
+}
+
+export interface CollapsibleExpansion {
+  open: boolean;
+  onOpenChange: (next: boolean) => void;
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function useCollapsibleExpansion(
+  key: string,
+  defaultExpanded: boolean,
+  options?: { eligibleForBulkExpand?: boolean }
+): CollapsibleExpansion {
+  const ctx = useSectionExpansion();
+  const [expanded, setExpanded] = useState(defaultExpanded);
+  const bulkOpen = resolveBulkOpen(ctx, key, options?.eligibleForBulkExpand ?? true);
+  const open = bulkOpen !== null ? bulkOpen : expanded;
+  const onOpenChange = (next: boolean) => {
+    setExpanded(next);
+    ctx.setOverride(key, next);
+  };
+  return { open, onOpenChange };
+}

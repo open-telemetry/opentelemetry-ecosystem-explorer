@@ -23,7 +23,7 @@ import { SchemaRenderer } from "./schema-renderer";
 import { SectionCardShell } from "./section-card-shell";
 import { FieldSection } from "./field-section";
 import { useStarterPaths } from "./configuration-ui-context";
-import { useSectionExpansion } from "./section-expansion-context";
+import { resolveBulkOpen, useSectionExpansion } from "./section-expansion-context";
 
 export interface GroupRendererProps {
   node: GroupNode;
@@ -58,16 +58,8 @@ export function GroupRenderer({
     if (enabled) setExpanded(true);
   }
 
-  const { bulkAction, overrides, setOverride } = useSectionExpansion();
-  const sectionKey = node.key;
-  const bulkOpen =
-    sectionKey in overrides
-      ? overrides[sectionKey]
-      : bulkAction === "expand" && (isTopLevel ? enabled : true)
-        ? true
-        : bulkAction === "collapse"
-          ? false
-          : null;
+  const ctx = useSectionExpansion();
+  const bulkOpen = resolveBulkOpen(ctx, path, isTopLevel ? enabled : true);
   const resolvedExpanded = bulkOpen !== null ? bulkOpen : expanded;
 
   const value = getByPath(state.values, parsePath(path));
@@ -94,7 +86,7 @@ export function GroupRenderer({
           asGroup={false}
           open={resolvedExpanded}
           onOpenChange={(next) => {
-            if (isTopLevel) setOverride(sectionKey, next);
+            ctx.setOverride(path, next);
             setExpanded(next);
           }}
         >
@@ -127,7 +119,7 @@ export function GroupRenderer({
       open={resolvedExpanded}
       onOpenChange={(next) => {
         setExpanded(next);
-        setOverride(sectionKey, next);
+        ctx.setOverride(path, next);
       }}
     >
       <FieldSection.Header>
