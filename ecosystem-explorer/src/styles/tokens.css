@@ -118,6 +118,10 @@
     --hero-gradient-opacity: 0.15; /* Boosted for white background */
     --hero-grid-opacity: 0.15;
 
+    /* Always-dark terminal panes */
+    --code-bg-hsl: 232 38% 15%; /* Dark navy */
+    --code-fg-hsl: 210 17% 98%;
+
     /* Syntax — reuse dark values until a light-mode consumer needs distinct tokens */
     --syntax-comment-hsl: 220 18% 58%;
     --syntax-key-hsl: 28 95% 65%;
