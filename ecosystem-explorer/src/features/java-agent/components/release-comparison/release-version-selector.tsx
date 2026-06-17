@@ -25,6 +25,43 @@ interface ReleaseVersionSelectorProps {
   onToVersionChange: (version: string) => void;
 }
 
+function VersionSelect({
+  id,
+  label,
+  value,
+  versions,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  versions: VersionInfo[];
+  onChange: (version: string) => void;
+}) {
+  return (
+    <div className="space-y-3">
+      <label
+        htmlFor={id}
+        className="bg-muted/50 text-foreground/70 block w-fit rounded-md px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase"
+      >
+        {label}
+      </label>
+      <select
+        id={id}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="border-primary/20 bg-primary/5 text-foreground hover:border-primary/40 hover:bg-primary/10 focus:ring-primary/50 focus:border-primary/50 w-full cursor-pointer rounded-lg border-2 px-4 py-2.5 text-sm font-medium shadow-sm transition-all duration-200 hover:shadow-md focus:ring-2 focus:outline-none"
+      >
+        {versions.map((v) => (
+          <option key={v.version} value={v.version}>
+            {v.version} {v.is_latest ? "(latest)" : ""}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
 export function ReleaseVersionSelector({
   versions,
   fromVersion,
@@ -43,47 +80,21 @@ export function ReleaseVersionSelector({
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div className="space-y-3">
-            <label
-              htmlFor="from-version-select"
-              className="bg-muted/50 text-foreground/70 block w-fit rounded-md px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase"
-            >
-              From Version
-            </label>
-            <select
-              id="from-version-select"
-              value={fromVersion}
-              onChange={(e) => onFromVersionChange(e.target.value)}
-              className="border-primary/20 bg-primary/5 text-foreground hover:border-primary/40 hover:bg-primary/10 focus:ring-primary/50 focus:border-primary/50 w-full cursor-pointer rounded-lg border-2 px-4 py-2.5 text-sm font-medium shadow-sm transition-all duration-200 hover:shadow-md focus:ring-2 focus:outline-none"
-            >
-              {versions.map((v) => (
-                <option key={v.version} value={v.version}>
-                  {v.version} {v.is_latest ? "(latest)" : ""}
-                </option>
-              ))}
-            </select>
-          </div>
+          <VersionSelect
+            id="from-version-select"
+            label="From Version"
+            value={fromVersion}
+            versions={versions}
+            onChange={onFromVersionChange}
+          />
 
-          <div className="space-y-3">
-            <label
-              htmlFor="to-version-select"
-              className="bg-muted/50 text-foreground/70 block w-fit rounded-md px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase"
-            >
-              To Version
-            </label>
-            <select
-              id="to-version-select"
-              value={toVersion}
-              onChange={(e) => onToVersionChange(e.target.value)}
-              className="border-primary/20 bg-primary/5 text-foreground hover:border-primary/40 hover:bg-primary/10 focus:ring-primary/50 focus:border-primary/50 w-full cursor-pointer rounded-lg border-2 px-4 py-2.5 text-sm font-medium shadow-sm transition-all duration-200 hover:shadow-md focus:ring-2 focus:outline-none"
-            >
-              {versions.map((v) => (
-                <option key={v.version} value={v.version}>
-                  {v.version} {v.is_latest ? "(latest)" : ""}
-                </option>
-              ))}
-            </select>
-          </div>
+          <VersionSelect
+            id="to-version-select"
+            label="To Version"
+            value={toVersion}
+            versions={versions}
+            onChange={onToVersionChange}
+          />
         </div>
       </div>
     </div>

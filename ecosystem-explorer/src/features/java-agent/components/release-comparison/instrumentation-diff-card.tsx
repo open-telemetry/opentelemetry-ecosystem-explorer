@@ -15,30 +15,35 @@
  */
 
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Plus, Minus, RefreshCcw } from "lucide-react";
+import { ChevronDown, ChevronUp, Plus, Minus, RefreshCcw, ExternalLink } from "lucide-react";
 import type { InstrumentationDiff } from "../../utils/release-diff";
 import { DiffResultsSection } from "../telemetry-comparison/diff-results-section";
 import { GlowBadge } from "@/components/ui/glow-badge";
+import { Tooltip } from "@/components/ui/tooltip";
 
 const STATUS_CONFIG: Record<
   InstrumentationDiff["status"],
-  { className: string; icon: React.ReactNode }
+  { className: string; icon: React.ReactNode; label: string }
 > = {
   added: {
     className: "border-green-400/30 bg-green-400/10 text-green-400",
     icon: <Plus className="h-4 w-4" />,
+    label: "Added",
   },
   removed: {
     className: "border-red-400/30 bg-red-400/10 text-red-400",
     icon: <Minus className="h-4 w-4" />,
+    label: "Removed",
   },
   changed: {
     className: "border-blue-400/30 bg-blue-400/10 text-blue-400",
     icon: <RefreshCcw className="h-4 w-4" />,
+    label: "Changed",
   },
   unchanged: {
     className: "border-border/50 bg-muted/20 text-muted-foreground",
     icon: <div className="h-2 w-2 rounded-full bg-current" />,
+    label: "Unchanged",
   },
 };
 
@@ -62,19 +67,41 @@ export function InstrumentationDiffCard({ diff }: InstrumentationDiffCardProps) 
 
   return (
     <div className="border-border/30 bg-card/20 overflow-hidden rounded-xl border transition-all duration-200">
-      <button
+      <div
+        role="button"
+        tabIndex={0}
         onClick={() => setIsExpanded(!isExpanded)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setIsExpanded(!isExpanded);
+          }
+        }}
         aria-expanded={isExpanded}
-        className="flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-white/5"
+        className="flex w-full cursor-pointer items-center justify-between p-4 text-left transition-colors hover:bg-white/5"
       >
         <div className="flex items-center gap-4">
-          <div
-            className={`flex h-8 w-8 items-center justify-center rounded-lg border ${statusInfo.className}`}
-          >
-            {statusInfo.icon}
-          </div>
+          <Tooltip content={statusInfo.label} side="top">
+            <div
+              className={`flex h-8 w-8 items-center justify-center rounded-lg border ${statusInfo.className}`}
+            >
+              {statusInfo.icon}
+            </div>
+          </Tooltip>
           <div>
-            <h3 className="text-sm font-semibold">{diff.displayName}</h3>
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-semibold">{diff.displayName}</h3>
+              <a
+                href={`/java-agent/instrumentation/${diff.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-muted-foreground hover:text-primary transition-colors"
+                onClick={(e) => e.stopPropagation()}
+                title="View Instrumentation Details"
+              >
+                <ExternalLink className="h-3.5 w-3.5" />
+              </a>
+            </div>
             <p className="text-muted-foreground text-xs">{diff.id}</p>
           </div>
         </div>
@@ -103,7 +130,7 @@ export function InstrumentationDiffCard({ diff }: InstrumentationDiffCardProps) 
             <ChevronDown className="text-muted-foreground h-5 w-5" />
           )}
         </div>
-      </button>
+      </div>
 
       {isExpanded && (
         <div className="border-border/30 animate-in fade-in slide-in-from-top-2 space-y-8 border-t p-6 duration-200">

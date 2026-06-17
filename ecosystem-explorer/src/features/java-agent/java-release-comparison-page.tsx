@@ -38,8 +38,6 @@ export function JavaReleaseComparisonPage() {
   const fromVersion = searchParams.get("from") || previousVersion;
   const toVersion = searchParams.get("to") || latestVersion;
 
-  const changelogUrl = `https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/tag/v${toVersion}`;
-
   useEffect(() => {
     if (versions.length > 0 && (!searchParams.get("from") || !searchParams.get("to"))) {
       setSearchParams(
@@ -81,6 +79,16 @@ export function JavaReleaseComparisonPage() {
     return fromIndex <= toIndex;
   }, [fromVersion, toVersion, versions]);
 
+  const changelogVersions = useMemo(() => {
+    if (isInvalidComparison || !versions.length) return [toVersion];
+    const fromIndex = versions.findIndex((v) => v.version === fromVersion);
+    const toIndex = versions.findIndex((v) => v.version === toVersion);
+    if (fromIndex > toIndex) {
+      return versions.slice(toIndex, fromIndex).map(v => v.version);
+    }
+    return [toVersion];
+  }, [fromVersion, toVersion, versions, isInvalidComparison]);
+
   return (
     <PageContainer>
       <div className="space-y-8">
@@ -97,15 +105,36 @@ export function JavaReleaseComparisonPage() {
               Compare Java Agent releases to discover new features and changes in telemetry.
             </p>
           </div>
-          <a
-            href={changelogUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="border-border/30 hover:bg-card/60 bg-card/40 flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors"
-          >
-            View Changelog for {toVersion}
-            <ExternalLink className="h-4 w-4" />
-          </a>
+          {changelogVersions.length <= 1 ? (
+            <a
+              href={`https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/tag/v${changelogVersions[0]}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="border-border/30 hover:bg-card/60 bg-card/40 flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors"
+            >
+              View Changelog for {changelogVersions[0]}
+              <ExternalLink className="h-4 w-4" />
+            </a>
+          ) : (
+            <div className="relative">
+              <select
+                className="border-border/30 hover:bg-card/60 bg-card/40 flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors appearance-none pr-8 cursor-pointer"
+                onChange={(e) => {
+                  if (e.target.value) {
+                    window.open(`https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/tag/v${e.target.value}`, '_blank');
+                    e.target.value = "";
+                  }
+                }}
+                defaultValue=""
+              >
+                <option value="" disabled>View Changelogs...</option>
+                {changelogVersions.map(v => (
+                  <option key={v} value={v}>Release {v}</option>
+                ))}
+              </select>
+              <ExternalLink className="text-foreground/70 h-4 w-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            </div>
+          )}
         </div>
 
         <ReleaseVersionSelector
@@ -189,19 +218,19 @@ export function JavaReleaseComparisonPage() {
                 <div className="text-center">
                   <p className="text-4xl font-black text-green-400">{diff.totals.added}</p>
                   <p className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
-                    Added
+                    Instrumentations Added
                   </p>
                 </div>
                 <div className="text-center">
                   <p className="text-4xl font-black text-blue-400">{diff.totals.changed}</p>
                   <p className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
-                    Changed
+                    Instrumentations Changed
                   </p>
                 </div>
                 <div className="text-center">
                   <p className="text-4xl font-black text-red-400">{diff.totals.removed}</p>
                   <p className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
-                    Removed
+                    Instrumentations Removed
                   </p>
                 </div>
               </div>

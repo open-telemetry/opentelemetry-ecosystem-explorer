@@ -57,8 +57,13 @@
           "type": "string"
         }
       },
-      "propertyOrder": ["name", "schema_url"],
-      "required": ["name"]
+      "propertyOrder": [
+        "name",
+        "schema_url"
+      ],
+      "required": [
+        "name"
+      ]
     },
     "has_javaagent": {
       "description": "Indicates if this instrumentation is compatible with the OpenTelemetry Java Agent.",
@@ -96,12 +101,23 @@
           },
           "type": {
             "description": "The expected data type of the configuration value.",
-            "enum": ["boolean", "double", "int", "list", "map", "string"],
+            "enum": [
+              "boolean",
+              "double",
+              "int",
+              "list",
+              "map",
+              "string"
+            ],
             "type": "string"
           },
           "default": {
             "description": "The default value if not specified.",
-            "type": ["string", "number", "boolean"]
+            "type": [
+              "string",
+              "number",
+              "boolean"
+            ]
           },
           "example": {
             "description": "Example values for this configuration option.",
@@ -111,8 +127,20 @@
             }
           }
         },
-        "propertyOrder": ["name", "declarative_name", "description", "type", "default", "example"],
-        "required": ["default", "description", "name", "type"]
+        "propertyOrder": [
+          "name",
+          "declarative_name",
+          "description",
+          "type",
+          "default",
+          "example"
+        ],
+        "required": [
+          "default",
+          "description",
+          "name",
+          "type"
+        ]
       }
     },
     "telemetry": {
@@ -143,7 +171,12 @@
                 },
                 "instrument": {
                   "description": "The instrument type (e.g., counter, gauge).",
-                  "enum": ["counter", "gauge", "histogram", "updowncounter"],
+                  "enum": [
+                    "counter",
+                    "gauge",
+                    "histogram",
+                    "updowncounter"
+                  ],
                   "type": "string"
                 },
                 "data_type": {
@@ -189,8 +222,14 @@
                         "type": "string"
                       }
                     },
-                    "propertyOrder": ["name", "type"],
-                    "required": ["name", "type"]
+                    "propertyOrder": [
+                      "name",
+                      "type"
+                    ],
+                    "required": [
+                      "name",
+                      "type"
+                    ]
                   }
                 }
               },
@@ -202,7 +241,13 @@
                 "unit",
                 "attributes"
               ],
-              "required": ["data_type", "description", "instrument", "name", "unit"]
+              "required": [
+                "data_type",
+                "description",
+                "instrument",
+                "name",
+                "unit"
+              ]
             }
           },
           "spans": {
@@ -214,7 +259,13 @@
               "properties": {
                 "span_kind": {
                   "description": "The span kind (e.g., CLIENT, SERVER).",
-                  "enum": ["CLIENT", "CONSUMER", "INTERNAL", "PRODUCER", "SERVER"],
+                  "enum": [
+                    "CLIENT",
+                    "CONSUMER",
+                    "INTERNAL",
+                    "PRODUCER",
+                    "SERVER"
+                  ],
                   "type": "string"
                 },
                 "attributes": {
@@ -243,21 +294,41 @@
                         "type": "string"
                       }
                     },
-                    "propertyOrder": ["name", "type"],
-                    "required": ["name", "type"]
+                    "propertyOrder": [
+                      "name",
+                      "type"
+                    ],
+                    "required": [
+                      "name",
+                      "type"
+                    ]
                   }
                 }
               },
-              "propertyOrder": ["span_kind", "attributes"],
-              "required": ["span_kind"]
+              "propertyOrder": [
+                "span_kind",
+                "attributes"
+              ],
+              "required": [
+                "span_kind"
+              ]
             }
           }
         },
-        "propertyOrder": ["when", "metrics", "spans"],
-        "required": ["when"]
+        "propertyOrder": [
+          "when",
+          "metrics",
+          "spans"
+        ],
+        "required": [
+          "when"
+        ]
       }
     },
-
+    "markdown_hash": {
+      "description": "Content hash of the library README markdown file.",
+      "type": "string"
+    },
     "_is_custom": {
       "description": "Whether this is a custom (non-upstream) instrumentation.",
       "type": "boolean"
@@ -279,8 +350,12 @@
     "javaagent_target_versions",
     "configurations",
     "telemetry",
+    "markdown_hash",
     "_is_custom"
   ],
-  "required": ["name", "scope"],
+  "required": [
+    "name",
+    "scope"
+  ],
   "$schema": "https://json-schema.org/draft-07/schema#"
 }
