@@ -31,6 +31,59 @@ beforeEach(() => {
   cleanup();
 });
 
+function mockYamlSectionVisibility(sectionKey: string, isVisible: boolean) {
+  const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect;
+  const getBoundingClientRectSpy = vi
+    .spyOn(Element.prototype, "getBoundingClientRect")
+    .mockImplementation(function (this: Element) {
+      if (this.tagName === "PRE") {
+        return {
+          top: 0,
+          bottom: 500,
+          left: 0,
+          right: 500,
+          width: 500,
+          height: 500,
+          x: 0,
+          y: 0,
+          toJSON: () => {},
+        };
+      }
+      if (this.getAttribute("data-yaml-section") === sectionKey) {
+        return isVisible
+          ? {
+              top: 100,
+              bottom: 200,
+              left: 0,
+              right: 500,
+              width: 500,
+              height: 100,
+              x: 0,
+              y: 0,
+              toJSON: () => {},
+            }
+          : {
+              top: 600,
+              bottom: 700,
+              left: 0,
+              right: 500,
+              width: 500,
+              height: 100,
+              x: 0,
+              y: 0,
+              toJSON: () => {},
+            };
+      }
+      return originalGetBoundingClientRect.call(this);
+    });
+
+  return {
+    restore: () => {
+      getBoundingClientRectSpy.mockRestore();
+    },
+  };
+}
+
 describe("ConfigurationBuilderPage card click behavior", () => {
   it("clicking an input inside an expanded card does not steal focus or scroll", async () => {
     renderPage();
@@ -98,51 +151,16 @@ describe("ConfigurationBuilderPage card click behavior", () => {
     const resourceSection = document.querySelector<HTMLElement>('[data-section-key="resource"]');
     expect(resourceSection).not.toBeNull();
 
-    // Mock getBoundingClientRect so the section appears off-screen
-    const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect;
-    const originalScrollIntoView = Element.prototype.scrollIntoView;
-    const scrollIntoViewMock = vi.fn();
-
-    Element.prototype.getBoundingClientRect = function () {
-      if (this.tagName === "PRE") {
-        return {
-          top: 0,
-          bottom: 500,
-          left: 0,
-          right: 500,
-          width: 500,
-          height: 500,
-          x: 0,
-          y: 0,
-          toJSON: () => {},
-        };
-      }
-      if (this.getAttribute("data-yaml-section") === "resource") {
-        return {
-          top: 600,
-          bottom: 700,
-          left: 0,
-          right: 500,
-          width: 500,
-          height: 100,
-          x: 0,
-          y: 0,
-          toJSON: () => {},
-        };
-      }
-      return originalGetBoundingClientRect.call(this);
-    };
-    Element.prototype.scrollIntoView = scrollIntoViewMock;
+    const { restore } = mockYamlSectionVisibility("resource", false);
 
     try {
       await user.click(resourceSection!);
 
       await waitFor(() => {
-        expect(scrollIntoViewMock).toHaveBeenCalledWith({ block: "nearest", behavior: "smooth" });
+        expect(Element.prototype.scrollIntoView).toHaveBeenCalledWith({ block: "nearest", behavior: "smooth" });
       });
     } finally {
-      Element.prototype.getBoundingClientRect = originalGetBoundingClientRect;
-      Element.prototype.scrollIntoView = originalScrollIntoView;
+      restore();
     }
   });
 
@@ -155,41 +173,7 @@ describe("ConfigurationBuilderPage card click behavior", () => {
     const resourceSection = document.querySelector<HTMLElement>('[data-section-key="resource"]');
     expect(resourceSection).not.toBeNull();
 
-    // Mock getBoundingClientRect so the section appears on-screen
-    const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect;
-    const originalScrollIntoView = Element.prototype.scrollIntoView;
-    const scrollIntoViewMock = vi.fn();
-
-    Element.prototype.getBoundingClientRect = function () {
-      if (this.tagName === "PRE") {
-        return {
-          top: 0,
-          bottom: 500,
-          left: 0,
-          right: 500,
-          width: 500,
-          height: 500,
-          x: 0,
-          y: 0,
-          toJSON: () => {},
-        };
-      }
-      if (this.getAttribute("data-yaml-section") === "resource") {
-        return {
-          top: 100,
-          bottom: 200,
-          left: 0,
-          right: 500,
-          width: 500,
-          height: 100,
-          x: 0,
-          y: 0,
-          toJSON: () => {},
-        };
-      }
-      return originalGetBoundingClientRect.call(this);
-    };
-    Element.prototype.scrollIntoView = scrollIntoViewMock;
+    const { restore } = mockYamlSectionVisibility("resource", true);
 
     try {
       await user.click(resourceSection!);
@@ -201,10 +185,9 @@ describe("ConfigurationBuilderPage card click behavior", () => {
         expect(resourceYamlSection?.className).toContain("bg-otel-orange/10");
       });
 
-      expect(scrollIntoViewMock).not.toHaveBeenCalled();
+      expect(Element.prototype.scrollIntoView).not.toHaveBeenCalled();
     } finally {
-      Element.prototype.getBoundingClientRect = originalGetBoundingClientRect;
-      Element.prototype.scrollIntoView = originalScrollIntoView;
+      restore();
     }
   });
 
