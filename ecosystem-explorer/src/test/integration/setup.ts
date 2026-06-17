@@ -54,7 +54,7 @@ if (typeof Element !== "undefined" && !Element.prototype.scrollIntoView) {
 
 beforeEach(async () => {
   if (typeof Element !== "undefined" && vi.isMockFunction(Element.prototype.scrollIntoView)) {
-    // @ts-ignore
+    // @ts-expect-error mockClear is not in type definitions for Element.prototype.scrollIntoView
     Element.prototype.scrollIntoView.mockClear();
   }
   // Clear stored entries so each test starts with a cold cache.
