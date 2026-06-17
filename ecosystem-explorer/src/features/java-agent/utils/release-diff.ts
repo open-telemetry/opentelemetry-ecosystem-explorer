@@ -158,7 +158,7 @@ export function compareReleases(
             fromConfig?.type !== config.type ||
             fromConfig?.default !== config.default ||
             fromConfig?.declarative_name !== config.declarative_name ||
-            JSON.stringify(fromConfig?.example) !== JSON.stringify(config.example)
+            JSON.stringify(fromConfig?.examples) !== JSON.stringify(config.examples)
           ) {
             configChanged.push(name);
           }

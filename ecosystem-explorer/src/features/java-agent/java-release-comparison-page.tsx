@@ -84,7 +84,7 @@ export function JavaReleaseComparisonPage() {
     const fromIndex = versions.findIndex((v) => v.version === fromVersion);
     const toIndex = versions.findIndex((v) => v.version === toVersion);
     if (fromIndex > toIndex) {
-      return versions.slice(toIndex, fromIndex).map(v => v.version);
+      return versions.slice(toIndex, fromIndex).map((v) => v.version);
     }
     return [toVersion];
   }, [fromVersion, toVersion, versions, isInvalidComparison]);
@@ -118,21 +118,28 @@ export function JavaReleaseComparisonPage() {
           ) : (
             <div className="relative">
               <select
-                className="border-border/30 hover:bg-card/60 bg-card/40 flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors appearance-none pr-8 cursor-pointer"
+                className="border-border/30 hover:bg-card/60 bg-card/40 flex cursor-pointer appearance-none items-center gap-2 rounded-lg border px-4 py-2 pr-8 text-sm font-medium transition-colors"
                 onChange={(e) => {
                   if (e.target.value) {
-                    window.open(`https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/tag/v${e.target.value}`, '_blank');
+                    window.open(
+                      `https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/tag/v${e.target.value}`,
+                      "_blank"
+                    );
                     e.target.value = "";
                   }
                 }}
                 defaultValue=""
               >
-                <option value="" disabled>View Changelogs...</option>
-                {changelogVersions.map(v => (
-                  <option key={v} value={v}>Release {v}</option>
+                <option value="" disabled>
+                  View Changelogs...
+                </option>
+                {changelogVersions.map((v) => (
+                  <option key={v} value={v}>
+                    Release {v}
+                  </option>
                 ))}
               </select>
-              <ExternalLink className="text-foreground/70 h-4 w-4 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <ExternalLink className="text-foreground/70 pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
             </div>
           )}
         </div>

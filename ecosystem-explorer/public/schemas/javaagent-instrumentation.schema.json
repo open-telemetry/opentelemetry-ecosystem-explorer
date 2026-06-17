@@ -57,13 +57,8 @@
           "type": "string"
         }
       },
-      "propertyOrder": [
-        "name",
-        "schema_url"
-      ],
-      "required": [
-        "name"
-      ]
+      "propertyOrder": ["name", "schema_url"],
+      "required": ["name"]
     },
     "has_javaagent": {
       "description": "Indicates if this instrumentation is compatible with the OpenTelemetry Java Agent.",
@@ -101,30 +96,46 @@
           },
           "type": {
             "description": "The expected data type of the configuration value.",
-            "enum": [
-              "boolean",
-              "double",
-              "int",
-              "list",
-              "map",
-              "string"
-            ],
+            "enum": ["boolean", "double", "int", "list", "map", "string"],
             "type": "string"
           },
           "default": {
             "description": "The default value if not specified.",
-            "type": [
-              "string",
-              "number",
-              "boolean"
-            ]
+            "type": ["string", "number", "boolean"]
           },
-          "example": {
+          "examples": {
             "description": "Example values for this configuration option.",
             "type": "array",
             "items": {
               "type": "string"
             }
+          },
+          "declarative_type": {
+            "description": "When set to \"structured_list\", each entry is an object described by declarative_schema.",
+            "const": "structured_list",
+            "type": "string"
+          },
+          "declarative_schema": {
+            "description": "Per-item schema used when declarative_type is \"structured_list\".",
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "object"
+              },
+              "required": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "properties": {
+                "type": "object",
+                "propertyOrder": []
+              }
+            },
+            "propertyOrder": ["type", "required", "properties"],
+            "required": ["properties", "type"]
           }
         },
         "propertyOrder": [
@@ -133,14 +144,11 @@
           "description",
           "type",
           "default",
-          "example"
+          "examples",
+          "declarative_type",
+          "declarative_schema"
         ],
-        "required": [
-          "default",
-          "description",
-          "name",
-          "type"
-        ]
+        "required": ["default", "description", "name", "type"]
       }
     },
     "telemetry": {
@@ -171,12 +179,7 @@
                 },
                 "instrument": {
                   "description": "The instrument type (e.g., counter, gauge).",
-                  "enum": [
-                    "counter",
-                    "gauge",
-                    "histogram",
-                    "updowncounter"
-                  ],
+                  "enum": ["counter", "gauge", "histogram", "updowncounter"],
                   "type": "string"
                 },
                 "data_type": {
@@ -222,14 +225,8 @@
                         "type": "string"
                       }
                     },
-                    "propertyOrder": [
-                      "name",
-                      "type"
-                    ],
-                    "required": [
-                      "name",
-                      "type"
-                    ]
+                    "propertyOrder": ["name", "type"],
+                    "required": ["name", "type"]
                   }
                 }
               },
@@ -241,13 +238,7 @@
                 "unit",
                 "attributes"
               ],
-              "required": [
-                "data_type",
-                "description",
-                "instrument",
-                "name",
-                "unit"
-              ]
+              "required": ["data_type", "description", "instrument", "name", "unit"]
             }
           },
           "spans": {
@@ -259,13 +250,7 @@
               "properties": {
                 "span_kind": {
                   "description": "The span kind (e.g., CLIENT, SERVER).",
-                  "enum": [
-                    "CLIENT",
-                    "CONSUMER",
-                    "INTERNAL",
-                    "PRODUCER",
-                    "SERVER"
-                  ],
+                  "enum": ["CLIENT", "CONSUMER", "INTERNAL", "PRODUCER", "SERVER"],
                   "type": "string"
                 },
                 "attributes": {
@@ -294,35 +279,18 @@
                         "type": "string"
                       }
                     },
-                    "propertyOrder": [
-                      "name",
-                      "type"
-                    ],
-                    "required": [
-                      "name",
-                      "type"
-                    ]
+                    "propertyOrder": ["name", "type"],
+                    "required": ["name", "type"]
                   }
                 }
               },
-              "propertyOrder": [
-                "span_kind",
-                "attributes"
-              ],
-              "required": [
-                "span_kind"
-              ]
+              "propertyOrder": ["span_kind", "attributes"],
+              "required": ["span_kind"]
             }
           }
         },
-        "propertyOrder": [
-          "when",
-          "metrics",
-          "spans"
-        ],
-        "required": [
-          "when"
-        ]
+        "propertyOrder": ["when", "metrics", "spans"],
+        "required": ["when"]
       }
     },
     "markdown_hash": {
@@ -331,6 +299,14 @@
     },
     "_is_custom": {
       "description": "Whether this is a custom (non-upstream) instrumentation.",
+      "type": "boolean"
+    },
+    "has_spans": {
+      "description": "Precomputed presence flag: whether any telemetry block emits spans. Present\nonly in slim per-version list-bundle entries (which drop the heavy\n`telemetry` array); undefined in full detail files, where presence is\nderived from `telemetry`. See `getBadgeInfo`.",
+      "type": "boolean"
+    },
+    "has_metrics": {
+      "description": "Precomputed presence flag: whether any telemetry block emits metrics. See `has_spans`.",
       "type": "boolean"
     }
   },
@@ -351,11 +327,10 @@
     "configurations",
     "telemetry",
     "markdown_hash",
-    "_is_custom"
+    "_is_custom",
+    "has_spans",
+    "has_metrics"
   ],
-  "required": [
-    "name",
-    "scope"
-  ],
+  "required": ["name", "scope"],
   "$schema": "https://json-schema.org/draft-07/schema#"
 }
