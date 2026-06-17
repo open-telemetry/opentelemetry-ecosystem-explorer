@@ -157,7 +157,10 @@ describe("ConfigurationBuilderPage card click behavior", () => {
       await user.click(resourceSection!);
 
       await waitFor(() => {
-        expect(Element.prototype.scrollIntoView).toHaveBeenCalledWith({ block: "nearest", behavior: "smooth" });
+        expect(Element.prototype.scrollIntoView).toHaveBeenCalledWith({
+          block: "nearest",
+          behavior: "smooth",
+        });
       });
     } finally {
       restore();
