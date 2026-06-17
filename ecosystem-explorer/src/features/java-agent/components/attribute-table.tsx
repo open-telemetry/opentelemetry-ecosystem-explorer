@@ -50,10 +50,7 @@ export function AttributeTable({ attributes }: AttributeTableProps) {
         </thead>
         <tbody>
           {attributes.map((attr, index) => (
-            <tr
-              key={attr.name}
-              className={`attribute-row ${index % 2 === 1 ? "bg-muted/20" : ""}`}
-            >
+            <tr key={attr.name} className={`attribute-row ${index % 2 === 1 ? "bg-muted/20" : ""}`}>
               <td className="p-2 font-mono text-xs sm:p-4 sm:text-sm">{attr.name}</td>
               <td className="p-2 sm:p-4">
                 <span className="border-border/30 bg-card/80 text-muted-foreground inline-block w-fit rounded border px-2 py-1 text-xs font-bold tracking-wider uppercase">

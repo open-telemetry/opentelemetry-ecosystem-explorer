@@ -69,23 +69,23 @@ export function InstrumentationRow({
       data-testid={`instrumentation-row-${module.name}`}
       data-expanded={String(isExpanded)}
       data-yaml-section-key="distribution"
-      className={`rounded-xl border transition-all duration-200 overflow-hidden ${containerClass}`}
+      className={`overflow-hidden rounded-xl border transition-all duration-200 ${containerClass}`}
     >
       {/* Header Region */}
       <div
-        className={`flex flex-col gap-3 border-b border-border/40 px-4 py-3 cursor-pointer sm:flex-row sm:items-center sm:justify-between ${headerBgClass}`}
+        className={`border-border/40 flex cursor-pointer flex-col gap-3 border-b px-4 py-3 sm:flex-row sm:items-center sm:justify-between ${headerBgClass}`}
         onClick={onToggleExpand}
       >
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
             <h4 className="text-foreground font-mono text-sm font-bold">{module.name}</h4>
             {module.coveredEntries.length > 1 ? (
-              <span className="border-border/60 bg-surface-card text-muted-foreground shadow-sm inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] leading-none">
+              <span className="border-border/60 bg-surface-card text-muted-foreground inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] leading-none shadow-sm">
                 {t("builder.row.versions", { count: module.coveredEntries.length })}
               </span>
             ) : null}
             {module.coveredEntries.some((e) => e._is_custom === true) ? (
-              <span className="border-border/60 bg-surface-card text-muted-foreground shadow-sm inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] leading-none">
+              <span className="border-border/60 bg-surface-card text-muted-foreground inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] leading-none shadow-sm">
                 {t("builder.row.custom")}
               </span>
             ) : null}
@@ -118,7 +118,7 @@ export function InstrumentationRow({
               type="button"
               onClick={onAddCustomization}
               aria-label={t("builder.row.customizeAriaLabel", { name: module.name })}
-              className="border-border/60 bg-surface-card text-foreground hover:bg-card shadow-sm inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs transition-colors"
+              className="border-border/60 bg-surface-card text-foreground hover:bg-card inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs shadow-sm transition-colors"
             >
               <Plus className="h-3 w-3" aria-hidden="true" />
               {t("builder.row.customize")}

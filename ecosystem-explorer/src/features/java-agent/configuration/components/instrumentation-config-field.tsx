@@ -382,7 +382,7 @@ export function InstrumentationConfigField({
             <button
               type="button"
               onClick={() => onJumpToGeneral("general")}
-              className="border-border/60 bg-surface-card text-foreground hover:bg-card shadow-sm inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs transition-colors"
+              className="border-border/60 bg-surface-card text-foreground hover:bg-card inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs shadow-sm transition-colors"
             >
               {t("builder.field.editInGeneral")}
             </button>
@@ -400,7 +400,7 @@ export function InstrumentationConfigField({
             <button
               type="button"
               onClick={handleCustomization}
-              className="border-border/60 bg-surface-card text-foreground hover:bg-card shadow-sm inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs transition-colors"
+              className="border-border/60 bg-surface-card text-foreground hover:bg-card inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs shadow-sm transition-colors"
             >
               <Plus className="h-3 w-3" aria-hidden="true" />
               {t("builder.field.customize")}

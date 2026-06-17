@@ -420,9 +420,7 @@ export function CollectorComponentsPage() {
         <header className="space-y-4">
           <h1 className="text-foreground text-4xl font-bold tracking-tight sm:text-5xl">
             {t("header.title")}{" "}
-            <span className="text-gradient-brand">
-              {t("header.titleAccent")}
-            </span>
+            <span className="text-gradient-brand">{t("header.titleAccent")}</span>
           </h1>
           <p className="text-muted-foreground max-w-2xl text-lg leading-relaxed">
             {t("header.description")}

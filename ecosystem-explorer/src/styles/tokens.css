@@ -74,7 +74,7 @@
     --surface-shadow-hover: none;
     --surface-card-bg: hsl(var(--card-hsl) / 0.8);
     --hero-gradient-opacity: 0.08;
-    --hero-grid-opacity: 0.10;
+    --hero-grid-opacity: 0.1;
 
     /* Syntax */
     --syntax-comment-hsl: 220 18% 58%;

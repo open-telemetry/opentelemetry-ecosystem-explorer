@@ -183,14 +183,14 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                       className={`overflow-hidden rounded-2xl border transition-all duration-200 ${
                         isExpanded
                           ? "border-primary/20 bg-surface-card shadow-md"
-                          : "border-border/40 bg-surface-card shadow-sm hover:border-border/60"
+                          : "border-border/40 bg-surface-card hover:border-border/60 shadow-sm"
                       }`}
                     >
                       <button
                         type="button"
                         onClick={() => toggleMetric(metricId)}
                         aria-expanded={isExpanded}
-                        className={`flex w-full cursor-pointer items-center justify-between gap-4 p-4 transition-colors hover:bg-muted/30 sm:px-6 sm:py-5 ${
+                        className={`hover:bg-muted/30 flex w-full cursor-pointer items-center justify-between gap-4 p-4 transition-colors sm:px-6 sm:py-5 ${
                           isExpanded ? "border-border/40 bg-muted/20 border-b" : ""
                         }`}
                       >
@@ -222,7 +222,7 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                               <span className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
                                 {t("telemetrySection.unit")}
                               </span>
-                              <code className="border-border/30 text-foreground/80 rounded border bg-muted/40 px-2 py-1 text-sm">
+                              <code className="border-border/30 text-foreground/80 bg-muted/40 rounded border px-2 py-1 text-sm">
                                 {metric.unit}
                               </code>
                             </div>
@@ -268,14 +268,14 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                       className={`overflow-hidden rounded-2xl border transition-all duration-200 ${
                         isExpanded
                           ? "border-primary/20 bg-surface-card shadow-md"
-                          : "border-border/40 bg-surface-card shadow-sm hover:border-border/60"
+                          : "border-border/40 bg-surface-card hover:border-border/60 shadow-sm"
                       }`}
                     >
                       <button
                         type="button"
                         onClick={() => toggleSpan(spanId)}
                         aria-expanded={isExpanded}
-                        className={`flex w-full cursor-pointer items-center justify-between gap-4 p-4 transition-colors hover:bg-muted/30 sm:px-6 sm:py-5 ${
+                        className={`hover:bg-muted/30 flex w-full cursor-pointer items-center justify-between gap-4 p-4 transition-colors sm:px-6 sm:py-5 ${
                           isExpanded ? "border-border/40 bg-muted/20 border-b" : ""
                         }`}
                       >

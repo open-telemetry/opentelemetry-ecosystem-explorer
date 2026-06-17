@@ -50,7 +50,7 @@
   --color-muted: hsl(var(--muted-hsl));
   --color-muted-foreground: hsl(var(--muted-foreground-hsl));
   --color-border: hsl(var(--border-hsl));
-  
+
   /* Theme-aware layout classes */
   --color-surface-card: var(--surface-card-bg);
   --shadow-surface: var(--surface-shadow);

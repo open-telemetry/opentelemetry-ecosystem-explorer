@@ -64,76 +64,75 @@ export function InstrumentationCard({
         />
       </div>
 
-      {/* Content structured into regions */}
-      <div className="relative z-10 flex h-full flex-col">
+      {/* Content */}
+      <div className="relative z-10 flex h-full flex-col space-y-4">
         {/* Header Region */}
-        <div className="flex items-start justify-between gap-3 pb-3">
-          <h3 className="text-foreground group-hover:text-primary flex-1 text-xl font-bold leading-tight transition-colors">
+        <div className="flex items-start justify-between gap-3">
+          <h3 className="text-foreground group-hover:text-primary flex-1 text-xl leading-tight font-bold transition-colors">
             {displayName}
           </h3>
-          <div className="bg-primary/5 -translate-x-2 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100">
-            <ArrowRight className="text-primary h-4 w-4" />
+          <div className="flex flex-shrink-0 items-center gap-2">
+            <div className="flex gap-1">
+              <TargetBadges badges={badgeInfo} activeFilters={activeFilters} />
+              <TelemetryBadges badges={badgeInfo} activeFilters={activeFilters} />
+            </div>
+            <div className="bg-primary/5 flex hidden h-8 w-8 flex-shrink-0 -translate-x-2 items-center justify-center rounded-full opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100 sm:flex">
+              <ArrowRight className="text-primary h-4 w-4" aria-hidden="true" />
+            </div>
           </div>
         </div>
 
         {/* Body Region */}
-        {instrumentation.description && (
-          <p className="text-muted-foreground line-clamp-3 flex-1 text-sm leading-relaxed">
-            {renderWithInlineCode(instrumentation.description)}
-          </p>
-        )}
+        <div className="flex-1 space-y-4">
+          {instrumentation.description && (
+            <p className="text-muted-foreground line-clamp-3 text-sm leading-relaxed">
+              {renderWithInlineCode(instrumentation.description)}
+            </p>
+          )}
 
-        {/* Footer Region: Badges and Metadata */}
-        <div className="border-border/40 mt-5 flex flex-col gap-3 border-t pt-4">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-muted-foreground/70 text-[10px] font-bold tracking-wider uppercase">
-              Signals
-            </span>
-            <TargetBadges badges={badgeInfo} activeFilters={activeFilters} />
-            <TelemetryBadges badges={badgeInfo} activeFilters={activeFilters} />
+          <div className="space-y-2">
+            {(instrumentation.semantic_conventions?.length || 0) > 0 && (
+              <div className="flex flex-wrap items-center gap-2">
+                {instrumentation.semantic_conventions?.map((s) => {
+                  const isActive =
+                    !activeFilters ||
+                    activeFilters.semantic.length === 0 ||
+                    activeFilters.semantic.includes(s);
+                  const info = getSemanticConventionInfo(s);
+                  return (
+                    <GlowBadge
+                      key={s}
+                      variant="accent"
+                      className={`px-1.5 py-0 ${isActive ? "" : "opacity-40 grayscale"}`}
+                    >
+                      {info?.label ?? s}
+                    </GlowBadge>
+                  );
+                })}
+              </div>
+            )}
+
+            {(instrumentation.features?.length || 0) > 0 && (
+              <div className="flex flex-wrap items-center gap-2">
+                {instrumentation.features?.map((f) => {
+                  const isActive =
+                    !activeFilters ||
+                    activeFilters.features.length === 0 ||
+                    activeFilters.features.includes(f);
+                  const info = getFeatureInfo(f);
+                  return (
+                    <GlowBadge
+                      key={f}
+                      variant="info"
+                      className={`px-1.5 py-0 ${isActive ? "" : "opacity-40 grayscale"}`}
+                    >
+                      {info?.label ?? f}
+                    </GlowBadge>
+                  );
+                })}
+              </div>
+            )}
           </div>
-
-          {(instrumentation.semantic_conventions?.length || 0) > 0 ||
-          (instrumentation.features?.length || 0) > 0 ? (
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-muted-foreground/70 text-[10px] font-bold tracking-wider uppercase">
-                Tags
-              </span>
-              {instrumentation.semantic_conventions?.map((s) => {
-                const isActive =
-                  !activeFilters ||
-                  activeFilters.semantic.length === 0 ||
-                  activeFilters.semantic.includes(s);
-                const info = getSemanticConventionInfo(s);
-                return (
-                  <GlowBadge
-                    key={s}
-                    variant="accent"
-                    className={`px-1.5 py-0 ${isActive ? "" : "opacity-40 grayscale"}`}
-                  >
-                    {info?.label ?? s}
-                  </GlowBadge>
-                );
-              })}
-
-              {instrumentation.features?.map((f) => {
-                const isActive =
-                  !activeFilters ||
-                  activeFilters.features.length === 0 ||
-                  activeFilters.features.includes(f);
-                const info = getFeatureInfo(f);
-                return (
-                  <GlowBadge
-                    key={f}
-                    variant="info"
-                    className={`px-1.5 py-0 ${isActive ? "" : "opacity-40 grayscale"}`}
-                  >
-                    {info?.label ?? f}
-                  </GlowBadge>
-                );
-              })}
-            </div>
-          ) : null}
         </div>
       </div>
     </Link>
