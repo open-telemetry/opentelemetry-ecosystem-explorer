@@ -1,0 +1,21 @@
+{
+  "header": {
+    "title": "OTel Explorer",
+    "languageSwitcher": "Seleccionar idioma",
+    "nav": {
+      "javaAgent": "Java Agent",
+      "collector": "Collector",
+      "about": "Acerca de"
+    }
+  },
+  "footer": {
+    "name": "OpenTelemetry Ecosystem Explorer",
+    "tagline": "Trazando el panorama de la observabilidad",
+    "nav": {
+      "about": "Acerca de",
+      "github": "GitHub",
+      "otelWebsite": "opentelemetry.io"
+    },
+    "copyright": "© 2026–Present OpenTelemetry Authors"
+  }
+}

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronDown } from "lucide-react";
 import type { InstrumentationGroup } from "../utils/group-instrumentations";
 import type { FilterState } from "./instrumentation-filter-bar";
@@ -33,6 +34,7 @@ export function MultiInstrumentationGroupCard({
   activeFilters,
   version,
 }: MultiInstrumentationGroupCardProps) {
+  const { t } = useTranslation("java-agent");
   const [expanded, setExpanded] = useState(false);
 
   const badges = useMemo(
@@ -73,8 +75,8 @@ export function MultiInstrumentationGroupCard({
                 }`}
               />
               <h3 className="truncate text-lg leading-tight font-semibold">{group.displayName}</h3>
-              <span className="bg-secondary/15 text-secondary flex-shrink-0 rounded-md px-2.5 py-1 text-xs font-medium">
-                {group.instrumentations.length} versions
+              <span className="bg-secondary/15 text-secondary flex-shrink-0 rounded-full px-2.5 py-1 text-xs font-medium">
+                {t("multiGroupCard.versions", { count: group.instrumentations.length })}
               </span>
             </div>
 

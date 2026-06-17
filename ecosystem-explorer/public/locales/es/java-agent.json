@@ -1,0 +1,511 @@
+{
+  "page": {
+    "title": "OpenTelemetry Java Agent",
+    "description": "Explora la auto-instrumentación para aplicaciones Java. Descubre bibliotecas compatibles, opciones de configuración y telemetría emitida."
+  },
+  "landing": {
+    "instrumentation": {
+      "title": "Bibliotecas de instrumentación",
+      "description": "Explora la auto-instrumentación para aplicaciones Java. Descubre bibliotecas compatibles, opciones de configuración y telemetría emitida."
+    },
+    "configuration": {
+      "title": "Opciones de configuración",
+      "description": "Descubre las opciones para configurar el Java Agent y la instrumentación."
+    },
+    "builder": {
+      "title": "Constructor de configuración",
+      "description": "Construye y personaliza un archivo de configuración declarativo para el Java Agent."
+    },
+    "releases": {
+      "title": "Versiones",
+      "description": "Compara versiones del Java Agent para ver cambios en telemetría y configuración."
+    }
+  },
+  "list": {
+    "title": "OpenTelemetry Java Agent",
+    "description_one": "Explora {{count}} instrumentación disponible.",
+    "description_other": "Explora {{count}} instrumentaciones disponibles.",
+    "invalidVersion": "La versión \"{{version}}\" no fue encontrada. Mostrando la versión más reciente ({{latest}}) en su lugar.",
+    "dismiss": "Cerrar",
+    "loading": "Cargando instrumentaciones...",
+    "error": {
+      "title": "Error al cargar datos",
+      "description": "Intenta recargar la página."
+    },
+    "results": {
+      "showing": "Mostrando {{shown}} de {{total}} instrumentaciones",
+      "empty": "No se encontraron instrumentaciones que coincidan con tus filtros.",
+      "emptySuggestion": "Intenta ajustar tu búsqueda o criterios de filtro"
+    },
+    "customSection": {
+      "title": "Instrumentaciones personalizadas",
+      "description": "Instrumentaciones que no son de bibliotecas, como métodos, métricas JMX y anotaciones externas."
+    }
+  },
+  "detail": {
+    "loading": {
+      "title": "Cargando instrumentación...",
+      "description": "Esto puede tardar un momento"
+    },
+    "error": {
+      "versionsError": "Error al cargar versiones",
+      "versionNotFound": "Versión no encontrada",
+      "versionDoesNotExist": "La versión no existe.",
+      "viewLatest": "Ver {{name}} en la versión más reciente ({{latestVersion}})",
+      "title": "Error al cargar instrumentación",
+      "notFound": "Instrumentación no encontrada"
+    },
+    "badges": {
+      "disabledByDefault": "Deshabilitado por defecto",
+      "enabledByDefault": "Habilitado por defecto"
+    },
+    "tabs": {
+      "details": "Detalles",
+      "telemetry": "Telemetría",
+      "configuration": "Configuración",
+      "standaloneLibrary": "Biblioteca independiente"
+    },
+    "sections": {
+      "capabilities": "Capacidades",
+      "requirements": "Requisitos",
+      "scope": "Alcance de instrumentación",
+      "links": "Enlaces y recursos"
+    },
+    "fields": {
+      "features": "Funciones",
+      "semanticConventions": "Convenciones semánticas",
+      "minimumJavaVersion": "Versión mínima de Java",
+      "targetVersions": "Versiones objetivo",
+      "scopeName": "Nombre del alcance",
+      "schemaUrl": "URL del esquema",
+      "libraryLink": "Enlace de la biblioteca",
+      "sourcePath": "Ruta de origen"
+    },
+    "tooltips": {
+      "targetVersions": "Las versiones de la biblioteca objetivo que admite esta instrumentación.",
+      "scope": "Un alcance de instrumentación es metadatos que indican la identidad de lo que produjo una pieza de telemetría.",
+      "moreInfoAriaLabel": "Más información sobre {{field}}"
+    },
+    "view": {
+      "current": "Vista actual",
+      "comparison": "Comparación de versiones"
+    },
+    "telemetry": {
+      "empty": "No hay información de telemetría disponible."
+    }
+  },
+  "standaloneLibrary": {
+    "loading": "Cargando documentación de la biblioteca...",
+    "error": "La documentación de la biblioteca no está disponible para esta versión."
+  },
+  "releaseComparison": {
+    "title": "Comparación de versiones",
+    "description": "Compara versiones del Java Agent para descubrir nuevas funciones y cambios en telemetría.",
+    "placeholder": {
+      "title": "En desarrollo",
+      "description": "La herramienta de comparación de versiones del Java Agent se está construyendo actualmente. Vuelve pronto para comparar cambios de telemetría entre versiones."
+    }
+  },
+  "configList": {
+    "title": "Explorador de opciones de configuración",
+    "description": "Explora todas las opciones de configuración entre instrumentaciones. Busca por nombre normal, representación declarativa o descripción.",
+    "search": {
+      "ariaLabel": "Buscar configuraciones",
+      "placeholder": "Buscar configuraciones, descripciones o instrumentaciones..."
+    },
+    "loading": "Cargando configuraciones...",
+    "results": {
+      "loading": "Cargando...",
+      "error": "No se pueden cargar las configuraciones",
+      "found_one": "Se encontró {{count}} configuración",
+      "found_other": "Se encontraron {{count}} configuraciones",
+      "empty": "No se encontraron configuraciones que coincidan con tu búsqueda."
+    }
+  },
+  "filter": {
+    "search": {
+      "label": "Buscar",
+      "placeholder": "Buscar instrumentaciones..."
+    },
+    "reset": "Limpiar todo",
+    "semanticConventions": {
+      "label": "Convenciones semánticas",
+      "placeholder": "Filtrar por convención..."
+    },
+    "features": {
+      "label": "Funciones",
+      "placeholder": "Filtrar por función..."
+    },
+    "telemetry": {
+      "label": "Telemetría"
+    },
+    "type": {
+      "label": "Tipo"
+    },
+    "spans": "Spans",
+    "metrics": "Métricas",
+    "javaAgent": "Java Agent",
+    "standalone": "Independiente"
+  },
+  "badges": {
+    "agent": {
+      "label": "Agente",
+      "tooltip": "Instrumentación estándar que se ejecuta junto a la aplicación usando un Java agent.",
+      "ariaLabel": "Tiene objetivo Java Agent"
+    },
+    "library": {
+      "label": "Biblioteca",
+      "tooltip": "Las bibliotecas independientes se instalan manualmente y se usan sin el agente.",
+      "ariaLabel": "Tiene objetivo de biblioteca independiente"
+    },
+    "spans": {
+      "label": "Spans",
+      "tooltip": "Produce telemetría de spans para el rastreo distribuido.",
+      "ariaLabel": "Tiene telemetría de spans"
+    },
+    "metrics": {
+      "label": "Métricas",
+      "tooltip": "Produce telemetría de métricas para monitoreo.",
+      "ariaLabel": "Tiene telemetría de métricas"
+    }
+  },
+  "attributeTable": {
+    "ariaLabel": "Atributos",
+    "columns": {
+      "key": "Clave",
+      "type": "Tipo"
+    }
+  },
+  "configCard": {
+    "default": "Predeterminado:",
+    "examples": "Ejemplos:",
+    "usageCount_one": "{{count}} instrumentación usando esta configuración",
+    "usageCount_other": "{{count}} instrumentaciones usando esta configuración"
+  },
+  "configTabs": {
+    "declarative": "Declarativo",
+    "systemProperties": "Propiedades del sistema",
+    "declarativeConfiguration": "Configuración declarativa",
+    "loadError": "No se pudieron cargar los datos de configuración. Intenta de nuevo más tarde."
+  },
+  "configSelector": {
+    "banner": "La telemetría varía según la configuración",
+    "label": "Configuración",
+    "defaultOption": "Predeterminado"
+  },
+  "versionSelector": {
+    "label": "Versión"
+  },
+  "multiGroupCard": {
+    "versions_one": "{{count}} versión",
+    "versions_other": "{{count}} versiones"
+  },
+  "subItem": {
+    "viewDetails": "Ver detalles de {{name}}"
+  },
+  "telemetrySection": {
+    "expandAll": "Expandir todo",
+    "collapseAll": "Contraer todo",
+    "metrics": "Métricas",
+    "spans": "Spans",
+    "unit": "Unidad",
+    "attributes": "Atributos",
+    "spanTitle": "Span {{kind}}",
+    "empty": "No hay métricas ni spans definidos para esta configuración."
+  },
+  "versionSelectorPanel": {
+    "banner": "Compara telemetría entre dos versiones",
+    "from": "Desde",
+    "to": "Hasta",
+    "configuration": "Configuración",
+    "defaultOption": "Predeterminado"
+  },
+  "telemetryComparison": {
+    "loading": "Cargando datos de comparación...",
+    "error": {
+      "title": "Error de comparación",
+      "bothVersionsFailed": "No se pudieron cargar ambas versiones. Es posible que la instrumentación no exista en estas versiones."
+    },
+    "warnings": {
+      "availability": {
+        "title": "Nota sobre disponibilidad de versión",
+        "fromNotFound": "La instrumentación no estaba disponible en la versión {{fromVersion}}. Toda la telemetría de la versión \"to\" se muestra como agregada.",
+        "toNotFound": "La instrumentación no estaba disponible en la versión {{toVersion}}. Toda la telemetría de la versión \"from\" se muestra como eliminada."
+      },
+      "sameVersion": {
+        "title": "Se seleccionó la misma versión",
+        "message": "Por favor selecciona versiones diferentes para comparar telemetría."
+      }
+    }
+  },
+  "diffResults": {
+    "addedRemovedHeader": "Telemetría agregada/eliminada",
+    "changedHeader": "Telemetría modificada",
+    "metrics": "Métricas",
+    "spans": "Spans",
+    "empty": {
+      "title": "No se encontraron diferencias",
+      "description": "La telemetría es idéntica para {{condition}} entre las versiones seleccionadas."
+    }
+  },
+  "diffCard": {
+    "status": {
+      "added": "Agregado",
+      "removed": "Eliminado",
+      "changed": "Modificado"
+    },
+    "unit": "Unidad",
+    "attributeChanges": "Cambios en atributos",
+    "descriptionChanged": "Descripción modificada",
+    "typeChanged": "Tipo modificado",
+    "metricRemoved": "Esta métrica ya no se emite en la versión de comparación.",
+    "spanRemoved": "Este span ya no se emite en la versión de comparación.",
+    "spanAdded": "Este span se emite por primera vez en la versión de comparación."
+  },
+  "diffAttributeTable": {
+    "ariaLabel": "Cambios en atributos",
+    "columns": {
+      "status": "Estado",
+      "key": "Clave",
+      "type": "Tipo"
+    },
+    "status": {
+      "added": "Agregado",
+      "removed": "Eliminado",
+      "modified": "Modificado"
+    }
+  },
+  "configInstrumentation": {
+    "noOptions": "No hay opciones de configuración disponibles."
+  },
+  "builder": {
+    "title": "Constructor de configuración",
+    "description": "Construye y personaliza la configuración de tu OpenTelemetry Java Agent.",
+    "links": {
+      "declarativeConfig": "Aprende más sobre la configuración declarativa",
+      "reportIssue": "Reportar un problema"
+    },
+    "loading": {
+      "versions": "Cargando versiones…",
+      "schema": "Cargando esquema…"
+    },
+    "error": {
+      "versions": "Error al cargar las versiones disponibles.",
+      "schema": "Error al cargar el esquema.",
+      "template": "Error al cargar la plantilla inicial."
+    },
+    "general": {
+      "label": "General",
+      "empty": "El esquema de esta versión no expone configuraciones generales de instrumentación."
+    },
+    "preview": {
+      "title": "Vista previa de salida",
+      "download": "Descargar",
+      "addAll": "Agregar todo",
+      "reset": "Restablecer",
+      "expandAriaLabel": "Expandir vista previa de YAML",
+      "dialogTitle": "Vista previa de configuración YAML",
+      "dialogDescription": "Configuración YAML completa generada para tu OpenTelemetry Java Agent.",
+      "downloadErrorTitle": "Corrige los errores de validación antes de descargar"
+    },
+    "sidebar": {
+      "tabs": {
+        "sdk": "SDK",
+        "instrumentation": "Instrumentación"
+      },
+      "search": {
+        "ariaLabel": "Buscar instrumentaciones",
+        "placeholder": "Buscar instrumentaciones…"
+      },
+      "status": "Estado",
+      "customized": "Personalizado",
+      "onThisPage": "En esta página",
+      "navAriaLabel": "Secciones de configuración"
+    },
+    "browser": {
+      "title": "Instrumentaciones",
+      "count_one": "· {{count}} módulo",
+      "count_other": "· {{count}} módulos",
+      "customized_one": "· {{count}} personalizado",
+      "customized_other": "· {{count}} personalizados",
+      "loading": "Cargando instrumentaciones…",
+      "error": "Error al cargar instrumentaciones.",
+      "readout": {
+        "search": "Buscar \"{{search}}\" · {{shown}} de {{total}}",
+        "customized": "Personalizado · {{count}} de {{total}}",
+        "noFilter_one": "Sin filtro · {{count}} módulo",
+        "noFilter_other": "Sin filtro · {{count}} módulos"
+      },
+      "empty": {
+        "search": "No hay instrumentaciones que coincidan con \"{{search}}\". Limpia la búsqueda para mostrar todos los {{total}}.",
+        "customized": "Aún no has personalizado ninguna instrumentación. Haz clic en \"+ Personalizar\" en una fila para agregar una.",
+        "empty": "No hay instrumentaciones disponibles."
+      }
+    },
+    "row": {
+      "versions_one": "{{count}} versión",
+      "versions_other": "{{count}} versiones",
+      "custom": "personalizado",
+      "covers": "cubre {{versions}}",
+      "removeTooltip": "Eliminar personalización de {{name}}",
+      "toggleDetailsTooltip": "Alternar detalles de {{name}}",
+      "customize": "Personalizar",
+      "customizeAriaLabel": "Personalizar {{name}}",
+      "customizationState": "Estado de personalización",
+      "enabled": "Habilitado",
+      "disabled": "Deshabilitado",
+      "enabledByDefault": "habilitado por defecto",
+      "disabledByDefault": "deshabilitado por defecto"
+    },
+    "form": {
+      "empty": "No hay opciones configurables para este módulo."
+    },
+    "field": {
+      "editInGeneral": "Editar en configuración general ↑",
+      "resetTooltip": "Restablecer {{name}}",
+      "customize": "Personalizar",
+      "pills": {
+        "general": "general · compartido",
+        "common": "java.common · compartido",
+        "experimental": "experimental",
+        "mismatch": "tipo de valor importado no coincide",
+        "mismatch_number": "el valor importado no es un número",
+        "mismatch_string": "el valor importado no es una cadena",
+        "mismatch_boolean": "el valor importado no es un booleano",
+        "mismatch_list": "el valor importado no es una lista",
+        "mismatch_map": "el valor importado no es un mapa"
+      },
+      "defaultPreview": "predeterminado: {{value}}"
+    },
+    "controls": {
+      "default": "predeterminado",
+      "reset": "Restablecer",
+      "fieldDefault": "Predeterminado:",
+      "nullOptionDefault": "Predeterminado",
+      "usingDefault": "Usando predeterminado",
+      "itemAdded": "Elemento agregado",
+      "itemRemoved": "Elemento eliminado",
+      "entryAdded": "Entrada agregada",
+      "entryRemoved": "Entrada eliminada"
+    },
+    "sections": {
+      "generalSettings": "Configuración general",
+      "instrumentations": "Instrumentaciones",
+      "schema": "Esquema",
+      "agent": "Agente"
+    },
+    "schemaRenderer": {
+      "itemLabel": "Elemento"
+    },
+    "unionTypes": {
+      "textInput": "Texto",
+      "numberInput": "Número",
+      "toggle": "Booleano",
+      "select": "Selección",
+      "flag": "Indicador",
+      "stringList": "Lista de texto",
+      "numberList": "Lista de números",
+      "list": "Lista",
+      "keyValueMap": "Mapa",
+      "group": "Grupo",
+      "union": "Variante",
+      "pluginSelect": "Plugin",
+      "circularRef": "Referencia"
+    },
+    "keyValueMap": {
+      "add": "Agregar",
+      "addTooltip": "Agregar entrada a {{label}}",
+      "removeTooltip": "Eliminar entrada {{index}}",
+      "empty": "Sin entradas aún",
+      "duplicateKeyError": "Clave duplicada: solo se conserva el último valor para cada clave.",
+      "tableAriaLabel": "Entradas de {{label}}",
+      "keyLabel": "Clave {{index}}",
+      "keyPlaceholder": "clave",
+      "valueLabel": "Valor {{index}}",
+      "valuePlaceholder": "valor"
+    },
+    "primitiveList": {
+      "add": "Agregar",
+      "addTooltip": "Agregar elemento a {{label}}",
+      "empty": "Sin elementos aún"
+    },
+    "fieldSection": {
+      "expandTooltip": "Expandir {{label}}",
+      "collapseTooltip": "Contraer {{label}}",
+      "empty": "Sin elementos aún"
+    },
+    "groupRenderer": {
+      "enableTooltip": "Habilitar {{label}}"
+    },
+    "listRenderer": {
+      "add": "Agregar",
+      "addTooltip": "Agregar elemento a {{label}}",
+      "removeTooltip": "Eliminar elemento {{index}}",
+      "default": "(predeterminado)"
+    },
+    "pluginSelect": {
+      "tablistAriaLabel": "Variante {{label}}",
+      "inputAriaLabel": "Nombre de plugin personalizado",
+      "inputPlaceholder": "nombre-plugin-personalizado",
+      "cancel": "Cancelar",
+      "done": "Listo",
+      "customEmpty": "Plugin personalizado. Configura su cuerpo manualmente importando YAML o déjalo como un bloque vacío.",
+      "customActive": "Personalizado: {{name}}",
+      "customEllipsis": "Personalizado…"
+    },
+    "unionRenderer": {
+      "tablistAriaLabel": "Variante {{label}}"
+    },
+    "circularRef": "Referencia circular a {{type}}. Configúralo bajo su sección canónica."
+  },
+  "format": {
+    "semconv": {
+      "HTTP_CLIENT_SPANS": "Spans de cliente HTTP",
+      "HTTP_SERVER_SPANS": "Spans de servidor HTTP",
+      "HTTP_CLIENT_METRICS": "Métricas de cliente HTTP",
+      "HTTP_SERVER_METRICS": "Métricas de servidor HTTP",
+      "DATABASE_CLIENT_SPANS": "Spans de cliente de base de datos",
+      "DATABASE_CLIENT_METRICS": "Métricas de cliente de base de datos",
+      "DATABASE_POOL_METRICS": "Métricas de pool de base de datos",
+      "MESSAGING_SPANS": "Spans de mensajería",
+      "RPC_CLIENT_SPANS": "Spans de cliente RPC",
+      "RPC_SERVER_SPANS": "Spans de servidor RPC",
+      "RPC_CLIENT_METRICS": "Métricas de cliente RPC",
+      "RPC_SERVER_METRICS": "Métricas de servidor RPC",
+      "FAAS_SERVER_SPANS": "Spans de servidor FaaS",
+      "GRAPHQL_SERVER_SPANS": "Spans de servidor GraphQL",
+      "GENAI_CLIENT_SPANS": "Spans de cliente GenAI",
+      "GENAI_CLIENT_METRICS": "Métricas de cliente GenAI"
+    },
+    "feature": {
+      "HTTP_ROUTE": {
+        "label": "Ruta HTTP",
+        "description": "Enriquece los spans HTTP con información de ruta."
+      },
+      "CONTEXT_PROPAGATION": {
+        "label": "Propagación de contexto",
+        "description": "Propaga el contexto entre procesos (vía headers en HTTP, gRPC y mensajería) y entre hilos (executors, actores y streams reactivos)."
+      },
+      "AUTO_INSTRUMENTATION_SHIM": {
+        "label": "Adaptador de auto-instrumentación",
+        "description": "Adapta o conecta la instrumentación de bibliotecas o frameworks externos."
+      },
+      "CONTROLLER_SPANS": {
+        "label": "Spans de controlador",
+        "description": "Genera spans para métodos controlador/handler en frameworks web. Deshabilitado por defecto y experimental."
+      },
+      "VIEW_SPANS": {
+        "label": "Spans de vista",
+        "description": "Genera spans para el renderizado de vistas como plantillas o JSP. Deshabilitado por defecto y experimental."
+      },
+      "LOGGING_BRIDGE": {
+        "label": "Puente de logging",
+        "description": "Conecta eventos del framework de logging a la API de Logs de OpenTelemetry, emitiendo registros de log desde frameworks de logging estándar."
+      },
+      "RESOURCE_DETECTOR": {
+        "label": "Detector de recursos",
+        "description": "Establece atributos de recursos según ciertas condiciones."
+      }
+    }
+  }
+}

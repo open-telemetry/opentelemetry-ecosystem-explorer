@@ -15,6 +15,7 @@
  */
 import { ChevronRight } from "lucide-react";
 import type { Configuration } from "@/types/javaagent";
+import { useTranslation } from "react-i18next";
 import { CopyButton } from "@/components/ui/copy-button";
 import { DetailCard } from "@/components/ui/detail-card";
 import { GlowBadge } from "@/components/ui/glow-badge";
@@ -32,6 +33,7 @@ interface ConfigurationCardProps {
 }
 
 export function ConfigurationCard({ config, format, instrumentations }: ConfigurationCardProps) {
+  const { t } = useTranslation("java-agent");
   const stability = config.declarative_name ? getStabilityLabel(config.declarative_name) : null;
 
   const showDeclarative = format === "declarative" && Boolean(config.declarative_name);
@@ -96,14 +98,18 @@ export function ConfigurationCard({ config, format, instrumentations }: Configur
         )}
 
         <div className="border-border/30 bg-muted/30 flex items-start gap-2 rounded-lg border p-3">
-          <span className="text-muted-foreground shrink-0 text-xs font-medium">Default:</span>
+          <span className="text-muted-foreground shrink-0 text-xs font-medium">
+            {t("configCard.default")}
+          </span>
           <code className="flex-1 text-xs break-all">{defaultValue}</code>
         </div>
 
-        {config.example && config.example.length > 0 && (
+        {config.examples && config.examples.length > 0 && (
           <div className="space-y-1">
-            <span className="text-muted-foreground text-xs font-medium">Examples:</span>
-            {config.example.map((ex, i) => (
+            <span className="text-muted-foreground text-xs font-medium">
+              {t("configCard.examples")}
+            </span>
+            {config.examples.map((ex, i) => (
               <div key={i} className="border-border/30 bg-muted/30 rounded-lg border px-3 py-2">
                 <code className="text-xs break-all">{ex}</code>
               </div>
@@ -116,8 +122,7 @@ export function ConfigurationCard({ config, format, instrumentations }: Configur
             <details className="group [&_summary::-webkit-details-marker]:hidden">
               <summary className="text-foreground hover:text-primary flex cursor-pointer list-none items-center gap-1 font-semibold select-none">
                 <ChevronRight className="h-3 w-3 transition-transform group-open:rotate-90" />
-                {instrumentations.length} Instrumentation{instrumentations.length === 1 ? "" : "s"}{" "}
-                using this configuration
+                {t("configCard.usageCount", { count: instrumentations.length })}
               </summary>
               <div className="mt-3 flex flex-wrap gap-1.5 pl-4">
                 {instrumentations.map((inst) => (

@@ -4,7 +4,7 @@ issue: 84
 type: plan
 phase: 3
 status: planning
-last_updated: "2026-05-06"
+last_updated: "2026-06-09"
 ---
 
 > [!NOTE]
@@ -30,6 +30,26 @@ a contextual hero, a "Latest release" delta card, an interactive **Pipeline anat
 doubles as a one-click filter into the list, and three quick-entry cards. The pipeline diagram is
 the load-bearing reusable piece — it gets built once and parameterized per ecosystem.
 
+## Mid-stream `main` changes to reconcile (added 2026-06-09)
+
+Work unrelated to the redesign landed on `main` while Phases 1-2 shipped. Phase 3 must build against
+the current state, not the state this plan was first drafted against:
+
+- **Canonical routes, not `/ecosystems/*`.** The 2026-05-12 routing pivot locked v1 paths to mirror
+  legacy. The reference branch and `V1App.tsx` use `/collector` and `/java-agent`. Tasks 5-6 below
+  are corrected; the `/ecosystems/*` paths in the original draft are dropped.
+- **i18n via i18next (#649).** Strings now go through `react-i18next`, not hardcoded literals. The
+  `collector` and `java-agent` namespaces are already declared in `src/i18n/config.ts` (JSON under
+  `public/locales/<lng>/<ns>.json`, currently `en` + `es`) but unpopulated — Phase 3 fills them.
+  Every new landing-page string ships via `useTranslation` following the merged pattern
+  (`footer.tsx`, `home/*`).
+- **Data layer moved to indexes (#645, #628, #629).** List/component data now loads through
+  per-version index bundles, and a `javaagent index.json` exists. The release-data integration
+  (Task 8) and the deep-link contract must target the new shape, not the per-component fan-out the
+  reference was authored against.
+- **Unified loading states (#497).** Empty/error/loading states (Task 9) follow the shared
+  convention merged on `main`, not bespoke per-page spinners.
+
 ## Goal
 
 A user clicking "OpenTelemetry Collector" from the home page should:
@@ -41,7 +61,8 @@ A user clicking "OpenTelemetry Collector" from the home page should:
 
 ## Scope (in)
 
-- **Sub-nav** with breadcrumbs (`Explorer › Ecosystems › Collector`).
+- **Sub-nav** with breadcrumbs (`Explorer › Ecosystems › Collector`). The `<SubNav>` primitive
+  already shipped in Phase 1 (#482) — this is composition, not new component work.
 - **Cover-block hero** with eyebrow ("Infrastructure · Vendor-agnostic agent"), gradient title, lead
   copy, three CTAs (Browse all → list page, Read overview, GitHub link), and a right-side "Latest
   release" card showing version + delta (`+4 added · 12 changed · 2 deprecated`).
@@ -80,9 +101,11 @@ A user clicking "OpenTelemetry Collector" from the home page should:
    (`stages: [{type, count, description, filterHref}]`). Renders horizontal stage cards with arrow
    separators on desktop, vertical stack on mobile. Each stage is a deep-link into the list page.
 4. **QuickEntryRow component** — three cards with a configurable list of entries.
-5. **/ecosystems/collector route** — composes the above with Collector-specific config.
-6. **/ecosystems/java-agent route** — composes the above with Java-Agent-specific config; the
-   PipelineAnatomy is swapped for an alternate "categories" diagram.
+5. **/collector route** — composes the above with Collector-specific config. (Canonical path, not
+   `/ecosystems/collector` — the routing pivot locked v1 paths to mirror legacy; see
+   [`v1-routing-pivot.md`](./v1-routing-pivot.md).)
+6. **/java-agent route** — composes the above with Java-Agent-specific config; the PipelineAnatomy
+   is swapped for an alternate "categories" diagram. (Canonical path, not `/ecosystems/java-agent`.)
 7. **Per-ecosystem config schema** — TypeScript types for `EcosystemConfig` (hero copy,
    release-fetch source, pipeline stages, quick-entry items). Future ecosystems plug into this
    schema.

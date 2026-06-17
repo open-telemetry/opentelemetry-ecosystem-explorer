@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import type { InstrumentationData } from "@/types/javaagent";
+import type { InstrumentationListEntry } from "@/types/javaagent";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
 import { useCustomizationStatusMap } from "@/hooks/use-customization-status";
 import { useCustomizedModules } from "@/hooks/use-customized-modules";
 import { InstrumentationBrowser } from "./instrumentation-browser";
+import { SectionExpansionProvider } from "./section-expansion-context";
 
 vi.mock("@/hooks/use-configuration-builder");
 vi.mock("@/hooks/use-customization-status");
@@ -31,15 +33,18 @@ vi.mock("@/hooks/use-customized-modules", () => ({
 const mockedBuilder = vi.mocked(useConfigurationBuilder);
 const mockedCustomization = vi.mocked(useCustomizationStatusMap);
 
-function entry(name: string, opts: Partial<InstrumentationData> = {}): InstrumentationData {
+function entry(
+  name: string,
+  opts: Partial<InstrumentationListEntry> = {}
+): InstrumentationListEntry {
   return {
     name,
     scope: { name: `io.opentelemetry.${name}` },
     ...opts,
-  } as InstrumentationData;
+  } as InstrumentationListEntry;
 }
 
-const FIXTURE: InstrumentationData[] = [
+const FIXTURE: InstrumentationListEntry[] = [
   entry("cassandra-3.0", { description: "Cassandra Driver context propagation" }),
   entry("cassandra-4.0"),
   entry("cassandra-4.4"),
@@ -73,9 +78,13 @@ beforeEach(() => {
   vi.mocked(useCustomizedModules).mockReturnValue(new Set<string>());
 });
 
+function renderWithProvider(ui: React.ReactElement) {
+  return render(<SectionExpansionProvider>{ui}</SectionExpansionProvider>);
+}
+
 describe("InstrumentationBrowser", () => {
   it("groups entries into module rows with version count", () => {
-    render(
+    renderWithProvider(
       <InstrumentationBrowser
         instrumentations={FIXTURE}
         search=""
@@ -91,7 +100,7 @@ describe("InstrumentationBrowser", () => {
   });
 
   it("matches search against the registry name of any covered entry", () => {
-    render(
+    renderWithProvider(
       <InstrumentationBrowser
         instrumentations={FIXTURE}
         search="cassandra-4.4"
@@ -104,7 +113,7 @@ describe("InstrumentationBrowser", () => {
   });
 
   it("matches search against display_name on any covered entry", () => {
-    render(
+    renderWithProvider(
       <InstrumentationBrowser
         instrumentations={FIXTURE}
         search="Kafka Clients"
@@ -117,7 +126,7 @@ describe("InstrumentationBrowser", () => {
   });
 
   it("matches search against description on any covered entry", () => {
-    render(
+    renderWithProvider(
       <InstrumentationBrowser
         instrumentations={FIXTURE}
         search="context propagation"
@@ -130,7 +139,7 @@ describe("InstrumentationBrowser", () => {
   });
 
   it("search is case-insensitive", () => {
-    render(
+    renderWithProvider(
       <InstrumentationBrowser
         instrumentations={FIXTURE}
         search="CASSANDRA"
@@ -143,7 +152,7 @@ describe("InstrumentationBrowser", () => {
 
   it("filters to customized when statusFilter='customized'", () => {
     vi.mocked(useCustomizedModules).mockReturnValue(new Set(["cassandra"]));
-    render(
+    renderWithProvider(
       <InstrumentationBrowser
         instrumentations={FIXTURE}
         search=""
@@ -156,7 +165,7 @@ describe("InstrumentationBrowser", () => {
   });
 
   it("calls setCustomization('cassandra', 'disabled') when + Customize is clicked on a default-enabled module", () => {
-    render(
+    renderWithProvider(
       <InstrumentationBrowser
         instrumentations={FIXTURE}
         search=""
@@ -169,7 +178,7 @@ describe("InstrumentationBrowser", () => {
   });
 
   it("calls setCustomization('jmx_metrics', 'enabled') when + Customize is clicked on a default-disabled module", () => {
-    render(
+    renderWithProvider(
       <InstrumentationBrowser
         instrumentations={FIXTURE}
         search=""
@@ -183,7 +192,7 @@ describe("InstrumentationBrowser", () => {
 
   it("calls setCustomization(name, 'none') when ✕ is clicked on an customized row", () => {
     mockedCustomization.mockReturnValue(new Map([["cassandra", "disabled"]]));
-    render(
+    renderWithProvider(
       <InstrumentationBrowser
         instrumentations={FIXTURE}
         search=""
@@ -197,7 +206,7 @@ describe("InstrumentationBrowser", () => {
 
   it("calls setCustomization('cassandra', 'enabled') when toggling customized Disabled→Enabled", () => {
     mockedCustomization.mockReturnValue(new Map([["cassandra", "disabled"]]));
-    render(
+    renderWithProvider(
       <InstrumentationBrowser
         instrumentations={FIXTURE}
         search=""
@@ -210,7 +219,7 @@ describe("InstrumentationBrowser", () => {
   });
 
   it("renders empty state for unmatched search", () => {
-    render(
+    renderWithProvider(
       <InstrumentationBrowser
         instrumentations={FIXTURE}
         search="nonexistent"
@@ -222,7 +231,7 @@ describe("InstrumentationBrowser", () => {
   });
 
   it("shows loading state", () => {
-    render(
+    renderWithProvider(
       <InstrumentationBrowser
         instrumentations={null}
         loading={true}
@@ -236,7 +245,7 @@ describe("InstrumentationBrowser", () => {
   });
 
   it("shows error state", () => {
-    render(
+    renderWithProvider(
       <InstrumentationBrowser
         instrumentations={null}
         loading={false}
@@ -259,6 +268,9 @@ describe("InstrumentationBrowser — expansion and customization filter", () => 
     {
       name: "cassandra-4.4",
       scope: { name: "io.opentelemetry.cassandra-4.4" },
+      has_spans: false,
+      has_metrics: false,
+      _is_custom: false,
       configurations: [
         {
           name: "x",
@@ -271,13 +283,25 @@ describe("InstrumentationBrowser — expansion and customization filter", () => 
     },
   ];
   const twoModules = [
-    { name: "cassandra-4.4", scope: { name: "io.opentelemetry.cassandra-4.4" } },
-    { name: "graphql-java-20.0", scope: { name: "io.opentelemetry.graphql-java-20.0" } },
+    {
+      name: "cassandra-4.4",
+      scope: { name: "io.opentelemetry.cassandra-4.4" },
+      has_spans: false,
+      has_metrics: false,
+      _is_custom: false,
+    },
+    {
+      name: "graphql-java-20.0",
+      scope: { name: "io.opentelemetry.graphql-java-20.0" },
+      has_spans: false,
+      has_metrics: false,
+      _is_custom: false,
+    },
   ];
 
   it("expands a row when its toggle button is clicked", async () => {
     const user = userEvent.setup();
-    render(
+    renderWithProvider(
       <InstrumentationBrowser
         instrumentations={cassandraData}
         search=""
@@ -293,7 +317,7 @@ describe("InstrumentationBrowser — expansion and customization filter", () => 
 
   it("keeps multiple rows expanded simultaneously", async () => {
     const user = userEvent.setup();
-    render(
+    renderWithProvider(
       <InstrumentationBrowser
         instrumentations={twoModules}
         search=""
@@ -313,7 +337,7 @@ describe("InstrumentationBrowser — expansion and customization filter", () => 
 
   it("uses useCustomizedModules to filter when statusFilter is 'customized'", () => {
     vi.mocked(useCustomizedModules).mockReturnValue(new Set(["cassandra"]));
-    render(
+    renderWithProvider(
       <InstrumentationBrowser
         instrumentations={twoModules}
         search=""
@@ -327,7 +351,7 @@ describe("InstrumentationBrowser — expansion and customization filter", () => 
 
   it("renders the customization count in the header from useCustomizedModules", () => {
     vi.mocked(useCustomizedModules).mockReturnValue(new Set(["cassandra"]));
-    render(
+    renderWithProvider(
       <InstrumentationBrowser
         instrumentations={[twoModules[0]]}
         search=""

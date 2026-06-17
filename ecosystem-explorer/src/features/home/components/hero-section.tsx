@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useTranslation } from "react-i18next";
 import { Compass } from "@/components/icons/compass";
 
 export function HeroSection() {
+  const { t } = useTranslation("home");
   return (
     <section className="bg-background relative flex items-center justify-center overflow-hidden py-12">
       {/* Ambient radial gradient background */}
@@ -53,15 +55,15 @@ export function HeroSection() {
 
         <div className="space-y-2">
           <h1 className="text-3xl leading-tight font-bold tracking-tight text-balance md:text-4xl">
-            <span className="text-foreground">OpenTelemetry</span>
+            <span className="text-foreground">{t("hero.titlePrefix")}</span>
             <br />
             <span className="from-otel-blue to-otel-orange bg-gradient-to-r bg-clip-text text-transparent">
-              Ecosystem Explorer
+              {t("hero.titleSuffix")}
             </span>
           </h1>
 
           <p className="text-muted-foreground mx-auto max-w-2xl text-sm leading-relaxed text-balance md:text-base">
-            Navigate the vast landscape of OpenTelemetry.
+            {t("hero.tagline")}
           </p>
         </div>
       </div>

@@ -14,32 +14,37 @@
  * limitations under the License.
  */
 import type { Attribute } from "@/types/javaagent";
+import { useTranslation } from "react-i18next";
 
 interface AttributeTableProps {
   attributes: Attribute[];
 }
 
 export function AttributeTable({ attributes }: AttributeTableProps) {
+  const { t } = useTranslation("java-agent");
   if (attributes.length === 0) {
     return null;
   }
 
   return (
     <div className="border-border/30 overflow-x-auto rounded-lg border">
-      <table aria-label="Attributes" className="w-full min-w-[260px] border-collapse">
+      <table
+        aria-label={t("attributeTable.ariaLabel")}
+        className="w-full min-w-[260px] border-collapse"
+      >
         <thead>
           <tr className="bg-white/5">
             <th
               scope="col"
               className="text-muted-foreground p-2 text-left text-[10px] font-bold tracking-widest uppercase sm:p-3"
             >
-              Key
+              {t("attributeTable.columns.key")}
             </th>
             <th
               scope="col"
               className="text-muted-foreground p-2 text-left text-[10px] font-bold tracking-widest uppercase sm:p-3"
             >
-              Type
+              {t("attributeTable.columns.type")}
             </th>
           </tr>
         </thead>

@@ -104,6 +104,15 @@ class TestInventoryManager:
         assert loaded["file_format"] == 0.1
         assert loaded["libraries"] == []
 
+    def test_load_versioned_inventory_rejects_non_mapping_yaml(self, inventory_manager):
+        version = Version("2.10.0")
+        version_dir = inventory_manager.get_version_dir(version)
+        version_dir.mkdir(parents=True, exist_ok=True)
+        (version_dir / "instrumentation.yaml").write_text("- not-a-mapping\n", encoding="utf-8")
+
+        with pytest.raises(ValueError, match="must contain a mapping"):
+            inventory_manager.load_versioned_inventory(version)
+
     def test_list_versions(self, inventory_manager):
         versions = [
             Version("2.9.0"),

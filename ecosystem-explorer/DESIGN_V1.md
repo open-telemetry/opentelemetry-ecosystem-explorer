@@ -26,9 +26,14 @@ under the `V1_REDESIGN` feature flag in `src/v1/`.
 - `/_dev/components` showcase route (gated by `DEV_SHOWCASE`) and a Playwright + axe-core baseline
   captured by `screenshots-baseline.yml`.
 
-**Coming next:** Phase 2 starts with PR 1 — `<CoverBlock>` + `<HomeV1 />` shell + the `/` route
-swap. Subsequent PRs slot real components into the skeleton sections. For the rolling roadmap, phase
-plans, and decision log, see
+**Shipped (Phase 2 — Home page):**
+
+- `<HomeV1 />` serves the `/` route and composes the home page from `<CoverBlock>`, `<StatsBand>`,
+  `<EcosystemsGrid>`, `<SignalsRow>`, and `<RecentActivityRail>` (all in `src/v1/components/home/`).
+
+**Coming next:** The `<GlobalSearch>` slot inside `<CoverBlock>` is still a skeleton
+(cross-ecosystem ⌘K search). After that, Phase 3+ work — ecosystem landing pages, the faceted list
+page, and the three-pane detail page. For the rolling roadmap, phase plans, and decision log, see
 [`projects/84-ui-ux-design/NEXT-STEPS.md`](../projects/84-ui-ux-design/NEXT-STEPS.md).
 
 ---
@@ -67,10 +72,10 @@ snapshots each primitive in light and dark on the `/_dev/components` showcase ro
 ### 2. opentelemetry.io alignment for chrome
 
 Navbar, footer, theme toggle, and CncfCallout track upstream opentelemetry.io styles verbatim.
-Metrics, hover behaviors, and surface colors come from the local clone at
-`/Users/vasconcellos/projetos/opentelemetry/opentelemetry.io` (see `CLAUDE.local.md`). The
-explorer's `.td-navbar`, `.td-footer`, `.td-light-dark-menu__*` selectors mirror their upstream SCSS
-counterparts.
+Metrics, hover behaviors, and surface colors come from a local clone of the
+[opentelemetry.io](https://github.com/open-telemetry/opentelemetry.io) repository (path configured
+in `CLAUDE.local.md`). The explorer's `.td-navbar`, `.td-footer`, `.td-light-dark-menu__*` selectors
+mirror their upstream SCSS counterparts.
 
 The chrome's **styles** track upstream; the chrome's **link list** is explorer-specific (today the
 navbar has a single `Docs` link; new explorer-scoped links land here, not on opentelemetry.io).
@@ -609,16 +614,13 @@ The next major components to land:
 
 | Component               | Phase | PR              | Notes                                                               |
 | ----------------------- | ----- | --------------- | ------------------------------------------------------------------- |
-| `<CoverBlock>`          | 2     | PR 1 (#371)     | Reusable hero — title + lead + CTAs + optional aside slot.          |
-| `<HomeV1 />` shell      | 2     | PR 1            | Wraps CoverBlock + skeleton placeholders for PRs 2-6.               |
-| `<GlobalSearch>`        | 2     | PR 2            | Cross-ecosystem ⌘K search inside CoverBlock.                        |
-| `<StatsBand>`           | 2     | PR 3            | OTel-purple stats band, synced with opentelemetry.io's numbers.     |
-| `<EcosystemsGrid>`      | 2     | PR 4            | Collector / Java Agent + dashed "coming soon" cards.                |
-| `<SignalsRow>`          | 2     | PR 5            | Browse-by-signal — Traces · Metrics · Logs · Baggage.               |
-| `<RecentActivityRail>`  | 2     | PR 6            | Recent activity feed.                                               |
+| `<GlobalSearch>`        | 2     | PR 2            | Cross-ecosystem ⌘K search inside CoverBlock — still a skeleton.     |
 | Ecosystem landing pages | 3     | per-page PRs    | Pipeline-anatomy diagram, release card, quick-entry strip.          |
 | Faceted list page       | 4     | per-PR slices   | Hard dependency on StatusPill (PR 4) + TypeStripe (PR 5) — shipped. |
 | Three-pane detail page  | 5     | PR 04a + PR 04b | PR 04b depends on per-version data exposed by `ecosystem-registry`. |
+
+The Phase 2 home components — `<CoverBlock>`, `<HomeV1 />`, `<StatsBand>`, `<EcosystemsGrid>`,
+`<SignalsRow>`, `<RecentActivityRail>` — have shipped; see the Status section above.
 
 This file is updated incrementally — each phase's components and patterns land in their relevant
 sections as they ship, mirroring how `DESIGN.md` grew over the legacy system's lifetime.

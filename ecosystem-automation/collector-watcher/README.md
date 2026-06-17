@@ -12,12 +12,17 @@ Process:
 - Clone or update local copies of the `core` and `contrib` collector repositories.
 - Scan for components and parse their `metadata.yaml` files.
 - Create or update versioned snapshots of component metadata in YAML format.
+- Store the upstream `metadata-schema.yaml` in content-addressed storage under
+  `ecosystem-registry/collector/meta/schemas/{hash}.yaml`.
+- Detect deprecations across versions and maintain the deprecation baseline in
+  `ecosystem-registry/collector/deprecations.yaml`.
 
 You can pass in a location of the repositories to scan via environment variables or else it will
 default to cloning them into `tmp_repos/`.
 
 It maintains a versioned `inventory` of component snapshots in YAML format in the
-`ecosystem-registry/collector` directory.
+`ecosystem-registry/collector` directory, alongside the shared `deprecations.yaml` baseline and
+`meta/schemas/` schema store at the `collector/` root.
 
 ## Configuration
 

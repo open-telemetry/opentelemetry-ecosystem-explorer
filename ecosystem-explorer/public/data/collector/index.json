@@ -285,7 +285,7 @@
       "distribution": "contrib",
       "id": "contrib-alibabacloudlogserviceexporter",
       "name": "alibabacloudlogserviceexporter",
-      "stability": "unmaintained",
+      "stability": "beta",
       "type": "exporter"
     },
     {
@@ -484,15 +484,6 @@
       "id": "contrib-googlemanagedprometheusexporter",
       "name": "googlemanagedprometheusexporter",
       "stability": "beta",
-      "type": "exporter"
-    },
-    {
-      "description": null,
-      "display_name": null,
-      "distribution": "contrib",
-      "id": "contrib-googlesecopsexporter",
-      "name": "googlesecopsexporter",
-      "stability": "development",
       "type": "exporter"
     },
     {
@@ -938,6 +929,15 @@
     },
     {
       "description": null,
+      "display_name": "MCP Server",
+      "distribution": "contrib",
+      "id": "contrib-mcp",
+      "name": "mcp",
+      "stability": "development",
+      "type": "extension"
+    },
+    {
+      "description": null,
       "display_name": "OAuth2 Client Credentials Authenticator Extension",
       "distribution": "contrib",
       "id": "contrib-oauth2clientauthextension",
@@ -996,7 +996,7 @@
       "distribution": "contrib",
       "id": "contrib-kafkatopicsobserver",
       "name": "kafkatopicsobserver",
-      "stability": "alpha",
+      "stability": "deprecated",
       "type": "extension"
     },
     {
@@ -1099,6 +1099,24 @@
       "type": "processor"
     },
     {
+      "description": null,
+      "display_name": null,
+      "distribution": "contrib",
+      "id": "contrib-awsecsattributesprocessor",
+      "name": "awsecsattributesprocessor",
+      "stability": "development",
+      "type": "processor"
+    },
+    {
+      "description": null,
+      "display_name": null,
+      "distribution": "contrib",
+      "id": "contrib-cardinalityguardianprocessor",
+      "name": "cardinalityguardianprocessor",
+      "stability": "development",
+      "type": "processor"
+    },
+    {
       "description": "The Coralogix processor adds attributes to spans that enable features in Coralogix.",
       "display_name": "Coralogix Processor",
       "distribution": "contrib",
@@ -1149,6 +1167,15 @@
       "distribution": "contrib",
       "id": "contrib-filterprocessor",
       "name": "filterprocessor",
+      "stability": "alpha",
+      "type": "processor"
+    },
+    {
+      "description": null,
+      "display_name": "GenAI Normalizer Processor",
+      "distribution": "contrib",
+      "id": "contrib-genainormalizerprocessor",
+      "name": "genainormalizerprocessor",
       "stability": "alpha",
       "type": "processor"
     },
@@ -1225,7 +1252,7 @@
       "type": "processor"
     },
     {
-      "description": "The lookup processor enriches telemetry signals by performing external lookups to retrieve additional data. It evaluates an [OTTL](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/pkg/ottl/README.md) value expression to extract a lookup key, queries a lookup source, and writes the results as new attributes. Currently supports logs, with metrics and traces support planned.",
+      "description": "The lookup processor enriches telemetry signals by performing external lookups to retrieve additional data. It evaluates an [OTTL](https://github.com/open-telemetry/opentelemetry-collector-contrib/blob/main/pkg/ottl/README.md) value expression to extract a lookup key, queries a lookup source, and writes the results as new attributes.",
       "display_name": "Lookup Processor",
       "distribution": "contrib",
       "id": "contrib-lookupprocessor",
@@ -1311,7 +1338,7 @@
       "distribution": "contrib",
       "id": "contrib-schemaprocessor",
       "name": "schemaprocessor",
-      "stability": "development",
+      "stability": "alpha",
       "type": "processor"
     },
     {
@@ -2355,7 +2382,7 @@
       "distribution": "contrib",
       "id": "contrib-windowsservicereceiver",
       "name": "windowsservicereceiver",
-      "stability": "development",
+      "stability": "alpha",
       "type": "receiver"
     },
     {

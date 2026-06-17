@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { useId } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronDown } from "lucide-react";
 import type { SelectNode } from "@/types/configuration";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
@@ -30,6 +31,7 @@ const SELECT_CLASS =
   "w-full appearance-none rounded-lg border border-border/60 bg-background/80 px-4 pr-10 py-2.5 text-sm backdrop-blur-sm transition-all duration-200 focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 [color-scheme:dark]";
 
 export function SelectControl({ node, path, value, onChange }: SelectControlProps) {
+  const { t } = useTranslation("java-agent");
   const id = useId();
   const descId = useId();
   const { state, validateField } = useConfigurationBuilder();
@@ -53,7 +55,9 @@ export function SelectControl({ node, path, value, onChange }: SelectControlProp
           className={SELECT_CLASS}
         >
           {node.nullable ? (
-            <option value="">{node.nullBehavior ?? node.defaultBehavior ?? "Default"}</option>
+            <option value="">
+              {node.nullBehavior ?? node.defaultBehavior ?? t("builder.controls.nullOptionDefault")}
+            </option>
           ) : value === null ? (
             <option value="" disabled hidden />
           ) : null}

@@ -5,8 +5,10 @@ Python pipelines that watch upstream OpenTelemetry projects and write versioned 
 
 - `collector-watcher/` — Collector core/contrib components
 - `java-instrumentation-watcher/` — Java agent instrumentations
+- `dotnet-instrumentation-watcher/` — .NET automatic instrumentation components
 - `configuration-watcher/` — Declarative configuration schema
 - `explorer-db-builder/` — Builds the content-addressed database the frontend reads
+- `v1-registry-sync/` — Compares the collector registry against the upstream v1 registry
 - `watcher-common/` — Shared base classes for inventory and version detection
   (`watcher-common/src/watcher_common/`)
 
@@ -23,9 +25,10 @@ Run from the repository root:
 - `uv run ruff check ecosystem-automation/` — Lint
 - `uv run ruff format ecosystem-automation/` — Format
 - `uv run collector-watcher` / `uv run java-instrumentation-watcher` /
-  `uv run configuration-watcher` / `uv run explorer-db-builder` — Run a watcher
+  `uv run dotnet-instrumentation-watcher` / `uv run configuration-watcher` /
+  `uv run explorer-db-builder` / `uv run v1-registry-sync` — Run a watcher or tool
 
-Each watcher exposes a `sync` orchestrator (used by nightly CI). The `collector-watcher` and
+Nightly CI invokes the watchers directly via these console scripts. The `collector-watcher` and
 `configuration-watcher` also expose a `backfill` mode (`--backfill`) for re-extracting existing
 versions after a schema change.
 
@@ -37,8 +40,11 @@ non-negotiable rules:
 - **Idempotency.** Always check whether a version is already in the inventory before processing it.
   Without this, nightly runs re-process every version and produce noisy diffs.
 - **Inventory layout.** Versions are written under
-  `ecosystem-registry/{ecosystem}/{distribution}/v{version}/`, using semantic versioning with a
-  `SNAPSHOT` prerelease tag for nightly builds.
+  `ecosystem-registry/{ecosystem}/[{distribution}/]v{version}/`, using semantic versioning with a
+  `SNAPSHOT` prerelease tag for nightly builds. The `{distribution}` segment applies only where an
+  ecosystem ships multiple distributions: collector (`collector/{core,contrib}/v…`) and Java
+  (`java/javaagent/v…`). Configuration (`configuration/v…`) and .NET (`dotnet/v…`) have no
+  distribution segment.
 
 ## Schema discipline
 

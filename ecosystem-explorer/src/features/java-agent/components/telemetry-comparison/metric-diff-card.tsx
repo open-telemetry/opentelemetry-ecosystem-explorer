@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { useTranslation } from "react-i18next";
 import { GlowBadge } from "@/components/ui/glow-badge";
 import type { MetricDiff } from "@/types/javaagent";
 import { AttributeDiffTable } from "./attribute-diff-table";
@@ -23,11 +24,17 @@ interface MetricDiffCardProps {
 }
 
 export function MetricDiffCard({ diff }: MetricDiffCardProps) {
+  const { t } = useTranslation("java-agent");
   const { status, metric, changes } = diff;
 
   const statusVariant = status === "added" ? "success" : "warning";
 
-  const statusLabel = status === "added" ? "Added" : status === "removed" ? "Removed" : "Changed";
+  const statusLabel =
+    status === "added"
+      ? t("diffCard.status.added")
+      : status === "removed"
+        ? t("diffCard.status.removed")
+        : t("diffCard.status.changed");
 
   return (
     <div className="border-border/30 bg-card/30 hover:bg-card-secondary rounded-2xl border p-6 transition-all duration-300 md:p-10">
@@ -56,7 +63,7 @@ export function MetricDiffCard({ diff }: MetricDiffCardProps) {
         {status === "changed" && changes?.description && (
           <div className="space-y-2">
             <span className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
-              Description Changed
+              {t("diffCard.descriptionChanged")}
             </span>
             <div className="border-border/30 space-y-1 rounded-lg border bg-white/[0.03] p-3">
               <p className="text-sm text-red-400 line-through opacity-60">
@@ -71,7 +78,7 @@ export function MetricDiffCard({ diff }: MetricDiffCardProps) {
         {status === "changed" && changes?.data_type && (
           <div className="flex items-center gap-3">
             <span className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
-              Type Changed
+              {t("diffCard.typeChanged")}
             </span>
             <div className="flex items-center gap-2">
               <code className="rounded border border-red-400/30 bg-red-400/10 px-2 py-1 text-sm text-red-400 line-through">
@@ -89,7 +96,7 @@ export function MetricDiffCard({ diff }: MetricDiffCardProps) {
         {status !== "removed" && (
           <div className="border-border/30 flex items-center gap-3 border-b pb-6">
             <span className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
-              Unit
+              {t("diffCard.unit")}
             </span>
             <code className="border-border/30 text-foreground/80 rounded border bg-white/[0.03] px-2 py-1 text-sm">
               {metric.unit}
@@ -110,7 +117,7 @@ export function MetricDiffCard({ diff }: MetricDiffCardProps) {
         {status === "changed" && changes?.attributes && (
           <div className="space-y-4">
             <h4 className="text-muted-foreground text-xs font-black tracking-[0.2em] uppercase">
-              Attribute Changes
+              {t("diffCard.attributeChanges")}
             </h4>
             <AttributeDiffTable changes={changes.attributes} />
           </div>
@@ -119,9 +126,7 @@ export function MetricDiffCard({ diff }: MetricDiffCardProps) {
         {/* Removed indicator */}
         {status === "removed" && (
           <div className="rounded-lg border border-red-400/30 bg-red-400/10 p-4">
-            <p className="text-sm text-red-400">
-              This metric is no longer emitted in the comparison version.
-            </p>
+            <p className="text-sm text-red-400">{t("diffCard.metricRemoved")}</p>
           </div>
         )}
       </div>
