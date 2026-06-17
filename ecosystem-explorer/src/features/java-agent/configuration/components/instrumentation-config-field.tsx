@@ -99,6 +99,7 @@ function StringListRenderer({
   disabled,
   showAdd,
 }: ControlRendererProps) {
+  const { t } = useTranslation("java-agent");
   const items = Array.isArray(value)
     ? (value.filter((v) => typeof v === "string") as string[])
     : [];
@@ -135,7 +136,7 @@ function StringListRenderer({
           className="border-border/60 text-foreground hover:bg-card/80 mt-2 inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs"
         >
           <Plus className="h-3 w-3" aria-hidden="true" />
-          Add
+          {t("builder.primitiveList.add")}
         </button>
       ) : null}
     </div>
@@ -168,6 +169,7 @@ function KeyValueMapRenderer({
   disabled,
   showAdd,
 }: ControlRendererProps) {
+  const { t } = useTranslation("java-agent");
   const entries = toEntries(value);
   const update = (next: MapEntry[]) => onChange(fromEntries(next));
   return (
@@ -206,7 +208,7 @@ function KeyValueMapRenderer({
             }}
             disabled={disabled}
             className="text-muted-foreground hover:text-foreground rounded-md p-1"
-            aria-label={`Remove entry ${idx}`}
+            aria-label={t("builder.keyValueMap.removeTooltip", { index: idx + 1 })}
           >
             <X className="h-3 w-3" aria-hidden="true" />
           </button>
@@ -219,7 +221,7 @@ function KeyValueMapRenderer({
           className="border-border/60 text-foreground hover:bg-card/80 inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs"
         >
           <Plus className="h-3 w-3" aria-hidden="true" />
-          Add entry
+          {t("builder.keyValueMap.add")}
         </button>
       ) : null}
     </div>
@@ -234,6 +236,7 @@ function StructuredListRenderer({
   showAdd,
   schema,
 }: ControlRendererProps & { schema: NonNullable<Configuration["declarative_schema"]> }) {
+  const { t } = useTranslation("java-agent");
   const items = Array.isArray(value) ? (value as ConfigValues[]) : [];
   const properties = Object.entries(schema.properties);
 
@@ -242,13 +245,15 @@ function StructuredListRenderer({
       {items.map((item, idx) => (
         <div key={idx} className="border-border/40 space-y-1.5 rounded-md border p-3">
           <div className="flex items-center justify-between">
-            <span className="text-muted-foreground text-xs italic">Item {idx + 1}</span>
+            <span className="text-muted-foreground text-xs italic">
+              {t("builder.structuredList.itemLabel", { index: idx + 1 })}
+            </span>
             {!disabled && (
               <button
                 type="button"
                 onClick={() => onChange(items.filter((_, i) => i !== idx) as ConfigValue)}
                 className="text-muted-foreground rounded p-1 hover:text-red-400"
-                aria-label={`Remove item ${idx + 1}`}
+                aria-label={t("builder.listRenderer.removeTooltip", { index: idx + 1 })}
               >
                 <X className="h-3 w-3" aria-hidden="true" />
               </button>
@@ -310,7 +315,7 @@ function StructuredListRenderer({
           className="border-border/60 text-foreground hover:bg-card/80 inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs"
         >
           <Plus className="h-3 w-3" aria-hidden="true" />
-          Add entry
+          {t("builder.listRenderer.add")}
         </button>
       )}
     </div>

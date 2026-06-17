@@ -397,6 +397,9 @@
     "schemaRenderer": {
       "itemLabel": "Elemento"
     },
+    "structuredList": {
+      "itemLabel": "Elemento {{index}}"
+    },
     "unionTypes": {
       "textInput": "Texto",
       "numberInput": "Número",
