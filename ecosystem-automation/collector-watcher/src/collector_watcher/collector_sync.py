@@ -63,6 +63,10 @@ class CollectorSync:
         self.deprecations = inventory_manager.load_deprecations()
         self.previous_versions: dict[DistributionName, Version | None] = {}
         self.previous_components: dict[DistributionName, dict[str, list[dict[str, Any]]]] = {}
+        # Cache of core release tags for the lifetime of the sync run. get_all_release_tags()
+        # shells out to `git tag --list`, and _core_schema_refs() is called once per version;
+        # caching avoids an extra git process per saved version during a backfill.
+        self._core_release_tags: list[Version] | None = None
 
     @staticmethod
     def get_repository_name(distribution: DistributionName) -> str:
@@ -241,8 +245,11 @@ class CollectorSync:
         if version.prerelease:
             return ["main"]
 
+        if self._core_release_tags is None:
+            self._core_release_tags = self.version_detectors["core"].get_all_release_tags()
+
         refs = [f"v{version}"]
-        earlier = [v for v in self.version_detectors["core"].get_all_release_tags() if not v.prerelease and v < version]
+        earlier = [v for v in self._core_release_tags if not v.prerelease and v < version]
         if earlier:
             refs.append(f"v{max(earlier)}")
         refs.append("main")
