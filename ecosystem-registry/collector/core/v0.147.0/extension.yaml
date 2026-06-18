@@ -2,6 +2,7 @@ distribution: core
 version: 0.147.0
 repository: opentelemetry-collector
 component_type: extension
+schema_hash: 053934807f90
 components:
 - name: memorylimiterextension
   metadata:
