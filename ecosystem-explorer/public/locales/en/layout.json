@@ -2,6 +2,7 @@
   "header": {
     "title": "OTel Explorer",
     "languageSwitcher": "Select language",
+    "themeSwitcher": "Toggle theme",
     "nav": {
       "javaAgent": "Java Agent",
       "collector": "Collector",
@@ -17,5 +18,10 @@
       "otelWebsite": "opentelemetry.io"
     },
     "copyright": "© 2026–Present OpenTelemetry Authors"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "auto": "Auto"
   }
 }

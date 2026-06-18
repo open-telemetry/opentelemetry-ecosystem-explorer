@@ -2,6 +2,7 @@ distribution: core
 version: 0.148.0
 repository: opentelemetry-collector
 component_type: receiver
+schema_hash: 1dfd2577234f
 components:
 - name: nopreceiver
   metadata:

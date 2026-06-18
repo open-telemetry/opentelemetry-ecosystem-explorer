@@ -22,6 +22,7 @@ import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
 import { SchemaRenderer } from "./schema-renderer";
 import { parsePath, getByPath } from "@/lib/config-path";
 import { FieldSection } from "./field-section";
+import { useCollapsibleExpansion } from "./section-expansion-context";
 
 export interface UnionRendererProps {
   node: UnionNode;
@@ -138,6 +139,8 @@ export function UnionRenderer({ node, depth, path }: UnionRendererProps): JSX.El
     selectedKey === null ? undefined : effectiveVariants.find((v) => v.key === selectedKey);
   const showChooser = renderable.length > 0;
 
+  const { open, onOpenChange } = useCollapsibleExpansion(`${path}#union`, true);
+
   const handleChange = (nextKey: string) => {
     if (nextKey === selectedKey) return;
     const nextVariant = effectiveVariants.find((v) => v.key === nextKey);
@@ -187,7 +190,7 @@ export function UnionRenderer({ node, depth, path }: UnionRendererProps): JSX.El
   ) : null;
 
   return (
-    <FieldSection node={node} level="field" defaultExpanded>
+    <FieldSection node={node} level="field" open={open} onOpenChange={onOpenChange}>
       <FieldSection.Header>
         <FieldSection.Chevron />
         <FieldSection.Label />

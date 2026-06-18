@@ -93,9 +93,7 @@ export function JavaConfigurationListPage() {
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div className="min-w-0 flex-1 space-y-2">
                 <h1 className="text-2xl leading-tight font-bold sm:text-3xl md:text-4xl">
-                  <span className="bg-gradient-to-r from-[hsl(var(--secondary-hsl))] to-[hsl(var(--primary-hsl))] bg-clip-text text-transparent">
-                    {t("configList.title")}
-                  </span>
+                  <span className="text-gradient-brand">{t("configList.title")}</span>
                 </h1>
                 <p className="text-muted-foreground max-w-4xl text-base leading-relaxed">
                   {t("configList.description")}

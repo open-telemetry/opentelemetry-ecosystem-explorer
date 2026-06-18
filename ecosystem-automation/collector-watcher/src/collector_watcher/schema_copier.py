@@ -22,7 +22,6 @@ holding that schema (no version directory lookup required).
 """
 
 import logging
-import shutil
 from pathlib import Path
 
 import yaml
@@ -36,62 +35,86 @@ UNKNOWN_HASH = "unknown"
 
 
 class CollectorSchemaCopier:
-    """Stores metadata-schema.yaml from a collector repo into content-addressable storage."""
+    """Stores metadata-schema.yaml content into content-addressable storage.
 
-    def store_schema(self, repo_path: Path, schemas_dir: Path) -> str | None:
+    The hash is computed from the *normalized* YAML representation of the schema
+    (``yaml.safe_load`` then ``yaml.safe_dump`` with stable options), so
+    comment-only, formatting, and key-order changes upstream do not churn the
+    store. The stored file keeps the original content verbatim — only the file
+    *name* is derived from the normalized hash.
+
+    Callers pass the schema *content* (read from a pinned git ref via
+    ``VersionDetector.read_file_at_ref``) rather than a working-tree path, so the
+    hash is a pure function of the content and never depends on which revision a
+    clone happens to be checked out to.
+    """
+
+    def store_schema_content(self, content: str | None, schemas_dir: Path) -> str | None:
         """
-        Copy metadata-schema.yaml from the upstream repo into a hash-named file.
+        Store schema content into a hash-named file under ``schemas_dir``.
 
         The destination is ``schemas_dir / f"{schema_hash}.yaml"``. If a file
-        with that name already exists (because the same schema content was
-        stored previously), the copy is skipped — the existing file is the
-        canonical record. Returns the schema hash on success. The schema hash
-        is computed from the normalized YAML content (ignoring comments and key order).
+        with that name already exists (the same schema content was stored
+        previously, possibly by another version or distribution), the write is
+        skipped — the existing file is the canonical record.
 
         Args:
-            repo_path: Path to the checked-out collector repository.
+            content: Raw ``metadata-schema.yaml`` text, or None when the schema
+                file is absent at the requested ref (older tags pre-date it).
             schemas_dir: Content-addressable storage directory (typically
                 ``ecosystem-registry/collector/meta/schemas``).
 
         Returns:
-            The 12-char schema hash on success, or None if the upstream repo
-            does not contain ``cmd/mdatagen/metadata-schema.yaml`` (older tags
-            pre-date the file).
+            The 12-char schema hash on success, or None when ``content`` is None.
         """
-        src = repo_path / SCHEMA_RELATIVE_PATH
-        if not src.exists():
-            logger.debug("Schema file not found in repo at %s, skipping store", src)
+        if content is None:
             return None
 
-        schema_hash = self.compute_schema_hash(src)
+        schema_hash = self.compute_schema_hash(content)
         dst = schemas_dir / f"{schema_hash}.yaml"
         if dst.exists():
-            logger.debug("Schema %s already stored at %s, skipping copy", schema_hash, dst)
+            logger.debug("Schema %s already stored at %s, skipping write", schema_hash, dst)
             return schema_hash
 
         schemas_dir.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(src, dst)
+        dst.write_text(content, encoding="utf-8")
         logger.debug("Stored schema %s at %s", schema_hash, dst)
         return schema_hash
 
-    def compute_schema_hash(self, schema_path: Path) -> str:
+    def compute_schema_hash(self, content: str | None) -> str:
         """
-        Compute the content hash of a schema file, ignoring comments and formatting.
+        Compute the content hash of schema content, ignoring comments and key order.
 
-        The hash is computed from the normalized YAML representation of the schema.
-        Returns ``UNKNOWN_HASH`` when the file is absent — used by component
+        The hash is taken over the normalized YAML representation, so two schemas
+        that differ only in comments, formatting, or key order hash identically.
+
+        Returns ``UNKNOWN_HASH`` when ``content`` is None — used by component
         YAMLs scanned from older collector tags that pre-date the schema file.
 
         Args:
-            schema_path: Path to the schema file.
+            content: Raw schema text, or None.
 
         Returns:
             12-character hex hash, or ``UNKNOWN_HASH``.
         """
-        if not schema_path.exists():
+        if content is None:
             return UNKNOWN_HASH
+        return compute_content_hash(self._normalize(content))
 
-        with open(schema_path, "r", encoding="utf-8") as f:
-            data = yaml.safe_load(f)
-        normalized_yaml = yaml.safe_dump(data, sort_keys=True)
-        return compute_content_hash(normalized_yaml)
+    @staticmethod
+    def _normalize(content: str) -> str:
+        """Return a canonical YAML rendering of ``content``.
+
+        Dump options are pinned (not left to PyYAML defaults) so the canonical
+        form — and therefore every schema hash — stays stable across PyYAML
+        upgrades. Changing these options re-hashes every schema and requires a
+        full backfill to keep the store deduplicated.
+        """
+        data = yaml.safe_load(content)
+        return yaml.safe_dump(
+            data,
+            sort_keys=True,
+            default_flow_style=False,
+            allow_unicode=True,
+            width=4096,
+        )

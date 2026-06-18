@@ -26,9 +26,7 @@ export function JavaAgentPage() {
         <BackButton />
         <div>
           <h1 className="mb-2 text-3xl font-bold md:text-4xl">
-            <span className="from-otel-orange to-otel-blue bg-gradient-to-r bg-clip-text text-transparent">
-              {t("page.title")}
-            </span>
+            <span className="text-gradient-brand">{t("page.title")}</span>
           </h1>
           <p className="text-muted-foreground">{t("page.description")}</p>
         </div>

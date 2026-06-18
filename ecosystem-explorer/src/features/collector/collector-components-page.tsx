@@ -178,7 +178,7 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
 
   return (
     <>
-      <div className="border-border/60 bg-card/80 relative overflow-hidden rounded-xl border p-6">
+      <div className="border-border/60 bg-surface-card shadow-surface relative overflow-hidden rounded-xl border p-6">
         <div className="bg-gradient-radial from-secondary/5 via-primary/2 absolute inset-0 to-transparent opacity-50" />
 
         <div className="relative z-10 flex flex-col gap-6 md:flex-row md:items-end">
@@ -420,9 +420,7 @@ export function CollectorComponentsPage() {
         <header className="space-y-4">
           <h1 className="text-foreground text-4xl font-bold tracking-tight sm:text-5xl">
             {t("header.title")}{" "}
-            <span className="from-secondary to-primary bg-gradient-to-r bg-clip-text text-transparent">
-              {t("header.titleAccent")}
-            </span>
+            <span className="text-gradient-brand">{t("header.titleAccent")}</span>
           </h1>
           <p className="text-muted-foreground max-w-2xl text-lg leading-relaxed">
             {t("header.description")}

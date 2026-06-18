@@ -23,6 +23,7 @@ import { parsePath, getByPath } from "@/lib/config-path";
 import { deriveListItemLabel } from "@/lib/derive-list-item-label";
 import { FieldSection } from "./field-section";
 import { ListItemContext, useStarterPaths } from "./configuration-ui-context";
+import { useCollapsibleExpansion } from "./section-expansion-context";
 
 export interface ListRendererProps {
   node: ListNode;
@@ -44,9 +45,10 @@ export function ListRenderer({ node, depth, path }: ListRendererProps): JSX.Elem
       ? storedIds
       : items.map((_, i) => `${path}#${i}`);
   const itemHasTablist = node.itemSchema.controlType === "plugin_select";
+  const { open, onOpenChange } = useCollapsibleExpansion(path, starterPaths.has(path));
 
   return (
-    <FieldSection node={node} level="field" value={items} defaultExpanded={starterPaths.has(path)}>
+    <FieldSection node={node} level="field" value={items} open={open} onOpenChange={onOpenChange}>
       <FieldSection.Header>
         <FieldSection.Chevron />
         <FieldSection.Label />

@@ -25,12 +25,12 @@ export function HeroSection() {
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(circle at center, hsl(var(--hero-accent-hsl) / 0.08) 0%, hsl(var(--hero-accent-alt-hsl) / 0.04) 30%, transparent 70%)",
+            "radial-gradient(circle at center, hsl(var(--hero-accent-hsl) / var(--hero-gradient-opacity)) 0%, hsl(var(--hero-accent-alt-hsl) / calc(var(--hero-gradient-opacity) / 2)) 30%, transparent 70%)",
         }}
       />
 
       {/* Grid pattern overlay */}
-      <div className="absolute inset-0 opacity-10">
+      <div className="absolute inset-0" style={{ opacity: "var(--hero-grid-opacity)" }}>
         <div
           className="h-full w-full"
           style={{

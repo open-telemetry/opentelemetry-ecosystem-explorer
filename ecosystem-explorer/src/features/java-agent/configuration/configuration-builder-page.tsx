@@ -15,6 +15,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { ChevronsDownUp, ChevronsUpDown } from "lucide-react";
 import { Loader } from "@/components/ui/loader";
 import { BackButton } from "@/components/ui/back-button";
 import { BetaBadge } from "@/components/ui/beta-badge";
@@ -43,6 +44,10 @@ import {
 import { GeneralSectionCard, GENERAL_SECTION_KEY } from "./components/general-section-card";
 import { InstrumentationBrowser } from "./components/instrumentation-browser";
 import { useActiveSection } from "./hooks/use-active-section";
+import {
+  SectionExpansionProvider,
+  useSectionExpansion,
+} from "./components/section-expansion-context";
 
 // Per-tab hidden-keys: SDK hides the entire `instrumentation/development`
 // subtree (the Instrumentation tab owns it), while the Instrumentation tab
@@ -79,6 +84,25 @@ function PruneInstrumentationsForAgentVersion({ javaAgentVersion }: { javaAgentV
   return null;
 }
 
+const EXPAND_TOOLBAR_BUTTON =
+  "border-border/60 bg-card text-foreground hover:bg-card/80 focus-visible:ring-primary inline-flex cursor-pointer items-center gap-1 rounded-md border px-3 py-1.5 text-xs focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none";
+
+function ExpandCollapseToolbar() {
+  const { expandAll, collapseAll } = useSectionExpansion();
+  return (
+    <div className="flex items-center gap-2">
+      <button type="button" onClick={expandAll} className={EXPAND_TOOLBAR_BUTTON}>
+        <ChevronsUpDown className="h-3 w-3" aria-hidden="true" />
+        Expand all
+      </button>
+      <button type="button" onClick={collapseAll} className={EXPAND_TOOLBAR_BUTTON}>
+        <ChevronsDownUp className="h-3 w-3" aria-hidden="true" />
+        Collapse all
+      </button>
+    </div>
+  );
+}
+
 interface SdkTabContentProps {
   schema: GroupNode;
   starter: ReturnType<typeof useConfigStarter>["data"];
@@ -97,10 +121,6 @@ function SdkTabContent({
   const { t } = useTranslation("java-agent");
   const [activePreviewKey, setActivePreviewKey] = useState<string | null>(null);
 
-  // Leaf keys take precedence over the enclosing section key. The General card uses
-  // a synthetic section key ("general") that doesn't map to any top-level YAML key,
-  // so its individual leaf fields (`disabled`, `log_level`, ...) tag themselves with
-  // `data-yaml-section-key` so their real YAML key can be highlighted instead.
   const handleInteraction = (e: React.BaseSyntheticEvent) => {
     const target = e.target as HTMLElement;
     const leafKey = target
@@ -140,34 +160,41 @@ function SdkTabContent({
       starter={starter}
     >
       <PruneInstrumentationsForAgentVersion javaAgentVersion={javaAgentVersion} />
-      <div className={BUILDER_GRID}>
-        <ConfigurationTocSidebar
-          activeTab={activeTab}
-          sections={tocSections}
-          activeKey={activeKey}
-          onSectionClick={scrollToSection}
-        />
-        <div
-          ref={sectionsContainerRef}
-          className="space-y-4"
-          onFocusCapture={handleInteraction}
-          onPointerDown={handleInteraction}
-        >
-          {hasGeneralLeaves && (
-            <GeneralSectionCard label={t("builder.general.label")}>
-              {leafChildren}
-            </GeneralSectionCard>
-          )}
-          {groupChildren.map((child) => (
-            <SchemaRenderer key={child.key} node={child} depth={0} path={child.key} />
-          ))}
+      <SectionExpansionProvider>
+        <div className={BUILDER_GRID}>
+          <ConfigurationTocSidebar
+            activeTab={activeTab}
+            sections={tocSections}
+            activeKey={activeKey}
+            onSectionClick={scrollToSection}
+          />
+          <div className="space-y-4">
+            <div className="flex justify-end">
+              <ExpandCollapseToolbar />
+            </div>
+            <div
+              ref={sectionsContainerRef}
+              className="space-y-4"
+              onFocusCapture={handleInteraction}
+              onPointerDown={handleInteraction}
+            >
+              {hasGeneralLeaves && (
+                <GeneralSectionCard label={t("builder.general.label")}>
+                  {leafChildren}
+                </GeneralSectionCard>
+              )}
+              {groupChildren.map((child) => (
+                <SchemaRenderer key={child.key} node={child} depth={0} path={child.key} />
+              ))}
+            </div>
+          </div>
+          <PreviewCard
+            schema={schema}
+            javaAgentVersion={javaAgentVersion}
+            activePreviewKey={activePreviewKey}
+          />
         </div>
-        <PreviewCard
-          schema={schema}
-          javaAgentVersion={javaAgentVersion}
-          activePreviewKey={activePreviewKey}
-        />
-      </div>
+      </SectionExpansionProvider>
     </ConfigurationBuilderProvider>
   );
 }
@@ -245,6 +272,7 @@ function InstrumentationTabBody({
       setActivePreviewKey(key);
     }
   };
+
   const tocSections: TocSection[] = useMemo(
     () => [
       { key: GENERAL_SECTION_KEY, label: t("builder.sections.generalSettings") },
@@ -293,48 +321,55 @@ function InstrumentationTabBody({
   }, [hasDistributionContent, isDistributionEnabled, setEnabled]);
 
   return (
-    <div className={BUILDER_GRID}>
-      <ConfigurationTocSidebar
-        activeTab={activeTab}
-        sections={tocSections}
-        activeKey={activeKey}
-        onSectionClick={scrollToSection}
-        search={search}
-        onSearchChange={setSearch}
-        statusFilter={statusFilter}
-        onStatusFilterChange={setStatusFilter}
-        customizationCount={customizationCount}
-      />
-      <div
-        ref={sectionsContainerRef}
-        className="space-y-4"
-        onFocusCapture={handleInteraction}
-        onPointerDown={handleInteraction}
-      >
-        <GeneralSectionCard
-          label={t("builder.sections.generalSettings")}
-          sectionKey={GENERAL_SECTION_KEY}
-          pathPrefix={`${INSTRUMENTATION_DEV_KEY}.${GENERAL_SUBKEY}`}
-          defaultExpanded={true}
-          emptyMessage={t("builder.general.empty")}
-        >
-          {generalNode?.children ?? []}
-        </GeneralSectionCard>
-        <InstrumentationBrowser
-          instrumentations={instrumentationsState.data}
-          loading={instrumentationsState.loading}
-          error={instrumentationsState.error}
+    <SectionExpansionProvider>
+      <div className={BUILDER_GRID}>
+        <ConfigurationTocSidebar
+          activeTab={activeTab}
+          sections={tocSections}
+          activeKey={activeKey}
+          onSectionClick={scrollToSection}
           search={search}
+          onSearchChange={setSearch}
           statusFilter={statusFilter}
-          onJumpToGeneral={scrollToSection}
+          onStatusFilterChange={setStatusFilter}
+          customizationCount={customizationCount}
+        />
+        <div className="space-y-4">
+          <div className="flex justify-end">
+            <ExpandCollapseToolbar />
+          </div>
+          <div
+            ref={sectionsContainerRef}
+            className="space-y-4"
+            onFocusCapture={handleInteraction}
+            onPointerDown={handleInteraction}
+          >
+            <GeneralSectionCard
+              label={t("builder.sections.generalSettings")}
+              sectionKey={GENERAL_SECTION_KEY}
+              pathPrefix={`${INSTRUMENTATION_DEV_KEY}.${GENERAL_SUBKEY}`}
+              defaultExpanded={true}
+              emptyMessage={t("builder.general.empty")}
+            >
+              {generalNode?.children ?? []}
+            </GeneralSectionCard>
+            <InstrumentationBrowser
+              instrumentations={instrumentationsState.data}
+              loading={instrumentationsState.loading}
+              error={instrumentationsState.error}
+              search={search}
+              statusFilter={statusFilter}
+              onJumpToGeneral={scrollToSection}
+            />
+          </div>
+        </div>
+        <PreviewCard
+          schema={schema}
+          javaAgentVersion={javaAgentVersion}
+          activePreviewKey={activePreviewKey}
         />
       </div>
-      <PreviewCard
-        schema={schema}
-        javaAgentVersion={javaAgentVersion}
-        activePreviewKey={activePreviewKey}
-      />
-    </div>
+    </SectionExpansionProvider>
   );
 }
 
@@ -377,9 +412,7 @@ export function ConfigurationBuilderPage() {
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-3xl font-semibold md:text-4xl">
-                <span className="from-otel-orange to-otel-blue bg-gradient-to-r bg-clip-text text-transparent">
-                  {t("builder.title")}
-                </span>
+                <span className="text-gradient-brand">{t("builder.title")}</span>
               </h1>
               <BetaBadge />
             </div>

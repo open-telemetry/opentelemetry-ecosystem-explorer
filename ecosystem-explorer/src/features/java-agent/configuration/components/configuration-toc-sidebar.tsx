@@ -39,8 +39,8 @@ export interface ConfigurationTocSidebarProps {
 }
 
 const LINK_BASE = "block w-full rounded-md px-3 py-1.5 text-left text-sm transition-colors";
-const LINK_ACTIVE = "bg-card/80 font-medium text-foreground";
-const LINK_INACTIVE = "text-muted-foreground hover:bg-card/40 hover:text-foreground";
+const LINK_ACTIVE = "bg-surface-card shadow-sm font-medium text-foreground";
+const LINK_INACTIVE = "text-muted-foreground hover:bg-muted/50 hover:text-foreground";
 
 const SECTION_LABEL =
   "text-muted-foreground/80 mb-1.5 px-1 text-[10px] font-medium tracking-wider uppercase";
@@ -82,7 +82,7 @@ export function ConfigurationTocSidebar({
               value={search ?? ""}
               onChange={(e) => onSearchChange?.(e.target.value)}
               placeholder={t("builder.sidebar.search.placeholder")}
-              className="border-border/50 bg-card/40 text-foreground placeholder:text-muted-foreground/60 focus:border-primary/40 focus:ring-primary/20 w-full rounded-md border py-1.5 pr-2 pl-8 text-sm focus:ring-1 focus:outline-none"
+              className="border-border/50 bg-surface-card text-foreground placeholder:text-muted-foreground/60 focus:border-primary/40 focus:ring-primary/20 w-full rounded-md border py-1.5 pr-2 pl-8 text-sm focus:ring-1 focus:outline-none"
             />
           </label>
         </div>

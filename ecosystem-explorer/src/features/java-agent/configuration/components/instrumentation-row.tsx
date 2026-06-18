@@ -54,45 +54,50 @@ export function InstrumentationRow({
     .filter((s) => s !== "")
     .join(", ");
 
-  const containerClass = isCustomized
+  const containerClass = isExpanded
+    ? "border-primary/40 shadow-md bg-surface-card"
+    : "border-border/60 shadow-sm bg-surface-card hover:border-border/80";
+
+  const headerBgClass = isCustomized
     ? customizationEnabled
-      ? "border-primary/40 bg-primary/5"
-      : "border-red-500/40 bg-red-500/5"
-    : "border-border/60 bg-background/30 hover:bg-background/50";
+      ? "bg-primary/5"
+      : "bg-red-500/5"
+    : "bg-muted/20";
 
   return (
     <div
       data-testid={`instrumentation-row-${module.name}`}
       data-expanded={String(isExpanded)}
       data-yaml-section-key="distribution"
-      className={`rounded-md border transition-colors ${containerClass}`}
+      className={`overflow-hidden rounded-xl border transition-all duration-200 ${containerClass}`}
     >
-      <div className="flex flex-col gap-2 px-3 py-2 sm:flex-row sm:items-center sm:gap-3">
+      {/* Header Region */}
+      <div
+        className={`border-border/40 flex cursor-pointer flex-col gap-3 border-b px-4 py-3 sm:flex-row sm:items-center sm:justify-between ${headerBgClass}`}
+        onClick={onToggleExpand}
+      >
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span className="text-foreground font-mono text-sm font-medium">{module.name}</span>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <h4 className="text-foreground font-mono text-sm font-bold">{module.name}</h4>
             {module.coveredEntries.length > 1 ? (
-              <span className="border-border/60 text-muted-foreground inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] leading-none">
+              <span className="border-border/60 bg-surface-card text-muted-foreground inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] leading-none shadow-sm">
                 {t("builder.row.versions", { count: module.coveredEntries.length })}
               </span>
             ) : null}
             {module.coveredEntries.some((e) => e._is_custom === true) ? (
-              <span className="border-border/60 text-muted-foreground inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] leading-none">
+              <span className="border-border/60 bg-surface-card text-muted-foreground inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] leading-none shadow-sm">
                 {t("builder.row.custom")}
               </span>
             ) : null}
           </div>
-          {description ? (
-            <p className="text-muted-foreground mt-0.5 truncate text-xs">{description}</p>
-          ) : null}
           {versionsCovered ? (
-            <p className="text-muted-foreground/70 mt-0.5 truncate text-[11px]">
+            <p className="text-muted-foreground/70 mt-1.5 truncate text-[11px]">
               {t("builder.row.covers", { versions: versionsCovered })}
             </p>
           ) : null}
         </div>
 
-        <div className="flex items-center gap-2 sm:contents">
+        <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
           {isCustomized ? (
             <CustomizationToggle enabled={customizationEnabled} onChange={onSetEnabled} />
           ) : (
@@ -104,7 +109,7 @@ export function InstrumentationRow({
               type="button"
               aria-label={t("builder.row.removeTooltip", { name: module.name })}
               onClick={onRemoveCustomization}
-              className="text-muted-foreground hover:text-foreground rounded-md p-1"
+              className="text-muted-foreground hover:bg-card-secondary hover:text-foreground rounded-md p-1.5 transition-colors"
             >
               <X className="h-3.5 w-3.5" aria-hidden="true" />
             </button>
@@ -113,7 +118,7 @@ export function InstrumentationRow({
               type="button"
               onClick={onAddCustomization}
               aria-label={t("builder.row.customizeAriaLabel", { name: module.name })}
-              className="border-border/60 text-foreground hover:bg-card/80 inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs"
+              className="border-border/60 bg-surface-card text-foreground hover:bg-card inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs shadow-sm transition-colors"
             >
               <Plus className="h-3 w-3" aria-hidden="true" />
               {t("builder.row.customize")}
@@ -126,21 +131,32 @@ export function InstrumentationRow({
             aria-label={t("builder.row.toggleDetailsTooltip", { name: module.name })}
             aria-expanded={isExpanded}
             onClick={onToggleExpand}
-            className="text-muted-foreground/60 hover:text-foreground hidden h-5 w-5 items-center justify-center sm:inline-flex"
+            className="text-muted-foreground/60 hover:bg-card-secondary hover:text-foreground hidden h-7 w-7 items-center justify-center rounded-md transition-colors sm:inline-flex"
           >
             <ChevronRight
-              className={`h-4 w-4 transition-transform ${isExpanded ? "rotate-90" : ""}`}
+              className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`}
               aria-hidden="true"
             />
           </button>
         </div>
       </div>
 
+      {/* Description Area (collapsed) */}
+      {!isExpanded && description ? (
+        <div className="bg-surface-card px-4 py-3">
+          <p className="text-muted-foreground truncate text-xs">{description}</p>
+        </div>
+      ) : null}
+
+      {/* Expanded Body Region */}
       {isExpanded ? (
         <div
-          className="border-border/40 border-t px-3 py-3"
+          className="bg-surface-card px-4 py-4 sm:px-5 sm:py-5"
           data-yaml-section-key="instrumentation/development"
         >
+          {description ? (
+            <p className="text-muted-foreground mb-6 text-sm leading-relaxed">{description}</p>
+          ) : null}
           <InstrumentationConfigForm module={module} onJumpToGeneral={onJumpToGeneral} />
         </div>
       ) : null}

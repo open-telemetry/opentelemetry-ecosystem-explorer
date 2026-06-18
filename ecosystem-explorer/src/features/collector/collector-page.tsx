@@ -29,9 +29,7 @@ export function CollectorPage() {
         <BackButton />
         <div>
           <h1 className="mb-2 text-3xl font-bold md:text-4xl">
-            <span className="bg-gradient-to-r from-[hsl(var(--secondary-hsl))] to-[hsl(var(--primary-hsl))] bg-clip-text text-transparent">
-              {t("page.title")}
-            </span>
+            <span className="text-gradient-brand">{t("page.title")}</span>
           </h1>
           <p className="text-muted-foreground">{t("page.description")}</p>
         </div>

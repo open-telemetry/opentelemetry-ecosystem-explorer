@@ -12,5 +12,8 @@
   "pipelineAnatomy": {
     "defaultTitle": "Anatomía del pipeline",
     "stageAriaLabel": "{{label}} — {{count}} componentes"
+  },
+  "quickEntry": {
+    "defaultTitle": "Accesos rápidos"
   }
 }

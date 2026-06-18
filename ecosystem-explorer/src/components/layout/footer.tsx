@@ -23,7 +23,7 @@ export function Footer() {
   const { t } = useTranslation("layout");
 
   return (
-    <footer className="border-border/30 bg-background flex-shrink-0 border-t px-6 py-4">
+    <footer className="border-border bg-background flex-shrink-0 border-t px-6 py-4">
       <div className="mx-auto flex max-w-6xl flex-col items-center gap-3">
         <div className="flex w-full flex-col items-center gap-3 md:grid md:grid-cols-3">
           <div className="text-muted-foreground flex items-center gap-2">

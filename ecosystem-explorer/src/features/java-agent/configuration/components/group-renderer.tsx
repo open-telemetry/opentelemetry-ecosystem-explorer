@@ -23,6 +23,7 @@ import { SchemaRenderer } from "./schema-renderer";
 import { SectionCardShell } from "./section-card-shell";
 import { FieldSection } from "./field-section";
 import { useStarterPaths } from "./configuration-ui-context";
+import { resolveBulkOpen, useSectionExpansion } from "./section-expansion-context";
 
 export interface GroupRendererProps {
   node: GroupNode;
@@ -57,6 +58,10 @@ export function GroupRenderer({
     if (enabled) setExpanded(true);
   }
 
+  const ctx = useSectionExpansion();
+  const bulkOpen = resolveBulkOpen(ctx, path, isTopLevel ? enabled : true);
+  const resolvedExpanded = bulkOpen !== null ? bulkOpen : expanded;
+
   const value = getByPath(state.values, parsePath(path));
 
   const childNodes = node.children.map((child) => (
@@ -79,8 +84,11 @@ export function GroupRenderer({
           level="section"
           value={value}
           asGroup={false}
-          open={expanded}
-          onOpenChange={setExpanded}
+          open={resolvedExpanded}
+          onOpenChange={(next) => {
+            ctx.setOverride(path, next);
+            setExpanded(next);
+          }}
         >
           <FieldSection.Header>
             {enabled && <FieldSection.Chevron />}
@@ -108,8 +116,11 @@ export function GroupRenderer({
       value={value}
       headless={headless}
       asGroup={!headless}
-      open={expanded}
-      onOpenChange={setExpanded}
+      open={resolvedExpanded}
+      onOpenChange={(next) => {
+        setExpanded(next);
+        ctx.setOverride(path, next);
+      }}
     >
       <FieldSection.Header>
         <FieldSection.Chevron />
