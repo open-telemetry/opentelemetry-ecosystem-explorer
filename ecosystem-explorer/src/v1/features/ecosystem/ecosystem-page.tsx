@@ -21,6 +21,8 @@
  * a one-line route swap in `V1App.tsx`.
  */
 
+import { Link } from "react-router-dom";
+
 import { SubNav } from "@/v1/components/layout/sub-nav";
 import { CoverBlock } from "@/v1/components/home/cover-block";
 import { PipelineAnatomy } from "@/v1/components/ecosystem/pipeline-anatomy";
@@ -53,19 +55,19 @@ export function EcosystemPage({ config }: EcosystemPageProps) {
               key={cta.label}
               href={cta.href}
               target="_blank"
-              rel="noopener"
+              rel="noopener noreferrer"
               className={`td-btn ${cta.primary ? "td-btn--primary" : "td-btn--outline-light"}`}
             >
               {cta.label}
             </a>
           ) : (
-            <a
+            <Link
               key={cta.label}
-              href={cta.href}
+              to={cta.href}
               className={`td-btn ${cta.primary ? "td-btn--primary" : "td-btn--outline-light"}`}
             >
               {cta.label}
-            </a>
+            </Link>
           )
         )}
         aside={
