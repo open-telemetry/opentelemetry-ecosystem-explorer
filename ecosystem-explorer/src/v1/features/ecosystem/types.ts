@@ -47,8 +47,6 @@ export interface EcosystemReleaseInfo {
 }
 
 export interface EcosystemConfig {
-  id: string;
-  slug: string;
   name: string;
   hero: EcosystemHeroCopy;
   /** Pipeline anatomy title — defaults to "Pipeline anatomy". */

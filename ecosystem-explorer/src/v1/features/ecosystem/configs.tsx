@@ -28,6 +28,7 @@ import { ArrowLeftRight, Box, GitCompare, Layers } from "lucide-react";
 import { TYPE_STRIPE_COLORS } from "@/components/ui/type-stripe-colors";
 import { OtelLogo } from "@/components/icons/otel-logo";
 import { JavaIcon } from "@/components/icons/java-icon";
+import { isEnabled } from "@/lib/feature-flags";
 import { filtersToHref } from "@/v1/lib/list-filters";
 import type { EcosystemConfig } from "./types";
 
@@ -35,8 +36,6 @@ const collectorComponentsPath = "/collector/components";
 const javaInstrumentationPath = "/java-agent/instrumentation";
 
 export const collectorConfig: EcosystemConfig = {
-  id: "collector",
-  slug: "collector",
   name: "OpenTelemetry Collector",
   hero: {
     eyebrow: "Infrastructure · Vendor-agnostic agent",
@@ -138,8 +137,6 @@ export const collectorConfig: EcosystemConfig = {
 };
 
 export const javaAgentConfig: EcosystemConfig = {
-  id: "java-agent",
-  slug: "java-agent",
   name: "OpenTelemetry Java Agent",
   hero: {
     eyebrow: "Auto-instrumentation · JVM",
@@ -174,7 +171,7 @@ export const javaAgentConfig: EcosystemConfig = {
       label: "HTTP",
       count: "32",
       description: "Servers & clients",
-      href: `${javaInstrumentationPath}?q=http`,
+      href: `${javaInstrumentationPath}?search=http`,
       accentColor: TYPE_STRIPE_COLORS.receiver,
     },
     {
@@ -182,7 +179,7 @@ export const javaAgentConfig: EcosystemConfig = {
       label: "Databases",
       count: "41",
       description: "JDBC, NoSQL, ORM",
-      href: `${javaInstrumentationPath}?q=db`,
+      href: `${javaInstrumentationPath}?search=db`,
       accentColor: TYPE_STRIPE_COLORS.processor,
     },
     {
@@ -190,7 +187,7 @@ export const javaAgentConfig: EcosystemConfig = {
       label: "Messaging",
       count: "21",
       description: "Brokers & queues",
-      href: `${javaInstrumentationPath}?q=messaging`,
+      href: `${javaInstrumentationPath}?search=messaging`,
       accentColor: TYPE_STRIPE_COLORS.exporter,
     },
     {
@@ -198,7 +195,7 @@ export const javaAgentConfig: EcosystemConfig = {
       label: "Frameworks",
       count: "55",
       description: "Spring, Quarkus, …",
-      href: `${javaInstrumentationPath}?q=framework`,
+      href: `${javaInstrumentationPath}?search=framework`,
       accentColor: TYPE_STRIPE_COLORS.connector,
     },
     {
@@ -206,7 +203,7 @@ export const javaAgentConfig: EcosystemConfig = {
       label: "Runtime",
       count: "12",
       description: "JVM, threads, GC",
-      href: `${javaInstrumentationPath}?q=runtime`,
+      href: `${javaInstrumentationPath}?search=runtime`,
       accentColor: TYPE_STRIPE_COLORS.extension,
     },
   ],
@@ -218,13 +215,20 @@ export const javaAgentConfig: EcosystemConfig = {
       href: "/java-agent/configuration/builder",
       icon: <Box className="h-5 w-5" aria-hidden />,
     },
-    {
-      id: "releases",
-      title: "Compare releases",
-      description: "See what's new between two Java Agent versions.",
-      href: "/java-agent/releases",
-      icon: <GitCompare className="h-5 w-5" aria-hidden />,
-    },
+    // Only surface the release-comparison entry when its route is mounted —
+    // `/java-agent/releases` is gated behind JAVA_RELEASE_COMPARISON in V1App,
+    // so without this guard the card would 404 wherever the flag is off.
+    ...(isEnabled("JAVA_RELEASE_COMPARISON")
+      ? [
+          {
+            id: "releases",
+            title: "Compare releases",
+            description: "See what's new between two Java Agent versions.",
+            href: "/java-agent/releases",
+            icon: <GitCompare className="h-5 w-5" aria-hidden />,
+          },
+        ]
+      : []),
     {
       id: "supported-libs",
       title: "Supported libraries",
@@ -239,9 +243,4 @@ export const javaAgentConfig: EcosystemConfig = {
     deltas: { added: 3, changed: 9, deprecated: 1 },
     hrefChangelog: "https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases",
   },
-};
-
-export const ECOSYSTEMS: Record<string, EcosystemConfig> = {
-  collector: collectorConfig,
-  "java-agent": javaAgentConfig,
 };
