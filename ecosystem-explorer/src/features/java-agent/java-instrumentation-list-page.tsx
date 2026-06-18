@@ -319,9 +319,7 @@ export function JavaInstrumentationListPage() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-3">
             <h1 className="text-3xl font-bold md:text-4xl">
-              <span className="from-otel-orange to-otel-blue bg-gradient-to-r bg-clip-text text-transparent">
-                OpenTelemetry Java Agent
-              </span>
+              <span className="text-gradient-brand">OpenTelemetry Java Agent</span>
             </h1>
             {instrumentations != null && (
               <p className="text-muted-foreground text-base">

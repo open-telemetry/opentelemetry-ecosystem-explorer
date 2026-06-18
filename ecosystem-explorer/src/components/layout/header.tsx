@@ -57,7 +57,7 @@ export function Header() {
 
   return (
     <>
-      <header className="border-border/30 bg-background/95 fixed top-0 right-0 left-0 z-50 h-16 border-b backdrop-blur-xl">
+      <header className="border-border bg-background/95 fixed top-0 right-0 left-0 z-50 h-16 border-b backdrop-blur-xl">
         <div className="mx-auto flex h-full max-w-screen-2xl items-center justify-between px-6">
           <Link to="/" className="flex items-center gap-3">
             <OtelLogo className="text-primary h-6 w-6" />

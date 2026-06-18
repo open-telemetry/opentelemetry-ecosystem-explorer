@@ -368,92 +368,100 @@ export function InstrumentationConfigField({
       data-scope={scope}
       className={fieldClass(scope)}
     >
-      <div className="flex flex-wrap items-baseline gap-2">
-        <span className="text-foreground font-mono text-sm">{declarativeName}</span>
-        <ScopePill scope={scope} />
-        {isExperimental ? <ExperimentalPill /> : null}
-        {typeMismatch ? <MismatchPill type={entry.type} /> : null}
+      {/* Header Region */}
+      <div className="border-border/40 bg-muted/20 flex flex-wrap items-center justify-between gap-3 border-b px-4 py-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <code className="text-foreground font-mono text-xs font-bold">{declarativeName}</code>
+          <ScopePill scope={scope} />
+          {isExperimental ? <ExperimentalPill /> : null}
+          {typeMismatch ? <MismatchPill type={entry.type} /> : null}
+        </div>
+
+        <div className="flex shrink-0 items-center gap-2">
+          {isReadOnly ? (
+            <button
+              type="button"
+              onClick={() => onJumpToGeneral("general")}
+              className="border-border/60 bg-surface-card text-foreground hover:bg-card inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs shadow-sm transition-colors"
+            >
+              {t("builder.field.editInGeneral")}
+            </button>
+          ) : isCustomized ? (
+            <button
+              type="button"
+              onClick={handleReset}
+              className="text-muted-foreground hover:bg-card-secondary hover:text-foreground inline-flex items-center gap-1.5 rounded-md px-2 py-1 text-xs transition-colors"
+              aria-label={t("builder.field.resetTooltip", { name: declarativeName })}
+            >
+              <RotateCcw className="h-3 w-3" aria-hidden="true" />
+              {t("builder.controls.reset")}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={handleCustomization}
+              className="border-border/60 bg-surface-card text-foreground hover:bg-card inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs shadow-sm transition-colors"
+            >
+              <Plus className="h-3 w-3" aria-hidden="true" />
+              {t("builder.field.customize")}
+            </button>
+          )}
+        </div>
       </div>
 
-      {entry.description ? (
-        <p className="text-muted-foreground mt-1 text-xs">{entry.description}</p>
-      ) : null}
+      {/* Body Region */}
+      <div className="space-y-4 px-4 py-4 sm:px-5">
+        {entry.description ? (
+          <p className="text-muted-foreground text-sm leading-relaxed">{entry.description}</p>
+        ) : null}
 
-      <div className="mt-2 flex flex-wrap items-center gap-2">
-        {isReadOnly ? (
-          isStructuredList ? (
-            <StructuredListRenderer
-              value={currentValue ?? []}
-              onChange={() => {}}
-              onClear={() => {}}
-              ariaLabel={declarativeName}
-              disabled={true}
-              showAdd={false}
-              schema={entry.declarative_schema!}
-            />
-          ) : Render ? (
-            <Render
-              value={currentValue ?? defaultRenderValue(entry.type)}
-              onChange={() => {}}
-              onClear={() => {}}
-              ariaLabel={declarativeName}
-              disabled={true}
-              showAdd={false}
-            />
-          ) : null
-        ) : isCustomized ? (
-          isStructuredList ? (
-            <StructuredListRenderer
-              value={currentValue as ConfigValue}
-              onChange={handleChange}
-              onClear={handleReset}
-              ariaLabel={declarativeName}
-              disabled={false}
-              showAdd={true}
-              schema={entry.declarative_schema!}
-            />
-          ) : Render ? (
-            <Render
-              value={currentValue as ConfigValue}
-              onChange={handleChange}
-              onClear={handleReset}
-              ariaLabel={declarativeName}
-              disabled={false}
-              showAdd={true}
-            />
-          ) : null
-        ) : (
-          <DefaultPreview type={entry.type} raw={entry.default} />
-        )}
-
-        {isReadOnly ? (
-          <button
-            type="button"
-            onClick={() => onJumpToGeneral("general")}
-            className="border-border/60 text-foreground hover:bg-card/80 inline-flex items-center gap-1 rounded-md border border-dashed px-2 py-1 text-xs"
-          >
-            {t("builder.field.editInGeneral")}
-          </button>
-        ) : isCustomized ? (
-          <button
-            type="button"
-            onClick={handleReset}
-            className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1 rounded-md p-1 text-xs"
-            aria-label={t("builder.field.resetTooltip", { name: declarativeName })}
-          >
-            <RotateCcw className="h-3 w-3" aria-hidden="true" />
-            {t("builder.controls.reset")}
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={handleCustomization}
-            className="border-border/60 text-foreground hover:bg-card/80 inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs"
-          >
-            <Plus className="h-3 w-3" aria-hidden="true" />
-            {t("builder.field.customize")}
-          </button>
-        )}
+        <div className="flex flex-wrap items-center gap-3">
+          {isReadOnly ? (
+            isStructuredList ? (
+              <StructuredListRenderer
+                value={currentValue ?? []}
+                onChange={() => {}}
+                onClear={() => {}}
+                ariaLabel={declarativeName}
+                disabled={true}
+                showAdd={false}
+                schema={entry.declarative_schema!}
+              />
+            ) : Render ? (
+              <Render
+                value={currentValue ?? defaultRenderValue(entry.type)}
+                onChange={() => {}}
+                onClear={() => {}}
+                ariaLabel={declarativeName}
+                disabled={true}
+                showAdd={false}
+              />
+            ) : null
+          ) : isCustomized ? (
+            isStructuredList ? (
+              <StructuredListRenderer
+                value={currentValue as ConfigValue}
+                onChange={handleChange}
+                onClear={handleReset}
+                ariaLabel={declarativeName}
+                disabled={false}
+                showAdd={true}
+                schema={entry.declarative_schema!}
+              />
+            ) : Render ? (
+              <Render
+                value={currentValue as ConfigValue}
+                onChange={handleChange}
+                onClear={handleReset}
+                ariaLabel={declarativeName}
+                disabled={false}
+                showAdd={true}
+              />
+            ) : null
+          ) : (
+            <DefaultPreview type={entry.type} raw={entry.default} />
+          )}
+        </div>
       </div>
     </div>
   );
@@ -496,9 +504,9 @@ function defaultRenderValue(type: Configuration["type"]): ConfigValue {
 }
 
 function fieldClass(scope: AggregatedConfig["scope"]): string {
-  const base = "rounded-md border border-border/60 bg-background/40 px-3 py-2";
-  if (scope === "general") return `${base} border-l-[3px] border-l-purple-400/60 opacity-90`;
-  if (scope === "common") return `${base} border-l-[3px] border-l-amber-400/60`;
+  const base = "mb-4 overflow-hidden rounded-xl border border-border/60 bg-surface-card shadow-sm";
+  if (scope === "general") return `${base} border-l-[4px] border-l-purple-400/60 opacity-90`;
+  if (scope === "common") return `${base} border-l-[4px] border-l-amber-400/60`;
   return base;
 }
 
