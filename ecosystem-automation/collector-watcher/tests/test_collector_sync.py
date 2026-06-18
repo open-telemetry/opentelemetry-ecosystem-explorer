@@ -14,6 +14,7 @@
 #
 """Tests for collector sync."""
 
+import logging
 import shutil
 import tempfile
 from pathlib import Path
@@ -26,6 +27,24 @@ from collector_watcher.collector_sync import CollectorSync
 from collector_watcher.inventory_manager import InventoryManager
 from semantic_version import Version
 from watcher_common.testing import init_repo, run_git
+
+
+def set_core_schema(repo_path, content, tag=None):
+    """Commit ``content`` as core's metadata-schema.yaml and optionally (re)tag.
+
+    The schema is now read from a pinned git ref (``git show {ref}:...``), not
+    the working tree, so tests must commit it. When ``tag`` is given it is
+    force-created at the new commit so ``git show {tag}:...`` returns ``content``;
+    when omitted, only ``main`` advances (used to simulate a schema that changed
+    on main after a release was tagged).
+    """
+    schema_path = Path(repo_path) / "cmd" / "mdatagen" / "metadata-schema.yaml"
+    schema_path.parent.mkdir(parents=True, exist_ok=True)
+    schema_path.write_text(content)
+    run_git(repo_path, "add", "-A")
+    run_git(repo_path, "commit", "-m", f"schema {tag or 'main'}")
+    if tag is not None:
+        run_git(repo_path, "tag", "-f", tag)
 
 
 @pytest.fixture
@@ -144,10 +163,8 @@ def test_save_version_writes_schema_hash_when_schema_present(
     collector_sync, sample_components, temp_inventory_dir, temp_git_repos
 ):
     """When the upstream repo has metadata-schema.yaml, schema_hash is a 12-char hex."""
-    # Plant a fake schema file in the repo the sync uses for "core"
-    schema_dir = Path(temp_git_repos["core"]) / "cmd" / "mdatagen"
-    schema_dir.mkdir(parents=True, exist_ok=True)
-    (schema_dir / "metadata-schema.yaml").write_text("type: object\n")
+    # Commit a schema into core at the version's tag (read via git ref, not the tree).
+    set_core_schema(temp_git_repos["core"], "type: object\n", tag="v0.112.0")
 
     version = Version("0.112.0")
     collector_sync.save_version("core", version, sample_components)
@@ -166,10 +183,8 @@ def test_save_version_contrib_reads_schema_hash_from_core(
     collector_sync, sample_components, temp_inventory_dir, temp_git_repos
 ):
     """Contrib has no mdatagen — its schema_hash must come from the core repo."""
-    # Plant a schema file in core only. Contrib intentionally has none.
-    schema_dir = Path(temp_git_repos["core"]) / "cmd" / "mdatagen"
-    schema_dir.mkdir(parents=True, exist_ok=True)
-    (schema_dir / "metadata-schema.yaml").write_text("type: object\n")
+    # Commit a schema in core only. Contrib intentionally has none.
+    set_core_schema(temp_git_repos["core"], "type: object\n", tag="v0.112.0")
 
     version = Version("0.112.0")
     collector_sync.save_version("core", version, sample_components)
@@ -188,9 +203,7 @@ def test_save_version_stores_schema_in_cas_when_present(
     collector_sync, sample_components, temp_inventory_dir, temp_git_repos
 ):
     """The schema is stored at meta/schemas/{hash}.yaml, not under a distribution directory."""
-    schema_dir = Path(temp_git_repos["core"]) / "cmd" / "mdatagen"
-    schema_dir.mkdir(parents=True, exist_ok=True)
-    (schema_dir / "metadata-schema.yaml").write_text("type: object\n")
+    set_core_schema(temp_git_repos["core"], "type: object\n", tag="v0.112.0")
 
     version = Version("0.112.0")
     collector_sync.save_version("core", version, sample_components)
@@ -211,9 +224,7 @@ def test_save_version_cas_dedupes_across_distributions(
     collector_sync, sample_components, temp_inventory_dir, temp_git_repos
 ):
     """Saving core and contrib at the same schema content yields a single CAS file."""
-    schema_dir = Path(temp_git_repos["core"]) / "cmd" / "mdatagen"
-    schema_dir.mkdir(parents=True, exist_ok=True)
-    (schema_dir / "metadata-schema.yaml").write_text("type: object\n")
+    set_core_schema(temp_git_repos["core"], "type: object\n", tag="v0.112.0")
 
     version = Version("0.112.0")
     collector_sync.save_version("contrib", version, sample_components)
@@ -232,6 +243,89 @@ def test_save_version_does_not_create_schema_file_when_absent(collector_sync, sa
     schemas_dir = temp_inventory_dir / "meta" / "schemas"
     assert not schemas_dir.exists() or not any(schemas_dir.iterdir())
     assert not (temp_inventory_dir / "core" / "v0.112.0" / "metadata-schema.yaml").exists()
+
+
+def _hash_for(collector_sync, content):
+    return collector_sync.schema_copier.compute_schema_hash(content)
+
+
+def test_save_version_resolves_schema_per_version(
+    collector_sync, sample_components, temp_inventory_dir, temp_git_repos
+):
+    """Each version records the schema committed at its own tag, not a shared one."""
+    set_core_schema(temp_git_repos["core"], "type: object\nv: a\n", tag="v0.111.0")
+    set_core_schema(temp_git_repos["core"], "type: object\nv: b\n", tag="v0.112.0")
+
+    collector_sync.save_version("core", Version("0.111.0"), sample_components)
+    collector_sync.save_version("core", Version("0.112.0"), sample_components)
+
+    with open(temp_inventory_dir / "core" / "v0.111.0" / "receiver.yaml") as f:
+        hash_111 = yaml.safe_load(f)["schema_hash"]
+    with open(temp_inventory_dir / "core" / "v0.112.0" / "receiver.yaml") as f:
+        hash_112 = yaml.safe_load(f)["schema_hash"]
+
+    assert hash_111 == _hash_for(collector_sync, "type: object\nv: a\n")
+    assert hash_112 == _hash_for(collector_sync, "type: object\nv: b\n")
+    assert hash_111 != hash_112
+
+
+def test_save_version_contrib_uses_core_schema_at_version_not_head(
+    collector_sync, sample_components, temp_inventory_dir, temp_git_repos
+):
+    """Regression: contrib must record core's schema *at its version*, not whatever
+    core is currently checked out to. A backfill processes core then contrib,
+    leaving the core clone on main — a checkout-dependent read would stamp every
+    contrib version with main's schema."""
+    at_version = "type: object\nv: release\n"
+    at_head = "type: object\nv: main-moved-ahead\n"
+    set_core_schema(temp_git_repos["core"], at_version, tag="v0.112.0")
+    set_core_schema(temp_git_repos["core"], at_head, tag=None)  # main now differs from v0.112.0
+
+    # Leave the core clone checked out on main, mimicking the backfill end state.
+    collector_sync.version_detectors["core"].checkout_main()
+
+    collector_sync.save_version("contrib", Version("0.112.0"), sample_components)
+
+    with open(temp_inventory_dir / "contrib" / "v0.112.0" / "receiver.yaml") as f:
+        contrib_hash = yaml.safe_load(f)["schema_hash"]
+
+    assert contrib_hash == _hash_for(collector_sync, at_version)
+    assert contrib_hash != _hash_for(collector_sync, at_head)
+
+
+def test_save_version_falls_back_to_earlier_core_release(
+    collector_sync, sample_components, temp_inventory_dir, temp_git_repos, caplog
+):
+    """When core has no schema at the exact tag, fall back to the nearest earlier
+    core release (not main), and warn about it."""
+    earlier = "type: object\nv: earlier-release\n"
+    set_core_schema(temp_git_repos["core"], earlier, tag="v0.111.0")
+    set_core_schema(temp_git_repos["core"], "type: object\nv: main\n", tag=None)  # main differs
+    # v0.112.0 tag (from the fixture) has no schema, so resolution must fall back.
+
+    with caplog.at_level(logging.WARNING):
+        collector_sync.save_version("contrib", Version("0.112.0"), sample_components)
+
+    with open(temp_inventory_dir / "contrib" / "v0.112.0" / "receiver.yaml") as f:
+        contrib_hash = yaml.safe_load(f)["schema_hash"]
+
+    assert contrib_hash == _hash_for(collector_sync, earlier)
+    assert contrib_hash != _hash_for(collector_sync, "type: object\nv: main\n")
+    assert any("falling back" in r.message.lower() or "using" in r.message.lower() for r in caplog.records)
+
+
+def test_core_schema_refs_release_orders_exact_then_earlier_then_main(collector_sync):
+    refs = collector_sync._core_schema_refs(Version("0.112.0"))
+
+    assert refs[0] == "v0.112.0"  # exact tag first
+    assert "v0.111.0" in refs  # nearest earlier core release
+    assert refs[-1] == "main"  # main as last resort
+
+
+def test_core_schema_refs_prerelease_uses_main_only(collector_sync):
+    snapshot = Version(major=0, minor=113, patch=0, prerelease=("SNAPSHOT",))
+
+    assert collector_sync._core_schema_refs(snapshot) == ["main"]
 
 
 def test_process_latest_release_already_exists(collector_sync, sample_components, temp_inventory_dir):

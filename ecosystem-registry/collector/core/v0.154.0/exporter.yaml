@@ -2,7 +2,7 @@ distribution: core
 version: 0.154.0
 repository: opentelemetry-collector
 component_type: exporter
-schema_hash: 4dbd47fa25e7
+schema_hash: ed2f88264c14
 components:
 - name: debugexporter
   metadata:
