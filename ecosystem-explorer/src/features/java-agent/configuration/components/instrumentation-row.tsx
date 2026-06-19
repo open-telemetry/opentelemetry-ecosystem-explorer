@@ -24,7 +24,6 @@ export interface InstrumentationRowProps {
   module: InstrumentationModule;
   status: CustomizationStatus;
   isExpanded: boolean;
-  isConfigured: boolean;
   onSetEnabled: (enabled: boolean) => void;
   onRemoveCustomization: () => void;
   onToggleExpand: () => void;
@@ -111,10 +110,21 @@ export function InstrumentationRow({
             )}
           </div>
 
-          <ChevronRight
-            className={`text-muted-foreground/60 h-5 w-5 transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`}
-            aria-hidden="true"
-          />
+          <button
+            type="button"
+            aria-label={t("builder.row.toggleDetailsTooltip", { name: module.name })}
+            aria-expanded={isExpanded}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleExpand();
+            }}
+            className="text-muted-foreground/60 hover:bg-card-secondary hover:text-foreground inline-flex h-7 w-7 items-center justify-center rounded-md transition-colors"
+          >
+            <ChevronRight
+              className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`}
+              aria-hidden="true"
+            />
+          </button>
         </div>
       </div>
 

@@ -55,7 +55,6 @@ describe("InstrumentationRow", () => {
       <InstrumentationRow
         module={moduleFixture("cassandra", [entry("cassandra-3.0"), entry("cassandra-4.4")])}
         status="none"
-        isConfigured={false}
         onSetEnabled={() => {}}
         onRemoveCustomization={() => {}}
         {...expansionDefaults}
@@ -70,7 +69,6 @@ describe("InstrumentationRow", () => {
       <InstrumentationRow
         module={moduleFixture("cassandra", [entry("cassandra-4.4")])}
         status="none"
-        isConfigured={false}
         onSetEnabled={() => {}}
         onRemoveCustomization={() => {}}
         {...expansionDefaults}
@@ -85,7 +83,6 @@ describe("InstrumentationRow", () => {
       <InstrumentationRow
         module={moduleFixture("jmx_metrics", [entry("jmx-metrics")], true)}
         status="none"
-        isConfigured={false}
         onSetEnabled={() => {}}
         onRemoveCustomization={() => {}}
         {...expansionDefaults}
@@ -100,7 +97,6 @@ describe("InstrumentationRow", () => {
       <InstrumentationRow
         module={moduleFixture("cassandra", [entry("cassandra-4.4")])}
         status="disabled"
-        isConfigured={false}
         onSetEnabled={() => {}}
         onRemoveCustomization={() => {}}
         {...expansionDefaults}
@@ -116,7 +112,6 @@ describe("InstrumentationRow", () => {
       <InstrumentationRow
         module={moduleFixture("cassandra", [entry("cassandra-4.4")])}
         status="none"
-        isConfigured={false}
         onSetEnabled={() => {}}
         onRemoveCustomization={() => {}}
         {...expansionDefaults}
@@ -135,7 +130,6 @@ describe("InstrumentationRow", () => {
         module={moduleFixture("cassandra", [entry("cassandra-4.4")])}
         status="disabled"
         isExpanded={true}
-        isConfigured={false}
         onSetEnabled={onSetEnabled}
         onRemoveCustomization={onRemove}
         onToggleExpand={vi.fn()}
@@ -163,7 +157,6 @@ describe("InstrumentationRow", () => {
         module={moduleFixture("cassandra", [entry("cassandra-4.4")])}
         status="disabled"
         isExpanded={true}
-        isConfigured={false}
         onSetEnabled={onSetEnabled}
         onRemoveCustomization={() => {}}
         onToggleExpand={vi.fn()}
@@ -175,7 +168,6 @@ describe("InstrumentationRow", () => {
         module={moduleFixture("cassandra", [entry("cassandra-4.4")])}
         status="enabled"
         isExpanded={true}
-        isConfigured={false}
         onSetEnabled={onSetEnabled}
         onRemoveCustomization={() => {}}
         onToggleExpand={vi.fn()}
@@ -196,7 +188,6 @@ describe("InstrumentationRow", () => {
       <InstrumentationRow
         module={moduleFixture("jmx_metrics", [entry("jmx-metrics", { _is_custom: true })], true)}
         status="none"
-        isConfigured={false}
         onSetEnabled={() => {}}
         onRemoveCustomization={() => {}}
         {...expansionDefaults}
@@ -210,7 +201,6 @@ describe("InstrumentationRow", () => {
       <InstrumentationRow
         module={moduleFixture("cassandra", [entry("cassandra-4.4")])}
         status="none"
-        isConfigured={false}
         onSetEnabled={() => {}}
         onRemoveCustomization={() => {}}
         {...expansionDefaults}
@@ -239,7 +229,6 @@ describe("InstrumentationRow — expansion", () => {
     const props = {
       module: baseModule,
       status: "none" as const,
-      isConfigured: false,
       onSetEnabled: vi.fn(),
       onRemoveCustomization: vi.fn(),
       onToggleExpand: vi.fn(),
@@ -257,7 +246,6 @@ describe("InstrumentationRow — expansion", () => {
         module={baseModule}
         status="none"
         isExpanded={false}
-        isConfigured={false}
         onSetEnabled={vi.fn()}
         onRemoveCustomization={vi.fn()}
         onToggleExpand={vi.fn()}
@@ -273,7 +261,6 @@ describe("InstrumentationRow — expansion", () => {
         module={baseModule}
         status="none"
         isExpanded={true}
-        isConfigured={false}
         onSetEnabled={vi.fn()}
         onRemoveCustomization={vi.fn()}
         onToggleExpand={vi.fn()}

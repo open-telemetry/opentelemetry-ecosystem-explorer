@@ -143,7 +143,6 @@ export function InstrumentationBrowser({
           total={modules.length}
           filtered={filtered}
           customizationMap={customizationMap}
-          customizedSet={customizedSet}
           expandedSet={resolvedExpandedSet}
           search={trimmedSearch}
           statusFilter={statusFilter}
@@ -162,7 +161,6 @@ interface BodyProps {
   total: number;
   filtered: InstrumentationModule[];
   customizationMap: Map<string, "enabled" | "disabled">;
-  customizedSet: Set<string>;
   expandedSet: Set<string>;
   search: string;
   statusFilter: "all" | "customized";
@@ -177,7 +175,6 @@ function Body({
   total,
   filtered,
   customizationMap,
-  customizedSet,
   expandedSet,
   search,
   statusFilter,
@@ -210,7 +207,6 @@ function Body({
                   module={m}
                   status={status}
                   isExpanded={expandedSet.has(m.name)}
-                  isConfigured={customizedSet.has(m.name)}
                   onSetEnabled={(enabled) => onSetEnabled(m.name, enabled)}
                   onRemoveCustomization={() => onRemoveCustomization(m.name)}
                   onToggleExpand={() => onToggleExpand(m.name)}
