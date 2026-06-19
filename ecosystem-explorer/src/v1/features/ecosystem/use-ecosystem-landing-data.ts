@@ -22,9 +22,10 @@
  * the data layer directly.
  *
  * Collector counts come from the slim `index.json` grouped by `type`; the
- * release deltas come from diffing the two latest per-version manifests (added
- * = ids new in latest, changed = ids whose content hash moved, deprecated =
- * ids the latest bundle marks deprecated/unmaintained). Java Agent counts come
+ * release deltas come from diffing the two latest releases (added = ids new in
+ * latest, changed = ids whose content hash moved, deprecated = ids newly marked
+ * deprecated/unmaintained vs the prior release — a delta, not a running total).
+ * Java Agent counts come
  * from running the SAME substring search the list page uses for each tile's
  * `?search=` term, so a tile's count equals what clicking it lands on. Java
  * Agent records carry no stability field, so its deltas are `null` (the
@@ -49,15 +50,24 @@ export interface EcosystemLandingData {
   };
 }
 
+type StabilityComponent = { id: string; stability?: string | null };
+
+const isDeprecatedStability = (stability?: string | null): boolean =>
+  stability === "deprecated" || stability === "unmaintained";
+
 /**
- * Diffs two collector version manifests (id → content-hash maps) plus the
- * latest list bundle into release deltas. Mirrors the client-side version-diff
- * approach in `use-telemetry-comparison.ts`.
+ * Diffs the two latest collector releases into release deltas. `added`/`changed`
+ * come from the per-version manifests (id → content-hash maps); `deprecated` is
+ * a delta too — components newly marked deprecated/unmaintained in the latest
+ * release that were not already so in the prior one (a brand-new component that
+ * arrives deprecated counts, since its prior stability is "none"). Mirrors the
+ * client-side version-diff approach in `use-telemetry-comparison.ts`.
  */
 function computeCollectorDeltas(
   latest: Record<string, string>,
   previous: Record<string, string>,
-  latestBundle: Array<{ id: string; stability?: string | null }>
+  latestBundle: StabilityComponent[],
+  previousBundle: StabilityComponent[]
 ): ReleaseDeltas {
   const previousIds = new Set(Object.keys(previous));
 
@@ -71,8 +81,9 @@ function computeCollectorDeltas(
     }
   }
 
+  const previousStability = new Map(previousBundle.map((c) => [c.id, c.stability]));
   const deprecated = latestBundle.filter(
-    (c) => c.stability === "deprecated" || c.stability === "unmaintained"
+    (c) => isDeprecatedStability(c.stability) && !isDeprecatedStability(previousStability.get(c.id))
   ).length;
 
   return { added, changed, deprecated };
@@ -98,15 +109,17 @@ async function loadCollectorLandingData(): Promise<EcosystemLandingData> {
 
   let deltas: ReleaseDeltas | null = null;
   if (latestVersion && previousVersion) {
-    const [latestManifest, previousManifest, latestBundle] = await Promise.all([
+    const [latestManifest, previousManifest, latestBundle, previousBundle] = await Promise.all([
       collectorData.loadVersionManifest(latestVersion.version),
       collectorData.loadVersionManifest(previousVersion.version),
       collectorData.loadAllComponents(latestVersion.version),
+      collectorData.loadAllComponents(previousVersion.version),
     ]);
     deltas = computeCollectorDeltas(
       latestManifest.components,
       previousManifest.components,
-      latestBundle
+      latestBundle,
+      previousBundle
     );
   }
 

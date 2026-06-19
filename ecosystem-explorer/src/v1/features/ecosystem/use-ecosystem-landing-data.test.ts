@@ -47,27 +47,53 @@ describe("useEcosystemLandingData — collector", () => {
       ],
     });
     // Two manifests (id → content-hash). Latest adds `c-new`, changes `b`'s
-    // hash, leaves `a` untouched.
+    // hash, leaves `a` and `d` untouched.
     vi.mocked(collectorData.loadVersionManifest).mockImplementation(async (version: string) => {
       const components: Record<string, string> =
-        version === "0.154.0" ? { a: "h1", b: "h2-new", "c-new": "h3" } : { a: "h1", b: "h2-old" };
+        version === "0.154.0"
+          ? { a: "h1", b: "h2-new", "c-new": "h3", d: "h4" }
+          : { a: "h1", b: "h2-old", d: "h4" };
       return { version, components };
     });
-    // Latest bundle marks one component deprecated and one unmaintained.
-    vi.mocked(collectorData.loadAllComponents).mockResolvedValue([
-      { id: "a", name: "a", distribution: "core", type: "receiver", stability: "stable" },
-      { id: "b", name: "b", distribution: "core", type: "receiver", stability: "deprecated" },
-      {
-        id: "c-new",
-        name: "c-new",
-        distribution: "core",
-        type: "processor",
-        stability: "unmaintained",
-      },
-    ]);
+    // Per-version bundles carry stability. `b` flips beta → deprecated (newly
+    // deprecated); `d` is deprecated in BOTH releases (already deprecated, so it
+    // is not a delta). A naive "total deprecated in latest" would count 2 (b+d);
+    // the correct between-versions delta is 1 (only b).
+    vi.mocked(collectorData.loadAllComponents).mockImplementation(async (version: string) =>
+      version === "0.154.0"
+        ? [
+            { id: "a", name: "a", distribution: "core", type: "receiver", stability: "stable" },
+            { id: "b", name: "b", distribution: "core", type: "receiver", stability: "deprecated" },
+            {
+              id: "c-new",
+              name: "c-new",
+              distribution: "core",
+              type: "processor",
+              stability: "stable",
+            },
+            {
+              id: "d",
+              name: "d",
+              distribution: "contrib",
+              type: "exporter",
+              stability: "deprecated",
+            },
+          ]
+        : [
+            { id: "a", name: "a", distribution: "core", type: "receiver", stability: "stable" },
+            { id: "b", name: "b", distribution: "core", type: "receiver", stability: "beta" },
+            {
+              id: "d",
+              name: "d",
+              distribution: "contrib",
+              type: "exporter",
+              stability: "deprecated",
+            },
+          ]
+    );
   });
 
-  it("groups index by type and diffs the two latest manifests into release deltas", async () => {
+  it("groups index by type and diffs the two latest releases into release deltas", async () => {
     const { result } = renderHook(() => useEcosystemLandingData("collector", {}));
 
     await waitFor(() => expect(result.current.loading).toBe(false));
@@ -80,8 +106,8 @@ describe("useEcosystemLandingData — collector", () => {
     });
     expect(result.current.data?.release.version).toBe("v0.154.0");
     // added: `c-new` is new in latest; changed: `b`'s hash moved; deprecated:
-    // the bundle's deprecated + unmaintained entries.
-    expect(result.current.data?.release.deltas).toEqual({ added: 1, changed: 1, deprecated: 2 });
+    // only `b` flipped to deprecated this release (`d` was already deprecated).
+    expect(result.current.data?.release.deltas).toEqual({ added: 1, changed: 1, deprecated: 1 });
   });
 
   it("surfaces an error when a loader rejects", async () => {
