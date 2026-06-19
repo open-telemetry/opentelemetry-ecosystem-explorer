@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { Menu, X, Sun, Moon, Monitor, ChevronDown } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { OtelLogo } from "@/components/icons/otel-logo";
 import { isEnabled } from "@/lib/feature-flags";
+import { useTheme, type ThemeMode } from "@/theme-context";
 
 const NAV_ITEMS = [
   { to: "/java-agent", labelKey: "header.nav.javaAgent" },
@@ -38,6 +40,50 @@ function LanguageSwitcher() {
       <option value="en">English</option>
       <option value="es">Español</option>
     </select>
+  );
+}
+
+const THEME_OPTIONS = [
+  { mode: "light" as ThemeMode, label: "Light", Icon: Sun },
+  { mode: "dark" as ThemeMode, label: "Dark", Icon: Moon },
+  { mode: "auto" as ThemeMode, label: "Auto", Icon: Monitor },
+] as const;
+
+function ThemeSwitcher() {
+  const { mode, setMode } = useTheme();
+  const { t } = useTranslation("layout");
+  const ActiveIcon = THEME_OPTIONS.find((o) => o.mode === mode)?.Icon ?? Monitor;
+
+  return (
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger
+        className="border-border/40 bg-background text-muted-foreground hover:text-foreground focus:ring-primary/20 flex cursor-pointer items-center justify-center gap-1 rounded border px-2 py-1 transition-colors focus:ring-2 focus:outline-none"
+        aria-label={t("header.themeSwitcher", "Toggle theme")}
+      >
+        <ActiveIcon className="h-4 w-4" />
+        <ChevronDown className="h-3 w-3 opacity-50" />
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content
+          align="end"
+          sideOffset={8}
+          className="border-border/60 bg-background/95 ring-border/5 z-[100] min-w-[8rem] overflow-hidden rounded-lg border p-1 shadow-xl ring-1 backdrop-blur-md"
+        >
+          {THEME_OPTIONS.map(({ mode: optMode, label, Icon }) => (
+            <DropdownMenu.Item
+              key={optMode}
+              className={`data-[highlighted]:bg-primary/10 hover:bg-primary/10 focus:bg-primary/10 flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors outline-none select-none ${
+                mode === optMode ? "bg-primary/5 text-primary font-medium" : "text-foreground"
+              }`}
+              onSelect={() => setMode(optMode)}
+            >
+              <Icon className="h-4 w-4" />
+              <span>{t(`theme.${optMode}`, label)}</span>
+            </DropdownMenu.Item>
+          ))}
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
   );
 }
 
@@ -74,6 +120,7 @@ export function Header() {
               </Link>
             ))}
             {isEnabled("I18N") && <LanguageSwitcher />}
+            <ThemeSwitcher />
           </nav>
           <button
             type="button"
@@ -108,6 +155,9 @@ export function Header() {
                 <LanguageSwitcher />
               </li>
             )}
+            <li>
+              <ThemeSwitcher />
+            </li>
           </ul>
         </nav>
       </header>
