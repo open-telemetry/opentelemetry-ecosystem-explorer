@@ -10625,6 +10625,9 @@ components:
       network.peer.port:
         description: TCP port used by the peer client.
         type: int
+      oracle.db.service:
+        description: The Oracle service name associated with the database connection.
+        type: string
       oracledb.application_wait_time:
         description: The total time (in seconds) a query spent waiting on the application
           before it could proceed with execution (reporting delta).
@@ -16220,6 +16223,7 @@ components:
         active:
         - sincejune
         - crobert-1
+        - sv-splunk
         emeritus:
         - StefanKurek
         seeking_new: true
@@ -17078,6 +17082,13 @@ components:
         description: A unique identifier of the SQL Server instance in the format
           host:port. This resource attribute is only available when the receiver is
           configured to directly connect to SQL Server.
+        type: string
+      service.name:
+        description: Logical name of the service. When enabled, defaults to unknown_service:microsoft.sql_server.
+        type: string
+      service.namespace:
+        description: Logical namespace for the service (for example team or environment).
+          When enabled, defaults to an empty string until set via configuration.
         type: string
       sqlserver.computer.name:
         description: The name of the SQL Server instance being monitored.
