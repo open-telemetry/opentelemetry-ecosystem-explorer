@@ -47,6 +47,8 @@ export interface EcosystemReleaseInfo {
 }
 
 export interface EcosystemConfig {
+  /** Stable ecosystem identifier — selects the live data loader in the landing hook. */
+  id: "collector" | "java-agent";
   name: string;
   hero: EcosystemHeroCopy;
   /** Pipeline anatomy title — defaults to "Pipeline anatomy". */

@@ -16,6 +16,15 @@
 
 /* ---------- Release card ---------- */
 
+/*
+ * Loading placeholder shown while the landing hook fetches the live release
+ * summary. Reuses the release-card frame so the hero layout doesn't shift when
+ * the real card swaps in.
+ */
+.td-release-card--loading {
+  min-height: 9rem;
+}
+
 .td-release-card {
   background-color: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(255, 255, 255, 0.14);

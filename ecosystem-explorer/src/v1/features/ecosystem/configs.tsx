@@ -36,6 +36,7 @@ const collectorComponentsPath = "/collector/components";
 const javaInstrumentationPath = "/java-agent/instrumentation";
 
 export const collectorConfig: EcosystemConfig = {
+  id: "collector",
   name: "OpenTelemetry Collector",
   hero: {
     eyebrow: "Infrastructure · Vendor-agnostic agent",
@@ -137,6 +138,7 @@ export const collectorConfig: EcosystemConfig = {
 };
 
 export const javaAgentConfig: EcosystemConfig = {
+  id: "java-agent",
   name: "OpenTelemetry Java Agent",
   hero: {
     eyebrow: "Auto-instrumentation · JVM",
