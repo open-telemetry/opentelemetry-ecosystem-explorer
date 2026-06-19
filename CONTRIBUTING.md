@@ -65,7 +65,10 @@ Use AI as an assistant, not an author:
   generated prose that we then have to reconcile against the diff.
 
 When working on UI elements, ensure that your agents reference the `ecosystem-explorer/DESIGN.md`
-document for detailed guidelines to help ensure consistency and quality across the project.
+document for detailed guidelines to help ensure consistency and quality across the project. When
+adding or editing user-visible strings (labels, tooltips, `aria-label` attributes), follow the i18n
+patterns documented in `ecosystem-explorer/AGENTS.md` — all user-visible text must go through `t()`
+rather than being hardcoded.
 
 For more details, read our
 [Generative AI contribution policy](https://github.com/open-telemetry/community/blob/main/policies/genai.md).

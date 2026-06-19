@@ -65,6 +65,81 @@ Feature flags live in `src/lib/feature-flags.ts` and are accessed via `isEnabled
 They're read from `import.meta.env.VITE_FEATURE_FLAG_*` and baked at build time, so they cannot be
 toggled at runtime. Document new flags in `.env.development` for local testing.
 
+## Internationalization (i18n)
+
+The app uses [i18next](https://www.i18next.com/) + [react-i18next](https://react.i18next.com/).
+Runtime config lives in `src/i18n/config.ts`. Locale files are served as static JSON:
+
+```text
+public/locales/{lng}/{namespace}.json
+```
+
+Currently supported languages: `en`, `es`. Active namespaces: `common`, `layout`, `home`,
+`collector`, `java-agent`, `about`, `ecosystem`.
+
+### Patterns
+
+**Inside a React component** — call the hook with the namespace closest to the component:
+
+```tsx
+const { t } = useTranslation("java-agent");
+// ...
+<button>{t("builder.controls.reset")}</button>;
+```
+
+**Text with embedded JSX** (links, formatted spans) — use the `Trans` component:
+
+```tsx
+import { Trans } from "react-i18next";
+
+<Trans
+  i18nKey="intro.description"
+  ns="about"
+  components={{ otelLink: <a href="https://opentelemetry.io" /> }}
+/>;
+```
+
+The locale value uses the component name as a placeholder tag:
+`"Visit <otelLink>OpenTelemetry</otelLink> to learn more."`
+
+**Outside React** (module-level functions, utilities) — import `getI18n`:
+
+```ts
+import { getI18n } from "react-i18next";
+getI18n().t("namespace:some.key");
+```
+
+### Adding a new namespace
+
+1. Create `public/locales/{lng}/{ns}.json` for every supported language (currently `en` and `es`).
+2. Add `"{ns}"` to the `ns` array in `src/i18n/config.ts`.
+3. Add the import and entry to **both** test setup files:
+   - `src/test/setup.ts` (unit tests)
+   - `src/test/integration/setup.ts` (integration tests)
+
+### Feature flag
+
+The `I18N` flag (`VITE_FEATURE_FLAG_I18N`) gates the language-switcher UI and browser language
+detection. When the flag is off, the app always renders in English. The translation keys and locale
+files are always present regardless of the flag.
+
+### Rules
+
+- Never hardcode user-visible strings. Every label, tooltip, `aria-label`, and button text must go
+  through `t()`.
+- Do not use `getI18n()` inside a component — use `useTranslation()` instead.
+- When adding a key to `en`, add the equivalent key to every other language file in the same commit.
+  If a real translation is not yet available, copy the English value verbatim as a placeholder —
+  this keeps all files structurally identical and gives translators a clear starting point. Do not
+  omit the key; a missing key is harder to discover than an untranslated one.
+- When removing a UI string, delete its key from **every** language file in the same commit. Search
+  for the key literal across `public/locales/` to find all copies. Dead keys accumulate silently and
+  make future audits harder.
+- When reviewing a PR that touches locale files or translatable components, verify: every key added
+  to `en` has a counterpart in all other language files; every key removed from `en` is also removed
+  from all other language files; no key exists only in a non-English file (orphan keys with no `en`
+  counterpart).
+
 ## Accessibility Guidelines
 
 Accessibility is a critical requirement for all UI components. Prioritize accessibility from the
@@ -166,3 +241,7 @@ Run before submitting changes:
 - `bun run typecheck`
 - `bun run lint`
 - `bun run test`
+
+If your change added, removed, or renamed any locale keys: verify that every language file under
+`public/locales/` has the same key structure as `en`. Every key present in `en` must exist in all
+other language files, and no orphan keys should exist only in a non-English file.

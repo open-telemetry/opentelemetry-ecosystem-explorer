@@ -46,7 +46,7 @@ React web app for browsing and exploring the registry.
 - View detailed metadata (supported signals, library versions, etc.)
 - Compare versions
 
-**Tech**: React 19, TypeScript, Vite, Tailwind CSS
+**Tech**: React 19, TypeScript, Vite, Tailwind CSS, i18next
 
 ## Data Flow
 
