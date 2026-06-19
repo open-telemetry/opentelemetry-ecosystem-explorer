@@ -91,10 +91,20 @@ export function YamlCodeBlock({
       const sectionRect = activeSection.getBoundingClientRect();
 
       const isVisible =
-        sectionRect.bottom > containerRect.top && sectionRect.top < containerRect.bottom;
+        sectionRect.top >= containerRect.top && sectionRect.bottom <= containerRect.bottom;
 
       if (!isVisible) {
-        activeSection.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        const delta =
+          sectionRect.top < containerRect.top
+            ? sectionRect.top - containerRect.top
+            : sectionRect.bottom - containerRect.bottom;
+        const prefersReducedMotion = window.matchMedia?.(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
+        containerRef.current.scrollBy({
+          top: delta,
+          behavior: prefersReducedMotion ? "auto" : "smooth",
+        });
       }
     }
   }, [activePreviewKey]);

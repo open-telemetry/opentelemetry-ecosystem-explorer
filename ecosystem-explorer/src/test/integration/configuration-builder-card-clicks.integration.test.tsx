@@ -151,16 +151,21 @@ describe("ConfigurationBuilderPage card click behavior", () => {
     const resourceSection = document.querySelector<HTMLElement>('[data-section-key="resource"]');
     expect(resourceSection).not.toBeNull();
 
+    // Force scrollY > 0 so a "jump to top" would be detectable.
+    Object.defineProperty(window, "scrollY", { configurable: true, value: 400 });
+    const scrollYBefore = window.scrollY;
+
     const { restore } = mockYamlSectionVisibility("resource", false);
 
     try {
       await user.click(resourceSection!);
 
       await waitFor(() => {
-        expect(Element.prototype.scrollIntoView).toHaveBeenCalledWith({
-          block: "nearest",
+        expect(Element.prototype.scrollBy).toHaveBeenCalledWith({
+          top: 200,
           behavior: "smooth",
         });
+        expect(window.scrollY).toBe(scrollYBefore);
       });
     } finally {
       restore();
@@ -188,7 +193,7 @@ describe("ConfigurationBuilderPage card click behavior", () => {
         expect(resourceYamlSection?.className).toContain("bg-otel-orange/10");
       });
 
-      expect(Element.prototype.scrollIntoView).not.toHaveBeenCalled();
+      expect(Element.prototype.scrollBy).not.toHaveBeenCalled();
     } finally {
       restore();
     }

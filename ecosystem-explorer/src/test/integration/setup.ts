@@ -48,16 +48,23 @@ i18n.use(initReactI18next).init({
   },
 });
 
-// JSDOM does not implement Element.scrollIntoView; provide a stub so that
+// JSDOM does not implement Element.scrollIntoView or scrollBy; provide a stub so that
 // click handlers wired to scrollToSection don't throw during tests.
 if (typeof Element !== "undefined" && !Element.prototype.scrollIntoView) {
   Element.prototype.scrollIntoView = vi.fn();
+}
+if (typeof Element !== "undefined" && !Element.prototype.scrollBy) {
+  Element.prototype.scrollBy = vi.fn();
 }
 
 beforeEach(async () => {
   if (typeof Element !== "undefined" && vi.isMockFunction(Element.prototype.scrollIntoView)) {
     // @ts-expect-error mockClear is not in type definitions for Element.prototype.scrollIntoView
     Element.prototype.scrollIntoView.mockClear();
+  }
+  if (typeof Element !== "undefined" && vi.isMockFunction(Element.prototype.scrollBy)) {
+    // @ts-expect-error mockClear is not in type definitions for Element.prototype.scrollBy
+    Element.prototype.scrollBy.mockClear();
   }
   // Clear stored entries so each test starts with a cold cache.
   await clearAllCached();
