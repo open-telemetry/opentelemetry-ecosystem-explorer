@@ -15,133 +15,26 @@
  */
 
 /*
- * Per-ecosystem configs that drive the ecosystem landing pages. New
- * ecosystems get a new entry here plus a one-line route swap in
- * `V1App.tsx`.
+ * Java Agent landing config. Copy fields (eyebrow, lead, CTA labels, pipeline
+ * title/lead, stage label/description, quick-entry title/description) hold
+ * i18next KEYS, not literal English — `EcosystemPage` resolves them via
+ * `useTranslation("java-agent")` against the `landingV1.*` block. The hero
+ * `title` stays JSX because it carries the gradient-accent span.
  *
- * Copy fields (eyebrow, lead, CTA labels, pipeline title/lead, stage
- * label/description, quick-entry title/description) hold i18next KEYS, not
- * literal English. `EcosystemPage` resolves them via `useTranslation(config.id)`
- * — each per-ecosystem string lives in the `collector` / `java-agent`
- * namespace under `landingV1.*`. The hero `title` stays as JSX because it
- * carries the gradient-accent span.
- *
- * Pipeline/category counts and the release block are runtime-loaded by
- * `useEcosystemLandingData`; the static values here are the documented
- * offline/fallback baseline.
+ * Category counts are runtime-loaded by `useEcosystemLandingData`, derived per
+ * tile from its own `?search=` term so a count equals what clicking it lands
+ * on; the static values here are the documented offline/fallback baseline.
+ * Java Agent records carry no stability field, so the release card has no
+ * deltas (version-only). The pipeline renders as a no-flow grid of categories.
  */
 
-import { ArrowLeftRight, Box, GitCompare, Layers } from "lucide-react";
+import { Box, GitCompare, Layers } from "lucide-react";
 import { TYPE_STRIPE_COLORS } from "@/components/ui/type-stripe-colors";
-import { OtelLogo } from "@/components/icons/otel-logo";
 import { JavaIcon } from "@/components/icons/java-icon";
 import { isEnabled } from "@/lib/feature-flags";
-import { filtersToHref } from "@/v1/lib/list-filters";
 import type { EcosystemConfig } from "./types";
 
-const collectorComponentsPath = "/collector/components";
 const javaInstrumentationPath = "/java-agent/instrumentation";
-
-export const collectorConfig: EcosystemConfig = {
-  id: "collector",
-  name: "OpenTelemetry Collector",
-  hero: {
-    eyebrow: "landingV1.hero.eyebrow",
-    title: (
-      <>
-        OpenTelemetry <span className="td-cover-block__title-accent">Collector</span>
-      </>
-    ),
-    lead: "landingV1.hero.lead",
-    ctas: [
-      { label: "landingV1.hero.cta.browse", href: collectorComponentsPath, primary: true },
-      {
-        label: "landingV1.hero.cta.overview",
-        href: "https://opentelemetry.io/docs/collector/",
-        external: true,
-      },
-      {
-        label: "landingV1.hero.cta.github",
-        href: "https://github.com/open-telemetry/opentelemetry-collector",
-        external: true,
-      },
-    ],
-    logo: <OtelLogo className="td-cover-block__logo" />,
-  },
-  pipelineTitle: "landingV1.pipeline.title",
-  pipelineLead: "landingV1.pipeline.lead",
-  stages: [
-    {
-      id: "receiver",
-      label: "landingV1.stages.receiver.label",
-      count: "98",
-      description: "landingV1.stages.receiver.description",
-      href: filtersToHref(collectorComponentsPath, { types: ["receiver"] }),
-      accentColor: TYPE_STRIPE_COLORS.receiver,
-    },
-    {
-      id: "processor",
-      label: "landingV1.stages.processor.label",
-      count: "28",
-      description: "landingV1.stages.processor.description",
-      href: filtersToHref(collectorComponentsPath, { types: ["processor"] }),
-      accentColor: TYPE_STRIPE_COLORS.processor,
-    },
-    {
-      id: "exporter",
-      label: "landingV1.stages.exporter.label",
-      count: "47",
-      description: "landingV1.stages.exporter.description",
-      href: filtersToHref(collectorComponentsPath, { types: ["exporter"] }),
-      accentColor: TYPE_STRIPE_COLORS.exporter,
-    },
-    {
-      id: "connector",
-      label: "landingV1.stages.connector.label",
-      count: "9",
-      description: "landingV1.stages.connector.description",
-      href: filtersToHref(collectorComponentsPath, { types: ["connector"] }),
-      accentColor: TYPE_STRIPE_COLORS.connector,
-    },
-    {
-      id: "extension",
-      label: "landingV1.stages.extension.label",
-      count: "18",
-      description: "landingV1.stages.extension.description",
-      href: filtersToHref(collectorComponentsPath, { types: ["extension"] }),
-      accentColor: TYPE_STRIPE_COLORS.extension,
-    },
-  ],
-  quickEntries: [
-    {
-      id: "most-used",
-      title: "landingV1.quickEntries.most-used.title",
-      description: "landingV1.quickEntries.most-used.description",
-      href: filtersToHref(collectorComponentsPath, { sort: "updated" }),
-      icon: <Layers className="h-5 w-5" aria-hidden />,
-    },
-    {
-      id: "core-vs-contrib",
-      title: "landingV1.quickEntries.core-vs-contrib.title",
-      description: "landingV1.quickEntries.core-vs-contrib.description",
-      href: filtersToHref(collectorComponentsPath, { distributions: ["core", "contrib"] }),
-      icon: <ArrowLeftRight className="h-5 w-5" aria-hidden />,
-    },
-    {
-      id: "diff",
-      title: "landingV1.quickEntries.diff.title",
-      description: "landingV1.quickEntries.diff.description",
-      href: filtersToHref(collectorComponentsPath, { sort: "updated" }),
-      icon: <GitCompare className="h-5 w-5" aria-hidden />,
-    },
-  ],
-  release: {
-    version: "v0.150.0",
-    releaseDate: "May 2026",
-    deltas: { added: 4, changed: 12, deprecated: 2 },
-    hrefChangelog: "https://github.com/open-telemetry/opentelemetry-collector-releases/releases",
-  },
-};
 
 export const javaAgentConfig: EcosystemConfig = {
   id: "java-agent",
