@@ -178,7 +178,7 @@ function KeyValueMapRenderer({
         <div key={idx} className="flex items-center gap-2">
           <input
             type="text"
-            aria-label={`${ariaLabel} key ${idx}`}
+            aria-label={t("builder.keyValueMap.keyLabel", { index: idx + 1 })}
             value={entry.key}
             disabled={disabled}
             onChange={(e) => {
@@ -190,7 +190,7 @@ function KeyValueMapRenderer({
           />
           <input
             type="text"
-            aria-label={`${ariaLabel} value ${idx}`}
+            aria-label={t("builder.keyValueMap.valueLabel", { index: idx + 1 })}
             value={entry.value}
             disabled={disabled}
             onChange={(e) => {
