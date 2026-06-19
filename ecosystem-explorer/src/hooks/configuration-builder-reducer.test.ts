@@ -381,8 +381,9 @@ describe("configurationBuilderReducer", () => {
         type: "PRUNE_INSTRUMENTATIONS",
         validModules: ["reactor", "cassandra"],
       });
-      // Wait, PRUNE_INSTRUMENTATIONS just leaves an empty object now!
-      expect(getInst(s)).toEqual({});
+      // Now PRUNE_INSTRUMENTATIONS correctly removes the whole empty branch
+      expect(getInst(s)).toBeUndefined();
+      expect(s.values.distribution).toBeUndefined();
     });
 
     it("returns the same state reference when nothing needs pruning", () => {

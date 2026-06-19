@@ -29,11 +29,10 @@ export function useCustomizedModules(modules: InstrumentationModule[]): Set<stri
 
     const enabledSection = getByPath(state.values, [...ENABLED_PATH]);
     if (enabledSection && typeof enabledSection === "object" && !Array.isArray(enabledSection)) {
-      for (const key of ["enabled", "disabled"] as const) {
-        const list = (enabledSection as Record<string, unknown>)[key];
-        if (Array.isArray(list)) {
-          for (const m of list) {
-            if (typeof m === "string") result.add(m);
+      for (const [moduleName, moduleVal] of Object.entries(enabledSection)) {
+        if (moduleVal && typeof moduleVal === "object" && !Array.isArray(moduleVal)) {
+          if (typeof (moduleVal as Record<string, unknown>).enabled === "boolean") {
+            result.add(moduleName);
           }
         }
       }

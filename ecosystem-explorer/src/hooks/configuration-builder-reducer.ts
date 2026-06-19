@@ -35,6 +35,58 @@ export const INITIAL_STATE: ConfigurationBuilderState = {
 
 const INSTRUMENTATION_PATH = ["distribution", "javaagent", "instrumentation"];
 
+function cleanInstrumentation(values: ConfigValues): ConfigValues {
+  if (!values.distribution || typeof values.distribution !== "object") return values;
+  const dist = { ...values.distribution } as ConfigValues;
+  if (!dist.javaagent || typeof dist.javaagent !== "object") return values;
+  const ja = { ...dist.javaagent } as ConfigValues;
+  if (!ja.instrumentation || typeof ja.instrumentation !== "object") return values;
+
+  const inst = { ...ja.instrumentation } as ConfigValues;
+  let changed = false;
+
+  for (const [moduleName, moduleVal] of Object.entries(inst)) {
+    if (moduleVal && typeof moduleVal === "object" && !Array.isArray(moduleVal)) {
+      const modObj = { ...moduleVal } as ConfigValues;
+      if (modObj.enabled === null || modObj.enabled === undefined) {
+        delete modObj.enabled;
+        changed = true;
+      }
+      if (Object.keys(modObj).length === 0) {
+        delete inst[moduleName];
+        changed = true;
+      } else if (changed) {
+        inst[moduleName] = modObj;
+      }
+    } else if (moduleVal === null || moduleVal === undefined) {
+      delete inst[moduleName];
+      changed = true;
+    }
+  }
+
+  if (!changed && Object.keys(inst).length > 0) return values;
+
+  if (Object.keys(inst).length === 0) {
+    delete ja.instrumentation;
+  } else {
+    ja.instrumentation = inst;
+  }
+
+  if (Object.keys(ja).length === 0) {
+    delete dist.javaagent;
+  } else {
+    dist.javaagent = ja;
+  }
+
+  if (Object.keys(dist).length === 0) {
+    const copy = { ...values };
+    delete copy.distribution;
+    return copy;
+  } else {
+    return { ...values, distribution: dist };
+  }
+}
+
 export function configurationBuilderReducer(
   state: ConfigurationBuilderState,
   action: ConfigurationBuilderAction
@@ -46,7 +98,7 @@ export function configurationBuilderReducer(
       delete remainingErrors[pathKey];
       return {
         ...state,
-        values: setByPath(state.values, action.path, action.value),
+        values: cleanInstrumentation(setByPath(state.values, action.path, action.value)),
         validationErrors: remainingErrors,
         isDirty: true,
       };
@@ -192,7 +244,7 @@ export function configurationBuilderReducer(
 
       return {
         ...state,
-        values: setByPath(state.values, INSTRUMENTATION_PATH, nextInst),
+        values: cleanInstrumentation(setByPath(state.values, INSTRUMENTATION_PATH, nextInst)),
       };
     }
 
