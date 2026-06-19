@@ -60,16 +60,18 @@ describe("ConfigurationBuilderPage Expand all / Collapse all", () => {
     renderPage();
     const user = userEvent.setup();
     await openInstrumentationTab(user);
-    await screen.findAllByRole("button", { name: /Toggle details for/i }, { timeout: 10_000 });
+    await screen.findAllByTestId(/^instrumentation-row-/, {}, { timeout: 10_000 });
 
-    const rows = () => screen.getAllByRole("button", { name: /Toggle details for/i });
+    const rows = () => document.querySelectorAll('[data-testid^="instrumentation-row-"]');
 
     await user.click(screen.getByRole("button", { name: /^Expand all$/i }));
-    const opened = rows();
+    const opened = Array.from(rows());
     expect(opened.length).toBeGreaterThan(0);
-    expect(opened.every((b) => b.getAttribute("aria-expanded") === "true")).toBe(true);
+    expect(opened.every((el) => el.getAttribute("data-expanded") === "true")).toBe(true);
 
     await user.click(screen.getByRole("button", { name: /^Collapse all$/i }));
-    expect(rows().every((b) => b.getAttribute("aria-expanded") === "false")).toBe(true);
+    expect(Array.from(rows()).every((el) => el.getAttribute("data-expanded") === "false")).toBe(
+      true
+    );
   });
 });

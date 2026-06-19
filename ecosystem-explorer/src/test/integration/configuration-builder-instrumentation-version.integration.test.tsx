@@ -141,7 +141,7 @@ describe("ConfigurationBuilderPage version selectors", () => {
   it("prunes instrumentation customizations referencing modules absent from the selected Agent version", async () => {
     if (!otherAgentVersion || !moduleOnlyInLatest) return;
     const orphan = moduleOnlyInLatest;
-    const orphanLineRe = new RegExp(`- ${orphan}\\b`);
+    const orphanLineRe = new RegExp(`${orphan}:\\b`);
     renderPage();
     const user = userEvent.setup();
     const agent = await findAgentSelector();
@@ -152,10 +152,12 @@ describe("ConfigurationBuilderPage version selectors", () => {
       {},
       { timeout: 10_000 }
     )) as HTMLElement;
-    const customize = within(row).getByRole("button", {
-      name: new RegExp(`Customize ${orphan}`, "i"),
-    });
-    await user.click(customize);
+
+    // Expand the row
+    await user.click(within(row).getByRole("heading", { name: orphan }));
+    // Disable to customize it
+    await user.click(within(row).getByRole("button", { name: /Disabled/i }));
+
     const preview = (await screen.findByLabelText(
       "Output Preview",
       {},

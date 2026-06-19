@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, it, expect, beforeAll, beforeEach, afterAll } from "vitest";
-import { screen, within, cleanup, waitFor } from "@testing-library/react";
+import { screen, within, cleanup, waitFor, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { installFetchInterceptor, uninstallFetchInterceptor } from "./helpers/fetch-interceptor";
 import { renderBuilderPage as renderPage } from "./helpers/render-builder-page";
@@ -146,7 +146,12 @@ describe("ConfigurationBuilderPage card click behavior", () => {
       { timeout: 10_000 }
     )) as HTMLElement;
 
-    await user.click(within(row).getByRole("button", { name: /Customize reactor/i }));
+    // Expand the row first
+    await user.click(within(row).getByRole("heading", { name: "reactor" }));
+    // Disable it to trigger customization
+    await user.click(within(row).getByRole("button", { name: /Disabled/i }));
+    // Trigger pointerDown on the row to highlight the distribution section
+    fireEvent.pointerDown(row);
 
     await waitFor(() => {
       const distributionYaml = document.querySelector<HTMLElement>(
