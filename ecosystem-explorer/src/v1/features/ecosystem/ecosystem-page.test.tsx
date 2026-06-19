@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { render, screen } from "@testing-library/react";
+import i18n from "i18next";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -58,7 +59,10 @@ describe("Collector ecosystem landing", () => {
     );
     renderRouter(<CollectorLandingV1 />);
 
-    expect(screen.getByText(/Infrastructure · Vendor-agnostic agent/i)).toBeInTheDocument();
+    // Copy is resolved from the `collector` namespace, not a literal string.
+    expect(
+      screen.getByText(i18n.t("landingV1.hero.eyebrow", { ns: "collector" }))
+    ).toBeInTheDocument();
     expect(
       screen.getByRole("heading", { level: 1, name: /OpenTelemetry Collector/i })
     ).toBeInTheDocument();
@@ -131,5 +135,26 @@ describe("Java Agent ecosystem landing", () => {
     renderRouter(<JavaAgentLandingV1 />);
     expect(screen.getByText("v2.10.0")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /^HTTP — 32 components$/ })).toBeInTheDocument();
+  });
+});
+
+describe("Ecosystem landing i18n", () => {
+  // Proves the per-ecosystem copy is namespace-resolved, not hardcoded: render
+  // in Spanish and assert the translated hero lead appears.
+  it("renders the Spanish lead when the language is switched", async () => {
+    const javaAgentEs = await import("../../../../public/locales/es/java-agent.json");
+    i18n.addResourceBundle("es", "java-agent", javaAgentEs.default, true, true);
+    await i18n.changeLanguage("es");
+
+    try {
+      useEcosystemLandingData.mockReturnValue(errorState);
+      renderRouter(<JavaAgentLandingV1 />);
+      expect(
+        screen.getByText(i18n.t("landingV1.hero.lead", { ns: "java-agent" }))
+      ).toBeInTheDocument();
+      expect(screen.getByText(/Auto-instrumentación · JVM/)).toBeInTheDocument();
+    } finally {
+      await i18n.changeLanguage("en");
+    }
   });
 });

@@ -19,9 +19,16 @@
  * ecosystems get a new entry here plus a one-line route swap in
  * `V1App.tsx`.
  *
- * Counts and version strings are pulled from the 2026-05-13 mockup;
- * wiring to live data via `loadAllComponents` / `loadAllInstrumentations`
- * is a follow-up tracked in the decision log.
+ * Copy fields (eyebrow, lead, CTA labels, pipeline title/lead, stage
+ * label/description, quick-entry title/description) hold i18next KEYS, not
+ * literal English. `EcosystemPage` resolves them via `useTranslation(config.id)`
+ * — each per-ecosystem string lives in the `collector` / `java-agent`
+ * namespace under `landingV1.*`. The hero `title` stays as JSX because it
+ * carries the gradient-accent span.
+ *
+ * Pipeline/category counts and the release block are runtime-loaded by
+ * `useEcosystemLandingData`; the static values here are the documented
+ * offline/fallback baseline.
  */
 
 import { ArrowLeftRight, Box, GitCompare, Layers } from "lucide-react";
@@ -39,69 +46,68 @@ export const collectorConfig: EcosystemConfig = {
   id: "collector",
   name: "OpenTelemetry Collector",
   hero: {
-    eyebrow: "Infrastructure · Vendor-agnostic agent",
+    eyebrow: "landingV1.hero.eyebrow",
     title: (
       <>
         OpenTelemetry <span className="td-cover-block__title-accent">Collector</span>
       </>
     ),
-    lead: "Receive, process, and export telemetry data. A vendor-agnostic agent for ingesting, processing, and exporting metrics, traces, and logs.",
+    lead: "landingV1.hero.lead",
     ctas: [
-      { label: "Browse components", href: collectorComponentsPath, primary: true },
+      { label: "landingV1.hero.cta.browse", href: collectorComponentsPath, primary: true },
       {
-        label: "Read overview",
+        label: "landingV1.hero.cta.overview",
         href: "https://opentelemetry.io/docs/collector/",
         external: true,
       },
       {
-        label: "GitHub",
+        label: "landingV1.hero.cta.github",
         href: "https://github.com/open-telemetry/opentelemetry-collector",
         external: true,
       },
     ],
     logo: <OtelLogo className="td-cover-block__logo" />,
   },
-  pipelineTitle: "Pipeline anatomy",
-  pipelineLead:
-    "A Collector pipeline is composed of receivers, processors, exporters, connectors, and extensions. Click any stage to filter the components list.",
+  pipelineTitle: "landingV1.pipeline.title",
+  pipelineLead: "landingV1.pipeline.lead",
   stages: [
     {
       id: "receiver",
-      label: "Receivers",
+      label: "landingV1.stages.receiver.label",
       count: "98",
-      description: "Ingest data from sources",
+      description: "landingV1.stages.receiver.description",
       href: filtersToHref(collectorComponentsPath, { types: ["receiver"] }),
       accentColor: TYPE_STRIPE_COLORS.receiver,
     },
     {
       id: "processor",
-      label: "Processors",
+      label: "landingV1.stages.processor.label",
       count: "28",
-      description: "Transform & enrich data",
+      description: "landingV1.stages.processor.description",
       href: filtersToHref(collectorComponentsPath, { types: ["processor"] }),
       accentColor: TYPE_STRIPE_COLORS.processor,
     },
     {
       id: "exporter",
-      label: "Exporters",
+      label: "landingV1.stages.exporter.label",
       count: "47",
-      description: "Send data to backends",
+      description: "landingV1.stages.exporter.description",
       href: filtersToHref(collectorComponentsPath, { types: ["exporter"] }),
       accentColor: TYPE_STRIPE_COLORS.exporter,
     },
     {
       id: "connector",
-      label: "Connectors",
+      label: "landingV1.stages.connector.label",
       count: "9",
-      description: "Bridge between pipelines",
+      description: "landingV1.stages.connector.description",
       href: filtersToHref(collectorComponentsPath, { types: ["connector"] }),
       accentColor: TYPE_STRIPE_COLORS.connector,
     },
     {
       id: "extension",
-      label: "Extensions",
+      label: "landingV1.stages.extension.label",
       count: "18",
-      description: "Auxiliary capabilities",
+      description: "landingV1.stages.extension.description",
       href: filtersToHref(collectorComponentsPath, { types: ["extension"] }),
       accentColor: TYPE_STRIPE_COLORS.extension,
     },
@@ -109,22 +115,22 @@ export const collectorConfig: EcosystemConfig = {
   quickEntries: [
     {
       id: "most-used",
-      title: "Most-used components",
-      description: "Receivers, processors, and exporters most commonly deployed.",
+      title: "landingV1.quickEntries.most-used.title",
+      description: "landingV1.quickEntries.most-used.description",
       href: filtersToHref(collectorComponentsPath, { sort: "updated" }),
       icon: <Layers className="h-5 w-5" aria-hidden />,
     },
     {
       id: "core-vs-contrib",
-      title: "Core vs. Contrib",
-      description: "Compare the core distribution against the contrib add-ons.",
+      title: "landingV1.quickEntries.core-vs-contrib.title",
+      description: "landingV1.quickEntries.core-vs-contrib.description",
       href: filtersToHref(collectorComponentsPath, { distributions: ["core", "contrib"] }),
       icon: <ArrowLeftRight className="h-5 w-5" aria-hidden />,
     },
     {
       id: "diff",
-      title: "Diff across versions",
-      description: "See what changed between two Collector releases.",
+      title: "landingV1.quickEntries.diff.title",
+      description: "landingV1.quickEntries.diff.description",
       href: filtersToHref(collectorComponentsPath, { sort: "updated" }),
       icon: <GitCompare className="h-5 w-5" aria-hidden />,
     },
@@ -141,70 +147,69 @@ export const javaAgentConfig: EcosystemConfig = {
   id: "java-agent",
   name: "OpenTelemetry Java Agent",
   hero: {
-    eyebrow: "Auto-instrumentation · JVM",
+    eyebrow: "landingV1.hero.eyebrow",
     title: (
       <>
         OpenTelemetry <span className="td-cover-block__title-accent">Java Agent</span>
       </>
     ),
-    lead: "Zero-code auto-instrumentation for Java applications. Hundreds of supported libraries and frameworks; configurable via system properties or env vars.",
+    lead: "landingV1.hero.lead",
     ctas: [
-      { label: "Browse instrumentations", href: javaInstrumentationPath, primary: true },
+      { label: "landingV1.hero.cta.browse", href: javaInstrumentationPath, primary: true },
       {
-        label: "Read overview",
+        label: "landingV1.hero.cta.overview",
         href: "https://opentelemetry.io/docs/zero-code/java/agent/",
         external: true,
       },
       {
-        label: "GitHub",
+        label: "landingV1.hero.cta.github",
         href: "https://github.com/open-telemetry/opentelemetry-java-instrumentation",
         external: true,
       },
     ],
     logo: <JavaIcon className="td-cover-block__logo" />,
   },
-  pipelineTitle: "Instrumentation categories",
-  pipelineLead:
-    "Java auto-instrumentations are grouped by category. Click any category to filter the instrumentation list.",
+  pipelineTitle: "landingV1.pipeline.title",
+  pipelineLead: "landingV1.pipeline.lead",
   pipelineNoFlow: true,
   stages: [
     {
       id: "http",
-      label: "HTTP",
+      label: "landingV1.stages.http.label",
       count: "32",
-      description: "Servers & clients",
+      description: "landingV1.stages.http.description",
       href: `${javaInstrumentationPath}?search=http`,
       accentColor: TYPE_STRIPE_COLORS.receiver,
     },
     {
       id: "db",
-      label: "Databases",
+      label: "landingV1.stages.db.label",
       count: "41",
-      description: "JDBC, NoSQL, ORM",
+      description: "landingV1.stages.db.description",
       href: `${javaInstrumentationPath}?search=db`,
       accentColor: TYPE_STRIPE_COLORS.processor,
     },
     {
       id: "messaging",
-      label: "Messaging",
+      label: "landingV1.stages.messaging.label",
       count: "21",
-      description: "Brokers & queues",
+      description: "landingV1.stages.messaging.description",
       href: `${javaInstrumentationPath}?search=messaging`,
       accentColor: TYPE_STRIPE_COLORS.exporter,
     },
     {
       id: "frameworks",
-      label: "Frameworks",
+      label: "landingV1.stages.frameworks.label",
       count: "55",
-      description: "Spring, Quarkus, …",
+      description: "landingV1.stages.frameworks.description",
       href: `${javaInstrumentationPath}?search=framework`,
       accentColor: TYPE_STRIPE_COLORS.connector,
     },
     {
       id: "runtime",
-      label: "Runtime",
+      label: "landingV1.stages.runtime.label",
       count: "12",
-      description: "JVM, threads, GC",
+      description: "landingV1.stages.runtime.description",
       href: `${javaInstrumentationPath}?search=runtime`,
       accentColor: TYPE_STRIPE_COLORS.extension,
     },
@@ -212,8 +217,8 @@ export const javaAgentConfig: EcosystemConfig = {
   quickEntries: [
     {
       id: "config-builder",
-      title: "Configuration builder",
-      description: "Build a declarative agent configuration interactively.",
+      title: "landingV1.quickEntries.config-builder.title",
+      description: "landingV1.quickEntries.config-builder.description",
       href: "/java-agent/configuration/builder",
       icon: <Box className="h-5 w-5" aria-hidden />,
     },
@@ -224,8 +229,8 @@ export const javaAgentConfig: EcosystemConfig = {
       ? [
           {
             id: "releases",
-            title: "Compare releases",
-            description: "See what's new between two Java Agent versions.",
+            title: "landingV1.quickEntries.releases.title",
+            description: "landingV1.quickEntries.releases.description",
             href: "/java-agent/releases",
             icon: <GitCompare className="h-5 w-5" aria-hidden />,
           },
@@ -233,8 +238,8 @@ export const javaAgentConfig: EcosystemConfig = {
       : []),
     {
       id: "supported-libs",
-      title: "Supported libraries",
-      description: "Browse the complete catalog of supported libraries and frameworks.",
+      title: "landingV1.quickEntries.supported-libs.title",
+      description: "landingV1.quickEntries.supported-libs.description",
       href: javaInstrumentationPath,
       icon: <Layers className="h-5 w-5" aria-hidden />,
     },

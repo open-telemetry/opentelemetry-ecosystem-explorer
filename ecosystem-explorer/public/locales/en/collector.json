@@ -1,4 +1,40 @@
 {
+  "landingV1": {
+    "hero": {
+      "eyebrow": "Infrastructure · Vendor-agnostic agent",
+      "lead": "Receive, process, and export telemetry data. A vendor-agnostic agent for ingesting, processing, and exporting metrics, traces, and logs.",
+      "cta": {
+        "browse": "Browse components",
+        "overview": "Read overview",
+        "github": "GitHub"
+      }
+    },
+    "pipeline": {
+      "title": "Pipeline anatomy",
+      "lead": "A Collector pipeline is composed of receivers, processors, exporters, connectors, and extensions. Click any stage to filter the components list."
+    },
+    "stages": {
+      "receiver": { "label": "Receivers", "description": "Ingest data from sources" },
+      "processor": { "label": "Processors", "description": "Transform & enrich data" },
+      "exporter": { "label": "Exporters", "description": "Send data to backends" },
+      "connector": { "label": "Connectors", "description": "Bridge between pipelines" },
+      "extension": { "label": "Extensions", "description": "Auxiliary capabilities" }
+    },
+    "quickEntries": {
+      "most-used": {
+        "title": "Most-used components",
+        "description": "Receivers, processors, and exporters most commonly deployed."
+      },
+      "core-vs-contrib": {
+        "title": "Core vs. Contrib",
+        "description": "Compare the core distribution against the contrib add-ons."
+      },
+      "diff": {
+        "title": "Diff across versions",
+        "description": "See what changed between two Collector releases."
+      }
+    }
+  },
   "page": {
     "title": "OpenTelemetry Collector",
     "description": "A vendor-agnostic implementation for receiving, processing, and exporting telemetry data.",

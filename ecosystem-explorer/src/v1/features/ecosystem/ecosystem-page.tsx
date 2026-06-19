@@ -22,6 +22,7 @@
  */
 
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 
 import { SubNav } from "@/v1/components/layout/sub-nav";
@@ -58,6 +59,10 @@ export function EcosystemPage({ config }: EcosystemPageProps) {
   const { hero, release, stages, quickEntries, pipelineTitle, pipelineLead, pipelineNoFlow } =
     config;
 
+  // Per-ecosystem copy lives in the config's own namespace (`collector` /
+  // `java-agent`); config fields hold i18n keys, resolved here via `t`.
+  const { t } = useTranslation(config.id);
+
   const searchTerms = useMemo(() => searchTermsByStageId(config), [config]);
   // `error` is intentionally not destructured: on fetch error `data` is null,
   // so the static-config fallback below renders without a separate error branch.
@@ -74,12 +79,21 @@ export function EcosystemPage({ config }: EcosystemPageProps) {
    *               live version/deltas into the ReleaseCard.
    * configs.tsx therefore stays the documented offline/fallback baseline.
    */
-  const resolvedStages = data
-    ? stages.map((stage) => ({
-        ...stage,
-        count: data.stageCounts[stage.id] ?? stage.count,
-      }))
-    : stages;
+  const resolvedStages = stages.map((stage) => ({
+    ...stage,
+    label: t(stage.label),
+    description: stage.description ? t(stage.description) : undefined,
+    count: data ? (data.stageCounts[stage.id] ?? stage.count) : stage.count,
+  }));
+
+  const resolvedQuickEntries = quickEntries.map((item) => ({
+    ...item,
+    title: t(item.title),
+    description: t(item.description),
+  }));
+
+  const resolvedPipelineTitle = pipelineTitle ? t(pipelineTitle) : undefined;
+  const resolvedPipelineLead = pipelineLead ? t(pipelineLead) : undefined;
 
   const resolvedVersion = data ? data.release.version : release.version;
   const resolvedDeltas = data ? data.release.deltas : (release.deltas ?? null);
@@ -92,9 +106,9 @@ export function EcosystemPage({ config }: EcosystemPageProps) {
 
       <CoverBlock
         logo={hero.logo}
-        eyebrow={hero.eyebrow}
+        eyebrow={t(hero.eyebrow)}
         title={hero.title}
-        lead={hero.lead}
+        lead={t(hero.lead)}
         ctas={hero.ctas.map((cta) =>
           cta.external ? (
             <a
@@ -104,7 +118,7 @@ export function EcosystemPage({ config }: EcosystemPageProps) {
               rel="noopener noreferrer"
               className={`td-btn ${cta.primary ? "td-btn--primary" : "td-btn--outline-light"}`}
             >
-              {cta.label}
+              {t(cta.label)}
             </a>
           ) : (
             <Link
@@ -112,7 +126,7 @@ export function EcosystemPage({ config }: EcosystemPageProps) {
               to={cta.href}
               className={`td-btn ${cta.primary ? "td-btn--primary" : "td-btn--outline-light"}`}
             >
-              {cta.label}
+              {t(cta.label)}
             </Link>
           )
         )}
@@ -139,12 +153,12 @@ export function EcosystemPage({ config }: EcosystemPageProps) {
             <div
               className="td-home__skeleton"
               style={{ height: "8rem" }}
-              aria-label={`${pipelineTitle ?? "Pipeline anatomy"} loading`}
+              aria-label={`${resolvedPipelineTitle ?? "Pipeline anatomy"} loading`}
             />
           ) : (
             <PipelineAnatomy
-              title={pipelineTitle ?? "Pipeline anatomy"}
-              lead={pipelineLead}
+              title={resolvedPipelineTitle}
+              lead={resolvedPipelineLead}
               stages={resolvedStages}
               noFlow={pipelineNoFlow}
             />
@@ -154,7 +168,7 @@ export function EcosystemPage({ config }: EcosystemPageProps) {
 
       <section className="td-box td-box--muted">
         <div className="td-box__container">
-          <QuickEntryRow items={quickEntries} />
+          <QuickEntryRow items={resolvedQuickEntries} />
         </div>
       </section>
     </div>

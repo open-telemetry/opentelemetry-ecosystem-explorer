@@ -1,4 +1,40 @@
 {
+  "landingV1": {
+    "hero": {
+      "eyebrow": "Auto-instrumentation · JVM",
+      "lead": "Zero-code auto-instrumentation for Java applications. Hundreds of supported libraries and frameworks; configurable via system properties or env vars.",
+      "cta": {
+        "browse": "Browse instrumentations",
+        "overview": "Read overview",
+        "github": "GitHub"
+      }
+    },
+    "pipeline": {
+      "title": "Instrumentation categories",
+      "lead": "Java auto-instrumentations are grouped by category. Click any category to filter the instrumentation list."
+    },
+    "stages": {
+      "http": { "label": "HTTP", "description": "Servers & clients" },
+      "db": { "label": "Databases", "description": "JDBC, NoSQL, ORM" },
+      "messaging": { "label": "Messaging", "description": "Brokers & queues" },
+      "frameworks": { "label": "Frameworks", "description": "Spring, Quarkus, …" },
+      "runtime": { "label": "Runtime", "description": "JVM, threads, GC" }
+    },
+    "quickEntries": {
+      "config-builder": {
+        "title": "Configuration builder",
+        "description": "Build a declarative agent configuration interactively."
+      },
+      "releases": {
+        "title": "Compare releases",
+        "description": "See what's new between two Java Agent versions."
+      },
+      "supported-libs": {
+        "title": "Supported libraries",
+        "description": "Browse the complete catalog of supported libraries and frameworks."
+      }
+    }
+  },
   "page": {
     "title": "OpenTelemetry Java Agent",
     "description": "Explore auto-instrumentation for Java applications. Discover supported libraries, configuration options, and emitted telemetry."
