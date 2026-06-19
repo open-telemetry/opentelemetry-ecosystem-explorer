@@ -4,7 +4,7 @@ issue: 84
 type: roadmap
 phase: meta
 status: planning
-last_updated: "2026-06-05"
+last_updated: "2026-06-19"
 ---
 
 ## Next steps
@@ -218,6 +218,31 @@ Per-ecosystem overview pages. See [`02-ecosystem-landing.md`](./02-ecosystem-lan
 **Coupling with Phase 4:** the pipeline-anatomy diagram needs the URL contract from the list page.
 The two phases can run in parallel once that contract is locked (it's a shared `listFilters`
 parser/serializer — see `03-list-page.md` Task 1).
+
+### Follow-ups identified during Phase 3 (tracked separately)
+
+Recorded here so the work stays visible after the Phase 3 issues close and through the
+end-of-redesign cleanup. None of these block shipping the landing pages.
+
+- **Hardcoded landing-page data → live data (Jay's PR #708 review, `configs.tsx:172`).** The
+  per-ecosystem configs ship with static counts and release strings pulled from the mockup. There is
+  no single inventory of the swap-to-dynamic sites yet — this is it. Every value below needs wiring
+  to the index-based data layer (`loadIndex()` / `loadAllComponents` / `loadAllInstrumentations`);
+  fall back to the static config when the source is unavailable.
+
+  | Site (`configs.tsx`)               | Current value            | Intended dynamic source                          | Status                                                    |
+  | ---------------------------------- | ------------------------ | ------------------------------------------------ | --------------------------------------------------------- |
+  | Collector pipeline-stage counts    | `98 / 28 / 47 / 9 / 18`  | `loadIndex()` count per Collector component type | open — not yet scoped as a task                           |
+  | Java Agent category counts         | `32 / 41 / 21 / 55 / 12` | `loadAllInstrumentations` aggregated by category | open — depends on a reliable category field in the bundle |
+  | Collector release version + date   | `v0.150.0` · `May 2026`  | `ecosystem-registry` / `ecosystem-automation`    | `02-ecosystem-landing.md` Task 8 (Release-data)           |
+  | Java Agent release version + date  | `v2.10.0` · `May 2026`   | `ecosystem-registry` / `ecosystem-automation`    | `02-ecosystem-landing.md` Task 8 (Release-data)           |
+  | Release deltas (added/changed/dep) | `{4,12,2}` · `{3,9,1}`   | pipeline must expose diffs first                 | open question in `02-ecosystem-landing.md`                |
+
+  Open uncertainties: the Collector stage counts are likely derivable from `loadIndex()` today; the
+  Java Agent category counts depend on whether the per-version bundle carries a trustworthy category
+  field (unverified); the release deltas may not be computable until the data pipeline exposes
+  cross-version diffs. When this lands, also retarget the `configs.tsx` header comment (lines 22-24)
+  from "tracked in the decision log" to this table.
 
 ---
 
