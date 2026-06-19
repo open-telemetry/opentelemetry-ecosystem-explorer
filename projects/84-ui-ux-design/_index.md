@@ -3,8 +3,8 @@ title: "Issue #84 — Explorer UI/UX Design"
 issue: 84
 type: index
 phase: meta
-status: planning
-last_updated: "2026-05-19"
+status: in-progress
+last_updated: "2026-06-19"
 ---
 
 > [!NOTE]
@@ -81,8 +81,8 @@ open questions.
 | 1     | [`00-foundation.md`](./00-foundation.md)               | complete    |
 | 1     | [`00-foundation-audit.md`](./00-foundation-audit.md)   | complete    |
 | 1     | [`v1-routing-pivot.md`](./v1-routing-pivot.md)         | complete    |
-| 2     | [`01-home-page.md`](./01-home-page.md)                 | in-progress |
-| 3     | [`02-ecosystem-landing.md`](./02-ecosystem-landing.md) | planning    |
+| 2     | [`01-home-page.md`](./01-home-page.md)                 | complete    |
+| 3     | [`02-ecosystem-landing.md`](./02-ecosystem-landing.md) | in-progress |
 | 4     | [`03-list-page.md`](./03-list-page.md)                 | planning    |
 | 5     | [`04-detail-page.md`](./04-detail-page.md)             | planning    |
 
