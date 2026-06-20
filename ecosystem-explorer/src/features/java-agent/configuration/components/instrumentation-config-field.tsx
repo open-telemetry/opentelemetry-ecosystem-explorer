@@ -273,12 +273,20 @@ function StructuredListRenderer({
                     next[idx] = { ...item, [key]: !(item as ConfigValues)[key] };
                     onChange(next as ConfigValue);
                   }}
-                  ariaLabel={`${ariaLabel} item ${idx + 1} ${key}`}
+                  ariaLabel={t("builder.structuredList.fieldLabel", {
+                    name: ariaLabel,
+                    index: idx + 1,
+                    field: key,
+                  })}
                 />
               ) : (
                 <input
                   type="text"
-                  aria-label={`${ariaLabel} item ${idx + 1} ${key}`}
+                  aria-label={t("builder.structuredList.fieldLabel", {
+                    name: ariaLabel,
+                    index: idx + 1,
+                    field: key,
+                  })}
                   disabled={disabled}
                   value={
                     typeof (item as ConfigValues)[key] === "string" ||

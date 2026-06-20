@@ -398,7 +398,8 @@
       "itemLabel": "Item"
     },
     "structuredList": {
-      "itemLabel": "Item {{index}}"
+      "itemLabel": "Item {{index}}",
+      "fieldLabel": "{{name}} item {{index}} {{field}}"
     },
     "unionTypes": {
       "textInput": "Text",
