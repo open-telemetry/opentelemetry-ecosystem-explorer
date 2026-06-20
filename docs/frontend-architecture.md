@@ -90,12 +90,6 @@ ecosystem-explorer/public/locales/{language}/{namespace}.json
 | `about`      | About page                                                 |
 | `ecosystem`  | v1 ecosystem landing page components                       |
 
-### Feature flag
-
-The `I18N` feature flag (`VITE_FEATURE_FLAG_I18N`) gates the language-switcher UI and browser
-language detection. When the flag is off, the app renders in English only. Locale files and
-translation keys are always present regardless of the flag.
-
 ### Adding a new language
 
 1. Copy each `ecosystem-explorer/public/locales/en/{ns}.json` to

@@ -117,12 +117,6 @@ getI18n().t("namespace:some.key");
    - `src/test/setup.ts` (unit tests)
    - `src/test/integration/setup.ts` (integration tests)
 
-### Feature flag
-
-The `I18N` flag (`VITE_FEATURE_FLAG_I18N`) gates the language-switcher UI and browser language
-detection. When the flag is off, the app always renders in English. The translation keys and locale
-files are always present regardless of the flag.
-
 ### Rules
 
 - Never hardcode user-visible strings. Every label, tooltip, `aria-label`, and button text must go
