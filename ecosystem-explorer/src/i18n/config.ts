@@ -24,6 +24,8 @@ i18n
   .use(initReactI18next)
   .init({
     fallbackLng: "en",
+    supportedLngs: ["en", "es"],
+    load: "languageOnly",
     ns: ["common", "layout", "home", "collector", "java-agent", "about", "ecosystem"],
     defaultNS: "common",
     backend: { loadPath: "/locales/{{lng}}/{{ns}}.json" },
