@@ -1,31 +1,15 @@
 package instrumentation
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"github.com/open-telemetry/opentelemetry-ecosystem-explorer/golang-instrumentation-watcher/metadata"
 	"golang.org/x/mod/modfile"
-	"gopkg.in/yaml.v3"
 )
 
 const otelContribPrefix = "go.opentelemetry.io/contrib/"
-
-func encodeYAMLFile(path string, data interface{}) error {
-	file, err := os.Create(path)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	encoder := yaml.NewEncoder(file)
-	encoder.SetIndent(2)
-	defer encoder.Close()
-
-	return encoder.Encode(data)
-}
 
 var bridgeTargetMap = map[string]string{
 	"otelslog":   "log/slog",
@@ -106,32 +90,6 @@ func DeriveMetadata(r ContribRequire) *metadata.Metadata {
 		Installation:        metadata.Installation{Type: inferInstallType(instrType)},
 		Stability:           metadata.StabilityExperimental,
 	}
-}
-
-// GenerateMetadataYAML writes m as YAML to path, creating parent directories as
-// needed. If path already exists and its file carries a non-empty description,
-// GenerateMetadataYAML leaves it untouched so hand-authored descriptions are
-// preserved.
-func GenerateMetadataYAML(path string, m *metadata.Metadata) error {
-	if existing, err := loadMetadata(path); err == nil && existing.Description != "" {
-		return nil
-	}
-	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
-		return err
-	}
-	return encodeYAMLFile(path, m)
-}
-
-func loadMetadata(path string) (*metadata.Metadata, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-	var m metadata.Metadata
-	if err := yaml.Unmarshal(data, &m); err != nil {
-		return nil, fmt.Errorf("%s: %w", path, err)
-	}
-	return &m, nil
 }
 
 func inferInstrType(path string) metadata.InstrType {

@@ -2,11 +2,10 @@
 // [go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp] library
 // end-to-end and prints the resulting telemetry to stdout.
 //
-// The watcher generates a metadata descriptor for each OTel contrib library
-// declared in an exemplar's go.mod. This exemplar demonstrates two such
-// libraries: otelhttp and the [go.opentelemetry.io/contrib/bridges/otelslog]
-// log bridge. Running this harness produces real spans, metrics, and logs
-// so the instrumentation can be observed in isolation.
+// This exemplar demonstrates two OTel contrib libraries: otelhttp and the
+// [go.opentelemetry.io/contrib/bridges/otelslog] log bridge. Running the
+// harness produces real spans, metrics, and logs so the instrumentation can be
+// observed in isolation.
 //
 // # What it does
 //
