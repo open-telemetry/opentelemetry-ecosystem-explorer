@@ -17,6 +17,8 @@ dependencies = [
 [tool.uv.workspace]
 members = [
     "ecosystem-automation/*",
+]
+exclude = [
     "ecosystem-automation/golang-instrumentation-watcher",
 ]
 
