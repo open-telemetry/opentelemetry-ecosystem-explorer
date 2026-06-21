@@ -30,21 +30,23 @@ func Walk(rootPath string) ([]Package, error) {
 			return err
 		}
 
-		if !d.IsDir() && d.Name() == "go.mod" {
+		if d.IsDir() {
+			relPath, err := filepath.Rel(rootPath, path)
+			if err != nil {
+				return err
+			}
+			if relPath != "." && omitDirectory(relPath) {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+
+		if d.Name() == "go.mod" {
 			relPath, err := filepath.Rel(rootPath, filepath.Dir(path))
 			if err != nil {
 				return err
 			}
-
-			if omitDirectory(relPath) {
-				return nil
-			}
-
-			pkg := Package{
-				Path:      relPath,
-				GoModPath: path,
-			}
-			packages = append(packages, pkg)
+			packages = append(packages, Package{Path: relPath, GoModPath: path})
 		}
 
 		return nil
