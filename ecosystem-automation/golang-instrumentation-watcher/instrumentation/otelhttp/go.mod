@@ -1,6 +1,6 @@
 module github.com/open-telemetry/opentelemetry-ecosystem-explorer/golang-instrumentation-watcher/instrumentation/otelhttp
 
-go 1.26.3
+go 1.26
 
 require (
 	go.opentelemetry.io/contrib/bridges/otelslog v0.9.0
