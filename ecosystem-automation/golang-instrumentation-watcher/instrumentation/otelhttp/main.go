@@ -34,6 +34,7 @@ func main() {
 	logger := otelslog.NewLogger(serviceName)
 	slog.SetDefault(logger)
 
+	// bind to first available port with :0
 	ln, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
 		slog.Error("failed to listen", "error", err)
