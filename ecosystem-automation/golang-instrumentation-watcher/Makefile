@@ -28,7 +28,7 @@ tidy: ## 📚 Tidy modules
 	go mod tidy
 
 .PHONY: docs
-docs: ## 📖 Serve godocs at http://localhost:6060
+docs: ## 📖 Serve godocs @ http://localhost:6060/github.com/open-telemetry/opentelemetry-ecosystem-explorer/golang-instrumentation-watcher
 	go run golang.org/x/pkgsite/cmd/pkgsite@latest -http=localhost:6060 .
 
 .PHONY: test
