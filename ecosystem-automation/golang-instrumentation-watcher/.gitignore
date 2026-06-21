@@ -28,4 +28,9 @@ semantic-conventions*
 # llms
 CLAUDE.md
 CLAUDE.local.md
-MERGE_PLAN.md
+
+# Cloned upstream working copies (gitignored by the golang watcher)
+**/.repo
+
+# Local agent settings
+**/.claude
