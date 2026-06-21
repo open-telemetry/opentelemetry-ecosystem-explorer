@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useTranslation } from "react-i18next";
 import { AlertCircle, X } from "lucide-react";
 import { Loader } from "@/components/ui/loader";
 import { BackButton } from "@/components/ui/back-button";
@@ -31,6 +32,7 @@ import { groupInstrumentationsByDisplayName } from "./utils/group-instrumentatio
 import { PageContainer } from "@/components/layout/page-container";
 
 export function JavaInstrumentationListPage() {
+  const { t } = useTranslation("java-agent");
   const [searchParams, setSearchParams] = useSearchParams();
 
   const navigate = useNavigate();
@@ -188,17 +190,10 @@ export function JavaInstrumentationListPage() {
       }
 
       if (filters.telemetry.size > 0) {
-        // Prefer the precomputed flags from slim list-bundle entries; fall back
-        // to scanning telemetry for full detail objects (which omit the flags).
-        const hasSpans =
-          instr.has_spans ?? instr.telemetry?.some((t) => t.spans && t.spans.length > 0);
-        const hasMetrics =
-          instr.has_metrics ?? instr.telemetry?.some((t) => t.metrics && t.metrics.length > 0);
-
-        if (filters.telemetry.has("spans") && !hasSpans) {
+        if (filters.telemetry.has("spans") && !instr.has_spans) {
           return false;
         }
-        if (filters.telemetry.has("metrics") && !hasMetrics) {
+        if (filters.telemetry.has("metrics") && !instr.has_metrics) {
           return false;
         }
       }
@@ -310,13 +305,10 @@ export function JavaInstrumentationListPage() {
 
         {invalidVersion && !bannerDismissed && (
           <div className="flex items-start justify-between gap-2 rounded-lg border border-yellow-500/50 bg-yellow-500/10 px-4 py-3 text-sm text-yellow-700 dark:text-yellow-400">
-            <p>
-              Version &quot;{invalidVersion}&quot; was not found. Showing the latest version (
-              {latestVersion}) instead.
-            </p>
+            <p>{t("list.invalidVersion", { version: invalidVersion, latest: latestVersion })}</p>
             <button
               onClick={() => setBannerDismissed(true)}
-              aria-label="Dismiss"
+              aria-label={t("list.dismiss")}
               className="mt-0.5 shrink-0 hover:opacity-70"
             >
               <X className="h-4 w-4" aria-hidden="true" />
@@ -327,13 +319,11 @@ export function JavaInstrumentationListPage() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-3">
             <h1 className="text-3xl font-bold md:text-4xl">
-              <span className="from-otel-orange to-otel-blue bg-gradient-to-r bg-clip-text text-transparent">
-                OpenTelemetry Java Agent
-              </span>
+              <span className="text-gradient-brand">OpenTelemetry Java Agent</span>
             </h1>
             {instrumentations != null && (
               <p className="text-muted-foreground text-base">
-                Explore {instrumentations.length} available instrumentations.
+                {t("list.description", { count: instrumentations.length })}
               </p>
             )}
           </div>
@@ -362,13 +352,15 @@ export function JavaInstrumentationListPage() {
             <p className="text-muted-foreground">Please try refreshing the page.</p>
           </div>
         ) : versionsLoading || instrumentationsLoading || (!resolvedVersion && !versionsError) ? (
-          <Loader label="Loading instrumentations..." />
+          <Loader label={t("list.loading")} />
         ) : (
           <>
             <div className="border-border/50 flex items-center justify-between border-b pb-4">
               <div className="text-muted-foreground text-sm">
-                Showing {filteredInstrumentations.length} of {instrumentations?.length ?? 0}{" "}
-                instrumentations
+                {t("list.results.showing", {
+                  shown: filteredInstrumentations.length,
+                  total: instrumentations?.length ?? 0,
+                })}
               </div>
             </div>
 

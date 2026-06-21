@@ -25,6 +25,9 @@
  */
 
 export interface StatItem {
+  /** Stable identifier for lookups and React keys; decoupled from `label` so a
+   *  display-copy change never breaks consumers that key off a specific stat. */
+  key: string;
   /** Visible counter label (e.g. "Languages"). */
   label: string;
   /** Pre-formatted counter value (e.g. "12+"). */
@@ -35,28 +38,45 @@ export interface StatItem {
   external?: boolean;
 }
 
+/** Stable key for the headline ecosystem-scale counter (see INTEGRATIONS_STAT_VALUE). */
+const INTEGRATIONS_STAT_KEY = "integrations";
+
 export const HOME_STATS: StatItem[] = [
   {
+    key: "languages",
     label: "Languages",
     value: "12+",
     href: "https://opentelemetry.io/docs/languages/",
     external: true,
   },
   {
+    key: "collector-components",
     label: "Collector Components",
     value: "200+",
     href: "/collector",
   },
   {
+    key: INTEGRATIONS_STAT_KEY,
     label: "Integrations",
     value: "1005+",
     href: "https://opentelemetry.io/ecosystem/registry/",
     external: true,
   },
   {
+    key: "vendors",
     label: "Vendors",
     value: "102+",
     href: "https://opentelemetry.io/ecosystem/vendors/",
     external: true,
   },
 ];
+
+/**
+ * Headline ecosystem-scale counter ("Integrations"), single-sourced from
+ * HOME_STATS so the stats band and the GlobalSearch placeholder can never
+ * drift apart. Looked up by the stable `key` rather than the display label, so
+ * renaming the label leaves this intact. Falls back to an empty string only if
+ * the stat is removed entirely — callers should tolerate that gracefully.
+ */
+export const INTEGRATIONS_STAT_VALUE =
+  HOME_STATS.find((stat) => stat.key === INTEGRATIONS_STAT_KEY)?.value ?? "";

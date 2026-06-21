@@ -21,6 +21,32 @@ import "fake-indexeddb/auto";
 import "@testing-library/jest-dom";
 import { beforeEach } from "vitest";
 import { clearAllCached, closeDB } from "@/lib/api/idb-cache";
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
+
+import commonEn from "../../../public/locales/en/common.json";
+import layoutEn from "../../../public/locales/en/layout.json";
+import homeEn from "../../../public/locales/en/home.json";
+import collectorEn from "../../../public/locales/en/collector.json";
+import javaAgentEn from "../../../public/locales/en/java-agent.json";
+import aboutEn from "../../../public/locales/en/about.json";
+
+i18n.use(initReactI18next).init({
+  lng: "en",
+  fallbackLng: "en",
+  ns: ["common", "layout", "home", "collector", "java-agent", "about"],
+  defaultNS: "common",
+  resources: {
+    en: {
+      common: commonEn,
+      layout: layoutEn,
+      home: homeEn,
+      collector: collectorEn,
+      "java-agent": javaAgentEn,
+      about: aboutEn,
+    },
+  },
+});
 
 // JSDOM does not implement Element.scrollIntoView; provide a stub so that
 // click handlers wired to scrollToSection don't throw during tests.

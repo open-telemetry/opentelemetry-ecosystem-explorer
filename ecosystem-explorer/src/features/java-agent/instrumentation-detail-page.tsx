@@ -15,10 +15,12 @@
  */
 import { useParams, useNavigate, Link, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Info,
   Activity,
   Settings,
+  BookOpen,
   ExternalLink,
   Code,
   Check,
@@ -46,6 +48,7 @@ import { VersionSelector } from "./components/version-selector";
 import { PageContainer } from "@/components/layout/page-container";
 import { Tooltip } from "@/components/ui/tooltip";
 import { InstrumentationConfigurationTab } from "./components/instrumentation-configuration-tab";
+import { StandaloneLibraryTab } from "./components/standalone-library-tab";
 import { renderWithInlineCode } from "@/lib/render-inline-code";
 
 function buildSourceUrl(sourcePath: string): string {
@@ -73,6 +76,7 @@ function isSafeUrl(url: string): boolean {
 }
 
 export function InstrumentationDetailPage() {
+  const { t } = useTranslation("java-agent");
   const [searchParams] = useSearchParams();
   const { param } = useParams<{ param: string }>();
 
@@ -121,7 +125,7 @@ export function InstrumentationDetailPage() {
   if (loading) {
     return (
       <PageContainer>
-        <Loader label="Loading instrumentation..." />
+        <Loader label={t("detail.loading.title")} />
       </PageContainer>
     );
   }
@@ -139,7 +143,7 @@ export function InstrumentationDetailPage() {
               />
               <div className="flex-1 space-y-2">
                 <h3 className="font-semibold text-red-600 dark:text-red-400">
-                  Error loading versions
+                  {t("detail.error.versionsError")}
                 </h3>
                 <p className="text-sm text-red-600/90 dark:text-red-400/90">
                   {versionsError.message}
@@ -165,18 +169,18 @@ export function InstrumentationDetailPage() {
               />
               <div className="flex-1 space-y-3">
                 <h3 className="font-semibold text-yellow-600 dark:text-yellow-400">
-                  Version not found
+                  {t("detail.error.versionNotFound")}
                 </h3>
                 <p className="text-sm text-yellow-600/90 dark:text-yellow-400/90">
                   Version <code className="rounded bg-yellow-500/10 px-1 py-0.5">{version}</code>{" "}
-                  does not exist.
+                  {t("detail.error.versionDoesNotExist")}
                 </p>
                 {latestVersion && param && (
                   <Link
                     to={`/java-agent/instrumentation/${param}?version=${latestVersion}`}
                     className="inline-flex items-center gap-1.5 text-sm text-yellow-600 underline hover:no-underline dark:text-yellow-400"
                   >
-                    View {param} under the latest version ({latestVersion})
+                    {t("detail.error.viewLatest", { name: param, latestVersion })}
                   </Link>
                 )}
               </div>
@@ -200,10 +204,10 @@ export function InstrumentationDetailPage() {
               />
               <div className="flex-1 space-y-2">
                 <h3 className="font-semibold text-red-600 dark:text-red-400">
-                  Error loading instrumentation
+                  {t("detail.error.title")}
                 </h3>
                 <p className="text-sm text-red-600/90 dark:text-red-400/90">
-                  {error?.message || "Instrumentation not found"}
+                  {error?.message || t("detail.error.notFound")}
                 </p>
               </div>
             </div>
@@ -227,7 +231,7 @@ export function InstrumentationDetailPage() {
             className="absolute inset-0"
             style={{
               background:
-                "radial-gradient(circle at top right, hsl(var(--otel-blue-hsl) / 0.06) 0%, hsl(var(--otel-orange-hsl) / 0.03) 40%, transparent 70%)",
+                "radial-gradient(circle at top right, hsl(var(--hero-accent-hsl) / 0.06) 0%, hsl(var(--hero-accent-alt-hsl) / 0.03) 40%, transparent 70%)",
             }}
           />
 
@@ -274,8 +278,8 @@ export function InstrumentationDetailPage() {
                   withGlow
                 >
                   {instrumentation.disabled_by_default
-                    ? "Disabled by Default"
-                    : "Enabled by Default"}
+                    ? t("detail.badges.disabledByDefault")
+                    : t("detail.badges.enabledByDefault")}
                 </GlowBadge>
               </div>
             </div>
@@ -317,19 +321,28 @@ export function InstrumentationDetailPage() {
                 tabs={[
                   {
                     value: "details",
-                    label: "Details",
+                    label: t("detail.tabs.details"),
                     icon: <Info className="h-4 w-4" aria-hidden="true" />,
                   },
                   {
                     value: "telemetry",
-                    label: "Telemetry",
+                    label: t("detail.tabs.telemetry"),
                     icon: <Activity className="h-4 w-4" aria-hidden="true" />,
                   },
                   {
                     value: "configuration",
-                    label: "Configuration",
+                    label: t("detail.tabs.configuration"),
                     icon: <Settings className="h-4 w-4" aria-hidden="true" />,
                   },
+                  ...(instrumentation.has_standalone_library && instrumentation.markdown_hash
+                    ? [
+                        {
+                          value: "standalone-library",
+                          label: t("detail.tabs.standaloneLibrary"),
+                          icon: <BookOpen className="h-4 w-4" aria-hidden="true" />,
+                        },
+                      ]
+                    : []),
                 ]}
               />
             </div>
@@ -340,12 +353,14 @@ export function InstrumentationDetailPage() {
                   (instrumentation.semantic_conventions &&
                     instrumentation.semantic_conventions.length > 0)) && (
                   <div>
-                    <SectionHeader>Capabilities</SectionHeader>
+                    <SectionHeader>{t("detail.sections.capabilities")}</SectionHeader>
                     <div className="space-y-4">
                       {instrumentation.features && instrumentation.features.length > 0 && (
                         <DetailCard>
                           <div className="space-y-3">
-                            <h3 className="text-muted-foreground text-sm font-medium">Features</h3>
+                            <h3 className="text-muted-foreground text-sm font-medium">
+                              {t("detail.fields.features")}
+                            </h3>
                             <ul className="space-y-2">
                               {instrumentation.features.map((feature) => {
                                 const info = getFeatureInfo(feature);
@@ -378,7 +393,7 @@ export function InstrumentationDetailPage() {
                           <DetailCard>
                             <div className="space-y-3">
                               <h3 className="text-muted-foreground text-sm font-medium">
-                                Semantic Conventions
+                                {t("detail.fields.semanticConventions")}
                               </h3>
                               <div className="flex flex-wrap gap-2">
                                 {instrumentation.semantic_conventions.map((convention) => {
@@ -412,13 +427,13 @@ export function InstrumentationDetailPage() {
 
                 {(instrumentation.minimum_java_version || instrumentation.has_javaagent) && (
                   <div>
-                    <SectionHeader>Requirements</SectionHeader>
+                    <SectionHeader>{t("detail.sections.requirements")}</SectionHeader>
                     <div className="space-y-4">
                       {instrumentation.minimum_java_version && (
                         <DetailCard withGrid withHoverEffect>
                           <div className="space-y-2">
                             <h3 className="text-muted-foreground text-sm font-medium">
-                              Minimum Java Version
+                              {t("detail.fields.minimumJavaVersion")}
                             </h3>
                             <p className="text-foreground text-lg font-semibold">
                               {instrumentation.minimum_java_version}
@@ -432,11 +447,13 @@ export function InstrumentationDetailPage() {
                           <DetailCard>
                             <div className="space-y-3">
                               <h3 className="text-muted-foreground flex items-center gap-1.5 text-sm font-medium">
-                                Target Versions
-                                <Tooltip content="The versions of the target library that this instrumentation supports.">
+                                {t("detail.fields.targetVersions")}
+                                <Tooltip content={t("detail.tooltips.targetVersions")}>
                                   <HelpCircle
                                     className="focus:ring-ring h-3.5 w-3.5 cursor-help rounded-full opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-1 focus:outline-none"
-                                    aria-label="More information about target versions"
+                                    aria-label={t("detail.tooltips.moreInfoAriaLabel", {
+                                      field: t("detail.fields.targetVersions"),
+                                    })}
                                     tabIndex={0}
                                     role="button"
                                   />
@@ -460,11 +477,13 @@ export function InstrumentationDetailPage() {
                   <div>
                     <SectionHeader>
                       <div className="flex items-center gap-2">
-                        Instrumentation Scope
-                        <Tooltip content="An instrumentation scope is metadata indicating the identity of what produced a piece of telemetry.">
+                        {t("detail.sections.scope")}
+                        <Tooltip content={t("detail.tooltips.scope")}>
                           <HelpCircle
                             className="focus:ring-ring h-4 w-4 cursor-help rounded-full opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-1 focus:outline-none"
-                            aria-label="More information about instrumentation scope"
+                            aria-label={t("detail.tooltips.moreInfoAriaLabel", {
+                              field: t("detail.sections.scope"),
+                            })}
                             tabIndex={0}
                             role="button"
                           />
@@ -474,7 +493,9 @@ export function InstrumentationDetailPage() {
                     <DetailCard withGrid>
                       <div className="space-y-3">
                         <div>
-                          <h3 className="text-muted-foreground text-sm font-medium">Scope Name</h3>
+                          <h3 className="text-muted-foreground text-sm font-medium">
+                            {t("detail.fields.scopeName")}
+                          </h3>
                           <p className="text-foreground mt-1 text-sm font-medium">
                             {instrumentation.scope.name}
                           </p>
@@ -482,7 +503,7 @@ export function InstrumentationDetailPage() {
                         {instrumentation.scope.schema_url && (
                           <div>
                             <h3 className="text-muted-foreground text-sm font-medium">
-                              Schema URL
+                              {t("detail.fields.schemaUrl")}
                             </h3>
                             <code className="bg-muted mt-1 block rounded px-2 py-1 text-xs break-all">
                               {instrumentation.scope.schema_url}
@@ -496,7 +517,7 @@ export function InstrumentationDetailPage() {
 
                 {(instrumentation.library_link || instrumentation.source_path) && (
                   <div>
-                    <SectionHeader>Links & Resources</SectionHeader>
+                    <SectionHeader>{t("detail.sections.links")}</SectionHeader>
                     <div className="grid gap-4 md:grid-cols-2">
                       {instrumentation.library_link && isSafeUrl(instrumentation.library_link) && (
                         <DetailCard withHoverEffect>
@@ -507,7 +528,7 @@ export function InstrumentationDetailPage() {
                             />
                             <div className="flex-1 space-y-1">
                               <h3 className="text-muted-foreground text-sm font-medium">
-                                Library Link
+                                {t("detail.fields.libraryLink")}
                               </h3>
                               <a
                                 href={instrumentation.library_link}
@@ -532,7 +553,7 @@ export function InstrumentationDetailPage() {
                               />
                               <div className="flex-1 space-y-1">
                                 <h3 className="text-muted-foreground text-sm font-medium">
-                                  Source Path
+                                  {t("detail.fields.sourcePath")}
                                 </h3>
                                 <a
                                   href={buildSourceUrl(instrumentation.source_path)}
@@ -570,7 +591,7 @@ export function InstrumentationDetailPage() {
                             : "text-muted-foreground hover:text-foreground"
                         }`}
                       >
-                        Current View
+                        {t("detail.view.current")}
                       </button>
                       <button
                         type="button"
@@ -582,7 +603,7 @@ export function InstrumentationDetailPage() {
                             : "text-muted-foreground hover:text-foreground"
                         }`}
                       >
-                        Version Comparison
+                        {t("detail.view.comparison")}
                       </button>
                     </div>
                   </div>
@@ -607,7 +628,7 @@ export function InstrumentationDetailPage() {
                       aria-hidden="true"
                     />
                     <p className="text-muted-foreground mt-4 text-sm">
-                      No telemetry information available.
+                      {t("detail.telemetry.empty")}
                     </p>
                   </div>
                 </div>
@@ -619,6 +640,14 @@ export function InstrumentationDetailPage() {
                 configurations={instrumentation.configurations ?? []}
               />
             </TabsContent>
+            {instrumentation.has_standalone_library && instrumentation.markdown_hash && (
+              <TabsContent value="standalone-library" className="mt-0 p-4 sm:p-6">
+                <StandaloneLibraryTab
+                  name={instrumentation.name}
+                  markdownHash={instrumentation.markdown_hash}
+                />
+              </TabsContent>
+            )}
           </Tabs>
         </div>
       </div>

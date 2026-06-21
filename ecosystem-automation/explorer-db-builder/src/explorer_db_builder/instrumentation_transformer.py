@@ -180,6 +180,53 @@ def _transform_0_3_to_0_5(inventory_data: dict[str, Any]) -> dict[str, Any]:
     return transformed_data
 
 
+def _strip_version_range(coordinate: str) -> str:
+    """Drop the version range from a Maven coordinate (``group:artifact:[6.0.0,)``
+    -> ``group:artifact``); non-coordinate strings (e.g. ``Java 8+``) pass through."""
+    parts = coordinate.split(":")
+    return ":".join(parts[:2]) if len(parts) >= 3 else coordinate
+
+
+def _collect_search_terms(instrumentation: dict[str, Any]) -> list[str]:
+    """Distinctive, searchable identifiers for the index.json ``search_terms`` field.
+
+    Limited to high-signal terms (scope name, semantic conventions, features, Maven
+    coordinate, config name/declarative_name/description, metric name/description);
+    noisy fields and the seeded name/display_name/description are excluded. Returns
+    ``sorted(set(...))`` for a stable content hash.
+    """
+    terms: set[str] = set()
+
+    def add(value: Any) -> None:
+        if value is None or isinstance(value, (dict, list)):
+            return
+        text = str(value).strip()
+        if text:
+            terms.add(text)
+
+    scope = instrumentation.get("scope") or {}
+    add(scope.get("name"))
+
+    for value in instrumentation.get("semantic_conventions") or []:
+        add(value)
+    for value in instrumentation.get("features") or []:
+        add(value)
+    for value in instrumentation.get("javaagent_target_versions") or []:
+        add(_strip_version_range(value) if isinstance(value, str) else value)
+
+    for configuration in instrumentation.get("configurations") or []:
+        add(configuration.get("name"))
+        add(configuration.get("declarative_name"))
+        add(configuration.get("description"))
+
+    for telemetry in instrumentation.get("telemetry") or []:
+        for metric in telemetry.get("metrics") or []:
+            add(metric.get("name"))
+            add(metric.get("description"))
+
+    return sorted(terms)
+
+
 def make_index_instrumentation(instrumentation: dict[str, Any]) -> dict[str, Any]:
     """Extract lightweight metadata for the javaagent index.json.
 
@@ -201,6 +248,9 @@ def make_index_instrumentation(instrumentation: dict[str, Any]) -> dict[str, Any
         # Booleans the browse/search UI filters on without loading full detail.
         "has_telemetry": bool(telemetry),
         "has_standalone_library": bool(instrumentation.get("has_standalone_library")),
+        # Precomputed global-search terms (sorted, deduped) so the frontend search
+        # source reads the slim index instead of fanning out to full detail.
+        "search_terms": _collect_search_terms(instrumentation),
     }
 
 

@@ -1,0 +1,19 @@
+{
+  "releaseCard": {
+    "eyebrow": "Latest release",
+    "ariaLabel": "Latest release {{version}}",
+    "changesAriaLabel": "Changes in this release",
+    "added": "added",
+    "changed": "changed",
+    "deprecated": "deprecated",
+    "changelog": "View changelog",
+    "empty": "Release information is not yet available for this ecosystem."
+  },
+  "pipelineAnatomy": {
+    "defaultTitle": "Pipeline anatomy",
+    "stageAriaLabel": "{{label}} — {{count}} components"
+  },
+  "quickEntry": {
+    "defaultTitle": "Quick entries"
+  }
+}

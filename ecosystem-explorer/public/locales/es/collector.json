@@ -1,0 +1,133 @@
+{
+  "page": {
+    "title": "OpenTelemetry Collector",
+    "description": "Una implementación agnóstica al proveedor para recibir, procesar y exportar datos de telemetría.",
+    "unavailableTitle": "Explorador del Collector no disponible",
+    "unavailableDescription": "El explorador del ecosistema del Collector no está habilitado en este despliegue."
+  },
+  "header": {
+    "title": "Collector",
+    "titleAccent": "Componentes",
+    "description": "Navega el ecosistema del OpenTelemetry Collector. Descubre receptores, procesadores, exportadores y extensiones en diferentes distribuciones.",
+    "comingSoon": "Actualmente estamos construyendo el explorador de componentes del Collector. ¡Pronto habrá una vista completa de receptores, procesadores y más!"
+  },
+  "filters": {
+    "search": {
+      "label": "Buscar",
+      "placeholder": "Filtrar por nombre o descripción..."
+    },
+    "type": {
+      "label": "Tipo",
+      "all": "Todos los tipos",
+      "receiver": "Receptores",
+      "processor": "Procesadores",
+      "exporter": "Exportadores",
+      "extension": "Extensiones",
+      "connector": "Conectores"
+    },
+    "version": {
+      "label": "Versión",
+      "latest": "(más reciente)"
+    },
+    "distribution": {
+      "label": "Distribución",
+      "all": "Todas las distribuciones",
+      "core": "Core",
+      "contrib": "Contrib"
+    }
+  },
+  "results": {
+    "showingCount_one": "Mostrando {{count}} componente",
+    "showingCount_other": "Mostrando {{count}} componentes"
+  },
+  "card": {
+    "defaultDescription": "Consulta los detalles técnicos y opciones de configuración de este componente.",
+    "empty": {
+      "title": "No se encontraron componentes",
+      "description": "No encontramos ningún componente que coincida con tu búsqueda.",
+      "clearFilters": "Limpiar todos los filtros"
+    }
+  },
+  "states": {
+    "loading": "Cargando componentes...",
+    "error": {
+      "title": "Error al cargar datos",
+      "description": "Intenta recargar la página."
+    }
+  },
+  "detail": {
+    "loading": {
+      "title": "Cargando componente...",
+      "description": "Esto puede tardar un momento"
+    },
+    "error": {
+      "title": "Error al cargar componente",
+      "fallback": "Componente no encontrado",
+      "goBack": "Volver"
+    },
+    "tabs": {
+      "details": "Detalles",
+      "stability": "Estabilidad"
+    },
+    "sections": {
+      "componentInfo": "Información del componente",
+      "linksResources": "Enlaces y recursos",
+      "stabilityLevels": "Niveles de estabilidad",
+      "stabilityLegend": "Leyenda de estabilidad",
+      "distributionAvailability": "Disponibilidad por distribución"
+    },
+    "labels": {
+      "type": "Tipo",
+      "version": "Versión",
+      "distribution": "Distribución"
+    },
+    "links": {
+      "sourceCode": "Código fuente",
+      "viewOnGithub": "Ver en GitHub",
+      "viewDocumentation": "Ver documentación"
+    },
+    "typeDescriptions": {
+      "receiver": "Los receptores recopilan datos de telemetría de diversas fuentes y formatos.",
+      "processor": "Los procesadores transforman, filtran o enriquecen datos de telemetría entre receptores y exportadores.",
+      "exporter": "Los exportadores envían datos de telemetría a uno o más backends o destinos.",
+      "extension": "Las extensiones proporcionan capacidades adicionales al collector sin procesar datos de telemetría.",
+      "connector": "Los conectores actúan como exportador y receptor a la vez, uniendo dos pipelines."
+    },
+    "stabilityLabels": {
+      "alpha": "Alfa",
+      "beta": "Beta",
+      "stable": "Estable",
+      "deprecated": "Obsoleto",
+      "unmaintained": "Sin mantenimiento",
+      "development": "En desarrollo"
+    },
+    "stabilityDescriptions": {
+      "development": "Aún no están todos los componentes en su lugar. Este componente no debe usarse en producción.",
+      "alpha": "El componente está listo para ser usado en cargas de trabajo limitadas no críticas, y los autores agradecen tus comentarios.",
+      "beta": "Igual que Alfa, pero las opciones de configuración se consideran estables. Adecuado para un uso más amplio.",
+      "stable": "El componente está listo para disponibilidad general. No se esperan cambios incompatibles sin previo aviso.",
+      "deprecated": "Se planea eliminar el componente en una versión futura y no se proporcionará más soporte.",
+      "unmaintained": "El componente ya no se mantiene activamente. Es probable que los nuevos problemas no se aborden."
+    },
+    "distributions": {
+      "packaged": "Este componente está incluido en las siguientes distribuciones:",
+      "noInfo": "No hay información de distribución disponible para este componente.",
+      "contrib": {
+        "name": "OpenTelemetry Collector Contrib",
+        "desc": "La distribución impulsada por la comunidad que contiene plugins de terceros, receptores especializados y componentes experimentales."
+      },
+      "core": {
+        "name": "OpenTelemetry Collector Core",
+        "desc": "La distribución principal que contiene solo los componentes de telemetría más esenciales y con soporte oficial."
+      },
+      "k8s": {
+        "name": "OpenTelemetry Operator para Kubernetes",
+        "desc": "El Operador oficial de Kubernetes diseñado para gestionar y proveer el OpenTelemetry Collector."
+      },
+      "generic": {
+        "desc": "Una distribución especializada de OpenTelemetry."
+      }
+    },
+    "noStability": "No hay información de estabilidad disponible para esta versión."
+  }
+}

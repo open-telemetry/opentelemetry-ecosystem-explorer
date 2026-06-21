@@ -5,17 +5,32 @@
   internalChecksFilter: "strict",
   labels: ["dependencies"],
   schedule: ["before 8am on Monday"],
-
   lockFileMaintenance: {
     enabled: true,
     schedule: ["before 4am on Monday"],
   },
-
   packageRules: [
-    // Pre-commit hooks (digest-pin to commit SHA for supply chain hardening)
     {
       matchManagers: ["pre-commit"],
       pinDigests: true,
+    },
+  ],
+  customManagers: [
+    {
+      customType: "regex",
+      managerFilePatterns: ["/^\\.bun-version$/"],
+      matchStrings: ["(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+      depNameTemplate: "oven-sh/bun",
+      datasourceTemplate: "github-releases",
+      extractVersionTemplate: "^bun-v(?<version>.+)$",
+    },
+    {
+      customType: "regex",
+      managerFilePatterns: ["/(^|/)netlify\\.toml$/"],
+      matchStrings: ['BUN_VERSION\\s*=\\s*"(?<currentValue>[^"]+)"'],
+      depNameTemplate: "oven-sh/bun",
+      datasourceTemplate: "github-releases",
+      extractVersionTemplate: "^bun-v(?<version>.+)$",
     },
   ],
 }

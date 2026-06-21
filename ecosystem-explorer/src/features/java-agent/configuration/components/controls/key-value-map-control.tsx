@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Plus, X } from "lucide-react";
 import type { KeyValueMapNode } from "@/types/configuration";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
@@ -57,11 +58,11 @@ const INPUT_CLASS =
 const INPUT_ERROR_CLASS =
   "rounded-lg border border-red-500/60 bg-background/80 px-3 py-2 text-sm backdrop-blur-sm transition-all duration-200 placeholder:text-muted-foreground/50 focus:border-red-500/80 focus:outline-none focus:ring-2 focus:ring-red-500/20";
 
-const DUPLICATE_KEY_ERROR = "Duplicate key: only the last value for each key is kept.";
-
 export function KeyValueMapControl({ node, path, value, onChange }: KeyValueMapControlProps) {
+  const { t } = useTranslation("java-agent");
   const isNull = node.nullable === true && value === null;
   const { state, setFieldError, clearValidationError } = useConfigurationBuilder();
+  const duplicateKeyError = t("builder.keyValueMap.duplicateKeyError");
   const error = state.validationErrors[path] ?? null;
   const listRef = useRef<HTMLUListElement>(null);
   const addButtonRef = useRef<HTMLButtonElement>(null);
@@ -90,8 +91,8 @@ export function KeyValueMapControl({ node, path, value, onChange }: KeyValueMapC
   const emit = (next: Entry[]) => {
     const obj = fromEntries(next);
     if (getDuplicateKeys(next).size > 0) {
-      setFieldError(path, DUPLICATE_KEY_ERROR);
-    } else if (state.validationErrors[path] === DUPLICATE_KEY_ERROR) {
+      setFieldError(path, duplicateKeyError);
+    } else if (state.validationErrors[path] === duplicateKeyError) {
       clearValidationError(path);
     }
     lastSerializedEmit.current = JSON.stringify(obj);
@@ -106,7 +107,7 @@ export function KeyValueMapControl({ node, path, value, onChange }: KeyValueMapC
       const lastItem = items?.item(items.length - 1);
       lastItem?.querySelector("input")?.focus();
     });
-    announce("Entry added");
+    announce(t("builder.controls.entryAdded"));
   };
 
   const handleRemove = (index: number) => {
@@ -120,7 +121,7 @@ export function KeyValueMapControl({ node, path, value, onChange }: KeyValueMapC
         addButtonRef.current?.focus();
       }
     });
-    announce("Entry removed");
+    announce(t("builder.controls.entryRemoved"));
   };
 
   return (
@@ -141,29 +142,33 @@ export function KeyValueMapControl({ node, path, value, onChange }: KeyValueMapC
               ref={addButtonRef}
               type="button"
               onClick={handleAdd}
-              aria-label={`Add entry to ${node.label}`}
+              aria-label={t("builder.keyValueMap.addTooltip", { label: node.label })}
               className="border-border/60 bg-background/80 hover:border-primary/40 text-foreground flex items-center gap-1 rounded-md border px-3 py-1.5 text-xs transition-all"
             >
               <Plus className="text-primary h-3 w-3" aria-hidden="true" />
-              Add
+              {t("builder.keyValueMap.add")}
             </button>
           </FieldSection.Action>
         </FieldSection.Header>
         <FieldSection.Body>
           <span ref={statusRef} className="sr-only" aria-live="polite" />
           {localEntries.length === 0 ? (
-            <FieldSection.Empty>No entries yet</FieldSection.Empty>
+            <FieldSection.Empty>{t("builder.keyValueMap.empty")}</FieldSection.Empty>
           ) : (
-            <ul ref={listRef} className="space-y-2" aria-label={`${node.label} entries`}>
+            <ul
+              ref={listRef}
+              className="space-y-2"
+              aria-label={t("builder.keyValueMap.tableAriaLabel", { label: node.label })}
+            >
               {localEntries.map((entry, index) => {
                 const isDuplicate = duplicateKeys.has(entry.key);
                 return (
                   <li key={index} className="flex items-center gap-2">
                     <input
                       type="text"
-                      aria-label={`Key ${index + 1}`}
+                      aria-label={t("builder.keyValueMap.keyLabel", { index: index + 1 })}
                       aria-invalid={isDuplicate}
-                      placeholder="key"
+                      placeholder={t("builder.keyValueMap.keyPlaceholder")}
                       value={entry.key}
                       onChange={(e) => {
                         const next = [...localEntries];
@@ -177,8 +182,8 @@ export function KeyValueMapControl({ node, path, value, onChange }: KeyValueMapC
                     </span>
                     <input
                       type="text"
-                      aria-label={`Value ${index + 1}`}
-                      placeholder="value"
+                      aria-label={t("builder.keyValueMap.valueLabel", { index: index + 1 })}
+                      placeholder={t("builder.keyValueMap.valuePlaceholder")}
                       value={entry.value}
                       onChange={(e) => {
                         const next = [...localEntries];
@@ -190,7 +195,7 @@ export function KeyValueMapControl({ node, path, value, onChange }: KeyValueMapC
                     <button
                       type="button"
                       onClick={() => handleRemove(index)}
-                      aria-label={`Remove entry ${index + 1}`}
+                      aria-label={t("builder.keyValueMap.removeTooltip", { index: index + 1 })}
                       className="border-border/60 bg-background/80 text-muted-foreground shrink-0 rounded-lg border p-2 transition-all hover:border-red-500/40 hover:text-red-400"
                     >
                       <X className="h-4 w-4" aria-hidden="true" />

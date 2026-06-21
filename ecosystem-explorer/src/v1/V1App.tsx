@@ -45,10 +45,14 @@ const HomePage = lazy(() =>
   import("@/v1/features/home/home-page").then((m) => ({ default: m.HomeV1 }))
 );
 const JavaAgentPage = lazy(() =>
-  import("@/features/java-agent/java-agent-page").then((m) => ({ default: m.JavaAgentPage }))
+  import("@/v1/features/ecosystem/java-agent-landing").then((m) => ({
+    default: m.JavaAgentLandingV1,
+  }))
 );
 const CollectorPage = lazy(() =>
-  import("@/features/collector/collector-page").then((m) => ({ default: m.CollectorPage }))
+  import("@/v1/features/ecosystem/collector-landing").then((m) => ({
+    default: m.CollectorLandingV1,
+  }))
 );
 const CollectorComponentsPage = lazy(() =>
   import("@/features/collector/collector-components-page").then((m) => ({

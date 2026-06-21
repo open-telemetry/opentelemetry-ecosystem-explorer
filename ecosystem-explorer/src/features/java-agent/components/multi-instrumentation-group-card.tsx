@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronDown } from "lucide-react";
 import type { InstrumentationGroup } from "../utils/group-instrumentations";
 import type { FilterState } from "./instrumentation-filter-bar";
@@ -33,6 +34,7 @@ export function MultiInstrumentationGroupCard({
   activeFilters,
   version,
 }: MultiInstrumentationGroupCardProps) {
+  const { t } = useTranslation("java-agent");
   const [expanded, setExpanded] = useState(false);
 
   const badges = useMemo(
@@ -44,7 +46,7 @@ export function MultiInstrumentationGroupCard({
   const description = group.instrumentations.find((i) => i.description)?.description;
 
   return (
-    <div className="group border-border bg-card hover:border-secondary/40 relative flex h-full flex-col overflow-hidden rounded-lg border transition-all duration-300 hover:shadow-[0_0_30px_hsl(var(--otel-orange-hsl)/0.12)]">
+    <div className="group border-border bg-card hover:border-secondary/40 relative flex h-full flex-col overflow-hidden rounded-lg border transition-all duration-300 hover:shadow-[0_0_30px_hsl(var(--secondary-hsl)/0.12)]">
       {/* Grid pattern background */}
       <div className="absolute inset-0 opacity-[0.15]">
         <div
@@ -64,6 +66,7 @@ export function MultiInstrumentationGroupCard({
         aria-label={`${group.displayName} group with ${group.instrumentations.length} instrumentations`}
       >
         <div className="space-y-4">
+          {/* Header Region */}
           <div className="flex items-start justify-between gap-3">
             <div className="flex min-w-0 items-center gap-3">
               <ChevronDown
@@ -72,9 +75,11 @@ export function MultiInstrumentationGroupCard({
                   expanded ? "rotate-0" : "-rotate-90"
                 }`}
               />
-              <h3 className="truncate text-lg leading-tight font-semibold">{group.displayName}</h3>
-              <span className="bg-secondary/15 text-secondary flex-shrink-0 rounded-md px-2.5 py-1 text-xs font-medium">
-                {group.instrumentations.length} versions
+              <h3 className="text-foreground group-hover:text-primary truncate text-xl leading-tight font-bold transition-colors">
+                {group.displayName}
+              </h3>
+              <span className="bg-secondary/15 text-secondary flex-shrink-0 rounded-full px-2.5 py-1 text-xs font-medium">
+                {t("multiGroupCard.versions", { count: group.instrumentations.length })}
               </span>
             </div>
 
@@ -83,6 +88,7 @@ export function MultiInstrumentationGroupCard({
             </div>
           </div>
 
+          {/* Body Region */}
           {description && (
             <p className="text-muted-foreground line-clamp-2 pl-8 text-sm leading-relaxed">
               {renderWithInlineCode(description)}

@@ -1,0 +1,95 @@
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* ---------- Release card ---------- */
+
+.td-release-card {
+  background-color: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  backdrop-filter: blur(8px);
+}
+
+.td-release-card__eyebrow {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.td-release-card__version {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: hsl(var(--otel-orange-hsl));
+}
+
+.td-release-card__date {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.td-release-card__deltas {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.td-release-card__delta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.td-release-card__delta-icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.td-release-card__changelog {
+  margin-top: 0.5rem;
+  color: hsl(var(--otel-orange-hsl));
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+
+/* Decorative trailing arrow — kept out of the link's accessible name. */
+.td-release-card__changelog::after {
+  content: " \2192";
+}
+
+.td-release-card__changelog:hover,
+.td-release-card__changelog:focus-visible {
+  text-decoration: underline;
+}
+
+.td-release-card__empty-msg {
+  margin: 0;
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.65);
+}

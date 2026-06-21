@@ -15,6 +15,7 @@
  */
 import type { ReactNode, RefObject } from "react";
 import { useCallback, useImperativeHandle, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
 
 interface RenderInputProps<T> {
@@ -64,6 +65,7 @@ export function FocusManagedInputList<T>({
   addButtonRef,
   handleRef,
 }: FocusManagedInputListProps<T>) {
+  const { t } = useTranslation("java-agent");
   const listRef = useRef<HTMLUListElement>(null);
   const statusRef = useRef<HTMLSpanElement>(null);
 
@@ -79,10 +81,10 @@ export function FocusManagedInputList<T>({
           const inputs = listRef.current?.querySelectorAll<HTMLElement>(ROW_FOCUSABLE_SELECTOR);
           inputs?.item(inputs.length - 1)?.focus();
         });
-        announce("Item added");
+        announce(t("builder.controls.itemAdded"));
       },
     }),
-    [announce]
+    [announce, t]
   );
 
   const handleRemove = (index: number) => {
@@ -96,7 +98,7 @@ export function FocusManagedInputList<T>({
         addButtonRef.current?.focus();
       }
     });
-    announce("Item removed");
+    announce(t("builder.controls.itemRemoved"));
   };
 
   const setItemAt = (index: number, next: T) => {
