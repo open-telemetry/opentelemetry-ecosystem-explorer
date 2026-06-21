@@ -16,6 +16,7 @@ with offline support through IndexedDB caching.
 - **Styling**: Tailwind CSS v4
 - **Testing**: Vitest + React Testing Library
 - **Caching**: IndexedDB via `idb`
+- **Internationalization**: i18next + react-i18next
 - **Deployment**: Static site hosting
 
 ### IndexedDB Cache
@@ -60,3 +61,63 @@ Store in IndexedDB
     ↓
 Return to caller
 ```
+
+## Internationalization (i18n)
+
+The app is localized using [i18next](https://www.i18next.com/) with the
+[react-i18next](https://react.i18next.com/) bindings and the HTTP backend for lazy-loading
+translation files. Runtime configuration is in `ecosystem-explorer/src/i18n/config.ts`.
+
+### Locale files
+
+Translation strings live in static JSON files served alongside the app:
+
+```text
+ecosystem-explorer/public/locales/{language}/{namespace}.json
+```
+
+**Supported languages**: `en` (English), `es` (Spanish)
+
+**Namespaces** (one file per namespace per language):
+
+| Namespace    | Covers                                                     |
+| ------------ | ---------------------------------------------------------- |
+| `common`     | Shared strings used across multiple features               |
+| `layout`     | Header, footer, navigation, theme switcher                 |
+| `home`       | Home page                                                  |
+| `collector`  | Collector components pages                                 |
+| `java-agent` | Java Agent instrumentation and configuration builder pages |
+| `about`      | About page                                                 |
+| `ecosystem`  | v1 ecosystem landing page components                       |
+
+### Feature flag
+
+The `I18N` feature flag (`VITE_FEATURE_FLAG_I18N`) gates the language-switcher UI and browser
+language detection. When the flag is off, the app renders in English only. Locale files and
+translation keys are always present regardless of the flag.
+
+### Adding a new language
+
+1. Copy each `ecosystem-explorer/public/locales/en/{ns}.json` to
+   `ecosystem-explorer/public/locales/{new-lang}/{ns}.json` and translate the values (keep all keys
+   identical).
+2. Add the language code to `ecosystem-explorer/src/i18n/config.ts` if explicit language list
+   configuration is needed.
+3. Add the new language option to the `LanguageSwitcher` component in
+   `ecosystem-explorer/src/components/layout/header.tsx`.
+
+### Translation maintenance
+
+**Fallback chain:** Browser language → nearest supported language → `fallbackLng: "en"`. A key
+missing in `es` will silently render in English; the app never crashes on a missing key.
+
+**Key hygiene:** `en` is the source of truth for the key set. All other language files must mirror
+it exactly — same keys, same structure. If a translation is not yet available, copy the English
+value verbatim as a placeholder so the file stays complete and auditable. Extra keys in a
+non-English file that have no `en` counterpart are dead weight and should be removed.
+
+**Removing strings:** When a UI string is deleted, remove its key from all locale files in the same
+commit. Search for the key literal across `ecosystem-explorer/public/locales/` to catch all copies.
+
+For developer guidance on using `useTranslation`, `Trans`, and adding namespaces, see the
+Internationalization section of `ecosystem-explorer/AGENTS.md`.

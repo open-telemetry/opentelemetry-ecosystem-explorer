@@ -397,6 +397,10 @@
     "schemaRenderer": {
       "itemLabel": "Item"
     },
+    "structuredList": {
+      "itemLabel": "Item {{index}}",
+      "fieldLabel": "{{name}} item {{index}} {{field}}"
+    },
     "unionTypes": {
       "textInput": "Text",
       "numberInput": "Number",
