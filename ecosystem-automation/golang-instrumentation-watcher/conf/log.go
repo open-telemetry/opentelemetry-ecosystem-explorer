@@ -30,8 +30,10 @@ func newLog(level slog.Level) *Log {
 	cfg := NewEnv()
 	// override log level if set in env
 	if envLevelStr := cfg.GetEnv(ENV_LOG_LEVEL, LOG_LEVEL_INFO); envLevelStr != "" {
-		envLevel, err := strconv.Atoi(envLevelStr)
-		if err == nil {
+		var parsed slog.Level
+		if err := parsed.UnmarshalText([]byte(envLevelStr)); err == nil {
+			logLevel = parsed
+		} else if envLevel, err := strconv.Atoi(envLevelStr); err == nil {
 			logLevel = slog.Level(envLevel)
 		}
 	}
