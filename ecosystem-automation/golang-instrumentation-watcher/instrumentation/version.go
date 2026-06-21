@@ -19,9 +19,9 @@ func ModuleVersions(tags []string) map[string]string {
 	return versions
 }
 
-// ApplyModuleVersions sets each library's Module.Version from the per-module
-// version map, keyed by the module's repo-relative path. Libraries without a
-// matching tag are left unchanged.
+// ApplyModuleVersions sets each [Library]'s Module.Version from versions, the
+// per-module map produced by [ModuleVersions], keyed by the module's
+// repo-relative path. Libraries without a matching entry are left unchanged.
 func ApplyModuleVersions(libs []Library, versions map[string]string) {
 	for i := range libs {
 		rel := strings.TrimPrefix(libs[i].Module.Path, otelContribPrefix)

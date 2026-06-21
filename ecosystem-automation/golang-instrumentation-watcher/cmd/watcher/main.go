@@ -1,3 +1,18 @@
+// Command watcher scans the upstream opentelemetry-go-contrib repository and
+// writes a versioned instrumentation inventory into the ecosystem registry.
+//
+// It inventories two versions per run: the latest bare release tag and a
+// snapshot of the main branch. The release is skipped when it has already been
+// inventoried.
+//
+// Usage:
+//
+//	watcher [-base-dir dir] [-inventory-dir dir]
+//
+// The -base-dir flag sets the directory under which the upstream repositories
+// are cloned (into .repo); it defaults to the working directory. The
+// -inventory-dir flag sets the directory to which the versioned inventory is
+// written; it defaults to ecosystem-registry/go/contrib under the monorepo root.
 package main
 
 import (

@@ -8,14 +8,17 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-// SemconvAttribute represents an attribute from the semantic conventions registry.
+// SemconvAttribute is an attribute definition loaded from the semantic
+// conventions registry by [LoadSemconv] and retrieved with
+// [GetSemconvAttribute].
 type SemconvAttribute struct {
 	ID    string
 	Brief string
 	Type  string
 }
 
-// SemconvMetric represents a metric from the semantic conventions registry.
+// SemconvMetric is a metric definition loaded from the semantic conventions
+// registry by [LoadSemconv] and retrieved with [GetSemconvMetric].
 type SemconvMetric struct {
 	Name string
 }
@@ -26,7 +29,11 @@ var semconvRegistry map[string]SemconvAttribute
 // semconvMetrics holds loaded semantic convention metric names.
 var semconvMetrics map[string]SemconvMetric
 
-// LoadSemconv loads attribute and metric definitions from the semantic conventions registry.
+// LoadSemconv loads attribute and metric definitions from the semantic
+// conventions registry rooted at semconvPath into the package-level registry,
+// walking it for YAML files. A missing path is treated as an empty registry and
+// reported as success. Loaded definitions are then available through
+// [GetSemconvAttribute] and [GetSemconvMetric].
 func LoadSemconv(semconvPath string) error {
 	semconvRegistry = make(map[string]SemconvAttribute)
 	semconvMetrics = make(map[string]SemconvMetric)
@@ -142,7 +149,9 @@ func mapSemconvType(semconvType string) string {
 	}
 }
 
-// GetSemconvAttribute retrieves an attribute from the semconv registry.
+// GetSemconvAttribute returns the [SemconvAttribute] with the given id from the
+// registry loaded by [LoadSemconv]. The boolean result reports whether a
+// matching attribute was found.
 func GetSemconvAttribute(id string) (SemconvAttribute, bool) {
 	if semconvRegistry == nil {
 		return SemconvAttribute{}, false
@@ -151,7 +160,9 @@ func GetSemconvAttribute(id string) (SemconvAttribute, bool) {
 	return attr, ok
 }
 
-// GetSemconvMetric retrieves a metric from the semconv registry.
+// GetSemconvMetric returns the [SemconvMetric] with the given name from the
+// registry loaded by [LoadSemconv]. The boolean result reports whether a
+// matching metric was found.
 func GetSemconvMetric(name string) (SemconvMetric, bool) {
 	if semconvMetrics == nil {
 		return SemconvMetric{}, false

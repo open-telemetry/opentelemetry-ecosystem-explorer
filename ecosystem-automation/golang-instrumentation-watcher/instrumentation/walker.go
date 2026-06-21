@@ -12,11 +12,16 @@ var omitDirectories = []string{
 	"test",
 }
 
+// Package is a Go module discovered by [Walk]: Path is its location relative to
+// the scan root and GoModPath is the absolute path to its go.mod.
 type Package struct {
 	Path      string
 	GoModPath string
 }
 
+// Walk finds every go.mod under rootPath and returns the discovered [Package]
+// values. Directories whose relative path contains "example", "internal", or
+// "test" are skipped.
 func Walk(rootPath string) ([]Package, error) {
 	var packages []Package
 

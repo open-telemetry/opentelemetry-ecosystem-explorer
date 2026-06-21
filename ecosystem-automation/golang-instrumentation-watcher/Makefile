@@ -28,8 +28,8 @@ tidy: ## 📚 Tidy modules
 	go mod tidy
 
 .PHONY: docs
-docs: ## 📖 Godocs
-	go doc -http
+docs: ## 📖 Serve godocs at http://localhost:6060
+	go run golang.org/x/pkgsite/cmd/pkgsite@latest -http=localhost:6060 .
 
 .PHONY: test
 test: ## 🧪 Run all tests
@@ -37,6 +37,10 @@ test: ## 🧪 Run all tests
 	go tool cover -html=coverage.out -o coverage.html && \
 	echo "Coverage report saved to coverage.html" && \
 	rm -f coverage.out
+
+.PHONY: test-integration
+test-integration: ## 🌐 Run integration tests (clones upstream repos)
+	go test -tags=integration -race ./...
 
 .PHONY: pre-commit
 pre-commit: fmt tidy lint test ## ✅ Run all checks

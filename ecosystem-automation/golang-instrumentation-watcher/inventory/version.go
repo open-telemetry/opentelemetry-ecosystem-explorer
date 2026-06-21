@@ -30,8 +30,9 @@ func sortVersionsDesc(versions []string) {
 
 // NextSnapshot returns the next snapshot version for the given latest release:
 // the patch component is incremented and a "-SNAPSHOT" prerelease is attached
-// (e.g. "v0.5.2" -> "v0.5.3-SNAPSHOT"). It mirrors the Python watcher's
-// update_snapshot patch-bump behaviour.
+// (e.g. "v0.5.2" becomes "v0.5.3-SNAPSHOT"). It returns an error when
+// latestRelease is not a valid semantic version. NextSnapshot mirrors the
+// Python watcher's update_snapshot patch-bump behaviour.
 func NextSnapshot(latestRelease string) (string, error) {
 	core := semver.Canonical(latestRelease)
 	if core == "" {

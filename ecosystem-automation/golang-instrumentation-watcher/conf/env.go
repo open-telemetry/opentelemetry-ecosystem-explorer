@@ -1,3 +1,4 @@
+// Package conf provides environment and logging configuration for the watcher.
 package conf
 
 import (
@@ -6,15 +7,21 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// EnvConf resolves configuration from .env files and the OS environment.
+//
+// Construct an EnvConf with [NewEnv].
 type EnvConf interface {
-	// Loads env variables from .env files and/or OS environment
+	// Load reads environment variables from the configured .env files, or from
+	// the default .env file when none are configured.
 	Load() error
-	// Resolve env variables or fallback
+	// GetEnv returns the value of env, or fallback when env is unset.
 	GetEnv(env, fallback string) string
-	// Resolve current working dir
+	// WorkDir returns the current working directory.
 	WorkDir() (string, error)
 }
 
+// NewEnv returns an [EnvConf] that loads the given .env files, or the default
+// .env file when none are given.
 func NewEnv(files ...string) EnvConf {
 	return &conf{
 		files: files,

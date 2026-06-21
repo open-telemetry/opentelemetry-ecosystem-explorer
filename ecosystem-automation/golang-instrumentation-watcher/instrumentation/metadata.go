@@ -41,19 +41,25 @@ var bridgeDisplayNames = map[string]string{
 	"logrus": "logrus",
 }
 
+// ContribRequire is the identity of a go-contrib module: its module path,
+// version, and declared Go version. It is the per-module source of truth that
+// [DeriveMetadata] turns into a library's descriptive metadata.
 type ContribRequire struct {
 	Path      string
 	Version   string
 	GoVersion string
 }
 
+// IsOTelContribRequire reports whether path is a go.opentelemetry.io/contrib
+// module path.
 func IsOTelContribRequire(path string) bool {
 	return strings.HasPrefix(path, otelContribPrefix)
 }
 
-// ParseModule reads a go.mod and returns the module's own identity (its
-// `module` directive path and `go` version) as a ContribRequire. This is the
-// per-module source of truth used to derive a library's metadata.
+// ParseModule reads the go.mod at goModPath and returns the module's own
+// identity as a [ContribRequire], taking the path from its module directive and
+// the Go version from its go directive. The returned Version is empty, since a
+// module's own go.mod does not record its release version.
 func ParseModule(goModPath string) (ContribRequire, error) {
 	data, err := os.ReadFile(goModPath)
 	if err != nil {
@@ -74,6 +80,9 @@ func ParseModule(goModPath string) (ContribRequire, error) {
 	return ContribRequire{Path: modPath, GoVersion: goVer}, nil
 }
 
+// DeriveMetadata builds a library's descriptive [metadata.Metadata] from its
+// go-contrib module identity r, inferring its name, display name, target
+// module, instrumentation type, installation type, and documentation links.
 func DeriveMetadata(r ContribRequire) *metadata.Metadata {
 	// sourcePath is the repo-relative path after the module root prefix, e.g.
 	// "instrumentation/net/http/otelhttp" or "bridges/otelslog". We use it as
@@ -99,6 +108,10 @@ func DeriveMetadata(r ContribRequire) *metadata.Metadata {
 	}
 }
 
+// GenerateMetadataYAML writes m as YAML to path, creating parent directories as
+// needed. If path already exists and its file carries a non-empty description,
+// GenerateMetadataYAML leaves it untouched so hand-authored descriptions are
+// preserved.
 func GenerateMetadataYAML(path string, m *metadata.Metadata) error {
 	if existing, err := loadMetadata(path); err == nil && existing.Description != "" {
 		return nil

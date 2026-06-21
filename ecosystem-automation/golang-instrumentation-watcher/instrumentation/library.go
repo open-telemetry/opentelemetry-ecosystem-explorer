@@ -1,3 +1,9 @@
+// Package instrumentation scans OpenTelemetry Go instrumentation modules and
+// produces a versioned inventory of [Library] records. For each module it
+// parses the go.mod with [ParseModule], derives descriptive metadata with
+// [DeriveMetadata], and statically analyzes the package with [AnalyzePackage]
+// to extract the spans and metrics it emits. [ScanRepo] ties these steps
+// together over an upstream repository checkout.
 package instrumentation
 
 import (
@@ -9,21 +15,25 @@ import (
 	"github.com/open-telemetry/opentelemetry-ecosystem-explorer/golang-instrumentation-watcher/repo"
 )
 
-// Library is the fused per-instrumentation record: derived library metadata
-// combined with telemetry extracted from static analysis. It mirrors the
+// Library is the fused per-instrumentation record: derived [metadata.Metadata]
+// combined with [Telemetry] extracted from static analysis. It mirrors the
 // libraries[].telemetry[] shape used by the other ecosystem watchers.
 type Library struct {
 	metadata.Metadata `yaml:",inline"`
 	Telemetry         []Telemetry `yaml:"telemetry,omitempty"`
 }
 
-// ScanResult holds the output of a repository scan: the fused library records
-// for the versioned inventory.
+// ScanResult holds the output of a repository scan: the fused [Library] records
+// that make up the versioned inventory.
 type ScanResult struct {
 	Libraries []Library
 }
 
-// ScanRepo walks an upstream repository and produces fused library records.
+// ScanRepo walks the upstream repository rooted at repoPath and returns the
+// fused [Library] records discovered within it. repoName selects the scan
+// layout: [repo.RepoGo] scans the whole tree, while go-contrib repositories
+// scan only the instrumentation and bridges subtrees. The returned libraries
+// are sorted by name for a byte-stable inventory.
 func ScanRepo(repoName, repoPath string) (*ScanResult, error) {
 	var scanPaths []string
 	switch repoName {
@@ -62,9 +72,10 @@ func ScanRepo(repoName, repoPath string) (*ScanResult, error) {
 	return &ScanResult{Libraries: libraries}, nil
 }
 
-// analyzeLibrary builds the fused record for a single instrumentation module.
-// Metadata is derived from the module's own go.mod directive; telemetry comes
-// from static analysis of the package.
+// analyzeLibrary builds the fused [Library] for a single instrumentation
+// module. Metadata is derived from the module's own go.mod directive via
+// [DeriveMetadata]; telemetry comes from [AnalyzePackage]. It returns a nil
+// library (and nil error) for modules that are not go-contrib requires.
 func analyzeLibrary(goModPath string) (*Library, error) {
 	mod, err := ParseModule(goModPath)
 	if err != nil {
@@ -91,4 +102,3 @@ func analyzeLibrary(goModPath string) (*Library, error) {
 
 	return &Library{Metadata: *meta, Telemetry: telemetry}, nil
 }
-

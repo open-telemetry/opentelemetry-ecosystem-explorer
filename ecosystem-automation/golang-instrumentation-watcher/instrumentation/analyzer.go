@@ -9,7 +9,11 @@ import (
 	"golang.org/x/tools/go/packages"
 )
 
-// AnalyzePackage performs static analysis on an instrumentation package.
+// AnalyzePackage loads and statically analyzes the instrumentation package
+// rooted at pkgPath and returns its [PackageAnalysis]. It extracts the package
+// description, semantic conventions, and the spans and metrics emitted through
+// the tracer and meter APIs. It returns a nil analysis (and nil error) when no
+// package is found at pkgPath.
 func AnalyzePackage(pkgPath string) (*PackageAnalysis, error) {
 	cfg := &packages.Config{
 		Mode: packages.NeedName |
@@ -54,6 +58,8 @@ func AnalyzePackage(pkgPath string) (*PackageAnalysis, error) {
 	return analysis, nil
 }
 
+// PackageAnalysis is the result of statically analyzing one instrumentation
+// package: its name, doc description, semantic conventions, and [Telemetry].
 type PackageAnalysis struct {
 	Name                string
 	Description         string
@@ -685,7 +691,6 @@ func isRuntimePackage(pkgPath string) bool {
 func isHostPackage(pkgPath string) bool {
 	return strings.HasSuffix(pkgPath, "/instrumentation/host")
 }
-
 
 func getSemConvMetrics(pkgPath string) []Metric {
 	pkgLower := strings.ToLower(pkgPath)

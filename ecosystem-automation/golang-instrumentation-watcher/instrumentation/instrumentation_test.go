@@ -1,3 +1,9 @@
+//go:build integration
+
+// These tests clone the upstream opentelemetry-go-contrib repository over the
+// network and analyze it end to end. They are excluded from the default
+// `go test ./...` run; build them with `-tags integration` (see `make
+// test-integration`).
 package instrumentation
 
 import (

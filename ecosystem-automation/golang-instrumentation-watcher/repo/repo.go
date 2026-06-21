@@ -1,3 +1,5 @@
+// Package repo clones and checks out the upstream OpenTelemetry repositories
+// that the watcher scans.
 package repo
 
 import (
@@ -23,6 +25,7 @@ const (
 	perms     = 0755
 	shaLength = 8
 
+	// RepoGo, RepoContrib, and RepoSemconv are the upstream repository names.
 	RepoGo      = "opentelemetry-go"
 	RepoContrib = "opentelemetry-go-contrib"
 	RepoSemconv = "semantic-conventions"
@@ -36,6 +39,8 @@ var repos = []string{
 	"git@github.com:open-telemetry/opentelemetry-go-contrib.git",
 }
 
+// RepoInfo identifies a checked-out repository and its current commit. It is
+// returned by [Checkout] and [CheckoutAt].
 type RepoInfo struct {
 	Name    string
 	Path    string
@@ -44,6 +49,7 @@ type RepoInfo struct {
 	Message string
 }
 
+// LogValue renders the [RepoInfo] as a [slog.Value] group for structured logging.
 func (r RepoInfo) LogValue() slog.Value {
 	return slog.GroupValue(
 		slog.String("name", r.Name),
@@ -163,7 +169,9 @@ func sync(url, dir string, log *conf.Log) (*RepoInfo, error) {
 	return repoInfo, nil
 }
 
-// Checkout clones the upstream opentelemetry-go repositories into baseDir/.repo.
+// Checkout clones the upstream opentelemetry-go repositories into baseDir/.repo
+// and returns a [RepoInfo] for each. Errors from individual repositories are
+// joined and returned alongside the repositories that did sync.
 func Checkout(baseDir string) ([]RepoInfo, error) {
 	log := conf.NewLog()
 
@@ -188,7 +196,7 @@ func Checkout(baseDir string) ([]RepoInfo, error) {
 
 // CheckoutAt ensures opentelemetry-go-contrib is cloned under baseDir/.repo and
 // checks the working tree out at ref (a bare release tag like "v1.44.0" or a
-// branch like "main"), returning the resolved repository info.
+// branch like "main"), returning the resolved [RepoInfo].
 func CheckoutAt(baseDir, ref string) (*RepoInfo, error) {
 	log := conf.NewLog()
 
@@ -301,8 +309,9 @@ func TagsAt(repoPath string) ([]string, error) {
 	return strings.Split(out, "\n"), nil
 }
 
-// CheckoutSemconv downloads the semantic conventions model from the upstream
-// release archive into baseDir/.repo.
+// CheckoutSemconv downloads the [RepoSemconv] model from the upstream release
+// archive into baseDir/.repo and returns the path to the extracted model
+// directory.
 func CheckoutSemconv(baseDir string) (string, error) {
 	log := conf.NewLog()
 	log.Info(RepoSemconv, "url", semconvZipURL, "subdir", semconvSubdir)
