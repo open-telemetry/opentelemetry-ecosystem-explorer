@@ -358,7 +358,9 @@
       "disabledByDefault": "deshabilitado por defecto",
       "statusHeader": "Estado de instrumentación",
       "statusDescription": "Habilita o deshabilita explícitamente esta instrumentación.",
-      "resetToDefault": "Restablecer al valor predeterminado"
+      "resetToDefault": "Restablecer al valor predeterminado",
+      "options_one": "{{count}} opción",
+      "options_other": "{{count}} opciones"
     },
     "form": {
       "empty": "No hay opciones configurables para este módulo."

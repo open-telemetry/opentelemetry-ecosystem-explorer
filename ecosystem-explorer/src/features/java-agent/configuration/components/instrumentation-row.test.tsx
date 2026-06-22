@@ -208,6 +208,39 @@ describe("InstrumentationRow", () => {
     );
     expect(screen.queryByText("custom")).toBeNull();
   });
+
+  it("renders the configuration options count badge when options are present", () => {
+    const cassandraModule = moduleFixture("cassandra", [
+      entry("cassandra-4.4", {
+        configurations: [
+          {
+            name: "enabled",
+            declarative_name: "otel.instrumentation.cassandra.enabled",
+            type: "boolean",
+            description: "Enable cassandra",
+            default: true,
+          },
+          {
+            name: "some-option",
+            declarative_name: "otel.instrumentation.cassandra.some-option",
+            type: "string",
+            description: "Some option",
+            default: "",
+          },
+        ],
+      }),
+    ]);
+    render(
+      <InstrumentationRow
+        module={cassandraModule}
+        status="none"
+        onSetEnabled={() => {}}
+        onRemoveCustomization={() => {}}
+        {...expansionDefaults}
+      />
+    );
+    expect(screen.getByText("2 options")).toBeInTheDocument();
+  });
 });
 
 describe("InstrumentationRow — expansion", () => {

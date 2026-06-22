@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { JSX } from "react";
+import { useMemo, type JSX } from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronRight } from "lucide-react";
 import type { InstrumentationModule } from "@/types/javaagent";
 import type { CustomizationStatus } from "@/hooks/use-customization-status";
 import { InstrumentationConfigForm } from "./instrumentation-config-form";
+import { aggregateConfigurations } from "@/lib/configurations-aggregate";
 
 export interface InstrumentationRowProps {
   module: InstrumentationModule;
@@ -44,6 +45,7 @@ export function InstrumentationRow({
   const isExplicitlyDisabled = status === "disabled";
   const enabledByDefault = !module.defaultDisabled;
   const isEnabled = isExplicitlyEnabled || (status === "none" && enabledByDefault);
+  const configCount = useMemo(() => aggregateConfigurations(module).length, [module]);
 
   const description =
     module.coveredEntries[module.coveredEntries.length - 1]?.description ?? undefined;
@@ -97,6 +99,11 @@ export function InstrumentationRow({
         </div>
 
         <div className="flex items-center gap-4">
+          {configCount > 0 && (
+            <span className="border-border/60 bg-muted/20 text-muted-foreground inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] leading-none shadow-sm">
+              {t("builder.row.options", { count: configCount })}
+            </span>
+          )}
           <div className="flex flex-col items-end text-right">
             <span
               className={`text-sm font-bold ${isEnabled ? "text-emerald-500" : "text-muted-foreground"}`}
