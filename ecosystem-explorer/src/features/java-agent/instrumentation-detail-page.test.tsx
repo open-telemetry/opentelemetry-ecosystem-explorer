@@ -278,7 +278,7 @@ describe("InstrumentationDetailPage", () => {
     vi.mocked(useInstrumentation).mockReturnValue({
       data: {
         ...mockInstrumentation,
-        telemetry: [{ when: "always", metrics: [] }]
+        telemetry: [{ when: "always", metrics: [] }],
       },
       loading: false,
       error: null,
