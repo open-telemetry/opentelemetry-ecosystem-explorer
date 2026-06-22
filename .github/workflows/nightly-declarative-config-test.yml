@@ -6,8 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  issues: write
+  contents: read # Default minimum; the run-acceptance-test job declares its own elevated scopes
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -17,6 +16,9 @@ jobs:
   run-acceptance-test:
     name: Run Acceptance Test
     runs-on: ubuntu-latest
+    permissions:
+      contents: read # Required to checkout the repository
+      issues: write # Required to create bug report issues on test failure
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
