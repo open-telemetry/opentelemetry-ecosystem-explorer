@@ -112,7 +112,9 @@ export function InstrumentationRow({
             </span>
             {isEnabled !== enabledByDefault && (
               <span className="text-muted-foreground/70 text-[10px] font-medium">
-                {enabledByDefault ? t("builder.row.enabledByDefault") : t("builder.row.disabledByDefault")}
+                {enabledByDefault
+                  ? t("builder.row.enabledByDefault")
+                  : t("builder.row.disabledByDefault")}
               </span>
             )}
           </div>
@@ -153,9 +155,7 @@ export function InstrumentationRow({
               <h5 className="text-foreground text-sm font-semibold">
                 {t("builder.row.statusHeader")}
               </h5>
-              <p className="text-muted-foreground text-xs">
-                {t("builder.row.statusDescription")}
-              </p>
+              <p className="text-muted-foreground text-xs">{t("builder.row.statusDescription")}</p>
             </div>
             <div className="flex flex-col items-end gap-1.5">
               <CustomizationToggle enabled={isEnabled} onChange={onSetEnabled} />
