@@ -15,6 +15,7 @@
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, within, fireEvent } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes, useNavigate } from "react-router-dom";
 import { InstrumentationDetailPage } from "./instrumentation-detail-page";
 import type { InstrumentationData } from "@/types/javaagent";
@@ -28,6 +29,10 @@ vi.mock("@/components/ui/back-button", () => ({
   BackButton: () => <button>Back</button>,
 }));
 
+vi.mock("./components/telemetry-comparison/telemetry-comparison-section", () => ({
+  TelemetryComparisonSection: vi.fn(() => <div data-testid="telemetry-comparison-mock" />),
+}));
+
 vi.mock("react-router-dom", async () => {
   const actual = await vi.importActual("react-router-dom");
   return {
@@ -37,6 +42,7 @@ vi.mock("react-router-dom", async () => {
 });
 
 import { useVersions, useInstrumentation } from "@/hooks/use-javaagent-data";
+import { TelemetryComparisonSection } from "./components/telemetry-comparison/telemetry-comparison-section";
 
 const mockVersionsData = {
   versions: [
@@ -266,5 +272,32 @@ describe("InstrumentationDetailPage", () => {
     renderWithRouter("/java-agent/instrumentation/2.0.0/jdbc");
 
     expect(screen.queryByRole("heading", { name: "Semantic Conventions" })).not.toBeInTheDocument();
+  });
+
+  it("passes correct instrumentationName to TelemetryComparisonSection from route parameter", async () => {
+    vi.mocked(useInstrumentation).mockReturnValue({
+      data: {
+        ...mockInstrumentation,
+        telemetry: [{ when: "always", metrics: [] }],
+      },
+      loading: false,
+      error: null,
+    });
+
+    renderWithRouter("/java-agent/instrumentation/my-test-identifier");
+
+    const user = userEvent.setup();
+    const telemetryTab = screen.getByRole("tab", { name: /Telemetry/i });
+    await user.click(telemetryTab);
+
+    const comparisonButton = await screen.findByRole("button", { name: /Comparison/i });
+    await user.click(comparisonButton);
+
+    expect(TelemetryComparisonSection).toHaveBeenCalledWith(
+      expect.objectContaining({
+        instrumentationName: "my-test-identifier",
+      }),
+      undefined
+    );
   });
 });
