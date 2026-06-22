@@ -18,6 +18,7 @@ import { screen, within, cleanup, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { installFetchInterceptor, uninstallFetchInterceptor } from "./helpers/fetch-interceptor";
 import { renderBuilderPage as renderPage } from "./helpers/render-builder-page";
+import { openInstrumentationTab } from "./helpers/open-instrumentation-tab";
 
 beforeAll(() => {
   installFetchInterceptor();
@@ -117,5 +118,60 @@ describe("ConfigurationBuilderPage card click behavior", () => {
       expect(disabledYamlBlock).not.toBeNull();
       expect(disabledYamlBlock?.className).toContain("bg-otel-orange/10");
     });
+  });
+
+  it("instrumentation rows carry the distribution key and no scroll-spy section key", async () => {
+    renderPage();
+    const user = userEvent.setup();
+    await openInstrumentationTab(user);
+
+    const row = (await screen.findByTestId(
+      "instrumentation-row-reactor",
+      {},
+      { timeout: 10_000 }
+    )) as HTMLElement;
+
+    expect(row.getAttribute("data-yaml-section-key")).toBe("distribution");
+    expect(row.getAttribute("data-section-key")).toBeNull();
+  });
+
+  it("customizing an instrumentation module highlights the distribution YAML block", async () => {
+    renderPage();
+    const user = userEvent.setup();
+    await openInstrumentationTab(user);
+
+    const row = (await screen.findByTestId(
+      "instrumentation-row-reactor",
+      {},
+      { timeout: 10_000 }
+    )) as HTMLElement;
+
+    await user.click(within(row).getByRole("button", { name: /Customize reactor/i }));
+
+    await waitFor(() => {
+      const distributionYaml = document.querySelector<HTMLElement>(
+        '[data-yaml-section="distribution"]'
+      );
+      expect(distributionYaml).not.toBeNull();
+      expect(distributionYaml?.className).toContain("bg-otel-orange/10");
+    });
+  });
+
+  it("General card leaf wrappers on the Instrumentation tab map to the instrumentation/development path", async () => {
+    renderPage();
+    const user = userEvent.setup();
+    await openInstrumentationTab(user);
+
+    const httpLeaf = await waitFor(() => {
+      const el = document.querySelector<HTMLElement>(
+        '[data-yaml-section-key="instrumentation/development.general.http"]'
+      );
+      expect(el).not.toBeNull();
+      return el as HTMLElement;
+    });
+
+    expect(httpLeaf.getAttribute("data-yaml-section-key")).toBe(
+      "instrumentation/development.general.http"
+    );
   });
 });

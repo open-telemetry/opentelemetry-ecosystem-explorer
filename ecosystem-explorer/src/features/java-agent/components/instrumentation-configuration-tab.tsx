@@ -15,15 +15,11 @@
  */
 import { useState } from "react";
 import { Settings } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { Configuration } from "@/types/javaagent";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { SegmentedTabList } from "@/components/ui/segmented-tabs";
 import { ConfigurationCard, type ConfigurationFormat } from "./configuration-card";
-
-const FORMAT_TABS = [
-  { value: "declarative", label: "Declarative" },
-  { value: "system-property", label: "System Properties" },
-];
 
 interface InstrumentationConfigurationTabProps {
   configurations: Configuration[];
@@ -32,14 +28,21 @@ interface InstrumentationConfigurationTabProps {
 export function InstrumentationConfigurationTab({
   configurations,
 }: InstrumentationConfigurationTabProps) {
+  const { t } = useTranslation("java-agent");
   const [format, setFormat] = useState<ConfigurationFormat>("declarative");
+  const formatTabs = [
+    { value: "declarative", label: t("configTabs.declarative") },
+    { value: "system-property", label: t("configTabs.systemProperties") },
+  ];
 
   if (configurations.length === 0) {
     return (
       <div className="flex min-h-[300px] items-center justify-center">
         <div className="text-center">
           <Settings className="text-muted-foreground/50 mx-auto h-12 w-12" aria-hidden="true" />
-          <p className="text-muted-foreground mt-4 text-sm">No configuration options available.</p>
+          <p className="text-muted-foreground mt-4 text-sm">
+            {t("configInstrumentation.noOptions")}
+          </p>
         </div>
       </div>
     );
@@ -65,7 +68,7 @@ export function InstrumentationConfigurationTab({
       value={format}
       onValueChange={(v) => setFormat(v as ConfigurationFormat)}
     >
-      <SegmentedTabList tabs={FORMAT_TABS} value={format} fullWidth />
+      <SegmentedTabList tabs={formatTabs} value={format} fullWidth />
       <TabsContent value="declarative">{grid("declarative")}</TabsContent>
       <TabsContent value="system-property">{grid("system-property")}</TabsContent>
     </Tabs>

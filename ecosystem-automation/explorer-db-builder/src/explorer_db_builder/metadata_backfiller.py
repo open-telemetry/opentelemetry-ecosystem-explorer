@@ -65,7 +65,10 @@ def backfill_metadata(
     backfilled_inventories = {}
     for version in versions:
         inventory = inventories[version]
-        items = inventory.get(item_key, [])
+        # `or []` (not a .get default) so an explicit "<item_key>": None (malformed or
+        # partial inventory, since YAML `libraries:` parses as None) normalizes to a list
+        # instead of raising TypeError when iterating below.
+        items = inventory.get(item_key) or []
 
         backfilled_items = []
         for item in items:
@@ -175,7 +178,9 @@ def _build_timelines(
         inventory = load_inventory_fn(version)
         inventories[version] = inventory
 
-        items = inventory.get(item_key, [])
+        # `or []` (not a .get default) so an explicit "<item_key>": None normalizes to a
+        # list instead of raising TypeError when iterating below (see backfill_metadata).
+        items = inventory.get(item_key) or []
         for item in items:
             item_name = item.get("name")
             if not item_name:

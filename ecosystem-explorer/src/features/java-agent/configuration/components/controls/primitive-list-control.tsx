@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Plus } from "lucide-react";
 import type {
   ConfigNode,
@@ -135,6 +136,7 @@ export function PrimitiveListControl({
   value,
   onChange,
 }: PrimitiveListControlProps) {
+  const { t } = useTranslation("java-agent");
   const items = value ?? [];
   const isNull = node.nullable === true && value === null;
   const { state } = useConfigurationBuilder();
@@ -169,17 +171,17 @@ export function PrimitiveListControl({
               ref={addButtonRef}
               type="button"
               onClick={handleAdd}
-              aria-label={`Add item to ${node.label}`}
+              aria-label={t("builder.primitiveList.addTooltip", { label: node.label })}
               className="border-border/60 bg-background/80 hover:border-primary/40 text-foreground inline-flex items-center gap-1 rounded-md border px-3 py-1.5 text-xs transition-all"
             >
               <Plus className="text-primary h-3 w-3" aria-hidden="true" />
-              Add
+              {t("builder.primitiveList.add")}
             </button>
           </FieldSection.Action>
         </FieldSection.Header>
         <FieldSection.Body>
           {items.length === 0 ? (
-            <FieldSection.Empty />
+            <FieldSection.Empty>{t("builder.primitiveList.empty")}</FieldSection.Empty>
           ) : (
             <FocusManagedInputList<ConfigValue>
               label={node.label}

@@ -14,9 +14,11 @@
 #
 """Tests for main entry point."""
 
+import json
 from unittest.mock import MagicMock, patch
 
 import pytest
+from explorer_db_builder.database_writer import DatabaseWriter
 from explorer_db_builder.main import (
     get_release_versions,
     process_version,
@@ -106,11 +108,21 @@ class TestProcessVersion:
         # write_libraries will be called twice (libraries, custom)
         mock_db_writer.write_libraries.side_effect = [library_map, custom_map]
 
-        process_version(version, mock_inventory_manager, mock_db_writer)
+        mock_db_writer.write_version_bundle.return_value = "bundlehash"
+
+        instrumentations, bundle_hash = process_version(version, mock_inventory_manager, mock_db_writer)
 
         mock_inventory_manager.load_versioned_inventory.assert_called_once_with(version)
         assert mock_db_writer.write_libraries.call_count == 2
         mock_db_writer.write_version_index.assert_called_once_with(version, library_map, custom_map)
+        # A consolidated per-version bundle is written and its hash returned.
+        assert bundle_hash == "bundlehash"
+        mock_db_writer.write_version_bundle.assert_called_once()
+        bundle_items = mock_db_writer.write_version_bundle.call_args.args[1]
+        # Slim entries: telemetry/configurations dropped, _is_custom set, custom last.
+        assert [e["name"] for e in bundle_items] == ["lib1", "lib2", "custom1"]
+        assert [e["_is_custom"] for e in bundle_items] == [False, False, True]
+        assert all("telemetry" not in e and "configurations" not in e for e in bundle_items)
 
     def test_process_version_missing_libraries_key(self, mock_inventory_manager, mock_db_writer):
         version = Version("2.0.0")
@@ -139,6 +151,19 @@ class TestProcessVersion:
         with pytest.raises(ValueError, match="No instrumentations found"):
             process_version(version, mock_inventory_manager, mock_db_writer)
 
+    def test_process_version_none_one_side_does_not_crash(self, mock_inventory_manager, mock_db_writer):
+        """An explicit None on one side (malformed/partial inventory) normalizes to a
+        list instead of raising TypeError when unpacking into the returned list."""
+        version = Version("2.0.0")
+        inventory_data = {"file_format": 0.2, "libraries": None, "custom": [{"name": "custom1"}]}
+
+        mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
+        mock_db_writer.write_libraries.return_value = {"custom1": "hash1"}
+
+        instrumentations, _bundle_hash = process_version(version, mock_inventory_manager, mock_db_writer)
+
+        assert [i["name"] for i in instrumentations] == ["custom1"]
+
 
 class TestRunJavaagentBuilder:
     def test_run_builder_success(self, mock_inventory_manager, mock_db_writer):
@@ -150,12 +175,16 @@ class TestRunJavaagentBuilder:
         mock_inventory_manager.list_versions.return_value = versions
         mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
         mock_db_writer.write_libraries.return_value = library_map
+        mock_db_writer.write_version_bundle.side_effect = ["hash-2.0.0", "hash-1.0.0"]
 
         exit_code = run_javaagent_builder(mock_inventory_manager, mock_db_writer)
 
         assert exit_code == 0
         assert mock_db_writer.write_version_list.called
-        mock_db_writer.write_version_list.assert_called_once_with(versions)
+        # write_version_list now also receives the per-version bundle hash map.
+        mock_db_writer.write_version_list.assert_called_once_with(
+            versions, {versions[0]: "hash-2.0.0", versions[1]: "hash-1.0.0"}
+        )
 
     def test_run_builder_value_error(self, mock_inventory_manager, mock_db_writer):
         mock_inventory_manager.list_versions.return_value = []
@@ -209,6 +238,27 @@ class TestRunJavaagentBuilder:
         assert mock_db_writer.write_libraries.call_count == 3
         assert mock_db_writer.write_version_index.call_count == 3
 
+    def test_run_builder_writes_index_from_latest_version(self, mock_inventory_manager, mock_db_writer):
+        """write_index is called once with the latest version's instrumentations."""
+        versions = [Version("3.0.0"), Version("2.0.0")]
+        # Each version carries a distinct library so we can tell which one fed the index.
+        inventories = {
+            Version("3.0.0"): {"file_format": 0.2, "libraries": [{"name": "latest-lib"}]},
+            Version("2.0.0"): {"file_format": 0.2, "libraries": [{"name": "older-lib"}]},
+        }
+
+        mock_inventory_manager.list_versions.return_value = versions
+        mock_inventory_manager.load_versioned_inventory.side_effect = lambda v: inventories[v]
+        mock_db_writer.write_libraries.return_value = {"x": "hash"}
+
+        exit_code = run_javaagent_builder(mock_inventory_manager, mock_db_writer)
+
+        assert exit_code == 0
+        mock_db_writer.write_index.assert_called_once()
+        (indexed_instrumentations,), _ = mock_db_writer.write_index.call_args
+        # versions[0] (3.0.0) is latest, so its library is the one indexed.
+        assert [i["name"] for i in indexed_instrumentations] == ["latest-lib"]
+
     def test_run_builder_processes_readmes(self, mock_inventory_manager, mock_db_writer):
         """Verifies READMEs are discovered, published, and hashes injected."""
         versions = [Version("1.0.0")]
@@ -243,6 +293,28 @@ class TestRunJavaagentBuilder:
         custom = write_calls[1][0][0]
         assert custom[0]["name"] == "custom1"
         assert custom[0]["markdown_hash"] == "fed4321cba98"
+
+    def test_run_builder_none_instrumentation_side_does_not_crash(self, mock_inventory_manager, mock_db_writer):
+        """An explicit None on one side (malformed/partial inventory) is normalized to a list
+        during README augmentation instead of raising TypeError while iterating."""
+        versions = [Version("1.0.0")]
+        inventory_data = {"file_format": 0.2, "libraries": None, "custom": [{"name": "custom1"}]}
+        readme_map = {"custom1": "abc123def456"}
+
+        mock_inventory_manager.list_versions.return_value = versions
+        mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
+        mock_inventory_manager.load_library_readme_map.return_value = readme_map
+        mock_inventory_manager.load_library_readme_content.return_value = "# README content"
+        mock_db_writer.write_libraries.return_value = {"custom1": "hash1"}
+
+        exit_code = run_javaagent_builder(mock_inventory_manager, mock_db_writer)
+
+        assert exit_code == 0
+        # The custom side still gets its markdown_hash augmented despite libraries being None.
+        write_calls = mock_db_writer.write_libraries.call_args_list
+        custom = write_calls[0][0][0]
+        assert custom[0]["name"] == "custom1"
+        assert custom[0]["markdown_hash"] == "abc123def456"
 
     def test_run_builder_uses_backfilled_inventories(self, mock_inventory_manager, mock_db_writer):
         versions = [Version("1.0.0"), Version("2.0.0")]
@@ -326,6 +398,33 @@ class TestRunJavaagentBuilder:
 
         assert call_order[0] == "clean"
         assert call_order[1] == "list_versions"
+
+    def test_aggregates_global_configurations(self, tmp_path):
+        """run_javaagent_builder writes global-configurations.json with newest-version-wins."""
+        inventory_manager = MagicMock()
+        inventory_manager.list_versions.return_value = [Version("2.1.0"), Version("2.0.0")]
+        inventory_manager.load_library_readme_map.return_value = {}
+        inventory_manager.load_versioned_inventory.side_effect = lambda v: {
+            Version("2.1.0"): {
+                "file_format": 0.5,
+                "libraries": [{"name": "jdbc", "configurations": [{"name": "otel.x", "type": "list"}]}],
+            },
+            Version("2.0.0"): {
+                "file_format": 0.5,
+                "libraries": [{"name": "jdbc", "configurations": [{"name": "otel.x", "type": "string"}]}],
+            },
+        }[v]
+
+        db_writer = DatabaseWriter(database_dir=str(tmp_path))
+
+        exit_code = run_javaagent_builder(inventory_manager, db_writer)
+
+        assert exit_code == 0
+        data = json.loads((tmp_path / "global-configurations.json").read_text(encoding="utf-8"))
+        assert [c["name"] for c in data] == ["otel.x"]
+        # newest version (2.1.0) wins the type conflict
+        assert data[0]["type"] == "list"
+        assert data[0]["instrumentations"] == ["jdbc"]
 
 
 class TestMain:

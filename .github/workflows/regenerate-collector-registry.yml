@@ -1,0 +1,168 @@
+name: Regenerate Collector Registry
+
+# Re-generate collector registry versions with the current watcher
+# logic and opens a PR with the result. Use this after a change to how the
+# schema hash is computed (e.g. normalization or dump-option changes), or after
+# adding a metadata parser, so historical versions are re-stamped and the schema
+# store stays deduplicated.
+
+on:
+  workflow_dispatch:
+    inputs:
+      versions:
+        description:
+          "Optional comma-separated versions to scope the backfill (e.g. 0.144.0,0.145.0). Empty =
+          all existing versions, both distributions."
+        type: string
+        required: false
+        default: ""
+
+permissions:
+  contents: read # Default minimum; the job declares its own elevated scopes below
+
+concurrency:
+  # Single in-flight run since all runs target the shared backfill branch.
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  backfill:
+    name: Regenerate collector registry and open PR
+    permissions:
+      contents: write # Push the backfill result to the otelbot/collector-registry-regenerate branch
+      pull-requests: write # Create or update the backfill PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Detect repository type (if on a fork we use different git config)
+        id: repo_check
+        env:
+          REPO: ${{ github.repository }}
+        run: |
+          if [ "$REPO" == "open-telemetry/opentelemetry-ecosystem-explorer" ]; then
+            echo "is_primary=true" >> $GITHUB_OUTPUT
+          else
+            echo "is_primary=false" >> $GITHUB_OUTPUT
+          fi
+
+      # Mint the otelbot App token for the PR operations below. The branch push
+      # authenticates as GITHUB_TOKEN (the App has no `contents: write`); we
+      # re-trigger required checks afterwards by closing and reopening the PR
+      # with this App token (see the "Commit and push changes" step).
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        if: steps.repo_check.outputs.is_primary == 'true'
+        id: otelbot-token
+        with:
+          client-id: ${{ vars.OTELBOT_APP_ID }}
+          private-key: ${{ secrets.OTELBOT_PRIVATE_KEY }}
+          repositories: ${{ github.event.repository.name }}
+          permission-pull-requests: write # Create / edit / reopen the backfill PR
+
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          # Persist GITHUB_TOKEN as the git credential for the branch push. A
+          # push authenticated with GITHUB_TOKEN does not start workflows, so the
+          # "Commit and push changes" step re-triggers the required checks by
+          # closing/reopening the PR with the otelbot App token.
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
+
+      - name: Configure git (primary repository)
+        if: steps.repo_check.outputs.is_primary == 'true'
+        run: |
+          .github/scripts/use-cla-approved-bot.sh
+
+      - name: Configure git (forked repository)
+        if: steps.repo_check.outputs.is_primary == 'false'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Cache repository clones
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: tmp_repos
+          key: tmp-repos
+          restore-keys: |
+            tmp-repos-
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version-file: ".python-version"
+
+      - name: Install dependencies
+        run: uv sync --locked
+
+      - name: Run collector-watcher backfill
+        id: backfill
+        env:
+          VERSIONS: ${{ inputs.versions }}
+        run: |
+          # Backfill re-extracts both core and contrib. Contrib's schema is
+          # resolved from the core clone at each version's ref, so both
+          # distributions stay in sync regardless of scope.
+          ARGS=(--backfill)
+          if [ -n "$VERSIONS" ]; then
+            ARGS+=(--versions "$VERSIONS")
+          fi
+          echo "Running: uv run collector-watcher ${ARGS[*]}"
+          uv run collector-watcher "${ARGS[@]}"
+
+      - name: Check for registry changes
+        id: check_changes
+        run: |
+          git add -N ecosystem-registry/ 2>/dev/null || true
+          if git diff --quiet ecosystem-registry/ && [ -z "$(git ls-files --others --exclude-standard ecosystem-registry/)" ]; then
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: No changes
+        if: steps.check_changes.outputs.has_changes == 'false'
+        run: echo "Backfill produced no registry changes — nothing to open a PR for."
+
+      - name: Commit and push changes
+        if: steps.check_changes.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN:
+            ${{ steps.repo_check.outputs.is_primary == 'true' && steps.otelbot-token.outputs.token
+            || secrets.GITHUB_TOKEN }}
+          VERSIONS: ${{ inputs.versions }}
+          RUN_ID: ${{ github.run_id }}
+          REPO: ${{ github.repository }}
+        run: |
+          BRANCH="otelbot/collector-registry-regenerate"
+
+          git add ecosystem-registry/
+          git commit -m "Backfill collector registry${VERSIONS:+ ($VERSIONS)}"
+          git push -f origin HEAD:${BRANCH}
+
+          PR_TITLE="[automated] Regenerate Collector Registry"
+          PR_BODY="Re-extracted collector registry versions via \`collector-watcher --backfill\`.
+
+          - **Versions:** ${VERSIONS:-all existing}
+
+          See [workflow run](https://github.com/${REPO}/actions/runs/${RUN_ID}).
+
+          ---
+          _Generated by the Collector Schema Backfill workflow._"
+
+          if gh pr list --head ${BRANCH} --state open --json number --jq '.[0].number' | grep -q .; then
+            echo "Open PR already exists, updating..."
+            gh pr edit ${BRANCH} --title "${PR_TITLE}" --body "${PR_BODY}"
+            # The force-push above is authenticated with GITHUB_TOKEN, which does
+            # not start workflows. Closing and reopening with the otelbot App
+            # token re-runs the required checks against the updated head.
+            gh pr close ${BRANCH}
+            gh pr reopen ${BRANCH}
+          else
+            echo "Creating new PR..."
+            gh pr create --title "${PR_TITLE}" --body "${PR_BODY}" --base main --head ${BRANCH}
+          fi

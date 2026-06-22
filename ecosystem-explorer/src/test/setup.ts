@@ -14,15 +14,46 @@
  * limitations under the License.
  */
 import "@testing-library/jest-dom";
-import { beforeEach, vi } from "vitest";
+import { beforeAll, vi } from "vitest";
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
+
+import commonEn from "../../public/locales/en/common.json";
+import layoutEn from "../../public/locales/en/layout.json";
+import homeEn from "../../public/locales/en/home.json";
+import collectorEn from "../../public/locales/en/collector.json";
+import javaAgentEn from "../../public/locales/en/java-agent.json";
+import ecosystemEn from "../../public/locales/en/ecosystem.json";
+import aboutEn from "../../public/locales/en/about.json";
+
+i18n.use(initReactI18next).init({
+  lng: "en",
+  fallbackLng: "en",
+  ns: ["common", "layout", "home", "collector", "java-agent", "ecosystem", "about"],
+  defaultNS: "common",
+  resources: {
+    en: {
+      common: commonEn,
+      layout: layoutEn,
+      home: homeEn,
+      collector: collectorEn,
+      "java-agent": javaAgentEn,
+      ecosystem: ecosystemEn,
+      about: aboutEn,
+    },
+  },
+});
 
 /*
  * jsdom doesn't ship `window.matchMedia`, but `ThemeProvider` calls it on
  * mount (via `useSyncExternalStore`) to resolve `auto` mode. Provide a stub
  * globally so tests that render anything under the provider don't have to
  * wire it up themselves. `matches: true` defaults to "system prefers dark".
+ *
+ * beforeAll is correct here: the stub is a constant value that never needs
+ * resetting between tests in the same file.
  */
-beforeEach(() => {
+beforeAll(() => {
   vi.stubGlobal("matchMedia", () => ({
     matches: true,
     addEventListener: vi.fn(),

@@ -1,0 +1,17 @@
+{
+  "hero": {
+    "titlePrefix": "OpenTelemetry",
+    "titleSuffix": "Ecosystem Explorer",
+    "tagline": "Navega el vasto panorama de OpenTelemetry."
+  },
+  "explore": {
+    "javaAgent": {
+      "title": "OpenTelemetry Java Agent",
+      "description": "Explora la auto-instrumentación para aplicaciones Java. Descubre bibliotecas compatibles, opciones de configuración y telemetría emitida."
+    },
+    "collector": {
+      "title": "OpenTelemetry Collector",
+      "description": "Navega los componentes del Collector como receptores, procesadores y exportadores."
+    }
+  }
+}

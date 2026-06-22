@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { JSX } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronRight, Plus, X } from "lucide-react";
 import type { InstrumentationModule } from "@/types/javaagent";
 import type { CustomizationStatus } from "@/hooks/use-customization-status";
@@ -40,6 +41,7 @@ export function InstrumentationRow({
   onToggleExpand,
   onJumpToGeneral,
 }: InstrumentationRowProps): JSX.Element {
+  const { t } = useTranslation("java-agent");
   const isCustomized = status !== "none";
   const customizationEnabled = status === "enabled";
   const enabledByDefault = !module.defaultDisabled;
@@ -52,44 +54,50 @@ export function InstrumentationRow({
     .filter((s) => s !== "")
     .join(", ");
 
-  const containerClass = isCustomized
+  const containerClass = isExpanded
+    ? "border-primary/40 shadow-md bg-surface-card"
+    : "border-border/60 shadow-sm bg-surface-card hover:border-border/80";
+
+  const headerBgClass = isCustomized
     ? customizationEnabled
-      ? "border-primary/40 bg-primary/5"
-      : "border-red-500/40 bg-red-500/5"
-    : "border-border/60 bg-background/30 hover:bg-background/50";
+      ? "bg-primary/5"
+      : "bg-red-500/5"
+    : "bg-muted/20";
 
   return (
     <div
       data-testid={`instrumentation-row-${module.name}`}
       data-expanded={String(isExpanded)}
-      className={`rounded-md border transition-colors ${containerClass}`}
+      data-yaml-section-key="distribution"
+      className={`overflow-hidden rounded-xl border transition-all duration-200 ${containerClass}`}
     >
-      <div className="flex flex-col gap-2 px-3 py-2 sm:flex-row sm:items-center sm:gap-3">
+      {/* Header Region */}
+      <div
+        className={`border-border/40 flex cursor-pointer flex-col gap-3 border-b px-4 py-3 sm:flex-row sm:items-center sm:justify-between ${headerBgClass}`}
+        onClick={onToggleExpand}
+      >
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span className="text-foreground font-mono text-sm font-medium">{module.name}</span>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <h4 className="text-foreground font-mono text-sm font-bold">{module.name}</h4>
             {module.coveredEntries.length > 1 ? (
-              <span className="border-border/60 text-muted-foreground inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] leading-none">
-                {module.coveredEntries.length} versions
+              <span className="border-border/60 bg-surface-card text-muted-foreground inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] leading-none shadow-sm">
+                {t("builder.row.versions", { count: module.coveredEntries.length })}
               </span>
             ) : null}
             {module.coveredEntries.some((e) => e._is_custom === true) ? (
-              <span className="border-border/60 text-muted-foreground inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] leading-none">
-                custom
+              <span className="border-border/60 bg-surface-card text-muted-foreground inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] leading-none shadow-sm">
+                {t("builder.row.custom")}
               </span>
             ) : null}
           </div>
-          {description ? (
-            <p className="text-muted-foreground mt-0.5 truncate text-xs">{description}</p>
-          ) : null}
           {versionsCovered ? (
-            <p className="text-muted-foreground/70 mt-0.5 truncate text-[11px]">
-              covers {versionsCovered}
+            <p className="text-muted-foreground/70 mt-1.5 truncate text-[11px]">
+              {t("builder.row.covers", { versions: versionsCovered })}
             </p>
           ) : null}
         </div>
 
-        <div className="flex items-center gap-2 sm:contents">
+        <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
           {isCustomized ? (
             <CustomizationToggle enabled={customizationEnabled} onChange={onSetEnabled} />
           ) : (
@@ -99,9 +107,9 @@ export function InstrumentationRow({
           {isCustomized ? (
             <button
               type="button"
-              aria-label={`Remove customization for ${module.name}`}
+              aria-label={t("builder.row.removeTooltip", { name: module.name })}
               onClick={onRemoveCustomization}
-              className="text-muted-foreground hover:text-foreground rounded-md p-1"
+              className="text-muted-foreground hover:bg-card-secondary hover:text-foreground rounded-md p-1.5 transition-colors"
             >
               <X className="h-3.5 w-3.5" aria-hidden="true" />
             </button>
@@ -109,32 +117,46 @@ export function InstrumentationRow({
             <button
               type="button"
               onClick={onAddCustomization}
-              aria-label={`Customize ${module.name}`}
-              className="border-border/60 text-foreground hover:bg-card/80 inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs"
+              aria-label={t("builder.row.customizeAriaLabel", { name: module.name })}
+              className="border-border/60 bg-surface-card text-foreground hover:bg-card inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs shadow-sm transition-colors"
             >
               <Plus className="h-3 w-3" aria-hidden="true" />
-              Customize
+              {t("builder.row.customize")}
             </button>
           )}
 
           <button
             type="button"
             data-row-toggle
-            aria-label={`Toggle details for ${module.name}`}
+            aria-label={t("builder.row.toggleDetailsTooltip", { name: module.name })}
             aria-expanded={isExpanded}
             onClick={onToggleExpand}
-            className="text-muted-foreground/60 hover:text-foreground hidden h-5 w-5 items-center justify-center sm:inline-flex"
+            className="text-muted-foreground/60 hover:bg-card-secondary hover:text-foreground hidden h-7 w-7 items-center justify-center rounded-md transition-colors sm:inline-flex"
           >
             <ChevronRight
-              className={`h-4 w-4 transition-transform ${isExpanded ? "rotate-90" : ""}`}
+              className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`}
               aria-hidden="true"
             />
           </button>
         </div>
       </div>
 
+      {/* Description Area (collapsed) */}
+      {!isExpanded && description ? (
+        <div className="bg-surface-card px-4 py-3">
+          <p className="text-muted-foreground truncate text-xs">{description}</p>
+        </div>
+      ) : null}
+
+      {/* Expanded Body Region */}
       {isExpanded ? (
-        <div className="border-border/40 border-t px-3 py-3">
+        <div
+          className="bg-surface-card px-4 py-4 sm:px-5 sm:py-5"
+          data-yaml-section-key="instrumentation/development"
+        >
+          {description ? (
+            <p className="text-muted-foreground mb-6 text-sm leading-relaxed">{description}</p>
+          ) : null}
           <InstrumentationConfigForm module={module} onJumpToGeneral={onJumpToGeneral} />
         </div>
       ) : null}
@@ -143,16 +165,17 @@ export function InstrumentationRow({
 }
 
 function DefaultPill({ enabledByDefault }: { enabledByDefault: boolean }) {
+  const { t } = useTranslation("java-agent");
   if (enabledByDefault) {
     return (
       <span className="inline-flex items-center rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] leading-none text-emerald-300">
-        enabled by default
+        {t("builder.row.enabledByDefault")}
       </span>
     );
   }
   return (
     <span className="border-border/60 text-muted-foreground inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] leading-none">
-      disabled by default
+      {t("builder.row.disabledByDefault")}
     </span>
   );
 }
@@ -164,13 +187,14 @@ function CustomizationToggle({
   enabled: boolean;
   onChange: (next: boolean) => void;
 }) {
+  const { t } = useTranslation("java-agent");
   const onClass = "bg-emerald-500/20 text-emerald-300";
   const offClass = "bg-red-500/20 text-red-300";
   const baseClass = "px-2 py-1 text-[11px] leading-none";
   return (
     <div
       role="group"
-      aria-label="Customization state"
+      aria-label={t("builder.row.customizationState")}
       className="border-border/60 inline-flex overflow-hidden rounded-md border"
     >
       <button
@@ -179,7 +203,7 @@ function CustomizationToggle({
         aria-pressed={enabled}
         className={`${baseClass} ${enabled ? onClass : "text-muted-foreground"}`}
       >
-        Enabled
+        {t("builder.row.enabled")}
       </button>
       <button
         type="button"
@@ -187,7 +211,7 @@ function CustomizationToggle({
         aria-pressed={!enabled}
         className={`${baseClass} ${!enabled ? offClass : "text-muted-foreground"}`}
       >
-        Disabled
+        {t("builder.row.disabled")}
       </button>
     </div>
   );

@@ -20,7 +20,10 @@ import { isEnabled } from "@/lib/feature-flags";
 import { CncfCallout } from "@/v1/components/layout/cncf-callout";
 import { FooterV1 } from "@/v1/components/layout/footer";
 import { NavBar } from "@/v1/components/layout/nav-bar";
+import { Loader } from "@/components/ui/loader";
 import "@/v1/styles/index.css";
+import { InstrumentationHandler } from "@/features/java-agent/instrumentation-handler";
+import { LegacyNameVersionRedirect } from "@/features/java-agent/legacy-name-version-redirect";
 
 /*
  * V1 sub-app entry. Reached via the V1_REDESIGN boundary read in `src/App.tsx`.
@@ -42,10 +45,14 @@ const HomePage = lazy(() =>
   import("@/v1/features/home/home-page").then((m) => ({ default: m.HomeV1 }))
 );
 const JavaAgentPage = lazy(() =>
-  import("@/features/java-agent/java-agent-page").then((m) => ({ default: m.JavaAgentPage }))
+  import("@/v1/features/ecosystem/java-agent-landing").then((m) => ({
+    default: m.JavaAgentLandingV1,
+  }))
 );
 const CollectorPage = lazy(() =>
-  import("@/features/collector/collector-page").then((m) => ({ default: m.CollectorPage }))
+  import("@/v1/features/ecosystem/collector-landing").then((m) => ({
+    default: m.CollectorLandingV1,
+  }))
 );
 const CollectorComponentsPage = lazy(() =>
   import("@/features/collector/collector-components-page").then((m) => ({
@@ -75,11 +82,7 @@ const JavaReleaseComparisonPage = lazy(() =>
     default: m.JavaReleaseComparisonPage,
   }))
 );
-const InstrumentationDetailPage = lazy(() =>
-  import("@/features/java-agent/instrumentation-detail-page").then((m) => ({
-    default: m.InstrumentationDetailPage,
-  }))
-);
+
 const ConfigurationBuilderPage = lazy(() =>
   import("@/features/java-agent/configuration/configuration-builder-page").then((m) => ({
     default: m.ConfigurationBuilderPage,
@@ -98,29 +101,21 @@ export function V1App() {
       <NavBar />
       <main className="flex-1 pt-16">
         <ErrorBoundary>
-          <Suspense
-            fallback={
-              <div
-                className="flex min-h-[400px] items-center justify-center"
-                role="status"
-                aria-live="polite"
-              >
-                <div className="text-muted-foreground text-sm font-medium">Loading…</div>
-              </div>
-            }
-          >
+          <Suspense fallback={<Loader label="Loading…" />}>
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/java-agent" element={<JavaAgentPage />} />
               <Route path="/java-agent/instrumentation" element={<JavaInstrumentationListPage />} />
+
               <Route
-                path="/java-agent/instrumentation/:version"
-                element={<JavaInstrumentationListPage />}
+                path="/java-agent/instrumentation/:param"
+                element={<InstrumentationHandler />}
               />
               <Route
                 path="/java-agent/instrumentation/:version/:name"
-                element={<InstrumentationDetailPage />}
+                element={<LegacyNameVersionRedirect />}
               />
+
               <Route path="/java-agent/configuration" element={<JavaConfigurationListPage />} />
               {isEnabled("JAVA_RELEASE_COMPARISON") && (
                 <Route path="/java-agent/releases" element={<JavaReleaseComparisonPage />} />

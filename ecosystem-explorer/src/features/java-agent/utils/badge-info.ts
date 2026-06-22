@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { InstrumentationData } from "@/types/javaagent";
+import type { InstrumentationListEntry } from "@/types/javaagent";
 
 export interface BadgeInfo {
   hasSpans: boolean;
@@ -23,12 +23,14 @@ export interface BadgeInfo {
 }
 
 /**
- * Computes badge presence flags for a single instrumentation.
+ * Computes badge presence flags for a single instrumentation. Slim list entries
+ * always carry the precomputed `has_spans`/`has_metrics` flags (the bundle and
+ * the fan-out projection both set them), so no telemetry scan is needed.
  */
-export function getBadgeInfo(instrumentation: InstrumentationData): BadgeInfo {
+export function getBadgeInfo(instrumentation: InstrumentationListEntry): BadgeInfo {
   return {
-    hasSpans: instrumentation.telemetry?.some((t) => t.spans && t.spans.length > 0) ?? false,
-    hasMetrics: instrumentation.telemetry?.some((t) => t.metrics && t.metrics.length > 0) ?? false,
+    hasSpans: instrumentation.has_spans === true,
+    hasMetrics: instrumentation.has_metrics === true,
     hasJavaAgentTarget: instrumentation.has_javaagent === true,
     hasLibraryTarget: instrumentation.has_standalone_library === true,
   };
@@ -38,15 +40,11 @@ export function getBadgeInfo(instrumentation: InstrumentationData): BadgeInfo {
  * Computes aggregated badge presence flags across multiple instrumentations.
  * A badge is present if any instrumentation in the list has it.
  */
-export function getAggregatedBadgeInfo(instrumentations: InstrumentationData[]): BadgeInfo {
+export function getAggregatedBadgeInfo(instrumentations: InstrumentationListEntry[]): BadgeInfo {
   return {
-    hasSpans: instrumentations.some(
-      (instr) => instr.telemetry?.some((t) => t.spans && t.spans.length > 0) ?? false
-    ),
-    hasMetrics: instrumentations.some(
-      (instr) => instr.telemetry?.some((t) => t.metrics && t.metrics.length > 0) ?? false
-    ),
-    hasJavaAgentTarget: instrumentations.some((instr) => instr.has_javaagent === true),
-    hasLibraryTarget: instrumentations.some((instr) => instr.has_standalone_library === true),
+    hasSpans: instrumentations.some((i) => i.has_spans === true),
+    hasMetrics: instrumentations.some((i) => i.has_metrics === true),
+    hasJavaAgentTarget: instrumentations.some((i) => i.has_javaagent === true),
+    hasLibraryTarget: instrumentations.some((i) => i.has_standalone_library === true),
   };
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { InstrumentationData, InstrumentationModule } from "@/types/javaagent";
+import type { InstrumentationListEntry, InstrumentationModule } from "@/types/javaagent";
 
 const VERSION_SUFFIX_RE = /-\d+(?:\.\d+)*$/;
 
@@ -21,8 +21,8 @@ export function normalizeRegistryName(name: string): string {
   return name.replace(VERSION_SUFFIX_RE, "").replace(/[-.]/g, "_");
 }
 
-export function groupByModule(entries: InstrumentationData[]): InstrumentationModule[] {
-  const buckets = new Map<string, InstrumentationData[]>();
+export function groupByModule(entries: InstrumentationListEntry[]): InstrumentationModule[] {
+  const buckets = new Map<string, InstrumentationListEntry[]>();
   for (const entry of entries) {
     const key = normalizeRegistryName(entry.name);
     let bucket = buckets.get(key);

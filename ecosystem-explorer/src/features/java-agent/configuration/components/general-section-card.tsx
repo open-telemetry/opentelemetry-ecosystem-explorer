@@ -18,6 +18,7 @@ import type { ConfigNode } from "@/types/configuration";
 import { SchemaRenderer } from "./schema-renderer";
 import { SectionCardShell } from "./section-card-shell";
 import { FieldSection } from "./field-section";
+import { useCollapsibleExpansion } from "./section-expansion-context";
 
 export const GENERAL_SECTION_KEY = "general";
 export const GENERAL_SECTION_LABEL = "General";
@@ -39,6 +40,8 @@ export function GeneralSectionCard({
   sectionKey = GENERAL_SECTION_KEY,
   emptyMessage,
 }: GeneralSectionCardProps): JSX.Element {
+  const { open, onOpenChange } = useCollapsibleExpansion(sectionKey, defaultExpanded);
+
   const headerNode = {
     controlType: "group" as const,
     key: "__general__",
@@ -51,7 +54,8 @@ export function GeneralSectionCard({
         node={headerNode}
         level="section"
         asGroup={false}
-        defaultExpanded={defaultExpanded}
+        open={open}
+        onOpenChange={onOpenChange}
       >
         <FieldSection.Header>
           <FieldSection.Chevron />
@@ -62,15 +66,14 @@ export function GeneralSectionCard({
             <p className="text-muted-foreground text-sm">{emptyMessage}</p>
           ) : (
             <div className="space-y-3 pl-3">
-              {children.map((child) => (
-                <div key={child.key} data-yaml-section-key={child.key}>
-                  <SchemaRenderer
-                    node={child}
-                    depth={1}
-                    path={pathPrefix ? `${pathPrefix}.${child.key}` : child.key}
-                  />
-                </div>
-              ))}
+              {children.map((child) => {
+                const path = pathPrefix ? `${pathPrefix}.${child.key}` : child.key;
+                return (
+                  <div key={child.key} data-yaml-section-key={path}>
+                    <SchemaRenderer node={child} depth={1} path={path} />
+                  </div>
+                );
+              })}
             </div>
           )}
         </FieldSection.Body>

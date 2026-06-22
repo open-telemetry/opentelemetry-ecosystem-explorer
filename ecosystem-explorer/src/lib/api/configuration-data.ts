@@ -23,7 +23,8 @@ export async function loadConfigVersions(): Promise<ConfigVersionsIndex> {
   const data = await fetchWithCache<ConfigVersionsIndex>(
     "config-versions-index",
     `${BASE_PATH}/versions-index.json`,
-    STORES.CONFIGURATION
+    STORES.CONFIGURATION,
+    { validate: (d) => Array.isArray(d.versions) && d.versions.length > 0 }
   );
   if (!data) throw new Error("Versions index returned null unexpectedly");
   return data;

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useTranslation } from "react-i18next";
 import type { BadgeInfo } from "../utils/badge-info";
 import type { FilterState } from "./instrumentation-filter-bar";
 import { FILTER_STYLES } from "../styles/filter-styles";
@@ -36,6 +37,7 @@ export function TargetBadges({
   activeFilters,
   size = "default",
 }: InstrumentationBadgesProps) {
+  const { t } = useTranslation("java-agent");
   const cls = sizeClasses[size];
   const isJavaAgentFilterActive = activeFilters?.target.has("javaagent");
   const isLibraryFilterActive = activeFilters?.target.has("library");
@@ -43,32 +45,32 @@ export function TargetBadges({
   return (
     <>
       {badges.hasJavaAgentTarget && (
-        <Tooltip content="Standard instrumentation that runs alongside the application using a Java agent.">
+        <Tooltip content={t("badges.agent.tooltip")}>
           <span
+            aria-label={t("badges.agent.ariaLabel")}
             className={`${cls} focus:ring-ring cursor-help transition-all focus:ring-2 focus:ring-offset-1 focus:outline-none ${
               isJavaAgentFilterActive
                 ? FILTER_STYLES.target.javaagent.active
                 : FILTER_STYLES.target.javaagent.inactive
             }`}
-            aria-label="Has Java Agent target"
             tabIndex={0}
           >
-            Agent
+            {t("badges.agent.label")}
           </span>
         </Tooltip>
       )}
       {badges.hasLibraryTarget && (
-        <Tooltip content="Standalone libraries are installed manually and for use without the agent.">
+        <Tooltip content={t("badges.library.tooltip")}>
           <span
+            aria-label={t("badges.library.ariaLabel")}
             className={`${cls} focus:ring-ring cursor-help transition-all focus:ring-2 focus:ring-offset-1 focus:outline-none ${
               isLibraryFilterActive
                 ? FILTER_STYLES.target.library.active
                 : FILTER_STYLES.target.library.inactive
             }`}
-            aria-label="Has standalone library target"
             tabIndex={0}
           >
-            Library
+            {t("badges.library.label")}
           </span>
         </Tooltip>
       )}
@@ -81,6 +83,7 @@ export function TelemetryBadges({
   activeFilters,
   size = "default",
 }: InstrumentationBadgesProps) {
+  const { t } = useTranslation("java-agent");
   const cls = sizeClasses[size];
   const isSpansFilterActive = activeFilters?.telemetry.has("spans");
   const isMetricsFilterActive = activeFilters?.telemetry.has("metrics");
@@ -88,32 +91,32 @@ export function TelemetryBadges({
   return (
     <>
       {badges.hasSpans && (
-        <Tooltip content="Produces span telemetry for distributed tracing.">
+        <Tooltip content={t("badges.spans.tooltip")}>
           <span
+            aria-label={t("badges.spans.ariaLabel")}
             className={`${cls} focus:ring-ring cursor-help transition-all focus:ring-2 focus:ring-offset-1 focus:outline-none ${
               isSpansFilterActive
                 ? FILTER_STYLES.telemetry.spans.active
                 : FILTER_STYLES.telemetry.spans.inactive
             }`}
-            aria-label="Has span telemetry"
             tabIndex={0}
           >
-            Spans
+            {t("badges.spans.label")}
           </span>
         </Tooltip>
       )}
       {badges.hasMetrics && (
-        <Tooltip content="Produces metric telemetry for monitoring.">
+        <Tooltip content={t("badges.metrics.tooltip")}>
           <span
+            aria-label={t("badges.metrics.ariaLabel")}
             className={`${cls} focus:ring-ring cursor-help transition-all focus:ring-2 focus:ring-offset-1 focus:outline-none ${
               isMetricsFilterActive
                 ? FILTER_STYLES.telemetry.metrics.active
                 : FILTER_STYLES.telemetry.metrics.inactive
             }`}
-            aria-label="Has metric telemetry"
             tabIndex={0}
           >
-            Metrics
+            {t("badges.metrics.label")}
           </span>
         </Tooltip>
       )}

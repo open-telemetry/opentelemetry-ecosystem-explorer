@@ -2,6 +2,7 @@ distribution: contrib
 version: 0.148.0
 repository: opentelemetry-collector-contrib
 component_type: extension
+schema_hash: 1dfd2577234f
 components:
 - name: ackextension
   metadata:

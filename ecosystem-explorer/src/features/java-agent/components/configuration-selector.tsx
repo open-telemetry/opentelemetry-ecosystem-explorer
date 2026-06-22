@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { Info, ChevronDown } from "lucide-react";
+import { useTranslation, getI18n } from "react-i18next";
 import type { Telemetry } from "@/types/javaagent";
 
 interface ConfigurationSelectorProps {
@@ -23,7 +24,7 @@ interface ConfigurationSelectorProps {
 }
 
 function getConfigLabel(when: string): string {
-  if (when === "default") return "Default";
+  if (when === "default") return getI18n().t("configSelector.defaultOption", { ns: "java-agent" });
   return when;
 }
 
@@ -32,6 +33,7 @@ export function ConfigurationSelector({
   selectedWhen,
   onWhenChange,
 }: ConfigurationSelectorProps) {
+  const { t } = useTranslation("java-agent");
   return (
     <div className="mx-auto max-w-3xl">
       <div className="border-border/30 bg-card/40 flex flex-col gap-4 rounded-xl border p-6 shadow-sm backdrop-blur-sm md:flex-row md:items-center md:justify-between">
@@ -40,7 +42,7 @@ export function ConfigurationSelector({
           <div className="bg-secondary/10 border-secondary/20 flex items-center gap-2 rounded-lg border px-3 py-2">
             <Info className="text-secondary h-4 w-4" aria-hidden="true" />
             <span className="text-foreground/90 text-xs font-medium">
-              Telemetry varies by configuration
+              {t("configSelector.banner")}
             </span>
           </div>
         </div>
@@ -51,7 +53,7 @@ export function ConfigurationSelector({
             htmlFor="config-select"
             className="bg-muted/50 text-foreground/70 shrink-0 rounded-md px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase"
           >
-            Configuration
+            {t("configSelector.label")}
           </label>
           <div className="relative flex-1 sm:flex-none">
             <select
