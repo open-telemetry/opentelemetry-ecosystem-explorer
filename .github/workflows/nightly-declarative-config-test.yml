@@ -1,0 +1,91 @@
+name: Nightly Declarative Config Test
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  run-acceptance-test:
+    name: Run Acceptance Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: .bun-version
+          cache: true
+          cache-dependency-path: ecosystem-explorer/bun.lock
+
+      - name: Install dependencies
+        run: |
+          cd ecosystem-explorer
+          bun install --frozen-lockfile
+
+      - name: Build explorer
+        run: |
+          cd ecosystem-explorer
+          bun run build
+
+      - name: Install Playwright browsers
+        run: |
+          cd ecosystem-explorer
+          bunx playwright install chromium
+
+      - name: Generate config file
+        run: |
+          cd ecosystem-explorer
+          node scripts/generate-test-config.mjs ../acceptance-tests/declarative-config-acceptance/test-config.yaml
+
+      - name: Download latest OpenTelemetry Java Agent
+        run: |
+          AGENT_URL=$(curl -s https://api.github.com/repos/open-telemetry/opentelemetry-java-instrumentation/releases/latest | grep "browser_download_url" | grep "opentelemetry-javaagent.jar" | head -n 1 | cut -d '"' -f 4)
+          echo "Downloading latest agent from: $AGENT_URL"
+          curl -L -o acceptance-tests/declarative-config-acceptance/opentelemetry-javaagent.jar "$AGENT_URL"
+
+      - name: Run OATS acceptance tests
+        run: |
+          cd acceptance-tests/declarative-config-acceptance
+          docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v "$(pwd):/workspace" -w /workspace grafana/oats:latest test
+
+      - name: Create issue on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          CONFIG_CONTENT=""
+          if [ -f acceptance-tests/declarative-config-acceptance/test-config.yaml ]; then
+            CONFIG_CONTENT=$(cat acceptance-tests/declarative-config-acceptance/test-config.yaml)
+          else
+            CONFIG_CONTENT="No config file was generated."
+          fi
+
+          TITLE="Bug: Nightly Declarative Config Acceptance Test Failed"
+          BODY=$(cat <<EOF
+          The nightly end-to-end acceptance test for the Declarative Configuration Builder failed.
+
+          **Run Details:**
+          - Workflow Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+          **Generated Configuration:**
+          \`\`\`yaml
+          $CONFIG_CONTENT
+          \`\`\`
+
+          Please inspect the workflow logs and verify if the Java agent has had schema regressions or if the builder generated invalid syntax.
+          EOF
+          )
+
+          gh issue create --title "$TITLE" --body "$BODY" --label "bug"

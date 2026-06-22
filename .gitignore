@@ -21,3 +21,7 @@ CLAUDE.local.md
 
 # dotenv
 .envrc
+
+# Acceptance test generated files
+opentelemetry-javaagent.jar
+test-config.yaml
