@@ -48,12 +48,12 @@ i18n.use(initReactI18next).init({
   },
 });
 
-// JSDOM does not implement Element.scrollIntoView or scrollBy; provide a stub so that
-// click handlers wired to scrollToSection don't throw during tests.
-if (typeof Element !== "undefined" && !Element.prototype.scrollIntoView) {
+// JSDOM does not implement Element.scrollIntoView or scrollBy; stub them
+// unconditionally (matching src/test/setup.ts) so that click handlers wired to
+// scrollToSection don't throw, and so tests can assert against them as vi mocks
+// even if a future JSDOM/polyfill provides a real implementation.
+if (typeof Element !== "undefined") {
   Element.prototype.scrollIntoView = vi.fn();
-}
-if (typeof Element !== "undefined" && !Element.prototype.scrollBy) {
   Element.prototype.scrollBy = vi.fn();
 }
 
