@@ -613,7 +613,7 @@ export function InstrumentationDetailPage() {
                   ) : (
                     versionsData && (
                       <TelemetryComparisonSection
-                        instrumentationName={name ?? ""}
+                        instrumentationName={param ?? ""}
                         versions={versionsData.versions}
                         currentVersion={version ?? ""}
                       />
