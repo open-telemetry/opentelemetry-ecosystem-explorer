@@ -25,9 +25,18 @@ import { isPlainObject } from "./value-guards";
 const EMPTY = Symbol("EMPTY");
 type StrippedResult = ConfigValue | typeof EMPTY;
 
+export type ConfigurationTarget = "javaagent" | "spring_starter";
+
 interface GenerateYamlOptions {
   header?: string;
   javaAgentVersion?: string;
+  /**
+   * Output flavor. `"javaagent"` (default) emits a standalone declarative
+   * config file. `"spring_starter"` wraps the body under a top-level `otel:`
+   * key and renames `distribution.javaagent` → `distribution.spring_starter`
+   * so the YAML can be pasted into a Spring Boot `application.yaml`.
+   */
+  target?: ConfigurationTarget;
 }
 
 function defaultHeader(schemaVersion: string, javaAgentVersion?: string): string {
@@ -144,12 +153,40 @@ export interface StructuredYaml {
   sections: YamlSection[];
 }
 
+// In spring_starter mode the state is still stored under
+// `distribution.javaagent` (the canonical key the builder uses internally),
+// but the Spring Boot starter reads its instrumentation config under
+// `distribution.spring_starter`. Rename only at output time so toggling the
+// target does not invalidate or duplicate state.
+function renameJavaagentToSpringStarter(value: ConfigValue): ConfigValue {
+  if (!isPlainObject(value)) return value;
+  const out: ConfigValues = {};
+  for (const [k, v] of Object.entries(value)) {
+    out[k === "javaagent" ? "spring_starter" : k] = v;
+  }
+  return out;
+}
+
+function indentYamlBody(text: string, indent: string): string {
+  if (text === "") return text;
+  // Preserve a trailing newline so joined sections still separate cleanly.
+  const trailing = text.endsWith("\n") ? "\n" : "";
+  const body = trailing ? text.slice(0, -1) : text;
+  const indented = body
+    .split("\n")
+    .map((line) => (line === "" ? line : indent + line))
+    .join("\n");
+  return indented + trailing;
+}
+
 export function generateYamlSections(
   state: ConfigurationBuilderState,
   schema: ConfigNode,
   options?: GenerateYamlOptions
 ): StructuredYaml {
   const header = options?.header ?? defaultHeader(state.version, options?.javaAgentVersion);
+  const target: ConfigurationTarget = options?.target ?? "javaagent";
+  const isSpringStarter = target === "spring_starter";
 
   if (schema.controlType !== "group") {
     const fallbackContent = "# Schema is not a group; cannot generate sections.\n";
@@ -162,7 +199,10 @@ export function generateYamlSections(
 
   const children = schema.children;
   const fileFormatVersion = toFileFormatVersion(state.version);
-  const fileFormat = dumpYaml({ file_format: fileFormatVersion });
+  const fileFormatBody = dumpYaml({ file_format: fileFormatVersion });
+  const fileFormat = isSpringStarter
+    ? `otel:\n${indentYamlBody(fileFormatBody, "  ")}`
+    : fileFormatBody;
 
   const others = children
     .filter((c) => c.key !== "file_format")
@@ -183,8 +223,12 @@ export function generateYamlSections(
           stripped = EMPTY;
         }
       }
-      const body = stripped === EMPTY ? {} : (stripped as ConfigValue);
-      const content = sectionComment(child, child.key) + dumpYaml({ [child.key]: body });
+      let body: ConfigValue = stripped === EMPTY ? {} : (stripped as ConfigValue);
+      if (isSpringStarter && child.key === "distribution") {
+        body = renameJavaagentToSpringStarter(body);
+      }
+      const rawContent = sectionComment(child, child.key) + dumpYaml({ [child.key]: body });
+      const content = isSpringStarter ? indentYamlBody(rawContent, "  ") : rawContent;
       sections.push({ key: child.key, content });
       continue;
     }
@@ -192,8 +236,9 @@ export function generateYamlSections(
     if (raw === undefined) continue;
     const stripped = stripEmpties(raw);
     if (stripped === EMPTY) continue;
-    const content =
+    const rawContent =
       sectionComment(child, child.key) + dumpYaml({ [child.key]: stripped as ConfigValue });
+    const content = isSpringStarter ? indentYamlBody(rawContent, "  ") : rawContent;
     sections.push({ key: child.key, content });
   }
 

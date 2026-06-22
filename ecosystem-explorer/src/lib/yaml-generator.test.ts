@@ -612,6 +612,76 @@ describe("generateYaml", () => {
     expect(output).toContain("endpoint: http://localhost:4318");
   });
 
+  describe("spring_starter target", () => {
+    const distributionSchema: ConfigNode = {
+      controlType: "group",
+      key: "root",
+      label: "Root",
+      path: "",
+      children: [
+        {
+          controlType: "text_input",
+          key: "file_format",
+          label: "File Format",
+          path: "file_format",
+          required: true,
+        },
+        {
+          controlType: "group",
+          key: "distribution",
+          label: "Distribution",
+          path: "distribution",
+          children: [],
+        },
+        {
+          controlType: "group",
+          key: "resource",
+          label: "Resource",
+          path: "resource",
+          children: [],
+        },
+      ],
+    };
+
+    const distributionState: ConfigurationBuilderState = {
+      version: "1.0.0",
+      values: {
+        distribution: {
+          javaagent: { instrumentation: { enabled: ["jdbc"] } },
+        },
+        resource: { service_name: "demo" },
+      },
+      enabledSections: { distribution: true, resource: true },
+      validationErrors: {},
+      isDirty: false,
+    };
+
+    it("wraps body under top-level `otel:` and renames distribution.javaagent → distribution.spring_starter", () => {
+      const output = generateYaml(distributionState, distributionSchema, {
+        header: "",
+        target: "spring_starter",
+      });
+
+      expect(output).toMatch(/^otel:$/m);
+      expect(output).toMatch(/^ {2}file_format: "1\.0"$/m);
+      expect(output).toMatch(/^ {2}distribution:$/m);
+      expect(output).toMatch(/^ {4}spring_starter:$/m);
+      expect(output).toMatch(/^ {2}resource:$/m);
+      expect(output).toMatch(/^ {4}service_name: demo$/m);
+      // Comments are indented alongside their section body.
+      expect(output).toMatch(/^ {2}# Distribution$/m);
+      // Old key must not leak.
+      expect(output).not.toMatch(/javaagent/);
+    });
+
+    it("default target is javaagent and emits no `otel:` wrapper or rename", () => {
+      const output = generateYaml(distributionState, distributionSchema, { header: "" });
+      expect(output).not.toMatch(/^otel:$/m);
+      expect(output).toMatch(/^ {2}javaagent:$/m);
+      expect(output).not.toMatch(/spring_starter/);
+    });
+  });
+
   describe("generateYamlSections", () => {
     it("returns structured sections mapping to expected keys and content", () => {
       const state: ConfigurationBuilderState = {
