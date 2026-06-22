@@ -22,17 +22,23 @@ from .instrumentation_sync import InstrumentationSync
 from .inventory_manager import InventoryManager
 from .repository_manager import JsContribRepositoryManager
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-)
 logger = logging.getLogger(__name__)
 
 REGISTRY_DIR = "ecosystem-registry/javascript"
 
 
+def configure_logging() -> None:
+    """Configure root logging for the watcher."""
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    )
+
+
 def main() -> None:
     """Main entry point for the JS instrumentation watcher."""
+    configure_logging()
+
     base_dir = os.environ.get("JS_CONTRIB_REPOS_DIR", "tmp_repos")
 
     logger.info("Starting JS instrumentation watcher...")

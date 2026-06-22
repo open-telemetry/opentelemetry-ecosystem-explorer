@@ -27,11 +27,8 @@ class InventoryManager:
     """
     Manages storage of JS instrumentation metadata in the registry.
 
-    Registry layout (per maintainer direction):
+    Registry layout:
         ecosystem-registry/javascript/{package-name}/v{version}.yaml
-
-    Each package is versioned independently — there is no single
-    aggregated version file like the Java watcher uses.
     """
 
     def __init__(self, registry_dir: str):

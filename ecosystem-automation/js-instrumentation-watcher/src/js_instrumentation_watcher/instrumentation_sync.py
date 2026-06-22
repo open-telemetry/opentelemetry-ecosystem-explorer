@@ -87,8 +87,8 @@ class InstrumentationSync:
 
             try:
                 data = parser.parse()
-            except Exception as e:
-                logger.warning("Failed to parse %s: %s", name, e)
+            except Exception:
+                logger.exception("Failed to parse %s", name)
                 summary["failed"].append(name)
                 continue
 

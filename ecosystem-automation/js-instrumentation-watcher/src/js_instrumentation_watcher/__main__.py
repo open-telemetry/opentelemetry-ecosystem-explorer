@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+"""Allow running js_instrumentation_watcher as a module with python -m js_instrumentation_watcher."""
 
 from .main import main
 

@@ -76,7 +76,9 @@ class PackageScanner:
         Load the set of package names included in auto-instrumentations-node.
 
         Returns:
-            Set of npm package names included in the node auto-instrumentation bundle
+            Set of npm package names included in the node auto-instrumentation bundle.
+            Returns an empty set if the file is missing, malformed, or has an
+            unexpected shape (not a dict, or 'dependencies' is not a mapping).
         """
         auto_node_path = self.repo_path / AUTO_NODE_PKG
         if not auto_node_path.exists():
@@ -85,8 +87,8 @@ class PackageScanner:
 
         try:
             data = json.loads(auto_node_path.read_text())
-            deps = data.get("dependencies", {})
-            return set(deps.keys())
+            deps = data.get("dependencies", {}) if isinstance(data, dict) else {}
+            return set(deps.keys()) if isinstance(deps, dict) else set()
         except (json.JSONDecodeError, OSError) as e:
             logger.warning("Failed to load auto-instrumentations-node deps: %s", e)
             return set()
@@ -97,7 +99,9 @@ class PackageScanner:
 
         Returns:
             Dict mapping package path (e.g. 'packages/instrumentation-express')
-            to list of owner GitHub handles
+            to list of owner GitHub handles. Returns an empty dict if the file
+            is missing, malformed, or has an unexpected shape (not a dict, or
+            'components' is not a mapping).
         """
         owners_path = self.repo_path / COMPONENT_OWNERS_FILE
         if not owners_path.exists():
@@ -106,7 +110,13 @@ class PackageScanner:
 
         try:
             data = yaml.safe_load(owners_path.read_text())
+            if not isinstance(data, dict):
+                return {}
+
             components = data.get("components", {})
+            if not isinstance(components, dict):
+                return {}
+
             result = {}
             for path, owners in components.items():
                 result[path] = owners if isinstance(owners, list) else []

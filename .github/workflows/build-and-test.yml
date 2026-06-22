@@ -83,6 +83,10 @@ jobs:
         run: |
           cd ecosystem-automation/configuration-watcher
           uv run pytest tests/ --cov=configuration_watcher --cov-report=term-missing --cov-report=json
+      - name: Run js-instrumentation-watcher tests
+        run: |
+          cd ecosystem-automation/js-instrumentation-watcher
+          uv run pytest tests/ --cov=js_instrumentation_watcher --cov-report=term-missing --cov-report=json
 
       - name: Run explorer-db-builder tests
         run: |

@@ -109,6 +109,8 @@ class PackageParser:
         Parse the Supported Versions section from README.md.
 
         Only reads the structured list under the heading — no general scraping.
+        Results are sorted by (package, version_range) for deterministic
+        registry output.
 
         Returns:
             List of dicts with 'package' and 'version_range' keys,
@@ -131,33 +133,38 @@ class PackageParser:
         section = match.group(1)
         results = []
         for m in VERSION_RANGE_RE.finditer(section):
-            results.append({
-                "package": m.group(1),
-                "version_range": m.group(2),
-                "source": "README.md",
-            })
+            results.append(
+                {
+                    "package": m.group(1),
+                    "version_range": m.group(2),
+                    "source": "README.md",
+                }
+            )
 
-        return results
+        return sorted(results, key=lambda x: (x["package"], x["version_range"]))
 
     def _build_tav_entry(self, pkg_name: str, versions: dict) -> dict:
         """
         Build a single tested_versions entry from a versions dict.
 
-        Only includes 'exclude' if it has a non-empty value.
+        Only 'mode' and 'exclude' are omitted when empty; 'package', 'range',
+        and 'source' are always present.
 
         Args:
             pkg_name: The npm package name being tested
             versions: The versions dict from .tav.yml
 
         Returns:
-            Dict with package, range, mode, source, and optionally exclude
+            Dict with package, range, source, and optionally mode and exclude
         """
         entry: dict = {
             "package": pkg_name,
             "range": versions.get("include", ""),
-            "mode": versions.get("mode", ""),
             "source": ".tav.yml",
         }
+        mode = versions.get("mode", "")
+        if mode:
+            entry["mode"] = mode
         exclude = versions.get("exclude", "")
         if exclude:
             entry["exclude"] = exclude
@@ -185,9 +192,14 @@ class PackageParser:
                     mode: max-7
                   commands: [...]
 
+        Results are sorted by (package, range, mode, exclude) for
+        deterministic registry output, so upstream reordering of the
+        YAML mapping doesn't churn the registry.
+
         Returns:
-            List of dicts with package, range, mode, source, and optionally
-            exclude fields. Empty fields are omitted.
+            List of dicts with package, range, source, and optionally
+            mode and exclude fields. Only 'mode' and 'exclude' are
+            omitted when empty.
         """
         tav_path = self.package_path / ".tav.yml"
         if not tav_path.exists():
@@ -232,4 +244,12 @@ class PackageParser:
                     if isinstance(versions, dict) and versions:
                         results.append(self._build_tav_entry(pkg_name, versions))
 
-        return results
+        return sorted(
+            results,
+            key=lambda e: (
+                e.get("package", ""),
+                e.get("range", ""),
+                e.get("mode", ""),
+                str(e.get("exclude", "")),
+            ),
+        )

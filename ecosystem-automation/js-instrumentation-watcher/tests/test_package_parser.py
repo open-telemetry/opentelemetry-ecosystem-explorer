@@ -20,8 +20,6 @@ import textwrap
 from pathlib import Path
 
 import pytest
-import yaml
-
 from js_instrumentation_watcher.package_parser import PackageParser
 
 
@@ -38,17 +36,20 @@ def write_package_json(pkg_dir: Path, data: dict) -> None:
 
 
 def test_parse_basic_fields(tmp_package):
-    write_package_json(tmp_package, {
-        "name": "@opentelemetry/instrumentation-express",
-        "version": "0.66.0",
-        "description": "Express instrumentation",
-        "engines": {"node": "^18.19.0 || >=20.6.0"},
-        "repository": {
-            "type": "git",
-            "url": "https://github.com/open-telemetry/opentelemetry-js-contrib.git",
-            "directory": "packages/instrumentation-express",
+    write_package_json(
+        tmp_package,
+        {
+            "name": "@opentelemetry/instrumentation-express",
+            "version": "0.66.0",
+            "description": "Express instrumentation",
+            "engines": {"node": "^18.19.0 || >=20.6.0"},
+            "repository": {
+                "type": "git",
+                "url": "https://github.com/open-telemetry/opentelemetry-js-contrib.git",
+                "directory": "packages/instrumentation-express",
+            },
         },
-    })
+    )
 
     parser = PackageParser(
         package_path=tmp_package,
@@ -77,11 +78,14 @@ def test_parse_returns_none_on_missing_package_json(tmp_package):
 
 
 def test_parse_supported_versions_from_readme(tmp_package):
-    write_package_json(tmp_package, {
-        "name": "@opentelemetry/instrumentation-express",
-        "version": "0.66.0",
-        "description": "test",
-    })
+    write_package_json(
+        tmp_package,
+        {
+            "name": "@opentelemetry/instrumentation-express",
+            "version": "0.66.0",
+            "description": "test",
+        },
+    )
     readme = textwrap.dedent("""
         ## Installation
 
@@ -108,11 +112,14 @@ def test_parse_supported_versions_from_readme(tmp_package):
 
 
 def test_parse_tav_yml(tmp_package):
-    write_package_json(tmp_package, {
-        "name": "@opentelemetry/instrumentation-express",
-        "version": "0.66.0",
-        "description": "test",
-    })
+    write_package_json(
+        tmp_package,
+        {
+            "name": "@opentelemetry/instrumentation-express",
+            "version": "0.66.0",
+            "description": "test",
+        },
+    )
     tav = textwrap.dedent("""
         express:
           - versions:
@@ -133,15 +140,82 @@ def test_parse_tav_yml(tmp_package):
     assert len(result["tested_versions"]) == 1
     assert result["tested_versions"][0]["package"] == "express"
     assert result["tested_versions"][0]["range"] == ">=4.16.2 <6"
+    assert result["tested_versions"][0]["mode"] == "latest-minors"
     assert result["tested_versions"][0]["source"] == ".tav.yml"
+    assert "exclude" not in result["tested_versions"][0]
+
+
+def test_tav_entry_omits_mode_when_empty(tmp_package):
+    write_package_json(
+        tmp_package,
+        {
+            "name": "@opentelemetry/instrumentation-express",
+            "version": "0.66.0",
+            "description": "test",
+        },
+    )
+    tav = textwrap.dedent("""
+        express:
+          - versions:
+              include: ">=4.0.0 <6"
+            commands: npm test
+    """)
+    (tmp_package / ".tav.yml").write_text(tav)
+
+    parser = PackageParser(
+        package_path=tmp_package,
+        bundle_membership=set(),
+        component_owners={},
+    )
+    result = parser.parse()
+
+    assert result is not None
+    assert "mode" not in result["tested_versions"][0]
+
+
+def test_tested_versions_sorted_deterministically(tmp_package):
+    write_package_json(
+        tmp_package,
+        {
+            "name": "@opentelemetry/instrumentation-mongoose",
+            "version": "0.64.0",
+            "description": "test",
+        },
+    )
+    # Intentionally out of order to verify sorting
+    tav = textwrap.dedent("""
+        mongoose:
+          - versions:
+              include: ">=9 <10"
+              mode: max-7
+            commands: npm test
+          - versions:
+              include: ">=5.9.7 <7"
+              mode: latest-majors
+            commands: npm test
+    """)
+    (tmp_package / ".tav.yml").write_text(tav)
+
+    parser = PackageParser(
+        package_path=tmp_package,
+        bundle_membership=set(),
+        component_owners={},
+    )
+    result = parser.parse()
+
+    ranges = [entry["range"] for entry in result["tested_versions"]]
+    assert ranges == sorted(ranges)
 
 
 def test_not_in_bundle_when_absent(tmp_package):
-    write_package_json(tmp_package, {
-        "name": "@opentelemetry/instrumentation-express",
-        "version": "0.66.0",
-        "description": "test",
-    })
+    write_package_json(
+        tmp_package,
+        {
+            "name": "@opentelemetry/instrumentation-express",
+            "version": "0.66.0",
+            "description": "test",
+        },
+    )
 
     parser = PackageParser(
         package_path=tmp_package,
