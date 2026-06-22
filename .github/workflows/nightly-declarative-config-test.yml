@@ -77,7 +77,7 @@ jobs:
           The nightly end-to-end acceptance test for the Declarative Configuration Builder failed.
 
           **Run Details:**
-          - Workflow Run: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          - Workflow Run: https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
 
           **Generated Configuration:**
           \`\`\`yaml
