@@ -104,12 +104,19 @@ async function generateConfig() {
         .click({ timeout: 5000 });
       await page.getByText("otlp_http").first().click({ timeout: 5000 });
     } catch (e) {
-      console.log("Could not toggle OTLP exporter, proceeding with default", e.message);
+      console.log(
+        "Could not toggle OTLP exporter, proceeding with default",
+        e?.message || String(e)
+      );
     }
 
     const yamlElement = page.locator("pre").first();
     await yamlElement.waitFor({ state: "visible", timeout: 10000 });
     let yamlContent = await yamlElement.textContent();
+
+    if (!yamlContent) {
+      throw new Error("YAML content could not be extracted from the configuration builder.");
+    }
 
     if (yamlContent.includes("OpenTelemetry SDK Configuration")) {
       const codeElement = yamlElement.locator("code").first();

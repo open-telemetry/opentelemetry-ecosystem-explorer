@@ -49,11 +49,13 @@ jobs:
       - name: Generate config file
         run: |
           cd ecosystem-explorer
-          node scripts/generate-test-config.mjs ../acceptance-tests/declarative-config-acceptance/test-config.yaml
+          bun run scripts/generate-test-config.mjs ../acceptance-tests/declarative-config-acceptance/test-config.yaml
 
       - name: Download latest OpenTelemetry Java Agent
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          AGENT_URL=$(curl -s https://api.github.com/repos/open-telemetry/opentelemetry-java-instrumentation/releases/latest | grep "browser_download_url" | grep "opentelemetry-javaagent.jar" | head -n 1 | cut -d '"' -f 4)
+          AGENT_URL=$(gh release view --repo open-telemetry/opentelemetry-java-instrumentation latest --json assets -q '.assets[] | select(.name == "opentelemetry-javaagent.jar") | .url')
           echo "Downloading latest agent from: $AGENT_URL"
           curl -L -o acceptance-tests/declarative-config-acceptance/opentelemetry-javaagent.jar "$AGENT_URL"
 
@@ -90,4 +92,17 @@ jobs:
           EOF
           )
 
-          gh issue create --title "$TITLE" --body "$BODY" --label "bug"
+          EXISTING=$(gh issue list \
+            --search "in:title \"$TITLE\"" \
+            --state open \
+            --label bug \
+            --json number \
+            --jq '.[0].number // empty')
+
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body "$BODY"
+            echo "Added comment to existing issue #$EXISTING"
+          else
+            gh issue create --title "$TITLE" --body "$BODY" --label "bug"
+            echo "Created new issue"
+          fi
