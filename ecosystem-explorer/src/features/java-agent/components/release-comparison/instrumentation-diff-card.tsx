@@ -19,6 +19,8 @@ import { ChevronDown, ChevronUp, Plus, Minus, RefreshCcw, ExternalLink } from "l
 import type { InstrumentationDiff } from "../../utils/release-diff";
 import { DiffResultsSection } from "../telemetry-comparison/diff-results-section";
 import { GlowBadge } from "@/components/ui/glow-badge";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Tooltip } from "@/components/ui/tooltip";
 
 const STATUS_CONFIG: Record<
@@ -64,24 +66,20 @@ export function InstrumentationDiffCard({ diff }: InstrumentationDiffCardProps) 
     (diff.configDiff?.changed.length || 0);
 
   const statusInfo = STATUS_CONFIG[diff.status];
+  const { t } = useTranslation("java-agent");
+
+  const tooltipContent =
+    diff.status === "added"
+      ? t("diffCard.moduleAddedTooltip")
+      : diff.status === "removed"
+        ? t("diffCard.moduleRemovedTooltip")
+        : t("diffCard.moduleChangedTooltip");
 
   return (
     <div className="border-border/30 bg-card/20 overflow-hidden rounded-xl border transition-all duration-200">
-      <div
-        role="button"
-        tabIndex={0}
-        onClick={() => setIsExpanded(!isExpanded)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            setIsExpanded(!isExpanded);
-          }
-        }}
-        aria-expanded={isExpanded}
-        className="flex w-full cursor-pointer items-center justify-between p-4 text-left transition-colors hover:bg-white/5"
-      >
+      <div className="flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-white/5">
         <div className="flex items-center gap-4">
-          <Tooltip content={statusInfo.label} side="top">
+          <Tooltip content={tooltipContent} side="top">
             <div
               className={`flex h-8 w-8 items-center justify-center rounded-lg border ${statusInfo.className}`}
             >
@@ -91,36 +89,38 @@ export function InstrumentationDiffCard({ diff }: InstrumentationDiffCardProps) 
           <div>
             <div className="flex items-center gap-2">
               <h3 className="text-sm font-semibold">{diff.displayName}</h3>
-              <a
-                href={`/java-agent/instrumentation/${diff.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                to={`/java-agent/instrumentation/${diff.id}`}
                 className="text-muted-foreground hover:text-primary transition-colors"
-                onClick={(e) => e.stopPropagation()}
-                title="View Instrumentation Details"
+                aria-label={t("diffCard.viewInstrumentation")}
               >
                 <ExternalLink className="h-3.5 w-3.5" />
-              </a>
+              </Link>
             </div>
             <p className="text-muted-foreground text-xs">{diff.id}</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-6">
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          aria-expanded={isExpanded}
+          aria-label={t("diffCard.expandAriaLabel", { name: diff.displayName })}
+          className="focus-visible:ring-primary flex cursor-pointer items-center gap-6 rounded-md p-2 outline-none hover:bg-white/5 focus-visible:ring-2"
+        >
           <div className="flex items-center gap-2">
             {changedMetricsCount > 0 && (
               <GlowBadge variant="success">
-                {changedMetricsCount} Metric{changedMetricsCount > 1 ? "s" : ""}
+                {t("diffCard.metricCount", { count: changedMetricsCount })}
               </GlowBadge>
             )}
             {changedSpansCount > 0 && (
               <GlowBadge variant="info">
-                {changedSpansCount} Span{changedSpansCount > 1 ? "s" : ""}
+                {t("diffCard.spanCount", { count: changedSpansCount })}
               </GlowBadge>
             )}
             {configChangesCount > 0 && (
               <GlowBadge variant="warning">
-                {configChangesCount} Config{configChangesCount > 1 ? "s" : ""}
+                {t("diffCard.configCount", { count: configChangesCount })}
               </GlowBadge>
             )}
           </div>
@@ -129,7 +129,7 @@ export function InstrumentationDiffCard({ diff }: InstrumentationDiffCardProps) 
           ) : (
             <ChevronDown className="text-muted-foreground h-5 w-5" />
           )}
-        </div>
+        </button>
       </div>
 
       {isExpanded && (

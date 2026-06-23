@@ -16,7 +16,8 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import { AlertCircle, Loader2, ArrowRight, ExternalLink } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { AlertCircle, Loader2, ArrowRight, ExternalLink, ChevronDown } from "lucide-react";
 import { PageContainer } from "@/components/layout/page-container";
 import { BackButton } from "@/components/ui/back-button";
 import { useVersions } from "@/hooks/use-javaagent-data";
@@ -26,6 +27,7 @@ import { InstrumentationDiffCard } from "./components/release-comparison/instrum
 import { GlowBadge } from "@/components/ui/glow-badge";
 
 export function JavaReleaseComparisonPage() {
+  const { t } = useTranslation("java-agent");
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<"changes" | "metrics">("changes");
 
@@ -98,12 +100,10 @@ export function JavaReleaseComparisonPage() {
           <div className="space-y-2">
             <h1 className="text-3xl font-bold md:text-4xl">
               <span className="bg-gradient-to-r from-[hsl(var(--secondary-hsl))] to-[hsl(var(--primary-hsl))] bg-clip-text text-transparent">
-                Release Comparison
+                {t("releaseComparison.title")}
               </span>
             </h1>
-            <p className="text-muted-foreground max-w-2xl">
-              Compare Java Agent releases to discover new features and changes in telemetry.
-            </p>
+            <p className="text-muted-foreground max-w-2xl">{t("releaseComparison.description")}</p>
           </div>
           {changelogVersions.length <= 1 ? (
             <a
@@ -112,35 +112,29 @@ export function JavaReleaseComparisonPage() {
               rel="noopener noreferrer"
               className="border-border/30 hover:bg-card/60 bg-card/40 flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors"
             >
-              View Changelog for {changelogVersions[0]}
+              {t("releaseComparison.viewChangelog", { version: changelogVersions[0] })}
               <ExternalLink className="h-4 w-4" />
             </a>
           ) : (
-            <div className="relative">
-              <select
-                className="border-border/30 hover:bg-card/60 bg-card/40 flex cursor-pointer appearance-none items-center gap-2 rounded-lg border px-4 py-2 pr-8 text-sm font-medium transition-colors"
-                onChange={(e) => {
-                  if (e.target.value) {
-                    window.open(
-                      `https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/tag/v${e.target.value}`,
-                      "_blank"
-                    );
-                    e.target.value = "";
-                  }
-                }}
-                defaultValue=""
-              >
-                <option value="" disabled>
-                  View Changelogs...
-                </option>
+            <details className="group relative">
+              <summary className="border-border/30 hover:bg-card/60 bg-card/40 flex cursor-pointer list-none items-center gap-2 rounded-lg border px-4 py-2 text-sm font-medium transition-colors">
+                {t("releaseComparison.viewChangelogs")}
+                <ChevronDown className="h-4 w-4 transition-transform group-open:rotate-180" />
+              </summary>
+              <div className="border-border/30 bg-card absolute top-full right-0 z-50 mt-1 max-h-64 w-max min-w-full overflow-y-auto rounded-lg border shadow-lg">
                 {changelogVersions.map((v) => (
-                  <option key={v} value={v}>
-                    Release {v}
-                  </option>
+                  <a
+                    key={v}
+                    href={`https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/tag/v${v}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block px-4 py-2 text-sm transition-colors hover:bg-white/5"
+                  >
+                    {t("releaseComparison.release", { version: v })}
+                  </a>
                 ))}
-              </select>
-              <ExternalLink className="text-foreground/70 pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
-            </div>
+              </div>
+            </details>
           )}
         </div>
 
@@ -157,12 +151,14 @@ export function JavaReleaseComparisonPage() {
             <div className="flex items-start gap-3">
               <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-yellow-400" />
               <div className="space-y-1">
-                <p className="font-medium text-yellow-400">Invalid Comparison</p>
+                <p className="font-medium text-yellow-400">
+                  {t("releaseComparison.invalidComparison")}
+                </p>
                 <p className="text-sm text-yellow-400/80">
                   {versions.findIndex((v) => v.version === fromVersion) === -1 ||
                   versions.findIndex((v) => v.version === toVersion) === -1
-                    ? "One or both of the selected versions do not exist in the registry."
-                    : "Comparisons are usually performed from an older version to a newer version."}
+                    ? t("releaseComparison.invalidComparisonDescOne")
+                    : t("releaseComparison.invalidComparisonDescTwo")}
                 </p>
               </div>
             </div>
@@ -172,7 +168,7 @@ export function JavaReleaseComparisonPage() {
         {fromVersion === toVersion && (
           <div className="border-border flex min-h-[300px] items-center justify-center rounded-xl border border-dashed">
             <div className="text-center">
-              <p className="text-muted-foreground">Select two different versions to see changes.</p>
+              <p className="text-muted-foreground">{t("releaseComparison.selectDifferent")}</p>
             </div>
           </div>
         )}
@@ -182,9 +178,9 @@ export function JavaReleaseComparisonPage() {
             <div className="flex flex-col items-center gap-4">
               <Loader2 className="text-primary h-12 w-12 animate-spin" />
               <div className="text-center">
-                <p className="text-lg font-medium">Comparing Releases...</p>
+                <p className="text-lg font-medium">{t("releaseComparison.comparingReleases")}</p>
                 <p className="text-muted-foreground text-sm">
-                  Analyzing {fromVersion} and {toVersion}
+                  {t("releaseComparison.analyzing", { fromVersion, toVersion })}
                 </p>
               </div>
             </div>
@@ -195,7 +191,9 @@ export function JavaReleaseComparisonPage() {
           <div className="rounded-lg border border-red-400/30 bg-red-400/10 p-6 text-red-400">
             <div className="flex items-center gap-3">
               <AlertCircle className="h-5 w-5" />
-              <p className="font-medium">Error loading comparison data: {error.message}</p>
+              <p className="font-medium">
+                {t("releaseComparison.errorLoading", { message: error.message })}
+              </p>
             </div>
           </div>
         )}
@@ -225,27 +223,33 @@ export function JavaReleaseComparisonPage() {
                 <div className="text-center">
                   <p className="text-4xl font-black text-green-400">{diff.totals.added}</p>
                   <p className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
-                    Instrumentations Added
+                    {t("releaseComparison.instrumentationsAdded")}
                   </p>
                 </div>
                 <div className="text-center">
                   <p className="text-4xl font-black text-blue-400">{diff.totals.changed}</p>
                   <p className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
-                    Instrumentations Changed
+                    {t("releaseComparison.instrumentationsChanged")}
                   </p>
                 </div>
                 <div className="text-center">
                   <p className="text-4xl font-black text-red-400">{diff.totals.removed}</p>
                   <p className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
-                    Instrumentations Removed
+                    {t("releaseComparison.instrumentationsRemoved")}
                   </p>
                 </div>
               </div>
             </div>
 
             <div className="space-y-8">
-              <div className="border-border/30 flex gap-8 border-b">
+              <div
+                className="border-border/30 flex gap-8 border-b"
+                role="tablist"
+                aria-label="Comparison Sections"
+              >
                 <button
+                  id="tab-changes"
+                  aria-controls="panel-changes"
                   onClick={() => setActiveTab("changes")}
                   aria-selected={activeTab === "changes"}
                   role="tab"
@@ -255,12 +259,14 @@ export function JavaReleaseComparisonPage() {
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  Changes Summary
+                  {t("releaseComparison.changesSummary")}
                   {activeTab === "changes" && (
                     <div className="bg-primary absolute right-0 bottom-0 left-0 h-1 rounded-t-full" />
                   )}
                 </button>
                 <button
+                  id="tab-metrics"
+                  aria-controls="panel-metrics"
                   onClick={() => setActiveTab("metrics")}
                   aria-selected={activeTab === "metrics"}
                   role="tab"
@@ -270,7 +276,7 @@ export function JavaReleaseComparisonPage() {
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  All Metrics ({toVersion})
+                  {t("releaseComparison.allMetrics", { version: toVersion })}
                   {activeTab === "metrics" && (
                     <div className="bg-primary absolute right-0 bottom-0 left-0 h-1 rounded-t-full" />
                   )}
@@ -278,11 +284,18 @@ export function JavaReleaseComparisonPage() {
               </div>
 
               {activeTab === "changes" && (
-                <div className="space-y-6">
+                <div
+                  id="panel-changes"
+                  role="tabpanel"
+                  aria-labelledby="tab-changes"
+                  className="space-y-6"
+                >
                   <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-bold">Module Changes</h2>
+                    <h2 className="text-2xl font-bold">{t("releaseComparison.moduleChanges")}</h2>
                     <div className="bg-muted/50 text-foreground/70 rounded-full px-4 py-1 text-xs font-bold">
-                      {filteredInstrumentations.length} Modules Impacted
+                      {t("releaseComparison.modulesImpacted", {
+                        count: filteredInstrumentations.length,
+                      })}
                     </div>
                   </div>
 
@@ -290,10 +303,10 @@ export function JavaReleaseComparisonPage() {
                     <div className="border-border flex min-h-[300px] items-center justify-center rounded-2xl border border-dashed">
                       <div className="text-center">
                         <p className="text-muted-foreground text-lg">
-                          No changes found in telemetry or configuration.
+                          {t("releaseComparison.noChanges")}
                         </p>
                         <p className="text-muted-foreground/60 mt-1 text-sm">
-                          Everything is identical between these two versions.
+                          {t("releaseComparison.noChangesDesc")}
                         </p>
                       </div>
                     </div>
@@ -308,11 +321,21 @@ export function JavaReleaseComparisonPage() {
               )}
 
               {activeTab === "metrics" && (
-                <div className="space-y-6">
+                <div
+                  id="panel-metrics"
+                  role="tabpanel"
+                  aria-labelledby="tab-metrics"
+                  className="space-y-6"
+                >
                   <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-bold">Aggregate Metrics</h2>
+                    <h2 className="text-2xl font-bold">
+                      {t("releaseComparison.aggregateMetrics")}
+                    </h2>
                     <div className="bg-muted/50 text-foreground/70 rounded-full px-4 py-1 text-xs font-bold">
-                      {diff.aggregateMetrics.length} Total Metrics in {toVersion}
+                      {t("releaseComparison.totalMetrics", {
+                        count: diff.aggregateMetrics.length,
+                        version: toVersion,
+                      })}
                     </div>
                   </div>
 
@@ -321,13 +344,13 @@ export function JavaReleaseComparisonPage() {
                       <thead>
                         <tr className="bg-muted/30 border-border/30 border-b">
                           <th className="p-4 text-xs font-bold tracking-widest uppercase">
-                            Metric Name
+                            {t("releaseComparison.metricName")}
                           </th>
                           <th className="p-4 text-xs font-bold tracking-widest uppercase">
-                            Description
+                            {t("releaseComparison.metricDescription")}
                           </th>
                           <th className="p-4 text-xs font-bold tracking-widest uppercase">
-                            Emitted By
+                            {t("releaseComparison.emittedBy")}
                           </th>
                         </tr>
                       </thead>

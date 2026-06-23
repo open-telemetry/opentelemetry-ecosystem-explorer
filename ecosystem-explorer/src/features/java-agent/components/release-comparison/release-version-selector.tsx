@@ -15,6 +15,7 @@
  */
 
 import { Info } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { VersionInfo } from "@/types/javaagent";
 
 interface ReleaseVersionSelectorProps {
@@ -69,20 +70,22 @@ export function ReleaseVersionSelector({
   onFromVersionChange,
   onToVersionChange,
 }: ReleaseVersionSelectorProps) {
+  const { t } = useTranslation("java-agent");
+
   return (
     <div className="mx-auto max-w-4xl">
       <div className="border-border/30 bg-card/40 flex flex-col gap-6 rounded-xl border p-6 shadow-sm backdrop-blur-sm">
         <div className="bg-secondary/10 border-secondary/20 flex w-fit items-center gap-2 rounded-lg border px-3 py-2">
           <Info className="text-secondary h-4 w-4" aria-hidden="true" />
           <span className="text-foreground/90 text-xs font-medium">
-            Select versions to compare Java Agent changes
+            {t("versionSelectorPanel.banner")}
           </span>
         </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <VersionSelect
             id="from-version-select"
-            label="From Version"
+            label={t("releaseComparison.from")}
             value={fromVersion}
             versions={versions}
             onChange={onFromVersionChange}
@@ -90,7 +93,7 @@ export function ReleaseVersionSelector({
 
           <VersionSelect
             id="to-version-select"
-            label="To Version"
+            label={t("releaseComparison.to")}
             value={toVersion}
             versions={versions}
             onChange={onToVersionChange}

@@ -68,8 +68,8 @@ export function useReleaseComparison(
 
       try {
         const [fromData, toData] = await Promise.all([
-          javaagentData.loadAllInstrumentations(fromVersion),
-          javaagentData.loadAllInstrumentations(toVersion),
+          javaagentData.loadAllInstrumentationDetails(fromVersion),
+          javaagentData.loadAllInstrumentationDetails(toVersion),
         ]);
 
         if (cancelled) return;

@@ -148,19 +148,20 @@ export function compareReleases(
       const configRemoved: string[] = [];
       const configChanged: string[] = [];
 
-      for (const [name, config] of toConfigs) {
-        if (!fromConfigs.has(name)) {
-          configAdded.push(name);
+      for (const [configName, config] of toConfigs) {
+        if (!fromConfigs.has(configName)) {
+          configAdded.push(configName);
         } else {
-          const fromConfig = fromConfigs.get(name);
+          const fromConfig = fromConfigs.get(configName);
           if (
             fromConfig?.description !== config.description ||
             fromConfig?.type !== config.type ||
             fromConfig?.default !== config.default ||
             fromConfig?.declarative_name !== config.declarative_name ||
-            JSON.stringify(fromConfig?.examples) !== JSON.stringify(config.examples)
+            JSON.stringify(fromConfig?.examples?.slice().sort()) !==
+              JSON.stringify(config.examples?.slice().sort())
           ) {
-            configChanged.push(name);
+            configChanged.push(configName);
           }
         }
       }
@@ -199,7 +200,7 @@ export function compareReleases(
   }
 
   const metricToInstrumentations = new Map<string, { description: string; emittedBy: string[] }>();
-  for (const instr of toData) {
+  for (const instr of safeToData) {
     if (instr.telemetry) {
       for (const telemetry of instr.telemetry) {
         if (telemetry.metrics) {
