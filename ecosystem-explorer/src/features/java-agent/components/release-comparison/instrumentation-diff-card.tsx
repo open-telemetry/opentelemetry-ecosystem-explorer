@@ -25,27 +25,23 @@ import { Tooltip } from "@/components/ui/tooltip";
 
 const STATUS_CONFIG: Record<
   InstrumentationDiff["status"],
-  { className: string; icon: React.ReactNode; label: string }
+  { className: string; icon: React.ReactNode }
 > = {
   added: {
     className: "border-green-400/30 bg-green-400/10 text-green-400",
     icon: <Plus className="h-4 w-4" />,
-    label: "Added",
   },
   removed: {
     className: "border-red-400/30 bg-red-400/10 text-red-400",
     icon: <Minus className="h-4 w-4" />,
-    label: "Removed",
   },
   changed: {
     className: "border-blue-400/30 bg-blue-400/10 text-blue-400",
     icon: <RefreshCcw className="h-4 w-4" />,
-    label: "Changed",
   },
   unchanged: {
     className: "border-border/50 bg-muted/20 text-muted-foreground",
     icon: <div className="h-2 w-2 rounded-full bg-current" />,
-    label: "Unchanged",
   },
 };
 
@@ -77,7 +73,7 @@ export function InstrumentationDiffCard({ diff }: InstrumentationDiffCardProps) 
 
   return (
     <div className="border-border/30 bg-card/20 overflow-hidden rounded-xl border transition-all duration-200">
-      <div className="flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-white/5">
+      <div className="hover:bg-muted/50 flex w-full items-center justify-between p-4 text-left transition-colors">
         <div className="flex items-center gap-4">
           <Tooltip content={tooltipContent} side="top">
             <div
@@ -105,7 +101,7 @@ export function InstrumentationDiffCard({ diff }: InstrumentationDiffCardProps) 
           onClick={() => setIsExpanded(!isExpanded)}
           aria-expanded={isExpanded}
           aria-label={t("diffCard.expandAriaLabel", { name: diff.displayName })}
-          className="focus-visible:ring-primary flex cursor-pointer items-center gap-6 rounded-md p-2 outline-none hover:bg-white/5 focus-visible:ring-2"
+          className="focus-visible:ring-primary hover:bg-muted/50 flex cursor-pointer items-center gap-6 rounded-md p-2 outline-none focus-visible:ring-2"
         >
           <div className="flex items-center gap-2">
             {changedMetricsCount > 0 && (
@@ -139,7 +135,7 @@ export function InstrumentationDiffCard({ diff }: InstrumentationDiffCardProps) 
               <div className="flex items-center justify-center gap-4">
                 <div className="to-border h-px w-16 bg-gradient-to-r from-transparent" />
                 <span className="text-muted-foreground text-sm font-medium tracking-wider uppercase">
-                  Configuration Changes
+                  {t("diffCard.configurationChanges")}
                 </span>
                 <div className="to-border h-px w-16 bg-gradient-to-l from-transparent" />
               </div>

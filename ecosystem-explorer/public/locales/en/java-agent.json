@@ -119,6 +119,8 @@
     "errorLoading": "Error loading comparison data: {{message}}",
     "from": "From",
     "to": "To",
+    "latest": "(latest)",
+    "comparisonSections": "Comparison Sections",
     "changesSummary": "Changes Summary",
     "allMetrics": "All Metrics ({{version}})",
     "moduleChanges": "Module Changes",
@@ -282,6 +284,7 @@
       "changed": "Changed"
     },
     "unit": "Unit",
+    "configurationChanges": "Configuration Changes",
     "attributeChanges": "Attribute Changes",
     "descriptionChanged": "Description Changed",
     "typeChanged": "Type Changed",

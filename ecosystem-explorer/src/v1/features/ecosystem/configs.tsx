@@ -28,7 +28,6 @@ import { ArrowLeftRight, Box, GitCompare, Layers } from "lucide-react";
 import { TYPE_STRIPE_COLORS } from "@/components/ui/type-stripe-colors";
 import { OtelLogo } from "@/components/icons/otel-logo";
 import { JavaIcon } from "@/components/icons/java-icon";
-import { isEnabled } from "@/lib/feature-flags";
 import { filtersToHref } from "@/v1/lib/list-filters";
 import type { EcosystemConfig } from "./types";
 
@@ -215,20 +214,13 @@ export const javaAgentConfig: EcosystemConfig = {
       href: "/java-agent/configuration/builder",
       icon: <Box className="h-5 w-5" aria-hidden />,
     },
-    // Only surface the release-comparison entry when its route is mounted —
-    // `/java-agent/releases` is gated behind JAVA_RELEASE_COMPARISON in V1App,
-    // so without this guard the card would 404 wherever the flag is off.
-    ...(isEnabled("JAVA_RELEASE_COMPARISON")
-      ? [
-          {
-            id: "releases",
-            title: "Compare releases",
-            description: "See what's new between two Java Agent versions.",
-            href: "/java-agent/releases",
-            icon: <GitCompare className="h-5 w-5" aria-hidden />,
-          },
-        ]
-      : []),
+    {
+      id: "releases",
+      title: "Compare releases",
+      description: "See what's new between two Java Agent versions.",
+      href: "/java-agent/releases",
+      icon: <GitCompare className="h-5 w-5" aria-hidden />,
+    },
     {
       id: "supported-libs",
       title: "Supported libraries",

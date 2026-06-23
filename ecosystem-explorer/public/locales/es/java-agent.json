@@ -119,6 +119,8 @@
     "errorLoading": "Error al cargar datos de comparación: {{message}}",
     "from": "Desde",
     "to": "Hasta",
+    "latest": "(última)",
+    "comparisonSections": "Secciones de comparación",
     "changesSummary": "Resumen de cambios",
     "allMetrics": "Todas las métricas ({{version}})",
     "moduleChanges": "Cambios de módulos",
@@ -282,6 +284,7 @@
       "changed": "Modificado"
     },
     "unit": "Unidad",
+    "configurationChanges": "Cambios de configuración",
     "attributeChanges": "Cambios en atributos",
     "descriptionChanged": "Descripción modificada",
     "typeChanged": "Tipo modificado",

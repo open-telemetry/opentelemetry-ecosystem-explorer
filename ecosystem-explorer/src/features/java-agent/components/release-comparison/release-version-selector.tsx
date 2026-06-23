@@ -29,12 +29,14 @@ interface ReleaseVersionSelectorProps {
 function VersionSelect({
   id,
   label,
+  latestLabel,
   value,
   versions,
   onChange,
 }: {
   id: string;
   label: string;
+  latestLabel: string;
   value: string;
   versions: VersionInfo[];
   onChange: (version: string) => void;
@@ -55,7 +57,7 @@ function VersionSelect({
       >
         {versions.map((v) => (
           <option key={v.version} value={v.version}>
-            {v.version} {v.is_latest ? "(latest)" : ""}
+            {v.version} {v.is_latest ? latestLabel : ""}
           </option>
         ))}
       </select>
@@ -86,6 +88,7 @@ export function ReleaseVersionSelector({
           <VersionSelect
             id="from-version-select"
             label={t("releaseComparison.from")}
+            latestLabel={t("releaseComparison.latest")}
             value={fromVersion}
             versions={versions}
             onChange={onFromVersionChange}
@@ -94,6 +97,7 @@ export function ReleaseVersionSelector({
           <VersionSelect
             id="to-version-select"
             label={t("releaseComparison.to")}
+            latestLabel={t("releaseComparison.latest")}
             value={toVersion}
             versions={versions}
             onChange={onToVersionChange}

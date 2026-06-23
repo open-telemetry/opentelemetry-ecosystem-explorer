@@ -128,7 +128,7 @@ export function JavaReleaseComparisonPage() {
                     href={`https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/tag/v${v}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block px-4 py-2 text-sm transition-colors hover:bg-white/5"
+                    className="hover:bg-muted/50 block px-4 py-2 text-sm transition-colors"
                   >
                     {t("releaseComparison.release", { version: v })}
                   </a>
@@ -204,7 +204,7 @@ export function JavaReleaseComparisonPage() {
               <div className="flex items-center justify-center gap-12">
                 <div className="text-center">
                   <p className="text-muted-foreground mb-1 text-xs font-bold tracking-widest uppercase">
-                    From
+                    {t("releaseComparison.from")}
                   </p>
                   <p className="font-mono text-3xl font-black">{fromVersion}</p>
                 </div>
@@ -213,7 +213,7 @@ export function JavaReleaseComparisonPage() {
                 </div>
                 <div className="text-center">
                   <p className="text-muted-foreground mb-1 text-xs font-bold tracking-widest uppercase">
-                    To
+                    {t("releaseComparison.to")}
                   </p>
                   <p className="font-mono text-3xl font-black">{toVersion}</p>
                 </div>
@@ -245,7 +245,7 @@ export function JavaReleaseComparisonPage() {
               <div
                 className="border-border/30 flex gap-8 border-b"
                 role="tablist"
-                aria-label="Comparison Sections"
+                aria-label={t("releaseComparison.comparisonSections")}
               >
                 <button
                   id="tab-changes"
@@ -358,7 +358,7 @@ export function JavaReleaseComparisonPage() {
                         {diff.aggregateMetrics.map((metric, index) => (
                           <tr
                             key={metric.name}
-                            className={`border-border/10 border-b transition-colors hover:bg-white/5 ${
+                            className={`border-border/10 hover:bg-muted/50 border-b transition-colors ${
                               index % 2 === 1 ? "bg-muted/40" : ""
                             }`}
                           >
