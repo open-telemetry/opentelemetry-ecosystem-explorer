@@ -21,9 +21,6 @@ const FEATURE_FLAGS = [
   // Collector Page - Still in development
   "COLLECTOR_PAGE",
 
-  // Java Agent Release Comparison - Still in development
-  "JAVA_RELEASE_COMPARISON",
-
   // V1 Redesign - Still in development - https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/84
   "V1_REDESIGN",
 
