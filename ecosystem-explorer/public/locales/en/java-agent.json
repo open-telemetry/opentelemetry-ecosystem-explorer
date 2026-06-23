@@ -388,15 +388,17 @@
       "versions_other": "{{count}} versions",
       "custom": "custom",
       "covers": "covers {{versions}}",
-      "removeTooltip": "Remove customization for {{name}}",
       "toggleDetailsTooltip": "Toggle details for {{name}}",
-      "customize": "Customize",
-      "customizeAriaLabel": "Customize {{name}}",
       "customizationState": "Customization state",
       "enabled": "Enabled",
       "disabled": "Disabled",
       "enabledByDefault": "enabled by default",
-      "disabledByDefault": "disabled by default"
+      "disabledByDefault": "disabled by default",
+      "statusHeader": "Instrumentation Status",
+      "statusDescription": "Explicitly enable or disable this instrumentation.",
+      "resetToDefault": "Reset to default",
+      "options_one": "{{count}} option",
+      "options_other": "{{count}} options"
     },
     "form": {
       "empty": "No configurable options for this module."
