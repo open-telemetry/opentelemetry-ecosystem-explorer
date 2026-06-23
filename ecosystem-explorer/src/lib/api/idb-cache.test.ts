@@ -234,5 +234,24 @@ describe("idb-cache", () => {
       await pruneOldEntries(7);
       expect(await db.get(STORES.METADATA, "old-2")).toBeUndefined();
     });
+
+    it("does not log when the connection is closed mid-prune", async () => {
+      const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+
+      // Seed stale data so a real prune would have work to do.
+      const now = Date.now();
+      vi.setSystemTime(now - 10 * 24 * 60 * 60 * 1000);
+      await setCached("stale", { d: 1 }, STORES.METADATA);
+      vi.setSystemTime(now);
+
+      // Start the background prune but close the connection underneath it,
+      // mirroring page unload / test teardown. It must resolve quietly.
+      const pruning = pruneOldEntries(7);
+      closeDB();
+      await expect(pruning).resolves.toBeUndefined();
+
+      expect(consoleError).not.toHaveBeenCalled();
+      consoleError.mockRestore();
+    });
   });
 });
