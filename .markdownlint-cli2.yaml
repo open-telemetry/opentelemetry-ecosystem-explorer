@@ -8,7 +8,6 @@ ignores:
   - "**/tmp_repos/**"
   - "**/node_modules/**"
   - ".claude/**"
-  - "ecosystem-explorer/public/data/**"
 
 config:
   default: true
