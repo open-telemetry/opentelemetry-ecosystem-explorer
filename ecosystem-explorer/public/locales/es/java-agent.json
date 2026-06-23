@@ -388,15 +388,17 @@
       "versions_other": "{{count}} versiones",
       "custom": "personalizado",
       "covers": "cubre {{versions}}",
-      "removeTooltip": "Eliminar personalización de {{name}}",
       "toggleDetailsTooltip": "Alternar detalles de {{name}}",
-      "customize": "Personalizar",
-      "customizeAriaLabel": "Personalizar {{name}}",
       "customizationState": "Estado de personalización",
       "enabled": "Habilitado",
       "disabled": "Deshabilitado",
       "enabledByDefault": "habilitado por defecto",
-      "disabledByDefault": "deshabilitado por defecto"
+      "disabledByDefault": "deshabilitado por defecto",
+      "statusHeader": "Estado de instrumentación",
+      "statusDescription": "Habilita o deshabilita explícitamente esta instrumentación.",
+      "resetToDefault": "Restablecer al valor predeterminado",
+      "options_one": "{{count}} opción",
+      "options_other": "{{count}} opciones"
     },
     "form": {
       "empty": "No hay opciones configurables para este módulo."
