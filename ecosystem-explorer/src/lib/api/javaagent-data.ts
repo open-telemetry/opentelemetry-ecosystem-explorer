@@ -189,6 +189,21 @@ export async function loadAllInstrumentations(
   return entries.map(toListEntry);
 }
 
+export async function loadAllInstrumentationDetails(
+  version: string
+): Promise<InstrumentationData[]> {
+  const manifest = await loadVersionManifest(version);
+  const libraryIds = Object.keys(manifest.instrumentations || {});
+  const customIds = Object.keys(manifest.custom_instrumentations || {});
+
+  const allIds = [...libraryIds, ...customIds];
+
+  const entries = await mapWithConcurrency(allIds, MAX_INSTRUMENTATION_FETCH_CONCURRENCY, (id) =>
+    loadInstrumentation(id, version, manifest)
+  );
+  return entries;
+}
+
 export async function loadLibraryReadme(
   libraryName: string,
   markdownHash: string
