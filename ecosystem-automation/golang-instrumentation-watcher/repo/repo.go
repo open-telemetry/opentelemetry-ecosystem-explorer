@@ -353,9 +353,16 @@ func downloadAndExtractZip(zipURL, subdir, destDir string) (string, error) {
 			continue
 		}
 
-		targetPath := filepath.Join(destDir, file.Name)
+		cleanName := filepath.Clean(file.Name)
+		if cleanName == ".." || strings.HasPrefix(cleanName, ".."+string(filepath.Separator)) || filepath.IsAbs(cleanName) {
+			return "", fmt.Errorf("invalid zip entry path: %q", file.Name)
+		}
+
+		targetPath := filepath.Join(destDir, cleanName)
 		if file.FileInfo().IsDir() {
-			os.MkdirAll(targetPath, perms)
+			if err := os.MkdirAll(targetPath, perms); err != nil {
+				return "", err
+			}
 			if extractedPath == "" {
 				extractedPath = targetPath
 			}
