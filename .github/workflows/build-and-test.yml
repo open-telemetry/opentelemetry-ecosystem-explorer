@@ -68,9 +68,9 @@ jobs:
       - name: Install dependencies
         run: uv sync --locked --all-extras --dev
       - name: Run ruff check
-        run: uv run ruff check ecosystem-automation/
+        run: uv run ruff check ecosystem-automation scripts
       - name: Run ruff format check
-        run: uv run ruff format --check ecosystem-automation/
+        run: uv run ruff format --check ecosystem-automation scripts
 
   test-automation-collector-watcher:
     name: Test collector-watcher
