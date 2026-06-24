@@ -1,8 +1,8 @@
 distribution: core
-version: 0.154.1-SNAPSHOT
+version: 0.155.1-SNAPSHOT
 repository: opentelemetry-collector
 component_type: extension
-schema_hash: 6fb04b3979c2
+schema_hash: cafe11f1474d
 components:
 - name: memorylimiterextension
   metadata:
