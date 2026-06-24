@@ -16,7 +16,6 @@
 """Tests for InventoryManager."""
 
 import yaml
-
 from js_instrumentation_watcher.inventory_manager import InventoryManager
 
 

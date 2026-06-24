@@ -70,10 +70,7 @@ def apply_declarative_name_corrections(inventory: dict[str, Any]) -> dict[str, A
                         "type": "object",
                         "required": ["peer", "service_name"],
                         "properties": {
-                            "peer": {
-                                "type": "string",
-                                "description": "Host name or IP address to match against."
-                            },
+                            "peer": {"type": "string", "description": "Host name or IP address to match against."},
                             "service_name": {
                                 "type": "string",
                                 "description": "Peer service name to record for matching peers.",
