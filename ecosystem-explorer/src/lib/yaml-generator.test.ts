@@ -680,6 +680,70 @@ describe("generateYaml", () => {
       expect(output).toMatch(/^ {2}javaagent:$/m);
       expect(output).not.toMatch(/spring_starter/);
     });
+
+    const placeholderSchema: ConfigNode = {
+      controlType: "group",
+      key: "root",
+      label: "Root",
+      path: "",
+      children: [
+        {
+          controlType: "group",
+          key: "resource",
+          label: "Resource",
+          path: "resource",
+          children: [],
+        },
+      ],
+    };
+
+    const placeholderState: ConfigurationBuilderState = {
+      version: "1.0.0",
+      values: {
+        resource: {
+          service_name: "${OTEL_SERVICE_NAME:-my-service}",
+          endpoint: "${OTEL_EXPORTER_OTLP_ENDPOINT:-http://localhost:4318}/v1/traces",
+          bare: "${OTEL_RESOURCE_ATTRIBUTES}",
+          env_prefixed: "${env:OTEL_SERVICE_NAME:-fallback}",
+          sys_prefixed: "${sys:otel.service.name:-fallback}",
+        },
+      },
+      enabledSections: { resource: true },
+      validationErrors: {},
+      isDirty: false,
+    };
+
+    it("rewrites `${VAR:-default}` to Spring's `${VAR:default}` for spring_starter target", () => {
+      const output = generateYaml(placeholderState, placeholderSchema, {
+        header: "",
+        target: "spring_starter",
+      });
+      expect(output).toContain("${OTEL_SERVICE_NAME:my-service}");
+      expect(output).toContain("${OTEL_EXPORTER_OTLP_ENDPOINT:http://localhost:4318}/v1/traces");
+      // Bare placeholders without a default are unchanged.
+      expect(output).toContain("${OTEL_RESOURCE_ATTRIBUTES}");
+      // The SDK syntax must not survive in spring_starter output.
+      expect(output).not.toContain(":-my-service");
+      expect(output).not.toContain(":-http://localhost:4318");
+    });
+
+    it("leaves SDK-prefixed `${env:...:-default}` / `${sys:...:-default}` untouched for spring_starter", () => {
+      const output = generateYaml(placeholderState, placeholderSchema, {
+        header: "",
+        target: "spring_starter",
+      });
+      // env:/sys: forms carry semantics that Spring does not have; preserve so
+      // the user notices the mismatch rather than silently losing info.
+      expect(output).toContain("${env:OTEL_SERVICE_NAME:-fallback}");
+      expect(output).toContain("${sys:otel.service.name:-fallback}");
+    });
+
+    it("leaves `${VAR:-default}` unchanged for javaagent target", () => {
+      const output = generateYaml(placeholderState, placeholderSchema, { header: "" });
+      expect(output).toContain("${OTEL_SERVICE_NAME:-my-service}");
+      expect(output).toContain("${OTEL_EXPORTER_OTLP_ENDPOINT:-http://localhost:4318}/v1/traces");
+      expect(output).not.toContain("${OTEL_SERVICE_NAME:my-service}");
+    });
   });
 
   describe("generateYamlSections", () => {

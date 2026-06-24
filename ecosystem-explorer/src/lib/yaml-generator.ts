@@ -167,6 +167,21 @@ function renameJavaagentToSpringStarter(value: ConfigValue): ConfigValue {
   return out;
 }
 
+// Spring's property placeholder resolver uses `${VAR:default}` (single colon)
+// whereas the OpenTelemetry SDK declarative-config spec uses the shell-style
+// `${VAR:-default}`. When users paste the explorer's YAML into Spring's
+// `application.yaml`, Spring resolves placeholders first — and `${VAR:-default}`
+// is not recognized, so the dash ends up in the value. Rewrite the syntax to
+// Spring's form for the `spring_starter` target.
+//
+// Only the bare `${VAR:-default}` form is rewritten. SDK-prefixed forms like
+// `${env:VAR:-default}` or `${sys:property:-default}` are left untouched: those
+// carry semantics (env vs system property lookup) that have no Spring
+// equivalent, so rewriting them would silently lose information.
+function rewritePlaceholdersForSpring(text: string): string {
+  return text.replace(/\$\{([A-Za-z_][A-Za-z0-9_]*):-/g, "${$1:");
+}
+
 function indentYamlBody(text: string, indent: string): string {
   if (text === "") return text;
   // Preserve a trailing newline so joined sections still separate cleanly.
@@ -228,7 +243,8 @@ export function generateYamlSections(
         body = renameJavaagentToSpringStarter(body);
       }
       const rawContent = sectionComment(child, child.key) + dumpYaml({ [child.key]: body });
-      const content = isSpringStarter ? indentYamlBody(rawContent, "  ") : rawContent;
+      const indented = isSpringStarter ? indentYamlBody(rawContent, "  ") : rawContent;
+      const content = isSpringStarter ? rewritePlaceholdersForSpring(indented) : indented;
       sections.push({ key: child.key, content });
       continue;
     }
@@ -238,7 +254,8 @@ export function generateYamlSections(
     if (stripped === EMPTY) continue;
     const rawContent =
       sectionComment(child, child.key) + dumpYaml({ [child.key]: stripped as ConfigValue });
-    const content = isSpringStarter ? indentYamlBody(rawContent, "  ") : rawContent;
+    const indented = isSpringStarter ? indentYamlBody(rawContent, "  ") : rawContent;
+    const content = isSpringStarter ? rewritePlaceholdersForSpring(indented) : indented;
     sections.push({ key: child.key, content });
   }
 
