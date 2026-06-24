@@ -17,9 +17,8 @@ import type { ConfigVersionInfo } from "@/types/configuration";
 
 /**
  * Highest declarative-configuration schema version the builder UI supports.
- * The registry publishes newer versions before the UI can render their fields,
- * so the schema selector is pinned here. Bump this once the UI supports a newer
- * version.
+ * The registry publishes newer versions before the Java agent can support them,
+ * so the schema selector is pinned here.
  */
 export const MAX_SUPPORTED_CONFIG_SCHEMA_VERSION = "1.0.0";
 

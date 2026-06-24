@@ -353,8 +353,7 @@ function InstrumentationTabBody({
 export function ConfigurationBuilderPage() {
   const { t } = useTranslation("java-agent");
   const schemaVersionsState = useConfigVersions();
-  // The registry publishes newer schema versions than the builder UI supports,
-  // so cap the selectable versions at the pinned ceiling.
+  // The Java Agent needs time to implement support latest versions
   const supportedSchemaVersions = useMemo(
     () => filterSupportedConfigVersions(schemaVersionsState.data?.versions ?? []),
     [schemaVersionsState.data]
