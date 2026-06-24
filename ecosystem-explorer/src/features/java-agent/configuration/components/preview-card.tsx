@@ -18,7 +18,11 @@ import { useTranslation } from "react-i18next";
 import { Download, RefreshCcw, ListPlus, Maximize2 } from "lucide-react";
 import type { ConfigNode } from "@/types/configuration";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
-import { generateYamlSections, structuredToString } from "@/lib/yaml-generator";
+import {
+  generateYamlSections,
+  structuredToString,
+  type ConfigurationTarget,
+} from "@/lib/yaml-generator";
 import { downloadText } from "@/lib/download-text";
 import { CopyButton } from "@/components/ui/copy-button";
 import {
@@ -87,19 +91,25 @@ interface PreviewCardProps {
   schema: ConfigNode;
   javaAgentVersion: string;
   activePreviewKey: string | null;
+  target?: ConfigurationTarget;
 }
 
 export function PreviewCard({
   schema,
   javaAgentVersion,
   activePreviewKey,
+  target = "javaagent",
 }: PreviewCardProps): JSX.Element {
   const { t } = useTranslation("java-agent");
   const { state, enableAllSections, resetToDefaults, validateAll } = useConfigurationBuilder();
   const hasErrors = Object.keys(state.validationErrors).length > 0;
   const structured = useMemo(
-    () => generateYamlSections(state, schema, { javaAgentVersion: javaAgentVersion || undefined }),
-    [state, schema, javaAgentVersion]
+    () =>
+      generateYamlSections(state, schema, {
+        javaAgentVersion: javaAgentVersion || undefined,
+        target,
+      }),
+    [state, schema, javaAgentVersion, target]
   );
 
   const yaml = useMemo(() => structuredToString(structured), [structured]);
