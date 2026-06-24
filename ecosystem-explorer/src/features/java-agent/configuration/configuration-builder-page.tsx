@@ -22,8 +22,6 @@ import { BetaBadge } from "@/components/ui/beta-badge";
 import { PageContainer } from "@/components/layout/page-container";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { VersionSelector } from "@/features/java-agent/components/version-selector";
-import type { ConfigurationTarget } from "@/lib/yaml-generator";
-import { TargetSelector } from "./components/target-selector";
 import {
   useConfigVersions,
   useConfigSchema,
@@ -38,6 +36,8 @@ import type { GroupNode } from "@/types/configuration";
 import { hasMeaningfulLeaf } from "@/lib/state-hydrate";
 import { SchemaRenderer } from "./components/schema-renderer";
 import { PreviewCard } from "./components/preview-card";
+import type { ConfigurationTarget } from "@/lib/yaml-generator";
+import { TargetSelector } from "./components/target-selector";
 import {
   ConfigurationTocSidebar,
   type StatusFilter,
@@ -107,21 +107,12 @@ function ExpandCollapseToolbar() {
 
 interface SdkTabContentProps {
   schema: GroupNode;
-  starter: ReturnType<typeof useConfigStarter>["data"];
-  schemaVersion: string;
   javaAgentVersion: string;
   activeTab: string;
   target: ConfigurationTarget;
 }
 
-function SdkTabContent({
-  schema,
-  starter,
-  schemaVersion,
-  javaAgentVersion,
-  activeTab,
-  target,
-}: SdkTabContentProps) {
+function SdkTabContent({ schema, javaAgentVersion, activeTab, target }: SdkTabContentProps) {
   const { t } = useTranslation("java-agent");
   const [activePreviewKey, setActivePreviewKey] = useState<string | null>(null);
 
@@ -157,12 +148,7 @@ function SdkTabContent({
   const { activeKey, scrollToSection } = useActiveSection(sectionKeys, sectionsContainerRef);
 
   return (
-    <ConfigurationBuilderProvider
-      key={schemaVersion}
-      schema={schema}
-      version={schemaVersion}
-      starter={starter}
-    >
+    <>
       <PruneInstrumentationsForAgentVersion javaAgentVersion={javaAgentVersion} />
       <SectionExpansionProvider>
         <div className={BUILDER_GRID}>
@@ -200,14 +186,12 @@ function SdkTabContent({
           />
         </div>
       </SectionExpansionProvider>
-    </ConfigurationBuilderProvider>
+    </>
   );
 }
 
 interface InstrumentationTabContentProps {
   schema: GroupNode;
-  starter: ReturnType<typeof useConfigStarter>["data"];
-  schemaVersion: string;
   javaAgentVersion: string;
   activeTab: string;
   target: ConfigurationTarget;
@@ -215,8 +199,6 @@ interface InstrumentationTabContentProps {
 
 function InstrumentationTabContent({
   schema,
-  starter,
-  schemaVersion,
   javaAgentVersion,
   activeTab,
   target,
@@ -230,20 +212,13 @@ function InstrumentationTabContent({
   }, [schema]);
 
   return (
-    <ConfigurationBuilderProvider
-      key={schemaVersion}
+    <InstrumentationTabBody
+      activeTab={activeTab}
       schema={schema}
-      version={schemaVersion}
-      starter={starter}
-    >
-      <InstrumentationTabBody
-        activeTab={activeTab}
-        schema={schema}
-        generalNode={generalNode}
-        javaAgentVersion={javaAgentVersion}
-        target={target}
-      />
-    </ConfigurationBuilderProvider>
+      generalNode={generalNode}
+      javaAgentVersion={javaAgentVersion}
+      target={target}
+    />
   );
 }
 
@@ -471,58 +446,52 @@ export function ConfigurationBuilderPage() {
             <TargetSelector value={target} onChange={setTarget} />
           </div>
         </div>
+        {/*
+         * Loading and error states are handled here, OUTSIDE the provider, so
+         * the schema-loading Loader and schema/starter error messages stay
+         * reachable. The provider is mounted only once data is ready, and it is
+         * hoisted above <Tabs> (not nested per-tab) so builder state survives
+         * tab switches — Radix unmounts the inactive TabsContent, which would
+         * otherwise discard unsaved edits. `key={schemaVersion}` remounts (and
+         * resets) state only when the schema version changes.
+         */}
         {schemaVersionsState.loading ? (
           <Loader size="lg" label={t("builder.loading.versions")} className="mt-4" />
         ) : schemaVersionsState.error ? (
           <p className="mt-4 text-sm text-red-400">{t("builder.error.versions")}</p>
-        ) : (
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsContent value="sdk">
-              {!schemaVersion || schema.loading || starter.loading || (!schema.error && !root) ? (
-                <Loader
-                  size={root ? "sm" : "lg"}
-                  label={t("builder.loading.schema")}
-                  className={root ? "mt-4" : undefined}
-                />
-              ) : schema.error ? (
-                <p className="mt-4 text-sm text-red-400">{t("builder.error.schema")}</p>
-              ) : starter.error ? (
-                <p className="mt-4 text-sm text-red-400">{t("builder.error.template")}</p>
-              ) : root ? (
+        ) : schema.loading || starter.loading || (!schema.error && !root) ? (
+          <Loader size="lg" label={t("builder.loading.schema")} className="mt-4" />
+        ) : schema.error ? (
+          <p className="mt-4 text-sm text-red-400">{t("builder.error.schema")}</p>
+        ) : starter.error ? (
+          <p className="mt-4 text-sm text-red-400">{t("builder.error.template")}</p>
+        ) : root ? (
+          <ConfigurationBuilderProvider
+            key={schemaVersion}
+            schema={root}
+            version={schemaVersion}
+            starter={starter.data}
+          >
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsContent value="sdk">
                 <SdkTabContent
                   schema={root}
-                  starter={starter.data}
-                  schemaVersion={schemaVersion}
                   javaAgentVersion={javaAgentVersion}
                   activeTab={activeTab}
                   target={target}
                 />
-              ) : null}
-            </TabsContent>
-            <TabsContent value="instrumentation">
-              {!schemaVersion || schema.loading || starter.loading || (!schema.error && !root) ? (
-                <Loader
-                  size={root ? "sm" : "lg"}
-                  label={t("builder.loading.schema")}
-                  className={root ? "mt-4" : undefined}
-                />
-              ) : schema.error ? (
-                <p className="mt-4 text-sm text-red-400">{t("builder.error.schema")}</p>
-              ) : starter.error ? (
-                <p className="mt-4 text-sm text-red-400">{t("builder.error.template")}</p>
-              ) : root ? (
+              </TabsContent>
+              <TabsContent value="instrumentation">
                 <InstrumentationTabContent
                   schema={root}
-                  starter={starter.data}
-                  schemaVersion={schemaVersion}
                   javaAgentVersion={javaAgentVersion}
                   activeTab={activeTab}
                   target={target}
                 />
-              ) : null}
-            </TabsContent>
-          </Tabs>
-        )}
+              </TabsContent>
+            </Tabs>
+          </ConfigurationBuilderProvider>
+        ) : null}
       </div>
     </PageContainer>
   );

@@ -21,9 +21,6 @@ const FEATURE_FLAGS = [
   // Collector Page - Still in development
   "COLLECTOR_PAGE",
 
-  // Java Agent Release Comparison - Still in development
-  "JAVA_RELEASE_COMPARISON",
-
   // V1 Redesign - Still in development - https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/84
   "V1_REDESIGN",
 
@@ -31,9 +28,6 @@ const FEATURE_FLAGS = [
   // screenshot CI builds enable it so the visual-regression and a11y baseline
   // can cover the design-system primitives in isolation.
   "DEV_SHOWCASE",
-
-  // Internationalisation — language detection and switcher UI.
-  "I18N",
 ] as const;
 
 const FEATURE_FLAG_PREFIX = "VITE_FEATURE_FLAG_";

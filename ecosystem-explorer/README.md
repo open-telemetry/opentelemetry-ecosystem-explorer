@@ -110,10 +110,9 @@ The available feature flags are defined in `src/lib/feature-flags.ts`.
 
 **Deployment behavior:**
 
-Branch deploys and deploy previews enable `COLLECTOR_PAGE` through `netlify.toml`.
-`JAVA_RELEASE_COMPARISON` is not enabled in any deploy context. `V1_REDESIGN` is enabled
-automatically on `feat/84-*` branches via the build command. Production enables none of these flags
-by default.
+Branch deploys and deploy previews enable `COLLECTOR_PAGE` through `netlify.toml`. `V1_REDESIGN` is
+enabled automatically on `feat/84-*` branches via the build command. Production enables none of
+these flags by default.
 
 ## Data Fetching and Caching
 

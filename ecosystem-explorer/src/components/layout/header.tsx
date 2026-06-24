@@ -19,7 +19,6 @@ import { Menu, X, Sun, Moon, Monitor, ChevronDown } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { OtelLogo } from "@/components/icons/otel-logo";
-import { isEnabled } from "@/lib/feature-flags";
 import { useTheme, type ThemeMode } from "@/theme-context";
 
 const NAV_ITEMS = [
@@ -119,7 +118,7 @@ export function Header() {
                 {t(item.labelKey)}
               </Link>
             ))}
-            {isEnabled("I18N") && <LanguageSwitcher />}
+            <LanguageSwitcher />
             <ThemeSwitcher />
           </nav>
           <button
@@ -150,11 +149,9 @@ export function Header() {
                 </Link>
               </li>
             ))}
-            {isEnabled("I18N") && (
-              <li>
-                <LanguageSwitcher />
-              </li>
-            )}
+            <li>
+              <LanguageSwitcher />
+            </li>
             <li>
               <ThemeSwitcher />
             </li>

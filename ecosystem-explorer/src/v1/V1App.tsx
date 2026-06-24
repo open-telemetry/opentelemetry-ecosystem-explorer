@@ -117,9 +117,7 @@ export function V1App() {
               />
 
               <Route path="/java-agent/configuration" element={<JavaConfigurationListPage />} />
-              {isEnabled("JAVA_RELEASE_COMPARISON") && (
-                <Route path="/java-agent/releases" element={<JavaReleaseComparisonPage />} />
-              )}
+              <Route path="/java-agent/releases" element={<JavaReleaseComparisonPage />} />
               <Route
                 path="/java-agent/configuration/builder"
                 element={<ConfigurationBuilderPage />}

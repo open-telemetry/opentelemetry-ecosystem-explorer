@@ -15,7 +15,7 @@
  */
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { InstrumentationListEntry } from "@/types/javaagent";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
@@ -164,34 +164,9 @@ describe("InstrumentationBrowser", () => {
     expect(screen.queryByText("kafka_clients")).not.toBeInTheDocument();
   });
 
-  it("calls setCustomization('cassandra', 'disabled') when + Customize is clicked on a default-enabled module", () => {
-    renderWithProvider(
-      <InstrumentationBrowser
-        instrumentations={FIXTURE}
-        search=""
-        statusFilter="all"
-        {...browserDefaults}
-      />
-    );
-    fireEvent.click(screen.getByLabelText("Customize cassandra"));
-    expect(setCustomization).toHaveBeenCalledWith("cassandra", "disabled");
-  });
-
-  it("calls setCustomization('jmx_metrics', 'enabled') when + Customize is clicked on a default-disabled module", () => {
-    renderWithProvider(
-      <InstrumentationBrowser
-        instrumentations={FIXTURE}
-        search=""
-        statusFilter="all"
-        {...browserDefaults}
-      />
-    );
-    fireEvent.click(screen.getByLabelText("Customize jmx_metrics"));
-    expect(setCustomization).toHaveBeenCalledWith("jmx_metrics", "enabled");
-  });
-
-  it("calls setCustomization(name, 'none') when ✕ is clicked on an customized row", () => {
+  it("calls setCustomization(name, 'none') when Reset is clicked on a customized row inside expanded panel", async () => {
     mockedCustomization.mockReturnValue(new Map([["cassandra", "disabled"]]));
+    const user = userEvent.setup();
     renderWithProvider(
       <InstrumentationBrowser
         instrumentations={FIXTURE}
@@ -200,12 +175,16 @@ describe("InstrumentationBrowser", () => {
         {...browserDefaults}
       />
     );
-    fireEvent.click(screen.getByLabelText("Remove customization for cassandra"));
+    // Expand the row first
+    await user.click(screen.getByText("cassandra"));
+    // Then click reset
+    await user.click(screen.getByText("Reset to default"));
     expect(setCustomization).toHaveBeenCalledWith("cassandra", "none");
   });
 
-  it("calls setCustomization('cassandra', 'enabled') when toggling customized Disabled→Enabled", () => {
+  it("calls setCustomization('cassandra', 'enabled') when toggling customized Disabled→Enabled in expanded panel", async () => {
     mockedCustomization.mockReturnValue(new Map([["cassandra", "disabled"]]));
+    const user = userEvent.setup();
     renderWithProvider(
       <InstrumentationBrowser
         instrumentations={FIXTURE}
@@ -214,7 +193,8 @@ describe("InstrumentationBrowser", () => {
         {...browserDefaults}
       />
     );
-    fireEvent.click(screen.getAllByRole("button", { name: "Enabled" })[0]);
+    await user.click(screen.getByText("cassandra"));
+    await user.click(screen.getByRole("button", { name: "Enabled" }));
     expect(setCustomization).toHaveBeenCalledWith("cassandra", "enabled");
   });
 
@@ -299,7 +279,7 @@ describe("InstrumentationBrowser — expansion and customization filter", () => 
     },
   ];
 
-  it("expands a row when its toggle button is clicked", async () => {
+  it("expands a row when its header is clicked", async () => {
     const user = userEvent.setup();
     renderWithProvider(
       <InstrumentationBrowser
@@ -311,7 +291,7 @@ describe("InstrumentationBrowser — expansion and customization filter", () => 
     );
     const row = screen.getByTestId("instrumentation-row-cassandra");
     expect(row.getAttribute("data-expanded")).toBe("false");
-    await user.click(screen.getByRole("button", { name: /toggle details for cassandra/i }));
+    await user.click(screen.getByText("cassandra"));
     expect(row.getAttribute("data-expanded")).toBe("true");
   });
 
@@ -329,8 +309,8 @@ describe("InstrumentationBrowser — expansion and customization filter", () => 
     const graphql = screen.getByTestId("instrumentation-row-graphql_java");
     expect(cass.getAttribute("data-expanded")).toBe("false");
     expect(graphql.getAttribute("data-expanded")).toBe("false");
-    await user.click(screen.getByRole("button", { name: /toggle details for cassandra/i }));
-    await user.click(screen.getByRole("button", { name: /toggle details for graphql_java/i }));
+    await user.click(screen.getByText("cassandra"));
+    await user.click(screen.getByText("graphql_java"));
     expect(cass.getAttribute("data-expanded")).toBe("true");
     expect(graphql.getAttribute("data-expanded")).toBe("true");
   });
