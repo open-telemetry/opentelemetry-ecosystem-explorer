@@ -36,6 +36,8 @@ import type { GroupNode } from "@/types/configuration";
 import { hasMeaningfulLeaf } from "@/lib/state-hydrate";
 import { SchemaRenderer } from "./components/schema-renderer";
 import { PreviewCard } from "./components/preview-card";
+import type { ConfigurationTarget } from "@/lib/yaml-generator";
+import { TargetSelector } from "./components/target-selector";
 import {
   ConfigurationTocSidebar,
   type StatusFilter,
@@ -107,9 +109,10 @@ interface SdkTabContentProps {
   schema: GroupNode;
   javaAgentVersion: string;
   activeTab: string;
+  target: ConfigurationTarget;
 }
 
-function SdkTabContent({ schema, javaAgentVersion, activeTab }: SdkTabContentProps) {
+function SdkTabContent({ schema, javaAgentVersion, activeTab, target }: SdkTabContentProps) {
   const { t } = useTranslation("java-agent");
   const [activePreviewKey, setActivePreviewKey] = useState<string | null>(null);
 
@@ -179,6 +182,7 @@ function SdkTabContent({ schema, javaAgentVersion, activeTab }: SdkTabContentPro
             schema={schema}
             javaAgentVersion={javaAgentVersion}
             activePreviewKey={activePreviewKey}
+            target={target}
           />
         </div>
       </SectionExpansionProvider>
@@ -190,12 +194,14 @@ interface InstrumentationTabContentProps {
   schema: GroupNode;
   javaAgentVersion: string;
   activeTab: string;
+  target: ConfigurationTarget;
 }
 
 function InstrumentationTabContent({
   schema,
   javaAgentVersion,
   activeTab,
+  target,
 }: InstrumentationTabContentProps) {
   const generalNode = useMemo<GroupNode | null>(() => {
     const devNode = schema.children.find((c) => c.key === INSTRUMENTATION_DEV_KEY);
@@ -211,6 +217,7 @@ function InstrumentationTabContent({
       schema={schema}
       generalNode={generalNode}
       javaAgentVersion={javaAgentVersion}
+      target={target}
     />
   );
 }
@@ -220,6 +227,7 @@ interface InstrumentationTabBodyProps {
   schema: GroupNode;
   generalNode: GroupNode | null;
   javaAgentVersion: string;
+  target: ConfigurationTarget;
 }
 
 function InstrumentationTabBody({
@@ -227,6 +235,7 @@ function InstrumentationTabBody({
   schema,
   generalNode,
   javaAgentVersion,
+  target,
 }: InstrumentationTabBodyProps) {
   const { t } = useTranslation("java-agent");
   const [activePreviewKey, setActivePreviewKey] = useState<string | null>(null);
@@ -343,6 +352,7 @@ function InstrumentationTabBody({
           schema={schema}
           javaAgentVersion={javaAgentVersion}
           activePreviewKey={activePreviewKey}
+          target={target}
         />
       </div>
     </SectionExpansionProvider>
@@ -375,6 +385,7 @@ export function ConfigurationBuilderPage() {
   );
   const [currentJavaAgentVersion, setCurrentJavaAgentVersion] = useState<string>("");
   const javaAgentVersion = currentJavaAgentVersion || latestJavaAgentVersion;
+  const [target, setTarget] = useState<ConfigurationTarget>("javaagent");
 
   const schema = useConfigSchema(schemaVersion);
   const starter = useConfigStarter(schemaVersion);
@@ -432,6 +443,7 @@ export function ConfigurationBuilderPage() {
                 id="java-agent-version-select"
               />
             ) : null}
+            <TargetSelector value={target} onChange={setTarget} />
           </div>
         </div>
         {/*
@@ -466,6 +478,7 @@ export function ConfigurationBuilderPage() {
                   schema={root}
                   javaAgentVersion={javaAgentVersion}
                   activeTab={activeTab}
+                  target={target}
                 />
               </TabsContent>
               <TabsContent value="instrumentation">
@@ -473,6 +486,7 @@ export function ConfigurationBuilderPage() {
                   schema={root}
                   javaAgentVersion={javaAgentVersion}
                   activeTab={activeTab}
+                  target={target}
                 />
               </TabsContent>
             </Tabs>
