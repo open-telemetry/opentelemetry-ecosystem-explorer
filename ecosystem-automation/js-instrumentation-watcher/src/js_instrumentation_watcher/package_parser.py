@@ -75,6 +75,11 @@ class PackageParser:
         repo = pkg_json.get("repository", {})
         source_path = repo.get("directory", f"packages/{name}") if isinstance(repo, dict) else f"packages/{name}"
 
+        # Guard like `repository` above: a null/non-dict `engines` field must not
+        # raise and drop the whole package's metadata.
+        engines = pkg_json.get("engines", {})
+        node_engine = engines.get("node", "") if isinstance(engines, dict) else ""
+
         owners_key = f"packages/{name}"
         owners = self.component_owners.get(owners_key, [])
 
@@ -88,7 +93,7 @@ class PackageParser:
             "description": pkg_json.get("description", ""),
             "source_path": source_path,
             "repository": "open-telemetry/opentelemetry-js-contrib",
-            "node_engine": pkg_json.get("engines", {}).get("node", ""),
+            "node_engine": node_engine,
             "in_auto_instrumentations_node": npm_name in self.bundle_membership,
             "component_owners": owners,
             "supported_versions": supported_versions,

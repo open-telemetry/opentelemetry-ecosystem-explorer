@@ -207,6 +207,29 @@ def test_tested_versions_sorted_deterministically(tmp_package):
     assert ranges == sorted(ranges)
 
 
+def test_parse_handles_non_dict_engines(tmp_package):
+    # A null/non-dict `engines` field must not raise and drop the package.
+    write_package_json(
+        tmp_package,
+        {
+            "name": "@opentelemetry/instrumentation-express",
+            "version": "0.66.0",
+            "description": "test",
+            "engines": None,
+        },
+    )
+
+    parser = PackageParser(
+        package_path=tmp_package,
+        bundle_membership=set(),
+        component_owners={},
+    )
+    result = parser.parse()
+
+    assert result is not None
+    assert result["node_engine"] == ""
+
+
 def test_not_in_bundle_when_absent(tmp_package):
     write_package_json(
         tmp_package,

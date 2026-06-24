@@ -18,7 +18,7 @@ version = "0.1.0"
 description = "Automation tool for watching and collecting OpenTelemetry JavaScript instrumentation metadata"
 requires-python = ">=3.11"
 dependencies = [
-    "semantic-version>=2.10.0",
+    "PyYAML>=6.0.1",
     "watcher-common",
 ]
 
