@@ -32,6 +32,7 @@ import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
 import { useInstrumentations, useVersions } from "@/hooks/use-javaagent-data";
 import { groupByModule } from "@/lib/normalize-instrumentation";
 import { useCustomizedModules } from "@/hooks/use-customized-modules";
+import { filterSupportedConfigVersions } from "@/lib/config-schema-version";
 import type { GroupNode } from "@/types/configuration";
 import { hasMeaningfulLeaf } from "@/lib/state-hydrate";
 import { SchemaRenderer } from "./components/schema-renderer";
@@ -352,12 +353,18 @@ function InstrumentationTabBody({
 export function ConfigurationBuilderPage() {
   const { t } = useTranslation("java-agent");
   const schemaVersionsState = useConfigVersions();
+  // The registry publishes newer schema versions than the builder UI supports,
+  // so cap the selectable versions at the pinned ceiling.
+  const supportedSchemaVersions = useMemo(
+    () => filterSupportedConfigVersions(schemaVersionsState.data?.versions ?? []),
+    [schemaVersionsState.data]
+  );
   const latestSchemaVersion = useMemo(
     () =>
-      schemaVersionsState.data?.versions.find((v) => v.is_latest)?.version ??
-      schemaVersionsState.data?.versions[0]?.version ??
+      supportedSchemaVersions.find((v) => v.is_latest)?.version ??
+      supportedSchemaVersions[0]?.version ??
       "",
-    [schemaVersionsState.data]
+    [supportedSchemaVersions]
   );
   const [currentSchemaVersion, setCurrentSchemaVersion] = useState<string>("");
   const schemaVersion = currentSchemaVersion || latestSchemaVersion;
@@ -414,9 +421,9 @@ export function ConfigurationBuilderPage() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-4">
-            {schemaVersionsState.data && schemaVersion ? (
+            {supportedSchemaVersions.length > 0 && schemaVersion ? (
               <VersionSelector
-                versions={schemaVersionsState.data.versions}
+                versions={supportedSchemaVersions}
                 currentVersion={schemaVersion}
                 onVersionChange={setCurrentSchemaVersion}
                 label={t("builder.sections.schema")}
