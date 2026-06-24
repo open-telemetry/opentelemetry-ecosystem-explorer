@@ -186,20 +186,6 @@ export function PreviewCard({
           </Dialog>
         </div>
       </header>
-      {target === "spring_starter" ? (
-        <p className="text-muted-foreground text-xs">
-          {t("builder.target.springStarterHint")}{" "}
-          <a
-            href="https://opentelemetry.io/docs/zero-code/java/spring-boot-starter/declarative-configuration/"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={t("builder.target.springStarterDocsLabel")}
-            className="hover:text-foreground underline"
-          >
-            {t("builder.links.declarativeConfig")}
-          </a>
-        </p>
-      ) : null}
       <YamlCodeBlock
         structured={structured}
         activePreviewKey={activePreviewKey}

@@ -627,11 +627,13 @@ describe("generateYaml", () => {
           required: true,
         },
         {
-          controlType: "group",
+          // Matches the real schema: `distribution` is a key_value_map, not a
+          // group, so it flows through the non-group emit branch. Using "group"
+          // here would mask the missing rename in that branch.
+          controlType: "key_value_map",
           key: "distribution",
           label: "Distribution",
           path: "distribution",
-          children: [],
         },
         {
           controlType: "group",
@@ -672,6 +674,31 @@ describe("generateYaml", () => {
       expect(output).toMatch(/^ {2}# Distribution$/m);
       // Old key must not leak.
       expect(output).not.toMatch(/javaagent/);
+    });
+
+    it("emits a spring-specific default header (no agent -Dotel.config.file line)", () => {
+      const output = generateYaml(distributionState, distributionSchema, {
+        target: "spring_starter",
+        javaAgentVersion: "2.30.0",
+      });
+      expect(output).toContain("# OpenTelemetry Spring Boot starter configuration");
+      expect(output).toContain("# Paste at the top level of your Spring Boot application.yaml");
+      expect(output).toContain("# Requires the OpenTelemetry Spring Boot starter >= 2.26.0.");
+      expect(output).toContain(
+        "# Docs: https://opentelemetry.io/docs/zero-code/java/spring-boot-starter/declarative-configuration/"
+      );
+      // The agent-oriented guidance must not appear for spring_starter output.
+      expect(output).not.toContain("-Dotel.config.file");
+      expect(output).not.toContain("# OpenTelemetry SDK Configuration");
+    });
+
+    it("keeps the agent-oriented default header for the javaagent target", () => {
+      const output = generateYaml(distributionState, distributionSchema, {
+        javaAgentVersion: "2.30.0",
+      });
+      expect(output).toContain("# OpenTelemetry SDK Configuration");
+      expect(output).toContain("-Dotel.config.file");
+      expect(output).not.toContain("Spring Boot starter configuration");
     });
 
     it("default target is javaagent and emits no `otel:` wrapper or rename", () => {

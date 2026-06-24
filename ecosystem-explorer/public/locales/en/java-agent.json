@@ -440,9 +440,7 @@
     },
     "target": {
       "javaagent": "Java agent",
-      "springStarter": "Spring Boot starter",
-      "springStarterHint": "Paste this block at the top level of your `application.yaml` (the `otel:` wrapper is already included). Requires starter ≥ 2.26.0 and the OTel instrumentation BOM in `dependencyManagement` on Spring Boot 3.5+.",
-      "springStarterDocsLabel": "Spring Boot starter declarative configuration docs"
+      "springStarter": "Spring Boot starter"
     },
     "schemaRenderer": {
       "itemLabel": "Item"
