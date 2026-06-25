@@ -353,7 +353,7 @@ function InstrumentationTabBody({
 export function ConfigurationBuilderPage() {
   const { t } = useTranslation("java-agent");
   const schemaVersionsState = useConfigVersions();
-  // The Java Agent needs time to implement support latest versions
+  // The Java Agent needs time to implement support for the latest schema versions.
   const supportedSchemaVersions = useMemo(
     () => filterSupportedConfigVersions(schemaVersionsState.data?.versions ?? []),
     [schemaVersionsState.data]
