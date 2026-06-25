@@ -1,5 +1,5 @@
 distribution: contrib
-version: 0.154.1-SNAPSHOT
+version: 0.155.0
 repository: opentelemetry-collector-contrib
 component_type: receiver
 schema_hash: cafe11f1474d

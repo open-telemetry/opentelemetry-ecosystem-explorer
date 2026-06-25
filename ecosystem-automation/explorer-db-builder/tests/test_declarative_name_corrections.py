@@ -117,9 +117,7 @@ class TestApplyDeclarativeNameCorrections:
             "libraries": [
                 {
                     "name": "some-lib",
-                    "configurations": [
-                        {"declarative_name": "java.common.service_peer_mapping"}
-                    ],
+                    "configurations": [{"declarative_name": "java.common.service_peer_mapping"}],
                 }
             ]
         }
@@ -138,9 +136,7 @@ class TestApplyDeclarativeNameCorrections:
             "libraries": [
                 {
                     "name": "some-lib",
-                    "configurations": [
-                        {"declarative_name": "some.prefix.url_template_rules"}
-                    ],
+                    "configurations": [{"declarative_name": "some.prefix.url_template_rules"}],
                 }
             ]
         }
@@ -153,4 +149,3 @@ class TestApplyDeclarativeNameCorrections:
         assert "pattern" in config["declarative_schema"]["required"]
         assert "template" in config["declarative_schema"]["required"]
         assert "override" in config["declarative_schema"]["properties"]
-
