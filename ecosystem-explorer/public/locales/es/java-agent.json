@@ -435,7 +435,12 @@
       "generalSettings": "Configuración general",
       "instrumentations": "Instrumentaciones",
       "schema": "Esquema",
-      "agent": "Agente"
+      "agent": "Agente",
+      "target": "Destino"
+    },
+    "target": {
+      "javaagent": "Java agent",
+      "springStarter": "Spring Boot starter"
     },
     "schemaRenderer": {
       "itemLabel": "Elemento"

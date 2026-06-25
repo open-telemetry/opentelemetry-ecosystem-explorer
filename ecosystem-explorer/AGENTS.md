@@ -2,7 +2,8 @@
 
 React 19 + Vite + TypeScript frontend that provides search and exploration for the OpenTelemetry
 ecosystem. Tailwind CSS v4 for styling, Radix UI primitives, Vitest for both unit and integration
-tests (Playwright is used only by `scripts/take-screenshots.mjs`).
+tests (Playwright is used by `scripts/take-screenshots.mjs` and `scripts/generate-test-config.mjs`
+for acceptance tests).
 
 For design system reference (colors, typography, spacing, component patterns) see `DESIGN.md` in
 this directory.
