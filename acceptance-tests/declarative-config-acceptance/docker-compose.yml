@@ -1,10 +1,9 @@
-version: "3"
 services:
   app:
-    image: ghcr.io/open-telemetry/opentelemetry-java-instrumentation/smoke-test-spring-boot:latest
+    image: ghcr.io/open-telemetry/opentelemetry-java-instrumentation/smoke-test-spring-boot:jdk17-20260623.27999598977
     environment:
       JAVA_TOOL_OPTIONS: "-javaagent:/app/opentelemetry-javaagent.jar"
-      OTEL_JAVAAGENT_CONFIGURATION_FILE: "/app/test-config.yaml"
+      OTEL_CONFIG_FILE: "/app/test-config.yaml"
       OTEL_SERVICE_NAME: "declarative-config-example-app"
       # OATS uses an lgtm stack under the hood for trace collection in tests
       OTEL_EXPORTER_OTLP_ENDPOINT: "http://lgtm:4318"

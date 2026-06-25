@@ -10,8 +10,7 @@ input:
 
 expected:
   traces:
-    - trace:
-        spans:
-          - name: "GET /greeting"
-            attributes:
-              http.route: "/greeting"
+    - traceql: '{ span.http.route = "/greeting" }'
+      equals: "GET /greeting"
+      attributes:
+        http.route: "/greeting"

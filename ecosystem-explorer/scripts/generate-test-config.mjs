@@ -97,6 +97,9 @@ async function generateConfig() {
       timeout: 20000,
     });
 
+    // Select schema version 1.0.0 (default 1.1.0 is ahead of released agents)
+    await page.locator("#schema-version-select").selectOption("1.0.0");
+
     try {
       await page
         .getByRole("button", { name: /Expand Exporter/i })
@@ -104,10 +107,8 @@ async function generateConfig() {
         .click({ timeout: 5000 });
       await page.getByText("otlp_http").first().click({ timeout: 5000 });
     } catch (e) {
-      console.log(
-        "Could not toggle OTLP exporter, proceeding with default",
-        e?.message || String(e)
-      );
+      console.error("Could not toggle OTLP exporter:", e?.message || String(e));
+      throw e;
     }
 
     const yamlElement = page.locator("pre").first();
@@ -123,6 +124,10 @@ async function generateConfig() {
       if ((await codeElement.count()) > 0) {
         yamlContent = await codeElement.textContent();
       }
+    }
+
+    if (!yamlContent.includes("otlp_http")) {
+      throw new Error("YAML does not contain the expected OTLP exporter block.");
     }
 
     const outputPath = process.argv[2]
