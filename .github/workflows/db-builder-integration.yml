@@ -9,7 +9,7 @@ on:
       - "ecosystem-explorer/src/lib/api/**"
 
 permissions:
-  contents: read # Checkout the repository source
+  contents: read
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
