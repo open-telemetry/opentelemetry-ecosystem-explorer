@@ -19,14 +19,13 @@ import { fileURLToPath } from "node:url";
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import schemaVersionsIndex from "../../../public/data/configuration/versions-index.json";
 import javaAgentVersionsIndex from "../../../public/data/javaagent/versions-index.json";
 import { normalizeRegistryName } from "@/lib/normalize-instrumentation";
 import { installFetchInterceptor, uninstallFetchInterceptor } from "./helpers/fetch-interceptor";
 import { renderBuilderPage as renderPage } from "./helpers/render-builder-page";
 import { openInstrumentationTab } from "./helpers/open-instrumentation-tab";
 
-const latestSchemaVersion = schemaVersionsIndex.versions.find((v) => v.is_latest)!.version;
+const latestSchemaVersion = "1.0.0";
 const latestAgentVersion = javaAgentVersionsIndex.versions.find((v) => v.is_latest)!.version;
 const otherAgentVersion = javaAgentVersionsIndex.versions.find((v) => !v.is_latest)?.version;
 

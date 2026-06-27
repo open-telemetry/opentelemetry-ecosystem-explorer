@@ -124,4 +124,30 @@ describe("ConfigurationBuilderPage loading/error states", () => {
     // The builder tabs must not render while the starter is in an error state.
     expect(screen.queryByRole("tab")).toBeNull();
   });
+
+  it("hides schema versions above the supported ceiling and pins to the latest supported", () => {
+    // The registry advertises 1.1.0 as latest, but the builder UI only supports
+    // up to MAX_SUPPORTED_CONFIG_SCHEMA_VERSION (1.0.0). The selector must drop
+    // 1.1.0 and default to 1.0.0, re-labelled "(latest)".
+    mocks.configVersions = {
+      data: {
+        versions: [
+          { version: "1.1.0", is_latest: true },
+          { version: "1.0.0", is_latest: false },
+        ],
+      },
+      loading: false,
+      error: null,
+    };
+    mocks.configSchema = { data: ROOT_SCHEMA, loading: false, error: null };
+    mocks.configStarter = { data: null, loading: false, error: null };
+    renderPage();
+
+    const select = screen.getByLabelText("Schema") as HTMLSelectElement;
+    const optionValues = Array.from(select.options).map((o) => o.value);
+    expect(optionValues).toEqual(["1.0.0"]);
+    expect(select.value).toBe("1.0.0");
+    expect(screen.queryByRole("option", { name: /1\.1\.0/ })).toBeNull();
+    expect(screen.getByRole("option", { name: "1.0.0 (latest)" })).toBeInTheDocument();
+  });
 });
