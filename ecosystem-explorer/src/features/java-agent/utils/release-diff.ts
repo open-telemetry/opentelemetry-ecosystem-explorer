@@ -64,10 +64,16 @@ function deduplicateSpanDiffs(spans: SpanDiff[]): SpanDiff[] {
   const result: SpanDiff[] = [];
 
   for (const removedEntry of removed) {
-    const matchIdx = added.findIndex((a, i) => !consumed.has(i) && spansIdentical(removedEntry.span, a.span));
+    const matchIdx = added.findIndex(
+      (a, i) => !consumed.has(i) && spansIdentical(removedEntry.span, a.span)
+    );
     if (matchIdx !== -1) {
       consumed.add(matchIdx);
-      result.push({ status: "changed", span: removedEntry.span, whenCondition: added[matchIdx].whenCondition });
+      result.push({
+        status: "changed",
+        span: removedEntry.span,
+        whenCondition: added[matchIdx].whenCondition,
+      });
     } else {
       result.push(removedEntry);
     }
@@ -91,10 +97,16 @@ function deduplicateMetricDiffs(metrics: MetricDiff[]): MetricDiff[] {
   const result: MetricDiff[] = [];
 
   for (const removedEntry of removed) {
-    const matchIdx = added.findIndex((a, i) => !consumed.has(i) && metricsIdentical(removedEntry.metric, a.metric));
+    const matchIdx = added.findIndex(
+      (a, i) => !consumed.has(i) && metricsIdentical(removedEntry.metric, a.metric)
+    );
     if (matchIdx !== -1) {
       consumed.add(matchIdx);
-      result.push({ status: "changed", metric: removedEntry.metric, whenCondition: added[matchIdx].whenCondition });
+      result.push({
+        status: "changed",
+        metric: removedEntry.metric,
+        whenCondition: added[matchIdx].whenCondition,
+      });
     } else {
       result.push(removedEntry);
     }

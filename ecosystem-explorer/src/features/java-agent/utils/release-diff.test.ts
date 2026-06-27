@@ -326,7 +326,9 @@ describe("cross-condition span/metric deduplication", () => {
         telemetry: [
           {
             when: "default",
-            spans: [{ span_kind: "INTERNAL", attributes: [{ name: "code.function", type: "STRING" }] }],
+            spans: [
+              { span_kind: "INTERNAL", attributes: [{ name: "code.function", type: "STRING" }] },
+            ],
           },
         ],
       },

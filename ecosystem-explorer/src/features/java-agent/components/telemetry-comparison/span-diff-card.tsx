@@ -55,10 +55,8 @@ export function SpanDiffCard({ diff }: SpanDiffCardProps) {
         {/* When-condition change indicator */}
         {status === "changed" && !changes && whenCondition && (
           <div className="space-y-1 rounded-lg border border-amber-400/30 bg-amber-400/10 p-4">
-            <p className="text-sm font-medium text-amber-400">
-              {t("diffCard.whenChanged.label")}
-            </p>
-            <code className="break-all font-mono text-sm text-amber-400">{whenCondition}</code>
+            <p className="text-sm font-medium text-amber-400">{t("diffCard.whenChanged.label")}</p>
+            <code className="font-mono text-sm break-all text-amber-400">{whenCondition}</code>
           </div>
         )}
 
