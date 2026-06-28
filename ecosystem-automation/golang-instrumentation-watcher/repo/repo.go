@@ -3,18 +3,12 @@
 package repo
 
 import (
-	"archive/zip"
-	"bytes"
-	"errors"
 	"fmt"
-	"io"
 	"log/slog"
-	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"golang.org/x/mod/semver"
 
@@ -26,24 +20,17 @@ const (
 	perms     = 0755
 	shaLength = 8
 
-	// RepoGo, RepoContrib, and RepoSemconv are the upstream repository names.
+	// RepoGo and RepoContrib are the upstream repository names.
 	RepoGo      = "opentelemetry-go"
 	RepoContrib = "opentelemetry-go-contrib"
-	RepoSemconv = "semantic-conventions"
-
-	semconvVersion = "1.38.0"
-	semconvZipURL  = "https://github.com/open-telemetry/semantic-conventions/archive/refs/tags/v" + semconvVersion + ".zip"
-	semconvSubdir  = "model"
 )
 
 var repos = []string{
 	"https://github.com/open-telemetry/opentelemetry-go-contrib.git",
 }
 
-var downloadClient = &http.Client{Timeout: 2 * time.Minute}
-
 // RepoInfo identifies a checked-out repository and its current commit. It is
-// returned by [Checkout] and [CheckoutAt].
+// returned by [CheckoutAt].
 type RepoInfo struct {
 	Name    string // repository name (e.g. "opentelemetry-go-contrib")
 	Path    string // absolute filesystem path to the checkout
@@ -75,12 +62,6 @@ func exists(path string) bool {
 func clone(url, dir string) error {
 	cmd := exec.Command("git", "clone", url)
 	cmd.Dir = dir
-	return cmd.Run()
-}
-
-func pull(path string) error {
-	cmd := exec.Command("git", "pull", "--rebase")
-	cmd.Dir = path
 	return cmd.Run()
 }
 
@@ -136,65 +117,6 @@ func info(path string) (*RepoInfo, error) {
 		SHA:     sha[:shaLength],
 		Message: strings.ReplaceAll(msg, "\n", " "),
 	}, nil
-}
-
-func sync(url, dir string, log *conf.Log) (*RepoInfo, error) {
-	repoName := name(url)
-	repoPath := filepath.Join(dir, repoName)
-
-	if exists(repoPath) {
-		if err := pull(repoPath); err != nil {
-			log.WithErrorMsg(err, "Failed to pull repo", "repo", repoName, "action", "pull")
-			return nil, err
-		}
-	} else {
-		if err := clone(url, dir); err != nil {
-			log.WithErrorMsg(err, "Failed to clone repo", "repo", repoName, "action", "clone")
-			return nil, err
-		}
-	}
-
-	commitInfo, err := info(repoPath)
-	if err != nil {
-		log.WithErrorMsg(err, "Failed to resolve repo info", "repo", repoName)
-		return nil, err
-	}
-
-	repoInfo := &RepoInfo{
-		Name:    repoName,
-		Path:    repoPath,
-		Head:    commitInfo.Head,
-		SHA:     commitInfo.SHA,
-		Message: commitInfo.Message,
-	}
-
-	log.Info(repoName, "info", *repoInfo)
-	return repoInfo, nil
-}
-
-// Checkout clones the upstream opentelemetry-go repositories into baseDir/.repo
-// and returns a [RepoInfo] for each. Errors from individual repositories are
-// joined and returned alongside the repositories that did sync.
-func Checkout(baseDir string) ([]RepoInfo, error) {
-	log := conf.NewLog()
-
-	cloneDir := filepath.Join(baseDir, cwd)
-	if err := os.MkdirAll(cloneDir, perms); err != nil {
-		log.WithErrorMsg(err, "Failed to create clone directory", "dir", cloneDir, "perms", perms)
-		return nil, err
-	}
-
-	var repoInfos []RepoInfo
-	var errs error
-	for _, repoURL := range repos {
-		repoInfo, err := sync(repoURL, cloneDir, log)
-		if err != nil {
-			errs = errors.Join(errs, err)
-			continue
-		}
-		repoInfos = append(repoInfos, *repoInfo)
-	}
-	return repoInfos, errs
 }
 
 // CheckoutAt ensures opentelemetry-go-contrib is cloned under baseDir/.repo and
@@ -310,94 +232,4 @@ func TagsAt(repoPath string) ([]string, error) {
 		return nil, nil
 	}
 	return strings.Split(out, "\n"), nil
-}
-
-// CheckoutSemconv downloads the [RepoSemconv] model from the upstream release
-// archive into baseDir/.repo and returns the path to the extracted model
-// directory.
-func CheckoutSemconv(baseDir string) (string, error) {
-	log := conf.NewLog()
-	log.Info(RepoSemconv, "url", semconvZipURL, "subdir", semconvSubdir)
-
-	cloneDir := filepath.Join(baseDir, cwd)
-	semconvDir, err := downloadAndExtractZip(semconvZipURL, semconvSubdir, cloneDir)
-	if err != nil {
-		return "", fmt.Errorf("failed to download semconv: %w", err)
-	}
-
-	return semconvDir, nil
-}
-
-// downloadAndExtractZip downloads a ZIP file and extracts a subdirectory.
-func downloadAndExtractZip(zipURL, subdir, destDir string) (string, error) {
-	resp, err := downloadClient.Get(zipURL)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("failed to download: %s", resp.Status)
-	}
-
-	zipData, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-
-	zipReader, err := zip.NewReader(bytes.NewReader(zipData), int64(len(zipData)))
-	if err != nil {
-		return "", err
-	}
-
-	cleanDest := filepath.Clean(destDir) + string(os.PathSeparator)
-	var extractedPath string
-	for _, file := range zipReader.File {
-		if !strings.Contains(file.Name, subdir+"/") {
-			continue
-		}
-
-		targetPath := filepath.Join(destDir, file.Name)
-		if !strings.HasPrefix(filepath.Clean(targetPath), cleanDest) {
-			return "", fmt.Errorf("zip entry escapes destination: %s", file.Name)
-		}
-		if file.FileInfo().IsDir() {
-			if err := os.MkdirAll(targetPath, perms); err != nil {
-				return "", err
-			}
-			if extractedPath == "" {
-				extractedPath = targetPath
-			}
-			continue
-		}
-
-		if err := os.MkdirAll(filepath.Dir(targetPath), perms); err != nil {
-			return "", err
-		}
-
-		outFile, err := os.Create(targetPath)
-		if err != nil {
-			return "", err
-		}
-
-		rc, err := file.Open()
-		if err != nil {
-			outFile.Close()
-			return "", err
-		}
-
-		_, err = io.Copy(outFile, rc)
-		outFile.Close()
-		rc.Close()
-
-		if err != nil {
-			return "", err
-		}
-
-		if extractedPath == "" {
-			extractedPath = filepath.Dir(targetPath)
-		}
-	}
-
-	return extractedPath, nil
 }

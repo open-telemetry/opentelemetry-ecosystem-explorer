@@ -126,37 +126,6 @@ func TestClone(t *testing.T) {
 	}
 }
 
-func TestPull(t *testing.T) {
-	requireGit(t)
-	tests := []struct {
-		name  string
-		setup [][]string
-	}{
-		{
-			name: "non-git directory",
-		},
-		{
-			name: "no upstream branch",
-			setup: [][]string{
-				{"git", "init"},
-				{"git", "config", "user.email", "test@example.com"},
-				{"git", "config", "user.name", "Test User"},
-				{"git", "commit", "--allow-empty", "-m", "initial commit"},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			tmpDir := t.TempDir()
-			if len(tt.setup) > 0 {
-				setupGitRepo(t, tmpDir, tt.setup)
-			}
-			if err := pull(tmpDir); err == nil {
-				t.Errorf("pull() expected error for %q, got nil", tt.name)
-			}
-		})
-	}
-}
 
 func TestLatestReleaseTag(t *testing.T) {
 	tests := []struct {
