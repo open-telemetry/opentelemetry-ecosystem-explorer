@@ -71,8 +71,7 @@ func TestDeriveMetadata(t *testing.T) {
 		},
 	}
 
-	for i := range cases {
-		tc := cases[i]
+	for _, tc := range cases {
 		m := DeriveMetadata(tc.req)
 		if m.Name != tc.wantName {
 			t.Errorf("Name: got %q, want %q", m.Name, tc.wantName)

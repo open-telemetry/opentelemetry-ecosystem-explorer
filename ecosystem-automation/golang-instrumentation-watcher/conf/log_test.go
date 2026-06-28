@@ -1,97 +1,73 @@
 package conf
 
 import (
+	"context"
 	"log/slog"
 	"os"
 	"testing"
 )
 
 func TestNewLog(t *testing.T) {
-	t.Run("log - creates new Log with default level", func(t *testing.T) {
+	t.Run("default level is info", func(t *testing.T) {
 		log := NewLog()
-		if log == nil {
-			t.Error("NewLog() returned nil")
-			return
+		if log == nil || log.Logger == nil {
+			t.Fatal("NewLog() returned nil")
 		}
-		if log.Logger == nil {
-			t.Error("NewLog().Logger is nil")
+		ctx := context.Background()
+		if log.Enabled(ctx, slog.LevelDebug) {
+			t.Error("debug should not be enabled at the default Info level")
+		}
+		if !log.Enabled(ctx, slog.LevelInfo) {
+			t.Error("info should be enabled at the default Info level")
 		}
 	})
 
-	t.Run("log - respects LOG_LEVEL environment variable", func(t *testing.T) {
-		_ = os.Setenv("LOG_LEVEL", "0")
-		defer func() {
-			_ = os.Unsetenv("LOG_LEVEL")
-		}()
-
+	t.Run("LOG_LEVEL overrides level", func(t *testing.T) {
+		_ = os.Setenv("LOG_LEVEL", "DEBUG")
+		defer func() { _ = os.Unsetenv("LOG_LEVEL") }()
 		log := NewLog()
-		if log == nil {
-			t.Error("NewLog() returned nil")
-			return
-		}
-		if log.Logger == nil {
-			t.Error("NewLog() Logger is nil")
-		}
-	})
-}
-
-func TestWithError(t *testing.T) {
-	t.Run("log - WithError adds error to context", func(t *testing.T) {
-		log := NewLog()
-		testErr := os.ErrNotExist
-
-		logWithErr := log.WithError(testErr)
-		if logWithErr == nil {
-			t.Error("WithError() returned nil")
-		}
-	})
-}
-
-func TestWithErrorMsg(t *testing.T) {
-	t.Run("log - WithErrorMsg logs error with message", func(t *testing.T) {
-		log := NewLog()
-		testErr := os.ErrNotExist
-
-		logWithErr := log.WithErrorMsg(testErr, "test error message", "key", "value")
-		if logWithErr == nil {
-			t.Error("WithErrorMsg() returned nil")
+		if !log.Enabled(context.Background(), slog.LevelDebug) {
+			t.Error("debug should be enabled when LOG_LEVEL=DEBUG")
 		}
 	})
 }
 
 func TestNewLogWithLevel(t *testing.T) {
 	tests := []struct {
-		name  string
-		level slog.Level
+		level   slog.Level
+		wantOn  slog.Level
+		wantOff slog.Level
 	}{
-		{
-			name:  "log - creates log with Debug level",
-			level: slog.LevelDebug,
-		},
-		{
-			name:  "log - creates log with Info level",
-			level: slog.LevelInfo,
-		},
-		{
-			name:  "log - creates log with Warn level",
-			level: slog.LevelWarn,
-		},
-		{
-			name:  "log - creates log with Error level",
-			level: slog.LevelError,
-		},
+		{slog.LevelDebug, slog.LevelDebug, slog.Level(slog.LevelDebug - 1)},
+		{slog.LevelInfo, slog.LevelInfo, slog.LevelDebug},
+		{slog.LevelWarn, slog.LevelWarn, slog.LevelInfo},
+		{slog.LevelError, slog.LevelError, slog.LevelWarn},
 	}
-
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
+		t.Run(tt.level.String(), func(t *testing.T) {
 			log := newLog(tt.level)
-			if log == nil {
-				t.Error("newLog() returned nil")
-				return
+			if log == nil || log.Logger == nil {
+				t.Fatal("newLog() returned nil")
 			}
-			if log.Logger == nil {
-				t.Error("newLog().Logger is nil")
+			ctx := context.Background()
+			if !log.Enabled(ctx, tt.wantOn) {
+				t.Errorf("level %v: %v should be enabled", tt.level, tt.wantOn)
+			}
+			if log.Enabled(ctx, tt.wantOff) {
+				t.Errorf("level %v: %v should not be enabled", tt.level, tt.wantOff)
 			}
 		})
+	}
+}
+
+func TestWithError(t *testing.T) {
+	if NewLog().WithError(os.ErrNotExist) == nil {
+		t.Error("WithError() returned nil")
+	}
+}
+
+func TestWithErrorMsg(t *testing.T) {
+	if NewLog().WithErrorMsg(os.ErrNotExist, "test error", "key", "value") == nil {
+		t.Error("WithErrorMsg() returned nil")
 	}
 }

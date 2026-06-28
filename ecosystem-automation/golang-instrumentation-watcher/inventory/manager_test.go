@@ -19,11 +19,19 @@ func lib(name string) instrumentation.Library {
 
 func TestVersionDir(t *testing.T) {
 	m := NewManager("/tmp/inv")
-	if got, want := m.VersionDir("v2.10.0"), filepath.Join("/tmp/inv", "v2.10.0"); got != want {
-		t.Errorf("VersionDir() = %q, want %q", got, want)
+	tests := []struct {
+		version string
+		want    string
+	}{
+		{"v2.10.0", filepath.Join("/tmp/inv", "v2.10.0")},
+		{"v2.11.0-SNAPSHOT", filepath.Join("/tmp/inv", "v2.11.0-SNAPSHOT")},
 	}
-	if got, want := m.VersionDir("v2.11.0-SNAPSHOT"), filepath.Join("/tmp/inv", "v2.11.0-SNAPSHOT"); got != want {
-		t.Errorf("VersionDir(snapshot) = %q, want %q", got, want)
+	for _, tt := range tests {
+		t.Run(tt.version, func(t *testing.T) {
+			if got := m.VersionDir(tt.version); got != tt.want {
+				t.Errorf("VersionDir(%q) = %q, want %q", tt.version, got, tt.want)
+			}
+		})
 	}
 }
 
@@ -107,49 +115,50 @@ func saveVersions(t *testing.T, m *Manager, versions ...string) {
 	}
 }
 
-func TestListVersionsSortedNewestFirst(t *testing.T) {
-	m := NewManager(t.TempDir())
-	saveVersions(t, m, "v1.0.0", "v2.10.0", "v2.9.0", "v2.10.1", "v2.11.0-SNAPSHOT")
-
-	got, err := m.ListVersions()
-	if err != nil {
-		t.Fatalf("ListVersions() error = %v", err)
+func TestListVersions(t *testing.T) {
+	tests := []struct {
+		name      string
+		versions  []string
+		extraDirs []string
+		want      []string
+	}{
+		{
+			name:     "sorted newest first",
+			versions: []string{"v1.0.0", "v2.10.0", "v2.9.0", "v2.10.1", "v2.11.0-SNAPSHOT"},
+			want:     []string{"v2.11.0-SNAPSHOT", "v2.10.1", "v2.10.0", "v2.9.0", "v1.0.0"},
+		},
+		{
+			name: "empty inventory",
+		},
+		{
+			name:      "skips invalid directories",
+			versions:  []string{"v2.10.0"},
+			extraDirs: []string{"not-a-version"},
+			want:      []string{"v2.10.0"},
+		},
 	}
-	want := []string{"v2.11.0-SNAPSHOT", "v2.10.1", "v2.10.0", "v2.9.0", "v1.0.0"}
-	if len(got) != len(want) {
-		t.Fatalf("ListVersions() = %v, want %v", got, want)
-	}
-	for i := range want {
-		if got[i] != want[i] {
-			t.Errorf("ListVersions()[%d] = %q, want %q", i, got[i], want[i])
-		}
-	}
-}
-
-func TestListVersionsEmpty(t *testing.T) {
-	m := NewManager(t.TempDir())
-	got, err := m.ListVersions()
-	if err != nil {
-		t.Fatalf("ListVersions() error = %v", err)
-	}
-	if len(got) != 0 {
-		t.Errorf("ListVersions() = %v, want empty", got)
-	}
-}
-
-func TestListVersionsSkipsInvalidDirs(t *testing.T) {
-	m := NewManager(t.TempDir())
-	saveVersions(t, m, "v2.10.0")
-	if err := os.MkdirAll(filepath.Join(m.VersionDir("not-a-version")), 0755); err != nil {
-		t.Fatal(err)
-	}
-
-	got, err := m.ListVersions()
-	if err != nil {
-		t.Fatalf("ListVersions() error = %v", err)
-	}
-	if len(got) != 1 || got[0] != "v2.10.0" {
-		t.Errorf("ListVersions() = %v, want [v2.10.0]", got)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := NewManager(t.TempDir())
+			saveVersions(t, m, tt.versions...)
+			for _, dir := range tt.extraDirs {
+				if err := os.MkdirAll(m.VersionDir(dir), 0755); err != nil {
+					t.Fatal(err)
+				}
+			}
+			got, err := m.ListVersions()
+			if err != nil {
+				t.Fatalf("ListVersions() error = %v", err)
+			}
+			if len(got) != len(tt.want) {
+				t.Fatalf("ListVersions() = %v, want %v", got, tt.want)
+			}
+			for i := range tt.want {
+				if got[i] != tt.want[i] {
+					t.Errorf("[%d] = %q, want %q", i, got[i], tt.want[i])
+				}
+			}
+		})
 	}
 }
 

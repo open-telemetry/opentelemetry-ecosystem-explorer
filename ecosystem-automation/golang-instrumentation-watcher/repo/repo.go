@@ -45,11 +45,11 @@ var downloadClient = &http.Client{Timeout: 2 * time.Minute}
 // RepoInfo identifies a checked-out repository and its current commit. It is
 // returned by [Checkout] and [CheckoutAt].
 type RepoInfo struct {
-	Name    string
-	Path    string
-	Head    string
-	SHA     string
-	Message string
+	Name    string // repository name (e.g. "opentelemetry-go-contrib")
+	Path    string // absolute filesystem path to the checkout
+	Head    string // short SHA of the checked-out commit
+	SHA     string // full commit SHA
+	Message string // commit message subject line
 }
 
 // LogValue renders the [RepoInfo] as a [slog.Value] group for structured logging.

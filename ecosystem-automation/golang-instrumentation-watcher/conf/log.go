@@ -21,15 +21,13 @@ type Log struct {
 
 // NewLog returns a [Log] at the info level, overridden by [ENV_LOG_LEVEL] if set.
 func NewLog() *Log {
-	// default log level is info
 	return newLog(slog.LevelInfo)
 }
 
 func newLog(level slog.Level) *Log {
 	logLevel := level
 	cfg := NewEnv()
-	// override log level if set in env
-	if envLevelStr := cfg.GetEnv(ENV_LOG_LEVEL, LOG_LEVEL_INFO); envLevelStr != "" {
+	if envLevelStr := cfg.GetEnv(ENV_LOG_LEVEL, ""); envLevelStr != "" {
 		var parsed slog.Level
 		if err := parsed.UnmarshalText([]byte(envLevelStr)); err == nil {
 			logLevel = parsed
@@ -42,7 +40,6 @@ func newLog(level slog.Level) *Log {
 	}
 	handler := slog.NewTextHandler(os.Stdout, &opts)
 	logger := slog.New(handler)
-	// set default logger
 	slog.SetDefault(logger)
 	return &Log{logger}
 }

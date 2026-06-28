@@ -3,7 +3,6 @@ package instrumentation
 import (
 	"os"
 	"path/filepath"
-	"strings"
 )
 
 var omitDirectories = []string{
@@ -20,8 +19,7 @@ type Package struct {
 }
 
 // Walk finds every go.mod under rootPath and returns the discovered [Package]
-// values. Directories whose relative path contains "example", "internal", or
-// "test" are skipped.
+// values. Directories named "example", "internal", or "test" are skipped.
 func Walk(rootPath string) ([]Package, error) {
 	var packages []Package
 
@@ -60,11 +58,3 @@ func omitDirectory(name string) bool {
 	return false
 }
 
-func omitDirectoryPath(relPath string) bool {
-	for _, seg := range strings.Split(relPath, string(filepath.Separator)) {
-		if omitDirectory(seg) {
-			return true
-		}
-	}
-	return false
-}

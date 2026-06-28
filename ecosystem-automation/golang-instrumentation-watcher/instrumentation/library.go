@@ -14,18 +14,18 @@ import (
 	"github.com/open-telemetry/opentelemetry-ecosystem-explorer/golang-instrumentation-watcher/repo"
 )
 
-// Library is the fused per-instrumentation record: derived [metadata.Metadata]
-// combined with [Telemetry] extracted from static analysis. It mirrors the
+// Library is the fused per-instrumentation record: [metadata.Metadata] derived
+// from go.mod paired with any observed [Telemetry]. It mirrors the
 // libraries[].telemetry[] shape used by the other ecosystem watchers.
 type Library struct {
 	metadata.Metadata `yaml:",inline"`
-	Telemetry         []Telemetry `yaml:"telemetry,omitempty"`
+	Telemetry         []Telemetry `yaml:"telemetry,omitempty"` // spans and metrics emitted by the library
 }
 
 // ScanResult holds the output of a repository scan: the fused [Library] records
 // that make up the versioned inventory.
 type ScanResult struct {
-	Libraries []Library
+	Libraries []Library // instrumentation libraries discovered in the scan
 }
 
 // ScanRepo walks the upstream repository rooted at repoPath and returns the
@@ -64,8 +64,6 @@ func ScanRepo(repoName, repoPath string) (*ScanResult, error) {
 		}
 	}
 
-	// Sort so the inventory is byte-stable; per-library telemetry is already
-	// ordered by the analyzer.
 	slices.SortFunc(libraries, func(a, b Library) int { return cmp.Compare(a.Name, b.Name) })
 
 	return &ScanResult{Libraries: libraries}, nil

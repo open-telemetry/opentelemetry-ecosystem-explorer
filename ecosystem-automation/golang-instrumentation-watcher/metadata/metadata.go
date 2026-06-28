@@ -77,9 +77,9 @@ func (t *InstallType) UnmarshalYAML(value *yaml.Node) error {
 type Stability int
 
 const (
-	StabilityDevelopment Stability = iota
-	StabilityExperimental
-	StabilityStable
+	StabilityDevelopment  Stability = iota // early-stage; API may change
+	StabilityExperimental                  // feature-complete but not yet production-ready
+	StabilityStable                        // stable API, production-ready
 )
 
 var stabilityStrings = [...]string{"development", "experimental", "stable"}
