@@ -96,7 +96,7 @@ export function EcosystemPage({ config }: EcosystemPageProps) {
   const resolvedPipelineLead = pipelineLead ? t(pipelineLead) : undefined;
 
   const resolvedVersion = data?.release.version ?? release.version;
-  const resolvedDeltas = data?.release.deltas ?? (release.deltas ?? null);
+  const resolvedDeltas = data?.release.deltas ?? release.deltas ?? null;
 
   return (
     <div className="td-ecosystem">
