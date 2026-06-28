@@ -77,13 +77,6 @@ func main() {
 func run(log *conf.Log, baseDir, inventoryDir string) error {
 	log.Info("🔭OTel Ecosystem Explorer: Golang 🔭")
 
-	semconvPath, err := repo.CheckoutSemconv(baseDir)
-	if err != nil {
-		log.WithErrorMsg(err, "Error checking out semantic conventions")
-	} else if err := instrumentation.LoadSemconv(semconvPath); err != nil {
-		log.WithErrorMsg(err, "Error loading semantic conventions")
-	}
-
 	releaseTag, err := repo.LatestReleaseTag()
 	if err != nil {
 		return err

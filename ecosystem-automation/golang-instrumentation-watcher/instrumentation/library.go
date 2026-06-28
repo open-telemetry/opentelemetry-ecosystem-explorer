@@ -1,9 +1,8 @@
 // Package instrumentation scans OpenTelemetry Go instrumentation modules and
 // produces a versioned inventory of [Library] records. For each module it
-// parses the go.mod with [ParseModule], derives descriptive metadata with
-// [DeriveMetadata], and statically analyzes the package with [AnalyzePackage]
-// to extract the spans and metrics it emits. [ScanRepo] ties these steps
-// together over an upstream repository checkout.
+// parses the go.mod with [ParseModule] and derives descriptive metadata with
+// [DeriveMetadata]. [ScanRepo] ties these steps together over an upstream
+// repository checkout.
 package instrumentation
 
 import (
@@ -72,10 +71,10 @@ func ScanRepo(repoName, repoPath string) (*ScanResult, error) {
 	return &ScanResult{Libraries: libraries}, nil
 }
 
-// analyzeLibrary builds the fused [Library] for a single instrumentation
-// module. Metadata is derived from the module's own go.mod directive via
-// [DeriveMetadata]; telemetry comes from [AnalyzePackage]. It returns a nil
-// library (and nil error) for modules that are not go-contrib requires.
+// analyzeLibrary builds the [Library] for a single instrumentation module.
+// Metadata is derived from the module's own go.mod directive via
+// [DeriveMetadata]. It returns nil (and nil error) for modules that are not
+// go-contrib requires.
 func analyzeLibrary(goModPath string) (*Library, error) {
 	mod, err := ParseModule(goModPath)
 	if err != nil {
@@ -84,21 +83,6 @@ func analyzeLibrary(goModPath string) (*Library, error) {
 	if mod.Path == "" || !IsOTelContribRequire(mod.Path) {
 		return nil, nil
 	}
-
 	meta := DeriveMetadata(mod)
-
-	analysis, err := AnalyzePackage(filepath.Dir(goModPath))
-	if err != nil {
-		return nil, err
-	}
-
-	var telemetry []Telemetry
-	if analysis != nil {
-		if len(analysis.SemanticConventions) > 0 {
-			meta.SemanticConventions = analysis.SemanticConventions
-		}
-		telemetry = analysis.Telemetry
-	}
-
-	return &Library{Metadata: *meta, Telemetry: telemetry}, nil
+	return &Library{Metadata: *meta}, nil
 }
