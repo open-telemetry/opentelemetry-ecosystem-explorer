@@ -31,11 +31,7 @@ func Walk(rootPath string) ([]Package, error) {
 		}
 
 		if d.IsDir() {
-			relPath, err := filepath.Rel(rootPath, path)
-			if err != nil {
-				return err
-			}
-			if relPath != "." && omitDirectory(relPath) {
+			if omitDirectory(d.Name()) {
 				return filepath.SkipDir
 			}
 			return nil
@@ -55,9 +51,18 @@ func Walk(rootPath string) ([]Package, error) {
 	return packages, err
 }
 
-func omitDirectory(relPath string) bool {
+func omitDirectory(name string) bool {
 	for _, dir := range omitDirectories {
-		if strings.Contains(relPath, dir) {
+		if name == dir {
+			return true
+		}
+	}
+	return false
+}
+
+func omitDirectoryPath(relPath string) bool {
+	for _, seg := range strings.Split(relPath, string(filepath.Separator)) {
+		if omitDirectory(seg) {
 			return true
 		}
 	}

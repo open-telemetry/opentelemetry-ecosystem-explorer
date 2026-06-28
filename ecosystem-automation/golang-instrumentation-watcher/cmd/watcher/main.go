@@ -124,13 +124,13 @@ func syncVersion(log *conf.Log, baseDir string, mgr *inventory.Manager, ref, ver
 	}
 	instrumentation.ApplyModuleVersions(result.Libraries, instrumentation.ModuleVersions(tags))
 
-	if snapshot {
-		if _, err := mgr.CleanupSnapshots(); err != nil {
-			return err
-		}
-	}
 	if err := mgr.Save(version, result.Libraries); err != nil {
 		return err
+	}
+	if snapshot {
+		if _, err := mgr.CleanupSnapshotsExcept(version); err != nil {
+			return err
+		}
 	}
 
 	log.Info("Inventory written 📦",

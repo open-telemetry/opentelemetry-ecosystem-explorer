@@ -585,11 +585,22 @@ func extractMetricUnit(callExpr *ast.CallExpr) string {
 	return ""
 }
 
+func enrichFromSemconv(attrs []Attribute) []Attribute {
+	enriched := make([]Attribute, len(attrs))
+	copy(enriched, attrs)
+	for i, attr := range enriched {
+		if sa, ok := GetSemconvAttribute(attr.Name); ok && sa.Type != "" {
+			enriched[i].Type = AttributeType(sa.Type)
+		}
+	}
+	return enriched
+}
+
 func getSemConvAttributesForSpan(spanKind SpanKind, pkgPath string) []Attribute {
 	pkgLower := strings.ToLower(pkgPath)
 
 	if spanKind == SpanKindServer && isHTTPPackage(pkgLower) {
-		return []Attribute{
+		return enrichFromSemconv([]Attribute{
 			{Name: "http.request.method", Type: AttributeTypeString},
 			{Name: "http.response.status_code", Type: AttributeTypeLong},
 			{Name: "http.route", Type: AttributeTypeString},
@@ -602,11 +613,11 @@ func getSemConvAttributesForSpan(spanKind SpanKind, pkgPath string) []Attribute 
 			{Name: "user_agent.original", Type: AttributeTypeString},
 			{Name: "client.address", Type: AttributeTypeString},
 			{Name: "network.peer.address", Type: AttributeTypeString},
-		}
+		})
 	}
 
 	if spanKind == SpanKindClient && isHTTPPackage(pkgLower) {
-		return []Attribute{
+		return enrichFromSemconv([]Attribute{
 			{Name: "http.request.method", Type: AttributeTypeString},
 			{Name: "http.response.status_code", Type: AttributeTypeLong},
 			{Name: "server.address", Type: AttributeTypeString},
@@ -614,45 +625,45 @@ func getSemConvAttributesForSpan(spanKind SpanKind, pkgPath string) []Attribute 
 			{Name: "url.full", Type: AttributeTypeString},
 			{Name: "network.protocol.name", Type: AttributeTypeString},
 			{Name: "network.protocol.version", Type: AttributeTypeString},
-		}
+		})
 	}
 
 	if spanKind == SpanKindClient && isDatabasePackage(pkgLower) {
-		return []Attribute{
+		return enrichFromSemconv([]Attribute{
 			{Name: "db.system", Type: AttributeTypeString},
 			{Name: "db.operation.name", Type: AttributeTypeString},
 			{Name: "db.collection.name", Type: AttributeTypeString},
 			{Name: "db.query.text", Type: AttributeTypeString},
 			{Name: "server.address", Type: AttributeTypeString},
 			{Name: "server.port", Type: AttributeTypeLong},
-		}
+		})
 	}
 
 	if (spanKind == SpanKindServer || spanKind == SpanKindClient) && isRPCPackage(pkgLower) {
-		return []Attribute{
+		return enrichFromSemconv([]Attribute{
 			{Name: "rpc.system", Type: AttributeTypeString},
 			{Name: "rpc.service", Type: AttributeTypeString},
 			{Name: "rpc.method", Type: AttributeTypeString},
 			{Name: "server.address", Type: AttributeTypeString},
 			{Name: "server.port", Type: AttributeTypeLong},
-		}
+		})
 	}
 
 	if spanKind == SpanKindServer && isLambdaPackage(pkgLower) {
-		return []Attribute{
+		return enrichFromSemconv([]Attribute{
 			{Name: "faas.invocation_id", Type: AttributeTypeString},
 			{Name: "cloud.resource_id", Type: AttributeTypeString},
-		}
+		})
 	}
 
 	if spanKind == SpanKindClient && isAWSPackage(pkgLower) {
-		return []Attribute{
+		return enrichFromSemconv([]Attribute{
 			{Name: "rpc.system", Type: AttributeTypeString},
 			{Name: "rpc.service", Type: AttributeTypeString},
 			{Name: "rpc.method", Type: AttributeTypeString},
 			{Name: "server.address", Type: AttributeTypeString},
 			{Name: "server.port", Type: AttributeTypeLong},
-		}
+		})
 	}
 
 	return nil

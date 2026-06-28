@@ -14,6 +14,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"golang.org/x/mod/semver"
 
@@ -36,8 +37,10 @@ const (
 )
 
 var repos = []string{
-	"git@github.com:open-telemetry/opentelemetry-go-contrib.git",
+	"https://github.com/open-telemetry/opentelemetry-go-contrib.git",
 }
+
+var downloadClient = &http.Client{Timeout: 2 * time.Minute}
 
 // RepoInfo identifies a checked-out repository and its current commit. It is
 // returned by [Checkout] and [CheckoutAt].
@@ -327,7 +330,7 @@ func CheckoutSemconv(baseDir string) (string, error) {
 
 // downloadAndExtractZip downloads a ZIP file and extracts a subdirectory.
 func downloadAndExtractZip(zipURL, subdir, destDir string) (string, error) {
-	resp, err := http.Get(zipURL)
+	resp, err := downloadClient.Get(zipURL)
 	if err != nil {
 		return "", err
 	}
@@ -347,18 +350,17 @@ func downloadAndExtractZip(zipURL, subdir, destDir string) (string, error) {
 		return "", err
 	}
 
+	cleanDest := filepath.Clean(destDir) + string(os.PathSeparator)
 	var extractedPath string
 	for _, file := range zipReader.File {
 		if !strings.Contains(file.Name, subdir+"/") {
 			continue
 		}
 
-		cleanName := filepath.Clean(file.Name)
-		if cleanName == ".." || strings.HasPrefix(cleanName, ".."+string(filepath.Separator)) || filepath.IsAbs(cleanName) {
-			return "", fmt.Errorf("invalid zip entry path: %q", file.Name)
+		targetPath := filepath.Join(destDir, file.Name)
+		if !strings.HasPrefix(filepath.Clean(targetPath), cleanDest) {
+			return "", fmt.Errorf("zip entry escapes destination: %s", file.Name)
 		}
-
-		targetPath := filepath.Join(destDir, cleanName)
 		if file.FileInfo().IsDir() {
 			if err := os.MkdirAll(targetPath, perms); err != nil {
 				return "", err
