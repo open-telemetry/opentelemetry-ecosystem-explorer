@@ -72,12 +72,12 @@ export function EcosystemPage({ config }: EcosystemPageProps) {
    * Live data with static-config fallback. The pipeline/category counts and the
    * release summary are loaded at runtime by `useEcosystemLandingData`:
    *   - loading → render the skeleton placeholder while the fetch is in flight;
-   *   - error   → fall back to the STATIC numbers authored in configs.tsx
-   *               (`stages[].count` and the `release` block), so a failed fetch
-   *               still renders a usable page rather than empty values;
+   *   - error   → fall back to the STATIC numbers authored in the per-ecosystem
+   *               config (`stages[].count` and the `release` block), so a failed
+   *               fetch still renders a usable page rather than empty values;
    *   - success → override each stage count with the live value and pass the
    *               live version/deltas into the ReleaseCard.
-   * configs.tsx therefore stays the documented offline/fallback baseline.
+   * The per-ecosystem config therefore stays the documented offline/fallback baseline.
    */
   const resolvedStages = stages.map((stage) => ({
     ...stage,
@@ -95,8 +95,8 @@ export function EcosystemPage({ config }: EcosystemPageProps) {
   const resolvedPipelineTitle = pipelineTitle ? t(pipelineTitle) : undefined;
   const resolvedPipelineLead = pipelineLead ? t(pipelineLead) : undefined;
 
-  const resolvedVersion = data ? data.release.version : release.version;
-  const resolvedDeltas = data ? data.release.deltas : (release.deltas ?? null);
+  const resolvedVersion = data?.release.version ?? release.version;
+  const resolvedDeltas = data?.release.deltas ?? (release.deltas ?? null);
 
   return (
     <div className="td-ecosystem">

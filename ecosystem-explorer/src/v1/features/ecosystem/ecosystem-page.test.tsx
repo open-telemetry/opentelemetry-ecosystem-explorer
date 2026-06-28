@@ -92,7 +92,7 @@ describe("Collector ecosystem landing", () => {
     useEcosystemLandingData.mockReturnValue(errorState);
     renderRouter(<CollectorLandingV1 />);
 
-    // Static fallback values from configs.tsx.
+    // Static fallback values from collector-config.tsx.
     expect(screen.getByText("v0.150.0")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /^Receivers — 98 components$/ })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /^Processors — 28 components$/ })).toBeInTheDocument();

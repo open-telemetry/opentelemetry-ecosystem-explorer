@@ -42,7 +42,7 @@ import * as collectorData from "@/lib/api/collector-data";
 import * as javaagentData from "@/lib/api/javaagent-data";
 
 export interface EcosystemLandingData {
-  /** Live count per stage id (matches the `stages[].id`s in configs.tsx). */
+  /** Live count per stage id (matches the `stages[].id`s in the per-ecosystem config). */
   stageCounts: Record<string, number>;
   release: {
     version: string | null;
@@ -97,7 +97,7 @@ async function loadCollectorLandingData(): Promise<EcosystemLandingData> {
   ]);
 
   // Group the slim index by `type` — the type strings (receiver, processor,
-  // exporter, connector, extension) are exactly the configs.tsx stage ids.
+  // exporter, connector, extension) are exactly the collector-config.tsx stage ids.
   const stageCounts: Record<string, number> = {};
   for (const component of index.components) {
     stageCounts[component.type] = (stageCounts[component.type] ?? 0) + 1;
@@ -152,7 +152,7 @@ function matchesSearch(
 }
 
 async function loadJavaAgentLandingData(
-  /** Maps each stage id to its `?search=` term, derived from configs.tsx hrefs. */
+  /** Maps each stage id to its `?search=` term, derived from the per-ecosystem config hrefs. */
   searchTermsByStageId: Record<string, string>
 ): Promise<EcosystemLandingData> {
   const versions = await javaagentData.loadVersions();
@@ -217,9 +217,7 @@ export function useEcosystemLandingData(
     return () => {
       cancelled = true;
     };
-    // searchTermsByStageId is a stable module-level object from configs.tsx;
-    // the eslint dep check would force memoizing it at every call site.
-  }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [id, searchTermsByStageId]);
 
   return state;
 }
