@@ -189,6 +189,30 @@ func TestCleanupSnapshots(t *testing.T) {
 	}
 }
 
+func TestCleanupSnapshotsExcept(t *testing.T) {
+	m := NewManager(t.TempDir())
+	saveVersions(t, m, "v2.9.0", "v2.10.0-SNAPSHOT", "v2.11.0-SNAPSHOT")
+
+	removed, err := m.CleanupSnapshotsExcept("v2.11.0-SNAPSHOT")
+	if err != nil {
+		t.Fatalf("CleanupSnapshotsExcept() error = %v", err)
+	}
+	if removed != 1 {
+		t.Errorf("CleanupSnapshotsExcept() removed = %d, want 1", removed)
+	}
+
+	remaining, _ := m.ListVersions()
+	if len(remaining) != 2 {
+		t.Fatalf("remaining = %v, want [v2.9.0, v2.11.0-SNAPSHOT]", remaining)
+	}
+	if !m.VersionExists("v2.9.0") {
+		t.Error("release version v2.9.0 should not have been removed")
+	}
+	if !m.VersionExists("v2.11.0-SNAPSHOT") {
+		t.Error("kept snapshot v2.11.0-SNAPSHOT should still exist")
+	}
+}
+
 func TestVersionExists(t *testing.T) {
 	m := NewManager(t.TempDir())
 	if m.VersionExists("v2.10.0") {

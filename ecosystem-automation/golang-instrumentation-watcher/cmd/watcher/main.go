@@ -62,6 +62,13 @@ func main() {
 func run(log *conf.Log, baseDir, inventoryDir string) error {
 	log.Info("🔭OTel Ecosystem Explorer: Golang 🔭")
 
+	semconvPath, err := repo.CheckoutSemconv(baseDir)
+	if err != nil {
+		log.WithErrorMsg(err, "Error checking out semantic conventions")
+	} else if err := instrumentation.LoadSemconv(semconvPath); err != nil {
+		log.WithErrorMsg(err, "Error loading semantic conventions")
+	}
+
 	releaseTag, err := repo.LatestReleaseTag()
 	if err != nil {
 		return err
@@ -84,7 +91,8 @@ func run(log *conf.Log, baseDir, inventoryDir string) error {
 
 // syncVersion checks the contrib repo out at ref, scans it into fused Library
 // records with per-module versions resolved from the tags at that commit, and
-// writes the versioned inventory. Snapshot writes first clean up the prior snapshot.
+// writes the versioned inventory. Snapshot writes save first, then clean up
+// stale snapshots, so the registry is never left without a snapshot on partial failure.
 func syncVersion(log *conf.Log, baseDir string, mgr *inventory.Manager, ref, version string, snapshot bool) error {
 	repoInfo, err := repo.CheckoutAt(baseDir, ref)
 	if err != nil {
@@ -102,13 +110,13 @@ func syncVersion(log *conf.Log, baseDir string, mgr *inventory.Manager, ref, ver
 	}
 	instrumentation.ApplyModuleVersions(result.Libraries, instrumentation.ModuleVersions(tags))
 
-	if snapshot {
-		if _, err := mgr.CleanupSnapshots(); err != nil {
-			return err
-		}
-	}
 	if err := mgr.Save(version, result.Libraries); err != nil {
 		return err
+	}
+	if snapshot {
+		if _, err := mgr.CleanupSnapshotsExcept(version); err != nil {
+			return err
+		}
 	}
 
 	log.Info("Inventory written 📦",

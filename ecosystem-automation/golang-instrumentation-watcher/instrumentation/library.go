@@ -62,8 +62,9 @@ func ScanRepo(repoName, repoPath string) (*ScanResult, error) {
 	return &ScanResult{Libraries: libraries}, nil
 }
 
-// analyzeLibrary builds the library record for a single instrumentation module.
-// Metadata is derived from the module's own go.mod directive.
+// analyzeLibrary builds the fused record for a single instrumentation module.
+// Metadata is derived from the module's own go.mod directive; telemetry comes
+// from static analysis of the package.
 func analyzeLibrary(goModPath string) (*Library, error) {
 	mod, err := ParseModule(goModPath)
 	if err != nil {
@@ -72,7 +73,22 @@ func analyzeLibrary(goModPath string) (*Library, error) {
 	if mod.Path == "" || !IsOTelContribRequire(mod.Path) {
 		return nil, nil
 	}
+
 	meta := DeriveMetadata(mod)
-	return &Library{Metadata: *meta}, nil
+
+	analysis, err := AnalyzePackage(filepath.Dir(goModPath))
+	if err != nil {
+		return nil, err
+	}
+
+	var telemetry []Telemetry
+	if analysis != nil {
+		if len(analysis.SemanticConventions) > 0 {
+			meta.SemanticConventions = analysis.SemanticConventions
+		}
+		telemetry = analysis.Telemetry
+	}
+
+	return &Library{Metadata: *meta, Telemetry: telemetry}, nil
 }
 

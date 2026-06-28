@@ -111,6 +111,26 @@ func (m *Manager) CleanupSnapshots() (int, error) {
 	return count, nil
 }
 
+// CleanupSnapshotsExcept removes all snapshot version directories except keep,
+// returning the number removed.
+func (m *Manager) CleanupSnapshotsExcept(keep string) (int, error) {
+	snapshots, err := m.ListSnapshotVersions()
+	if err != nil {
+		return 0, err
+	}
+	count := 0
+	for _, snapshot := range snapshots {
+		if snapshot == keep {
+			continue
+		}
+		if err := os.RemoveAll(m.VersionDir(snapshot)); err != nil {
+			return count, err
+		}
+		count++
+	}
+	return count, nil
+}
+
 // VersionExists reports whether the version directory and its inventory file
 // both exist.
 func (m *Manager) VersionExists(version string) bool {
