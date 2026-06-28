@@ -291,6 +291,9 @@
     "metricRemoved": "Esta métrica ya no se emite en la versión de comparación.",
     "spanRemoved": "Este span ya no se emite en la versión de comparación.",
     "spanAdded": "Este span se emite por primera vez en la versión de comparación.",
+    "whenChanged": {
+      "label": "Ahora solo se emite cuando"
+    },
     "moduleAddedTooltip": "Este módulo se agregó en la nueva versión",
     "moduleRemovedTooltip": "Este módulo se eliminó en la nueva versión",
     "moduleChangedTooltip": "Este módulo tiene cambios en telemetría o configuración",

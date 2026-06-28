@@ -252,3 +252,222 @@ describe("release-diff utility", () => {
     expect(instr2?.configDiff?.added).toContain("config2");
   });
 });
+
+// Regression tests for issue #732: span moved between when-conditions should not
+// appear as both removed and added.
+describe("cross-condition span/metric deduplication", () => {
+  it("collapses a span moved between when-conditions into changed (jaxrs-1.0 pattern)", () => {
+    const fromData: InstrumentationData[] = [
+      {
+        name: "jaxrs-1.0",
+        display_name: "JAX-RS 1.x",
+        scope: { name: "io.opentelemetry.jaxrs-1.0" },
+        telemetry: [
+          {
+            when: "default",
+            spans: [
+              {
+                span_kind: "INTERNAL",
+                attributes: [
+                  { name: "code.function", type: "STRING" },
+                  { name: "code.namespace", type: "STRING" },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ];
+
+    const toData: InstrumentationData[] = [
+      {
+        name: "jaxrs-1.0",
+        display_name: "JAX-RS 1.x",
+        scope: { name: "io.opentelemetry.jaxrs-1.0" },
+        telemetry: [
+          {
+            when: "otel.instrumentation.common.experimental.controller-telemetry.enabled=true",
+            spans: [
+              {
+                span_kind: "INTERNAL",
+                attributes: [
+                  { name: "code.function", type: "STRING" },
+                  { name: "code.namespace", type: "STRING" },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ];
+
+    const diff = compareReleases("2.27.0", "2.28.1", fromData, toData);
+
+    const instr = diff.instrumentations.find((i) => i.id === "jaxrs-1.0");
+    // The span content is identical; only the when-condition label changed.
+    // It must NOT appear as both removed and added — it must be a single "changed" entry
+    // with the new whenCondition populated.
+    expect(instr?.status).toBe("changed");
+    expect(instr?.telemetryDiff.spans).toHaveLength(1);
+    expect(instr?.telemetryDiff.spans[0].status).toBe("changed");
+    expect(instr?.telemetryDiff.spans[0].whenCondition).toBe(
+      "otel.instrumentation.common.experimental.controller-telemetry.enabled=true"
+    );
+    expect(instr?.telemetryDiff.spans.some((s) => s.status === "removed")).toBe(false);
+    expect(instr?.telemetryDiff.spans.some((s) => s.status === "added")).toBe(false);
+  });
+
+  it("does not collapse when the span content changed across conditions", () => {
+    // Same span_kind but extra attribute in the new version — NOT a pure condition rename.
+    const fromData: InstrumentationData[] = [
+      {
+        name: "instr1",
+        scope: { name: "test" },
+        telemetry: [
+          {
+            when: "default",
+            spans: [
+              { span_kind: "INTERNAL", attributes: [{ name: "code.function", type: "STRING" }] },
+            ],
+          },
+        ],
+      },
+    ];
+
+    const toData: InstrumentationData[] = [
+      {
+        name: "instr1",
+        scope: { name: "test" },
+        telemetry: [
+          {
+            when: "some-flag=true",
+            spans: [
+              {
+                span_kind: "INTERNAL",
+                attributes: [
+                  { name: "code.function", type: "STRING" },
+                  { name: "code.namespace", type: "STRING" }, // extra attribute
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ];
+
+    const diff = compareReleases("1.0.0", "1.1.0", fromData, toData);
+    const instr = diff.instrumentations.find((i) => i.id === "instr1");
+    // Content differs — must not be silently collapsed.
+    expect(instr?.telemetryDiff.spans.some((s) => s.status === "removed")).toBe(true);
+    expect(instr?.telemetryDiff.spans.some((s) => s.status === "added")).toBe(true);
+  });
+
+  it("preserves a genuinely removed span (no matching add in any condition)", () => {
+    const fromData: InstrumentationData[] = [
+      {
+        name: "instr1",
+        scope: { name: "test" },
+        telemetry: [
+          {
+            when: "default",
+            spans: [{ span_kind: "CLIENT", attributes: [{ name: "http.url", type: "STRING" }] }],
+          },
+        ],
+      },
+    ];
+    const toData: InstrumentationData[] = [
+      {
+        name: "instr1",
+        scope: { name: "test" },
+        telemetry: [{ when: "default", spans: [] }],
+      },
+    ];
+
+    const diff = compareReleases("1.0.0", "1.1.0", fromData, toData);
+    const instr = diff.instrumentations.find((i) => i.id === "instr1");
+    expect(instr?.telemetryDiff.spans.some((s) => s.status === "removed")).toBe(true);
+    expect(instr?.telemetryDiff.spans.some((s) => s.status === "added")).toBe(false);
+  });
+
+  it("preserves a genuinely added span (no matching remove in any condition)", () => {
+    const fromData: InstrumentationData[] = [
+      {
+        name: "instr1",
+        scope: { name: "test" },
+        telemetry: [{ when: "default", spans: [] }],
+      },
+    ];
+    const toData: InstrumentationData[] = [
+      {
+        name: "instr1",
+        scope: { name: "test" },
+        telemetry: [
+          {
+            when: "default",
+            spans: [{ span_kind: "CLIENT", attributes: [{ name: "http.url", type: "STRING" }] }],
+          },
+        ],
+      },
+    ];
+
+    const diff = compareReleases("1.0.0", "1.1.0", fromData, toData);
+    const instr = diff.instrumentations.find((i) => i.id === "instr1");
+    expect(instr?.telemetryDiff.spans.some((s) => s.status === "added")).toBe(true);
+    expect(instr?.telemetryDiff.spans.some((s) => s.status === "removed")).toBe(false);
+  });
+
+  it("collapses a metric moved between when-conditions into changed", () => {
+    const fromData: InstrumentationData[] = [
+      {
+        name: "instr1",
+        scope: { name: "test" },
+        telemetry: [
+          {
+            when: "default",
+            metrics: [
+              {
+                name: "jvm.memory.used",
+                description: "Memory used",
+                instrument: "updowncounter",
+                data_type: "LONG_SUM",
+                unit: "By",
+                attributes: [{ name: "pool", type: "STRING" }],
+              },
+            ],
+          },
+        ],
+      },
+    ];
+
+    const toData: InstrumentationData[] = [
+      {
+        name: "instr1",
+        scope: { name: "test" },
+        telemetry: [
+          {
+            when: "some-flag=true",
+            metrics: [
+              {
+                name: "jvm.memory.used",
+                description: "Memory used",
+                instrument: "updowncounter",
+                data_type: "LONG_SUM",
+                unit: "By",
+                attributes: [{ name: "pool", type: "STRING" }],
+              },
+            ],
+          },
+        ],
+      },
+    ];
+
+    const diff = compareReleases("1.0.0", "1.1.0", fromData, toData);
+    const instr = diff.instrumentations.find((i) => i.id === "instr1");
+    expect(instr?.status).toBe("changed");
+    expect(instr?.telemetryDiff.metrics).toHaveLength(1);
+    expect(instr?.telemetryDiff.metrics[0].status).toBe("changed");
+    expect(instr?.telemetryDiff.metrics[0].whenCondition).toBe("some-flag=true");
+    expect(instr?.telemetryDiff.metrics.some((m) => m.status === "removed")).toBe(false);
+    expect(instr?.telemetryDiff.metrics.some((m) => m.status === "added")).toBe(false);
+  });
+});
