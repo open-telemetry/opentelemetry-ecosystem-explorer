@@ -1,6 +1,6 @@
 services:
   app:
-    image: ghcr.io/open-telemetry/opentelemetry-java-instrumentation/smoke-test-spring-boot:jdk17-20260623.27999598977
+    image: ghcr.io/open-telemetry/opentelemetry-java-instrumentation/smoke-test-spring-boot:jdk17-20260623.27999598977@sha256:f1dcb280f4b8a5aa479ee632edd346f6ee28fbe940e4af4f1ce54561795d8feb
     environment:
       JAVA_TOOL_OPTIONS: "-javaagent:/app/opentelemetry-javaagent.jar"
       OTEL_CONFIG_FILE: "/app/test-config.yaml"
