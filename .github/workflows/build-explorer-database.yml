@@ -1,6 +1,9 @@
 name: Build Explorer Database
 
 on:
+  schedule:
+    # Nightly incremental build of all ecosystems at 06:00 UTC.
+    - cron: "0 6 * * *"
   workflow_dispatch:
     inputs:
       build_mode:
@@ -28,7 +31,7 @@ permissions:
 concurrency:
   # Serialize per ecosystem since each one targets its own
   # otelbot/automated-explorer-database-update-<ecosystem> branch.
-  group: ${{ github.workflow }}-${{ inputs.ecosystem }}
+  group: ${{ github.workflow }}-${{ inputs.ecosystem || 'all' }}
   cancel-in-progress: false
 
 jobs:
@@ -100,9 +103,10 @@ jobs:
         run: uv sync --locked
 
       - name: Build explorer database (incremental)
-        if: inputs.build_mode == 'incremental'
+        # Scheduled runs have no inputs, so default to an incremental build.
+        if: ${{ (inputs.build_mode || 'incremental') == 'incremental' }}
         env:
-          ECOSYSTEM: ${{ inputs.ecosystem }}
+          ECOSYSTEM: ${{ inputs.ecosystem || 'all' }}
         run: uv run explorer-db-builder --ecosystem "$ECOSYSTEM"
 
       - name: Build explorer database (clean)
@@ -144,9 +148,11 @@ jobs:
           GH_TOKEN:
             ${{ steps.repo_check.outputs.is_primary == 'true' && steps.otelbot-token.outputs.token
             || secrets.GITHUB_TOKEN }}
-          ECOSYSTEM: ${{ inputs.ecosystem }}
-          BUILD_MODE: ${{ inputs.build_mode }}
-          ACTOR: ${{ github.actor }}
+          ECOSYSTEM: ${{ inputs.ecosystem || 'all' }}
+          BUILD_MODE: ${{ inputs.build_mode || 'incremental' }}
+          # On scheduled runs github.actor is whoever last touched the workflow,
+          # not a real trigger, so attribute those runs to the schedule instead.
+          ACTOR: ${{ github.event_name == 'schedule' && 'nightly schedule' || github.actor }}
         run: |
           BRANCH="otelbot/automated-explorer-database-update-${ECOSYSTEM}"
 
@@ -158,7 +164,7 @@ jobs:
 
           PR_TITLE="[automated] Update explorer database (${ECOSYSTEM})"
           PR_BODY="$(cat <<EOF
-          Automated database build requested via workflow dispatch.
+          Automated database build.
 
           Build mode: ${BUILD_MODE}
           Ecosystem: ${ECOSYSTEM}
