@@ -6,6 +6,7 @@ Python pipelines that watch upstream OpenTelemetry projects and write versioned 
 - `collector-watcher/` — Collector core/contrib components
 - `java-instrumentation-watcher/` — Java agent instrumentations
 - `dotnet-instrumentation-watcher/` — .NET automatic instrumentation components
+- `js-instrumentation-watcher/` — JavaScript (js-contrib) instrumentations
 - `configuration-watcher/` — Declarative configuration schema
 - `explorer-db-builder/` — Builds the content-addressed database the frontend reads
 - `v1-registry-sync/` — Compares the collector registry against the upstream v1 registry
@@ -25,8 +26,9 @@ Run from the repository root:
 - `uv run ruff check ecosystem-automation/` — Lint
 - `uv run ruff format ecosystem-automation/` — Format
 - `uv run collector-watcher` / `uv run java-instrumentation-watcher` /
-  `uv run dotnet-instrumentation-watcher` / `uv run configuration-watcher` /
-  `uv run explorer-db-builder` / `uv run v1-registry-sync` — Run a watcher or tool
+  `uv run dotnet-instrumentation-watcher` / `uv run js-instrumentation-watcher` /
+  `uv run configuration-watcher` / `uv run explorer-db-builder` / `uv run v1-registry-sync` — Run a
+  watcher or tool
 
 Nightly CI invokes the watchers directly via these console scripts. The `collector-watcher` and
 `configuration-watcher` also expose a `backfill` mode (`--backfill`) for re-extracting existing
@@ -44,7 +46,9 @@ non-negotiable rules:
   `SNAPSHOT` prerelease tag for nightly builds. The `{distribution}` segment applies only where an
   ecosystem ships multiple distributions: collector (`collector/{core,contrib}/v…`) and Java
   (`java/javaagent/v…`). Configuration (`configuration/v…`) and .NET (`dotnet/v…`) have no
-  distribution segment.
+  distribution segment. JavaScript is the exception to the per-version-directory rule: js-contrib
+  packages version independently, so they are written per package as a single file —
+  `javascript/{package-name}/v{version}.yaml` — rather than an aggregated per-version directory.
 
 ## Schema discipline
 
