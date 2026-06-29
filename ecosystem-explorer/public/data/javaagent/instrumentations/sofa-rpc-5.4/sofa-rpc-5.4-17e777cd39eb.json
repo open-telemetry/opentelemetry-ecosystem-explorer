@@ -1,0 +1,153 @@
+{
+  "configurations": [
+    {
+      "declarative_name": "java.common.service_peer_mapping",
+      "declarative_schema": {
+        "properties": {
+          "peer": {
+            "description": "Host name or IP address to match against.",
+            "type": "string"
+          },
+          "service_name": {
+            "description": "Peer service name to record for matching peers.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "peer",
+          "service_name"
+        ],
+        "type": "object"
+      },
+      "declarative_type": "structured_list",
+      "default": "",
+      "description": "Used to specify a mapping from host names or IP addresses to peer services.",
+      "name": "otel.instrumentation.common.peer-service-mapping",
+      "type": "structured_list"
+    }
+  ],
+  "description": "The SOFARPC instrumentation provides RPC client spans and metrics, and RPC server spans and metrics for SOFARPC RPC calls.",
+  "display_name": "SOFARPC",
+  "has_javaagent": true,
+  "has_standalone_library": true,
+  "javaagent_target_versions": [
+    "com.alipay.sofa:sofa-rpc-all:[5.4.0,)"
+  ],
+  "library_link": "https://github.com/sofastack/sofa-rpc/",
+  "name": "sofa-rpc-5.4",
+  "scope": {
+    "name": "io.opentelemetry.sofa-rpc-5.4"
+  },
+  "semantic_conventions": [
+    "RPC_CLIENT_SPANS",
+    "RPC_CLIENT_METRICS",
+    "RPC_SERVER_SPANS",
+    "RPC_SERVER_METRICS"
+  ],
+  "source_path": "instrumentation/sofa-rpc-5.4",
+  "telemetry": [
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "rpc.method",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.service",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.system",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "data_type": "HISTOGRAM",
+          "description": "The duration of an outbound RPC invocation.",
+          "instrument": "histogram",
+          "name": "rpc.client.duration",
+          "unit": "ms"
+        },
+        {
+          "attributes": [
+            {
+              "name": "rpc.method",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.service",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.system",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "HISTOGRAM",
+          "description": "The duration of an inbound RPC invocation.",
+          "instrument": "histogram",
+          "name": "rpc.server.duration",
+          "unit": "ms"
+        }
+      ],
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "peer.service",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.method",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.service",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.system",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "span_kind": "CLIENT"
+        },
+        {
+          "attributes": [
+            {
+              "name": "rpc.method",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.service",
+              "type": "STRING"
+            },
+            {
+              "name": "rpc.system",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "SERVER"
+        }
+      ],
+      "when": "default"
+    }
+  ]
+}
