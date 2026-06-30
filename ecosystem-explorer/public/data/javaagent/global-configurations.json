@@ -424,7 +424,7 @@
       "vertx-redis-client-4.0"
     ],
     "name": "otel.instrumentation.common.peer-service-mapping",
-    "type": "structured_list"
+    "type": "map"
   },
   {
     "declarative_name": "java.common.user.name.enabled",
