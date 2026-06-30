@@ -111,16 +111,16 @@ describe("useConfigurationBuilderState", () => {
     expect(development.java["cassandra-4"]).toBeUndefined();
   });
 
-  it("setCustomization dispatches SET_CUSTOMIZATION and round-trips through state", () => {
+  it("setCustomization dispatches SET_VALUE and round-trips through state", () => {
     const { result } = renderHook(() => useConfigurationBuilderState(mockSchema, "1.0.0", null));
     act(() => {
       result.current.setCustomization("cassandra", "disabled");
     });
     const distribution = result.current.state.values["distribution"] as Record<
       string,
-      Record<string, Record<string, unknown>>
+      Record<string, Record<string, { enabled: boolean }>>
     >;
-    expect(distribution.javaagent.instrumentation.disabled).toEqual(["cassandra"]);
+    expect(distribution.javaagent.instrumentation.cassandra.enabled).toBe(false);
   });
 
   it("should enable a section with defaults", () => {

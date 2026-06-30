@@ -19,6 +19,7 @@ import { Menu, X, Sun, Moon, Monitor, ChevronDown } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { OtelLogo } from "@/components/icons/otel-logo";
+import { LANGUAGES } from "@/i18n/languages";
 import { useTheme, type ThemeMode } from "@/theme-context";
 
 const NAV_ITEMS = [
@@ -36,8 +37,11 @@ function LanguageSwitcher() {
       className="border-border/40 bg-background text-muted-foreground hover:text-foreground cursor-pointer rounded border px-2 py-1 text-xs transition-colors"
       aria-label={t("header.languageSwitcher")}
     >
-      <option value="en">English</option>
-      <option value="es">Español</option>
+      {LANGUAGES.map(({ code, label }) => (
+        <option key={code} value={code}>
+          {label}
+        </option>
+      ))}
     </select>
   );
 }

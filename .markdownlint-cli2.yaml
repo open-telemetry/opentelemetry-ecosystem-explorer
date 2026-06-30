@@ -9,6 +9,7 @@ ignores:
   - "**/node_modules/**"
   - ".claude/**"
   - "ecosystem-explorer/public/data/**"
+  - "ecosystem-explorer/dist/**"
 
 config:
   default: true

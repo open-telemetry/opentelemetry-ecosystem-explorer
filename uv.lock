@@ -9,6 +9,7 @@ members = [
     "dotnet-instrumentation-watcher",
     "explorer-db-builder",
     "java-instrumentation-watcher",
+    "js-instrumentation-watcher",
     "opentelemetry-ecosystem-explorer",
     "v1-registry-sync",
     "watcher-common",
@@ -442,6 +443,30 @@ requires-dist = [
 provides-extras = ["dev"]
 
 [[package]]
+name = "js-instrumentation-watcher"
+version = "0.1.0"
+source = { editable = "ecosystem-automation/js-instrumentation-watcher" }
+dependencies = [
+    { name = "pyyaml" },
+    { name = "watcher-common" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "pytest" },
+    { name = "pytest-cov" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
+    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.1.0" },
+    { name = "pyyaml", specifier = ">=6.0.1" },
+    { name = "watcher-common", editable = "ecosystem-automation/watcher-common" },
+]
+provides-extras = ["dev"]
+
+[[package]]
 name = "nodeenv"
 version = "1.10.0"
 source = { registry = "https://pypi.org/simple" }
@@ -460,6 +485,7 @@ dependencies = [
     { name = "dotnet-instrumentation-watcher" },
     { name = "explorer-db-builder" },
     { name = "java-instrumentation-watcher" },
+    { name = "js-instrumentation-watcher" },
     { name = "v1-registry-sync" },
 ]
 
@@ -478,6 +504,7 @@ requires-dist = [
     { name = "dotnet-instrumentation-watcher", editable = "ecosystem-automation/dotnet-instrumentation-watcher" },
     { name = "explorer-db-builder", editable = "ecosystem-automation/explorer-db-builder" },
     { name = "java-instrumentation-watcher", editable = "ecosystem-automation/java-instrumentation-watcher" },
+    { name = "js-instrumentation-watcher", editable = "ecosystem-automation/js-instrumentation-watcher" },
     { name = "v1-registry-sync", editable = "ecosystem-automation/v1-registry-sync" },
 ]
 

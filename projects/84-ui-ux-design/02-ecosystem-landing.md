@@ -3,8 +3,8 @@ title: "Phase 3 — Ecosystem landing pages"
 issue: 84
 type: plan
 phase: 3
-status: planning
-last_updated: "2026-06-09"
+status: in-progress
+last_updated: "2026-06-19"
 ---
 
 > [!NOTE]

@@ -104,13 +104,6 @@ export function InstrumentationBrowser({
     });
   }, [modules, customizedSet, trimmedSearch, statusFilter]);
 
-  const handleAddCustomization = useCallback(
-    (m: InstrumentationModule) => {
-      setCustomization(m.name, m.defaultDisabled ? "enabled" : "disabled");
-    },
-    [setCustomization]
-  );
-
   const handleSetEnabled = useCallback(
     (name: string, enabled: boolean) => {
       setCustomization(name, enabled ? "enabled" : "disabled");
@@ -154,7 +147,6 @@ export function InstrumentationBrowser({
           search={trimmedSearch}
           statusFilter={statusFilter}
           customizationCount={customizationCount}
-          onAddCustomization={handleAddCustomization}
           onSetEnabled={handleSetEnabled}
           onRemoveCustomization={handleRemoveCustomization}
           onToggleExpand={toggleExpand}
@@ -173,7 +165,6 @@ interface BodyProps {
   search: string;
   statusFilter: "all" | "customized";
   customizationCount: number;
-  onAddCustomization: (m: InstrumentationModule) => void;
   onSetEnabled: (name: string, enabled: boolean) => void;
   onRemoveCustomization: (name: string) => void;
   onToggleExpand: (name: string) => void;
@@ -188,7 +179,6 @@ function Body({
   search,
   statusFilter,
   customizationCount,
-  onAddCustomization,
   onSetEnabled,
   onRemoveCustomization,
   onToggleExpand,
@@ -217,7 +207,6 @@ function Body({
                   module={m}
                   status={status}
                   isExpanded={expandedSet.has(m.name)}
-                  onAddCustomization={() => onAddCustomization(m)}
                   onSetEnabled={(enabled) => onSetEnabled(m.name, enabled)}
                   onRemoveCustomization={() => onRemoveCustomization(m.name)}
                   onToggleExpand={() => onToggleExpand(m.name)}

@@ -63,6 +63,8 @@ export async function loadVersionManifest(version: string): Promise<VersionManif
     STORES.METADATA,
     {
       validate: (d) =>
+        d !== null &&
+        typeof d === "object" &&
         typeof d.version === "string" &&
         d.version === version &&
         d.instrumentations !== null &&
@@ -187,6 +189,21 @@ export async function loadAllInstrumentations(
   return entries.map(toListEntry);
 }
 
+export async function loadAllInstrumentationDetails(
+  version: string
+): Promise<InstrumentationData[]> {
+  const manifest = await loadVersionManifest(version);
+  const libraryIds = Object.keys(manifest.instrumentations || {});
+  const customIds = Object.keys(manifest.custom_instrumentations || {});
+
+  const allIds = [...libraryIds, ...customIds];
+
+  const entries = await mapWithConcurrency(allIds, MAX_INSTRUMENTATION_FETCH_CONCURRENCY, (id) =>
+    loadInstrumentation(id, version, manifest)
+  );
+  return entries;
+}
+
 export async function loadLibraryReadme(
   libraryName: string,
   markdownHash: string
@@ -210,7 +227,8 @@ export async function loadGlobalConfigurations(): Promise<GlobalConfiguration[]>
   const data = await fetchWithCache<GlobalConfiguration[]>(
     "global-configurations",
     resolveDataPath(BASE_DIR, "global-configurations.json"),
-    STORES.GLOBAL_CONFIGURATIONS
+    STORES.GLOBAL_CONFIGURATIONS,
+    { validate: (d) => Array.isArray(d) }
   );
   if (!data) throw new Error("Global configurations returned null unexpectedly");
   return data;

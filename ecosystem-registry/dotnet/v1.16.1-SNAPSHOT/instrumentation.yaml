@@ -54,7 +54,7 @@ modules:
 - name: OpenTelemetry.Exporter.OneCollector
   description: An OpenTelemetry .NET exporter that sends telemetry to Microsoft OneCollector.
   type: exporter
-  version: 1.15.1
+  version: 1.16.0
 - name: OpenTelemetry.Exporter.OpenTelemetryProtocol
   description: OpenTelemetry protocol exporter for OpenTelemetry .NET
   type: exporter
@@ -111,16 +111,16 @@ modules:
 - name: OpenTelemetry.Instrumentation.AspNet
   description: ASP.NET instrumentation for OpenTelemetry .NET.
   type: instrumentation
-  version: 1.15.2
+  version: 1.16.0
 - name: OpenTelemetry.Instrumentation.AspNet.TelemetryHttpModule
   description: A module that instruments incoming request with System.Diagnostics.Activity
     and notifies listeners with DiagnosticsSource.
   type: instrumentation
-  version: 1.15.2
+  version: 1.16.0
 - name: OpenTelemetry.Instrumentation.AspNetCore
   description: ASP.NET Core instrumentation for OpenTelemetry .NET
   type: instrumentation
-  version: 1.15.2
+  version: 1.16.0
 - name: OpenTelemetry.Instrumentation.Cassandra
   description: OpenTelemetry Cassandra Instrumentation.
   type: instrumentation
@@ -136,35 +136,35 @@ modules:
 - name: OpenTelemetry.Instrumentation.EntityFrameworkCore
   description: Microsoft.EntityFrameworkCore instrumentation for OpenTelemetry .NET.
   type: instrumentation
-  version: 1.15.1-beta.1
+  version: 1.16.0-beta.1
 - name: OpenTelemetry.Instrumentation.EventCounters
   description: OpenTelemetry Metrics instrumentation for .NET EventCounters.
   type: instrumentation
-  version: 1.15.1-alpha.1
+  version: 1.16.0-alpha.1
 - name: OpenTelemetry.Instrumentation.GrpcCore
   description: .NET gRPC Core based client and server interceptors for OpenTelemetry.
   type: instrumentation
-  version: 1.0.0-beta.11
+  version: 1.0.0-beta.12
 - name: OpenTelemetry.Instrumentation.GrpcNetClient
   description: gRPC for .NET client instrumentation for OpenTelemetry .NET.
   type: instrumentation
-  version: 1.15.1-beta.1
+  version: 1.16.0-beta.1
 - name: OpenTelemetry.Instrumentation.Hangfire
   description: OpenTelemetry Hangfire Instrumentation.
   type: instrumentation
-  version: 1.15.1-beta.1
+  version: 1.16.0-beta.1
 - name: OpenTelemetry.Instrumentation.Http
   description: HTTP instrumentation for OpenTelemetry .NET.
   type: instrumentation
-  version: 1.15.1
+  version: 1.16.0
 - name: OpenTelemetry.Instrumentation.Owin
   description: OpenTelemetry instrumentation for OWIN.
   type: instrumentation
-  version: 1.15.1-beta.1
+  version: 1.16.0-beta.1
 - name: OpenTelemetry.Instrumentation.Process
   description: dotnet process instrumentation for OpenTelemetry .NET.
   type: instrumentation
-  version: 1.15.1-beta.1
+  version: 1.16.0-beta.1
 - name: OpenTelemetry.Instrumentation.Quartz
   description: OpenTelemetry Quartz.NET Instrumentation.
   type: instrumentation
@@ -184,15 +184,15 @@ modules:
 - name: OpenTelemetry.Instrumentation.SqlClient
   description: SqlClient instrumentation for OpenTelemetry .NET.
   type: instrumentation
-  version: 1.15.2
+  version: 1.16.0
 - name: OpenTelemetry.Instrumentation.StackExchangeRedis
   description: StackExchange.Redis instrumentation for OpenTelemetry .NET.
   type: instrumentation
-  version: 1.15.1-beta.2
+  version: 1.16.0-beta.1
 - name: OpenTelemetry.Instrumentation.Wcf
   description: OpenTelemetry instrumentation for WCF.
   type: instrumentation
-  version: 1.15.1-beta.2
+  version: 1.16.0-beta.1
 - name: OpenTelemetry.Resources.AWS
   description: OpenTelemetry Resource Detectors for AWS ElasticBeanstalk, EC2, ECS,
     EKS.
@@ -229,4 +229,4 @@ modules:
 - name: OpenTelemetry.Sampler.AWS
   description: OpenTelemetry remote sampler for AWS X-Ray.
   type: extension
-  version: 0.1.0-alpha.9
+  version: 0.1.0-alpha.10

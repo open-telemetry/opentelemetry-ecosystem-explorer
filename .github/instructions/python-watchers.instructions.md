@@ -33,8 +33,12 @@ Old registry files are immutable history. Breaking the schema breaks history.
   even if some are empty:
   - Collector versions ship 5 component-type files (connector, exporter, extension, processor,
     receiver).
-  - Configuration versions ship 12 schema files.
+  - Configuration versions ship 13 schema files.
   - Java javaagent ships `instrumentation.yaml` plus `library_readmes/`.
+  - .NET versions ship a single aggregated `instrumentation.yaml` (`dotnet/v.../`).
+  - JavaScript is the exception to aggregation: js-contrib packages version independently, so each
+    package is written as one file per version — `javascript/{package-name}/v{version}.yaml` — not
+    an aggregated per-version directory.
 - **Schema evolution is versioned, not in place.** Flag mutations to existing parsers when an input
   format changes; expect a new version-specific parser and re-extraction of historical versions.
 

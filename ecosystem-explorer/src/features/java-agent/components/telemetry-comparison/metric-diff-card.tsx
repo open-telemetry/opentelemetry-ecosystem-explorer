@@ -25,7 +25,7 @@ interface MetricDiffCardProps {
 
 export function MetricDiffCard({ diff }: MetricDiffCardProps) {
   const { t } = useTranslation("java-agent");
-  const { status, metric, changes } = diff;
+  const { status, metric, changes, whenCondition } = diff;
 
   const statusVariant = status === "added" ? "success" : "warning";
 
@@ -110,6 +110,14 @@ export function MetricDiffCard({ diff }: MetricDiffCardProps) {
                 <span className="text-muted-foreground text-xs">)</span>
               </div>
             )}
+          </div>
+        )}
+
+        {/* When-condition change indicator */}
+        {status === "changed" && !changes && whenCondition && (
+          <div className="space-y-1 rounded-lg border border-amber-400/30 bg-amber-400/10 p-4">
+            <p className="text-sm font-medium text-amber-400">{t("diffCard.whenChanged.label")}</p>
+            <code className="font-mono text-sm break-all text-amber-400">{whenCondition}</code>
           </div>
         )}
 

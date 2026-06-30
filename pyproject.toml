@@ -12,6 +12,7 @@ dependencies = [
     "dotnet-instrumentation-watcher",
     "explorer-db-builder",
     "v1-registry-sync",
+    "js-instrumentation-watcher",
 ]
 
 [tool.uv.workspace]
@@ -26,6 +27,7 @@ java-instrumentation-watcher = { workspace = true }
 dotnet-instrumentation-watcher = { workspace = true }
 explorer-db-builder = { workspace = true }
 v1-registry-sync = { workspace = true }
+js-instrumentation-watcher = { workspace = true }
 
 [dependency-groups]
 dev = [
@@ -50,7 +52,9 @@ select = ["E", "F", "I", "N", "W", "S"]
 "ecosystem-automation/watcher-common/src/watcher_common/testing.py" = ["S603"]
 "ecosystem-automation/configuration-watcher/src/configuration_watcher/repository_manager.py" = ["S603"]
 # pytest uses assert as its primary assertion mechanism; S101 is not meaningful here.
-"ecosystem-automation/**/tests/*.py" = ["S101"]
+# Tests also use fake/hardcoded credentials as fixtures (e.g. a dummy GitHub token), so the
+# hardcoded-secret rules (S105/S106/S107) are noise rather than real findings here.
+"ecosystem-automation/**/tests/*.py" = ["S101", "S105", "S106", "S107"]
 
 [tool.pytest.ini_options]
 addopts = "--import-mode=importlib"

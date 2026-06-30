@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { EcosystemPage } from "./ecosystem-page";
-import { javaAgentConfig } from "./configs";
+import { javaAgentConfig } from "./java-agent-config";
 
 export function JavaAgentLandingV1() {
   return <EcosystemPage config={javaAgentConfig} />;

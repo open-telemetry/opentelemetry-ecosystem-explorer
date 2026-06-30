@@ -1,4 +1,40 @@
 {
+  "landingV1": {
+    "hero": {
+      "eyebrow": "Auto-instrumentación · JVM",
+      "lead": "Auto-instrumentación sin código para aplicaciones Java. Cientos de bibliotecas y frameworks compatibles; configurable mediante propiedades del sistema o variables de entorno.",
+      "cta": {
+        "browse": "Explorar instrumentaciones",
+        "overview": "Leer la introducción",
+        "github": "GitHub"
+      }
+    },
+    "pipeline": {
+      "title": "Categorías de instrumentación",
+      "lead": "Las auto-instrumentaciones de Java se agrupan por categoría. Haz clic en cualquier categoría para filtrar la lista de instrumentaciones."
+    },
+    "stages": {
+      "http": { "label": "HTTP", "description": "Servidores y clientes" },
+      "db": { "label": "Bases de datos", "description": "JDBC, NoSQL, ORM" },
+      "messaging": { "label": "Mensajería", "description": "Brokers y colas" },
+      "frameworks": { "label": "Frameworks", "description": "Spring, Quarkus, …" },
+      "runtime": { "label": "Runtime", "description": "JVM, hilos, GC" }
+    },
+    "quickEntries": {
+      "config-builder": {
+        "title": "Generador de configuración",
+        "description": "Crea una configuración declarativa del agente de forma interactiva."
+      },
+      "releases": {
+        "title": "Comparar versiones",
+        "description": "Mira las novedades entre dos versiones del Java Agent."
+      },
+      "supported-libs": {
+        "title": "Bibliotecas compatibles",
+        "description": "Explora el catálogo completo de bibliotecas y frameworks compatibles."
+      }
+    }
+  },
   "page": {
     "title": "OpenTelemetry Java Agent",
     "description": "Explora la auto-instrumentación para aplicaciones Java. Descubre bibliotecas compatibles, opciones de configuración y telemetría emitida."
@@ -104,7 +140,36 @@
     "placeholder": {
       "title": "En desarrollo",
       "description": "La herramienta de comparación de versiones del Java Agent se está construyendo actualmente. Vuelve pronto para comparar cambios de telemetría entre versiones."
-    }
+    },
+    "instrumentationsAdded": "Módulos agregados",
+    "instrumentationsChanged": "Módulos modificados",
+    "instrumentationsRemoved": "Módulos eliminados",
+    "viewChangelog": "Ver registro de cambios de {{version}}",
+    "viewChangelogs": "Ver registros de cambios...",
+    "invalidComparison": "Comparación inválida",
+    "invalidComparisonDescOne": "Una o ambas de las versiones seleccionadas no existen en el registro.",
+    "invalidComparisonDescTwo": "Las comparaciones generalmente se realizan desde una versión más antigua a una versión más reciente.",
+    "selectDifferent": "Selecciona dos versiones diferentes para ver los cambios.",
+    "comparingReleases": "Comparando versiones...",
+    "analyzing": "Analizando {{fromVersion}} y {{toVersion}}",
+    "errorLoading": "Error al cargar datos de comparación: {{message}}",
+    "from": "Desde",
+    "to": "Hasta",
+    "latest": "(última)",
+    "comparisonSections": "Secciones de comparación",
+    "changesSummary": "Resumen de cambios",
+    "allMetrics": "Todas las métricas ({{version}})",
+    "moduleChanges": "Cambios de módulos",
+    "modulesImpacted_one": "{{count}} Módulo impactado",
+    "modulesImpacted_other": "{{count}} Módulos impactados",
+    "noChanges": "No se encontraron cambios en la telemetría o configuración.",
+    "noChangesDesc": "Todo es idéntico entre estas dos versiones.",
+    "aggregateMetrics": "Métricas agregadas",
+    "totalMetrics": "{{count}} Métricas totales en {{version}}",
+    "metricName": "Nombre de la métrica",
+    "metricDescription": "Descripción",
+    "emittedBy": "Emitido por",
+    "release": "Versión {{version}}"
   },
   "configList": {
     "title": "Explorador de opciones de configuración",
@@ -255,12 +320,27 @@
       "changed": "Modificado"
     },
     "unit": "Unidad",
+    "configurationChanges": "Cambios de configuración",
     "attributeChanges": "Cambios en atributos",
     "descriptionChanged": "Descripción modificada",
     "typeChanged": "Tipo modificado",
     "metricRemoved": "Esta métrica ya no se emite en la versión de comparación.",
     "spanRemoved": "Este span ya no se emite en la versión de comparación.",
-    "spanAdded": "Este span se emite por primera vez en la versión de comparación."
+    "spanAdded": "Este span se emite por primera vez en la versión de comparación.",
+    "whenChanged": {
+      "label": "Ahora solo se emite cuando"
+    },
+    "moduleAddedTooltip": "Este módulo se agregó en la nueva versión",
+    "moduleRemovedTooltip": "Este módulo se eliminó en la nueva versión",
+    "moduleChangedTooltip": "Este módulo tiene cambios en telemetría o configuración",
+    "viewInstrumentation": "Ver detalles de instrumentación",
+    "expandAriaLabel": "Alternar diferencias para {{name}}",
+    "metricCount_one": "{{count}} Métrica",
+    "metricCount_other": "{{count}} Métricas",
+    "spanCount_one": "{{count}} Span",
+    "spanCount_other": "{{count}} Spans",
+    "configCount_one": "{{count}} Configuración",
+    "configCount_other": "{{count}} Configuraciones"
   },
   "diffAttributeTable": {
     "ariaLabel": "Cambios en atributos",
@@ -347,15 +427,17 @@
       "versions_other": "{{count}} versiones",
       "custom": "personalizado",
       "covers": "cubre {{versions}}",
-      "removeTooltip": "Eliminar personalización de {{name}}",
       "toggleDetailsTooltip": "Alternar detalles de {{name}}",
-      "customize": "Personalizar",
-      "customizeAriaLabel": "Personalizar {{name}}",
       "customizationState": "Estado de personalización",
       "enabled": "Habilitado",
       "disabled": "Deshabilitado",
       "enabledByDefault": "habilitado por defecto",
-      "disabledByDefault": "deshabilitado por defecto"
+      "disabledByDefault": "deshabilitado por defecto",
+      "statusHeader": "Estado de instrumentación",
+      "statusDescription": "Habilita o deshabilita explícitamente esta instrumentación.",
+      "resetToDefault": "Restablecer al valor predeterminado",
+      "options_one": "{{count}} opción",
+      "options_other": "{{count}} opciones"
     },
     "form": {
       "empty": "No hay opciones configurables para este módulo."
@@ -392,7 +474,12 @@
       "generalSettings": "Configuración general",
       "instrumentations": "Instrumentaciones",
       "schema": "Esquema",
-      "agent": "Agente"
+      "agent": "Agente",
+      "target": "Destino"
+    },
+    "target": {
+      "javaagent": "Java agent",
+      "springStarter": "Spring Boot starter"
     },
     "schemaRenderer": {
       "itemLabel": "Elemento"

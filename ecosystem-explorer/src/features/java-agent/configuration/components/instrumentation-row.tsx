@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { JSX } from "react";
+import { useMemo, type JSX } from "react";
 import { useTranslation } from "react-i18next";
-import { ChevronRight, Plus, X } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import type { InstrumentationModule } from "@/types/javaagent";
 import type { CustomizationStatus } from "@/hooks/use-customization-status";
 import { InstrumentationConfigForm } from "./instrumentation-config-form";
+import { aggregateConfigurations } from "@/lib/configurations-aggregate";
 
 export interface InstrumentationRowProps {
   module: InstrumentationModule;
   status: CustomizationStatus;
   isExpanded: boolean;
-  onAddCustomization: () => void;
   onSetEnabled: (enabled: boolean) => void;
   onRemoveCustomization: () => void;
   onToggleExpand: () => void;
@@ -35,16 +35,17 @@ export function InstrumentationRow({
   module,
   status,
   isExpanded,
-  onAddCustomization,
   onSetEnabled,
   onRemoveCustomization,
   onToggleExpand,
   onJumpToGeneral,
 }: InstrumentationRowProps): JSX.Element {
   const { t } = useTranslation("java-agent");
-  const isCustomized = status !== "none";
-  const customizationEnabled = status === "enabled";
+  const isExplicitlyEnabled = status === "enabled";
+  const isExplicitlyDisabled = status === "disabled";
   const enabledByDefault = !module.defaultDisabled;
+  const isEnabled = isExplicitlyEnabled || (status === "none" && enabledByDefault);
+  const configCount = useMemo(() => aggregateConfigurations(module).length, [module]);
 
   const description =
     module.coveredEntries[module.coveredEntries.length - 1]?.description ?? undefined;
@@ -58,11 +59,11 @@ export function InstrumentationRow({
     ? "border-primary/40 shadow-md bg-surface-card"
     : "border-border/60 shadow-sm bg-surface-card hover:border-border/80";
 
-  const headerBgClass = isCustomized
-    ? customizationEnabled
-      ? "bg-primary/5"
-      : "bg-red-500/5"
-    : "bg-muted/20";
+  const headerBgClass = isExplicitlyEnabled
+    ? "bg-primary/5"
+    : isExplicitlyDisabled
+      ? "bg-red-500/5"
+      : "bg-muted/20";
 
   return (
     <div
@@ -97,41 +98,36 @@ export function InstrumentationRow({
           ) : null}
         </div>
 
-        <div className="flex items-center gap-3" onClick={(e) => e.stopPropagation()}>
-          {isCustomized ? (
-            <CustomizationToggle enabled={customizationEnabled} onChange={onSetEnabled} />
-          ) : (
-            <DefaultPill enabledByDefault={enabledByDefault} />
+        <div className="flex items-center gap-4">
+          {configCount > 0 && (
+            <span className="border-border/60 bg-muted/20 text-muted-foreground inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] leading-none shadow-sm">
+              {t("builder.row.options", { count: configCount })}
+            </span>
           )}
-
-          {isCustomized ? (
-            <button
-              type="button"
-              aria-label={t("builder.row.removeTooltip", { name: module.name })}
-              onClick={onRemoveCustomization}
-              className="text-muted-foreground hover:bg-card-secondary hover:text-foreground rounded-md p-1.5 transition-colors"
+          <div className="flex flex-col items-end text-right">
+            <span
+              className={`text-sm font-bold ${isEnabled ? "text-emerald-500" : "text-muted-foreground"}`}
             >
-              <X className="h-3.5 w-3.5" aria-hidden="true" />
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={onAddCustomization}
-              aria-label={t("builder.row.customizeAriaLabel", { name: module.name })}
-              className="border-border/60 bg-surface-card text-foreground hover:bg-card inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-xs shadow-sm transition-colors"
-            >
-              <Plus className="h-3 w-3" aria-hidden="true" />
-              {t("builder.row.customize")}
-            </button>
-          )}
+              {isEnabled ? t("builder.row.enabled") : t("builder.row.disabled")}
+            </span>
+            {isEnabled !== enabledByDefault && (
+              <span className="text-muted-foreground/70 text-[10px] font-medium">
+                {enabledByDefault
+                  ? t("builder.row.enabledByDefault")
+                  : t("builder.row.disabledByDefault")}
+              </span>
+            )}
+          </div>
 
           <button
             type="button"
-            data-row-toggle
             aria-label={t("builder.row.toggleDetailsTooltip", { name: module.name })}
             aria-expanded={isExpanded}
-            onClick={onToggleExpand}
-            className="text-muted-foreground/60 hover:bg-card-secondary hover:text-foreground hidden h-7 w-7 items-center justify-center rounded-md transition-colors sm:inline-flex"
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleExpand();
+            }}
+            className="text-muted-foreground/60 hover:bg-card-secondary hover:text-foreground inline-flex h-7 w-7 items-center justify-center rounded-md transition-colors"
           >
             <ChevronRight
               className={`h-4 w-4 transition-transform duration-200 ${isExpanded ? "rotate-90" : ""}`}
@@ -154,6 +150,26 @@ export function InstrumentationRow({
           className="bg-surface-card px-4 py-4 sm:px-5 sm:py-5"
           data-yaml-section-key="instrumentation/development"
         >
+          <div className="border-border/40 mb-6 flex items-center justify-between border-b pb-4">
+            <div>
+              <h5 className="text-foreground text-sm font-semibold">
+                {t("builder.row.statusHeader")}
+              </h5>
+              <p className="text-muted-foreground text-xs">{t("builder.row.statusDescription")}</p>
+            </div>
+            <div className="flex flex-col items-end gap-1.5">
+              <CustomizationToggle enabled={isEnabled} onChange={onSetEnabled} />
+              {status !== "none" && (
+                <button
+                  type="button"
+                  onClick={onRemoveCustomization}
+                  className="text-muted-foreground text-[10px] transition-colors hover:underline"
+                >
+                  {t("builder.row.resetToDefault")}
+                </button>
+              )}
+            </div>
+          </div>
           {description ? (
             <p className="text-muted-foreground mb-6 text-sm leading-relaxed">{description}</p>
           ) : null}
@@ -161,22 +177,6 @@ export function InstrumentationRow({
         </div>
       ) : null}
     </div>
-  );
-}
-
-function DefaultPill({ enabledByDefault }: { enabledByDefault: boolean }) {
-  const { t } = useTranslation("java-agent");
-  if (enabledByDefault) {
-    return (
-      <span className="inline-flex items-center rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] leading-none text-emerald-300">
-        {t("builder.row.enabledByDefault")}
-      </span>
-    );
-  }
-  return (
-    <span className="border-border/60 text-muted-foreground inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] leading-none">
-      {t("builder.row.disabledByDefault")}
-    </span>
   );
 }
 

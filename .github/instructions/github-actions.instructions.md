@@ -18,7 +18,7 @@ Examples to flag:
 - `uses: actions/checkout@abc1234` — short SHA, flag.
 
 The current canonical pin in this repo is
-`actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2`. When updating an action
+`actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3`. When updating an action
 version, update all callers together.
 
 ## Permissions

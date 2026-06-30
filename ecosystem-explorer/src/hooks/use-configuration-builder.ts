@@ -168,7 +168,12 @@ export function useConfigurationBuilderState(
 
   const setCustomization = useCallback(
     (module: string, status: "enabled" | "disabled" | "none") => {
-      dispatch({ type: "SET_CUSTOMIZATION", module, status });
+      const path: Path = ["distribution", "javaagent", "instrumentation", module, "enabled"];
+      if (status === "none") {
+        dispatch({ type: "SET_VALUE", path, value: null });
+      } else {
+        dispatch({ type: "SET_VALUE", path, value: status === "enabled" });
+      }
     },
     []
   );

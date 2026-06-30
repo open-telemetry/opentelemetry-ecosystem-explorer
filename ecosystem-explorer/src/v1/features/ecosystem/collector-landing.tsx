@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { EcosystemPage } from "./ecosystem-page";
-import { collectorConfig } from "./configs";
+import { collectorConfig } from "./collector-config";
 
 export function CollectorLandingV1() {
   return <EcosystemPage config={collectorConfig} />;
