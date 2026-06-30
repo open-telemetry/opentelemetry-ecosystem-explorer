@@ -184,8 +184,9 @@ def run_javaagent_builder(
             # Correct known-bad declarative_name values before backfill and aggregation so the
             # fix lands in both the per-version files and global-configurations.json.
             apply_declarative_name_corrections(inventory)
-            # Correct known-bad telemetry when-conditions (signals gated behind feature flags
-            # that were incorrectly placed under "default" in pre-2.28.0 registry files).
+            # Correct known-bad telemetry when-conditions:
+            # - fold known test-harness artifact when-conditions back into "default"
+            # - move specific signals from "default" into their correct feature-gated when blocks
             apply_telemetry_when_corrections(inventory, version)
 
             # Normalize an explicit "libraries": None / "custom": None (malformed or

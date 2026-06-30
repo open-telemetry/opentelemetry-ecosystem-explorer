@@ -196,7 +196,7 @@ def _apply_correction(item: dict[str, Any], correction: dict[str, Any], version:
         if matched_signal is None:
             return
 
-        from_block["spans"] = [s for s in spans if s is not matched_signal]
+        from_block["spans"] = [s for s in spans if _span_key(s) != target_key]
 
     else:
         metric_name: str = correction["metric"]
@@ -209,7 +209,7 @@ def _apply_correction(item: dict[str, Any], correction: dict[str, Any], version:
         if matched_signal is None:
             return
 
-        from_block["metrics"] = [m for m in metrics if m is not matched_signal]
+        from_block["metrics"] = [m for m in metrics if _metric_key(m) != metric_name]
 
     # Drop the from_when block if it is now empty.
     if _is_block_empty(from_block):
@@ -226,21 +226,39 @@ def _apply_correction(item: dict[str, Any], correction: dict[str, Any], version:
         telemetry.append(to_block)
 
     if "span_kind" in correction:
-        to_block.setdefault("spans", []).append(matched_signal)
-        logger.debug(
-            "corrections: moved span %s from default → '%s' in %s",
-            _span_key(matched_signal),
-            to_when,
-            item.get("name"),
-        )
+        existing_spans = to_block.setdefault("spans", [])
+        if not any(_span_key(s) == target_key for s in existing_spans):
+            existing_spans.append(matched_signal)
+            logger.debug(
+                "corrections: moved span %s from default → '%s' in %s",
+                _span_key(matched_signal),
+                to_when,
+                item.get("name"),
+            )
+        else:
+            logger.debug(
+                "corrections: span %s already exists in '%s' for %s, skipped appending duplicate",
+                _span_key(matched_signal),
+                to_when,
+                item.get("name"),
+            )
     else:
-        to_block.setdefault("metrics", []).append(matched_signal)
-        logger.debug(
-            "corrections: moved metric '%s' from default → '%s' in %s",
-            _metric_key(matched_signal),
-            to_when,
-            item.get("name"),
-        )
+        existing_metrics = to_block.setdefault("metrics", [])
+        if not any(_metric_key(m) == metric_name for m in existing_metrics):
+            existing_metrics.append(matched_signal)
+            logger.debug(
+                "corrections: moved metric '%s' from default → '%s' in %s",
+                _metric_key(matched_signal),
+                to_when,
+                item.get("name"),
+            )
+        else:
+            logger.debug(
+                "corrections: metric '%s' already exists in '%s' for %s, skipped appending duplicate",
+                _metric_key(matched_signal),
+                to_when,
+                item.get("name"),
+            )
 
     item["telemetry"] = telemetry
 
