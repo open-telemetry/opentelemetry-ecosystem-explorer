@@ -33,3 +33,9 @@ ecosystem-explorer/public/data
 
 # Registry (written by automation watchers - do not reformat)
 ecosystem-registry
+
+# Cloned upstream working copies (gitignored by the golang watcher)
+**/.repo
+
+# Local agent settings
+**/.claude
