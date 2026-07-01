@@ -66,7 +66,7 @@ export default async (request: Request, context: Context) => {
     let mdPath = "";
     if (pathname === "/" || pathname === "/index.html") {
       mdPath = "/llms.txt";
-    } else if (pathname.startsWith("/java-agent")) {
+    } else if (pathname.startsWith("/java-agent") || pathname.startsWith("/javaagent")) {
       mdPath = "/agent/javaagent/index.md";
     } else if (pathname.startsWith("/collector")) {
       mdPath = "/agent/collector/index.md";
