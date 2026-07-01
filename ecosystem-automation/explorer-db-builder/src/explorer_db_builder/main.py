@@ -27,6 +27,7 @@ from explorer_db_builder.configuration_aggregator import build_global_configurat
 from explorer_db_builder.configuration_builder import run_configuration_builder
 from explorer_db_builder.database_writer import DatabaseWriter
 from explorer_db_builder.declarative_name_corrections import apply_declarative_name_corrections
+from explorer_db_builder.ecosystem_stats import count_unique_library_names
 from explorer_db_builder.instrumentation_transformer import (
     make_list_instrumentation,
     transform_instrumentation_format,
@@ -234,6 +235,13 @@ def run_javaagent_builder(
 
         global_configurations = build_global_configurations([backfilled_inventories[v] for v in versions])
         db_writer.write_global_configurations(global_configurations)
+
+        db_writer.write_ecosystem_stats(
+            {
+                "version_count": len(versions),
+                "library_count": count_unique_library_names([backfilled_inventories[v] for v in versions]),
+            }
+        )
 
         stats = db_writer.get_stats()
         total_mb = stats["total_bytes"] / (1024 * 1024)

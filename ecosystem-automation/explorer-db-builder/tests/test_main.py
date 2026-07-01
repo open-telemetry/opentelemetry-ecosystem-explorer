@@ -426,6 +426,33 @@ class TestRunJavaagentBuilder:
         assert data[0]["type"] == "list"
         assert data[0]["instrumentations"] == ["jdbc"]
 
+    def test_writes_ecosystem_stats(self, tmp_path):
+        """run_javaagent_builder writes ecosystem-stats.json with version and unique library counts."""
+        inventory_manager = MagicMock()
+        inventory_manager.list_versions.return_value = [Version("2.1.0"), Version("2.0.0")]
+        inventory_manager.load_library_readme_map.return_value = {}
+        inventory_manager.load_versioned_inventory.side_effect = lambda v: {
+            Version("2.1.0"): {
+                "file_format": 0.5,
+                "libraries": [{"name": "jdbc"}],
+                "custom": [{"name": "custom-a"}],
+            },
+            Version("2.0.0"): {
+                "file_format": 0.5,
+                "libraries": [{"name": "jdbc"}, {"name": "removed-lib"}],
+            },
+        }[v]
+
+        db_writer = DatabaseWriter(database_dir=str(tmp_path))
+
+        exit_code = run_javaagent_builder(inventory_manager, db_writer)
+
+        assert exit_code == 0
+        data = json.loads((tmp_path / "ecosystem-stats.json").read_text(encoding="utf-8"))
+        assert data["version_count"] == 2
+        # jdbc, custom-a, removed-lib: unioned across versions and across libraries/custom.
+        assert data["library_count"] == 3
+
 
 class TestMain:
     @patch("explorer_db_builder.main.run_builder")

@@ -8,6 +8,25 @@
     "body1": "El ecosistema es grande y está en crecimiento. Encontrar qué instrumentación existe, qué produce y cómo configurarla puede ser difícil. Este proyecto busca hacer esa información accesible y fácil de navegar.",
     "body2": "Al construir un registro estructurado y un explorador interactivo, ayudamos a los desarrolladores a entender qué está disponible, qué señales emite cada componente y cómo se relacionan con las convenciones semánticas de OpenTelemetry."
   },
+  "ecosystems": {
+    "heading": "Ecosistemas",
+    "loading": "Cargando estadísticas del ecosistema…",
+    "error": "No pudimos cargar las estadísticas del ecosistema en este momento.",
+    "javaAgent": {
+      "title": "Java Agent",
+      "versions_one": "{{count}} versión",
+      "versions_other": "{{count}} versiones",
+      "libraries_one": "{{count}} biblioteca de instrumentación",
+      "libraries_other": "{{count}} bibliotecas de instrumentación"
+    },
+    "collector": {
+      "title": "Collector",
+      "versions_one": "{{count}} versión",
+      "versions_other": "{{count}} versiones",
+      "components_one": "{{count}} componente",
+      "components_other": "{{count}} componentes"
+    }
+  },
   "getInvolved": {
     "heading": "Participa",
     "sourceCode": {

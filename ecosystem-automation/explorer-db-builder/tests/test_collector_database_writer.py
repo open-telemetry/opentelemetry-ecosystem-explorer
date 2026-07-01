@@ -255,6 +255,33 @@ class TestWriteIndex:
         assert "attributes" not in otlp
 
 
+class TestWriteEcosystemStats:
+    def test_writes_deterministic_file(self, db_writer, temp_db_dir):
+        """Serialization is exactly json.dumps(indent=2, sort_keys=True) with no trailing newline."""
+        stats = {"version_count": 7, "component_count": 312}
+
+        db_writer.write_ecosystem_stats(stats)
+
+        raw = (temp_db_dir / "ecosystem-stats.json").read_text(encoding="utf-8")
+        assert raw == json.dumps(stats, indent=2, sort_keys=True)
+        assert not raw.endswith("\n")
+
+    def test_writes_expected_shape(self, db_writer, temp_db_dir):
+        db_writer.write_ecosystem_stats({"version_count": 7, "component_count": 312})
+
+        with open(temp_db_dir / "ecosystem-stats.json") as f:
+            data = json.load(f)
+        assert data == {"version_count": 7, "component_count": 312}
+
+    def test_counts_bytes_in_stats(self, db_writer):
+        """The write increments files_written and total_bytes."""
+        db_writer.write_ecosystem_stats({"version_count": 1, "component_count": 1})
+
+        stats = db_writer.get_stats()
+        assert stats["files_written"] == 1
+        assert stats["total_bytes"] > 0
+
+
 class TestGetStats:
     def test_initial_stats(self, db_writer):
         stats = db_writer.get_stats()

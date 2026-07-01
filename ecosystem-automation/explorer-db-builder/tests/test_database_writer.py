@@ -721,3 +721,29 @@ class TestWriteGlobalConfigurations:
         db_writer.write_global_configurations([])
 
         assert json.loads((temp_db_dir / "global-configurations.json").read_text(encoding="utf-8")) == []
+
+
+class TestWriteEcosystemStats:
+    def test_writes_deterministic_file(self, db_writer, temp_db_dir):
+        """Serialization is exactly json.dumps(indent=2, sort_keys=True) with no trailing newline."""
+        stats = {"version_count": 5, "library_count": 253}
+
+        db_writer.write_ecosystem_stats(stats)
+
+        raw = (temp_db_dir / "ecosystem-stats.json").read_text(encoding="utf-8")
+        assert raw == json.dumps(stats, indent=2, sort_keys=True)
+        assert not raw.endswith("\n")
+
+    def test_writes_expected_shape(self, db_writer, temp_db_dir):
+        db_writer.write_ecosystem_stats({"version_count": 5, "library_count": 253})
+
+        data = json.loads((temp_db_dir / "ecosystem-stats.json").read_text(encoding="utf-8"))
+        assert data == {"version_count": 5, "library_count": 253}
+
+    def test_counts_bytes_in_stats(self, db_writer):
+        """The write increments files_written and total_bytes."""
+        db_writer.write_ecosystem_stats({"version_count": 1, "library_count": 1})
+
+        stats = db_writer.get_stats()
+        assert stats["files_written"] == 1
+        assert stats["total_bytes"] > 0
