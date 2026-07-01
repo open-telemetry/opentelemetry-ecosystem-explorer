@@ -63,4 +63,17 @@ describe("agent-negotiation edge function", () => {
     const res = await handler(get("/agent/javaagent"), context);
     expect(res?.status).toBe(304);
   });
+
+  it("serves markdown for /javaagent with Accept: text/markdown", async () => {
+    const context = contextWith(
+      async () =>
+        new Response("# Java Agent", {
+          status: 200,
+          headers: { "content-type": "text/plain" },
+        })
+    );
+    const res = await handler(get("/javaagent", { accept: "text/markdown" }), context);
+    expect(res?.status).toBe(200);
+    expect(res?.headers.get("content-type")).toBe("text/markdown; charset=UTF-8");
+  });
 });
