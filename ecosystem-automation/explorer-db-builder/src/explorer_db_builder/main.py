@@ -32,6 +32,7 @@ from explorer_db_builder.instrumentation_transformer import (
     transform_instrumentation_format,
 )
 from explorer_db_builder.metadata_backfiller import backfill_metadata
+from explorer_db_builder.telemetry_when_corrections import apply_telemetry_when_corrections
 
 logger = logging.getLogger(__name__)
 
@@ -183,6 +184,10 @@ def run_javaagent_builder(
             # Correct known-bad declarative_name values before backfill and aggregation so the
             # fix lands in both the per-version files and global-configurations.json.
             apply_declarative_name_corrections(inventory)
+            # Correct known-bad telemetry when-conditions:
+            # - fold known test-harness artifact when-conditions back into "default"
+            # - move specific signals from "default" into their correct feature-gated when blocks
+            apply_telemetry_when_corrections(inventory, version)
 
             # Normalize an explicit "libraries": None / "custom": None (malformed or
             # partial inventory, since YAML `libraries:` parses as None) to [] up front.

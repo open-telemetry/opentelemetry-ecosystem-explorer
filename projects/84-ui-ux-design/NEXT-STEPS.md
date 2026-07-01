@@ -3,8 +3,8 @@ title: "Roadmap — explorer redesign"
 issue: 84
 type: roadmap
 phase: meta
-status: planning
-last_updated: "2026-06-05"
+status: in-progress
+last_updated: "2026-06-19"
 ---
 
 ## Next steps
@@ -98,6 +98,14 @@ This is a _living_ document. Update it as decisions land and PRs ship. Cross-ref
   rules; `<GlobalSearch>` now consumes that hook through a 200ms debounce and navigates client-side
   via `<Link>` instead of `<a href>`. Loading + error states added. Typecheck + 947 tests green (101
   files; +9 across 2 new test files), ready to push.
+- **2026-06-19 snapshot:** Phase 2 is complete (#371 closed 2026-06-08; GlobalSearch #587 merged).
+  Phase 3 PRs 1-7 are merged on `main` — PR 1 (#685, listFilters URL contract), PR 2 (#686,
+  ReleaseCard), PR 3 (#687, PipelineAnatomy), PR 4 (#688, QuickEntryRow), and PRs 5-7 bundled in
+  #708 (EcosystemConfig schema + `/collector` + `/java-agent` routes). Remaining: PR 8 (release-data
+  integration + landing-page i18n) on `feat/84-phase3-pr8-release-data`, and PR 9 (empty/error/
+  loading states + visual regression). A gap audit on this date (see decision log) found the landing
+  copy in `configs.tsx` is hardcoded English instead of going through i18next — folded into PR 8 —
+  and four untracked `/simplify` items carried into the end-of-redesign cleanup PR.
 
 ---
 
@@ -105,26 +113,24 @@ This is a _living_ document. Update it as decisions land and PRs ship. Cross-ref
 
 In order:
 
-- [x] PR 1 (#377), PR 2 (#453), PR 2b (#470), PR 3 (#482), PR 4 (#455), PR 5 (#483), PR 6 (#484), PR
-      7 (#487) — all merged on `main`. Phase 1 complete; #370 closed.
-- [x] Phase 2 PR 1 (#517) — `feat(v1): CoverBlock + HomeV1 shell`. Merged.
-- [x] Phase 2 PR 3 (#524) — `feat(v1): StatsBand + canonical home stats`. Merged 2026-05-21.
-- [x] Phase 2 PR 4 (#541) — `feat(v1): EcosystemsGrid`. Merged 2026-05-21.
-- [x] Phase 2 PR 5 (#544) — `feat(v1): SignalsRow`. Merged 2026-05-21.
-- [x] Phase 2 PR 6 (#555) — `feat(v1): RecentActivityRail`. Merged 2026-05-30.
-- [ ] **Merge Phase 2 PR 2** — `feat(v1): GlobalSearch (Phase 2 - Home page PR 2)`. Branch
-      `feat/84-phase2-pr2-global-search` pushed as a PR against `main`; `main` merged in to resolve
-      conflicts (GlobalSearch + RecentActivityRail coexistence). Last home-page component PR.
-- [ ] **Phase 2 stat-link integration test** — the only remaining #371 build-plan item. Acceptance
-      criterion "clicking a stat number navigates to the relevant doc" has no
-      `src/test/integration/` coverage yet (every integration test there is configuration-builder /
-      instrumentation). Small follow-up PR adding a HomeV1/StatsBand routing test; ticks the last
-      #371 box. Empty/loading states (#555) and the visual-regression showcase + ⌘K unit test
-      already shipped — see [`01-home-page.md`](./01-home-page.md) build-plan items 8-9.
-- [ ] **Close #371** once PR 2 and the stat-link test land — Phase 2 (home page) complete. Carry the
-      three follow-ups (Java Agent index endpoint, real activity-feed pipeline, GlobalSearch "see
-      all results") forward as their own issues; none block closing #371. Then Phase 3 (ecosystem
-      landing, #372 / [`02-ecosystem-landing.md`](./02-ecosystem-landing.md)) starts.
+- [x] **Phase 1** — PRs 0-7 merged on `main`; #370 closed. Foundation complete.
+- [x] **Phase 2** — PRs 1-6 plus PR 2 (GlobalSearch, #587) merged; **#371 closed 2026-06-08**. Home
+      page complete.
+- [x] **Phase 3 PRs 1-7** — PR 1 (#685, listFilters), PR 2 (#686, ReleaseCard), PR 3 (#687,
+      PipelineAnatomy), PR 4 (#688, QuickEntryRow), PRs 5-7 (#708, EcosystemConfig schema +
+      `/collector` + `/java-agent` routes). All merged on `main`.
+- [ ] **Phase 3 PR 8 — Release-data integration + landing-page i18n.** Wire the release cards (and,
+      where derivable, the pipeline/category counts) to the index-based data layer with a static
+      fallback; move the hardcoded landing copy in `configs.tsx` (hero eyebrow/lead, stage labels/
+      descriptions, quick-entry copy) into the `collector`/`java-agent` i18next namespaces. The
+      hardcoded→dynamic inventory is the "Follow-ups identified during Phase 3" table below. Branch
+      `feat/84-phase3-pr8-release-data`.
+- [ ] **Phase 3 PR 9 — Empty/error/loading states + visual regression.** Unified states per the #497
+      convention; Playwright snapshots of `/collector` and `/java-agent` in both themes — and add
+      those bare landing routes to `scripts/take-screenshots.mjs`, which currently captures only the
+      list/detail routes.
+- [ ] **Close #372** once PR 8 and PR 9 land — Phase 3 (ecosystem landing) complete. Then Phase 4
+      (list page, [`03-list-page.md`](./03-list-page.md)) starts.
 
 ---
 
@@ -219,6 +225,55 @@ Per-ecosystem overview pages. See [`02-ecosystem-landing.md`](./02-ecosystem-lan
 The two phases can run in parallel once that contract is locked (it's a shared `listFilters`
 parser/serializer — see `03-list-page.md` Task 1).
 
+### Follow-ups identified during Phase 3 (tracked separately)
+
+Recorded here so the work stays visible after the Phase 3 issues close and through the
+end-of-redesign cleanup. None of these block shipping the landing pages.
+
+- **Hardcoded landing-page data → live data (Jay's PR #708 review, `configs.tsx:172`).** The
+  per-ecosystem configs ship with static counts and release strings pulled from the mockup. There is
+  no single inventory of the swap-to-dynamic sites yet — this is it. Every value below needs wiring
+  to the index-based data layer (`loadIndex()` / `loadAllComponents` / `loadAllInstrumentations`);
+  fall back to the static config when the source is unavailable.
+
+  | Site (`configs.tsx`)               | Current value            | Intended dynamic source                                              | Status                                                                      |
+  | ---------------------------------- | ------------------------ | -------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+  | Collector pipeline-stage counts    | `98 / 28 / 47 / 9 / 18`  | `useCollectorIndex()` → group-by `type` (live: 116/37/52/16/47)      | **PR 8 — derivable**                                                        |
+  | Java Agent category counts         | `32 / 41 / 21 / 55 / 12` | per-tile `?search=` term match — no category field exists            | **PR 8 — count derived from each tile's search term (count = destination)** |
+  | Collector release version          | `v0.150.0`               | `versions-index.json` `is_latest` (`loadVersions()`; live `0.154.0`) | **PR 8**                                                                    |
+  | Java Agent release version         | `v2.10.0`                | `versions-index.json` `is_latest` (live `2.28.1`)                    | **PR 8**                                                                    |
+  | Release date (both)                | `May 2026`               | not in data — watcher reads tag names only, discards dates           | **follow-up — needs watcher + builder**                                     |
+  | Release deltas (added/changed/dep) | `{4,12,2}` · `{3,9,1}`   | client-side diff of the two latest version bundles                   | **PR 8 — client-computable**                                                |
+
+  **Resolved 2026-06-19** (data-layer investigation + decisions with Vitor — see decision log):
+  Collector counts, both release versions, and the deltas are all derivable today and ship in PR 8;
+  the release **date** is the only piece needing pipeline work (the watcher derives versions from
+  `git tag --list` and never captures tag dates) — split into a follow-up, and `<ReleaseCard>`
+  renders without a date until then. Java Agent has no category field, so each tile's count is
+  derived from its own `?search=` term, keeping the count and the click destination consistent by
+  construction (accepted trade-off: categories become substring-defined, e.g. "HTTP" counts every
+  record mentioning http). When PR 8 lands, retarget the `configs.tsx` header comment (lines 22-24)
+  from "tracked in the decision log" to this table.
+
+- **Landing copy bypasses i18next — folded into PR 8 (2026-06-19 gap audit).** Every config-level
+  string in `configs.tsx` (hero `eyebrow`/`lead`, pipeline/category stage `label`/`description`,
+  quick-entry `title`/`description`) is a hardcoded English literal; the `ecosystem` namespace only
+  localizes component chrome (`releaseCard`/`pipelineAnatomy`/`quickEntry`) and the landing copy
+  lives in no locale file. This contradicts the 2026-06-09 decision that Phase 3 strings flow
+  through i18next via the `collector`/`java-agent` namespaces. PR 8 moves the copy into those
+  namespaces alongside the release-data wiring.
+- **Java Agent pipeline deep-links use a second URL vocabulary.** Collector stage links go through
+  the `filtersToHref` serializer (the listFilters contract); the Java Agent stages use raw
+  `?search=<term>` strings (`configs.tsx:174-206`) because the Java instrumentation list page reads
+  `?search=`, not the collector `ListFilters` facets. The links resolve, but the two ecosystems
+  speak different query languages, and the `db`/`messaging`/`framework`/`runtime` mappings are
+  unverified against the actual instrumentation data. Flagged, non-blocking — revisit if Phase 4
+  unifies the list-filter contract.
+- **Landing routes absent from `scripts/take-screenshots.mjs` — fold into PR 9.** The screenshot
+  pipeline captures `/collector/components`, `/java-agent/instrumentation`, and the detail routes,
+  but never the bare `/collector` / `/java-agent` landing pages. PR 9's visual-regression work must
+  add them, or the landing pages ship with no snapshot coverage.
+
 ---
 
 ## Phase 4 — List page (Project 03)
@@ -251,8 +306,13 @@ data-pipeline PR before 04b can ship.
 
 ## Follow-ups (deferred from /simplify pass on Phase 2 PR 1, 2026-05-19)
 
-Surfaced during the /simplify review of `feat/84-phase2-pr1-cover-block`. Each is non-blocking; fold
-into the natural next PR rather than expanding PR 1's scope.
+Surfaced during the /simplify review of `feat/84-phase2-pr1-cover-block`. Each is non-blocking.
+**2026-06-19 gap audit:** the still-open items below are now carried into the end-of-redesign
+cleanup PR (Phase 1 table, PR 8) rather than filed as separate issues. "Trim PR-numbered narration"
+is **resolved** — the staged PRs cleaned the comments as skeletons were replaced. Note the
+focus-ring item doubles as a live AGENTS.md "no hex literals" violation: `footer.css` lines 105,
+136, and 140 still hardcode `#f5a800` while the rest of the v1 chrome uses
+`hsl(var(--otel-orange-hsl))`.
 
 - **Shared focus-ring rule.** `buttons.css` and `footer.css` both define orange-token focus rings
   with slightly different offsets. When Phase 2 PR 2 lands `<GlobalSearch>` (which needs the same
@@ -369,5 +429,7 @@ Surface early so it's not blocking when PR 04b is ready.
 | 2026-06-01 | Java Agent search fan-out fix split into its own follow-up PR rather than folded into PR 2 (GlobalSearch). PR 2 ships as-is; the new PR bounds `loadAllInstrumentations` concurrency client-side (~6–8 pool) as a stopgap.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Out of PR 2's "GlobalSearch UI" scope and touches the data layer (`lib/api/javaagent-data.ts`), which the reference-implementation convention keeps out of the component PR. Distinct from the existing "Java Agent index endpoint" follow-up: that's the watcher-side proper fix (no fan-out at all), this is the near-term client cap that gets deleted once the index lands. Collector side already avoids the fan-out via `loadIndex()`. Reviewed Copilot's PR 2 (#587) comments: the collector fan-out and every hardcoded-color flag were already resolved by the search-engine split (`d943ef6`); only the Java Agent fan-out stayed actionable, and the "1,005+" counter is handled separately.                                                                                              |
 | 2026-06-05 | Cleared the last two Phase 2 / PR 2 follow-ups in one pass. (1) Java Agent search fan-out: #645's consolidated per-version bundle already eliminates it — GlobalSearch reuses `loadAllInstrumentations`, where the bundle is the primary single-request path and the per-instrumentation fan-out only survives as a fallback bounded at 8 concurrent. Both follow-ups originally filed here (watcher-side index endpoint + client-side concurrency cap) are therefore moot; the Follow-ups bullet was rewritten to a RESOLVED note. (2) The hardcoded `1,005+` search placeholder now single-sources from `home-stats.ts` via `INTEGRATIONS_STAT_VALUE`, so it tracks the stats band instead of drifting — the last actionable Copilot flag on PR 2 (#587).                                                                                                                                                                                                                                                              | Counter dropped the bespoke thousands-comma to match the stats band's `1005+` rendering; both now read one source, and `global-search.test.tsx` asserts against `INTEGRATIONS_STAT_VALUE` instead of a literal so the count can move without breaking the test. Also fixed a latent typecheck break the `main` merge introduced: upstream renamed `Configuration.example` → `examples`, so `search/sources/java-agent.ts` failed `tsc`; updated the field reference. Typecheck + lint clean; 29 search/home-stat tests green.                                                                                                                                                                                                                                                                        |
 | 2026-06-09 | Phase 3 kickoff. Rebased `feat/84-tmp-full-layout` onto current `main` (backup `feat/84-tmp-full-layout-backup-2026-06-09`); resolved conflicts by taking `main`'s shipped Phase 2 home files and keeping the reference's Phase 3-5 additions. Reconciled #372 against mid-stream `main` changes unrelated to the redesign: (1) routes are canonical `/collector` + `/java-agent`, not `/ecosystems/*` (per routing pivot) — `02-ecosystem-landing.md` Tasks 5-6 corrected; (2) Phase 3 strings go through i18next per #649, populating the already-declared `collector`/`java-agent` namespaces; (3) release-data integration retargets the index-based data layer (#645/#628/#629); (4) empty/error/loading states follow the unified convention (#497). PR sequence reordered so each PR compiles: `list-filters` URL contract first (shared with Phase 4), then leaf components (`ReleaseCard` → `PipelineAnatomy` → `QuickEntryRow`) → `EcosystemConfig` schema → routes → release-data → states/visual-regression. | The `EcosystemConfig` schema imports prop types from the three components, so the original "schema first" ordering in #372 was inverted. `<CoverBlock>` (eyebrow/aside), `<SubNav>`, `<StatusPill>`, `<TypeStripe>`, CNCF/Footer all shipped in Phase 1/2 — Phase 3 composes them. Known carryover: the reference's Phase 4 `list-page.tsx` fails `tsc` against `main`'s `IndexComponent` return type (#645); left for Phase 4's derivation. #372 body has an embedded prompt-injection HTML comment ("Sir Vitor") — ignored.                                                                                                                                                                                                                                                                        |
+| 2026-06-19 | Gap audit across all #84 phases before Phase 3 PR 8 (3 parallel subagents cross-checking each phase plan's acceptance criteria against merged code in `src/v1/`). Phase 3 PRs 1-7 confirmed merged (#685-#708). Findings + dispositions (decided with Vitor via AskUserQuestion): (A1) landing copy in `configs.tsx` is hardcoded English, contradicting the 2026-06-09 i18next decision — **folded into PR 8** alongside release-data; (A2) Java Agent stage deep-links use raw `?search=` instead of the `filtersToHref` serializer — flagged, non-blocking; (B) `/collector` + `/java-agent` landing routes missing from `take-screenshots.mjs` — **folded into PR 9**; (C) four untracked `/simplify` follow-ups (focus-ring + `footer.css` `#f5a800`, `Section bare` flag, `font-size:16px` hoist, BEM-test tightening) **carried into the end-of-redesign cleanup PR**; (D) doc hygiene refreshed.                                                                                                                 | All shipped Phase-3 design commitments and the new-ecosystem extensibility criterion verified MET; live release data + empty/error states + visual regression correctly DEFERRED to PR 8/9 (not silent gaps). The stale "stat-link integration test is the only remaining #371 item" claim is wrong — coverage exists as a unit test (`stats-band.test.tsx`). Docs updated this pass: `NEXT-STEPS.md` / `_index.md` / `02-ecosystem-landing.md` flipped to `status: in-progress`; Immediate-next-steps rewritten to the Phase 3 state; a Phase 3 "Where we are" snapshot added; `_index.md` phase table reconciled (Phase 2 complete, Phase 3 in-progress).                                                                                                                                          |
+| 2026-06-19 | Phase 3 PR 8 implementation spec locked (data-layer investigation + `/interview` with Vitor). Collector pipeline counts wired live via `useCollectorIndex()` group-by `type`; Java Agent category-tile counts derived from each tile's own `?search=` term so the count and the click-destination always agree (no category field exists — accepted trade-off: substring-defined categories, e.g. HTTP over-counts); release **version** live via `versions-index.json` `is_latest`; release **deltas** computed client-side by diffing the two latest version bundles (precedent: `use-telemetry-comparison.ts`); release **date** omitted (not in data — the watcher discards tag dates) and split into a watcher+builder follow-up; landing copy moved into the `collector`/`java-agent` i18next namespaces. Loading → skeleton (the redesign's locked default); on fetch error → fall back to the static mockup numbers, **documented as a code comment** per Vitor.                                                 | Delta semantics: `deprecated` = stability flipped to deprecated/unmaintained between the two versions; `changed` = component metadata content-hash changed; `added` = new ids. Client-side computation adopted (zero-pipeline, mirrors the existing telemetry-comparison feature); PR 8 stays pure-frontend. Follow-ups filed: the release-date pipeline work, and an optional data-owned Java Agent `category` field (the long-term "correct" home, watcher/registry-owned). Live numbers jump visibly vs the stale mockup — Collector receivers 98→116, extensions 18→47; versions `v0.150.0`→`0.154.0`, `v2.10.0`→`2.28.1`.                                                                                                                                                                       |
 
 Add a row whenever a decision lands. Keeps the doc honest.

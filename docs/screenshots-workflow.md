@@ -5,13 +5,15 @@ as an inline PR comment.
 
 ## How it works
 
-The workflow is split across three files to support fork PRs safely:
+The workflow spans four files. The capture/commit split supports fork PRs safely (see below); the
+baseline workflow maintains the main-branch reference images that each PR is diffed against:
 
-| File                      | Trigger                          | Token                                     | Responsibility                                                                                                                        |
-| ------------------------- | -------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `screenshots-capture.yml` | `pull_request`                   | `contents: read`                          | Builds the app, captures screenshots, uploads artifacts                                                                               |
-| `screenshots-commit.yml`  | `workflow_run` (after capture)   | `contents: write`, `pull-requests: write` | Downloads artifacts, commits to `otelbot/screenshots` branch, posts PR comment                                                        |
-| `screenshots-cleanup.yml` | `pull_request_target` (on close) | `contents: write`                         | Currently disabled (`if: false`). Originally deleted the PR's subfolder on close; retained as a no-op so old PR comments keep working |
+| File                       | Trigger                                                 | Token                                     | Responsibility                                                                                                                        |
+| -------------------------- | ------------------------------------------------------- | ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `screenshots-baseline.yml` | `push` to `main` (explorer paths) + `workflow_dispatch` | `contents: write` (per-job)               | Builds `main`, captures baseline screenshots, commits them to `otelbot/screenshots/main/` — the reference each PR is diffed against   |
+| `screenshots-capture.yml`  | `pull_request`                                          | `contents: read`                          | Builds the app, captures screenshots, uploads artifacts                                                                               |
+| `screenshots-commit.yml`   | `workflow_run` (after capture)                          | `contents: write`, `pull-requests: write` | Downloads artifacts, commits to `otelbot/screenshots` branch, posts PR comment                                                        |
+| `screenshots-cleanup.yml`  | `pull_request_target` (on close)                        | `contents: write`                         | Currently disabled (`if: false`). Originally deleted the PR's subfolder on close; retained as a no-op so old PR comments keep working |
 
 **Why two workflows for capture + commit?** GitHub restricts fork PRs from running workflows with
 write access. Splitting into a read-only capture phase and a write-capable commit phase (triggered
@@ -30,6 +32,9 @@ The layout is flat:
 
 ```text
 screenshots (branch)
+├── main/                            # Baseline images from main (screenshots-baseline.yml)
+│   ├── desktop-light-home.png
+│   └── ...
 ├── 377/
 │   ├── desktop-light-home.png
 │   ├── desktop-dark-home.png

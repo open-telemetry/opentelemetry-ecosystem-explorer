@@ -20,6 +20,7 @@
  * - tokens.css       — v1-only surface-token overrides, scoped via `.v1-app`
  * - navbar.css       — v1 navbar (`.td-navbar`) — mirrors opentelemetry.io
  * - theme-toggle.css — v1 theme toggle dropdown — mirrors opentelemetry.io
+ * - language-toggle.css — v1 language switcher dropdown — shares theme-toggle chrome
  * - sub-nav.css      — v1 breadcrumb sub-nav row beneath the navbar
  * - buttons.css      — v1 `.td-btn` primitive (primary, outline-light variants)
  * - cover-block.css  — v1 hero shell (`.td-cover-block`) — mirrors opentelemetry.io
@@ -36,13 +37,15 @@
  * - footer.css       — v1 footer (`.td-footer`) — mirrors opentelemetry.io
  *
  * All v1 styles use class selectors (`.td-navbar`, `.td-subnav`, `.td-footer`,
- * `.td-cncf-callout`, `.td-cover-block`, `.td-light-dark-menu__*`) and only
+ * `.td-cncf-callout`, `.td-cover-block`, `.td-light-dark-menu__*`,
+ * `.td-lang-menu__*`) and only
  * match elements rendered by `<V1App />`, so they're inert in the legacy
  * bundle even when both branches ship.
  */
 @import "./tokens.css";
 @import "./navbar.css";
 @import "./theme-toggle.css";
+@import "./language-toggle.css";
 @import "./sub-nav.css";
 @import "./buttons.css";
 @import "./cover-block.css";

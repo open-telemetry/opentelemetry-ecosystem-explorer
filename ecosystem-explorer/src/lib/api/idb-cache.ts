@@ -16,7 +16,7 @@
 import { openDB, type IDBPDatabase } from "idb";
 
 const DB_NAME = "otel-explorer-cache";
-const DB_VERSION = 15;
+const DB_VERSION = 17;
 const CACHE_EXPIRATION_MS = 24 * 60 * 60 * 1000;
 const PRUNE_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const PRUNE_KEY = "__internal_last_pruned_at";
@@ -45,6 +45,21 @@ function isExpired(cachedAt: number): boolean {
   const now = Date.now();
   if (cachedAt > now) return true;
   return now - cachedAt > CACHE_EXPIRATION_MS;
+}
+
+/**
+ * Returns true when an error is the benign consequence of the database
+ * connection being closed underneath an in-flight operation — for example when
+ * the page unloads, or when test teardown calls closeDB() while a fire-and-forget
+ * prune is still running. The browser surfaces these as InvalidStateError (the
+ * connection is closing) or AbortError (an open transaction was aborted). They
+ * are not actionable for a best-effort background task, so callers swallow them.
+ */
+function isConnectionClosedError(error: unknown): boolean {
+  return (
+    error instanceof DOMException &&
+    (error.name === "InvalidStateError" || error.name === "AbortError")
+  );
 }
 
 export async function initDB(): Promise<IDBPDatabase> {
@@ -162,6 +177,11 @@ export async function pruneOldEntries(maxAgeDays = 7): Promise<void> {
     const maxAgeMs = maxAgeDays * 24 * 60 * 60 * 1000;
 
     for (const store of Object.values(STORES)) {
+      // The connection may have been closed underneath us between stores (e.g.
+      // page unload or test teardown calling closeDB() during this background
+      // task). closeDB() nulls/replaces dbInstance, so a mismatch means our
+      // handle is stale — stop quietly rather than throwing InvalidStateError.
+      if (dbInstance !== db) return;
       const tx = db.transaction(store, "readwrite");
       let cursor = await tx.store.openCursor();
 
@@ -188,6 +208,9 @@ export async function pruneOldEntries(maxAgeDays = 7): Promise<void> {
       lastAccessedAt: now,
     });
   } catch (error) {
+    // A closed connection mid-prune is expected and harmless for this
+    // best-effort background task; only surface genuine failures.
+    if (isConnectionClosedError(error)) return;
     console.error("Failed to prune old cache entries:", error);
   }
 }

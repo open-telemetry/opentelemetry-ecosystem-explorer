@@ -17,6 +17,7 @@ import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import HttpBackend from "i18next-http-backend";
+import { NAMESPACES, SUPPORTED_LANGUAGES } from "@/i18n/languages";
 
 i18n
   .use(HttpBackend)
@@ -24,9 +25,9 @@ i18n
   .use(initReactI18next)
   .init({
     fallbackLng: "en",
-    supportedLngs: ["en", "es"],
+    supportedLngs: SUPPORTED_LANGUAGES,
     load: "languageOnly",
-    ns: ["common", "layout", "home", "collector", "java-agent", "about", "ecosystem"],
+    ns: [...NAMESPACES],
     defaultNS: "common",
     backend: { loadPath: "/locales/{{lng}}/{{ns}}.json" },
     interpolation: { escapeValue: false },

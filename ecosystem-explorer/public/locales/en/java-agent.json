@@ -1,4 +1,40 @@
 {
+  "landingV1": {
+    "hero": {
+      "eyebrow": "Auto-instrumentation · JVM",
+      "lead": "Zero-code auto-instrumentation for Java applications. Hundreds of supported libraries and frameworks; configurable via system properties or env vars.",
+      "cta": {
+        "browse": "Browse instrumentations",
+        "overview": "Read overview",
+        "github": "GitHub"
+      }
+    },
+    "pipeline": {
+      "title": "Instrumentation categories",
+      "lead": "Java auto-instrumentations are grouped by category. Click any category to filter the instrumentation list."
+    },
+    "stages": {
+      "http": { "label": "HTTP", "description": "Servers & clients" },
+      "db": { "label": "Databases", "description": "JDBC, NoSQL, ORM" },
+      "messaging": { "label": "Messaging", "description": "Brokers & queues" },
+      "frameworks": { "label": "Frameworks", "description": "Spring, Quarkus, …" },
+      "runtime": { "label": "Runtime", "description": "JVM, threads, GC" }
+    },
+    "quickEntries": {
+      "config-builder": {
+        "title": "Configuration builder",
+        "description": "Build a declarative agent configuration interactively."
+      },
+      "releases": {
+        "title": "Compare releases",
+        "description": "See what's new between two Java Agent versions."
+      },
+      "supported-libs": {
+        "title": "Supported libraries",
+        "description": "Browse the complete catalog of supported libraries and frameworks."
+      }
+    }
+  },
   "page": {
     "title": "OpenTelemetry Java Agent",
     "description": "Explore auto-instrumentation for Java applications. Discover supported libraries, configuration options, and emitted telemetry."
@@ -104,7 +140,36 @@
     "placeholder": {
       "title": "Under Development",
       "description": "The Java Agent Release Comparison tool is currently being built. Check back soon to compare telemetry changes across versions."
-    }
+    },
+    "instrumentationsAdded": "Modules Added",
+    "instrumentationsChanged": "Modules Changed",
+    "instrumentationsRemoved": "Modules Removed",
+    "viewChangelog": "View Changelog for {{version}}",
+    "viewChangelogs": "View Changelogs...",
+    "invalidComparison": "Invalid Comparison",
+    "invalidComparisonDescOne": "One or both of the selected versions do not exist in the registry.",
+    "invalidComparisonDescTwo": "Comparisons are usually performed from an older version to a newer version.",
+    "selectDifferent": "Select two different versions to see changes.",
+    "comparingReleases": "Comparing Releases...",
+    "analyzing": "Analyzing {{fromVersion}} and {{toVersion}}",
+    "errorLoading": "Error loading comparison data: {{message}}",
+    "from": "From",
+    "to": "To",
+    "latest": "(latest)",
+    "comparisonSections": "Comparison Sections",
+    "changesSummary": "Changes Summary",
+    "allMetrics": "All Metrics ({{version}})",
+    "moduleChanges": "Module Changes",
+    "modulesImpacted_one": "{{count}} Module Impacted",
+    "modulesImpacted_other": "{{count}} Modules Impacted",
+    "noChanges": "No changes found in telemetry or configuration.",
+    "noChangesDesc": "Everything is identical between these two versions.",
+    "aggregateMetrics": "Aggregate Metrics",
+    "totalMetrics": "{{count}} Total Metrics in {{version}}",
+    "metricName": "Metric Name",
+    "metricDescription": "Description",
+    "emittedBy": "Emitted By",
+    "release": "Release {{version}}"
   },
   "configList": {
     "title": "Configuration Options Explorer",
@@ -255,12 +320,27 @@
       "changed": "Changed"
     },
     "unit": "Unit",
+    "configurationChanges": "Configuration Changes",
     "attributeChanges": "Attribute Changes",
     "descriptionChanged": "Description Changed",
     "typeChanged": "Type Changed",
     "metricRemoved": "This metric is no longer emitted in the comparison version.",
     "spanRemoved": "This span is no longer emitted in the comparison version.",
-    "spanAdded": "This span is newly emitted in the comparison version."
+    "spanAdded": "This span is newly emitted in the comparison version.",
+    "whenChanged": {
+      "label": "Now only emitted when"
+    },
+    "moduleAddedTooltip": "This module was added in the new version",
+    "moduleRemovedTooltip": "This module was removed in the new version",
+    "moduleChangedTooltip": "This module has telemetry or configuration changes",
+    "viewInstrumentation": "View Instrumentation Details",
+    "expandAriaLabel": "Toggle differences for {{name}}",
+    "metricCount_one": "{{count}} Metric",
+    "metricCount_other": "{{count}} Metrics",
+    "spanCount_one": "{{count}} Span",
+    "spanCount_other": "{{count}} Spans",
+    "configCount_one": "{{count}} Config",
+    "configCount_other": "{{count}} Configs"
   },
   "diffAttributeTable": {
     "ariaLabel": "Attribute changes",
@@ -347,15 +427,17 @@
       "versions_other": "{{count}} versions",
       "custom": "custom",
       "covers": "covers {{versions}}",
-      "removeTooltip": "Remove customization for {{name}}",
       "toggleDetailsTooltip": "Toggle details for {{name}}",
-      "customize": "Customize",
-      "customizeAriaLabel": "Customize {{name}}",
       "customizationState": "Customization state",
       "enabled": "Enabled",
       "disabled": "Disabled",
       "enabledByDefault": "enabled by default",
-      "disabledByDefault": "disabled by default"
+      "disabledByDefault": "disabled by default",
+      "statusHeader": "Instrumentation Status",
+      "statusDescription": "Explicitly enable or disable this instrumentation.",
+      "resetToDefault": "Reset to default",
+      "options_one": "{{count}} option",
+      "options_other": "{{count}} options"
     },
     "form": {
       "empty": "No configurable options for this module."
@@ -392,7 +474,12 @@
       "generalSettings": "General settings",
       "instrumentations": "Instrumentations",
       "schema": "Schema",
-      "agent": "Agent"
+      "agent": "Agent",
+      "target": "Target"
+    },
+    "target": {
+      "javaagent": "Java agent",
+      "springStarter": "Spring Boot starter"
     },
     "schemaRenderer": {
       "itemLabel": "Item"

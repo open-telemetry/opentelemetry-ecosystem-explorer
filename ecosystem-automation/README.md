@@ -12,6 +12,8 @@ repository root using `uv` commands.**
   Instrumentation project
 - **dotnet-instrumentation-watcher**: Collects and aggregates metadata from the OpenTelemetry .NET
   Automatic Instrumentation project
+- **js-instrumentation-watcher**: Collects metadata from the OpenTelemetry JavaScript
+  Instrumentation (js-contrib) project
 - **configuration-watcher**: Collects the OpenTelemetry declarative configuration schema
 - **explorer-db-builder**: Builds the database for the ecosystem explorer web application
 - **v1-registry-sync**: Compares the collector registry against the upstream OpenTelemetry v1
@@ -31,6 +33,7 @@ uv run pytest ecosystem-automation/
 uv run pytest ecosystem-automation/collector-watcher/tests/
 uv run pytest ecosystem-automation/java-instrumentation-watcher/tests/
 uv run pytest ecosystem-automation/dotnet-instrumentation-watcher/tests/
+uv run pytest ecosystem-automation/js-instrumentation-watcher/tests/
 uv run pytest ecosystem-automation/configuration-watcher/tests/
 uv run pytest ecosystem-automation/explorer-db-builder/tests/
 uv run pytest ecosystem-automation/v1-registry-sync/tests/

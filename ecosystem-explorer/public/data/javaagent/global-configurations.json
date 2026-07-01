@@ -164,7 +164,7 @@
   {
     "declarative_name": "java.common.enduser.id.enabled",
     "default": false,
-    "description": "Enables capturing the enduser.id attribute.",
+    "description": "Enables capturing the enduser.id attribute. This property and the associated attribute are not supported when v3 preview is enabled.",
     "instrumentations": [
       "spring-security-config-6.0"
     ],
@@ -174,7 +174,7 @@
   {
     "declarative_name": "java.common.enduser.role.enabled",
     "default": false,
-    "description": "Enables capturing the enduser.role attribute.",
+    "description": "Enables capturing the enduser.role attribute. This property and the associated attribute are not supported when v3 preview is enabled.",
     "instrumentations": [
       "spring-security-config-6.0"
     ],
@@ -184,7 +184,7 @@
   {
     "declarative_name": "java.common.enduser.scope.enabled",
     "default": false,
-    "description": "Enables capturing the enduser.scope attribute.",
+    "description": "Enables capturing the enduser.scope attribute when v3 preview is not enabled. This property is not honored when v3 preview is enabled.",
     "instrumentations": [
       "spring-security-config-6.0"
     ],
@@ -262,6 +262,19 @@
     "type": "string"
   },
   {
+    "declarative_name": "java.common.logging.span_id_key",
+    "default": "span_id",
+    "description": "Specifies the key name used to store the span ID in the logging context.",
+    "instrumentations": [
+      "log4j-context-data-2.17",
+      "log4j-context-data-2.7",
+      "log4j-mdc-1.2",
+      "logback-mdc-1.0"
+    ],
+    "name": "otel.instrumentation.common.logging.span-id-key",
+    "type": "string"
+  },
+  {
     "declarative_name": "java.common.logging.trace_flags",
     "default": "trace_flags",
     "description": "Specifies the key name used to store the trace flags in the logging context.",
@@ -275,6 +288,19 @@
     "type": "string"
   },
   {
+    "declarative_name": "java.common.logging.trace_flags_key",
+    "default": "trace_flags",
+    "description": "Specifies the key name used to store the trace flags in the logging context.",
+    "instrumentations": [
+      "log4j-context-data-2.17",
+      "log4j-context-data-2.7",
+      "log4j-mdc-1.2",
+      "logback-mdc-1.0"
+    ],
+    "name": "otel.instrumentation.common.logging.trace-flags-key",
+    "type": "string"
+  },
+  {
     "declarative_name": "java.common.logging.trace_id",
     "default": "trace_id",
     "description": "Specifies the key name used to store the trace ID in the logging context.",
@@ -285,6 +311,19 @@
       "logback-mdc-1.0"
     ],
     "name": "otel.instrumentation.common.logging.trace-id",
+    "type": "string"
+  },
+  {
+    "declarative_name": "java.common.logging.trace_id_key",
+    "default": "trace_id",
+    "description": "Specifies the key name used to store the trace ID in the logging context.",
+    "instrumentations": [
+      "log4j-context-data-2.17",
+      "log4j-context-data-2.7",
+      "log4j-mdc-1.2",
+      "logback-mdc-1.0"
+    ],
+    "name": "otel.instrumentation.common.logging.trace-id-key",
     "type": "string"
   },
   {
@@ -378,6 +417,7 @@
       "r2dbc-1.0",
       "ratpack-1.7",
       "reactor-netty-1.0",
+      "sofa-rpc-5.4",
       "vertx-http-client-3.0",
       "vertx-http-client-4.0",
       "vertx-http-client-5.0",
@@ -387,12 +427,36 @@
     "type": "map"
   },
   {
+    "declarative_name": "java.common.user.name.enabled",
+    "default": false,
+    "description": "Enables capturing the user.name attribute when v3 preview is enabled. This property and the associated attribute are not supported when v3 preview is disabled.",
+    "instrumentations": [
+      "spring-security-config-6.0"
+    ],
+    "name": "otel.instrumentation.common.user.name.enabled",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.common.user.roles.enabled",
+    "default": false,
+    "description": "Enables capturing the user.roles attribute when v3 preview is enabled. This property and the associated attribute are not supported when v3 preview is disabled.",
+    "instrumentations": [
+      "spring-security-config-6.0"
+    ],
+    "name": "otel.instrumentation.common.user.roles.enabled",
+    "type": "boolean"
+  },
+  {
     "declarative_name": "java.couchbase.experimental_span_attributes/development",
     "default": false,
     "description": "Enables experimental span attributes `couchbase.operation_id` and `couchbase.local.address`. Different operation types receive different experimental attributes.",
     "instrumentations": [
       "couchbase-2.0",
-      "couchbase-2.6"
+      "couchbase-2.6",
+      "couchbase-3.1",
+      "couchbase-3.1.6",
+      "couchbase-3.2",
+      "couchbase-3.4"
     ],
     "name": "otel.instrumentation.couchbase.experimental-span-attributes",
     "type": "boolean"
@@ -1554,7 +1618,8 @@
     "default": false,
     "description": "Enable the experimental `runtime.java.memory` and `runtime.java.cpu_time` metrics.",
     "instrumentations": [
-      "oshi"
+      "oshi",
+      "oshi-5.0"
     ],
     "name": "otel.instrumentation.oshi.experimental-metrics.enabled",
     "type": "boolean"
@@ -1901,7 +1966,7 @@
   {
     "declarative_name": "java.spring_security.enduser.role.granted_authority_prefix",
     "default": "ROLE_",
-    "description": "Prefix of granted authorities identifying roles to capture in the `enduser.role` semantic attribute.",
+    "description": "Prefix of granted authorities identifying roles to capture in the `enduser.role` semantic attribute. This property is not honored when v3 preview is enabled; use the `user.roles` variant instead.",
     "instrumentations": [
       "spring-security-config-6.0"
     ],
@@ -1911,7 +1976,7 @@
   {
     "declarative_name": "java.spring_security.enduser.scope.granted_authority_prefix",
     "default": "SCOPE_",
-    "description": "Prefix of granted authorities identifying scopes to capture in the `enduser.scope` semantic attribute.",
+    "description": "Prefix of granted authorities identifying scopes to capture in the `enduser.scope` semantic attribute. This property and the associated attribute are not supported when v3 preview is enabled.",
     "instrumentations": [
       "spring-security-config-6.0"
     ],
@@ -1925,6 +1990,16 @@
       "spring-security-config-6.0"
     ],
     "name": "otel.instrumentation.spring-security.scope.role.granted-authority-prefix",
+    "type": "string"
+  },
+  {
+    "declarative_name": "java.spring_security.user.roles.granted_authority_prefix",
+    "default": "ROLE_",
+    "description": "Prefix of granted authorities identifying roles to capture in the `user.roles` semantic attribute when v3 preview is enabled. This property is not honored when v3 preview is disabled; use the `enduser.role` variant instead.",
+    "instrumentations": [
+      "spring-security-config-6.0"
+    ],
+    "name": "otel.instrumentation.spring-security.user.roles.granted-authority-prefix",
     "type": "string"
   },
   {
@@ -2017,7 +2092,8 @@
     "instrumentations": [
       "alibaba-druid-1.0",
       "apache-dbcp-2.0",
-      "tomcat-jdbc"
+      "tomcat-jdbc",
+      "tomcat-jdbc-8.5"
     ],
     "name": "otel.semconv-stability.opt-in",
     "type": "list"

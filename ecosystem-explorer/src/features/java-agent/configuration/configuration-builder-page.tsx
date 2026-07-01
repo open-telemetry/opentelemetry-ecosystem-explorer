@@ -32,10 +32,13 @@ import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
 import { useInstrumentations, useVersions } from "@/hooks/use-javaagent-data";
 import { groupByModule } from "@/lib/normalize-instrumentation";
 import { useCustomizedModules } from "@/hooks/use-customized-modules";
+import { filterSupportedConfigVersions } from "@/lib/config-schema-version";
 import type { GroupNode } from "@/types/configuration";
 import { hasMeaningfulLeaf } from "@/lib/state-hydrate";
 import { SchemaRenderer } from "./components/schema-renderer";
 import { PreviewCard } from "./components/preview-card";
+import type { ConfigurationTarget } from "@/lib/yaml-generator";
+import { TargetSelector } from "./components/target-selector";
 import {
   ConfigurationTocSidebar,
   type StatusFilter,
@@ -105,19 +108,12 @@ function ExpandCollapseToolbar() {
 
 interface SdkTabContentProps {
   schema: GroupNode;
-  starter: ReturnType<typeof useConfigStarter>["data"];
-  schemaVersion: string;
   javaAgentVersion: string;
   activeTab: string;
+  target: ConfigurationTarget;
 }
 
-function SdkTabContent({
-  schema,
-  starter,
-  schemaVersion,
-  javaAgentVersion,
-  activeTab,
-}: SdkTabContentProps) {
+function SdkTabContent({ schema, javaAgentVersion, activeTab, target }: SdkTabContentProps) {
   const { t } = useTranslation("java-agent");
   const [activePreviewKey, setActivePreviewKey] = useState<string | null>(null);
 
@@ -153,12 +149,7 @@ function SdkTabContent({
   const { activeKey, scrollToSection } = useActiveSection(sectionKeys, sectionsContainerRef);
 
   return (
-    <ConfigurationBuilderProvider
-      key={schemaVersion}
-      schema={schema}
-      version={schemaVersion}
-      starter={starter}
-    >
+    <>
       <PruneInstrumentationsForAgentVersion javaAgentVersion={javaAgentVersion} />
       <SectionExpansionProvider>
         <div className={BUILDER_GRID}>
@@ -192,27 +183,26 @@ function SdkTabContent({
             schema={schema}
             javaAgentVersion={javaAgentVersion}
             activePreviewKey={activePreviewKey}
+            target={target}
           />
         </div>
       </SectionExpansionProvider>
-    </ConfigurationBuilderProvider>
+    </>
   );
 }
 
 interface InstrumentationTabContentProps {
   schema: GroupNode;
-  starter: ReturnType<typeof useConfigStarter>["data"];
-  schemaVersion: string;
   javaAgentVersion: string;
   activeTab: string;
+  target: ConfigurationTarget;
 }
 
 function InstrumentationTabContent({
   schema,
-  starter,
-  schemaVersion,
   javaAgentVersion,
   activeTab,
+  target,
 }: InstrumentationTabContentProps) {
   const generalNode = useMemo<GroupNode | null>(() => {
     const devNode = schema.children.find((c) => c.key === INSTRUMENTATION_DEV_KEY);
@@ -223,19 +213,13 @@ function InstrumentationTabContent({
   }, [schema]);
 
   return (
-    <ConfigurationBuilderProvider
-      key={schemaVersion}
+    <InstrumentationTabBody
+      activeTab={activeTab}
       schema={schema}
-      version={schemaVersion}
-      starter={starter}
-    >
-      <InstrumentationTabBody
-        activeTab={activeTab}
-        schema={schema}
-        generalNode={generalNode}
-        javaAgentVersion={javaAgentVersion}
-      />
-    </ConfigurationBuilderProvider>
+      generalNode={generalNode}
+      javaAgentVersion={javaAgentVersion}
+      target={target}
+    />
   );
 }
 
@@ -244,6 +228,7 @@ interface InstrumentationTabBodyProps {
   schema: GroupNode;
   generalNode: GroupNode | null;
   javaAgentVersion: string;
+  target: ConfigurationTarget;
 }
 
 function InstrumentationTabBody({
@@ -251,6 +236,7 @@ function InstrumentationTabBody({
   schema,
   generalNode,
   javaAgentVersion,
+  target,
 }: InstrumentationTabBodyProps) {
   const { t } = useTranslation("java-agent");
   const [activePreviewKey, setActivePreviewKey] = useState<string | null>(null);
@@ -367,6 +353,7 @@ function InstrumentationTabBody({
           schema={schema}
           javaAgentVersion={javaAgentVersion}
           activePreviewKey={activePreviewKey}
+          target={target}
         />
       </div>
     </SectionExpansionProvider>
@@ -376,12 +363,17 @@ function InstrumentationTabBody({
 export function ConfigurationBuilderPage() {
   const { t } = useTranslation("java-agent");
   const schemaVersionsState = useConfigVersions();
+  // The Java Agent needs time to implement support for the latest schema versions.
+  const supportedSchemaVersions = useMemo(
+    () => filterSupportedConfigVersions(schemaVersionsState.data?.versions ?? []),
+    [schemaVersionsState.data]
+  );
   const latestSchemaVersion = useMemo(
     () =>
-      schemaVersionsState.data?.versions.find((v) => v.is_latest)?.version ??
-      schemaVersionsState.data?.versions[0]?.version ??
+      supportedSchemaVersions.find((v) => v.is_latest)?.version ??
+      supportedSchemaVersions[0]?.version ??
       "",
-    [schemaVersionsState.data]
+    [supportedSchemaVersions]
   );
   const [currentSchemaVersion, setCurrentSchemaVersion] = useState<string>("");
   const schemaVersion = currentSchemaVersion || latestSchemaVersion;
@@ -399,6 +391,7 @@ export function ConfigurationBuilderPage() {
   );
   const [currentJavaAgentVersion, setCurrentJavaAgentVersion] = useState<string>("");
   const javaAgentVersion = currentJavaAgentVersion || latestJavaAgentVersion;
+  const [target, setTarget] = useState<ConfigurationTarget>("javaagent");
 
   const schema = useConfigSchema(schemaVersion);
   const starter = useConfigStarter(schemaVersion);
@@ -438,9 +431,9 @@ export function ConfigurationBuilderPage() {
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-4">
-            {schemaVersionsState.data && schemaVersion ? (
+            {supportedSchemaVersions.length > 0 && schemaVersion ? (
               <VersionSelector
-                versions={schemaVersionsState.data.versions}
+                versions={supportedSchemaVersions}
                 currentVersion={schemaVersion}
                 onVersionChange={setCurrentSchemaVersion}
                 label={t("builder.sections.schema")}
@@ -456,58 +449,55 @@ export function ConfigurationBuilderPage() {
                 id="java-agent-version-select"
               />
             ) : null}
+            <TargetSelector value={target} onChange={setTarget} />
           </div>
         </div>
+        {/*
+         * Loading and error states are handled here, OUTSIDE the provider, so
+         * the schema-loading Loader and schema/starter error messages stay
+         * reachable. The provider is mounted only once data is ready, and it is
+         * hoisted above <Tabs> (not nested per-tab) so builder state survives
+         * tab switches — Radix unmounts the inactive TabsContent, which would
+         * otherwise discard unsaved edits. `key={schemaVersion}` remounts (and
+         * resets) state only when the schema version changes.
+         */}
         {schemaVersionsState.loading ? (
           <Loader size="lg" label={t("builder.loading.versions")} className="mt-4" />
         ) : schemaVersionsState.error ? (
           <p className="mt-4 text-sm text-red-400">{t("builder.error.versions")}</p>
-        ) : (
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsContent value="sdk">
-              {!schemaVersion || schema.loading || starter.loading || (!schema.error && !root) ? (
-                <Loader
-                  size={root ? "sm" : "lg"}
-                  label={t("builder.loading.schema")}
-                  className={root ? "mt-4" : undefined}
-                />
-              ) : schema.error ? (
-                <p className="mt-4 text-sm text-red-400">{t("builder.error.schema")}</p>
-              ) : starter.error ? (
-                <p className="mt-4 text-sm text-red-400">{t("builder.error.template")}</p>
-              ) : root ? (
+        ) : schema.loading || starter.loading || (!schema.error && !root) ? (
+          <Loader size="lg" label={t("builder.loading.schema")} className="mt-4" />
+        ) : schema.error ? (
+          <p className="mt-4 text-sm text-red-400">{t("builder.error.schema")}</p>
+        ) : starter.error ? (
+          <p className="mt-4 text-sm text-red-400">{t("builder.error.template")}</p>
+        ) : root ? (
+          <ConfigurationBuilderProvider
+            key={schemaVersion}
+            schema={root}
+            version={schemaVersion}
+            starter={starter.data}
+          >
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsContent value="sdk">
                 <SdkTabContent
                   schema={root}
-                  starter={starter.data}
-                  schemaVersion={schemaVersion}
                   javaAgentVersion={javaAgentVersion}
                   activeTab={activeTab}
+                  target={target}
                 />
-              ) : null}
-            </TabsContent>
-            <TabsContent value="instrumentation">
-              {!schemaVersion || schema.loading || starter.loading || (!schema.error && !root) ? (
-                <Loader
-                  size={root ? "sm" : "lg"}
-                  label={t("builder.loading.schema")}
-                  className={root ? "mt-4" : undefined}
-                />
-              ) : schema.error ? (
-                <p className="mt-4 text-sm text-red-400">{t("builder.error.schema")}</p>
-              ) : starter.error ? (
-                <p className="mt-4 text-sm text-red-400">{t("builder.error.template")}</p>
-              ) : root ? (
+              </TabsContent>
+              <TabsContent value="instrumentation">
                 <InstrumentationTabContent
                   schema={root}
-                  starter={starter.data}
-                  schemaVersion={schemaVersion}
                   javaAgentVersion={javaAgentVersion}
                   activeTab={activeTab}
+                  target={target}
                 />
-              ) : null}
-            </TabsContent>
-          </Tabs>
-        )}
+              </TabsContent>
+            </Tabs>
+          </ConfigurationBuilderProvider>
+        ) : null}
       </div>
     </PageContainer>
   );

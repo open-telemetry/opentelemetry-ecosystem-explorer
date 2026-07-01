@@ -25,7 +25,7 @@ interface SpanDiffCardProps {
 
 export function SpanDiffCard({ diff }: SpanDiffCardProps) {
   const { t } = useTranslation("java-agent");
-  const { status, span, changes } = diff;
+  const { status, span, changes, whenCondition } = diff;
 
   const statusVariant = status === "added" ? "success" : "warning";
 
@@ -51,6 +51,14 @@ export function SpanDiffCard({ diff }: SpanDiffCardProps) {
             </GlowBadge>
           </div>
         </div>
+
+        {/* When-condition change indicator */}
+        {status === "changed" && !changes && whenCondition && (
+          <div className="space-y-1 rounded-lg border border-amber-400/30 bg-amber-400/10 p-4">
+            <p className="text-sm font-medium text-amber-400">{t("diffCard.whenChanged.label")}</p>
+            <code className="font-mono text-sm break-all text-amber-400">{whenCondition}</code>
+          </div>
+        )}
 
         {/* Attributes section */}
         {status === "changed" && changes?.attributes && (
