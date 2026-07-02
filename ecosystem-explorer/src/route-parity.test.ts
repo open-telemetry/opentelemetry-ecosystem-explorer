@@ -22,6 +22,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const legacyAppPath = resolve(__dirname, "LegacyApp.tsx");
 const v1AppPath = resolve(__dirname, "v1/V1App.tsx");
 
+// TODO: This test file to be removed when we retire the Legacy theme
 function extractRoutePaths(filePath: string): string[] {
   const content = readFileSync(filePath, "utf-8");
   const routeCount = (content.match(/<Route\b/g) ?? []).length;
