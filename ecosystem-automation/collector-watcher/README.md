@@ -4,19 +4,25 @@ Automation tool for watching and collecting OpenTelemetry Collector component me
 
 ## Methodology
 
-On a nightly basis, the tool scans the OpenTelemetry Collector core and contrib repositories to detect any changes in
-component metadata.
+On a nightly basis, the tool scans the OpenTelemetry Collector core and contrib repositories to
+detect any changes in component metadata.
 
 Process:
 
 - Clone or update local copies of the `core` and `contrib` collector repositories.
 - Scan for components and parse their `metadata.yaml` files.
 - Create or update versioned snapshots of component metadata in YAML format.
+- Store the upstream `metadata-schema.yaml` in content-addressed storage under
+  `ecosystem-registry/collector/meta/schemas/{hash}.yaml`.
+- Detect deprecations across versions and maintain the deprecation baseline in
+  `ecosystem-registry/collector/deprecations.yaml`.
 
-You can pass in a location of the repositories to scan via environment variables or else it will default to cloning
-them into `tmp_repos/`.
+You can pass in a location of the repositories to scan via environment variables or else it will
+default to cloning them into `tmp_repos/`.
 
-It maintains a versioned `inventory` of component snapshots in YAML format in the `ecosystem-registry/collector` directory.
+It maintains a versioned `inventory` of component snapshots in YAML format in the
+`ecosystem-registry/collector` directory, alongside the shared `deprecations.yaml` baseline and
+`meta/schemas/` schema store at the `collector/` root.
 
 ## Configuration
 
@@ -88,10 +94,11 @@ uv run collector-watcher --backfill --versions "0.144.0,0.145.0"
 - `--backfill` - Enable backfill mode (regenerates existing versions)
 - `--distribution {core,contrib}` - Target a specific distribution
 - `--versions VERSION_LIST` - Comma-separated list of versions (e.g., "0.144.0,0.145.0")
-- `--inventory-dir PATH` - Custom path to inventory directory (default: ecosystem-registry/collector)
+- `--inventory-dir PATH` - Custom path to inventory directory (default:
+  ecosystem-registry/collector)
 
-**Note:** Backfill mode will delete and regenerate the specified versions. The tool automatically checks out the correct
-git tags for each version.
+**Note:** Backfill mode will delete and regenerate the specified versions. The tool automatically
+checks out the correct git tags for each version.
 
 ## Development
 

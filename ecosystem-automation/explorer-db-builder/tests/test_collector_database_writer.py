@@ -36,7 +36,7 @@ def db_writer(temp_db_dir):
 def sample_components():
     return [
         {
-            "id": "contrib-receiver-otlp",
+            "id": "contrib-otlp",
             "ecosystem": "collector",
             "distribution": "contrib",
             "type": "receiver",
@@ -47,7 +47,7 @@ def sample_components():
             "status": {"class": "receiver", "stability": {"beta": ["traces"]}},
         },
         {
-            "id": "core-processor-batch",
+            "id": "core-batch",
             "ecosystem": "collector",
             "distribution": "core",
             "type": "processor",
@@ -65,9 +65,9 @@ class TestWriteComponents:
         component_map = db_writer.write_components(sample_components)
 
         assert len(component_map) == 2
-        assert "contrib-receiver-otlp" in component_map
-        assert "core-processor-batch" in component_map
-        assert len(component_map["contrib-receiver-otlp"]) == 12
+        assert "contrib-otlp" in component_map
+        assert "core-batch" in component_map
+        assert len(component_map["contrib-otlp"]) == 12
 
         for comp_id, comp_hash in component_map.items():
             expected = temp_db_dir / "components" / comp_id / f"{comp_id}-{comp_hash}.json"
@@ -76,7 +76,7 @@ class TestWriteComponents:
     def test_write_components_content(self, db_writer, sample_components, temp_db_dir):
         component_map = db_writer.write_components(sample_components)
 
-        comp_id = "contrib-receiver-otlp"
+        comp_id = "contrib-otlp"
         comp_hash = component_map[comp_id]
         path = temp_db_dir / "components" / comp_id / f"{comp_id}-{comp_hash}.json"
         with open(path) as f:
@@ -126,7 +126,7 @@ class TestWriteComponents:
 class TestWriteVersionIndex:
     def test_write_version_index_success(self, db_writer, temp_db_dir):
         version = Version("0.150.0")
-        component_map = {"contrib-receiver-otlp": "abc123456789"}
+        component_map = {"contrib-otlp": "abc123456789"}
 
         db_writer.write_version_index(version, component_map)
 
@@ -169,6 +169,49 @@ class TestWriteVersionList:
         with pytest.raises(ValueError, match="Versions list cannot be empty"):
             db_writer.write_version_list([])
 
+    def test_write_version_list_includes_bundle_hash_when_provided(self, db_writer, temp_db_dir):
+        versions = [Version("0.150.0"), Version("0.149.0")]
+        db_writer.write_version_list(versions, {Version("0.150.0"): "hashA", Version("0.149.0"): "hashB"})
+
+        with open(temp_db_dir / "versions-index.json") as f:
+            data = json.load(f)
+
+        assert data["versions"][0]["bundle_hash"] == "hashA"
+        assert data["versions"][1]["bundle_hash"] == "hashB"
+
+    def test_write_version_list_omits_bundle_hash_when_absent(self, db_writer, temp_db_dir):
+        db_writer.write_version_list([Version("0.150.0"), Version("0.149.0")], {Version("0.150.0"): "hashA"})
+
+        with open(temp_db_dir / "versions-index.json") as f:
+            data = json.load(f)
+
+        assert data["versions"][0]["bundle_hash"] == "hashA"
+        assert "bundle_hash" not in data["versions"][1]
+
+
+class TestWriteVersionBundle:
+    def test_writes_bundle_and_returns_hash(self, db_writer, temp_db_dir, sample_components):
+        bundle_hash = db_writer.write_version_bundle(Version("0.150.0"), sample_components)
+
+        assert isinstance(bundle_hash, str)
+        assert len(bundle_hash) == 12
+        bundle_file = temp_db_dir / "bundles" / f"0.150.0-{bundle_hash}.json"
+        assert bundle_file.exists()
+        with open(bundle_file) as f:
+            assert json.load(f) == sample_components
+
+    def test_is_idempotent(self, db_writer, sample_components):
+        first = db_writer.write_version_bundle(Version("0.150.0"), sample_components)
+        files_after_first = db_writer.files_written
+        second = db_writer.write_version_bundle(Version("0.150.0"), sample_components)
+
+        assert first == second
+        assert db_writer.files_written == files_after_first
+
+    def test_empty_raises(self, db_writer):
+        with pytest.raises(ValueError, match="Bundle components cannot be empty"):
+            db_writer.write_version_bundle(Version("0.150.0"), [])
+
 
 class TestWriteIndex:
     def test_write_index_success(self, db_writer, sample_components, temp_db_dir):
@@ -204,12 +247,39 @@ class TestWriteIndex:
         index_components = data["components"]
         assert len(index_components) == 2
 
-        otlp = next(c for c in index_components if c["id"] == "contrib-receiver-otlp")
+        otlp = next(c for c in index_components if c["id"] == "contrib-otlp")
         assert otlp["display_name"] == "OTLP Receiver"
         assert otlp["stability"] == "beta"
         # heavy fields absent
         assert "repository" not in otlp
         assert "attributes" not in otlp
+
+
+class TestWriteEcosystemStats:
+    def test_writes_deterministic_file(self, db_writer, temp_db_dir):
+        """Serialization is exactly json.dumps(indent=2, sort_keys=True) with no trailing newline."""
+        stats = {"version_count": 7, "component_count": 312}
+
+        db_writer.write_ecosystem_stats(stats)
+
+        raw = (temp_db_dir / "ecosystem-stats.json").read_text(encoding="utf-8")
+        assert raw == json.dumps(stats, indent=2, sort_keys=True)
+        assert not raw.endswith("\n")
+
+    def test_writes_expected_shape(self, db_writer, temp_db_dir):
+        db_writer.write_ecosystem_stats({"version_count": 7, "component_count": 312})
+
+        with open(temp_db_dir / "ecosystem-stats.json") as f:
+            data = json.load(f)
+        assert data == {"version_count": 7, "component_count": 312}
+
+    def test_counts_bytes_in_stats(self, db_writer):
+        """The write increments files_written and total_bytes."""
+        db_writer.write_ecosystem_stats({"version_count": 1, "component_count": 1})
+
+        stats = db_writer.get_stats()
+        assert stats["files_written"] == 1
+        assert stats["total_bytes"] > 0
 
 
 class TestGetStats:

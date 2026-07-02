@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { JSX } from "react";
+import { useTranslation } from "react-i18next";
 import { Search } from "lucide-react";
 import { SegmentedTabList } from "@/components/ui/segmented-tabs";
 
@@ -22,7 +23,7 @@ export interface TocSection {
   label: string;
 }
 
-export type StatusFilter = "all" | "overridden";
+export type StatusFilter = "all" | "customized";
 
 export interface ConfigurationTocSidebarProps {
   activeTab: string;
@@ -34,17 +35,12 @@ export interface ConfigurationTocSidebarProps {
   onSearchChange?: (value: string) => void;
   statusFilter?: StatusFilter;
   onStatusFilterChange?: (value: StatusFilter) => void;
-  overrideCount?: number;
+  customizationCount?: number;
 }
 
-const TABS = [
-  { value: "sdk", label: "SDK" },
-  { value: "instrumentation", label: "Instrumentation" },
-];
-
 const LINK_BASE = "block w-full rounded-md px-3 py-1.5 text-left text-sm transition-colors";
-const LINK_ACTIVE = "bg-card/80 font-medium text-foreground";
-const LINK_INACTIVE = "text-muted-foreground hover:bg-card/40 hover:text-foreground";
+const LINK_ACTIVE = "bg-surface-card shadow-sm font-medium text-foreground";
+const LINK_INACTIVE = "text-muted-foreground hover:bg-muted/50 hover:text-foreground";
 
 const SECTION_LABEL =
   "text-muted-foreground/80 mb-1.5 px-1 text-[10px] font-medium tracking-wider uppercase";
@@ -58,20 +54,25 @@ export function ConfigurationTocSidebar({
   onSearchChange,
   statusFilter = "all",
   onStatusFilterChange,
-  overrideCount = 0,
+  customizationCount = 0,
 }: ConfigurationTocSidebarProps): JSX.Element {
+  const { t } = useTranslation("java-agent");
+  const tabs = [
+    { value: "sdk", label: t("builder.sidebar.tabs.sdk") },
+    { value: "instrumentation", label: t("builder.sidebar.tabs.instrumentation") },
+  ];
   const isInstrumentation = activeTab === "instrumentation";
   const showTocNav = activeTab === "sdk" || isInstrumentation;
-  const showStatusSection = isInstrumentation && overrideCount > 0;
-  const isOverriddenActive = statusFilter === "overridden";
+  const showStatusSection = isInstrumentation && customizationCount > 0;
+  const isCustomizedActive = statusFilter === "customized";
 
   return (
     <aside className="lg:sticky lg:top-20 lg:max-h-[calc(100vh-5rem)] lg:self-start lg:overflow-auto">
-      <SegmentedTabList tabs={TABS} value={activeTab} fullWidth />
+      <SegmentedTabList tabs={tabs} value={activeTab} fullWidth />
       {isInstrumentation && (
         <div className="mt-3">
           <label className="relative block">
-            <span className="sr-only">Search instrumentations</span>
+            <span className="sr-only">{t("builder.sidebar.search.ariaLabel")}</span>
             <Search
               aria-hidden="true"
               className="text-muted-foreground/70 pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2"
@@ -80,32 +81,36 @@ export function ConfigurationTocSidebar({
               type="search"
               value={search ?? ""}
               onChange={(e) => onSearchChange?.(e.target.value)}
-              placeholder="Search instrumentations…"
-              className="border-border/50 bg-card/40 text-foreground placeholder:text-muted-foreground/60 focus:border-primary/40 focus:ring-primary/20 w-full rounded-md border py-1.5 pr-2 pl-8 text-sm focus:ring-1 focus:outline-none"
+              placeholder={t("builder.sidebar.search.placeholder")}
+              className="border-border/50 bg-surface-card text-foreground placeholder:text-muted-foreground/60 focus:border-primary/40 focus:ring-primary/20 w-full rounded-md border py-1.5 pr-2 pl-8 text-sm focus:ring-1 focus:outline-none"
             />
           </label>
         </div>
       )}
       {showStatusSection && (
         <div className="mt-4">
-          <div className={SECTION_LABEL}>Status</div>
+          <div className={SECTION_LABEL}>{t("builder.sidebar.status")}</div>
           <button
             type="button"
-            aria-pressed={isOverriddenActive}
-            onClick={() => onStatusFilterChange?.(isOverriddenActive ? "all" : "overridden")}
+            aria-pressed={isCustomizedActive}
+            onClick={() => onStatusFilterChange?.(isCustomizedActive ? "all" : "customized")}
             className={`${LINK_BASE} flex items-center justify-between ${
-              isOverriddenActive ? LINK_ACTIVE : LINK_INACTIVE
+              isCustomizedActive ? LINK_ACTIVE : LINK_INACTIVE
             }`}
           >
-            <span>Overridden</span>
-            <span className="text-primary text-xs font-medium tabular-nums">{overrideCount}</span>
+            <span>{t("builder.sidebar.customized")}</span>
+            <span className="text-primary text-xs font-medium tabular-nums">
+              {customizationCount}
+            </span>
           </button>
         </div>
       )}
       {showTocNav && sections.length > 0 && (
         <div className="mt-4">
-          {isInstrumentation && <div className={SECTION_LABEL}>On this page</div>}
-          <nav aria-label="Configuration sections" className="space-y-0.5">
+          {isInstrumentation && (
+            <div className={SECTION_LABEL}>{t("builder.sidebar.onThisPage")}</div>
+          )}
+          <nav aria-label={t("builder.sidebar.navAriaLabel")} className="space-y-0.5">
             {sections.map((section) => {
               const isActive = section.key === activeKey;
               return (

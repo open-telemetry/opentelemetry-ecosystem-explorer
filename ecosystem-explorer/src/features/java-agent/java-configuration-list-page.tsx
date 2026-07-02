@@ -13,36 +13,161 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ConfigurationIcon } from "@/components/icons/configuration-icon";
+import { useState, useMemo, useEffect } from "react";
+import { Search, Settings } from "lucide-react";
+import { Loader } from "@/components/ui/loader";
 import { BackButton } from "@/components/ui/back-button";
-import { NavigationCard } from "@/components/ui/navigation-card";
-import { isEnabled } from "@/lib/feature-flags";
 import { PageContainer } from "@/components/layout/page-container";
+import { useTranslation } from "react-i18next";
+import { Tabs } from "@/components/ui/tabs";
+import { SegmentedTabList } from "@/components/ui/segmented-tabs";
+import { ConfigurationCard, type ConfigurationFormat } from "./components/configuration-card";
+import type { Configuration } from "@/types/javaagent";
+import { loadGlobalConfigurations } from "@/lib/api/javaagent-data";
+
+interface GlobalConfiguration extends Configuration {
+  instrumentations?: string[];
+}
+
+function useGlobalConfigurations() {
+  const { t } = useTranslation("java-agent");
+  const [data, setData] = useState<GlobalConfiguration[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadGlobalConfigurations()
+      .then((configs: unknown) => {
+        setData(configs as GlobalConfiguration[]);
+        setIsLoading(false);
+      })
+      .catch((err: unknown) => {
+        console.error("Failed to fetch configurations:", err);
+        setError(t("configTabs.loadError"));
+        setIsLoading(false);
+      });
+  }, [t]);
+
+  return { data, isLoading, error };
+}
 
 export function JavaConfigurationListPage() {
+  const { t } = useTranslation("java-agent");
+  const [format, setFormat] = useState<ConfigurationFormat>("declarative");
+  const [searchQuery, setSearchQuery] = useState("");
+  const formatTabs = [
+    { value: "system-property", label: t("configTabs.systemProperties") },
+    { value: "declarative", label: t("configTabs.declarativeConfiguration") },
+  ];
+  const { data: allConfigurations, isLoading, error } = useGlobalConfigurations();
+
+  const filteredConfigs = useMemo(() => {
+    if (!searchQuery.trim()) return allConfigurations;
+
+    const query = searchQuery.toLowerCase();
+    return allConfigurations.filter((config) => {
+      const nameMatch = config.name.toLowerCase().includes(query);
+      const descMatch = config.description?.toLowerCase().includes(query) ?? false;
+      const declMatch = config.declarative_name?.toLowerCase().includes(query) ?? false;
+      const instMatch =
+        config.instrumentations?.some((inst) => inst.toLowerCase().includes(query)) ?? false;
+
+      return nameMatch || descMatch || declMatch || instMatch;
+    });
+  }, [allConfigurations, searchQuery]);
+
   return (
     <PageContainer>
-      <div className="space-y-6">
-        <BackButton />
-        <div>
-          <h1 className="mb-2 text-3xl font-bold md:text-4xl">
-            <span className="bg-gradient-to-r from-[hsl(var(--secondary-hsl))] to-[hsl(var(--primary-hsl))] bg-clip-text text-transparent">
-              OpenTelemetry Java Agent Configuration
-            </span>
-          </h1>
-        </div>
-        {isEnabled("JAVA_CONFIG_BUILDER") ? (
-          <NavigationCard
-            title="Configuration Builder"
-            description="Build and customize your OpenTelemetry Java Agent configuration"
-            href="/java-agent/configuration/builder"
-            icon={<ConfigurationIcon className="h-16 w-16" />}
+      <BackButton />
+
+      <div className="mt-3 space-y-6">
+        <header className="border-border/60 bg-card/80 relative overflow-hidden rounded-lg border p-5 sm:p-8">
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "radial-gradient(circle at top right, hsl(var(--primary-hsl) / 0.06) 0%, hsl(var(--secondary-hsl) / 0.03) 40%, transparent 70%)",
+            }}
           />
-        ) : (
-          <div className="border-border/50 bg-card/50 rounded-lg border p-8 text-center">
-            <p className="text-muted-foreground">Configuration Builder coming soon...</p>
+          <div className="relative z-10 space-y-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0 flex-1 space-y-2">
+                <h1 className="text-2xl leading-tight font-bold sm:text-3xl md:text-4xl">
+                  <span className="text-gradient-brand">{t("configList.title")}</span>
+                </h1>
+                <p className="text-muted-foreground max-w-4xl text-base leading-relaxed">
+                  {t("configList.description")}
+                </p>
+              </div>
+            </div>
           </div>
-        )}
+        </header>
+
+        <div className="border-border/60 bg-card/80 relative space-y-6 rounded-lg border p-4 sm:p-6">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="relative max-w-xl flex-1">
+              <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+              <input
+                type="text"
+                aria-label={t("configList.search.ariaLabel")}
+                placeholder={t("configList.search.placeholder")}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="border-border bg-background focus:border-primary focus:ring-primary w-full rounded-md border py-2 pr-4 pl-10 text-sm focus:ring-1 focus:outline-none"
+              />
+            </div>
+
+            <div className="w-full shrink-0 md:w-auto">
+              <Tabs value={format} onValueChange={(v) => setFormat(v as ConfigurationFormat)}>
+                <SegmentedTabList tabs={formatTabs} value={format} fullWidth={false} />
+              </Tabs>
+            </div>
+          </div>
+
+          <div className="mt-6">
+            <div className="text-muted-foreground mb-4 text-sm">
+              {isLoading
+                ? t("configList.results.loading")
+                : error
+                  ? t("configList.results.error")
+                  : t("configList.results.found", { count: filteredConfigs.length })}
+            </div>
+
+            {isLoading ? (
+              <Loader label={t("configList.loading")} />
+            ) : error ? (
+              <div className="flex min-h-[300px] items-center justify-center rounded-lg border border-dashed">
+                <div className="mx-auto max-w-md px-4 text-center">
+                  <Settings className="text-destructive/50 mx-auto h-12 w-12" aria-hidden="true" />
+                  <p className="text-muted-foreground mt-4 text-sm font-medium">{error}</p>
+                </div>
+              </div>
+            ) : filteredConfigs.length === 0 ? (
+              <div className="flex min-h-[300px] items-center justify-center rounded-lg border border-dashed">
+                <div className="text-center">
+                  <Search
+                    className="text-muted-foreground/50 mx-auto h-12 w-12"
+                    aria-hidden="true"
+                  />
+                  <p className="text-muted-foreground mt-4 text-sm">
+                    {t("configList.results.empty")}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2">
+                {filteredConfigs.map((config) => (
+                  <ConfigurationCard
+                    key={config.name}
+                    config={config}
+                    format={format}
+                    instrumentations={config.instrumentations}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </PageContainer>
   );

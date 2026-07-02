@@ -1,0 +1,59 @@
+name: Issue management - run stale action
+
+on:
+  schedule:
+    # hourly at minute 23
+    - cron: "23 * * * *"
+  workflow_dispatch:
+
+# Only one stale sweep should run at a time; cancel a queued run if a newer one starts.
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  stale:
+    name: Run stale action
+    permissions:
+      contents: read
+      actions: write # because actions/stale deletes its old cache before saving new one
+      issues: write # for actions/stale to close stale issues
+      pull-requests: write # for actions/stale to close stale PRs
+    runs-on: ubuntu-latest
+    steps:
+      # Handle issues/PRs awaiting author feedback
+      # - After 7 days inactive: Adds "stale" label + warning comment
+      # - After 7 more days inactive: Closes
+      - uses: actions/stale@eb5cf3af3ac0a1aa4c9c45633dd1ae542a27a899 # v10.3.0
+        with:
+          only-labels: "needs author feedback"
+          days-before-stale: 7
+          days-before-close: 7
+          stale-issue-label: stale
+          stale-issue-message: >
+            This issue has been labeled as stale due to lack of activity and needing author
+            feedback. It will be automatically closed if there is no further activity over the next
+            7 days.
+          stale-pr-label: stale
+          stale-pr-message: >
+            This PR has been labeled as stale due to lack of activity and needing author feedback.
+            It will be automatically closed if there is no further activity over the next 7 days.
+          operations-per-run: 1000
+
+      # Handle stale PRs
+      # - After 90 days inactive: Adds "stale" label + warning comment
+      # - After 14 more days inactive: Closes
+      - uses: actions/stale@eb5cf3af3ac0a1aa4c9c45633dd1ae542a27a899 # v10.3.0
+        with:
+          days-before-issue-stale: -1
+          days-before-issue-close: -1
+          days-before-pr-stale: 90
+          days-before-pr-close: 14
+          stale-pr-label: stale
+          stale-pr-message: >
+            This PR has been labeled as stale due to lack of activity. It will be automatically
+            closed if there is no further activity over the next 14 days.
+          operations-per-run: 1000

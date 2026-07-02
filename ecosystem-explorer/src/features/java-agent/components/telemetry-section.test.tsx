@@ -421,4 +421,73 @@ describe("TelemetrySection", () => {
       ).toBeInTheDocument();
     });
   });
+
+  describe("Expand/Collapse Functionality", () => {
+    it("toggles individual metrics when clicked", async () => {
+      const user = userEvent.setup();
+      const telemetry: Telemetry[] = [
+        {
+          when: "default",
+          metrics: [mockMetric],
+        },
+      ];
+
+      render(<TelemetrySection telemetry={telemetry} />);
+
+      expect(screen.getByTestId("attribute-table")).toBeInTheDocument();
+
+      const metricHeader = screen.getByRole("button", { name: /http\.server\.duration/i });
+      await user.click(metricHeader);
+
+      expect(screen.queryByTestId("attribute-table")).not.toBeInTheDocument();
+
+      await user.click(metricHeader);
+      expect(screen.getByTestId("attribute-table")).toBeInTheDocument();
+    });
+
+    it("toggles individual spans when clicked", async () => {
+      const user = userEvent.setup();
+      const telemetry: Telemetry[] = [
+        {
+          when: "default",
+          spans: [mockSpan],
+        },
+      ];
+
+      render(<TelemetrySection telemetry={telemetry} />);
+
+      expect(screen.getByTestId("attribute-table")).toBeInTheDocument();
+
+      const spanHeader = screen.getByRole("button", { name: /CLIENT Span/i });
+      await user.click(spanHeader);
+
+      expect(screen.queryByTestId("attribute-table")).not.toBeInTheDocument();
+
+      await user.click(spanHeader);
+      expect(screen.getByTestId("attribute-table")).toBeInTheDocument();
+    });
+
+    it("supports keyboard interaction for toggling", async () => {
+      const user = userEvent.setup();
+      const telemetry: Telemetry[] = [
+        {
+          when: "default",
+          metrics: [mockMetric],
+        },
+      ];
+
+      render(<TelemetrySection telemetry={telemetry} />);
+
+      expect(screen.getByTestId("attribute-table")).toBeInTheDocument();
+
+      const metricHeader = screen.getByRole("button", { name: /http\.server\.duration/i });
+      metricHeader.focus();
+      await user.keyboard("{Enter}");
+
+      expect(screen.queryByTestId("attribute-table")).not.toBeInTheDocument();
+
+      await user.keyboard(" ");
+      expect(screen.getByTestId("attribute-table")).toBeInTheDocument();
+    });
+  });
 });

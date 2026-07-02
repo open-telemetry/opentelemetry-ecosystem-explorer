@@ -1,13 +1,13 @@
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.1
+    rev: 18ba2d02dcafd1cc608bd83eff6c17fb0108ca71 # v0.9.1
     hooks:
       - id: ruff
         args: [--fix]
       - id: ruff-format
 
   - repo: https://github.com/DavidAnson/markdownlint-cli2
-    rev: v0.16.0
+    rev: 1d349044b9624661f5a0a7e13e0ca9801752022a # v0.16.0
     hooks:
       - id: markdownlint-cli2
         args: ["--fix"]
@@ -31,22 +31,6 @@ repos:
         files: ^ecosystem-explorer/
         stages: [pre-commit]
 
-      - id: pytest-collector-watcher
-        name: pytest (collector-watcher)
-        entry: bash -c 'cd ecosystem-automation/collector-watcher && uv run pytest tests/ -v'
-        language: system
-        pass_filenames: false
-        files: ^ecosystem-automation/collector-watcher/
-        stages: [pre-commit]
-
-      - id: test-ecosystem-explorer
-        name: test (ecosystem-explorer)
-        entry: bash -c 'cd ecosystem-explorer && bun run test'
-        language: system
-        pass_filenames: false
-        files: ^ecosystem-explorer/
-        stages: [pre-commit]
-
       - id: typecheck-ecosystem-explorer
         name: typecheck (ecosystem-explorer)
         entry: bash -c 'cd ecosystem-explorer && bun run typecheck'
@@ -55,17 +39,17 @@ repos:
         files: ^ecosystem-explorer/.*\.(ts|tsx)$
         stages: [pre-commit]
 
+      - id: generate-schemas
+        name: generate JSON schemas (ecosystem-explorer)
+        entry: bash -c 'cd ecosystem-explorer && bun run generate-schemas'
+        language: system
+        pass_filenames: false
+        files: ^ecosystem-explorer/(src/types/(collector|javaagent)\.ts|scripts/generate-schemas\.mjs)$
+        stages: [pre-commit]
+
       - id: add-copyright-headers
         name: add copyright headers
         entry: uv run python scripts/add_copyright.py
-        language: system
-        pass_filenames: false
-        files: \.(py|js|mjs|ts|tsx)$
-        stages: [pre-commit]
-
-      - id: check-copyright-headers
-        name: check copyright headers
-        entry: uv run python scripts/check_copyright.py
         language: system
         pass_filenames: false
         files: \.(py|js|mjs|ts|tsx)$

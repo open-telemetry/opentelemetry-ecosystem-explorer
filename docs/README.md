@@ -1,9 +1,10 @@
 # Ecosystem Explorer Documentation
 
-This directory contains documentation for the OpenTelemetry Ecosystem Explorer project. It includes guides, references,
-and resources to help users understand and contribute to the project.
+This directory contains documentation for the OpenTelemetry Ecosystem Explorer project. It includes
+guides, references, and resources to help users understand and contribute to the project.
 
-Also reference the [project wiki](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/wiki) for
+Also reference the
+[project wiki](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/wiki) for
 additional information.
 
 <!-- markdownlint-disable MD033 -->
@@ -19,11 +20,12 @@ additional information.
 - [Architecture Overview](./architecture-overview.md) - Three-component system design and data flow
 - [Watchers and Registry Consumers](./watchers-registry-consumers.md) - Automation pipeline
 - [Registry Structure](./registry-structure.md) - Metadata organization and versioning
-- [Content-Addressed Storage](./content-addressed-storage.md) - Storage pattern for multi-version support
+- [Content-Addressed Storage](./content-addressed-storage.md) - Storage pattern for multi-version
+  support
 - [Frontend Architecture](./frontend-architecture.md) - Web app caching and data loading
 
-**Deployment**: The web app deploys automatically to production when changes merge to `main`. Registry updates run
-nightly via GitHub Actions.
+**Deployment**: The web app deploys automatically to production when changes merge to `main`.
+Registry updates run nightly via GitHub Actions.
 
 ## Project Guiding Principles
 

@@ -14,10 +14,12 @@
 #
 """Version detection for OpenTelemetry git repositories."""
 
+import subprocess
 from pathlib import Path
 
-import git
 from semantic_version import Version
+
+from watcher_common.repository_manager import _GIT
 
 
 class VersionDetector:
@@ -34,7 +36,29 @@ class VersionDetector:
         if not self.repo_path.exists():
             raise ValueError(f"Repository path does not exist: {repo_path}")
 
-        self.repo = git.Repo(str(self.repo_path))
+    def _list_tags(self) -> list[str]:
+        """Return all tag names in the repository."""
+        result = subprocess.run(
+            [_GIT, "tag", "--list"],
+            cwd=self.repo_path,
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        return [line for line in result.stdout.splitlines() if line]
+
+    def _parse_release_versions(self) -> list[Version]:
+        """Parse all tag names into non-prerelease Version objects, ignoring invalid tags."""
+        versions = []
+        for tag_name in self._list_tags():
+            try:
+                # Strip 'v' prefix from tag name (e.g., "v0.112.0" -> "0.112.0")
+                version = Version(tag_name.lstrip("v"))
+                if not version.prerelease:
+                    versions.append(version)
+            except ValueError:
+                continue
+        return versions
 
     def get_latest_release_tag(self) -> Version | None:
         """Get the latest release tag from the repository.
@@ -42,22 +66,8 @@ class VersionDetector:
         Returns:
             Latest version tag, or None if no valid tags found
         """
-        tags = self.repo.tags
-        version_tags = []
-
-        for tag in tags:
-            try:
-                # Strip 'v' prefix from tag name (e.g., "v0.112.0" -> "0.112.0")
-                version = Version(tag.name.lstrip("v"))
-                if not version.prerelease:
-                    version_tags.append(version)
-            except ValueError:
-                continue
-
-        if not version_tags:
-            return None
-
-        return max(version_tags)
+        versions = self._parse_release_versions()
+        return max(versions) if versions else None
 
     def get_all_release_tags(self) -> list[Version]:
         """Get all release tags from the repository, sorted newest to oldest.
@@ -65,19 +75,7 @@ class VersionDetector:
         Returns:
             List of version tags
         """
-        tags = self.repo.tags
-        version_tags = []
-
-        for tag in tags:
-            try:
-                # Strip 'v' prefix from tag name (e.g., "v0.112.0" -> "0.112.0")
-                version = Version(tag.name.lstrip("v"))
-                if not version.prerelease:
-                    version_tags.append(version)
-            except ValueError:
-                continue
-
-        return sorted(version_tags, reverse=True)
+        return sorted(self._parse_release_versions(), reverse=True)
 
     def checkout_version(self, version: Version) -> None:
         """Checkout a specific version tag.
@@ -91,9 +89,15 @@ class VersionDetector:
         # Git tags have 'v' prefix (e.g., "v0.112.0")
         tag_name = f"v{version}"
         try:
-            self.repo.git.checkout(tag_name)
-        except git.exc.GitCommandError as e:
-            raise ValueError(f"Failed to checkout {tag_name}: {e}") from e
+            subprocess.run(
+                [_GIT, "checkout", tag_name],
+                cwd=self.repo_path,
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+        except subprocess.CalledProcessError as e:
+            raise ValueError(f"Failed to checkout {tag_name}: {e.stderr}") from e
 
     def checkout_main(self) -> None:
         """Checkout the main branch.
@@ -102,9 +106,46 @@ class VersionDetector:
             ValueError: If main doesn't exist
         """
         try:
-            self.repo.git.checkout("main")
-        except git.exc.GitCommandError as e:
-            raise ValueError(f"Failed to checkout main branch: {e}") from e
+            subprocess.run(
+                [_GIT, "checkout", "main"],
+                cwd=self.repo_path,
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+        except subprocess.CalledProcessError as e:
+            raise ValueError(f"Failed to checkout main branch: {e.stderr}") from e
+
+    def read_file_at_ref(self, ref: str, rel_path: str) -> str | None:
+        """Return the text content of ``rel_path`` at git ``ref``.
+
+        Reads the blob directly via ``git show`` without touching the working
+        tree, so the result depends only on ``ref`` — not on whatever revision
+        the repository is currently checked out to. This makes it safe to read a
+        file at one version while the clone is checked out to another (e.g.
+        resolving a per-version schema during a multi-version backfill).
+
+        Args:
+            ref: Git ref to read from (tag like ``v0.145.0``, branch like
+                ``main``, or any commit-ish).
+            rel_path: Repository-relative path to the file.
+
+        Returns:
+            The file's text content, or None if ``ref`` does not exist or the
+            file is absent at that ref.
+        """
+        result = subprocess.run(
+            [_GIT, "show", f"{ref}:{rel_path}"],
+            cwd=self.repo_path,
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+        if result.returncode != 0:
+            return None
+        return result.stdout
 
     def determine_next_snapshot_version(self) -> Version:
         """Determine the next snapshot version based on latest release.
@@ -120,10 +161,9 @@ class VersionDetector:
             return Version(major=0, minor=0, patch=1, prerelease=("SNAPSHOT",))
 
         # Create snapshot version (increment patch)
-        snapshot_version = Version(
+        return Version(
             major=latest.major,
             minor=latest.minor,
             patch=latest.patch + 1,
             prerelease=("SNAPSHOT",),
         )
-        return snapshot_version

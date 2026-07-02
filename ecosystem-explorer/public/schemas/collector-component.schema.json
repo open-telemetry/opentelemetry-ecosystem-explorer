@@ -1,0 +1,131 @@
+{
+  "description": "Core metadata for an OpenTelemetry Collector component.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "description": "Unique identifier for the component (e.g., core-receiver-otlpreceiver).",
+      "type": "string"
+    },
+    "name": {
+      "description": "The short name of the component (e.g., otlpreceiver).",
+      "type": "string"
+    },
+    "ecosystem": {
+      "description": "The ecosystem this component belongs to (always 'collector').",
+      "type": "string"
+    },
+    "type": {
+      "description": "The functional type of the component.",
+      "enum": ["connector", "exporter", "extension", "processor", "receiver"],
+      "type": "string"
+    },
+    "distribution": {
+      "description": "The distribution where this component originates.",
+      "type": "string"
+    },
+    "display_name": {
+      "description": "Human-readable name of the component.",
+      "type": ["null", "string"]
+    },
+    "description": {
+      "description": "Brief description of the component's functionality.",
+      "type": ["null", "string"]
+    },
+    "repository": {
+      "description": "Link to the component's source code or documentation.",
+      "type": "string"
+    },
+    "status": {
+      "description": "Detailed status including codeowners and signal stability.",
+      "type": "object",
+      "properties": {
+        "class": {
+          "description": "Functional types this component supports (e.g., as a receiver, processor).",
+          "type": "string"
+        },
+        "stability": {
+          "description": "Stability levels per telemetry signal (metrics, logs, traces).",
+          "type": "object",
+          "properties": {
+            "alpha": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "beta": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "stable": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "deprecated": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "unmaintained": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "development": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "propertyOrder": ["alpha", "beta", "stable", "deprecated", "unmaintained", "development"]
+        },
+        "distributions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "codeowners": {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "emeritus": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "propertyOrder": ["active", "emeritus"]
+        }
+      },
+      "propertyOrder": ["class", "stability", "distributions", "codeowners"],
+      "required": ["class", "distributions", "stability"]
+    }
+  },
+  "propertyOrder": [
+    "id",
+    "name",
+    "ecosystem",
+    "type",
+    "distribution",
+    "display_name",
+    "description",
+    "repository",
+    "status"
+  ],
+  "required": ["distribution", "ecosystem", "id", "name", "type"],
+  "$schema": "https://json-schema.org/draft-07/schema#"
+}

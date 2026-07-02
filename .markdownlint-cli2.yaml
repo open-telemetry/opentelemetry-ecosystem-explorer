@@ -4,10 +4,12 @@ ignores:
   - CLAUDE.md
   - "**/AGENTS.md"
   - "ecosystem-explorer/DESIGN.md"
+  - "ecosystem-registry/**"
   - "**/tmp_repos/**"
   - "**/node_modules/**"
   - ".claude/**"
-  - "ecosystem-registry/**"
+  - "ecosystem-explorer/public/data/**"
+  - "ecosystem-explorer/dist/**"
 
 config:
   default: true

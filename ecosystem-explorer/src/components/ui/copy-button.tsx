@@ -15,12 +15,14 @@
  */
 import { useEffect, useRef, useState } from "react";
 import { Copy } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface CopyButtonProps {
   text: string;
   label?: string;
   copiedLabel?: string;
   className?: string;
+  onClick?: () => void;
   onCopy?: () => void;
 }
 
@@ -31,11 +33,13 @@ const DEFAULT_CLASS =
 
 export function CopyButton({
   text,
-  label = "Copy",
-  copiedLabel = "Copied",
+  label,
+  copiedLabel,
   className,
+  onClick,
   onCopy,
 }: CopyButtonProps) {
+  const { t } = useTranslation("common");
   const [copied, setCopied] = useState(false);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -48,6 +52,7 @@ export function CopyButton({
   }, []);
 
   const handleCopy = () => {
+    onClick?.();
     if (!navigator.clipboard?.writeText) return; // Clipboard API not supported, stay silent.
     navigator.clipboard.writeText(text).then(
       () => {
@@ -67,7 +72,7 @@ export function CopyButton({
     );
   };
 
-  const visibleLabel = copied ? copiedLabel : label;
+  const visibleLabel = copied ? (copiedLabel ?? t("copied")) : (label ?? t("copy"));
 
   return (
     <button

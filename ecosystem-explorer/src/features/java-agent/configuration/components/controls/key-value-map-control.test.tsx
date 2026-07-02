@@ -19,6 +19,8 @@ import { KeyValueMapControl } from "./key-value-map-control";
 import type { KeyValueMapNode } from "@/types/configuration";
 
 const validateField = vi.fn();
+const setFieldError = vi.fn();
+const clearValidationError = vi.fn();
 let mockValidationErrors: Record<string, string> = {};
 
 vi.mock("@/hooks/use-configuration-builder", () => ({
@@ -31,6 +33,8 @@ vi.mock("@/hooks/use-configuration-builder", () => ({
       isDirty: false,
     },
     validateField,
+    setFieldError,
+    clearValidationError,
     setValue: vi.fn(),
   }),
 }));
@@ -45,6 +49,8 @@ const node: KeyValueMapNode = {
 describe("KeyValueMapControl", () => {
   beforeEach(() => {
     validateField.mockReset();
+    setFieldError.mockReset();
+    clearValidationError.mockReset();
     mockValidationErrors = {};
   });
 
@@ -138,5 +144,82 @@ describe("KeyValueMapControl", () => {
     mockValidationErrors = { [node.path]: "Required" };
     render(<KeyValueMapControl node={node} path={node.path} value={{}} onChange={vi.fn()} />);
     expect(screen.getByRole("alert")).toHaveTextContent("Required");
+  });
+
+  it("calls setFieldError when two entries share the same key", () => {
+    const onChange = vi.fn();
+    render(
+      <KeyValueMapControl node={node} path={node.path} value={{ host: "a" }} onChange={onChange} />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Add entry to Resource Attributes" }));
+
+    const keyInputs = screen.getAllByPlaceholderText("key");
+    fireEvent.change(keyInputs[1], { target: { value: "host" } });
+
+    expect(setFieldError).toHaveBeenCalledWith(
+      node.path,
+      "Duplicate key: only the last value for each key is kept."
+    );
+  });
+
+  it("marks duplicate key inputs as aria-invalid", () => {
+    const onChange = vi.fn();
+    render(
+      <KeyValueMapControl node={node} path={node.path} value={{ host: "a" }} onChange={onChange} />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Add entry to Resource Attributes" }));
+    const keyInputs = screen.getAllByPlaceholderText("key");
+    fireEvent.change(keyInputs[1], { target: { value: "host" } });
+
+    const invalidInputs = screen
+      .getAllByRole("textbox")
+      .filter((el) => el.getAttribute("aria-invalid") === "true");
+    expect(invalidInputs.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("calls clearValidationError when the conflicting key is renamed", () => {
+    mockValidationErrors = {
+      [node.path]: "Duplicate key: only the last value for each key is kept.",
+    };
+    const onChange = vi.fn();
+    render(
+      <KeyValueMapControl node={node} path={node.path} value={{ host: "a" }} onChange={onChange} />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Add entry to Resource Attributes" }));
+    const keyInputs = screen.getAllByPlaceholderText("key");
+    fireEvent.change(keyInputs[1], { target: { value: "host" } });
+    expect(setFieldError).toHaveBeenCalled();
+
+    clearValidationError.mockClear();
+    setFieldError.mockClear();
+    fireEvent.change(keyInputs[1], { target: { value: "port" } });
+
+    expect(clearValidationError).toHaveBeenCalledWith(node.path);
+    expect(setFieldError).not.toHaveBeenCalled();
+  });
+
+  it("does not clear an unrelated validation error when editing a non-duplicate row", () => {
+    mockValidationErrors = { [node.path]: "Required" };
+    render(
+      <KeyValueMapControl node={node} path={node.path} value={{ host: "a" }} onChange={vi.fn()} />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Add entry to Resource Attributes" }));
+    const keyInputs = screen.getAllByPlaceholderText("key");
+    fireEvent.change(keyInputs[1], { target: { value: "port" } });
+
+    expect(clearValidationError).not.toHaveBeenCalled();
+  });
+
+  it("does not call setFieldError for empty keys", () => {
+    render(<KeyValueMapControl node={node} path={node.path} value={{}} onChange={vi.fn()} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Add entry to Resource Attributes" }));
+    fireEvent.click(screen.getByRole("button", { name: "Add entry to Resource Attributes" }));
+
+    expect(setFieldError).not.toHaveBeenCalled();
   });
 });

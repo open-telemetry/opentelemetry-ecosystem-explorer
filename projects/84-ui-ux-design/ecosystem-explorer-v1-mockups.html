@@ -1,0 +1,1859 @@
+<!doctype html>
+<html lang="en" data-bs-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>OTel Ecosystem Explorer — v1 Mockups (aligned with opentelemetry.io)</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        /* Brand */
+        --color-primary: 38 95% 52%; /* OTel orange #f5a800 */
+        --color-primary-fg: 0 0% 0%;
+        --color-secondary: 230 38% 49%; /* OTel purple #4f62ad */
+        --color-secondary-fg: 0 0% 100%;
+
+        /* Light theme defaults */
+        --color-background: 0 0% 100%;
+        --color-foreground: 220 13% 15%;
+        --color-card: 210 17% 98%;
+        --color-card-secondary: 210 14% 95%;
+        --color-muted: 210 14% 92%;
+        --color-muted-fg: 220 9% 40%;
+        --color-border: 210 14% 88%;
+
+        --color-success: 145 63% 42%;
+        --color-info: 200 85% 45%;
+        --color-warning: 38 95% 52%;
+        --color-error: 0 70% 50%;
+
+        --color-stripe-receiver: 200 85% 45%;
+        --color-stripe-processor: 270 70% 55%;
+        --color-stripe-exporter: 38 95% 52%;
+        --color-stripe-connector: 330 75% 50%;
+        --color-stripe-extension: 165 70% 40%;
+
+        --bs-primary-rgb: 79 98 173;
+      }
+      [data-bs-theme="dark"] {
+        --color-background: 222 25% 6%; /* #0b0d12 */
+        --color-foreground: 0 0% 90%;
+        --color-card: 222 23% 9%; /* #11141b */
+        --color-card-secondary: 222 22% 13%;
+        --color-muted: 222 22% 11%;
+        --color-muted-fg: 220 14% 65%;
+        --color-border: 222 18% 22%;
+      }
+      html,
+      body {
+        background: hsl(var(--color-background));
+        color: hsl(var(--color-foreground));
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .text-otel-purple {
+        color: #4f62ad;
+      }
+      .bg-otel-purple {
+        background-color: #4f62ad;
+      }
+      .text-otel-orange {
+        color: #f5a800;
+      }
+      .bg-otel-orange {
+        background-color: #f5a800;
+      }
+      .otel-gradient-text {
+        background: linear-gradient(90deg, #4f62ad, #f5a800);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      /* Always-dark navbar like opentelemetry.io */
+      .navbar-otel {
+        background: #11141b;
+        color: #e6e6e6;
+        border-bottom: 1px solid #1a1d24;
+      }
+      .navbar-otel a,
+      .navbar-otel button {
+        color: #d6d6d6;
+      }
+      .navbar-otel a:hover {
+        color: #fff;
+      }
+      .navbar-otel .nav-link.active {
+        color: #f5a800;
+      }
+      .navbar-brand-otel {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        color: #fff !important;
+      }
+      .otel-logo-mark {
+        width: 32px;
+        height: 32px;
+        background: linear-gradient(135deg, #f5a800, #4f62ad);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+      .otel-logo-mark::after {
+        content: "";
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        background: hsl(var(--color-background));
+        border-radius: 50%;
+      }
+      [data-bs-theme="light"] .otel-logo-mark::after {
+        background: #11141b;
+      }
+
+      /* Sub-nav for the explorer */
+      .sub-nav {
+        background: hsl(var(--color-card));
+        border-bottom: 1px solid hsl(var(--color-border));
+      }
+
+      /* Cover block (hero) — matches td-cover-block */
+      .cover-block {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, #1a1d33 0%, #0b0d12 100%);
+        color: #fff;
+        padding: 5rem 0 4rem;
+      }
+      .cover-block::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          radial-gradient(ellipse at 20% 30%, rgba(245, 168, 0, 0.18), transparent 50%),
+          radial-gradient(ellipse at 80% 70%, rgba(79, 98, 173, 0.3), transparent 50%);
+      }
+      .cover-block::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+        background-size: 40px 40px;
+      }
+      .cover-block > .container {
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Boxes (matches td-box patterns) */
+      .box-light {
+        background: hsl(var(--color-background));
+        padding: 4rem 0;
+      }
+      .box-muted {
+        background: hsl(var(--color-card));
+        padding: 3rem 0;
+      }
+      .box-primary {
+        background: #4f62ad;
+        color: #fff;
+        padding: 4rem 0;
+      }
+      .box-primary a {
+        color: #fff;
+      }
+
+      /* Stats (matches ecosystem-stats) */
+      .ecosystem-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 2rem;
+        text-align: center;
+      }
+      .ecosystem-stat__number {
+        font-size: 3rem;
+        font-weight: 700;
+        line-height: 1;
+      }
+      .ecosystem-stat__number a {
+        color: #f5a800;
+        text-decoration: none;
+        border-bottom: 2px dashed transparent;
+      }
+      .ecosystem-stat__number a:hover {
+        border-bottom-color: #f5a800;
+      }
+      .ecosystem-stat__label {
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-top: 0.5rem;
+        opacity: 0.9;
+      }
+
+      /* Signal cards */
+      .signal-card {
+        display: block;
+        padding: 1.25rem;
+        border: 1px solid hsl(var(--color-border));
+        border-radius: 0.5rem;
+        background: hsl(var(--color-card));
+        text-decoration: none;
+        color: hsl(var(--color-foreground));
+        transition: all 0.2s ease;
+      }
+      .signal-card:hover {
+        background: hsl(var(--color-card-secondary));
+        transform: translateY(-2px);
+        color: hsl(var(--color-foreground));
+      }
+      .signal-card__name {
+        font-weight: 600;
+        margin-top: 0.5rem;
+      }
+      .signal-card__description {
+        color: hsl(var(--color-muted-fg));
+        font-size: 0.875rem;
+      }
+
+      /* Type stripe */
+      .type-stripe {
+        width: 4px;
+        align-self: stretch;
+        flex-shrink: 0;
+      }
+      .stripe-receiver {
+        background: hsl(var(--color-stripe-receiver));
+      }
+      .stripe-processor {
+        background: hsl(var(--color-stripe-processor));
+      }
+      .stripe-exporter {
+        background: hsl(var(--color-stripe-exporter));
+      }
+      .stripe-connector {
+        background: hsl(var(--color-stripe-connector));
+      }
+      .stripe-extension {
+        background: hsl(var(--color-stripe-extension));
+      }
+
+      /* Component card */
+      .component-card {
+        position: relative;
+        background: hsl(var(--color-card));
+        border: 1px solid hsl(var(--color-border));
+        border-radius: 0.5rem;
+        overflow: hidden;
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        transition: all 0.2s ease;
+      }
+      .component-card:hover {
+        background: hsl(var(--color-card-secondary));
+        color: inherit;
+        box-shadow: 0 4px 12px hsl(var(--color-foreground) / 0.05);
+      }
+
+      /* Compact list rows */
+      .component-row {
+        display: grid;
+        grid-template-columns: 4px 1fr 110px 140px 110px;
+        align-items: center;
+        text-decoration: none;
+        color: inherit;
+        background: hsl(var(--color-card));
+        border-bottom: 1px solid hsl(var(--color-border));
+        transition: background 0.15s ease;
+      }
+      .component-row:hover {
+        background: hsl(var(--color-card-secondary));
+        color: inherit;
+      }
+      .component-row:nth-child(odd) {
+        background: hsl(var(--color-muted) / 0.5);
+      }
+      .component-row:nth-child(odd):hover {
+        background: hsl(var(--color-card-secondary));
+      }
+
+      /* Pills (Bootstrap-aligned) */
+      .pill-stable {
+        background-color: hsl(var(--color-success) / 0.15);
+        color: hsl(var(--color-success));
+        border: 1px solid hsl(var(--color-success) / 0.3);
+      }
+      .pill-beta {
+        background-color: hsl(var(--color-info) / 0.15);
+        color: hsl(var(--color-info));
+        border: 1px solid hsl(var(--color-info) / 0.3);
+      }
+      .pill-alpha {
+        background-color: hsl(var(--color-warning) / 0.15);
+        color: hsl(var(--color-warning));
+        border: 1px solid hsl(var(--color-warning) / 0.3);
+      }
+      .pill-deprecated {
+        background-color: hsl(var(--color-error) / 0.15);
+        color: hsl(var(--color-error));
+        border: 1px solid hsl(var(--color-error) / 0.3);
+      }
+      .pill-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 2px 10px;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+
+      /* Page switcher (mockup-only chrome) */
+      .mockup-switcher {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: hsl(var(--color-background) / 0.95);
+        backdrop-filter: blur(8px);
+        border-bottom: 1px solid hsl(var(--color-border));
+        padding: 0.75rem 1rem;
+      }
+      .mockup-tab {
+        padding: 0.375rem 0.875rem;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        background: transparent;
+        border: 1px solid hsl(var(--color-border));
+        color: hsl(var(--color-foreground));
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .mockup-tab[data-active="true"] {
+        background: #4f62ad;
+        color: #fff;
+        border-color: #4f62ad;
+      }
+
+      /* Footer (matches td-footer) */
+      .footer-otel {
+        background: #11141b;
+        color: #d6d6d6;
+        padding: 2rem 0;
+        font-size: 0.875rem;
+      }
+      .footer-otel a {
+        color: #d6d6d6;
+      }
+      .footer-otel a:hover {
+        color: #f5a800;
+      }
+
+      /* Misc */
+      .breadcrumb-otel a {
+        color: hsl(var(--color-muted-fg));
+        text-decoration: none;
+      }
+      .breadcrumb-otel a:hover {
+        color: hsl(var(--color-foreground));
+      }
+      .filter-facet input[type="checkbox"] {
+        margin-right: 0.5rem;
+      }
+      .filter-facet label {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.25rem 0;
+        cursor: pointer;
+        color: hsl(var(--color-muted-fg));
+      }
+      .filter-facet label:hover {
+        color: hsl(var(--color-foreground));
+      }
+      .page {
+        animation: fadeIn 0.25s ease-out;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      pre,
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      }
+      kbd {
+        font-family: ui-monospace, monospace;
+        background: hsl(var(--color-muted));
+        border: 1px solid hsl(var(--color-border));
+        padding: 1px 6px;
+        border-radius: 4px;
+        font-size: 11px;
+        color: hsl(var(--color-muted-fg));
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Mockup-only switcher -->
+    <div class="mockup-switcher d-flex align-items-center flex-wrap gap-3">
+      <strong class="text-otel-purple">v1 Mockups</strong>
+      <span class="text-muted small">aligned with opentelemetry.io · for issue #84</span>
+      <div class="d-flex ms-auto flex-wrap gap-2">
+        <button class="mockup-tab" data-page="home" data-active="true">Home</button>
+        <button class="mockup-tab" data-page="landing">Ecosystem landing</button>
+        <button class="mockup-tab" data-page="list">List</button>
+        <button class="mockup-tab" data-page="detail">Detail</button>
+      </div>
+    </div>
+
+    <!-- =================== Always-dark navbar (matches opentelemetry.io) =================== -->
+    <header class="navbar-otel">
+      <nav class="container-xl d-flex align-items-center flex-wrap gap-3 py-2">
+        <a href="#" class="navbar-brand-otel">
+          <div class="otel-logo-mark"></div>
+          <span>OpenTelemetry</span>
+        </a>
+        <ul class="nav ms-md-3 me-md-auto">
+          <li class="nav-item"><a class="nav-link" href="#">Docs</a></li>
+          <li class="nav-item"><a class="nav-link active" href="#">Ecosystem</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Status</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Community</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Training</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Blog</a></li>
+        </ul>
+        <div class="d-flex align-items-center gap-2">
+          <div
+            class="input-group input-group-sm"
+            style="width: 220px; background: rgba(255, 255, 255, 0.06); border-radius: 6px"
+          >
+            <span class="input-group-text text-light border-0 bg-transparent"
+              ><i class="fa fa-search"></i
+            ></span>
+            <input
+              type="search"
+              class="form-control text-light border-0 bg-transparent"
+              placeholder="Ask AI or search…"
+            />
+            <span class="input-group-text border-0 bg-transparent"
+              ><kbd
+                style="
+                  background: rgba(255, 255, 255, 0.08);
+                  border-color: rgba(255, 255, 255, 0.15);
+                  color: #ddd;
+                "
+                >⌘K</kbd
+              ></span
+            >
+          </div>
+          <select
+            class="form-select form-select-sm"
+            style="
+              background: rgba(255, 255, 255, 0.06);
+              color: #d6d6d6;
+              border-color: rgba(255, 255, 255, 0.15);
+              width: auto;
+            "
+          >
+            <option>EN</option>
+            <option>ES</option>
+            <option>FR</option>
+            <option>JA</option>
+            <option>PT</option>
+            <option>ZH</option>
+          </select>
+          <button id="theme-toggle" class="btn btn-sm btn-outline-light" aria-label="Toggle theme">
+            <i class="fa-solid fa-circle-half-stroke"></i>
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <!-- =================== HOME =================== -->
+    <section id="page-home" class="page">
+      <!-- Hero -->
+      <section class="cover-block">
+        <div class="container text-center">
+          <div class="otel-logo-mark mx-auto mb-4" style="width: 64px; height: 64px"></div>
+          <h1 class="display-4 fw-bold mb-3">
+            OpenTelemetry <span class="otel-gradient-text">Ecosystem Explorer</span>
+          </h1>
+          <p
+            class="lead mb-4"
+            style="color: rgba(255, 255, 255, 0.85); max-width: 640px; margin-inline: auto"
+          >
+            Navigate every receiver, processor, exporter, and instrumentation across the
+            OpenTelemetry project — searchable, comparable, version-aware.
+          </p>
+          <div class="d-flex justify-content-center mb-5 flex-wrap gap-2">
+            <a
+              class="btn btn-lg"
+              style="background: #f5a800; color: #000; font-weight: 600"
+              href="#"
+              >Browse components</a
+            >
+            <a class="btn btn-lg btn-outline-light" href="#">Read the overview</a>
+          </div>
+          <!-- Global search -->
+          <div class="mx-auto" style="max-width: 600px">
+            <div
+              class="input-group input-group-lg"
+              style="
+                background: rgba(255, 255, 255, 0.08);
+                border-radius: 8px;
+                backdrop-filter: blur(8px);
+              "
+            >
+              <span class="input-group-text text-light border-0 bg-transparent"
+                ><i class="fa fa-search"></i
+              ></span>
+              <input
+                class="form-control text-light border-0 bg-transparent"
+                placeholder="Search 1,005+ components, instrumentations, vendors…"
+              />
+              <span class="input-group-text border-0 bg-transparent"
+                ><kbd
+                  style="
+                    background: rgba(255, 255, 255, 0.1);
+                    border-color: rgba(255, 255, 255, 0.2);
+                    color: #fff;
+                  "
+                  >⌘K</kbd
+                ></span
+              >
+            </div>
+            <div class="d-flex justify-content-center small mt-3 flex-wrap gap-2">
+              <span style="color: rgba(255, 255, 255, 0.6)">Try:</span>
+              <a class="badge text-bg-secondary text-decoration-none" href="#">otlp exporter</a>
+              <a class="badge text-bg-secondary text-decoration-none" href="#"
+                >redis instrumentation</a
+              >
+              <a class="badge text-bg-secondary text-decoration-none" href="#">kafka receiver</a>
+              <a class="badge text-bg-secondary text-decoration-none" href="#">trace sampling</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Stats band (OTel purple, matches box-primary on opentelemetry.io) -->
+      <section class="box-primary">
+        <div class="container-xl">
+          <h2 class="h3 fw-bold mb-4 text-center">The OpenTelemetry Ecosystem</h2>
+          <div class="ecosystem-stats">
+            <div class="ecosystem-stat">
+              <div class="ecosystem-stat__number"><a href="#">12+</a></div>
+              <div class="ecosystem-stat__label">Languages</div>
+            </div>
+            <div class="ecosystem-stat">
+              <div class="ecosystem-stat__number"><a href="#">200+</a></div>
+              <div class="ecosystem-stat__label">Collector Components</div>
+            </div>
+            <div class="ecosystem-stat">
+              <div class="ecosystem-stat__number"><a href="#">1005+</a></div>
+              <div class="ecosystem-stat__label">Integrations</div>
+            </div>
+            <div class="ecosystem-stat">
+              <div class="ecosystem-stat__number"><a href="#">102+</a></div>
+              <div class="ecosystem-stat__label">Vendors</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Ecosystems grid -->
+      <section class="box-light">
+        <div class="container-xl">
+          <div class="d-flex align-items-end justify-content-between mb-4 flex-wrap gap-2">
+            <div>
+              <h2 class="h3 fw-bold mb-1">Ecosystems</h2>
+              <p class="text-muted mb-0">Browse the projects that make up OpenTelemetry.</p>
+            </div>
+            <a class="btn btn-link p-0" href="#">View all projects →</a>
+          </div>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <a
+                href="#"
+                class="component-card d-flex flex-column h-100 p-4"
+                style="text-decoration: none"
+              >
+                <div class="d-flex align-items-start justify-content-between mb-2">
+                  <div class="d-flex align-items-center gap-3">
+                    <div
+                      class="d-flex align-items-center justify-content-center rounded"
+                      style="width: 48px; height: 48px; background: rgba(79, 98, 173, 0.15)"
+                    >
+                      <i class="fa-solid fa-network-wired fa-lg text-otel-purple"></i>
+                    </div>
+                    <div>
+                      <h3 class="h5 mb-1">OpenTelemetry Collector</h3>
+                      <small class="text-muted">Vendor-agnostic agent</small>
+                    </div>
+                  </div>
+                  <span class="pill-status pill-stable">stable</span>
+                </div>
+                <p class="text-muted small mt-2">
+                  Receive, process, and export telemetry data. 200+ receivers, processors,
+                  exporters, connectors and extensions.
+                </p>
+                <div class="d-flex small mt-auto gap-3">
+                  <span><strong>200+</strong> components</span>
+                  <span><strong>v0.150.0</strong> latest</span>
+                  <span><strong>12</strong> updated this week</span>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-6">
+              <a
+                href="#"
+                class="component-card d-flex flex-column h-100 p-4"
+                style="text-decoration: none"
+              >
+                <div class="d-flex align-items-start justify-content-between mb-2">
+                  <div class="d-flex align-items-center gap-3">
+                    <div
+                      class="d-flex align-items-center justify-content-center rounded"
+                      style="width: 48px; height: 48px; background: rgba(245, 168, 0, 0.18)"
+                    >
+                      <i class="fa-brands fa-java fa-lg text-otel-orange"></i>
+                    </div>
+                    <div>
+                      <h3 class="h5 mb-1">OpenTelemetry Java Agent</h3>
+                      <small class="text-muted">Auto-instrumentation</small>
+                    </div>
+                  </div>
+                  <span class="pill-status pill-stable">stable</span>
+                </div>
+                <p class="text-muted small mt-2">
+                  Discover supported libraries, configuration options, and emitted telemetry for the
+                  Java auto-instrumentation agent.
+                </p>
+                <div class="d-flex small mt-auto gap-3">
+                  <span><strong>187</strong> instrumentations</span>
+                  <span><strong>v2.10.0</strong> latest</span>
+                  <span><strong>8</strong> updated this week</span>
+                </div>
+              </a>
+            </div>
+            <div class="col-md-3">
+              <div
+                class="component-card d-flex align-items-center justify-content-center h-100 p-3 text-center"
+                style="border-style: dashed; min-height: 120px"
+              >
+                <div>
+                  <i class="fa-brands fa-python text-muted mb-2"></i>
+                  <div class="small">Python SDK</div>
+                  <small class="text-muted">Coming soon</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div
+                class="component-card d-flex align-items-center justify-content-center h-100 p-3 text-center"
+                style="border-style: dashed; min-height: 120px"
+              >
+                <div>
+                  <i class="fa-brands fa-golang text-muted mb-2"></i>
+                  <div class="small">Go SDK</div>
+                  <small class="text-muted">Coming soon</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div
+                class="component-card d-flex align-items-center justify-content-center h-100 p-3 text-center"
+                style="border-style: dashed; min-height: 120px"
+              >
+                <div>
+                  <i class="fa-brands fa-js text-muted mb-2"></i>
+                  <div class="small">JS / Node</div>
+                  <small class="text-muted">Coming soon</small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div
+                class="component-card d-flex align-items-center justify-content-center h-100 p-3 text-center"
+                style="border-style: dashed; min-height: 120px"
+              >
+                <div>
+                  <i class="fa-brands fa-microsoft text-muted mb-2"></i>
+                  <div class="small">.NET</div>
+                  <small class="text-muted">Coming soon</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Signals + Recent activity -->
+      <section class="box-muted">
+        <div class="container-xl">
+          <div class="row g-4">
+            <div class="col-lg-6">
+              <h3 class="h5 fw-bold mb-3">Browse by signal</h3>
+              <p class="text-muted small mb-3">
+                Cuts across ecosystems. Match opentelemetry.io's canonical signal taxonomy.
+              </p>
+              <div class="row g-3">
+                <div class="col-md-6 col-6">
+                  <a href="#" class="signal-card">
+                    <span
+                      class="d-inline-block rounded-circle"
+                      style="
+                        width: 12px;
+                        height: 12px;
+                        background: hsl(var(--color-stripe-receiver));
+                      "
+                    ></span>
+                    <div class="signal-card__name">Traces</div>
+                    <div class="signal-card__description">Distributed traces · 312 components</div>
+                  </a>
+                </div>
+                <div class="col-md-6 col-6">
+                  <a href="#" class="signal-card">
+                    <span
+                      class="d-inline-block rounded-circle"
+                      style="width: 12px; height: 12px; background: hsl(var(--color-success))"
+                    ></span>
+                    <div class="signal-card__name">Metrics</div>
+                    <div class="signal-card__description">Measurements over time · 218</div>
+                  </a>
+                </div>
+                <div class="col-md-6 col-6">
+                  <a href="#" class="signal-card">
+                    <span
+                      class="d-inline-block rounded-circle"
+                      style="width: 12px; height: 12px; background: hsl(var(--color-warning))"
+                    ></span>
+                    <div class="signal-card__name">Logs</div>
+                    <div class="signal-card__description">Timestamped records · 147</div>
+                  </a>
+                </div>
+                <div class="col-md-6 col-6">
+                  <a href="#" class="signal-card">
+                    <span
+                      class="d-inline-block rounded-circle"
+                      style="
+                        width: 12px;
+                        height: 12px;
+                        background: hsl(var(--color-stripe-processor));
+                      "
+                    ></span>
+                    <div class="signal-card__name">Baggage</div>
+                    <div class="signal-card__description">Contextual metadata</div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <h3 class="h5 fw-bold mb-3">Recent activity</h3>
+              <p class="text-muted small mb-3">
+                What changed in the last 30 days, across all ecosystems.
+              </p>
+              <div class="card">
+                <ul class="list-group list-group-flush">
+                  <a
+                    href="#"
+                    class="list-group-item list-group-item-action d-flex align-items-center gap-3"
+                  >
+                    <span class="pill-status pill-beta">beta</span>
+                    <div class="flex-grow-1">
+                      <div class="fw-semibold">Kafka Receiver promoted to beta</div>
+                      <small class="text-muted">collector · v0.150.0 · 2 days ago</small>
+                    </div>
+                    <i class="fa fa-chevron-right text-muted"></i>
+                  </a>
+                  <a
+                    href="#"
+                    class="list-group-item list-group-item-action d-flex align-items-center gap-3"
+                  >
+                    <span class="pill-status pill-stable">new</span>
+                    <div class="flex-grow-1">
+                      <div class="fw-semibold">Splunk HEC Exporter added</div>
+                      <small class="text-muted">collector-contrib · v0.150.0 · 4 days ago</small>
+                    </div>
+                    <i class="fa fa-chevron-right text-muted"></i>
+                  </a>
+                  <a
+                    href="#"
+                    class="list-group-item list-group-item-action d-flex align-items-center gap-3"
+                  >
+                    <span class="pill-status pill-deprecated">deprecated</span>
+                    <div class="flex-grow-1">
+                      <div class="fw-semibold">Akka Actors instrumentation marked unmaintained</div>
+                      <small class="text-muted">java-agent · 1 week ago</small>
+                    </div>
+                    <i class="fa fa-chevron-right text-muted"></i>
+                  </a>
+                  <a
+                    href="#"
+                    class="list-group-item list-group-item-action d-flex align-items-center gap-3"
+                  >
+                    <span class="pill-status pill-stable">stable</span>
+                    <div class="flex-grow-1">
+                      <div class="fw-semibold">OTLP HTTP Exporter — schema changes documented</div>
+                      <small class="text-muted">collector · v0.150.0 · 1 week ago</small>
+                    </div>
+                    <i class="fa fa-chevron-right text-muted"></i>
+                  </a>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- =================== ECOSYSTEM LANDING =================== -->
+    <section id="page-landing" class="page d-none">
+      <!-- Sub-nav with breadcrumbs -->
+      <div class="sub-nav py-2">
+        <div class="container-xl">
+          <nav aria-label="breadcrumb" class="breadcrumb-otel">
+            <ol class="breadcrumb small mb-0">
+              <li class="breadcrumb-item"><a href="#">Explorer</a></li>
+              <li class="breadcrumb-item"><a href="#">Ecosystems</a></li>
+              <li class="breadcrumb-item active text-otel-purple">Collector</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+
+      <!-- Hero (lighter cover-block) -->
+      <section class="cover-block" style="padding: 3rem 0">
+        <div class="container-xl">
+          <div class="row align-items-end g-4">
+            <div class="col-lg-8">
+              <small
+                class="text-uppercase fw-bold"
+                style="letter-spacing: 0.1em; color: rgba(245, 168, 0, 0.9)"
+                >Infrastructure · Vendor-agnostic agent</small
+              >
+              <h1 class="display-5 fw-bold mt-2 mb-3">
+                <span class="otel-gradient-text">OpenTelemetry</span> Collector
+              </h1>
+              <p class="lead mb-4" style="color: rgba(255, 255, 255, 0.85)">
+                Receive, process, and export telemetry data without locking into a single vendor.
+                Compose pipelines from receivers, processors, exporters, connectors, and extensions.
+              </p>
+              <div class="d-flex flex-wrap gap-2">
+                <a class="btn btn-lg" style="background: #f5a800; color: #000; font-weight: 600"
+                  >Browse all 200+ components →</a
+                >
+                <a class="btn btn-lg btn-outline-light">Read overview</a>
+                <a class="btn btn-lg btn-outline-light"
+                  ><i class="fa-brands fa-github me-2"></i>GitHub</a
+                >
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div
+                class="card"
+                style="
+                  background: rgba(255, 255, 255, 0.08);
+                  border-color: rgba(255, 255, 255, 0.15);
+                  color: #fff;
+                "
+              >
+                <div class="card-body">
+                  <small class="text-uppercase" style="letter-spacing: 0.1em; opacity: 0.7"
+                    >Latest release</small
+                  >
+                  <div class="d-flex align-items-baseline mt-1 gap-2">
+                    <span class="h3 fw-bold otel-gradient-text mb-0">v0.150.0</span>
+                    <small style="opacity: 0.7">2 days ago</small>
+                  </div>
+                  <div class="row g-2 mt-3 text-center">
+                    <div class="col-4">
+                      <div class="rounded p-2" style="background: rgba(255, 255, 255, 0.06)">
+                        <div class="fw-bold">+4</div>
+                        <small style="opacity: 0.7">added</small>
+                      </div>
+                    </div>
+                    <div class="col-4">
+                      <div class="rounded p-2" style="background: rgba(255, 255, 255, 0.06)">
+                        <div class="fw-bold">12</div>
+                        <small style="opacity: 0.7">changed</small>
+                      </div>
+                    </div>
+                    <div class="col-4">
+                      <div class="rounded p-2" style="background: rgba(255, 255, 255, 0.06)">
+                        <div class="fw-bold">2</div>
+                        <small style="opacity: 0.7">deprecated</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Pipeline anatomy -->
+      <section class="box-light">
+        <div class="container-xl">
+          <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <h2 class="h4 fw-bold mb-0">Pipeline anatomy</h2>
+            <small class="text-muted">Click any stage to filter components</small>
+          </div>
+          <div class="d-flex align-items-stretch flex-wrap gap-2">
+            <a
+              href="#"
+              class="component-card flex-fill text-decoration-none p-3"
+              style="min-width: 160px"
+            >
+              <div class="d-flex align-items-center mb-1 gap-2">
+                <span
+                  class="d-inline-block rounded-circle"
+                  style="width: 8px; height: 8px; background: hsl(var(--color-stripe-receiver))"
+                ></span>
+                <small class="text-uppercase text-muted" style="letter-spacing: 0.08em"
+                  >Receivers</small
+                >
+              </div>
+              <div class="h3 fw-bold otel-gradient-text mb-1">98</div>
+              <small class="text-muted">Pull or accept telemetry</small>
+            </a>
+            <span class="align-self-center text-muted">→</span>
+            <a
+              href="#"
+              class="component-card flex-fill text-decoration-none p-3"
+              style="min-width: 160px"
+            >
+              <div class="d-flex align-items-center mb-1 gap-2">
+                <span
+                  class="d-inline-block rounded-circle"
+                  style="width: 8px; height: 8px; background: hsl(var(--color-stripe-processor))"
+                ></span>
+                <small class="text-uppercase text-muted" style="letter-spacing: 0.08em"
+                  >Processors</small
+                >
+              </div>
+              <div class="h3 fw-bold otel-gradient-text mb-1">42</div>
+              <small class="text-muted">Filter, batch, transform</small>
+            </a>
+            <span class="align-self-center text-muted">→</span>
+            <a
+              href="#"
+              class="component-card flex-fill text-decoration-none p-3"
+              style="min-width: 160px"
+            >
+              <div class="d-flex align-items-center mb-1 gap-2">
+                <span
+                  class="d-inline-block rounded-circle"
+                  style="width: 8px; height: 8px; background: hsl(var(--color-stripe-exporter))"
+                ></span>
+                <small class="text-uppercase text-muted" style="letter-spacing: 0.08em"
+                  >Exporters</small
+                >
+              </div>
+              <div class="h3 fw-bold otel-gradient-text mb-1">76</div>
+              <small class="text-muted">Send to backends</small>
+            </a>
+            <span class="align-self-center text-muted">→</span>
+            <a
+              href="#"
+              class="component-card flex-fill text-decoration-none p-3"
+              style="min-width: 160px"
+            >
+              <div class="d-flex align-items-center mb-1 gap-2">
+                <span
+                  class="d-inline-block rounded-circle"
+                  style="width: 8px; height: 8px; background: hsl(var(--color-stripe-connector))"
+                ></span>
+                <small class="text-uppercase text-muted" style="letter-spacing: 0.08em"
+                  >Connectors</small
+                >
+              </div>
+              <div class="h3 fw-bold otel-gradient-text mb-1">14</div>
+              <small class="text-muted">Bridge pipelines</small>
+            </a>
+            <span class="align-self-center text-muted">+</span>
+            <a
+              href="#"
+              class="component-card flex-fill text-decoration-none p-3"
+              style="min-width: 160px"
+            >
+              <div class="d-flex align-items-center mb-1 gap-2">
+                <span
+                  class="d-inline-block rounded-circle"
+                  style="width: 8px; height: 8px; background: hsl(var(--color-stripe-extension))"
+                ></span>
+                <small class="text-uppercase text-muted" style="letter-spacing: 0.08em"
+                  >Extensions</small
+                >
+              </div>
+              <div class="h3 fw-bold otel-gradient-text mb-1">35</div>
+              <small class="text-muted">Auth, health, monitoring</small>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Quick entry cards -->
+      <section class="box-muted">
+        <div class="container-xl">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <a href="#" class="component-card d-block p-4">
+                <small class="text-uppercase text-muted" style="letter-spacing: 0.08em"
+                  >Get started</small
+                >
+                <h3 class="h5 mt-2 mb-1">Most-used components</h3>
+                <p class="text-muted small mb-0">otlp · batch · resource · prometheus</p>
+              </a>
+            </div>
+            <div class="col-md-4">
+              <a href="#" class="component-card d-block p-4">
+                <small class="text-uppercase text-muted" style="letter-spacing: 0.08em"
+                  >By distribution</small
+                >
+                <h3 class="h5 mt-2 mb-1">Core vs. Contrib</h3>
+                <p class="text-muted small mb-0">35 core components · 230 contrib</p>
+              </a>
+            </div>
+            <div class="col-md-4">
+              <a href="#" class="component-card d-block p-4">
+                <small class="text-uppercase text-muted" style="letter-spacing: 0.08em"
+                  >Compare</small
+                >
+                <h3 class="h5 mt-2 mb-1">Diff across versions →</h3>
+                <p class="text-muted small mb-0">See what changed between any two releases</p>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- =================== LIST =================== -->
+    <section id="page-list" class="page d-none">
+      <div class="sub-nav py-2">
+        <div class="container-xl">
+          <nav class="breadcrumb-otel">
+            <ol class="breadcrumb small mb-0">
+              <li class="breadcrumb-item"><a href="#">Explorer</a></li>
+              <li class="breadcrumb-item"><a href="#">Collector</a></li>
+              <li class="breadcrumb-item active text-otel-purple">Components</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+
+      <div class="container-xl py-4">
+        <div class="d-flex justify-content-between align-items-end mb-3 flex-wrap gap-3">
+          <div>
+            <h1 class="h2 fw-bold mb-1">
+              <span class="otel-gradient-text">Collector</span> Components
+            </h1>
+            <p class="text-muted small mb-0">
+              Showing <strong>42</strong> of <strong>200+</strong> components
+            </p>
+          </div>
+          <div class="d-flex align-items-center small gap-2">
+            <span class="text-muted">View:</span>
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-secondary">Cards</button>
+              <button class="btn btn-secondary" style="background: #4f62ad; border-color: #4f62ad">
+                Compact
+              </button>
+              <button class="btn btn-outline-secondary">Table</button>
+            </div>
+            <span class="text-muted ms-3">Sort:</span>
+            <select class="form-select form-select-sm" style="width: auto">
+              <option>Name (A-Z)</option>
+              <option>Recently updated</option>
+              <option>Stability</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Active filter chips -->
+        <div class="d-flex align-items-center mb-3 flex-wrap gap-2">
+          <small class="text-muted text-uppercase" style="letter-spacing: 0.08em"
+            >Active filters:</small
+          >
+          <span class="badge text-bg-secondary rounded-pill"
+            >Type: receiver <i class="fa fa-times ms-1"></i
+          ></span>
+          <span class="badge text-bg-secondary rounded-pill"
+            >Signal: traces <i class="fa fa-times ms-1"></i
+          ></span>
+          <span class="badge text-bg-secondary rounded-pill"
+            >Distribution: contrib <i class="fa fa-times ms-1"></i
+          ></span>
+          <button class="btn btn-link btn-sm text-muted">Clear all</button>
+        </div>
+
+        <div class="row g-4">
+          <!-- Facet sidebar -->
+          <aside class="col-lg-3">
+            <div class="filter-facet" style="position: sticky; top: 80px">
+              <div class="input-group input-group-sm mb-3">
+                <span class="input-group-text bg-transparent"><i class="fa fa-search"></i></span>
+                <input class="form-control" placeholder="Filter by name…" />
+              </div>
+
+              <div class="mb-4">
+                <small class="text-uppercase fw-bold" style="letter-spacing: 0.08em">Type</small>
+                <label
+                  ><span
+                    ><span
+                      class="d-inline-block me-2 rounded"
+                      style="width: 8px; height: 8px; background: hsl(var(--color-stripe-receiver))"
+                    ></span
+                    >Receiver</span
+                  ><small>98</small></label
+                >
+                <label
+                  ><span
+                    ><span
+                      class="d-inline-block me-2 rounded"
+                      style="
+                        width: 8px;
+                        height: 8px;
+                        background: hsl(var(--color-stripe-processor));
+                      "
+                    ></span
+                    >Processor</span
+                  ><small>42</small></label
+                >
+                <label
+                  ><span
+                    ><span
+                      class="d-inline-block me-2 rounded"
+                      style="width: 8px; height: 8px; background: hsl(var(--color-stripe-exporter))"
+                    ></span
+                    >Exporter</span
+                  ><small>76</small></label
+                >
+                <label
+                  ><span
+                    ><span
+                      class="d-inline-block me-2 rounded"
+                      style="
+                        width: 8px;
+                        height: 8px;
+                        background: hsl(var(--color-stripe-connector));
+                      "
+                    ></span
+                    >Connector</span
+                  ><small>14</small></label
+                >
+                <label
+                  ><span
+                    ><span
+                      class="d-inline-block me-2 rounded"
+                      style="
+                        width: 8px;
+                        height: 8px;
+                        background: hsl(var(--color-stripe-extension));
+                      "
+                    ></span
+                    >Extension</span
+                  ><small>35</small></label
+                >
+              </div>
+
+              <div class="mb-4">
+                <small class="text-uppercase fw-bold" style="letter-spacing: 0.08em">Signal</small>
+                <label><span>Traces</span><small>312</small></label>
+                <label><span>Metrics</span><small>218</small></label>
+                <label><span>Logs</span><small>147</small></label>
+                <label><span>Baggage</span><small>9</small></label>
+              </div>
+
+              <div class="mb-4">
+                <small class="text-uppercase fw-bold" style="letter-spacing: 0.08em"
+                  >Stability</small
+                >
+                <label
+                  ><span
+                    ><span
+                      class="d-inline-block rounded-circle me-2"
+                      style="width: 8px; height: 8px; background: hsl(var(--color-success))"
+                    ></span
+                    >Stable</span
+                  ><small>114</small></label
+                >
+                <label
+                  ><span
+                    ><span
+                      class="d-inline-block rounded-circle me-2"
+                      style="width: 8px; height: 8px; background: hsl(var(--color-info))"
+                    ></span
+                    >Beta</span
+                  ><small>89</small></label
+                >
+                <label
+                  ><span
+                    ><span
+                      class="d-inline-block rounded-circle me-2"
+                      style="width: 8px; height: 8px; background: hsl(var(--color-warning))"
+                    ></span
+                    >Alpha</span
+                  ><small>52</small></label
+                >
+                <label
+                  ><span
+                    ><span
+                      class="d-inline-block rounded-circle me-2"
+                      style="width: 8px; height: 8px; background: hsl(var(--color-error))"
+                    ></span
+                    >Deprecated</span
+                  ><small>10</small></label
+                >
+              </div>
+
+              <div class="mb-4">
+                <small class="text-uppercase fw-bold" style="letter-spacing: 0.08em"
+                  >Distribution</small
+                >
+                <label><span>Core</span><small>35</small></label>
+                <label><span>Contrib</span><small>230</small></label>
+              </div>
+
+              <div class="mb-4">
+                <small class="text-uppercase fw-bold d-block mb-2" style="letter-spacing: 0.08em"
+                  >Version</small
+                >
+                <select class="form-select form-select-sm">
+                  <option>v0.150.0 (latest)</option>
+                  <option>v0.149.0</option>
+                  <option>v0.148.0</option>
+                </select>
+              </div>
+            </div>
+          </aside>
+
+          <!-- Results -->
+          <main class="col-lg-9">
+            <div class="card overflow-hidden">
+              <!-- Header row -->
+              <div
+                class="row g-0 border-bottom small text-uppercase fw-bold text-muted px-3 py-2"
+                style="background: hsl(var(--color-muted)); letter-spacing: 0.08em"
+              >
+                <div class="col-1"></div>
+                <div class="col-5">Name</div>
+                <div class="col-2">Type</div>
+                <div class="col-2">Signals</div>
+                <div class="col-2 text-end">Stability</div>
+              </div>
+
+              <!-- Component rows -->
+              <a
+                href="#"
+                class="component-row d-flex align-items-center px-3 py-2"
+                style="grid-template-columns: 4px 1fr 110px 140px 110px"
+              >
+                <span class="type-stripe stripe-receiver" style="height: 36px"></span>
+                <div class="min-w-0 flex-grow-1 ps-3" style="min-width: 0">
+                  <div class="fw-semibold">
+                    Kafka Receiver <code class="small text-muted ms-1">kafkareceiver</code>
+                  </div>
+                  <small class="text-muted text-truncate d-block"
+                    >Reads telemetry data from Kafka topics. Supports OTLP, Jaeger, and Zipkin
+                    payloads.</small
+                  >
+                </div>
+                <span class="text-muted small" style="width: 110px">Receiver</span>
+                <span class="text-muted small" style="width: 140px">traces · metrics · logs</span>
+                <span class="pill-status pill-beta" style="width: 80px; justify-content: center"
+                  >beta</span
+                >
+              </a>
+
+              <a href="#" class="component-row d-flex align-items-center px-3 py-2">
+                <span class="type-stripe stripe-receiver" style="height: 36px"></span>
+                <div class="flex-grow-1 ps-3" style="min-width: 0">
+                  <div class="fw-semibold">
+                    OTLP Receiver <code class="small text-muted ms-1">otlpreceiver</code>
+                  </div>
+                  <small class="text-muted text-truncate d-block"
+                    >Accepts OTLP traces, metrics, and logs over gRPC and HTTP.</small
+                  >
+                </div>
+                <span class="text-muted small" style="width: 110px">Receiver</span>
+                <span class="text-muted small" style="width: 140px">traces · metrics · logs</span>
+                <span class="pill-status pill-stable" style="width: 80px; justify-content: center"
+                  >stable</span
+                >
+              </a>
+
+              <a href="#" class="component-row d-flex align-items-center px-3 py-2">
+                <span class="type-stripe stripe-receiver" style="height: 36px"></span>
+                <div class="flex-grow-1 ps-3" style="min-width: 0">
+                  <div class="fw-semibold">
+                    Prometheus Receiver
+                    <code class="small text-muted ms-1">prometheusreceiver</code>
+                  </div>
+                  <small class="text-muted text-truncate d-block"
+                    >Scrapes Prometheus metrics from configured targets.</small
+                  >
+                </div>
+                <span class="text-muted small" style="width: 110px">Receiver</span>
+                <span class="text-muted small" style="width: 140px">metrics</span>
+                <span class="pill-status pill-beta" style="width: 80px; justify-content: center"
+                  >beta</span
+                >
+              </a>
+
+              <a href="#" class="component-row d-flex align-items-center px-3 py-2">
+                <span class="type-stripe stripe-receiver" style="height: 36px"></span>
+                <div class="flex-grow-1 ps-3" style="min-width: 0">
+                  <div class="fw-semibold">
+                    Jaeger Receiver <code class="small text-muted ms-1">jaegerreceiver</code>
+                  </div>
+                  <small class="text-muted text-truncate d-block"
+                    >Receives traces in Jaeger formats over gRPC, HTTP, and Thrift.</small
+                  >
+                </div>
+                <span class="text-muted small" style="width: 110px">Receiver</span>
+                <span class="text-muted small" style="width: 140px">traces</span>
+                <span class="pill-status pill-stable" style="width: 80px; justify-content: center"
+                  >stable</span
+                >
+              </a>
+
+              <a href="#" class="component-row d-flex align-items-center px-3 py-2">
+                <span class="type-stripe stripe-receiver" style="height: 36px"></span>
+                <div class="flex-grow-1 ps-3" style="min-width: 0">
+                  <div class="fw-semibold">
+                    Zipkin Receiver <code class="small text-muted ms-1">zipkinreceiver</code>
+                  </div>
+                  <small class="text-muted text-truncate d-block"
+                    >Receives spans from Zipkin clients in JSON or Thrift.</small
+                  >
+                </div>
+                <span class="text-muted small" style="width: 110px">Receiver</span>
+                <span class="text-muted small" style="width: 140px">traces</span>
+                <span class="pill-status pill-stable" style="width: 80px; justify-content: center"
+                  >stable</span
+                >
+              </a>
+
+              <a href="#" class="component-row d-flex align-items-center px-3 py-2">
+                <span class="type-stripe stripe-receiver" style="height: 36px"></span>
+                <div class="flex-grow-1 ps-3" style="min-width: 0">
+                  <div class="fw-semibold">
+                    Filelog Receiver <code class="small text-muted ms-1">filelogreceiver</code>
+                  </div>
+                  <small class="text-muted text-truncate d-block"
+                    >Tails log files and parses them into OTel logs.</small
+                  >
+                </div>
+                <span class="text-muted small" style="width: 110px">Receiver</span>
+                <span class="text-muted small" style="width: 140px">logs</span>
+                <span class="pill-status pill-beta" style="width: 80px; justify-content: center"
+                  >beta</span
+                >
+              </a>
+
+              <a href="#" class="component-row d-flex align-items-center px-3 py-2">
+                <span class="type-stripe stripe-receiver" style="height: 36px"></span>
+                <div class="flex-grow-1 ps-3" style="min-width: 0">
+                  <div class="fw-semibold">
+                    Aerospike Receiver <code class="small text-muted ms-1">aerospikereceiver</code>
+                  </div>
+                  <small class="text-muted text-truncate d-block"
+                    >Collects performance metrics from one or more Aerospike nodes.</small
+                  >
+                </div>
+                <span class="text-muted small" style="width: 110px">Receiver</span>
+                <span class="text-muted small" style="width: 140px">metrics</span>
+                <span class="pill-status pill-alpha" style="width: 80px; justify-content: center"
+                  >alpha</span
+                >
+              </a>
+
+              <!-- Pagination -->
+              <div
+                class="d-flex justify-content-between align-items-center small border-top px-3 py-2"
+                style="background: hsl(var(--color-muted) / 0.5)"
+              >
+                <span class="text-muted">Showing 1–8 of 42</span>
+                <ul class="pagination pagination-sm mb-0">
+                  <li class="page-item disabled"><a class="page-link" href="#">‹</a></li>
+                  <li class="page-item active">
+                    <a class="page-link" href="#" style="background: #4f62ad; border-color: #4f62ad"
+                      >1</a
+                    >
+                  </li>
+                  <li class="page-item"><a class="page-link" href="#">2</a></li>
+                  <li class="page-item"><a class="page-link" href="#">3</a></li>
+                  <li class="page-item"><a class="page-link" href="#">›</a></li>
+                </ul>
+              </div>
+            </div>
+          </main>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== DETAIL =================== -->
+    <section id="page-detail" class="page d-none">
+      <div class="sub-nav py-2">
+        <div class="container-xl">
+          <nav class="breadcrumb-otel">
+            <ol class="breadcrumb small mb-0">
+              <li class="breadcrumb-item"><a href="#">Explorer</a></li>
+              <li class="breadcrumb-item"><a href="#">Collector</a></li>
+              <li class="breadcrumb-item"><a href="#">Receivers</a></li>
+              <li class="breadcrumb-item active text-otel-purple">Kafka Receiver</li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+
+      <div class="container-xl py-4">
+        <div class="row g-4">
+          <!-- Left rail: sibling nav + on-page anchors -->
+          <aside class="col-lg-3">
+            <div style="position: sticky; top: 80px">
+              <div class="card mb-3">
+                <div class="card-body p-3">
+                  <small class="text-uppercase fw-bold text-muted" style="letter-spacing: 0.08em"
+                    >Receivers · 98</small
+                  >
+                  <input class="form-control form-control-sm mt-2 mb-2" placeholder="Filter…" />
+                  <ul class="list-unstyled small mb-0" style="max-height: 280px; overflow-y: auto">
+                    <li>
+                      <a class="d-block text-decoration-none text-muted rounded px-2 py-1" href="#"
+                        >Jaeger Receiver</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        class="d-block fw-semibold rounded px-2 py-1"
+                        href="#"
+                        style="background: rgba(245, 168, 0, 0.15); color: #f5a800"
+                        >Kafka Receiver</a
+                      >
+                    </li>
+                    <li>
+                      <a class="d-block text-decoration-none text-muted rounded px-2 py-1" href="#"
+                        >OTLP Receiver</a
+                      >
+                    </li>
+                    <li>
+                      <a class="d-block text-decoration-none text-muted rounded px-2 py-1" href="#"
+                        >Prometheus Receiver</a
+                      >
+                    </li>
+                    <li>
+                      <a class="d-block text-decoration-none text-muted rounded px-2 py-1" href="#"
+                        >Zipkin Receiver</a
+                      >
+                    </li>
+                    <li>
+                      <a class="d-block text-decoration-none text-muted rounded px-2 py-1" href="#"
+                        >Filelog Receiver</a
+                      >
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-body p-3">
+                  <small class="text-uppercase fw-bold text-muted" style="letter-spacing: 0.08em"
+                    >On this page</small
+                  >
+                  <ul class="list-unstyled small mt-2 mb-0">
+                    <li><a class="text-decoration-none fw-semibold" href="#">Overview</a></li>
+                    <li><a class="text-decoration-none text-muted" href="#">Configuration</a></li>
+                    <li>
+                      <a class="text-decoration-none text-muted" href="#">Emitted attributes</a>
+                    </li>
+                    <li>
+                      <a class="text-decoration-none text-muted" href="#">Pipeline placement</a>
+                    </li>
+                    <li><a class="text-decoration-none text-muted" href="#">Version history</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          <!-- Center: content -->
+          <main class="col-lg-6">
+            <!-- Header card -->
+            <div class="card mb-3">
+              <div class="d-flex">
+                <span class="type-stripe stripe-receiver"></span>
+                <div class="card-body">
+                  <div class="d-flex justify-content-between mb-2 flex-wrap gap-2">
+                    <small class="text-uppercase fw-bold text-muted" style="letter-spacing: 0.08em"
+                      >Receiver · contrib</small
+                    >
+                    <div class="d-flex align-items-center gap-2">
+                      <span class="pill-status pill-beta">beta</span>
+                      <small class="text-muted">v0.150.0</small>
+                    </div>
+                  </div>
+                  <h1 class="h2 fw-bold mb-1">Kafka Receiver</h1>
+                  <code class="small text-muted">kafkareceiver</code>
+                  <p class="text-muted mt-3 mb-3">
+                    Reads telemetry data from Kafka topics. Supports OTLP, Jaeger, and Zipkin
+                    payloads. Configurable consumer groups, encoding, and TLS.
+                  </p>
+                  <div class="d-flex small flex-wrap gap-2">
+                    <span class="badge text-bg-light"
+                      ><i class="fa fa-bezier-curve me-1"></i>traces</span
+                    >
+                    <span class="badge text-bg-light"
+                      ><i class="fa fa-chart-line me-1"></i>metrics</span
+                    >
+                    <span class="badge text-bg-light"><i class="fa fa-receipt me-1"></i>logs</span>
+                    <span class="text-muted mx-1">·</span>
+                    <a class="badge text-bg-secondary text-decoration-none" href="#"
+                      ><i class="fa-brands fa-github me-1"></i>GitHub</a
+                    >
+                    <a class="badge text-bg-secondary text-decoration-none" href="#"
+                      ><i class="fa fa-book me-1"></i>Docs</a
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pipeline placement -->
+            <div class="card mb-3">
+              <div class="card-body">
+                <h3 class="h6 fw-bold mb-3">
+                  Where this fits
+                  <small class="text-muted fw-normal">— in a typical pipeline</small>
+                </h3>
+                <div class="d-flex align-items-center small flex-wrap gap-2">
+                  <span
+                    class="badge fw-semibold p-2"
+                    style="
+                      background: hsl(var(--color-stripe-receiver) / 0.18);
+                      color: hsl(var(--color-stripe-receiver));
+                      border: 1px solid hsl(var(--color-stripe-receiver) / 0.4);
+                    "
+                    >Kafka Receiver</span
+                  >
+                  <span class="text-muted">→</span>
+                  <span class="badge text-bg-light border">batch</span>
+                  <span class="text-muted">→</span>
+                  <span class="badge text-bg-light border">resource</span>
+                  <span class="text-muted">→</span>
+                  <span class="badge text-bg-light border">otlp exporter</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tabbed embedded content -->
+            <div class="card">
+              <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs">
+                  <li class="nav-item"><a class="nav-link active" href="#">Configuration</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#">README</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#">Emitted attributes</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#">Examples</a></li>
+                </ul>
+              </div>
+              <div class="card-body">
+                <p class="text-muted small mb-3">
+                  All configuration keys for <code>kafkareceiver</code> in v0.150.0.
+                </p>
+                <div class="table-responsive">
+                  <table class="table-sm table-striped mb-0 table">
+                    <thead>
+                      <tr>
+                        <th>Key</th>
+                        <th>Type</th>
+                        <th>Default</th>
+                        <th>Description</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><code>brokers</code></td>
+                        <td><span class="badge text-bg-light">[]string</span></td>
+                        <td><code class="small">["localhost:9092"]</code></td>
+                        <td class="small">Kafka broker addresses.</td>
+                      </tr>
+                      <tr>
+                        <td><code>topic</code></td>
+                        <td><span class="badge text-bg-light">string</span></td>
+                        <td><code class="small">"otlp_spans"</code></td>
+                        <td class="small">Topic to subscribe to.</td>
+                      </tr>
+                      <tr>
+                        <td><code>encoding</code></td>
+                        <td><span class="badge text-bg-light">enum</span></td>
+                        <td><code class="small">"otlp_proto"</code></td>
+                        <td class="small">Encoding of incoming records.</td>
+                      </tr>
+                      <tr>
+                        <td><code>group_id</code></td>
+                        <td><span class="badge text-bg-light">string</span></td>
+                        <td><code class="small">"otel-collector"</code></td>
+                        <td class="small">Consumer group identifier.</td>
+                      </tr>
+                      <tr>
+                        <td><code>client_id</code></td>
+                        <td><span class="badge text-bg-light">string</span></td>
+                        <td><code class="small">"otel-collector"</code></td>
+                        <td class="small">Sets the client ID for kafka.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </main>
+
+          <!-- Right: version timeline + compatibility -->
+          <aside class="col-lg-3">
+            <div style="position: sticky; top: 80px">
+              <div class="card mb-3">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3 class="h6 fw-bold mb-0">Version history</h3>
+                    <a class="small text-otel-purple text-decoration-none fw-semibold" href="#"
+                      >Diff →</a
+                    >
+                  </div>
+                  <div class="small text-muted d-flex align-items-center mb-3 gap-1">
+                    <span>Compare</span>
+                    <select class="form-select form-select-sm" style="width: auto">
+                      <option>v0.149.0</option>
+                    </select>
+                    <span>→</span>
+                    <select class="form-select form-select-sm" style="width: auto">
+                      <option>v0.150.0</option>
+                    </select>
+                  </div>
+
+                  <ul class="list-unstyled mb-0">
+                    <li
+                      class="position-relative mb-3 ps-3"
+                      style="border-left: 2px solid hsl(var(--color-success))"
+                    >
+                      <span
+                        class="position-absolute rounded-circle"
+                        style="
+                          left: -7px;
+                          top: 5px;
+                          width: 12px;
+                          height: 12px;
+                          background: hsl(var(--color-success));
+                        "
+                      ></span>
+                      <div class="fw-semibold small">v0.150.0</div>
+                      <small class="text-muted">2 days ago · promoted to beta</small>
+                      <ul class="small text-muted mt-1 ps-3">
+                        <li>Added <code class="small">message_marking</code> option</li>
+                        <li>TLS config keys renamed</li>
+                      </ul>
+                    </li>
+                    <li
+                      class="position-relative mb-2 ps-3"
+                      style="border-left: 2px solid hsl(var(--color-border))"
+                    >
+                      <span
+                        class="position-absolute rounded-circle bg-secondary"
+                        style="left: -7px; top: 5px; width: 12px; height: 12px"
+                      ></span>
+                      <div class="fw-semibold small">v0.149.0</div>
+                      <small class="text-muted">3 weeks ago</small>
+                    </li>
+                    <li
+                      class="position-relative mb-2 ps-3"
+                      style="border-left: 2px solid hsl(var(--color-border))"
+                    >
+                      <span
+                        class="position-absolute rounded-circle bg-secondary"
+                        style="left: -7px; top: 5px; width: 12px; height: 12px"
+                      ></span>
+                      <div class="fw-semibold small">v0.148.0</div>
+                      <small class="text-muted">5 weeks ago</small>
+                    </li>
+                    <li
+                      class="position-relative mb-2 ps-3"
+                      style="border-left: 2px solid hsl(var(--color-border))"
+                    >
+                      <span
+                        class="position-absolute rounded-circle bg-secondary"
+                        style="left: -7px; top: 5px; width: 12px; height: 12px"
+                      ></span>
+                      <div class="fw-semibold small">v0.147.0</div>
+                      <small class="text-muted">7 weeks ago</small>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-body">
+                  <h3 class="h6 fw-bold mb-3">Compatibility</h3>
+                  <ul class="list-unstyled small mb-0">
+                    <li class="d-flex justify-content-between py-1">
+                      <span class="text-muted">Min collector</span><code>v0.140.0</code>
+                    </li>
+                    <li class="d-flex justify-content-between py-1">
+                      <span class="text-muted">Min Go</span><code>1.22</code>
+                    </li>
+                    <li class="d-flex justify-content-between py-1">
+                      <span class="text-muted">Distribution</span><span>contrib</span>
+                    </li>
+                    <li class="d-flex justify-content-between py-1">
+                      <span class="text-muted">License</span><span>Apache 2.0</span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== CNCF callout (every page) =================== -->
+    <section class="box-muted text-center" style="padding: 2rem 0">
+      <div class="container-xl">
+        <p class="small mb-2">
+          <strong
+            >OpenTelemetry is a
+            <a href="https://cncf.io" class="text-decoration-none text-otel-purple">CNCF</a>
+            incubating project.</strong
+          ><br />
+          Formed through a merger of the OpenTracing and OpenCensus projects.
+        </p>
+        <div class="text-muted small" style="opacity: 0.6">[CNCF logo placeholder]</div>
+      </div>
+    </section>
+
+    <!-- =================== Footer (matches td-footer) =================== -->
+    <footer class="footer-otel">
+      <div class="container-xl">
+        <div class="row align-items-center">
+          <div class="col-md-4 mb-md-0 mb-2">
+            <ul class="list-inline mb-0">
+              <li class="list-inline-item me-2">
+                <a href="#" title="Mailing Lists"><i class="fa fa-envelope"></i></a>
+              </li>
+              <li class="list-inline-item me-2">
+                <a href="#" title="Bluesky"><i class="fa-brands fa-bluesky"></i></a>
+              </li>
+              <li class="list-inline-item me-2">
+                <a href="#" title="Mastodon"><i class="fa-brands fa-mastodon"></i></a>
+              </li>
+              <li class="list-inline-item me-2">
+                <a href="#" title="Stack Overflow"><i class="fa-brands fa-stack-overflow"></i></a>
+              </li>
+              <li class="list-inline-item me-2">
+                <a href="#" title="OTel logos"><i class="fa-solid fa-image"></i></a>
+              </li>
+              <li class="list-inline-item me-2">
+                <a href="#" title="Meeting Recordings"><i class="fa-solid fa-video"></i></a>
+              </li>
+              <li class="list-inline-item me-2">
+                <a href="#" title="Site analytics"><i class="fa-solid fa-chart-line"></i></a>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-4 mb-md-0 small mb-2 text-center">
+            © 2019–present OpenTelemetry Authors<br />
+            <span style="opacity: 0.6">Docs CC BY 4.0 · All Rights Reserved</span>
+          </div>
+          <div class="col-md-4 text-md-end">
+            <ul class="list-inline mb-0">
+              <li class="list-inline-item me-2">
+                <a href="#" title="GitHub"><i class="fa-brands fa-github"></i></a>
+              </li>
+              <li class="list-inline-item me-2">
+                <a href="#" title="Slack"><i class="fa-brands fa-slack"></i></a>
+              </li>
+              <li class="list-inline-item me-2">
+                <a href="#" title="DevStats"><i class="fa-solid fa-chart-area"></i></a>
+              </li>
+              <li class="list-inline-item me-2">
+                <a href="#" title="Privacy Policy"><i class="fa fa-book"></i></a>
+              </li>
+              <li class="list-inline-item me-2">
+                <a href="#" title="Trademark Usage"><i class="fa-solid fa-trademark"></i></a>
+              </li>
+              <li class="list-inline-item me-2">
+                <a href="#" title="Marketing Guidelines"><i class="fa-solid fa-bullhorn"></i></a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // Page switcher
+      const buttons = document.querySelectorAll("[data-page]");
+      const pages = {
+        home: document.getElementById("page-home"),
+        landing: document.getElementById("page-landing"),
+        list: document.getElementById("page-list"),
+        detail: document.getElementById("page-detail"),
+      };
+      function show(name) {
+        Object.entries(pages).forEach(([k, el]) => {
+          if (k === name) {
+            el.classList.remove("d-none");
+          } else {
+            el.classList.add("d-none");
+          }
+        });
+        buttons.forEach((b) => (b.dataset.active = b.dataset.page === name ? "true" : "false"));
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      buttons.forEach((b) => b.addEventListener("click", () => show(b.dataset.page)));
+
+      // Theme toggle (mirrors opentelemetry.io's td-color-theme key)
+      const root = document.documentElement;
+      function applyTheme(theme) {
+        if (theme === "auto") {
+          theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+        }
+        root.setAttribute("data-bs-theme", theme);
+        try {
+          localStorage.setItem("td-color-theme", theme);
+        } catch (e) {}
+      }
+      const stored = (() => {
+        try {
+          return localStorage.getItem("td-color-theme");
+        } catch (e) {
+          return null;
+        }
+      })();
+      applyTheme(stored || "light");
+      document.getElementById("theme-toggle").addEventListener("click", () => {
+        const current = root.getAttribute("data-bs-theme");
+        applyTheme(current === "dark" ? "light" : "dark");
+      });
+    </script>
+  </body>
+</html>

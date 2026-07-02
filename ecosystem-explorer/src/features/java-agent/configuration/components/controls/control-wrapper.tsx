@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import type { ConfigNodeBase, Constraints } from "@/types/configuration";
 import type { ConfigValue } from "@/types/configuration-builder";
 import { InfoTooltip } from "@/components/ui/info-tooltip";
@@ -52,21 +53,23 @@ interface ControlWrapperProps {
 }
 
 function DefaultBadge() {
+  const { t } = useTranslation("java-agent");
   return (
     <span className="border-border/60 text-muted-foreground rounded border border-dashed px-1.5 py-0.5 text-[10px] font-medium tracking-wider uppercase">
-      default
+      {t("builder.controls.default")}
     </span>
   );
 }
 
 function ResetLink({ onClick }: { onClick: () => void }) {
+  const { t } = useTranslation("java-agent");
   return (
     <button
       type="button"
       onClick={onClick}
       className="text-primary text-xs font-medium hover:underline"
     >
-      Reset
+      {t("builder.controls.reset")}
     </button>
   );
 }
@@ -97,6 +100,11 @@ export function ControlWrapper({
 
   return (
     <div className="space-y-2">
+      {labelHidden && inputId && (
+        <label htmlFor={inputId} className="sr-only">
+          {node.label}
+        </label>
+      )}
       {!labelHidden && (
         <div className="flex items-center gap-2">
           {inputId ? (
@@ -121,6 +129,12 @@ export function ControlWrapper({
               {trailing}
             </span>
           )}
+        </div>
+      )}
+      {labelHidden && inlineControl && (
+        <div className="flex items-center gap-2">
+          {children}
+          {trailing}
         </div>
       )}
       {!inlineControl && (

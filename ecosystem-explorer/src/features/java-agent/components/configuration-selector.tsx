@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Info } from "lucide-react";
+import { Info, ChevronDown } from "lucide-react";
+import { useTranslation, getI18n } from "react-i18next";
 import type { Telemetry } from "@/types/javaagent";
 
 interface ConfigurationSelectorProps {
@@ -23,7 +24,7 @@ interface ConfigurationSelectorProps {
 }
 
 function getConfigLabel(when: string): string {
-  if (when === "default") return "Default";
+  if (when === "default") return getI18n().t("configSelector.defaultOption", { ns: "java-agent" });
   return when;
 }
 
@@ -32,6 +33,7 @@ export function ConfigurationSelector({
   selectedWhen,
   onWhenChange,
 }: ConfigurationSelectorProps) {
+  const { t } = useTranslation("java-agent");
   return (
     <div className="mx-auto max-w-3xl">
       <div className="border-border/30 bg-card/40 flex flex-col gap-4 rounded-xl border p-6 shadow-sm backdrop-blur-sm md:flex-row md:items-center md:justify-between">
@@ -40,31 +42,37 @@ export function ConfigurationSelector({
           <div className="bg-secondary/10 border-secondary/20 flex items-center gap-2 rounded-lg border px-3 py-2">
             <Info className="text-secondary h-4 w-4" aria-hidden="true" />
             <span className="text-foreground/90 text-xs font-medium">
-              Telemetry varies by configuration
+              {t("configSelector.banner")}
             </span>
           </div>
         </div>
 
         {/* Right: Label + Select */}
-        <div className="flex items-center gap-3">
+        <div className="flex w-full items-center gap-3 sm:w-auto">
           <label
             htmlFor="config-select"
-            className="bg-muted/50 text-foreground/70 rounded-md px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase"
+            className="bg-muted/50 text-foreground/70 shrink-0 rounded-md px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase"
           >
-            Configuration
+            {t("configSelector.label")}
           </label>
-          <select
-            id="config-select"
-            value={selectedWhen}
-            onChange={(e) => onWhenChange(e.target.value)}
-            className="border-primary/20 bg-primary/5 text-foreground hover:border-primary/40 hover:bg-primary/10 focus:ring-primary/50 focus:border-primary/50 min-w-[200px] cursor-pointer rounded-lg border-2 px-4 py-2.5 text-sm font-medium shadow-sm transition-all duration-200 hover:shadow-md focus:ring-2 focus:outline-none"
-          >
-            {telemetry.map((t) => (
-              <option key={t.when} value={t.when}>
-                {getConfigLabel(t.when)}
-              </option>
-            ))}
-          </select>
+          <div className="relative flex-1 sm:flex-none">
+            <select
+              id="config-select"
+              value={selectedWhen}
+              onChange={(e) => onWhenChange(e.target.value)}
+              className="border-border/60 bg-background/80 text-foreground hover:border-primary/40 focus:border-primary/50 focus:ring-primary/20 w-full min-w-0 cursor-pointer appearance-none rounded-lg border-2 py-2.5 pr-10 pl-4 text-sm font-medium [color-scheme:dark] backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none sm:min-w-[200px]"
+            >
+              {telemetry.map((t) => (
+                <option key={t.when} value={t.when}>
+                  {getConfigLabel(t.when)}
+                </option>
+              ))}
+            </select>
+            <ChevronDown
+              className="text-muted-foreground pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2"
+              aria-hidden="true"
+            />
+          </div>
         </div>
       </div>
     </div>

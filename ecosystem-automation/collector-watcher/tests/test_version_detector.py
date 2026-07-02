@@ -15,10 +15,11 @@
 """Tests for version detector."""
 
 from pathlib import Path
+from subprocess import CalledProcessError
 
-import git
 import pytest
 from semantic_version import Version
+from watcher_common.testing import git_commit, init_repo, run_git
 from watcher_common.version_detector import VersionDetector
 
 
@@ -27,41 +28,40 @@ def temp_git_repo(tmp_path):
     """Create a temporary git repository with some version tags."""
     repo_path = tmp_path / "test_repo"
     repo_path.mkdir()
-
-    repo = git.Repo.init(repo_path)
+    init_repo(repo_path)
 
     test_file = repo_path / "test.txt"
+
     test_file.write_text("initial content")
-    repo.index.add(["test.txt"])
-    repo.index.commit("Initial commit")
+    run_git(repo_path, "add", "test.txt")
+    git_commit(repo_path, "Initial commit")
 
-    # Explicitly create and checkout main branch to ensure it exists
+    # Ensure the branch is named "main" regardless of git's default.
     try:
-        repo.git.checkout("-b", "main")
-    except git.exc.GitCommandError:
-        # If main already exists (depends on git config), just checkout
-        repo.git.checkout("main")
+        run_git(repo_path, "checkout", "-b", "main")
+    except CalledProcessError:
+        run_git(repo_path, "checkout", "main")
 
-    repo.create_tag("v0.110.0")
+    run_git(repo_path, "tag", "v0.110.0")
 
     test_file.write_text("update 1")
-    repo.index.add(["test.txt"])
-    repo.index.commit("Update 1")
-    repo.create_tag("v0.111.0")
+    run_git(repo_path, "add", "test.txt")
+    git_commit(repo_path, "Update 1")
+    run_git(repo_path, "tag", "v0.111.0")
 
     test_file.write_text("update 2")
-    repo.index.add(["test.txt"])
-    repo.index.commit("Update 2")
-    repo.create_tag("v0.112.0")
+    run_git(repo_path, "add", "test.txt")
+    git_commit(repo_path, "Update 2")
+    run_git(repo_path, "tag", "v0.112.0")
 
     # Add a snapshot tag (should be ignored in release detection)
     test_file.write_text("update 3")
-    repo.index.add(["test.txt"])
-    repo.index.commit("Update 3")
-    repo.create_tag("v0.113.0-SNAPSHOT")
+    run_git(repo_path, "add", "test.txt")
+    git_commit(repo_path, "Update 3")
+    run_git(repo_path, "tag", "v0.113.0-SNAPSHOT")
 
     # Add an invalid tag (should be ignored)
-    repo.create_tag("not-a-version")
+    run_git(repo_path, "tag", "not-a-version")
 
     return repo_path
 
@@ -71,20 +71,17 @@ def empty_git_repo(tmp_path):
     """Create an empty git repository with no tags."""
     repo_path = tmp_path / "empty_repo"
     repo_path.mkdir()
-
-    repo = git.Repo.init(repo_path)
+    init_repo(repo_path)
 
     test_file = repo_path / "test.txt"
     test_file.write_text("initial")
-    repo.index.add(["test.txt"])
-    repo.index.commit("Initial commit")
+    run_git(repo_path, "add", "test.txt")
+    git_commit(repo_path, "Initial commit")
 
-    # Explicitly create and checkout main branch to ensure it exists
     try:
-        repo.git.checkout("-b", "main")
-    except git.exc.GitCommandError:
-        # If main already exists (depends on git config), just checkout
-        repo.git.checkout("main")
+        run_git(repo_path, "checkout", "-b", "main")
+    except CalledProcessError:
+        run_git(repo_path, "checkout", "main")
 
     return repo_path
 
@@ -93,7 +90,6 @@ class TestVersionDetector:
     def test_init_valid_path(self, temp_git_repo):
         detector = VersionDetector(temp_git_repo)
         assert detector.repo_path == Path(temp_git_repo)
-        assert detector.repo is not None
 
     def test_init_invalid_path(self, tmp_path):
         invalid_path = tmp_path / "nonexistent"
@@ -148,8 +144,10 @@ class TestVersionDetector:
 
         detector.checkout_version(version)
 
-        # Verify we're at the correct tag
-        assert detector.repo.head.commit == detector.repo.tags["v0.111.0"].commit
+        # Verify HEAD points to the same commit as the tag
+        head_sha = run_git(temp_git_repo, "rev-parse", "HEAD")
+        tag_sha = run_git(temp_git_repo, "rev-list", "-n", "1", "v0.111.0")
+        assert head_sha == tag_sha
 
     def test_checkout_version_invalid(self, temp_git_repo):
         detector = VersionDetector(temp_git_repo)
@@ -167,8 +165,36 @@ class TestVersionDetector:
         # Then checkout main
         detector.checkout_main()
 
-        current_branch = detector.repo.active_branch.name
+        current_branch = run_git(temp_git_repo, "branch", "--show-current")
         assert current_branch == "main"
+
+    def test_read_file_at_ref_returns_content_at_tag(self, temp_git_repo):
+        detector = VersionDetector(temp_git_repo)
+
+        # Each tag pins a different revision of test.txt.
+        assert detector.read_file_at_ref("v0.110.0", "test.txt") == "initial content"
+        assert detector.read_file_at_ref("v0.111.0", "test.txt") == "update 1"
+        assert detector.read_file_at_ref("v0.112.0", "test.txt") == "update 2"
+
+    def test_read_file_at_ref_does_not_change_checkout(self, temp_git_repo):
+        """Reading an old ref must not disturb the working-tree checkout."""
+        detector = VersionDetector(temp_git_repo)
+        detector.checkout_main()
+
+        content = detector.read_file_at_ref("v0.110.0", "test.txt")
+
+        assert content == "initial content"
+        # Still on main, working tree unchanged.
+        assert run_git(temp_git_repo, "branch", "--show-current") == "main"
+        assert (temp_git_repo / "test.txt").read_text() == "update 3"
+
+    def test_read_file_at_ref_missing_path_returns_none(self, temp_git_repo):
+        detector = VersionDetector(temp_git_repo)
+        assert detector.read_file_at_ref("v0.110.0", "does/not/exist.yaml") is None
+
+    def test_read_file_at_ref_missing_ref_returns_none(self, temp_git_repo):
+        detector = VersionDetector(temp_git_repo)
+        assert detector.read_file_at_ref("v9.9.9", "test.txt") is None
 
     def test_determine_next_snapshot_version(self, temp_git_repo):
         detector = VersionDetector(temp_git_repo)

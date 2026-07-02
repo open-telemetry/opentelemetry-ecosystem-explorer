@@ -1,0 +1,28 @@
+{
+  "description": "The Drain Processor applies the Drain log clustering algorithm to log records as they pass through the pipeline, deriving a template string (e.g. \"user <*> logged in from <*>\") and attaching it as an attribute on each record.",
+  "display_name": "Drain Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-drainprocessor",
+  "name": "drainprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "MikeGoldsmith",
+        "atoulme",
+        "martinjt"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs"
+      ]
+    }
+  },
+  "type": "processor"
+}

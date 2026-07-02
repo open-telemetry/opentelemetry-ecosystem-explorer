@@ -16,9 +16,209 @@
 
 import pytest
 from explorer_db_builder.instrumentation_transformer import (
+    _collect_search_terms,
+    _strip_version_range,
     _transform_0_1_to_0_2,
+    make_index_instrumentation,
+    make_list_instrumentation,
     transform_instrumentation_format,
 )
+
+
+class TestMakeListInstrumentation:
+    def test_collapses_telemetry_to_flags_and_drops_heavy_telemetry(self):
+        instrumentation = {
+            "name": "akka-actor-2.3",
+            "display_name": "Akka Actor",
+            "description": "Akka actor instrumentation",
+            "scope": {"name": "io.opentelemetry.akka-actor-2.3"},
+            "has_javaagent": True,
+            "has_standalone_library": False,
+            "semantic_conventions": ["messaging"],
+            "features": ["context-propagation"],
+            "telemetry": [{"when": "always", "spans": [{"span_kind": "CLIENT"}], "metrics": []}],
+        }
+
+        entry = make_list_instrumentation(instrumentation, is_custom=False)
+
+        # Presence flags precomputed from telemetry; the heavy telemetry array dropped.
+        assert entry["has_spans"] is True
+        assert entry["has_metrics"] is False
+        assert "telemetry" not in entry
+        assert entry["_is_custom"] is False
+        # Fields the list page reads are preserved.
+        assert entry["name"] == "akka-actor-2.3"
+        assert entry["semantic_conventions"] == ["messaging"]
+        assert entry["scope"] == {"name": "io.opentelemetry.akka-actor-2.3"}
+
+    def test_preserves_configurations_for_config_builder(self):
+        # The Configuration Builder reads `configurations` off the slim list
+        # entries to render per-module options. Dropping them showed "No
+        # configurable options for this module" for every module once a bundle
+        # existed (CI missed it because committed data has no bundle_hash yet).
+        configs = [
+            {
+                "name": "otel.x",
+                "declarative_name": "java.x",
+                "description": "d",
+                "type": "boolean",
+                "default": True,
+            }
+        ]
+        entry = make_list_instrumentation({"name": "akka-actor-2.3", "configurations": configs}, is_custom=False)
+
+        assert entry["configurations"] == configs
+
+    def test_preserves_disabled_by_default_for_config_builder(self):
+        # The Configuration Builder derives each module's default enabled/disabled
+        # state (and the initial customization toggle) from `disabled_by_default`.
+        # Dropping it flipped default-disabled modules (e.g. dropwizard_metrics)
+        # to "enabled by default" and inverted the YAML toggle.
+        entry = make_list_instrumentation(
+            {"name": "dropwizard-metrics-1.5", "disabled_by_default": True}, is_custom=False
+        )
+
+        assert entry["disabled_by_default"] is True
+
+    def test_marks_custom_and_omits_absent_optional_fields(self):
+        entry = make_list_instrumentation({"name": "my-custom"}, is_custom=True)
+
+        assert entry["_is_custom"] is True
+        assert entry["has_spans"] is False
+        assert entry["has_metrics"] is False
+        # Absent optional fields are omitted so the content hash stays stable.
+        assert "display_name" not in entry
+        assert "semantic_conventions" not in entry
+        assert "configurations" not in entry
+        assert "disabled_by_default" not in entry
+
+
+class TestMakeIndexInstrumentation:
+    @staticmethod
+    def _full_instrumentation() -> dict:
+        return {
+            "name": "kafka-clients-2.6",
+            "display_name": "Kafka Clients",
+            "description": "Kafka client instrumentation",
+            "has_standalone_library": True,
+            "library_link": "https://kafka.apache.org",
+            "source_path": "instrumentation/kafka/kafka-clients-2.6",
+            "minimum_java_version": 8,
+            "scope": {"name": "io.opentelemetry.kafka-clients-2.6", "schema_url": "https://x/1.0"},
+            "semantic_conventions": ["messaging"],
+            "features": ["TRACING", "METRICS"],
+            "javaagent_target_versions": ["org.apache.kafka:kafka-clients:[2.6,)"],
+            "configurations": [
+                {
+                    "name": "otel.instrumentation.kafka.experimental-span-attributes",
+                    "declarative_name": "experimental_span_attributes",
+                    "description": "Enable experimental span attributes",
+                    "type": "boolean",
+                    "default": False,
+                    "examples": ["true"],
+                }
+            ],
+            "telemetry": [
+                {
+                    "when": "on publish",
+                    "metrics": [
+                        {
+                            "name": "messaging.publish.duration",
+                            "description": "Publish duration.",
+                            "instrument": "histogram",
+                            "data_type": "HISTOGRAM",
+                            "unit": "s",
+                            "attributes": [{"name": "messaging.system", "type": "STRING"}],
+                        }
+                    ],
+                    "spans": [
+                        {"span_kind": "PRODUCER", "attributes": [{"name": "messaging.system", "type": "STRING"}]}
+                    ],
+                }
+            ],
+        }
+
+    def test_collects_distinctive_identifiers(self):
+        terms = _collect_search_terms(self._full_instrumentation())
+        for expected in [
+            "io.opentelemetry.kafka-clients-2.6",  # scope.name
+            "messaging",  # semantic convention
+            "TRACING",
+            "METRICS",
+            "org.apache.kafka:kafka-clients",  # maven coordinate, version range stripped
+            "otel.instrumentation.kafka.experimental-span-attributes",  # config name
+            "experimental_span_attributes",  # config declarative_name
+            "Enable experimental span attributes",  # config description
+            "messaging.publish.duration",  # metric name
+            "Publish duration.",  # metric description
+        ]:
+            assert expected in terms
+
+    def test_excludes_low_signal_and_seeded_fields(self):
+        # Noise (attributes, instrument/unit/data_type, span kind, link/path) is
+        # dropped; name/display_name/description are re-indexed by the frontend.
+        terms = _collect_search_terms(self._full_instrumentation())
+        for excluded in [
+            "https://kafka.apache.org",  # library_link
+            "instrumentation/kafka/kafka-clients-2.6",  # source_path
+            "8",  # minimum_java_version
+            "https://x/1.0",  # scope.schema_url
+            "on publish",  # telemetry.when
+            "histogram",  # metric instrument
+            "HISTOGRAM",  # metric data_type
+            "s",  # metric unit
+            "messaging.system",  # attribute name
+            "STRING",  # attribute type
+            "PRODUCER",  # span kind
+            "org.apache.kafka:kafka-clients:[2.6,)",  # unstripped coordinate
+            "kafka-clients-2.6",
+            "Kafka Clients",
+            "Kafka client instrumentation",
+        ]:
+            assert excluded not in terms
+
+    def test_sorted_deduped_and_deterministic(self):
+        a = self._full_instrumentation()
+        b = self._full_instrumentation()
+        b["features"] = list(reversed(b["features"]))
+        # Two coordinates that strip to the same group:artifact must dedupe to one.
+        b["javaagent_target_versions"] = [
+            "org.apache.kafka:kafka-clients:[2.6,)",
+            "org.apache.kafka:kafka-clients:[3.0,)",
+        ]
+        terms = _collect_search_terms(a)
+        assert terms == sorted(set(terms))
+        b_terms = _collect_search_terms(b)
+        assert b_terms.count("org.apache.kafka:kafka-clients") == 1
+        assert _collect_search_terms(a) == b_terms
+
+    def test_null_safe_on_missing_optional_blocks(self):
+        # No scope, no telemetry, no version metadata -> empty list, never a crash.
+        assert _collect_search_terms({"name": "bare-1.0"}) == []
+        assert _collect_search_terms({"name": "x", "scope": None, "telemetry": None}) == []
+
+    def test_make_index_carries_lightweight_fields_and_search_terms(self):
+        entry = make_index_instrumentation(self._full_instrumentation())
+        assert entry["name"] == "kafka-clients-2.6"
+        assert entry["display_name"] == "Kafka Clients"
+        assert entry["description"] == "Kafka client instrumentation"
+        assert entry["has_telemetry"] is True
+        assert entry["has_standalone_library"] is True
+        assert "messaging.publish.duration" in entry["search_terms"]
+        # Heavy objects must not leak into the index entry.
+        assert "configurations" not in entry
+        assert "scope" not in entry
+        assert "telemetry" not in entry
+
+    def test_make_index_no_telemetry_yields_empty_search_terms(self):
+        entry = make_index_instrumentation({"name": "bare-1.0"})
+        assert entry["has_telemetry"] is False
+        assert entry["search_terms"] == []
+
+    def test_strip_version_range(self):
+        assert _strip_version_range("org.springframework:spring-webmvc:[6.0.0,)") == "org.springframework:spring-webmvc"
+        # Non-coordinate strings (no group:artifact:range shape) are unchanged.
+        assert _strip_version_range("Java 8+") == "Java 8+"
 
 
 class TestTransformInstrumentationFormat:
@@ -253,6 +453,13 @@ class TestTransform01To02:
     def test_missing_libraries_key_raises_error(self):
         """Missing libraries key raises KeyError."""
         data = {"file_format": 0.1}
+
+        with pytest.raises(KeyError, match="missing 'libraries' key"):
+            _transform_0_1_to_0_2(data)
+
+    def test_libraries_key_is_none_raises_error(self):
+        """libraries key present but None also raises KeyError."""
+        data = {"file_format": 0.1, "libraries": None}
 
         with pytest.raises(KeyError, match="missing 'libraries' key"):
             _transform_0_1_to_0_2(data)

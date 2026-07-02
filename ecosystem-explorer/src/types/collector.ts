@@ -21,6 +21,13 @@ export interface VersionsIndex {
 export interface VersionInfo {
   version: string;
   is_latest: boolean;
+  /**
+   * Content hash of the consolidated per-version list bundle, when available.
+   * The list page fetches `bundles/{version}-{bundle_hash}.json` in one request
+   * instead of fanning out per component. Optional so old cached indexes (and
+   * missing bundles) degrade gracefully to the per-component fan-out.
+   */
+  bundle_hash?: string;
 }
 
 export interface VersionManifest {
@@ -28,21 +35,43 @@ export interface VersionManifest {
   version: string;
 }
 
+/**
+ * Represents the stability level of a Collector component or one of its signals.
+ */
+export type Stability = "alpha" | "beta" | "stable" | "deprecated" | "unmaintained" | "development";
+
+/**
+ * Core metadata for an OpenTelemetry Collector component.
+ */
 export interface CollectorComponent {
+  /** Unique identifier for the component (e.g., core-receiver-otlpreceiver). */
   id: string;
+  /** The short name of the component (e.g., otlpreceiver). */
   name: string;
+  /** The ecosystem this component belongs to (always 'collector'). */
   ecosystem: string;
+  /** The functional type of the component. */
   type: "receiver" | "processor" | "exporter" | "extension" | "connector";
+  /** The distribution where this component originates. */
   distribution: "core" | "contrib" | string;
+  /** Human-readable name of the component. */
   display_name?: string | null;
+  /** Brief description of the component's functionality. */
   description?: string | null;
+  /** Link to the component's source code or documentation. */
   repository?: string;
+  /** Detailed status including codeowners and signal stability. */
   status?: ComponentStatus;
 }
 
+/**
+ * Detailed status information for a Collector component.
+ */
 export interface ComponentStatus {
+  /** Functional types this component supports (e.g., as a receiver, processor). */
   class: string;
-  stability: Record<string, string[]>;
+  /** Stability levels per telemetry signal (metrics, logs, traces). */
+  stability: Partial<Record<Stability, string[]>>;
   distributions: string[];
   codeowners?: {
     active?: string[];
@@ -66,5 +95,5 @@ export interface IndexComponent {
   type: string;
   display_name?: string | null;
   description?: string | null;
-  stability?: string | null;
+  stability?: Stability | null;
 }

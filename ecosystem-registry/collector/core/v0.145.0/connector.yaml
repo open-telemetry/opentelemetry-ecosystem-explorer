@@ -2,6 +2,7 @@ distribution: core
 version: 0.145.0
 repository: opentelemetry-collector
 component_type: connector
+schema_hash: 7c0f8d486b9e
 components:
 - name: forwardconnector
   metadata:

@@ -19,16 +19,53 @@
 // module load time.
 import "fake-indexeddb/auto";
 import "@testing-library/jest-dom";
-import { beforeEach } from "vitest";
+import { beforeEach, vi } from "vitest";
 import { clearAllCached, closeDB } from "@/lib/api/idb-cache";
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
 
-// JSDOM does not implement Element.scrollIntoView; provide a stub so that
-// click handlers wired to scrollToSection don't throw during tests.
-if (typeof Element !== "undefined" && !Element.prototype.scrollIntoView) {
-  Element.prototype.scrollIntoView = function () {};
+import commonEn from "../../../public/locales/en/common.json";
+import layoutEn from "../../../public/locales/en/layout.json";
+import homeEn from "../../../public/locales/en/home.json";
+import collectorEn from "../../../public/locales/en/collector.json";
+import javaAgentEn from "../../../public/locales/en/java-agent.json";
+import aboutEn from "../../../public/locales/en/about.json";
+
+i18n.use(initReactI18next).init({
+  lng: "en",
+  fallbackLng: "en",
+  ns: ["common", "layout", "home", "collector", "java-agent", "about"],
+  defaultNS: "common",
+  resources: {
+    en: {
+      common: commonEn,
+      layout: layoutEn,
+      home: homeEn,
+      collector: collectorEn,
+      "java-agent": javaAgentEn,
+      about: aboutEn,
+    },
+  },
+});
+
+// JSDOM does not implement Element.scrollIntoView or scrollBy; stub them
+// unconditionally (matching src/test/setup.ts) so that click handlers wired to
+// scrollToSection don't throw, and so tests can assert against them as vi mocks
+// even if a future JSDOM/polyfill provides a real implementation.
+if (typeof Element !== "undefined") {
+  Element.prototype.scrollIntoView = vi.fn();
+  Element.prototype.scrollBy = vi.fn();
 }
 
 beforeEach(async () => {
+  if (typeof Element !== "undefined" && vi.isMockFunction(Element.prototype.scrollIntoView)) {
+    // @ts-expect-error mockClear is not in type definitions for Element.prototype.scrollIntoView
+    Element.prototype.scrollIntoView.mockClear();
+  }
+  if (typeof Element !== "undefined" && vi.isMockFunction(Element.prototype.scrollBy)) {
+    // @ts-expect-error mockClear is not in type definitions for Element.prototype.scrollBy
+    Element.prototype.scrollBy.mockClear();
+  }
   // Clear stored entries so each test starts with a cold cache.
   await clearAllCached();
   // Reset the IDB singleton (dbInstance, dbInitPromise, dbInitFailed) so

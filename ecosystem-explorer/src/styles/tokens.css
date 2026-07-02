@@ -1,0 +1,133 @@
+/*
+ * Design token — CSS custom properties.
+ *
+ * Brand hues are canonical from opentelemetry.io's _vars.scss:
+ *   $primary   = blue  hsl(228, 37%, 49%)
+ *   $secondary = orange hsl(41, 100%, 48%)
+ *
+ * Two-tier brand system:
+ *   --otel-blue-hsl / --otel-orange-hsl  — named primitives, never swap these
+ *   --primary-hsl / --secondary-hsl       — semantic role tokens; re-point only
+ *     here to change which hue plays a structural vs accent role
+ *
+ * SVG illustrations and gradient ornaments reference --otel-*-hsl directly so
+ * they express literal hue intent and stay correct across any role reassignment.
+ * Interactive UI chrome (focus rings, hover borders, CTA buttons) uses
+ * --primary-hsl / --secondary-hsl to track whichever hue plays that role.
+ *
+ * Surface tokens differ per theme; syntax tokens reuse the dark palette in
+ * light mode for now (revisit when a light-mode syntax consumer lands).
+ *
+ * Note: dark-theme surface tokens are applied globally (no V1_REDESIGN gate).
+ * V1_REDESIGN gates UI components and layout; the base palette ships on merge.
+ */
+
+@layer theme {
+  :root {
+    /*
+     * Navbar surface — always-dark, theme-invariant.
+     * Values mirror opentelemetry.io's `.td-navbar` (see upstream
+     * `assets/scss/_variables_project.scss`):
+     *   bg     = shade-color($primary, 22%) ≈ #3d4c86 (otel blue, darkened)
+     *   text   = $gray-100 (#f8f9fa) per the project's `_navbar.scss` override
+     *   accent = $secondary (otel orange) — hover + active underline
+     * Logo SVG is shipped with `fill="currentColor"` and rendered white by the
+     * `.navbar-brand { color: #fff }` rule in `navbar.css`, not a token.
+     * `--td-navbar-border-bottom: none` upstream — we don't emit a border.
+     * Kept outside the [data-theme] blocks so neither theme rewrites them.
+     */
+    --navbar-bg-hsl: 228 38% 38%; /* #3d4c86 */
+    --navbar-fg-hsl: 210 17% 98%; /* #f8f9fa (gray-100) */
+    --navbar-accent-hsl: var(--otel-orange-hsl); /* hover + active line */
+
+    /* Always-dark terminal panes */
+    --code-bg-hsl: 232 38% 15%; /* Dark navy */
+    --code-fg-hsl: 210 17% 98%;
+  }
+
+  :root,
+  [data-theme="dark"] {
+    /* Brand primitives — stable, never reassigned */
+    --otel-blue-hsl: 228 37% 49%;
+    --otel-orange-hsl: 41 100% 48%;
+    --otel-purple-hsl: 230 38% 49%;
+
+    /* Semantic role tokens */
+    --primary-hsl: var(--otel-blue-hsl); /* structural / navbar / buttons */
+    --secondary-hsl: var(--otel-orange-hsl); /* accents / hover / CTAs */
+
+    /* Ornament accents — flip per theme (compass, hero glow, ambient radial) */
+    --hero-accent-hsl: var(--otel-orange-hsl);
+    --hero-accent-alt-hsl: var(--otel-blue-hsl);
+
+    /* Surfaces — navy palette */
+    --background-hsl: 232 38% 15%;
+    --foreground-hsl: 210 17% 98%;
+    --card-hsl: 232 35% 19%;
+    --card-secondary-hsl: 232 32% 23%;
+    --muted-hsl: 232 28% 22%;
+    --muted-foreground-hsl: 220 14% 65%;
+    --border-hsl: 232 22% 28%;
+
+    /* Theme-aware layout values */
+    --surface-shadow: none;
+    --surface-shadow-hover: none;
+    --surface-card-bg: hsl(var(--card-hsl) / 0.8);
+    --hero-gradient-opacity: 0.08;
+    --hero-grid-opacity: 0.1;
+
+    /* Syntax */
+    --syntax-comment-hsl: 220 18% 58%;
+    --syntax-key-hsl: 28 95% 65%;
+    --syntax-string-hsl: 95 60% 65%;
+    --syntax-number-hsl: 330 80% 72%;
+    --syntax-keyword-hsl: 265 70% 78%;
+    --syntax-punct-hsl: 220 22% 55%;
+  }
+
+  [data-theme="light"] {
+    /* Brand primitives — identical across themes */
+    --otel-blue-hsl: 228 37% 49%;
+    --otel-orange-hsl: 41 100% 48%;
+    --otel-purple-hsl: 230 38% 49%;
+
+    /* Semantic role tokens */
+    --primary-hsl: 228 75% 45%; /* Deepened from brand blue for light-mode contrast */
+    --secondary-hsl: 230 60% 45%; /* Swapped to Purple for modern aesthetic */
+
+    /* Ornament accents — flip per theme (compass, hero glow, ambient radial) */
+    --hero-accent-hsl: var(--otel-blue-hsl);
+    --hero-accent-alt-hsl: var(--otel-purple-hsl);
+
+    /*
+     * Surfaces — structured light palette (#655).
+     * "Elevated UI" approach: Rich slate canvas with pure white cards and crisp borders.
+     */
+    --background-hsl: 214 32% 96%; /* Slate-100 equivalent, crisp and modern */
+    --foreground-hsl: 215 25% 15%; /* Deep slate text */
+    --card-hsl: 0 0% 100%; /* Pure white */
+    --card-secondary-hsl: 216 20% 98%;
+    --muted-hsl: 214 32% 91%; /* Slate-200 */
+    --muted-foreground-hsl: 215 16% 47%; /* Slate-500 */
+    --border-hsl: 214 32% 85%; /* Slate-300 for visible structural lines */
+
+    /* Theme-aware layout values */
+    --surface-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+    --surface-shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.08), 0 4px 8px rgba(0, 0, 0, 0.04);
+    --surface-card-bg: hsl(var(--card-hsl) / 1); /* Solid in light mode */
+    --hero-gradient-opacity: 0.15; /* Boosted for white background */
+    --hero-grid-opacity: 0.15;
+
+    /* Always-dark terminal panes */
+    --code-bg-hsl: 232 38% 15%; /* Dark navy */
+    --code-fg-hsl: 210 17% 98%;
+
+    /* Syntax — reuse dark values until a light-mode consumer needs distinct tokens */
+    --syntax-comment-hsl: 220 18% 58%;
+    --syntax-key-hsl: 28 95% 65%;
+    --syntax-string-hsl: 95 60% 65%;
+    --syntax-number-hsl: 330 80% 72%;
+    --syntax-keyword-hsl: 265 70% 78%;
+    --syntax-punct-hsl: 220 22% 55%;
+  }
+}

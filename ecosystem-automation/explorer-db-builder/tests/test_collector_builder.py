@@ -220,6 +220,28 @@ class TestRunCollectorBuilder:
         assert "receiver" in data["taxonomy"]["types"]
         assert len(data["components"]) == 3
 
+    def test_creates_per_version_bundles_referenced_by_index(self, tmp_path):
+        manager = _make_mock_inventory_manager()
+        db_writer = CollectorDatabaseWriter(database_dir=str(tmp_path / "collector"))
+
+        run_collector_builder(inventory_manager=manager, db_writer=db_writer)
+
+        with open(tmp_path / "collector" / "versions-index.json") as f:
+            data = json.load(f)
+
+        latest = data["versions"][0]
+        assert latest["bundle_hash"]
+        bundle_file = tmp_path / "collector" / "bundles" / f"{latest['version']}-{latest['bundle_hash']}.json"
+        assert bundle_file.exists()
+        with open(bundle_file) as f:
+            bundle = json.load(f)
+        # Slim entries: index shape with derived stability, no nested status/attributes.
+        assert len(bundle) == 3
+        assert all(
+            set(entry.keys()) <= {"id", "name", "distribution", "type", "display_name", "description", "stability"}
+            for entry in bundle
+        )
+
     def test_clean_flag(self, tmp_path):
         manager = _make_mock_inventory_manager()
         out_dir = tmp_path / "collector"
@@ -277,6 +299,52 @@ class TestRunCollectorBuilder:
         versions_listed = [v["version"] for v in data["versions"]]
         assert versions_listed == ["0.151.0"]
         assert not (tmp_path / "collector" / "versions" / "0.150.0-index.json").exists()
+
+    def test_writes_ecosystem_stats(self, tmp_path):
+        manager = _make_mock_inventory_manager()
+        db_writer = CollectorDatabaseWriter(database_dir=str(tmp_path / "collector"))
+
+        result = run_collector_builder(inventory_manager=manager, db_writer=db_writer)
+
+        assert result == 0
+        with open(tmp_path / "collector" / "ecosystem-stats.json") as f:
+            data = json.load(f)
+
+        assert data["version_count"] == 2
+        # Both mocked versions carry the same 3 components (core: 1 receiver, contrib: 2
+        # receivers), so the union across versions is still 3, not 6.
+        assert data["component_count"] == 3
+
+    def test_ecosystem_stats_counts_components_removed_in_newer_versions(self, tmp_path):
+        """A component present only in an older version still contributes to the total."""
+        inventories = {
+            ("core", Version("0.151.0")): _make_core_inventory("0.151.0"),
+            ("contrib", Version("0.151.0")): {
+                "distribution": "contrib",
+                "version": "0.151.0",
+                "repository": "opentelemetry-collector-contrib",
+                "components": {
+                    "receiver": [],
+                    "processor": [],
+                    "exporter": [],
+                    "connector": [],
+                    "extension": [],
+                },
+            },
+            ("core", Version("0.150.0")): _make_core_inventory("0.150.0"),
+            ("contrib", Version("0.150.0")): _make_contrib_inventory("0.150.0"),
+        }
+        manager = _make_mock_inventory_manager(inventories=inventories)
+        db_writer = CollectorDatabaseWriter(database_dir=str(tmp_path / "collector"))
+
+        result = run_collector_builder(inventory_manager=manager, db_writer=db_writer)
+
+        assert result == 0
+        with open(tmp_path / "collector" / "ecosystem-stats.json") as f:
+            data = json.load(f)
+
+        # 0.151.0 has only core's 1 receiver; 0.150.0 additionally has contrib's 2 receivers.
+        assert data["component_count"] == 3
 
     def test_returns_1_when_all_versions_empty(self, tmp_path):
         inventories = {

@@ -1,0 +1,25 @@
+{
+  "description": null,
+  "display_name": "Solarwinds APM Settings extension",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-solarwindsapmsettingsextension",
+  "name": "solarwindsapmsettingsextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "jerrytfleung",
+        "cheempz"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "extension"
+      ]
+    }
+  },
+  "type": "extension"
+}

@@ -15,12 +15,14 @@
  */
 import { useState } from "react";
 import type { JSX } from "react";
+import { useTranslation, getI18n } from "react-i18next";
 import type { ConfigNode, UnionNode } from "@/types/configuration";
 import type { ConfigValue } from "@/types/configuration-builder";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
-import { InfoTooltip } from "@/components/ui/info-tooltip";
 import { SchemaRenderer } from "./schema-renderer";
 import { parsePath, getByPath } from "@/lib/config-path";
+import { FieldSection } from "./field-section";
+import { useCollapsibleExpansion } from "./section-expansion-context";
 
 export interface UnionRendererProps {
   node: UnionNode;
@@ -79,30 +81,37 @@ function emptyValueFor(variant: ConfigNode): ConfigValue {
   }
 }
 
-const CONTROL_TYPE_DISPLAY: Record<ConfigNode["controlType"], string> = {
-  text_input: "Text",
-  number_input: "Number",
-  toggle: "Boolean",
-  select: "Choice",
-  flag: "Flag",
-  string_list: "Text list",
-  number_list: "Number list",
-  list: "List",
-  key_value_map: "Map",
-  group: "Group",
-  union: "Variant",
-  plugin_select: "Plugin",
-  circular_ref: "Reference",
+const CONTROL_TYPE_KEY: Partial<Record<ConfigNode["controlType"], string>> = {
+  text_input: "textInput",
+  number_input: "numberInput",
+  toggle: "toggle",
+  select: "select",
+  flag: "flag",
+  string_list: "stringList",
+  number_list: "numberList",
+  list: "list",
+  key_value_map: "keyValueMap",
+  group: "group",
+  union: "union",
+  plugin_select: "pluginSelect",
+  circular_ref: "circularRef",
 };
 
-// The schema parser names anonymous union members "Variant 1", "Variant 2", …
-// when no explicit label is set. Filter those out so we fall back to the
-// control-type display name instead of leaking parser-generated labels to UI.
+function getControlTypeDisplay(controlType: ConfigNode["controlType"]): string {
+  const key = CONTROL_TYPE_KEY[controlType];
+  if (!key) return controlType;
+  return getI18n().t(`builder.unionTypes.${key}`, { ns: "java-agent" });
+}
+
 const ANONYMOUS_VARIANT_LABEL_RE = /^Variant \d+$/;
 
 function displayLabel(variant: ConfigNode): string {
   if (variant.label && !ANONYMOUS_VARIANT_LABEL_RE.test(variant.label)) return variant.label;
-  return CONTROL_TYPE_DISPLAY[variant.controlType] ?? variant.controlType;
+  if (variant.controlType === "list") {
+    const inner = getControlTypeDisplay(variant.itemSchema.controlType);
+    return `${inner} list`;
+  }
+  return getControlTypeDisplay(variant.controlType);
 }
 
 function isRenderable(variant: ConfigNode): boolean {
@@ -110,7 +119,13 @@ function isRenderable(variant: ConfigNode): boolean {
   return true;
 }
 
+const TAB_BASE =
+  "px-3 py-1.5 text-xs font-medium border-b-2 -mb-px transition-colors focus:outline-none focus-visible:text-foreground";
+const TAB_ACTIVE = "border-primary text-primary";
+const TAB_INACTIVE = "border-transparent text-muted-foreground hover:text-foreground";
+
 export function UnionRenderer({ node, depth, path }: UnionRendererProps): JSX.Element {
+  const { t } = useTranslation("java-agent");
   const { state, setValue } = useConfigurationBuilder();
   const current = getByPath(state.values, parsePath(path));
 
@@ -124,6 +139,8 @@ export function UnionRenderer({ node, depth, path }: UnionRendererProps): JSX.El
     selectedKey === null ? undefined : effectiveVariants.find((v) => v.key === selectedKey);
   const showChooser = renderable.length > 0;
 
+  const { open, onOpenChange } = useCollapsibleExpansion(`${path}#union`, true);
+
   const handleChange = (nextKey: string) => {
     if (nextKey === selectedKey) return;
     const nextVariant = effectiveVariants.find((v) => v.key === nextKey);
@@ -132,39 +149,60 @@ export function UnionRenderer({ node, depth, path }: UnionRendererProps): JSX.El
     setValue(path, emptyValueFor(nextVariant));
   };
 
-  return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-2">
-        <p className="text-foreground text-sm font-medium">{node.label}</p>
-        {node.description && <InfoTooltip text={node.description} />}
-      </div>
-      {showChooser && (
-        <fieldset>
-          <legend className="sr-only">{node.label}</legend>
-          <div className="flex flex-wrap gap-2">
-            {effectiveVariants.map((v) => (
-              <label key={v.key} className="text-muted-foreground flex items-center gap-2 text-xs">
-                <input
-                  type="radio"
-                  name={`${path}-variant`}
-                  value={v.key}
-                  checked={selectedKey === v.key}
-                  onChange={() => handleChange(v.key)}
-                />
-                {displayLabel(v)}
-              </label>
-            ))}
-          </div>
-        </fieldset>
-      )}
-      {selectedVariant && (
-        <SchemaRenderer
-          key={selectedVariant.key}
-          node={{ ...selectedVariant, hideLabel: true } as ConfigNode}
-          depth={depth + 1}
-          path={path}
-        />
-      )}
+  const tablist = showChooser ? (
+    <div
+      role="tablist"
+      aria-label={t("builder.unionRenderer.tablistAriaLabel", { label: node.label })}
+      className="border-border/60 flex flex-wrap items-center gap-x-1 border-b"
+    >
+      {effectiveVariants.map((v) => {
+        const active = selectedKey === v.key;
+        return (
+          <button
+            key={v.key}
+            type="button"
+            role="tab"
+            aria-selected={active}
+            onClick={() => handleChange(v.key)}
+            className={`${TAB_BASE} ${active ? TAB_ACTIVE : TAB_INACTIVE}`}
+          >
+            {displayLabel(v)}
+          </button>
+        );
+      })}
     </div>
+  ) : null;
+
+  const variantBody = selectedVariant ? (
+    <SchemaRenderer
+      key={selectedVariant.key}
+      node={
+        {
+          ...selectedVariant,
+          label: displayLabel(selectedVariant),
+          hideLabel: true,
+        } as ConfigNode
+      }
+      depth={depth + 1}
+      path={path}
+      inline
+    />
+  ) : null;
+
+  return (
+    <FieldSection node={node} level="field" open={open} onOpenChange={onOpenChange}>
+      <FieldSection.Header>
+        <FieldSection.Chevron />
+        <FieldSection.Label />
+        <FieldSection.Stability />
+        <FieldSection.Info />
+      </FieldSection.Header>
+      <FieldSection.Body>
+        <div className="space-y-2">
+          {tablist}
+          {variantBody}
+        </div>
+      </FieldSection.Body>
+    </FieldSection>
   );
 }

@@ -23,40 +23,62 @@ on:
         default: "all"
 
 permissions:
-  contents: read
+  contents: read # Default minimum; the build-database job declares its own elevated scopes
+
+concurrency:
+  # Serialize per ecosystem since each one targets its own
+  # otelbot/automated-explorer-database-update-<ecosystem> branch.
+  group: ${{ github.workflow }}-${{ inputs.ecosystem }}
+  cancel-in-progress: false
 
 jobs:
   build-database:
+    name: Build explorer database
     permissions:
-      contents: write
-      pull-requests: write
+      contents: write # Push generated database to the otelbot/automated-explorer-database-update branch
+      pull-requests: write # Create or update the automated database-update PR
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Detect repository type (if on a fork we use different git config)
         id: repo_check
+        env:
+          REPO: ${{ github.repository }}
         run: |
-          if [ "${{ github.repository }}" == "open-telemetry/opentelemetry-ecosystem-explorer" ]; then
+          if [ "$REPO" == "open-telemetry/opentelemetry-ecosystem-explorer" ]; then
             echo "is_primary=true" >> $GITHUB_OUTPUT
           else
             echo "is_primary=false" >> $GITHUB_OUTPUT
           fi
 
+      # Mint the otelbot App token for the PR operations below (create / edit /
+      # close-reopen). The otelbot App installed on this repo only holds
+      # `pull-requests: write` and has no `contents: write`, so it cannot push.
+      # The branch push therefore authenticates as GITHUB_TOKEN; we re-trigger
+      # the required checks afterwards by closing and reopening the PR with this
+      # App token (see the "Commit and push changes" step).
+      - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        if: steps.repo_check.outputs.is_primary == 'true'
+        id: otelbot-token
+        with:
+          client-id: ${{ vars.OTELBOT_APP_ID }}
+          private-key: ${{ secrets.OTELBOT_PRIVATE_KEY }}
+          repositories: ${{ github.event.repository.name }}
+          permission-pull-requests: write # Create / edit / reopen the automated PR
+
+      - name: Checkout code
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          # Persist GITHUB_TOKEN as the git credential for the branch push. A
+          # push authenticated with GITHUB_TOKEN does not start workflows, so the
+          # "Commit and push changes" step re-triggers the required checks on the
+          # new head by closing/reopening the PR with the otelbot App token.
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
+
       - name: Configure git (primary repository)
         if: steps.repo_check.outputs.is_primary == 'true'
         run: |
           .github/scripts/use-cla-approved-bot.sh
-
-      - uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
-        if: steps.repo_check.outputs.is_primary == 'true'
-        id: otelbot-token
-        with:
-          app-id: ${{ vars.OTELBOT_APP_ID }}
-          private-key: ${{ secrets.OTELBOT_PRIVATE_KEY }}
 
       - name: Configure git (fork)
         if: steps.repo_check.outputs.is_primary == 'false'
@@ -65,7 +87,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
         with:
           enable-cache: true
 
@@ -75,15 +97,19 @@ jobs:
           python-version-file: ".python-version"
 
       - name: Install dependencies
-        run: uv sync
+        run: uv sync --locked
 
       - name: Build explorer database (incremental)
         if: inputs.build_mode == 'incremental'
-        run: uv run explorer-db-builder --ecosystem ${{ inputs.ecosystem }}
+        env:
+          ECOSYSTEM: ${{ inputs.ecosystem }}
+        run: uv run explorer-db-builder --ecosystem "$ECOSYSTEM"
 
       - name: Build explorer database (clean)
         if: inputs.build_mode == 'clean'
-        run: uv run explorer-db-builder --ecosystem ${{ inputs.ecosystem }} --clean
+        env:
+          ECOSYSTEM: ${{ inputs.ecosystem }}
+        run: uv run explorer-db-builder --ecosystem "$ECOSYSTEM" --clean
 
       - name: Check for database changes
         id: check_changes
@@ -115,23 +141,28 @@ jobs:
       - name: Commit and push changes
         if: steps.check_changes.outputs.has_changes == 'true'
         env:
-          GH_TOKEN: ${{ steps.repo_check.outputs.is_primary == 'true' && steps.otelbot-token.outputs.token || secrets.GITHUB_TOKEN }}
+          GH_TOKEN:
+            ${{ steps.repo_check.outputs.is_primary == 'true' && steps.otelbot-token.outputs.token
+            || secrets.GITHUB_TOKEN }}
+          ECOSYSTEM: ${{ inputs.ecosystem }}
+          BUILD_MODE: ${{ inputs.build_mode }}
+          ACTOR: ${{ github.actor }}
         run: |
-          BRANCH="otelbot/automated-explorer-database-update-${{ inputs.ecosystem }}"
+          BRANCH="otelbot/automated-explorer-database-update-${ECOSYSTEM}"
 
           git add ecosystem-explorer/public/data/ ecosystem-explorer/src/lib/api/idb-cache.ts
 
-          git commit -m "Update explorer database (${{ inputs.ecosystem }})"
+          git commit -m "Update explorer database (${ECOSYSTEM})"
 
           git push -f origin HEAD:${BRANCH}
 
-          PR_TITLE="[automated] Update explorer database (${{ inputs.ecosystem }})"
-          PR_BODY="$(cat <<'EOF'
+          PR_TITLE="[automated] Update explorer database (${ECOSYSTEM})"
+          PR_BODY="$(cat <<EOF
           Automated database build requested via workflow dispatch.
 
-          Build mode: ${{ inputs.build_mode }}
-          Ecosystem: ${{ inputs.ecosystem }}
-          Triggered by: ${{ github.actor }}
+          Build mode: ${BUILD_MODE}
+          Ecosystem: ${ECOSYSTEM}
+          Triggered by: ${ACTOR}
           ---
 
           _This PR is automatically generated by the Build Explorer Database workflow._
@@ -149,6 +180,14 @@ jobs:
                 exit 1
               fi
               gh pr edit "$PR_NUMBER" --title "${PR_TITLE}" --body "${PR_BODY}"
+              # The force-push above is authenticated with GITHUB_TOKEN, which
+              # does not start workflows, so CodeQL never re-runs for the new
+              # head and the PR stays blocked on the "Code scanning results"
+              # merge rule. Closing and reopening the PR with the otelbot App
+              # token emits a `pull_request: reopened` event that re-runs the
+              # required checks against the updated head.
+              gh pr close "$PR_NUMBER"
+              gh pr reopen "$PR_NUMBER"
             else
               echo "Failed to create PR"
               cat pr-output.txt

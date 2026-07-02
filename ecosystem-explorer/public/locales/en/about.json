@@ -1,0 +1,54 @@
+{
+  "intro": {
+    "heading": "About",
+    "description": "The OpenTelemetry Ecosystem Explorer is a community-driven tool for discovering and exploring projects, instrumentations, and components across the <otelLink>OpenTelemetry</otelLink> ecosystem."
+  },
+  "goals": {
+    "heading": "Goals",
+    "body1": "The ecosystem is large and growing. Finding what instrumentation exists, what it produces, and how to configure it can be difficult. This project aims to make that information accessible and easy to navigate.",
+    "body2": "By building a structured registry and an interactive explorer, we help developers understand what is available, what signals each component emits, and how components relate to OpenTelemetry semantic conventions."
+  },
+  "ecosystems": {
+    "heading": "Ecosystems",
+    "loading": "Loading ecosystem stats…",
+    "error": "We couldn't load ecosystem stats right now.",
+    "javaAgent": {
+      "title": "Java Agent",
+      "versions_one": "{{count}} Version",
+      "versions_other": "{{count}} Versions",
+      "libraries_one": "{{count}} instrumentation library",
+      "libraries_other": "{{count}} instrumentation libraries"
+    },
+    "collector": {
+      "title": "Collector",
+      "versions_one": "{{count}} Version",
+      "versions_other": "{{count}} Versions",
+      "components_one": "{{count}} Component",
+      "components_other": "{{count}} Components"
+    }
+  },
+  "getInvolved": {
+    "heading": "Get Involved",
+    "sourceCode": {
+      "title": "Source Code",
+      "description": "Browse the repository, review open issues, and submit pull requests."
+    },
+    "docs": {
+      "title": "OpenTelemetry Docs",
+      "description": "Learn about OpenTelemetry concepts, APIs, and SDKs at opentelemetry.io."
+    },
+    "reportBug": {
+      "title": "Report a Bug",
+      "description": "Found something wrong? Open an issue on GitHub and let us know."
+    },
+    "requestFeature": {
+      "title": "Request a Feature",
+      "description": "Have an idea? Open an issue to discuss it with the maintainers."
+    }
+  },
+  "contributing": {
+    "heading": "Contributing",
+    "body1": "Contributions of all sizes are welcome — from fixing a typo to adding new ecosystem coverage. To get started, read the <guideLink>contributing guide</guideLink>.",
+    "body2": "The project is part of the <slackLink>#otel-ecosystem-explorer</slackLink> channel on CNCF Slack. Join us there for questions, discussions, and updates."
+  }
+}

@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { Loader } from "@/components/ui/loader";
 import type { VersionInfo } from "@/types/javaagent";
 import { useTelemetryComparison } from "../../hooks/use-telemetry-comparison";
 import { VersionSelectorPanel } from "./version-selector-panel";
@@ -31,12 +33,12 @@ export function TelemetryComparisonSection({
   versions,
   currentVersion,
 }: TelemetryComparisonSectionProps) {
-  // "To" defaults to the version being viewed; "From" defaults to the previous release.
+  const { t } = useTranslation("java-agent");
+  // "To" defaults to the version being viewed. "From" defaults to the previous release,
+  // or falls back to currentVersion (triggering a same-version warning) if viewing the oldest version.
   const currentIndex = versions.findIndex((v) => v.version === currentVersion);
   const defaultFromVersion =
-    currentIndex < versions.length - 1
-      ? versions[currentIndex + 1].version
-      : versions[0]?.version || currentVersion;
+    currentIndex < versions.length - 1 ? versions[currentIndex + 1].version : currentVersion;
 
   const {
     fromVersion,
@@ -70,10 +72,7 @@ export function TelemetryComparisonSection({
       {/* Loading state */}
       {loading && (
         <div className="flex min-h-[300px] items-center justify-center">
-          <div className="flex items-center gap-3">
-            <Loader2 className="text-primary h-6 w-6 animate-spin" />
-            <p className="text-muted-foreground text-sm">Loading comparison data...</p>
-          </div>
+          <Loader size="sm" label={t("telemetryComparison.loading")} />
         </div>
       )}
 
@@ -84,7 +83,7 @@ export function TelemetryComparisonSection({
             <div className="flex items-start gap-3">
               <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-400" />
               <div className="space-y-1">
-                <p className="font-medium text-red-400">Comparison Error</p>
+                <p className="font-medium text-red-400">{t("telemetryComparison.error.title")}</p>
                 <p className="text-sm text-red-400/80">{error.message}</p>
               </div>
             </div>
@@ -98,17 +97,17 @@ export function TelemetryComparisonSection({
           <div className="flex items-start gap-3">
             <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-yellow-400" />
             <div className="space-y-1">
-              <p className="font-medium text-yellow-400">Version Availability Note</p>
+              <p className="font-medium text-yellow-400">
+                {t("telemetryComparison.warnings.availability.title")}
+              </p>
               {fromNotFound && (
                 <p className="text-sm text-yellow-400/80">
-                  The instrumentation was not available in version {fromVersion}.
-                  {toNotFound ? "" : " All telemetry from the “to” version is shown as added."}
+                  {t("telemetryComparison.warnings.availability.fromNotFound", { fromVersion })}
                 </p>
               )}
               {toNotFound && !fromNotFound && (
                 <p className="text-sm text-yellow-400/80">
-                  The instrumentation was not available in version {toVersion}. All telemetry from
-                  the &ldquo;from&rdquo; version is shown as removed.
+                  {t("telemetryComparison.warnings.availability.toNotFound", { toVersion })}
                 </p>
               )}
             </div>
@@ -123,9 +122,11 @@ export function TelemetryComparisonSection({
             <div className="flex items-start gap-3">
               <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-yellow-400" />
               <div className="space-y-1">
-                <p className="font-medium text-yellow-400">Same Version Selected</p>
+                <p className="font-medium text-yellow-400">
+                  {t("telemetryComparison.warnings.sameVersion.title")}
+                </p>
                 <p className="text-sm text-yellow-400/80">
-                  Please select different versions to compare telemetry.
+                  {t("telemetryComparison.warnings.sameVersion.message")}
                 </p>
               </div>
             </div>

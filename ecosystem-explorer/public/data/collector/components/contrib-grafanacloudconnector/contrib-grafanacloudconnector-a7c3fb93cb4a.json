@@ -1,0 +1,29 @@
+{
+  "description": null,
+  "display_name": "Grafana Cloud Connector",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-grafanacloudconnector",
+  "name": "grafanacloudconnector",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "connector",
+    "codeowners": {
+      "active": [
+        "rlankfo",
+        "jcreixell"
+      ],
+      "emeritus": [],
+      "seeking_new": false
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "traces_to_metrics"
+      ]
+    }
+  },
+  "type": "connector"
+}

@@ -17,7 +17,12 @@ import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import "fake-indexeddb/auto";
 import * as javaagentData from "./javaagent-data";
 import * as idbCache from "./idb-cache";
-import type { VersionsIndex, VersionManifest, InstrumentationData } from "@/types/javaagent";
+import type {
+  VersionsIndex,
+  VersionManifest,
+  InstrumentationData,
+  InstrumentationIndex,
+} from "@/types/javaagent";
 
 declare const global: typeof globalThis;
 
@@ -47,9 +52,10 @@ describe("javaagent-data", () => {
     },
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     vi.resetAllMocks();
     global.fetch = vi.fn();
+    await idbCache.clearAllCached();
     idbCache.closeDB();
   });
 
@@ -102,7 +108,7 @@ describe("javaagent-data", () => {
       });
 
       await expect(javaagentData.loadVersions()).rejects.toThrow(
-        "Failed to load versions-index: 404 Not Found"
+        /Failed to load versions-index from .*: 404 Not Found/
       );
     });
 
@@ -112,6 +118,26 @@ describe("javaagent-data", () => {
       (global.fetch as ReturnType<typeof vi.fn>).mockRejectedValue(new Error("Network error"));
 
       await expect(javaagentData.loadVersions()).rejects.toThrow("Network error");
+    });
+
+    it("should bypass cache and re-fetch when cached versions list is empty", async () => {
+      const staleData: VersionsIndex = { versions: [] };
+      const freshData: VersionsIndex = {
+        versions: [{ version: "2.10.0", is_latest: true }],
+      };
+
+      vi.spyOn(idbCache, "getCached").mockResolvedValue(staleData);
+      vi.spyOn(idbCache, "setCached").mockResolvedValue();
+
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ok: true,
+        json: async () => freshData,
+      });
+
+      const result = await javaagentData.loadVersions();
+
+      expect(result).toEqual(freshData);
+      expect(global.fetch).toHaveBeenCalledWith("/data/javaagent/versions-index.json");
     });
 
     it("should deduplicate concurrent requests to the same resource", async () => {
@@ -129,9 +155,8 @@ describe("javaagent-data", () => {
       const request2 = javaagentData.loadVersions();
       const request3 = javaagentData.loadVersions();
 
-      await vi.waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledTimes(1);
-      });
+      await Promise.resolve(); // Allow microtasks to run
+      expect(global.fetch).toHaveBeenCalledTimes(1);
 
       fetchResolve!({
         ok: true,
@@ -175,6 +200,55 @@ describe("javaagent-data", () => {
       const result = await javaagentData.loadVersionManifest("2.10.0");
 
       expect(result).toEqual(mockVersionManifest);
+      expect(global.fetch).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("loadIndex", () => {
+    const mockIndex: InstrumentationIndex = {
+      ecosystem: "javaagent",
+      components: [
+        {
+          name: "akka-actor-2.3",
+          display_name: "Akka Actor",
+          description: "Akka actor instrumentation",
+          has_telemetry: true,
+          has_standalone_library: false,
+          search_terms: ["io.opentelemetry.akka-actor-2.3"],
+        },
+      ],
+    };
+
+    it("should fetch and cache the index on cache miss", async () => {
+      const getCachedSpy = vi.spyOn(idbCache, "getCached").mockResolvedValue(null);
+      const setCachedSpy = vi.spyOn(idbCache, "setCached").mockResolvedValue();
+
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ok: true,
+        json: async () => mockIndex,
+      });
+
+      const result = await javaagentData.loadIndex();
+
+      expect(result).toEqual(mockIndex);
+      expect(getCachedSpy).toHaveBeenCalledWith(
+        "javaagent-instrumentation-index",
+        idbCache.STORES.METADATA
+      );
+      expect(global.fetch).toHaveBeenCalledWith("/data/javaagent/index.json");
+      expect(setCachedSpy).toHaveBeenCalledWith(
+        "javaagent-instrumentation-index",
+        mockIndex,
+        idbCache.STORES.METADATA
+      );
+    });
+
+    it("should return cached data on cache hit", async () => {
+      vi.spyOn(idbCache, "getCached").mockResolvedValue(mockIndex);
+
+      const result = await javaagentData.loadIndex();
+
+      expect(result).toEqual(mockIndex);
       expect(global.fetch).not.toHaveBeenCalled();
     });
   });
@@ -234,8 +308,41 @@ describe("javaagent-data", () => {
     });
   });
 
-  describe("loadAllInstrumentations", () => {
-    it("should load all instrumentations from manifest", async () => {
+  describe("loadAllInstrumentations (bundle path)", () => {
+    // versions-index advertising a bundle hash for 2.10.0.
+    const versionsIndexWithBundle: VersionsIndex = {
+      versions: [
+        { version: "2.10.0", is_latest: true, bundle_hash: "bundlehash" },
+        { version: "2.9.0", is_latest: false },
+      ],
+    };
+
+    it("loads the single per-version bundle when the index advertises a bundle hash", async () => {
+      const bundle = [
+        { ...mockInstrumentationData, name: "akka-actor", has_spans: true, _is_custom: false },
+      ];
+      const getCachedSpy = vi
+        .spyOn(idbCache, "getCached")
+        .mockImplementation(async (key: string) => {
+          if (key === "versions-index") return versionsIndexWithBundle;
+          if (key === "bundle-2.10.0-bundlehash") return bundle;
+          return null;
+        });
+
+      const result = await javaagentData.loadAllInstrumentations("2.10.0");
+
+      expect(result).toEqual(bundle);
+      expect(getCachedSpy).toHaveBeenCalledWith(
+        "bundle-2.10.0-bundlehash",
+        idbCache.STORES.INSTRUMENTATIONS
+      );
+      // The manifest fan-out must not run when the bundle succeeds.
+      const manifestCalls = getCachedSpy.mock.calls.filter((call) => call[0] === "manifest-2.10.0");
+      expect(manifestCalls).toHaveLength(0);
+      expect(global.fetch).not.toHaveBeenCalled();
+    });
+
+    it("falls back to the fan-out when the bundle fetch fails", async () => {
       const akkaData = {
         ...mockInstrumentationData,
         name: "akka-actor",
@@ -246,8 +353,62 @@ describe("javaagent-data", () => {
         name: "spring-webmvc",
         scope: { name: "io.opentelemetry.spring-webmvc" },
       };
-
       vi.spyOn(idbCache, "getCached").mockImplementation(async (key: string) => {
+        if (key === "versions-index") return versionsIndexWithBundle;
+        // Bundle not cached; the network fetch (below) 404s, forcing fallback.
+        if (key === "manifest-2.10.0") return mockVersionManifest;
+        if (key === "instrumentation-abc123") return akkaData;
+        if (key === "instrumentation-def456") return springData;
+        return null;
+      });
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ok: false,
+        status: 404,
+        statusText: "Not Found",
+      });
+
+      const result = await javaagentData.loadAllInstrumentations("2.10.0");
+
+      expect(result).toHaveLength(2);
+      expect(result).toContainEqual(
+        expect.objectContaining({
+          name: "akka-actor",
+          scope: { name: "io.opentelemetry.akka-actor" },
+          display_name: "Akka Actor",
+          description: "Instrumentation for Akka Actor",
+          has_spans: false,
+          has_metrics: false,
+          _is_custom: false,
+        })
+      );
+      expect(result).toContainEqual(
+        expect.objectContaining({
+          name: "spring-webmvc",
+          scope: { name: "io.opentelemetry.spring-webmvc" },
+          has_spans: false,
+          has_metrics: false,
+          _is_custom: false,
+        })
+      );
+    });
+  });
+
+  describe("loadAllInstrumentations (fan-out fallback)", () => {
+    // versions-index WITHOUT a bundle hash forces the per-instrumentation fan-out.
+    const akkaData = {
+      ...mockInstrumentationData,
+      name: "akka-actor",
+      scope: { name: "io.opentelemetry.akka-actor" },
+    };
+    const springData = {
+      ...mockInstrumentationData,
+      name: "spring-webmvc",
+      scope: { name: "io.opentelemetry.spring-webmvc" },
+    };
+
+    it("should load all instrumentations from manifest", async () => {
+      vi.spyOn(idbCache, "getCached").mockImplementation(async (key: string) => {
+        if (key === "versions-index") return mockVersionsIndex;
         if (key === "manifest-2.10.0") return mockVersionManifest;
         if (key === "instrumentation-abc123") return akkaData;
         if (key === "instrumentation-def456") return springData;
@@ -257,25 +418,33 @@ describe("javaagent-data", () => {
       const result = await javaagentData.loadAllInstrumentations("2.10.0");
 
       expect(result).toHaveLength(2);
-      expect(result).toContainEqual({ ...akkaData, _is_custom: false });
-      expect(result).toContainEqual({ ...springData, _is_custom: false });
+      expect(result).toContainEqual(
+        expect.objectContaining({
+          name: "akka-actor",
+          scope: { name: "io.opentelemetry.akka-actor" },
+          display_name: "Akka Actor",
+          description: "Instrumentation for Akka Actor",
+          has_spans: false,
+          has_metrics: false,
+          _is_custom: false,
+        })
+      );
+      expect(result).toContainEqual(
+        expect.objectContaining({
+          name: "spring-webmvc",
+          scope: { name: "io.opentelemetry.spring-webmvc" },
+          has_spans: false,
+          has_metrics: false,
+          _is_custom: false,
+        })
+      );
     });
 
     it("should only load manifest once for all instrumentations", async () => {
-      const akkaData = {
-        ...mockInstrumentationData,
-        name: "akka-actor",
-        scope: { name: "io.opentelemetry.akka-actor" },
-      };
-      const springData = {
-        ...mockInstrumentationData,
-        name: "spring-webmvc",
-        scope: { name: "io.opentelemetry.spring-webmvc" },
-      };
-
       const getCachedSpy = vi
         .spyOn(idbCache, "getCached")
         .mockImplementation(async (key: string) => {
+          if (key === "versions-index") return mockVersionsIndex;
           if (key === "manifest-2.10.0") return mockVersionManifest;
           if (key === "instrumentation-abc123") return akkaData;
           if (key === "instrumentation-def456") return springData;
@@ -290,11 +459,71 @@ describe("javaagent-data", () => {
 
     it("should handle empty manifest", async () => {
       const emptyManifest: VersionManifest = { version: "2.10.0", instrumentations: {} };
-      vi.spyOn(idbCache, "getCached").mockResolvedValue(emptyManifest);
+      vi.spyOn(idbCache, "getCached").mockImplementation(async (key: string) => {
+        if (key === "versions-index") return mockVersionsIndex;
+        if (key === "manifest-2.10.0") return emptyManifest;
+        return null;
+      });
 
       const result = await javaagentData.loadAllInstrumentations("2.10.0");
 
       expect(result).toEqual([]);
+    });
+  });
+
+  describe("loadLibraryReadme", () => {
+    it("should load library README markdown", async () => {
+      const content = "# My Library README";
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ok: true,
+        text: async () => content,
+      });
+
+      const result = await javaagentData.loadLibraryReadme("mylib", "abc123def456");
+
+      expect(result).toBe(content);
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.stringContaining("/markdown/mylib-abc123def456.md")
+      );
+    });
+
+    it("should propagate fetch errors when loading README", async () => {
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ok: false,
+        status: 404,
+        statusText: "Not Found",
+      });
+
+      await expect(javaagentData.loadLibraryReadme("mylib", "abc123def456")).rejects.toThrow(
+        /Failed to load readme-mylib-abc123def456 from.*: 404 Not Found/
+      );
+    });
+  });
+
+  describe("loadGlobalConfigurations", () => {
+    it("should load global configurations", async () => {
+      const config = [{ some: "config" }];
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ok: true,
+        json: async () => config,
+      });
+
+      const result = await javaagentData.loadGlobalConfigurations();
+
+      expect(result).toEqual(config);
+      expect(global.fetch).toHaveBeenCalledWith("/data/javaagent/global-configurations.json");
+    });
+
+    it("should throw error when global configurations fetch fails", async () => {
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ok: false,
+        status: 500,
+        statusText: "Server Error",
+      });
+
+      await expect(javaagentData.loadGlobalConfigurations()).rejects.toThrow(
+        /Failed to load global-configurations from .*: 500 Server Error/
+      );
     });
   });
 });
