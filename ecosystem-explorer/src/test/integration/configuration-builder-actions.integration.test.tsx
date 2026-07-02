@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, it, expect, beforeAll, beforeEach, afterAll, vi } from "vitest";
-import { screen, waitFor, fireEvent, cleanup } from "@testing-library/react";
+import { screen, waitFor, fireEvent, cleanup, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { installFetchInterceptor, uninstallFetchInterceptor } from "./helpers/fetch-interceptor";
 import { renderBuilderPage as renderPage } from "./helpers/render-builder-page";
@@ -69,5 +69,42 @@ describe("ConfigurationBuilderPage — actions", () => {
       expect(text).toMatch(/^resource:/m);
       expect(text).toMatch(/^attribute_limits:/m);
     });
+  });
+
+  // Merge-safe preservation of already-customized leaves is covered exhaustively
+  // at the unit level (reducer MERGE_DEFAULTS + hook mergeDefaults tests); this
+  // integration case verifies the end-to-end button → YAML wiring on the tab.
+  it("Instrumentation 'Add all configs' merges the instrumentation section into the YAML", async () => {
+    const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(true);
+    renderPage();
+    const user = userEvent.setup();
+
+    // SDK tab is loaded; switch to the Instrumentation tab via the sidebar.
+    await screen.findByRole("switch", { name: /Enable Resource/i }, { timeout: 10_000 });
+    const sidebar = screen.getByRole("complementary");
+    await user.click(within(sidebar).getByRole("tab", { name: /Instrumentation/i }));
+
+    // Wait for instrumentation data to load and enable the button (it is
+    // disabled while `entries.length === 0`).
+    const addAllConfigs = await screen.findByRole(
+      "button",
+      { name: "Add all configs" },
+      { timeout: 10_000 }
+    );
+    await waitFor(() => expect(addAllConfigs).toBeEnabled(), { timeout: 10_000 });
+
+    const readPreview = () =>
+      screen.getByText(/OpenTelemetry SDK Configuration/).closest("pre")?.textContent ?? "";
+
+    // Before: the instrumentation section is not present in the YAML.
+    expect(readPreview()).not.toMatch(/^instrumentation\/development:/m);
+
+    await user.click(addAllConfigs);
+
+    await waitFor(() => {
+      expect(readPreview()).toMatch(/^instrumentation\/development:/m);
+    });
+    expect(confirmSpy).toHaveBeenCalled();
+    confirmSpy.mockRestore();
   });
 });

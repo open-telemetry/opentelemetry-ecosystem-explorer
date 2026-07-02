@@ -225,6 +225,39 @@ export function configurationBuilderReducer(
       return { ...state, values: newValues, enabledSections: newEnabled, isDirty: true };
     }
 
+    case "MERGE_DEFAULTS": {
+      // Merge-safe bulk add: write each entry's default only where the leaf is
+      // currently undefined, so values the user has already set are preserved.
+      // Each setByPath builds on the previous result, so entries sharing a
+      // parent path accumulate instead of clobbering each other.
+      let values = state.values;
+      let changed = false;
+      for (const { path, value } of action.entries) {
+        if (getByPath(values, path) !== undefined) continue;
+        values = setByPath(values, path, value);
+        changed = true;
+      }
+      if (!changed) return state;
+      return { ...state, values, isDirty: true };
+    }
+
+    case "SET_OVERRIDE": {
+      const path = ["distribution", "javaagent", "instrumentation"];
+      const current = getByPath(state.values, path);
+      const inst = isPlainObject(current) ? current : {};
+      const enabledArr = Array.isArray(inst.enabled) ? (inst.enabled as string[]) : [];
+      const disabledArr = Array.isArray(inst.disabled) ? (inst.disabled as string[]) : [];
+
+      const remainingEnabled = enabledArr.filter((m) => m !== action.module);
+      const remainingDisabled = disabledArr.filter((m) => m !== action.module);
+
+      let nextEnabled = remainingEnabled;
+      let nextDisabled = remainingDisabled;
+      if (action.status === "enabled") {
+        nextEnabled = [...remainingEnabled, action.module].sort();
+      } else if (action.status === "disabled") {
+        nextDisabled = [...remainingDisabled, action.module].sort();
+      }
     case "PRUNE_INSTRUMENTATIONS": {
       const current = getByPath(state.values, INSTRUMENTATION_PATH);
       if (!isPlainObject(current)) return state;
