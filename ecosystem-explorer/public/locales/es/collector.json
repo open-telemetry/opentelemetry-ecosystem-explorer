@@ -37,9 +37,7 @@
   },
   "page": {
     "title": "OpenTelemetry Collector",
-    "description": "Una implementación agnóstica al proveedor para recibir, procesar y exportar datos de telemetría.",
-    "unavailableTitle": "Explorador del Collector no disponible",
-    "unavailableDescription": "El explorador del ecosistema del Collector no está habilitado en este despliegue."
+    "description": "Una implementación agnóstica al proveedor para recibir, procesar y exportar datos de telemetría."
   },
   "header": {
     "title": "Collector",

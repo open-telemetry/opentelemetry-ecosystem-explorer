@@ -18,9 +18,6 @@
 // There is no need to edit anything else in this file.
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const FEATURE_FLAGS = [
-  // Collector Page - Still in development
-  "COLLECTOR_PAGE",
-
   // V1 Redesign - Still in development - https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/84
   "V1_REDESIGN",
 

@@ -37,9 +37,7 @@
   },
   "page": {
     "title": "OpenTelemetry Collector",
-    "description": "A vendor-agnostic implementation for receiving, processing, and exporting telemetry data.",
-    "unavailableTitle": "Collector explorer unavailable",
-    "unavailableDescription": "The Collector ecosystem explorer is not enabled for this deployment."
+    "description": "A vendor-agnostic implementation for receiving, processing, and exporting telemetry data."
   },
   "header": {
     "title": "Collector",
