@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 import { useState, useCallback, useMemo, type JSX } from "react";
+import { CopyPlus } from "lucide-react";
 import type { InstrumentationData, InstrumentationModule } from "@/types/javaagent";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
 import { useOverrideStatusMap, type OverrideStatus } from "@/hooks/use-override-status";
 import { useOverriddenModules } from "@/hooks/use-overridden-modules";
 import { groupByModule } from "@/lib/normalize-instrumentation";
+import { buildInstrumentationDefaultEntries } from "@/lib/instrumentation-default-entries";
+import type { DeclarativeScope } from "@/lib/declarative-name";
 import { SectionCardShell } from "./section-card-shell";
 import { InstrumentationRow } from "./instrumentation-row";
+
+// "Add all configs" includes every scope; general.* maps to a real, editable
+// instrumentation/development.general.* path (see the plan §9.1).
+const ALL_SCOPES: DeclarativeScope[] = ["general", "common", "owned"];
 
 export interface InstrumentationBrowserProps {
   instrumentations: InstrumentationData[] | null;
@@ -39,12 +46,19 @@ export function InstrumentationBrowser({
   statusFilter,
   onJumpToGeneral,
 }: InstrumentationBrowserProps): JSX.Element {
-  const { setOverride } = useConfigurationBuilder();
+  const { setOverride, mergeDefaults } = useConfigurationBuilder();
   const overrideMap = useOverrideStatusMap();
 
   const modules = useMemo<InstrumentationModule[]>(
     () => (instrumentations ? groupByModule(instrumentations) : []),
     [instrumentations]
+  );
+
+  // Built from the full module list (all modules, not the active filter) so
+  // "Add all configs" always adds every instrumentation config option.
+  const defaultEntries = useMemo(
+    () => buildInstrumentationDefaultEntries(modules, { includeScopes: ALL_SCOPES }),
+    [modules]
   );
 
   const overriddenSet = useOverriddenModules(modules);
@@ -92,6 +106,16 @@ export function InstrumentationBrowser({
     [setOverride]
   );
 
+  const handleAddAll = useCallback(() => {
+    if (defaultEntries.length === 0) return;
+    const ok = window.confirm(
+      `Add ${defaultEntries.length} instrumentation config options with their defaults? ` +
+        `Values you've already customized will be kept.`
+    );
+    if (!ok) return;
+    mergeDefaults(defaultEntries);
+  }, [defaultEntries, mergeDefaults]);
+
   return (
     <SectionCardShell sectionKey="instrumentations">
       <header className="flex flex-wrap items-baseline justify-between gap-2">
@@ -104,6 +128,15 @@ export function InstrumentationBrowser({
             </span>
           ) : null}
         </h3>
+        <button
+          type="button"
+          onClick={handleAddAll}
+          disabled={defaultEntries.length === 0}
+          className="border-border/60 bg-card text-foreground hover:bg-card/80 flex items-center gap-1 rounded-md border px-3 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          <CopyPlus className="h-3 w-3" aria-hidden="true" />
+          Add all configs
+        </button>
       </header>
 
       {loading ? (

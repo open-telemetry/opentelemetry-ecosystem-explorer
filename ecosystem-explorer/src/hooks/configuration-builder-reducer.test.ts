@@ -337,6 +337,97 @@ describe("configurationBuilderReducer", () => {
     });
   });
 
+  describe("MERGE_DEFAULTS", () => {
+    const ROOT = "instrumentation/development";
+
+    it("adds every entry into empty state and sets isDirty", () => {
+      const next = configurationBuilderReducer(baseState, {
+        type: "MERGE_DEFAULTS",
+        entries: [
+          { path: [ROOT, "foo", "enabled"], value: true },
+          { path: [ROOT, "bar", "limit"], value: 100 },
+        ],
+      });
+      expect(next.values).toEqual({
+        [ROOT]: { foo: { enabled: true }, bar: { limit: 100 } },
+      });
+      expect(next.isDirty).toBe(true);
+    });
+
+    it("preserves a leaf the user already set and fills only the missing sibling", () => {
+      const initial: ConfigurationBuilderState = {
+        ...baseState,
+        values: { [ROOT]: { foo: { enabled: false } } },
+      };
+      const next = configurationBuilderReducer(initial, {
+        type: "MERGE_DEFAULTS",
+        entries: [
+          { path: [ROOT, "foo", "enabled"], value: true },
+          { path: [ROOT, "foo", "limit"], value: 100 },
+        ],
+      });
+      expect(next.values).toEqual({
+        [ROOT]: { foo: { enabled: false, limit: 100 } },
+      });
+    });
+
+    it("returns the same state reference when every entry already exists", () => {
+      const initial: ConfigurationBuilderState = {
+        ...baseState,
+        values: { [ROOT]: { foo: { enabled: true } } },
+      };
+      const next = configurationBuilderReducer(initial, {
+        type: "MERGE_DEFAULTS",
+        entries: [{ path: [ROOT, "foo", "enabled"], value: false }],
+      });
+      expect(next).toBe(initial);
+      expect(next.isDirty).toBe(false);
+    });
+
+    it("lands two entries that share a parent object path without clobbering", () => {
+      const next = configurationBuilderReducer(baseState, {
+        type: "MERGE_DEFAULTS",
+        entries: [
+          { path: [ROOT, "foo", "a"], value: 1 },
+          { path: [ROOT, "foo", "b"], value: 2 },
+        ],
+      });
+      expect(next.values).toEqual({ [ROOT]: { foo: { a: 1, b: 2 } } });
+    });
+
+    it("merges a list-type entry as an array and leaves an existing list untouched", () => {
+      const initial: ConfigurationBuilderState = {
+        ...baseState,
+        values: { [ROOT]: { foo: { existing: ["keep"] } } },
+      };
+      const next = configurationBuilderReducer(initial, {
+        type: "MERGE_DEFAULTS",
+        entries: [
+          { path: [ROOT, "foo", "existing"], value: ["other"] },
+          { path: [ROOT, "foo", "added"], value: ["x", "y"] },
+        ],
+      });
+      expect(next.values).toEqual({
+        [ROOT]: { foo: { existing: ["keep"], added: ["x", "y"] } },
+      });
+    });
+
+    it("preserves an intentionally-empty list/map the user set", () => {
+      const initial: ConfigurationBuilderState = {
+        ...baseState,
+        values: { [ROOT]: { foo: { list: [], map: {} } } },
+      };
+      const next = configurationBuilderReducer(initial, {
+        type: "MERGE_DEFAULTS",
+        entries: [
+          { path: [ROOT, "foo", "list"], value: ["default"] },
+          { path: [ROOT, "foo", "map"], value: { k: "v" } },
+        ],
+      });
+      expect(next.values).toEqual({ [ROOT]: { foo: { list: [], map: {} } } });
+    });
+  });
+
   describe("SET_OVERRIDE", () => {
     const PATH = ["distribution", "javaagent", "instrumentation"] as const;
     const initial = { ...INITIAL_STATE, version: "1.0.0" };

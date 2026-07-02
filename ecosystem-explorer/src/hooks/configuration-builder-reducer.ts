@@ -171,6 +171,22 @@ export function configurationBuilderReducer(
       return { ...state, values: newValues, enabledSections: newEnabled, isDirty: true };
     }
 
+    case "MERGE_DEFAULTS": {
+      // Merge-safe bulk add: write each entry's default only where the leaf is
+      // currently undefined, so values the user has already set are preserved.
+      // Each setByPath builds on the previous result, so entries sharing a
+      // parent path accumulate instead of clobbering each other.
+      let values = state.values;
+      let changed = false;
+      for (const { path, value } of action.entries) {
+        if (getByPath(values, path) !== undefined) continue;
+        values = setByPath(values, path, value);
+        changed = true;
+      }
+      if (!changed) return state;
+      return { ...state, values, isDirty: true };
+    }
+
     case "SET_OVERRIDE": {
       const path = ["distribution", "javaagent", "instrumentation"];
       const current = getByPath(state.values, path);

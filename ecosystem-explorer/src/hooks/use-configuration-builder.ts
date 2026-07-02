@@ -62,6 +62,7 @@ export interface ConfigurationBuilderStateContextValue {
 export interface ConfigurationBuilderActionsContextValue {
   setValue: (path: string, value: ConfigValue) => void;
   setValueByPath: (path: Path, value: ConfigValue) => void;
+  mergeDefaults: (entries: { path: Path; value: ConfigValue }[]) => void;
   setOverride: (module: string, status: "enabled" | "disabled" | "none") => void;
   setEnabled: (section: string, enabled: boolean) => void;
   selectPlugin: (path: string, pluginKey: string) => void;
@@ -166,6 +167,10 @@ export function useConfigurationBuilderState(
 
   const setOverride = useCallback((module: string, status: "enabled" | "disabled" | "none") => {
     dispatch({ type: "SET_OVERRIDE", module, status });
+  }, []);
+
+  const mergeDefaults = useCallback((entries: { path: Path; value: ConfigValue }[]) => {
+    dispatch({ type: "MERGE_DEFAULTS", entries });
   }, []);
 
   const setEnabled = useCallback((section: string, enabled: boolean) => {
@@ -296,6 +301,7 @@ export function useConfigurationBuilderState(
     () => ({
       setValue,
       setValueByPath,
+      mergeDefaults,
       setOverride,
       setEnabled,
       selectPlugin,

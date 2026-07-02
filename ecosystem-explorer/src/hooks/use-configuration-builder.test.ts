@@ -349,6 +349,31 @@ describe("useConfigurationBuilderState", () => {
     expect(result.current.state.enabledSections.file_format).toBeUndefined();
   });
 
+  it("mergeDefaults fills missing leaves while preserving a customized value", () => {
+    const schema: ConfigNode = {
+      controlType: "group",
+      key: "root",
+      label: "Root",
+      path: "",
+      children: [],
+    };
+    const starter: ConfigStarter = {
+      enabledSections: {},
+      values: { "instrumentation/development": { foo: { enabled: false } } },
+    };
+    const { result } = renderHook(() => useConfigurationBuilderState(schema, "1.0.0", starter));
+    act(() =>
+      result.current.mergeDefaults([
+        { path: ["instrumentation/development", "foo", "enabled"], value: true },
+        { path: ["instrumentation/development", "foo", "limit"], value: 100 },
+      ])
+    );
+    expect(result.current.state.values["instrumentation/development"]).toEqual({
+      foo: { enabled: false, limit: 100 },
+    });
+    expect(result.current.state.isDirty).toBe(true);
+  });
+
   it("selectPlugin works for a plugin_select inside a list item", () => {
     const schema: ConfigNode = {
       controlType: "group",

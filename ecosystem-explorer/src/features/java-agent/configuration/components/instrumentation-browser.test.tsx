@@ -49,6 +49,7 @@ const FIXTURE: InstrumentationData[] = [
 ];
 
 const setOverride = vi.fn();
+const mergeDefaults = vi.fn();
 
 const browserDefaults = {
   loading: false,
@@ -58,6 +59,7 @@ const browserDefaults = {
 
 beforeEach(() => {
   setOverride.mockReset();
+  mergeDefaults.mockReset();
   mockedBuilder.mockReturnValue({
     state: {
       values: {},
@@ -68,6 +70,7 @@ beforeEach(() => {
       listItemIds: {},
     },
     setOverride,
+    mergeDefaults,
   } as unknown as ReturnType<typeof useConfigurationBuilder>);
   mockedOverride.mockReturnValue(new Map());
   vi.mocked(useOverriddenModules).mockReturnValue(new Set<string>());
@@ -336,5 +339,125 @@ describe("InstrumentationBrowser — expansion and override filter", () => {
       />
     );
     expect(screen.getByText(/1 overridden/i)).toBeInTheDocument();
+  });
+});
+
+describe("InstrumentationBrowser — Add all configs", () => {
+  // Two modules sharing one common config plus one owned config each → 3 deduped
+  // config entries total.
+  const commonCfg = {
+    name: "otel.methods",
+    declarative_name: "java.common.http.known_methods",
+    description: "",
+    type: "list" as const,
+    default: "GET,POST",
+  };
+  const modulesWithConfigs: InstrumentationData[] = [
+    {
+      name: "cassandra-4.4",
+      scope: { name: "io.opentelemetry.cassandra-4.4" },
+      configurations: [
+        commonCfg,
+        {
+          name: "x",
+          declarative_name: "java.cassandra.query_sanitization.enabled",
+          description: "",
+          type: "boolean" as const,
+          default: true,
+        },
+      ],
+    },
+    {
+      name: "graphql-java-20.0",
+      scope: { name: "io.opentelemetry.graphql-java-20.0" },
+      configurations: [
+        commonCfg,
+        {
+          name: "y",
+          declarative_name: "java.graphql.capture_query",
+          description: "",
+          type: "boolean" as const,
+          default: false,
+        },
+      ],
+    },
+  ];
+
+  beforeEach(() => {
+    vi.mocked(useOverriddenModules).mockReturnValue(new Set<string>());
+  });
+
+  it("renders an 'Add all configs' button distinct from the SDK 'Add all'", () => {
+    render(
+      <InstrumentationBrowser
+        instrumentations={modulesWithConfigs}
+        search=""
+        statusFilter="all"
+        {...browserDefaults}
+      />
+    );
+    expect(screen.getByRole("button", { name: "Add all configs" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^Add all$/ })).toBeNull();
+  });
+
+  it("calls mergeDefaults once with the deduped entry set when confirmed", () => {
+    const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(true);
+    render(
+      <InstrumentationBrowser
+        instrumentations={modulesWithConfigs}
+        search=""
+        statusFilter="all"
+        {...browserDefaults}
+      />
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Add all configs" }));
+    expect(mergeDefaults).toHaveBeenCalledTimes(1);
+    expect(mergeDefaults.mock.calls[0][0]).toHaveLength(3);
+    confirmSpy.mockRestore();
+  });
+
+  it("does not call mergeDefaults when the confirm is cancelled", () => {
+    const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(false);
+    render(
+      <InstrumentationBrowser
+        instrumentations={modulesWithConfigs}
+        search=""
+        statusFilter="all"
+        {...browserDefaults}
+      />
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Add all configs" }));
+    expect(mergeDefaults).not.toHaveBeenCalled();
+    confirmSpy.mockRestore();
+  });
+
+  it("counts all modules regardless of the active filter", () => {
+    const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(true);
+    render(
+      <InstrumentationBrowser
+        instrumentations={modulesWithConfigs}
+        search="cassandra"
+        statusFilter="all"
+        {...browserDefaults}
+      />
+    );
+    // graphql_java is filtered out of the list...
+    expect(screen.queryByTestId("instrumentation-row-graphql_java")).toBeNull();
+    // ...but Add all still adds the full deduped set (3), not just cassandra's.
+    fireEvent.click(screen.getByRole("button", { name: "Add all configs" }));
+    expect(mergeDefaults.mock.calls[0][0]).toHaveLength(3);
+    confirmSpy.mockRestore();
+  });
+
+  it("disables the button when there are no config entries", () => {
+    render(
+      <InstrumentationBrowser
+        instrumentations={FIXTURE}
+        search=""
+        statusFilter="all"
+        {...browserDefaults}
+      />
+    );
+    expect(screen.getByRole("button", { name: "Add all configs" })).toBeDisabled();
   });
 });
