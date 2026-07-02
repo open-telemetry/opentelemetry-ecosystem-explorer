@@ -109,7 +109,7 @@ export function useLibraryReadme(
 ): DataState<string> {
   const [state, setState] = useState<DataState<string>>({
     data: null,
-    loading: false,
+    loading: true,
     error: null,
   });
 
