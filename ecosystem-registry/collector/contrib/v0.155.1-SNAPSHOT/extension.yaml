@@ -67,7 +67,7 @@ components:
     status:
       class: extension
       stability:
-        alpha:
+        beta:
         - extension
       distributions:
       - contrib

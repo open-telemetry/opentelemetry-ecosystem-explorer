@@ -8732,6 +8732,8 @@ components:
       stability:
         beta:
         - metrics
+        development:
+        - logs
       distributions:
       - contrib
       codeowners:
@@ -8741,6 +8743,12 @@ components:
         - ishleenk17
         seeking_new: true
     attributes:
+      client.address:
+        description: Hostname or address of the client.
+        type: string
+      client.port:
+        description: TCP port used by the client.
+        type: int
       collection:
         description: The name of a collection.
         type: string
@@ -8752,9 +8760,26 @@ components:
         - active
         - available
         - current
+      db.collection.name:
+        description: The MongoDB collection being accessed within the database stated
+          in db.namespace.
+        type: string
       db.namespace:
         description: The name of a database.
         type: string
+      db.operation.name:
+        description: The name of the MongoDB command being executed (e.g. find, aggregate,
+          insert).
+        type: string
+      db.query.text:
+        description: The obfuscated MongoDB command statement.
+        type: string
+      db.system.name:
+        description: The database management system (DBMS) product as identified by
+          the client instrumentation.
+        type: string
+        enum:
+        - mongodb
       lock_mode:
         description: The mode of Lock which denotes the degree of access
         type: string
@@ -8782,6 +8807,93 @@ components:
         enum:
         - resident
         - virtual
+      mongodb.client.app.name:
+        description: The identifier of the client application which ran the operation,
+          as set by the driver's `appName` connection option.
+        type: string
+      mongodb.cursor.await_data:
+        description: Whether the tailable cursor waits for new data instead of returning
+          immediately.
+        type: bool
+      mongodb.cursor.id:
+        description: The identifier of the cursor.
+        type: string
+      mongodb.cursor.no_timeout:
+        description: Whether the cursor is configured not to time out when idle.
+        type: bool
+      mongodb.cursor.originating_command:
+        description: The obfuscated command that originally created the cursor.
+        type: string
+      mongodb.cursor.returned_batches:
+        description: The cumulative number of batches returned by the cursor.
+        type: int
+      mongodb.cursor.returned_documents:
+        description: The cumulative number of documents returned by the cursor.
+        type: int
+      mongodb.cursor.tailable:
+        description: Whether the cursor is a tailable cursor.
+        type: bool
+      mongodb.lsid.id:
+        description: The UUID portion of the logical session identifier associated
+          with the MongoDB operation.
+        type: string
+      mongodb.operation.comment:
+        description: The comments attached to the MongoDB command. String comments
+          are reported as-is; array comments are expanded into multiple entries; non-string
+          values are reported as MongoDB Extended JSON.
+        type: slice
+      mongodb.operation.duration:
+        description: The duration of the MongoDB operation in seconds.
+        type: double
+      mongodb.operation.id:
+        description: Identifier of the MongoDB operation.
+        type: string
+      mongodb.operation.plan.summary:
+        description: Summary of the execution plan for the MongoDB operation.
+        type: string
+      mongodb.operation.prepared_read_conflict.count:
+        description: The number of times the MongoDB operation had to wait for a prepared
+          transaction with a write to commit or abort.
+        type: int
+      mongodb.operation.state:
+        description: Simplified state of the MongoDB operation.
+        type: string
+        enum:
+        - active
+        - waiting
+      mongodb.operation.type:
+        description: The raw MongoDB operation type from `$currentOp.op` (e.g. query,
+          insert, update, remove, getmore, command).
+        type: string
+      mongodb.operation.wait.details:
+        description: Details about what the MongoDB operation is waiting on.
+        type: string
+      mongodb.operation.wait.type:
+        description: 'The set of wait conditions the MongoDB operation is currently
+          blocked on. Possible values: `lock` (from `waitingForLock`), `flow_control`
+          (from `waitingForFlowControl`), and `latch` (when `waitingForLatch` is a
+          non-empty document). An empty slice indicates the operation is not waiting
+          on any of these conditions.'
+        type: slice
+      mongodb.operation.write_conflict.count:
+        description: The number of times the MongoDB operation conflicted with another
+          write operation on the same document.
+        type: int
+      mongodb.operation.yield.count:
+        description: The number of times the MongoDB operation yielded to allow other
+          operations to complete.
+        type: int
+      mongodb.query.framework:
+        description: The MongoDB query execution engine that processed this operation.
+          Only present for operations that flow through the query subsystem (reads,
+          read-modify-writes, and getMore continuations); absent for pure inserts,
+          index management, and administrative commands. Known values include `classic`
+          and `sbe`.
+        type: string
+      mongodb.query.truncated:
+        description: Whether the value carried by db.query.text is a truncated rendering
+          of the MongoDB command, as indicated by `$truncated` in the currentOp output.
+        type: bool
       operation:
         description: The MongoDB operation being counted.
         type: string
@@ -8806,6 +8918,9 @@ components:
         enum:
         - hit
         - miss
+      user.name:
+        description: Name of the user associated with the operation.
+        type: string
     metrics:
       mongodb.active.reads:
         description: The number of read operations currently being processed.
@@ -10669,10 +10784,24 @@ components:
         description: The number of seconds this session has been waiting for the current
           wait event.
         type: int
+      oracledb.buffer.state:
+        description: The state of a buffer encountered while inspecting the LRU queue
+          for a reusable buffer (free = a reusable buffer that was skipped; dirty
+          = a dirty buffer found).
+        type: string
+        enum:
+        - dirty
+        - free
       oracledb.buffer_gets:
         description: Number of logical reads (i.e., buffer cache accesses) performed
           by a query (reporting delta).
         type: int
+      oracledb.call.type:
+        description: Type of call reported by Oracle.
+        type: string
+        enum:
+        - recursive
+        - user
       oracledb.child_address:
         description: Address of the child cursor.
         type: string
@@ -10714,6 +10843,15 @@ components:
         description: The total time (in seconds) taken by a query from start to finish,
           including CPU time and all types of waits (reporting delta).
         type: double
+      oracledb.enqueue.type:
+        description: Type of enqueue (lock) operation reported by Oracle.
+        type: string
+        enum:
+        - conversions
+        - releases
+        - requests
+        - timeouts
+        - waits
       oracledb.event:
         description: The specific wait event that a query or session is currently
           experiencing.
@@ -10824,6 +10962,20 @@ components:
         description: The total number of rows that a query has read, returned, or
           affected during its execution (reporting delta).
         type: int
+      oracledb.scan.mode:
+        description: Execution mode of the scan reported by Oracle.
+        type: string
+        enum:
+        - direct_read
+        - full
+        - long_tables
+        - rowid_ranges
+      oracledb.scan.type:
+        description: Type of scan operation reported by Oracle.
+        type: string
+        enum:
+        - index_fast_full
+        - table
       oracledb.schemaname:
         description: Oracle schema under which SQL statements are being executed
         type: string
@@ -10837,6 +10989,11 @@ components:
         description: The timestamp when the session logged on, in ISO 8601 format
           (UTC).
         type: string
+      oracledb.session.type:
+        description: Class of session the database time is attributed to.
+        type: string
+        enum:
+        - foreground
       oracledb.sid:
         description: ID of the Oracle Server session.
         type: string
@@ -10844,6 +11001,7 @@ components:
         description: Type of sort operation (e.g., memory, disk).
         type: string
         enum:
+        - disk
         - memory
       oracledb.sql_id:
         description: The SQL ID of the query.
@@ -10882,6 +11040,53 @@ components:
         description: Database user name under which a session is connected to
         type: string
     metrics:
+      oracledb.buffer.inspected:
+        description: Number of buffers inspected from the end of the LRU queue while
+          a process searched for a reusable buffer, grouped by buffer state.
+        unit: '{buffer}'
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+          input_type: string
+        attributes:
+        - oracledb.buffer.state
+        stability: development
+      oracledb.buffer.requests:
+        description: Number of times a reusable or free buffer was requested to create
+          or load a block.
+        unit: '{request}'
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+          input_type: string
+        stability: development
+      oracledb.buffer_cache.block.changes:
+        description: Number of changes that were part of an update or delete operation
+          made to blocks in the buffer cache.
+        unit: '{change}'
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+          input_type: string
+        stability: development
+      oracledb.buffer_cache.block.gets:
+        description: Number of current-mode block gets satisfied from the buffer cache.
+          Distinct from oracledb.db_block_gets, which counts all current-mode block
+          gets requested regardless of where they are satisfied.
+        unit: '{get}'
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+          input_type: string
+        stability: development
       oracledb.buffer_cache.utilization:
         description: Fraction of logical reads served from the buffer cache without
           physical I/O, as computed by Oracle V$SYSMETRIC (% (LogRead - PhyRead)/LogRead).
@@ -10889,6 +11094,47 @@ components:
         enabled: false
         gauge:
           value_type: double
+        stability: development
+      oracledb.call.count:
+        description: Total count of calls issued to the database.
+        unit: '{call}'
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+          input_type: string
+        attributes:
+        - oracledb.call.type
+        stability: development
+      oracledb.call.recursive.cpu.time:
+        description: Total CPU time spent on recursive (internal) calls.
+        unit: s
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: double
+        stability: development
+      oracledb.checkpoint.buffers:
+        description: Number of buffers written by the Database Writer (DBWR) for checkpoints.
+        unit: '{buffer}'
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+          input_type: string
+        stability: development
+      oracledb.checkpoint.completed:
+        description: Number of checkpoints completed by the Database Writer (DBWR).
+        unit: '{checkpoint}'
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+          input_type: string
         stability: development
       oracledb.consistent_gets:
         description: Number of times a consistent read was requested for a block from
@@ -10909,6 +11155,33 @@ components:
           aggregation_temporality: cumulative
           monotonic: true
           value_type: double
+        stability: development
+      oracledb.cursor.cache.hits:
+        description: Total count of session cursor cache hits, where an existing cached
+          cursor is reused to avoid a soft parse.
+        unit: '{hit}'
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+          input_type: string
+        stability: development
+      oracledb.cursor.cache.size:
+        description: Number of cursors currently held in the session cursor cache.
+        unit: '{cursor}'
+        enabled: false
+        gauge:
+          value_type: int
+          input_type: string
+        stability: development
+      oracledb.cursor.open:
+        description: Number of currently open cursors in the Oracle instance.
+        unit: '{cursor}'
+        enabled: false
+        gauge:
+          value_type: int
+          input_type: string
         stability: development
       oracledb.data_dictionary.hit_ratio:
         description: Data dictionary cache hit ratio from v$rowcache.
@@ -10932,6 +11205,17 @@ components:
         enabled: false
         gauge:
           value_type: double
+        stability: development
+      oracledb.db.time:
+        description: Total wall-clock time spent in database calls.
+        unit: s
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: double
+        attributes:
+        - oracledb.session.type
         stability: development
       oracledb.db_block_gets:
         description: Number of times a current block was requested from the buffer
@@ -10980,6 +11264,18 @@ components:
           monotonic: true
           value_type: int
           input_type: string
+        stability: development
+      oracledb.enqueue.operations:
+        description: Total count of enqueue (lock) operations.
+        unit: '{operation}'
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+          input_type: string
+        attributes:
+        - oracledb.enqueue.type
         stability: development
       oracledb.enqueue_deadlocks:
         description: Total number of deadlocks between table or row locks in different
@@ -11084,6 +11380,18 @@ components:
         gauge:
           value_type: double
         stability: development
+      oracledb.lob.operations:
+        description: Total count of LOB (large object) I/O operations.
+        unit: '{operation}'
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+          input_type: string
+        attributes:
+        - disk.io.direction
+        stability: development
       oracledb.logical_reads:
         description: Number of logical reads
         unit: '{reads}'
@@ -11173,6 +11481,24 @@ components:
           monotonic: true
           value_type: int
           input_type: string
+        stability: development
+      oracledb.parse.cpu.time:
+        description: Total CPU time spent on SQL parsing.
+        unit: s
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: double
+        stability: development
+      oracledb.parse.elapsed.time:
+        description: Total wall-clock time spent on SQL parsing.
+        unit: s
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: double
         stability: development
       oracledb.parse.rate:
         description: Rate of parse operations per second broken down by result, as
@@ -11426,6 +11752,29 @@ components:
         gauge:
           value_type: double
         stability: development
+      oracledb.scan.count:
+        description: Total count of scan operations.
+        unit: '{operation}'
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+          input_type: string
+        attributes:
+        - oracledb.scan.mode
+        - oracledb.scan.type
+        stability: development
+      oracledb.scan.table.rows:
+        description: Total number of rows returned by full-table scans.
+        unit: '{row}'
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+          input_type: string
+        stability: development
       oracledb.sessions.limit:
         description: Maximum limit of active sessions, -1 if unlimited.
         unit: '{sessions}'
@@ -11453,6 +11802,18 @@ components:
         gauge:
           value_type: double
         stability: development
+      oracledb.sort.operations:
+        description: Total count of sort operations.
+        unit: '{operation}'
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+          input_type: string
+        attributes:
+        - oracledb.sort.type
+        stability: development
       oracledb.sort.ratio:
         description: Fraction of sorts performed in memory vs disk, as computed by
           Oracle V$SYSMETRIC (% MemSort/(MemSort + DiskSort)). Low values indicate
@@ -11463,6 +11824,16 @@ components:
           value_type: double
         attributes:
         - oracledb.sort.type
+        stability: development
+      oracledb.sort.rows:
+        description: Total number of rows sorted across all sort operations.
+        unit: '{row}'
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+          input_type: string
         stability: development
       oracledb.sql_service.response.duration:
         description: Average SQL service response time in seconds, converted from
@@ -11586,6 +11957,13 @@ components:
       service.instance.id:
         description: A unique identifier of the Oracle DB instance in the format host:port/serviceName.
           (defaults to 'unknown:1521', in case of error in generating this value)
+        type: string
+      service.name:
+        description: Logical name of the service. When enabled, defaults to unknown_service:oracle.
+        type: string
+      service.namespace:
+        description: Logical namespace for the service (for example team or environment).
+          When enabled, defaults to an empty string until set via configuration.
         type: string
 - name: osqueryreceiver
   metadata:
@@ -11868,6 +12246,34 @@ components:
       postgresql.application_name:
         description: Name of the application that is connected to this backend.
         type: string
+      postgresql.blocking.lock.mode:
+        description: The lock mode being requested by the blocked session (e.g. RowExclusiveLock,
+          AccessExclusiveLock). Empty string when not blocked.
+        type: string
+      postgresql.blocking.lock.relation:
+        description: The name of the relation (table) being waited on. Empty string
+          when not blocked or when lock is not on a relation.
+        type: string
+      postgresql.blocking.lock.type:
+        description: The type of lock resource being waited on (e.g. relation, transactionid,
+          tuple). Empty string when not blocked.
+        type: string
+      postgresql.blocking.pids:
+        description: Array of PIDs of sessions blocking this session (from pg_blocking_pids).
+          Empty array when not blocked.
+        type: string
+      postgresql.blocking.start_time:
+        description: UTC timestamp (RFC3339) when the current lock wait began, derived
+          from pg_locks.waitstart. Empty string when not blocked.
+        type: string
+      postgresql.blocking.transaction.start_time:
+        description: UTC timestamp (RFC3339) when the current transaction started.
+          Empty string when no active transaction.
+        type: string
+      postgresql.blocking.wait_duration:
+        description: Whole seconds this session has been waiting for a lock, measured
+          from pg_locks.waitstart. 0 when not blocked.
+        type: int
       postgresql.calls:
         description: Number of times the statement was executed, reported in delta
           value.
@@ -12338,6 +12744,13 @@ components:
         description: A unique identifier of the PostgreSQL instance in the format
           host:port (defaults to 'unknown:5432' in case of error in generating this
           value).
+        type: string
+      service.name:
+        description: Logical name of the service. When enabled, defaults to unknown_service:postgresql.
+        type: string
+      service.namespace:
+        description: Logical namespace for the service (for example team or environment).
+          When enabled, defaults to an empty string until set via configuration.
         type: string
 - name: pprofreceiver
   metadata:
