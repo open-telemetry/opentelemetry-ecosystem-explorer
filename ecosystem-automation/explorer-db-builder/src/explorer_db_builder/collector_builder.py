@@ -22,7 +22,7 @@ from semantic_version import Version
 
 from explorer_db_builder.collector_database_writer import CollectorDatabaseWriter
 from explorer_db_builder.collector_transformer import make_index_component, transform_collector_components
-from explorer_db_builder.ecosystem_stats import count_unique_component_ids
+from explorer_db_builder.ecosystem_stats import count_unique_collector_component_ids
 
 logger = logging.getLogger(__name__)
 
@@ -154,7 +154,7 @@ def run_collector_builder(
         db_writer.write_ecosystem_stats(
             {
                 "version_count": len(processed_versions),
-                "component_count": count_unique_component_ids(components_by_version),
+                "component_count": count_unique_collector_component_ids(components_by_version),
             }
         )
 

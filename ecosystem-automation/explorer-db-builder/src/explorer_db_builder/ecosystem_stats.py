@@ -22,7 +22,7 @@ reflects the latest version, so these unions must run over every loaded version 
 from typing import Any
 
 
-def count_unique_library_names(inventories: list[dict[str, Any]]) -> int:
+def count_unique_java_library_names(inventories: list[dict[str, Any]]) -> int:
     """Count unique instrumentation names across all versions.
 
     Libraries and custom instrumentations are counted together, matching how every other
@@ -45,7 +45,7 @@ def count_unique_library_names(inventories: list[dict[str, Any]]) -> int:
     return len(names)
 
 
-def count_unique_component_ids(components_by_version: list[list[dict[str, Any]]]) -> int:
+def count_unique_collector_component_ids(components_by_version: list[list[dict[str, Any]]]) -> int:
     """Count unique collector component ids across all versions.
 
     Args:

@@ -15,6 +15,7 @@
  */
 import { useEffect, useState } from "react";
 import type { DataState } from "@/hooks/data-state";
+import { resolveDataPath } from "@/lib/api/fetch-with-cache";
 
 export const JAVA_AGENT_ECOSYSTEM_STATS_URL = "/data/javaagent/ecosystem-stats.json";
 export const COLLECTOR_ECOSYSTEM_STATS_URL = "/data/collector/ecosystem-stats.json";
@@ -40,7 +41,8 @@ export interface UseEcosystemStatsOptions {
 }
 
 async function fetchJson<T>(url: string): Promise<T> {
-  const res = await fetch(url);
+  // Intentionally not using cache for this data
+  const res = await fetch(resolveDataPath(url));
   if (!res.ok) throw new Error(`${url} responded with ${res.status}`);
   return (await res.json()) as T;
 }
