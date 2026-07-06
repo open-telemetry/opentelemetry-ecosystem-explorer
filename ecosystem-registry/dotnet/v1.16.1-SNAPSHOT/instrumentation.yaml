@@ -157,6 +157,10 @@ modules:
   description: HTTP instrumentation for OpenTelemetry .NET.
   type: instrumentation
   version: 1.16.0
+- name: OpenTelemetry.Instrumentation.Kusto
+  description: OpenTelemetry Kusto Instrumentation.
+  type: instrumentation
+  version: 0.1.0-alpha.2
 - name: OpenTelemetry.Instrumentation.Owin
   description: OpenTelemetry instrumentation for OWIN.
   type: instrumentation

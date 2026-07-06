@@ -1,0 +1,13 @@
+component_owners:
+- d4nyll
+- raphael-theriault-swi
+description: OpenTelemetry instrumentation for Node.js Performance measurement API
+in_auto_instrumentations_node: true
+name: instrumentation-runtime-node
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-runtime-node'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-runtime-node
+supported_versions: []
+tested_versions: []
+version: 0.33.0

@@ -1,0 +1,32 @@
+component_owners:
+- Ugzuzg
+description: OpenTelemetry instrumentation for `@cucumber/cucumber` automated tests
+  runner
+in_auto_instrumentations_node: true
+name: instrumentation-cucumber
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-cucumber'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-cucumber
+supported_versions:
+- package: '@cucumber/cucumber'
+  source: README.md
+  version_range: '>=8.0.0 <13'
+tested_versions:
+- mode: latest-minors
+  package: '@cucumber/cucumber'
+  range: ^10.0.0
+  source: .tav.yml
+- mode: latest-minors
+  package: '@cucumber/cucumber'
+  range: ^11.0.0
+  source: .tav.yml
+- mode: latest-minors
+  package: '@cucumber/cucumber'
+  range: ^12.0.0
+  source: .tav.yml
+- mode: latest-minors
+  package: '@cucumber/cucumber'
+  range: ^8.0.0 || ^9.0.0
+  source: .tav.yml
+version: 0.36.0

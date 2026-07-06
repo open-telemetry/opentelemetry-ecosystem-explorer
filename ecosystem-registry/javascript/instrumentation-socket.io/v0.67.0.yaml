@@ -1,0 +1,24 @@
+component_owners:
+- mottibec
+description: OpenTelemetry instrumentation for `socket.io` messaging server implementation
+  for Socket.IO communication
+in_auto_instrumentations_node: true
+name: instrumentation-socket.io
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-socket.io'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-socket.io
+supported_versions:
+- package: socket.io
+  source: README.md
+  version_range: '>=2.0.0 <5'
+tested_versions:
+- mode: latest-minors
+  package: socket.io
+  range: ^2.1.1
+  source: .tav.yml
+- mode: latest-minors
+  package: socket.io
+  range: ^4.5.3
+  source: .tav.yml
+version: 0.67.0

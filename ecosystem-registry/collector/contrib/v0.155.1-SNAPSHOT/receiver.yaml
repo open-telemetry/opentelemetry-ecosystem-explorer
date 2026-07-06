@@ -6797,10 +6797,11 @@ components:
       codeowners:
         active:
         - dmitryax
-        - hvaghani221
         - TylerHelmuth
         - ChrsMark
         - krisztianfekete
+        emeritus:
+        - hvaghani221
 - name: kafkametricsreceiver
   metadata:
     type: kafka_metrics
@@ -12180,6 +12181,7 @@ components:
         - antonblock
         - ishleenk17
         - Caleb-Hurshman
+        - ebrdarSplunk
         seeking_new: true
         emeritus:
         - djaglowski
@@ -16827,6 +16829,13 @@ components:
       server.port:
         description: The port number on which the server is listening.
         type: int
+      sqlserver.access.scan.type:
+        description: The type of access method scan being performed.
+        type: string
+        enum:
+        - free_space
+        - probe
+        - range
       sqlserver.blocking.start_time:
         description: Timestamp of when the current blocking wait began (ISO 8601 format).
         type: string
@@ -16856,6 +16865,12 @@ components:
         description: Number of times that the plan has been executed since it was
           last compiled, reported in delta value.
         type: int
+      sqlserver.extent.operation.type:
+        description: The type of extent allocation operation.
+        type: string
+        enum:
+        - allocated
+        - deallocated
       sqlserver.lock_timeout:
         description: Lock timeout value in seconds.
         type: double
@@ -16865,6 +16880,19 @@ components:
       sqlserver.open_transaction_count:
         description: Number of transactions currently open in the session.
         type: int
+      sqlserver.page.allocation.type:
+        description: The type of page allocation operation.
+        type: string
+        enum:
+        - allocated
+        - deallocated
+        - mixed
+      sqlserver.page.compression.type:
+        description: The type of page compression operation.
+        type: string
+        enum:
+        - attempted
+        - succeeded
       sqlserver.parameterization.result:
         description: The result of an auto-parameterization attempt by the SQL Server
           query optimizer.
@@ -17028,6 +17056,15 @@ components:
           for more information.
         type: string
     metrics:
+      sqlserver.access.scan.rate:
+        description: Rate of access method scans.
+        unit: '{scan}/s'
+        enabled: false
+        gauge:
+          value_type: double
+        attributes:
+        - sqlserver.access.scan.type
+        stability: development
       sqlserver.attention.rate:
         description: Number of SQL attentions (client cancellation interrupts) received
           per second.
@@ -17174,6 +17211,23 @@ components:
       sqlserver.deadlock.rate:
         description: Total number of deadlocks.
         unit: “{deadlocks}/s”
+        enabled: false
+        gauge:
+          value_type: double
+        attributes: []
+        stability: development
+      sqlserver.extent.operation.rate:
+        description: Rate of extent operations.
+        unit: '{extent}/s'
+        enabled: false
+        gauge:
+          value_type: double
+        attributes:
+        - sqlserver.extent.operation.type
+        stability: development
+      sqlserver.ghost_record.skipped.rate:
+        description: Rate of ghosted records skipped during scans.
+        unit: '{record}/s'
         enabled: false
         gauge:
           value_type: double
@@ -17336,6 +17390,15 @@ components:
         - wait.category
         - wait.type
         stability: development
+      sqlserver.page.allocation.rate:
+        description: Rate of page allocation operations.
+        unit: '{page}/s'
+        enabled: false
+        gauge:
+          value_type: double
+        attributes:
+        - sqlserver.page.allocation.type
+        stability: development
       sqlserver.page.buffer_cache.free_list.stalls.rate:
         description: Number of free list stalls.
         unit: “{stalls}/s”
@@ -17358,6 +17421,15 @@ components:
         enabled: true
         gauge:
           value_type: double
+        stability: development
+      sqlserver.page.compression.rate:
+        description: Rate of page compression operations.
+        unit: '{page}/s'
+        enabled: false
+        gauge:
+          value_type: double
+        attributes:
+        - sqlserver.page.compression.type
         stability: development
       sqlserver.page.lazy_write.rate:
         description: Number of lazy writes moving dirty pages to disk.
@@ -17391,6 +17463,14 @@ components:
           value_type: double
         attributes:
         - page.operations
+        stability: development
+      sqlserver.page.read_ahead.rate:
+        description: Rate of pages read from disk by the read-ahead manager.
+        unit: '{page}/s'
+        enabled: false
+        gauge:
+          value_type: double
+        attributes: []
         stability: development
       sqlserver.page.split.rate:
         description: Number of pages split as a result of overflowing index pages.
@@ -17470,6 +17550,14 @@ components:
         gauge:
           value_type: double
           input_type: string
+        attributes: []
+        stability: development
+      sqlserver.scan_point.revalidation.rate:
+        description: Rate at which scan points needed to be revalidated.
+        unit: '{revalidate}/s'
+        enabled: false
+        gauge:
+          value_type: double
         attributes: []
         stability: development
       sqlserver.table.count:
@@ -17569,6 +17657,15 @@ components:
         enabled: true
         gauge:
           value_type: int
+        stability: development
+      sqlserver.worktable.cache.hit_ratio:
+        description: Fraction of worktables that did not require initialization because
+          they were retrieved from the worktable cache.
+        unit: '1'
+        enabled: false
+        gauge:
+          value_type: double
+        attributes: []
         stability: development
     resource_attributes:
       host.name:

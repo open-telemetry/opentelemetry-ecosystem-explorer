@@ -1,0 +1,21 @@
+component_owners:
+- JamieDanielson
+- pkanal
+- raphael-theriault-swi
+description: OpenTelemetry instrumentation for `express` http web application framework
+in_auto_instrumentations_node: true
+name: instrumentation-express
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-express'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-express
+supported_versions:
+- package: express
+  source: README.md
+  version_range: '>=4.0.0 <6'
+tested_versions:
+- mode: latest-minors
+  package: express
+  range: '>=4.16.2 <6'
+  source: .tav.yml
+version: 0.68.0

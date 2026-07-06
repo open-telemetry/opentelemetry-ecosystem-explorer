@@ -1,0 +1,24 @@
+component_owners:
+- raphael-theriault-swi
+description: OpenTelemetry instrumentation for `mysql2` database client for MySQL
+in_auto_instrumentations_node: true
+name: instrumentation-mysql2
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-mysql2'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-mysql2
+supported_versions:
+- package: mysql2
+  source: README.md
+  version_range: '>=1.4.2 <4'
+tested_versions:
+- exclude: 1.6.2 || 2.3.3
+  mode: max-3
+  package: mysql2
+  range: '>=1.4.2 <3'
+  source: .tav.yml
+- mode: max-7
+  package: mysql2
+  range: '>=3 <4'
+  source: .tav.yml
+version: 0.66.0

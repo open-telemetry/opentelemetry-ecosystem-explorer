@@ -222,6 +222,8 @@ components:
         beta:
         - logs
         - traces
+        development:
+        - profiles
       distributions:
       - contrib
       codeowners:
@@ -567,6 +569,7 @@ components:
       codeowners:
         active:
         - rlankfo
+        - iblancasa
         emeritus:
         - jpkrohling
         seeking_new: true

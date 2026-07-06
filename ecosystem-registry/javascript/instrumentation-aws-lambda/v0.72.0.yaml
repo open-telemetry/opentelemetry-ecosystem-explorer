@@ -1,0 +1,12 @@
+component_owners:
+- jj22ee
+description: OpenTelemetry instrumentation for AWS Lambda function invocations
+in_auto_instrumentations_node: true
+name: instrumentation-aws-lambda
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-aws-lambda'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-aws-lambda
+supported_versions: []
+tested_versions: []
+version: 0.72.0
