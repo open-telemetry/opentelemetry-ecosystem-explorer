@@ -57,5 +57,5 @@ This purposive sampling approach ensures that a range of perspectives and inform
 - Otel Reddit
 
 #### Reach out Message 
-Hi (Name).  I'm Karimot, an LFX mentee working on UX research for the OpenTelemetry Ecosystem Explorer (explorer.opentelemetry.io). I'm trying to understand how engineers actually find and use info about OTel components and instrumentation.
-Would you have 20-30 min sometime in the coming weeks for an informal chat about your experience? You don't need to have used the Ecosystem Explorer before. No prep needed,  just want to hear how things actually work for you. Thank you.
+Hi (Name). I'm Karimot, an LFX mentee working on UX research for the OpenTelemetry Ecosystem Explorer (explorer.opentelemetry.io). I'm trying to understand how engineers actually find and use info about OTel components and instrumentation.
+Would you have 20-30 min sometime in the coming weeks for an informal chat about your experience? You don't need to have used the Ecosystem Explorer before. No prep needed, just want to hear how things actually work for you. Thank you.
