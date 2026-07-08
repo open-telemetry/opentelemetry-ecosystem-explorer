@@ -1,0 +1,32 @@
+component_owners:
+- blumamir
+description: OpenTelemetry instrumentation for `mongoose` database object data modeling
+  (ODM) library for MongoDB
+in_auto_instrumentations_node: true
+name: instrumentation-mongoose
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-mongoose'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-mongoose
+supported_versions:
+- package: mongoose
+  source: README.md
+  version_range: '>=5.9.7 <10'
+tested_versions:
+- mode: latest-majors
+  package: mongoose
+  range: '>=5.9.7 <7'
+  source: .tav.yml
+- mode: max-5
+  package: mongoose
+  range: '>=7 <8'
+  source: .tav.yml
+- mode: max-5
+  package: mongoose
+  range: '>=8 <9'
+  source: .tav.yml
+- mode: max-7
+  package: mongoose
+  range: '>=9 <10'
+  source: .tav.yml
+version: 0.66.0

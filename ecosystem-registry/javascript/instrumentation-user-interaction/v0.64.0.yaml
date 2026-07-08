@@ -1,0 +1,13 @@
+component_owners:
+- obecny
+description: OpenTelemetry instrumentation for user interactions as click events in
+  a web application
+in_auto_instrumentations_node: false
+name: instrumentation-user-interaction
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-user-interaction'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-user-interaction
+supported_versions: []
+tested_versions: []
+version: 0.64.0

@@ -1,0 +1,30 @@
+component_owners:
+- blumamir
+- jj22ee
+- trivikr
+description: OpenTelemetry instrumentation for `aws-sdk` and `@aws-sdk/client-*` clients
+  for various AWS services
+in_auto_instrumentations_node: true
+name: instrumentation-aws-sdk
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-aws-sdk'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-aws-sdk
+supported_versions: []
+tested_versions:
+- exclude: '>=3.363.0 <=3.377.0'
+  mode: max-7
+  package: '@aws-sdk/client-bedrock-runtime'
+  range: ^3.587.0
+  source: .tav.yml
+- exclude: 3.529.0 || >=3.363.0 <=3.377.0
+  mode: max-7
+  package: '@aws-sdk/client-s3'
+  range: ^3.6.1
+  source: .tav.yml
+- exclude: '>=3.363.0 <=3.377.0'
+  mode: max-7
+  package: '@aws-sdk/client-sqs'
+  range: ^3.24.0
+  source: .tav.yml
+version: 0.75.0

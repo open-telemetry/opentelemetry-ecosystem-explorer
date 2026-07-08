@@ -1,0 +1,13 @@
+component_owners:
+- mhennoch
+- t2t2
+description: OpenTelemetry instrumentation for long task Web API
+in_auto_instrumentations_node: false
+name: instrumentation-long-task
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-long-task'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-long-task
+supported_versions: []
+tested_versions: []
+version: 0.64.0
