@@ -26,12 +26,22 @@
  * FooterV1 + CncfCallout), add its primitive to the relevant section.
  */
 
+import { useState } from "react";
 import { GitCompare, LayoutGrid, Split } from "lucide-react";
 
 import { GlowBadge } from "@/components/ui/glow-badge";
 import { StabilityBadge } from "@/components/ui/stability-badge";
 import { type Stability, StatusPill } from "@/components/ui/status-pill";
 import { ReleaseCard } from "@/v1/components/ecosystem/release-card";
+import {
+  ActiveFilterChips,
+  DensityToggle,
+  EmptyState,
+  FacetDrawerToggle,
+  Pagination,
+  SortDropdown,
+} from "@/v1/components/list/controls";
+import { DEFAULT_FILTERS, activeFilterCount, type ListFilters } from "@/v1/lib/list-filters";
 import { type PipelineStage, PipelineAnatomy } from "@/v1/components/ecosystem/pipeline-anatomy";
 import { QuickEntryRow } from "@/v1/components/ecosystem/quick-entry-row";
 import { CoverBlock } from "@/v1/components/home/cover-block";
@@ -167,6 +177,37 @@ function Section({
         </div>
       )}
     </section>
+  );
+}
+
+// Interactive list-controls demo: the controls are stateless dispatchers on
+// the real list page (the URL owns the state), so the showcase supplies a
+// local `ListFilters` object for them to act on.
+function ListControlsShowcase() {
+  const [filters, setFilters] = useState<ListFilters>({
+    ...DEFAULT_FILTERS,
+    types: ["receiver", "processor"],
+    signals: ["traces"],
+    q: "kafka",
+  });
+  const [page, setPage] = useState(2);
+  const onChange = (next: Partial<ListFilters>) => setFilters((prev) => ({ ...prev, ...next }));
+
+  return (
+    <div className="space-y-4">
+      {/* Mobile-only by design: hidden at >=992px, where the facet rail is visible. */}
+      <FacetDrawerToggle filters={filters} onClick={() => {}} />
+      <ActiveFilterChips filters={filters} onChange={onChange} />
+      <div className="flex flex-wrap items-center gap-3">
+        <DensityToggle value={filters.density} onChange={(density) => onChange({ density })} />
+        <SortDropdown value={filters.sort} onChange={(sort) => onChange({ sort })} />
+      </div>
+      <Pagination page={page} totalPages={5} onChange={setPage} />
+      <EmptyState
+        hasActiveFilters={activeFilterCount(filters) > 0}
+        onClearAll={() => setFilters(DEFAULT_FILTERS)}
+      />
+    </div>
   );
 }
 
@@ -376,6 +417,14 @@ export function DevComponentsPage() {
             },
           ]}
         />
+      </Section>
+
+      <Section
+        id="list-controls"
+        title="List controls (chips, density toggle, sort, pagination, empty state)"
+        bare
+      >
+        <ListControlsShowcase />
       </Section>
 
       <Section

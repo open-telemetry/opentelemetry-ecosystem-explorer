@@ -76,7 +76,7 @@ public/locales/{lng}/{namespace}.json
 ```
 
 Currently supported languages: `en`, `es`. Active namespaces: `common`, `layout`, `home`,
-`collector`, `java-agent`, `about`, `ecosystem`.
+`collector`, `java-agent`, `about`, `ecosystem`, `list`.
 
 ### Patterns
 

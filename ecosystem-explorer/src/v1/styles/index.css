@@ -33,6 +33,7 @@
  * - home.css         — v1 home page wrapper + shared `td-box`/`td-two-col` chrome
  * - pipeline-anatomy.css — v1 ecosystem-landing pipeline strip (`.td-pipeline-anatomy*`, `.td-pipeline-stage*`)
  * - quick-entry-row.css — v1 ecosystem-landing quick-entry row (`.td-quick-entry*`)
+ * - list-controls.css — v1 list-page controls (`.td-chip*`, `.td-density*`, `.td-sort*`, `.td-pagination*`, `.td-empty*`, `.td-facet-toggle*`)
  * - cncf-callout.css — sitewide CNCF band above the footer
  * - footer.css       — v1 footer (`.td-footer`) — mirrors opentelemetry.io
  *
@@ -58,5 +59,6 @@
 @import "./home.css";
 @import "./pipeline-anatomy.css";
 @import "./quick-entry-row.css";
+@import "./list-controls.css";
 @import "./cncf-callout.css";
 @import "./footer.css";
