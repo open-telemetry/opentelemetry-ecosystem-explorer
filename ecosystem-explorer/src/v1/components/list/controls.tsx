@@ -23,7 +23,6 @@
 import { ChevronLeft, ChevronRight, Filter, Grid2x2, Rows3, Table2, X } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import {
-  DEFAULT_FILTERS,
   activeFilterCount,
   type DensityMode,
   type Distribution,
@@ -261,20 +260,13 @@ export interface FacetDrawerToggleProps {
 export function FacetDrawerToggle({ filters, onClick }: FacetDrawerToggleProps) {
   const { t } = useTranslation("list");
   const count = activeFilterCount(filters);
-  const isDefault =
-    filters.types.length === 0 &&
-    filters.signals.length === 0 &&
-    filters.stabilities.length === 0 &&
-    filters.distributions.length === 0 &&
-    !filters.version &&
-    filters.q === DEFAULT_FILTERS.q;
   return (
     <button
       type="button"
       className="td-facet-toggle"
       onClick={onClick}
       aria-label={
-        isDefault
+        count === 0
           ? t("facetToggle.openAriaLabel")
           : t("facetToggle.openWithCountAriaLabel", { count })
       }

@@ -189,8 +189,8 @@ function ListControlsShowcase() {
     types: ["receiver", "processor"],
     signals: ["traces"],
     q: "kafka",
+    page: 2,
   });
-  const [page, setPage] = useState(2);
   const onChange = (next: Partial<ListFilters>) => setFilters((prev) => ({ ...prev, ...next }));
 
   return (
@@ -202,7 +202,7 @@ function ListControlsShowcase() {
         <DensityToggle value={filters.density} onChange={(density) => onChange({ density })} />
         <SortDropdown value={filters.sort} onChange={(sort) => onChange({ sort })} />
       </div>
-      <Pagination page={page} totalPages={5} onChange={setPage} />
+      <Pagination page={filters.page} totalPages={5} onChange={(page) => onChange({ page })} />
       <EmptyState
         hasActiveFilters={activeFilterCount(filters) > 0}
         onClearAll={() => setFilters(DEFAULT_FILTERS)}

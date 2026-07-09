@@ -98,6 +98,12 @@
   border-left: 1px solid hsl(var(--border-hsl));
 }
 
+/* Inset the ring: `.td-density`'s overflow: hidden clips an outside outline. */
+.td-density__btn:focus-visible {
+  outline: 2px solid hsl(var(--primary-hsl));
+  outline-offset: -2px;
+}
+
 .td-density__btn--active {
   background-color: hsl(var(--primary-hsl) / 0.15);
   color: hsl(var(--primary-hsl));
