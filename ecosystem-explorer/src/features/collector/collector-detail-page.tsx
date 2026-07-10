@@ -49,12 +49,15 @@ export function CollectorDetailPage() {
 
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { data: versionData } = useCollectorVersions();
+  const { data: versionData, error: versionsError } = useCollectorVersions();
 
   const version =
     searchParams.get("version") || versionData?.versions.find((v) => v.is_latest)?.version || "";
 
-  const versionLoading = !version;
+  // Once the versions fetch has settled with an error, stop waiting for a
+  // version to resolve — `version` will never become non-empty otherwise,
+  // which would leave this stuck on the loading state forever.
+  const versionLoading = !version && !versionsError;
   const {
     data: component,
     loading,
@@ -111,7 +114,7 @@ export function CollectorDetailPage() {
     );
   }
 
-  if (error || !component) {
+  if (error || (!version && versionsError) || !component) {
     return (
       <PageContainer>
         <BackButton />
@@ -127,7 +130,7 @@ export function CollectorDetailPage() {
                   {t("detail.error.title")}
                 </h3>
                 <p className="text-sm text-red-600/90 dark:text-red-400/90">
-                  {error?.message || t("detail.error.fallback")}
+                  {(error ?? versionsError)?.message || t("detail.error.fallback")}
                 </p>
                 <button
                   onClick={() => navigate(-1)}

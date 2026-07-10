@@ -1,0 +1,15 @@
+component_owners: []
+description: OpenTelemetry instrumentation for `generic-pool` resource pool for managing
+  expensive resources
+in_auto_instrumentations_node: true
+name: instrumentation-generic-pool
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-generic-pool'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-generic-pool
+supported_versions:
+- package: generic-pool
+  source: README.md
+  version_range: '>=2.0.0 <4'
+tested_versions: []
+version: 0.63.0

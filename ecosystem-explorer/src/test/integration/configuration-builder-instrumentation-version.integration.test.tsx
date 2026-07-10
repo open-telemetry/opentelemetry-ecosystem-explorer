@@ -140,7 +140,7 @@ describe("ConfigurationBuilderPage version selectors", () => {
   it("prunes instrumentation customizations referencing modules absent from the selected Agent version", async () => {
     if (!otherAgentVersion || !moduleOnlyInLatest) return;
     const orphan = moduleOnlyInLatest;
-    const orphanLineRe = new RegExp(`${orphan}:\\b`);
+    const orphanLineRe = new RegExp(`\\b${orphan}:`);
     renderPage();
     const user = userEvent.setup();
     const agent = await findAgentSelector();

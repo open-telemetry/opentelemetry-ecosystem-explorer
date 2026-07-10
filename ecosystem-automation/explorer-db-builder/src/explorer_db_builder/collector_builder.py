@@ -22,6 +22,7 @@ from semantic_version import Version
 
 from explorer_db_builder.collector_database_writer import CollectorDatabaseWriter
 from explorer_db_builder.collector_transformer import make_index_component, transform_collector_components
+from explorer_db_builder.ecosystem_stats import count_unique_collector_component_ids
 
 logger = logging.getLogger(__name__)
 
@@ -130,6 +131,7 @@ def run_collector_builder(
 
         processed_versions: list[Version] = []
         latest_components: list[dict] = []
+        components_by_version: list[list[dict]] = []
         bundle_hashes: dict[Version, str] = {}
 
         for version in versions:
@@ -139,6 +141,7 @@ def run_collector_builder(
 
             processed_versions.append(version)
             bundle_hashes[version] = bundle_hash
+            components_by_version.append(components)
             if not latest_components:
                 latest_components = components
 
@@ -147,6 +150,13 @@ def run_collector_builder(
 
         db_writer.write_version_list(processed_versions, bundle_hashes)
         db_writer.write_index(latest_components)
+
+        db_writer.write_ecosystem_stats(
+            {
+                "version_count": len(processed_versions),
+                "component_count": count_unique_collector_component_ids(components_by_version),
+            }
+        )
 
         stats = db_writer.get_stats()
         total_mb = stats["total_bytes"] / (1024 * 1024)

@@ -103,11 +103,11 @@ prefixed with `VITE_FEATURE_FLAG_`. They are evaluated at build time.
 Update `.env.development` file and set the flag to `true`, `1`, or `yes`:
 
 ```bash
-VITE_FEATURE_FLAG_COLLECTOR_PAGE=true
+VITE_FEATURE_FLAG_V1_REDESIGN=true
 ```
 
-For example, setting `VITE_FEATURE_FLAG_COLLECTOR_PAGE` to `true` makes the Collector Page visible,
-while setting it to `false` hides it.
+For example, setting `VITE_FEATURE_FLAG_V1_REDESIGN` to `true` switches the app to the v1 redesign,
+while setting it to `false` uses the legacy app.
 
 **Using a flag in code:**
 
@@ -115,21 +115,19 @@ while setting it to `false` hides it.
 import { isEnabled } from "@/lib/feature-flags";
 
 {
-  isEnabled("COLLECTOR_PAGE") && <MyComponent />;
+  isEnabled("V1_REDESIGN") && <MyComponent />;
 }
 ```
 
 The available feature flags are defined in `src/lib/feature-flags.ts`:
 
-- `COLLECTOR_PAGE` — exposes the Collector page
 - `V1_REDESIGN` — switches the app to the in-progress v1 redesign (`src/v1/`)
 - `DEV_SHOWCASE` — enables the `/_dev/components` component showcase route
 
 **Deployment behavior:**
 
-Branch deploys and deploy previews enable `COLLECTOR_PAGE` through `netlify.toml`. `V1_REDESIGN` is
-enabled automatically on `feat/84-*` branches via the build command. Production enables none of
-these flags by default.
+`V1_REDESIGN` is enabled automatically on `feat/84-*` branches via the build command. Production
+enables none of these flags by default.
 
 ## Data Fetching and Caching
 

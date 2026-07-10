@@ -1,0 +1,20 @@
+component_owners:
+- blumamir
+description: OpenTelemetry instrumentation for `lru-memoizer` function memoization
+  using lru-cache
+in_auto_instrumentations_node: true
+name: instrumentation-lru-memoizer
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-lru-memoizer'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-lru-memoizer
+supported_versions:
+- package: lru-memoizer
+  source: README.md
+  version_range: '>=1.3.0 <4'
+tested_versions:
+- mode: latest-minors
+  package: lru-memoizer
+  range: '>=1.3 <4'
+  source: .tav.yml
+version: 0.64.0

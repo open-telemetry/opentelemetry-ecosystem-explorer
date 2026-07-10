@@ -18,11 +18,17 @@ import { BookOpen, Bug, MessageSquare } from "lucide-react";
 import { GitHubIcon } from "@/components/icons/github-icon";
 import { BackButton } from "@/components/ui/back-button";
 import { PageContainer } from "@/components/layout/page-container";
+import { useEcosystemStats } from "@/hooks/use-ecosystem-stats";
 
 const REPO_URL = "https://github.com/open-telemetry/opentelemetry-ecosystem-explorer";
 
 export function AboutPage() {
   const { t } = useTranslation("about");
+  const {
+    data: ecosystemStats,
+    loading: ecosystemStatsLoading,
+    error: ecosystemStatsError,
+  } = useEcosystemStats();
   return (
     <PageContainer>
       <div className="space-y-6">
@@ -54,6 +60,56 @@ export function AboutPage() {
               <p>{t("goals.body1")}</p>
               <p>{t("goals.body2")}</p>
             </div>
+          </section>
+
+          <section className="space-y-4">
+            <h2 className="text-foreground text-xl font-semibold">{t("ecosystems.heading")}</h2>
+            {ecosystemStatsError ? (
+              <p className="text-muted-foreground text-sm" role="status">
+                {t("ecosystems.error")}
+              </p>
+            ) : ecosystemStatsLoading || !ecosystemStats ? (
+              <p className="text-muted-foreground text-sm" role="status" aria-live="polite">
+                {t("ecosystems.loading")}
+              </p>
+            ) : (
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="border-border/50 bg-card/50 space-y-2 rounded-lg border p-6">
+                  <h3 className="text-foreground text-sm font-medium">
+                    {t("ecosystems.javaAgent.title")}
+                  </h3>
+                  <ul className="text-muted-foreground space-y-1 text-sm">
+                    <li>
+                      {t("ecosystems.javaAgent.versions", {
+                        count: ecosystemStats.javaAgent.version_count,
+                      })}
+                    </li>
+                    <li>
+                      {t("ecosystems.javaAgent.libraries", {
+                        count: ecosystemStats.javaAgent.library_count,
+                      })}
+                    </li>
+                  </ul>
+                </div>
+                <div className="border-border/50 bg-card/50 space-y-2 rounded-lg border p-6">
+                  <h3 className="text-foreground text-sm font-medium">
+                    {t("ecosystems.collector.title")}
+                  </h3>
+                  <ul className="text-muted-foreground space-y-1 text-sm">
+                    <li>
+                      {t("ecosystems.collector.versions", {
+                        count: ecosystemStats.collector.version_count,
+                      })}
+                    </li>
+                    <li>
+                      {t("ecosystems.collector.components", {
+                        count: ecosystemStats.collector.component_count,
+                      })}
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            )}
           </section>
 
           <section className="space-y-4">

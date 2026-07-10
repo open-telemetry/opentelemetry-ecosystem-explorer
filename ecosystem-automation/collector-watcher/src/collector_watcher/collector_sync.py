@@ -23,6 +23,7 @@ from watcher_common.version_detector import VersionDetector
 from .component_scanner import ComponentScanner
 from .deprecation_detector import DeprecationDetector
 from .inventory_manager import InventoryManager
+from .readme_scanner import discover_component_readmes
 from .schema_copier import SCHEMA_RELATIVE_PATH, UNKNOWN_HASH, CollectorSchemaCopier
 from .type_defs import DistributionName
 
@@ -174,14 +175,21 @@ class CollectorSync:
         distributions) and records that hash in every component YAML for
         drift detection and parser routing.
 
+        Also discovers and stores each component's README.md, if present,
+        content-addressed under ``component_readmes/``. README publishing
+        is best-effort: a failure here is logged and does not fail the sync.
+        This always runs after the inventory write below, never before -
+        see the comment at that call site for why the order matters.
+
         Schema is always read from the core repo: ``mdatagen`` lives only in
         ``opentelemetry-collector``, and the schema is identical across
         distributions, so contrib carries the same ``schema_hash`` as core.
 
         Registry layout after this call:
             ecosystem-registry/collector/
-                {distribution}/v{version}/*.yaml   (component data, each with schema_hash)
-                meta/schemas/{hash}.yaml           (one file per distinct schema)
+                {distribution}/v{version}/*.yaml               (component data, each with schema_hash)
+                {distribution}/v{version}/component_readmes/    (one file per distinct README content)
+                meta/schemas/{hash}.yaml                        (one file per distinct schema)
 
         Args:
             distribution: Distribution name
@@ -198,6 +206,26 @@ class CollectorSync:
             repository=repository,
             schema_hash=schema_hash,
         )
+
+        # Readme discovery/save runs after the critical inventory write, not
+        # before: save_versioned_inventory() is what version_exists() treats
+        # as the "this version is tracked" signal, since it just checks
+        # whether the version directory exists. If readme saving (which also
+        # mkdirs that directory as a side effect of writing into it) ran
+        # first and the process crashed before save_versioned_inventory
+        # completed, version_exists() would incorrectly report the version
+        # as already tracked despite zero real component data ever being
+        # written - causing process_latest_release() to skip it forever.
+        repo_path = self.repos[distribution]
+        try:
+            readmes = discover_component_readmes(repo_path, components)
+            written = self.inventory_manager.save_component_readmes(distribution, version, readmes.items())
+            if written:
+                logger.info("  Saved %d component README(s)", written)
+        except OSError as e:
+            # README publishing is best-effort and must never fail the sync -
+            # the component inventory itself is the critical data.
+            logger.warning("  Failed to save component READMEs for %s %s: %s", distribution, version, e)
 
         logger.info("  Saved %s %s (schema_hash=%s)", distribution, version, schema_hash)
 

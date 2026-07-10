@@ -46,13 +46,13 @@
       "display_name": "Akka Actors",
       "has_standalone_library": false,
       "has_telemetry": false,
-      "name": "akka-actor-fork-join-2.5",
+      "name": "akka-actor-forkjoin-2.5",
       "search_terms": [
         "CONTEXT_PROPAGATION",
         "com.typesafe.akka:akka-actor_2.11",
         "com.typesafe.akka:akka-actor_2.12",
         "com.typesafe.akka:akka-actor_2.13",
-        "io.opentelemetry.akka-actor-fork-join-2.5"
+        "io.opentelemetry.akka-actor-forkjoin-2.5"
       ]
     },
     {
@@ -461,6 +461,7 @@
         "io.opentelemetry.async-http-client-1.8",
         "java.common.http.client.emit_experimental_telemetry/development",
         "java.common.http.known_methods",
+        "java.common.service_peer_mapping",
         "otel.instrumentation.common.peer-service-mapping",
         "otel.instrumentation.http.client.capture-request-headers",
         "otel.instrumentation.http.client.capture-response-headers",
@@ -908,8 +909,11 @@
       "search_terms": [
         "AUTO_INSTRUMENTATION_SHIM",
         "DATABASE_CLIENT_SPANS",
+        "Enables experimental span attributes emitted from the underlying Couchbase library.",
         "com.couchbase.client:java-client",
-        "io.opentelemetry.couchbase-3.1"
+        "io.opentelemetry.couchbase-3.1",
+        "java.couchbase.experimental_span_attributes/development",
+        "otel.instrumentation.couchbase.experimental-span-attributes"
       ]
     },
     {
@@ -921,8 +925,11 @@
       "search_terms": [
         "AUTO_INSTRUMENTATION_SHIM",
         "DATABASE_CLIENT_SPANS",
+        "Enables experimental span attributes emitted from the underlying Couchbase library.",
         "com.couchbase.client:java-client",
-        "io.opentelemetry.couchbase-3.1.6"
+        "io.opentelemetry.couchbase-3.1.6",
+        "java.couchbase.experimental_span_attributes/development",
+        "otel.instrumentation.couchbase.experimental-span-attributes"
       ]
     },
     {
@@ -934,8 +941,11 @@
       "search_terms": [
         "AUTO_INSTRUMENTATION_SHIM",
         "DATABASE_CLIENT_SPANS",
+        "Enables experimental span attributes emitted from the underlying Couchbase library.",
         "com.couchbase.client:java-client",
-        "io.opentelemetry.couchbase-3.2"
+        "io.opentelemetry.couchbase-3.2",
+        "java.couchbase.experimental_span_attributes/development",
+        "otel.instrumentation.couchbase.experimental-span-attributes"
       ]
     },
     {
@@ -947,8 +957,11 @@
       "search_terms": [
         "AUTO_INSTRUMENTATION_SHIM",
         "DATABASE_CLIENT_SPANS",
+        "Enables experimental span attributes emitted from the underlying Couchbase library.",
         "com.couchbase.client:java-client",
-        "io.opentelemetry.couchbase-3.4"
+        "io.opentelemetry.couchbase-3.4",
+        "java.couchbase.experimental_span_attributes/development",
+        "otel.instrumentation.couchbase.experimental-span-attributes"
       ]
     },
     {
@@ -1409,6 +1422,19 @@
       ]
     },
     {
+      "description": "This instrumentation enables database client spans and database client metrics for the Apache HBase client.",
+      "display_name": "HBase Client",
+      "has_standalone_library": false,
+      "has_telemetry": false,
+      "name": "hbase-client-2.0",
+      "search_terms": [
+        "DATABASE_CLIENT_METRICS",
+        "DATABASE_CLIENT_SPANS",
+        "io.opentelemetry.hbase-client-2.0",
+        "org.apache.hbase:hbase-client"
+      ]
+    },
+    {
       "description": "This instrumentation enables HTTP server spans and HTTP server metrics for the Helidon HTTP server.",
       "display_name": "Helidon",
       "has_standalone_library": true,
@@ -1474,7 +1500,7 @@
         "Enables the experimental `hibernate.session_id` span attribute.",
         "io.opentelemetry.hibernate-6.0",
         "java.hibernate.experimental_span_attributes/development",
-        "org.hibernate:hibernate-core",
+        "org.hibernate.orm:hibernate-core",
         "otel.instrumentation.hibernate.experimental-span-attributes"
       ]
     },
@@ -1565,6 +1591,7 @@
         "io.opentelemetry.http-url-connection",
         "java.common.http.client.emit_experimental_telemetry/development",
         "java.common.http.known_methods",
+        "java.common.service_peer_mapping",
         "otel.instrumentation.common.peer-service-mapping",
         "otel.instrumentation.http.client.capture-request-headers",
         "otel.instrumentation.http.client.capture-response-headers",
@@ -2511,7 +2538,7 @@
       ]
     },
     {
-      "description": "This instrumentation enables context propagation for Kotlin coroutines and adds support for @WithSpan annotations on Kotlin suspend functions.",
+      "description": "This instrumentation enables context propagation for Kotlin coroutines and adds support for @WithSpan annotations on Kotlin suspend functions by default unless v3 preview mode is enabled.",
       "display_name": "Kotlin Coroutines",
       "has_standalone_library": false,
       "has_telemetry": false,
@@ -2873,15 +2900,15 @@
         "Specifies the key name used to store the trace flags in the logging context.",
         "Specifies which resource attributes to add to the logging context as a comma-separated list of attribute keys.",
         "io.opentelemetry.log4j-context-data-2.17",
-        "java.common.logging.span_id",
-        "java.common.logging.trace_flags",
-        "java.common.logging.trace_id",
+        "java.common.logging.span_id_key",
+        "java.common.logging.trace_flags_key",
+        "java.common.logging.trace_id_key",
         "java.common.mdc.resource_attributes",
         "java.log4j_context_data.add_baggage",
         "org.apache.logging.log4j:log4j-core",
-        "otel.instrumentation.common.logging.span-id",
-        "otel.instrumentation.common.logging.trace-flags",
-        "otel.instrumentation.common.logging.trace-id",
+        "otel.instrumentation.common.logging.span-id-key",
+        "otel.instrumentation.common.logging.trace-flags-key",
+        "otel.instrumentation.common.logging.trace-id-key",
         "otel.instrumentation.common.mdc.resource-attributes",
         "otel.instrumentation.log4j-context-data.add-baggage"
       ]
@@ -2899,15 +2926,15 @@
         "Specifies the key name used to store the trace flags in the logging context.",
         "Specifies which resource attributes to add to the logging context as a comma-separated list of attribute keys.",
         "io.opentelemetry.log4j-context-data-2.7",
-        "java.common.logging.span_id",
-        "java.common.logging.trace_flags",
-        "java.common.logging.trace_id",
+        "java.common.logging.span_id_key",
+        "java.common.logging.trace_flags_key",
+        "java.common.logging.trace_id_key",
         "java.common.mdc.resource_attributes",
         "java.log4j_context_data.add_baggage",
         "org.apache.logging.log4j:log4j-core",
-        "otel.instrumentation.common.logging.span-id",
-        "otel.instrumentation.common.logging.trace-flags",
-        "otel.instrumentation.common.logging.trace-id",
+        "otel.instrumentation.common.logging.span-id-key",
+        "otel.instrumentation.common.logging.trace-flags-key",
+        "otel.instrumentation.common.logging.trace-id-key",
         "otel.instrumentation.common.mdc.resource-attributes",
         "otel.instrumentation.log4j-context-data.add-baggage"
       ]
@@ -2924,14 +2951,14 @@
         "Specifies the key name used to store the trace flags in the logging context.",
         "Specifies which resource attributes to add to the logging context as a comma-separated list of attribute keys.",
         "io.opentelemetry.log4j-mdc-1.2",
-        "java.common.logging.span_id",
-        "java.common.logging.trace_flags",
-        "java.common.logging.trace_id",
+        "java.common.logging.span_id_key",
+        "java.common.logging.trace_flags_key",
+        "java.common.logging.trace_id_key",
         "java.common.mdc.resource_attributes",
         "log4j:log4j",
-        "otel.instrumentation.common.logging.span-id",
-        "otel.instrumentation.common.logging.trace-flags",
-        "otel.instrumentation.common.logging.trace-id",
+        "otel.instrumentation.common.logging.span-id-key",
+        "otel.instrumentation.common.logging.trace-flags-key",
+        "otel.instrumentation.common.logging.trace-id-key",
         "otel.instrumentation.common.mdc.resource-attributes"
       ]
     },
@@ -2991,14 +3018,14 @@
         "Specifies which resource attributes to add to the logging context as a comma-separated list of attribute keys.",
         "ch.qos.logback:logback-classic",
         "io.opentelemetry.logback-mdc-1.0",
-        "java.common.logging.span_id",
-        "java.common.logging.trace_flags",
-        "java.common.logging.trace_id",
+        "java.common.logging.span_id_key",
+        "java.common.logging.trace_flags_key",
+        "java.common.logging.trace_id_key",
         "java.common.mdc.resource_attributes",
         "java.logback_mdc.add_baggage",
-        "otel.instrumentation.common.logging.span-id",
-        "otel.instrumentation.common.logging.trace-flags",
-        "otel.instrumentation.common.logging.trace-id",
+        "otel.instrumentation.common.logging.span-id-key",
+        "otel.instrumentation.common.logging.trace-flags-key",
+        "otel.instrumentation.common.logging.trace-id-key",
         "otel.instrumentation.common.mdc.resource-attributes",
         "otel.instrumentation.logback-mdc.add-baggage"
       ]
@@ -3489,7 +3516,7 @@
       "display_name": "OSHI",
       "has_standalone_library": true,
       "has_telemetry": true,
-      "name": "oshi",
+      "name": "oshi-5.0",
       "search_terms": [
         "Enable the experimental `runtime.java.memory` and `runtime.java.cpu_time` metrics.",
         "Runtime Java CPU time",
@@ -3522,9 +3549,9 @@
       "display_name": "Payara",
       "has_standalone_library": false,
       "has_telemetry": false,
-      "name": "payara",
+      "name": "payara-5.2020",
       "search_terms": [
-        "io.opentelemetry.payara"
+        "io.opentelemetry.payara-5.2020"
       ]
     },
     {
@@ -3779,10 +3806,10 @@
       "display_name": "Quarkus RESTEasy Reactive",
       "has_standalone_library": false,
       "has_telemetry": false,
-      "name": "quarkus-resteasy-reactive",
+      "name": "quarkus-resteasy-reactive-1.11",
       "search_terms": [
         "HTTP_ROUTE",
-        "io.opentelemetry.quarkus-resteasy-reactive",
+        "io.opentelemetry.quarkus-resteasy-reactive-1.11",
         "io.quarkus:quarkus-rest",
         "io.quarkus:quarkus-resteasy-reactive"
       ]
@@ -4043,6 +4070,8 @@
       "search_terms": [
         "DATABASE_CLIENT_METRICS",
         "DATABASE_CLIENT_SPANS",
+        "Duration of database client operations.",
+        "db.client.operation.duration",
         "io.opentelemetry.redisson-3.0",
         "org.redisson:redisson"
       ]
@@ -4296,9 +4325,9 @@
       "display_name": "Scala ForkJoinPool",
       "has_standalone_library": false,
       "has_telemetry": false,
-      "name": "scala-fork-join-2.8",
+      "name": "scala-forkjoin-2.8",
       "search_terms": [
-        "io.opentelemetry.scala-fork-join-2.8",
+        "io.opentelemetry.scala-forkjoin-2.8",
         "org.scala-lang:scala-library"
       ]
     },
@@ -4384,6 +4413,28 @@
         "otel.instrumentation.servlet.experimental-span-attributes",
         "otel.instrumentation.servlet.experimental.capture-request-parameters",
         "otel.instrumentation.servlet.experimental.trace-id-request-attribute.enabled"
+      ]
+    },
+    {
+      "description": "The SOFARPC instrumentation provides RPC client spans and metrics, and RPC server spans and metrics for SOFARPC RPC calls.",
+      "display_name": "SOFARPC",
+      "has_standalone_library": true,
+      "has_telemetry": true,
+      "name": "sofa-rpc-5.4",
+      "search_terms": [
+        "RPC_CLIENT_METRICS",
+        "RPC_CLIENT_SPANS",
+        "RPC_SERVER_METRICS",
+        "RPC_SERVER_SPANS",
+        "The duration of an inbound RPC invocation.",
+        "The duration of an outbound RPC invocation.",
+        "Used to specify a mapping from host names or IP addresses to peer services.",
+        "com.alipay.sofa:sofa-rpc-all",
+        "io.opentelemetry.sofa-rpc-5.4",
+        "java.common.service_peer_mapping",
+        "otel.instrumentation.common.peer-service-mapping",
+        "rpc.client.duration",
+        "rpc.server.duration"
       ]
     },
     {
@@ -4646,29 +4697,38 @@
       ]
     },
     {
-      "description": "This instrumentation does not emit any telemetry on its own. Instead, it captures enduser attributes, and is only enabled when at least one of the `enduser` configurations is enabled.\nNOTE: The `enduser` attributes have been deprecated and will be removed in 3.0+ of the java agent.",
+      "description": "This instrumentation does not emit any telemetry on its own. Instead, it captures identity attributes, and is only enabled when at least one common identity configuration is enabled.\nNOTE: The `enduser` attributes have been deprecated. When `otel.instrumentation.common.v3-preview` is enabled, `enduser.id` is emitted as `user.name`, `enduser.role` is emitted as the string array `user.roles`, and `enduser.scope` is not emitted.",
       "display_name": "Spring Security",
       "has_standalone_library": true,
       "has_telemetry": false,
       "name": "spring-security-config-6.0",
       "search_terms": [
-        "Enables capturing the enduser.id attribute.",
-        "Enables capturing the enduser.role attribute.",
-        "Enables capturing the enduser.scope attribute.",
-        "Prefix of granted authorities identifying roles to capture in the `enduser.role` semantic attribute.",
-        "Prefix of granted authorities identifying scopes to capture in the `enduser.scope` semantic attribute.",
+        "Enables capturing the enduser.id attribute. This property and the associated attribute are not supported when v3 preview is enabled.",
+        "Enables capturing the enduser.role attribute. This property and the associated attribute are not supported when v3 preview is enabled.",
+        "Enables capturing the enduser.scope attribute when v3 preview is not enabled. This property is not honored when v3 preview is enabled.",
+        "Enables capturing the user.name attribute when v3 preview is enabled. This property and the associated attribute are not supported when v3 preview is disabled.",
+        "Enables capturing the user.roles attribute when v3 preview is enabled. This property and the associated attribute are not supported when v3 preview is disabled.",
+        "Prefix of granted authorities identifying roles to capture in the `enduser.role` semantic attribute. This property is not honored when v3 preview is enabled; use the `user.roles` variant instead.",
+        "Prefix of granted authorities identifying roles to capture in the `user.roles` semantic attribute when v3 preview is enabled. This property is not honored when v3 preview is disabled; use the `enduser.role` variant instead.",
+        "Prefix of granted authorities identifying scopes to capture in the `enduser.scope` semantic attribute. This property and the associated attribute are not supported when v3 preview is enabled.",
         "io.opentelemetry.spring-security-config-6.0",
         "java.common.enduser.id.enabled",
         "java.common.enduser.role.enabled",
         "java.common.enduser.scope.enabled",
+        "java.common.user.name.enabled",
+        "java.common.user.roles.enabled",
         "java.spring_security.enduser.role.granted_authority_prefix",
         "java.spring_security.enduser.scope.granted_authority_prefix",
+        "java.spring_security.user.roles.granted_authority_prefix",
         "org.springframework.security:spring-security-config",
         "otel.instrumentation.common.enduser.id.enabled",
         "otel.instrumentation.common.enduser.role.enabled",
         "otel.instrumentation.common.enduser.scope.enabled",
+        "otel.instrumentation.common.user.name.enabled",
+        "otel.instrumentation.common.user.roles.enabled",
         "otel.instrumentation.spring-security.enduser.role.granted-authority-prefix",
-        "otel.instrumentation.spring-security.enduser.scope.granted-authority-prefix"
+        "otel.instrumentation.spring-security.enduser.scope.granted-authority-prefix",
+        "otel.instrumentation.spring-security.user.roles.granted-authority-prefix"
       ]
     },
     {
@@ -4968,7 +5028,7 @@
       "display_name": "Tomcat JDBC",
       "has_standalone_library": false,
       "has_telemetry": true,
-      "name": "tomcat-jdbc",
+      "name": "tomcat-jdbc-8.5",
       "search_terms": [
         "DATABASE_POOL_METRICS",
         "Opt-in to emit stable semantic conventions instead of the old experimental semantic conventions. Accepts a comma-separated list of semantic convention groups (e.g., `database`, `http`, `messaging`). Use `<group>/dup` to emit both old and new conventions simultaneously. Stable semantic conventions will become the default in version 3.0 of the agent.",

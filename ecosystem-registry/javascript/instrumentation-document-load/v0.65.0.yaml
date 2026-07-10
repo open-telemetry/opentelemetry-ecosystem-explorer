@@ -1,0 +1,14 @@
+component_owners:
+- pkanal
+- martinkuba
+description: OpenTelemetry instrumentation for document load operations in browser
+  applications
+in_auto_instrumentations_node: false
+name: instrumentation-document-load
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-document-load'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-document-load
+supported_versions: []
+tested_versions: []
+version: 0.65.0

@@ -1,0 +1,12 @@
+component_owners:
+- seemk
+description: OpenTelemetry instrumentation for `node:net` network API module
+in_auto_instrumentations_node: true
+name: instrumentation-net
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-net'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-net
+supported_versions: []
+tested_versions: []
+version: 0.64.0

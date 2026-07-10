@@ -1113,7 +1113,7 @@
       "distribution": "contrib",
       "id": "contrib-cardinalityguardianprocessor",
       "name": "cardinalityguardianprocessor",
-      "stability": "development",
+      "stability": "alpha",
       "type": "processor"
     },
     {
@@ -1402,6 +1402,15 @@
       "id": "contrib-activedirectorydsreceiver",
       "name": "activedirectorydsreceiver",
       "stability": "beta",
+      "type": "receiver"
+    },
+    {
+      "description": null,
+      "display_name": null,
+      "distribution": "contrib",
+      "id": "contrib-activedirectoryinvreceiver",
+      "name": "activedirectoryinvreceiver",
+      "stability": "alpha",
       "type": "receiver"
     },
     {

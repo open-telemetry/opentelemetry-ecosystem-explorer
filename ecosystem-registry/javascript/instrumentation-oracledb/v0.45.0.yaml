@@ -1,0 +1,17 @@
+component_owners:
+- sudarshan12s
+- sharadraju
+description: OpenTelemetry instrumentation for `oracledb` database client for Oracle
+  DB
+in_auto_instrumentations_node: true
+name: instrumentation-oracledb
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-oracledb'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-oracledb
+supported_versions:
+- package: oracledb
+  source: README.md
+  version_range: '>=6.7.0 <7'
+tested_versions: []
+version: 0.45.0

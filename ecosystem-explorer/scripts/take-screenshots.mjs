@@ -219,7 +219,29 @@ async function takeScreenshots() {
           await page.screenshot({ path: p("home"), fullPage: true });
           if (isFirstViewport) await recordA11y(page, "home", theme);
 
-          // 2. Java agent instrumentation list
+          // 2. Collector ecosystem landing (v1)
+          await page.goto(`${BASE_URL}/collector`, {
+            waitUntil: "domcontentloaded",
+            timeout: 10000,
+          });
+          await page.waitForSelector("h1", { state: "visible", timeout: 5000 });
+          await settle(page);
+          await assertNoError(page, `${BASE_URL}/collector`);
+          await page.screenshot({ path: p("collector-landing"), fullPage: true });
+          if (isFirstViewport) await recordA11y(page, "collector-landing", theme);
+
+          // 3. Java Agent ecosystem landing (v1)
+          await page.goto(`${BASE_URL}/java-agent`, {
+            waitUntil: "domcontentloaded",
+            timeout: 10000,
+          });
+          await page.waitForSelector("h1", { state: "visible", timeout: 5000 });
+          await settle(page);
+          await assertNoError(page, `${BASE_URL}/java-agent`);
+          await page.screenshot({ path: p("java-agent-landing"), fullPage: true });
+          if (isFirstViewport) await recordA11y(page, "java-agent-landing", theme);
+
+          // 4. Java agent instrumentation list
           await page.goto(`${BASE_URL}/java-agent/instrumentation`, {
             waitUntil: "domcontentloaded",
             timeout: 10000,
@@ -229,7 +251,7 @@ async function takeScreenshots() {
           await page.screenshot({ path: p("instrumentation-list"), fullPage: true });
           if (isFirstViewport) await recordA11y(page, "instrumentation-list", theme);
 
-          // 3. Java agent instrumentation detail - Details tab
+          // 5. Java agent instrumentation detail - Details tab
           const detailUrl = `${BASE_URL}/java-agent/instrumentation/${DETAIL_VERSION}/${DETAIL_NAME}`;
           await page.goto(detailUrl, { waitUntil: "domcontentloaded", timeout: 10000 });
           await settle(page);
@@ -237,19 +259,19 @@ async function takeScreenshots() {
           await page.screenshot({ path: p("detail-details"), fullPage: true });
           if (isFirstViewport) await recordA11y(page, "detail-details", theme);
 
-          // 4. Telemetry tab (skipped gracefully if tabs aren't present in this branch)
+          // 6. Telemetry tab (skipped gracefully if tabs aren't present in this branch)
           await clickTab(page, "Telemetry");
           await assertNoError(page, detailUrl);
           await page.screenshot({ path: p("detail-telemetry"), fullPage: true });
           if (isFirstViewport) await recordA11y(page, "detail-telemetry", theme);
 
-          // 5. Configuration tab (skipped gracefully if tabs aren't present in this branch)
+          // 7. Configuration tab (skipped gracefully if tabs aren't present in this branch)
           await clickTab(page, "Configuration");
           await assertNoError(page, detailUrl);
           await page.screenshot({ path: p("detail-configuration"), fullPage: true });
           if (isFirstViewport) await recordA11y(page, "detail-configuration", theme);
 
-          // 6. Collector list
+          // 8. Collector list
           await page.goto(`${BASE_URL}/collector/components`, {
             waitUntil: "domcontentloaded",
             timeout: 10000,
@@ -259,7 +281,7 @@ async function takeScreenshots() {
           await page.screenshot({ path: p("collector-list"), fullPage: true });
           if (isFirstViewport) await recordA11y(page, "collector-list", theme);
 
-          // 7. Collector detail
+          // 9. Collector detail
           const collectorDetailUrl = `${BASE_URL}/collector/components/${COLLECTOR_DISTRIBUTION}/${COLLECTOR_DETAIL_NAME}`;
           await page.goto(collectorDetailUrl, {
             waitUntil: "domcontentloaded",
@@ -270,7 +292,7 @@ async function takeScreenshots() {
           await page.screenshot({ path: p("collector-detail"), fullPage: true });
           if (isFirstViewport) await recordA11y(page, "collector-detail", theme);
 
-          // 8. Dev component showcase — single page mounting every v1 primitive
+          // 10. Dev component showcase — single page mounting every v1 primitive
           //    in its canonical states. Captured so a11y + pixel-diff can baseline
           //    the design-system surface independently of feature pages.
           const devUrl = `${BASE_URL}/_dev/components`;

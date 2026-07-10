@@ -250,6 +250,25 @@ class CollectorDatabaseWriter:
             logger.error("Failed to write index.json: %s", e)
             raise
 
+    def write_ecosystem_stats(self, stats: dict[str, Any]) -> None:
+        """Write the collector ecosystem-stats.json summary file.
+
+        Args:
+            stats: Dict with "version_count" and "component_count".
+
+        Raises:
+            OSError: If file writing fails.
+        """
+        self.database_dir.mkdir(parents=True, exist_ok=True)
+
+        output_file = self.database_dir / "ecosystem-stats.json"
+        try:
+            self._write_json(output_file, stats)
+            logger.info("Wrote collector ecosystem stats: %s", stats)
+        except OSError as e:
+            logger.error("Failed to write ecosystem stats: %s", e)
+            raise
+
     def get_stats(self) -> dict[str, Any]:
         return {"files_written": self.files_written, "total_bytes": self.total_bytes}
 

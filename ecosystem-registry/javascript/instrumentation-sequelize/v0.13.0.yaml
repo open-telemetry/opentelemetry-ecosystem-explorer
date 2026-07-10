@@ -1,0 +1,21 @@
+component_owners:
+- seemk
+- t2t2
+- mhennoch
+description: OpenTelemetry instrumentation for `sequelize` ORM
+in_auto_instrumentations_node: false
+name: instrumentation-sequelize
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-sequelize'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-sequelize
+supported_versions:
+- package: sequelize
+  source: README.md
+  version_range: '>=6 <7'
+tested_versions:
+- mode: max-7
+  package: sequelize
+  range: '>=6 <7'
+  source: .tav.yml
+version: 0.13.0

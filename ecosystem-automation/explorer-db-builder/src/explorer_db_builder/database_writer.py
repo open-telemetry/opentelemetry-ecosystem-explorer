@@ -295,6 +295,30 @@ class DatabaseWriter:
             logger.error(f"Failed to write global configurations: {e}")
             raise
 
+    def write_ecosystem_stats(self, stats: dict[str, Any]) -> None:
+        """Write the javaagent ecosystem-stats.json summary file.
+
+        Args:
+            stats: Dict with "version_count" and "library_count".
+
+        Raises:
+            OSError: If file writing fails.
+        """
+        self.database_dir.mkdir(parents=True, exist_ok=True)
+
+        output_file = self.database_dir / "ecosystem-stats.json"
+        try:
+            content = json.dumps(stats, indent=2, sort_keys=True)
+            with open(output_file, "w", encoding="utf-8") as f:
+                f.write(content)
+            file_size = len(content.encode("utf-8"))
+            self.files_written += 1
+            self.total_bytes += file_size
+            logger.info(f"Wrote javaagent ecosystem stats: {stats}")
+        except OSError as e:
+            logger.error(f"Failed to write ecosystem stats: {e}")
+            raise
+
     def write_markdown(self, library_name: str, markdown_hash: str, content: str) -> None:
         """Write markdown file to the database.
 

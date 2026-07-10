@@ -14,8 +14,13 @@
 #
 """Corrects known-bad configuration ``declarative_name`` values from the registry.
 
-Can be removed after the next java agent release.
-See https://github.com/open-telemetry/opentelemetry-java-instrumentation/pull/18883
+Also normalizes the structured peer-service-mapping config: it injects the declarative schema and
+forces the system-property ``type`` back to ``map`` (v2.29.0 regressed it to ``structured_list``).
+
+Can be removed after the upstream metadata changes land in a java agent release.
+See:
+- https://github.com/open-telemetry/opentelemetry-java-instrumentation/pull/18883
+- https://github.com/open-telemetry/opentelemetry-java-instrumentation/pull/19077
 """
 
 import logging
@@ -64,7 +69,18 @@ def apply_declarative_name_corrections(inventory: dict[str, Any]) -> dict[str, A
                     )
 
                 current_name = config.get("declarative_name")
-                if current_name == "java.common.service_peer_mapping":
+                # Key off the stable config ``name`` (not declarative_name): the registry shape of
+                # peer-service-mapping drifted across releases and converges only here.
+                #   <=2.27.0 : declarative_name unset, type=map, no schema
+                #   2.28.x   : declarative_name set, type=map, structured schema present
+                #   2.29.0   : type regressed to structured_list
+                # Forcing the full canonical shape on every version (see upstream PR #19077) removes
+                # the spurious cross-version diff: type=map on the system-property/env-var form,
+                # declarative_type=structured_list only on the declarative form. This is idempotent
+                # once #19077 lands in a release.
+                if config.get("name") == "otel.instrumentation.common.peer-service-mapping":
+                    config["declarative_name"] = "java.common.service_peer_mapping"
+                    config["type"] = "map"
                     config["declarative_type"] = "structured_list"
                     config["declarative_schema"] = {
                         "type": "object",

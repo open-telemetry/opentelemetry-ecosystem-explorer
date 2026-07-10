@@ -46,7 +46,6 @@ You can also reach out in either `#otel-ecosystem-explorer` or `#otel-comms` cha
 
 - [Jay DeLuca](https://github.com/jaydeluca), Grafana Labs
 - [Severin Neumann](https://github.com/svrnm), Causely
-- [Pablo Baeyans](https://github.com/mx-psi), Datadog
 - [Vitor Vasconcellos](https://github.com/vitorvasc)
 
 For more information about the maintainer role, see the
@@ -59,6 +58,10 @@ For more information about the maintainer role, see the
 
 For more information about the approver role, see the
 [community repository](https://github.com/open-telemetry/community/blob/main/guides/contributor/membership.md#approver).
+
+## Emeritus
+
+- [Pablo Baeyens](https://github.com/mx-psi), Maintainer
 
 [opentelemetry community calendar]:
   https://calendar.google.com/calendar/u/0/embed?src=c_2bf73e3b6b530da4babd444e72b76a6ad893a5c3f43cf40467abc7a9a897f977@group.calendar.google.com

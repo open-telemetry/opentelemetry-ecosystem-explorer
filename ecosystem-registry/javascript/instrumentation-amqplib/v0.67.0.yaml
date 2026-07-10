@@ -1,0 +1,20 @@
+component_owners:
+- blumamir
+description: OpenTelemetry instrumentation for the `amqplib` messaging client for
+  RabbitMQ
+in_auto_instrumentations_node: true
+name: instrumentation-amqplib
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-amqplib'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-amqplib
+supported_versions:
+- package: amqplib
+  source: README.md
+  version_range: '>=0.5.5 <3'
+tested_versions:
+- mode: latest-minors
+  package: amqplib
+  range: '>=0.5.5 <3'
+  source: .tav.yml
+version: 0.67.0
