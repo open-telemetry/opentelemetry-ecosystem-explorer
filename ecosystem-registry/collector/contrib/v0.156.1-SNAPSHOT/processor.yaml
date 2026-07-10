@@ -1,5 +1,5 @@
 distribution: contrib
-version: 0.155.1-SNAPSHOT
+version: 0.156.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: processor
 schema_hash: 5f02f63b26d4

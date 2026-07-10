@@ -1,5 +1,5 @@
 distribution: core
-version: 0.155.1-SNAPSHOT
+version: 0.156.0
 repository: opentelemetry-collector
 component_type: processor
 schema_hash: 5f02f63b26d4
