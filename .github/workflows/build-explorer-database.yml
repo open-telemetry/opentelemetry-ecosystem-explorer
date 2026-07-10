@@ -29,9 +29,12 @@ permissions:
   contents: read # Default minimum; the build-database job declares its own elevated scopes
 
 concurrency:
-  # Serialize per ecosystem since each one targets its own
-  # otelbot/automated-explorer-database-update-<ecosystem> branch.
-  group: ${{ github.workflow }}-${{ inputs.ecosystem || 'all' }}
+  # Serialize every run of this workflow. A scheduled `all` build and a manual
+  # single-ecosystem build both write to ecosystem-explorer/public/data/ and bump
+  # DB_VERSION, so running them concurrently could produce overlapping automated
+  # PRs and merge conflicts. cancel-in-progress stays false so queued runs wait
+  # rather than being dropped.
+  group: ${{ github.workflow }}
   cancel-in-progress: false
 
 jobs:
@@ -103,7 +106,8 @@ jobs:
         run: uv sync --locked
 
       - name: Build explorer database (incremental)
-        # Scheduled runs have no inputs, so default to an incremental build.
+        # Scheduled runs don't set dispatch inputs, so `inputs.build_mode` is
+        # empty; default to an incremental build in that case.
         if: ${{ (inputs.build_mode || 'incremental') == 'incremental' }}
         env:
           ECOSYSTEM: ${{ inputs.ecosystem || 'all' }}
@@ -150,8 +154,8 @@ jobs:
             || secrets.GITHUB_TOKEN }}
           ECOSYSTEM: ${{ inputs.ecosystem || 'all' }}
           BUILD_MODE: ${{ inputs.build_mode || 'incremental' }}
-          # On scheduled runs github.actor is whoever last touched the workflow,
-          # not a real trigger, so attribute those runs to the schedule instead.
+          # On scheduled runs github.actor doesn't reflect a human who triggered
+          # the build, so attribute those runs to the schedule instead.
           ACTOR: ${{ github.event_name == 'schedule' && 'nightly schedule' || github.actor }}
         run: |
           BRANCH="otelbot/automated-explorer-database-update-${ECOSYSTEM}"
