@@ -4365,6 +4365,10 @@ components:
         - atoulme
         seeking_new: true
     attributes:
+      file.include:
+        description: The glob pattern configured via the `include` option that produced
+          this count.
+        type: string
       file.permissions:
         description: the permissions associated with the file, using an octal format.
         type: string
@@ -4385,6 +4389,8 @@ components:
         enabled: false
         gauge:
           value_type: int
+        attributes:
+        - file.include
         stability: development
       file.ctime:
         description: Elapsed time since the last change of the file or folder, in

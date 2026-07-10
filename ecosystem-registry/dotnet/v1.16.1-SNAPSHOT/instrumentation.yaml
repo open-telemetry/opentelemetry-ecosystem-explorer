@@ -201,15 +201,15 @@ modules:
   description: OpenTelemetry Resource Detectors for AWS ElasticBeanstalk, EC2, ECS,
     EKS.
   type: extension
-  version: 1.15.1
+  version: 1.16.0
 - name: OpenTelemetry.Resources.Azure
   description: OpenTelemetry Resource Detectors for Azure cloud environments.
   type: extension
-  version: 1.15.1-beta.1
+  version: 1.16.0-beta.1
 - name: OpenTelemetry.Resources.Container
   description: OpenTelemetry Resource Detectors for Container environment.
   type: extension
-  version: 1.15.1-beta.1
+  version: 1.16.0-beta.1
 - name: OpenTelemetry.Resources.Gcp
   description: OpenTelemetry Resource Detectors for Google Cloud Platform environments.
   type: extension
@@ -217,11 +217,11 @@ modules:
 - name: OpenTelemetry.Resources.Host
   description: OpenTelemetry Resource Detectors for Host.
   type: extension
-  version: 1.15.1-beta.1
+  version: 1.16.0-beta.1
 - name: OpenTelemetry.Resources.OperatingSystem
   description: OpenTelemetry Resource Detectors for Operating System.
   type: extension
-  version: 1.15.1-beta.1
+  version: 1.16.0-beta.1
 - name: OpenTelemetry.Resources.Process
   description: OpenTelemetry Resource Detectors for Process.
   type: extension
@@ -229,7 +229,7 @@ modules:
 - name: OpenTelemetry.Resources.ProcessRuntime
   description: OpenTelemetry Resource Detectors for Process Runtime.
   type: extension
-  version: 1.15.1-beta.1
+  version: 1.16.0-beta.1
 - name: OpenTelemetry.Sampler.AWS
   description: OpenTelemetry remote sampler for AWS X-Ray.
   type: extension
