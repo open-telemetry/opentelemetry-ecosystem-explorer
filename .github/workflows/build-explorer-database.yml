@@ -60,7 +60,7 @@ jobs:
         if: steps.repo_check.outputs.is_primary == 'true'
         id: otelbot-token
         with:
-          client-id: ${{ vars.OTELBOT_APP_ID }}
+          client-id: ${{ vars.OTELBOT_CLIENT_ID }}
           private-key: ${{ secrets.OTELBOT_PRIVATE_KEY }}
           repositories: ${{ github.event.repository.name }}
           permission-pull-requests: write # Create / edit / reopen the automated PR
