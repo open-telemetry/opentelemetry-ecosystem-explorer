@@ -6015,23 +6015,6 @@ components:
       codeowners:
         active:
         - yurishkuro
-- name: jmxreceiver
-  metadata:
-    type: jmx
-    display_name: JMX Receiver
-    status:
-      class: receiver
-      stability:
-        deprecated:
-        - metrics
-      distributions:
-      - contrib
-      codeowners:
-        active:
-        - atoulme
-        - rogercoll
-        emeritus:
-        - rmfitzpatrick
 - name: journaldreceiver
   metadata:
     type: journald

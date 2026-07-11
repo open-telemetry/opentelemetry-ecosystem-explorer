@@ -73,7 +73,7 @@ components:
         - iblancasa
 - name: cumulativetodeltaprocessor
   metadata:
-    type: cumulativetodelta
+    type: cumulative_to_delta
     display_name: Cumulative to Delta Processor
     description: The cumulative to delta processor (`cumulativetodeltaprocessor`)
       converts monotonic sum, histogram, and exponential histogram metrics from cumulative
