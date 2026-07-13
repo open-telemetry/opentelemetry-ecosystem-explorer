@@ -11,7 +11,7 @@
     "format:check": "prettier --check ."
   },
   "devDependencies": {
-    "markdownlint-cli2": "0.22.1",
+    "markdownlint-cli2": "0.23.0",
     "prettier": "3.8.4",
     "prettier-plugin-tailwindcss": "0.8.0"
   },
