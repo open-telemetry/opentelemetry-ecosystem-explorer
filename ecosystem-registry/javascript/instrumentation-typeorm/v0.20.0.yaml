@@ -1,0 +1,22 @@
+component_owners:
+- seemk
+- weyert
+- t2t2
+- mhennoch
+description: OpenTelemetry instrumentation for `typeorm` database data-mapper ORM
+in_auto_instrumentations_node: false
+name: instrumentation-typeorm
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-typeorm'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-typeorm
+supported_versions:
+- package: typeorm
+  source: README.md
+  version_range: '>=0.3.0 <1'
+tested_versions:
+- mode: max-7
+  package: typeorm
+  range: '>=0.3.0 <1'
+  source: .tav.yml
+version: 0.20.0

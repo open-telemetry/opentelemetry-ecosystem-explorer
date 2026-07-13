@@ -1,0 +1,22 @@
+component_owners:
+- blumamir
+- naseemkullah
+description: OpenTelemetry instrumentation for `ioredis` database redis client for
+  Redis
+in_auto_instrumentations_node: true
+name: instrumentation-ioredis
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-ioredis'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-ioredis
+supported_versions:
+- package: ioredis
+  source: README.md
+  version_range: '>=2.0.0 <6'
+tested_versions:
+- exclude: 4.19.0
+  mode: max-7
+  package: ioredis
+  range: '>=2.0.0 <6'
+  source: .tav.yml
+version: 0.68.0

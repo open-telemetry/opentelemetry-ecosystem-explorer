@@ -566,3 +566,82 @@ def test_baseline_not_updated_for_prereleases(collector_sync):
     assert collector_sync.deprecations["core"]["receiver"][0]["name"] == "receiver2"
     assert collector_sync.deprecations["core"]["receiver"][0]["last_version"] == f"v{v1}"
     assert collector_sync.deprecations["core"]["receiver"][0]["deprecated_in_version"] == f"v{v2}"
+
+
+def test_save_version_discovers_and_saves_component_readmes(
+    collector_sync, sample_components, temp_inventory_dir, temp_git_repos
+):
+    version = Version("0.112.0")
+    receiver_dir = Path(temp_git_repos["core"]) / "receiver" / "otlpreceiver"
+    receiver_dir.mkdir(parents=True)
+    (receiver_dir / "README.md").write_text("# OTLP Receiver")
+
+    collector_sync.save_version("core", version, sample_components)
+
+    readme_map = collector_sync.inventory_manager.load_component_readme_map("core", version)
+    assert "otlpreceiver" in readme_map
+    content = collector_sync.inventory_manager.load_component_readme_content(
+        "core", version, "otlpreceiver", readme_map["otlpreceiver"]
+    )
+    assert content == "# OTLP Receiver"
+
+
+def test_save_version_with_no_readmes_persists_no_readme_content(collector_sync, sample_components, temp_inventory_dir):
+    """Most components won't have a README - no readme content should be persisted."""
+    version = Version("0.112.0")
+
+    collector_sync.save_version("core", version, sample_components)
+
+    # save_component_readmes always creates the target dir (matching java's
+    # save_library_readmes exactly), so check for absence of content, not
+    # absence of the directory itself.
+    assert collector_sync.inventory_manager.load_component_readme_map("core", version) == {}
+
+
+def test_save_version_crash_before_inventory_write_leaves_no_trace(
+    collector_sync, sample_components, temp_inventory_dir
+):
+    """
+    Regression test for an ordering bug: readme saving used to run before the
+    real inventory write and mkdir'd the version directory as a side effect.
+    A crash between the two steps left version_exists() incorrectly True with
+    zero real component data, causing process_latest_release() to treat the
+    version as already tracked forever. The real write must happen first.
+    """
+    version = Version("0.112.0")
+
+    with patch.object(
+        collector_sync.inventory_manager, "save_versioned_inventory", side_effect=RuntimeError("simulated crash")
+    ):
+        with pytest.raises(RuntimeError):
+            collector_sync.save_version("core", version, sample_components)
+
+    assert not collector_sync.inventory_manager.version_exists("core", version)
+
+
+def test_save_version_crash_during_readme_save_is_benign(collector_sync, sample_components, temp_inventory_dir):
+    """The flip side: once the real inventory write has succeeded, a later readme-save crash is harmless."""
+    version = Version("0.112.0")
+
+    with patch.object(
+        collector_sync.inventory_manager, "save_component_readmes", side_effect=RuntimeError("simulated crash")
+    ):
+        with pytest.raises(RuntimeError):
+            collector_sync.save_version("core", version, sample_components)
+
+    assert collector_sync.inventory_manager.version_exists("core", version)
+    version_dir = temp_inventory_dir / "core" / "v0.112.0"
+    assert (version_dir / "receiver.yaml").exists()
+
+
+def test_save_version_readme_failure_does_not_block_inventory_save(
+    collector_sync, sample_components, temp_inventory_dir
+):
+    """A readme-saving failure must never prevent the core component inventory from being written."""
+    version = Version("0.112.0")
+
+    with patch.object(collector_sync.inventory_manager, "save_component_readmes", side_effect=OSError("disk full")):
+        collector_sync.save_version("core", version, sample_components)
+
+    version_dir = temp_inventory_dir / "core" / "v0.112.0"
+    assert (version_dir / "receiver.yaml").exists()

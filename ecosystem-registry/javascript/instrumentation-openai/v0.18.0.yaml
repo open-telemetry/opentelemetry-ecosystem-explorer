@@ -1,0 +1,21 @@
+component_owners:
+- hectorhdzg
+- trentm
+- seemk
+description: OpenTelemetry instrumentation for the `openai` OpenAI client library
+in_auto_instrumentations_node: true
+name: instrumentation-openai
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-openai'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-openai
+supported_versions:
+- package: openai
+  source: README.md
+  version_range: '>=4.19.0 <7'
+tested_versions:
+- mode: max-5
+  package: openai
+  range: '>=4.19.0 <7'
+  source: .tav.yml
+version: 0.18.0

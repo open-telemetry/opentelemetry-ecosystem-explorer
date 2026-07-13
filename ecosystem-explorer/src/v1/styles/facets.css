@@ -1,0 +1,132 @@
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* ---------- Facet primitives ----------
+ *
+ * Leaf controls rendered by `<CheckboxFacet>`, `<SearchFacet>`, and
+ * `<SelectFacet>` on the list page (Phase 4). The composing `<FacetPanel>`
+ * chrome (`.td-facet-panel*`) and the list-page rail live in later slices.
+ */
+
+.td-facet {
+  border: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.td-facet__title {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: hsl(var(--muted-foreground-hsl));
+  padding: 0;
+}
+
+.td-facet__options {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.td-facet__option {
+  margin: 0;
+  padding: 0;
+}
+
+.td-facet__label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  padding: 0.25rem 0.375rem;
+  border-radius: 0.25rem;
+}
+
+.td-facet__label:hover {
+  background-color: hsl(var(--muted-hsl) / 0.5);
+}
+
+.td-facet__input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: hsl(var(--primary-hsl));
+}
+
+.td-facet__swatch {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 0.125rem;
+  flex-shrink: 0;
+}
+
+.td-facet__name {
+  flex: 1;
+}
+
+.td-facet__count {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground-hsl));
+  font-variant-numeric: tabular-nums;
+}
+
+.td-facet__search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.625rem;
+  background-color: hsl(var(--background-hsl));
+  border: 1px solid hsl(var(--border-hsl));
+  border-radius: 0.375rem;
+}
+
+.td-facet__search:focus-within {
+  border-color: hsl(var(--primary-hsl));
+}
+
+.td-facet__search-icon {
+  width: 1rem;
+  height: 1rem;
+  color: hsl(var(--muted-foreground-hsl));
+  flex-shrink: 0;
+}
+
+.td-facet__search-input {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.875rem;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: hsl(var(--foreground-hsl));
+}
+
+.td-facet__select {
+  padding: 0.375rem 0.5rem;
+  font-size: 0.875rem;
+  background-color: hsl(var(--background-hsl));
+  border: 1px solid hsl(var(--border-hsl));
+  border-radius: 0.375rem;
+  color: hsl(var(--foreground-hsl));
+  font-family: inherit;
+}

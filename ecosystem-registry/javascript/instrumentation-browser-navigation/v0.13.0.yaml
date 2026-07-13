@@ -1,0 +1,14 @@
+component_owners:
+- Abinet18
+- martinkuba
+description: OpenTelemetry instrumentation for browser navigation events (page load
+  and same-document navigations)
+in_auto_instrumentations_node: false
+name: instrumentation-browser-navigation
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-browser-navigation'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-browser-navigation
+supported_versions: []
+tested_versions: []
+version: 0.13.0

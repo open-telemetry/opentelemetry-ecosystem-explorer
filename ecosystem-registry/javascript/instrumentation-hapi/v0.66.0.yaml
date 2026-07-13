@@ -1,0 +1,26 @@
+component_owners: []
+description: OpenTelemetry instrumentation for `@hapi/hapi` http web application framework
+in_auto_instrumentations_node: true
+name: instrumentation-hapi
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-hapi'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-hapi
+supported_versions:
+- package: '@hapi/hapi'
+  source: README.md
+  version_range: '>=17.0.0 <22'
+tested_versions:
+- mode: latest-minors
+  package: '@hapi/hapi'
+  range: ^19.2.0 || ^18.4.1 || ^17.9.0
+  source: .tav.yml
+- mode: latest-minors
+  package: '@hapi/hapi'
+  range: ^20.3.0
+  source: .tav.yml
+- mode: latest-minors
+  package: '@hapi/hapi'
+  range: ^21.3.3
+  source: .tav.yml
+version: 0.66.0

@@ -1,0 +1,16 @@
+component_owners:
+- seemk
+description: OpenTelemetry instrumentation for `cassandra-driver` database client
+  library for Apache Cassandra
+in_auto_instrumentations_node: true
+name: instrumentation-cassandra-driver
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-cassandra-driver'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-cassandra-driver
+supported_versions:
+- package: cassandra-driver
+  source: README.md
+  version_range: '>=4.4.0 <5'
+tested_versions: []
+version: 0.65.0

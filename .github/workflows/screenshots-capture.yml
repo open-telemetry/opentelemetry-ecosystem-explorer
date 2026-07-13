@@ -59,7 +59,6 @@ jobs:
       - name: Build the frontend
         run: bun run build
         env:
-          VITE_FEATURE_FLAG_COLLECTOR_PAGE: "true"
           VITE_FEATURE_FLAG_V1_REDESIGN: ${{ steps.flags.outputs.v1_redesign }}
           VITE_FEATURE_FLAG_DEV_SHOWCASE: "true"
 

@@ -1,0 +1,34 @@
+component_owners:
+- neilime
+description: OpenTelemetry instrumentation for NestJS server side applications framework
+in_auto_instrumentations_node: true
+name: instrumentation-nestjs-core
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-nestjs-core'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-nestjs-core
+supported_versions:
+- package: '@nestjs/core'
+  source: README.md
+  version_range: '>=4.0.0 <12'
+tested_versions:
+- mode: latest-minors
+  package: '@nestjs/core'
+  range: '>=10.0.0 <11'
+  source: .tav.yml
+- mode: latest-minors
+  package: '@nestjs/core'
+  range: '>=11.0.0 <12'
+  source: .tav.yml
+- mode: latest-minors
+  package: '@nestjs/core'
+  range: '>=8.0.0 <9.0.0'
+  source: .tav.yml
+- mode: latest-minors
+  package: '@nestjs/core'
+  range: '>=9.0.0 <10'
+  source: .tav.yml
+- package: '@nestjs/core'
+  range: ^7.6.18
+  source: .tav.yml
+version: 0.66.0

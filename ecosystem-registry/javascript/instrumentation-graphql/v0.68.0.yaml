@@ -1,0 +1,20 @@
+component_owners:
+- obecny
+description: OpenTelemetry instrumentation for `graphql` gql query language and runtime
+  for GraphQL
+in_auto_instrumentations_node: true
+name: instrumentation-graphql
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-graphql'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-graphql
+supported_versions:
+- package: graphql
+  source: README.md
+  version_range: '>=14.0.0 <17'
+tested_versions:
+- mode: max-7
+  package: graphql
+  range: 14 || 15 || 16
+  source: .tav.yml
+version: 0.68.0
