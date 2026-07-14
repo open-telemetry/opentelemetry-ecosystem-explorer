@@ -51,7 +51,7 @@ describe("AgentExploreLanding", () => {
     });
     expect(configRefLink).toHaveAttribute(
       "href",
-      "https://opentelemetry.io/docs/zero-code/java/agent-config/"
+      "https://opentelemetry.io/docs/zero-code/java/agent/configuration/"
     );
 
     const githubLink = screen.getByRole("link", {
