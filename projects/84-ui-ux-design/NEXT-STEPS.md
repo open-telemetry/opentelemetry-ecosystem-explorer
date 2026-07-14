@@ -4,7 +4,7 @@ issue: 84
 type: roadmap
 phase: meta
 status: in-progress
-last_updated: "2026-07-13"
+last_updated: "2026-07-14"
 ---
 
 ## Next steps
@@ -139,6 +139,14 @@ This is a _living_ document. Update it as decisions land and PRs ship. Cross-ref
 
 ---
 
+- **2026-07-14 snapshot:** Phase 4 PR 2 (#803, FacetPanel) merged 2026-07-13 after a two-axis code
+  review (fixes in `3df0debc`; open items filed as decision #11 and the drawer-focus follow-up). PRs
+  3 (#786, controls) and 4 (#787, views) already existed as drafts with derivation + `/simplify`
+  done; both refreshed against post-PR-2 `main` (PR 3: both-sides-added conflicts in the showcase
+  and `index.css`, resolved keeping both; PR 4: `index.css` only). Note for undrafting PR 3: it adds
+  an ecosystem-agnostic `list` i18next namespace while PR 2 put panel copy in `collector.listV1` —
+  two homes for list copy; intersects decision #11.
+
 ## Immediate next steps
 
 In order:
@@ -166,14 +174,17 @@ In order:
 - [x] **Phase 4 PR 1 — Facet primitives** (`facets.tsx`: CheckboxFacet, SearchFacet, SelectFacet).
       Merged as [#784](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/784)
       (2026-07-10), carrying the Phase 3 close-out doc updates.
-- [ ] **Phase 4 PR 2 — FacetPanel** (`facet-panel.tsx`). Derived + localized + `/simplify`-cleaned
-      on `feat/84-phase4-pr2-facet-panel`; opened as
+- [x] **Phase 4 PR 2 — FacetPanel** (`facet-panel.tsx`). Merged as
       [#803](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/803)
       (2026-07-13).
 - [ ] **Phase 4 PR 3 — List controls** (`controls.tsx`: ActiveFilterChips, DensityToggle,
-      SortDropdown, Pagination, EmptyState, FacetDrawerToggle). Parallel with PRs 1/4.
-- [ ] **Phase 4 PR 4 — Views** (`views.tsx`: CompactList, CardView, TableView). Parallel with PRs
-      1/3.
+      SortDropdown, Pagination, EmptyState, FacetDrawerToggle). Draft
+      [#786](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/786); refreshed
+      against post-PR-2 `main` 2026-07-14. Adds a new `list` i18next namespace — see the namespace
+      note under decision #11 before undrafting.
+- [ ] **Phase 4 PR 4 — Views** (`views.tsx`: CompactList, CardView, TableView). Draft
+      [#787](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/787); refreshed
+      against post-PR-2 `main` 2026-07-14.
 - [ ] **Phase 4 PR 5 — List page + route** (`list-page.tsx` + `/collector/components` swap in
       `V1App.tsx`). After PRs 2-4. Carries the known #645 data-layer adaptation: the reference's
       `componentToRow` expects a full `CollectorComponent` while `useCollectorComponents` now
@@ -403,13 +414,13 @@ question.
 
 These are the ones that still need to land before the PRs they block:
 
-| #   | Decision                                                                                                                                                                                                                                                                                                                            | Owner                | Blocks                              | Status                                                                                        |
-| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- | ----------------------------------- | --------------------------------------------------------------------------------------------- |
-| 7   | Cross-ecosystem search architecture (client-side vs. dedicated index)                                                                                                                                                                                                                                                               | Vitor + maintainers  | Phase 2 (home)                      | ✅ Resolved 2026-05-25 — client-side index in `src/lib/search.ts` (see decision log)          |
-| 8   | Activity-feed source (build-time JSON vs. runtime API)                                                                                                                                                                                                                                                                              | Vitor + maintainers  | Phase 2 (home recent activity rail) | ✅ Resolved — build-time JSON stub shipped (#555); generated-feed watcher work is a follow-up |
-| 9   | Per-version config schema availability in `ecosystem-registry`                                                                                                                                                                                                                                                                      | Registry maintainers | Phase 5 PR 04b (diff view)          | Open                                                                                          |
-| 10  | Signals for the list page's Signal facet: expose in the collector index (builder work in `ecosystem-automation`) vs. fetch the per-version bundle client-side                                                                                                                                                                       | Vitor + maintainers  | Phase 4 PR 5 (list page + route)    | Open                                                                                          |
-| 11  | FacetPanel i18n namespace: `useTranslation("collector")` is hardwired, but the plan's list route is `/<ecosystem>/components` parameterized by slug — a Java Agent list would render collector-namespace copy. Options: namespace-as-prop, per-ecosystem panel config, or accept collector-only until a second ecosystem list ships | Vitor                | Phase 4 PR 5 (list page + route)    | Open (filed by the 2026-07-13 code review of PR 2 #803)                                       |
+| #   | Decision                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Owner                | Blocks                              | Status                                                                                        |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- | ----------------------------------- | --------------------------------------------------------------------------------------------- |
+| 7   | Cross-ecosystem search architecture (client-side vs. dedicated index)                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Vitor + maintainers  | Phase 2 (home)                      | ✅ Resolved 2026-05-25 — client-side index in `src/lib/search.ts` (see decision log)          |
+| 8   | Activity-feed source (build-time JSON vs. runtime API)                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Vitor + maintainers  | Phase 2 (home recent activity rail) | ✅ Resolved — build-time JSON stub shipped (#555); generated-feed watcher work is a follow-up |
+| 9   | Per-version config schema availability in `ecosystem-registry`                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Registry maintainers | Phase 5 PR 04b (diff view)          | Open                                                                                          |
+| 10  | Signals for the list page's Signal facet: expose in the collector index (builder work in `ecosystem-automation`) vs. fetch the per-version bundle client-side                                                                                                                                                                                                                                                                                                                                                                   | Vitor + maintainers  | Phase 4 PR 5 (list page + route)    | Open                                                                                          |
+| 11  | FacetPanel i18n namespace: `useTranslation("collector")` is hardwired, but the plan's list route is `/<ecosystem>/components` parameterized by slug — a Java Agent list would render collector-namespace copy. Options: namespace-as-prop, per-ecosystem panel config, or accept collector-only until a second ecosystem list ships. New input 2026-07-14: draft PR 3 (#786) introduces an ecosystem-agnostic `list` namespace for the controls — migrating the panel's non-Type copy there would resolve most of this decision | Vitor                | Phase 4 PR 5 (list page + route)    | Open (filed by the 2026-07-13 code review of PR 2 #803)                                       |
 
 (Numbering preserved for traceability against earlier conversations.) The longest-tail remaining
 decision is **#9** — depends on `ecosystem-registry` maintainers and gates the Phase 5 diff view.
