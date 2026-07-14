@@ -35,6 +35,59 @@
       }
     }
   },
+  "listV1": {
+    "facets": {
+      "panel": {
+        "label": "Filtros",
+        "close": "Cerrar filtros"
+      },
+      "search": {
+        "title": "Buscar",
+        "placeholder": "Buscar por nombre o descripción…"
+      },
+      "type": {
+        "title": "Tipo",
+        "options": {
+          "receiver": "Receptor",
+          "processor": "Procesador",
+          "exporter": "Exportador",
+          "connector": "Conector",
+          "extension": "Extensión"
+        }
+      },
+      "signal": {
+        "title": "Señal",
+        "options": {
+          "traces": "Trazas",
+          "metrics": "Métricas",
+          "logs": "Logs",
+          "baggage": "Baggage"
+        }
+      },
+      "stability": {
+        "title": "Estabilidad",
+        "options": {
+          "stable": "Estable",
+          "beta": "Beta",
+          "alpha": "Alfa",
+          "development": "En desarrollo",
+          "deprecated": "Obsoleto",
+          "unmaintained": "Sin mantenimiento"
+        }
+      },
+      "distribution": {
+        "title": "Distribución",
+        "options": {
+          "core": "Core",
+          "contrib": "Contrib"
+        }
+      },
+      "version": {
+        "title": "Versión",
+        "latest": "Más reciente"
+      }
+    }
+  },
   "page": {
     "title": "OpenTelemetry Collector",
     "description": "Una implementación agnóstica al proveedor para recibir, procesar y exportar datos de telemetría."
@@ -101,7 +154,8 @@
     },
     "tabs": {
       "details": "Detalles",
-      "stability": "Estabilidad"
+      "stability": "Estabilidad",
+      "telemetry": "Telemetría"
     },
     "sections": {
       "componentInfo": "Información del componente",
@@ -162,6 +216,88 @@
         "desc": "Una distribución especializada de OpenTelemetry."
       }
     },
-    "noStability": "No hay información de estabilidad disponible para esta versión."
+    "noStability": "No hay información de estabilidad disponible para esta versión.",
+    "telemetryTab": {
+      "metricsHeader": "Métricas",
+      "expandAll": "Expandir todo",
+      "collapseAll": "Contraer todo",
+      "unit": "Unidad",
+      "attributes": "Atributos",
+      "aggregation": "Agregación",
+      "monotonic": "Monotónico",
+      "enabled": "Habilitado",
+      "disabled": "Deshabilitado (opt-in)",
+      "empty": "No hay métricas de telemetría definidas para este componente.",
+      "metricType": {
+        "sum": "Suma",
+        "gauge": "Indicador",
+        "histogram": "Histograma"
+      },
+      "table": {
+        "key": "Clave",
+        "type": "Tipo",
+        "description": "Descripción"
+      }
+    }
+  },
+  "explore": {
+    "componentTypes": {
+      "heading": "Tipos de componentes",
+      "latestVersion": "Última versión de datos",
+      "types": {
+        "receiver": {
+          "label": "Receptor",
+          "description": "Recopila datos de telemetría de diversas fuentes, entre ellas OTLP, Prometheus, Jaeger y muchas más"
+        },
+        "processor": {
+          "label": "Procesador",
+          "description": "Transforma, filtra, agrupa en lotes y enriquece los datos de telemetría antes de exportarlos"
+        },
+        "exporter": {
+          "label": "Exportador",
+          "description": "Envía datos de telemetría a backends de observabilidad y sistemas de almacenamiento"
+        },
+        "extension": {
+          "label": "Extensión",
+          "description": "Ofrece capacidades adicionales como verificaciones de estado (health checks), perfilado y autenticación"
+        },
+        "connector": {
+          "label": "Conector",
+          "description": "Conecta múltiples pipelines y permite el flujo de datos entre tipos de señales"
+        }
+      }
+    },
+    "distributions": {
+      "heading": "Distribuciones",
+      "componentCount_one": "{{formattedCount}} componente",
+      "componentCount_other": "{{formattedCount}} componentes",
+      "items": {
+        "core": {
+          "description": "Componentes mantenidos oficialmente con APIs estables. Dependencias mínimas, listos para producción.",
+          "button": "Ver componentes Core"
+        },
+        "contrib": {
+          "description": "Componentes aportados por la comunidad. Pueden tener distintos niveles de estabilidad. Mayor cobertura del ecosistema.",
+          "button": "Ver componentes Contrib"
+        }
+      }
+    },
+    "summary": {
+      "ariaLabel": "Estadísticas resumidas del Collector",
+      "components": "Componentes",
+      "types": "Tipos"
+    },
+    "resources": {
+      "heading": "Recursos",
+      "items": {
+        "officialDocs": "Documentación oficial",
+        "gettingStarted": "Primeros pasos",
+        "configReference": "Referencia de configuración",
+        "githubCore": "GitHub (Core)",
+        "githubContrib": "GitHub (Contrib)"
+      }
+    },
+    "loading": "Cargando datos del ecosistema del Collector...",
+    "error": "Error al cargar los datos del Collector"
   }
 }

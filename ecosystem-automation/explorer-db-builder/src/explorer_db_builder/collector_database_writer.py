@@ -16,6 +16,7 @@
 
 import json
 import logging
+import re
 import shutil
 from pathlib import Path
 from typing import Any
@@ -35,6 +36,49 @@ class CollectorDatabaseWriter:
         self.database_dir = Path(database_dir)
         self.files_written = 0
         self.total_bytes = 0
+
+    def _sanitize_name(self, name: str) -> str:
+        """Sanitizes a name for use as a filename to prevent path traversal."""
+        return re.sub(r"[^a-zA-Z0-9._\-]", "_", name)
+
+    def write_markdown(self, component_name: str, markdown_hash: str, content: str) -> bool:
+        """Write a component README to the database, content-addressed.
+
+        Args:
+            component_name: Name of the component
+            markdown_hash: Hash of the markdown content
+            content: Markdown content string
+
+        Returns:
+            True if the markdown is present on disk after this call (either
+            just written, or already existed at the content-addressed path).
+            False if the write failed. Failures are logged here rather than
+            raised - README publishing must never fail DB generation - so
+            callers must check this return value to know whether to stamp
+            markdown_hash, rather than assuming success.
+        """
+        markdown_dir = self.database_dir / "markdown"
+        markdown_dir.mkdir(parents=True, exist_ok=True)
+
+        safe_name = self._sanitize_name(component_name)
+        file_path = markdown_dir / f"{safe_name}-{markdown_hash}.md"
+
+        if file_path.exists():
+            logger.debug("Markdown for '%s' with hash %s already exists, skipping write", safe_name, markdown_hash)
+            return True
+
+        try:
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write(content)
+            self.files_written += 1
+            self.total_bytes += len(content.encode("utf-8"))
+            logger.debug("Wrote markdown for '%s' with hash %s", safe_name, markdown_hash)
+            return True
+        except OSError as e:
+            logger.error("Failed to write markdown for '%s': %s", safe_name, e)
+            # README publishing failures must never fail DB generation, matching
+            # the same principle already established for the javaagent writer.
+            return False
 
     def _write_json(self, path: Path, data: Any) -> None:
         content = json.dumps(data, indent=2, sort_keys=True)

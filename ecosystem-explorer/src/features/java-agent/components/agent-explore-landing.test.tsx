@@ -28,4 +28,38 @@ describe("AgentExploreLanding", () => {
     const link = screen.getByRole("link", { name: /configuration builder/i });
     expect(link).toHaveAttribute("href", "/java-agent/configuration/builder");
   });
+
+  it("renders the resources and documentation links", () => {
+    render(
+      <BrowserRouter>
+        <AgentExploreLanding />
+      </BrowserRouter>
+    );
+
+    expect(screen.getByRole("heading", { name: /resources & documentation/i })).toBeInTheDocument();
+
+    const gettingStartedLink = screen.getByRole("link", {
+      name: /java agent getting started/i,
+    });
+    expect(gettingStartedLink).toHaveAttribute(
+      "href",
+      "https://opentelemetry.io/docs/zero-code/java/"
+    );
+
+    const configRefLink = screen.getByRole("link", {
+      name: /java agent configuration reference/i,
+    });
+    expect(configRefLink).toHaveAttribute(
+      "href",
+      "https://opentelemetry.io/docs/zero-code/java/agent-config/"
+    );
+
+    const githubLink = screen.getByRole("link", {
+      name: /github repository/i,
+    });
+    expect(githubLink).toHaveAttribute(
+      "href",
+      "https://github.com/open-telemetry/opentelemetry-java-instrumentation"
+    );
+  });
 });

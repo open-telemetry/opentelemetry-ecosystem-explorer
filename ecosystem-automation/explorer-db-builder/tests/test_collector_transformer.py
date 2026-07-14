@@ -307,3 +307,100 @@ class TestMakeIndexComponent:
         }
         result = make_index_component(component)
         assert result["stability"] == "alpha"
+
+
+class TestTransformCollectorComponentsReadmes:
+    def test_stamps_markdown_hash_when_name_in_readme_map(self):
+        inventory = _make_inventory(
+            components={
+                "receiver": [{"name": "otlpreceiver", "metadata": {"display_name": "OTLP Receiver"}}],
+                "processor": [],
+                "exporter": [],
+                "connector": [],
+                "extension": [],
+            }
+        )
+
+        result = transform_collector_components(inventory, "contrib", readme_map={"otlpreceiver": "abc123def456"})
+
+        assert result[0]["markdown_hash"] == "abc123def456"
+
+    def test_no_markdown_hash_when_name_not_in_readme_map(self):
+        inventory = _make_inventory(
+            components={
+                "receiver": [{"name": "otlpreceiver", "metadata": {"display_name": "OTLP Receiver"}}],
+                "processor": [],
+                "exporter": [],
+                "connector": [],
+                "extension": [],
+            }
+        )
+
+        result = transform_collector_components(inventory, "contrib", readme_map={"someotherreceiver": "abc123def456"})
+
+        assert "markdown_hash" not in result[0]
+
+    def test_no_markdown_hash_when_readme_map_omitted(self):
+        """readme_map is optional - callers that don't pass it get the old behavior."""
+        inventory = _make_inventory(
+            components={
+                "receiver": [{"name": "otlpreceiver", "metadata": {"display_name": "OTLP Receiver"}}],
+                "processor": [],
+                "exporter": [],
+                "connector": [],
+                "extension": [],
+            }
+        )
+
+        result = transform_collector_components(inventory, "contrib")
+
+        assert "markdown_hash" not in result[0]
+
+    def test_only_matching_components_get_stamped(self):
+        inventory = _make_inventory(
+            components={
+                "receiver": [
+                    {"name": "otlpreceiver", "metadata": {"display_name": "OTLP"}},
+                    {"name": "prometheusreceiver", "metadata": {"display_name": "Prometheus"}},
+                ],
+                "processor": [],
+                "exporter": [],
+                "connector": [],
+                "extension": [],
+            }
+        )
+
+        result = transform_collector_components(inventory, "contrib", readme_map={"otlpreceiver": "abc123def456"})
+
+        by_name = {c["name"]: c for c in result}
+        assert by_name["otlpreceiver"]["markdown_hash"] == "abc123def456"
+        assert "markdown_hash" not in by_name["prometheusreceiver"]
+
+
+class TestMakeIndexComponentHasReadme:
+    def test_has_readme_true_when_markdown_hash_present(self):
+        component = {
+            "id": "x",
+            "name": "x",
+            "distribution": "contrib",
+            "type": "receiver",
+            "display_name": None,
+            "description": None,
+            "status": {},
+            "markdown_hash": "abc123def456",
+        }
+        result = make_index_component(component)
+        assert result["has_readme"] is True
+
+    def test_has_readme_false_when_markdown_hash_absent(self):
+        component = {
+            "id": "x",
+            "name": "x",
+            "distribution": "contrib",
+            "type": "receiver",
+            "display_name": None,
+            "description": None,
+            "status": {},
+        }
+        result = make_index_component(component)
+        assert result["has_readme"] is False

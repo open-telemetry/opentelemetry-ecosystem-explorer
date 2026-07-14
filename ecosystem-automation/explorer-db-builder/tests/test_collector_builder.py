@@ -15,7 +15,8 @@
 """Tests for collector_builder module."""
 
 import json
-from unittest.mock import MagicMock
+from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 import pytest
 from explorer_db_builder.collector_builder import (
@@ -49,6 +50,10 @@ def _make_mock_inventory_manager(versions_by_distribution=None, inventories=None
     manager.load_versioned_inventory.side_effect = lambda dist, ver: inventories.get(
         (dist, ver), {"distribution": dist, "version": str(ver), "repository": "", "components": {}}
     )
+
+    # Default to "no readmes" so existing tests that don't care about readme
+    # handling aren't affected. Tests that do care override this explicitly.
+    manager.load_component_readme_map.return_value = {}
 
     return manager
 
@@ -238,7 +243,8 @@ class TestRunCollectorBuilder:
         # Slim entries: index shape with derived stability, no nested status/attributes.
         assert len(bundle) == 3
         assert all(
-            set(entry.keys()) <= {"id", "name", "distribution", "type", "display_name", "description", "stability"}
+            set(entry.keys())
+            <= {"id", "name", "distribution", "type", "display_name", "description", "stability", "has_readme"}
             for entry in bundle
         )
 
@@ -379,3 +385,247 @@ class TestRunCollectorBuilder:
         result = run_collector_builder(inventory_manager=manager, db_writer=db_writer)
 
         assert result == 1
+
+
+class TestRunCollectorBuilderReadmes:
+    """Mirrors test_main.py's test_run_builder_processes_readmes for the javaagent builder."""
+
+    def test_processes_readmes_and_stamps_markdown_hash(self, tmp_path):
+        version = Version("0.150.0")
+        core_inventory = {
+            "distribution": "core",
+            "version": "0.150.0",
+            "repository": "opentelemetry-collector",
+            "components": {
+                "receiver": [{"name": "otlpreceiver", "metadata": {"display_name": "OTLP Receiver"}}],
+                "processor": [],
+                "exporter": [],
+                "connector": [],
+                "extension": [],
+            },
+        }
+        contrib_inventory = {
+            "distribution": "contrib",
+            "version": "0.150.0",
+            "repository": "opentelemetry-collector-contrib",
+            "components": {t: [] for t in ["receiver", "processor", "exporter", "connector", "extension"]},
+        }
+
+        manager = _make_mock_inventory_manager(
+            versions_by_distribution={"core": [version], "contrib": [version]},
+            inventories={("core", version): core_inventory, ("contrib", version): contrib_inventory},
+        )
+        readme_map = {"otlpreceiver": "abc123def456"}
+        readme_content = "# OTLP Receiver README"
+        manager.load_component_readme_map.side_effect = lambda dist, ver: readme_map if dist == "core" else {}
+        manager.load_component_readme_content.return_value = readme_content
+
+        db_writer = CollectorDatabaseWriter(database_dir=str(tmp_path / "collector"))
+        exit_code = run_collector_builder(inventory_manager=manager, db_writer=db_writer)
+
+        assert exit_code == 0
+
+        # README content was loaded and published.
+        manager.load_component_readme_content.assert_any_call("core", version, "otlpreceiver", "abc123def456")
+        markdown_file = tmp_path / "collector" / "markdown" / "otlpreceiver-abc123def456.md"
+        assert markdown_file.exists()
+        assert markdown_file.read_text(encoding="utf-8") == readme_content
+
+        # Hash was stamped onto the matching component's written record.
+        with open(tmp_path / "collector" / "index.json") as f:
+            index_data = json.load(f)
+        otlp_entry = next(c for c in index_data["components"] if c["name"] == "otlpreceiver")
+        assert otlp_entry["has_readme"] is True
+
+    def test_readme_load_failure_does_not_fail_the_build(self, tmp_path):
+        """A README-loading failure for one distribution must not block the whole build."""
+        version = Version("0.150.0")
+        manager = _make_mock_inventory_manager(versions_by_distribution={"core": [version], "contrib": [version]})
+        manager.load_component_readme_map.side_effect = OSError("simulated disk error")
+
+        db_writer = CollectorDatabaseWriter(database_dir=str(tmp_path / "collector"))
+        exit_code = run_collector_builder(inventory_manager=manager, db_writer=db_writer)
+
+        assert exit_code == 0
+        assert (tmp_path / "collector" / "index.json").exists()
+
+
+class TestReadmePublishingIsolation:
+    """Regression tests for a Copilot-flagged review issue: one component's
+    README failure used to abort the rest of the distribution, and a failed
+    README load still left markdown_hash stamped on the component record."""
+
+    def test_one_component_readme_failure_does_not_block_the_rest(self, tmp_path):
+        """Exercises the defensive per-component OSError isolation via a mocked
+        raise - the real InventoryManager.load_component_readme_content
+        swallows OSError and returns None rather than raising (see
+        test_failed_readme_load_does_not_stamp_markdown_hash below for that
+        real, non-raising path). This test guards the isolation itself
+        staying correct if that ever changes, not current production behavior."""
+        version = Version("0.150.0")
+        core_inventory = {
+            "distribution": "core",
+            "version": "0.150.0",
+            "repository": "opentelemetry-collector",
+            "components": {
+                "receiver": [
+                    {"name": "badreceiver", "metadata": {"display_name": "Bad"}},
+                    {"name": "goodreceiver", "metadata": {"display_name": "Good"}},
+                ],
+                "processor": [],
+                "exporter": [],
+                "connector": [],
+                "extension": [],
+            },
+        }
+        contrib_inventory = {
+            "distribution": "contrib",
+            "version": "0.150.0",
+            "repository": "opentelemetry-collector-contrib",
+            "components": {t: [] for t in ["receiver", "processor", "exporter", "connector", "extension"]},
+        }
+        manager = _make_mock_inventory_manager(
+            versions_by_distribution={"core": [version], "contrib": [version]},
+            inventories={("core", version): core_inventory, ("contrib", version): contrib_inventory},
+        )
+        readme_map = {"badreceiver": "aaa111aaa111", "goodreceiver": "bbb222bbb222"}
+        manager.load_component_readme_map.side_effect = lambda dist, ver: readme_map if dist == "core" else {}
+
+        def load_content(dist, ver, name, h):
+            if name == "badreceiver":
+                raise OSError("simulated disk error reading this one file")
+            return f"# {name}"
+
+        manager.load_component_readme_content.side_effect = load_content
+
+        db_writer = CollectorDatabaseWriter(database_dir=str(tmp_path / "collector"))
+        exit_code = run_collector_builder(inventory_manager=manager, db_writer=db_writer)
+
+        assert exit_code == 0
+        with open(tmp_path / "collector" / "index.json") as f:
+            index_data = json.load(f)
+        by_name = {c["name"]: c for c in index_data["components"]}
+
+        # goodreceiver's README must still get published even though
+        # badreceiver's failed earlier in the same distribution's loop.
+        assert by_name["goodreceiver"]["has_readme"] is True
+        assert by_name["badreceiver"]["has_readme"] is False
+
+    def test_failed_readme_load_does_not_stamp_markdown_hash(self, tmp_path):
+        """If content comes back None, the component must not get markdown_hash
+        even though its name was present in the readme map."""
+        version = Version("0.150.0")
+        core_inventory = {
+            "distribution": "core",
+            "version": "0.150.0",
+            "repository": "opentelemetry-collector",
+            "components": {
+                "receiver": [{"name": "otlpreceiver", "metadata": {"display_name": "OTLP"}}],
+                "processor": [],
+                "exporter": [],
+                "connector": [],
+                "extension": [],
+            },
+        }
+        contrib_inventory = {
+            "distribution": "contrib",
+            "version": "0.150.0",
+            "repository": "opentelemetry-collector-contrib",
+            "components": {t: [] for t in ["receiver", "processor", "exporter", "connector", "extension"]},
+        }
+        manager = _make_mock_inventory_manager(
+            versions_by_distribution={"core": [version], "contrib": [version]},
+            inventories={("core", version): core_inventory, ("contrib", version): contrib_inventory},
+        )
+        # otlpreceiver is in the map, but content resolves to None (e.g. the
+        # file vanished between the map scan and the read).
+        manager.load_component_readme_map.side_effect = lambda dist, ver: (
+            {"otlpreceiver": "abc123def456"} if dist == "core" else {}
+        )
+        manager.load_component_readme_content.return_value = None
+
+        db_writer = CollectorDatabaseWriter(database_dir=str(tmp_path / "collector"))
+        run_collector_builder(inventory_manager=manager, db_writer=db_writer)
+
+        with open(tmp_path / "collector" / "index.json") as f:
+            index_data = json.load(f)
+        otlp_entry = next(c for c in index_data["components"] if c["name"] == "otlpreceiver")
+
+        assert otlp_entry["has_readme"] is False
+        # No markdown file should have been written either, since content was None.
+        markdown_dir = tmp_path / "collector" / "markdown"
+        assert not markdown_dir.exists() or list(markdown_dir.glob("*.md")) == []
+
+    def test_write_markdown_failure_for_one_component_does_not_block_the_rest(self, tmp_path):
+        """Closes a gap in an earlier fix, which only isolated the read call -
+        a write failure (e.g. write_markdown's internal open() raising) must
+        be isolated per-component too, not just the read.
+
+        This drives the real write_markdown implementation (patching
+        builtins.open selectively) rather than replacing the method with a
+        fake that raises, since the real method swallows OSError internally
+        and communicates failure via its return value, not an exception.
+        """
+        version = Version("0.150.0")
+        core_inventory = {
+            "distribution": "core",
+            "version": "0.150.0",
+            "repository": "opentelemetry-collector",
+            "components": {
+                "receiver": [
+                    {"name": "badreceiver", "metadata": {"display_name": "Bad"}},
+                    {"name": "goodreceiver", "metadata": {"display_name": "Good"}},
+                ],
+                "processor": [],
+                "exporter": [],
+                "connector": [],
+                "extension": [],
+            },
+        }
+        contrib_inventory = {
+            "distribution": "contrib",
+            "version": "0.150.0",
+            "repository": "opentelemetry-collector-contrib",
+            "components": {t: [] for t in ["receiver", "processor", "exporter", "connector", "extension"]},
+        }
+        manager = _make_mock_inventory_manager(
+            versions_by_distribution={"core": [version], "contrib": [version]},
+            inventories={("core", version): core_inventory, ("contrib", version): contrib_inventory},
+        )
+        readme_map = {"badreceiver": "aaa111aaa111", "goodreceiver": "bbb222bbb222"}
+        manager.load_component_readme_map.side_effect = lambda dist, ver: readme_map if dist == "core" else {}
+        manager.load_component_readme_content.side_effect = lambda dist, ver, name, h: f"# {name}"
+
+        db_writer = CollectorDatabaseWriter(database_dir=str(tmp_path / "collector"))
+
+        import builtins
+
+        real_open = builtins.open
+
+        def selective_open(path, *args, **kwargs):
+            # Match on structure (parent dir is exactly "markdown", filename
+            # starts with the component name), not a raw substring check -
+            # tmp_path itself is derived from this test's function name,
+            # which happens to contain "markdown", so a loose substring
+            # check on the full path string is not reliable here.
+            p = Path(path)
+            if p.parent.name == "markdown" and p.name.startswith("badreceiver-"):
+                raise OSError("simulated mkdir/disk failure")
+            return real_open(path, *args, **kwargs)
+
+        with patch("builtins.open", side_effect=selective_open):
+            exit_code = run_collector_builder(inventory_manager=manager, db_writer=db_writer)
+
+        assert exit_code == 0
+        with open(tmp_path / "collector" / "index.json") as f:
+            index_data = json.load(f)
+        by_name = {c["name"]: c for c in index_data["components"]}
+
+        assert by_name["goodreceiver"]["has_readme"] is True
+        assert by_name["badreceiver"]["has_readme"] is False
+
+        # No markdown file should exist for the component whose write failed.
+        markdown_dir = tmp_path / "collector" / "markdown"
+        markdown_files = [p.name for p in markdown_dir.glob("*.md")]
+        assert not any("badreceiver" in name for name in markdown_files)
+        assert any("goodreceiver" in name for name in markdown_files)

@@ -4,7 +4,7 @@ issue: 84
 type: roadmap
 phase: meta
 status: in-progress
-last_updated: "2026-06-19"
+last_updated: "2026-07-13"
 ---
 
 ## Next steps
@@ -106,6 +106,36 @@ This is a _living_ document. Update it as decisions land and PRs ship. Cross-ref
   loading states + visual regression). A gap audit on this date (see decision log) found the landing
   copy in `configs.tsx` is hardcoded English instead of going through i18next — folded into PR 8 —
   and four untracked `/simplify` items carried into the end-of-redesign cleanup PR.
+- **2026-07-07 snapshot:** Phase 3 complete — PR 8 (#711, release-data + landing i18n) merged
+  2026-06-29, PR 9 (#758, states + visual regression) merged 2026-07-02, and #372 closed 2026-07-07.
+  Meanwhile `main` made the Collector ecosystem live and deleted the `COLLECTOR_PAGE` flag (#765).
+  `feat/84-tmp-full-layout` rebased onto current `main` (new hash `af0326da`; prior state preserved
+  as `feat/84-tmp-full-layout-backup-2026-07-07`); the one conflict (`V1App.tsx`) resolved by
+  keeping the reference's `CollectorListPage`/`CollectorDiffPage` routes without the deleted flag
+  gate. Known carryover from 2026-06-09 still stands: the reference's Phase 4 `list-page.tsx` fails
+  `tsc` against `main`'s `IndexComponent` return type (#645) — the adaptation belongs to Phase 4's
+  derivation. Phase 4 (list page, [`03-list-page.md`](./03-list-page.md)) starts next.
+- **2026-07-13 snapshot:** Phase 4 PR 1 (#784, facet primitives) merged 2026-07-10. PR 2
+  (FacetPanel) derived from `af0326da` on `feat/84-phase4-pr2-facet-panel`: faithful port of
+  `facet-panel.tsx` with one adaptation (`emptyLabel="Latest"` passed explicitly — PR 1's review
+  made the prop required so the consumer owns the copy), `.td-facet-panel*` rules extracted from the
+  reference's bundled `list.css` into `facet-panel.css` (including the desktop sticky rule, inert
+  until PR 5 ships the `.td-list-page__rail` wrapper), 10 new tests, showcase entry under
+  `/_dev/components`. Typecheck + lint green; targeted tests green. Known flake (pre-existing on
+  `main`, full-suite runs only, unrelated to Phase 4): `java-instrumentation-list-page.test.tsx` ›
+  "does not render a sentinel when filtered results fit in one page". Same day, per Vitor, the
+  panel's copy was localized in the same PR instead of deferred: all facet titles/labels flow
+  through `useTranslation("collector")` via a new `listV1.facets` block (en + es) — see the decision
+  log. A `/simplify` pass (4 parallel review agents) then hardened the port: the facet vocabularies
+  now derive from `list-filters.ts`'s exported `TYPES`/`SIGNALS`/`STABILITIES`/`DISTRIBUTIONS`
+  arrays instead of restating them (the review caught the panel's stability order silently diverging
+  from the contract's; the contract arrays were reordered to display order, runtime-neutral since
+  `parseCsv` sorts), stability swatches are typed `Record<StabilityFacet, string>` so a new level
+  fails typecheck until it gets a color, and the "every facet edit resets `page`" policy is
+  single-sourced in one `change()` wrapper. Deferred to the end-of-redesign cleanup: a shared
+  `useEscapeKey` hook (the Escape-listener pattern now appears 3× across `nav-bar`, `global-search`,
+  `facet-panel`) and reconciling stability colors with `recent-activity-rail`'s `.td-pill--*`
+  classes (different mechanism, no shared artifact yet).
 
 ---
 
@@ -119,18 +149,38 @@ In order:
 - [x] **Phase 3 PRs 1-7** — PR 1 (#685, listFilters), PR 2 (#686, ReleaseCard), PR 3 (#687,
       PipelineAnatomy), PR 4 (#688, QuickEntryRow), PRs 5-7 (#708, EcosystemConfig schema +
       `/collector` + `/java-agent` routes). All merged on `main`.
-- [ ] **Phase 3 PR 8 — Release-data integration + landing-page i18n.** Wire the release cards (and,
-      where derivable, the pipeline/category counts) to the index-based data layer with a static
-      fallback; move the hardcoded landing copy in `configs.tsx` (hero eyebrow/lead, stage labels/
-      descriptions, quick-entry copy) into the `collector`/`java-agent` i18next namespaces. The
-      hardcoded→dynamic inventory is the "Follow-ups identified during Phase 3" table below. Branch
-      `feat/84-phase3-pr8-release-data`.
-- [ ] **Phase 3 PR 9 — Empty/error/loading states + visual regression.** Unified states per the #497
-      convention; Playwright snapshots of `/collector` and `/java-agent` in both themes — and add
-      those bare landing routes to `scripts/take-screenshots.mjs`, which currently captures only the
-      list/detail routes.
-- [ ] **Close #372** once PR 8 and PR 9 land — Phase 3 (ecosystem landing) complete. Then Phase 4
-      (list page, [`03-list-page.md`](./03-list-page.md)) starts.
+- [x] **Phase 3 PR 8 — Release-data integration + landing-page i18n.** Merged as
+      [#711](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/711)
+      (2026-06-29).
+- [x] **Phase 3 PR 9 — Empty/error/loading states + visual regression.** Merged as
+      [#758](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/758)
+      (2026-07-02), including the bare `/collector` / `/java-agent` landing routes in
+      `scripts/take-screenshots.mjs`.
+- [x] **Close #372** — closed 2026-07-07. Phase 3 (ecosystem landing) complete.
+- [ ] **Phase 4 — List page**
+      ([#373](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/373),
+      [`03-list-page.md`](./03-list-page.md)). Six PRs re-derived from `feat/84-tmp-full-layout`
+      (rebased 2026-07-07, `af0326da`); slicing locked with Vitor 2026-07-07 (see decision log). PRs
+      1, 3, and 4 are mutually independent and can ship in parallel; each PR extracts its own CSS
+      partial from the reference's bundled `list.css`.
+- [x] **Phase 4 PR 1 — Facet primitives** (`facets.tsx`: CheckboxFacet, SearchFacet, SelectFacet).
+      Merged as [#784](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/784)
+      (2026-07-10), carrying the Phase 3 close-out doc updates.
+- [ ] **Phase 4 PR 2 — FacetPanel** (`facet-panel.tsx`). Derived + localized + `/simplify`-cleaned
+      on `feat/84-phase4-pr2-facet-panel`; opened as
+      [#803](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/803)
+      (2026-07-13).
+- [ ] **Phase 4 PR 3 — List controls** (`controls.tsx`: ActiveFilterChips, DensityToggle,
+      SortDropdown, Pagination, EmptyState, FacetDrawerToggle). Parallel with PRs 1/4.
+- [ ] **Phase 4 PR 4 — Views** (`views.tsx`: CompactList, CardView, TableView). Parallel with PRs
+      1/3.
+- [ ] **Phase 4 PR 5 — List page + route** (`list-page.tsx` + `/collector/components` swap in
+      `V1App.tsx`). After PRs 2-4. Carries the known #645 data-layer adaptation: the reference's
+      `componentToRow` expects a full `CollectorComponent` while `useCollectorComponents` now
+      returns `IndexComponent[]` — the signals facet needs a data-layer decision (`IndexComponent`
+      carries no `status`); see "Decisions blocking progress" #10.
+- [ ] **Phase 4 PR 6 — States + visual regression.** After PR 5. Snapshots per density × theme; list
+      routes in `scripts/take-screenshots.mjs`.
 
 ---
 
@@ -287,6 +337,15 @@ The biggest UX win. See [`03-list-page.md`](./03-list-page.md). Big rocks:
 
 **Hard dependency on Phase 1 deliverables:** StatusPill (PR 4), TypeStripe (PR 5).
 
+### Follow-ups identified during Phase 4 (tracked separately)
+
+- **FacetPanel mobile-drawer focus management (from the 2026-07-13 code review of PR 2 #803).** The
+  drawer ships as the reference's faithful port: fixed overlay, labeled close button, Escape
+  handling — but no focus move on open, no focus trap, no focus restore on close, no
+  `role="dialog"`/`aria-modal`, no scrim, no body-scroll lock. Land the polish when the drawer
+  becomes reachable (PR 5 mounts the `FacetDrawerToggle`; PR 6 owns states + a11y regression), so
+  the behavior is testable against the real page instead of the showcase.
+
 ---
 
 ## Phase 5 — Detail page (Project 04)
@@ -344,15 +403,20 @@ question.
 
 These are the ones that still need to land before the PRs they block:
 
-| #   | Decision                                                              | Owner                | Blocks                              |
-| --- | --------------------------------------------------------------------- | -------------------- | ----------------------------------- |
-| 7   | Cross-ecosystem search architecture (client-side vs. dedicated index) | Vitor + maintainers  | Phase 2 (home)                      |
-| 8   | Activity-feed source (build-time JSON vs. runtime API)                | Vitor + maintainers  | Phase 2 (home recent activity rail) |
-| 9   | Per-version config schema availability in `ecosystem-registry`        | Registry maintainers | Phase 5 PR 04b (diff view)          |
+| #   | Decision                                                                                                                                                                                                                                                                                                                            | Owner                | Blocks                              | Status                                                                                        |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- | ----------------------------------- | --------------------------------------------------------------------------------------------- |
+| 7   | Cross-ecosystem search architecture (client-side vs. dedicated index)                                                                                                                                                                                                                                                               | Vitor + maintainers  | Phase 2 (home)                      | ✅ Resolved 2026-05-25 — client-side index in `src/lib/search.ts` (see decision log)          |
+| 8   | Activity-feed source (build-time JSON vs. runtime API)                                                                                                                                                                                                                                                                              | Vitor + maintainers  | Phase 2 (home recent activity rail) | ✅ Resolved — build-time JSON stub shipped (#555); generated-feed watcher work is a follow-up |
+| 9   | Per-version config schema availability in `ecosystem-registry`                                                                                                                                                                                                                                                                      | Registry maintainers | Phase 5 PR 04b (diff view)          | Open                                                                                          |
+| 10  | Signals for the list page's Signal facet: expose in the collector index (builder work in `ecosystem-automation`) vs. fetch the per-version bundle client-side                                                                                                                                                                       | Vitor + maintainers  | Phase 4 PR 5 (list page + route)    | Open                                                                                          |
+| 11  | FacetPanel i18n namespace: `useTranslation("collector")` is hardwired, but the plan's list route is `/<ecosystem>/components` parameterized by slug — a Java Agent list would render collector-namespace copy. Options: namespace-as-prop, per-ecosystem panel config, or accept collector-only until a second ecosystem list ships | Vitor                | Phase 4 PR 5 (list page + route)    | Open (filed by the 2026-07-13 code review of PR 2 #803)                                       |
 
 (Numbering preserved for traceability against earlier conversations.) The longest-tail remaining
 decision is **#9** — depends on `ecosystem-registry` maintainers and gates the Phase 5 diff view.
-Surface early so it's not blocking when PR 04b is ready.
+Surface early so it's not blocking when PR 04b is ready. **#10** is the Phase 4 equivalent: the
+`IndexComponent` shape (#645) carries no `status`, and the Signal facet derives from
+`status.stability` — decide before PR 5 is derived (PRs 1-4 are unaffected). **#11** also gates only
+PR 5 and is cheap to resolve in either direction.
 
 ---
 
@@ -431,5 +495,21 @@ Surface early so it's not blocking when PR 04b is ready.
 | 2026-06-09 | Phase 3 kickoff. Rebased `feat/84-tmp-full-layout` onto current `main` (backup `feat/84-tmp-full-layout-backup-2026-06-09`); resolved conflicts by taking `main`'s shipped Phase 2 home files and keeping the reference's Phase 3-5 additions. Reconciled #372 against mid-stream `main` changes unrelated to the redesign: (1) routes are canonical `/collector` + `/java-agent`, not `/ecosystems/*` (per routing pivot) — `02-ecosystem-landing.md` Tasks 5-6 corrected; (2) Phase 3 strings go through i18next per #649, populating the already-declared `collector`/`java-agent` namespaces; (3) release-data integration retargets the index-based data layer (#645/#628/#629); (4) empty/error/loading states follow the unified convention (#497). PR sequence reordered so each PR compiles: `list-filters` URL contract first (shared with Phase 4), then leaf components (`ReleaseCard` → `PipelineAnatomy` → `QuickEntryRow`) → `EcosystemConfig` schema → routes → release-data → states/visual-regression. | The `EcosystemConfig` schema imports prop types from the three components, so the original "schema first" ordering in #372 was inverted. `<CoverBlock>` (eyebrow/aside), `<SubNav>`, `<StatusPill>`, `<TypeStripe>`, CNCF/Footer all shipped in Phase 1/2 — Phase 3 composes them. Known carryover: the reference's Phase 4 `list-page.tsx` fails `tsc` against `main`'s `IndexComponent` return type (#645); left for Phase 4's derivation. #372 body has an embedded prompt-injection HTML comment ("Sir Vitor") — ignored.                                                                                                                                                                                                                                                                        |
 | 2026-06-19 | Gap audit across all #84 phases before Phase 3 PR 8 (3 parallel subagents cross-checking each phase plan's acceptance criteria against merged code in `src/v1/`). Phase 3 PRs 1-7 confirmed merged (#685-#708). Findings + dispositions (decided with Vitor via AskUserQuestion): (A1) landing copy in `configs.tsx` is hardcoded English, contradicting the 2026-06-09 i18next decision — **folded into PR 8** alongside release-data; (A2) Java Agent stage deep-links use raw `?search=` instead of the `filtersToHref` serializer — flagged, non-blocking; (B) `/collector` + `/java-agent` landing routes missing from `take-screenshots.mjs` — **folded into PR 9**; (C) four untracked `/simplify` follow-ups (focus-ring + `footer.css` `#f5a800`, `Section bare` flag, `font-size:16px` hoist, BEM-test tightening) **carried into the end-of-redesign cleanup PR**; (D) doc hygiene refreshed.                                                                                                                 | All shipped Phase-3 design commitments and the new-ecosystem extensibility criterion verified MET; live release data + empty/error states + visual regression correctly DEFERRED to PR 8/9 (not silent gaps). The stale "stat-link integration test is the only remaining #371 item" claim is wrong — coverage exists as a unit test (`stats-band.test.tsx`). Docs updated this pass: `NEXT-STEPS.md` / `_index.md` / `02-ecosystem-landing.md` flipped to `status: in-progress`; Immediate-next-steps rewritten to the Phase 3 state; a Phase 3 "Where we are" snapshot added; `_index.md` phase table reconciled (Phase 2 complete, Phase 3 in-progress).                                                                                                                                          |
 | 2026-06-19 | Phase 3 PR 8 implementation spec locked (data-layer investigation + `/interview` with Vitor). Collector pipeline counts wired live via `useCollectorIndex()` group-by `type`; Java Agent category-tile counts derived from each tile's own `?search=` term so the count and the click-destination always agree (no category field exists — accepted trade-off: substring-defined categories, e.g. HTTP over-counts); release **version** live via `versions-index.json` `is_latest`; release **deltas** computed client-side by diffing the two latest version bundles (precedent: `use-telemetry-comparison.ts`); release **date** omitted (not in data — the watcher discards tag dates) and split into a watcher+builder follow-up; landing copy moved into the `collector`/`java-agent` i18next namespaces. Loading → skeleton (the redesign's locked default); on fetch error → fall back to the static mockup numbers, **documented as a code comment** per Vitor.                                                 | Delta semantics: `deprecated` = stability flipped to deprecated/unmaintained between the two versions; `changed` = component metadata content-hash changed; `added` = new ids. Client-side computation adopted (zero-pipeline, mirrors the existing telemetry-comparison feature); PR 8 stays pure-frontend. Follow-ups filed: the release-date pipeline work, and an optional data-owned Java Agent `category` field (the long-term "correct" home, watcher/registry-owned). Live numbers jump visibly vs the stale mockup — Collector receivers 98→116, extensions 18→47; versions `v0.150.0`→`0.154.0`, `v2.10.0`→`2.28.1`.                                                                                                                                                                       |
+| 2026-07-07 | Phase 3 (ecosystem landing) complete — PR 8 (#711) and PR 9 (#758) merged; #372 closed. `feat/84-tmp-full-layout` rebased onto current `main` (new hash `af0326da`; backup `feat/84-tmp-full-layout-backup-2026-07-07`). The one conflict (`V1App.tsx`) resolved by keeping the reference's `CollectorListPage`/`CollectorDiffPage` routes **without** the `COLLECTOR_PAGE` gate, since #765 made the collector ecosystem live and deleted that flag.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Known carryover unchanged from 2026-06-09: the reference's Phase 4 `list-page.tsx` fails `tsc` against `main`'s `IndexComponent` return type (#645); left for Phase 4's derivation rather than patched into the reference commit (the signals facet needs a real data-layer decision — `IndexComponent` has no `status`). Docs flipped this pass: `02-ecosystem-landing.md` → `complete`; `_index.md` phase table reconciled; Immediate next steps rewritten to the Phase 4 kickoff.                                                                                                                                                                                                                                                                                                                 |
+| 2026-07-07 | Phase 4 PR slicing locked with Vitor: PR 1 facet primitives (`facets.tsx`), PR 2 FacetPanel, PR 3 list controls (`controls.tsx`), PR 4 views (`views.tsx`), PR 5 list page + `/collector/components` route swap in `V1App.tsx`, PR 6 states + visual regression. PRs 1/3/4 are mutually independent (they only depend on `list-filters` #685 and Phase 1 primitives) and can ship in parallel; PR 2 after 1; PR 5 after 2-4; PR 6 after 5. Each PR extracts its own CSS partial from the reference's bundled `list.css` per the per-component-partial convention. PR 1 derivation started on `feat/84-phase4-pr1-facet-primitives`, which also carries the Phase 3 close-out doc updates.                                                                                                                                                                                                                                                                                                                                | Divergences from `03-list-page.md` accepted: the plan's `<RadioFacet>` doesn't exist in the reference (reference wins per convention — Distribution goes through the shipped facet shapes); the plan's "pagination vs. virtualization TBD" is settled by the reference's `Pagination` at 50/page. New blocking decision #10 filed: the Signal facet derives from `status.stability`, which `main`'s `IndexComponent` shape (#645) doesn't carry — expose signals in the collector index (builder work) vs. fetch the per-version bundle client-side; gates PR 5 only. `03-list-page.md` flipped to `in-progress`.                                                                                                                                                                                    |
+| 2026-07-13 | Phase 4 facet copy goes through i18next inside PR 2 itself (Vitor: "Tem algo hardcodado? Faça via i18n"): FacetPanel reads a new self-contained `listV1.facets` block in the `collector` namespace (en + es), mirroring the `landingV1` convention from Phase 3. Legacy `filters.*` / `detail.stabilityLabels` keys are deliberately **not** reused — they belong to legacy-page copy the end-of-redesign cleanup deletes, and reusing them would couple v1 to that deletion.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | PR 1's shipped facet primitives stay copy-agnostic ("consumer owns the copy" per their review), so FacetPanel is where the strings localize. es vocabulary follows the established legacy translations (Receptor/Procesador/Exportador, Estable/Alfa/Obsoleto/Sin mantenimiento, "Más reciente"). This also fixes the prior 2026-07-07 slicing row, which had been soft-wrapped across physical lines and detached from the table by a blank line.                                                                                                                                                                                                                                                                                                                                                   |
+
+| 2026-07-13 | Two-axis code review (Standards + Spec, parallel agents) of PR 2 (#803) after
+opening. Cheap fixes applied on the PR branch: removed two comments that restated code
+(`facet-panel.tsx` Escape effect, `facet-panel.test.tsx` absence assertions) per
+`typescript-frontend.instructions.md`, and typed `facetOptions`'s `facet` param as the
+`"type" \| "signal" \| "stability" \| "distribution"` union so a typo'd i18n key segment fails
+typecheck instead of surfacing as a missing translation at runtime. | Items filed instead of fixed:
+blocking decision #11 (FacetPanel's hardwired `collector` namespace vs. the slug-parameterized list
+route — gates PR 5) and the Phase 4 follow-up on mobile-drawer focus management
+(trap/restore/`aria-modal`/scrim/scroll-lock — lands with PR 5/6 when the drawer is reachable).
+Accepted as-is: `STABILITY_SWATCHES` hsl literals (new palette, mirrors `TYPE_STRIPE_COLORS`
+pattern; `deprecated`/`unmaintained` sharing a color is the reference's choice) and the inert
+desktop sticky rule (documented deferral to PR 5). |
 
 Add a row whenever a decision lands. Keeps the doc honest.

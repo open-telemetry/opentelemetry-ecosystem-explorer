@@ -66,23 +66,27 @@ export const DEFAULT_FILTERS: ListFilters = {
   page: 1,
 };
 
-const TYPES: readonly CollectorComponentType[] = [
+// Canonical facet vocabularies. Parsing treats them as membership sets
+// (`parseCsv` sorts its output), so array order is runtime-irrelevant here —
+// but the FacetPanel derives its checkbox display order from these arrays,
+// so they are kept in display order.
+export const TYPES: readonly CollectorComponentType[] = [
   "receiver",
   "processor",
   "exporter",
   "connector",
   "extension",
 ];
-const SIGNALS: readonly Signal[] = ["traces", "metrics", "logs", "baggage"];
-const STABILITIES: readonly StabilityFacet[] = [
+export const SIGNALS: readonly Signal[] = ["traces", "metrics", "logs", "baggage"];
+export const STABILITIES: readonly StabilityFacet[] = [
   "stable",
   "beta",
   "alpha",
+  "development",
   "deprecated",
   "unmaintained",
-  "development",
 ];
-const DISTRIBUTIONS: readonly Distribution[] = ["core", "contrib"];
+export const DISTRIBUTIONS: readonly Distribution[] = ["core", "contrib"];
 const SORTS: readonly SortMode[] = ["name", "updated", "stability"];
 const DENSITIES: readonly DensityMode[] = ["cards", "compact", "table"];
 

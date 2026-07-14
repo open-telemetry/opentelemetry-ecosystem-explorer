@@ -47,6 +47,7 @@ def _make_component_id(distribution: str, name: str) -> str:
 def transform_collector_components(
     inventory: dict[str, Any],
     distribution: str,
+    readme_map: dict[str, str] | None = None,
 ) -> list[dict[str, Any]]:
     """Transform a loaded inventory dict into a flat list of canonical component dicts.
 
@@ -54,12 +55,16 @@ def transform_collector_components(
         inventory: Result of InventoryManager.load_versioned_inventory(distribution, version).
                    Shape: {distribution, version, repository, components: {type: [raw_component]}}
         distribution: Distribution name ("core" or "contrib").
+        readme_map: Optional {component_name: markdown_hash} for this distribution/version,
+                    from InventoryManager.load_component_readme_map(). Components whose name
+                    is present get a "markdown_hash" field; others are left without one.
 
     Returns:
         List of canonical component dicts, one per component across all types.
     """
     components_by_type: dict[str, list[dict[str, Any]]] = inventory.get("components", {})
     repository: str = inventory.get("repository", "")
+    readme_map = readme_map or {}
     results: list[dict[str, Any]] = []
 
     for component_type in COMPONENT_TYPES:
@@ -97,6 +102,9 @@ def transform_collector_components(
             if metrics:
                 component["metrics"] = metrics
 
+            if name in readme_map:
+                component["markdown_hash"] = readme_map[name]
+
             results.append(component)
 
     return results
@@ -120,4 +128,5 @@ def make_index_component(component: dict[str, Any]) -> dict[str, Any]:
         "display_name": component.get("display_name"),
         "description": component.get("description"),
         "stability": _derive_stability(stability_raw),
+        "has_readme": bool(component.get("markdown_hash")),
     }

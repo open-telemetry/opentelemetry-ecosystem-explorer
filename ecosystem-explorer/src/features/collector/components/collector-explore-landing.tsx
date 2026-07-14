@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import {
   AlertCircle,
@@ -31,76 +32,34 @@ import { useCollectorIndex, useCollectorVersions } from "@/hooks/use-collector-d
 import type { IndexComponent } from "@/types/collector";
 
 const COMPONENT_TYPES = [
-  {
-    type: "receiver",
-    label: "Receiver",
-    description:
-      "Collect telemetry data from various sources including OTLP, Prometheus, Jaeger, and many others",
-    icon: Box,
-  },
-  {
-    type: "processor",
-    label: "Processor",
-    description: "Transform, filter, batch, and enrich telemetry data before export",
-    icon: Layers,
-  },
-  {
-    type: "exporter",
-    label: "Exporter",
-    description: "Send telemetry data to observability backends and storage systems",
-    icon: Send,
-  },
-  {
-    type: "extension",
-    label: "Extension",
-    description:
-      "Provide additional capabilities like health checks, profiling, and authentication",
-    icon: Plug,
-  },
-  {
-    type: "connector",
-    label: "Connector",
-    description: "Connect multiple pipelines and enable data flow between signal types",
-    icon: Workflow,
-  },
+  { type: "receiver", icon: Box },
+  { type: "processor", icon: Layers },
+  { type: "exporter", icon: Send },
+  { type: "extension", icon: Plug },
+  { type: "connector", icon: Workflow },
 ] as const;
 
-const DISTRIBUTIONS = [
-  {
-    distribution: "core",
-    label: "Core",
-    description:
-      "Officially maintained components with stable APIs. Minimal dependencies, production-ready.",
-    buttonLabel: "View Core Components",
-  },
-  {
-    distribution: "contrib",
-    label: "Contrib",
-    description:
-      "Community-contributed components. May have varying stability levels. Broader ecosystem coverage.",
-    buttonLabel: "View Contrib Components",
-  },
-] as const;
+const DISTRIBUTIONS = [{ distribution: "core" }, { distribution: "contrib" }] as const;
 
 const RESOURCES = [
   {
-    label: "Official Documentation",
+    key: "officialDocs",
     href: "https://opentelemetry.io/docs/collector/",
   },
   {
-    label: "Getting Started Guide",
+    key: "gettingStarted",
     href: "https://opentelemetry.io/docs/collector/getting-started/",
   },
   {
-    label: "Configuration Reference",
+    key: "configReference",
     href: "https://opentelemetry.io/docs/collector/configuration/",
   },
   {
-    label: "GitHub (Core)",
+    key: "githubCore",
     href: "https://github.com/open-telemetry/opentelemetry-collector",
   },
   {
-    label: "GitHub (Contrib)",
+    key: "githubContrib",
     href: "https://github.com/open-telemetry/opentelemetry-collector-contrib",
   },
 ] as const;
@@ -167,13 +126,17 @@ function buildCollectorLandingStats(
 }
 
 export function CollectorExploreLanding() {
+  const { t, i18n } = useTranslation("collector");
   const { data: collectorIndex, loading: indexLoading, error: indexError } = useCollectorIndex();
   const {
     data: versionData,
     loading: versionsLoading,
     error: versionsError,
   } = useCollectorVersions();
-  const numberFormatter = useMemo(() => new Intl.NumberFormat(), []);
+  const numberFormatter = useMemo(
+    () => new Intl.NumberFormat(i18n.resolvedLanguage || i18n.language),
+    [i18n.resolvedLanguage, i18n.language]
+  );
   const stats = useMemo(() => {
     if (!collectorIndex || !versionData) {
       return null;
@@ -196,7 +159,7 @@ export function CollectorExploreLanding() {
         className="border-border/60 bg-card/80 flex min-h-72 flex-col items-center justify-center rounded-lg border p-8 text-center"
       >
         <AlertCircle className="text-primary h-10 w-10" aria-hidden="true" />
-        <h2 className="text-foreground mt-4 text-lg font-semibold">Error loading Collector data</h2>
+        <h2 className="text-foreground mt-4 text-lg font-semibold">{t("explore.error")}</h2>
         <p className="text-muted-foreground mt-2 max-w-xl text-sm">{error.message}</p>
       </section>
     );
@@ -209,9 +172,7 @@ export function CollectorExploreLanding() {
         className="border-border/60 bg-card/80 flex min-h-72 flex-col items-center justify-center rounded-lg border p-8 text-center"
       >
         <Loader2 className="text-primary h-10 w-10 animate-spin" aria-hidden="true" />
-        <p className="text-muted-foreground mt-4 text-sm font-medium">
-          Loading Collector ecosystem data...
-        </p>
+        <p className="text-muted-foreground mt-4 text-sm font-medium">{t("explore.loading")}</p>
       </section>
     );
   }
@@ -222,17 +183,17 @@ export function CollectorExploreLanding() {
         <section aria-labelledby="collector-component-types" className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 id="collector-component-types" className="text-foreground text-2xl font-bold">
-              Component Types
+              {t("explore.componentTypes.heading")}
             </h2>
             {stats.latestVersion && (
               <p className="text-muted-foreground text-sm font-medium">
-                Latest data version{" "}
+                {t("explore.componentTypes.latestVersion")}{" "}
                 <span className="text-foreground font-semibold">v{stats.latestVersion}</span>
               </p>
             )}
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {COMPONENT_TYPES.map(({ type, label, description, icon: Icon }) => (
+            {COMPONENT_TYPES.map(({ type, icon: Icon }) => (
               <Link
                 key={type}
                 to={`/collector/components?type=${type}`}
@@ -251,13 +212,15 @@ export function CollectorExploreLanding() {
                     </div>
                     <div className="space-y-1">
                       <h3 className="text-foreground group-hover:text-primary text-lg font-semibold transition-colors">
-                        {label}
+                        {t(`explore.componentTypes.types.${type}.label`)}
                       </h3>
                       <p className="text-3xl font-bold">
                         {numberFormatter.format(stats.byType[type])}
                       </p>
                     </div>
-                    <p className="text-muted-foreground text-sm leading-relaxed">{description}</p>
+                    <p className="text-muted-foreground text-sm leading-relaxed">
+                      {t(`explore.componentTypes.types.${type}.description`)}
+                    </p>
                   </div>
                 </article>
               </Link>
@@ -268,11 +231,11 @@ export function CollectorExploreLanding() {
         <section aria-labelledby="collector-distributions" className="space-y-4">
           <div>
             <h2 id="collector-distributions" className="text-foreground text-2xl font-bold">
-              Distributions
+              {t("explore.distributions.heading")}
             </h2>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
-            {DISTRIBUTIONS.map(({ distribution, label, description, buttonLabel }) => (
+            {DISTRIBUTIONS.map(({ distribution }) => (
               <article
                 key={distribution}
                 className="border-border/60 bg-card/80 flex h-full flex-col rounded-lg border p-6"
@@ -280,20 +243,27 @@ export function CollectorExploreLanding() {
                 <div className="flex flex-1 flex-col gap-4">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <h3 className="text-foreground text-xl font-semibold">{label}</h3>
+                      <h3 className="text-foreground text-xl font-semibold">
+                        {t(`filters.distribution.${distribution}`)}
+                      </h3>
                       <p className="text-muted-foreground mt-1 text-sm">
-                        {numberFormatter.format(stats.byDistribution[distribution])} components
+                        {t("explore.distributions.componentCount", {
+                          count: stats.byDistribution[distribution],
+                          formattedCount: numberFormatter.format(
+                            stats.byDistribution[distribution]
+                          ),
+                        })}
                       </p>
                     </div>
                   </div>
                   <p className="text-muted-foreground flex-1 text-sm leading-relaxed">
-                    {description}
+                    {t(`explore.distributions.items.${distribution}.description`)}
                   </p>
                   <Link
                     to={`/collector/components?distribution=${distribution}`}
                     className="border-border bg-background text-foreground hover:border-primary/40 hover:bg-card-secondary focus-visible:ring-primary inline-flex w-fit items-center gap-2 rounded-md border px-3 py-2 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
                   >
-                    {buttonLabel}
+                    {t(`explore.distributions.items.${distribution}.button`)}
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </Link>
                 </div>
@@ -303,22 +273,28 @@ export function CollectorExploreLanding() {
         </section>
 
         <section
-          aria-label="Collector summary statistics"
+          aria-label={t("explore.summary.ariaLabel")}
           className="border-border/60 bg-card/80 rounded-lg border p-6"
         >
           <dl className="grid gap-4 text-center sm:grid-cols-3">
             <div className="sm:border-border/60 sm:border-r">
-              <dt className="text-muted-foreground text-sm font-medium">Components</dt>
+              <dt className="text-muted-foreground text-sm font-medium">
+                {t("explore.summary.components")}
+              </dt>
               <dd className="text-foreground mt-1 text-3xl font-bold">
                 {numberFormatter.format(stats.total)}
               </dd>
             </div>
             <div className="sm:border-border/60 sm:border-r">
-              <dt className="text-muted-foreground text-sm font-medium">Types</dt>
+              <dt className="text-muted-foreground text-sm font-medium">
+                {t("explore.summary.types")}
+              </dt>
               <dd className="text-foreground mt-1 text-3xl font-bold">{COMPONENT_TYPES.length}</dd>
             </div>
             <div>
-              <dt className="text-muted-foreground text-sm font-medium">Distributions</dt>
+              <dt className="text-muted-foreground text-sm font-medium">
+                {t("explore.distributions.heading")}
+              </dt>
               <dd className="text-foreground mt-1 text-3xl font-bold">{DISTRIBUTIONS.length}</dd>
             </div>
           </dl>
@@ -327,11 +303,11 @@ export function CollectorExploreLanding() {
         <section aria-labelledby="collector-resources" className="space-y-4">
           <div>
             <h2 id="collector-resources" className="text-foreground text-2xl font-bold">
-              Resources
+              {t("explore.resources.heading")}
             </h2>
           </div>
           <div className="grid gap-3 md:grid-cols-2">
-            {RESOURCES.map(({ label, href }) => (
+            {RESOURCES.map(({ key, href }) => (
               <a
                 key={href}
                 href={href}
@@ -339,7 +315,9 @@ export function CollectorExploreLanding() {
                 rel="noopener noreferrer"
                 className="border-border/60 bg-card/80 hover:border-primary/40 hover:bg-card focus-visible:ring-primary group flex items-center justify-between gap-4 rounded-lg border p-4 transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
               >
-                <span className="text-foreground font-medium">{label}</span>
+                <span className="text-foreground font-medium">
+                  {t(`explore.resources.items.${key}`)}
+                </span>
                 <ExternalLink
                   className="text-muted-foreground group-hover:text-primary h-4 w-4 flex-shrink-0"
                   aria-hidden="true"

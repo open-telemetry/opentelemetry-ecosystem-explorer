@@ -113,6 +113,218 @@
       },
       "propertyOrder": ["class", "stability", "distributions", "codeowners"],
       "required": ["class", "distributions", "stability"]
+    },
+    "metrics": {
+      "description": "Telemetry metrics emitted by this component. Keyed by metric name.",
+      "type": "object",
+      "additionalProperties": {
+        "description": "A single metric emitted by a Collector component.\nModeled after the metadata.yaml schema used by the collector-contrib repo.",
+        "type": "object",
+        "properties": {
+          "description": {
+            "description": "Description of what this metric measures.",
+            "type": "string"
+          },
+          "enabled": {
+            "description": "Whether the metric is collected by default.",
+            "type": "boolean"
+          },
+          "unit": {
+            "description": "Metric unit as defined by https://ucum.org/ucum.html.",
+            "type": "string"
+          },
+          "stability": {
+            "description": "Stability level of this specific metric.",
+            "enum": ["alpha", "beta", "deprecated", "development", "stable", "unmaintained"],
+            "type": "string"
+          },
+          "extended_documentation": {
+            "description": "Extended documentation beyond the description.",
+            "type": "string"
+          },
+          "optional": {
+            "description": "Whether this metric is optional (only initialized under certain conditions).",
+            "type": "boolean"
+          },
+          "sum": {
+            "description": "Sum metric type descriptor. Present when the metric is a sum.",
+            "allOf": [
+              {
+                "description": "Shared fields across sum, gauge, and histogram metric type descriptors.",
+                "type": "object",
+                "properties": {
+                  "value_type": {
+                    "description": "The numeric type of the metric's data points.",
+                    "type": "string"
+                  },
+                  "aggregation_temporality": {
+                    "description": "Aggregation temporality (e.g., \"cumulative\", \"delta\"). Only present on sum metrics.",
+                    "type": "string"
+                  },
+                  "async": {
+                    "description": "Whether this metric is observed asynchronously.",
+                    "type": "boolean"
+                  }
+                },
+                "propertyOrder": ["value_type", "aggregation_temporality", "async"],
+                "required": ["value_type"]
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "monotonic": {
+                    "type": "boolean"
+                  }
+                },
+                "propertyOrder": ["monotonic"],
+                "required": ["monotonic"]
+              }
+            ]
+          },
+          "gauge": {
+            "description": "Gauge metric type descriptor. Present when the metric is a gauge.",
+            "type": "object",
+            "properties": {
+              "value_type": {
+                "description": "The numeric type of the metric's data points.",
+                "type": "string"
+              },
+              "aggregation_temporality": {
+                "description": "Aggregation temporality (e.g., \"cumulative\", \"delta\"). Only present on sum metrics.",
+                "type": "string"
+              },
+              "async": {
+                "description": "Whether this metric is observed asynchronously.",
+                "type": "boolean"
+              }
+            },
+            "propertyOrder": ["value_type", "aggregation_temporality", "async"],
+            "required": ["value_type"]
+          },
+          "histogram": {
+            "description": "Histogram metric type descriptor. Present when the metric is a histogram.",
+            "allOf": [
+              {
+                "description": "Shared fields across sum, gauge, and histogram metric type descriptors.",
+                "type": "object",
+                "properties": {
+                  "value_type": {
+                    "description": "The numeric type of the metric's data points.",
+                    "type": "string"
+                  },
+                  "aggregation_temporality": {
+                    "description": "Aggregation temporality (e.g., \"cumulative\", \"delta\"). Only present on sum metrics.",
+                    "type": "string"
+                  },
+                  "async": {
+                    "description": "Whether this metric is observed asynchronously.",
+                    "type": "boolean"
+                  }
+                },
+                "propertyOrder": ["value_type", "aggregation_temporality", "async"],
+                "required": ["value_type"]
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "bucket_boundaries": {
+                    "type": "array",
+                    "items": {
+                      "type": "number"
+                    }
+                  }
+                },
+                "propertyOrder": ["bucket_boundaries"]
+              }
+            ]
+          },
+          "attributes": {
+            "description": "Attribute keys referencing the component-level attributes map.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "propertyOrder": [
+          "description",
+          "enabled",
+          "unit",
+          "stability",
+          "extended_documentation",
+          "optional",
+          "sum",
+          "gauge",
+          "histogram",
+          "attributes"
+        ],
+        "required": ["description", "enabled", "unit"]
+      },
+      "propertyOrder": []
+    },
+    "attributes": {
+      "description": "Attribute definitions referenced by metrics. Keyed by attribute name.",
+      "type": "object",
+      "additionalProperties": {
+        "description": "Attribute definition at the component level.\nMetrics reference these by key name in their `attributes` array.",
+        "type": "object",
+        "properties": {
+          "description": {
+            "description": "Human-readable description of the attribute.",
+            "type": "string"
+          },
+          "type": {
+            "description": "Data type of the attribute (e.g., \"string\", \"int\", \"double\", \"bool\").",
+            "type": "string"
+          },
+          "name_override": {
+            "description": "If set, the exported attribute name differs from the map key.",
+            "type": "string"
+          },
+          "enum": {
+            "description": "Allowed values when the attribute is an enum.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "propertyOrder": ["description", "type", "name_override", "enum"],
+        "required": ["description", "type"]
+      },
+      "propertyOrder": []
+    },
+    "resource_attributes": {
+      "description": "Resource attributes associated with the component. Keyed by attribute name.",
+      "type": "object",
+      "additionalProperties": {
+        "description": "Attribute definition at the component level.\nMetrics reference these by key name in their `attributes` array.",
+        "type": "object",
+        "properties": {
+          "description": {
+            "description": "Human-readable description of the attribute.",
+            "type": "string"
+          },
+          "type": {
+            "description": "Data type of the attribute (e.g., \"string\", \"int\", \"double\", \"bool\").",
+            "type": "string"
+          },
+          "name_override": {
+            "description": "If set, the exported attribute name differs from the map key.",
+            "type": "string"
+          },
+          "enum": {
+            "description": "Allowed values when the attribute is an enum.",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "propertyOrder": ["description", "type", "name_override", "enum"],
+        "required": ["description", "type"]
+      },
+      "propertyOrder": []
     }
   },
   "propertyOrder": [
@@ -124,7 +336,10 @@
     "display_name",
     "description",
     "repository",
-    "status"
+    "status",
+    "metrics",
+    "attributes",
+    "resource_attributes"
   ],
   "required": ["distribution", "ecosystem", "id", "name", "type"],
   "$schema": "https://json-schema.org/draft-07/schema#"
