@@ -144,7 +144,7 @@ modules:
 - name: OpenTelemetry.Instrumentation.GrpcCore
   description: .NET gRPC Core based client and server interceptors for OpenTelemetry.
   type: instrumentation
-  version: 1.0.0-beta.12
+  version: 1.0.0-beta.13
 - name: OpenTelemetry.Instrumentation.GrpcNetClient
   description: gRPC for .NET client instrumentation for OpenTelemetry .NET.
   type: instrumentation
@@ -152,7 +152,7 @@ modules:
 - name: OpenTelemetry.Instrumentation.Hangfire
   description: OpenTelemetry Hangfire Instrumentation.
   type: instrumentation
-  version: 1.16.0-beta.1
+  version: 1.16.0-beta.2
 - name: OpenTelemetry.Instrumentation.Http
   description: HTTP instrumentation for OpenTelemetry .NET.
   type: instrumentation
