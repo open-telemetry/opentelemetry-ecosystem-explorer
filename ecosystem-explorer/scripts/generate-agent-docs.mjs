@@ -136,8 +136,10 @@ function buildJavaAgentVersions(versions) {
  * `collectorPages` / `javaPages` are `{ label, pageUrl }` lists for every
  * latest-version detail page. They are listed here (matching the sitemap URLs)
  * so the file provides full coverage of the site's documented pages; each page
- * URL also serves Markdown when requested with `Accept: text/markdown` or by
- * appending `.md`.
+ * URL also serves Markdown when its `.md` suffix is appended. (The edge function
+ * only negotiates `Accept: text/markdown` for the section index pages, not for
+ * individual component/instrumentation or top-level pages, so those are
+ * documented with the `.md` suffix only.)
  */
 function buildLlmsTxt(staticPages, collectorPages, javaPages) {
   const pageList = (pages) =>
@@ -160,7 +162,7 @@ For agent consumption, we provide index files that point to our structured JSON 
 
 ## Pages
 
-Top-level pages (append \`.md\` to the URL or send \`Accept: text/markdown\` for Markdown):
+Top-level pages (append \`.md\` to the URL for Markdown):
 
 ${pageList(staticPages)}
 
@@ -190,13 +192,13 @@ To find what changed in a component between versions, compare its hash in the tw
 
 ## Collector Components
 
-Every component below has a Markdown page (append \`.md\` to the URL or send \`Accept: text/markdown\`):
+Every component below has a Markdown page (append \`.md\` to the URL):
 
 ${pageList(collectorPages)}
 
 ## Java Agent Instrumentations
 
-Every instrumentation below has a Markdown page (append \`.md\` to the URL or send \`Accept: text/markdown\`):
+Every instrumentation below has a Markdown page (append \`.md\` to the URL):
 
 ${pageList(javaPages)}
 `;
