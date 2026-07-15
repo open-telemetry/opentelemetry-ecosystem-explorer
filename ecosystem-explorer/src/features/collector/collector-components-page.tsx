@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 
 import { PageContainer } from "@/components/layout/page-container";
+import { Seo } from "@/components/seo/seo";
 import { BackButton } from "@/components/ui/back-button";
 import { GlowBadge } from "@/components/ui/glow-badge";
 import { DetailCard } from "@/components/ui/detail-card";
@@ -178,6 +179,8 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
 
   return (
     <>
+      {/* Pin canonical to the version-less list so /collector/components/:version variants dedupe. */}
+      <Seo pathname="/collector/components" />
       <div className="border-border/60 bg-surface-card shadow-surface relative overflow-hidden rounded-xl border p-6">
         <div className="bg-gradient-radial from-secondary/5 via-primary/2 absolute inset-0 to-transparent opacity-50" />
 

@@ -18,6 +18,7 @@ import { BookOpen, Bug, MessageSquare } from "lucide-react";
 import { GitHubIcon } from "@/components/icons/github-icon";
 import { BackButton } from "@/components/ui/back-button";
 import { PageContainer } from "@/components/layout/page-container";
+import { Seo } from "@/components/seo/seo";
 import { useEcosystemStats } from "@/hooks/use-ecosystem-stats";
 
 const REPO_URL = "https://github.com/open-telemetry/opentelemetry-ecosystem-explorer";
@@ -31,6 +32,7 @@ export function AboutPage() {
   } = useEcosystemStats();
   return (
     <PageContainer>
+      <Seo />
       <div className="space-y-6">
         <BackButton />
         <div className="mx-auto max-w-4xl space-y-10 py-12">

@@ -26,6 +26,8 @@ import { GlowBadge } from "@/components/ui/glow-badge";
 import { DetailCard } from "@/components/ui/detail-card";
 import { SectionHeader } from "@/components/ui/section-header";
 import { PageContainer } from "@/components/layout/page-container";
+import { Seo } from "@/components/seo/seo";
+import { deriveCollectorMeta } from "@/lib/seo/derive";
 import { useCollectorComponent, useCollectorVersions } from "@/hooks/use-collector-data";
 import { CollectorTelemetryTab } from "./components/collector-telemetry-tab";
 
@@ -165,8 +167,18 @@ export function CollectorDetailPage() {
 
   const typeDesc = t(`detail.typeDescriptions.${component.type}`, { defaultValue: "" });
 
+  const seo = deriveCollectorMeta({
+    id: `${component.distribution}-${component.name}`,
+    name: component.name,
+    distribution: component.distribution,
+    display_name: component.display_name,
+    description: component.description,
+    type: component.type,
+  });
+
   return (
     <PageContainer>
+      <Seo title={seo.title} description={seo.description} />
       <BackButton />
 
       <div className="mt-3 space-y-6">

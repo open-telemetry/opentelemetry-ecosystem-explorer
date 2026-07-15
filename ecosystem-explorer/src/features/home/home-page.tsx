@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Seo } from "@/components/seo/seo";
 import { HeroSection } from "./components/hero-section";
 import { ExploreSection } from "./components/explore-section";
 
 export function HomePage() {
   return (
     <>
+      <Seo />
       <HeroSection />
       <ExploreSection />
     </>
