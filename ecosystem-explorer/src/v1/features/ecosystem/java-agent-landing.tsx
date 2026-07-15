@@ -13,9 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Seo } from "@/components/seo/seo";
 import { EcosystemPage } from "./ecosystem-page";
 import { javaAgentConfig } from "./java-agent-config";
 
 export function JavaAgentLandingV1() {
-  return <EcosystemPage config={javaAgentConfig} />;
+  return (
+    <>
+      <Seo />
+      <EcosystemPage config={javaAgentConfig} />
+    </>
+  );
 }

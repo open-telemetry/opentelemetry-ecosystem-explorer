@@ -30,10 +30,14 @@ import {
 } from "lucide-react";
 
 import { PageContainer } from "@/components/layout/page-container";
+import { Seo } from "@/components/seo/seo";
 import { BackButton } from "@/components/ui/back-button";
 import { GlowBadge } from "@/components/ui/glow-badge";
 import { DetailCard } from "@/components/ui/detail-card";
+import { SignalBadge } from "@/components/ui/signal-badge";
 import { useCollectorVersions, useCollectorComponents } from "@/hooks/use-collector-data";
+import { getPresentSignals } from "./utils/signal-badge-info";
+import { SIGNAL_STYLES } from "./styles/signal-styles";
 
 type ComponentTypeFilter =
   | "all"
@@ -178,6 +182,8 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
 
   return (
     <>
+      {/* Pin canonical to the version-less list so /collector/components/:version variants dedupe. */}
+      <Seo pathname="/collector/components" />
       <div className="border-border/60 bg-surface-card shadow-surface relative overflow-hidden rounded-xl border p-6">
         <div className="bg-gradient-radial from-secondary/5 via-primary/2 absolute inset-0 to-transparent opacity-50" />
 
@@ -368,7 +374,7 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
                         {comp.description || t("card.defaultDescription")}
                       </p>
 
-                      <div className="border-border/10 flex items-center gap-2 border-t pt-2">
+                      <div className="border-border/10 flex flex-wrap items-center gap-2 border-t pt-2">
                         {comp.stability && (
                           <GlowBadge
                             variant={comp.stability === "stable" ? "success" : "info"}
@@ -377,6 +383,17 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
                             {comp.stability}
                           </GlowBadge>
                         )}
+                        {getPresentSignals(comp).map((signal) => (
+                          <SignalBadge
+                            key={signal}
+                            label={t(`card.badges.${signal}.label`)}
+                            tooltip={t(`card.badges.${signal}.tooltip`)}
+                            ariaLabel={t(`card.badges.${signal}.ariaLabel`)}
+                            active={false}
+                            styles={SIGNAL_STYLES[signal]}
+                            size="compact"
+                          />
+                        ))}
                       </div>
                     </div>
                   </DetailCard>

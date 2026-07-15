@@ -133,6 +133,28 @@
       "title": "No components found",
       "description": "We couldn't find any components matching your search criteria.",
       "clearFilters": "Clear all filters"
+    },
+    "badges": {
+      "metrics": {
+        "label": "Metrics",
+        "tooltip": "Produces metric telemetry for monitoring.",
+        "ariaLabel": "Has metric telemetry"
+      },
+      "traces": {
+        "label": "Traces",
+        "tooltip": "Produces trace telemetry for distributed tracing.",
+        "ariaLabel": "Has trace telemetry"
+      },
+      "logs": {
+        "label": "Logs",
+        "tooltip": "Produces log telemetry.",
+        "ariaLabel": "Has log telemetry"
+      },
+      "profiles": {
+        "label": "Profiles",
+        "tooltip": "Produces profile telemetry.",
+        "ariaLabel": "Has profile telemetry"
+      }
     }
   },
   "states": {

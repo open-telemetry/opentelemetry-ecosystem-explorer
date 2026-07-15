@@ -19,6 +19,7 @@ import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AlertCircle, Loader2, ArrowRight, ExternalLink, ChevronDown } from "lucide-react";
 import { PageContainer } from "@/components/layout/page-container";
+import { Seo } from "@/components/seo/seo";
 import { BackButton } from "@/components/ui/back-button";
 import { useVersions } from "@/hooks/use-javaagent-data";
 import { useReleaseComparison } from "./hooks/use-release-comparison";
@@ -93,6 +94,7 @@ export function JavaReleaseComparisonPage() {
 
   return (
     <PageContainer>
+      <Seo />
       <div className="space-y-8">
         <BackButton />
 

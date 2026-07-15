@@ -23,6 +23,8 @@ COMPONENT_TYPES = ["connector", "exporter", "extension", "processor", "receiver"
 
 _STABILITY_RANK = {"stable": 3, "beta": 2, "alpha": 1, "development": 0}
 
+_SIGNAL_ORDER = ["traces", "metrics", "logs", "profiles"]
+
 
 def _derive_stability(stability: dict[str, list[str]] | None) -> str | None:
     """Return the highest-ranked stability level present across all signals.
@@ -38,6 +40,26 @@ def _derive_stability(stability: dict[str, list[str]] | None) -> str | None:
         return None
     best = max(stability.keys(), key=lambda lvl: _STABILITY_RANK.get(lvl, -1))
     return best
+
+
+def _derive_signals(stability: dict[str, list[str]] | None) -> list[str]:
+    """Return the deduplicated set of signals supported across all stability levels.
+
+    Args:
+        stability: Dict mapping stability level to list of signals, e.g.
+                   {"beta": ["metrics", "traces"], "alpha": ["profiles"]}
+
+    Returns:
+        Signal names in a stable order: known signals first (traces, metrics, logs,
+        profiles), then any unrecognized signal names sorted alphabetically. Empty
+        list if no signals are present.
+    """
+    if not stability:
+        return []
+    signals = {signal for signal_list in stability.values() for signal in signal_list}
+    known = [s for s in _SIGNAL_ORDER if s in signals]
+    unknown = sorted(signals - set(_SIGNAL_ORDER))
+    return known + unknown
 
 
 def _make_component_id(distribution: str, name: str) -> str:
@@ -128,5 +150,6 @@ def make_index_component(component: dict[str, Any]) -> dict[str, Any]:
         "display_name": component.get("display_name"),
         "description": component.get("description"),
         "stability": _derive_stability(stability_raw),
+        "signals": _derive_signals(stability_raw),
         "has_readme": bool(component.get("markdown_hash")),
     }

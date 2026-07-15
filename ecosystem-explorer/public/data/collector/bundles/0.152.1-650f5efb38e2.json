@@ -3,8 +3,15 @@
     "description": null,
     "display_name": "Forward Connector",
     "distribution": "core",
+    "has_readme": false,
     "id": "core-forwardconnector",
     "name": "forwardconnector",
+    "signals": [
+      "logs_to_logs",
+      "metrics_to_metrics",
+      "profiles_to_profiles",
+      "traces_to_traces"
+    ],
     "stability": "beta",
     "type": "connector"
   },
@@ -12,8 +19,12 @@
     "description": null,
     "display_name": null,
     "distribution": "core",
+    "has_readme": false,
     "id": "core-xconnector",
     "name": "xconnector",
+    "signals": [
+      "profiles"
+    ],
     "stability": "alpha",
     "type": "connector"
   },
@@ -21,8 +32,15 @@
     "description": null,
     "display_name": "Debug Exporter",
     "distribution": "core",
+    "has_readme": false,
     "id": "core-debugexporter",
     "name": "debugexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "alpha",
     "type": "exporter"
   },
@@ -30,8 +48,15 @@
     "description": null,
     "display_name": "No-op Exporter",
     "distribution": "core",
+    "has_readme": false,
     "id": "core-nopexporter",
     "name": "nopexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "beta",
     "type": "exporter"
   },
@@ -39,8 +64,15 @@
     "description": null,
     "display_name": "OTLP gRPC Exporter",
     "distribution": "core",
+    "has_readme": false,
     "id": "core-otlpexporter",
     "name": "otlpexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "stable",
     "type": "exporter"
   },
@@ -48,8 +80,15 @@
     "description": null,
     "display_name": "OTLP HTTP Exporter",
     "distribution": "core",
+    "has_readme": false,
     "id": "core-otlphttpexporter",
     "name": "otlphttpexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "stable",
     "type": "exporter"
   },
@@ -57,8 +96,12 @@
     "description": null,
     "display_name": null,
     "distribution": "core",
+    "has_readme": false,
     "id": "core-xexporter",
     "name": "xexporter",
+    "signals": [
+      "profiles"
+    ],
     "stability": "alpha",
     "type": "exporter"
   },
@@ -66,8 +109,12 @@
     "description": null,
     "display_name": "Memory Limiter Extension",
     "distribution": "core",
+    "has_readme": false,
     "id": "core-memorylimiterextension",
     "name": "memorylimiterextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "development",
     "type": "extension"
   },
@@ -75,8 +122,12 @@
     "description": null,
     "display_name": null,
     "distribution": "core",
+    "has_readme": false,
     "id": "core-xextension",
     "name": "xextension",
+    "signals": [
+      "profiles"
+    ],
     "stability": "alpha",
     "type": "extension"
   },
@@ -84,8 +135,12 @@
     "description": null,
     "display_name": "zPages Extension",
     "distribution": "core",
+    "has_readme": false,
     "id": "core-zpagesextension",
     "name": "zpagesextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "beta",
     "type": "extension"
   },
@@ -93,8 +148,14 @@
     "description": null,
     "display_name": "Batch Processor",
     "distribution": "core",
+    "has_readme": false,
     "id": "core-batchprocessor",
     "name": "batchprocessor",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "processor"
   },
@@ -102,8 +163,15 @@
     "description": null,
     "display_name": "Memory Limiter Processor",
     "distribution": "core",
+    "has_readme": false,
     "id": "core-memorylimiterprocessor",
     "name": "memorylimiterprocessor",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "beta",
     "type": "processor"
   },
@@ -111,8 +179,12 @@
     "description": null,
     "display_name": null,
     "distribution": "core",
+    "has_readme": false,
     "id": "core-xprocessor",
     "name": "xprocessor",
+    "signals": [
+      "profiles"
+    ],
     "stability": "alpha",
     "type": "processor"
   },
@@ -120,8 +192,15 @@
     "description": null,
     "display_name": "No-op Receiver",
     "distribution": "core",
+    "has_readme": false,
     "id": "core-nopreceiver",
     "name": "nopreceiver",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -129,8 +208,15 @@
     "description": null,
     "display_name": "OTLP Receiver",
     "distribution": "core",
+    "has_readme": false,
     "id": "core-otlpreceiver",
     "name": "otlpreceiver",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "stable",
     "type": "receiver"
   },
@@ -138,8 +224,12 @@
     "description": null,
     "display_name": null,
     "distribution": "core",
+    "has_readme": false,
     "id": "core-xreceiver",
     "name": "xreceiver",
+    "signals": [
+      "profiles"
+    ],
     "stability": "alpha",
     "type": "receiver"
   }

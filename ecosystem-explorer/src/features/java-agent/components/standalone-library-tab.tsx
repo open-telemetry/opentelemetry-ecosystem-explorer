@@ -89,14 +89,17 @@ export function StandaloneLibraryTab({
         components={{
           a: Anchor,
           code: Code,
+          // Downshift README headings h1–h3 one level: the page already owns the sole
+          // <h1> (the instrumentation name), so the rendered document keeps a
+          // single top-level heading. Styling classes are unchanged.
           h1: ({ children }) => (
-            <h1 className="text-foreground mt-6 mb-3 text-2xl font-bold first:mt-0">{children}</h1>
+            <h2 className="text-foreground mt-6 mb-3 text-2xl font-bold first:mt-0">{children}</h2>
           ),
           h2: ({ children }) => (
-            <h2 className="text-foreground mt-5 mb-2 text-xl font-semibold">{children}</h2>
+            <h3 className="text-foreground mt-5 mb-2 text-xl font-semibold">{children}</h3>
           ),
           h3: ({ children }) => (
-            <h3 className="text-foreground mt-4 mb-2 text-base font-semibold">{children}</h3>
+            <h4 className="text-foreground mt-4 mb-2 text-base font-semibold">{children}</h4>
           ),
           p: ({ children }) => (
             <p className="text-foreground/80 mb-3 text-sm leading-relaxed">{children}</p>

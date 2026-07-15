@@ -133,6 +133,28 @@
       "title": "No se encontraron componentes",
       "description": "No encontramos ningún componente que coincida con tu búsqueda.",
       "clearFilters": "Limpiar todos los filtros"
+    },
+    "badges": {
+      "metrics": {
+        "label": "Métricas",
+        "tooltip": "Produce telemetría de métricas para monitoreo.",
+        "ariaLabel": "Tiene telemetría de métricas"
+      },
+      "traces": {
+        "label": "Trazas",
+        "tooltip": "Produce telemetría de trazas para el rastreo distribuido.",
+        "ariaLabel": "Tiene telemetría de trazas"
+      },
+      "logs": {
+        "label": "Registros",
+        "tooltip": "Produce telemetría de registros.",
+        "ariaLabel": "Tiene telemetría de registros"
+      },
+      "profiles": {
+        "label": "Perfiles",
+        "tooltip": "Produce telemetría de perfiles.",
+        "ariaLabel": "Tiene telemetría de perfiles"
+      }
     }
   },
   "states": {

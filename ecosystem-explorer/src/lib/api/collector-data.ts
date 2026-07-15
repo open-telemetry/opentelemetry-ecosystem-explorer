@@ -40,12 +40,26 @@ const MAX_COMPONENT_FETCH_CONCURRENCY = 8;
 // derives the same primary stability the bundle (make_index_component) carries.
 const STABILITY_RANK: Record<string, number> = { stable: 3, beta: 2, alpha: 1, development: 0 };
 
+// Mirrors _SIGNAL_ORDER in collector_transformer.py so the fan-out fallback derives
+// signals in the same order as the bundle (make_index_component).
+const SIGNAL_ORDER = ["traces", "metrics", "logs", "profiles"];
+
 function deriveStability(stability?: Partial<Record<Stability, string[]>>): Stability | null {
   const levels = stability ? Object.keys(stability) : [];
   if (levels.length === 0) return null;
   return levels.reduce((best, lvl) =>
     (STABILITY_RANK[lvl] ?? -1) > (STABILITY_RANK[best] ?? -1) ? lvl : best
   ) as Stability;
+}
+
+// Mirrors _derive_signals in collector_transformer.py: dedupes signal names across
+// all stability levels, known signals first in canonical order, then any
+// unrecognized signal names sorted alphabetically.
+function deriveSignals(stability?: Partial<Record<Stability, string[]>>): string[] {
+  const signals = new Set(Object.values(stability ?? {}).flat());
+  const known = SIGNAL_ORDER.filter((s) => signals.has(s));
+  const unknown = [...signals].filter((s) => !SIGNAL_ORDER.includes(s)).sort();
+  return [...known, ...unknown];
 }
 
 /** Projects a full component down to the slim list shape (matches make_index_component). */
@@ -58,6 +72,7 @@ function toIndexComponent(component: CollectorComponent): IndexComponent {
     display_name: component.display_name,
     description: component.description,
     stability: deriveStability(component.status?.stability),
+    signals: deriveSignals(component.status?.stability),
   };
 }
 

@@ -6,6 +6,12 @@
     "has_readme": false,
     "id": "core-forwardconnector",
     "name": "forwardconnector",
+    "signals": [
+      "logs_to_logs",
+      "metrics_to_metrics",
+      "profiles_to_profiles",
+      "traces_to_traces"
+    ],
     "stability": "beta",
     "type": "connector"
   },
@@ -16,6 +22,9 @@
     "has_readme": false,
     "id": "core-xconnector",
     "name": "xconnector",
+    "signals": [
+      "profiles"
+    ],
     "stability": "alpha",
     "type": "connector"
   },
@@ -26,6 +35,12 @@
     "has_readme": false,
     "id": "core-debugexporter",
     "name": "debugexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "alpha",
     "type": "exporter"
   },
@@ -36,6 +51,12 @@
     "has_readme": false,
     "id": "core-nopexporter",
     "name": "nopexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "beta",
     "type": "exporter"
   },
@@ -46,6 +67,12 @@
     "has_readme": false,
     "id": "core-otlpexporter",
     "name": "otlpexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "stable",
     "type": "exporter"
   },
@@ -56,6 +83,12 @@
     "has_readme": false,
     "id": "core-otlphttpexporter",
     "name": "otlphttpexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "stable",
     "type": "exporter"
   },
@@ -66,6 +99,9 @@
     "has_readme": false,
     "id": "core-xexporter",
     "name": "xexporter",
+    "signals": [
+      "profiles"
+    ],
     "stability": "alpha",
     "type": "exporter"
   },
@@ -76,6 +112,9 @@
     "has_readme": false,
     "id": "core-memorylimiterextension",
     "name": "memorylimiterextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "development",
     "type": "extension"
   },
@@ -86,6 +125,9 @@
     "has_readme": false,
     "id": "core-xextension",
     "name": "xextension",
+    "signals": [
+      "profiles"
+    ],
     "stability": "alpha",
     "type": "extension"
   },
@@ -96,6 +138,9 @@
     "has_readme": false,
     "id": "core-zpagesextension",
     "name": "zpagesextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "beta",
     "type": "extension"
   },
@@ -106,6 +151,11 @@
     "has_readme": false,
     "id": "core-batchprocessor",
     "name": "batchprocessor",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "processor"
   },
@@ -116,6 +166,12 @@
     "has_readme": false,
     "id": "core-memorylimiterprocessor",
     "name": "memorylimiterprocessor",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "beta",
     "type": "processor"
   },
@@ -126,6 +182,9 @@
     "has_readme": false,
     "id": "core-xprocessor",
     "name": "xprocessor",
+    "signals": [
+      "profiles"
+    ],
     "stability": "alpha",
     "type": "processor"
   },
@@ -136,6 +195,12 @@
     "has_readme": false,
     "id": "core-nopreceiver",
     "name": "nopreceiver",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -146,6 +211,12 @@
     "has_readme": false,
     "id": "core-otlpreceiver",
     "name": "otlpreceiver",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "stable",
     "type": "receiver"
   },
@@ -156,6 +227,9 @@
     "has_readme": false,
     "id": "core-xreceiver",
     "name": "xreceiver",
+    "signals": [
+      "profiles"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -166,6 +240,12 @@
     "has_readme": false,
     "id": "contrib-countconnector",
     "name": "countconnector",
+    "signals": [
+      "logs_to_metrics",
+      "metrics_to_metrics",
+      "profiles_to_metrics",
+      "traces_to_metrics"
+    ],
     "stability": "alpha",
     "type": "connector"
   },
@@ -176,6 +256,10 @@
     "has_readme": false,
     "id": "contrib-datadogconnector",
     "name": "datadogconnector",
+    "signals": [
+      "traces_to_metrics",
+      "traces_to_traces"
+    ],
     "stability": "beta",
     "type": "connector"
   },
@@ -186,6 +270,10 @@
     "has_readme": false,
     "id": "contrib-exceptionsconnector",
     "name": "exceptionsconnector",
+    "signals": [
+      "traces_to_logs",
+      "traces_to_metrics"
+    ],
     "stability": "alpha",
     "type": "connector"
   },
@@ -196,6 +284,11 @@
     "has_readme": false,
     "id": "contrib-failoverconnector",
     "name": "failoverconnector",
+    "signals": [
+      "logs_to_logs",
+      "metrics_to_metrics",
+      "traces_to_traces"
+    ],
     "stability": "alpha",
     "type": "connector"
   },
@@ -206,6 +299,9 @@
     "has_readme": false,
     "id": "contrib-grafanacloudconnector",
     "name": "grafanacloudconnector",
+    "signals": [
+      "traces_to_metrics"
+    ],
     "stability": "alpha",
     "type": "connector"
   },
@@ -216,6 +312,9 @@
     "has_readme": false,
     "id": "contrib-metricsaslogsconnector",
     "name": "metricsaslogsconnector",
+    "signals": [
+      "metrics_to_logs"
+    ],
     "stability": "development",
     "type": "connector"
   },
@@ -226,6 +325,11 @@
     "has_readme": false,
     "id": "contrib-otlpjsonconnector",
     "name": "otlpjsonconnector",
+    "signals": [
+      "logs_to_logs",
+      "logs_to_metrics",
+      "logs_to_traces"
+    ],
     "stability": "alpha",
     "type": "connector"
   },
@@ -236,6 +340,11 @@
     "has_readme": false,
     "id": "contrib-roundrobinconnector",
     "name": "roundrobinconnector",
+    "signals": [
+      "logs_to_logs",
+      "metrics_to_metrics",
+      "traces_to_traces"
+    ],
     "stability": "beta",
     "type": "connector"
   },
@@ -246,6 +355,11 @@
     "has_readme": false,
     "id": "contrib-routingconnector",
     "name": "routingconnector",
+    "signals": [
+      "logs_to_logs",
+      "metrics_to_metrics",
+      "traces_to_traces"
+    ],
     "stability": "alpha",
     "type": "connector"
   },
@@ -256,6 +370,9 @@
     "has_readme": false,
     "id": "contrib-servicegraphconnector",
     "name": "servicegraphconnector",
+    "signals": [
+      "traces_to_metrics"
+    ],
     "stability": "alpha",
     "type": "connector"
   },
@@ -266,6 +383,12 @@
     "has_readme": false,
     "id": "contrib-signaltometricsconnector",
     "name": "signaltometricsconnector",
+    "signals": [
+      "logs_to_metrics",
+      "metrics_to_metrics",
+      "profiles_to_metrics",
+      "traces_to_metrics"
+    ],
     "stability": "alpha",
     "type": "connector"
   },
@@ -276,6 +399,9 @@
     "has_readme": false,
     "id": "contrib-slowsqlconnector",
     "name": "slowsqlconnector",
+    "signals": [
+      "traces_to_logs"
+    ],
     "stability": "development",
     "type": "connector"
   },
@@ -286,6 +412,9 @@
     "has_readme": false,
     "id": "contrib-spanmetricsconnector",
     "name": "spanmetricsconnector",
+    "signals": [
+      "traces_to_metrics"
+    ],
     "stability": "alpha",
     "type": "connector"
   },
@@ -296,6 +425,11 @@
     "has_readme": false,
     "id": "contrib-sumconnector",
     "name": "sumconnector",
+    "signals": [
+      "logs_to_metrics",
+      "metrics_to_metrics",
+      "traces_to_metrics"
+    ],
     "stability": "alpha",
     "type": "connector"
   },
@@ -306,6 +440,10 @@
     "has_readme": false,
     "id": "contrib-alertmanagerexporter",
     "name": "alertmanagerexporter",
+    "signals": [
+      "traces",
+      "logs"
+    ],
     "stability": "development",
     "type": "exporter"
   },
@@ -316,6 +454,11 @@
     "has_readme": false,
     "id": "contrib-alibabacloudlogserviceexporter",
     "name": "alibabacloudlogserviceexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "exporter"
   },
@@ -326,6 +469,9 @@
     "has_readme": false,
     "id": "contrib-awscloudwatchlogsexporter",
     "name": "awscloudwatchlogsexporter",
+    "signals": [
+      "logs"
+    ],
     "stability": "alpha",
     "type": "exporter"
   },
@@ -336,6 +482,9 @@
     "has_readme": false,
     "id": "contrib-awsemfexporter",
     "name": "awsemfexporter",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "exporter"
   },
@@ -346,6 +495,11 @@
     "has_readme": false,
     "id": "contrib-awskinesisexporter",
     "name": "awskinesisexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "exporter"
   },
@@ -356,6 +510,11 @@
     "has_readme": false,
     "id": "contrib-awss3exporter",
     "name": "awss3exporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "alpha",
     "type": "exporter"
   },
@@ -366,6 +525,9 @@
     "has_readme": false,
     "id": "contrib-awsxrayexporter",
     "name": "awsxrayexporter",
+    "signals": [
+      "traces"
+    ],
     "stability": "beta",
     "type": "exporter"
   },
@@ -376,6 +538,11 @@
     "has_readme": false,
     "id": "contrib-azureblobexporter",
     "name": "azureblobexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "alpha",
     "type": "exporter"
   },
@@ -386,6 +553,11 @@
     "has_readme": false,
     "id": "contrib-azuredataexplorerexporter",
     "name": "azuredataexplorerexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "exporter"
   },
@@ -396,6 +568,11 @@
     "has_readme": false,
     "id": "contrib-azuremonitorexporter",
     "name": "azuremonitorexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "exporter"
   },
@@ -406,6 +583,9 @@
     "has_readme": false,
     "id": "contrib-bmchelixexporter",
     "name": "bmchelixexporter",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "exporter"
   },
@@ -416,6 +596,10 @@
     "has_readme": false,
     "id": "contrib-cassandraexporter",
     "name": "cassandraexporter",
+    "signals": [
+      "traces",
+      "logs"
+    ],
     "stability": "alpha",
     "type": "exporter"
   },
@@ -426,6 +610,12 @@
     "has_readme": false,
     "id": "contrib-clickhouseexporter",
     "name": "clickhouseexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "beta",
     "type": "exporter"
   },
@@ -436,6 +626,12 @@
     "has_readme": false,
     "id": "contrib-coralogixexporter",
     "name": "coralogixexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "beta",
     "type": "exporter"
   },
@@ -446,6 +642,11 @@
     "has_readme": false,
     "id": "contrib-datadogexporter",
     "name": "datadogexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "exporter"
   },
@@ -456,6 +657,10 @@
     "has_readme": false,
     "id": "contrib-datasetexporter",
     "name": "datasetexporter",
+    "signals": [
+      "traces",
+      "logs"
+    ],
     "stability": "alpha",
     "type": "exporter"
   },
@@ -466,6 +671,11 @@
     "has_readme": false,
     "id": "contrib-dorisexporter",
     "name": "dorisexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "alpha",
     "type": "exporter"
   },
@@ -476,6 +686,12 @@
     "has_readme": false,
     "id": "contrib-elasticsearchexporter",
     "name": "elasticsearchexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "beta",
     "type": "exporter"
   },
@@ -486,6 +702,10 @@
     "has_readme": false,
     "id": "contrib-faroexporter",
     "name": "faroexporter",
+    "signals": [
+      "traces",
+      "logs"
+    ],
     "stability": "alpha",
     "type": "exporter"
   },
@@ -496,6 +716,12 @@
     "has_readme": false,
     "id": "contrib-fileexporter",
     "name": "fileexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "alpha",
     "type": "exporter"
   },
@@ -506,6 +732,11 @@
     "has_readme": false,
     "id": "contrib-googlecloudexporter",
     "name": "googlecloudexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "exporter"
   },
@@ -516,6 +747,11 @@
     "has_readme": false,
     "id": "contrib-googlecloudpubsubexporter",
     "name": "googlecloudpubsubexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "exporter"
   },
@@ -526,6 +762,10 @@
     "has_readme": false,
     "id": "contrib-googlecloudstorageexporter",
     "name": "googlecloudstorageexporter",
+    "signals": [
+      "traces",
+      "logs"
+    ],
     "stability": "alpha",
     "type": "exporter"
   },
@@ -536,6 +776,9 @@
     "has_readme": false,
     "id": "contrib-googlemanagedprometheusexporter",
     "name": "googlemanagedprometheusexporter",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "exporter"
   },
@@ -546,6 +789,9 @@
     "has_readme": false,
     "id": "contrib-honeycombmarkerexporter",
     "name": "honeycombmarkerexporter",
+    "signals": [
+      "logs"
+    ],
     "stability": "alpha",
     "type": "exporter"
   },
@@ -556,6 +802,11 @@
     "has_readme": false,
     "id": "contrib-influxdbexporter",
     "name": "influxdbexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "exporter"
   },
@@ -566,6 +817,12 @@
     "has_readme": false,
     "id": "contrib-kafkaexporter",
     "name": "kafkaexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "beta",
     "type": "exporter"
   },
@@ -576,6 +833,11 @@
     "has_readme": false,
     "id": "contrib-loadbalancingexporter",
     "name": "loadbalancingexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "exporter"
   },
@@ -586,6 +848,10 @@
     "has_readme": false,
     "id": "contrib-logicmonitorexporter",
     "name": "logicmonitorexporter",
+    "signals": [
+      "traces",
+      "logs"
+    ],
     "stability": "alpha",
     "type": "exporter"
   },
@@ -596,6 +862,10 @@
     "has_readme": false,
     "id": "contrib-logzioexporter",
     "name": "logzioexporter",
+    "signals": [
+      "traces",
+      "logs"
+    ],
     "stability": "beta",
     "type": "exporter"
   },
@@ -606,6 +876,9 @@
     "has_readme": false,
     "id": "contrib-mezmoexporter",
     "name": "mezmoexporter",
+    "signals": [
+      "logs"
+    ],
     "stability": "beta",
     "type": "exporter"
   },
@@ -616,6 +889,10 @@
     "has_readme": false,
     "id": "contrib-opensearchexporter",
     "name": "opensearchexporter",
+    "signals": [
+      "traces",
+      "logs"
+    ],
     "stability": "alpha",
     "type": "exporter"
   },
@@ -626,6 +903,11 @@
     "has_readme": false,
     "id": "contrib-otelarrowexporter",
     "name": "otelarrowexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "exporter"
   },
@@ -636,6 +918,9 @@
     "has_readme": false,
     "id": "contrib-prometheusexporter",
     "name": "prometheusexporter",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "exporter"
   },
@@ -646,6 +931,9 @@
     "has_readme": false,
     "id": "contrib-prometheusremotewriteexporter",
     "name": "prometheusremotewriteexporter",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "exporter"
   },
@@ -656,6 +944,11 @@
     "has_readme": false,
     "id": "contrib-pulsarexporter",
     "name": "pulsarexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "alpha",
     "type": "exporter"
   },
@@ -666,6 +959,11 @@
     "has_readme": false,
     "id": "contrib-rabbitmqexporter",
     "name": "rabbitmqexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "alpha",
     "type": "exporter"
   },
@@ -676,6 +974,10 @@
     "has_readme": false,
     "id": "contrib-sematextexporter",
     "name": "sematextexporter",
+    "signals": [
+      "metrics",
+      "logs"
+    ],
     "stability": "development",
     "type": "exporter"
   },
@@ -686,6 +988,10 @@
     "has_readme": false,
     "id": "contrib-sentryexporter",
     "name": "sentryexporter",
+    "signals": [
+      "traces",
+      "logs"
+    ],
     "stability": "alpha",
     "type": "exporter"
   },
@@ -696,6 +1002,11 @@
     "has_readme": false,
     "id": "contrib-signalfxexporter",
     "name": "signalfxexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "exporter"
   },
@@ -706,6 +1017,12 @@
     "has_readme": false,
     "id": "contrib-splunkhecexporter",
     "name": "splunkhecexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "beta",
     "type": "exporter"
   },
@@ -716,6 +1033,9 @@
     "has_readme": false,
     "id": "contrib-stefexporter",
     "name": "stefexporter",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "exporter"
   },
@@ -726,6 +1046,11 @@
     "has_readme": false,
     "id": "contrib-sumologicexporter",
     "name": "sumologicexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "exporter"
   },
@@ -736,6 +1061,9 @@
     "has_readme": false,
     "id": "contrib-syslogexporter",
     "name": "syslogexporter",
+    "signals": [
+      "logs"
+    ],
     "stability": "alpha",
     "type": "exporter"
   },
@@ -746,6 +1074,9 @@
     "has_readme": false,
     "id": "contrib-tencentcloudlogserviceexporter",
     "name": "tencentcloudlogserviceexporter",
+    "signals": [
+      "logs"
+    ],
     "stability": "beta",
     "type": "exporter"
   },
@@ -756,6 +1087,11 @@
     "has_readme": false,
     "id": "contrib-tinybirdexporter",
     "name": "tinybirdexporter",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "alpha",
     "type": "exporter"
   },
@@ -766,6 +1102,9 @@
     "has_readme": false,
     "id": "contrib-zipkinexporter",
     "name": "zipkinexporter",
+    "signals": [
+      "traces"
+    ],
     "stability": "beta",
     "type": "exporter"
   },
@@ -776,6 +1115,9 @@
     "has_readme": false,
     "id": "contrib-ackextension",
     "name": "ackextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "alpha",
     "type": "extension"
   },
@@ -786,6 +1128,9 @@
     "has_readme": false,
     "id": "contrib-asapauthextension",
     "name": "asapauthextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "beta",
     "type": "extension"
   },
@@ -796,6 +1141,9 @@
     "has_readme": false,
     "id": "contrib-awsproxy",
     "name": "awsproxy",
+    "signals": [
+      "extension"
+    ],
     "stability": "beta",
     "type": "extension"
   },
@@ -806,7 +1154,10 @@
     "has_readme": false,
     "id": "contrib-azureauthextension",
     "name": "azureauthextension",
-    "stability": "alpha",
+    "signals": [
+      "extension"
+    ],
+    "stability": "beta",
     "type": "extension"
   },
   {
@@ -816,6 +1167,9 @@
     "has_readme": false,
     "id": "contrib-basicauthextension",
     "name": "basicauthextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "beta",
     "type": "extension"
   },
@@ -826,6 +1180,9 @@
     "has_readme": false,
     "id": "contrib-bearertokenauthextension",
     "name": "bearertokenauthextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "beta",
     "type": "extension"
   },
@@ -836,6 +1193,9 @@
     "has_readme": false,
     "id": "contrib-cgroupruntimeextension",
     "name": "cgroupruntimeextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "alpha",
     "type": "extension"
   },
@@ -846,6 +1206,9 @@
     "has_readme": false,
     "id": "contrib-datadogextension",
     "name": "datadogextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "alpha",
     "type": "extension"
   },
@@ -856,6 +1219,9 @@
     "has_readme": false,
     "id": "contrib-avrologencodingextension",
     "name": "avrologencodingextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "development",
     "type": "extension"
   },
@@ -866,6 +1232,9 @@
     "has_readme": false,
     "id": "contrib-awscloudwatchmetricstreamsencodingextension",
     "name": "awscloudwatchmetricstreamsencodingextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "alpha",
     "type": "extension"
   },
@@ -876,6 +1245,9 @@
     "has_readme": false,
     "id": "contrib-awslogsencodingextension",
     "name": "awslogsencodingextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "alpha",
     "type": "extension"
   },
@@ -886,6 +1258,9 @@
     "has_readme": false,
     "id": "contrib-azureencodingextension",
     "name": "azureencodingextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "alpha",
     "type": "extension"
   },
@@ -896,6 +1271,9 @@
     "has_readme": false,
     "id": "contrib-googlecloudlogentryencodingextension",
     "name": "googlecloudlogentryencodingextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "alpha",
     "type": "extension"
   },
@@ -906,6 +1284,9 @@
     "has_readme": false,
     "id": "contrib-jaegerencodingextension",
     "name": "jaegerencodingextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "alpha",
     "type": "extension"
   },
@@ -916,6 +1297,9 @@
     "has_readme": false,
     "id": "contrib-jsonlogencodingextension",
     "name": "jsonlogencodingextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "alpha",
     "type": "extension"
   },
@@ -926,6 +1310,9 @@
     "has_readme": false,
     "id": "contrib-otlpencodingextension",
     "name": "otlpencodingextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "beta",
     "type": "extension"
   },
@@ -936,6 +1323,9 @@
     "has_readme": false,
     "id": "contrib-skywalkingencodingextension",
     "name": "skywalkingencodingextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "alpha",
     "type": "extension"
   },
@@ -946,6 +1336,9 @@
     "has_readme": false,
     "id": "contrib-textencodingextension",
     "name": "textencodingextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "beta",
     "type": "extension"
   },
@@ -956,6 +1349,9 @@
     "has_readme": false,
     "id": "contrib-zipkinencodingextension",
     "name": "zipkinencodingextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "alpha",
     "type": "extension"
   },
@@ -966,6 +1362,9 @@
     "has_readme": false,
     "id": "contrib-googleclientauthextension",
     "name": "googleclientauthextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "beta",
     "type": "extension"
   },
@@ -976,6 +1375,9 @@
     "has_readme": false,
     "id": "contrib-headerssetterextension",
     "name": "headerssetterextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "alpha",
     "type": "extension"
   },
@@ -986,6 +1388,9 @@
     "has_readme": false,
     "id": "contrib-healthcheckextension",
     "name": "healthcheckextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "alpha",
     "type": "extension"
   },
@@ -996,6 +1401,9 @@
     "has_readme": false,
     "id": "contrib-healthcheckv2extension",
     "name": "healthcheckv2extension",
+    "signals": [
+      "extension"
+    ],
     "stability": "development",
     "type": "extension"
   },
@@ -1006,6 +1414,9 @@
     "has_readme": false,
     "id": "contrib-httpforwarderextension",
     "name": "httpforwarderextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "beta",
     "type": "extension"
   },
@@ -1016,6 +1427,9 @@
     "has_readme": false,
     "id": "contrib-jaegerremotesampling",
     "name": "jaegerremotesampling",
+    "signals": [
+      "extension"
+    ],
     "stability": "alpha",
     "type": "extension"
   },
@@ -1026,6 +1440,9 @@
     "has_readme": false,
     "id": "contrib-k8sleaderelector",
     "name": "k8sleaderelector",
+    "signals": [
+      "extension"
+    ],
     "stability": "alpha",
     "type": "extension"
   },
@@ -1036,6 +1453,9 @@
     "has_readme": false,
     "id": "contrib-mcp",
     "name": "mcp",
+    "signals": [
+      "extension"
+    ],
     "stability": "development",
     "type": "extension"
   },
@@ -1046,6 +1466,9 @@
     "has_readme": false,
     "id": "contrib-oauth2clientauthextension",
     "name": "oauth2clientauthextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "beta",
     "type": "extension"
   },
@@ -1056,6 +1479,9 @@
     "has_readme": false,
     "id": "contrib-cfgardenobserver",
     "name": "cfgardenobserver",
+    "signals": [
+      "extension"
+    ],
     "stability": "alpha",
     "type": "extension"
   },
@@ -1066,6 +1492,9 @@
     "has_readme": false,
     "id": "contrib-dockerobserver",
     "name": "dockerobserver",
+    "signals": [
+      "extension"
+    ],
     "stability": "beta",
     "type": "extension"
   },
@@ -1076,6 +1505,9 @@
     "has_readme": false,
     "id": "contrib-ecsobserver",
     "name": "ecsobserver",
+    "signals": [
+      "extension"
+    ],
     "stability": "beta",
     "type": "extension"
   },
@@ -1086,6 +1518,9 @@
     "has_readme": false,
     "id": "contrib-hostobserver",
     "name": "hostobserver",
+    "signals": [
+      "extension"
+    ],
     "stability": "beta",
     "type": "extension"
   },
@@ -1096,6 +1531,9 @@
     "has_readme": false,
     "id": "contrib-k8sobserver",
     "name": "k8sobserver",
+    "signals": [
+      "extension"
+    ],
     "stability": "alpha",
     "type": "extension"
   },
@@ -1106,6 +1544,9 @@
     "has_readme": false,
     "id": "contrib-kafkatopicsobserver",
     "name": "kafkatopicsobserver",
+    "signals": [
+      "extension"
+    ],
     "stability": "deprecated",
     "type": "extension"
   },
@@ -1116,6 +1557,9 @@
     "has_readme": false,
     "id": "contrib-oidcauthextension",
     "name": "oidcauthextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "beta",
     "type": "extension"
   },
@@ -1126,6 +1570,9 @@
     "has_readme": false,
     "id": "contrib-opampextension",
     "name": "opampextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "alpha",
     "type": "extension"
   },
@@ -1136,6 +1583,9 @@
     "has_readme": false,
     "id": "contrib-pprofextension",
     "name": "pprofextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "beta",
     "type": "extension"
   },
@@ -1146,6 +1596,9 @@
     "has_readme": false,
     "id": "contrib-remotetapextension",
     "name": "remotetapextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "development",
     "type": "extension"
   },
@@ -1156,6 +1609,9 @@
     "has_readme": false,
     "id": "contrib-sigv4authextension",
     "name": "sigv4authextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "beta",
     "type": "extension"
   },
@@ -1166,6 +1622,9 @@
     "has_readme": false,
     "id": "contrib-solarwindsapmsettingsextension",
     "name": "solarwindsapmsettingsextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "development",
     "type": "extension"
   },
@@ -1176,6 +1635,9 @@
     "has_readme": false,
     "id": "contrib-dbstorage",
     "name": "dbstorage",
+    "signals": [
+      "extension"
+    ],
     "stability": "alpha",
     "type": "extension"
   },
@@ -1186,6 +1648,9 @@
     "has_readme": false,
     "id": "contrib-filestorage",
     "name": "filestorage",
+    "signals": [
+      "extension"
+    ],
     "stability": "beta",
     "type": "extension"
   },
@@ -1196,6 +1661,9 @@
     "has_readme": false,
     "id": "contrib-redisstorageextension",
     "name": "redisstorageextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "alpha",
     "type": "extension"
   },
@@ -1206,6 +1674,9 @@
     "has_readme": false,
     "id": "contrib-sumologicextension",
     "name": "sumologicextension",
+    "signals": [
+      "extension"
+    ],
     "stability": "alpha",
     "type": "extension"
   },
@@ -1216,6 +1687,11 @@
     "has_readme": false,
     "id": "contrib-attributesprocessor",
     "name": "attributesprocessor",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "processor"
   },
@@ -1226,6 +1702,12 @@
     "has_readme": false,
     "id": "contrib-awsecsattributesprocessor",
     "name": "awsecsattributesprocessor",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "development",
     "type": "processor"
   },
@@ -1236,6 +1718,9 @@
     "has_readme": false,
     "id": "contrib-cardinalityguardianprocessor",
     "name": "cardinalityguardianprocessor",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "processor"
   },
@@ -1246,6 +1731,9 @@
     "has_readme": false,
     "id": "contrib-coralogixprocessor",
     "name": "coralogixprocessor",
+    "signals": [
+      "traces"
+    ],
     "stability": "alpha",
     "type": "processor"
   },
@@ -1256,6 +1744,9 @@
     "has_readme": false,
     "id": "contrib-cumulativetodeltaprocessor",
     "name": "cumulativetodeltaprocessor",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "processor"
   },
@@ -1266,6 +1757,9 @@
     "has_readme": false,
     "id": "contrib-deltatocumulativeprocessor",
     "name": "deltatocumulativeprocessor",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "processor"
   },
@@ -1276,6 +1770,9 @@
     "has_readme": false,
     "id": "contrib-deltatorateprocessor",
     "name": "deltatorateprocessor",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "processor"
   },
@@ -1286,7 +1783,23 @@
     "has_readme": false,
     "id": "contrib-drainprocessor",
     "name": "drainprocessor",
+    "signals": [
+      "logs"
+    ],
     "stability": "alpha",
+    "type": "processor"
+  },
+  {
+    "description": "The Dynamic Sampling Processor performs adaptive trace sampling using first-match rules-based routing to dynamic samplers. Each sampler produces a known sample rate which is encoded as `ot=th` in W3C TraceState for correct downstream metric weighting.",
+    "display_name": "Dynamic Sampling Processor",
+    "distribution": "contrib",
+    "has_readme": false,
+    "id": "contrib-dynamicsamplingprocessor",
+    "name": "dynamicsamplingprocessor",
+    "signals": [
+      "traces"
+    ],
+    "stability": "development",
     "type": "processor"
   },
   {
@@ -1296,6 +1809,12 @@
     "has_readme": false,
     "id": "contrib-filterprocessor",
     "name": "filterprocessor",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "alpha",
     "type": "processor"
   },
@@ -1306,6 +1825,9 @@
     "has_readme": false,
     "id": "contrib-genainormalizerprocessor",
     "name": "genainormalizerprocessor",
+    "signals": [
+      "traces"
+    ],
     "stability": "alpha",
     "type": "processor"
   },
@@ -1316,6 +1838,11 @@
     "has_readme": false,
     "id": "contrib-geoipprocessor",
     "name": "geoipprocessor",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "alpha",
     "type": "processor"
   },
@@ -1326,6 +1853,11 @@
     "has_readme": false,
     "id": "contrib-groupbyattrsprocessor",
     "name": "groupbyattrsprocessor",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "processor"
   },
@@ -1336,6 +1868,9 @@
     "has_readme": false,
     "id": "contrib-groupbytraceprocessor",
     "name": "groupbytraceprocessor",
+    "signals": [
+      "traces"
+    ],
     "stability": "beta",
     "type": "processor"
   },
@@ -1346,6 +1881,9 @@
     "has_readme": false,
     "id": "contrib-intervalprocessor",
     "name": "intervalprocessor",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "processor"
   },
@@ -1356,6 +1894,11 @@
     "has_readme": false,
     "id": "contrib-isolationforestprocessor",
     "name": "isolationforestprocessor",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "alpha",
     "type": "processor"
   },
@@ -1366,6 +1909,12 @@
     "has_readme": false,
     "id": "contrib-k8sattributesprocessor",
     "name": "k8sattributesprocessor",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "beta",
     "type": "processor"
   },
@@ -1376,6 +1925,9 @@
     "has_readme": false,
     "id": "contrib-logdedupprocessor",
     "name": "logdedupprocessor",
+    "signals": [
+      "logs"
+    ],
     "stability": "alpha",
     "type": "processor"
   },
@@ -1386,6 +1938,9 @@
     "has_readme": false,
     "id": "contrib-logstransformprocessor",
     "name": "logstransformprocessor",
+    "signals": [
+      "logs"
+    ],
     "stability": "development",
     "type": "processor"
   },
@@ -1396,6 +1951,11 @@
     "has_readme": false,
     "id": "contrib-lookupprocessor",
     "name": "lookupprocessor",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "development",
     "type": "processor"
   },
@@ -1406,6 +1966,9 @@
     "has_readme": false,
     "id": "contrib-metricsgenerationprocessor",
     "name": "metricsgenerationprocessor",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "processor"
   },
@@ -1416,6 +1979,9 @@
     "has_readme": false,
     "id": "contrib-metricstarttimeprocessor",
     "name": "metricstarttimeprocessor",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "processor"
   },
@@ -1426,6 +1992,9 @@
     "has_readme": false,
     "id": "contrib-metricstransformprocessor",
     "name": "metricstransformprocessor",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "processor"
   },
@@ -1436,6 +2005,10 @@
     "has_readme": false,
     "id": "contrib-probabilisticsamplerprocessor",
     "name": "probabilisticsamplerprocessor",
+    "signals": [
+      "traces",
+      "logs"
+    ],
     "stability": "beta",
     "type": "processor"
   },
@@ -1446,6 +2019,11 @@
     "has_readme": false,
     "id": "contrib-redactionprocessor",
     "name": "redactionprocessor",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "processor"
   },
@@ -1456,6 +2034,11 @@
     "has_readme": false,
     "id": "contrib-remotetapprocessor",
     "name": "remotetapprocessor",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "alpha",
     "type": "processor"
   },
@@ -1466,6 +2049,12 @@
     "has_readme": false,
     "id": "contrib-resourcedetectionprocessor",
     "name": "resourcedetectionprocessor",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "beta",
     "type": "processor"
   },
@@ -1476,6 +2065,12 @@
     "has_readme": false,
     "id": "contrib-resourceprocessor",
     "name": "resourceprocessor",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "beta",
     "type": "processor"
   },
@@ -1486,6 +2081,11 @@
     "has_readme": false,
     "id": "contrib-schemaprocessor",
     "name": "schemaprocessor",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "alpha",
     "type": "processor"
   },
@@ -1496,6 +2096,9 @@
     "has_readme": false,
     "id": "contrib-spanprocessor",
     "name": "spanprocessor",
+    "signals": [
+      "traces"
+    ],
     "stability": "alpha",
     "type": "processor"
   },
@@ -1506,6 +2109,9 @@
     "has_readme": false,
     "id": "contrib-spanpruningprocessor",
     "name": "spanpruningprocessor",
+    "signals": [
+      "traces"
+    ],
     "stability": "alpha",
     "type": "processor"
   },
@@ -1516,6 +2122,11 @@
     "has_readme": false,
     "id": "contrib-sumologicprocessor",
     "name": "sumologicprocessor",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "processor"
   },
@@ -1526,6 +2137,9 @@
     "has_readme": false,
     "id": "contrib-tailsamplingprocessor",
     "name": "tailsamplingprocessor",
+    "signals": [
+      "traces"
+    ],
     "stability": "beta",
     "type": "processor"
   },
@@ -1536,6 +2150,12 @@
     "has_readme": false,
     "id": "contrib-transformprocessor",
     "name": "transformprocessor",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "beta",
     "type": "processor"
   },
@@ -1546,6 +2166,9 @@
     "has_readme": false,
     "id": "contrib-unrollprocessor",
     "name": "unrollprocessor",
+    "signals": [
+      "logs"
+    ],
     "stability": "alpha",
     "type": "processor"
   },
@@ -1556,6 +2179,9 @@
     "has_readme": false,
     "id": "contrib-activedirectorydsreceiver",
     "name": "activedirectorydsreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -1566,6 +2192,9 @@
     "has_readme": false,
     "id": "contrib-activedirectoryinvreceiver",
     "name": "activedirectoryinvreceiver",
+    "signals": [
+      "logs"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -1576,6 +2205,9 @@
     "has_readme": false,
     "id": "contrib-aerospikereceiver",
     "name": "aerospikereceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -1586,6 +2218,9 @@
     "has_readme": false,
     "id": "contrib-apachereceiver",
     "name": "apachereceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -1596,6 +2231,9 @@
     "has_readme": false,
     "id": "contrib-apachesparkreceiver",
     "name": "apachesparkreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -1606,6 +2244,10 @@
     "has_readme": false,
     "id": "contrib-awscloudwatchreceiver",
     "name": "awscloudwatchreceiver",
+    "signals": [
+      "metrics",
+      "logs"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -1616,6 +2258,9 @@
     "has_readme": false,
     "id": "contrib-awscontainerinsightreceiver",
     "name": "awscontainerinsightreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -1626,6 +2271,9 @@
     "has_readme": false,
     "id": "contrib-awsecscontainermetricsreceiver",
     "name": "awsecscontainermetricsreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -1636,6 +2284,10 @@
     "has_readme": false,
     "id": "contrib-awsfirehosereceiver",
     "name": "awsfirehosereceiver",
+    "signals": [
+      "metrics",
+      "logs"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -1646,6 +2298,10 @@
     "has_readme": false,
     "id": "contrib-awslambdareceiver",
     "name": "awslambdareceiver",
+    "signals": [
+      "metrics",
+      "logs"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -1656,6 +2312,11 @@
     "has_readme": false,
     "id": "contrib-awss3receiver",
     "name": "awss3receiver",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -1666,6 +2327,9 @@
     "has_readme": false,
     "id": "contrib-awsxrayreceiver",
     "name": "awsxrayreceiver",
+    "signals": [
+      "traces"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -1676,6 +2340,10 @@
     "has_readme": false,
     "id": "contrib-azureblobreceiver",
     "name": "azureblobreceiver",
+    "signals": [
+      "traces",
+      "logs"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -1686,6 +2354,11 @@
     "has_readme": false,
     "id": "contrib-azureeventhubreceiver",
     "name": "azureeventhubreceiver",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -1696,6 +2369,9 @@
     "has_readme": false,
     "id": "contrib-azurefunctionsreceiver",
     "name": "azurefunctionsreceiver",
+    "signals": [
+      "logs"
+    ],
     "stability": "development",
     "type": "receiver"
   },
@@ -1706,6 +2382,9 @@
     "has_readme": false,
     "id": "contrib-azuremonitorreceiver",
     "name": "azuremonitorreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -1716,6 +2395,9 @@
     "has_readme": false,
     "id": "contrib-carbonreceiver",
     "name": "carbonreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -1726,6 +2408,9 @@
     "has_readme": false,
     "id": "contrib-chronyreceiver",
     "name": "chronyreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -1736,6 +2421,9 @@
     "has_readme": false,
     "id": "contrib-ciscoosreceiver",
     "name": "ciscoosreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -1746,6 +2434,9 @@
     "has_readme": false,
     "id": "contrib-cloudflarereceiver",
     "name": "cloudflarereceiver",
+    "signals": [
+      "logs"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -1756,6 +2447,10 @@
     "has_readme": false,
     "id": "contrib-cloudfoundryreceiver",
     "name": "cloudfoundryreceiver",
+    "signals": [
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -1766,6 +2461,9 @@
     "has_readme": false,
     "id": "contrib-collectdreceiver",
     "name": "collectdreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -1776,6 +2474,9 @@
     "has_readme": false,
     "id": "contrib-couchdbreceiver",
     "name": "couchdbreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -1786,6 +2487,11 @@
     "has_readme": false,
     "id": "contrib-datadogreceiver",
     "name": "datadogreceiver",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -1796,6 +2502,9 @@
     "has_readme": false,
     "id": "contrib-dockerstatsreceiver",
     "name": "dockerstatsreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -1806,6 +2515,9 @@
     "has_readme": false,
     "id": "contrib-elasticsearchreceiver",
     "name": "elasticsearchreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -1816,6 +2528,9 @@
     "has_readme": false,
     "id": "contrib-envoyalsreceiver",
     "name": "envoyalsreceiver",
+    "signals": [
+      "logs"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -1826,6 +2541,9 @@
     "has_readme": false,
     "id": "contrib-expvarreceiver",
     "name": "expvarreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -1836,6 +2554,10 @@
     "has_readme": false,
     "id": "contrib-faroreceiver",
     "name": "faroreceiver",
+    "signals": [
+      "traces",
+      "logs"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -1846,6 +2568,9 @@
     "has_readme": false,
     "id": "contrib-filelogreceiver",
     "name": "filelogreceiver",
+    "signals": [
+      "logs"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -1856,6 +2581,9 @@
     "has_readme": false,
     "id": "contrib-filestatsreceiver",
     "name": "filestatsreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -1866,6 +2594,9 @@
     "has_readme": false,
     "id": "contrib-flinkmetricsreceiver",
     "name": "flinkmetricsreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -1876,6 +2607,9 @@
     "has_readme": false,
     "id": "contrib-fluentforwardreceiver",
     "name": "fluentforwardreceiver",
+    "signals": [
+      "logs"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -1886,6 +2620,10 @@
     "has_readme": false,
     "id": "contrib-githubreceiver",
     "name": "githubreceiver",
+    "signals": [
+      "traces",
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -1896,6 +2634,9 @@
     "has_readme": false,
     "id": "contrib-gitlabreceiver",
     "name": "gitlabreceiver",
+    "signals": [
+      "traces"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -1906,6 +2647,9 @@
     "has_readme": false,
     "id": "contrib-googlecloudmonitoringreceiver",
     "name": "googlecloudmonitoringreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -1916,6 +2660,9 @@
     "has_readme": false,
     "id": "contrib-googlecloudpubsubpushreceiver",
     "name": "googlecloudpubsubpushreceiver",
+    "signals": [
+      "logs"
+    ],
     "stability": "development",
     "type": "receiver"
   },
@@ -1926,6 +2673,11 @@
     "has_readme": false,
     "id": "contrib-googlecloudpubsubreceiver",
     "name": "googlecloudpubsubreceiver",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -1936,6 +2688,9 @@
     "has_readme": false,
     "id": "contrib-googlecloudspannerreceiver",
     "name": "googlecloudspannerreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -1946,6 +2701,9 @@
     "has_readme": false,
     "id": "contrib-haproxyreceiver",
     "name": "haproxyreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -1956,6 +2714,10 @@
     "has_readme": false,
     "id": "contrib-hostmetricsreceiver",
     "name": "hostmetricsreceiver",
+    "signals": [
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -1966,6 +2728,9 @@
     "has_readme": false,
     "id": "contrib-httpcheckreceiver",
     "name": "httpcheckreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -1976,6 +2741,9 @@
     "has_readme": false,
     "id": "contrib-huaweicloudcesreceiver",
     "name": "huaweicloudcesreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -1986,6 +2754,9 @@
     "has_readme": false,
     "id": "contrib-icmpcheckreceiver",
     "name": "icmpcheckreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "development",
     "type": "receiver"
   },
@@ -1996,6 +2767,9 @@
     "has_readme": false,
     "id": "contrib-iisreceiver",
     "name": "iisreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2006,6 +2780,9 @@
     "has_readme": false,
     "id": "contrib-influxdbreceiver",
     "name": "influxdbreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2016,6 +2793,9 @@
     "has_readme": false,
     "id": "contrib-jaegerreceiver",
     "name": "jaegerreceiver",
+    "signals": [
+      "traces"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2026,6 +2806,9 @@
     "has_readme": false,
     "id": "contrib-jmxreceiver",
     "name": "jmxreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "deprecated",
     "type": "receiver"
   },
@@ -2036,6 +2819,9 @@
     "has_readme": false,
     "id": "contrib-journaldreceiver",
     "name": "journaldreceiver",
+    "signals": [
+      "logs"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2046,6 +2832,10 @@
     "has_readme": false,
     "id": "contrib-k8sclusterreceiver",
     "name": "k8sclusterreceiver",
+    "signals": [
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2056,6 +2846,9 @@
     "has_readme": false,
     "id": "contrib-k8seventsreceiver",
     "name": "k8seventsreceiver",
+    "signals": [
+      "logs"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2066,6 +2859,9 @@
     "has_readme": false,
     "id": "contrib-k8sobjectsreceiver",
     "name": "k8sobjectsreceiver",
+    "signals": [
+      "logs"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2076,6 +2872,9 @@
     "has_readme": false,
     "id": "contrib-kafkametricsreceiver",
     "name": "kafkametricsreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2086,6 +2885,12 @@
     "has_readme": false,
     "id": "contrib-kafkareceiver",
     "name": "kafkareceiver",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2096,6 +2901,9 @@
     "has_readme": false,
     "id": "contrib-kubeletstatsreceiver",
     "name": "kubeletstatsreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2106,6 +2914,10 @@
     "has_readme": false,
     "id": "contrib-libhoneyreceiver",
     "name": "libhoneyreceiver",
+    "signals": [
+      "traces",
+      "logs"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2116,6 +2928,9 @@
     "has_readme": false,
     "id": "contrib-lokireceiver",
     "name": "lokireceiver",
+    "signals": [
+      "logs"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2126,6 +2941,9 @@
     "has_readme": false,
     "id": "contrib-macosunifiedloggingreceiver",
     "name": "macosunifiedloggingreceiver",
+    "signals": [
+      "logs"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2136,6 +2954,9 @@
     "has_readme": false,
     "id": "contrib-memcachedreceiver",
     "name": "memcachedreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2146,6 +2967,10 @@
     "has_readme": false,
     "id": "contrib-mongodbatlasreceiver",
     "name": "mongodbatlasreceiver",
+    "signals": [
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2156,6 +2981,10 @@
     "has_readme": false,
     "id": "contrib-mongodbreceiver",
     "name": "mongodbreceiver",
+    "signals": [
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2166,6 +2995,10 @@
     "has_readme": false,
     "id": "contrib-mysqlreceiver",
     "name": "mysqlreceiver",
+    "signals": [
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2176,6 +3009,9 @@
     "has_readme": false,
     "id": "contrib-namedpipereceiver",
     "name": "namedpipereceiver",
+    "signals": [
+      "logs"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2186,6 +3022,9 @@
     "has_readme": false,
     "id": "contrib-netflowreceiver",
     "name": "netflowreceiver",
+    "signals": [
+      "logs"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2196,6 +3035,9 @@
     "has_readme": false,
     "id": "contrib-nginxreceiver",
     "name": "nginxreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2206,6 +3048,9 @@
     "has_readme": false,
     "id": "contrib-nsxtreceiver",
     "name": "nsxtreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2216,6 +3061,9 @@
     "has_readme": false,
     "id": "contrib-ntpreceiver",
     "name": "ntpreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2226,6 +3074,10 @@
     "has_readme": false,
     "id": "contrib-oracledbreceiver",
     "name": "oracledbreceiver",
+    "signals": [
+      "metrics",
+      "logs"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2236,6 +3088,9 @@
     "has_readme": false,
     "id": "contrib-osqueryreceiver",
     "name": "osqueryreceiver",
+    "signals": [
+      "logs"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2246,6 +3101,11 @@
     "has_readme": false,
     "id": "contrib-otelarrowreceiver",
     "name": "otelarrowreceiver",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2256,6 +3116,12 @@
     "has_readme": false,
     "id": "contrib-otlpjsonfilereceiver",
     "name": "otlpjsonfilereceiver",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2266,6 +3132,9 @@
     "has_readme": false,
     "id": "contrib-podmanreceiver",
     "name": "podmanreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2276,6 +3145,10 @@
     "has_readme": false,
     "id": "contrib-postgresqlreceiver",
     "name": "postgresqlreceiver",
+    "signals": [
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2286,6 +3159,9 @@
     "has_readme": false,
     "id": "contrib-pprofreceiver",
     "name": "pprofreceiver",
+    "signals": [
+      "profiles"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2296,6 +3172,9 @@
     "has_readme": false,
     "id": "contrib-prometheusreceiver",
     "name": "prometheusreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2306,6 +3185,9 @@
     "has_readme": false,
     "id": "contrib-prometheusremotewritereceiver",
     "name": "prometheusremotewritereceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2316,6 +3198,11 @@
     "has_readme": false,
     "id": "contrib-pulsarreceiver",
     "name": "pulsarreceiver",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2326,6 +3213,9 @@
     "has_readme": false,
     "id": "contrib-purefareceiver",
     "name": "purefareceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2336,6 +3226,9 @@
     "has_readme": false,
     "id": "contrib-purefbreceiver",
     "name": "purefbreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2346,6 +3239,9 @@
     "has_readme": false,
     "id": "contrib-rabbitmqreceiver",
     "name": "rabbitmqreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2356,6 +3252,12 @@
     "has_readme": false,
     "id": "contrib-receivercreator",
     "name": "receivercreator",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2366,6 +3268,9 @@
     "has_readme": false,
     "id": "contrib-redfishreceiver",
     "name": "redfishreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "development",
     "type": "receiver"
   },
@@ -2376,6 +3281,9 @@
     "has_readme": false,
     "id": "contrib-redisreceiver",
     "name": "redisreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2386,6 +3294,9 @@
     "has_readme": false,
     "id": "contrib-riakreceiver",
     "name": "riakreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2396,6 +3307,9 @@
     "has_readme": false,
     "id": "contrib-saphanareceiver",
     "name": "saphanareceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2406,6 +3320,10 @@
     "has_readme": false,
     "id": "contrib-signalfxreceiver",
     "name": "signalfxreceiver",
+    "signals": [
+      "metrics",
+      "logs"
+    ],
     "stability": "deprecated",
     "type": "receiver"
   },
@@ -2416,7 +3334,10 @@
     "has_readme": false,
     "id": "contrib-simpleprometheusreceiver",
     "name": "simpleprometheusreceiver",
-    "stability": "beta",
+    "signals": [
+      "metrics"
+    ],
+    "stability": "unmaintained",
     "type": "receiver"
   },
   {
@@ -2426,6 +3347,10 @@
     "has_readme": false,
     "id": "contrib-skywalkingreceiver",
     "name": "skywalkingreceiver",
+    "signals": [
+      "traces",
+      "metrics"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2436,6 +3361,9 @@
     "has_readme": false,
     "id": "contrib-snmpreceiver",
     "name": "snmpreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2446,6 +3374,9 @@
     "has_readme": false,
     "id": "contrib-snowflakereceiver",
     "name": "snowflakereceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2456,6 +3387,9 @@
     "has_readme": false,
     "id": "contrib-solacereceiver",
     "name": "solacereceiver",
+    "signals": [
+      "traces"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2466,6 +3400,9 @@
     "has_readme": false,
     "id": "contrib-splunkenterprisereceiver",
     "name": "splunkenterprisereceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2476,6 +3413,10 @@
     "has_readme": false,
     "id": "contrib-splunkhecreceiver",
     "name": "splunkhecreceiver",
+    "signals": [
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2486,6 +3427,10 @@
     "has_readme": false,
     "id": "contrib-sqlqueryreceiver",
     "name": "sqlqueryreceiver",
+    "signals": [
+      "metrics",
+      "logs"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2496,6 +3441,10 @@
     "has_readme": false,
     "id": "contrib-sqlserverreceiver",
     "name": "sqlserverreceiver",
+    "signals": [
+      "metrics",
+      "logs"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2506,6 +3455,9 @@
     "has_readme": false,
     "id": "contrib-sshcheckreceiver",
     "name": "sshcheckreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2516,6 +3468,9 @@
     "has_readme": false,
     "id": "contrib-statsdreceiver",
     "name": "statsdreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2526,6 +3481,9 @@
     "has_readme": false,
     "id": "contrib-stefreceiver",
     "name": "stefreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2536,6 +3494,9 @@
     "has_readme": false,
     "id": "contrib-syslogreceiver",
     "name": "syslogreceiver",
+    "signals": [
+      "logs"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2546,6 +3507,9 @@
     "has_readme": false,
     "id": "contrib-systemdreceiver",
     "name": "systemdreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2556,6 +3520,9 @@
     "has_readme": false,
     "id": "contrib-tcpcheckreceiver",
     "name": "tcpcheckreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2566,6 +3533,9 @@
     "has_readme": false,
     "id": "contrib-tcplogreceiver",
     "name": "tcplogreceiver",
+    "signals": [
+      "logs"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2576,6 +3546,9 @@
     "has_readme": false,
     "id": "contrib-tlscheckreceiver",
     "name": "tlscheckreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2586,6 +3559,9 @@
     "has_readme": false,
     "id": "contrib-udplogreceiver",
     "name": "udplogreceiver",
+    "signals": [
+      "logs"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2596,6 +3572,9 @@
     "has_readme": false,
     "id": "contrib-vcenterreceiver",
     "name": "vcenterreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2606,6 +3585,12 @@
     "has_readme": false,
     "id": "contrib-vcrreceiver",
     "name": "vcrreceiver",
+    "signals": [
+      "traces",
+      "metrics",
+      "logs",
+      "profiles"
+    ],
     "stability": "development",
     "type": "receiver"
   },
@@ -2616,6 +3601,9 @@
     "has_readme": false,
     "id": "contrib-wavefrontreceiver",
     "name": "wavefrontreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "deprecated",
     "type": "receiver"
   },
@@ -2626,6 +3614,9 @@
     "has_readme": false,
     "id": "contrib-webhookeventreceiver",
     "name": "webhookeventreceiver",
+    "signals": [
+      "logs"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2636,6 +3627,9 @@
     "has_readme": false,
     "id": "contrib-windowseventlogreceiver",
     "name": "windowseventlogreceiver",
+    "signals": [
+      "logs"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2646,6 +3640,9 @@
     "has_readme": false,
     "id": "contrib-windowsperfcountersreceiver",
     "name": "windowsperfcountersreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2656,6 +3653,9 @@
     "has_readme": false,
     "id": "contrib-windowsservicereceiver",
     "name": "windowsservicereceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2666,6 +3666,9 @@
     "has_readme": false,
     "id": "contrib-yanggrpcreceiver",
     "name": "yanggrpcreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "receiver"
   },
@@ -2676,6 +3679,9 @@
     "has_readme": false,
     "id": "contrib-zipkinreceiver",
     "name": "zipkinreceiver",
+    "signals": [
+      "traces"
+    ],
     "stability": "beta",
     "type": "receiver"
   },
@@ -2686,6 +3692,9 @@
     "has_readme": false,
     "id": "contrib-zookeeperreceiver",
     "name": "zookeeperreceiver",
+    "signals": [
+      "metrics"
+    ],
     "stability": "alpha",
     "type": "receiver"
   }

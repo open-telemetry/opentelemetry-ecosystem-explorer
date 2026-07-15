@@ -244,7 +244,17 @@ class TestRunCollectorBuilder:
         assert len(bundle) == 3
         assert all(
             set(entry.keys())
-            <= {"id", "name", "distribution", "type", "display_name", "description", "stability", "has_readme"}
+            <= {
+                "id",
+                "name",
+                "distribution",
+                "type",
+                "display_name",
+                "description",
+                "stability",
+                "signals",
+                "has_readme",
+            }
             for entry in bundle
         )
 

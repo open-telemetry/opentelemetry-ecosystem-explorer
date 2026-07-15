@@ -256,6 +256,7 @@ class TestMakeIndexComponent:
         assert result["display_name"] == "OTLP Receiver"
         assert result["description"] == "Receives data."
         assert result["stability"] == "beta"
+        assert result["signals"] == ["traces", "metrics"]
         # heavy fields should be absent
         assert "repository" not in result
         assert "attributes" not in result
@@ -307,6 +308,65 @@ class TestMakeIndexComponent:
         }
         result = make_index_component(component)
         assert result["stability"] == "alpha"
+
+
+class TestMakeIndexComponentSignals:
+    def test_signals_dedupe_and_canonical_order(self):
+        component = {
+            "id": "x",
+            "name": "x",
+            "distribution": "contrib",
+            "type": "receiver",
+            "display_name": None,
+            "description": None,
+            "status": {
+                "stability": {
+                    "beta": ["metrics", "traces"],
+                    "alpha": ["profiles", "metrics"],
+                },
+            },
+        }
+        result = make_index_component(component)
+        assert result["signals"] == ["traces", "metrics", "profiles"]
+
+    def test_signals_single_signal(self):
+        component = {
+            "id": "x",
+            "name": "x",
+            "distribution": "contrib",
+            "type": "receiver",
+            "display_name": None,
+            "description": None,
+            "status": {"stability": {"alpha": ["metrics"]}},
+        }
+        result = make_index_component(component)
+        assert result["signals"] == ["metrics"]
+
+    def test_signals_empty_when_stability_missing(self):
+        component = {
+            "id": "x",
+            "name": "x",
+            "distribution": "contrib",
+            "type": "receiver",
+            "display_name": None,
+            "description": None,
+            "status": {},
+        }
+        result = make_index_component(component)
+        assert result["signals"] == []
+
+    def test_signals_unknown_signal_appended_alphabetically(self):
+        component = {
+            "id": "x",
+            "name": "x",
+            "distribution": "contrib",
+            "type": "receiver",
+            "display_name": None,
+            "description": None,
+            "status": {"stability": {"alpha": ["metrics", "zsignal", "asignal"]}},
+        }
+        result = make_index_component(component)
+        assert result["signals"] == ["metrics", "asignal", "zsignal"]
 
 
 class TestTransformCollectorComponentsReadmes:

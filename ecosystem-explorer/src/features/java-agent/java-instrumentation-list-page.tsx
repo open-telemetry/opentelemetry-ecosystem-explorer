@@ -30,6 +30,7 @@ import { VersionSelector } from "@/features/java-agent/components/version-select
 import { getInstrumentationDisplayName } from "./utils/format";
 import { groupInstrumentationsByDisplayName } from "./utils/group-instrumentations";
 import { PageContainer } from "@/components/layout/page-container";
+import { Seo } from "@/components/seo/seo";
 
 export function JavaInstrumentationListPage() {
   const { t } = useTranslation("java-agent");
@@ -300,6 +301,7 @@ export function JavaInstrumentationListPage() {
 
   return (
     <PageContainer>
+      <Seo />
       <div className="space-y-4">
         <BackButton />
 

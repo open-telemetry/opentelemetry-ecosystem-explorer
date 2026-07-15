@@ -13,9 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { Seo } from "@/components/seo/seo";
 import { EcosystemPage } from "./ecosystem-page";
 import { collectorConfig } from "./collector-config";
 
 export function CollectorLandingV1() {
-  return <EcosystemPage config={collectorConfig} />;
+  return (
+    <>
+      <Seo />
+      <EcosystemPage config={collectorConfig} />
+    </>
+  );
 }
