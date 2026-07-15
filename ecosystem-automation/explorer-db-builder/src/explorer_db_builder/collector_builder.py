@@ -21,6 +21,10 @@ from collector_watcher.inventory_manager import InventoryManager
 from semantic_version import Version
 
 from explorer_db_builder.collector_database_writer import CollectorDatabaseWriter
+from explorer_db_builder.collector_display_name_audit import (
+    find_missing_display_names,
+    write_missing_display_name_report,
+)
 from explorer_db_builder.collector_transformer import make_index_component, transform_collector_components
 from explorer_db_builder.ecosystem_stats import count_unique_collector_component_ids
 
@@ -147,6 +151,7 @@ def run_collector_builder(
     inventory_manager: Optional[InventoryManager] = None,
     db_writer: Optional[CollectorDatabaseWriter] = None,
     clean: bool = False,
+    audit_report_path: Optional[str] = None,
 ) -> int:
     """Run the collector database builder pipeline.
 
@@ -154,6 +159,9 @@ def run_collector_builder(
         inventory_manager: Optional override for testing.
         db_writer: Optional override for testing.
         clean: If True, wipe the output directory before building.
+        audit_report_path: If set, write a JSON report of latest-release components
+            missing a display_name to this path (a build artifact, not part of the
+            database, so it must live outside the database directory).
 
     Returns:
         Exit code: 0 for success, 1 for failure.
@@ -196,6 +204,12 @@ def run_collector_builder(
                 "component_count": count_unique_collector_component_ids(components_by_version),
             }
         )
+
+        if audit_report_path:
+            # Latest release only: that's the version fixable upstream today.
+            missing = find_missing_display_names(latest_components)
+            write_missing_display_name_report(audit_report_path, str(processed_versions[0]), missing)
+            logger.info("Collector components missing display_name (latest release): %d", len(missing))
 
         stats = db_writer.get_stats()
         total_mb = stats["total_bytes"] / (1024 * 1024)

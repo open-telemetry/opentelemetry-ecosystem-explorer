@@ -43,6 +43,7 @@ jobs:
     permissions:
       contents: write # Push generated database to the otelbot/automated-explorer-database-update branch
       pull-requests: write # Create or update the automated database-update PR
+      issues: write # Open/update/close the "collector components missing display_name" tracking issue
     runs-on: ubuntu-latest
     steps:
       - name: Detect repository type (if on a fork we use different git config)
@@ -111,13 +112,99 @@ jobs:
         if: ${{ (inputs.build_mode || 'incremental') == 'incremental' }}
         env:
           ECOSYSTEM: ${{ inputs.ecosystem || 'all' }}
-        run: uv run explorer-db-builder --ecosystem "$ECOSYSTEM"
+        # --collector-audit-report writes a build artifact (not committed to the database)
+        # consumed by the "Sync missing-display_name tracking issue" step below.
+        run:
+          uv run explorer-db-builder --ecosystem "$ECOSYSTEM" --collector-audit-report
+          "${RUNNER_TEMP}/collector-missing-display-names.json"
 
       - name: Build explorer database (clean)
         if: inputs.build_mode == 'clean'
         env:
           ECOSYSTEM: ${{ inputs.ecosystem }}
-        run: uv run explorer-db-builder --ecosystem "$ECOSYSTEM" --clean
+        run:
+          uv run explorer-db-builder --ecosystem "$ECOSYSTEM" --clean --collector-audit-report
+          "${RUNNER_TEMP}/collector-missing-display-names.json"
+
+      # Open/update/close a tracking issue for collector components lacking a display_name.
+      # Not gated on has_changes (a component can be missing one on a night with no DB diff);
+      # skips when the report is absent (javaagent/configuration-only runs). Issue writes use
+      # GITHUB_TOKEN + `issues: write`; the otelbot App token only holds `pull-requests: write`.
+      - name: Sync missing-display_name tracking issue
+        if: steps.repo_check.outputs.is_primary == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPORT_FILE: ${{ runner.temp }}/collector-missing-display-names.json
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          if [ ! -f "$REPORT_FILE" ]; then
+            echo "No collector audit report at $REPORT_FILE (collector not built); skipping."
+            exit 0
+          fi
+
+          # No backticks in the title: they'd show literally (titles aren't rendered) and
+          # this is also the `in:title` search key below.
+          ISSUE_TITLE="Collector components missing display_name"
+          LABEL="upstream-metadata"
+
+          # Idempotent: no-op if the label already exists.
+          gh label create "$LABEL" \
+            --description "Metadata that should be fixed in the upstream OpenTelemetry repositories" \
+            --color "d4c5f9" 2>/dev/null || true
+
+          COUNT=$(jq '.missing | length' "$REPORT_FILE")
+          VERSION=$(jq -r '.version' "$REPORT_FILE")
+
+          EXISTING=$(gh issue list \
+            --search "in:title \"$ISSUE_TITLE\"" \
+            --state open \
+            --label "$LABEL" \
+            --json number \
+            --jq '.[0].number // empty')
+
+          if [ "$COUNT" -eq 0 ]; then
+            if [ -n "$EXISTING" ]; then
+              gh issue close "$EXISTING" \
+                --comment "All collector components in \`v${VERSION}\` now have a \`display_name\`. Closing."
+              echo "Closed tracking issue #$EXISTING (no components missing display_name)."
+            else
+              echo "No components missing display_name and no open issue; nothing to do."
+            fi
+            exit 0
+          fi
+
+          BODY_FILE="${RUNNER_TEMP}/missing-display-names-body.md"
+          {
+            jq -r '
+              . as $r
+              | "The following components in the latest collector release (`v\($r.version)`) are missing a `display_name` in their upstream `metadata.yaml`. Fixing them upstream (opentelemetry-collector / opentelemetry-collector-contrib) lets them render with a friendly name in the Ecosystem Explorer.\n\n**Total missing: \($r.missing | length)**\n"
+                + ( $r.missing
+                    | group_by(.distribution)
+                    | map(
+                        "\n## \(.[0].distribution)\n"
+                        + ( group_by(.type)
+                            | map( "\n### \(.[0].type)\n" + ( map("- `\(.name)`") | join("\n") ) )
+                            | join("\n") ) )
+                    | join("\n") )
+            ' "$REPORT_FILE"
+            echo ""
+            echo ""
+            echo "---"
+            echo "_This issue is maintained automatically by the [Build Explorer Database](https://github.com/${REPO}/actions/runs/${RUN_ID}) workflow. It is updated nightly and closed automatically once every component has a display_name._"
+          } > "$BODY_FILE"
+
+          if [ -n "$EXISTING" ]; then
+            # Edit the body rather than comment: this runs nightly and comments would be noisy.
+            gh issue edit "$EXISTING" --body-file "$BODY_FILE"
+            echo "Updated tracking issue #$EXISTING ($COUNT components missing display_name)."
+          else
+            gh issue create \
+              --title "$ISSUE_TITLE" \
+              --body-file "$BODY_FILE" \
+              --label "$LABEL"
+            echo "Created tracking issue ($COUNT components missing display_name)."
+          fi
 
       - name: Check for database changes
         id: check_changes

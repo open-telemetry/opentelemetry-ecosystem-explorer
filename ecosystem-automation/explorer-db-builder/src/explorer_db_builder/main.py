@@ -268,12 +268,14 @@ def run_javaagent_builder(
         return 1
 
 
-def run_builder(clean: bool = False, ecosystem: str = "all") -> int:
+def run_builder(clean: bool = False, ecosystem: str = "all", collector_audit_report: Optional[str] = None) -> int:
     """Run the selected database builder pipelines.
 
     Args:
         clean: If True, wipe the output directories before building.
         ecosystem: Which pipeline to run: "javaagent", "configuration", "collector", or "all".
+        collector_audit_report: If set, the collector build writes a JSON report of
+            latest-release components missing a display_name to this path.
 
     Returns:
         0 if all selected pipelines succeed, 1 if any fail.
@@ -292,7 +294,7 @@ def run_builder(clean: bool = False, ecosystem: str = "all") -> int:
 
     if ecosystem in ("collector", "all"):
         logger.info("--- Collector ---")
-        results.append(run_collector_builder(clean=clean))
+        results.append(run_collector_builder(clean=clean, audit_report_path=collector_audit_report))
         logger.info("")
 
     return 1 if any(r != 0 for r in results) else 0
@@ -315,6 +317,15 @@ def main() -> None:
         default="all",
         help="Which ecosystem pipeline to run (default: all)",
     )
+    parser.add_argument(
+        "--collector-audit-report",
+        default=None,
+        metavar="PATH",
+        help=(
+            "Write a JSON report of latest-release collector components missing a "
+            "display_name to PATH. Only produced when the collector pipeline runs."
+        ),
+    )
 
     args = parser.parse_args()
 
@@ -325,7 +336,11 @@ def main() -> None:
     logger.info("=" * 60)
     logger.info("")
 
-    exit_code = run_builder(clean=args.clean, ecosystem=args.ecosystem)
+    exit_code = run_builder(
+        clean=args.clean,
+        ecosystem=args.ecosystem,
+        collector_audit_report=args.collector_audit_report,
+    )
     sys.exit(exit_code)
 
 

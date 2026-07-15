@@ -387,6 +387,74 @@ class TestRunCollectorBuilder:
         assert result == 1
 
 
+class TestRunCollectorBuilderAuditReport:
+    def test_no_report_written_without_path(self, tmp_path):
+        manager = _make_mock_inventory_manager()
+        db_writer = CollectorDatabaseWriter(database_dir=str(tmp_path / "collector"))
+
+        run_collector_builder(inventory_manager=manager, db_writer=db_writer)
+
+        # No stray report file anywhere when the flag isn't passed.
+        assert list(tmp_path.glob("*.json")) == []
+
+    def test_report_lists_only_latest_release_missing_components(self, tmp_path):
+        # Latest (0.151.0): one component without display_name; an older version has none
+        # missing, and must not leak into the latest-only report.
+        core_latest = {
+            "distribution": "core",
+            "version": "0.151.0",
+            "repository": "opentelemetry-collector",
+            "components": {
+                "receiver": [
+                    {"name": "nopreceiver", "metadata": {"display_name": "No-op Receiver"}},
+                    {"name": "mysteryreceiver", "metadata": {}},  # missing display_name
+                ],
+                "processor": [],
+                "exporter": [],
+                "connector": [],
+                "extension": [],
+            },
+        }
+        contrib_latest = {
+            "distribution": "contrib",
+            "version": "0.151.0",
+            "repository": "opentelemetry-collector-contrib",
+            "components": {t: [] for t in ["receiver", "processor", "exporter", "connector", "extension"]},
+        }
+        inventories = {
+            ("core", Version("0.151.0")): core_latest,
+            ("contrib", Version("0.151.0")): contrib_latest,
+            ("core", Version("0.150.0")): _make_core_inventory("0.150.0"),
+            ("contrib", Version("0.150.0")): _make_contrib_inventory("0.150.0"),
+        }
+        manager = _make_mock_inventory_manager(inventories=inventories)
+        db_writer = CollectorDatabaseWriter(database_dir=str(tmp_path / "collector"))
+        report_path = tmp_path / "missing.json"
+
+        result = run_collector_builder(
+            inventory_manager=manager, db_writer=db_writer, audit_report_path=str(report_path)
+        )
+
+        assert result == 0
+        with open(report_path) as f:
+            report = json.load(f)
+
+        assert report["ecosystem"] == "collector"
+        assert report["version"] == "0.151.0"
+        assert [c["name"] for c in report["missing"]] == ["mysteryreceiver"]
+
+    def test_report_empty_when_all_have_display_name(self, tmp_path):
+        manager = _make_mock_inventory_manager()  # default fixtures all carry display_name
+        db_writer = CollectorDatabaseWriter(database_dir=str(tmp_path / "collector"))
+        report_path = tmp_path / "missing.json"
+
+        run_collector_builder(inventory_manager=manager, db_writer=db_writer, audit_report_path=str(report_path))
+
+        with open(report_path) as f:
+            report = json.load(f)
+        assert report["missing"] == []
+
+
 class TestRunCollectorBuilderReadmes:
     """Mirrors test_main.py's test_run_builder_processes_readmes for the javaagent builder."""
 
