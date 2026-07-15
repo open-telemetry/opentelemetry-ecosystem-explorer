@@ -127,11 +127,11 @@ jobs:
           "${RUNNER_TEMP}/collector-missing-display-names.json"
 
       # Open/update/close a tracking issue for collector components lacking a display_name.
-      # Not gated on has_changes (a component can be missing one on a night with no DB diff);
-      # skips when the report is absent (javaagent/configuration-only runs). Issue writes use
-      # GITHUB_TOKEN + `issues: write`; the otelbot App token only holds `pull-requests: write`.
+      # Not gated on has_changes (a component can be missing one on a night with no DB diff)
+      # or on is_primary (issue writes only need GITHUB_TOKEN + `issues: write`, so this works
+      # on forks too, against their own issues); skips when the report is absent
+      # (javaagent/configuration-only runs).
       - name: Sync missing-display_name tracking issue
-        if: steps.repo_check.outputs.is_primary == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPORT_FILE: ${{ runner.temp }}/collector-missing-display-names.json
