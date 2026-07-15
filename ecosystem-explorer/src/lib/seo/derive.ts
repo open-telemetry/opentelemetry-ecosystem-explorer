@@ -92,9 +92,9 @@ export function deriveCollectorMeta(component: CollectorComponentLike): SeoMeta 
   const description = component.description
     ? clampDescription(component.description)
     : clampDescription(
-        `${label} is ${component.stability ? `a ${component.stability} ` : "a "}${
-          component.type ?? "component"
-        } in the OpenTelemetry Collector ${component.distribution} distribution.`
+        `${label} is a ${component.type ?? "component"} in the OpenTelemetry Collector ${
+          component.distribution
+        } distribution${component.stability ? ` (${component.stability})` : ""}.`
       );
   return { title, description };
 }

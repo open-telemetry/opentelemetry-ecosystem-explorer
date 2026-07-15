@@ -78,7 +78,7 @@ describe("deriveCollectorMeta", () => {
     expect(meta.description).toBe("Receives OTLP data.");
   });
 
-  it("falls back to a templated description and the id when metadata is sparse", () => {
+  it("falls back to a templated description and the name when metadata is sparse", () => {
     const meta = deriveCollectorMeta({
       id: "core-xconnector",
       name: "xconnector",
@@ -90,7 +90,7 @@ describe("deriveCollectorMeta", () => {
     });
     expect(meta.title).toBe("xconnector — OpenTelemetry Collector");
     expect(meta.description).toBe(
-      "xconnector is a alpha connector in the OpenTelemetry Collector core distribution."
+      "xconnector is a connector in the OpenTelemetry Collector core distribution (alpha)."
     );
   });
 });
