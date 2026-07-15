@@ -2,12 +2,49 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#12142a" />
     <link rel="help" type="text/plain" href="/llms.txt" />
     <link rel="alternate" type="text/plain" href="/llms.txt" />
     <link rel="llms-txt" type="text/plain" href="/llms.txt" />
     <title>OpenTelemetry Ecosystem Explorer</title>
+
+    <!--
+      Site-level SEO defaults. These are the fallback for every route; per-route
+      title/description/canonical/OG are set client-side (React <Seo>) and at the
+      edge (agent-negotiation edge function) so social scrapers and non-JS
+      crawlers get page-specific metadata. No static canonical here on purpose:
+      index.html is served for every path, so a hardcoded canonical would point
+      all routes at the homepage.
+    -->
+    <meta
+      name="description"
+      content="Search and explore the OpenTelemetry ecosystem: Collector components and Java agent instrumentations, with telemetry, configuration, and version details."
+    />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="OpenTelemetry Ecosystem Explorer" />
+    <meta property="og:title" content="OpenTelemetry Ecosystem Explorer" />
+    <meta
+      property="og:description"
+      content="Search and explore the OpenTelemetry ecosystem: Collector components and Java agent instrumentations, with telemetry, configuration, and version details."
+    />
+    <meta property="og:url" content="https://explorer.opentelemetry.io/" />
+    <meta property="og:image" content="https://explorer.opentelemetry.io/og-default.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="OpenTelemetry Ecosystem Explorer" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="OpenTelemetry Ecosystem Explorer" />
+    <meta
+      name="twitter:description"
+      content="Search and explore the OpenTelemetry ecosystem: Collector components and Java agent instrumentations, with telemetry, configuration, and version details."
+    />
+    <meta name="twitter:image" content="https://explorer.opentelemetry.io/og-default.png" />
     <script>
       (function () {
         function fromSystem() {
