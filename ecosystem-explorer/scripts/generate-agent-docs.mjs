@@ -204,6 +204,9 @@ ${pageList(javaPages)}
 
 const escapeCell = (value) =>
   String(value ?? "")
+    // Escape backslashes first so a literal "\" becomes "\\" before we introduce
+    // our own backslash escapes for pipes (otherwise the escaping is ambiguous).
+    .replace(/\\/g, "\\\\")
     .replace(/\|/g, "\\|")
     .replace(/\s+/g, " ")
     .trim();
