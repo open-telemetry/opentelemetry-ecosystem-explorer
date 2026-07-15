@@ -126,11 +126,6 @@ jobs:
           uv run explorer-db-builder --ecosystem "$ECOSYSTEM" --clean --collector-audit-report
           "${RUNNER_TEMP}/collector-missing-display-names.json"
 
-      # Open/update/close a tracking issue for collector components lacking a display_name.
-      # Not gated on has_changes (a component can be missing one on a night with no DB diff)
-      # or on is_primary (issue writes only need GITHUB_TOKEN + `issues: write`, so this works
-      # on forks too, against their own issues); skips when the report is absent
-      # (javaagent/configuration-only runs).
       - name: Sync missing-display_name tracking issue
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -143,8 +138,6 @@ jobs:
             exit 0
           fi
 
-          # No backticks in the title: they'd show literally (titles aren't rendered) and
-          # this is also the `in:title` search key below.
           ISSUE_TITLE="Collector components missing display_name"
           LABEL="upstream-metadata"
 
