@@ -89,7 +89,7 @@ export function StandaloneLibraryTab({
         components={{
           a: Anchor,
           code: Code,
-          // Downshift README headings one level: the page already owns the sole
+          // Downshift README headings h1–h3 one level: the page already owns the sole
           // <h1> (the instrumentation name), so the rendered document keeps a
           // single top-level heading. Styling classes are unchanged.
           h1: ({ children }) => (
