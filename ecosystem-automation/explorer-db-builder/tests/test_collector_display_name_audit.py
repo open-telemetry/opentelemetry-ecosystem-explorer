@@ -80,6 +80,18 @@ class TestFindMissingDisplayNames:
         result = find_missing_display_names([_component("nopreceiver", display_name=None)])
         assert set(result[0].keys()) == {"id", "distribution", "type", "name"}
 
+    def test_ignores_experimental_core_placeholders(self):
+        components = [
+            _component("xconnector", display_name=None, distribution="core", component_type="connector"),
+            _component("xexporter", display_name=None, distribution="core", component_type="exporter"),
+            _component("xextension", display_name=None, distribution="core", component_type="extension"),
+            _component("xprocessor", display_name=None, distribution="core", component_type="processor"),
+            _component("xreceiver", display_name=None, distribution="core", component_type="receiver"),
+            _component("realreceiver", display_name=None, distribution="core"),
+        ]
+        result = find_missing_display_names(components)
+        assert [c["name"] for c in result] == ["realreceiver"]
+
 
 class TestWriteMissingDisplayNameReport:
     def test_round_trips(self, tmp_path):

@@ -24,6 +24,19 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
+# Experimental interface placeholders in collector-core (the "x" prefix denotes the
+# experimental component API), not real user-facing components - they legitimately have
+# no display_name, so exclude them from the audit rather than flag them for an upstream fix.
+IGNORED_COMPONENT_IDS = frozenset(
+    {
+        "core-xconnector",
+        "core-xexporter",
+        "core-xextension",
+        "core-xprocessor",
+        "core-xreceiver",
+    }
+)
+
 
 def find_missing_display_names(components: list[dict[str, Any]]) -> list[dict[str, str]]:
     """Return the components whose display_name is missing or blank.
@@ -35,9 +48,12 @@ def find_missing_display_names(components: list[dict[str, Any]]) -> list[dict[st
     Returns:
         Slim dicts {id, distribution, type, name} for every component whose display_name
         is absent, null, or empty/whitespace-only, sorted by id for deterministic output.
+        Components in IGNORED_COMPONENT_IDS are excluded.
     """
     missing: list[dict[str, str]] = []
     for component in components:
+        if component.get("id") in IGNORED_COMPONENT_IDS:
+            continue
         if not (component.get("display_name") or "").strip():
             missing.append(
                 {
