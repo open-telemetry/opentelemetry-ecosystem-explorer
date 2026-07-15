@@ -2,7 +2,7 @@ distribution: contrib
 version: 0.156.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: processor
-schema_hash: 5f02f63b26d4
+schema_hash: cb7aa934b19a
 components:
 - name: attributesprocessor
   metadata:
@@ -664,6 +664,50 @@ components:
         - Aneurysm9
         - dashpole
         seeking_new: true
+    attributes:
+      detector:
+        description: The resource detector that produced the result.
+        type: string
+        enum:
+        - akamai
+        - aks
+        - alibaba_ecs
+        - azure
+        - consul
+        - digitalocean
+        - docker
+        - dynatrace
+        - ec2
+        - ecs
+        - eks
+        - elastic_beanstalk
+        - env
+        - gcp
+        - heroku
+        - hetzner
+        - ibmcloud_classic
+        - ibmcloud_vpc
+        - k8s_api
+        - k8snode
+        - kubeadm
+        - lambda
+        - nova
+        - openshift
+        - oraclecloud
+        - scaleway
+        - system
+        - tencent_cvm
+        - upcloud
+        - vultr
+      error.type:
+        description: The type of error that caused detection to fail. Absent on success.
+        type: string
+      outcome:
+        description: Whether the detection operation succeeded or failed.
+        type: string
+        enum:
+        - failure
+        - success
 - name: resourceprocessor
   metadata:
     type: resource

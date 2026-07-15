@@ -2,7 +2,7 @@ distribution: contrib
 version: 0.156.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: receiver
-schema_hash: 5f02f63b26d4
+schema_hash: cb7aa934b19a
 components:
 - name: activedirectorydsreceiver
   metadata:
@@ -9428,6 +9428,11 @@ components:
         active:
         - antonblock
         - ishleenk17
+        - ebrdarSplunk
+        - XSAM
+        - akshays-19
+        - sv-splunk
+        - splunk-shanu
         seeking_new: true
         emeritus:
         - djaglowski
@@ -11915,6 +11920,31 @@ components:
         gauge:
           value_type: double
         stability: development
+      oracledb.system.cpu.count:
+        description: Number of CPUs or processors available to the Oracle server,
+          as reported by the operating system.
+        unit: '{cpu}'
+        enabled: false
+        gauge:
+          value_type: int
+        stability: development
+      oracledb.system.memory.limit:
+        description: Total number of bytes of physical memory on the host running
+          the Oracle server.
+        unit: By
+        enabled: false
+        gauge:
+          value_type: int
+        stability: development
+      oracledb.system.process.count:
+        description: Current number of processes that are either running or in the
+          ready state, waiting to be selected by the operating-system scheduler to
+          run.
+        unit: '{process}'
+        enabled: false
+        gauge:
+          value_type: double
+        stability: development
       oracledb.tablespace_size.limit:
         description: Maximum size of tablespace in bytes, -1 if unlimited.
         unit: By
@@ -12225,6 +12255,10 @@ components:
         - ishleenk17
         - Caleb-Hurshman
         - ebrdarSplunk
+        - XSAM
+        - akshays-19
+        - sv-splunk
+        - splunk-shanu
         seeking_new: true
         emeritus:
         - djaglowski
@@ -16949,6 +16983,9 @@ components:
         enum:
         - allocated
         - deallocated
+      sqlserver.index.id:
+        description: The identifier of the index.
+        type: int
       sqlserver.lock.block.type:
         description: The type of lock block tracked by the lock manager.
         type: string
@@ -16970,6 +17007,9 @@ components:
       sqlserver.logical_reads:
         description: Number of logical reads (data read from cache/memory).
         type: int
+      sqlserver.object.name:
+        description: The name of the database object.
+        type: string
       sqlserver.open_transaction_count:
         description: Number of transactions currently open in the session.
         type: int
@@ -17047,6 +17087,9 @@ components:
       sqlserver.row_count:
         description: Number of rows affected or returned by the query.
         type: int
+      sqlserver.schema.name:
+        description: The name of the database schema.
+        type: string
       sqlserver.session.duration:
         description: Total elapsed time in seconds the session has been actively executing
           requests.
@@ -17343,6 +17386,57 @@ components:
           value_type: double
         attributes: []
         stability: development
+      sqlserver.index.fragmentation:
+        description: Average fragmentation percentage of the index.
+        unit: '%'
+        enabled: false
+        gauge:
+          value_type: double
+        attributes:
+        - db.namespace
+        - sqlserver.index.id
+        - sqlserver.object.name
+        - sqlserver.schema.name
+        stability: development
+      sqlserver.index.page.count:
+        description: Number of pages in the index.
+        unit: '{page}'
+        enabled: false
+        gauge:
+          value_type: int
+          input_type: string
+        attributes:
+        - db.namespace
+        - sqlserver.index.id
+        - sqlserver.object.name
+        - sqlserver.schema.name
+        stability: development
+      sqlserver.index.page.utilization:
+        description: Average percentage of available data storage space used in all
+          pages of the index.
+        unit: '%'
+        enabled: false
+        gauge:
+          value_type: double
+        attributes:
+        - db.namespace
+        - sqlserver.index.id
+        - sqlserver.object.name
+        - sqlserver.schema.name
+        stability: development
+      sqlserver.index.record.count:
+        description: Total number of records in the index.
+        unit: '{record}'
+        enabled: false
+        gauge:
+          value_type: int
+          input_type: string
+        attributes:
+        - db.namespace
+        - sqlserver.index.id
+        - sqlserver.object.name
+        - sqlserver.schema.name
+        stability: development
       sqlserver.index.search.rate:
         description: Total number of index searches.
         unit: '{searches}/s'
@@ -17350,6 +17444,19 @@ components:
         gauge:
           value_type: double
         attributes: []
+        stability: development
+      sqlserver.index.size:
+        description: Total size of the index.
+        unit: By
+        enabled: false
+        gauge:
+          value_type: int
+          input_type: string
+        attributes:
+        - db.namespace
+        - sqlserver.index.id
+        - sqlserver.object.name
+        - sqlserver.schema.name
         stability: development
       sqlserver.latch.superlatch.count:
         description: Number of superlatches currently active.
