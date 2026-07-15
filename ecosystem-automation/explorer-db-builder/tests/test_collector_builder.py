@@ -454,6 +454,20 @@ class TestRunCollectorBuilderAuditReport:
             report = json.load(f)
         assert report["missing"] == []
 
+    def test_report_path_inside_database_dir_fails(self, tmp_path):
+        manager = _make_mock_inventory_manager()
+        db_dir = tmp_path / "collector"
+        db_writer = CollectorDatabaseWriter(database_dir=str(db_dir))
+        # A report written inside the DB dir would get committed / bump DB_VERSION.
+        report_path = db_dir / "audit" / "missing.json"
+
+        result = run_collector_builder(
+            inventory_manager=manager, db_writer=db_writer, audit_report_path=str(report_path)
+        )
+
+        assert result == 1
+        assert not report_path.exists()
+
 
 class TestRunCollectorBuilderReadmes:
     """Mirrors test_main.py's test_run_builder_processes_readmes for the javaagent builder."""

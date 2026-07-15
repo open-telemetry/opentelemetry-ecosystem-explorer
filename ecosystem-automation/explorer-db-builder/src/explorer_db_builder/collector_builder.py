@@ -15,6 +15,7 @@
 """Orchestrates the collector database build pipeline."""
 
 import logging
+from pathlib import Path
 from typing import Optional
 
 from collector_watcher.inventory_manager import InventoryManager
@@ -206,6 +207,13 @@ def run_collector_builder(
         )
 
         if audit_report_path:
+            # Enforce the "outside the database directory" invariant: a report written
+            # inside it would be committed and bump DB_VERSION. Fail fast if so.
+            report_path = Path(audit_report_path).resolve()
+            db_dir = db_writer.database_dir.resolve()
+            if report_path == db_dir or db_dir in report_path.parents:
+                raise ValueError(f"audit report path {report_path} must be outside the database directory {db_dir}")
+
             # Latest release only: that's the version fixable upstream today.
             missing = find_missing_display_names(latest_components)
             write_missing_display_name_report(audit_report_path, str(processed_versions[0]), missing)
