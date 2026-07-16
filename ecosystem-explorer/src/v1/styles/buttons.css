@@ -22,8 +22,9 @@
  * rule).
  *
  * The `--outline-light` variant assumes a dark surface (today: only inside
- * `.td-cover-block`). A future light-surface outline variant will land
- * alongside the first consumer that needs it.
+ * `.td-cover-block`). `--outline-regular` is its regular/light-surface
+ * counterpart, first consumed by the list page's empty-state CTA
+ * (`EmptyState` in `src/v1/components/list/controls.tsx`).
  */
 
 .td-btn {
@@ -68,6 +69,18 @@
   background-color: hsl(var(--cover-block-fg-hsl) / 0.1);
   border-color: hsl(var(--cover-block-fg-hsl));
   color: hsl(var(--cover-block-fg-hsl));
+}
+
+.td-btn--outline-regular {
+  background-color: transparent;
+  color: hsl(var(--primary-hsl));
+  border-color: hsl(var(--primary-hsl) / 0.5);
+}
+
+.td-btn--outline-regular:hover,
+.td-btn--outline-regular:focus-visible {
+  background-color: hsl(var(--primary-hsl) / 0.1);
+  border-color: hsl(var(--primary-hsl));
 }
 
 .td-btn:focus-visible {

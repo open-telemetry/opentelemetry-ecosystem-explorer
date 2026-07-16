@@ -204,23 +204,6 @@
   color: hsl(var(--muted-foreground-hsl));
 }
 
-/*
- * `.td-btn` variant for the empty-state CTA — an outline button on regular
- * (non-cover-block) surfaces, complementing `--outline-light` in
- * `buttons.css` which assumes a dark cover-block surface.
- */
-.td-btn--outline-dark {
-  background-color: transparent;
-  color: hsl(var(--primary-hsl));
-  border-color: hsl(var(--primary-hsl) / 0.5);
-}
-
-.td-btn--outline-dark:hover,
-.td-btn--outline-dark:focus-visible {
-  background-color: hsl(var(--primary-hsl) / 0.1);
-  border-color: hsl(var(--primary-hsl));
-}
-
 /* ---------- Facet drawer toggle ---------- */
 
 .td-facet-toggle {

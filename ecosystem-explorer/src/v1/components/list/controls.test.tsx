@@ -58,25 +58,23 @@ describe("ActiveFilterChips", () => {
 
   it("renders one chip per active filter plus a Clear-all", () => {
     renderChips();
-    expect(
-      screen.getByRole("button", { name: /Remove filter Search: kafka/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /Remove filter Type: receiver/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /Remove filter Type: processor/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /Remove filter Signal: traces/i })
-    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Remove filter Search: kafka" })).toBeInTheDocument();
+    expect(screen.getByText("Type: Receiver")).toBeInTheDocument();
+    expect(screen.getByText("Type: Processor")).toBeInTheDocument();
+    expect(screen.getByText("Signal: Traces")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Clear all/i })).toBeInTheDocument();
+  });
+
+  it("localizes facet chip labels through the collector namespace instead of raw filter values", () => {
+    renderChips();
+    expect(screen.queryByText("Type: receiver")).toBeNull();
+    expect(screen.queryByText("Signal: traces")).toBeNull();
   });
 
   it("dispatches a filter change when a chip is clicked", () => {
     const onChange = vi.fn();
     renderChips({ onChange });
-    fireEvent.click(screen.getByRole("button", { name: /Remove filter Type: receiver/i }));
+    fireEvent.click(screen.getByRole("button", { name: "Remove filter Type: Receiver" }));
     expect(onChange).toHaveBeenCalledWith({ types: ["processor"] });
   });
 

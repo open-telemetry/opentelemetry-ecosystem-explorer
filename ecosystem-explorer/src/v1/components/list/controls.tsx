@@ -45,8 +45,19 @@ export interface ActiveFilterChipsProps {
 }
 
 export function ActiveFilterChips({ filters, onChange }: ActiveFilterChipsProps) {
-  const { t } = useTranslation("list");
+  const { t } = useTranslation(["list", "collector"]);
   const chips: Chip[] = [];
+
+  // Facet values (e.g. "receiver", "traces") are internal identifiers, not
+  // display text — resolve them through the same `collector:listV1.facets`
+  // keys `FacetPanel` already uses so chip labels stay localized and never
+  // drift from the facet panel's option copy.
+  function facetLabel(
+    facet: "type" | "signal" | "stability" | "distribution",
+    value: string
+  ): string {
+    return t(`listV1.facets.${facet}.options.${value}`, { ns: "collector" });
+  }
 
   if (filters.q.trim().length > 0) {
     chips.push({
@@ -64,28 +75,28 @@ export function ActiveFilterChips({ filters, onChange }: ActiveFilterChipsProps)
   filters.types.forEach((type) =>
     chips.push({
       key: `type:${type}`,
-      label: t("chips.type", { value: type }),
+      label: t("chips.type", { value: facetLabel("type", type) }),
       onRemove: () => removeFrom<CollectorComponentType>("types", type),
     })
   );
   filters.signals.forEach((signal) =>
     chips.push({
       key: `signal:${signal}`,
-      label: t("chips.signal", { value: signal }),
+      label: t("chips.signal", { value: facetLabel("signal", signal) }),
       onRemove: () => removeFrom<Signal>("signals", signal),
     })
   );
   filters.stabilities.forEach((stability) =>
     chips.push({
       key: `stability:${stability}`,
-      label: t("chips.stability", { value: stability }),
+      label: t("chips.stability", { value: facetLabel("stability", stability) }),
       onRemove: () => removeFrom<StabilityFacet>("stabilities", stability),
     })
   );
   filters.distributions.forEach((distribution) =>
     chips.push({
       key: `dist:${distribution}`,
-      label: t("chips.distribution", { value: distribution }),
+      label: t("chips.distribution", { value: facetLabel("distribution", distribution) }),
       onRemove: () => removeFrom<Distribution>("distributions", distribution),
     })
   );
@@ -244,7 +255,7 @@ export function EmptyState({ onClearAll, hasActiveFilters }: EmptyStateProps) {
         {hasActiveFilters ? t("emptyState.leadFiltered") : t("emptyState.leadUnfiltered")}
       </p>
       {hasActiveFilters && onClearAll && (
-        <button type="button" className="td-btn td-btn--outline-dark" onClick={onClearAll}>
+        <button type="button" className="td-btn td-btn--outline-regular" onClick={onClearAll}>
           {t("emptyState.clearAll")}
         </button>
       )}
