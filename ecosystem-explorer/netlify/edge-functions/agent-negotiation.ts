@@ -87,6 +87,21 @@ async function loadRoutes(context: Context): Promise<Record<string, RouteMeta>> 
   return routesCache ?? {};
 }
 
+// Fetches the pre-generated Markdown for a route (served at `${path}.md`).
+// Returns null when the file doesn't exist — the SPA catch-all serves
+// /index.html (200, text/html) for unknown paths, which we detect and treat as
+// "no Markdown for this route".
+async function fetchMarkdown(context: Context, mdPath: string): Promise<string | null> {
+  try {
+    const response = await context.rewrite(mdPath);
+    if (response.status !== 200) return null;
+    if ((response.headers.get("content-type") ?? "").includes("text/html")) return null;
+    return await response.text();
+  } catch {
+    return null;
+  }
+}
+
 // Parameterized routes that are valid but not enumerated in routes.json (they
 // resolve client-side): versioned Collector lists and the Java instrumentation
 // version/redirect routes. Anything else not in the manifest is a real 404.
@@ -101,6 +116,177 @@ function isDynamicKnownRoute(pathname: string): boolean {
 const escapeHtml = (value: string): string =>
   value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const escapeAttr = (value: string): string => escapeHtml(value).replace(/"/g, "&quot;");
+
+// --- Minimal Markdown -> HTML for edge-side body injection -------------------
+// Converts the constrained Markdown our build emits (headings, blockquotes,
+// unordered lists, GFM tables, and inline bold/code/links) into HTML. This is
+// deliberately NOT a general Markdown implementation — it only needs to cover
+// the shapes produced by scripts/generate-agent-docs.mjs. The result is injected
+// into `#root` so HTTP-only agents (which don't execute our React SPA) see real
+// page content instead of an empty shell (afdocs rendering-strategy /
+// content-start-position checks read the non-JS HTML body).
+
+// Inline formatting on a single line: code spans, bold, then links. The whole
+// string is HTML-escaped first, so captured link hrefs only need quote-escaping.
+function inlineMd(text: string): string {
+  let s = escapeHtml(text);
+  s = s.replace(/`([^`]+)`/g, (_m, code) => `<code>${code}</code>`);
+  s = s.replace(/\*\*([^*]+)\*\*/g, (_m, bold) => `<strong>${bold}</strong>`);
+  s = s.replace(
+    /\[([^\]]+)\]\(([^)]+)\)/g,
+    (_m, label, href) => `<a href="${href.replace(/"/g, "&quot;")}">${label}</a>`
+  );
+  return s;
+}
+
+// Splits a table row on unescaped pipes, reversing the "\|" and "\\" escapes that
+// escapeCell() introduces in the generator.
+function splitRow(line: string): string[] {
+  const body = line.trim().replace(/^\|/, "").replace(/\|$/, "");
+  const cells: string[] = [];
+  let cur = "";
+  for (let i = 0; i < body.length; i++) {
+    const ch = body[i];
+    if (ch === "\\" && i + 1 < body.length) {
+      cur += body[i + 1];
+      i++;
+    } else if (ch === "|") {
+      cells.push(cur.trim());
+      cur = "";
+    } else {
+      cur += ch;
+    }
+  }
+  cells.push(cur.trim());
+  return cells;
+}
+
+const isTableSeparator = (line: string): boolean =>
+  line.includes("-") && /^[\s|:-]+$/.test(line.trim());
+
+function markdownToHtml(md: string): string {
+  const lines = md.replace(/\r\n/g, "\n").split("\n");
+  const out: string[] = [];
+  const isBlockStart = (t: string): boolean =>
+    t === "" ||
+    /^<!--.*-->$/.test(t) ||
+    /^#{1,6}\s+/.test(t) ||
+    /^>\s?/.test(t) ||
+    /^[-*]\s+/.test(t) ||
+    t.startsWith("|") ||
+    /^-{3,}$/.test(t);
+
+  let i = 0;
+  while (i < lines.length) {
+    const t = lines[i].trim();
+
+    // Blank lines and standalone HTML comments (e.g. the llms-txt-link marker).
+    if (t === "" || /^<!--.*-->$/.test(t)) {
+      i++;
+      continue;
+    }
+
+    const heading = /^(#{1,6})\s+(.*)$/.exec(t);
+    if (heading) {
+      const level = heading[1].length;
+      out.push(`<h${level}>${inlineMd(heading[2].trim())}</h${level}>`);
+      i++;
+      continue;
+    }
+
+    if (/^-{3,}$/.test(t)) {
+      out.push("<hr>");
+      i++;
+      continue;
+    }
+
+    if (/^>\s?/.test(t)) {
+      const buf: string[] = [];
+      while (i < lines.length && /^>\s?/.test(lines[i].trim())) {
+        buf.push(inlineMd(lines[i].trim().replace(/^>\s?/, "")));
+        i++;
+      }
+      out.push(`<blockquote><p>${buf.join("<br>")}</p></blockquote>`);
+      continue;
+    }
+
+    if (t.startsWith("|") && i + 1 < lines.length && isTableSeparator(lines[i + 1])) {
+      const header = splitRow(lines[i]);
+      i += 2; // consume the header row and the "| --- |" separator
+      const rows: string[][] = [];
+      while (i < lines.length && lines[i].trim().startsWith("|")) {
+        rows.push(splitRow(lines[i]));
+        i++;
+      }
+      const thead = `<thead><tr>${header.map((c) => `<th>${inlineMd(c)}</th>`).join("")}</tr></thead>`;
+      const tbody = `<tbody>${rows
+        .map((r) => `<tr>${r.map((c) => `<td>${inlineMd(c)}</td>`).join("")}</tr>`)
+        .join("")}</tbody>`;
+      out.push(`<table>${thead}${tbody}</table>`);
+      continue;
+    }
+
+    if (/^[-*]\s+/.test(t)) {
+      const items: string[] = [];
+      while (i < lines.length && /^[-*]\s+/.test(lines[i].trim())) {
+        items.push(`<li>${inlineMd(lines[i].trim().replace(/^[-*]\s+/, ""))}</li>`);
+        i++;
+      }
+      out.push(`<ul>${items.join("")}</ul>`);
+      continue;
+    }
+
+    const para: string[] = [];
+    while (i < lines.length && !isBlockStart(lines[i].trim())) {
+      para.push(inlineMd(lines[i].trim()));
+      i++;
+    }
+    if (para.length) {
+      out.push(`<p>${para.join(" ")}</p>`);
+    }
+  }
+
+  return out.join("\n");
+}
+
+// Visually-hidden (sr-only) in-body directive pointing agents at the docs index
+// and the page's Markdown. Kept in the page content area (a <p>, not
+// <nav>/<script>/<style>) so it satisfies the afdocs llms-txt-directive-html
+// check, which scans the <body> for a directive that survives HTML-to-Markdown
+// conversion. Not display:none — that risks being stripped by converters.
+const SR_ONLY_STYLE =
+  "position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;" +
+  "clip:rect(0,0,0,0);white-space:nowrap;border:0";
+
+function llmsDirective(mdUrl: string): string {
+  return (
+    `<p style="${SR_ONLY_STYLE}">This documentation has an index for AI agents at ` +
+    `<a href="/llms.txt">/llms.txt</a>. A Markdown version of this page is available at ` +
+    `<a href="${escapeAttr(mdUrl)}">${escapeHtml(mdUrl)}</a>.</p>`
+  );
+}
+
+// Wraps the agent-facing body injected into `#root`. The React app replaces this
+// on mount (createRoot clears the container), so it is only ever seen by non-JS
+// agents and briefly during first paint.
+function buildAgentBody(mdUrl: string, contentHtml: string): string {
+  return (
+    llmsDirective(mdUrl) +
+    `<main style="max-width:48rem;margin:0 auto;padding:2rem 1rem;` +
+    `font-family:system-ui,sans-serif;line-height:1.6">${contentHtml}</main>`
+  );
+}
+
+// Stub body for known routes without a generated Markdown page (e.g. versioned
+// lists) and for 404s, so the injected body is never empty.
+function fallbackContent(title: string, description: string): string {
+  return (
+    `<h1>${escapeHtml(title)}</h1><p>${escapeHtml(description)}</p><ul>` +
+    `<li><a href="/agent/collector/index.md">All Collector components</a></li>` +
+    `<li><a href="/agent/javaagent/index.md">All Java agent instrumentations</a></li>` +
+    `<li><a href="/llms.txt">Full documentation index</a></li></ul>`
+  );
+}
 
 // Replaces the content="" value of a <meta> tag identified by `identifier`
 // (e.g. `property="og:title"`). Our shell writes the identifier before content,
@@ -124,8 +310,10 @@ function buildJsonLd(title: string, description: string, canonicalUrl: string): 
 }
 
 // Rewrites the SPA shell's <head> with per-route title/description/OG/canonical,
-// a Markdown alternate link, and JSON-LD, then returns it with `status` (200 for
-// known routes, 404 for unknown ones so crawlers don't see soft 404s).
+// a Markdown alternate link, and JSON-LD; injects `bodyHtml` into the empty
+// `#root` so non-JS agents see real content (not a bare SPA shell); then returns
+// it with `status` (200 for known routes, 404 for unknown ones so crawlers don't
+// see soft 404s).
 async function injectHead(
   shell: Response,
   opts: {
@@ -134,9 +322,10 @@ async function injectHead(
     canonicalUrl: string;
     mdUrl: string;
     status: number;
+    bodyHtml: string;
   }
 ): Promise<Response> {
-  const { title, description, canonicalUrl, mdUrl, status } = opts;
+  const { title, description, canonicalUrl, mdUrl, status, bodyHtml } = opts;
   let html = await shell.text();
 
   html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(title)}</title>`);
@@ -152,6 +341,10 @@ async function injectHead(
     `<link rel="alternate" type="text/markdown" href="${escapeAttr(mdUrl)}" />` +
     `<script type="application/ld+json">${buildJsonLd(title, description, canonicalUrl)}</script>`;
   html = html.replace(/<\/head>/i, `${extraHead}</head>`);
+
+  // Populate the SPA root so HTTP-only agents see content. A function replacer
+  // avoids `$`-sequence interpretation in bodyHtml (which can contain `$`).
+  html = html.replace(/<div id="root">\s*<\/div>/, () => `<div id="root">${bodyHtml}</div>`);
 
   const headers = new Headers(shell.headers);
   headers.delete("content-length");
@@ -276,7 +469,19 @@ export default async (request: Request, context: Context) => {
   const title = meta?.title ?? (known ? DEFAULT_TITLE : `Page not found — ${DEFAULT_TITLE}`);
   const description = meta?.description ?? DEFAULT_DESCRIPTION;
   const canonicalUrl = `${SITE_ORIGIN}${lookupPath}`;
+  const mdPath = lookupPath === "/" ? "/index.md" : `${lookupPath}.md`;
   const mdUrl = lookupPath === "/" ? `${SITE_ORIGIN}/llms.txt` : `${SITE_ORIGIN}${lookupPath}.md`;
+
+  // Body injected into #root so HTTP-only agents get real content instead of an
+  // empty shell. Prefer the route's pre-generated Markdown; fall back to a
+  // title/description stub for known routes without a Markdown page and for 404s.
+  let contentHtml: string;
+  if (!known) {
+    contentHtml = fallbackContent("Page not found", `The page ${lookupPath} could not be found.`);
+  } else {
+    const md = await fetchMarkdown(context, mdPath);
+    contentHtml = md ? markdownToHtml(md) : fallbackContent(title, description);
+  }
 
   return injectHead(shell, {
     title,
@@ -284,5 +489,6 @@ export default async (request: Request, context: Context) => {
     canonicalUrl,
     mdUrl,
     status: known ? 200 : 404,
+    bodyHtml: buildAgentBody(mdUrl, contentHtml),
   });
 };

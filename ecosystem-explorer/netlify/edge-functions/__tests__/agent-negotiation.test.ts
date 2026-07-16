@@ -59,6 +59,26 @@ function htmlContext(routes: Record<string, { title: string; description: string
   });
 }
 
+// Like htmlContext, but also serves Markdown from `mdByPath` (path -> markdown)
+// so the body-injection branch can be exercised.
+function htmlContextWithMd(
+  routes: Record<string, { title: string; description: string }>,
+  mdByPath: Record<string, string>
+) {
+  return contextWith(async (path) => {
+    if (path === "/seo/routes.json") {
+      return new Response(JSON.stringify(routes), { status: 200 });
+    }
+    if (mdByPath[path]) {
+      return new Response(mdByPath[path], {
+        status: 200,
+        headers: { "content-type": "text/markdown" },
+      });
+    }
+    return htmlShell();
+  });
+}
+
 describe("agent-negotiation edge function", () => {
   it("passes a 304 Not Modified through for /data instead of converting it to 404", async () => {
     const context = contextWith(async () => new Response(null, { status: 304 }));
@@ -218,5 +238,102 @@ describe("agent-negotiation HTML metadata injection", () => {
     });
     const res = await handler(get("/collector/components/contrib/anything"), context);
     expect(res?.status).toBe(200);
+  });
+});
+
+describe("agent-negotiation body injection", () => {
+  const DETAIL_MD = [
+    "# Kafka Exporter",
+    "",
+    "<!-- llms-txt-link: /llms.txt -->",
+    "",
+    "> OpenTelemetry Collector exporter · contrib distribution",
+    "",
+    "- **Type**: exporter",
+    "- **Component ID**: `contrib-kafkaexporter`",
+    "",
+    "## Stability",
+    "",
+    "| Level | Signals |",
+    "| --- | --- |",
+    "| beta | logs, metrics |",
+  ].join("\n");
+
+  it("injects the route's Markdown into #root as HTML (headings, list, table, inline)", async () => {
+    const handler = await freshHandler();
+    const res = await handler(
+      get("/collector/components/contrib/kafkaexporter"),
+      htmlContextWithMd(
+        {
+          "/collector/components/contrib/kafkaexporter": {
+            title: "Kafka Exporter",
+            description: "d",
+          },
+        },
+        { "/collector/components/contrib/kafkaexporter.md": DETAIL_MD }
+      )
+    );
+    expect(res?.status).toBe(200);
+    const html = await res!.text();
+    // Root is no longer an empty SPA shell.
+    expect(html).not.toContain('<div id="root"></div>');
+    expect(html).toContain("<h1>Kafka Exporter</h1>");
+    expect(html).toContain("<blockquote>");
+    expect(html).toContain("<strong>Type</strong>");
+    expect(html).toContain("<code>contrib-kafkaexporter</code>");
+    expect(html).toContain("<table>");
+    expect(html).toContain("<th>Level</th>");
+    expect(html).toContain("<td>beta</td>");
+    // The llms-txt-link HTML comment is stripped, not rendered as text.
+    expect(html).not.toContain("llms-txt-link");
+  });
+
+  it("injects an in-body llms.txt directive that survives Markdown conversion", async () => {
+    const handler = await freshHandler();
+    const res = await handler(
+      get("/collector/components/contrib/kafkaexporter"),
+      htmlContextWithMd(
+        {
+          "/collector/components/contrib/kafkaexporter": {
+            title: "Kafka Exporter",
+            description: "d",
+          },
+        },
+        { "/collector/components/contrib/kafkaexporter.md": DETAIL_MD }
+      )
+    );
+    const html = await res!.text();
+    // A real anchor in the body content area (not a <head> <link>, <nav>, or script).
+    expect(html).toContain('<a href="/llms.txt">/llms.txt</a>');
+  });
+
+  it("falls back to a title/description body for a known route without Markdown", async () => {
+    const handler = await freshHandler();
+    const res = await handler(
+      get("/collector"),
+      htmlContext({ "/collector": { title: "Collector — X", description: "Browse components." } })
+    );
+    expect(res?.status).toBe(200);
+    const html = await res!.text();
+    expect(html).not.toContain('<div id="root"></div>');
+    expect(html).toContain("<h1>Collector — X</h1>");
+    expect(html).toContain("Browse components.");
+    expect(html).toContain('<a href="/llms.txt">/llms.txt</a>');
+  });
+
+  it("injects a not-found body (and directive) on a 404", async () => {
+    const handler = await freshHandler();
+    const res = await handler(
+      get("/collector/components/contrib/does-not-exist-xyz"),
+      htmlContextWithMd(
+        { "/collector/components/contrib/real": { title: "R", description: "d" } },
+        {}
+      )
+    );
+    expect(res?.status).toBe(404);
+    const html = await res!.text();
+    expect(html).not.toContain('<div id="root"></div>');
+    expect(html).toContain("<h1>Page not found</h1>");
+    expect(html).toContain('<a href="/llms.txt">/llms.txt</a>');
   });
 });
