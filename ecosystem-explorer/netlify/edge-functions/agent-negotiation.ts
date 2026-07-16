@@ -47,6 +47,120 @@ async function serveAsset(
   return response;
 }
 
+// Canonical production origin (mirrors SITE_ORIGIN in src/lib/seo/constants.ts).
+// Duplicated here to keep the edge function self-contained in the Deno runtime.
+const SITE_ORIGIN = "https://explorer.opentelemetry.io";
+const DEFAULT_TITLE = "OpenTelemetry Ecosystem Explorer";
+const DEFAULT_DESCRIPTION =
+  "Search and explore the OpenTelemetry ecosystem: Collector components and Java agent " +
+  "instrumentations, with telemetry, configuration, and version details.";
+
+// Static asset extensions that must pass through untouched (never rewritten to
+// the HTML shell). App routes have no such extension — note instrumentation
+// slugs like "kafka-clients-0.11" end in a version, not a file extension.
+const ASSET_EXT =
+  /\.(js|mjs|css|map|json|xml|txt|png|jpe?g|gif|svg|webp|avif|ico|woff2?|ttf|eot|wasm|pdf)$/i;
+
+interface RouteMeta {
+  title: string;
+  description: string;
+}
+
+// Per-route SEO metadata generated at build time (dist/seo/routes.json), cached
+// across invocations within an edge isolate.
+let routesCache: Record<string, RouteMeta> | null = null;
+let routesLoaded = false;
+
+async function loadRoutes(context: Context): Promise<Record<string, RouteMeta>> {
+  if (routesLoaded) {
+    return routesCache ?? {};
+  }
+  routesLoaded = true;
+  try {
+    const response = await context.rewrite("/seo/routes.json");
+    if (response.status === 200) {
+      routesCache = (await response.json()) as Record<string, RouteMeta>;
+    }
+  } catch {
+    routesCache = null;
+  }
+  return routesCache ?? {};
+}
+
+// Parameterized routes that are valid but not enumerated in routes.json (they
+// resolve client-side): versioned Collector lists and the Java instrumentation
+// version/redirect routes. Anything else not in the manifest is a real 404.
+function isDynamicKnownRoute(pathname: string): boolean {
+  if (/^\/collector\/components\/[^/]+$/.test(pathname)) return true;
+  if (/^\/java-agent\/instrumentation\/(latest|\d[\w.+-]*)$/.test(pathname)) return true;
+  if (/^\/java-agent\/instrumentation\/[^/]+\/[^/]+$/.test(pathname)) return true;
+  if (pathname === "/_dev/components") return true;
+  return false;
+}
+
+const escapeHtml = (value: string): string =>
+  value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const escapeAttr = (value: string): string => escapeHtml(value).replace(/"/g, "&quot;");
+
+// Replaces the content="" value of a <meta> tag identified by `identifier`
+// (e.g. `property="og:title"`). Our shell writes the identifier before content,
+// so this targeted replacement is sufficient; unmatched tags are left as-is.
+function setMetaContent(html: string, identifier: string, value: string): string {
+  const re = new RegExp(`(<meta[^>]*${identifier}[^>]*content=")[^"]*(")`, "i");
+  return html.replace(re, `$1${escapeAttr(value)}$2`);
+}
+
+function buildJsonLd(title: string, description: string, canonicalUrl: string): string {
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: title,
+    description,
+    url: canonicalUrl,
+    isPartOf: { "@type": "WebSite", name: DEFAULT_TITLE, url: `${SITE_ORIGIN}/` },
+  };
+  // Escape "<" so the JSON can't terminate the <script> element early.
+  return JSON.stringify(data).replace(/</g, "\\u003c");
+}
+
+// Rewrites the SPA shell's <head> with per-route title/description/OG/canonical,
+// a Markdown alternate link, and JSON-LD, then returns it with `status` (200 for
+// known routes, 404 for unknown ones so crawlers don't see soft 404s).
+async function injectHead(
+  shell: Response,
+  opts: {
+    title: string;
+    description: string;
+    canonicalUrl: string;
+    mdUrl: string;
+    status: number;
+  }
+): Promise<Response> {
+  const { title, description, canonicalUrl, mdUrl, status } = opts;
+  let html = await shell.text();
+
+  html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(title)}</title>`);
+  html = setMetaContent(html, 'name="description"', description);
+  html = setMetaContent(html, 'property="og:title"', title);
+  html = setMetaContent(html, 'property="og:description"', description);
+  html = setMetaContent(html, 'property="og:url"', canonicalUrl);
+  html = setMetaContent(html, 'name="twitter:title"', title);
+  html = setMetaContent(html, 'name="twitter:description"', description);
+
+  const extraHead =
+    `<link rel="canonical" href="${escapeAttr(canonicalUrl)}" />` +
+    `<link rel="alternate" type="text/markdown" href="${escapeAttr(mdUrl)}" />` +
+    `<script type="application/ld+json">${buildJsonLd(title, description, canonicalUrl)}</script>`;
+  html = html.replace(/<\/head>/i, `${extraHead}</head>`);
+
+  const headers = new Headers(shell.headers);
+  headers.delete("content-length");
+  headers.delete("content-encoding");
+  headers.set("content-type", "text/html; charset=utf-8");
+  headers.set("vary", "Accept");
+  return new Response(html, { status, headers });
+}
+
 export default async (request: Request, context: Context) => {
   const url = new URL(request.url);
   const { pathname } = url;
@@ -61,23 +175,27 @@ export default async (request: Request, context: Context) => {
     );
   }
 
-  // Content negotiation for AI agents
+  // Content negotiation for AI agents: prefer the page's own Markdown (generated
+  // at the app-route path), falling back to the section index, then the docs root.
   if (isMarkdownRequested) {
-    let mdPath = "";
+    const candidates: string[] = [];
     if (pathname === "/" || pathname === "/index.html") {
-      mdPath = "/llms.txt";
-    } else if (
-      pathname === "/java-agent" ||
-      pathname.startsWith("/java-agent/") ||
-      pathname === "/javaagent" ||
-      pathname.startsWith("/javaagent/")
-    ) {
-      mdPath = "/agent/javaagent/index.md";
-    } else if (pathname === "/collector" || pathname.startsWith("/collector/")) {
-      mdPath = "/agent/collector/index.md";
+      candidates.push("/llms.txt");
+    } else {
+      candidates.push(`${pathname}.md`);
+      if (
+        pathname === "/java-agent" ||
+        pathname.startsWith("/java-agent/") ||
+        pathname === "/javaagent" ||
+        pathname.startsWith("/javaagent/")
+      ) {
+        candidates.push("/agent/javaagent/index.md");
+      } else if (pathname === "/collector" || pathname.startsWith("/collector/")) {
+        candidates.push("/agent/collector/index.md");
+      }
     }
 
-    if (mdPath) {
+    for (const mdPath of candidates) {
       const finalContentType = mdPath.endsWith(".md")
         ? "text/markdown; charset=UTF-8"
         : "text/plain; charset=UTF-8";
@@ -125,5 +243,46 @@ export default async (request: Request, context: Context) => {
     return (await serveAsset(context, pathname, finalContentType)) ?? notFound();
   }
 
-  return undefined;
+  // HTML page navigation. Inject per-route metadata so non-JS social scrapers
+  // and crawlers get page-specific title/description/OG/canonical, and return a
+  // real 404 for unknown routes. Asset requests and non-GET methods pass through
+  // untouched so Netlify serves them (or the SPA shell) as before.
+  if (request.method !== "GET" || ASSET_EXT.test(pathname)) {
+    return undefined;
+  }
+
+  const shell = await context.rewrite("/index.html");
+  const shellType = shell.headers.get("content-type") ?? "";
+  if (shell.status !== 200 || !shellType.includes("text/html")) {
+    // Not the shell we expected — leave the response untouched.
+    return shell.status === 200 ? undefined : shell;
+  }
+
+  // Normalize /index.html and trailing slashes to the canonical route key so
+  // those variants resolve against the manifest instead of falling to a 404.
+  const lookupPath =
+    pathname === "/index.html"
+      ? "/"
+      : pathname.length > 1 && pathname.endsWith("/")
+        ? pathname.replace(/\/+$/, "")
+        : pathname;
+
+  const routes = await loadRoutes(context);
+  const manifestLoaded = Object.keys(routes).length > 0;
+  const meta = routes[lookupPath];
+  // If the manifest failed to load, don't risk false 404s: treat every page as known.
+  const known = !manifestLoaded || Boolean(meta) || isDynamicKnownRoute(lookupPath);
+
+  const title = meta?.title ?? (known ? DEFAULT_TITLE : `Page not found — ${DEFAULT_TITLE}`);
+  const description = meta?.description ?? DEFAULT_DESCRIPTION;
+  const canonicalUrl = `${SITE_ORIGIN}${lookupPath}`;
+  const mdUrl = lookupPath === "/" ? `${SITE_ORIGIN}/llms.txt` : `${SITE_ORIGIN}${lookupPath}.md`;
+
+  return injectHead(shell, {
+    title,
+    description,
+    canonicalUrl,
+    mdUrl,
+    status: known ? 200 : 404,
+  });
 };

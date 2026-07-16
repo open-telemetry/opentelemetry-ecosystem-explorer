@@ -17,6 +17,7 @@ import { describe, it, expect, vi } from "vitest";
 import handler from "../agent-negotiation";
 
 type Rewrite = (path: string) => Promise<Response>;
+type Handler = typeof handler;
 
 function contextWith(rewrite: Rewrite) {
   return { rewrite: vi.fn(rewrite) } as unknown as Parameters<typeof handler>[1];
@@ -24,6 +25,38 @@ function contextWith(rewrite: Rewrite) {
 
 function get(path: string, headers?: Record<string, string>) {
   return new Request(`https://explorer.opentelemetry.io${path}`, { headers });
+}
+
+// The routes manifest is cached in module scope, so load a fresh module instance
+// per test that exercises the HTML-injection branch to keep them isolated.
+async function freshHandler(): Promise<Handler> {
+  vi.resetModules();
+  const mod = await import("../agent-negotiation");
+  return mod.default;
+}
+
+// Minimal SPA shell mirroring the static tags in index.html that the edge overwrites.
+const SHELL = `<!doctype html><html lang="en"><head>
+<meta name="description" content="default description" />
+<meta property="og:title" content="OpenTelemetry Ecosystem Explorer" />
+<meta property="og:description" content="default og description" />
+<meta property="og:url" content="https://explorer.opentelemetry.io/" />
+<meta name="twitter:title" content="OpenTelemetry Ecosystem Explorer" />
+<meta name="twitter:description" content="default twitter description" />
+<title>OpenTelemetry Ecosystem Explorer</title>
+</head><body><div id="root"></div></body></html>`;
+
+const htmlShell = () =>
+  new Response(SHELL, { status: 200, headers: { "content-type": "text/html" } });
+
+// Dispatches rewrite() by path: routes.json returns `routes`, everything else the shell.
+function htmlContext(routes: Record<string, { title: string; description: string }>) {
+  return contextWith(async (path) => {
+    if (path === "/seo/routes.json") {
+      return new Response(JSON.stringify(routes), { status: 200 });
+    }
+    return htmlShell();
+  });
 }
 
 describe("agent-negotiation edge function", () => {
@@ -90,5 +123,100 @@ describe("agent-negotiation edge function", () => {
 
     const res2 = await handler(get("/java-agent-foo", { accept: "text/markdown" }), context);
     expect(res2?.status).toBe(404);
+  });
+
+  it("prefers the page's own markdown for a detail path with Accept: text/markdown", async () => {
+    const context = contextWith(async (path) => {
+      if (path === "/collector/components/contrib/kafkaexporter.md") {
+        return new Response("# Kafka Exporter", {
+          status: 200,
+          headers: { "content-type": "text/plain" },
+        });
+      }
+      return htmlShell();
+    });
+    const res = await handler(
+      get("/collector/components/contrib/kafkaexporter", { accept: "text/markdown" }),
+      context
+    );
+    expect(res?.status).toBe(200);
+    expect(res?.headers.get("content-type")).toBe("text/markdown; charset=UTF-8");
+    expect(await res!.text()).toContain("# Kafka Exporter");
+  });
+});
+
+describe("agent-negotiation HTML metadata injection", () => {
+  it("injects per-route title/description/OG/canonical for a known route", async () => {
+    const handler = await freshHandler();
+    const res = await handler(
+      get("/collector"),
+      htmlContext({ "/collector": { title: "Collector — X", description: "Browse components." } })
+    );
+    expect(res?.status).toBe(200);
+    const html = await res!.text();
+    expect(html).toContain("<title>Collector — X</title>");
+    expect(html).toContain('property="og:title" content="Collector — X"');
+    expect(html).toContain('name="description" content="Browse components."');
+    expect(html).toContain('rel="canonical" href="https://explorer.opentelemetry.io/collector"');
+    expect(html).toContain(
+      'type="text/markdown" href="https://explorer.opentelemetry.io/collector.md"'
+    );
+    expect(html).toContain("application/ld+json");
+  });
+
+  it("returns a real 404 for an unknown detail path (fixes soft 404)", async () => {
+    const handler = await freshHandler();
+    const res = await handler(
+      get("/collector/components/contrib/does-not-exist-xyz"),
+      htmlContext({ "/collector/components/contrib/real": { title: "R", description: "d" } })
+    );
+    expect(res?.status).toBe(404);
+  });
+
+  it("treats a versioned Collector list path as known (200)", async () => {
+    const handler = await freshHandler();
+    const res = await handler(
+      get("/collector/components/0.156.0"),
+      htmlContext({ "/": { title: "Home", description: "d" } })
+    );
+    expect(res?.status).toBe(200);
+  });
+
+  it("normalizes /index.html and trailing slashes to the canonical route", async () => {
+    const routes = {
+      "/": { title: "Home", description: "d" },
+      "/collector": { title: "Collector — X", description: "d" },
+    };
+
+    const home = await freshHandler();
+    const homeRes = await home(get("/index.html"), htmlContext(routes));
+    expect(homeRes?.status).toBe(200);
+    expect(await homeRes!.text()).toContain(
+      'rel="canonical" href="https://explorer.opentelemetry.io/"'
+    );
+
+    const slashed = await freshHandler();
+    const slashedRes = await slashed(get("/collector/"), htmlContext(routes));
+    expect(slashedRes?.status).toBe(200);
+    const html = await slashedRes!.text();
+    expect(html).toContain("<title>Collector — X</title>");
+    expect(html).toContain('rel="canonical" href="https://explorer.opentelemetry.io/collector"');
+  });
+
+  it("passes through asset requests untouched", async () => {
+    const handler = await freshHandler();
+    const context = contextWith(async () => htmlShell());
+    const res = await handler(get("/assets/index-abc123.js"), context);
+    expect(res).toBeUndefined();
+  });
+
+  it("serves 200 (no false 404) when the routes manifest is unavailable", async () => {
+    const handler = await freshHandler();
+    const context = contextWith(async (path) => {
+      if (path === "/seo/routes.json") return new Response("missing", { status: 404 });
+      return htmlShell();
+    });
+    const res = await handler(get("/collector/components/contrib/anything"), context);
+    expect(res?.status).toBe(200);
   });
 });
