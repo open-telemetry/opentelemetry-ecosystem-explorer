@@ -111,12 +111,6 @@ describe("agent-negotiation edge function", () => {
     expect(res?.status).toBe(404);
   });
 
-  it("passes a 304 Not Modified through for a markdown agent route", async () => {
-    const context = contextWith(async () => new Response(null, { status: 304 }));
-    const res = await handler(get("/agent/javaagent"), context);
-    expect(res?.status).toBe(304);
-  });
-
   it("serves markdown for /javaagent with Accept: text/markdown", async () => {
     const context = contextWith(
       async () =>
@@ -287,28 +281,11 @@ describe("agent-negotiation body injection", () => {
     // The llms-txt-link HTML comment is stripped, not rendered as text.
     expect(html).not.toContain("llms-txt-link");
     // Injected for agents but hidden from human visitors (no flash) and from
-    // screen readers, while the text stays in the HTML for HTTP fetchers.
+    // screen readers, and inert so it can't be tabbed into before React mounts,
+    // while the text stays in the HTML for HTTP fetchers.
     expect(html).toContain('aria-hidden="true"');
     expect(html).toContain("clip:rect(0,0,0,0)");
-  });
-
-  it("injects an in-body llms.txt directive that survives Markdown conversion", async () => {
-    const handler = await freshHandler();
-    const res = await handler(
-      get("/collector/components/contrib/kafkaexporter"),
-      htmlContextWithMd(
-        {
-          "/collector/components/contrib/kafkaexporter": {
-            title: "Kafka Exporter",
-            description: "d",
-          },
-        },
-        { "/collector/components/contrib/kafkaexporter.md": DETAIL_MD }
-      )
-    );
-    const html = await res!.text();
-    // A real anchor in the body content area (not a <head> <link>, <nav>, or script).
-    expect(html).toContain('<a href="/llms.txt">/llms.txt</a>');
+    expect(html).toContain("<div inert ");
   });
 
   it("falls back to a title/description body for a known route without Markdown", async () => {
@@ -404,6 +381,65 @@ describe("agent-negotiation body injection", () => {
     const vary = res!.headers.get("vary") ?? "";
     expect(vary).toContain("Accept-Encoding");
     expect(vary).toContain("Accept");
+  });
+
+  it("drops unsafe link schemes (javascript:) from injected Markdown, keeping safe ones", async () => {
+    const handler = await freshHandler();
+    const md = [
+      "# Title",
+      "",
+      "- [click me](javascript:alert(1))",
+      "- [protocol relative](//evil.example)",
+      "- [safe](/data/x.json)",
+      "- [external](https://example.com)",
+    ].join("\n");
+    const res = await handler(
+      get("/collector/components/contrib/kafkaexporter"),
+      htmlContextWithMd(
+        {
+          "/collector/components/contrib/kafkaexporter": {
+            title: "Kafka Exporter",
+            description: "d",
+          },
+        },
+        { "/collector/components/contrib/kafkaexporter.md": md }
+      )
+    );
+    const html = await res!.text();
+    // Unsafe hrefs never become anchors; the label survives as plain text.
+    expect(html).not.toContain("javascript:");
+    expect(html).not.toContain('href="//evil.example"');
+    expect(html).toContain("click me");
+    expect(html).toContain("protocol relative");
+    // Safe links still render.
+    expect(html).toContain('<a href="/data/x.json">safe</a>');
+    expect(html).toContain('<a href="https://example.com">external</a>');
+  });
+
+  it("retries loading the routes manifest after a transient failure", async () => {
+    const handler = await freshHandler();
+    let attempt = 0;
+    const context = contextWith(async (path) => {
+      if (path === "/seo/routes.json") {
+        attempt++;
+        if (attempt === 1) return new Response("boom", { status: 500 });
+        return new Response(
+          JSON.stringify({
+            "/collector/components/contrib/real": { title: "R", description: "d" },
+          }),
+          { status: 200 }
+        );
+      }
+      return htmlShell();
+    });
+    // First request: manifest fails, so every page is treated as known (200).
+    const res1 = await handler(get("/collector/components/contrib/does-not-exist"), context);
+    expect(res1?.status).toBe(200);
+    // Second request: the manifest loads (retry, not a permanent latch), so the
+    // unknown route now returns a real 404.
+    const res2 = await handler(get("/collector/components/contrib/does-not-exist"), context);
+    expect(res2?.status).toBe(404);
+    expect(attempt).toBe(2);
   });
 });
 

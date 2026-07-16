@@ -19,11 +19,10 @@ import type { Context } from "@netlify/edge-functions";
 const notFound = () => new Response("Not Found", { status: 404 });
 
 // Rewrites to a static asset and normalizes its Content-Type. Returns null when
-// the rewrite resolves to the SPA HTML shell (the catch-all redirect serves
-// /index.html with status 200 for unknown paths), so the caller can 404.
-// Any non-200 status is returned untouched: a 304 from a conditional
-// (If-None-Match) request must stay a 304 — collapsing it to 404 is what broke
-// data loading on revalidation. The same applies to 3xx, 206, and real errors.
+// the rewrite resolves to the SPA HTML shell (the catch-all serves /index.html
+// with status 200 for unknown paths), so the caller can 404. Any non-200 status
+// is returned untouched — collapsing a 304 to 404 is what broke data loading on
+// revalidation.
 async function serveAsset(
   context: Context,
   path: string,
@@ -75,11 +74,14 @@ async function loadRoutes(context: Context): Promise<Record<string, RouteMeta>> 
   if (routesLoaded) {
     return routesCache ?? {};
   }
-  routesLoaded = true;
   try {
     const response = await context.rewrite("/seo/routes.json");
     if (response.status === 200) {
       routesCache = (await response.json()) as Record<string, RouteMeta>;
+      // Only latch the cache on success; a transient failure (bad status,
+      // network error, invalid JSON) leaves routesLoaded false so the next
+      // request retries instead of degrading to defaults for the isolate's life.
+      routesLoaded = true;
     }
   } catch {
     routesCache = null;
@@ -118,13 +120,20 @@ const escapeHtml = (value: string): string =>
 const escapeAttr = (value: string): string => escapeHtml(value).replace(/"/g, "&quot;");
 
 // --- Minimal Markdown -> HTML for edge-side body injection -------------------
-// Converts the constrained Markdown our build emits (headings, blockquotes,
-// unordered lists, GFM tables, and inline bold/code/links) into HTML. This is
-// deliberately NOT a general Markdown implementation — it only needs to cover
-// the shapes produced by scripts/generate-agent-docs.mjs. The result is injected
-// into `#root` so HTTP-only agents (which don't execute our React SPA) see real
-// page content instead of an empty shell (afdocs rendering-strategy /
-// content-start-position checks read the non-JS HTML body).
+// Converts only the constrained Markdown shapes our build emits (headings,
+// blockquotes, unordered lists, GFM tables, inline bold/code/links) — not a
+// general Markdown implementation. The result is injected into `#root` so
+// HTTP-only agents (which don't execute our React SPA) see real page content
+// instead of an empty shell.
+
+// Only http(s), root-relative (but not protocol-relative "//"), fragment, query,
+// and relative links become anchors. Markdown can embed untrusted registry
+// strings, so unsafe schemes (javascript:, data:, etc.) must not reach an
+// `href` — even in the visually hidden agent body they'd be an XSS vector.
+const isSafeHref = (href: string): boolean => {
+  const h = href.trim();
+  return /^https?:\/\//i.test(h) || /^(#|\?|\.\/|\.\.\/)/.test(h) || /^\/(?!\/)/.test(h);
+};
 
 // Inline formatting on a single line: code spans, bold, then links. The whole
 // string is HTML-escaped first, so captured link hrefs only need quote-escaping.
@@ -132,9 +141,8 @@ function inlineMd(text: string): string {
   let s = escapeHtml(text);
   s = s.replace(/`([^`]+)`/g, (_m, code) => `<code>${code}</code>`);
   s = s.replace(/\*\*([^*]+)\*\*/g, (_m, bold) => `<strong>${bold}</strong>`);
-  s = s.replace(
-    /\[([^\]]+)\]\(([^)]+)\)/g,
-    (_m, label, href) => `<a href="${href.replace(/"/g, "&quot;")}">${label}</a>`
+  s = s.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_m, label, href) =>
+    isSafeHref(href) ? `<a href="${href.replace(/"/g, "&quot;")}">${label}</a>` : label
   );
   return s;
 }
@@ -271,16 +279,17 @@ function llmsDirective(mdUrl: string): string {
 //     strip) so human visitors never see a flash of unstyled content before
 //     React mounts;
 //   - aria-hidden so a screen reader doesn't announce it during the brief
-//     pre-mount window.
-// Neither CSS nor aria-hidden is honored by raw HTTP fetches or HTML-to-Markdown
-// converters, so agents still receive the full text content.
+//     pre-mount window, and inert so keyboard users can't tab into the hidden
+//     links before React mounts (aria-hidden alone doesn't block focus).
+// None of CSS, aria-hidden, or inert is honored by raw HTTP fetches or
+// HTML-to-Markdown converters, so agents still receive the full text content.
 const SR_ONLY_STYLE =
   "position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;" +
   "clip:rect(0,0,0,0);white-space:nowrap;border:0";
 
 function buildAgentBody(mdUrl: string, contentHtml: string): string {
   return (
-    `<div aria-hidden="true" style="${SR_ONLY_STYLE}">` +
+    `<div inert aria-hidden="true" style="${SR_ONLY_STYLE}">` +
     llmsDirective(mdUrl) +
     `<main>${contentHtml}</main>` +
     `</div>`
