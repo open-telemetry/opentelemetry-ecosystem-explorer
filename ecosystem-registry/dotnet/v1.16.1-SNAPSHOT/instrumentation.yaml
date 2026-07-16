@@ -217,7 +217,7 @@ modules:
 - name: OpenTelemetry.Resources.Host
   description: OpenTelemetry Resource Detectors for Host.
   type: extension
-  version: 1.16.0-beta.1
+  version: 1.16.0-beta.2
 - name: OpenTelemetry.Resources.OperatingSystem
   description: OpenTelemetry Resource Detectors for Operating System.
   type: extension

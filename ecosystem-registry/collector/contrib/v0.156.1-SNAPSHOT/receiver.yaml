@@ -10747,7 +10747,7 @@ components:
         - buffered
         - total
       network.io.direction:
-        description: Direction of the SQL*Net network transfer.
+        description: Direction of the network transfer.
         type: string
         enum:
         - receive
@@ -11009,9 +11009,10 @@ components:
           (UTC).
         type: string
       oracledb.session.type:
-        description: Class of session the database time is attributed to.
+        description: Class of session the activity is attributed to.
         type: string
         enum:
+        - background
         - foreground
       oracledb.sga.component.name:
         description: Name of the SGA component.
@@ -11030,6 +11031,12 @@ components:
       oracledb.sid:
         description: ID of the Oracle Server session.
         type: string
+      oracledb.smon.type:
+        description: Type of recovery SMON was posted to perform.
+        type: string
+        enum:
+        - instance
+        - transaction
       oracledb.sort.type:
         description: Type of sort operation (e.g., memory, disk).
         type: string
@@ -11180,6 +11187,13 @@ components:
           value_type: int
           input_type: string
         stability: development
+      oracledb.cpu.usage.rate:
+        description: CPU consumption rate, in CPU-seconds used per second.
+        unit: '1'
+        enabled: false
+        gauge:
+          value_type: double
+        stability: development
       oracledb.cpu_time:
         description: Cumulative CPU time, in seconds
         unit: s
@@ -11207,6 +11221,14 @@ components:
         gauge:
           value_type: int
           input_type: string
+        stability: development
+      oracledb.cursor.cache.utilization:
+        description: Percentage of cursor executions that reused a cursor in the session
+          cursor cache.
+        unit: '%'
+        enabled: false
+        gauge:
+          value_type: double
         stability: development
       oracledb.cursor.open:
         description: Number of currently open cursors in the Oracle instance.
@@ -11387,6 +11409,18 @@ components:
           value_type: int
           input_type: string
         stability: development
+      oracledb.gc.current_block.time:
+        description: Cumulative time spent transferring current blocks between instances
+          over RAC cache fusion.
+        unit: s
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: double
+        attributes:
+        - network.io.direction
+        stability: development
       oracledb.hard_parses:
         description: Number of hard parses
         unit: '{parses}'
@@ -11397,10 +11431,25 @@ components:
           value_type: int
           input_type: string
         stability: development
+      oracledb.host.cpu.usage.rate:
+        description: Host CPU consumption rate across all cores, in CPU-seconds used
+          per second.
+        unit: '1'
+        enabled: false
+        gauge:
+          value_type: double
+        stability: development
       oracledb.host.cpu.utilization:
         description: Fraction of host CPU time in use, as computed by Oracle V$SYSMETRIC
           (% Busy/(Idle+Busy)).
         unit: '%'
+        enabled: false
+        gauge:
+          value_type: double
+        stability: development
+      oracledb.io.single_block.read.latency:
+        description: Average latency of a synchronous single-block read.
+        unit: s
         enabled: false
         gauge:
           value_type: double
@@ -11424,6 +11473,17 @@ components:
           input_type: string
         attributes:
         - disk.io.direction
+        stability: development
+      oracledb.lock.time:
+        description: Cumulative time spent on transaction lock activity.
+        unit: s
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: double
+        attributes:
+        - oracledb.session.type
         stability: development
       oracledb.logical_reads:
         description: Number of logical reads
@@ -11562,6 +11622,14 @@ components:
           value_type: int
           input_type: string
         stability: development
+      oracledb.pga.cache.utilization:
+        description: Percentage of PGA work-area memory requests satisfied without
+          spilling to temporary disk.
+        unit: '%'
+        enabled: false
+        gauge:
+          value_type: double
+        stability: development
       oracledb.pga_memory:
         description: Session PGA (Program Global Area) memory
         unit: By
@@ -11699,6 +11767,16 @@ components:
           value_type: int
           input_type: string
         stability: development
+      oracledb.recovery.blocks:
+        description: Number of blocks read during instance or media recovery.
+        unit: '{block}'
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+          input_type: string
+        stability: development
       oracledb.recycle_bin.limit:
         description: Total size of the recycle bin.
         unit: By
@@ -11808,6 +11886,15 @@ components:
           value_type: int
           input_type: string
         stability: development
+      oracledb.session.average:
+        description: Average number of sessions over the metric interval.
+        unit: '{session}'
+        enabled: false
+        gauge:
+          value_type: double
+        attributes:
+        - session_status
+        stability: development
       oracledb.sessions.limit:
         description: Maximum limit of active sessions, -1 if unlimited.
         unit: '{sessions}'
@@ -11850,6 +11937,18 @@ components:
         enabled: false
         gauge:
           value_type: double
+        stability: development
+      oracledb.smon.posts:
+        description: Number of times SMON was posted to perform recovery.
+        unit: '{post}'
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+          input_type: string
+        attributes:
+        - oracledb.smon.type
         stability: development
       oracledb.sort.operations:
         description: Total count of sort operations.
@@ -11962,6 +12061,23 @@ components:
           value_type: int
         attributes:
         - tablespace_name
+        stability: development
+      oracledb.transaction.response.time:
+        description: Average response time per transaction.
+        unit: s
+        enabled: false
+        gauge:
+          value_type: double
+        stability: development
+      oracledb.transaction.rollbacks:
+        description: Total number of transactions rolled back.
+        unit: '{rollback}'
+        enabled: false
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+          input_type: string
         stability: development
       oracledb.transactions.limit:
         description: Maximum limit of active transactions, -1 if unlimited.
