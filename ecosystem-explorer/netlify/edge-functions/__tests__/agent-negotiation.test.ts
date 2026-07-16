@@ -286,6 +286,10 @@ describe("agent-negotiation body injection", () => {
     expect(html).toContain("<td>beta</td>");
     // The llms-txt-link HTML comment is stripped, not rendered as text.
     expect(html).not.toContain("llms-txt-link");
+    // Injected for agents but hidden from human visitors (no flash) and from
+    // screen readers, while the text stays in the HTML for HTTP fetchers.
+    expect(html).toContain('aria-hidden="true"');
+    expect(html).toContain("clip:rect(0,0,0,0)");
   });
 
   it("injects an in-body llms.txt directive that survives Markdown conversion", async () => {

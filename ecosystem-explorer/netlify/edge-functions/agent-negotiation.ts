@@ -249,31 +249,38 @@ function markdownToHtml(md: string): string {
   return out.join("\n");
 }
 
-// Visually-hidden (sr-only) in-body directive pointing agents at the docs index
-// and the page's Markdown. Kept in the page content area (a <p>, not
-// <nav>/<script>/<style>) so it satisfies the afdocs llms-txt-directive-html
-// check, which scans the <body> for a directive that survives HTML-to-Markdown
-// conversion. Not display:none — that risks being stripped by converters.
-const SR_ONLY_STYLE =
-  "position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;" +
-  "clip:rect(0,0,0,0);white-space:nowrap;border:0";
-
+// In-body directive pointing agents at the docs index and the page's Markdown.
+// Kept in the page content area (a <p>, not <nav>/<script>/<style>) so it
+// satisfies the afdocs llms-txt-directive-html check, which scans the <body> for
+// a directive that survives HTML-to-Markdown conversion.
 function llmsDirective(mdUrl: string): string {
   return (
-    `<p style="${SR_ONLY_STYLE}">This documentation has an index for AI agents at ` +
+    `<p>This documentation has an index for AI agents at ` +
     `<a href="/llms.txt">/llms.txt</a>. A Markdown version of this page is available at ` +
     `<a href="${escapeAttr(mdUrl)}">${escapeHtml(mdUrl)}</a>.</p>`
   );
 }
 
-// Wraps the agent-facing body injected into `#root`. The React app replaces this
-// on mount (createRoot clears the container), so it is only ever seen by non-JS
-// agents and briefly during first paint.
+// Wraps the agent-facing body injected into `#root`. It's rendered for HTTP-only
+// agents that don't execute our React SPA; the app replaces it on mount
+// (createRoot clears #root). The wrapper is:
+//   - visually hidden (sr-only clip, NOT display:none which md converters may
+//     strip) so human visitors never see a flash of unstyled content before
+//     React mounts;
+//   - aria-hidden so a screen reader doesn't announce it during the brief
+//     pre-mount window.
+// Neither CSS nor aria-hidden is honored by raw HTTP fetches or HTML-to-Markdown
+// converters, so agents still receive the full text content.
+const SR_ONLY_STYLE =
+  "position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;" +
+  "clip:rect(0,0,0,0);white-space:nowrap;border:0";
+
 function buildAgentBody(mdUrl: string, contentHtml: string): string {
   return (
+    `<div aria-hidden="true" style="${SR_ONLY_STYLE}">` +
     llmsDirective(mdUrl) +
-    `<main style="max-width:48rem;margin:0 auto;padding:2rem 1rem;` +
-    `font-family:system-ui,sans-serif;line-height:1.6">${contentHtml}</main>`
+    `<main>${contentHtml}</main>` +
+    `</div>`
   );
 }
 
