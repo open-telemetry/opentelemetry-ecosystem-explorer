@@ -165,11 +165,16 @@ const isTableSeparator = (line: string): boolean =>
   line.includes("-") && /^[\s|:-]+$/.test(line.trim());
 
 function markdownToHtml(md: string): string {
-  const lines = md.replace(/\r\n/g, "\n").split("\n");
+  // Strip HTML comments (e.g. the llms-txt-link marker) up front. `[\s\S]*?`
+  // matches across newlines, so multi-line comments are removed too — a plain
+  // `<!--.*-->` would miss those (CodeQL js/bad-tag-filter).
+  const lines = md
+    .replace(/\r\n/g, "\n")
+    .replace(/<!--[\s\S]*?-->/g, "")
+    .split("\n");
   const out: string[] = [];
   const isBlockStart = (t: string): boolean =>
     t === "" ||
-    /^<!--.*-->$/.test(t) ||
     /^#{1,6}\s+/.test(t) ||
     /^>\s?/.test(t) ||
     /^[-*]\s+/.test(t) ||
@@ -180,8 +185,8 @@ function markdownToHtml(md: string): string {
   while (i < lines.length) {
     const t = lines[i].trim();
 
-    // Blank lines and standalone HTML comments (e.g. the llms-txt-link marker).
-    if (t === "" || /^<!--.*-->$/.test(t)) {
+    // Blank lines (including lines emptied by the comment stripping above).
+    if (t === "") {
       i++;
       continue;
     }
