@@ -340,4 +340,97 @@ describe("agent-negotiation body injection", () => {
     expect(html).toContain("<h1>Page not found</h1>");
     expect(html).toContain('<a href="/llms.txt">/llms.txt</a>');
   });
+
+  it("does not hang on a stray '|' line that is not a table (renders it as a paragraph)", async () => {
+    const handler = await freshHandler();
+    // A leading "|" with no "| --- |" separator on the next line hits isBlockStart
+    // but no block handler — the paragraph branch must still advance.
+    const md = ["# Title", "", "| not a real table row", "", "Trailing prose."].join("\n");
+    const res = await handler(
+      get("/collector/components/contrib/kafkaexporter"),
+      htmlContextWithMd(
+        {
+          "/collector/components/contrib/kafkaexporter": {
+            title: "Kafka Exporter",
+            description: "d",
+          },
+        },
+        { "/collector/components/contrib/kafkaexporter.md": md }
+      )
+    );
+    expect(res?.status).toBe(200);
+    const html = await res!.text();
+    expect(html).toContain("<h1>Title</h1>");
+    expect(html).toContain("<p>| not a real table row</p>");
+    expect(html).toContain("<p>Trailing prose.</p>");
+    expect(html).not.toContain("<table>");
+  });
+
+  it("aligns the homepage's Markdown alternate/injection with /index.md (not /llms.txt)", async () => {
+    const handler = await freshHandler();
+    const res = await handler(
+      get("/"),
+      htmlContextWithMd(
+        { "/": { title: "Home", description: "d" } },
+        { "/index.md": "# Home\n\nWelcome to the explorer." }
+      )
+    );
+    expect(res?.status).toBe(200);
+    const html = await res!.text();
+    // Advertised alternate + in-body directive both point at /index.md.
+    expect(html).toContain(
+      'rel="alternate" type="text/markdown" href="https://explorer.opentelemetry.io/index.md"'
+    );
+    expect(html).toContain('href="https://explorer.opentelemetry.io/index.md"');
+    // The injected body is the homepage Markdown, not the llms.txt index.
+    expect(html).toContain("<h1>Home</h1>");
+    expect(html).toContain("Welcome to the explorer.");
+  });
+
+  it("merges Accept into an existing Vary header instead of overwriting it", async () => {
+    const handler = await freshHandler();
+    const context = contextWith(async (path) => {
+      if (path === "/seo/routes.json") {
+        return new Response(JSON.stringify({ "/collector": { title: "C", description: "d" } }), {
+          status: 200,
+        });
+      }
+      return new Response(SHELL, {
+        status: 200,
+        headers: { "content-type": "text/html", vary: "Accept-Encoding" },
+      });
+    });
+    const res = await handler(get("/collector"), context);
+    const vary = res!.headers.get("vary") ?? "";
+    expect(vary).toContain("Accept-Encoding");
+    expect(vary).toContain("Accept");
+  });
+});
+
+describe("agent-negotiation content negotiation", () => {
+  it("serves the homepage's own Markdown (/index.md) for Accept: text/markdown on /", async () => {
+    const context = contextWith(async (path) => {
+      if (path === "/index.md") {
+        return new Response("# Home", { status: 200, headers: { "content-type": "text/plain" } });
+      }
+      return htmlShell();
+    });
+    const res = await handler(get("/", { accept: "text/markdown" }), context);
+    expect(res?.status).toBe(200);
+    expect(res?.headers.get("content-type")).toBe("text/markdown; charset=UTF-8");
+    expect(await res!.text()).toContain("# Home");
+  });
+
+  it("falls back to /llms.txt for / when /index.md is missing", async () => {
+    const context = contextWith(async (path) => {
+      if (path === "/llms.txt") {
+        return new Response("# Index", { status: 200, headers: { "content-type": "text/plain" } });
+      }
+      return htmlShell(); // /index.md resolves to the SPA shell => treated as missing
+    });
+    const res = await handler(get("/", { accept: "text/markdown" }), context);
+    expect(res?.status).toBe(200);
+    expect(res?.headers.get("content-type")).toBe("text/plain; charset=UTF-8");
+    expect(await res!.text()).toContain("# Index");
+  });
 });

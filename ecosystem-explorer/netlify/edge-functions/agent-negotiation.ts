@@ -165,16 +165,12 @@ const isTableSeparator = (line: string): boolean =>
   line.includes("-") && /^[\s|:-]+$/.test(line.trim());
 
 function markdownToHtml(md: string): string {
-  // Strip HTML comments (e.g. the llms-txt-link marker) up front. `[\s\S]*?`
-  // matches across newlines, so multi-line comments are removed too — a plain
-  // `<!--.*-->` would miss those (CodeQL js/bad-tag-filter).
-  const lines = md
-    .replace(/\r\n/g, "\n")
-    .replace(/<!--[\s\S]*?-->/g, "")
-    .split("\n");
+  const lines = md.replace(/\r\n/g, "\n").split("\n");
   const out: string[] = [];
+  const isComment = (t: string): boolean => t.startsWith("<!--") && t.endsWith("-->");
   const isBlockStart = (t: string): boolean =>
     t === "" ||
+    isComment(t) ||
     /^#{1,6}\s+/.test(t) ||
     /^>\s?/.test(t) ||
     /^[-*]\s+/.test(t) ||
@@ -185,8 +181,8 @@ function markdownToHtml(md: string): string {
   while (i < lines.length) {
     const t = lines[i].trim();
 
-    // Blank lines (including lines emptied by the comment stripping above).
-    if (t === "") {
+    // Blank lines and whole-line HTML comments.
+    if (t === "" || isComment(t)) {
       i++;
       continue;
     }
@@ -241,14 +237,16 @@ function markdownToHtml(md: string): string {
       continue;
     }
 
-    const para: string[] = [];
+    // Paragraph. Always consume the current line first so `i` advances even when
+    // it is a block-start line no handler claimed (e.g. a stray "|" that isn't a
+    // table) — otherwise the loop would spin forever.
+    const para: string[] = [inlineMd(t)];
+    i++;
     while (i < lines.length && !isBlockStart(lines[i].trim())) {
       para.push(inlineMd(lines[i].trim()));
       i++;
     }
-    if (para.length) {
-      out.push(`<p>${para.join(" ")}</p>`);
-    }
+    out.push(`<p>${para.join(" ")}</p>`);
   }
 
   return out.join("\n");
@@ -362,7 +360,14 @@ async function injectHead(
   headers.delete("content-length");
   headers.delete("content-encoding");
   headers.set("content-type", "text/html; charset=utf-8");
-  headers.set("vary", "Accept");
+  // Merge "Accept" into any existing Vary (the shell may already vary on e.g.
+  // Accept-Encoding) rather than clobbering it, to keep caching correct.
+  const vary = headers.get("vary");
+  const varyParts = vary ? vary.split(",").map((p) => p.trim()) : [];
+  if (!varyParts.some((p) => p.toLowerCase() === "accept")) {
+    varyParts.push("Accept");
+  }
+  headers.set("vary", varyParts.join(", "));
   return new Response(html, { status, headers });
 }
 
@@ -385,7 +390,7 @@ export default async (request: Request, context: Context) => {
   if (isMarkdownRequested) {
     const candidates: string[] = [];
     if (pathname === "/" || pathname === "/index.html") {
-      candidates.push("/llms.txt");
+      candidates.push("/index.md", "/llms.txt");
     } else {
       candidates.push(`${pathname}.md`);
       if (
@@ -481,8 +486,11 @@ export default async (request: Request, context: Context) => {
   const title = meta?.title ?? (known ? DEFAULT_TITLE : `Page not found — ${DEFAULT_TITLE}`);
   const description = meta?.description ?? DEFAULT_DESCRIPTION;
   const canonicalUrl = `${SITE_ORIGIN}${lookupPath}`;
+  // The homepage's Markdown is /index.md (the route's own generated page), not
+  // /llms.txt. Keep mdPath (fetched + injected), mdUrl (advertised alternate +
+  // directive), and the Accept negotiation below all pointing at the same file.
   const mdPath = lookupPath === "/" ? "/index.md" : `${lookupPath}.md`;
-  const mdUrl = lookupPath === "/" ? `${SITE_ORIGIN}/llms.txt` : `${SITE_ORIGIN}${lookupPath}.md`;
+  const mdUrl = `${SITE_ORIGIN}${mdPath}`;
 
   // Body injected into #root so HTTP-only agents get real content instead of an
   // empty shell. Prefer the route's pre-generated Markdown; fall back to a
