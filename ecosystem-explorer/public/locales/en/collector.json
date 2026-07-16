@@ -35,6 +35,59 @@
       }
     }
   },
+  "listV1": {
+    "facets": {
+      "panel": {
+        "label": "Filters",
+        "close": "Close filters"
+      },
+      "search": {
+        "title": "Search",
+        "placeholder": "Search name or description…"
+      },
+      "type": {
+        "title": "Type",
+        "options": {
+          "receiver": "Receiver",
+          "processor": "Processor",
+          "exporter": "Exporter",
+          "connector": "Connector",
+          "extension": "Extension"
+        }
+      },
+      "signal": {
+        "title": "Signal",
+        "options": {
+          "traces": "Traces",
+          "metrics": "Metrics",
+          "logs": "Logs",
+          "baggage": "Baggage"
+        }
+      },
+      "stability": {
+        "title": "Stability",
+        "options": {
+          "stable": "Stable",
+          "beta": "Beta",
+          "alpha": "Alpha",
+          "development": "Development",
+          "deprecated": "Deprecated",
+          "unmaintained": "Unmaintained"
+        }
+      },
+      "distribution": {
+        "title": "Distribution",
+        "options": {
+          "core": "Core",
+          "contrib": "Contrib"
+        }
+      },
+      "version": {
+        "title": "Version",
+        "latest": "Latest"
+      }
+    }
+  },
   "page": {
     "title": "OpenTelemetry Collector",
     "description": "A vendor-agnostic implementation for receiving, processing, and exporting telemetry data."
@@ -68,6 +121,19 @@
       "all": "All Distributions",
       "core": "Core",
       "contrib": "Contrib"
+    },
+    "stability": {
+      "label": "Stability",
+      "all": "All",
+      "stable": "Stable",
+      "beta": "Beta",
+      "alpha": "Alpha",
+      "development": "Development",
+      "deprecated": "Deprecated",
+      "unmaintained": "Unmaintained"
+    },
+    "signal": {
+      "label": "Telemetry"
     }
   },
   "results": {
@@ -80,6 +146,28 @@
       "title": "No components found",
       "description": "We couldn't find any components matching your search criteria.",
       "clearFilters": "Clear all filters"
+    },
+    "badges": {
+      "metrics": {
+        "label": "Metrics",
+        "tooltip": "Produces metric telemetry for monitoring.",
+        "ariaLabel": "Has metric telemetry"
+      },
+      "traces": {
+        "label": "Traces",
+        "tooltip": "Produces trace telemetry for distributed tracing.",
+        "ariaLabel": "Has trace telemetry"
+      },
+      "logs": {
+        "label": "Logs",
+        "tooltip": "Produces log telemetry.",
+        "ariaLabel": "Has log telemetry"
+      },
+      "profiles": {
+        "label": "Profiles",
+        "tooltip": "Produces profile telemetry.",
+        "ariaLabel": "Has profile telemetry"
+      }
     }
   },
   "states": {

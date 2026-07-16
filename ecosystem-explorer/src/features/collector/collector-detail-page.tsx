@@ -16,7 +16,7 @@
 import { useState } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Info, ExternalLink, AlertCircle, Check } from "lucide-react";
+import { Info, ExternalLink, AlertCircle, Check, Activity } from "lucide-react";
 import { Loader } from "@/components/ui/loader";
 import { GitHubIcon } from "@/components/icons/github-icon";
 import { BackButton } from "@/components/ui/back-button";
@@ -26,7 +26,10 @@ import { GlowBadge } from "@/components/ui/glow-badge";
 import { DetailCard } from "@/components/ui/detail-card";
 import { SectionHeader } from "@/components/ui/section-header";
 import { PageContainer } from "@/components/layout/page-container";
+import { Seo } from "@/components/seo/seo";
+import { deriveCollectorMeta } from "@/lib/seo/derive";
 import { useCollectorComponent, useCollectorVersions } from "@/hooks/use-collector-data";
+import { CollectorTelemetryTab } from "./components/collector-telemetry-tab";
 
 const getBadgeVariant = (level: string): "success" | "info" | "warning" | "muted" => {
   const lower = level.toLowerCase();
@@ -164,8 +167,18 @@ export function CollectorDetailPage() {
 
   const typeDesc = t(`detail.typeDescriptions.${component.type}`, { defaultValue: "" });
 
+  const seo = deriveCollectorMeta({
+    id: `${component.distribution}-${component.name}`,
+    name: component.name,
+    distribution: component.distribution,
+    display_name: component.display_name,
+    description: component.description,
+    type: component.type,
+  });
+
   return (
     <PageContainer>
+      <Seo title={seo.title} description={seo.description} />
       <BackButton />
 
       <div className="mt-3 space-y-6">
@@ -224,6 +237,15 @@ export function CollectorDetailPage() {
                     label: t("detail.tabs.stability"),
                     icon: <Check className="h-4 w-4" aria-hidden="true" />,
                   },
+                  ...(component.metrics && Object.keys(component.metrics).length > 0
+                    ? [
+                        {
+                          value: "telemetry",
+                          label: t("detail.tabs.telemetry"),
+                          icon: <Activity className="h-4 w-4" aria-hidden="true" />,
+                        },
+                      ]
+                    : []),
                 ]}
               />
             </div>
@@ -369,7 +391,6 @@ export function CollectorDetailPage() {
                     </div>
                   )}
 
-                  {/* Distribution Information */}
                   {component.status.distributions && component.status.distributions.length > 0 ? (
                     <div className="space-y-6">
                       <div>
@@ -443,6 +464,16 @@ export function CollectorDetailPage() {
                 </div>
               )}
             </TabsContent>
+
+            {component.metrics && Object.keys(component.metrics).length > 0 && (
+              <TabsContent value="telemetry" className="mt-0 p-6">
+                <CollectorTelemetryTab
+                  metrics={component.metrics}
+                  attributes={component.attributes}
+                  resourceAttributes={component.resource_attributes}
+                />
+              </TabsContent>
+            )}
           </Tabs>
         </div>
       </div>

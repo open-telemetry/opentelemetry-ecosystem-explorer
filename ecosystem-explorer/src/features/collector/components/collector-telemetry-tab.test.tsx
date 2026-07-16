@@ -111,7 +111,6 @@ describe("CollectorTelemetryTab", () => {
 
   it("starts with all cards expanded by default", () => {
     render(<CollectorTelemetryTab metrics={sampleMetrics} />);
-    // Description is visible only when expanded
     expect(
       screen.getByText("The number of binds per second performed by the domain controller.")
     ).toBeInTheDocument();
@@ -123,16 +122,10 @@ describe("CollectorTelemetryTab", () => {
   it("collapses a card when its header button is clicked", async () => {
     const user = userEvent.setup();
     render(<CollectorTelemetryTab metrics={{ "my.metric": sumMetric }} />);
-
-    // Description is visible (card starts expanded)
     expect(
       screen.getByText("The number of binds per second performed by the domain controller.")
     ).toBeInTheDocument();
-
-    // Click the metric header to collapse
     await user.click(screen.getByRole("button", { name: /my\.metric/i }));
-
-    // Description should now be hidden
     expect(
       screen.queryByText("The number of binds per second performed by the domain controller.")
     ).not.toBeInTheDocument();
@@ -143,14 +136,10 @@ describe("CollectorTelemetryTab", () => {
     render(<CollectorTelemetryTab metrics={{ "my.metric": sumMetric }} />);
 
     const metricButton = screen.getByRole("button", { name: /my\.metric/i });
-
-    // Collapse
     await user.click(metricButton);
     expect(
       screen.queryByText("The number of binds per second performed by the domain controller.")
     ).not.toBeInTheDocument();
-
-    // Expand again
     await user.click(metricButton);
     expect(
       screen.getByText("The number of binds per second performed by the domain controller.")
@@ -209,18 +198,12 @@ describe("CollectorTelemetryTab", () => {
         attributes={sampleAttributes}
       />
     );
-    // The attribute key should appear in the table
     expect(screen.getByText("The type of bind to the domain server.")).toBeInTheDocument();
     expect(screen.getByText("string")).toBeInTheDocument();
   });
 
   it("shows raw key when attribute definition is not found", () => {
-    render(
-      <CollectorTelemetryTab
-        metrics={{ "my.metric": sumMetric }}
-        // No attributes prop — keys should still render
-      />
-    );
+    render(<CollectorTelemetryTab metrics={{ "my.metric": sumMetric }} />);
     expect(screen.getByText("bind_type")).toBeInTheDocument();
   });
 
@@ -245,7 +228,6 @@ describe("CollectorTelemetryTab", () => {
         resourceAttributes={sampleAttributes}
       />
     );
-    // The attribute key should appear in the table
     expect(screen.getByText("The type of bind to the domain server.")).toBeInTheDocument();
     expect(screen.getByText("string")).toBeInTheDocument();
   });

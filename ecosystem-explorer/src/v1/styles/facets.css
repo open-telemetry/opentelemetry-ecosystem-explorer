@@ -18,7 +18,7 @@
  *
  * Leaf controls rendered by `<CheckboxFacet>`, `<SearchFacet>`, and
  * `<SelectFacet>` on the list page (Phase 4). The composing `<FacetPanel>`
- * chrome (`.td-facet-panel*`) and the list-page rail live in later slices.
+ * chrome lives in facet-panel.css; the list-page rail lives in a later slice.
  */
 
 .td-facet {

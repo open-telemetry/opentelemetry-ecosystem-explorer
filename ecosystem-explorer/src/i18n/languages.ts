@@ -40,4 +40,5 @@ export const NAMESPACES = [
   "java-agent",
   "about",
   "ecosystem",
+  "list",
 ] as const;

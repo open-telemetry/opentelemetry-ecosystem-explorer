@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
 import { CollectorDetailPage } from "./collector-detail-page";
-
-vi.mock("@/hooks/use-collector-data", () => ({
-  useCollectorVersions: vi.fn(),
-  useCollectorComponent: vi.fn(),
-}));
-
-import { useCollectorVersions, useCollectorComponent } from "@/hooks/use-collector-data";
+import { useCollectorComponent, useCollectorVersions } from "@/hooks/use-collector-data";
 import type { CollectorComponent } from "@/types/collector";
 
-const mockComponent: CollectorComponent = {
+vi.mock("@/hooks/use-collector-data", () => ({
+  useCollectorComponent: vi.fn(),
+  useCollectorVersions: vi.fn(),
+}));
+
+const mockComponentWithoutTelemetry: CollectorComponent = {
   id: "core-otlpreceiver",
   name: "otlpreceiver",
   ecosystem: "collector",
@@ -39,6 +40,22 @@ const mockComponent: CollectorComponent = {
     class: "receiver",
     stability: { stable: ["traces", "metrics", "logs"] },
     distributions: ["core"],
+  },
+};
+
+const mockComponentWithTelemetry: CollectorComponent = {
+  ...mockComponentWithoutTelemetry,
+  metrics: {
+    "my.metric.name": {
+      description: "A test metric",
+      enabled: true,
+      unit: "bytes",
+      sum: {
+        monotonic: true,
+        value_type: "int",
+        aggregation_temporality: "cumulative",
+      },
+    },
   },
 };
 
@@ -111,7 +128,7 @@ describe("CollectorDetailPage", () => {
       error: null,
     });
     vi.mocked(useCollectorComponent).mockReturnValue({
-      data: mockComponent,
+      data: mockComponentWithoutTelemetry,
       loading: false,
       error: null,
     });
@@ -151,7 +168,7 @@ describe("CollectorDetailPage", () => {
       error: new Error("Failed to load collector-versions-index"),
     });
     vi.mocked(useCollectorComponent).mockReturnValue({
-      data: mockComponent,
+      data: mockComponentWithoutTelemetry,
       loading: false,
       error: null,
     });
@@ -160,5 +177,45 @@ describe("CollectorDetailPage", () => {
 
     expect(useCollectorComponent).toHaveBeenCalledWith("core", "otlpreceiver", "0.150.0");
     expect(screen.getByText("OTLP Receiver")).toBeInTheDocument();
+  });
+
+  it("does not render Telemetry tab when component has no metrics", () => {
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: mockComponentWithoutTelemetry,
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    expect(screen.queryByRole("tab", { name: /telemetry/i })).not.toBeInTheDocument();
+  });
+
+  it("renders Telemetry tab when component has metrics and displays content on click", async () => {
+    const user = userEvent.setup();
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: mockComponentWithTelemetry,
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    const telemetryTab = screen.getByRole("tab", { name: /telemetry/i });
+    expect(telemetryTab).toBeInTheDocument();
+
+    await user.click(telemetryTab);
+
+    expect(screen.getByText("my.metric.name")).toBeInTheDocument();
   });
 });

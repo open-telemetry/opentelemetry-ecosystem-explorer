@@ -1,6 +1,9 @@
 name: Build Explorer Database
 
 on:
+  schedule:
+    # Nightly incremental build of all ecosystems at 06:00 UTC.
+    - cron: "0 6 * * *"
   workflow_dispatch:
     inputs:
       build_mode:
@@ -26,9 +29,12 @@ permissions:
   contents: read # Default minimum; the build-database job declares its own elevated scopes
 
 concurrency:
-  # Serialize per ecosystem since each one targets its own
-  # otelbot/automated-explorer-database-update-<ecosystem> branch.
-  group: ${{ github.workflow }}-${{ inputs.ecosystem }}
+  # Serialize every run of this workflow. A scheduled `all` build and a manual
+  # single-ecosystem build both write to ecosystem-explorer/public/data/ and bump
+  # DB_VERSION, so running them concurrently could produce overlapping automated
+  # PRs and merge conflicts. cancel-in-progress stays false so queued runs wait
+  # rather than being dropped.
+  group: ${{ github.workflow }}
   cancel-in-progress: false
 
 jobs:
@@ -37,6 +43,7 @@ jobs:
     permissions:
       contents: write # Push generated database to the otelbot/automated-explorer-database-update branch
       pull-requests: write # Create or update the automated database-update PR
+      issues: write # Open/update/close the "collector components missing display_name" tracking issue
     runs-on: ubuntu-latest
     steps:
       - name: Detect repository type (if on a fork we use different git config)
@@ -100,16 +107,97 @@ jobs:
         run: uv sync --locked
 
       - name: Build explorer database (incremental)
-        if: inputs.build_mode == 'incremental'
+        # Scheduled runs don't set dispatch inputs, so `inputs.build_mode` is
+        # empty; default to an incremental build in that case.
+        if: ${{ (inputs.build_mode || 'incremental') == 'incremental' }}
         env:
-          ECOSYSTEM: ${{ inputs.ecosystem }}
-        run: uv run explorer-db-builder --ecosystem "$ECOSYSTEM"
+          ECOSYSTEM: ${{ inputs.ecosystem || 'all' }}
+        # --collector-audit-report writes a build artifact (not committed to the database)
+        # consumed by the "Sync missing-display_name tracking issue" step below.
+        run:
+          uv run explorer-db-builder --ecosystem "$ECOSYSTEM" --collector-audit-report
+          "${RUNNER_TEMP}/collector-missing-display-names.json"
 
       - name: Build explorer database (clean)
         if: inputs.build_mode == 'clean'
         env:
           ECOSYSTEM: ${{ inputs.ecosystem }}
-        run: uv run explorer-db-builder --ecosystem "$ECOSYSTEM" --clean
+        run:
+          uv run explorer-db-builder --ecosystem "$ECOSYSTEM" --clean --collector-audit-report
+          "${RUNNER_TEMP}/collector-missing-display-names.json"
+
+      - name: Sync missing-display_name tracking issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPORT_FILE: ${{ runner.temp }}/collector-missing-display-names.json
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          if [ ! -f "$REPORT_FILE" ]; then
+            echo "No collector audit report at $REPORT_FILE (collector not built); skipping."
+            exit 0
+          fi
+
+          ISSUE_TITLE="Collector components missing display_name"
+          LABEL="upstream-metadata"
+
+          # Idempotent: no-op if the label already exists.
+          gh label create "$LABEL" \
+            --description "Metadata that should be fixed in the upstream OpenTelemetry repositories" \
+            --color "d4c5f9" 2>/dev/null || true
+
+          COUNT=$(jq '.missing | length' "$REPORT_FILE")
+          VERSION=$(jq -r '.version' "$REPORT_FILE")
+
+          EXISTING=$(gh issue list \
+            --search "in:title \"$ISSUE_TITLE\"" \
+            --state open \
+            --label "$LABEL" \
+            --json number \
+            --jq '.[0].number // empty')
+
+          if [ "$COUNT" -eq 0 ]; then
+            if [ -n "$EXISTING" ]; then
+              gh issue close "$EXISTING" \
+                --comment "All collector components in \`v${VERSION}\` now have a \`display_name\`. Closing."
+              echo "Closed tracking issue #$EXISTING (no components missing display_name)."
+            else
+              echo "No components missing display_name and no open issue; nothing to do."
+            fi
+            exit 0
+          fi
+
+          BODY_FILE="${RUNNER_TEMP}/missing-display-names-body.md"
+          {
+            jq -r '
+              . as $r
+              | "The following components in the latest collector release (`v\($r.version)`) are missing a `display_name` in their upstream `metadata.yaml`. Fixing them upstream (opentelemetry-collector / opentelemetry-collector-contrib) lets them render with a friendly name in the Ecosystem Explorer.\n\n**Total missing: \($r.missing | length)**\n"
+                + ( $r.missing
+                    | group_by(.distribution)
+                    | map(
+                        "\n## \(.[0].distribution)\n"
+                        + ( group_by(.type)
+                            | map( "\n### \(.[0].type)\n" + ( map("- `\(.name)`") | join("\n") ) )
+                            | join("\n") ) )
+                    | join("\n") )
+            ' "$REPORT_FILE"
+            echo ""
+            echo ""
+            echo "---"
+            echo "_This issue is maintained automatically by the [Build Explorer Database](https://github.com/${REPO}/actions/runs/${RUN_ID}) workflow. It is updated nightly and closed automatically once every component has a display_name._"
+          } > "$BODY_FILE"
+
+          if [ -n "$EXISTING" ]; then
+            # Edit the body rather than comment: this runs nightly and comments would be noisy.
+            gh issue edit "$EXISTING" --body-file "$BODY_FILE"
+            echo "Updated tracking issue #$EXISTING ($COUNT components missing display_name)."
+          else
+            gh issue create \
+              --title "$ISSUE_TITLE" \
+              --body-file "$BODY_FILE" \
+              --label "$LABEL"
+            echo "Created tracking issue ($COUNT components missing display_name)."
+          fi
 
       - name: Check for database changes
         id: check_changes
@@ -144,9 +232,11 @@ jobs:
           GH_TOKEN:
             ${{ steps.repo_check.outputs.is_primary == 'true' && steps.otelbot-token.outputs.token
             || secrets.GITHUB_TOKEN }}
-          ECOSYSTEM: ${{ inputs.ecosystem }}
-          BUILD_MODE: ${{ inputs.build_mode }}
-          ACTOR: ${{ github.actor }}
+          ECOSYSTEM: ${{ inputs.ecosystem || 'all' }}
+          BUILD_MODE: ${{ inputs.build_mode || 'incremental' }}
+          # On scheduled runs github.actor doesn't reflect a human who triggered
+          # the build, so attribute those runs to the schedule instead.
+          ACTOR: ${{ github.event_name == 'schedule' && 'nightly schedule' || github.actor }}
         run: |
           BRANCH="otelbot/automated-explorer-database-update-${ECOSYSTEM}"
 
@@ -158,7 +248,7 @@ jobs:
 
           PR_TITLE="[automated] Update explorer database (${ECOSYSTEM})"
           PR_BODY="$(cat <<EOF
-          Automated database build requested via workflow dispatch.
+          Automated database build.
 
           Build mode: ${BUILD_MODE}
           Ecosystem: ${ECOSYSTEM}

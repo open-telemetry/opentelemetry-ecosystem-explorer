@@ -15,12 +15,17 @@
 """Orchestrates the collector database build pipeline."""
 
 import logging
+from pathlib import Path
 from typing import Optional
 
 from collector_watcher.inventory_manager import InventoryManager
 from semantic_version import Version
 
 from explorer_db_builder.collector_database_writer import CollectorDatabaseWriter
+from explorer_db_builder.collector_display_name_audit import (
+    find_missing_display_names,
+    write_missing_display_name_report,
+)
 from explorer_db_builder.collector_transformer import make_index_component, transform_collector_components
 from explorer_db_builder.ecosystem_stats import count_unique_collector_component_ids
 
@@ -67,6 +72,13 @@ def _process_version(
 
     Loads data from every distribution and merges into one flat component list.
 
+    Also loads each distribution's component README map (if any), publishes
+    the underlying markdown content, and stamps a markdown_hash onto matching
+    components. Only components whose README was actually loaded and
+    published successfully get a markdown_hash - a failure loading or
+    publishing one component's README is logged and only excludes that
+    component, not the rest of the distribution.
+
     Args:
         version: The version to process.
         inventory_manager: Source of raw registry data.
@@ -84,7 +96,39 @@ def _process_version(
 
     for distribution in DISTRIBUTIONS:
         inventory = inventory_manager.load_versioned_inventory(distribution, version)
-        components = transform_collector_components(inventory, distribution)
+
+        published_readmes: dict[str, str] = {}
+        try:
+            readme_map = inventory_manager.load_component_readme_map(distribution, version)
+            for component_name, markdown_hash in readme_map.items():
+                try:
+                    content = inventory_manager.load_component_readme_content(
+                        distribution, version, component_name, markdown_hash
+                    )
+                    if content is not None and db_writer.write_markdown(component_name, markdown_hash, content):
+                        published_readmes[component_name] = markdown_hash
+                except OSError as e:
+                    # Defensive: neither load_component_readme_content nor
+                    # write_markdown currently raise OSError (both swallow
+                    # their own failures and signal via return value - see
+                    # `content is not None and db_writer.write_markdown(...)`
+                    # above, which is what actually gates the stamp). This
+                    # stays as a safety net in case that changes, so one
+                    # component's failure still can't take down the rest of
+                    # this distribution's READMEs or the component inventory.
+                    logger.warning(
+                        "  Failed to load/publish README for component '%s' in %s %s: %s",
+                        component_name,
+                        distribution,
+                        version,
+                        e,
+                    )
+        except OSError as e:
+            # Covers a failure in load_component_readme_map itself (e.g. the
+            # component_readmes directory becoming unreadable mid-scan).
+            logger.warning("  Failed to load component READMEs for %s %s: %s", distribution, version, e)
+
+        components = transform_collector_components(inventory, distribution, published_readmes)
         logger.info("  %s: %d components", distribution, len(components))
         all_components.extend(components)
 
@@ -108,6 +152,7 @@ def run_collector_builder(
     inventory_manager: Optional[InventoryManager] = None,
     db_writer: Optional[CollectorDatabaseWriter] = None,
     clean: bool = False,
+    audit_report_path: Optional[str] = None,
 ) -> int:
     """Run the collector database builder pipeline.
 
@@ -115,6 +160,9 @@ def run_collector_builder(
         inventory_manager: Optional override for testing.
         db_writer: Optional override for testing.
         clean: If True, wipe the output directory before building.
+        audit_report_path: If set, write a JSON report of latest-release components
+            missing a display_name to this path (a build artifact, not part of the
+            database, so it must live outside the database directory).
 
     Returns:
         Exit code: 0 for success, 1 for failure.
@@ -157,6 +205,19 @@ def run_collector_builder(
                 "component_count": count_unique_collector_component_ids(components_by_version),
             }
         )
+
+        if audit_report_path:
+            # Enforce the "outside the database directory" invariant: a report written
+            # inside it would be committed and bump DB_VERSION. Fail fast if so.
+            report_path = Path(audit_report_path).resolve()
+            db_dir = db_writer.database_dir.resolve()
+            if report_path == db_dir or db_dir in report_path.parents:
+                raise ValueError(f"audit report path {report_path} must be outside the database directory {db_dir}")
+
+            # Latest release only: that's the version fixable upstream today.
+            missing = find_missing_display_names(latest_components)
+            write_missing_display_name_report(audit_report_path, str(processed_versions[0]), missing)
+            logger.info("Collector components missing display_name (latest release): %d", len(missing))
 
         stats = db_writer.get_stats()
         total_mb = stats["total_bytes"] / (1024 * 1024)

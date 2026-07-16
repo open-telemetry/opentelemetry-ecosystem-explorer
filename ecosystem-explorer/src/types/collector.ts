@@ -156,4 +156,6 @@ export interface IndexComponent {
   display_name?: string | null;
   description?: string | null;
   stability?: Stability | null;
+  /** Telemetry signals supported across all stability levels (e.g. ["metrics", "traces"]). */
+  signals?: string[];
 }

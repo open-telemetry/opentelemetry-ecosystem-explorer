@@ -464,12 +464,13 @@ class TestMain:
         mock_args = MagicMock()
         mock_args.clean = False
         mock_args.ecosystem = "all"
+        mock_args.collector_audit_report = None
         mock_parse_args.return_value = mock_args
         mock_run_builder.return_value = 0
 
         main()
 
-        mock_run_builder.assert_called_once_with(clean=False, ecosystem="all")
+        mock_run_builder.assert_called_once_with(clean=False, ecosystem="all", collector_audit_report=None)
         mock_exit.assert_called_once_with(0)
 
     @patch("explorer_db_builder.main.run_builder")
@@ -481,12 +482,13 @@ class TestMain:
         mock_args = MagicMock()
         mock_args.clean = False
         mock_args.ecosystem = "all"
+        mock_args.collector_audit_report = None
         mock_parse_args.return_value = mock_args
         mock_run_builder.return_value = 1
 
         main()
 
-        mock_run_builder.assert_called_once_with(clean=False, ecosystem="all")
+        mock_run_builder.assert_called_once_with(clean=False, ecosystem="all", collector_audit_report=None)
         mock_exit.assert_called_once_with(1)
 
     @patch("explorer_db_builder.main.run_builder")
@@ -498,12 +500,13 @@ class TestMain:
         mock_args = MagicMock()
         mock_args.clean = True
         mock_args.ecosystem = "all"
+        mock_args.collector_audit_report = None
         mock_parse_args.return_value = mock_args
         mock_run_builder.return_value = 0
 
         main()
 
-        mock_run_builder.assert_called_once_with(clean=True, ecosystem="all")
+        mock_run_builder.assert_called_once_with(clean=True, ecosystem="all", collector_audit_report=None)
         mock_exit.assert_called_once_with(0)
 
     @patch("explorer_db_builder.main.run_builder")
@@ -516,12 +519,13 @@ class TestMain:
         mock_args = MagicMock()
         mock_args.clean = False
         mock_args.ecosystem = "collector"
+        mock_args.collector_audit_report = None
         mock_parse_args.return_value = mock_args
         mock_run_builder.return_value = 0
 
         main()
 
-        mock_run_builder.assert_called_once_with(clean=False, ecosystem="collector")
+        mock_run_builder.assert_called_once_with(clean=False, ecosystem="collector", collector_audit_report=None)
         mock_exit.assert_called_once_with(0)
 
 
@@ -592,7 +596,7 @@ class TestRunBuilderOrchestrator:
 
         mock_java.assert_called_once_with(clean=True)
         mock_config.assert_called_once_with(clean=True)
-        mock_collector.assert_called_once_with(clean=True)
+        mock_collector.assert_called_once_with(clean=True, audit_report_path=None)
 
     @patch("explorer_db_builder.main.run_collector_builder")
     @patch("explorer_db_builder.main.run_configuration_builder")
@@ -632,3 +636,13 @@ class TestRunBuilderOrchestrator:
         mock_java.assert_not_called()
         mock_config.assert_not_called()
         mock_collector.assert_called_once()
+
+    @patch("explorer_db_builder.main.run_collector_builder")
+    @patch("explorer_db_builder.main.run_configuration_builder")
+    @patch("explorer_db_builder.main.run_javaagent_builder")
+    def test_collector_audit_report_passed_to_collector(self, mock_java, mock_config, mock_collector):
+        mock_collector.return_value = 0
+
+        run_builder(clean=False, ecosystem="collector", collector_audit_report="audit/report.json")
+
+        mock_collector.assert_called_once_with(clean=False, audit_report_path="audit/report.json")

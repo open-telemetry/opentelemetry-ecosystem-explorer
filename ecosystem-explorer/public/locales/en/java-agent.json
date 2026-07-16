@@ -57,6 +57,16 @@
       "description": "Compare Java Agent versions to see changes in telemetry and configuration."
     }
   },
+  "explore": {
+    "resources": {
+      "heading": "Resources & Documentation",
+      "items": {
+        "gettingStarted": "Java Agent Getting Started",
+        "configReference": "Java Agent Configuration Reference",
+        "githubRepo": "GitHub Repository"
+      }
+    }
+  },
   "list": {
     "title": "OpenTelemetry Java Agent",
     "description_one": "Explore {{count}} available instrumentation.",

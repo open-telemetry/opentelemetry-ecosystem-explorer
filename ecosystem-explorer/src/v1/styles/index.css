@@ -34,6 +34,8 @@
  * - pipeline-anatomy.css — v1 ecosystem-landing pipeline strip (`.td-pipeline-anatomy*`, `.td-pipeline-stage*`)
  * - quick-entry-row.css — v1 ecosystem-landing quick-entry row (`.td-quick-entry*`)
  * - facets.css       — v1 list-page facet primitives (`.td-facet*`, minus `.td-facet-panel*`)
+ * - facet-panel.css  — v1 list-page facet panel chrome (`.td-facet-panel*`)
+ * - list-controls.css — v1 list-page controls (`.td-chip*`, `.td-density*`, `.td-sort*`, `.td-pagination*`, `.td-empty*`, `.td-facet-toggle*`)
  * - cncf-callout.css — sitewide CNCF band above the footer
  * - footer.css       — v1 footer (`.td-footer`) — mirrors opentelemetry.io
  *
@@ -60,5 +62,7 @@
 @import "./pipeline-anatomy.css";
 @import "./quick-entry-row.css";
 @import "./facets.css";
+@import "./facet-panel.css";
+@import "./list-controls.css";
 @import "./cncf-callout.css";
 @import "./footer.css";

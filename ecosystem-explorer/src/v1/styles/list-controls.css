@@ -1,0 +1,241 @@
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/* ---------- List controls ----------
+ *
+ * Chrome for the list-page controls in `components/list/controls.tsx`:
+ * active-filter chips, density toggle, sort dropdown, pagination, empty
+ * state, and the mobile facet-drawer toggle. All surfaces route through
+ * theme-aware tokens (`--card-hsl`, `--border-hsl`, `--secondary-hsl`,
+ * `--primary-hsl`, `--muted-*`), so the controls read correctly in both
+ * themes. The facet panel/rail chrome ships separately with the facet
+ * components; the result views (rows/cards/table) ship with `views.tsx`.
+ */
+
+/* ---------- Chips ---------- */
+
+.td-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-bottom: 1rem;
+}
+
+.td-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background-color: hsl(var(--secondary-hsl) / 0.15);
+  color: hsl(var(--secondary-hsl));
+  border: 1px solid hsl(var(--secondary-hsl) / 0.35);
+  border-radius: 999px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.td-chip:hover,
+.td-chip:focus-visible {
+  background-color: hsl(var(--secondary-hsl) / 0.25);
+}
+
+.td-chip__x {
+  width: 0.875rem;
+  height: 0.875rem;
+}
+
+.td-chip--clear {
+  background-color: transparent;
+  color: hsl(var(--muted-foreground-hsl));
+  border-color: hsl(var(--border-hsl));
+}
+
+.td-chip--clear:hover,
+.td-chip--clear:focus-visible {
+  color: hsl(var(--foreground-hsl));
+  background-color: hsl(var(--muted-hsl));
+}
+
+/* ---------- Density toggle ---------- */
+
+.td-density {
+  display: inline-flex;
+  border: 1px solid hsl(var(--border-hsl));
+  border-radius: 0.375rem;
+  overflow: hidden;
+  background-color: hsl(var(--card-hsl));
+}
+
+.td-density__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  background: transparent;
+  border: none;
+  color: hsl(var(--muted-foreground-hsl));
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.td-density__btn + .td-density__btn {
+  border-left: 1px solid hsl(var(--border-hsl));
+}
+
+/* Inset the ring: `.td-density`'s overflow: hidden clips an outside outline. */
+.td-density__btn:focus-visible {
+  outline: 2px solid hsl(var(--primary-hsl));
+  outline-offset: -2px;
+}
+
+.td-density__btn--active {
+  background-color: hsl(var(--primary-hsl) / 0.15);
+  color: hsl(var(--primary-hsl));
+  font-weight: 600;
+}
+
+.td-density__btn:hover {
+  color: hsl(var(--foreground-hsl));
+}
+
+.td-density__btn--active:hover {
+  color: hsl(var(--primary-hsl));
+}
+
+/* ---------- Sort ---------- */
+
+.td-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.td-sort__label {
+  color: hsl(var(--muted-foreground-hsl));
+}
+
+.td-sort__select {
+  padding: 0.375rem 0.5rem;
+  background-color: hsl(var(--card-hsl));
+  border: 1px solid hsl(var(--border-hsl));
+  border-radius: 0.375rem;
+  color: hsl(var(--foreground-hsl));
+  font-family: inherit;
+}
+
+/* ---------- Pagination ---------- */
+
+.td-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 1.5rem 0 0.5rem;
+  font-size: 0.875rem;
+}
+
+.td-pagination__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.375rem 0.75rem;
+  background-color: hsl(var(--card-hsl));
+  border: 1px solid hsl(var(--border-hsl));
+  border-radius: 0.375rem;
+  color: hsl(var(--foreground-hsl));
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.td-pagination__btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.td-pagination__btn:not(:disabled):hover,
+.td-pagination__btn:not(:disabled):focus-visible {
+  border-color: hsl(var(--primary-hsl) / 0.5);
+}
+
+.td-pagination__status {
+  color: hsl(var(--muted-foreground-hsl));
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Empty state ---------- */
+
+.td-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  background-color: hsl(var(--card-hsl));
+  border: 1px solid hsl(var(--border-hsl));
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.td-empty__title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.td-empty__lead {
+  margin: 0;
+  color: hsl(var(--muted-foreground-hsl));
+}
+
+/* ---------- Facet drawer toggle ---------- */
+
+.td-facet-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  background-color: hsl(var(--card-hsl));
+  border: 1px solid hsl(var(--border-hsl));
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  color: hsl(var(--foreground-hsl));
+  font-family: inherit;
+}
+
+@media (min-width: 992px) {
+  .td-facet-toggle {
+    display: none;
+  }
+}
+
+.td-facet-toggle__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 0.375rem;
+  border-radius: 999px;
+  background-color: hsl(var(--secondary-hsl) / 0.18);
+  color: hsl(var(--secondary-hsl));
+  font-size: 0.6875rem;
+  font-weight: 700;
+}
