@@ -71,6 +71,7 @@ describe("collector-data", () => {
     distribution: "core",
     type: "receiver",
     stability: "beta",
+    signals: ["traces", "metrics"],
   };
   const otlpHttpExporterIndex = {
     id: "contrib-otlphttpexporter",
@@ -78,6 +79,7 @@ describe("collector-data", () => {
     distribution: "contrib",
     type: "exporter",
     stability: null,
+    signals: [],
   };
 
   beforeEach(async () => {
@@ -189,6 +191,35 @@ describe("collector-data", () => {
       const result = await collectorData.loadAllComponents("0.150.0");
 
       expect(result).toEqual([]);
+    });
+
+    it("derives signals in canonical order, deduped across stability levels", async () => {
+      const sparkReceiver: CollectorComponent = {
+        id: "contrib-apachesparkreceiver",
+        name: "apachesparkreceiver",
+        ecosystem: "collector",
+        type: "receiver",
+        distribution: "contrib",
+        status: {
+          class: "receiver",
+          stability: { beta: ["metrics", "traces"], alpha: ["profiles", "metrics"] },
+          distributions: ["contrib"],
+        },
+      };
+      const manifest: VersionManifest = {
+        version: "0.150.0",
+        components: { "contrib-apachesparkreceiver": "hash3" },
+      };
+      vi.spyOn(idbCache, "getCached").mockImplementation(async (key: string) => {
+        if (key === "collector-versions-index") return versionsIndexNoBundle;
+        if (key === "collector-manifest-0.150.0") return manifest;
+        if (key === "collector-component-hash3") return sparkReceiver;
+        return null;
+      });
+
+      const result = await collectorData.loadAllComponents("0.150.0");
+
+      expect(result[0].signals).toEqual(["traces", "metrics", "profiles"]);
     });
   });
 });

@@ -16,12 +16,14 @@
 import { AgentExploreLanding } from "@/features/java-agent/components/agent-explore-landing.tsx";
 import { BackButton } from "@/components/ui/back-button";
 import { PageContainer } from "@/components/layout/page-container";
+import { Seo } from "@/components/seo/seo";
 import { useTranslation } from "react-i18next";
 
 export function JavaAgentPage() {
   const { t } = useTranslation("java-agent");
   return (
     <PageContainer>
+      <Seo />
       <div className="space-y-6">
         <BackButton />
         <div>

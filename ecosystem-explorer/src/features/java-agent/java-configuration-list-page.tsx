@@ -18,6 +18,7 @@ import { Search, Settings } from "lucide-react";
 import { Loader } from "@/components/ui/loader";
 import { BackButton } from "@/components/ui/back-button";
 import { PageContainer } from "@/components/layout/page-container";
+import { Seo } from "@/components/seo/seo";
 import { useTranslation } from "react-i18next";
 import { Tabs } from "@/components/ui/tabs";
 import { SegmentedTabList } from "@/components/ui/segmented-tabs";
@@ -78,6 +79,7 @@ export function JavaConfigurationListPage() {
 
   return (
     <PageContainer>
+      <Seo />
       <BackButton />
 
       <div className="mt-3 space-y-6">

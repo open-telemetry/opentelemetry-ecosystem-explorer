@@ -20,6 +20,7 @@ import { Loader } from "@/components/ui/loader";
 import { BackButton } from "@/components/ui/back-button";
 import { BetaBadge } from "@/components/ui/beta-badge";
 import { PageContainer } from "@/components/layout/page-container";
+import { Seo } from "@/components/seo/seo";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { VersionSelector } from "@/features/java-agent/components/version-selector";
 import {
@@ -399,6 +400,7 @@ export function ConfigurationBuilderPage() {
 
   return (
     <PageContainer>
+      <Seo />
       <div className="space-y-6">
         <BackButton />
         <div className="flex flex-wrap items-start justify-between gap-4">

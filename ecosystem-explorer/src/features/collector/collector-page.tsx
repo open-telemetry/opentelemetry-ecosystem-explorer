@@ -16,6 +16,7 @@
 import { useTranslation } from "react-i18next";
 import { PageContainer } from "@/components/layout/page-container";
 import { BackButton } from "@/components/ui/back-button";
+import { Seo } from "@/components/seo/seo";
 import { CollectorExploreLanding } from "@/features/collector/components/collector-explore-landing.tsx";
 
 export function CollectorPage() {
@@ -23,6 +24,7 @@ export function CollectorPage() {
 
   return (
     <PageContainer>
+      <Seo />
       <div className="space-y-6">
         <BackButton />
         <div>

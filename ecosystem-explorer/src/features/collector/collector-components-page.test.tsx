@@ -138,4 +138,81 @@ describe("CollectorComponentsPage", () => {
       "/collector/components/core/otlpreceiver?type=receiver&version=0.150.0"
     );
   });
+
+  describe("signal badges", () => {
+    it("renders a Metrics badge for a component that only supports metrics", () => {
+      vi.mocked(useCollectorComponents).mockReturnValue({
+        data: [
+          {
+            id: "contrib-apachesparkreceiver",
+            name: "apachesparkreceiver",
+            type: "receiver",
+            distribution: "contrib",
+            display_name: "Apache Spark Receiver",
+            description: "Fetches metrics for an Apache Spark cluster.",
+            stability: "alpha",
+            signals: ["metrics"],
+          },
+        ],
+        loading: false,
+        error: null,
+      });
+
+      renderPage();
+
+      expect(screen.getByText("Metrics")).toBeInTheDocument();
+      expect(screen.queryByText("Traces")).not.toBeInTheDocument();
+      expect(screen.queryByText("Logs")).not.toBeInTheDocument();
+      expect(screen.queryByText("Profiles")).not.toBeInTheDocument();
+    });
+
+    it("renders one badge per signal, in canonical order, for a multi-signal component", () => {
+      vi.mocked(useCollectorComponents).mockReturnValue({
+        data: [
+          {
+            id: "core-otlpreceiver",
+            name: "otlpreceiver",
+            type: "receiver",
+            distribution: "core",
+            display_name: "OTLP Receiver",
+            description: "Receives OTLP telemetry.",
+            signals: ["logs", "traces", "metrics"],
+          },
+        ],
+        loading: false,
+        error: null,
+      });
+
+      renderPage();
+
+      expect(screen.getByText("Metrics")).toBeInTheDocument();
+      expect(screen.getByText("Traces")).toBeInTheDocument();
+      expect(screen.getByText("Logs")).toBeInTheDocument();
+      expect(screen.queryByText("Profiles")).not.toBeInTheDocument();
+    });
+
+    it("renders no signal badges when signals is missing or empty", () => {
+      vi.mocked(useCollectorComponents).mockReturnValue({
+        data: [
+          {
+            id: "core-batchprocessor",
+            name: "batchprocessor",
+            type: "processor",
+            distribution: "core",
+            display_name: "Batch Processor",
+            description: "Batches telemetry.",
+          },
+        ],
+        loading: false,
+        error: null,
+      });
+
+      renderPage();
+
+      expect(screen.queryByText("Metrics")).not.toBeInTheDocument();
+      expect(screen.queryByText("Traces")).not.toBeInTheDocument();
+      expect(screen.queryByText("Logs")).not.toBeInTheDocument();
+      expect(screen.queryByText("Profiles")).not.toBeInTheDocument();
+    });
+  });
 });

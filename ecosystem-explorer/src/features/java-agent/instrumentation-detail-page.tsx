@@ -46,6 +46,8 @@ import { TelemetrySection } from "./components/telemetry-section";
 import { TelemetryComparisonSection } from "./components/telemetry-comparison/telemetry-comparison-section";
 import { VersionSelector } from "./components/version-selector";
 import { PageContainer } from "@/components/layout/page-container";
+import { Seo } from "@/components/seo/seo";
+import { deriveInstrumentationMeta } from "@/lib/seo/derive";
 import { Tooltip } from "@/components/ui/tooltip";
 import { InstrumentationConfigurationTab } from "./components/instrumentation-configuration-tab";
 import { StandaloneLibraryTab } from "./components/standalone-library-tab";
@@ -221,8 +223,11 @@ export function InstrumentationDetailPage() {
   const showRawName =
     instrumentation.display_name && instrumentation.display_name !== instrumentation.name;
 
+  const seo = deriveInstrumentationMeta(instrumentation);
+
   return (
     <PageContainer>
+      <Seo title={seo.title} description={seo.description} />
       <BackButton />
 
       <div className="mt-3 space-y-6">

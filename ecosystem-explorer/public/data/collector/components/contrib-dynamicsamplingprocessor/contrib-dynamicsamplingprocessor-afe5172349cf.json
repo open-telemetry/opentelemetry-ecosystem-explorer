@@ -1,0 +1,26 @@
+{
+  "description": "The Dynamic Sampling Processor performs adaptive trace sampling using first-match rules-based routing to dynamic samplers. Each sampler produces a known sample rate which is encoded as `ot=th` in W3C TraceState for correct downstream metric weighting.",
+  "display_name": "Dynamic Sampling Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-dynamicsamplingprocessor",
+  "name": "dynamicsamplingprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "MikeGoldsmith",
+        "VinozzZ",
+        "jmacd"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "traces"
+      ]
+    }
+  },
+  "type": "processor"
+}
