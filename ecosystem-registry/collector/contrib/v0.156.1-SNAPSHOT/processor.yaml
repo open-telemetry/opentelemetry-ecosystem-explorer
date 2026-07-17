@@ -893,6 +893,7 @@ components:
       - contrib
       codeowners:
         active:
-        - axw
         - schmikei
         - rnishtala-sumo
+        emeritus:
+        - axw

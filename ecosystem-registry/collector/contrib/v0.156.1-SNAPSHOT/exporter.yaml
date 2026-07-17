@@ -530,8 +530,9 @@ components:
         active:
         - pavolloffay
         - MovieStoreGuy
-        - axw
         - paulojmdias
+        emeritus:
+        - axw
     attributes:
       node_id:
         description: The Kafka node ID.

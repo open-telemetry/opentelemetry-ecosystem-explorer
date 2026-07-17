@@ -186,9 +186,10 @@ components:
       - contrib
       codeowners:
         active:
-        - axw
         - constanca-m
         - Kavindu-Dodan
+        emeritus:
+        - axw
 - name: awslogsencodingextension
   subtype: encoding
   metadata:
@@ -205,10 +206,11 @@ components:
       - contrib
       codeowners:
         active:
-        - axw
         - constanca-m
         - Kavindu-Dodan
         - MichaelKatsoulis
+        emeritus:
+        - axw
 - name: azureencodingextension
   subtype: encoding
   metadata:
@@ -226,8 +228,9 @@ components:
       - contrib
       codeowners:
         active:
-        - axw
         - constanca-m
+        emeritus:
+        - axw
 - name: googlecloudlogentryencodingextension
   subtype: encoding
   metadata:

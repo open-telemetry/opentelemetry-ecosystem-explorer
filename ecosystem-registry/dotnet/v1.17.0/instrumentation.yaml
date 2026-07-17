@@ -3,7 +3,7 @@ modules:
   description: Contains extensions to register OpenTelemetry in applications using
     Microsoft.Extensions.DependencyInjection
   type: extension
-  version: 1.16.0
+  version: 1.17.0
 - name: OpenTelemetry.AutoInstrumentation
   description: OpenTelemetry Automatic Instrumentation package with all required components
     to enable automatic instrumentation.
@@ -38,7 +38,7 @@ modules:
 - name: OpenTelemetry.Exporter.Console
   description: Console exporter for OpenTelemetry .NET
   type: exporter
-  version: 1.16.0
+  version: 1.17.0
 - name: OpenTelemetry.Exporter.Geneva
   description: An OpenTelemetry .NET exporter that exports to local ETW or UDS.
   type: exporter
@@ -46,7 +46,7 @@ modules:
 - name: OpenTelemetry.Exporter.InMemory
   description: In-memory exporter for OpenTelemetry .NET
   type: exporter
-  version: 1.16.0
+  version: 1.17.0
 - name: OpenTelemetry.Exporter.InfluxDB
   description: An OpenTelemetry .NET exporter that exports to InfluxDB.
   type: exporter
@@ -58,20 +58,20 @@ modules:
 - name: OpenTelemetry.Exporter.OpenTelemetryProtocol
   description: OpenTelemetry protocol exporter for OpenTelemetry .NET
   type: exporter
-  version: 1.16.0
+  version: 1.17.0
 - name: OpenTelemetry.Exporter.Prometheus.AspNetCore
   description: ASP.NET Core middleware for hosting OpenTelemetry .NET Prometheus Exporter
   type: exporter
-  version: 1.16.0-beta.1
+  version: 1.17.0-beta.1
 - name: OpenTelemetry.Exporter.Prometheus.HttpListener
   description: Stand-alone HttpListener for hosting OpenTelemetry .NET Prometheus
     Exporter
   type: exporter
-  version: 1.16.0-beta.1
+  version: 1.17.0-beta.1
 - name: OpenTelemetry.Exporter.Zipkin
   description: Zipkin exporter for OpenTelemetry .NET
   type: exporter
-  version: 1.16.0
+  version: 1.17.0
 - name: OpenTelemetry.Extensions
   description: OpenTelemetry .NET SDK preview features and extensions.
   type: extension
@@ -95,11 +95,11 @@ modules:
 - name: OpenTelemetry.Extensions.Hosting
   description: Contains extensions to start OpenTelemetry in applications using Microsoft.Extensions.Hosting
   type: extension
-  version: 1.16.0
+  version: 1.17.0
 - name: OpenTelemetry.Extensions.Propagators
   description: OpenTelemetry Extensions Propagators
   type: extension
-  version: 1.16.0
+  version: 1.17.0
 - name: OpenTelemetry.Instrumentation.AWS
   description: AWS client instrumentation for OpenTelemetry .NET.
   type: instrumentation
