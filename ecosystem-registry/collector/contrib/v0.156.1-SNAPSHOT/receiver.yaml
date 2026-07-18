@@ -13265,6 +13265,26 @@ components:
           aggregation_temporality: cumulative
           value_type: int
         stability: development
+      rabbitmq.exchange.messages.published_in:
+        description: The total number of messages published into an exchange from
+          channels.
+        unit: '{messages}'
+        enabled: false
+        sum:
+          monotonic: true
+          aggregation_temporality: cumulative
+          value_type: int
+        stability: development
+      rabbitmq.exchange.messages.published_out:
+        description: The total number of messages published out of an exchange to
+          bound queues.
+        unit: '{messages}'
+        enabled: false
+        sum:
+          monotonic: true
+          aggregation_temporality: cumulative
+          value_type: int
+        stability: development
       rabbitmq.message.acknowledged:
         description: The number of messages acknowledged by consumers.
         unit: '{messages}'
@@ -13979,6 +13999,13 @@ components:
           value_type: int
         stability: development
     resource_attributes:
+      rabbitmq.exchange.name:
+        description: The name of the RabbitMQ exchange.
+        type: string
+      rabbitmq.exchange.type:
+        description: The type of the RabbitMQ exchange (direct, fanout, topic, or
+          headers).
+        type: string
       rabbitmq.node.name:
         description: The name of the RabbitMQ node.
         type: string
@@ -17107,6 +17134,12 @@ components:
       client.port:
         description: TCP port used by the client.
         type: int
+      cursor.state:
+        description: The state of the cursor.
+        type: string
+        enum:
+        - active
+        - cached
       database.status:
         description: The current status of a database
         type: string
@@ -17186,6 +17219,11 @@ components:
         enum:
         - receive
         - transmit
+      request.state:
+        description: The state of the worker request.
+        type: string
+        enum:
+        - waiting
       server.address:
         description: The network address of the server hosting the database.
         type: string
@@ -17428,6 +17466,18 @@ components:
         enum:
         - permanent
         - temporary
+      task.result:
+        description: The result of the task activation.
+        type: string
+        enum:
+        - aborted
+        - started
+      task.state:
+        description: The state of the task.
+        type: string
+        enum:
+        - limit_reached
+        - running
       tempdb.state:
         description: The status of the tempdb space usage.
         type: string
@@ -17450,6 +17500,14 @@ components:
         description: Type of the wait, view [WaitTypes documentation](https://learn.microsoft.com/en-us/sql/relational-databases/system-dynamic-management-views/sys-dm-os-wait-stats-transact-sql?view=sql-server-ver16#WaitTypes)
           for more information.
         type: string
+      worker.state:
+        description: The state of the worker thread.
+        type: string
+        enum:
+        - active
+        - available
+        - maximum
+        - waiting_for_cpu
     metrics:
       sqlserver.access.scan.rate:
         description: Rate of access method scans.
@@ -17490,6 +17548,17 @@ components:
         gauge:
           value_type: double
         stability: development
+      sqlserver.clr.execution.time:
+        description: Total time spent executing in the CLR. Only non-zero when CLR
+          integration is enabled and CLR code has been executed.
+        unit: s
+        enabled: false
+        sum:
+          monotonic: true
+          aggregation_temporality: cumulative
+          value_type: double
+        attributes: []
+        stability: development
       sqlserver.computer.uptime:
         description: Computer uptime.
         unit: '{seconds}'
@@ -17513,6 +17582,39 @@ components:
         gauge:
           value_type: int
           input_type: string
+        stability: development
+      sqlserver.cursor.count:
+        description: Number of cursors by state.
+        unit: '{cursor}'
+        enabled: false
+        gauge:
+          value_type: int
+        attributes:
+        - cursor.state
+        stability: development
+      sqlserver.cursor.memory.usage:
+        description: Memory used by cursors.
+        unit: By
+        enabled: false
+        gauge:
+          value_type: int
+        attributes: []
+        stability: development
+      sqlserver.cursor.plan.count:
+        description: Number of active cursor plans.
+        unit: '{plan}'
+        enabled: false
+        gauge:
+          value_type: int
+        attributes: []
+        stability: development
+      sqlserver.cursor.request.rate:
+        description: Rate of cursor requests per second.
+        unit: '{request}/s'
+        enabled: false
+        gauge:
+          value_type: double
+        attributes: []
         stability: development
       sqlserver.database.backup_or_restore.rate:
         description: Total number of backups/restores.
@@ -18082,6 +18184,15 @@ components:
           value_type: double
         attributes: []
         stability: development
+      sqlserver.stored_procedure.invocation.rate:
+        description: Rate of Service Broker activated stored procedure invocations
+          per second.
+        unit: '{invocation}/s'
+        enabled: false
+        gauge:
+          value_type: double
+        attributes: []
+        stability: development
       sqlserver.table.count:
         description: The number of tables.
         unit: '{tables}'
@@ -18093,6 +18204,24 @@ components:
         attributes:
         - table.state
         - table.status
+        stability: development
+      sqlserver.task.count:
+        description: Number of Service Broker activation tasks by state.
+        unit: '{task}'
+        enabled: false
+        gauge:
+          value_type: int
+        attributes:
+        - task.state
+        stability: development
+      sqlserver.task.rate:
+        description: Rate of Service Broker activation tasks by type per second.
+        unit: '{task}/s'
+        enabled: false
+        gauge:
+          value_type: double
+        attributes:
+        - task.result
         stability: development
       sqlserver.transaction.delay:
         description: Time consumed in transaction delays.
@@ -18179,6 +18308,24 @@ components:
         enabled: true
         gauge:
           value_type: int
+        stability: development
+      sqlserver.worker.request.count:
+        description: Number of worker requests by state.
+        unit: '{request}'
+        enabled: false
+        gauge:
+          value_type: int
+        attributes:
+        - request.state
+        stability: development
+      sqlserver.worker.thread.count:
+        description: Number of worker threads by state.
+        unit: '{thread}'
+        enabled: false
+        gauge:
+          value_type: int
+        attributes:
+        - worker.state
         stability: development
       sqlserver.worktable.cache.hit_ratio:
         description: Fraction of worktables that did not require initialization because
