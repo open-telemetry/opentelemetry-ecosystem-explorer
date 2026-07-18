@@ -1,0 +1,19 @@
+{
+  "description": null,
+  "display_name": "Memory Limiter Extension",
+  "distribution": "core",
+  "ecosystem": "collector",
+  "id": "core-memorylimiterextension",
+  "name": "memorylimiterextension",
+  "repository": "opentelemetry-collector",
+  "status": {
+    "class": "extension",
+    "distributions": [],
+    "stability": {
+      "development": [
+        "extension"
+      ]
+    }
+  },
+  "type": "extension"
+}

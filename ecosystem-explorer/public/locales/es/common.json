@@ -1,0 +1,11 @@
+{
+  "back": "Atrás",
+  "copy": "Copiar",
+  "copied": "Copiado",
+  "comingSoon": "Próximamente",
+  "notFound": {
+    "title": "404 - Página no encontrada",
+    "description": "La página que buscas no existe. Es posible que hayas escrito la dirección incorrectamente o que la página haya sido movida.",
+    "returnHome": "Volver al inicio"
+  }
+}

@@ -205,4 +205,13 @@ describe("ControlWrapper", () => {
     const ctl = screen.getByTestId("ctl");
     expect(label.parentElement).not.toBe(ctl.parentElement);
   });
+
+  it("renders inline children when both inlineControl and hideLabel are true", () => {
+    render(
+      <ControlWrapper node={baseNode} inlineControl hideLabel>
+        <button data-testid="switch">switch</button>
+      </ControlWrapper>
+    );
+    expect(screen.getByTestId("switch")).toBeInTheDocument();
+  });
 });

@@ -15,12 +15,15 @@
 """Inventory management for component tracking."""
 
 import logging
+import re
 import shutil
+from collections.abc import Iterable
 from pathlib import Path
 from typing import Any
 
 import yaml
 from semantic_version import Version
+from watcher_common.content_hashing import compute_content_hash
 
 from .type_defs import COMPONENT_TYPES, DistributionName
 
@@ -29,6 +32,8 @@ logger = logging.getLogger(__name__)
 
 class InventoryManager:
     """Manages component inventory storage and retrieval."""
+
+    README_DIR = "component_readmes"
 
     def __init__(self, inventory_dir: str = "ecosystem-registry/collector"):
         """
@@ -50,12 +55,68 @@ class InventoryManager:
         """
         return self.inventory_dir / distribution / f"v{version}"
 
+    def meta_schemas_dir(self) -> Path:
+        """
+        Return the content-addressable schema storage directory.
+
+        The schema is stored once per distinct content as ``{hash}.yaml``,
+        not once per version. A component YAML's ``schema_hash`` field
+        directly identifies its schema file at
+        ``meta_schemas_dir() / f"{schema_hash}.yaml"``.
+        """
+        return self.inventory_dir / "meta" / "schemas"
+
+    def prune_orphan_schemas(self) -> int:
+        """
+        Delete schema files in ``meta/schemas/`` no longer referenced by any
+        component YAML.
+
+        Walks every distribution's version directories, collects the set of
+        ``schema_hash`` values referenced by component YAMLs, then removes any
+        ``meta/schemas/{hash}.yaml`` whose hash is not in that set. Should be
+        called after deleting a version (release backfill, snapshot cleanup)
+        to reclaim files that lost their last reference.
+
+        Returns:
+            Number of orphan schema files deleted.
+        """
+        schemas_dir = self.meta_schemas_dir()
+        if not schemas_dir.exists():
+            return 0
+
+        referenced: set[str] = set()
+        if self.inventory_dir.exists():
+            for dist_dir in self.inventory_dir.iterdir():
+                if not dist_dir.is_dir() or dist_dir.name == "meta":
+                    continue
+                for version_dir in dist_dir.iterdir():
+                    if not version_dir.is_dir():
+                        continue
+                    for component_file in version_dir.glob("*.yaml"):
+                        try:
+                            with open(component_file, encoding="utf-8") as f:
+                                data = yaml.safe_load(f) or {}
+                        except yaml.YAMLError:
+                            continue
+                        schema_hash = data.get("schema_hash")
+                        if schema_hash and schema_hash != "unknown":
+                            referenced.add(schema_hash)
+
+        removed = 0
+        for stored in schemas_dir.glob("*.yaml"):
+            if stored.stem not in referenced:
+                stored.unlink()
+                removed += 1
+
+        return removed
+
     def save_versioned_inventory(
         self,
         distribution: DistributionName,
         version: Version,
         components: dict[str, list[dict[str, Any]]],
         repository: str,
+        schema_hash: str = "unknown",
     ) -> None:
         """
         Save inventory for a specific distribution and version.
@@ -65,6 +126,8 @@ class InventoryManager:
             version: Version object
             components: Dictionary of component type to component list
             repository: Name of the repository being scanned
+            schema_hash: 12-char hex hash of metadata-schema.yaml at scan time,
+                         or "unknown" when the schema file was absent in the repo
         """
         version_dir = self.get_version_dir(distribution, version)
         version_dir.mkdir(parents=True, exist_ok=True)
@@ -78,6 +141,7 @@ class InventoryManager:
                 "version": str(version),
                 "repository": repository,
                 "component_type": component_type,
+                "schema_hash": schema_hash,
                 "components": component_list,
             }
 
@@ -93,15 +157,18 @@ class InventoryManager:
             version: Version object
 
         Returns:
-            Inventory dictionary with all components, or empty structure if it doesn't exist
+            Inventory dictionary with all components, or empty structure if it doesn't exist.
+            Includes schema_hash field (defaults to "unknown" for files written before
+            schema fingerprinting was introduced).
         """
         version_dir = self.get_version_dir(distribution, version)
 
         if not version_dir.exists():
-            return {"distribution": distribution, "version": str(version), "components": {}}
+            return {"distribution": distribution, "version": str(version), "schema_hash": "unknown", "components": {}}
 
         components = {}
         repository = ""
+        schema_hash = "unknown"
 
         for component_type in COMPONENT_TYPES:
             file_path = version_dir / f"{component_type}.yaml"
@@ -112,6 +179,8 @@ class InventoryManager:
                     components[component_type] = data.get("components", [])
                     if not repository:
                         repository = data.get("repository", "")
+                    if schema_hash == "unknown":
+                        schema_hash = data.get("schema_hash", "unknown")
             else:
                 components[component_type] = []
 
@@ -119,8 +188,145 @@ class InventoryManager:
             "distribution": distribution,
             "version": str(version),
             "repository": repository,
+            "schema_hash": schema_hash,
             "components": components,
         }
+
+    def readme_dir_exists(self, distribution: DistributionName, version: Version) -> bool:
+        """Return True if the component_readmes directory exists for this distribution/version."""
+        return (self.get_version_dir(distribution, version) / self.README_DIR).exists()
+
+    def _sanitize_name(self, name: str) -> str:
+        """Sanitizes a name for use as a filename to prevent path traversal."""
+        return re.sub(r"[^a-zA-Z0-9._\-]", "_", name)
+
+    def save_component_readmes(
+        self,
+        distribution: DistributionName,
+        version: Version,
+        readmes: Iterable[tuple[str, str]],  # (component_name, content)
+    ) -> int:
+        """
+        Write each README content-addressed. Returns count newly written.
+
+        Args:
+            distribution: Distribution name (core or contrib)
+            version: Version object
+            readmes: Iterable of (component_name, content) pairs, e.g. from
+                     readme_scanner.discover_component_readmes()
+
+        Returns:
+            Number of README files newly written (existing content-addressed
+            files are left untouched, matching save_versioned_inventory's
+            general approach of not rewriting unchanged data).
+        """
+        target_dir = self.get_version_dir(distribution, version) / self.README_DIR
+        target_dir.mkdir(parents=True, exist_ok=True)
+        written = 0
+        for name, content in readmes:
+            digest = compute_content_hash(content)
+            safe_name = self._sanitize_name(name)
+            file_path = target_dir / f"{safe_name}-{digest}.md"
+            if file_path.exists():
+                continue
+            file_path.write_text(content, encoding="utf-8")
+            written += 1
+        return written
+
+    def load_component_readme_map(self, distribution: DistributionName, version: Version) -> dict[str, str]:
+        """
+        Scan component_readmes/ and build a map of sanitized component_name -> markdown_hash.
+
+        Args:
+            distribution: Distribution name (core or contrib)
+            version: Version to scan
+
+        Returns:
+            Dictionary mapping sanitized component names to their markdown content hashes
+        """
+        readme_dir = self.get_version_dir(distribution, version) / self.README_DIR
+        if not readme_dir.exists():
+            return {}
+
+        selected_readmes: dict[str, tuple[str, int, str]] = {}
+        seen_hashes: dict[str, set[str]] = {}
+
+        for item in sorted(readme_dir.iterdir(), key=lambda p: p.name):
+            if item.is_file() and item.suffix == ".md":
+                parsed = self._parse_readme_filename(item.name)
+                if parsed:
+                    component_name, markdown_hash = parsed
+                    seen_hashes.setdefault(component_name, set()).add(markdown_hash)
+
+                    try:
+                        mtime_ns = item.stat().st_mtime_ns
+                    except OSError:
+                        logger.warning("Failed to stat README file in %s %s: %s", distribution, version, item.name)
+                        continue
+
+                    current = selected_readmes.get(component_name)
+                    if current is None:
+                        selected_readmes[component_name] = (markdown_hash, mtime_ns, item.name)
+                    else:
+                        _, current_mtime_ns, current_name = current
+                        if mtime_ns > current_mtime_ns or (mtime_ns == current_mtime_ns and item.name > current_name):
+                            selected_readmes[component_name] = (markdown_hash, mtime_ns, item.name)
+                else:
+                    logger.warning("Malformed README filename in %s %s: %s", distribution, version, item.name)
+
+        readme_map = {}
+        for component_name, (markdown_hash, _, selected_name) in selected_readmes.items():
+            readme_map[component_name] = markdown_hash
+            hashes = seen_hashes.get(component_name, set())
+            if len(hashes) > 1:
+                logger.warning(
+                    "Multiple README files found for component '%s' in %s %s; "
+                    "selected '%s' with hash '%s'. Available hashes: %s",
+                    component_name,
+                    distribution,
+                    version,
+                    selected_name,
+                    markdown_hash,
+                    sorted(hashes),
+                )
+
+        return readme_map
+
+    def load_component_readme_content(
+        self, distribution: DistributionName, version: Version, component_name: str, markdown_hash: str
+    ) -> str | None:
+        """
+        Load the content of a specific component README.
+
+        Args:
+            distribution: Distribution name (core or contrib)
+            version: Version to load from
+            component_name: Name of the component
+            markdown_hash: Content hash of the markdown
+
+        Returns:
+            The markdown content, or None if it doesn't exist or cannot be read
+        """
+        safe_name = self._sanitize_name(component_name)
+        file_path = self.get_version_dir(distribution, version) / self.README_DIR / f"{safe_name}-{markdown_hash}.md"
+        if not file_path.exists():
+            return None
+
+        try:
+            return file_path.read_text(encoding="utf-8")
+        except OSError as e:
+            logger.error("Failed to read README file '%s': %s", file_path, e)
+            return None
+
+    def _parse_readme_filename(self, filename: str) -> tuple[str, str] | None:
+        """
+        Parse a README filename into (component_name, markdown_hash).
+        Format: {component-name}-{hash}.md
+        """
+        match = re.match(r"^(.+)-([a-f0-9]{12})\.md$", filename)
+        if match:
+            return match.group(1), match.group(2)
+        return None
 
     def list_versions(self, distribution: DistributionName) -> list[Version]:
         """
@@ -192,6 +398,9 @@ class InventoryManager:
                 shutil.rmtree(snapshot_dir)
                 count += 1
 
+        if count > 0:
+            self.prune_orphan_schemas()
+
         return count
 
     def version_exists(self, distribution: DistributionName, version: Version) -> bool:
@@ -222,6 +431,7 @@ class InventoryManager:
         version_dir = self.get_version_dir(distribution, version)
         if version_dir.exists():
             shutil.rmtree(version_dir)
+            self.prune_orphan_schemas()
             return True
         return False
 

@@ -1,0 +1,29 @@
+{
+  "description": null,
+  "display_name": "Schema Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-schemaprocessor",
+  "name": "schemaprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "MovieStoreGuy",
+        "ankitpatel96",
+        "dineshg13",
+        "MikeGoldsmith"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "processor"
+}

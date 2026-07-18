@@ -8,19 +8,33 @@ on:
     - cron: "21 14 * * 3" # weekly at 14:21 (UTC) on Wednesday
   workflow_dispatch:
 
-permissions: read-all
+permissions:
+  contents: read # Default minimum; the analysis job declares its full scope set
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   analysis:
-    if: github.event_name != 'schedule' || github.repository == 'open-telemetry/opentelemetry-ecosystem-explorer'
+    name: Scorecard analysis
+    if:
+      github.event_name != 'schedule' || github.repository ==
+      'open-telemetry/opentelemetry-ecosystem-explorer'
     runs-on: ubuntu-latest
+    # Scorecard checks need broad read access to inspect repo configuration,
+    # workflow history, PR/issue activity, and CI statuses. See
+    # https://github.com/ossf/scorecard-action#workflow-restrictions
     permissions:
-      # Needed for Code scanning upload
-      security-events: write
-      # Needed for GitHub OIDC token if publish_results is true
-      id-token: write
+      security-events: write # Upload SARIF results to Code Scanning
+      id-token: write # Required when publish_results: true (OIDC token for OSSF)
+      contents: read # Scorecard reads repository file contents
+      actions: read # Scorecard inspects workflow run history
+      issues: read # Scorecard's GraphQL ListCommits paths
+      pull-requests: read # Scorecard analyzes PR activity
+      checks: read # Scorecard detects SAST tools from check runs
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           persist-credentials: false
 
@@ -43,6 +57,6 @@ jobs:
       # Upload the results to GitHub's code scanning dashboard (optional).
       # Commenting out will disable upload of results to your repo's Code Scanning dashboard
       - name: "Upload to code-scanning"
-        uses: github/codeql-action/upload-sarif@95e58e9a2cdfd71adc6e0353d5c52f41a045d225 # v4.35.2
+        uses: github/codeql-action/upload-sarif@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4.36.2
         with:
           sarif_file: results.sarif

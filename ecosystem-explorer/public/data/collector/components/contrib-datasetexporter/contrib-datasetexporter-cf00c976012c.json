@@ -1,0 +1,30 @@
+{
+  "description": null,
+  "display_name": "DataSet Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-datasetexporter",
+  "name": "datasetexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "atoulme",
+        "martin-majlis-s1",
+        "zdaratom-s1",
+        "tomaz-s1"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "traces"
+      ]
+    }
+  },
+  "type": "exporter"
+}

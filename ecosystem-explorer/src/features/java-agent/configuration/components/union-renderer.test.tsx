@@ -36,8 +36,19 @@ vi.mock("@/hooks/use-configuration-builder", () => ({
 }));
 
 vi.mock("./schema-renderer", () => ({
-  SchemaRenderer: ({ node }: { node: { key: string; hideLabel?: boolean } }) => (
-    <span data-testid="variant" data-hide-label={String(!!node.hideLabel)}>
+  SchemaRenderer: ({
+    node,
+    inline,
+  }: {
+    node: { key: string; label: string; hideLabel?: boolean };
+    inline?: boolean;
+  }) => (
+    <span
+      data-testid="variant"
+      data-hide-label={String(!!node.hideLabel)}
+      data-inline={String(!!inline)}
+      data-label={node.label}
+    >
       {node.key}
     </span>
   ),
@@ -55,21 +66,21 @@ const unionNode: UnionNode = {
 };
 
 describe("UnionRenderer", () => {
-  it("renders a radio per variant", () => {
+  it("renders a tab per variant", () => {
     render(<UnionRenderer node={unionNode} depth={1} path="value" />);
-    expect(screen.getByRole("radio", { name: "String" })).toBeInTheDocument();
-    expect(screen.getByRole("radio", { name: "Int" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "String" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Int" })).toBeInTheDocument();
   });
 
   it("infers the selected variant from the stored value type (string)", () => {
     render(<UnionRenderer node={unionNode} depth={1} path="value" />);
     expect(screen.getByTestId("variant")).toHaveTextContent("string");
-    expect(screen.getByRole("radio", { name: "String" })).toBeChecked();
+    expect(screen.getByRole("tab", { name: "String" })).toHaveAttribute("aria-selected", "true");
   });
 
-  it("dispatches setValue with the variant's empty value on radio change", () => {
+  it("dispatches setValue with the variant's empty value on tab click", () => {
     render(<UnionRenderer node={unionNode} depth={1} path="value" />);
-    fireEvent.click(screen.getByRole("radio", { name: "Int" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Int" }));
     expect(setValue).toHaveBeenCalledWith("value", 0);
   });
 
@@ -82,7 +93,42 @@ describe("UnionRenderer", () => {
       variants: [{ controlType: "text_input", key: "a", label: "String", path: "v" }],
     };
     render(<UnionRenderer node={n} depth={1} path="v" />);
-    expect(screen.getByRole("radio", { name: "String" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "String" })).toBeInTheDocument();
+  });
+
+  it("derives the inner item type for anonymous list variants ('list of toggle' -> 'Boolean list')", () => {
+    const n: UnionNode = {
+      controlType: "union",
+      key: "v",
+      label: "V",
+      path: "v",
+      variants: [
+        { controlType: "text_input", key: "a", label: "Variant 0", path: "v" },
+        {
+          controlType: "list",
+          key: "b",
+          label: "Variant 1",
+          path: "v",
+          itemSchema: { controlType: "toggle", key: "item", label: "Item", path: "v.item" },
+        },
+        {
+          controlType: "list",
+          key: "c",
+          label: "Variant 2",
+          path: "v",
+          itemSchema: {
+            controlType: "group",
+            key: "item",
+            label: "Item",
+            path: "v.item",
+            children: [],
+          },
+        },
+      ],
+    };
+    render(<UnionRenderer node={n} depth={1} path="v" />);
+    expect(screen.getByRole("tab", { name: "Boolean list" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Group list" })).toBeInTheDocument();
   });
 
   it("falls back to a pretty controlType label when the schema label is 'Variant N'", () => {
@@ -98,9 +144,9 @@ describe("UnionRenderer", () => {
       ],
     };
     render(<UnionRenderer node={n} depth={1} path="v" />);
-    expect(screen.getByRole("radio", { name: "Text" })).toBeInTheDocument();
-    expect(screen.getByRole("radio", { name: "Boolean" })).toBeInTheDocument();
-    expect(screen.getByRole("radio", { name: "Number list" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Text" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Boolean" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Number list" })).toBeInTheDocument();
   });
 
   it("filters out empty-group variants", () => {
@@ -116,12 +162,12 @@ describe("UnionRenderer", () => {
       ],
     };
     render(<UnionRenderer node={n} depth={1} path="v" />);
-    expect(screen.getByRole("radio", { name: "Text" })).toBeInTheDocument();
-    expect(screen.queryByRole("radio", { name: "Group" })).not.toBeInTheDocument();
-    expect(screen.getByRole("radio", { name: "Boolean" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Text" })).toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "Group" })).not.toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Boolean" })).toBeInTheDocument();
   });
 
-  it("renders the first variant without a fieldset when every variant is filtered out", () => {
+  it("renders the first variant without a tablist when every variant is filtered out", () => {
     const n: UnionNode = {
       controlType: "union",
       key: "v",
@@ -130,12 +176,11 @@ describe("UnionRenderer", () => {
       variants: [{ controlType: "group", key: "b", label: "Variant 0", children: [], path: "v" }],
     };
     render(<UnionRenderer node={n} depth={1} path="v" />);
-    expect(screen.queryByRole("radio")).not.toBeInTheDocument();
+    expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
     expect(screen.getByTestId("variant")).toHaveTextContent("b");
   });
 
   it("preserves the user's explicit List pick when inference is ambiguous between multiple array variants", () => {
-    // Simulate three array-shaped variants where inference cannot disambiguate.
     const n: UnionNode = {
       controlType: "union",
       key: "v",
@@ -154,34 +199,36 @@ describe("UnionRenderer", () => {
       ],
     };
 
-    // Value is "" (string) per the shared mock; start by rendering so the default selection
-    // is inferred from the string. First let's flip to "List" via a click.
     render(<UnionRenderer node={n} depth={1} path="v" />);
-
-    // Click the "List" radio. setValue dispatches [] which is ambiguous among all 3 array variants.
-    fireEvent.click(screen.getByRole("radio", { name: "List" }));
-
-    // After click, the "List" radio must remain checked — it must NOT snap back to "Text list".
-    expect(screen.getByRole("radio", { name: "List" })).toBeChecked();
+    fireEvent.click(screen.getByRole("tab", { name: "Boolean list" }));
+    expect(screen.getByRole("tab", { name: "Boolean list" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
   });
 
-  it("renders the union's own label visibly, not only as a sr-only legend", () => {
+  it("renders the union's own label visibly via the FieldSection chevron row", () => {
     render(<UnionRenderer node={unionNode} depth={1} path="value" />);
-    // There should be at least one visible (non-sr-only) element with the label text.
-    const elements = screen.getAllByText("Value");
-    const visibleElement = elements.find((el) => !el.classList.contains("sr-only"));
-    expect(visibleElement).toBeDefined();
-    // The visible label must not be a legend element.
-    expect(visibleElement!.tagName.toLowerCase()).not.toBe("legend");
+    expect(screen.getByText("Value")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Collapse Value/ })).toBeInTheDocument();
   });
 
-  it("renders the selected variant with hideLabel=true so inner ControlWrapper suppresses its own label", () => {
-    render(<UnionRenderer node={unionNode} depth={1} path="value" />);
+  it("renders the selected variant inline with hideLabel=true and the display name in place of 'Variant N'", () => {
+    const n: UnionNode = {
+      controlType: "union",
+      key: "v",
+      label: "V",
+      path: "v",
+      variants: [{ controlType: "text_input", key: "a", label: "Variant 0", path: "v" }],
+    };
+    render(<UnionRenderer node={n} depth={1} path="v" />);
     const variantSpan = screen.getByTestId("variant");
     expect(variantSpan.getAttribute("data-hide-label")).toBe("true");
+    expect(variantSpan.getAttribute("data-inline")).toBe("true");
+    expect(variantSpan.getAttribute("data-label")).toBe("Text");
   });
 
-  it("renders the description in a tooltip, not as an inline paragraph", () => {
+  it("renders the description in a tooltip via the chevron-row Info, not as an inline paragraph", () => {
     const n: UnionNode = {
       controlType: "union",
       key: "sampler",
@@ -194,7 +241,6 @@ describe("UnionRenderer", () => {
       ],
     };
     render(<UnionRenderer node={n} depth={1} path="tracer_provider.sampler" />);
-    expect(screen.getByText("Choose a sampling strategy.")).toBeInTheDocument();
     expect(screen.getAllByText("Choose a sampling strategy.")).toHaveLength(1);
   });
 
@@ -209,14 +255,10 @@ describe("UnionRenderer", () => {
         { controlType: "number_input", key: "b", label: "Number", path: "v" },
       ],
     };
-    // Shared mock stores values: { value: "x" }. Inference says text_input (String).
     render(<UnionRenderer node={n} depth={1} path="v" />);
-    expect(screen.getByRole("radio", { name: "String" })).toBeChecked();
+    expect(screen.getByRole("tab", { name: "String" })).toHaveAttribute("aria-selected", "true");
 
-    // User clicks Number -> setValue dispatches 0 -> inference is unambiguous (number_input wins).
-    fireEvent.click(screen.getByRole("radio", { name: "Number" }));
-    // We can't directly observe state post-click because our mock is static, but the click's
-    // setValue call should have been emitted with 0:
+    fireEvent.click(screen.getByRole("tab", { name: "Number" }));
     expect(setValue).toHaveBeenLastCalledWith("v", 0);
   });
 });

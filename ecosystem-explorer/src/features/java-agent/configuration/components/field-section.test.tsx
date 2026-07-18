@@ -17,7 +17,7 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { FieldSection, useFieldSectionCanAdd } from "./field-section";
-import type { GroupNode, ListNode, KeyValueMapNode } from "@/types/configuration";
+import type { GroupNode, ListNode } from "@/types/configuration";
 
 const groupNode: GroupNode = {
   controlType: "group",
@@ -131,92 +131,6 @@ const listNode: ListNode = {
   path: "tp.processors",
   itemSchema: { controlType: "group", key: "item", label: "Item", path: "x", children: [] },
 };
-
-const kvNode: KeyValueMapNode = {
-  controlType: "key_value_map",
-  key: "attributes",
-  label: "Attributes",
-  path: "resource.attributes",
-};
-
-describe("FieldSection — badge", () => {
-  it("renders 'N items' for a list node with N > 0", () => {
-    render(
-      <FieldSection node={listNode} level="field" value={[{}, {}, {}]}>
-        <FieldSection.Header>
-          <FieldSection.Badge />
-        </FieldSection.Header>
-      </FieldSection>
-    );
-    expect(screen.getByText("3 items")).toBeInTheDocument();
-  });
-
-  it("singularizes to '1 item'", () => {
-    render(
-      <FieldSection node={listNode} level="field" value={[{}]}>
-        <FieldSection.Header>
-          <FieldSection.Badge />
-        </FieldSection.Header>
-      </FieldSection>
-    );
-    expect(screen.getByText("1 item")).toBeInTheDocument();
-  });
-
-  it("renders 'N entries' for a key-value map", () => {
-    render(
-      <FieldSection node={kvNode} level="field" value={{ a: "1", b: "2" }}>
-        <FieldSection.Header>
-          <FieldSection.Badge />
-        </FieldSection.Header>
-      </FieldSection>
-    );
-    expect(screen.getByText("2 entries")).toBeInTheDocument();
-  });
-
-  it("renders 'N fields set' for a group with configured leaves", () => {
-    const grp: GroupNode = {
-      ...groupNode,
-      children: [
-        {
-          controlType: "text_input",
-          key: "endpoint",
-          label: "Endpoint",
-          path: "x.endpoint",
-        },
-      ],
-    };
-    render(
-      <FieldSection node={grp} level="field" value={{ endpoint: "http://x" }}>
-        <FieldSection.Header>
-          <FieldSection.Badge />
-        </FieldSection.Header>
-      </FieldSection>
-    );
-    expect(screen.getByText("1 field set")).toBeInTheDocument();
-  });
-
-  it("hides when count is 0", () => {
-    render(
-      <FieldSection node={listNode} level="field" value={[]}>
-        <FieldSection.Header>
-          <FieldSection.Badge />
-        </FieldSection.Header>
-      </FieldSection>
-    );
-    expect(screen.queryByText(/items?$/)).toBeNull();
-  });
-
-  it("treats null value as 0 (nullable list)", () => {
-    render(
-      <FieldSection node={listNode} level="field" value={null}>
-        <FieldSection.Header>
-          <FieldSection.Badge />
-        </FieldSection.Header>
-      </FieldSection>
-    );
-    expect(screen.queryByText(/items?$/)).toBeNull();
-  });
-});
 
 describe("FieldSection — stability/info/description", () => {
   it("renders StabilityBadge whenever node.stability is set, at any level", () => {

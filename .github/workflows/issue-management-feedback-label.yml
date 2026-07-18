@@ -1,0 +1,35 @@
+# Removes the "needs author feedback" label (and "stale" label) when the issue author replies to their own issue.
+name: Issue management - remove labels as needed
+
+on:
+  issue_comment:
+    types: [created]
+
+# Serialize label edits per issue so concurrent comments don't race on the same labels.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  issue_comment:
+    name: Remove labels
+    permissions:
+      contents: read # checkout is not needed, but keep read as the safe default baseline
+      issues: write # to remove labels; PR labels are also managed via the Issues API
+    if: >
+      contains(github.event.issue.labels.*.name, 'needs author feedback') &&
+      github.event.comment.user.login == github.event.issue.user.login
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove labels
+        env:
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue edit "$ISSUE_NUMBER" \
+            --remove-label "needs author feedback" \
+            --remove-label "stale"

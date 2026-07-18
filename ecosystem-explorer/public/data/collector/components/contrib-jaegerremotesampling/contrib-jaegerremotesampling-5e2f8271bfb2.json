@@ -1,0 +1,27 @@
+{
+  "description": null,
+  "display_name": "Jaeger Remote Sampling Extension",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-jaegerremotesampling",
+  "name": "jaegerremotesampling",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "yurishkuro",
+        "frzifus"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "extension"
+      ]
+    }
+  },
+  "type": "extension"
+}

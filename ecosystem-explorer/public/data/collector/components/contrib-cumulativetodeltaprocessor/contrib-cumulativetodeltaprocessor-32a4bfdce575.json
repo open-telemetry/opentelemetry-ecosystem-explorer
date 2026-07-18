@@ -1,0 +1,47 @@
+{
+  "attributes": {
+    "metric_type": {
+      "description": "The pdata metric type of the datapoint.",
+      "enum": [
+        "exponential_histogram",
+        "histogram",
+        "sum"
+      ],
+      "type": "string"
+    },
+    "reason": {
+      "description": "The reason a datapoint was dropped instead of converted.",
+      "enum": [
+        "bucket_mismatch",
+        "initial",
+        "reset"
+      ],
+      "type": "string"
+    }
+  },
+  "description": "The cumulative to delta processor (`cumulativetodeltaprocessor`) converts monotonic sum, histogram, and exponential histogram metrics from cumulative to delta aggregation temporality. Non-monotonic sums are excluded. Delta metrics are excluded from any conversion and forwarded without changes.",
+  "display_name": "Cumulative to Delta Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-cumulativetodeltaprocessor",
+  "name": "cumulativetodeltaprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "TylerHelmuth"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "processor"
+}

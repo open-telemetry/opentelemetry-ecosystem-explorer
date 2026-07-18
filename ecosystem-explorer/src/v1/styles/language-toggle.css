@@ -1,0 +1,130 @@
+/*
+ * Language toggle — shares the dropdown chrome of the theme toggle
+ * (`.td-light-dark-menu`, see `theme-toggle.css`), reusing opentelemetry.io's
+ * Bootstrap `.dropdown-menu` / `.dropdown-item` values. The trigger differs:
+ * it pairs the translate icon with the active locale's endonym, so it lays out
+ * as an icon + label row rather than the theme toggle's icon-only button.
+ *
+ * Surface colours follow the *page* theme via `[data-theme]` ancestor
+ * selectors (Radix portals the menu to <body>, so `<html data-theme=...>`
+ * still matches), matching the theme toggle exactly.
+ */
+
+/* --- Trigger button --- */
+
+.td-lang-menu__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  line-height: 1;
+  font-weight: 600; /* matches `.nav-link` upstream — trigger is a nav-link */
+  transition: color 150ms ease;
+}
+
+/*
+ * Hover and open-state visuals (color + underline) come from `.td-navbar`'s
+ * shared rule in `navbar.css`. The trigger renders inside the navbar so it
+ * picks them up automatically.
+ */
+.td-lang-menu__trigger:focus-visible {
+  outline: revert;
+  box-shadow: none;
+}
+
+.td-lang-menu__trigger .bi {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+  fill: currentColor;
+}
+
+/* Bootstrap's `.dropdown-toggle::after` chevron, reproduced verbatim. */
+.td-lang-menu__trigger::after {
+  display: inline-block;
+  margin-left: 0.255em;
+  vertical-align: 0.255em;
+  content: "";
+  border-top: 0.3em solid;
+  border-right: 0.3em solid transparent;
+  border-bottom: 0;
+  border-left: 0.3em solid transparent;
+}
+
+/* --- Menu surface --- */
+
+.td-lang-menu__menu {
+  min-width: 10rem;
+  border-radius: 6px;
+  padding: 8px 0;
+  box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 0.15);
+  z-index: 33;
+
+  /* Bootstrap defaults — light mode */
+  background-color: #fff;
+  color: #212529;
+  border: 1px solid rgb(0 0 0 / 0.175);
+}
+
+[data-theme="dark"] .td-lang-menu__menu {
+  /* Bootstrap dark-mode dropdown values from opentelemetry.io's compiled CSS */
+  background-color: #343a40;
+  color: #dee2e6;
+  border-color: rgb(255 255 255 / 0.15);
+}
+
+/* --- Menu items --- */
+
+.td-lang-menu__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+}
+
+/* Hover/keyboard-highlight — Bootstrap defaults */
+.td-lang-menu__item[data-highlighted] {
+  background-color: #e9ecef; /* --bs-tertiary-bg light */
+  color: #1e2125;
+}
+
+[data-theme="dark"] .td-lang-menu__item[data-highlighted] {
+  background-color: rgb(255 255 255 / 0.15); /* --bs-tertiary-bg dark */
+  color: #fff;
+}
+
+/*
+ * Active row — coloured background, no checkmark (matches the theme toggle).
+ * The `[data-theme="dark"] [data-highlighted]` rule above has specificity
+ * 0,3,0, so the active rule needs an equivalent or higher path in dark mode
+ * for active to win when the row is *also* hovered/keyboard-highlighted.
+ */
+.td-lang-menu__item[data-active="true"],
+.td-lang-menu__item[data-active="true"][data-highlighted],
+[data-theme="dark"] .td-lang-menu__item[data-active="true"],
+[data-theme="dark"] .td-lang-menu__item[data-active="true"][data-highlighted] {
+  background-color: hsl(var(--otel-blue-hsl));
+  color: #fff;
+}
+
+/*
+ * Mobile — inside the collapsed navbar panel the trigger should fill the
+ * full row so the tap target is comfortable and aligns with the stacked
+ * nav-link above it.
+ */
+@media (max-width: 767.98px) {
+  .td-navbar-collapse .td-lang-menu__trigger {
+    width: 100%;
+    justify-content: flex-start;
+    padding: 12px 8px;
+  }
+}

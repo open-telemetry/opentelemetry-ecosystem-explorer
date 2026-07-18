@@ -22,42 +22,42 @@ describe("isEnabled", () => {
   });
 
   it("should return true for 'true'", () => {
-    vi.stubEnv("VITE_FEATURE_FLAG_JAVA_CONFIG_BUILDER", "true");
-    expect(isEnabled("JAVA_CONFIG_BUILDER")).toBe(true);
+    vi.stubEnv("VITE_FEATURE_FLAG_V1_REDESIGN", "true");
+    expect(isEnabled("V1_REDESIGN")).toBe(true);
   });
 
   it("should return true for '1'", () => {
-    vi.stubEnv("VITE_FEATURE_FLAG_JAVA_CONFIG_BUILDER", "1");
-    expect(isEnabled("JAVA_CONFIG_BUILDER")).toBe(true);
+    vi.stubEnv("VITE_FEATURE_FLAG_V1_REDESIGN", "1");
+    expect(isEnabled("V1_REDESIGN")).toBe(true);
   });
 
   it("should return true for 'yes'", () => {
-    vi.stubEnv("VITE_FEATURE_FLAG_JAVA_CONFIG_BUILDER", "yes");
-    expect(isEnabled("JAVA_CONFIG_BUILDER")).toBe(true);
+    vi.stubEnv("VITE_FEATURE_FLAG_V1_REDESIGN", "yes");
+    expect(isEnabled("V1_REDESIGN")).toBe(true);
   });
 
   it("should return true for uppercase truthy values", () => {
-    vi.stubEnv("VITE_FEATURE_FLAG_JAVA_CONFIG_BUILDER", "TRUE");
-    expect(isEnabled("JAVA_CONFIG_BUILDER")).toBe(true);
+    vi.stubEnv("VITE_FEATURE_FLAG_V1_REDESIGN", "TRUE");
+    expect(isEnabled("V1_REDESIGN")).toBe(true);
   });
 
   it("should return false for 'false'", () => {
-    vi.stubEnv("VITE_FEATURE_FLAG_JAVA_CONFIG_BUILDER", "false");
-    expect(isEnabled("JAVA_CONFIG_BUILDER")).toBe(false);
+    vi.stubEnv("VITE_FEATURE_FLAG_V1_REDESIGN", "false");
+    expect(isEnabled("V1_REDESIGN")).toBe(false);
   });
 
   it("should return false for '0'", () => {
-    vi.stubEnv("VITE_FEATURE_FLAG_JAVA_CONFIG_BUILDER", "0");
-    expect(isEnabled("JAVA_CONFIG_BUILDER")).toBe(false);
+    vi.stubEnv("VITE_FEATURE_FLAG_V1_REDESIGN", "0");
+    expect(isEnabled("V1_REDESIGN")).toBe(false);
   });
 
   it("should return false for 'no'", () => {
-    vi.stubEnv("VITE_FEATURE_FLAG_JAVA_CONFIG_BUILDER", "no");
-    expect(isEnabled("JAVA_CONFIG_BUILDER")).toBe(false);
+    vi.stubEnv("VITE_FEATURE_FLAG_V1_REDESIGN", "no");
+    expect(isEnabled("V1_REDESIGN")).toBe(false);
   });
 
   it("should return false for an empty string", () => {
-    vi.stubEnv("VITE_FEATURE_FLAG_JAVA_CONFIG_BUILDER", "");
-    expect(isEnabled("JAVA_CONFIG_BUILDER")).toBe(false);
+    vi.stubEnv("VITE_FEATURE_FLAG_V1_REDESIGN", "");
+    expect(isEnabled("V1_REDESIGN")).toBe(false);
   });
 });

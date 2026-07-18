@@ -1,0 +1,75 @@
+{
+  "configurations": [
+    {
+      "declarative_name": "java.common.enduser.id.enabled",
+      "default": false,
+      "description": "Enables capturing the enduser.id attribute. This property and the associated attribute are not supported when v3 preview is enabled.",
+      "name": "otel.instrumentation.common.enduser.id.enabled",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.common.enduser.role.enabled",
+      "default": false,
+      "description": "Enables capturing the enduser.role attribute. This property and the associated attribute are not supported when v3 preview is enabled.",
+      "name": "otel.instrumentation.common.enduser.role.enabled",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.common.enduser.scope.enabled",
+      "default": false,
+      "description": "Enables capturing the enduser.scope attribute when v3 preview is not enabled. This property is not honored when v3 preview is enabled.",
+      "name": "otel.instrumentation.common.enduser.scope.enabled",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.common.user.name.enabled",
+      "default": false,
+      "description": "Enables capturing the user.name attribute when v3 preview is enabled. This property and the associated attribute are not supported when v3 preview is disabled.",
+      "name": "otel.instrumentation.common.user.name.enabled",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.common.user.roles.enabled",
+      "default": false,
+      "description": "Enables capturing the user.roles attribute when v3 preview is enabled. This property and the associated attribute are not supported when v3 preview is disabled.",
+      "name": "otel.instrumentation.common.user.roles.enabled",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.spring_security.enduser.role.granted_authority_prefix",
+      "default": "ROLE_",
+      "description": "Prefix of granted authorities identifying roles to capture in the `enduser.role` semantic attribute. This property is not honored when v3 preview is enabled; use the `user.roles` variant instead.",
+      "name": "otel.instrumentation.spring-security.enduser.role.granted-authority-prefix",
+      "type": "string"
+    },
+    {
+      "declarative_name": "java.spring_security.user.roles.granted_authority_prefix",
+      "default": "ROLE_",
+      "description": "Prefix of granted authorities identifying roles to capture in the `user.roles` semantic attribute when v3 preview is enabled. This property is not honored when v3 preview is disabled; use the `enduser.role` variant instead.",
+      "name": "otel.instrumentation.spring-security.user.roles.granted-authority-prefix",
+      "type": "string"
+    },
+    {
+      "declarative_name": "java.spring_security.enduser.scope.granted_authority_prefix",
+      "default": "SCOPE_",
+      "description": "Prefix of granted authorities identifying scopes to capture in the `enduser.scope` semantic attribute. This property and the associated attribute are not supported when v3 preview is enabled.",
+      "name": "otel.instrumentation.spring-security.enduser.scope.granted-authority-prefix",
+      "type": "string"
+    }
+  ],
+  "description": "This instrumentation does not emit any telemetry on its own. Instead, it captures identity attributes, and is only enabled when at least one common identity configuration is enabled.\nNOTE: The `enduser` attributes have been deprecated. When `otel.instrumentation.common.v3-preview` is enabled, `enduser.id` is emitted as `user.name`, `enduser.role` is emitted as the string array `user.roles`, and `enduser.scope` is not emitted.",
+  "display_name": "Spring Security",
+  "has_javaagent": true,
+  "has_standalone_library": true,
+  "javaagent_target_versions": [
+    "org.springframework.security:spring-security-config:[6.0.0,]"
+  ],
+  "library_link": "https://spring.io/projects/spring-security",
+  "markdown_hash": "42e7aba5862d",
+  "minimum_java_version": 17,
+  "name": "spring-security-config-6.0",
+  "scope": {
+    "name": "io.opentelemetry.spring-security-config-6.0"
+  },
+  "source_path": "instrumentation/spring/spring-security-config-6.0"
+}

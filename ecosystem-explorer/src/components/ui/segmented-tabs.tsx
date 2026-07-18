@@ -67,7 +67,7 @@ export function SegmentedTabList({ tabs, value, fullWidth = false }: SegmentedTa
     >
       {/* Sliding pill */}
       <span
-        className="border-primary/40 bg-primary/12 absolute top-1 bottom-1 rounded-lg border"
+        className="border-secondary/40 bg-secondary/12 absolute top-1 bottom-1 rounded-lg border"
         aria-hidden="true"
         style={{
           left: pillStyle.left,
@@ -84,7 +84,7 @@ export function SegmentedTabList({ tabs, value, fullWidth = false }: SegmentedTa
           ref={(el) => {
             buttonRefs.current[tab.value] = el;
           }}
-          className={`data-[state=active]:text-primary data-[state=inactive]:text-muted-foreground relative z-10 inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-200 ${
+          className={`data-[state=active]:text-secondary data-[state=inactive]:text-muted-foreground relative z-10 inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors duration-200 ${
             fullWidth ? "w-full" : ""
           }`}
         >

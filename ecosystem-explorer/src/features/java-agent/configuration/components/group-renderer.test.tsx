@@ -13,10 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import React from "react";
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { GroupRenderer } from "./group-renderer";
-import type { GroupNode } from "@/types/configuration";
+import { SectionExpansionProvider } from "./section-expansion-context";
+import { StarterPathsContext } from "./configuration-ui-context";
+import type { ConfigNode, GroupNode } from "@/types/configuration";
 
 const mockState: {
   values: Record<string, unknown>;
@@ -43,6 +46,10 @@ vi.mock("@/hooks/use-configuration-builder", () => ({
   }),
 }));
 
+function renderWithProvider(ui: React.ReactElement) {
+  return render(<SectionExpansionProvider>{ui}</SectionExpansionProvider>);
+}
+
 const groupNode: GroupNode = {
   controlType: "group",
   key: "resource",
@@ -54,20 +61,20 @@ const groupNode: GroupNode = {
 
 describe("GroupRenderer", () => {
   it("at depth 0 renders a card with an enable switch", () => {
-    render(<GroupRenderer node={groupNode} depth={0} path="resource" />);
+    renderWithProvider(<GroupRenderer node={groupNode} depth={0} path="resource" />);
     expect(screen.getByText("Resource")).toBeInTheDocument();
     const sw = screen.getByRole("switch", { name: /Enable Resource/i });
     expect(sw).toHaveAttribute("aria-checked", "false");
   });
 
   it("at depth 0, flipping the switch dispatches setEnabled", () => {
-    render(<GroupRenderer node={groupNode} depth={0} path="resource" />);
+    renderWithProvider(<GroupRenderer node={groupNode} depth={0} path="resource" />);
     fireEvent.click(screen.getByRole("switch", { name: /Enable Resource/i }));
     expect(setEnabled).toHaveBeenCalledWith("resource", true);
   });
 
   it("at depth >= 3 still renders a chevron button so the user can collapse the group", () => {
-    render(<GroupRenderer node={groupNode} depth={3} path="resource" />);
+    renderWithProvider(<GroupRenderer node={groupNode} depth={3} path="resource" />);
     expect(screen.getByText("Resource")).toBeInTheDocument();
     // Collapsed by default at depth >= 1, so the chevron is in the "Expand" state.
     expect(screen.getByRole("button", { name: /Expand Resource/ })).toBeInTheDocument();
@@ -75,14 +82,14 @@ describe("GroupRenderer", () => {
 
   it("hides the chevron button at depth 0 when the section is disabled", () => {
     mockState.enabledSections.resource = false;
-    render(<GroupRenderer node={groupNode} depth={0} path="resource" />);
+    renderWithProvider(<GroupRenderer node={groupNode} depth={0} path="resource" />);
     expect(screen.queryByRole("button", { name: /Expand Resource/ })).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Collapse Resource/ })).not.toBeInTheDocument();
   });
 
   it("shows a labeled chevron button at depth 0 when the section is enabled", () => {
     mockState.enabledSections.resource = true;
-    render(<GroupRenderer node={groupNode} depth={0} path="resource" />);
+    renderWithProvider(<GroupRenderer node={groupNode} depth={0} path="resource" />);
     expect(screen.getByRole("button", { name: /Collapse Resource/ })).toBeInTheDocument();
     mockState.enabledSections.resource = false; // restore for other tests
   });
@@ -100,13 +107,17 @@ describe("GroupRenderer", () => {
         },
       ],
     };
-    const { rerender } = render(<GroupRenderer node={childNode} depth={0} path="resource" />);
+    const { rerender } = renderWithProvider(
+      <GroupRenderer node={childNode} depth={0} path="resource" />
+    );
+    const rerenderWithProvider = (ui: React.ReactElement) =>
+      rerender(<SectionExpansionProvider>{ui}</SectionExpansionProvider>);
     // Initially disabled and collapsed — child label should not appear.
     expect(screen.queryByText("Schema URL")).not.toBeInTheDocument();
 
     // Flip enabled on and re-render with the same node reference.
     mockState.enabledSections.resource = true;
-    rerender(<GroupRenderer node={childNode} depth={0} path="resource" />);
+    rerenderWithProvider(<GroupRenderer node={childNode} depth={0} path="resource" />);
 
     // Child label should now appear (auto-expanded).
     expect(screen.getByText("Schema URL")).toBeInTheDocument();
@@ -136,7 +147,9 @@ describe("GroupRenderer", () => {
         processors: [{ batch: { exporter: { otlp_http: {} }, schedule_delay: 1000 } }],
       },
     };
-    render(<GroupRenderer node={batchNode} depth={3} path="tracer_provider.processors[0].batch" />);
+    renderWithProvider(
+      <GroupRenderer node={batchNode} depth={3} path="tracer_provider.processors[0].batch" />
+    );
     expect(screen.queryByText("Schedule Delay")).toBeNull();
     // The chevron is there to expand on demand.
     expect(screen.getByRole("button", { name: /Expand Batch/ })).toBeInTheDocument();
@@ -160,7 +173,9 @@ describe("GroupRenderer", () => {
     mockState.values = {
       tracer_provider: { processors: [{ batch: { exporter: { otlp_http: {} } } }] },
     };
-    render(<GroupRenderer node={samplerNode} depth={1} path="tracer_provider.sampler" />);
+    renderWithProvider(
+      <GroupRenderer node={samplerNode} depth={1} path="tracer_provider.sampler" />
+    );
     expect(screen.queryByText("Ratio")).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: /Expand Sampler/ }));
     expect(screen.getByText("Ratio")).toBeInTheDocument();
@@ -175,7 +190,9 @@ describe("GroupRenderer", () => {
       path: "resource",
       children: [],
     };
-    const { container } = render(<GroupRenderer node={resourceNode} depth={0} path="resource" />);
+    const { container } = renderWithProvider(
+      <GroupRenderer node={resourceNode} depth={0} path="resource" />
+    );
     const section = container.querySelector<HTMLElement>('[data-section-key="resource"]');
     expect(section).not.toBeNull();
     expect(section?.getAttribute("tabindex")).toBe("-1");
@@ -191,7 +208,7 @@ describe("GroupRenderer", () => {
       description: "Configure spans, samplers, and processors. Multiple processors are supported.",
       children: [],
     };
-    render(<GroupRenderer node={node} depth={0} path="tracer" />);
+    renderWithProvider(<GroupRenderer node={node} depth={0} path="tracer" />);
     expect(screen.getByText("Configure spans, samplers, and processors.")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Show more" })).toBeInTheDocument();
   });
@@ -205,8 +222,55 @@ describe("GroupRenderer", () => {
       description: "Batch span processor.",
       children: [],
     };
-    render(<GroupRenderer node={node} depth={1} path="tracer.processors[0].batch" />);
+    renderWithProvider(<GroupRenderer node={node} depth={1} path="tracer.processors[0].batch" />);
     const allMatches = screen.getAllByText("Batch span processor.");
     expect(allMatches).toHaveLength(1);
+  });
+
+  it("at depth 1, non-headless body uses left indent (no nested box)", () => {
+    const nodeWithChild: GroupNode = {
+      ...groupNode,
+      children: [
+        {
+          controlType: "text_input",
+          key: "endpoint",
+          label: "Endpoint",
+          path: "resource.endpoint",
+        } as unknown as ConfigNode,
+      ],
+    };
+    const { container } = renderWithProvider(
+      <GroupRenderer node={nodeWithChild} depth={1} path="resource" />
+    );
+    fireEvent.click(screen.getByRole("button", { name: /Expand Resource/ }));
+    const indented = container.querySelectorAll<HTMLElement>(".pl-3");
+    expect(indented.length).toBeGreaterThan(0);
+  });
+
+  it("at depth 1, headless body has no extra indent (parent already provides container)", () => {
+    const nodeWithChild: GroupNode = {
+      ...groupNode,
+      children: [
+        {
+          controlType: "text_input",
+          key: "endpoint",
+          label: "Endpoint",
+          path: "resource.endpoint",
+        } as unknown as ConfigNode,
+      ],
+    };
+    const { container } = renderWithProvider(
+      <GroupRenderer node={nodeWithChild} depth={1} path="resource" headless />
+    );
+    expect(container.querySelectorAll<HTMLElement>(".pl-3")).toHaveLength(0);
+  });
+
+  it("at depth >= 1 starts expanded when its path is in StarterPathsContext", () => {
+    renderWithProvider(
+      <StarterPathsContext.Provider value={new Set(["resource"])}>
+        <GroupRenderer node={groupNode} depth={1} path="resource" />
+      </StarterPathsContext.Provider>
+    );
+    expect(screen.getByRole("button", { name: /Collapse Resource/ })).toBeInTheDocument();
   });
 });

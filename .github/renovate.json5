@@ -1,63 +1,36 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   extends: ["config:best-practices", "helpers:pinGitHubActionDigestsToSemver"],
-  minimumReleaseAge: "7 days",
+  minimumReleaseAge: "14 days",
   internalChecksFilter: "strict",
   labels: ["dependencies"],
   schedule: ["before 8am on Monday"],
-
   lockFileMaintenance: {
     enabled: true,
     schedule: ["before 4am on Monday"],
   },
-
   packageRules: [
-    // Dev dependencies (patch/minor)
     {
-      matchDepTypes: ["devDependencies"],
-      matchUpdateTypes: ["patch", "minor"],
-      groupName: "dev dependencies (non-major)",
+      matchManagers: ["pre-commit"],
+      pinDigests: true,
     },
-
-    // Dev dependencies (major)
+  ],
+  customManagers: [
     {
-      matchDepTypes: ["devDependencies"],
-      matchUpdateTypes: ["major"],
+      customType: "regex",
+      managerFilePatterns: ["/^\\.bun-version$/"],
+      matchStrings: ["(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+      depNameTemplate: "oven-sh/bun",
+      datasourceTemplate: "github-releases",
+      extractVersionTemplate: "^bun-v(?<version>.+)$",
     },
-
-    // Production dependencies (patch)
     {
-      matchDepTypes: ["dependencies"],
-      matchUpdateTypes: ["patch"],
-      groupName: "production patches",
-    },
-
-    // Production dependencies (minor)
-    {
-      matchDepTypes: ["dependencies"],
-      matchUpdateTypes: ["minor"],
-      groupName: "production minor updates",
-    },
-
-    // Production dependencies (major)
-    {
-      matchDepTypes: ["dependencies"],
-      matchUpdateTypes: ["major"],
-    },
-
-    // GitHub Actions (patch/minor)
-    {
-      matchManagers: ["github-actions"],
-      matchUpdateTypes: ["patch", "minor"],
-      minimumReleaseAge: "7 days",
-      groupName: "GitHub Actions",
-    },
-
-    // GitHub Actions (major)
-    {
-      matchManagers: ["github-actions"],
-      matchUpdateTypes: ["major"],
-      minimumReleaseAge: "7 days",
+      customType: "regex",
+      managerFilePatterns: ["/(^|/)netlify\\.toml$/"],
+      matchStrings: ['BUN_VERSION\\s*=\\s*"(?<currentValue>[^"]+)"'],
+      depNameTemplate: "oven-sh/bun",
+      datasourceTemplate: "github-releases",
+      extractVersionTemplate: "^bun-v(?<version>.+)$",
     },
   ],
 }

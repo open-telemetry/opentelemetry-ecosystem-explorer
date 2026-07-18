@@ -1,0 +1,27 @@
+{
+  "description": null,
+  "display_name": "GenAI Normalizer Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-genainormalizerprocessor",
+  "name": "genainormalizerprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "TylerHelmuth",
+        "kylehounslow"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "traces"
+      ]
+    }
+  },
+  "type": "processor"
+}

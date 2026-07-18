@@ -2,6 +2,7 @@ distribution: contrib
 version: 0.145.0
 repository: opentelemetry-collector-contrib
 component_type: receiver
+schema_hash: 7c0f8d486b9e
 components:
 - name: activedirectorydsreceiver
   metadata:

@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ChevronRight } from "lucide-react";
 import type { Configuration } from "@/types/javaagent";
+import { useTranslation } from "react-i18next";
 import { CopyButton } from "@/components/ui/copy-button";
 import { DetailCard } from "@/components/ui/detail-card";
 import { GlowBadge } from "@/components/ui/glow-badge";
@@ -27,9 +29,11 @@ export type ConfigurationFormat = "system-property" | "declarative";
 interface ConfigurationCardProps {
   config: Configuration;
   format: ConfigurationFormat;
+  instrumentations?: string[];
 }
 
-export function ConfigurationCard({ config, format }: ConfigurationCardProps) {
+export function ConfigurationCard({ config, format, instrumentations }: ConfigurationCardProps) {
+  const { t } = useTranslation("java-agent");
   const stability = config.declarative_name ? getStabilityLabel(config.declarative_name) : null;
 
   const showDeclarative = format === "declarative" && Boolean(config.declarative_name);
@@ -49,24 +53,36 @@ export function ConfigurationCard({ config, format }: ConfigurationCardProps) {
 
   return (
     <DetailCard withHoverEffect>
+      {/* Grid pattern background */}
+      <div className="pointer-events-none absolute -inset-6 -z-10 opacity-[0.15]">
+        <div
+          className="h-full w-full"
+          style={{
+            backgroundImage:
+              "linear-gradient(hsl(var(--border-hsl)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--border-hsl)) 1px, transparent 1px)",
+            backgroundSize: "20px 20px",
+          }}
+        />
+      </div>
+
       <div className="space-y-3">
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           {showDeclarative ? (
             <div data-testid="config-name" className="min-w-0 flex-1">
               <YamlCodeBlock
                 code={yamlCode}
-                className="bg-background/60 text-foreground rounded-md p-3 font-mono text-xs"
+                className="bg-background/60 text-foreground rounded-md p-3 font-mono text-xs break-words whitespace-pre-wrap"
               />
             </div>
           ) : (
             <code
               data-testid="config-name"
-              className="text-primary flex-1 font-mono text-sm break-all"
+              className="text-primary min-w-0 flex-1 font-mono text-sm break-all"
             >
               {flatName}
             </code>
           )}
-          <div className="flex shrink-0 flex-wrap items-center gap-1">
+          <div className="flex w-full flex-wrap items-center gap-1 sm:w-auto sm:justify-end">
             <GlowBadge variant="info" withGlow>
               {config.type}
             </GlowBadge>
@@ -82,18 +98,43 @@ export function ConfigurationCard({ config, format }: ConfigurationCardProps) {
         )}
 
         <div className="border-border/30 bg-muted/30 flex items-start gap-2 rounded-lg border p-3">
-          <span className="text-muted-foreground shrink-0 text-xs font-medium">Default:</span>
+          <span className="text-muted-foreground shrink-0 text-xs font-medium">
+            {t("configCard.default")}
+          </span>
           <code className="flex-1 text-xs break-all">{defaultValue}</code>
         </div>
 
-        {config.example && config.example.length > 0 && (
+        {config.examples && config.examples.length > 0 && (
           <div className="space-y-1">
-            <span className="text-muted-foreground text-xs font-medium">Examples:</span>
-            {config.example.map((ex, i) => (
+            <span className="text-muted-foreground text-xs font-medium">
+              {t("configCard.examples")}
+            </span>
+            {config.examples.map((ex, i) => (
               <div key={i} className="border-border/30 bg-muted/30 rounded-lg border px-3 py-2">
                 <code className="text-xs break-all">{ex}</code>
               </div>
             ))}
+          </div>
+        )}
+
+        {instrumentations && instrumentations.length > 0 && (
+          <div className="border-border/50 text-muted-foreground mt-4 border-t pt-3 text-xs">
+            <details className="group [&_summary::-webkit-details-marker]:hidden">
+              <summary className="text-foreground hover:text-primary flex cursor-pointer list-none items-center gap-1 font-semibold select-none">
+                <ChevronRight className="h-3 w-3 transition-transform group-open:rotate-90" />
+                {t("configCard.usageCount", { count: instrumentations.length })}
+              </summary>
+              <div className="mt-3 flex flex-wrap gap-1.5 pl-4">
+                {instrumentations.map((inst) => (
+                  <span
+                    key={inst}
+                    className="bg-muted/50 border-border/50 rounded-md border px-2 py-1 text-[10px] font-medium"
+                  >
+                    {inst}
+                  </span>
+                ))}
+              </div>
+            </details>
           </div>
         )}
       </div>

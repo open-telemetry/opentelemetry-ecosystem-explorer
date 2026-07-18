@@ -14,14 +14,40 @@
  * limitations under the License.
  */
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, afterEach, vi } from "vitest";
 import App from "./App";
+import { ThemeProvider } from "./theme-context";
 
 describe("App", () => {
-  it("renders the page title", async () => {
-    render(<App />);
-    const heading = await screen.findByRole("heading", { level: 1 });
-    expect(heading).toHaveTextContent("OpenTelemetry");
-    expect(heading).toHaveTextContent("Ecosystem Explorer");
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
+  it("renders the legacy app when V1_REDESIGN is disabled", () => {
+    vi.stubEnv("VITE_FEATURE_FLAG_V1_REDESIGN", "");
+
+    const { container } = render(
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
+    );
+
+    // V1App adds .v1-app to scope its token overrides; absence confirms legacy rendering.
+    expect(container.querySelector(".v1-app")).toBeNull();
+    // LegacyApp's Header renders "OTel Explorer" synchronously — no lazy load needed.
+    expect(screen.getByText("OTel Explorer")).toBeInTheDocument();
+  });
+
+  it("renders the v1 app when V1_REDESIGN is enabled", async () => {
+    vi.stubEnv("VITE_FEATURE_FLAG_V1_REDESIGN", "true");
+
+    const { container } = render(
+      <ThemeProvider>
+        <App />
+      </ThemeProvider>
+    );
+
+    expect(await screen.findByLabelText("OpenTelemetry")).toBeInTheDocument();
+    expect(container.querySelector(".v1-app")).not.toBeNull();
   });
 });

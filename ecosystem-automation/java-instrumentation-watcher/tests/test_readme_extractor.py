@@ -45,7 +45,9 @@ def test_discover_library_readmes_mixed_entries(extractor, mock_client):
 
     assert result == {
         "instrumentation/akka/akka-actor-2.3": "instrumentation/akka/akka-actor-2.3/library/README.md",
-        "instrumentation/apache-httpclient/apache-httpclient-4.3": "instrumentation/apache-httpclient/apache-httpclient-4.3/library/README.md",
+        "instrumentation/apache-httpclient/apache-httpclient-4.3": (
+            "instrumentation/apache-httpclient/apache-httpclient-4.3/library/README.md"
+        ),
     }
 
 

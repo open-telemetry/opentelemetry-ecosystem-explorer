@@ -1,0 +1,150 @@
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * Footer — mirrors opentelemetry.io's `.td-footer` chrome.
+ *
+ * Source rules (in the local opentelemetry.io clone):
+ *   themes/docsy/assets/scss/td/_footer.scss — base sizing, padding, border
+ *   themes/docsy/assets/scss/td/_boxes.scss  — `.td-box--dark` surface tokens
+ *   themes/docsy/layouts/_partials/footer.html — 3-column responsive layout
+ *
+ * Pixel-anchored at 16px-rem (the explorer sets `html { font-size: 14px }`
+ * globally, so rem-based descendants would shrink). We pin the footer subtree
+ * at 16px so `em` resolves correctly and `rem` values match Bootstrap's scale.
+ *
+ * Surface stays dark in both themes — upstream `.td-footer @extend .td-box--dark`
+ * imposes the dark background regardless of `data-bs-theme`. Upstream's top
+ * border color flips per theme; the explorer collapses this to a single dark
+ * border since the rendered surface doesn't change.
+ */
+
+.td-footer {
+  font-size: 16px;
+  background-color: #212529; /* $dark / $gray-900 — `.td-box--dark` */
+  color: #fff; /* color-contrast($gray-900) */
+  min-height: 10rem;
+  padding-top: 3rem; /* map-get($spacers, 5) */
+  padding-bottom: 1rem;
+  border-top: 1px solid #495057; /* --bs-border-color / --bs-gray-700 */
+}
+
+.td-footer__container {
+  width: 100%;
+  max-width: 1320px;
+  padding-right: 0.75rem;
+  padding-left: 0.75rem;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.td-footer__row {
+  display: grid;
+  gap: 0.75rem 1rem;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    "left right"
+    "center center";
+  align-items: center;
+}
+
+@media (min-width: 576px) {
+  .td-footer__row {
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-areas: "left center right";
+  }
+}
+
+.td-footer__left {
+  grid-area: left;
+}
+
+.td-footer__right {
+  grid-area: right;
+  text-align: right;
+}
+
+.td-footer__center {
+  grid-area: center;
+  font-size: 0.875em; /* @extends .small */
+  text-align: center;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.td-footer__copyright {
+  display: inline;
+}
+
+.td-footer__authors {
+  padding-left: 0.25rem;
+}
+
+.td-footer__center a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.td-footer__center a:hover,
+.td-footer__center a:focus-visible {
+  color: #f5a800; /* OTel orange — brand secondary */
+}
+
+.td-footer__links-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.td-footer__links-item {
+  display: inline-block;
+  margin-right: 0.5rem;
+  font-size: 1.25rem; /* map-get($font-sizes, 4) */
+  line-height: 1;
+}
+
+.td-footer__links-item:last-child {
+  margin-right: 0;
+}
+
+.td-footer__links-item a {
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: color 0.15s ease-in-out;
+}
+
+.td-footer__links-item a:hover,
+.td-footer__links-item a:focus-visible {
+  color: #f5a800; /* OTel orange — brand secondary */
+}
+
+.td-footer__links-item a:focus-visible {
+  outline: 2px solid #f5a800;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.td-footer__icon {
+  width: 1em;
+  height: 1em;
+  display: inline-block;
+  vertical-align: -0.125em;
+}

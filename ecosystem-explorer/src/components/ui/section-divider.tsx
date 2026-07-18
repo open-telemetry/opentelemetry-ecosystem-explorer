@@ -17,11 +17,12 @@ import type { ReactNode } from "react";
 
 interface SectionDividerProps {
   children: ReactNode;
+  className?: string;
 }
 
-export function SectionDivider({ children }: SectionDividerProps) {
+export function SectionDivider({ children, className }: SectionDividerProps) {
   return (
-    <div className="my-12 flex items-center">
+    <div className={`my-12 flex items-center ${className || ""}`}>
       <div className="border-border/30 flex-1 border-b-2" />
       <span className="text-muted-foreground px-8 text-xs font-bold tracking-[0.2em] uppercase">
         {children}

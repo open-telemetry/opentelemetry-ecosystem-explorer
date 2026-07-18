@@ -1,0 +1,14 @@
+component_owners: []
+description: OpenTelemetry instrumentation for `mysql` database client for MySQL
+in_auto_instrumentations_node: true
+name: instrumentation-mysql
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-mysql'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-mysql
+supported_versions:
+- package: mysql
+  source: README.md
+  version_range: '>=2.0.0 <3'
+tested_versions: []
+version: 0.66.0

@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { describe, it, expect, beforeAll, beforeEach, afterAll } from "vitest";
-import { screen, within, cleanup, waitFor } from "@testing-library/react";
+import { describe, it, expect, beforeAll, beforeEach, afterAll, vi } from "vitest";
+import { screen, within, cleanup, waitFor, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { installFetchInterceptor, uninstallFetchInterceptor } from "./helpers/fetch-interceptor";
 import { renderBuilderPage as renderPage } from "./helpers/render-builder-page";
+import { openInstrumentationTab } from "./helpers/open-instrumentation-tab";
 
 beforeAll(() => {
   installFetchInterceptor();
@@ -30,61 +31,82 @@ beforeEach(() => {
   cleanup();
 });
 
-describe("ConfigurationBuilderPage — card click behavior", () => {
+function mockYamlSectionVisibility(sectionKey: string, isVisible: boolean) {
+  const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect;
+  const getBoundingClientRectSpy = vi
+    .spyOn(Element.prototype, "getBoundingClientRect")
+    .mockImplementation(function (this: Element) {
+      if (this.tagName === "PRE") {
+        return {
+          top: 0,
+          bottom: 500,
+          left: 0,
+          right: 500,
+          width: 500,
+          height: 500,
+          x: 0,
+          y: 0,
+          toJSON: () => {},
+        };
+      }
+      if (this.getAttribute("data-yaml-section") === sectionKey) {
+        return isVisible
+          ? {
+              top: 100,
+              bottom: 200,
+              left: 0,
+              right: 500,
+              width: 500,
+              height: 100,
+              x: 0,
+              y: 0,
+              toJSON: () => {},
+            }
+          : {
+              top: 600,
+              bottom: 700,
+              left: 0,
+              right: 500,
+              width: 500,
+              height: 100,
+              x: 0,
+              y: 0,
+              toJSON: () => {},
+            };
+      }
+      return originalGetBoundingClientRect.call(this);
+    });
+
+  return {
+    restore: () => {
+      getBoundingClientRectSpy.mockRestore();
+    },
+  };
+}
+
+describe("ConfigurationBuilderPage card click behavior", () => {
   it("clicking an input inside an expanded card does not steal focus or scroll", async () => {
     renderPage();
     const user = userEvent.setup();
 
-    // Enable Logger Provider so its body renders, mirroring the user's bug
-    // report path of clicking inside an expanded section card.
-    const loggerSwitch = await screen.findByRole(
-      "switch",
-      { name: /Enable Logger Provider/i },
-      { timeout: 10_000 }
-    );
-    if (loggerSwitch.getAttribute("aria-checked") !== "true") {
-      await user.click(loggerSwitch);
-    }
+    // Wait for the page to settle. Resource is auto-enabled by the starter
+    // and its attributes_list text input renders inline.
+    await screen.findByRole("switch", { name: /Enable Resource/i }, { timeout: 10_000 });
 
-    // Scope all subsequent queries to the Logger Provider card.
-    const loggerSection = document.querySelector<HTMLElement>(
-      '[data-section-key="logger_provider"]'
-    );
-    expect(loggerSection).not.toBeNull();
-    const logger = within(loggerSection as HTMLElement);
+    const resourceSection = document.querySelector<HTMLElement>('[data-section-key="resource"]');
+    expect(resourceSection).not.toBeNull();
+    const resource = within(resourceSection as HTMLElement);
 
-    // Expand the Logger Configurator group so its leaf controls render.
-    await user.click(logger.getByRole("button", { name: "Expand Logger Configurator" }));
-
-    // Wait for at least one nested expand button or input to materialize.
+    // The attributes_list text input is in the DOM as soon as Resource expands.
     await waitFor(() => {
-      expect(logger.queryAllByRole("button").length).toBeGreaterThan(2);
+      expect(resource.queryAllByRole("textbox").length).toBeGreaterThan(0);
     });
-
-    // Expand the Loggers list inside Logger Configurator if present (the
-    // schema may evolve; pick whichever expand chevron leads to a textbox).
-    // Items are rendered headless after deriveListItemLabel landed, so the
-    // form fields are inline as soon as Add fires — no per-item Expand step.
-    const expandLoggers = logger.queryAllByRole("button", { name: "Expand Loggers" });
-    if (expandLoggers.length > 0) {
-      await user.click(expandLoggers[0]);
-      const addLoggers = logger.queryAllByRole("button", { name: "Add item to Loggers" });
-      if (addLoggers.length > 0) {
-        await user.click(addLoggers[0]);
-        await waitFor(() => {
-          expect(logger.queryAllByRole("textbox").length).toBeGreaterThan(0);
-        });
-      }
-    }
 
     // Force scrollY > 0 so a "jump to top" would be detectable.
     Object.defineProperty(window, "scrollY", { configurable: true, value: 400 });
     const scrollYBefore = window.scrollY;
 
-    const textInputs = logger.getAllByRole("textbox");
-    expect(textInputs.length).toBeGreaterThan(0);
-    const target = textInputs[0];
-
+    const target = resource.getAllByRole("textbox")[0];
     await user.click(target);
 
     // 1. The input keeps focus (was not stolen by the section element).
@@ -92,7 +114,179 @@ describe("ConfigurationBuilderPage — card click behavior", () => {
     // 2. No code path adjusted scroll position.
     expect(window.scrollY).toBe(scrollYBefore);
     // 3. Typing actually lands characters.
-    await user.type(target, "my-logger");
-    expect(target).toHaveValue("my-logger");
+    await user.clear(target);
+    await user.type(target, "my-service");
+    expect(target).toHaveValue("my-service");
+  });
+
+  it("interacting with a section card highlights the corresponding YAML section in the preview", async () => {
+    renderPage();
+    const user = userEvent.setup();
+
+    // Wait for the page to settle. Resource is auto-enabled by the starter
+    await screen.findByRole("switch", { name: /Enable Resource/i }, { timeout: 10_000 });
+
+    const resourceSection = document.querySelector<HTMLElement>('[data-section-key="resource"]');
+    expect(resourceSection).not.toBeNull();
+
+    // Interact with it (e.g. click the card itself)
+    await user.click(resourceSection!);
+
+    // Wait for the YAML preview to re-render with the active class
+    await waitFor(() => {
+      const resourceYamlSection = document.querySelector<HTMLElement>(
+        '[data-yaml-section="resource"]'
+      );
+      expect(resourceYamlSection).not.toBeNull();
+      expect(resourceYamlSection?.className).toContain("bg-otel-orange/10");
+    });
+  });
+
+  it("interacting with a section card scrolls the corresponding YAML section into view if it is not visible", async () => {
+    renderPage();
+    const user = userEvent.setup();
+
+    await screen.findByRole("switch", { name: /Enable Resource/i }, { timeout: 10_000 });
+
+    const resourceSection = document.querySelector<HTMLElement>('[data-section-key="resource"]');
+    expect(resourceSection).not.toBeNull();
+
+    // Force scrollY > 0 so a "jump to top" would be detectable.
+    Object.defineProperty(window, "scrollY", { configurable: true, value: 400 });
+    const scrollYBefore = window.scrollY;
+
+    const { restore } = mockYamlSectionVisibility("resource", false);
+
+    try {
+      await user.click(resourceSection!);
+
+      await waitFor(() => {
+        expect(Element.prototype.scrollBy).toHaveBeenCalledWith({
+          top: 200,
+          behavior: "smooth",
+        });
+        expect(window.scrollY).toBe(scrollYBefore);
+      });
+    } finally {
+      restore();
+    }
+  });
+
+  it("interacting with a section card does not scroll the YAML section if it is already visible", async () => {
+    renderPage();
+    const user = userEvent.setup();
+
+    await screen.findByRole("switch", { name: /Enable Resource/i }, { timeout: 10_000 });
+
+    const resourceSection = document.querySelector<HTMLElement>('[data-section-key="resource"]');
+    expect(resourceSection).not.toBeNull();
+
+    const { restore } = mockYamlSectionVisibility("resource", true);
+
+    try {
+      await user.click(resourceSection!);
+
+      await waitFor(() => {
+        const resourceYamlSection = document.querySelector<HTMLElement>(
+          '[data-yaml-section="resource"]'
+        );
+        expect(resourceYamlSection?.className).toContain("bg-otel-orange/10");
+      });
+
+      expect(Element.prototype.scrollBy).not.toHaveBeenCalled();
+    } finally {
+      restore();
+    }
+  });
+
+  it("interacting with a leaf field inside the General card highlights the matching YAML block", async () => {
+    renderPage();
+    const user = userEvent.setup();
+
+    // Wait for the page to settle.
+    await screen.findByRole("switch", { name: /Enable Resource/i }, { timeout: 10_000 });
+
+    // Expand the General card first so its leaf wrappers are in the DOM.
+    await user.click(screen.getByRole("button", { name: /Expand General/i }));
+
+    const disabledLeaf = await waitFor(() => {
+      const el = document.querySelector<HTMLElement>('[data-yaml-section-key="disabled"]');
+      expect(el).not.toBeNull();
+      return el as HTMLElement;
+    });
+
+    // Enable the `disabled` leaf so it shows up in the YAML output.
+    await user.click(within(disabledLeaf).getByRole("button", { name: /Expand Disabled/i }));
+    const disabledToggle = within(disabledLeaf).getByRole("switch", { name: /Disabled/i });
+    await user.click(disabledToggle);
+
+    // Assert the highlight tracks the leaf key, not the synthetic "general" section.
+    await waitFor(() => {
+      const disabledYamlBlock = document.querySelector<HTMLElement>(
+        '[data-yaml-section="disabled"]'
+      );
+      expect(disabledYamlBlock).not.toBeNull();
+      expect(disabledYamlBlock?.className).toContain("bg-otel-orange/10");
+    });
+  });
+
+  it("instrumentation rows carry the distribution key and no scroll-spy section key", async () => {
+    renderPage();
+    const user = userEvent.setup();
+    await openInstrumentationTab(user);
+
+    const row = (await screen.findByTestId(
+      "instrumentation-row-reactor",
+      {},
+      { timeout: 10_000 }
+    )) as HTMLElement;
+
+    expect(row.getAttribute("data-yaml-section-key")).toBe("distribution");
+    expect(row.getAttribute("data-section-key")).toBeNull();
+  });
+
+  it("customizing an instrumentation module highlights the distribution YAML block", async () => {
+    renderPage();
+    const user = userEvent.setup();
+    await openInstrumentationTab(user);
+
+    const row = (await screen.findByTestId(
+      "instrumentation-row-reactor",
+      {},
+      { timeout: 10_000 }
+    )) as HTMLElement;
+
+    // Expand the row first
+    await user.click(within(row).getByRole("heading", { name: "reactor" }));
+    // Disable it to trigger customization
+    await user.click(within(row).getByRole("button", { name: /Disabled/i }));
+    // Trigger pointerDown on the row to highlight the distribution section
+    fireEvent.pointerDown(row);
+
+    await waitFor(() => {
+      const distributionYaml = document.querySelector<HTMLElement>(
+        '[data-yaml-section="distribution"]'
+      );
+      expect(distributionYaml).not.toBeNull();
+      expect(distributionYaml?.className).toContain("bg-otel-orange/10");
+    });
+  });
+
+  it("General card leaf wrappers on the Instrumentation tab map to the instrumentation/development path", async () => {
+    renderPage();
+    const user = userEvent.setup();
+    await openInstrumentationTab(user);
+
+    const httpLeaf = await waitFor(() => {
+      const el = document.querySelector<HTMLElement>(
+        '[data-yaml-section-key="instrumentation/development.general.http"]'
+      );
+      expect(el).not.toBeNull();
+      return el as HTMLElement;
+    });
+
+    expect(httpLeaf.getAttribute("data-yaml-section-key")).toBe(
+      "instrumentation/development.general.http"
+    );
   });
 });

@@ -1,0 +1,45 @@
+{
+  "chips": {
+    "ariaLabel": "Active filters",
+    "removeAriaLabel": "Remove filter {{label}}",
+    "search": "Search: {{value}}",
+    "type": "Type: {{value}}",
+    "signal": "Signal: {{value}}",
+    "stability": "Stability: {{value}}",
+    "distribution": "Distribution: {{value}}",
+    "version": "Version: {{value}}",
+    "clearAll": "Clear all"
+  },
+  "density": {
+    "ariaLabel": "View density",
+    "cards": "Cards",
+    "compact": "Compact",
+    "table": "Table"
+  },
+  "sort": {
+    "label": "Sort by",
+    "name": "Name",
+    "updated": "Recently updated",
+    "stability": "Stability"
+  },
+  "pagination": {
+    "ariaLabel": "Pagination",
+    "previous": "Previous",
+    "previousAriaLabel": "Previous page",
+    "next": "Next",
+    "nextAriaLabel": "Next page",
+    "status": "Page {{page}} of {{totalPages}}"
+  },
+  "emptyState": {
+    "title": "No matching components",
+    "leadFiltered": "Try removing one or two filters to see more results.",
+    "leadUnfiltered": "There are no components to show at the moment.",
+    "clearAll": "Clear all filters"
+  },
+  "facetToggle": {
+    "label": "Filters",
+    "openAriaLabel": "Open filters",
+    "openWithCountAriaLabel_one": "Open filters ({{count}} active)",
+    "openWithCountAriaLabel_other": "Open filters ({{count}} active)"
+  }
+}

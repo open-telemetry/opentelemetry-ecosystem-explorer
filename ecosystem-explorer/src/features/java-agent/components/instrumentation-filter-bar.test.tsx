@@ -24,18 +24,32 @@ describe("InstrumentationFilterBar", () => {
     search: "",
     telemetry: new Set(),
     target: new Set(),
+    semantic: [],
+    features: [],
   };
 
   it("renders search input with correct placeholder", () => {
     const onFiltersChange = vi.fn();
-    render(<InstrumentationFilterBar filters={defaultFilters} onFiltersChange={onFiltersChange} />);
+    render(
+      <InstrumentationFilterBar
+        filters={defaultFilters}
+        onFiltersChange={onFiltersChange}
+        instrumentations={[]}
+      />
+    );
 
     expect(screen.getByPlaceholderText("Search instrumentations...")).toBeInTheDocument();
   });
 
   it("calls onFiltersChange when search input changes", () => {
     const onFiltersChange = vi.fn();
-    render(<InstrumentationFilterBar filters={defaultFilters} onFiltersChange={onFiltersChange} />);
+    render(
+      <InstrumentationFilterBar
+        filters={defaultFilters}
+        onFiltersChange={onFiltersChange}
+        instrumentations={[]}
+      />
+    );
 
     const input = screen.getByPlaceholderText("Search instrumentations...");
     fireEvent.change(input, { target: { value: "http" } });
@@ -49,7 +63,13 @@ describe("InstrumentationFilterBar", () => {
   it("toggles spans telemetry filter on button click", async () => {
     const user = userEvent.setup();
     const onFiltersChange = vi.fn();
-    render(<InstrumentationFilterBar filters={defaultFilters} onFiltersChange={onFiltersChange} />);
+    render(
+      <InstrumentationFilterBar
+        filters={defaultFilters}
+        onFiltersChange={onFiltersChange}
+        instrumentations={[]}
+      />
+    );
 
     const spansButton = screen.getByRole("button", { name: "Spans" });
     await user.click(spansButton);
@@ -63,7 +83,13 @@ describe("InstrumentationFilterBar", () => {
   it("toggles metrics telemetry filter on button click", async () => {
     const user = userEvent.setup();
     const onFiltersChange = vi.fn();
-    render(<InstrumentationFilterBar filters={defaultFilters} onFiltersChange={onFiltersChange} />);
+    render(
+      <InstrumentationFilterBar
+        filters={defaultFilters}
+        onFiltersChange={onFiltersChange}
+        instrumentations={[]}
+      />
+    );
 
     const metricsButton = screen.getByRole("button", { name: "Metrics" });
     await user.click(metricsButton);
@@ -82,7 +108,13 @@ describe("InstrumentationFilterBar", () => {
       telemetry: new Set(["spans"]),
     };
 
-    render(<InstrumentationFilterBar filters={activeFilters} onFiltersChange={onFiltersChange} />);
+    render(
+      <InstrumentationFilterBar
+        filters={activeFilters}
+        onFiltersChange={onFiltersChange}
+        instrumentations={[]}
+      />
+    );
 
     const spansButton = screen.getByRole("button", { name: "Spans" });
     await user.click(spansButton);
@@ -96,7 +128,13 @@ describe("InstrumentationFilterBar", () => {
   it("toggles java agent target filter on button click", async () => {
     const user = userEvent.setup();
     const onFiltersChange = vi.fn();
-    render(<InstrumentationFilterBar filters={defaultFilters} onFiltersChange={onFiltersChange} />);
+    render(
+      <InstrumentationFilterBar
+        filters={defaultFilters}
+        onFiltersChange={onFiltersChange}
+        instrumentations={[]}
+      />
+    );
 
     const javaAgentButton = screen.getByRole("button", { name: "Java Agent" });
     await user.click(javaAgentButton);
@@ -110,7 +148,13 @@ describe("InstrumentationFilterBar", () => {
   it("toggles standalone target filter on button click", async () => {
     const user = userEvent.setup();
     const onFiltersChange = vi.fn();
-    render(<InstrumentationFilterBar filters={defaultFilters} onFiltersChange={onFiltersChange} />);
+    render(
+      <InstrumentationFilterBar
+        filters={defaultFilters}
+        onFiltersChange={onFiltersChange}
+        instrumentations={[]}
+      />
+    );
 
     const standaloneButton = screen.getByRole("button", { name: "Standalone" });
     await user.click(standaloneButton);
@@ -126,9 +170,17 @@ describe("InstrumentationFilterBar", () => {
       search: "",
       telemetry: new Set(["spans", "metrics"]),
       target: new Set(["javaagent"]),
+      semantic: [],
+      features: [],
     };
 
-    render(<InstrumentationFilterBar filters={activeFilters} onFiltersChange={vi.fn()} />);
+    render(
+      <InstrumentationFilterBar
+        filters={activeFilters}
+        onFiltersChange={vi.fn()}
+        instrumentations={[]}
+      />
+    );
 
     const spansButton = screen.getByRole("button", { name: "Spans" });
     const metricsButton = screen.getByRole("button", { name: "Metrics" });
@@ -141,14 +193,82 @@ describe("InstrumentationFilterBar", () => {
     expect(standaloneButton.className).toContain(FILTER_STYLES.target.library.inactive);
   });
 
+  it("shows 'Clear all' button when any filter is active", () => {
+    const activeFilters: FilterState = {
+      search: "http",
+      telemetry: new Set(["spans"]),
+      target: new Set(),
+      semantic: [],
+      features: [],
+    };
+    render(
+      <InstrumentationFilterBar
+        filters={activeFilters}
+        onFiltersChange={vi.fn()}
+        instrumentations={[]}
+      />
+    );
+
+    expect(screen.getByRole("button", { name: "Clear all" })).toBeInTheDocument();
+  });
+
+  it("does not show 'Clear all' button when no filters are active", () => {
+    render(
+      <InstrumentationFilterBar
+        filters={defaultFilters}
+        onFiltersChange={vi.fn()}
+        instrumentations={[]}
+      />
+    );
+
+    expect(screen.queryByRole("button", { name: "Clear all" })).not.toBeInTheDocument();
+  });
+
+  it("clears all filters when 'Clear all' is clicked", async () => {
+    const user = userEvent.setup();
+    const onFiltersChange = vi.fn();
+    const activeFilters: FilterState = {
+      search: "http",
+      telemetry: new Set(["spans"]),
+      target: new Set(["javaagent"]),
+      semantic: ["db"],
+      features: ["db.client.connections"],
+    };
+    render(
+      <InstrumentationFilterBar
+        filters={activeFilters}
+        onFiltersChange={onFiltersChange}
+        instrumentations={[]}
+      />
+    );
+
+    await user.click(screen.getByRole("button", { name: "Clear all" }));
+
+    expect(onFiltersChange).toHaveBeenCalledWith({
+      search: "",
+      telemetry: new Set(),
+      target: new Set(),
+      semantic: [],
+      features: [],
+    });
+  });
+
   it("sets aria-pressed attribute correctly for toggle buttons", () => {
     const activeFilters: FilterState = {
       search: "",
       telemetry: new Set(["spans"]),
       target: new Set(["library"]),
+      semantic: [],
+      features: [],
     };
 
-    render(<InstrumentationFilterBar filters={activeFilters} onFiltersChange={vi.fn()} />);
+    render(
+      <InstrumentationFilterBar
+        filters={activeFilters}
+        onFiltersChange={vi.fn()}
+        instrumentations={[]}
+      />
+    );
 
     const spansButton = screen.getByRole("button", { name: "Spans" });
     const metricsButton = screen.getByRole("button", { name: "Metrics" });

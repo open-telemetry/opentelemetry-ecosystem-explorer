@@ -1,0 +1,26 @@
+{
+  "description": null,
+  "display_name": "Kafka Topics Observer Extension",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-kafkatopicsobserver",
+  "name": "kafkatopicsobserver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "MovieStoreGuy"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "extension"
+      ]
+    }
+  },
+  "type": "extension"
+}

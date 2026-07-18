@@ -1,0 +1,255 @@
+{
+  "attributes": {
+    "connection_state": {
+      "description": "The asynchronous connection state reported by Apache's server-status.",
+      "enum": [
+        "closing",
+        "keepalive",
+        "writing"
+      ],
+      "type": "string"
+    },
+    "cpu_level": {
+      "description": "Level of processes.",
+      "enum": [
+        "children",
+        "self"
+      ],
+      "name_override": "level",
+      "type": "string"
+    },
+    "cpu_mode": {
+      "description": "Mode of processes.",
+      "enum": [
+        "system",
+        "user"
+      ],
+      "name_override": "mode",
+      "type": "string"
+    },
+    "scoreboard_state": {
+      "description": "The state of a connection.",
+      "enum": [
+        "closing",
+        "dnslookup",
+        "finishing",
+        "idle_cleanup",
+        "keepalive",
+        "logging",
+        "open",
+        "reading",
+        "sending",
+        "starting",
+        "unknown",
+        "waiting"
+      ],
+      "name_override": "state",
+      "type": "string"
+    },
+    "workers_state": {
+      "description": "The state of workers.",
+      "enum": [
+        "busy",
+        "idle"
+      ],
+      "name_override": "state",
+      "type": "string"
+    }
+  },
+  "description": "The Apache Web Server Receiver fetches stats from an Apache Web Server instance using the `server-status?auto` endpoint.",
+  "display_name": "Apache Web Server Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-apachereceiver",
+  "metrics": {
+    "apache.connections.async": {
+      "attributes": [
+        "connection_state"
+      ],
+      "description": "The number of connections in different asynchronous states reported by Apache's server-status.",
+      "enabled": true,
+      "gauge": {
+        "input_type": "string",
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "{connections}"
+    },
+    "apache.cpu.load": {
+      "attributes": [],
+      "description": "Current load of the CPU.",
+      "enabled": true,
+      "gauge": {
+        "input_type": "string",
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "%"
+    },
+    "apache.cpu.time": {
+      "attributes": [
+        "cpu_level",
+        "cpu_mode"
+      ],
+      "description": "Jiffs used by processes of given category.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "double"
+      },
+      "unit": "{jiff}"
+    },
+    "apache.current_connections": {
+      "attributes": [],
+      "description": "The number of active connections currently attached to the HTTP server.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{connections}"
+    },
+    "apache.load.1": {
+      "attributes": [],
+      "description": "The average server load during the last minute.",
+      "enabled": true,
+      "gauge": {
+        "input_type": "string",
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "%"
+    },
+    "apache.load.15": {
+      "attributes": [],
+      "description": "The average server load during the last 15 minutes.",
+      "enabled": true,
+      "gauge": {
+        "input_type": "string",
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "%"
+    },
+    "apache.load.5": {
+      "attributes": [],
+      "description": "The average server load during the last 5 minutes.",
+      "enabled": true,
+      "gauge": {
+        "input_type": "string",
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "%"
+    },
+    "apache.request.time": {
+      "attributes": [],
+      "description": "Total time spent on handling requests.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "ms"
+    },
+    "apache.requests": {
+      "attributes": [],
+      "description": "The number of requests serviced by the HTTP server per second.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{requests}"
+    },
+    "apache.scoreboard": {
+      "attributes": [
+        "scoreboard_state"
+      ],
+      "description": "The number of workers in each state.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{workers}"
+    },
+    "apache.traffic": {
+      "attributes": [],
+      "description": "Total HTTP server traffic.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "apache.uptime": {
+      "attributes": [],
+      "description": "The amount of time that the server has been running in seconds.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "s"
+    },
+    "apache.workers": {
+      "attributes": [
+        "workers_state"
+      ],
+      "description": "The number of workers currently attached to the HTTP server.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "input_type": "string",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{workers}"
+    }
+  },
+  "name": "apachereceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "colelaven",
+        "ishleenk17"
+      ],
+      "emeritus": [
+        "djaglowski"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver"
+}

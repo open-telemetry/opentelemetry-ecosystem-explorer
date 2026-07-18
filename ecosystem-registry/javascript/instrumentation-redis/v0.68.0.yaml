@@ -1,0 +1,24 @@
+component_owners:
+- blumamir
+description: OpenTelemetry instrumentation for `redis` database client for Redis
+in_auto_instrumentations_node: true
+name: instrumentation-redis
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-redis'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-redis
+supported_versions:
+- package: redis
+  source: README.md
+  version_range: '>=2.6.0 <6'
+tested_versions:
+- mode: latest-minors
+  package: redis
+  range: '>=2.6.0 <4'
+  source: .tav.yml
+- exclude: 4.6.9
+  mode: latest-minors
+  package: redis
+  range: '>=4 <6'
+  source: .tav.yml
+version: 0.68.0

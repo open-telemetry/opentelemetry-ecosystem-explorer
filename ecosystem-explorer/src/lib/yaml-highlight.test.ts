@@ -48,18 +48,16 @@ describe("tokenize", () => {
     expect(kinds(line)).toEqual(["key", "punct", "ws", "plain"]);
   });
 
-  it("classifies key + integer / decimal / negative number", () => {
-    expect(kinds(tokenize("count: 5")[0])).toEqual(["key", "punct", "ws", "number"]);
-    expect(kinds(tokenize("ratio: 0.25")[0])).toEqual(["key", "punct", "ws", "number"]);
-    expect(kinds(tokenize("delta: -3")[0])).toEqual(["key", "punct", "ws", "number"]);
+  it.each(["count: 5", "ratio: 0.25", "delta: -3"])("classifies %s as number", (yaml) => {
+    expect(kinds(tokenize(yaml)[0])).toEqual(["key", "punct", "ws", "number"]);
   });
 
-  it("classifies true / false / null / ~ as keyword", () => {
-    expect(kinds(tokenize("enabled: true")[0])).toEqual(["key", "punct", "ws", "keyword"]);
-    expect(kinds(tokenize("debug: false")[0])).toEqual(["key", "punct", "ws", "keyword"]);
-    expect(kinds(tokenize("limit: null")[0])).toEqual(["key", "punct", "ws", "keyword"]);
-    expect(kinds(tokenize("limit: ~")[0])).toEqual(["key", "punct", "ws", "keyword"]);
-  });
+  it.each(["enabled: true", "debug: false", "limit: null", "limit: ~"])(
+    "classifies %s as keyword",
+    (yaml) => {
+      expect(kinds(tokenize(yaml)[0])).toEqual(["key", "punct", "ws", "keyword"]);
+    }
+  );
 
   it("classifies key with empty value (null-as-empty)", () => {
     const [line] = tokenize("attribute_value_length_limit:");

@@ -1,0 +1,27 @@
+[project]
+name = "v1-registry-sync"
+version = "0.1.0"
+description = "Dry-run tool for syncing description from V2 registry into V1 entries"
+requires-python = ">=3.11"
+dependencies = [
+    "collector-watcher",
+]
+
+[project.scripts]
+v1-registry-sync = "v1_registry_sync.main:main"
+
+[tool.uv.sources]
+collector-watcher = { workspace = true }
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.1.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/v1_registry_sync"]

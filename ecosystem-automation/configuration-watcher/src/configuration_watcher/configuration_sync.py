@@ -63,12 +63,17 @@ class ConfigurationSync:
 
         Returns:
             List of copied filenames
+
+        Raises:
+            ValueError: If no schema files were found. A zero-file copy is treated as a hard error
+                rather than a silent no-op so callers never report an empty version as written.
         """
         with tempfile.TemporaryDirectory() as tmp_dir:
             tmp_path = Path(tmp_dir)
             copied = self.schema_copier.copy_schemas(self.repo_path, tmp_path)
-            if copied:
-                self.inventory_manager.save_versioned_schemas(version, tmp_path)
+            if not copied:
+                raise ValueError(f"No schema files found for {version}; refusing to write an empty version")
+            self.inventory_manager.save_versioned_schemas(version, tmp_path)
             return copied
 
     def process_latest_release(self) -> Version | None:
@@ -103,8 +108,12 @@ class ConfigurationSync:
         This:
         1. Determines next snapshot version
         2. Checks out main branch
-        3. Cleans up old snapshots
-        4. Copies schema files
+        3. Copies schema files (writing the replacement snapshot)
+        4. Cleans up old snapshots
+
+        The replacement is written before old snapshots are removed: copy_schemas_to_inventory
+        raises on an empty copy, so a failed sync leaves the existing snapshot intact instead of
+        deleting it with nothing to replace it.
 
         Returns:
             Snapshot version that was created
@@ -115,14 +124,14 @@ class ConfigurationSync:
 
         self.version_detector.checkout_main()
 
-        logger.info("")
-        logger.info("Cleaning up old snapshots...")
-        removed = self.inventory_manager.cleanup_snapshots()
-        if removed > 0:
-            logger.info("  Removed %d old snapshot(s)", removed)
-
         copied = self.copy_schemas_to_inventory(snapshot_version)
         logger.info("  Copied %d schema files", len(copied))
+
+        logger.info("")
+        logger.info("Cleaning up old snapshots...")
+        removed = self.inventory_manager.cleanup_snapshots_except(snapshot_version)
+        if removed > 0:
+            logger.info("  Removed %d old snapshot(s)", removed)
 
         return snapshot_version
 
@@ -197,15 +206,14 @@ class ConfigurationSync:
             logger.info("")
             logger.info("Backfilling %s...", version)
 
-            deleted = self.inventory_manager.delete_version(version)
-            if deleted:
-                logger.info("  Deleted existing data")
-
             if version.prerelease:
                 self.version_detector.checkout_main()
             else:
                 self.version_detector.checkout_version(version)
 
+            # No pre-emptive delete: save_versioned_schemas replaces the version directory, and
+            # copy_schemas_to_inventory raises on an empty copy, so a failed backfill leaves the
+            # existing version intact instead of destroying it with no replacement.
             copied = self.copy_schemas_to_inventory(version)
             logger.info("  Copied %d schema files", len(copied))
             processed.append(str(version))

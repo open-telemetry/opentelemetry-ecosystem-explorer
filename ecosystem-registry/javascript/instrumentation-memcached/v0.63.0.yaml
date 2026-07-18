@@ -1,0 +1,14 @@
+component_owners: []
+description: OpenTelemetry instrumentation for `memcached` database client for memcached
+in_auto_instrumentations_node: true
+name: instrumentation-memcached
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-memcached'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-memcached
+supported_versions:
+- package: memcached
+  source: README.md
+  version_range: '>=2.2.0 <3'
+tested_versions: []
+version: 0.63.0

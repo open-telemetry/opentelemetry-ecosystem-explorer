@@ -1,0 +1,119 @@
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * SignalsRow — surface + 2-up signal cards. Dot colors are intentionally
+ * varied so the four signals stay visually distinct at a glance; they're
+ * accent indicators (not brand surfaces), so the inline HSL values here are
+ * the source of truth. Brand tokens (`--otel-*-hsl`) would homogenize them.
+ *
+ * Hover treatment (translateY(-2px) + muted bg) is deliberately lighter
+ * than EcosystemsGrid's (primary-tinted shadow + border-color shift) —
+ * SignalsRow cards are accent navigators, not the hero card group.
+ */
+
+.td-signals-row {
+  background-color: hsl(var(--card-hsl));
+  color: hsl(var(--foreground-hsl));
+  padding: 3rem 1.5rem;
+}
+
+.td-signals-row__container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.td-signals-row__title {
+  margin: 0 0 0.25rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.td-signals-row__lead {
+  margin: 0 0 1rem;
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground-hsl));
+}
+
+.td-signals-row__cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+@media (min-width: 768px) {
+  .td-signals-row__cards {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.td-signal-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 1rem;
+  border: 1px solid hsl(var(--border-hsl));
+  border-radius: 0.5rem;
+  background-color: hsl(var(--background-hsl));
+  text-decoration: none;
+  color: hsl(var(--foreground-hsl));
+  transition:
+    transform 0.15s ease,
+    background-color 0.15s ease;
+  min-height: 120px;
+}
+
+.td-signal-card:hover,
+.td-signal-card:focus-visible {
+  background-color: hsl(var(--muted-hsl));
+  transform: translateY(-2px);
+  color: hsl(var(--foreground-hsl));
+}
+
+.td-signal-card__dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.td-signal-card__dot--traces {
+  background-color: hsl(200 85% 45%);
+}
+
+.td-signal-card__dot--metrics {
+  background-color: hsl(142 71% 45%);
+}
+
+.td-signal-card__dot--logs {
+  background-color: hsl(38 92% 50%);
+}
+
+.td-signal-card__dot--baggage {
+  background-color: hsl(270 70% 55%);
+}
+
+.td-signal-card__name {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-top: 0.5rem;
+}
+
+.td-signal-card__description {
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground-hsl));
+  margin-top: 0.125rem;
+}

@@ -13,66 +13,114 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render, renderHook } from "@testing-library/react";
-import { describe, it, expect, beforeEach } from "vitest";
+import { render, renderHook, act } from "@testing-library/react";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { ThemeProvider, useTheme } from "./theme-context";
-import { themes, DEFAULT_THEME } from "./themes";
+import { DEFAULT_THEME } from "./themes";
+
+function mockMatchMedia(prefersDark: boolean) {
+  const listeners: ((e: { matches: boolean }) => void)[] = [];
+  const mql = {
+    matches: prefersDark,
+    addEventListener: (_: string, fn: (e: { matches: boolean }) => void) => listeners.push(fn),
+    removeEventListener: (_: string, fn: (e: { matches: boolean }) => void) => {
+      const idx = listeners.indexOf(fn);
+      if (idx !== -1) listeners.splice(idx, 1);
+    },
+    fire: (matches: boolean) => {
+      mql.matches = matches;
+      listeners.forEach((fn) => fn({ matches }));
+    },
+  };
+  vi.stubGlobal("matchMedia", () => mql);
+  return mql;
+}
 
 describe("ThemeProvider", () => {
   beforeEach(() => {
-    // Clear any theme attributes from previous tests
     document.documentElement.removeAttribute("data-theme");
+    localStorage.clear();
+    vi.unstubAllGlobals();
   });
 
-  it("applies default theme CSS variables to document root", () => {
+  it("applies default resolved theme (dark) to data-theme when no stored value", () => {
+    mockMatchMedia(true);
     render(
       <ThemeProvider>
-        <div>Content</div>
+        <div />
       </ThemeProvider>
     );
-
-    const theme = themes[DEFAULT_THEME];
-    const root = document.documentElement;
-
-    expect(root.style.getPropertyValue("--primary-hsl")).toBe(theme.colors.primary);
-    expect(root.style.getPropertyValue("--secondary-hsl")).toBe(theme.colors.secondary);
-    expect(root.style.getPropertyValue("--background-hsl")).toBe(theme.colors.background);
-    expect(root.style.getPropertyValue("--foreground-hsl")).toBe(theme.colors.foreground);
-    expect(root.style.getPropertyValue("--card-hsl")).toBe(theme.colors.card);
-    expect(root.style.getPropertyValue("--card-secondary-hsl")).toBe(theme.colors.cardSecondary);
-    expect(root.style.getPropertyValue("--border-hsl")).toBe(theme.colors.border);
-    expect(root.style.getPropertyValue("--muted-hsl")).toBe(theme.colors.muted);
-    expect(root.style.getPropertyValue("--muted-foreground-hsl")).toBe(
-      theme.colors.mutedForeground
-    );
-    expect(root.style.getPropertyValue("--syntax-key-hsl")).toBe(theme.colors.syntax.key);
-    expect(root.style.getPropertyValue("--syntax-string-hsl")).toBe(theme.colors.syntax.string);
+    expect(document.documentElement.dataset.theme).toBe(DEFAULT_THEME);
   });
 
-  it("sets data-theme attribute on document root", () => {
+  it("reads stored light preference on mount", () => {
+    mockMatchMedia(false);
+    localStorage.setItem("td-color-theme", "light");
     render(
       <ThemeProvider>
-        <div>Content</div>
+        <div />
       </ThemeProvider>
     );
+    expect(document.documentElement.dataset.theme).toBe("light");
+  });
 
-    expect(document.documentElement.getAttribute("data-theme")).toBe(DEFAULT_THEME);
+  it("reads stored dark preference on mount", () => {
+    mockMatchMedia(false);
+    localStorage.setItem("td-color-theme", "dark");
+    render(
+      <ThemeProvider>
+        <div />
+      </ThemeProvider>
+    );
+    expect(document.documentElement.dataset.theme).toBe("dark");
+  });
+
+  it("persists mode to localStorage when setMode is called", () => {
+    mockMatchMedia(false);
+    const { result } = renderHook(() => useTheme(), { wrapper: ThemeProvider });
+    act(() => result.current.setMode("light"));
+    expect(localStorage.getItem("td-color-theme")).toBe("light");
+  });
+
+  it("auto mode with prefers-dark resolves to dark", () => {
+    mockMatchMedia(true);
+    const { result } = renderHook(() => useTheme(), { wrapper: ThemeProvider });
+    act(() => result.current.setMode("auto"));
+    expect(document.documentElement.dataset.theme).toBe("dark");
+  });
+
+  it("auto mode with prefers-light resolves to light", () => {
+    mockMatchMedia(false);
+    const { result } = renderHook(() => useTheme(), { wrapper: ThemeProvider });
+    act(() => result.current.setMode("auto"));
+    expect(document.documentElement.dataset.theme).toBe("light");
+  });
+
+  it("auto mode responds to matchMedia change without updating localStorage", () => {
+    const mql = mockMatchMedia(false);
+    const { result } = renderHook(() => useTheme(), { wrapper: ThemeProvider });
+    act(() => result.current.setMode("auto"));
+    expect(document.documentElement.dataset.theme).toBe("light");
+
+    act(() => mql.fire(true));
+    expect(document.documentElement.dataset.theme).toBe("dark");
+    expect(result.current.resolved).toBe("dark");
+    expect(localStorage.getItem("td-color-theme")).toBe("auto");
   });
 });
 
 describe("useTheme", () => {
-  it("throws error when used outside ThemeProvider", () => {
-    expect(() => {
-      renderHook(() => useTheme());
-    }).toThrow("useTheme must be used within a ThemeProvider");
+  it("throws when used outside ThemeProvider", () => {
+    expect(() => renderHook(() => useTheme())).toThrow(
+      "useTheme must be used within a ThemeProvider"
+    );
   });
 
-  it("returns themeId and setThemeId", () => {
-    const { result } = renderHook(() => useTheme(), {
-      wrapper: ThemeProvider,
-    });
-
-    expect(result.current.themeId).toBe(DEFAULT_THEME);
-    expect(typeof result.current.setThemeId).toBe("function");
+  it("returns mode, resolved, and setMode", () => {
+    mockMatchMedia(true);
+    const { result } = renderHook(() => useTheme(), { wrapper: ThemeProvider });
+    expect(result.current.mode).toBe("auto");
+    expect(result.current.resolved).toBe("dark");
+    expect(typeof result.current.setMode).toBe("function");
   });
 });

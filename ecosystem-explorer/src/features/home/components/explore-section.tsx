@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useTranslation } from "react-i18next";
 import { JavaIcon } from "@/components/icons/java-icon";
 import { PipelineIcon } from "@/components/icons/pipeline-icon";
 import { NavigationCard } from "@/components/ui/navigation-card";
 
 export function ExploreSection() {
+  const { t } = useTranslation("home");
   return (
     <section className="bg-background relative px-6">
       {/* Subtle ambient glow at top */}
@@ -25,7 +27,7 @@ export function ExploreSection() {
         className="pointer-events-none absolute top-0 left-1/2 h-64 w-full max-w-3xl -translate-x-1/2 -translate-y-16"
         style={{
           background:
-            "radial-gradient(ellipse at center, hsl(var(--primary-hsl) / 0.04) 0%, transparent 80%)",
+            "radial-gradient(ellipse at center, hsl(var(--otel-blue-hsl) / 0.04) 0%, transparent 80%)",
         }}
       />
 
@@ -33,14 +35,14 @@ export function ExploreSection() {
         {/* Navigation cards */}
         <div className="grid gap-6 md:grid-cols-2">
           <NavigationCard
-            title="OpenTelemetry Java Agent"
-            description="Explore auto-instrumentation for Java applications. Discover supported libraries, configuration options, and emitted telemetry."
+            title={t("explore.javaAgent.title")}
+            description={t("explore.javaAgent.description")}
             href="/java-agent"
             icon={<JavaIcon className="h-20 w-20" />}
           />
           <NavigationCard
-            title="OpenTelemetry Collector"
-            description="Navigate Collector components like receivers, processors, and exporters."
+            title={t("explore.collector.title")}
+            description={t("explore.collector.description")}
             href="/collector"
             icon={<PipelineIcon className="h-20 w-20" />}
           />

@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 import { ChevronDown } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { VersionInfo } from "@/types/javaagent";
 
 interface VersionSelectorProps {
   versions: VersionInfo[];
   currentVersion: string;
   onVersionChange: (version: string) => void;
+  disabled?: boolean;
   label?: string;
   id?: string;
 }
@@ -28,20 +30,25 @@ export function VersionSelector({
   versions,
   currentVersion,
   onVersionChange,
-  label = "Version",
+  disabled = false,
+  label,
   id = "version-select",
 }: VersionSelectorProps) {
+  const { t } = useTranslation("java-agent");
+  const resolvedLabel = label ?? t("versionSelector.label");
   return (
-    <div className="flex items-center gap-2">
+    <div className="ml-auto flex items-center gap-2">
       <label htmlFor={id} className="text-muted-foreground text-sm font-medium whitespace-nowrap">
-        {label}
+        {resolvedLabel}
       </label>
-      <div className="relative">
+
+      <div className="relative min-w-fit">
         <select
           id={id}
           value={currentVersion}
           onChange={(e) => onVersionChange(e.target.value)}
-          className="border-border/60 bg-background/80 focus:border-primary/50 focus:ring-primary/20 cursor-pointer appearance-none rounded-lg border py-1.5 pr-8 pl-3 text-sm font-medium backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none"
+          disabled={disabled}
+          className="border-border/60 bg-card text-foreground hover:border-primary/40 focus:border-primary/50 focus:ring-primary/20 cursor-pointer appearance-none rounded-md border px-3 py-2 pr-7 text-sm font-medium shadow-sm transition-all duration-200 focus:ring-2 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
         >
           {versions.map((v) => (
             <option key={v.version} value={v.version}>
@@ -50,6 +57,7 @@ export function VersionSelector({
             </option>
           ))}
         </select>
+
         <ChevronDown
           className="text-muted-foreground pointer-events-none absolute top-1/2 right-2 h-4 w-4 -translate-y-1/2"
           aria-hidden="true"

@@ -14,6 +14,12 @@ contrib:
     distributions:
     - contrib
     subtype: null
+  - name: googlesecopsexporter
+    last_version: v0.153.0
+    deprecated_in_version: v0.154.0
+    source_repo: opentelemetry-collector-contrib
+    distributions: []
+    subtype: null
   extension: []
   processor:
   - name: datadogsemanticsprocessor

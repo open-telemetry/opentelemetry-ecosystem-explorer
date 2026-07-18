@@ -15,6 +15,7 @@
  */
 
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import type { TelemetryDiffResult } from "@/types/javaagent";
 import { MetricDiffCard } from "./metric-diff-card";
 import { SpanDiffCard } from "./span-diff-card";
@@ -40,6 +41,7 @@ export function DiffResultsSection({
   diffResult,
   whenCondition = "default",
 }: DiffResultsSectionProps) {
+  const { t } = useTranslation("java-agent");
   const { metrics, spans } = diffResult;
 
   // Separate diffs by status
@@ -61,10 +63,11 @@ export function DiffResultsSection({
     return (
       <div className="flex min-h-[300px] items-center justify-center">
         <div className="space-y-2 text-center">
-          <p className="text-muted-foreground text-lg font-medium">No differences found</p>
+          <p className="text-muted-foreground text-lg font-medium">
+            {t("diffResults.empty.title")}
+          </p>
           <p className="text-muted-foreground/70 text-sm">
-            Telemetry is identical for <span className="font-mono">{whenCondition}</span> between
-            the selected versions.
+            {t("diffResults.empty.description", { condition: whenCondition })}
           </p>
         </div>
       </div>
@@ -76,14 +79,14 @@ export function DiffResultsSection({
       {/* Added/Removed Section */}
       {hasAddedOrRemoved && (
         <div className="space-y-6">
-          <SectionDivider>Telemetry Added/Removed</SectionDivider>
+          <SectionDivider>{t("diffResults.addedRemovedHeader")}</SectionDivider>
 
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
             {/* Metrics */}
             {addedOrRemovedMetrics.length > 0 && (
               <div className="space-y-6">
                 <h3 className="text-muted-foreground text-xs font-black tracking-[0.2em] uppercase">
-                  Metrics
+                  {t("diffResults.metrics")}
                 </h3>
                 <div className="space-y-6">
                   {addedOrRemovedMetrics.map((metricDiff) => (
@@ -97,7 +100,7 @@ export function DiffResultsSection({
             {addedOrRemovedSpans.length > 0 && (
               <div className="space-y-6">
                 <h3 className="text-muted-foreground text-xs font-black tracking-[0.2em] uppercase">
-                  Spans
+                  {t("diffResults.spans")}
                 </h3>
                 <div className="space-y-6">
                   {addedOrRemovedSpans.map((spanDiff, index) => (
@@ -113,14 +116,14 @@ export function DiffResultsSection({
       {/* Changed Section */}
       {hasChanged && (
         <div className="space-y-6">
-          <SectionDivider>Telemetry Changed</SectionDivider>
+          <SectionDivider>{t("diffResults.changedHeader")}</SectionDivider>
 
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
             {/* Metrics */}
             {changedMetrics.length > 0 && (
               <div className="space-y-6">
                 <h3 className="text-muted-foreground text-xs font-black tracking-[0.2em] uppercase">
-                  Metrics
+                  {t("diffResults.metrics")}
                 </h3>
                 <div className="space-y-6">
                   {changedMetrics.map((metricDiff) => (
@@ -134,7 +137,7 @@ export function DiffResultsSection({
             {changedSpans.length > 0 && (
               <div className="space-y-6">
                 <h3 className="text-muted-foreground text-xs font-black tracking-[0.2em] uppercase">
-                  Spans
+                  {t("diffResults.spans")}
                 </h3>
                 <div className="space-y-6">
                   {changedSpans.map((spanDiff, index) => (

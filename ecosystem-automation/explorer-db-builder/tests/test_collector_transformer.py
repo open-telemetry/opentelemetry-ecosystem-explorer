@@ -61,7 +61,7 @@ class TestTransformCollectorComponents:
 
         assert len(result) == 1
         component = result[0]
-        assert component["id"] == "contrib-receiver-otlpreceiver"
+        assert component["id"] == "contrib-otlpreceiver"
         assert component["ecosystem"] == "collector"
         assert component["distribution"] == "contrib"
         assert component["type"] == "receiver"
@@ -150,7 +150,7 @@ class TestTransformCollectorComponents:
 
         result = transform_collector_components(inventory, "core")
 
-        assert result[0]["id"] == "core-receiver-nopreceiver"
+        assert result[0]["id"] == "core-nopreceiver"
 
     def test_skips_non_dict_components(self, caplog):
         inventory = _make_inventory(
@@ -210,7 +210,7 @@ class TestTransformCollectorComponents:
 
         assert len(result) == 2
         ids = {c["id"] for c in result}
-        assert ids == {"contrib-receiver-receiver_a", "contrib-receiver-receiver_b"}
+        assert ids == {"contrib-receiver_a", "contrib-receiver_b"}
 
     def test_repository_from_inventory(self):
         inventory = _make_inventory(
@@ -232,7 +232,7 @@ class TestTransformCollectorComponents:
 class TestMakeIndexComponent:
     def test_extracts_lightweight_fields(self):
         component = {
-            "id": "contrib-receiver-otlp",
+            "id": "contrib-otlp",
             "ecosystem": "collector",
             "distribution": "contrib",
             "type": "receiver",
@@ -249,13 +249,14 @@ class TestMakeIndexComponent:
 
         result = make_index_component(component)
 
-        assert result["id"] == "contrib-receiver-otlp"
+        assert result["id"] == "contrib-otlp"
         assert result["name"] == "otlpreceiver"
         assert result["distribution"] == "contrib"
         assert result["type"] == "receiver"
         assert result["display_name"] == "OTLP Receiver"
         assert result["description"] == "Receives data."
         assert result["stability"] == "beta"
+        assert result["signals"] == ["traces", "metrics"]
         # heavy fields should be absent
         assert "repository" not in result
         assert "attributes" not in result
@@ -307,3 +308,159 @@ class TestMakeIndexComponent:
         }
         result = make_index_component(component)
         assert result["stability"] == "alpha"
+
+
+class TestMakeIndexComponentSignals:
+    def test_signals_dedupe_and_canonical_order(self):
+        component = {
+            "id": "x",
+            "name": "x",
+            "distribution": "contrib",
+            "type": "receiver",
+            "display_name": None,
+            "description": None,
+            "status": {
+                "stability": {
+                    "beta": ["metrics", "traces"],
+                    "alpha": ["profiles", "metrics"],
+                },
+            },
+        }
+        result = make_index_component(component)
+        assert result["signals"] == ["traces", "metrics", "profiles"]
+
+    def test_signals_single_signal(self):
+        component = {
+            "id": "x",
+            "name": "x",
+            "distribution": "contrib",
+            "type": "receiver",
+            "display_name": None,
+            "description": None,
+            "status": {"stability": {"alpha": ["metrics"]}},
+        }
+        result = make_index_component(component)
+        assert result["signals"] == ["metrics"]
+
+    def test_signals_empty_when_stability_missing(self):
+        component = {
+            "id": "x",
+            "name": "x",
+            "distribution": "contrib",
+            "type": "receiver",
+            "display_name": None,
+            "description": None,
+            "status": {},
+        }
+        result = make_index_component(component)
+        assert result["signals"] == []
+
+    def test_signals_unknown_signal_appended_alphabetically(self):
+        component = {
+            "id": "x",
+            "name": "x",
+            "distribution": "contrib",
+            "type": "receiver",
+            "display_name": None,
+            "description": None,
+            "status": {"stability": {"alpha": ["metrics", "zsignal", "asignal"]}},
+        }
+        result = make_index_component(component)
+        assert result["signals"] == ["metrics", "asignal", "zsignal"]
+
+
+class TestTransformCollectorComponentsReadmes:
+    def test_stamps_markdown_hash_when_name_in_readme_map(self):
+        inventory = _make_inventory(
+            components={
+                "receiver": [{"name": "otlpreceiver", "metadata": {"display_name": "OTLP Receiver"}}],
+                "processor": [],
+                "exporter": [],
+                "connector": [],
+                "extension": [],
+            }
+        )
+
+        result = transform_collector_components(inventory, "contrib", readme_map={"otlpreceiver": "abc123def456"})
+
+        assert result[0]["markdown_hash"] == "abc123def456"
+
+    def test_no_markdown_hash_when_name_not_in_readme_map(self):
+        inventory = _make_inventory(
+            components={
+                "receiver": [{"name": "otlpreceiver", "metadata": {"display_name": "OTLP Receiver"}}],
+                "processor": [],
+                "exporter": [],
+                "connector": [],
+                "extension": [],
+            }
+        )
+
+        result = transform_collector_components(inventory, "contrib", readme_map={"someotherreceiver": "abc123def456"})
+
+        assert "markdown_hash" not in result[0]
+
+    def test_no_markdown_hash_when_readme_map_omitted(self):
+        """readme_map is optional - callers that don't pass it get the old behavior."""
+        inventory = _make_inventory(
+            components={
+                "receiver": [{"name": "otlpreceiver", "metadata": {"display_name": "OTLP Receiver"}}],
+                "processor": [],
+                "exporter": [],
+                "connector": [],
+                "extension": [],
+            }
+        )
+
+        result = transform_collector_components(inventory, "contrib")
+
+        assert "markdown_hash" not in result[0]
+
+    def test_only_matching_components_get_stamped(self):
+        inventory = _make_inventory(
+            components={
+                "receiver": [
+                    {"name": "otlpreceiver", "metadata": {"display_name": "OTLP"}},
+                    {"name": "prometheusreceiver", "metadata": {"display_name": "Prometheus"}},
+                ],
+                "processor": [],
+                "exporter": [],
+                "connector": [],
+                "extension": [],
+            }
+        )
+
+        result = transform_collector_components(inventory, "contrib", readme_map={"otlpreceiver": "abc123def456"})
+
+        by_name = {c["name"]: c for c in result}
+        assert by_name["otlpreceiver"]["markdown_hash"] == "abc123def456"
+        assert "markdown_hash" not in by_name["prometheusreceiver"]
+
+
+class TestMakeIndexComponentHasReadme:
+    def test_has_readme_true_when_markdown_hash_present(self):
+        component = {
+            "id": "x",
+            "name": "x",
+            "distribution": "contrib",
+            "type": "receiver",
+            "display_name": None,
+            "description": None,
+            "status": {},
+            "markdown_hash": "abc123def456",
+        }
+        result = make_index_component(component)
+        assert result["has_readme"] is True
+
+    def test_has_readme_false_when_markdown_hash_absent(self):
+        component = {
+            "id": "x",
+            "name": "x",
+            "distribution": "contrib",
+            "type": "receiver",
+            "display_name": None,
+            "description": None,
+            "status": {},
+        }
+        result = make_index_component(component)
+        assert result["has_readme"] is False

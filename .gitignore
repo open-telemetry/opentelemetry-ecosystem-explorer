@@ -12,3 +12,16 @@ tmp_repos/
 metadata-issues.md
 
 *.DS_Store
+
+# Personal Claude session context — never committed
+CLAUDE.local.md
+
+# Local Netlify folder
+.netlify
+
+# dotenv
+.envrc
+
+# Acceptance test generated files
+opentelemetry-javaagent.jar
+test-config.yaml

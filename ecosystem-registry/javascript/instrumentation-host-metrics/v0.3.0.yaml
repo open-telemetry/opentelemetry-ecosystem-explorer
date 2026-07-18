@@ -1,0 +1,12 @@
+component_owners:
+- legendecas
+description: OpenTelemetry Host Metrics instrumentation for Node.js
+in_auto_instrumentations_node: true
+name: instrumentation-host-metrics
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-host-metrics'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-host-metrics
+supported_versions: []
+tested_versions: []
+version: 0.3.0

@@ -1,0 +1,201 @@
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * EcosystemsGrid — surface + 12-column grid + per-card icon modifiers. The
+ * Collector and Java-Agent icon colors are driven by `--otel-purple-hsl` /
+ * `--otel-orange-hsl` so the brand tokens stay the single source of truth
+ * (no inline hex on the React side).
+ */
+
+.td-ecosystems-grid {
+  background-color: hsl(var(--background-hsl));
+  color: hsl(var(--foreground-hsl));
+  padding: 4rem 1.5rem;
+}
+
+.td-ecosystems-grid__container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* ---------- Section header (shared shape with future v1 sections) ---------- */
+
+.td-section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.td-section-header__title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.td-section-header__lead {
+  margin: 0.25rem 0 0;
+  color: hsl(var(--muted-foreground-hsl));
+}
+
+.td-section-header__action {
+  color: hsl(var(--primary-hsl));
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.td-section-header__action:hover,
+.td-section-header__action:focus-visible {
+  text-decoration: underline;
+}
+
+/* ---------- Card grid ---------- */
+
+.td-ecosystems-grid__cards {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1rem;
+}
+
+.td-ecosystem-card {
+  grid-column: span 12;
+  display: flex;
+  flex-direction: column;
+  background-color: hsl(var(--card-hsl));
+  border: 1px solid hsl(var(--border-hsl));
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+}
+
+@media (min-width: 768px) {
+  .td-ecosystem-card {
+    grid-column: span 6;
+  }
+  .td-ecosystem-card--placeholder {
+    grid-column: span 3;
+  }
+}
+
+a.td-ecosystem-card:hover,
+a.td-ecosystem-card:focus-visible {
+  border-color: hsl(var(--primary-hsl) / 0.5);
+  box-shadow: 0 4px 12px hsl(var(--primary-hsl) / 0.12);
+  transform: translateY(-1px);
+}
+
+.td-ecosystem-card--placeholder {
+  border-style: dashed;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  min-height: 120px;
+  cursor: default;
+}
+
+.td-ecosystem-card__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.td-ecosystem-card__id {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.td-ecosystem-card__icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 0.375rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.td-ecosystem-card__icon-svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.td-ecosystem-card__icon--collector {
+  background-color: hsl(var(--otel-purple-hsl) / 0.15);
+  color: hsl(var(--otel-purple-hsl));
+}
+
+/* Java Agent card uses the branded <JavaIcon> SVG, which carries its own
+   orange fill — only the neutral tinted tile is needed here. */
+.td-ecosystem-card__icon--java-agent {
+  background-color: hsl(var(--otel-orange-hsl) / 0.12);
+}
+
+.td-ecosystem-card__name {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.td-ecosystem-card__name--placeholder {
+  font-size: 0.9375rem;
+}
+
+.td-ecosystem-card__tagline {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: hsl(var(--muted-foreground-hsl));
+}
+
+.td-ecosystem-card__description {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground-hsl));
+}
+
+.td-ecosystem-card__metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.5rem;
+  font-size: 0.8125rem;
+  margin-top: auto;
+  padding-top: 0.75rem;
+}
+
+.td-ecosystem-card__metric-value {
+  font-weight: 700;
+}
+
+.td-ecosystem-card__metric-label {
+  color: hsl(var(--muted-foreground-hsl));
+}
+
+.td-ecosystem-card__placeholder-icon {
+  width: 28px;
+  height: 28px;
+  margin: 0 auto 0.5rem;
+  color: hsl(var(--muted-foreground-hsl));
+}

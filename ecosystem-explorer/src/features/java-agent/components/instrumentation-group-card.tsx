@@ -21,7 +21,7 @@ import { MultiInstrumentationGroupCard } from "./multi-instrumentation-group-car
 interface InstrumentationGroupCardProps {
   group: InstrumentationGroup;
   activeFilters?: FilterState;
-  version: string;
+  version: string | null;
 }
 
 export function InstrumentationGroupCard({

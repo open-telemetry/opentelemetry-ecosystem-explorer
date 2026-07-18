@@ -1,0 +1,16 @@
+oats-schema-version: 2
+
+docker-compose:
+  files:
+    - ./docker-compose.yml
+
+input:
+  # The smoke-test-spring-boot container exposes a /greeting endpoint
+  - path: /greeting
+
+expected:
+  traces:
+    - traceql: '{ span.http.route = "/greeting" }'
+      equals: "GET /greeting"
+      attributes:
+        http.route: "/greeting"

@@ -1,0 +1,341 @@
+latestSupportedFileFormat: 1.0.0
+typeSupportStatuses:
+  - type: Aggregation
+    status: supported
+    propertyOverrides: []
+  - type: AlwaysOffSampler
+    status: supported
+    propertyOverrides: []
+  - type: AlwaysOnSampler
+    status: supported
+    propertyOverrides: []
+  - type: AttributeLimits
+    status: ignored
+    propertyOverrides: []
+  - type: AttributeNameValue
+    status: supported
+    propertyOverrides: []
+  - type: AttributeType
+    status: supported
+    enumOverrides: []
+  - type: B3MultiPropagator
+    status: supported
+    propertyOverrides: []
+  - type: B3Propagator
+    status: supported
+    propertyOverrides: []
+  - type: BaggagePropagator
+    status: supported
+    propertyOverrides: []
+  - type: Base2ExponentialBucketHistogramAggregation
+    status: supported
+    propertyOverrides: []
+  - type: BatchLogRecordProcessor
+    status: supported
+    propertyOverrides: []
+  - type: BatchSpanProcessor
+    status: supported
+    propertyOverrides: []
+  - type: CardinalityLimits
+    status: supported
+    propertyOverrides: []
+  - type: ConsoleExporter
+    status: supported
+    propertyOverrides: []
+  - type: ConsoleMetricExporter
+    status: supported
+    propertyOverrides: []
+  - type: DefaultAggregation
+    status: supported
+    propertyOverrides: []
+  - type: Distribution
+    status: ignored
+    propertyOverrides: []
+  - type: DropAggregation
+    status: supported
+    propertyOverrides: []
+  - type: ExemplarFilter
+    status: supported
+    enumOverrides: []
+  - type: ExplicitBucketHistogramAggregation
+    status: supported
+    propertyOverrides: []
+  - type: ExporterDefaultHistogramAggregation
+    status: supported
+    enumOverrides: []
+  - type: ExporterTemporalityPreference
+    status: supported
+    enumOverrides: []
+  - type: GrpcTls
+    status: supported
+    propertyOverrides: []
+  - type: HttpTls
+    status: supported
+    propertyOverrides: []
+  - type: IdGenerator
+    status: ignored
+    propertyOverrides: []
+  - type: IncludeExclude
+    status: supported
+    propertyOverrides: []
+  - type: InstrumentType
+    status: supported
+    enumOverrides: []
+  - type: LastValueAggregation
+    status: supported
+    propertyOverrides: []
+  - type: LoggerProvider
+    status: supported
+    propertyOverrides: []
+  - type: LogRecordExporter
+    status: supported
+    propertyOverrides: []
+  - type: LogRecordLimits
+    status: ignored
+    propertyOverrides: []
+  - type: LogRecordProcessor
+    status: supported
+    propertyOverrides: []
+  - type: MeterProvider
+    status: supported
+    propertyOverrides: []
+  - type: MetricProducer
+    status: ignored
+    propertyOverrides: []
+  - type: MetricReader
+    status: supported
+    propertyOverrides: []
+  - type: NameStringValuePair
+    status: supported
+    propertyOverrides: []
+  - type: OpenCensusMetricProducer
+    status: ignored
+    propertyOverrides: []
+  - type: OpenTelemetryConfiguration
+    status: supported
+    propertyOverrides: []
+  - type: OtlpGrpcExporter
+    status: supported
+    propertyOverrides: []
+  - type: OtlpGrpcMetricExporter
+    status: supported
+    propertyOverrides: []
+  - type: OtlpHttpEncoding
+    status: supported
+    enumOverrides: []
+  - type: OtlpHttpExporter
+    status: supported
+    propertyOverrides: []
+  - type: OtlpHttpMetricExporter
+    status: supported
+    propertyOverrides: []
+  - type: ParentBasedSampler
+    status: supported
+    propertyOverrides: []
+  - type: PeriodicMetricReader
+    status: supported
+    propertyOverrides: []
+  - type: Propagator
+    status: supported
+    propertyOverrides: []
+  - type: PullMetricExporter
+    status: supported
+    propertyOverrides: []
+  - type: PullMetricReader
+    status: supported
+    propertyOverrides: []
+  - type: PushMetricExporter
+    status: supported
+    propertyOverrides: []
+  - type: RandomIdGenerator
+    status: ignored
+    propertyOverrides: []
+  - type: Resource
+    status: supported
+    propertyOverrides: []
+  - type: Sampler
+    status: supported
+    propertyOverrides: []
+  - type: SeverityNumber
+    status: supported
+    enumOverrides: []
+  - type: SimpleLogRecordProcessor
+    status: supported
+    propertyOverrides: []
+  - type: SimpleSpanProcessor
+    status: supported
+    propertyOverrides: []
+  - type: SpanExporter
+    status: supported
+    propertyOverrides: []
+  - type: SpanKind
+    status: supported
+    enumOverrides: []
+  - type: SpanLimits
+    status: supported
+    propertyOverrides: []
+  - type: SpanProcessor
+    status: supported
+    propertyOverrides: []
+  - type: SumAggregation
+    status: supported
+    propertyOverrides: []
+  - type: TextMapPropagator
+    status: supported
+    propertyOverrides: []
+  - type: TraceContextPropagator
+    status: supported
+    propertyOverrides: []
+  - type: TraceIdRatioBasedSampler
+    status: supported
+    propertyOverrides: []
+  - type: TracerProvider
+    status: supported
+    propertyOverrides: []
+  - type: View
+    status: supported
+    propertyOverrides: []
+  - type: ViewSelector
+    status: supported
+    propertyOverrides: []
+  - type: ViewStream
+    status: supported
+    propertyOverrides: []
+  - type: ExperimentalCodeInstrumentation
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalComposableAlwaysOffSampler
+    status: supported
+    propertyOverrides: []
+  - type: ExperimentalComposableAlwaysOnSampler
+    status: supported
+    propertyOverrides: []
+  - type: ExperimentalComposableParentThresholdSampler
+    status: supported
+    propertyOverrides: []
+  - type: ExperimentalComposableProbabilitySampler
+    status: supported
+    propertyOverrides: []
+  - type: ExperimentalComposableRuleBasedSampler
+    status: supported
+    propertyOverrides: []
+  - type: ExperimentalComposableRuleBasedSamplerRule
+    status: supported
+    propertyOverrides: []
+  - type: ExperimentalComposableRuleBasedSamplerRuleAttributePatterns
+    status: supported
+    propertyOverrides: []
+  - type: ExperimentalComposableRuleBasedSamplerRuleAttributeValues
+    status: supported
+    propertyOverrides: []
+  - type: ExperimentalComposableSampler
+    status: supported
+    propertyOverrides: []
+  - type: ExperimentalContainerResourceDetector
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalDbInstrumentation
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalEventToSpanEventBridgeLogRecordProcessor
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalGenAiInstrumentation
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalGeneralInstrumentation
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalHostResourceDetector
+    status: supported
+    propertyOverrides: []
+  - type: ExperimentalHttpClientInstrumentation
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalHttpInstrumentation
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalHttpServerInstrumentation
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalInstrumentation
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalJaegerRemoteSampler
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalLanguageSpecificInstrumentation
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalLoggerConfig
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalLoggerConfigurator
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalLoggerMatcherAndConfig
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalMessagingInstrumentation
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalMeterConfig
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalMeterConfigurator
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalMeterMatcherAndConfig
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalOtlpFileExporter
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalOtlpFileMetricExporter
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalProbabilitySampler
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalProcessResourceDetector
+    status: supported
+    propertyOverrides: []
+  - type: ExperimentalPrometheusMetricExporter
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalPrometheusTranslationStrategy
+    status: ignored
+    enumOverrides: []
+  - type: ExperimentalResourceDetection
+    status: supported
+    propertyOverrides: []
+  - type: ExperimentalResourceDetector
+    status: supported
+    propertyOverrides: []
+  - type: ExperimentalRpcInstrumentation
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalSanitization
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalSemconvConfig
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalServiceResourceDetector
+    status: supported
+    propertyOverrides: []
+  - type: ExperimentalSpanParent
+    status: supported
+    enumOverrides: []
+  - type: ExperimentalTracerConfig
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalTracerConfigurator
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalTracerMatcherAndConfig
+    status: ignored
+    propertyOverrides: []
+  - type: ExperimentalUrlSanitization
+    status: ignored
+    propertyOverrides: []

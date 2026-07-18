@@ -16,6 +16,7 @@
 
 import json
 import logging
+import re
 import shutil
 from pathlib import Path
 from typing import Any
@@ -35,6 +36,49 @@ class CollectorDatabaseWriter:
         self.database_dir = Path(database_dir)
         self.files_written = 0
         self.total_bytes = 0
+
+    def _sanitize_name(self, name: str) -> str:
+        """Sanitizes a name for use as a filename to prevent path traversal."""
+        return re.sub(r"[^a-zA-Z0-9._\-]", "_", name)
+
+    def write_markdown(self, component_name: str, markdown_hash: str, content: str) -> bool:
+        """Write a component README to the database, content-addressed.
+
+        Args:
+            component_name: Name of the component
+            markdown_hash: Hash of the markdown content
+            content: Markdown content string
+
+        Returns:
+            True if the markdown is present on disk after this call (either
+            just written, or already existed at the content-addressed path).
+            False if the write failed. Failures are logged here rather than
+            raised - README publishing must never fail DB generation - so
+            callers must check this return value to know whether to stamp
+            markdown_hash, rather than assuming success.
+        """
+        markdown_dir = self.database_dir / "markdown"
+        markdown_dir.mkdir(parents=True, exist_ok=True)
+
+        safe_name = self._sanitize_name(component_name)
+        file_path = markdown_dir / f"{safe_name}-{markdown_hash}.md"
+
+        if file_path.exists():
+            logger.debug("Markdown for '%s' with hash %s already exists, skipping write", safe_name, markdown_hash)
+            return True
+
+        try:
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write(content)
+            self.files_written += 1
+            self.total_bytes += len(content.encode("utf-8"))
+            logger.debug("Wrote markdown for '%s' with hash %s", safe_name, markdown_hash)
+            return True
+        except OSError as e:
+            logger.error("Failed to write markdown for '%s': %s", safe_name, e)
+            # README publishing failures must never fail DB generation, matching
+            # the same principle already established for the javaagent writer.
+            return False
 
     def _write_json(self, path: Path, data: Any) -> None:
         content = json.dumps(data, indent=2, sort_keys=True)
@@ -125,11 +169,60 @@ class CollectorDatabaseWriter:
             logger.error("Failed to write version index for %s: %s", version, e)
             raise
 
-    def write_version_list(self, versions: list[Version]) -> None:
+    def write_version_bundle(self, version: Version, components: list[dict[str, Any]]) -> str:
+        """Write a consolidated per-version bundle of slim component entries.
+
+        The frontend's list view loads every component for a version at once.
+        Rather than fan out one request per component, it fetches this single
+        content-addressed bundle. The per-component files in ``components/``
+        remain for detail/deep-link pages.
+
+        Entries are the slim ``make_index_component`` shape (the fields the list
+        page reads, with stability pre-derived) — not full detail.
+
+        Args:
+            version: The semantic version the bundle is for.
+            components: Slim component entries (``make_index_component`` shape).
+
+        Returns:
+            The 12-char content hash, for inclusion in versions-index.json.
+
+        Raises:
+            ValueError: If components is empty.
+            OSError: If file writing fails.
+        """
+        if not components:
+            raise ValueError("Bundle components cannot be empty")
+
+        bundle_hash = content_hash(components)
+
+        bundles_dir = self.database_dir / "bundles"
+        bundles_dir.mkdir(parents=True, exist_ok=True)
+        bundle_file = bundles_dir / f"{version}-{bundle_hash}.json"
+
+        if bundle_file.exists():
+            logger.debug("Collector bundle for %s hash %s already exists, skipping", version, bundle_hash)
+            return bundle_hash
+
+        try:
+            self._write_json(bundle_file, components)
+            logger.info("Wrote collector version bundle for %s with %d components", version, len(components))
+        except OSError as e:
+            logger.error("Failed to write collector version bundle for %s: %s", version, e)
+            raise
+
+        return bundle_hash
+
+    def write_version_list(self, versions: list[Version], bundle_hashes: dict[Version, str] | None = None) -> None:
         """Write the top-level versions-index.json listing all available versions.
 
         Args:
             versions: Sorted list of versions, latest first.
+            bundle_hashes: Optional map of version to its consolidated bundle
+                hash. When present, each version entry carries a ``bundle_hash``
+                the frontend uses to fetch the single per-version bundle. The
+                field is omitted for versions without a hash so old clients and
+                missing bundles degrade gracefully to the per-component fan-out.
 
         Raises:
             ValueError: If versions list is empty.
@@ -139,7 +232,13 @@ class CollectorDatabaseWriter:
 
         self.database_dir.mkdir(parents=True, exist_ok=True)
 
-        version_list = [{"version": str(v), "is_latest": v == versions[0]} for v in versions]
+        version_list: list[dict[str, Any]] = []
+        for v in versions:
+            entry: dict[str, Any] = {"version": str(v), "is_latest": v == versions[0]}
+            bundle_hash = (bundle_hashes or {}).get(v)
+            if bundle_hash:
+                entry["bundle_hash"] = bundle_hash
+            version_list.append(entry)
         versions_file = self.database_dir / "versions-index.json"
 
         try:
@@ -193,6 +292,25 @@ class CollectorDatabaseWriter:
             )
         except OSError as e:
             logger.error("Failed to write index.json: %s", e)
+            raise
+
+    def write_ecosystem_stats(self, stats: dict[str, Any]) -> None:
+        """Write the collector ecosystem-stats.json summary file.
+
+        Args:
+            stats: Dict with "version_count" and "component_count".
+
+        Raises:
+            OSError: If file writing fails.
+        """
+        self.database_dir.mkdir(parents=True, exist_ok=True)
+
+        output_file = self.database_dir / "ecosystem-stats.json"
+        try:
+            self._write_json(output_file, stats)
+            logger.info("Wrote collector ecosystem stats: %s", stats)
+        except OSError as e:
+            logger.error("Failed to write ecosystem stats: %s", e)
             raise
 
     def get_stats(self) -> dict[str, Any]:

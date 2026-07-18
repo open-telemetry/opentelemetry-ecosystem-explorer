@@ -58,3 +58,4 @@ export type ConfigurationBuilderAction =
   | { type: "ENABLE_ALL_SECTIONS"; defaultsBySection: Record<string, ConfigValues> }
   | { type: "MERGE_DEFAULTS"; entries: { path: Path; value: ConfigValue }[] }
   | { type: "SET_OVERRIDE"; module: string; status: "enabled" | "disabled" | "none" };
+  | { type: "PRUNE_INSTRUMENTATIONS"; validModules: readonly string[] };

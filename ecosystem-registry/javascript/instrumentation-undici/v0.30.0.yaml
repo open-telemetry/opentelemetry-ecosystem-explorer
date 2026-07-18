@@ -1,0 +1,24 @@
+component_owners:
+- david-luna
+- trentm
+description: OpenTelemetry instrumentation for `undici` http client and Node.js fetch()
+in_auto_instrumentations_node: true
+name: instrumentation-undici
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-undici'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-undici
+supported_versions:
+- package: undici
+  source: README.md
+  version_range: '>=5.12.0'
+tested_versions:
+- mode: max-7
+  package: undici
+  range: '>=5.12.0 <6'
+  source: .tav.yml
+- mode: max-7
+  package: undici
+  range: '>=6 <7'
+  source: .tav.yml
+version: 0.30.0

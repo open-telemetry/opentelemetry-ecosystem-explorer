@@ -1,0 +1,30 @@
+{
+  "description": "The primary objective of the Google Cloud Monitoring Receiver is to gather time series metrics data from all Google services and convert this data into a pipeline format that facilitates further use.",
+  "display_name": "Google Cloud Monitoring Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-googlecloudmonitoringreceiver",
+  "name": "googlecloudmonitoringreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "dashpole",
+        "TylerHelmuth"
+      ],
+      "emeritus": [
+        "abhishek-at-cloudwerx"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver"
+}

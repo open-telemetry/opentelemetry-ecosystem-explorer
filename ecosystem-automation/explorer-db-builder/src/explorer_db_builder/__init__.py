@@ -16,4 +16,7 @@
 
 import importlib.metadata
 
-__version__ = importlib.metadata.version("explorer-db-builder")
+try:
+    __version__ = importlib.metadata.version("explorer-db-builder")
+except importlib.metadata.PackageNotFoundError:
+    __version__ = "0.0.0-dev"

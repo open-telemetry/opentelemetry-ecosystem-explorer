@@ -36,7 +36,7 @@ def db_writer(temp_db_dir):
 def sample_components():
     return [
         {
-            "id": "contrib-receiver-otlp",
+            "id": "contrib-otlp",
             "ecosystem": "collector",
             "distribution": "contrib",
             "type": "receiver",
@@ -47,7 +47,7 @@ def sample_components():
             "status": {"class": "receiver", "stability": {"beta": ["traces"]}},
         },
         {
-            "id": "core-processor-batch",
+            "id": "core-batch",
             "ecosystem": "collector",
             "distribution": "core",
             "type": "processor",
@@ -65,9 +65,9 @@ class TestWriteComponents:
         component_map = db_writer.write_components(sample_components)
 
         assert len(component_map) == 2
-        assert "contrib-receiver-otlp" in component_map
-        assert "core-processor-batch" in component_map
-        assert len(component_map["contrib-receiver-otlp"]) == 12
+        assert "contrib-otlp" in component_map
+        assert "core-batch" in component_map
+        assert len(component_map["contrib-otlp"]) == 12
 
         for comp_id, comp_hash in component_map.items():
             expected = temp_db_dir / "components" / comp_id / f"{comp_id}-{comp_hash}.json"
@@ -76,7 +76,7 @@ class TestWriteComponents:
     def test_write_components_content(self, db_writer, sample_components, temp_db_dir):
         component_map = db_writer.write_components(sample_components)
 
-        comp_id = "contrib-receiver-otlp"
+        comp_id = "contrib-otlp"
         comp_hash = component_map[comp_id]
         path = temp_db_dir / "components" / comp_id / f"{comp_id}-{comp_hash}.json"
         with open(path) as f:
@@ -126,7 +126,7 @@ class TestWriteComponents:
 class TestWriteVersionIndex:
     def test_write_version_index_success(self, db_writer, temp_db_dir):
         version = Version("0.150.0")
-        component_map = {"contrib-receiver-otlp": "abc123456789"}
+        component_map = {"contrib-otlp": "abc123456789"}
 
         db_writer.write_version_index(version, component_map)
 
@@ -169,6 +169,49 @@ class TestWriteVersionList:
         with pytest.raises(ValueError, match="Versions list cannot be empty"):
             db_writer.write_version_list([])
 
+    def test_write_version_list_includes_bundle_hash_when_provided(self, db_writer, temp_db_dir):
+        versions = [Version("0.150.0"), Version("0.149.0")]
+        db_writer.write_version_list(versions, {Version("0.150.0"): "hashA", Version("0.149.0"): "hashB"})
+
+        with open(temp_db_dir / "versions-index.json") as f:
+            data = json.load(f)
+
+        assert data["versions"][0]["bundle_hash"] == "hashA"
+        assert data["versions"][1]["bundle_hash"] == "hashB"
+
+    def test_write_version_list_omits_bundle_hash_when_absent(self, db_writer, temp_db_dir):
+        db_writer.write_version_list([Version("0.150.0"), Version("0.149.0")], {Version("0.150.0"): "hashA"})
+
+        with open(temp_db_dir / "versions-index.json") as f:
+            data = json.load(f)
+
+        assert data["versions"][0]["bundle_hash"] == "hashA"
+        assert "bundle_hash" not in data["versions"][1]
+
+
+class TestWriteVersionBundle:
+    def test_writes_bundle_and_returns_hash(self, db_writer, temp_db_dir, sample_components):
+        bundle_hash = db_writer.write_version_bundle(Version("0.150.0"), sample_components)
+
+        assert isinstance(bundle_hash, str)
+        assert len(bundle_hash) == 12
+        bundle_file = temp_db_dir / "bundles" / f"0.150.0-{bundle_hash}.json"
+        assert bundle_file.exists()
+        with open(bundle_file) as f:
+            assert json.load(f) == sample_components
+
+    def test_is_idempotent(self, db_writer, sample_components):
+        first = db_writer.write_version_bundle(Version("0.150.0"), sample_components)
+        files_after_first = db_writer.files_written
+        second = db_writer.write_version_bundle(Version("0.150.0"), sample_components)
+
+        assert first == second
+        assert db_writer.files_written == files_after_first
+
+    def test_empty_raises(self, db_writer):
+        with pytest.raises(ValueError, match="Bundle components cannot be empty"):
+            db_writer.write_version_bundle(Version("0.150.0"), [])
+
 
 class TestWriteIndex:
     def test_write_index_success(self, db_writer, sample_components, temp_db_dir):
@@ -204,12 +247,39 @@ class TestWriteIndex:
         index_components = data["components"]
         assert len(index_components) == 2
 
-        otlp = next(c for c in index_components if c["id"] == "contrib-receiver-otlp")
+        otlp = next(c for c in index_components if c["id"] == "contrib-otlp")
         assert otlp["display_name"] == "OTLP Receiver"
         assert otlp["stability"] == "beta"
         # heavy fields absent
         assert "repository" not in otlp
         assert "attributes" not in otlp
+
+
+class TestWriteEcosystemStats:
+    def test_writes_deterministic_file(self, db_writer, temp_db_dir):
+        """Serialization is exactly json.dumps(indent=2, sort_keys=True) with no trailing newline."""
+        stats = {"version_count": 7, "component_count": 312}
+
+        db_writer.write_ecosystem_stats(stats)
+
+        raw = (temp_db_dir / "ecosystem-stats.json").read_text(encoding="utf-8")
+        assert raw == json.dumps(stats, indent=2, sort_keys=True)
+        assert not raw.endswith("\n")
+
+    def test_writes_expected_shape(self, db_writer, temp_db_dir):
+        db_writer.write_ecosystem_stats({"version_count": 7, "component_count": 312})
+
+        with open(temp_db_dir / "ecosystem-stats.json") as f:
+            data = json.load(f)
+        assert data == {"version_count": 7, "component_count": 312}
+
+    def test_counts_bytes_in_stats(self, db_writer):
+        """The write increments files_written and total_bytes."""
+        db_writer.write_ecosystem_stats({"version_count": 1, "component_count": 1})
+
+        stats = db_writer.get_stats()
+        assert stats["files_written"] == 1
+        assert stats["total_bytes"] > 0
 
 
 class TestGetStats:
@@ -256,3 +326,67 @@ class TestIntegration:
 
         for comp_id, comp_hash in component_map.items():
             assert (temp_db_dir / "components" / comp_id / f"{comp_id}-{comp_hash}.json").exists()
+
+
+class TestWriteMarkdown:
+    def test_write_markdown_success(self, db_writer, temp_db_dir):
+        component_name = "otlpreceiver"
+        markdown_hash = "abc123def456"
+        content = "# OTLP Receiver"
+
+        result = db_writer.write_markdown(component_name, markdown_hash, content)
+
+        assert result is True
+        markdown_file = temp_db_dir / "markdown" / f"{component_name}-{markdown_hash}.md"
+        assert markdown_file.exists()
+        assert markdown_file.read_text(encoding="utf-8") == content
+
+        assert db_writer.files_written == 1
+        assert db_writer.total_bytes == len(content.encode("utf-8"))
+
+    def test_write_markdown_deduplication(self, db_writer, temp_db_dir, caplog):
+        caplog.set_level(logging.DEBUG)
+
+        component_name = "otlpreceiver"
+        markdown_hash = "abc123def456"
+        content = "# OTLP Receiver"
+
+        first_result = db_writer.write_markdown(component_name, markdown_hash, content)
+        assert first_result is True
+        assert db_writer.files_written == 1
+
+        second_result = db_writer.write_markdown(component_name, markdown_hash, content)
+
+        # Already existing counts as success too - the markdown is genuinely
+        # present on disk, which is the only thing the caller cares about.
+        assert second_result is True
+        assert db_writer.files_written == 1
+        assert "already exists, skipping write" in caplog.text
+
+    def test_write_markdown_sanitizes_dangerous_name(self, db_writer, temp_db_dir):
+        result = db_writer.write_markdown("../dangerous", "abc123def456", "safe content")
+
+        assert result is True
+        # The sanitizer allows dots (real component names use them) and replaces any
+        # character outside [a-zA-Z0-9._-] (including path separators) with "_", so
+        # ".." survives as literal characters. What matters is that "/" is
+        # removed, so the file can't escape temp_db_dir/markdown/. Matches
+        # collector-watcher's identical _sanitize_name behavior from the
+        # readme-discovery PR.
+        markdown_dir = temp_db_dir / "markdown"
+        files = list(markdown_dir.glob("*.md"))
+        assert len(files) == 1
+        assert files[0].parent == markdown_dir
+        assert files[0].name == ".._dangerous-abc123def456.md"
+
+    def test_write_markdown_error_handling(self, db_writer):
+        from unittest.mock import patch
+
+        with patch("builtins.open", side_effect=OSError("Disk full")):
+            with patch("explorer_db_builder.collector_database_writer.logger") as mock_logger:
+                result = db_writer.write_markdown("error-component", "hash", "content")
+
+                assert result is False
+                mock_logger.error.assert_called()
+                args, _ = mock_logger.error.call_args
+                assert "Failed to write markdown" in args[0]

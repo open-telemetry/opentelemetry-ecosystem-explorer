@@ -1,0 +1,36 @@
+component_owners:
+- onurtemizkan
+description: OpenTelemetry instrumentation for `mongodb` database client for MongoDB
+in_auto_instrumentations_node: true
+name: instrumentation-mongodb
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-mongodb'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-mongodb
+supported_versions:
+- package: mongodb
+  source: README.md
+  version_range: '>=3.3.0 <8'
+tested_versions:
+- mode: max-7
+  package: mongodb
+  range: '>=3.3 <4'
+  source: .tav.yml
+- exclude: 4.17.2
+  mode: max-5
+  package: mongodb
+  range: '>=4 <5'
+  source: .tav.yml
+- mode: max-5
+  package: mongodb
+  range: '>=5 <6'
+  source: .tav.yml
+- mode: max-7
+  package: mongodb
+  range: '>=6 <7'
+  source: .tav.yml
+- mode: max-7
+  package: mongodb
+  range: '>=7 <8'
+  source: .tav.yml
+version: 0.73.0

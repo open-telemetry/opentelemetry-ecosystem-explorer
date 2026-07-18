@@ -1,0 +1,13 @@
+component_owners:
+- jacksonweber
+- hectorhdzg
+description: OpenTelemetry instrumentation for Node.js `console`
+in_auto_instrumentations_node: false
+name: instrumentation-console
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-console'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-console
+supported_versions: []
+tested_versions: []
+version: 0.2.0

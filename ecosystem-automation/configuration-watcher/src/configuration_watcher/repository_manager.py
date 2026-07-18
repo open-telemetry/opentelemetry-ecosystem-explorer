@@ -18,7 +18,7 @@ import logging
 import subprocess
 from pathlib import Path
 
-from watcher_common.repository_manager import BaseRepositoryManager
+from watcher_common.repository_manager import _GIT, BaseRepositoryManager
 
 logger = logging.getLogger(__name__)
 
@@ -84,28 +84,28 @@ class RepositoryManager(BaseRepositoryManager):
         try:
             # Discard any local changes left from previous tag checkouts
             subprocess.run(
-                ["git", "checkout", "."],
+                [_GIT, "checkout", "."],
                 cwd=repo_path,
                 check=True,
                 capture_output=True,
                 text=True,
             )
             subprocess.run(
-                ["git", "checkout", "main"],
+                [_GIT, "checkout", "main"],
                 cwd=repo_path,
                 check=True,
                 capture_output=True,
                 text=True,
             )
             subprocess.run(
-                ["git", "pull", "--ff-only"],
+                [_GIT, "pull", "--ff-only"],
                 cwd=repo_path,
                 check=True,
                 capture_output=True,
                 text=True,
             )
             subprocess.run(
-                ["git", "fetch", "--tags"],
+                [_GIT, "fetch", "--tags"],
                 cwd=repo_path,
                 check=True,
                 capture_output=True,

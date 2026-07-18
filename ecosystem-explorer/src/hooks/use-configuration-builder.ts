@@ -53,7 +53,7 @@ import {
   validateAll as validateAllNodes,
 } from "@/lib/config-validation";
 
-const STORAGE_KEY = "otel-config-builder-state-v2";
+const STORAGE_KEY = "otel-config-builder-state-v3";
 
 export interface ConfigurationBuilderStateContextValue {
   state: ConfigurationBuilderState;
@@ -64,6 +64,8 @@ export interface ConfigurationBuilderActionsContextValue {
   setValueByPath: (path: Path, value: ConfigValue) => void;
   mergeDefaults: (entries: { path: Path; value: ConfigValue }[]) => void;
   setOverride: (module: string, status: "enabled" | "disabled" | "none") => void;
+  setCustomization: (module: string, status: "enabled" | "disabled" | "none") => void;
+  pruneInstrumentations: (validModules: readonly string[]) => void;
   setEnabled: (section: string, enabled: boolean) => void;
   selectPlugin: (path: string, pluginKey: string) => void;
   addListItem: (path: string) => void;
@@ -76,6 +78,7 @@ export interface ConfigurationBuilderActionsContextValue {
   validateField: (path: string) => string | null;
   validateAll: () => ValidationResult;
   clearValidationError: (path: string) => void;
+  setFieldError: (path: string, error: string) => void;
 }
 
 export const ConfigStateContext = createContext<ConfigurationBuilderStateContextValue | null>(null);
@@ -165,8 +168,20 @@ export function useConfigurationBuilderState(
     dispatch({ type: "SET_VALUE", path, value });
   }, []);
 
-  const setOverride = useCallback((module: string, status: "enabled" | "disabled" | "none") => {
-    dispatch({ type: "SET_OVERRIDE", module, status });
+  const setCustomization = useCallback(
+    (module: string, status: "enabled" | "disabled" | "none") => {
+      const path: Path = ["distribution", "javaagent", "instrumentation", module, "enabled"];
+      if (status === "none") {
+        dispatch({ type: "SET_VALUE", path, value: null });
+      } else {
+        dispatch({ type: "SET_VALUE", path, value: status === "enabled" });
+      }
+    },
+    []
+  );
+
+  const pruneInstrumentations = useCallback((validModules: readonly string[]) => {
+    dispatch({ type: "PRUNE_INSTRUMENTATIONS", validModules });
   }, []);
 
   const mergeDefaults = useCallback((entries: { path: Path; value: ConfigValue }[]) => {
@@ -297,12 +312,19 @@ export function useConfigurationBuilderState(
     dispatch({ type: "SET_FIELD_ERROR", path: pathKey, error: null });
   }, []);
 
+  const setFieldError = useCallback((path: string, error: string) => {
+    const pathKey = serializePath(parsePath(path));
+    dispatch({ type: "SET_FIELD_ERROR", path: pathKey, error });
+  }, []);
+
   const actions = useMemo(
     () => ({
       setValue,
       setValueByPath,
       mergeDefaults,
       setOverride,
+      setCustomization,
+      pruneInstrumentations,
       setEnabled,
       selectPlugin,
       addListItem,
@@ -315,6 +337,7 @@ export function useConfigurationBuilderState(
       validateField: validateFieldAction,
       validateAll: validateAllAction,
       clearValidationError,
+      setFieldError,
     }),
     // all callbacks are stable; resetToDefaults reads starter via ref
     // eslint-disable-next-line react-hooks/exhaustive-deps

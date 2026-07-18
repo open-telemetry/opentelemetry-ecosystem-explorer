@@ -17,12 +17,12 @@ import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 import { InstrumentationCard } from "./instrumentation-card";
-import type { InstrumentationData } from "@/types/javaagent";
+import type { InstrumentationListEntry } from "@/types/javaagent";
 import type { FilterState } from "./instrumentation-filter-bar";
 import { FILTER_STYLES } from "../styles/filter-styles";
 
 function renderCard(
-  instrumentation: InstrumentationData,
+  instrumentation: InstrumentationListEntry,
   activeFilters?: FilterState,
   version = "2.0.0"
 ) {
@@ -38,13 +38,16 @@ function renderCard(
 }
 
 describe("InstrumentationCard", () => {
-  const baseInstrumentation: InstrumentationData = {
+  const baseInstrumentation: InstrumentationListEntry = {
     name: "test-instrumentation",
     display_name: "Test Instrumentation",
     description: "A test instrumentation for testing purposes",
     scope: {
       name: "test",
     },
+    has_spans: false,
+    has_metrics: false,
+    _is_custom: false,
   };
 
   it("renders instrumentation display name", () => {
@@ -64,17 +67,16 @@ describe("InstrumentationCard", () => {
   });
 
   it("displays Agent badge when has_javaagent is true", () => {
-    const instrumentation: InstrumentationData = {
+    const instrumentation: InstrumentationListEntry = {
       ...baseInstrumentation,
       has_javaagent: true,
-      javaagent_target_versions: ["1.0.0", "2.0.0"],
     };
     renderCard(instrumentation);
     expect(screen.getByText("Agent")).toBeInTheDocument();
   });
 
   it("displays Library badge when library target versions exist", () => {
-    const instrumentation: InstrumentationData = {
+    const instrumentation: InstrumentationListEntry = {
       ...baseInstrumentation,
       has_standalone_library: true,
     };
@@ -83,10 +85,9 @@ describe("InstrumentationCard", () => {
   });
 
   it("displays both Agent and Library badges when both exist", () => {
-    const instrumentation: InstrumentationData = {
+    const instrumentation: InstrumentationListEntry = {
       ...baseInstrumentation,
       has_javaagent: true,
-      javaagent_target_versions: ["1.0.0"],
       has_standalone_library: true,
     };
     renderCard(instrumentation);
@@ -95,59 +96,28 @@ describe("InstrumentationCard", () => {
   });
 
   it("displays Spans badge when telemetry includes spans", () => {
-    const instrumentation: InstrumentationData = {
+    const instrumentation: InstrumentationListEntry = {
       ...baseInstrumentation,
-      telemetry: [
-        {
-          when: "always",
-          spans: [{ span_kind: "CLIENT" }],
-        },
-      ],
+      has_spans: true,
     };
     renderCard(instrumentation);
     expect(screen.getByText("Spans")).toBeInTheDocument();
   });
 
   it("displays Metrics badge when telemetry includes metrics", () => {
-    const instrumentation: InstrumentationData = {
+    const instrumentation: InstrumentationListEntry = {
       ...baseInstrumentation,
-      telemetry: [
-        {
-          when: "always",
-          metrics: [
-            {
-              name: "test.metric",
-              description: "Test metric",
-              data_type: "COUNTER",
-              instrument: "counter",
-              unit: "1",
-            },
-          ],
-        },
-      ],
+      has_metrics: true,
     };
     renderCard(instrumentation);
     expect(screen.getByText("Metrics")).toBeInTheDocument();
   });
 
   it("displays both Spans and Metrics badges when both exist", () => {
-    const instrumentation: InstrumentationData = {
+    const instrumentation: InstrumentationListEntry = {
       ...baseInstrumentation,
-      telemetry: [
-        {
-          when: "always",
-          spans: [{ span_kind: "CLIENT" }],
-          metrics: [
-            {
-              name: "test.metric",
-              description: "Test metric",
-              data_type: "COUNTER",
-              instrument: "counter",
-              unit: "1",
-            },
-          ],
-        },
-      ],
+      has_spans: true,
+      has_metrics: true,
     };
     renderCard(instrumentation);
     expect(screen.getByText("Spans")).toBeInTheDocument();
@@ -155,15 +125,16 @@ describe("InstrumentationCard", () => {
   });
 
   it("highlights Agent badge when javaagent filter is active", () => {
-    const instrumentation: InstrumentationData = {
+    const instrumentation: InstrumentationListEntry = {
       ...baseInstrumentation,
       has_javaagent: true,
-      javaagent_target_versions: ["1.0.0"],
     };
     const activeFilters: FilterState = {
       search: "",
       telemetry: new Set(),
       target: new Set(["javaagent"]),
+      semantic: [],
+      features: [],
     };
 
     renderCard(instrumentation, activeFilters);
@@ -173,7 +144,7 @@ describe("InstrumentationCard", () => {
   });
 
   it("highlights Library badge when library filter is active", () => {
-    const instrumentation: InstrumentationData = {
+    const instrumentation: InstrumentationListEntry = {
       ...baseInstrumentation,
       has_standalone_library: true,
     };
@@ -181,6 +152,8 @@ describe("InstrumentationCard", () => {
       search: "",
       telemetry: new Set(),
       target: new Set(["library"]),
+      semantic: [],
+      features: [],
     };
 
     renderCard(instrumentation, activeFilters);
@@ -190,14 +163,16 @@ describe("InstrumentationCard", () => {
   });
 
   it("highlights Spans badge when spans filter is active", () => {
-    const instrumentation: InstrumentationData = {
+    const instrumentation: InstrumentationListEntry = {
       ...baseInstrumentation,
-      telemetry: [{ when: "always", spans: [{ span_kind: "CLIENT" }] }],
+      has_spans: true,
     };
     const activeFilters: FilterState = {
       search: "",
       telemetry: new Set(["spans"]),
       target: new Set(),
+      semantic: [],
+      features: [],
     };
 
     renderCard(instrumentation, activeFilters);
@@ -207,27 +182,16 @@ describe("InstrumentationCard", () => {
   });
 
   it("highlights Metrics badge when metrics filter is active", () => {
-    const instrumentation: InstrumentationData = {
+    const instrumentation: InstrumentationListEntry = {
       ...baseInstrumentation,
-      telemetry: [
-        {
-          when: "always",
-          metrics: [
-            {
-              name: "test.metric",
-              description: "Test",
-              data_type: "COUNTER",
-              instrument: "counter",
-              unit: "1",
-            },
-          ],
-        },
-      ],
+      has_metrics: true,
     };
     const activeFilters: FilterState = {
       search: "",
       telemetry: new Set(["metrics"]),
       target: new Set(),
+      semantic: [],
+      features: [],
     };
 
     renderCard(instrumentation, activeFilters);
@@ -242,6 +206,9 @@ describe("InstrumentationCard", () => {
     const link = screen.getByRole("link", {
       name: "View details for Test Instrumentation",
     });
-    expect(link).toHaveAttribute("href", "/java-agent/instrumentation/2.0.0/test-instrumentation");
+    expect(link).toHaveAttribute(
+      "href",
+      "/java-agent/instrumentation/test-instrumentation?version=2.0.0"
+    );
   });
 });

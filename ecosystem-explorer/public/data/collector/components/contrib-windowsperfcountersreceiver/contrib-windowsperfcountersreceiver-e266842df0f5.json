@@ -1,0 +1,33 @@
+{
+  "description": "This receiver, for Windows only, captures the configured system, application, or custom performance counter data from the Windows registry using the [PDH interface](https://docs.microsoft.com/en-us/windows/win32/perfctrs/using-the-pdh-functions-to-consume-counter-data).",
+  "display_name": "Windows Performance Counters Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-windowsperfcountersreceiver",
+  "name": "windowsperfcountersreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "dashpole",
+        "alxbl",
+        "pjanotti"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    },
+    "unsupported_platforms": [
+      "darwin",
+      "linux"
+    ]
+  },
+  "type": "receiver"
+}

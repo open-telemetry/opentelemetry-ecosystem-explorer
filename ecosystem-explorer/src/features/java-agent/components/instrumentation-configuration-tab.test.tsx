@@ -60,7 +60,7 @@ const exampleConfig: Configuration = {
   description: "Example field.",
   type: "string",
   default: "x",
-  example: ["foo", "bar"],
+  examples: ["foo", "bar"],
 };
 
 // Mirrors the real JDBC instrumentation dataset (no declarative_name on any
@@ -139,14 +139,14 @@ describe("InstrumentationConfigurationTab", () => {
     expect(screen.getByText("false")).toBeInTheDocument();
   });
 
-  it("renders an Examples section when example array is non-empty", () => {
+  it("renders an Examples section when the examples array is non-empty", () => {
     render(<InstrumentationConfigurationTab configurations={[exampleConfig]} />);
     expect(screen.getByText("Examples:")).toBeInTheDocument();
     expect(screen.getByText("foo")).toBeInTheDocument();
     expect(screen.getByText("bar")).toBeInTheDocument();
   });
 
-  it("does not render Examples section when example is missing", () => {
+  it("does not render Examples section when examples is missing", () => {
     render(<InstrumentationConfigurationTab configurations={[baseConfig]} />);
     expect(screen.queryByText("Examples:")).not.toBeInTheDocument();
   });

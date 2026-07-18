@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/projects/frontmatter.schema.json",
+  "title": "Project document frontmatter",
+  "description": "YAML frontmatter shape for markdown files under projects/<issue-number>-<slug>/. Validates planning, audit, brief, roadmap, and index documents tied to a single GitHub issue. Top-level meta files (e.g., projects/_index.md) are intentionally outside this schema's scope — they don't carry issue/phase/status fields because they aren't tied to any one initiative.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["title", "issue", "type", "phase", "status", "last_updated"],
+  "properties": {
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable title. Should be the same as or a close paraphrase of the H1 in the document body."
+    },
+    "issue": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "GitHub issue number that tracks this initiative. Must match the parent folder name (e.g., projects/84-ui-ux-design/ → issue: 84)."
+    },
+    "type": {
+      "type": "string",
+      "enum": ["plan", "audit", "brief", "roadmap", "index"],
+      "description": "Document kind. plan = forward-looking work plan for a phase. audit = current-state analysis or codebase delta. brief = design rationale or direction document. roadmap = rolling state-of-work index, updated continuously (one per folder, conventionally NEXT-STEPS.md). index = stable folder landing page describing what lives here and where to start (one per folder, conventionally _index.md)."
+    },
+    "phase": {
+      "oneOf": [
+        {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Numbered work phase (e.g., 1 for foundation, 2-5 for pages)."
+        },
+        {
+          "type": "string",
+          "const": "meta",
+          "description": "Cross-phase document (roadmap, brief) that doesn't belong to a single phase."
+        }
+      ],
+      "description": "Which phase of the initiative this document covers. Use \"meta\" for documents that span phases."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["planning", "in-progress", "complete", "archived"],
+      "description": "Status of the work the document describes (not the document itself). planning = not started. in-progress = PRs in flight. complete = all relevant PRs merged. archived = superseded."
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "description": "ISO 8601 date (YYYY-MM-DD) of the last meaningful edit. Bump when content changes substantively, not for typo fixes."
+    }
+  },
+  "examples": [
+    {
+      "title": "Phase 1 — Foundation",
+      "issue": 84,
+      "type": "plan",
+      "phase": 1,
+      "status": "planning",
+      "last_updated": "2026-05-06"
+    },
+    {
+      "title": "Roadmap — explorer redesign",
+      "issue": 84,
+      "type": "roadmap",
+      "phase": "meta",
+      "status": "planning",
+      "last_updated": "2026-05-06"
+    },
+    {
+      "title": "v1 design proposal — Ecosystem Explorer",
+      "issue": 84,
+      "type": "brief",
+      "phase": "meta",
+      "status": "complete",
+      "last_updated": "2026-05-06"
+    }
+  ]
+}

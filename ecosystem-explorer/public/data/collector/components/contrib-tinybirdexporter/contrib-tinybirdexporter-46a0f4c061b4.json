@@ -1,0 +1,30 @@
+{
+  "description": null,
+  "display_name": "Tinybird Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-tinybirdexporter",
+  "name": "tinybirdexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "mx-psi",
+        "jordivilaseca",
+        "MoreraAlejandro"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "exporter"
+}

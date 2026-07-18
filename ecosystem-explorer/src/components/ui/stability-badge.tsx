@@ -26,6 +26,6 @@ interface StabilityBadgeProps {
 export function StabilityBadge({ stability }: StabilityBadgeProps): JSX.Element | null {
   if (stability !== "development") return null;
   return (
-    <span className="rounded-full bg-yellow-500/15 px-2 py-0.5 text-xs text-yellow-500">dev</span>
+    <span className="rounded-md bg-yellow-500/15 px-2 py-0.5 text-xs text-yellow-500">dev</span>
   );
 }

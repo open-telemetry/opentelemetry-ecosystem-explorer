@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { SchemaRenderer } from "./schema-renderer";
-import type { TextInputNode } from "@/types/configuration";
+import { StarterPathsContext } from "./configuration-ui-context";
 
 vi.mock("./controls/text-input-control", () => ({
-  TextInputControl: ({ node }: { node: TextInputNode }) => <span>text:{node.key}</span>,
+  TextInputControl: ({ node }: { node: { key: string } }) => <span>text:{node.key}</span>,
 }));
 
 vi.mock("@/hooks/use-configuration-builder", () => ({
@@ -36,7 +36,23 @@ vi.mock("@/hooks/use-configuration-builder", () => ({
 }));
 
 describe("SchemaRenderer", () => {
-  it("dispatches leaves to their control component", () => {
+  it("at depth 0 dispatches a leaf to its control component without a wrapper", () => {
+    render(
+      <SchemaRenderer
+        node={{
+          controlType: "text_input",
+          key: "endpoint",
+          label: "Endpoint",
+          path: "endpoint",
+        }}
+        depth={0}
+        path="endpoint"
+      />
+    );
+    expect(screen.getByText("text:endpoint")).toBeInTheDocument();
+  });
+
+  it("at depth >= 1 wraps a leaf in a chevron row that hides the control until expanded", () => {
     render(
       <SchemaRenderer
         node={{
@@ -48,6 +64,27 @@ describe("SchemaRenderer", () => {
         depth={1}
         path="endpoint"
       />
+    );
+    expect(screen.queryByText("text:endpoint")).not.toBeInTheDocument();
+    expect(screen.getByText("Endpoint")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /Expand Endpoint/ }));
+    expect(screen.getByText("text:endpoint")).toBeInTheDocument();
+  });
+
+  it("pre-expands a leaf when its path is in StarterPathsContext", () => {
+    render(
+      <StarterPathsContext.Provider value={new Set(["endpoint"])}>
+        <SchemaRenderer
+          node={{
+            controlType: "text_input",
+            key: "endpoint",
+            label: "Endpoint",
+            path: "endpoint",
+          }}
+          depth={1}
+          path="endpoint"
+        />
+      </StarterPathsContext.Provider>
     );
     expect(screen.getByText("text:endpoint")).toBeInTheDocument();
   });

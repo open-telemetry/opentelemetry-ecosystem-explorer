@@ -15,10 +15,11 @@
 """Tests for version detector."""
 
 from pathlib import Path
+from subprocess import CalledProcessError
 
-import git
 import pytest
 from semantic_version import Version
+from watcher_common.testing import git_commit, init_repo, run_git
 from watcher_common.version_detector import VersionDetector
 
 
@@ -27,37 +28,37 @@ def temp_git_repo(tmp_path):
     """Create a temporary git repository with some version tags."""
     repo_path = tmp_path / "test_repo"
     repo_path.mkdir()
-
-    repo = git.Repo.init(repo_path)
+    init_repo(repo_path)
 
     test_file = repo_path / "test.txt"
+
     test_file.write_text("initial content")
-    repo.index.add(["test.txt"])
-    repo.index.commit("Initial commit")
+    run_git(repo_path, "add", "test.txt")
+    git_commit(repo_path, "Initial commit")
 
     try:
-        repo.git.checkout("-b", "main")
-    except git.exc.GitCommandError:
-        repo.git.checkout("main")
+        run_git(repo_path, "checkout", "-b", "main")
+    except CalledProcessError:
+        run_git(repo_path, "checkout", "main")
 
-    repo.create_tag("v0.3.0")
+    run_git(repo_path, "tag", "v0.3.0")
 
     test_file.write_text("update 1")
-    repo.index.add(["test.txt"])
-    repo.index.commit("Update 1")
-    repo.create_tag("v0.4.0")
+    run_git(repo_path, "add", "test.txt")
+    git_commit(repo_path, "Update 1")
+    run_git(repo_path, "tag", "v0.4.0")
 
     test_file.write_text("update 2")
-    repo.index.add(["test.txt"])
-    repo.index.commit("Update 2")
-    repo.create_tag("v1.0.0")
+    run_git(repo_path, "add", "test.txt")
+    git_commit(repo_path, "Update 2")
+    run_git(repo_path, "tag", "v1.0.0")
 
     test_file.write_text("update 3")
-    repo.index.add(["test.txt"])
-    repo.index.commit("Update 3")
-    repo.create_tag("v1.0.1-SNAPSHOT")
+    run_git(repo_path, "add", "test.txt")
+    git_commit(repo_path, "Update 3")
+    run_git(repo_path, "tag", "v1.0.1-SNAPSHOT")
 
-    repo.create_tag("not-a-version")
+    run_git(repo_path, "tag", "not-a-version")
 
     return repo_path
 
@@ -67,18 +68,17 @@ def empty_git_repo(tmp_path):
     """Create an empty git repository with no tags."""
     repo_path = tmp_path / "empty_repo"
     repo_path.mkdir()
-
-    repo = git.Repo.init(repo_path)
+    init_repo(repo_path)
 
     test_file = repo_path / "test.txt"
     test_file.write_text("initial")
-    repo.index.add(["test.txt"])
-    repo.index.commit("Initial commit")
+    run_git(repo_path, "add", "test.txt")
+    git_commit(repo_path, "Initial commit")
 
     try:
-        repo.git.checkout("-b", "main")
-    except git.exc.GitCommandError:
-        repo.git.checkout("main")
+        run_git(repo_path, "checkout", "-b", "main")
+    except CalledProcessError:
+        run_git(repo_path, "checkout", "main")
 
     return repo_path
 
@@ -87,7 +87,6 @@ class TestVersionDetector:
     def test_init_valid_path(self, temp_git_repo):
         detector = VersionDetector(temp_git_repo)
         assert detector.repo_path == Path(temp_git_repo)
-        assert detector.repo is not None
 
     def test_init_invalid_path(self, tmp_path):
         invalid_path = tmp_path / "nonexistent"
@@ -113,7 +112,10 @@ class TestVersionDetector:
 
         detector.checkout_version(version)
 
-        assert detector.repo.head.commit == detector.repo.tags["v0.4.0"].commit
+        # Verify HEAD points to the same commit as the tag
+        head_sha = run_git(temp_git_repo, "rev-parse", "HEAD")
+        tag_sha = run_git(temp_git_repo, "rev-list", "-n", "1", "v0.4.0")
+        assert head_sha == tag_sha
 
     def test_checkout_version_invalid(self, temp_git_repo):
         detector = VersionDetector(temp_git_repo)
@@ -128,7 +130,7 @@ class TestVersionDetector:
         detector.checkout_version(Version("0.4.0"))
         detector.checkout_main()
 
-        current_branch = detector.repo.active_branch.name
+        current_branch = run_git(temp_git_repo, "branch", "--show-current")
         assert current_branch == "main"
 
     def test_determine_next_snapshot_version(self, temp_git_repo):

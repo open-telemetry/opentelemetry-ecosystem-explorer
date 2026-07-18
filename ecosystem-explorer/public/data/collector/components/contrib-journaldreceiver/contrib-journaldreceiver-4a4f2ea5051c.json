@@ -1,0 +1,36 @@
+{
+  "description": "The Journald Receiver parses Journald events from systemd journal.",
+  "display_name": "Journald Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-journaldreceiver",
+  "name": "journaldreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "belimawr",
+        "namco1992"
+      ],
+      "emeritus": [
+        "djaglowski",
+        "sumo-drosiek"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "logs"
+      ]
+    },
+    "unsupported_platforms": [
+      "darwin",
+      "windows"
+    ]
+  },
+  "type": "receiver"
+}

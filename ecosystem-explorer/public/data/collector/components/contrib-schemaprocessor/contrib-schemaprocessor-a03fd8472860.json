@@ -1,0 +1,45 @@
+{
+  "attributes": {
+    "from_schema_url": {
+      "description": "The schema URL the signal arrived with",
+      "type": "string"
+    },
+    "migration_from_schema_url": {
+      "description": "The migration from version boundary (only present when migration is active)",
+      "type": "string"
+    },
+    "to_schema_url": {
+      "description": "The target schema URL the signal was translated to",
+      "type": "string"
+    }
+  },
+  "description": null,
+  "display_name": "Schema Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-schemaprocessor",
+  "name": "schemaprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "MovieStoreGuy",
+        "ankitpatel96",
+        "dineshg13",
+        "MikeGoldsmith"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "processor"
+}

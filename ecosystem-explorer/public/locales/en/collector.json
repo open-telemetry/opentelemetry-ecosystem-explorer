@@ -1,0 +1,338 @@
+{
+  "landingV1": {
+    "hero": {
+      "eyebrow": "Infrastructure · Vendor-agnostic agent",
+      "lead": "Receive, process, and export telemetry data. A vendor-agnostic agent for ingesting, processing, and exporting metrics, traces, and logs.",
+      "cta": {
+        "browse": "Browse components",
+        "overview": "Read overview",
+        "github": "GitHub"
+      }
+    },
+    "pipeline": {
+      "title": "Pipeline anatomy",
+      "lead": "A Collector pipeline is composed of receivers, processors, exporters, connectors, and extensions. Click any stage to filter the components list."
+    },
+    "stages": {
+      "receiver": { "label": "Receivers", "description": "Ingest data from sources" },
+      "processor": { "label": "Processors", "description": "Transform & enrich data" },
+      "exporter": { "label": "Exporters", "description": "Send data to backends" },
+      "connector": { "label": "Connectors", "description": "Bridge between pipelines" },
+      "extension": { "label": "Extensions", "description": "Auxiliary capabilities" }
+    },
+    "quickEntries": {
+      "most-used": {
+        "title": "Most-used components",
+        "description": "Receivers, processors, and exporters most commonly deployed."
+      },
+      "core-vs-contrib": {
+        "title": "Core vs. Contrib",
+        "description": "Compare the core distribution against the contrib add-ons."
+      },
+      "diff": {
+        "title": "Diff across versions",
+        "description": "See what changed between two Collector releases."
+      }
+    }
+  },
+  "listV1": {
+    "facets": {
+      "panel": {
+        "label": "Filters",
+        "close": "Close filters"
+      },
+      "search": {
+        "title": "Search",
+        "placeholder": "Search name or description…"
+      },
+      "type": {
+        "title": "Type",
+        "options": {
+          "receiver": "Receiver",
+          "processor": "Processor",
+          "exporter": "Exporter",
+          "connector": "Connector",
+          "extension": "Extension"
+        }
+      },
+      "signal": {
+        "title": "Signal",
+        "options": {
+          "traces": "Traces",
+          "metrics": "Metrics",
+          "logs": "Logs",
+          "baggage": "Baggage"
+        }
+      },
+      "stability": {
+        "title": "Stability",
+        "options": {
+          "stable": "Stable",
+          "beta": "Beta",
+          "alpha": "Alpha",
+          "development": "Development",
+          "deprecated": "Deprecated",
+          "unmaintained": "Unmaintained"
+        }
+      },
+      "distribution": {
+        "title": "Distribution",
+        "options": {
+          "core": "Core",
+          "contrib": "Contrib"
+        }
+      },
+      "version": {
+        "title": "Version",
+        "latest": "Latest"
+      }
+    }
+  },
+  "page": {
+    "title": "OpenTelemetry Collector",
+    "description": "A vendor-agnostic implementation for receiving, processing, and exporting telemetry data."
+  },
+  "header": {
+    "title": "Collector",
+    "titleAccent": "Components",
+    "description": "Navigate the OpenTelemetry Collector ecosystem. Discover receivers, processors, exporters, and extensions across different distributions.",
+    "comingSoon": "We're currently building the Collector component explorer. Stay tuned for a comprehensive view of receivers, processors, and more!"
+  },
+  "filters": {
+    "search": {
+      "label": "Search",
+      "placeholder": "Filter by name or description..."
+    },
+    "type": {
+      "label": "Type",
+      "all": "All Types",
+      "receiver": "Receivers",
+      "processor": "Processors",
+      "exporter": "Exporters",
+      "extension": "Extensions",
+      "connector": "Connectors"
+    },
+    "version": {
+      "label": "Version",
+      "latest": "(latest)"
+    },
+    "distribution": {
+      "label": "Distribution",
+      "all": "All Distributions",
+      "core": "Core",
+      "contrib": "Contrib"
+    },
+    "stability": {
+      "label": "Stability",
+      "all": "All",
+      "stable": "Stable",
+      "beta": "Beta",
+      "alpha": "Alpha",
+      "development": "Development",
+      "deprecated": "Deprecated",
+      "unmaintained": "Unmaintained"
+    },
+    "signal": {
+      "label": "Telemetry"
+    }
+  },
+  "results": {
+    "showingCount_one": "Showing {{count}} component",
+    "showingCount_other": "Showing {{count}} components"
+  },
+  "card": {
+    "defaultDescription": "Browse technical details and configuration options for this component.",
+    "empty": {
+      "title": "No components found",
+      "description": "We couldn't find any components matching your search criteria.",
+      "clearFilters": "Clear all filters"
+    },
+    "badges": {
+      "metrics": {
+        "label": "Metrics",
+        "tooltip": "Produces metric telemetry for monitoring.",
+        "ariaLabel": "Has metric telemetry"
+      },
+      "traces": {
+        "label": "Traces",
+        "tooltip": "Produces trace telemetry for distributed tracing.",
+        "ariaLabel": "Has trace telemetry"
+      },
+      "logs": {
+        "label": "Logs",
+        "tooltip": "Produces log telemetry.",
+        "ariaLabel": "Has log telemetry"
+      },
+      "profiles": {
+        "label": "Profiles",
+        "tooltip": "Produces profile telemetry.",
+        "ariaLabel": "Has profile telemetry"
+      }
+    }
+  },
+  "states": {
+    "loading": "Loading components...",
+    "error": {
+      "title": "Error loading data",
+      "description": "Please try refreshing the page."
+    }
+  },
+  "detail": {
+    "loading": {
+      "title": "Loading component...",
+      "description": "This may take a moment"
+    },
+    "error": {
+      "title": "Error loading component",
+      "fallback": "Component not found",
+      "goBack": "Go back"
+    },
+    "tabs": {
+      "details": "Details",
+      "stability": "Stability",
+      "telemetry": "Telemetry"
+    },
+    "sections": {
+      "componentInfo": "Component Info",
+      "linksResources": "Links & Resources",
+      "stabilityLevels": "Stability Levels",
+      "stabilityLegend": "Stability Legend",
+      "distributionAvailability": "Distribution Availability"
+    },
+    "labels": {
+      "type": "Type",
+      "version": "Version",
+      "distribution": "Distribution"
+    },
+    "links": {
+      "sourceCode": "Source Code",
+      "viewOnGithub": "View on GitHub",
+      "viewDocumentation": "View Documentation"
+    },
+    "typeDescriptions": {
+      "receiver": "Receivers collect telemetry data from various sources and formats.",
+      "processor": "Processors transform, filter, or enrich telemetry data between receivers and exporters.",
+      "exporter": "Exporters send telemetry data to one or more backends or destinations.",
+      "extension": "Extensions provide additional capabilities to the collector without processing telemetry data.",
+      "connector": "Connectors act as both an exporter and a receiver, joining two pipelines together."
+    },
+    "stabilityLabels": {
+      "alpha": "Alpha",
+      "beta": "Beta",
+      "stable": "Stable",
+      "deprecated": "Deprecated",
+      "unmaintained": "Unmaintained",
+      "development": "In Development"
+    },
+    "stabilityDescriptions": {
+      "development": "Not all pieces of the component are in place yet. The component should not be used in production.",
+      "alpha": "The component is ready to be used for limited non-critical workloads and the authors of this component would welcome your feedback.",
+      "beta": "Same as Alpha, but the configuration options are deemed stable. Suitable for broader usage.",
+      "stable": "The component is ready for general availability. Breaking changes are not expected to happen without prior notice.",
+      "deprecated": "The component is planned to be removed in a future version and no further support will be provided.",
+      "unmaintained": "The component is no longer actively maintained. New issues will likely not be worked on."
+    },
+    "distributions": {
+      "packaged": "This component is packaged within the following distributions:",
+      "noInfo": "No distribution information is currently available for this component.",
+      "contrib": {
+        "name": "OpenTelemetry Collector Contrib",
+        "desc": "The community-driven distribution containing third-party plugins, specialized receivers, and experimental components."
+      },
+      "core": {
+        "name": "OpenTelemetry Collector Core",
+        "desc": "The core distribution containing only the most essential, officially supported telemetry components."
+      },
+      "k8s": {
+        "name": "OpenTelemetry Operator for Kubernetes",
+        "desc": "The official Kubernetes Operator designed to manage and provision the OpenTelemetry Collector."
+      },
+      "generic": {
+        "desc": "A specialized OpenTelemetry distribution."
+      }
+    },
+    "noStability": "No stability information available for this version.",
+    "telemetryTab": {
+      "metricsHeader": "Metrics",
+      "expandAll": "Expand All",
+      "collapseAll": "Collapse All",
+      "unit": "Unit",
+      "attributes": "Attributes",
+      "aggregation": "Aggregation",
+      "monotonic": "Monotonic",
+      "enabled": "Enabled",
+      "disabled": "Disabled (opt-in)",
+      "empty": "No telemetry metrics are defined for this component.",
+      "metricType": {
+        "sum": "Sum",
+        "gauge": "Gauge",
+        "histogram": "Histogram"
+      },
+      "table": {
+        "key": "Key",
+        "type": "Type",
+        "description": "Description"
+      }
+    }
+  },
+  "explore": {
+    "componentTypes": {
+      "heading": "Component Types",
+      "latestVersion": "Latest data version",
+      "types": {
+        "receiver": {
+          "label": "Receiver",
+          "description": "Collect telemetry data from various sources including OTLP, Prometheus, Jaeger, and many others"
+        },
+        "processor": {
+          "label": "Processor",
+          "description": "Transform, filter, batch, and enrich telemetry data before export"
+        },
+        "exporter": {
+          "label": "Exporter",
+          "description": "Send telemetry data to observability backends and storage systems"
+        },
+        "extension": {
+          "label": "Extension",
+          "description": "Provide additional capabilities like health checks, profiling, and authentication"
+        },
+        "connector": {
+          "label": "Connector",
+          "description": "Connect multiple pipelines and enable data flow between signal types"
+        }
+      }
+    },
+    "distributions": {
+      "heading": "Distributions",
+      "componentCount_one": "{{formattedCount}} component",
+      "componentCount_other": "{{formattedCount}} components",
+      "items": {
+        "core": {
+          "description": "Officially maintained components with stable APIs. Minimal dependencies, production-ready.",
+          "button": "View Core Components"
+        },
+        "contrib": {
+          "description": "Community-contributed components. May have varying stability levels. Broader ecosystem coverage.",
+          "button": "View Contrib Components"
+        }
+      }
+    },
+    "summary": {
+      "ariaLabel": "Collector summary statistics",
+      "components": "Components",
+      "types": "Types"
+    },
+    "resources": {
+      "heading": "Resources",
+      "items": {
+        "officialDocs": "Official Documentation",
+        "gettingStarted": "Getting Started Guide",
+        "configReference": "Configuration Reference",
+        "githubCore": "GitHub (Core)",
+        "githubContrib": "GitHub (Contrib)"
+      }
+    },
+    "loading": "Loading Collector ecosystem data...",
+    "error": "Error loading Collector data"
+  }
+}

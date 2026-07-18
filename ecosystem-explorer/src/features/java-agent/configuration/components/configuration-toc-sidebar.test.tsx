@@ -81,32 +81,32 @@ describe("ConfigurationTocSidebar", () => {
   it("does not render the search input or status section on the SDK tab", () => {
     renderSidebar();
     expect(screen.queryByPlaceholderText(/Search instrumentations/i)).toBeNull();
-    expect(screen.queryByRole("button", { name: /Overridden/i })).toBeNull();
+    expect(screen.queryByRole("button", { name: /Customized/i })).toBeNull();
   });
 
   describe("instrumentation tab", () => {
-    it("renders search input + TOC and hides Status when overrideCount === 0", () => {
+    it("renders search input + TOC and hides Status when customizationCount === 0", () => {
       renderSidebar({
         activeTab: "instrumentation",
         sections: instrumentationSections,
         activeKey: "general",
-        overrideCount: 0,
+        customizationCount: 0,
       });
       expect(screen.getByPlaceholderText(/Search instrumentations/i)).toBeInTheDocument();
-      expect(screen.queryByRole("button", { name: /Overridden/i })).toBeNull();
+      expect(screen.queryByRole("button", { name: /Customized/i })).toBeNull();
       const nav = screen.getByRole("navigation", { name: "Configuration sections" });
       expect(within(nav).getByRole("button", { name: "General settings" })).toBeInTheDocument();
       expect(within(nav).getByRole("button", { name: "Instrumentations" })).toBeInTheDocument();
     });
 
-    it("renders the Overridden chip with the count when overrideCount > 0", () => {
+    it("renders the Customized chip with the count when customizationCount > 0", () => {
       renderSidebar({
         activeTab: "instrumentation",
         sections: instrumentationSections,
         activeKey: "general",
-        overrideCount: 1,
+        customizationCount: 1,
       });
-      const chip = screen.getByRole("button", { name: /Overridden/i });
+      const chip = screen.getByRole("button", { name: /Customized/i });
       expect(chip).toBeInTheDocument();
       expect(chip).toHaveTextContent("1");
       expect(chip).toHaveAttribute("aria-pressed", "false");
@@ -119,7 +119,7 @@ describe("ConfigurationTocSidebar", () => {
         activeTab: "instrumentation",
         sections: instrumentationSections,
         activeKey: "general",
-        overrideCount: 0,
+        customizationCount: 0,
         search: "",
         onSearchChange,
       });
@@ -127,19 +127,19 @@ describe("ConfigurationTocSidebar", () => {
       expect(onSearchChange).toHaveBeenCalledWith("c");
     });
 
-    it("toggles statusFilter from 'all' to 'overridden' when the chip is clicked", async () => {
+    it("toggles statusFilter from 'all' to 'customized' when the chip is clicked", async () => {
       const onStatusFilterChange = vi.fn();
       const user = userEvent.setup();
       renderSidebar({
         activeTab: "instrumentation",
         sections: instrumentationSections,
         activeKey: "general",
-        overrideCount: 2,
+        customizationCount: 2,
         statusFilter: "all",
         onStatusFilterChange,
       });
-      await user.click(screen.getByRole("button", { name: /Overridden/i }));
-      expect(onStatusFilterChange).toHaveBeenCalledWith("overridden");
+      await user.click(screen.getByRole("button", { name: /Customized/i }));
+      expect(onStatusFilterChange).toHaveBeenCalledWith("customized");
     });
 
     it("toggles statusFilter back to 'all' when the chip is clicked while active", async () => {
@@ -149,11 +149,11 @@ describe("ConfigurationTocSidebar", () => {
         activeTab: "instrumentation",
         sections: instrumentationSections,
         activeKey: "general",
-        overrideCount: 2,
-        statusFilter: "overridden",
+        customizationCount: 2,
+        statusFilter: "customized",
         onStatusFilterChange,
       });
-      const chip = screen.getByRole("button", { name: /Overridden/i });
+      const chip = screen.getByRole("button", { name: /Customized/i });
       expect(chip).toHaveAttribute("aria-pressed", "true");
       await user.click(chip);
       expect(onStatusFilterChange).toHaveBeenCalledWith("all");

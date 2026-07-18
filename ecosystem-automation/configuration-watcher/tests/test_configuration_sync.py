@@ -14,11 +14,13 @@
 #
 """Tests for configuration sync."""
 
-import git
+from subprocess import CalledProcessError
+
 import pytest
 from configuration_watcher.configuration_sync import ConfigurationSync
 from configuration_watcher.inventory_manager import InventoryManager
 from semantic_version import Version
+from watcher_common.testing import init_repo, run_git
 
 
 @pytest.fixture
@@ -26,32 +28,32 @@ def temp_git_repo(tmp_path):
     """Create a temporary git repo with schema files and version tags."""
     repo_path = tmp_path / "config_repo"
     repo_path.mkdir()
+    init_repo(repo_path)
 
     schema_dir = repo_path / "schema"
     schema_dir.mkdir()
     (schema_dir / "common.yaml").write_text("common: true")
     (schema_dir / "tracer_provider.yaml").write_text("tracer: true")
 
-    repo = git.Repo.init(repo_path)
-    repo.index.add(["schema/common.yaml", "schema/tracer_provider.yaml"])
-    repo.index.commit("Initial commit")
+    run_git(repo_path, "add", "schema/common.yaml", "schema/tracer_provider.yaml")
+    run_git(repo_path, "commit", "-m", "Initial commit")
 
     try:
-        repo.git.checkout("-b", "main")
-    except git.exc.GitCommandError:
-        repo.git.checkout("main")
+        run_git(repo_path, "checkout", "-b", "main")
+    except CalledProcessError:
+        run_git(repo_path, "checkout", "main")
 
-    repo.create_tag("v0.3.0")
+    run_git(repo_path, "tag", "v0.3.0")
 
     (schema_dir / "meter_provider.yaml").write_text("meter: true")
-    repo.index.add(["schema/meter_provider.yaml"])
-    repo.index.commit("Add meter provider")
-    repo.create_tag("v0.4.0")
+    run_git(repo_path, "add", "schema/meter_provider.yaml")
+    run_git(repo_path, "commit", "-m", "Add meter provider")
+    run_git(repo_path, "tag", "v0.4.0")
 
     (schema_dir / "logger_provider.yaml").write_text("logger: true")
-    repo.index.add(["schema/logger_provider.yaml"])
-    repo.index.commit("Add logger provider")
-    repo.create_tag("v1.0.0")
+    run_git(repo_path, "add", "schema/logger_provider.yaml")
+    run_git(repo_path, "commit", "-m", "Add logger provider")
+    run_git(repo_path, "tag", "v1.0.0")
 
     return repo_path
 
@@ -144,3 +146,35 @@ class TestConfigurationSync:
         result = config_sync.backfill()
 
         assert len(result["versions_processed"]) >= 1
+
+
+class TestEmptyCopySafety:
+    """A copy that yields zero schema files must fail loudly and never destroy existing data."""
+
+    def test_process_latest_release_raises_on_empty_copy(self, config_sync, monkeypatch):
+        monkeypatch.setattr(config_sync.schema_copier, "copy_schemas", lambda *a, **k: [])
+
+        with pytest.raises(ValueError):
+            config_sync.process_latest_release()
+
+    def test_update_snapshot_preserves_existing_on_empty_copy(self, config_sync, monkeypatch):
+        config_sync.update_snapshot()
+        existing = config_sync.inventory_manager.list_snapshot_versions()
+        assert existing
+
+        monkeypatch.setattr(config_sync.schema_copier, "copy_schemas", lambda *a, **k: [])
+        with pytest.raises(ValueError):
+            config_sync.update_snapshot()
+
+        for snapshot in existing:
+            assert config_sync.inventory_manager.version_exists(snapshot)
+
+    def test_backfill_preserves_existing_version_on_empty_copy(self, config_sync, monkeypatch):
+        config_sync.sync()
+        assert config_sync.inventory_manager.version_exists(Version("1.0.0"))
+
+        monkeypatch.setattr(config_sync.schema_copier, "copy_schemas", lambda *a, **k: [])
+        with pytest.raises(ValueError):
+            config_sync.backfill([Version("1.0.0")])
+
+        assert config_sync.inventory_manager.version_exists(Version("1.0.0"))

@@ -1,0 +1,27 @@
+component_owners:
+- seemk
+description: OpenTelemetry instrumentation for `pino` logger
+in_auto_instrumentations_node: true
+name: instrumentation-pino
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-pino'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-pino
+supported_versions:
+- package: pino
+  source: README.md
+  version_range: '>=5.14.0 <11'
+tested_versions:
+- mode: latest-minors
+  package: pino
+  range: '>=10.0.0 <11'
+  source: .tav.yml
+- mode: max-3
+  package: pino
+  range: '>=5.14.0 <9'
+  source: .tav.yml
+- mode: max-5
+  package: pino
+  range: '>=9.0.0 <10'
+  source: .tav.yml
+version: 0.66.0

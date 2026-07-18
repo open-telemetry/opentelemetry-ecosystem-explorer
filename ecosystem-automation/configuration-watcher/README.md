@@ -49,7 +49,8 @@ uv run configuration-watcher --backfill --versions "1.0.0,0.4.0"
 
 - `--backfill` - Enable backfill mode (regenerates existing versions)
 - `--versions VERSION_LIST` - Comma-separated list of versions (e.g., "1.0.0,0.4.0")
-- `--inventory-dir PATH` - Custom path to inventory directory (default: ecosystem-registry/configuration)
+- `--inventory-dir PATH` - Custom path to inventory directory (default:
+  ecosystem-registry/configuration)
 
 ## Development
 

@@ -130,6 +130,7 @@ def test_client_with_auth_token(mock_session_class):
 
 # --- resolve_ref_to_sha ---
 
+
 @patch("java_instrumentation_watcher.java_instrumentation_client.requests.Session")
 def test_resolve_ref_to_sha_success(mock_session_class):
     mock_session = Mock()
@@ -180,6 +181,7 @@ def test_resolve_ref_to_sha_missing_key(mock_session_class):
 
 
 # --- fetch_tree ---
+
 
 @patch("java_instrumentation_watcher.java_instrumentation_client.requests.Session")
 def test_fetch_tree_success(mock_session_class):
@@ -235,6 +237,7 @@ def test_fetch_tree_http_error(mock_session_class):
 
 # --- fetch_raw_file ---
 
+
 @patch("java_instrumentation_watcher.java_instrumentation_client.requests.Session")
 def test_fetch_raw_file_success(mock_session_class):
     mock_session = Mock()
@@ -270,6 +273,7 @@ def test_fetch_raw_file_http_error(mock_session_class):
 
 
 # --- fetch_instrumentation_list regression ---
+
 
 @patch("java_instrumentation_watcher.java_instrumentation_client.requests.Session")
 def test_fetch_instrumentation_list_delegates_to_fetch_raw_file(mock_session_class):
