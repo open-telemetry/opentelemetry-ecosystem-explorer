@@ -77,7 +77,7 @@ function defaultHeader(
     "# NOTE: With the exception of env var substitution syntax (i.e. ${MY_ENV}),",
     "# SDKs ignore environment variables when interpreting config files.",
     "#",
-    "# Schema docs: https://github.com/open-telemetry/opentelemetry-configuration/blob/main/schema-docs.md",
+    "# Schema docs: https://opentelemetry.io/docs/specs/otel/configuration/types/",
     "",
   ].join("\n");
 }
