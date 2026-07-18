@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, it, expect } from "vitest";
-import type { InstrumentationData, InstrumentationModule } from "@/types/javaagent";
+import type { InstrumentationListEntry, InstrumentationModule } from "@/types/javaagent";
 import { buildInstrumentationDefaultEntries } from "./instrumentation-default-entries";
 import type { DeclarativeScope } from "./declarative-name";
 
@@ -22,16 +22,22 @@ const ALL_SCOPES: DeclarativeScope[] = ["general", "common", "owned"];
 
 function makeEntry(
   name: string,
-  configs: InstrumentationData["configurations"]
-): InstrumentationData {
+  configs: InstrumentationListEntry["configurations"]
+): InstrumentationListEntry {
   return {
     name,
     scope: { name: `io.opentelemetry.${name}` },
     configurations: configs,
+    has_spans: false,
+    has_metrics: false,
+    _is_custom: false,
   };
 }
 
-function makeModule(name: string, coveredEntries: InstrumentationData[]): InstrumentationModule {
+function makeModule(
+  name: string,
+  coveredEntries: InstrumentationListEntry[]
+): InstrumentationModule {
   return { name, defaultDisabled: false, coveredEntries };
 }
 

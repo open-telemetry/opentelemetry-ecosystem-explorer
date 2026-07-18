@@ -15,7 +15,6 @@
  */
 import { useState, useCallback, useMemo, type JSX } from "react";
 import { CopyPlus } from "lucide-react";
-import type { InstrumentationData, InstrumentationModule } from "@/types/javaagent";
 import { useTranslation } from "react-i18next";
 import { useSectionExpansion } from "./section-expansion-context";
 import type { InstrumentationListEntry, InstrumentationModule } from "@/types/javaagent";
@@ -53,10 +52,8 @@ export function InstrumentationBrowser({
   statusFilter,
   onJumpToGeneral,
 }: InstrumentationBrowserProps): JSX.Element {
-  const { setOverride, mergeDefaults } = useConfigurationBuilder();
-  const overrideMap = useOverrideStatusMap();
+  const { setCustomization, mergeDefaults } = useConfigurationBuilder();
   const { t } = useTranslation("java-agent");
-  const { setCustomization } = useConfigurationBuilder();
   const customizationMap = useCustomizationStatusMap();
 
   const modules = useMemo<InstrumentationModule[]>(
@@ -71,8 +68,6 @@ export function InstrumentationBrowser({
     [modules]
   );
 
-  const overriddenSet = useOverriddenModules(modules);
-  const overrideCount = overriddenSet.size;
   const customizedSet = useCustomizedModules(modules);
   const customizationCount = customizedSet.size;
 

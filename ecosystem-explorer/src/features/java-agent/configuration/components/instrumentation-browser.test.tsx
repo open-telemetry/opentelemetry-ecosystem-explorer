@@ -15,7 +15,7 @@
  */
 import React from "react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import type { InstrumentationListEntry } from "@/types/javaagent";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
@@ -54,6 +54,7 @@ const FIXTURE: InstrumentationListEntry[] = [
 ];
 
 const setCustomization = vi.fn();
+const mergeDefaults = vi.fn();
 
 const browserDefaults = {
   loading: false,
@@ -63,6 +64,7 @@ const browserDefaults = {
 
 beforeEach(() => {
   setCustomization.mockReset();
+  mergeDefaults.mockReset();
   mockedBuilder.mockReturnValue({
     state: {
       values: {},
@@ -73,6 +75,7 @@ beforeEach(() => {
       listItemIds: {},
     },
     setCustomization,
+    mergeDefaults,
   } as unknown as ReturnType<typeof useConfigurationBuilder>);
   mockedCustomization.mockReturnValue(new Map());
   vi.mocked(useCustomizedModules).mockReturnValue(new Set<string>());
@@ -353,10 +356,8 @@ describe("InstrumentationBrowser — Add all configs", () => {
     type: "list" as const,
     default: "GET,POST",
   };
-  const modulesWithConfigs: InstrumentationData[] = [
-    {
-      name: "cassandra-4.4",
-      scope: { name: "io.opentelemetry.cassandra-4.4" },
+  const modulesWithConfigs: InstrumentationListEntry[] = [
+    entry("cassandra-4.4", {
       configurations: [
         commonCfg,
         {
@@ -367,10 +368,8 @@ describe("InstrumentationBrowser — Add all configs", () => {
           default: true,
         },
       ],
-    },
-    {
-      name: "graphql-java-20.0",
-      scope: { name: "io.opentelemetry.graphql-java-20.0" },
+    }),
+    entry("graphql-java-20.0", {
       configurations: [
         commonCfg,
         {
@@ -381,12 +380,8 @@ describe("InstrumentationBrowser — Add all configs", () => {
           default: false,
         },
       ],
-    },
+    }),
   ];
-
-  beforeEach(() => {
-    vi.mocked(useOverriddenModules).mockReturnValue(new Set<string>());
-  });
 
   it("renders an 'Add all configs' button distinct from the SDK 'Add all'", () => {
     render(

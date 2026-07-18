@@ -258,6 +258,24 @@ export function configurationBuilderReducer(
       } else if (action.status === "disabled") {
         nextDisabled = [...remainingDisabled, action.module].sort();
       }
+
+      if (nextEnabled.length === 0 && nextDisabled.length === 0) {
+        const { distribution: _omit, ...rest } = state.values;
+        void _omit;
+        return { ...state, values: rest, isDirty: true };
+      }
+
+      const newInstrumentation: ConfigValues = {};
+      if (nextEnabled.length > 0) newInstrumentation.enabled = nextEnabled;
+      if (nextDisabled.length > 0) newInstrumentation.disabled = nextDisabled;
+
+      return {
+        ...state,
+        values: setByPath(state.values, path, newInstrumentation),
+        isDirty: true,
+      };
+    }
+
     case "PRUNE_INSTRUMENTATIONS": {
       const current = getByPath(state.values, INSTRUMENTATION_PATH);
       if (!isPlainObject(current)) return state;

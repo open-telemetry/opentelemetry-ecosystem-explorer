@@ -180,6 +180,10 @@ export function useConfigurationBuilderState(
     []
   );
 
+  const setOverride = useCallback((module: string, status: "enabled" | "disabled" | "none") => {
+    dispatch({ type: "SET_OVERRIDE", module, status });
+  }, []);
+
   const pruneInstrumentations = useCallback((validModules: readonly string[]) => {
     dispatch({ type: "PRUNE_INSTRUMENTATIONS", validModules });
   }, []);
