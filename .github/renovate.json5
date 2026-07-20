@@ -14,6 +14,17 @@
       matchManagers: ["pre-commit"],
       pinDigests: true,
     },
+    {
+      matchManagers: ["npm"],
+      matchDepTypes: ["dependencies"],
+      rangeStrategy: "pin",
+    },
+    // The faro packages are version-locked to each other, so group them into a
+    // single PR to avoid mismatched partial upgrades.
+    {
+      matchPackageNames: ["@grafana/faro-react", "@grafana/faro-web-tracing"],
+      groupName: "faro",
+    },
   ],
   customManagers: [
     {
