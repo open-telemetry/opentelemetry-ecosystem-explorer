@@ -23,9 +23,9 @@
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
         "react-i18next": "^17.0.8",
-        "react-markdown": "^10.1.0",
+        "react-markdown": "10.1.0",
         "react-router-dom": "^7.13.0",
-        "remark-gfm": "^4.0.1",
+        "remark-gfm": "4.0.1",
       },
       "devDependencies": {
         "@axe-core/playwright": "4.12.1",
