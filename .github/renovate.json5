@@ -14,8 +14,10 @@
       matchManagers: ["pre-commit"],
       pinDigests: true,
     },
+    // package.json is managed by Renovate's "bun" manager here (bun.lock +
+    // .bun-version), not "npm", so the pin rule must target "bun" or it is inert.
     {
-      matchManagers: ["npm"],
+      matchManagers: ["bun", "npm"],
       matchDepTypes: ["dependencies"],
       rangeStrategy: "pin",
     },
