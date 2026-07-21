@@ -471,6 +471,90 @@ describe("javaagent-data", () => {
     });
   });
 
+  describe("loadComparisonDetails", () => {
+    // "shared" keeps the same hash across both versions, so it is byte-identical
+    // and must never be fetched. "moved" changes, "gone"/"fresh" are one-sided.
+    const fromManifest: VersionManifest = {
+      version: "2.9.0",
+      instrumentations: { shared: "same111", moved: "old222", gone: "old333" },
+    };
+    const toManifest: VersionManifest = {
+      version: "2.10.0",
+      instrumentations: { shared: "same111", moved: "new222", fresh: "new444" },
+    };
+
+    const detailFor = (name: string): InstrumentationData => ({
+      ...mockInstrumentationData,
+      name,
+      scope: { name: `io.opentelemetry.${name}` },
+    });
+
+    function mockCache(overrides: Record<string, unknown> = {}) {
+      return vi.spyOn(idbCache, "getCached").mockImplementation(async (key: string) => {
+        const table: Record<string, unknown> = {
+          "manifest-2.9.0": fromManifest,
+          "manifest-2.10.0": toManifest,
+          "instrumentation-same111": detailFor("shared"),
+          "instrumentation-old222": detailFor("moved"),
+          "instrumentation-new222": detailFor("moved"),
+          "instrumentation-old333": detailFor("gone"),
+          "instrumentation-new444": detailFor("fresh"),
+          ...overrides,
+        };
+        return (table[key] ?? null) as never;
+      });
+    }
+
+    it("should skip modules whose content hash is identical in both versions", async () => {
+      const getCachedSpy = mockCache();
+
+      const result = await javaagentData.loadComparisonDetails("2.9.0", "2.10.0");
+
+      expect(result.unchangedIds).toEqual(["shared"]);
+      // The identical file is never requested from either side.
+      const sharedReads = getCachedSpy.mock.calls.filter(
+        (call) => call[0] === "instrumentation-same111"
+      );
+      expect(sharedReads).toHaveLength(0);
+    });
+
+    it("should return changed and one-sided modules split by side", async () => {
+      mockCache();
+
+      const result = await javaagentData.loadComparisonDetails("2.9.0", "2.10.0");
+
+      expect(result.fromData.map((d) => d.name).sort()).toEqual(["gone", "moved"]);
+      expect(result.toData.map((d) => d.name).sort()).toEqual(["fresh", "moved"]);
+    });
+
+    it("should treat a module that moves between library and custom as changed", async () => {
+      // Same content hash, different manifest section: the detail file is
+      // identical but the module's custom-ness flipped, so it must be loaded.
+      const customToManifest: VersionManifest = {
+        version: "2.10.0",
+        instrumentations: {},
+        custom_instrumentations: { shared: "same111" },
+      };
+      mockCache({ "manifest-2.10.0": customToManifest });
+
+      const result = await javaagentData.loadComparisonDetails("2.9.0", "2.10.0");
+
+      expect(result.unchangedIds).not.toContain("shared");
+      expect(result.fromData.map((d) => d.name)).toContain("shared");
+      expect(result.toData.map((d) => d.name)).toContain("shared");
+    });
+
+    it("should skip every module when both versions are identical", async () => {
+      mockCache({ "manifest-2.10.0": { ...fromManifest, version: "2.10.0" } });
+
+      const result = await javaagentData.loadComparisonDetails("2.9.0", "2.10.0");
+
+      expect(result.unchangedIds.sort()).toEqual(["gone", "moved", "shared"]);
+      expect(result.fromData).toEqual([]);
+      expect(result.toData).toEqual([]);
+    });
+  });
+
   describe("loadLibraryReadme", () => {
     it("should load library README markdown", async () => {
       const content = "# My Library README";

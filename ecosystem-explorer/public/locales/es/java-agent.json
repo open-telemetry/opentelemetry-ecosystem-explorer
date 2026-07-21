@@ -162,6 +162,7 @@
     "selectDifferent": "Selecciona dos versiones diferentes para ver los cambios.",
     "comparingReleases": "Comparando versiones...",
     "analyzing": "Analizando {{fromVersion}} y {{toVersion}}",
+    "loadingMetrics": "Cargando todas las métricas en {{version}}...",
     "errorLoading": "Error al cargar datos de comparación: {{message}}",
     "from": "Desde",
     "to": "Hasta",

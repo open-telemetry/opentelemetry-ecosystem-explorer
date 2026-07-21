@@ -137,11 +137,7 @@ export interface ReleaseDiff {
   fromVersion: string;
   toVersion: string;
   instrumentations: InstrumentationDiff[];
-  aggregateMetrics: {
-    name: string;
-    description: string;
-    emittedBy: string[];
-  }[];
+  aggregateMetrics: AggregateMetric[];
   totals: {
     added: number;
     removed: number;
@@ -149,9 +145,67 @@ export interface ReleaseDiff {
   };
 }
 
+export interface AggregateMetric {
+  name: string;
+  description: string;
+  emittedBy: string[];
+}
+
+/**
+ * Rolls every metric emitted by a release up into a single name-keyed table.
+ *
+ * Split out of `compareReleases` so the "all metrics" tab can compute it from a
+ * full version load on demand: the comparison itself only loads the modules
+ * that changed, which is not enough data to build this table.
+ */
+export function computeAggregateMetrics(data: InstrumentationData[] = []): AggregateMetric[] {
+  const metricToInstrumentations = new Map<string, { description: string; emittedBy: string[] }>();
+  for (const instr of data) {
+    if (!instr.telemetry) continue;
+    for (const telemetry of instr.telemetry) {
+      if (!telemetry.metrics) continue;
+      for (const metric of telemetry.metrics) {
+        const existing = metricToInstrumentations.get(metric.name) || {
+          description: metric.description,
+          emittedBy: [],
+        };
+        const label = instr.display_name || instr.name;
+        if (!existing.emittedBy.includes(label)) {
+          existing.emittedBy.push(label);
+        }
+        metricToInstrumentations.set(metric.name, existing);
+      }
+    }
+  }
+
+  return Array.from(metricToInstrumentations.entries())
+    .map(([name, entry]) => ({
+      name,
+      description: entry.description,
+      emittedBy: entry.emittedBy.sort(),
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+export interface CompareReleasesOptions {
+  /**
+   * Set false when `toData` holds only the changed subset of a release, which
+   * is too little data to roll up a release-wide metric table. Callers that opt
+   * out get an empty `aggregateMetrics` and are expected to fill it in
+   * separately via `computeAggregateMetrics`.
+   */
+  includeAggregateMetrics?: boolean;
+}
+
 /**
  * Compares two Java Agent releases to identify added, removed, and changed instrumentation modules.
  * It also computes aggregate metrics for the target release.
+ *
+ * Passing only the modules that differ between the two releases yields the same
+ * `instrumentations` entries and `totals` as passing both releases in full:
+ * a module present in both sides unchanged contributes an "unchanged" entry and
+ * counts toward none of the totals. `aggregateMetrics` is the exception — see
+ * `CompareReleasesOptions.includeAggregateMetrics`.
  *
  * @param fromVersion The base version for comparison
  * @param toVersion The target version for comparison
@@ -163,7 +217,8 @@ export function compareReleases(
   fromVersion: string,
   toVersion: string,
   fromData: InstrumentationData[] = [],
-  toData: InstrumentationData[] = []
+  toData: InstrumentationData[] = [],
+  options: CompareReleasesOptions = {}
 ): ReleaseDiff {
   const safeFromData = fromData || [];
   const safeToData = toData || [];
@@ -301,33 +356,8 @@ export function compareReleases(
     }
   }
 
-  const metricToInstrumentations = new Map<string, { description: string; emittedBy: string[] }>();
-  for (const instr of safeToData) {
-    if (instr.telemetry) {
-      for (const telemetry of instr.telemetry) {
-        if (telemetry.metrics) {
-          for (const metric of telemetry.metrics) {
-            const existing = metricToInstrumentations.get(metric.name) || {
-              description: metric.description,
-              emittedBy: [],
-            };
-            if (!existing.emittedBy.includes(instr.display_name || instr.name)) {
-              existing.emittedBy.push(instr.display_name || instr.name);
-            }
-            metricToInstrumentations.set(metric.name, existing);
-          }
-        }
-      }
-    }
-  }
-
-  const aggregateMetrics = Array.from(metricToInstrumentations.entries())
-    .map(([name, data]) => ({
-      name,
-      description: data.description,
-      emittedBy: data.emittedBy.sort(),
-    }))
-    .sort((a, b) => a.name.localeCompare(b.name));
+  const aggregateMetrics =
+    options.includeAggregateMetrics === false ? [] : computeAggregateMetrics(safeToData);
 
   return {
     fromVersion,
