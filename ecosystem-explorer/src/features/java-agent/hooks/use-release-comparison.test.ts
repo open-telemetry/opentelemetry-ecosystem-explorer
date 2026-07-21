@@ -118,6 +118,70 @@ describe("useReleaseComparison hook", () => {
     expect(javaagentData.loadComparisonDetails).toHaveBeenCalledTimes(1);
   });
 
+  it("should not let a stale in-flight request overwrite a newer one's result", async () => {
+    // Two deferred promises so the test controls resolution order directly,
+    // rather than relying on timing.
+    let resolveFirst!: (value: {
+      fromData: unknown[];
+      toData: unknown[];
+      unchangedIds: string[];
+    }) => void;
+    let resolveSecond!: (value: {
+      fromData: unknown[];
+      toData: unknown[];
+      unchangedIds: string[];
+    }) => void;
+    const firstCall = new Promise((resolve) => {
+      resolveFirst = resolve;
+    });
+    const secondCall = new Promise((resolve) => {
+      resolveSecond = resolve;
+    });
+
+    vi.mocked(javaagentData.loadComparisonDetails)
+      .mockImplementationOnce(
+        () => firstCall as ReturnType<typeof javaagentData.loadComparisonDetails>
+      )
+      .mockImplementationOnce(
+        () => secondCall as ReturnType<typeof javaagentData.loadComparisonDetails>
+      );
+
+    vi.mocked(compareReleases).mockImplementation((fromVersion, toVersion) => ({
+      fromVersion,
+      toVersion,
+      instrumentations: [],
+      totals: { added: 0, removed: 0, changed: 0 },
+      aggregateMetrics: [],
+    }));
+
+    const { result, rerender } = renderHook(
+      ({ from, to }) => useReleaseComparison(from, to, validVersions),
+      { initialProps: { from: "1.0.0", to: "2.0.0" } }
+    );
+
+    expect(javaagentData.loadComparisonDetails).toHaveBeenCalledTimes(1);
+
+    // Change the target version before the first request resolves - this is
+    // the scenario the "cancelled" flag exists for. The effect's cleanup
+    // marks the first run stale and a second request starts.
+    rerender({ from: "1.5.0", to: "2.0.0" });
+    expect(javaagentData.loadComparisonDetails).toHaveBeenCalledTimes(2);
+
+    // Resolve the SECOND (current) request first, then the stale first one,
+    // to prove ordering of resolution - not call order - is what could cause
+    // a bug, and that the guard prevents it either way.
+    resolveSecond({ fromData: [], toData: [], unchangedIds: [] });
+    await waitFor(() => expect(result.current.diff?.fromVersion).toBe("1.5.0"));
+
+    resolveFirst({ fromData: [], toData: [], unchangedIds: [] });
+    // Give the stale promise's .then chain a chance to run if it were going
+    // to (it shouldn't, because `cancelled` was set true for that effect run).
+    await new Promise((r) => setTimeout(r, 0));
+
+    expect(result.current.diff?.fromVersion).toBe("1.5.0");
+    expect(result.current.loading).toBe(false);
+  });
+
   it("should not load data if fromVersion and toVersion are the same", async () => {
     const { result } = renderHook(() => useReleaseComparison("1.0.0", "1.0.0", validVersions));
 

@@ -544,6 +544,24 @@ describe("javaagent-data", () => {
       expect(result.toData.map((d) => d.name)).toContain("shared");
     });
 
+    it("should treat a module that moves between custom and library as changed", async () => {
+      // Reverse direction of the library->custom move above: same content
+      // hash, but the module was custom in the "from" version and moved to
+      // library in the "to" version.
+      const customFromManifest: VersionManifest = {
+        version: "2.9.0",
+        instrumentations: {},
+        custom_instrumentations: { shared: "same111" },
+      };
+      mockCache({ "manifest-2.9.0": customFromManifest });
+
+      const result = await javaagentData.loadComparisonDetails("2.9.0", "2.10.0");
+
+      expect(result.unchangedIds).not.toContain("shared");
+      expect(result.fromData.map((d) => d.name)).toContain("shared");
+      expect(result.toData.map((d) => d.name)).toContain("shared");
+    });
+
     it("should skip every module when both versions are identical", async () => {
       mockCache({ "manifest-2.10.0": { ...fromManifest, version: "2.10.0" } });
 
