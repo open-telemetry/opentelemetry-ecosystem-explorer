@@ -70,8 +70,17 @@ class BaseMetadataParser(ABC):
 class MetadataParserV1(BaseMetadataParser):
     """Parser for the current collector metadata schema (pre-file_format era).
 
-    Handles: type, display_name, description, status, attributes, metrics,
-    resource_attributes.
+    Gives dedicated normalization (sanitized descriptions, deterministic key/
+    list ordering) to: type, display_name, description, status, attributes,
+    metrics, resource_attributes, telemetry. Every other field present in the
+    source file — `tests`, `sem_conv_version`, `config`, `entities`, `events`,
+    `feature_gates`, or anything the upstream mdatagen schema adds later — is
+    passed through verbatim rather than dropped, so new top-level fields do
+    not require a code change here. The same pass-through-unless-normalized
+    rule applies one level down inside `status`, each `attributes`/
+    `resource_attributes` entry, and each `metrics` entry: only the specific
+    sub-fields that need sanitization or stable ordering are enumerated, and
+    anything else on those objects is preserved as-is.
     """
 
     def get_schema_version(self) -> str:
@@ -103,6 +112,19 @@ class MetadataParserV1(BaseMetadataParser):
 
         if "resource_attributes" in raw:
             parsed["resource_attributes"] = self._parse_attributes(raw["resource_attributes"])
+
+        if "telemetry" in raw:
+            parsed["telemetry"] = self._parse_telemetry(raw["telemetry"])
+
+        # Anything else on the file - present today or added upstream later -
+        # has no sanitization or ordering requirement of its own, so it is
+        # copied through unchanged instead of being silently dropped. This is
+        # what lets the parser absorb future mdatagen schema growth without a
+        # code change per field; only fields needing bespoke handling (above)
+        # get one.
+        for key, value in raw.items():
+            if key not in parsed:
+                parsed[key] = value
 
         return parsed or None
 
@@ -138,6 +160,12 @@ class MetadataParserV1(BaseMetadataParser):
             platforms = status["unsupported_platforms"]
             parsed["unsupported_platforms"] = sorted(platforms) if isinstance(platforms, list) else platforms
 
+        # e.g. `deprecation`, `warnings`, or any future addition to the status
+        # object: no ordering/sanitization need of its own, so preserve as-is.
+        for key, value in status.items():
+            if key not in parsed:
+                parsed[key] = value
+
         return parsed
 
     def _parse_attributes(self, attributes: dict[str, Any]) -> dict[str, Any]:
@@ -157,6 +185,10 @@ class MetadataParserV1(BaseMetadataParser):
                     parsed_attr["name_override"] = attr["name_override"]
                 if "enum" in attr:
                     parsed_attr["enum"] = sorted(attr["enum"]) if isinstance(attr["enum"], list) else attr["enum"]
+                # e.g. `requirement_level`, `semantic_convention`: preserve as-is.
+                for key, value in attr.items():
+                    if key not in parsed_attr:
+                        parsed_attr[key] = value
                 parsed[attr_name] = parsed_attr
             else:
                 parsed[attr_name] = attr
@@ -186,9 +218,36 @@ class MetadataParserV1(BaseMetadataParser):
                     parsed_metric["attributes"] = sorted(attrs) if isinstance(attrs, list) else attrs
                 if "stability" in metric:
                     parsed_metric["stability"] = metric["stability"]
+                # e.g. `extended_documentation`, `warnings`, `entity`,
+                # `deprecated`, `semantic_convention`, `migration`: preserve as-is.
+                for key, value in metric.items():
+                    if key not in parsed_metric:
+                        parsed_metric[key] = value
                 parsed[metric_name] = parsed_metric
             else:
                 parsed[metric_name] = metric
+
+        return parsed
+
+    def _parse_telemetry(self, telemetry: dict[str, Any]) -> dict[str, Any]:
+        """Parse the `telemetry` block: internal metrics the component itself emits.
+
+        `telemetry.metrics` has the same per-metric shape as the top-level
+        `metrics` field (name -> description/unit/sum.../attributes/stability),
+        so it reuses `_parse_metrics` for the same determinism and description
+        sanitization. Any other key on `telemetry` is preserved as-is.
+        """
+        if not telemetry:
+            return {}
+
+        parsed: dict[str, Any] = {}
+
+        if "metrics" in telemetry:
+            parsed["metrics"] = self._parse_metrics(telemetry["metrics"])
+
+        for key, value in telemetry.items():
+            if key not in parsed:
+                parsed[key] = value
 
         return parsed
 

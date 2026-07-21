@@ -271,6 +271,70 @@ metrics:
     assert "active_directory.ds.replication.network.io" in metadata["metrics"]
 
 
+def test_parse_memorylimiterprocessor_fixture_includes_telemetry(temp_component_dir):
+    """Regression test for GH-876: a real-shaped metadata.yaml (mirroring
+    opentelemetry-collector's memorylimiterprocessor, the file cited in the
+    issue) must retain its `telemetry` block through the full file-I/O path,
+    not just the in-memory parser unit tests above."""
+    content = """
+display_name: Memory Limiter Processor
+type: memory_limiter
+github_project: open-telemetry/opentelemetry-collector
+
+status:
+  disable_codecov_badge: true
+  class: processor
+  stability:
+    alpha: [profiles]
+    beta: [traces, metrics, logs]
+  distributions: [core, contrib, k8s]
+
+tests:
+  config:
+    check_interval: 5s
+    limit_mib: 400
+    spike_limit_mib: 50
+
+telemetry:
+  metrics:
+    processor_memory_limiter_accepted_log_records:
+      enabled: true
+      description: Number of log records successfully pushed into the next component in the pipeline.
+      stability: alpha
+      unit: "{record}"
+      sum:
+        value_type: int
+        monotonic: true
+    processor_memory_limiter_refused_spans:
+      enabled: true
+      description: Number of spans that were rejected by the next component in the pipeline.
+      stability: alpha
+      unit: "{span}"
+      sum:
+        value_type: int
+        monotonic: true
+"""
+    create_metadata_file(temp_component_dir, content)
+    parser = MetadataParser(temp_component_dir)
+    metadata = parser.parse()
+
+    assert metadata is not None
+    # The field the issue reports as missing.
+    assert "telemetry" in metadata
+    telemetry_metrics = metadata["telemetry"]["metrics"]
+    assert set(telemetry_metrics.keys()) == {
+        "processor_memory_limiter_accepted_log_records",
+        "processor_memory_limiter_refused_spans",
+    }
+    assert telemetry_metrics["processor_memory_limiter_accepted_log_records"]["unit"] == "{record}"
+
+    # Fields with no dedicated normalizer, also silently dropped before this
+    # fix, are preserved too - this was not a telemetry-only bug.
+    assert metadata["github_project"] == "open-telemetry/opentelemetry-collector"
+    assert metadata["tests"] == {"config": {"check_interval": "5s", "limit_mib": 400, "spike_limit_mib": 50}}
+    assert metadata["status"]["disable_codecov_badge"] is True
+
+
 def test_has_metadata_returns_false_for_missing_file(temp_component_dir):
     """Test that has_metadata() returns False when metadata.yaml doesn't exist."""
     parser = MetadataParser(temp_component_dir)
@@ -411,11 +475,142 @@ def test_parser_v1_sorted_attributes():
     assert list(result["attributes"].keys()) == ["a_attr", "z_attr"]
 
 
-def test_parser_v1_ignores_unknown_top_level_fields():
-    """Unknown fields (e.g. future schema additions) are silently dropped."""
+def test_parser_v1_passes_through_unknown_top_level_fields():
+    """Unknown fields (e.g. future schema additions) are preserved, not dropped."""
     raw = {"type": "test", "future_field": "some_value"}
     result = MetadataParserV1().parse(raw)
-    assert "future_field" not in result
+    assert result["future_field"] == "some_value"
+
+
+def test_parser_v1_passes_through_known_but_unhandled_top_level_fields():
+    """Fields that exist in the upstream schema today but have no dedicated
+    normalizer (e.g. `tests`, `sem_conv_version`, `config`) are preserved
+    verbatim rather than requiring bespoke handling."""
+    raw = {
+        "type": "test",
+        "sem_conv_version": "1.9.0",
+        "tests": {"config": {"endpoint": "localhost:1234"}},
+        "config": {"type": "object", "properties": {}},
+    }
+    result = MetadataParserV1().parse(raw)
+    assert result["sem_conv_version"] == "1.9.0"
+    assert result["tests"] == {"config": {"endpoint": "localhost:1234"}}
+    assert result["config"] == {"type": "object", "properties": {}}
+
+
+def test_parser_v1_parses_telemetry_metrics():
+    """The `telemetry` field (internal metrics the component emits) is
+    preserved, and its metrics get the same normalization as top-level
+    `metrics`: sorted keys and sanitized descriptions."""
+    raw = {
+        "type": "memory_limiter",
+        "telemetry": {
+            "metrics": {
+                "processor_memory_limiter_refused_spans": {
+                    "enabled": True,
+                    "description": "Number of spans rejected\nby downstream.",
+                    "stability": "alpha",
+                    "unit": "{span}",
+                    "sum": {"value_type": "int", "monotonic": True},
+                },
+                "processor_memory_limiter_accepted_spans": {
+                    "enabled": True,
+                    "description": "Number of spans accepted.",
+                    "stability": "alpha",
+                    "unit": "{span}",
+                    "sum": {"value_type": "int", "monotonic": True},
+                },
+            }
+        },
+    }
+    result = MetadataParserV1().parse(raw)
+
+    assert "telemetry" in result
+    metrics = result["telemetry"]["metrics"]
+    # Sorted by key, same as top-level metrics.
+    assert list(metrics.keys()) == [
+        "processor_memory_limiter_accepted_spans",
+        "processor_memory_limiter_refused_spans",
+    ]
+    # Description sanitization applies inside telemetry metrics too.
+    assert metrics["processor_memory_limiter_refused_spans"]["description"] == (
+        "Number of spans rejected by downstream."
+    )
+    assert metrics["processor_memory_limiter_refused_spans"]["sum"] == {
+        "value_type": "int",
+        "monotonic": True,
+    }
+
+
+def test_parser_v1_telemetry_passes_through_unknown_sibling_keys():
+    """A future sibling of `telemetry.metrics` is preserved, not dropped."""
+    raw = {
+        "type": "test",
+        "telemetry": {"metrics": {}, "future_telemetry_field": "value"},
+    }
+    result = MetadataParserV1().parse(raw)
+    assert result["telemetry"]["future_telemetry_field"] == "value"
+
+
+def test_parser_v1_status_passes_through_unknown_subfields():
+    """`status.deprecation` / `status.warnings` (present in the upstream schema
+    but previously unhandled) are preserved, not dropped."""
+    raw = {
+        "type": "test",
+        "status": {
+            "class": "processor",
+            "warnings": ["This component is unmaintained."],
+            "deprecation": {"traces": {"date": "2026-01-01", "migration": "use X instead"}},
+        },
+    }
+    result = MetadataParserV1().parse(raw)
+    status = result["status"]
+    assert status["warnings"] == ["This component is unmaintained."]
+    assert status["deprecation"] == {"traces": {"date": "2026-01-01", "migration": "use X instead"}}
+
+
+def test_parser_v1_attribute_passes_through_unknown_subfields():
+    """`requirement_level` / `semantic_convention` on an attribute (present
+    upstream but previously unhandled) are preserved, not dropped."""
+    raw = {
+        "type": "test",
+        "attributes": {
+            "http.method": {
+                "description": "HTTP method",
+                "type": "string",
+                "requirement_level": "required",
+                "semantic_convention": {"ref": "http"},
+            }
+        },
+    }
+    result = MetadataParserV1().parse(raw)
+    attr = result["attributes"]["http.method"]
+    assert attr["requirement_level"] == "required"
+    assert attr["semantic_convention"] == {"ref": "http"}
+
+
+def test_parser_v1_metric_passes_through_unknown_subfields():
+    """`entity` / `semantic_convention` / `migration` on a metric (present
+    upstream but previously unhandled) are preserved, not dropped."""
+    raw = {
+        "type": "test",
+        "metrics": {
+            "system.cpu.utilization": {
+                "description": "CPU utilization",
+                "unit": "1",
+                "gauge": {"value_type": "double"},
+                "stability": "beta",
+                "entity": "host",
+                "semantic_convention": {"ref": "system.cpu"},
+                "migration": {"to": "system.cpu.usage", "through_gates": {"disable_old": "gate1"}},
+            }
+        },
+    }
+    result = MetadataParserV1().parse(raw)
+    metric = result["metrics"]["system.cpu.utilization"]
+    assert metric["entity"] == "host"
+    assert metric["semantic_convention"] == {"ref": "system.cpu"}
+    assert metric["migration"] == {"to": "system.cpu.usage", "through_gates": {"disable_old": "gate1"}}
 
 
 # ---------------------------------------------------------------------------
