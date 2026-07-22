@@ -66,7 +66,17 @@ def main():
         help="Specific distribution to backfill (core or contrib). "
         "If not specified, all distributions will be processed.",
     )
+    parser.add_argument(
+        "--prune-unlisted",
+        action="store_true",
+        help="Delete existing release versions NOT listed in --versions before backfilling "
+        "(SNAPSHOT versions are always kept). Requires --backfill and --versions.",
+    )
     args = parser.parse_args()
+
+    if args.prune_unlisted and not (args.backfill and args.versions):
+        logger.error("--prune-unlisted requires both --backfill and --versions")
+        sys.exit(1)
 
     logger.info("Collector Watcher")
     logger.info("Inventory directory: %s", args.inventory_dir)
@@ -79,6 +89,8 @@ def main():
             logger.info("Versions: %s", args.versions)
         else:
             logger.info("Versions: auto-detect all existing versions")
+        if args.prune_unlisted:
+            logger.info("Prune unlisted: delete release versions not in --versions (keeping SNAPSHOTs)")
     else:
         logger.info("Mode: SYNC")
 
@@ -126,7 +138,7 @@ def main():
             elif args.distribution:
                 versions_by_dist = {args.distribution: None}
 
-            collector_sync.backfill(versions_by_dist)
+            collector_sync.backfill(versions_by_dist, prune_unlisted=args.prune_unlisted)
         else:
             collector_sync.sync()
 

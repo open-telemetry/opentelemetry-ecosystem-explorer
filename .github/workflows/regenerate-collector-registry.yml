@@ -16,6 +16,14 @@ on:
         type: string
         required: false
         default: ""
+      prune_unlisted_versions:
+        description:
+          "When 'versions' is set, delete any existing release versions NOT in that list from the
+          registry (both distributions) before regenerating. SNAPSHOT versions are always kept.
+          Errors if 'versions' is empty."
+        type: boolean
+        required: false
+        default: false
 
 permissions:
   contents: read # Default minimum; the job declares its own elevated scopes below
@@ -103,6 +111,7 @@ jobs:
         id: backfill
         env:
           VERSIONS: ${{ inputs.versions }}
+          PRUNE_UNLISTED: ${{ inputs.prune_unlisted_versions }}
         run: |
           # Backfill re-extracts both core and contrib. Contrib's schema is
           # resolved from the core clone at each version's ref, so both
@@ -110,6 +119,12 @@ jobs:
           ARGS=(--backfill)
           if [ -n "$VERSIONS" ]; then
             ARGS+=(--versions "$VERSIONS")
+            if [ "$PRUNE_UNLISTED" == "true" ]; then
+              ARGS+=(--prune-unlisted)
+            fi
+          elif [ "$PRUNE_UNLISTED" == "true" ]; then
+            echo "::error::prune_unlisted_versions requires 'versions' to be set; refusing to prune the entire registry." >&2
+            exit 1
           fi
           echo "Running: uv run collector-watcher ${ARGS[*]}"
           uv run collector-watcher "${ARGS[@]}"
@@ -135,6 +150,7 @@ jobs:
             ${{ steps.repo_check.outputs.is_primary == 'true' && steps.otelbot-token.outputs.token
             || secrets.GITHUB_TOKEN }}
           VERSIONS: ${{ inputs.versions }}
+          PRUNE_UNLISTED: ${{ inputs.prune_unlisted_versions }}
           RUN_ID: ${{ github.run_id }}
           REPO: ${{ github.repository }}
         run: |
@@ -148,6 +164,7 @@ jobs:
           PR_BODY="Re-extracted collector registry versions via \`collector-watcher --backfill\`.
 
           - **Versions:** ${VERSIONS:-all existing}
+          - **Pruned unlisted versions:** ${PRUNE_UNLISTED:-false}
 
           See [workflow run](https://github.com/${REPO}/actions/runs/${RUN_ID}).
 
