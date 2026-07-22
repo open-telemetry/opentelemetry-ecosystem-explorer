@@ -79,7 +79,7 @@ modules:
 - name: OpenTelemetry.Extensions.AWS
   description: OpenTelemetry extensions for AWS.
   type: extension
-  version: 1.16.0
+  version: 1.17.0
 - name: OpenTelemetry.Extensions.Enrichment
   description: OpenTelemetry .NET SDK telemetry enrichment.
   type: extension
@@ -103,11 +103,11 @@ modules:
 - name: OpenTelemetry.Instrumentation.AWS
   description: AWS client instrumentation for OpenTelemetry .NET.
   type: instrumentation
-  version: 1.16.0
+  version: 1.17.0
 - name: OpenTelemetry.Instrumentation.AWSLambda
   description: AWS Lambda tracing wrapper for OpenTelemetry .NET.
   type: instrumentation
-  version: 1.16.0
+  version: 1.17.0
 - name: OpenTelemetry.Instrumentation.AspNet
   description: ASP.NET instrumentation for OpenTelemetry .NET.
   type: instrumentation
