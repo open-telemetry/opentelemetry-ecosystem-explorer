@@ -44,7 +44,10 @@ export function useAggregateMetrics(version: string, enabled: boolean) {
     let cancelled = false;
 
     async function load() {
-      if (!enabled || !version) return;
+      if (!enabled || !version) {
+        setLoading(false);
+        return;
+      }
 
       setLoading(true);
       setError(null);

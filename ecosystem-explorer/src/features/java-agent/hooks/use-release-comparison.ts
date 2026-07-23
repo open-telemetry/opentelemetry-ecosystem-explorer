@@ -32,12 +32,16 @@ import { compareReleases, type ReleaseDiff } from "../utils/release-diff";
  *   idle rather than comparing against an unvalidated pair — the version list
  *   arrives a moment after first render, and starting early would throw the
  *   whole comparison away when it lands.
+ * @param versionsLoading Whether the version list itself is still being fetched.
+ *   Distinguishes "not arrived yet" (keep waiting) from "finished loading and
+ *   still empty" (the fetch failed — stop waiting, since it isn't coming).
  * @returns An object containing the diff results, loading state, and any error encountered
  */
 export function useReleaseComparison(
   fromVersion: string,
   toVersion: string,
-  validVersions: string[] = []
+  validVersions: string[] = [],
+  versionsLoading: boolean = false
 ) {
   const [diff, setDiff] = useState<ReleaseDiff | null>(null);
   const [loading, setLoading] = useState(false);
@@ -65,8 +69,17 @@ export function useReleaseComparison(
       // the very next render discards, doubling the work on every page open.
       if (validVersions.length === 0) {
         setDiff(null);
-        setLoading(true);
-        setError(null);
+        if (versionsLoading) {
+          // Genuinely still waiting on the version list - keep spinning.
+          setLoading(true);
+          setError(null);
+        } else {
+          // The version list finished loading (or failed) and is still
+          // empty, so it isn't coming - stop waiting instead of spinning
+          // forever on a request that will never resolve.
+          setLoading(false);
+          setError(new Error("Failed to load the list of available versions."));
+        }
         return;
       }
 
@@ -114,7 +127,7 @@ export function useReleaseComparison(
     return () => {
       cancelled = true;
     };
-  }, [fromVersion, toVersion, validVersions]);
+  }, [fromVersion, toVersion, validVersions, versionsLoading]);
 
   return { diff, loading, error };
 }

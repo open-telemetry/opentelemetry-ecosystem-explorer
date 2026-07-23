@@ -90,13 +90,15 @@ describe("useReleaseComparison hook", () => {
 
   it("should stay loading until the version list arrives", async () => {
     const { result, rerender } = renderHook(
-      ({ versions }) => useReleaseComparison("1.0.0", "2.0.0", versions),
-      { initialProps: { versions: [] as string[] } }
+      ({ versions, versionsLoading }) =>
+        useReleaseComparison("1.0.0", "2.0.0", versions, versionsLoading),
+      { initialProps: { versions: [] as string[], versionsLoading: true } }
     );
 
     // Comparing before the version list lands would start a full load that the
     // next render throws away, doubling the work on every page open.
     expect(result.current.loading).toBe(true);
+    expect(result.current.error).toBeNull();
     expect(javaagentData.loadComparisonDetails).not.toHaveBeenCalled();
 
     vi.mocked(javaagentData.loadComparisonDetails).mockResolvedValue({
@@ -112,10 +114,34 @@ describe("useReleaseComparison hook", () => {
       aggregateMetrics: [],
     });
 
-    rerender({ versions: validVersions });
+    rerender({ versions: validVersions, versionsLoading: false });
 
     await waitFor(() => expect(result.current.loading).toBe(false));
     expect(javaagentData.loadComparisonDetails).toHaveBeenCalledTimes(1);
+  });
+
+  it("should stop loading and surface an error if the version list fails to load", async () => {
+    // A stable empty-array reference, matching how the real caller passes a
+    // memoized `validVersionStrings` - an inline `[]` literal here would be a
+    // new reference every render, re-triggering the effect on every state
+    // update it makes and looping.
+    const noVersions: string[] = [];
+    const { result, rerender } = renderHook(
+      ({ versionsLoading }) => useReleaseComparison("1.0.0", "2.0.0", noVersions, versionsLoading),
+      { initialProps: { versionsLoading: true } }
+    );
+
+    expect(result.current.loading).toBe(true);
+
+    // The version list request finished (or failed) and there is still
+    // nothing valid to compare against - it isn't coming, so this must not
+    // stay stuck in a loading state indefinitely.
+    rerender({ versionsLoading: false });
+
+    expect(result.current.loading).toBe(false);
+    expect(result.current.error).not.toBeNull();
+    expect(result.current.diff).toBeNull();
+    expect(javaagentData.loadComparisonDetails).not.toHaveBeenCalled();
   });
 
   it("should not let a stale in-flight request overwrite a newer one's result", async () => {

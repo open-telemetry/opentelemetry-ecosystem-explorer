@@ -164,6 +164,7 @@
     "analyzing": "Analizando {{fromVersion}} y {{toVersion}}",
     "loadingMetrics": "Cargando todas las métricas en {{version}}...",
     "errorLoading": "Error al cargar datos de comparación: {{message}}",
+    "errorLoadingMetrics": "Error al cargar las métricas: {{message}}",
     "from": "Desde",
     "to": "Hasta",
     "latest": "(última)",

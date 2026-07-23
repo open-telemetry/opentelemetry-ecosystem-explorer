@@ -89,6 +89,34 @@ describe("useAggregateMetrics hook", () => {
     expect(result.current.metrics).toBeNull();
   });
 
+  it("should clear loading when disabled while a request is still in flight", async () => {
+    let resolveLoad!: (data: InstrumentationData[]) => void;
+    vi.mocked(javaagentData.loadAllInstrumentationDetails).mockReturnValue(
+      new Promise((resolve) => {
+        resolveLoad = resolve;
+      })
+    );
+
+    const { result, rerender } = renderHook(
+      ({ enabled }) => useAggregateMetrics("2.10.0", enabled),
+      { initialProps: { enabled: true } }
+    );
+
+    await waitFor(() => expect(result.current.loading).toBe(true));
+
+    // Closing the tab before the request resolves must not leave the hook
+    // reporting loading forever.
+    rerender({ enabled: false });
+    expect(result.current.loading).toBe(false);
+
+    // The stale request resolving afterward must not resurrect loading or
+    // apply its result.
+    resolveLoad(releaseData);
+    await new Promise((r) => setTimeout(r, 0));
+    expect(result.current.loading).toBe(false);
+    expect(result.current.metrics).toBeNull();
+  });
+
   it("should not show the previous version's metrics after the version changes", async () => {
     vi.mocked(javaagentData.loadAllInstrumentationDetails).mockResolvedValue(releaseData);
 

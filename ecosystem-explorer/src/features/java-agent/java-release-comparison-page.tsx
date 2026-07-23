@@ -60,7 +60,7 @@ export function JavaReleaseComparisonPage() {
     diff,
     loading: diffLoading,
     error,
-  } = useReleaseComparison(fromVersion, toVersion, validVersionStrings);
+  } = useReleaseComparison(fromVersion, toVersion, validVersionStrings, versionsLoading);
 
   // The metrics tab is a whole-release rollup and costs far more to load than
   // the diff, so it stays unloaded until the reader opens that tab.
@@ -366,7 +366,9 @@ export function JavaReleaseComparisonPage() {
                       <div className="flex items-center gap-3">
                         <AlertCircle className="h-5 w-5" />
                         <p className="font-medium">
-                          {t("releaseComparison.errorLoading", { message: metricsError.message })}
+                          {t("releaseComparison.errorLoadingMetrics", {
+                            message: metricsError.message,
+                          })}
                         </p>
                       </div>
                     </div>
