@@ -9442,6 +9442,13 @@ components:
         description: A unique identifier of the MongoDB resource as a UUID v5, derived
           from server address and port.
         type: string
+      service.name:
+        description: Logical name of the service. When enabled, defaults to unknown_service:mongodb.
+        type: string
+      service.namespace:
+        description: Logical namespace for the service (for example team or environment).
+          When enabled, defaults to an empty string until set via configuration.
+        type: string
 - name: mysqlreceiver
   metadata:
     type: mysql
@@ -11089,6 +11096,12 @@ components:
       oracledb.status:
         description: Execution state or result of a database query or session.
         type: string
+      oracledb.transaction.type:
+        description: The type of user transaction.
+        type: string
+        enum:
+        - commit
+        - rollback
       oracledb.user_io_wait_time:
         description: The total time (in seconds) a query spent waiting for user I/O
           operations—such as reading or writing data to disk or network file systems
@@ -11151,6 +11164,13 @@ components:
           monotonic: true
           value_type: int
           input_type: string
+        stability: development
+      oracledb.buffer_cache.block.changes.rate:
+        description: Rate of changes applied to blocks in the buffer cache.
+        unit: '{change}/s'
+        enabled: false
+        gauge:
+          value_type: double
         stability: development
       oracledb.buffer_cache.block.gets:
         description: Number of current-mode block gets satisfied from the buffer cache.
@@ -11275,6 +11295,13 @@ components:
           value_type: int
           input_type: string
         stability: development
+      oracledb.cursor.open.rate:
+        description: Rate of cursors opened.
+        unit: '{cursor}/s'
+        enabled: false
+        gauge:
+          value_type: double
+        stability: development
       oracledb.data_dictionary.hit_ratio:
         description: Data dictionary cache hit ratio from v$rowcache.
         unit: '%'
@@ -11357,6 +11384,13 @@ components:
           value_type: int
           input_type: string
         stability: development
+      oracledb.enqueue.deadlocks.rate:
+        description: Rate of enqueue deadlocks.
+        unit: '{deadlock}/s'
+        enabled: false
+        gauge:
+          value_type: double
+        stability: development
       oracledb.enqueue.operations:
         description: Total count of enqueue (lock) operations.
         unit: '{operation}'
@@ -11368,6 +11402,13 @@ components:
           input_type: string
         attributes:
         - oracledb.enqueue.type
+        stability: development
+      oracledb.enqueue.timeouts.rate:
+        description: Rate of enqueue timeouts.
+        unit: '{timeout}/s'
+        enabled: false
+        gauge:
+          value_type: double
         stability: development
       oracledb.enqueue_deadlocks:
         description: Total number of deadlocks between table or row locks in different
@@ -11446,6 +11487,13 @@ components:
           value_type: int
           input_type: string
         stability: development
+      oracledb.executions.rate:
+        description: Rate of SQL statement executions.
+        unit: '{execution}/s'
+        enabled: false
+        gauge:
+          value_type: double
+        stability: development
       oracledb.gc.current_block.time:
         description: Cumulative time spent transferring current blocks between instances
           over RAC cache fusion.
@@ -11468,6 +11516,13 @@ components:
           value_type: int
           input_type: string
         stability: development
+      oracledb.hard_parses.rate:
+        description: Rate of hard parses.
+        unit: '{parse}/s'
+        enabled: false
+        gauge:
+          value_type: double
+        stability: development
       oracledb.host.cpu.usage.rate:
         description: Host CPU consumption rate across all cores, in CPU-seconds used
           per second.
@@ -11484,9 +11539,23 @@ components:
         gauge:
           value_type: double
         stability: development
+      oracledb.io.requests.rate:
+        description: Rate of I/O requests issued by the database.
+        unit: '{request}/s'
+        enabled: false
+        gauge:
+          value_type: double
+        stability: development
       oracledb.io.single_block.read.latency:
         description: Average latency of a synchronous single-block read.
         unit: s
+        enabled: false
+        gauge:
+          value_type: double
+        stability: development
+      oracledb.io.throughput.rate:
+        description: Rate of I/O bytes transferred by the database.
+        unit: By/s
         enabled: false
         gauge:
           value_type: double
@@ -11558,6 +11627,13 @@ components:
           value_type: int
           input_type: string
         stability: development
+      oracledb.logical_reads.rate:
+        description: Rate of logical reads performed by the database.
+        unit: '{read}/s'
+        enabled: false
+        gauge:
+          value_type: double
+        stability: development
       oracledb.logons:
         description: Number of logon operations
         unit: '{operation}'
@@ -11567,6 +11643,13 @@ components:
           monotonic: true
           value_type: int
           input_type: string
+        stability: development
+      oracledb.logons.rate:
+        description: Rate of logon operations.
+        unit: '{logon}/s'
+        enabled: false
+        gauge:
+          value_type: double
         stability: development
       oracledb.os.swaps:
         description: Number of OS swap operations.
@@ -11739,6 +11822,15 @@ components:
         - disk.io.block_size
         - disk.io.direction
         stability: development
+      oracledb.physical_io.requests.rate:
+        description: Rate of physical I/O requests issued to storage.
+        unit: '{request}/s'
+        enabled: false
+        gauge:
+          value_type: double
+        attributes:
+        - disk.io.direction
+        stability: development
       oracledb.physical_io.transferred:
         description: Total physical I/O bytes transferred between Oracle and storage.
           Sums across all data files. Sourced from v$sysstat names physical read/write
@@ -11753,6 +11845,24 @@ components:
         attributes:
         - disk.io.direction
         - disk.io.type
+        stability: development
+      oracledb.physical_io.transferred.rate:
+        description: Rate of physical I/O bytes transferred between Oracle and storage.
+        unit: By/s
+        enabled: false
+        gauge:
+          value_type: double
+        attributes:
+        - disk.io.direction
+        stability: development
+      oracledb.physical_operations.rate:
+        description: Rate of physical read and write operations performed by the database.
+        unit: '{operation}/s'
+        enabled: false
+        gauge:
+          value_type: double
+        attributes:
+        - disk.io.direction
         stability: development
       oracledb.physical_read_io_requests:
         description: Number of read requests for application activity
@@ -11916,6 +12026,13 @@ components:
           monotonic: true
           value_type: int
           input_type: string
+        stability: development
+      oracledb.redo.size.rate:
+        description: Rate of redo bytes generated by the database.
+        unit: By/s
+        enabled: false
+        gauge:
+          value_type: double
         stability: development
       oracledb.redo.time:
         description: Time spent in each phase of the redo pipeline.
@@ -12190,6 +12307,15 @@ components:
         gauge:
           value_type: int
           input_type: string
+        stability: development
+      oracledb.transactions.rate:
+        description: Rate of user transactions.
+        unit: '{transaction}/s'
+        enabled: false
+        gauge:
+          value_type: double
+        attributes:
+        - oracledb.transaction.type
         stability: development
       oracledb.transactions.usage:
         description: Current count of active transactions.
@@ -12595,6 +12721,17 @@ components:
         - lock
         - snapshot
         - tablespace
+      postgresql.distance.function.name:
+        description: The vector distance (similarity) function used by the query,
+          one of the pgvector distance functions.
+        type: string
+        enum:
+        - cosine
+        - hamming
+        - inner_product
+        - jaccard
+        - l1
+        - l2
       postgresql.index.name:
         description: The name of the index on a table.
         type: string
@@ -13081,6 +13218,68 @@ components:
           aggregation_temporality: cumulative
         attributes:
         - db.namespace
+        stability: development
+      postgresql.vector.insert.duration:
+        description: The cumulative execution time of statements that insert vectors
+          into pgvector tables.
+        unit: s
+        enabled: false
+        sum:
+          value_type: double
+          monotonic: true
+          aggregation_temporality: cumulative
+        attributes:
+        - db.namespace
+        stability: development
+      postgresql.vector.insert.rows:
+        description: The number of vectors inserted into pgvector tables.
+        unit: '{vectors}'
+        enabled: false
+        sum:
+          value_type: int
+          monotonic: true
+          aggregation_temporality: cumulative
+        attributes:
+        - db.namespace
+        stability: development
+      postgresql.vector.search.calls:
+        description: The number of vector similarity search operations executed, grouped
+          by the distance function used.
+        unit: '{search}'
+        enabled: false
+        sum:
+          value_type: int
+          monotonic: true
+          aggregation_temporality: cumulative
+        attributes:
+        - db.namespace
+        - postgresql.distance.function.name
+        stability: development
+      postgresql.vector.search.duration:
+        description: The cumulative execution time of vector similarity searches,
+          grouped by the distance function used.
+        unit: s
+        enabled: false
+        sum:
+          value_type: double
+          monotonic: true
+          aggregation_temporality: cumulative
+        attributes:
+        - db.namespace
+        - postgresql.distance.function.name
+        stability: development
+      postgresql.vector.search.rows_returned:
+        description: The cumulative number of rows returned by vector similarity searches,
+          grouped by the distance function used.
+        unit: '{rows}'
+        enabled: false
+        sum:
+          value_type: int
+          monotonic: true
+          aggregation_temporality: cumulative
+        attributes:
+        - db.namespace
+        - postgresql.distance.function.name
         stability: development
       postgresql.wal.age:
         description: Age of the oldest WAL file.
