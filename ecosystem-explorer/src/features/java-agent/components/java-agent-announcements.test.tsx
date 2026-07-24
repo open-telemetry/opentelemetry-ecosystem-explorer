@@ -25,14 +25,16 @@ vi.mock("../hooks/use-java-agent-announcements", () => ({
 }));
 
 describe("JavaAgentAnnouncements", () => {
-  it("renders nothing when loading", () => {
+  it("renders a loading skeleton when announcements are loading", () => {
     vi.mocked(useJavaAgentAnnouncements).mockReturnValue({
       data: null,
       loading: true,
       error: null,
     });
     const { container } = render(<JavaAgentAnnouncements />);
-    expect(container).toBeEmptyDOMElement();
+
+    expect(screen.getByRole("heading", { name: "News & Announcements" })).toBeInTheDocument();
+    expect(container.querySelectorAll(".animate-pulse").length).toBeGreaterThan(0);
   });
 
   it("renders nothing when data is empty", () => {
