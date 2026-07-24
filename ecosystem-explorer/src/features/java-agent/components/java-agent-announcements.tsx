@@ -19,11 +19,14 @@ import { useJavaAgentAnnouncements } from "../hooks/use-java-agent-announcements
 import { ExternalLink, Calendar } from "lucide-react";
 import { isSafeUrl } from "../utils/url";
 
-const ANNOUNCEMENT_SKELETON_COUNT = 3;
+const MIN_ANNOUNCEMENT_SKELETON_COUNT = 3;
 
 function AnnouncementCardSkeleton() {
   return (
-    <div className="border-border/60 bg-card/80 rounded-lg border p-5 shadow-sm">
+    <div
+      className="border-border/60 bg-card/80 rounded-lg border p-5 shadow-sm"
+      data-testid="announcement-skeleton-card"
+    >
       <div className="space-y-3">
         <div className="flex items-center gap-2">
           <div className="bg-muted h-4 w-4 animate-pulse rounded" />
@@ -46,6 +49,7 @@ function AnnouncementCardSkeleton() {
 export function JavaAgentAnnouncements() {
   const { t } = useTranslation("java-agent");
   const { data: announcements, loading, error } = useJavaAgentAnnouncements();
+  const skeletonCount = Math.max(MIN_ANNOUNCEMENT_SKELETON_COUNT, announcements?.length ?? 0);
 
   if (loading) {
     return (
@@ -60,7 +64,7 @@ export function JavaAgentAnnouncements() {
           </h2>
         </div>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: ANNOUNCEMENT_SKELETON_COUNT }).map((_, index) => (
+          {Array.from({ length: skeletonCount }).map((_, index) => (
             <AnnouncementCardSkeleton key={index} />
           ))}
         </div>
