@@ -325,6 +325,10 @@
         "required": ["description", "type"]
       },
       "propertyOrder": []
+    },
+    "markdown_hash": {
+      "description": "Content hash of the component's README, if one was found. Used to lazily fetch the markdown file.",
+      "type": "string"
     }
   },
   "propertyOrder": [
@@ -339,7 +343,8 @@
     "status",
     "metrics",
     "attributes",
-    "resource_attributes"
+    "resource_attributes",
+    "markdown_hash"
   ],
   "required": ["distribution", "ecosystem", "id", "name", "type"],
   "$schema": "https://json-schema.org/draft-07/schema#"

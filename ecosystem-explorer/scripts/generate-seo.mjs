@@ -60,6 +60,21 @@ const STATIC_SITEMAP_HINTS = {
 };
 const DETAIL_SITEMAP_HINT = { changefreq: "weekly", priority: "0.6" };
 
+// Machine-readable documentation resources referenced by llms.txt. Listed in the
+// sitemap so the sitemap and llms.txt reference a consistent URL set (this is what
+// the Fern agent-score checks; a mismatch is flagged as "links not in sitemap").
+const DOC_RESOURCE_URLS = [
+  "/llms.txt",
+  "/llms-full.txt",
+  "/agent/collector/index.md",
+  "/agent/collector/versions.md",
+  "/agent/javaagent/index.md",
+  "/agent/javaagent/versions.md",
+  "/schemas/collector-component.schema.json",
+  "/schemas/javaagent-instrumentation.schema.json",
+];
+const DOC_RESOURCE_HINT = { changefreq: "weekly", priority: "0.5" };
+
 const readJson = async (relPath) =>
   JSON.parse(await fs.readFile(path.join(publicDir, relPath), "utf-8"));
 
@@ -117,10 +132,14 @@ async function javaAgentRoutes() {
 
 const xmlEscape = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
+const DOC_RESOURCE_SET = new Set(DOC_RESOURCE_URLS);
+
 function buildSitemap(pathnames) {
   const urls = pathnames
     .map((pathname) => {
-      const hint = STATIC_SITEMAP_HINTS[pathname] ?? DETAIL_SITEMAP_HINT;
+      const hint = DOC_RESOURCE_SET.has(pathname)
+        ? DOC_RESOURCE_HINT
+        : (STATIC_SITEMAP_HINTS[pathname] ?? DETAIL_SITEMAP_HINT);
       return [
         "  <url>",
         `    <loc>${xmlEscape(SITE_ORIGIN + pathname)}</loc>`,
@@ -155,8 +174,9 @@ async function generateSeo() {
   );
   console.log(` - Generated dist/seo/routes.json (${Object.keys(sortedRoutes).length} routes)`);
 
-  // Sitemap: home first, then everything else sorted for stable diffs.
-  const pathnames = Object.keys(routes).sort((a, b) => {
+  // Sitemap: app routes + machine-readable doc resources. Home first, then
+  // everything else sorted for stable diffs.
+  const pathnames = [...Object.keys(routes), ...DOC_RESOURCE_URLS].sort((a, b) => {
     if (a === "/") return -1;
     if (b === "/") return 1;
     return a.localeCompare(b);

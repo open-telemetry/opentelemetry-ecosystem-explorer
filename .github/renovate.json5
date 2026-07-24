@@ -14,6 +14,19 @@
       matchManagers: ["pre-commit"],
       pinDigests: true,
     },
+    // package.json is managed by Renovate's "bun" manager here (bun.lock +
+    // .bun-version), not "npm", so the pin rule must target "bun" or it is inert.
+    {
+      matchManagers: ["bun", "npm"],
+      matchDepTypes: ["dependencies"],
+      rangeStrategy: "pin",
+    },
+    // The faro packages are version-locked to each other, so group them into a
+    // single PR to avoid mismatched partial upgrades.
+    {
+      matchPackageNames: ["@grafana/faro-react", "@grafana/faro-web-tracing"],
+      groupName: "faro",
+    },
   ],
   customManagers: [
     {

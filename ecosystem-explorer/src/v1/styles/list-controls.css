@@ -104,18 +104,16 @@
   outline-offset: -2px;
 }
 
+/* Active label reads in `foreground`, not `primary`: dark-theme primary on
+ * the primary-tinted background lands at 2.3:1, below WCAG AA. */
 .td-density__btn--active {
   background-color: hsl(var(--primary-hsl) / 0.15);
-  color: hsl(var(--primary-hsl));
+  color: hsl(var(--foreground-hsl));
   font-weight: 600;
 }
 
 .td-density__btn:hover {
   color: hsl(var(--foreground-hsl));
-}
-
-.td-density__btn--active:hover {
-  color: hsl(var(--primary-hsl));
 }
 
 /* ---------- Sort ---------- */

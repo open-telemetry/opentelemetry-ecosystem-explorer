@@ -58,6 +58,12 @@
     }
   },
   "explore": {
+    "infoBar": {
+      "instrumentationCount_one": "Instrumentación disponible",
+      "instrumentationCount_other": "Instrumentaciones disponibles",
+      "latestRelease": "Última versión publicada",
+      "error": "Error al cargar estadísticas: {{message}}"
+    },
     "resources": {
       "heading": "Recursos y documentación",
       "items": {
@@ -65,6 +71,10 @@
         "configReference": "Referencia de configuración del Java Agent",
         "githubRepo": "Repositorio de GitHub"
       }
+    },
+    "announcements": {
+      "heading": "Noticias y Anuncios",
+      "readMore": "Leer más"
     }
   },
   "list": {
@@ -179,7 +189,9 @@
     "metricName": "Nombre de la métrica",
     "metricDescription": "Descripción",
     "emittedBy": "Emitido por",
-    "release": "Versión {{version}}"
+    "release": "Versión {{version}}",
+    "noFilteredResults": "Ningún módulo coincide con los filtros seleccionados.",
+    "noFilteredResultsDesc": "Prueba a seleccionar otro estado, o borra el filtro para ver todos los cambios."
   },
   "configList": {
     "title": "Explorador de opciones de configuración",
@@ -220,7 +232,14 @@
     "spans": "Spans",
     "metrics": "Métricas",
     "javaAgent": "Java Agent",
-    "standalone": "Independiente"
+    "standalone": "Independiente",
+    "status": {
+      "label": "Estado",
+      "all": "Todos los estados",
+      "added": "Agregado",
+      "changed": "Modificado",
+      "removed": "Eliminado"
+    }
   },
   "badges": {
     "agent": {

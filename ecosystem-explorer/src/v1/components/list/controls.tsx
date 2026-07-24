@@ -49,14 +49,18 @@ export function ActiveFilterChips({ filters, onChange }: ActiveFilterChipsProps)
   const chips: Chip[] = [];
 
   // Facet values (e.g. "receiver", "traces") are internal identifiers, not
-  // display text — resolve them through the same `collector:listV1.facets`
-  // keys `FacetPanel` already uses so chip labels stay localized and never
-  // drift from the facet panel's option copy.
+  // display text — resolve them through the same keys `FacetPanel` already
+  // uses so chip labels stay localized and never drift from the facet
+  // panel's option copy. Signal is ecosystem-agnostic vocabulary and lives
+  // in the `list` namespace; type/stability/distribution are collector
+  // domain terms and stay in `collector`.
   function facetLabel(
     facet: "type" | "signal" | "stability" | "distribution",
     value: string
   ): string {
-    return t(`listV1.facets.${facet}.options.${value}`, { ns: "collector" });
+    return facet === "signal"
+      ? t(`facets.signal.options.${value}`)
+      : t(`listV1.facets.${facet}.options.${value}`, { ns: "collector" });
   }
 
   if (filters.q.trim().length > 0) {

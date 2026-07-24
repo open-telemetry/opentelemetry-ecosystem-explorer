@@ -73,7 +73,7 @@ jobs:
           permission-pull-requests: write # Create / edit / reopen the automated PR
 
       - name: Checkout code
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           # Persist GITHUB_TOKEN as the git credential for the branch push. A
           # push authenticated with GITHUB_TOKEN does not start workflows, so the
@@ -94,7 +94,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@fac544c07dec837d0ccb6301d7b5580bf5edae39 # v8.2.0
+        uses: astral-sh/setup-uv@d31148d669074a8d0a63714ba94f3201e7020bc3 # v8.3.0
         with:
           enable-cache: true
 
@@ -189,13 +189,14 @@ jobs:
 
           if [ -n "$EXISTING" ]; then
             # Edit the body rather than comment: this runs nightly and comments would be noisy.
-            gh issue edit "$EXISTING" --body-file "$BODY_FILE"
+            gh issue edit "$EXISTING" --body-file "$BODY_FILE" --add-label "contribution welcome"
             echo "Updated tracking issue #$EXISTING ($COUNT components missing display_name)."
           else
             gh issue create \
               --title "$ISSUE_TITLE" \
               --body-file "$BODY_FILE" \
-              --label "$LABEL"
+              --label "$LABEL" \
+              --label "contribution welcome"
             echo "Created tracking issue ($COUNT components missing display_name)."
           fi
 

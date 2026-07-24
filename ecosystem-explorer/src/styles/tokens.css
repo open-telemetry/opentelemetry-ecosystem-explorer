@@ -108,7 +108,7 @@
     --card-hsl: 0 0% 100%; /* Pure white */
     --card-secondary-hsl: 216 20% 98%;
     --muted-hsl: 214 32% 91%; /* Slate-200 */
-    --muted-foreground-hsl: 215 16% 47%; /* Slate-500 */
+    --muted-foreground-hsl: 215 16% 40%; /* Slate-500 darkened to 40% lightness: 47% only clears WCAG AA on pure white, not on tinted surfaces (list rows, bg-muted chips) */
     --border-hsl: 214 32% 85%; /* Slate-300 for visible structural lines */
 
     /* Theme-aware layout values */

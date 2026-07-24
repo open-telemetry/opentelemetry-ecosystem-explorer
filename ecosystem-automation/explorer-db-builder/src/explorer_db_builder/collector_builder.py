@@ -34,8 +34,10 @@ logger = logging.getLogger(__name__)
 DISTRIBUTIONS = ["core", "contrib"]
 
 # Only build the database for versions >= this. Keeps the output bounded and
-# avoids including very old registry data that pre-dates reliable metadata.
-MINIMUM_VERSION = Version("0.150.0")
+# avoids including older registry data collected before the metadata pipeline
+# matured (raised from 0.150.0 to 0.154.0 to start the catalog from where
+# metadata quality has been consistently reliable).
+MINIMUM_VERSION = Version("0.154.0")
 
 
 def _get_merged_release_versions(inventory_manager: InventoryManager) -> list[Version]:
@@ -198,6 +200,12 @@ def run_collector_builder(
 
         db_writer.write_version_list(processed_versions, bundle_hashes)
         db_writer.write_index(latest_components)
+
+        # Incremental runs never overwrite the store, so files whose hash changed are left
+        # orphaned. Sweep them now that every version index (the reachability source) is on
+        # disk. Skipped after --clean, which already wiped everything.
+        if not clean:
+            db_writer.remove_orphans()
 
         db_writer.write_ecosystem_stats(
             {

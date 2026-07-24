@@ -71,6 +71,14 @@ const DETAIL_NAME = "spring-webmvc-6.0";
 const COLLECTOR_DISTRIBUTION = "core";
 const COLLECTOR_DETAIL_NAME = "otlpreceiver";
 
+// Collector list densities (Phase 4). The bare URL renders the default
+// density (compact); the others are URL-driven via `?density=`.
+const COLLECTOR_LIST_CAPTURES = [
+  { name: "collector-list", query: "" },
+  { name: "collector-list-cards", query: "?density=cards" },
+  { name: "collector-list-table", query: "?density=table" },
+];
+
 // Viewport sizes captured for each page. Edit here to add, remove, or resize.
 const VIEWPORTS = [
   { name: "desktop", width: 1800, height: 1200 },
@@ -271,15 +279,30 @@ async function takeScreenshots() {
           await page.screenshot({ path: p("detail-configuration"), fullPage: true });
           if (isFirstViewport) await recordA11y(page, "detail-configuration", theme);
 
-          // 8. Collector list
-          await page.goto(`${BASE_URL}/collector/components`, {
-            waitUntil: "domcontentloaded",
-            timeout: 10000,
-          });
-          await settle(page);
-          await assertNoError(page, `${BASE_URL}/collector/components`);
-          await page.screenshot({ path: p("collector-list"), fullPage: true });
-          if (isFirstViewport) await recordA11y(page, "collector-list", theme);
+          // 8. Collector list — one capture per density
+          for (const { name, query } of COLLECTOR_LIST_CAPTURES) {
+            const listUrl = `${BASE_URL}/collector/components${query}`;
+            await page.goto(listUrl, { waitUntil: "domcontentloaded", timeout: 10000 });
+            await settle(page);
+            await assertNoError(page, listUrl);
+            await page.screenshot({ path: p(name), fullPage: true });
+            if (isFirstViewport) await recordA11y(page, name, theme);
+          }
+
+          // 8b. Collector list with the facet drawer open. The drawer (and its
+          //    modal a11y surface) only exists on the mobile layout, so this is
+          //    captured on the mobile viewport instead of the first one.
+          if (viewport.name === "mobile") {
+            await page.goto(`${BASE_URL}/collector/components`, {
+              waitUntil: "domcontentloaded",
+              timeout: 10000,
+            });
+            await settle(page);
+            await page.getByRole("button", { name: /open filters/i }).click();
+            await page.waitForSelector('[role="dialog"]', { state: "visible", timeout: 5000 });
+            await page.screenshot({ path: p("collector-list-drawer") });
+            await recordA11y(page, "collector-list-drawer", theme);
+          }
 
           // 9. Collector detail
           const collectorDetailUrl = `${BASE_URL}/collector/components/${COLLECTOR_DISTRIBUTION}/${COLLECTOR_DETAIL_NAME}`;

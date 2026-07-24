@@ -25,7 +25,36 @@ import { useVersions } from "@/hooks/use-javaagent-data";
 import { useReleaseComparison } from "./hooks/use-release-comparison";
 import { ReleaseVersionSelector } from "./components/release-comparison/release-version-selector";
 import { InstrumentationDiffCard } from "./components/release-comparison/instrumentation-diff-card";
+import {
+  ModuleStatusFilter,
+  type ModuleChangeStatus,
+} from "./components/release-comparison/module-status-filter";
+import {
+  TelemetryFilter,
+  type TelemetryType,
+} from "./components/release-comparison/telemetry-filter";
 import { GlowBadge } from "@/components/ui/glow-badge";
+
+const VALID_MODULE_STATUSES: ModuleChangeStatus[] = ["added", "changed", "removed"];
+const VALID_TELEMETRY_TYPES: TelemetryType[] = ["spans", "metrics"];
+
+function parseStatusParam(value: string | null): ModuleChangeStatus | "" {
+  if (value && (VALID_MODULE_STATUSES as string[]).includes(value)) {
+    return value as ModuleChangeStatus;
+  }
+  return "";
+}
+
+function parseTelemetryParam(value: string | null): Set<TelemetryType> {
+  const result = new Set<TelemetryType>();
+  if (!value) return result;
+  value.split(",").forEach((v) => {
+    if ((VALID_TELEMETRY_TYPES as string[]).includes(v)) {
+      result.add(v as TelemetryType);
+    }
+  });
+  return result;
+}
 
 export function JavaReleaseComparisonPage() {
   const { t } = useTranslation("java-agent");
@@ -44,9 +73,15 @@ export function JavaReleaseComparisonPage() {
   useEffect(() => {
     if (versions.length > 0 && (!searchParams.get("from") || !searchParams.get("to"))) {
       setSearchParams(
-        {
-          from: fromVersion || versions[Math.min(1, versions.length - 1)].version,
-          to: toVersion || versions[0].version,
+        (prev) => {
+          const params = new URLSearchParams(prev);
+          if (!params.has("from")) {
+            params.set("from", fromVersion || versions[Math.min(1, versions.length - 1)].version);
+          }
+          if (!params.has("to")) {
+            params.set("to", toVersion || versions[0].version);
+          }
+          return params;
         },
         { replace: true }
       );
@@ -62,17 +97,97 @@ export function JavaReleaseComparisonPage() {
   } = useReleaseComparison(fromVersion, toVersion, validVersionStrings);
 
   const handleFromVersionChange = (version: string) => {
-    setSearchParams({ from: version, to: toVersion });
+    setSearchParams((prev) => {
+      const params = new URLSearchParams(prev);
+      params.set("from", version);
+      params.set("to", toVersion);
+      return params;
+    });
   };
 
   const handleToVersionChange = (version: string) => {
-    setSearchParams({ from: fromVersion, to: version });
+    setSearchParams((prev) => {
+      const params = new URLSearchParams(prev);
+      params.set("from", fromVersion);
+      params.set("to", version);
+      return params;
+    });
   };
+
+  const statusFilter = useMemo(() => parseStatusParam(searchParams.get("status")), [searchParams]);
+
+  const handleStatusFilterChange = (next: ModuleChangeStatus | "") => {
+    setSearchParams(
+      (prev) => {
+        const params = new URLSearchParams(prev);
+        if (next) {
+          params.set("status", next);
+        } else {
+          params.delete("status");
+        }
+        return params;
+      },
+      { replace: false }
+    );
+  };
+
+  const telemetryFilter = useMemo(
+    () => parseTelemetryParam(searchParams.get("telemetry")),
+    [searchParams]
+  );
+
+  const handleTelemetryFilterChange = (next: Set<TelemetryType>) => {
+    setSearchParams(
+      (prev) => {
+        const params = new URLSearchParams(prev);
+        if (next.size > 0) {
+          params.set("telemetry", [...next].join(","));
+        } else {
+          params.delete("telemetry");
+        }
+        return params;
+      },
+      { replace: false }
+    );
+  };
+
+  const handleClearFilters = () => {
+    setSearchParams(
+      (prev) => {
+        const params = new URLSearchParams(prev);
+        params.delete("status");
+        params.delete("telemetry");
+        return params;
+      },
+      { replace: false }
+    );
+  };
+
+  const hasAnyChanges = useMemo(() => {
+    if (!diff) return false;
+    return diff.instrumentations.some((i) => i.status !== "unchanged");
+  }, [diff]);
 
   const filteredInstrumentations = useMemo(() => {
     if (!diff) return [];
-    return diff.instrumentations.filter((i) => i.status !== "unchanged");
-  }, [diff]);
+    return diff.instrumentations.filter((i) => {
+      if (i.status === "unchanged") return false;
+      if (statusFilter && i.status !== statusFilter) return false;
+      if (
+        telemetryFilter.has("spans") &&
+        i.telemetryDiff.spans.filter((s) => s.status !== "unchanged").length === 0
+      )
+        return false;
+      if (
+        telemetryFilter.has("metrics") &&
+        i.telemetryDiff.metrics.filter((m) => m.status !== "unchanged").length === 0
+      )
+        return false;
+      return true;
+    });
+  }, [diff, statusFilter, telemetryFilter]);
+
+  const isFilteredEmpty = hasAnyChanges && filteredInstrumentations.length === 0;
 
   const isInvalidComparison = useMemo(() => {
     if (!fromVersion || !toVersion || versions.length === 0) return false;
@@ -292,16 +407,30 @@ export function JavaReleaseComparisonPage() {
                   aria-labelledby="tab-changes"
                   className="space-y-6"
                 >
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-wrap items-center justify-between gap-4">
                     <h2 className="text-2xl font-bold">{t("releaseComparison.moduleChanges")}</h2>
-                    <div className="bg-muted/50 text-foreground/70 rounded-full px-4 py-1 text-xs font-bold">
-                      {t("releaseComparison.modulesImpacted", {
-                        count: filteredInstrumentations.length,
-                      })}
+                    <div className="flex flex-wrap items-center gap-3">
+                      {hasAnyChanges && (
+                        <>
+                          <TelemetryFilter
+                            value={telemetryFilter}
+                            onChange={handleTelemetryFilterChange}
+                          />
+                          <ModuleStatusFilter
+                            value={statusFilter}
+                            onChange={handleStatusFilterChange}
+                          />
+                        </>
+                      )}
+                      <div className="bg-muted/50 text-foreground/70 rounded-full px-4 py-1 text-xs font-bold">
+                        {t("releaseComparison.modulesImpacted", {
+                          count: filteredInstrumentations.length,
+                        })}
+                      </div>
                     </div>
                   </div>
 
-                  {filteredInstrumentations.length === 0 ? (
+                  {!hasAnyChanges ? (
                     <div className="border-border flex min-h-[300px] items-center justify-center rounded-2xl border border-dashed">
                       <div className="text-center">
                         <p className="text-muted-foreground text-lg">
@@ -310,6 +439,23 @@ export function JavaReleaseComparisonPage() {
                         <p className="text-muted-foreground/60 mt-1 text-sm">
                           {t("releaseComparison.noChangesDesc")}
                         </p>
+                      </div>
+                    </div>
+                  ) : isFilteredEmpty ? (
+                    <div className="border-border flex min-h-[300px] items-center justify-center rounded-2xl border border-dashed">
+                      <div className="text-center">
+                        <p className="text-muted-foreground text-lg">
+                          {t("releaseComparison.noFilteredResults")}
+                        </p>
+                        <p className="text-muted-foreground/60 mt-1 text-sm">
+                          {t("releaseComparison.noFilteredResultsDesc")}
+                        </p>
+                        <button
+                          onClick={handleClearFilters}
+                          className="text-primary mt-4 text-sm font-semibold hover:underline"
+                        >
+                          {t("filter.reset")}
+                        </button>
                       </div>
                     </div>
                   ) : (

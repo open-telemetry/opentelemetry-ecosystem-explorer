@@ -68,6 +68,8 @@ export interface CollectorComponent {
   attributes?: { [key: string]: CollectorAttribute };
   /** Resource attributes associated with the component. Keyed by attribute name. */
   resource_attributes?: { [key: string]: CollectorAttribute };
+  /** Content hash of the component's README, if one was found. Used to lazily fetch the markdown file. */
+  markdown_hash?: string;
 }
 
 /**
@@ -156,6 +158,7 @@ export interface IndexComponent {
   display_name?: string | null;
   description?: string | null;
   stability?: Stability | null;
+  has_readme?: boolean;
   /** Telemetry signals supported across all stability levels (e.g. ["metrics", "traces"]). */
   signals?: string[];
 }

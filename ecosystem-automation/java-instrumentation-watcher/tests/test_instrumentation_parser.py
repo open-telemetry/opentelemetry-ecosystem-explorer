@@ -22,6 +22,7 @@ from java_instrumentation_watcher.instrumentation_parser import (
     ParserV02,
     ParserV03,
     ParserV05,
+    ParserV06,
     parse_instrumentation_yaml,
 )
 
@@ -263,6 +264,59 @@ class TestParserV05:
         assert lib["has_javaagent"] is True
 
 
+class TestParserV06:
+    def test_get_file_format(self):
+        parser = ParserV06()
+        assert parser.get_file_format() == 0.6
+
+    def test_parse_preserves_definitions_and_refs(self):
+        # 0.6 hoists shared configs/metrics into a top-level ``definitions`` catalog
+        # and references them by id. The parser must preserve this compact shape
+        # verbatim (resolution happens downstream in the db-builder).
+        yaml_content = """
+file_format: 0.6
+definitions:
+  configurations:
+    http.known-methods:
+      name: otel.instrumentation.http.known-methods
+      declarative_name: java.common.http.known_methods
+      description: '  Configures known methods.  '
+      type: list
+      default: GET,POST
+  metrics:
+    http.server.request.duration-639e2d0b:
+      name: http.server.request.duration
+      description: Duration of HTTP server requests.
+      instrument: histogram
+      data_type: HISTOGRAM
+      unit: s
+libraries:
+- name: activej-http-6.0
+  display_name: ActiveJ
+  configuration_refs:
+  - http.known-methods
+  telemetry:
+  - when: default
+    metric_refs:
+    - http.server.request.duration-639e2d0b
+"""
+        parser = ParserV06()
+        data = parser.parse(yaml_content)
+
+        assert data["file_format"] == 0.6
+        # Catalog is preserved and whitespace cleaned.
+        assert data["definitions"]["configurations"]["http.known-methods"]["description"] == "Configures known methods."
+        assert "http.server.request.duration-639e2d0b" in data["definitions"]["metrics"]
+        # Libraries stay a flat list and keep their references (not resolved here).
+        lib = data["libraries"][0]
+        assert lib["name"] == "activej-http-6.0"
+        assert lib["configuration_refs"] == ["http.known-methods"]
+        assert lib["telemetry"][0]["metric_refs"] == ["http.server.request.duration-639e2d0b"]
+        # No inline resolution happened in the parser.
+        assert "configurations" not in lib
+        assert "metrics" not in lib["telemetry"][0]
+
+
 class TestParserFactory:
     def test_get_parser_v0_1(self):
         parser = ParserFactory.get_parser(0.1)
@@ -283,11 +337,16 @@ class TestParserFactory:
         with pytest.raises(ValueError, match="Unsupported file_format: 999.0"):
             ParserFactory.get_parser(999.0)
 
+    def test_get_parser_v0_6(self):
+        parser = ParserFactory.get_parser(0.6)
+        assert isinstance(parser, ParserV06)
+        assert parser.get_file_format() == 0.6
+
     def test_get_default_parser(self):
         parser = ParserFactory.get_default_parser()
         assert isinstance(parser, InstrumentationParser)
         # Should return the latest version
-        assert parser.get_file_format() == 0.5
+        assert parser.get_file_format() == 0.6
 
 
 class TestParseInstrumentationYaml:

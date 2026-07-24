@@ -188,3 +188,53 @@ export function useCollectorComponent(
 
   return state;
 }
+
+export function useComponentReadme(
+  name: string,
+  markdownHash: string | null | undefined
+): DataState<string> {
+  // Starts in loading, not idle - if this started false, a consumer would
+  // briefly render its "no readme" state before the fetch even begins. See
+  // the identical fix on the javaagent side (useLibraryReadme).
+  const [state, setState] = useState<DataState<string>>({
+    data: null,
+    loading: true,
+    error: null,
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadData() {
+      if (!name || !markdownHash) {
+        setState({ data: null, loading: false, error: null });
+        return;
+      }
+
+      setState({ data: null, loading: true, error: null });
+
+      try {
+        const data = await collectorData.loadComponentReadme(name, markdownHash);
+        if (!cancelled) {
+          setState({ data, loading: false, error: null });
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setState({
+            data: null,
+            loading: false,
+            error: error instanceof Error ? error : new Error(String(error)),
+          });
+        }
+      }
+    }
+
+    loadData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [name, markdownHash]);
+
+  return state;
+}

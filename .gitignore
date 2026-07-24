@@ -9,6 +9,9 @@ node_modules/
 # Collector Watcher temporary repositories
 tmp_repos/
 
+# Golang watcher scratch directory
+.repo/
+
 metadata-issues.md
 
 *.DS_Store

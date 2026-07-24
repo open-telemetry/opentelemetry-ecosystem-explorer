@@ -15,6 +15,7 @@
  */
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useState } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { DEFAULT_FILTERS, type ListFilters } from "@/v1/lib/list-filters";
 import { FacetPanel } from "./facet-panel";
@@ -122,5 +123,80 @@ describe("FacetPanel", () => {
 
     fireEvent.keyDown(document, { key: "Escape" });
     expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it("renders dialog semantics only while open as a drawer", () => {
+    const { rerender } = render(
+      <FacetPanel filters={DEFAULT_FILTERS} onChange={vi.fn()} isOpen={false} onClose={vi.fn()} />
+    );
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+
+    rerender(<FacetPanel filters={DEFAULT_FILTERS} onChange={vi.fn()} isOpen onClose={vi.fn()} />);
+    expect(screen.getByRole("dialog")).toHaveAttribute("aria-modal", "true");
+  });
+
+  it("moves focus into the drawer on open and returns it to the opener on close", () => {
+    function Harness() {
+      const [open, setOpen] = useState(false);
+      return (
+        <>
+          <button type="button" onClick={() => setOpen(true)}>
+            open drawer
+          </button>
+          <FacetPanel
+            filters={DEFAULT_FILTERS}
+            onChange={vi.fn()}
+            isOpen={open}
+            onClose={() => setOpen(false)}
+          />
+        </>
+      );
+    }
+    render(<Harness />);
+    const opener = screen.getByRole("button", { name: "open drawer" });
+    opener.focus();
+    fireEvent.click(opener);
+
+    expect(screen.getByRole("button", { name: "Close filters" })).toHaveFocus();
+
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(opener).toHaveFocus();
+  });
+
+  it("locks body scroll while the drawer is open and restores it on close", () => {
+    const { rerender } = render(
+      <FacetPanel filters={DEFAULT_FILTERS} onChange={vi.fn()} isOpen onClose={vi.fn()} />
+    );
+    expect(document.body.style.overflow).toBe("hidden");
+
+    rerender(
+      <FacetPanel filters={DEFAULT_FILTERS} onChange={vi.fn()} isOpen={false} onClose={vi.fn()} />
+    );
+    expect(document.body.style.overflow).toBe("");
+  });
+
+  it("closes the drawer when the scrim is clicked", () => {
+    const onClose = vi.fn();
+    const { container } = renderPanel({ isOpen: true, onClose });
+
+    const scrim = container.querySelector(".td-facet-panel__scrim");
+    expect(scrim).not.toBeNull();
+    fireEvent.click(scrim as Element);
+    expect(onClose).toHaveBeenCalledOnce();
+  });
+
+  it("wraps Tab focus within the open drawer", () => {
+    renderPanel({ isOpen: true, onClose: vi.fn() });
+    const dialog = screen.getByRole("dialog");
+    const focusables = dialog.querySelectorAll<HTMLElement>("button, input, select");
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+
+    last.focus();
+    fireEvent.keyDown(document, { key: "Tab" });
+    expect(first).toHaveFocus();
+
+    fireEvent.keyDown(document, { key: "Tab", shiftKey: true });
+    expect(last).toHaveFocus();
   });
 });

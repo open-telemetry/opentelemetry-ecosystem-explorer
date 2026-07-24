@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { dump } from "js-yaml";
+import { dump, CORE_SCHEMA, nullCoreTag } from "js-yaml";
 import type { ConfigNode } from "@/types/configuration";
 import type {
   ConfigValue,
@@ -77,7 +77,7 @@ function defaultHeader(
     "# NOTE: With the exception of env var substitution syntax (i.e. ${MY_ENV}),",
     "# SDKs ignore environment variables when interpreting config files.",
     "#",
-    "# Schema docs: https://github.com/open-telemetry/opentelemetry-configuration/blob/main/schema-docs.md",
+    "# Schema docs: https://opentelemetry.io/docs/specs/otel/configuration/types/",
     "",
   ].join("\n");
 }
@@ -97,13 +97,16 @@ function emptiesToNull(value: unknown): unknown {
   return value;
 }
 
+// Represent null as an empty scalar (`key:`) rather than the literal `null`.
+const EMPTY_NULL_SCHEMA = CORE_SCHEMA.withTags({ ...nullCoreTag, represent: () => "" });
+
 function dumpYaml(obj: unknown): string {
   const yaml = dump(emptiesToNull(obj), {
     sortKeys: true,
     lineWidth: -1,
     noRefs: true,
-    quotingType: '"',
-    styles: { "!!null": "empty" },
+    quoteStyle: "double",
+    schema: EMPTY_NULL_SCHEMA,
   });
   // js-yaml leaves a trailing space after the empty-style null representation.
   return yaml.replace(/: $/gm, ":");

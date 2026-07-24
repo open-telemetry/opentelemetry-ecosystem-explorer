@@ -1,0 +1,78 @@
+{
+  "breadcrumbs": {
+    "explorer": "Explorer",
+    "components": "Components"
+  },
+  "loading": "Loading component…",
+  "notFound": {
+    "title": "Component not found",
+    "lead": "The registry has no entry for this component at this version. It may have been removed or never released here."
+  },
+  "header": {
+    "source": "Source",
+    "docs": "Docs"
+  },
+  "placement": {
+    "title": "Where this fits",
+    "lead": "A typical Collector pipeline. The highlighted stage is the type this component belongs to."
+  },
+  "siblingNav": {
+    "filterPlaceholder": "Filter…",
+    "filterAriaLabel": "Filter {{title}}",
+    "count": "{{filtered}} of {{total}}",
+    "empty": "No matches."
+  },
+  "railLabel": "Siblings and on-page navigation",
+  "onPage": {
+    "title": "On this page"
+  },
+  "anchors": {
+    "placement": "Where this fits",
+    "configuration": "Configuration",
+    "readme": "README",
+    "attributes": "Emitted attributes",
+    "examples": "Examples"
+  },
+  "tabs": {
+    "ariaLabel": "Component sections",
+    "configuration": "Configuration",
+    "readme": "README",
+    "attributes": "Attributes",
+    "examples": "Examples"
+  },
+  "configuration": {
+    "emptyTitle": "No configuration schema yet",
+    "emptyLead": "The registry does not yet expose a configuration schema for this component. In the meantime, check the source repository for the canonical YAML keys.",
+    "openSource": "Open source repository →",
+    "columns": {
+      "key": "Key",
+      "type": "Type",
+      "default": "Default",
+      "description": "Description"
+    }
+  },
+  "readme": {
+    "emptyTitle": "README embedding is on the way",
+    "emptyLead": "For v1 the README is hosted at the source repository. Open it for the up-to-date guidance and examples.",
+    "openSource": "Open README on GitHub →"
+  },
+  "attributes": {
+    "emptyTitle": "Emitted attributes not catalogued yet",
+    "emptyLead": "The data pipeline does not yet surface per-component emitted attributes for this component.",
+    "columns": {
+      "name": "Name",
+      "kind": "Kind",
+      "description": "Description"
+    },
+    "kinds": {
+      "metric": "Metric",
+      "attribute": "Attribute",
+      "resource": "Resource attribute"
+    }
+  },
+  "examples": {
+    "emptyTitle": "No curated examples yet",
+    "emptyLead": "For now, see the component's source repository for example configurations and deployments.",
+    "openSource": "Open examples directory →"
+  }
+}

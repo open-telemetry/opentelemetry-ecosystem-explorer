@@ -403,6 +403,38 @@ class InventoryManager:
 
         return count
 
+    def prune_release_versions_not_in(self, distribution: DistributionName, keep_versions: Iterable[Version]) -> int:
+        """
+        Delete release version directories not present in ``keep_versions``.
+
+        SNAPSHOT/prerelease versions are always preserved — deleting the current
+        snapshot would leave the frontend without one until the next nightly
+        sync. Orphaned schema files are pruned once after deletion.
+
+        Args:
+            distribution: Distribution name (core or contrib)
+            keep_versions: Release versions to keep; every other release version
+                is removed
+
+        Returns:
+            Number of release version directories removed
+        """
+        keep = {str(v) for v in keep_versions}
+        removed = 0
+
+        for version in self.list_release_versions(distribution):
+            if str(version) in keep:
+                continue
+            version_dir = self.get_version_dir(distribution, version)
+            if version_dir.exists():
+                shutil.rmtree(version_dir)
+                removed += 1
+
+        if removed > 0:
+            self.prune_orphan_schemas()
+
+        return removed
+
     def version_exists(self, distribution: DistributionName, version: Version) -> bool:
         """
         Check if a specific version exists for a distribution.

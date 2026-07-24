@@ -23,6 +23,7 @@ from typing import Any
 
 from semantic_version import Version
 
+from explorer_db_builder import orphan_gc
 from explorer_db_builder.content_hashing import content_hash
 from explorer_db_builder.instrumentation_transformer import make_index_instrumentation
 
@@ -52,6 +53,19 @@ class DatabaseWriter:
         """Sanitizes a name for use as a filename to prevent path traversal."""
         return re.sub(r"[^a-zA-Z0-9._\-]", "_", name)
 
+    def _instrumentation_file(self, library_name: str, library_hash: str) -> Path:
+        """Content-addressed path for a library, without creating its directory (unlike _get_file_path).
+
+        Lets callers that only need the path (e.g. orphan GC) avoid materializing empty dirs.
+        """
+        safe_name = self._sanitize_name(library_name)
+        return self.database_dir / "instrumentations" / safe_name / f"{safe_name}-{library_hash}.json"
+
+    def _markdown_file(self, library_name: str, markdown_hash: str) -> Path:
+        """Content-addressed path for a README (does not create its directory)."""
+        safe_name = self._sanitize_name(library_name)
+        return self.database_dir / "markdown" / f"{safe_name}-{markdown_hash}.md"
+
     def _get_file_path(self, library_name: str, library_hash: str) -> Path:
         """Get the file path for a library with the given name and hash.
 
@@ -64,10 +78,9 @@ class DatabaseWriter:
         Returns:
             Path to the library JSON file
         """
-        safe_name = self._sanitize_name(library_name)
-        instrumentations_dir = self.database_dir / "instrumentations" / safe_name
-        instrumentations_dir.mkdir(parents=True, exist_ok=True)
-        return instrumentations_dir / f"{safe_name}-{library_hash}.json"
+        file_path = self._instrumentation_file(library_name, library_hash)
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        return file_path
 
     def write_libraries(self, libraries: list[dict[str, Any]]) -> dict[str, str]:
         """Write library data to content-addressed files.
@@ -327,11 +340,9 @@ class DatabaseWriter:
             markdown_hash: Hash of the markdown content
             content: Markdown content string
         """
-        markdown_dir = self.database_dir / "markdown"
-        markdown_dir.mkdir(parents=True, exist_ok=True)
-
         safe_name = self._sanitize_name(library_name)
-        file_path = markdown_dir / f"{safe_name}-{markdown_hash}.md"
+        file_path = self._markdown_file(library_name, markdown_hash)
+        file_path.parent.mkdir(parents=True, exist_ok=True)
 
         if file_path.exists():
             logger.debug(f"Markdown for '{safe_name}' with hash {markdown_hash} already exists, skipping write")
@@ -392,6 +403,21 @@ class DatabaseWriter:
             Dictionary with 'files_written' (int) and 'total_bytes' (int)
         """
         return {"files_written": self.files_written, "total_bytes": self.total_bytes}
+
+    def remove_orphans(self) -> int:
+        """Delete content-addressed files no longer referenced by any version index.
+
+        See :func:`explorer_db_builder.orphan_gc.remove_orphans`. Java
+        instrumentations are referenced from two index sections (regular and
+        custom); markdown is keyed by the instrumentation's ``name``.
+        """
+        return orphan_gc.remove_orphans(
+            self.database_dir,
+            content_dir="instrumentations",
+            index_sections=("instrumentations", "custom_instrumentations"),
+            content_file=self._instrumentation_file,
+            markdown_file=self._markdown_file,
+        )
 
     def clean(self) -> None:
         """Remove all files in the database directory.

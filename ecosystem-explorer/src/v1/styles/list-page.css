@@ -1,0 +1,87 @@
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*
+ * List page (Phase 4, PR 5) — page shell: header + facet-rail/main grid.
+ * Pixel-anchored at 16px-rem. The facet rail's desktop sticky rule lives in
+ * facet-panel.css (`.td-list-page__rail .td-facet-panel`), shipped inert in
+ * PR 2 ahead of this wrapper.
+ */
+
+.td-list-page {
+  font-size: 16px;
+}
+
+.td-list-page__header {
+  border-bottom: 1px solid hsl(var(--border-hsl));
+}
+
+.td-list-page__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.td-list-page__title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.td-list-page__count {
+  margin: 0;
+  color: hsl(var(--muted-foreground-hsl));
+  font-size: 0.875rem;
+}
+
+.td-list-page__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.td-list-page__body {
+  padding-top: 1.5rem;
+}
+
+.td-list-page__layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 992px) {
+  .td-list-page__layout {
+    grid-template-columns: 280px 1fr;
+  }
+}
+
+.td-list-page__rail {
+  position: relative;
+}
+
+/* ---------- List loading ---------- */
+
+.td-list-loading {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  color: hsl(var(--muted-foreground-hsl));
+}

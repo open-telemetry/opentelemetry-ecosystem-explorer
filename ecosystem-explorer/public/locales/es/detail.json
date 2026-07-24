@@ -1,0 +1,78 @@
+{
+  "breadcrumbs": {
+    "explorer": "Explorador",
+    "components": "Componentes"
+  },
+  "loading": "Cargando componente…",
+  "notFound": {
+    "title": "Componente no encontrado",
+    "lead": "El registro no tiene una entrada para este componente en esta versión. Es posible que se haya eliminado o que nunca se haya publicado aquí."
+  },
+  "header": {
+    "source": "Código fuente",
+    "docs": "Documentación"
+  },
+  "placement": {
+    "title": "Dónde encaja",
+    "lead": "Un pipeline típico del Collector. La etapa resaltada es el tipo al que pertenece este componente."
+  },
+  "siblingNav": {
+    "filterPlaceholder": "Filtrar…",
+    "filterAriaLabel": "Filtrar {{title}}",
+    "count": "{{filtered}} de {{total}}",
+    "empty": "Sin coincidencias."
+  },
+  "railLabel": "Componentes similares y navegación en la página",
+  "onPage": {
+    "title": "En esta página"
+  },
+  "anchors": {
+    "placement": "Dónde encaja",
+    "configuration": "Configuración",
+    "readme": "README",
+    "attributes": "Atributos emitidos",
+    "examples": "Ejemplos"
+  },
+  "tabs": {
+    "ariaLabel": "Secciones del componente",
+    "configuration": "Configuración",
+    "readme": "README",
+    "attributes": "Atributos",
+    "examples": "Ejemplos"
+  },
+  "configuration": {
+    "emptyTitle": "Aún no hay esquema de configuración",
+    "emptyLead": "El registro todavía no expone un esquema de configuración para este componente. Mientras tanto, consulta el repositorio de código fuente para ver las claves YAML canónicas.",
+    "openSource": "Abrir repositorio de código fuente →",
+    "columns": {
+      "key": "Clave",
+      "type": "Tipo",
+      "default": "Predeterminado",
+      "description": "Descripción"
+    }
+  },
+  "readme": {
+    "emptyTitle": "La incorporación del README está en camino",
+    "emptyLead": "Para v1 el README se aloja en el repositorio de código fuente. Ábrelo para ver la guía y los ejemplos actualizados.",
+    "openSource": "Abrir README en GitHub →"
+  },
+  "attributes": {
+    "emptyTitle": "Los atributos emitidos aún no están catalogados",
+    "emptyLead": "El pipeline de datos todavía no expone los atributos emitidos por componente para este componente.",
+    "columns": {
+      "name": "Nombre",
+      "kind": "Tipo",
+      "description": "Descripción"
+    },
+    "kinds": {
+      "metric": "Métrica",
+      "attribute": "Atributo",
+      "resource": "Atributo de recurso"
+    }
+  },
+  "examples": {
+    "emptyTitle": "Aún no hay ejemplos curados",
+    "emptyLead": "Por ahora, consulta el repositorio de código fuente del componente para ver ejemplos de configuración e implementaciones.",
+    "openSource": "Abrir directorio de ejemplos →"
+  }
+}

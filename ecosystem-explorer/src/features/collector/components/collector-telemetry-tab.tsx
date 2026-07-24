@@ -209,7 +209,7 @@ export function CollectorTelemetryTab({
                         {t("detail.telemetryTab.unit")}
                       </span>
                       <code className="border-border/30 text-foreground/80 bg-muted/40 rounded border px-2 py-1 text-sm">
-                        {metric.unit}
+                        {metric.unit || "1"}
                       </code>
                     </div>
 

@@ -41,5 +41,48 @@
     "openAriaLabel": "Abrir filtros",
     "openWithCountAriaLabel_one": "Abrir filtros ({{count}} activo)",
     "openWithCountAriaLabel_other": "Abrir filtros ({{count}} activos)"
+  },
+  "views": {
+    "table": {
+      "columns": {
+        "name": "Nombre",
+        "type": "Tipo",
+        "signals": "Señales",
+        "distribution": "Distribución",
+        "stability": "Estabilidad"
+      }
+    }
+  },
+  "facets": {
+    "panel": {
+      "label": "Filtros",
+      "close": "Cerrar filtros"
+    },
+    "search": {
+      "title": "Buscar",
+      "placeholder": "Buscar por nombre o descripción…"
+    },
+    "type": {
+      "title": "Tipo"
+    },
+    "signal": {
+      "title": "Señal",
+      "options": {
+        "traces": "Trazas",
+        "metrics": "Métricas",
+        "logs": "Logs",
+        "baggage": "Baggage"
+      }
+    },
+    "stability": {
+      "title": "Estabilidad"
+    },
+    "distribution": {
+      "title": "Distribución"
+    },
+    "version": {
+      "title": "Versión",
+      "latest": "Más reciente"
+    }
   }
 }
