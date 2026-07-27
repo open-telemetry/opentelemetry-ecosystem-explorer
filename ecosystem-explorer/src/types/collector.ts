@@ -70,6 +70,23 @@ export interface CollectorComponent {
   resource_attributes?: { [key: string]: CollectorAttribute };
   /** Content hash of the component's README, if one was found. Used to lazily fetch the markdown file. */
   markdown_hash?: string;
+  /**
+   * Internal self-observability telemetry the component emits about its own
+   * operation (e.g. `processor_memory_limiter_refused_spans`). Distinct from
+   * `metrics`, which describes the signal data the component produces about
+   * the monitored system. Unlike Java Agent telemetry, there is no `when`
+   * condition here — Collector metadata has no configuration-dependent axis.
+   */
+  telemetry?: CollectorTelemetry;
+}
+
+/**
+ * Internal self-observability telemetry block for a Collector component.
+ * Introduced by the upstream mdatagen `telemetry:` field.
+ */
+export interface CollectorTelemetry {
+  /** Internal metrics the component emits about its own operation. Same per-metric shape as the top-level `metrics` field. */
+  metrics?: { [key: string]: CollectorMetric };
 }
 
 /**
@@ -161,4 +178,35 @@ export interface IndexComponent {
   has_readme?: boolean;
   /** Telemetry signals supported across all stability levels (e.g. ["metrics", "traces"]). */
   signals?: string[];
+}
+
+// Internal telemetry comparison types
+export type DiffStatus = "added" | "removed" | "changed" | "unchanged";
+
+/** Metric attribute keys added/removed between versions. Collector attributes are plain key references (`string[]`), so there is no per-attribute type-change concept like Java Agent's typed `Attribute`. */
+export interface CollectorAttributeChanges {
+  added: string[];
+  removed: string[];
+}
+
+export interface CollectorMetricChanges {
+  description?: { before: string; after: string };
+  unit?: { before: string; after: string };
+  enabled?: { before: boolean; after: boolean };
+  stability?: { before?: Stability; after?: Stability };
+  /** The instrument descriptor kind: "sum" | "gauge" | "histogram" | null. */
+  type?: { before: string | null; after: string | null };
+  attributes?: CollectorAttributeChanges;
+}
+
+export interface CollectorMetricDiff {
+  status: DiffStatus;
+  /** Metric name (the key in `telemetry.metrics`). */
+  name: string;
+  metric: CollectorMetric;
+  changes?: CollectorMetricChanges;
+}
+
+export interface CollectorTelemetryDiffResult {
+  metrics: CollectorMetricDiff[];
 }
