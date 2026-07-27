@@ -37,8 +37,6 @@
     "title": "Compare versions",
     "from": "From",
     "to": "To",
-    "fromAriaLabel": "Diff from version",
-    "toAriaLabel": "Diff to version",
     "submit": "Diff →"
   },
   "compat": {

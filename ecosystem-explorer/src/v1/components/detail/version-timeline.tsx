@@ -25,7 +25,7 @@
  */
 
 import { ArrowRight } from "lucide-react";
-import { useState } from "react";
+import { useId, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
@@ -107,20 +107,27 @@ export interface DiffSelectorProps {
 
 export function DiffSelector({ versions, defaultFrom, defaultTo, buildHref }: DiffSelectorProps) {
   const { t } = useTranslation("detail");
+  const fromId = useId();
+  const toId = useId();
   const [from, setFrom] = useState(defaultFrom ?? versions[1] ?? versions[0] ?? "");
   const [to, setTo] = useState(defaultTo ?? versions[0] ?? "");
   if (versions.length < 2) return null;
   return (
     <section className="td-diff-selector" aria-label={t("diffSelector.title")}>
       <h2 className="td-diff-selector__title">{t("diffSelector.title")}</h2>
+      {/* Each select is named by its visible label rather than an aria-label:
+          an aria-label replaces the accessible name outright, so a label
+          reading "From" and a name reading "Diff from version" leaves voice
+          control with no way to address the control it can see. The enclosing
+          section supplies the missing context via its own label. */}
       <div className="td-diff-selector__row">
-        <label className="td-diff-selector__label">
-          {t("diffSelector.from")}
+        <div className="td-diff-selector__label">
+          <label htmlFor={fromId}>{t("diffSelector.from")}</label>
           <select
+            id={fromId}
             className="td-facet__select"
             value={from}
             onChange={(e) => setFrom(e.target.value)}
-            aria-label={t("diffSelector.fromAriaLabel")}
           >
             {versions.map((v) => (
               <option key={v} value={v}>
@@ -128,15 +135,15 @@ export function DiffSelector({ versions, defaultFrom, defaultTo, buildHref }: Di
               </option>
             ))}
           </select>
-        </label>
+        </div>
         <ArrowRight className="td-diff-selector__arrow" aria-hidden focusable="false" />
-        <label className="td-diff-selector__label">
-          {t("diffSelector.to")}
+        <div className="td-diff-selector__label">
+          <label htmlFor={toId}>{t("diffSelector.to")}</label>
           <select
+            id={toId}
             className="td-facet__select"
             value={to}
             onChange={(e) => setTo(e.target.value)}
-            aria-label={t("diffSelector.toAriaLabel")}
           >
             {versions.map((v) => (
               <option key={v} value={v}>
@@ -144,7 +151,7 @@ export function DiffSelector({ versions, defaultFrom, defaultTo, buildHref }: Di
               </option>
             ))}
           </select>
-        </label>
+        </div>
       </div>
       <Link to={buildHref(from, to)} className="td-btn td-btn--outline-dark">
         {t("diffSelector.submit")}

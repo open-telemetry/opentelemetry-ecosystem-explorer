@@ -124,15 +124,26 @@ describe("DiffSelector", () => {
       "/diff?from=0.149.0&to=0.150.0"
     );
 
-    await user.selectOptions(
-      screen.getByRole("combobox", { name: "Diff from version" }),
-      "0.148.0"
-    );
+    // Each select is addressable by the label the user can actually see, so
+    // voice control can name it. An aria-label would have replaced that name.
+    await user.selectOptions(screen.getByRole("combobox", { name: "From" }), "0.148.0");
 
     expect(screen.getByRole("link", { name: /Diff/ })).toHaveAttribute(
       "href",
       "/diff?from=0.148.0&to=0.150.0"
     );
+  });
+
+  it("gives each select a unique id so two selectors can coexist on a page", () => {
+    render(
+      <MemoryRouter>
+        <DiffSelector versions={["0.150.0", "0.149.0"]} buildHref={() => "/diff"} />
+        <DiffSelector versions={["0.150.0", "0.149.0"]} buildHref={() => "/diff"} />
+      </MemoryRouter>
+    );
+
+    const ids = screen.getAllByRole("combobox").map((el) => el.id);
+    expect(new Set(ids).size).toBe(ids.length);
   });
 });
 

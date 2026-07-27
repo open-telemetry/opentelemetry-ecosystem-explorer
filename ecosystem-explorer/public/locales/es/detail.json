@@ -37,8 +37,6 @@
     "title": "Comparar versiones",
     "from": "Desde",
     "to": "Hasta",
-    "fromAriaLabel": "Comparar desde la versión",
-    "toAriaLabel": "Comparar hasta la versión",
     "submit": "Comparar →"
   },
   "compat": {
