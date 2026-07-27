@@ -25,7 +25,7 @@ from .deprecation_detector import DeprecationDetector
 from .inventory_manager import InventoryManager
 from .readme_scanner import discover_component_readmes
 from .schema_copier import SCHEMA_RELATIVE_PATH, UNKNOWN_HASH, CollectorSchemaCopier
-from .type_defs import DistributionName
+from .type_defs import COMPONENT_TYPES, DistributionName
 
 logger = logging.getLogger(__name__)
 
@@ -544,13 +544,21 @@ class CollectorSync:
             "versions_processed": processed,
         }
 
-    def backfill(self, versions_by_dist: dict[DistributionName, list[Version] | None] | None = None) -> dict[str, Any]:
+    def backfill(
+        self,
+        versions_by_dist: dict[DistributionName, list[Version] | None] | None = None,
+        prune_unlisted: bool = False,
+    ) -> dict[str, Any]:
         """
         Backfill versions across all distributions.
 
         Args:
             versions_by_dist: Dictionary mapping distribution to list of versions to backfill,
                             or None to auto-detect all existing versions for all distributions
+            prune_unlisted: When True, delete existing release versions not in the provided
+                            list for each distribution before backfilling. Requires an explicit
+                            version list per distribution (distributions mapped to None are left
+                            untouched). SNAPSHOT versions are always kept.
 
         Returns:
             Summary of backfill operation
@@ -565,7 +573,16 @@ class CollectorSync:
         logger.info("=" * 60)
 
         for distribution in versions_by_dist.keys():
-            result = self.backfill_versions(distribution, versions_by_dist[distribution])
+            keep = versions_by_dist[distribution]
+            if prune_unlisted and keep is not None:
+                # Reset this distribution's deprecation index so it is recomputed cleanly over
+                # only the surviving versions. Otherwise entries referencing now-deleted versions
+                # would linger in deprecations.yaml (backfill_versions appends, never clears).
+                self.deprecations[distribution] = {component_type: [] for component_type in COMPONENT_TYPES}
+                removed = self.inventory_manager.prune_release_versions_not_in(distribution, keep)
+                if removed:
+                    logger.info("Pruned %d unlisted release version(s) from %s", removed, distribution)
+            result = self.backfill_versions(distribution, keep)
             summary["backfilled"].append(result)
 
         logger.info("")

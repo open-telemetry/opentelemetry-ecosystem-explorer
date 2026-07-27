@@ -255,6 +255,12 @@ def run_javaagent_builder(
         db_writer.write_version_list(versions, bundle_hashes)
         db_writer.write_index(latest_instrumentations)
 
+        # Incremental runs never overwrite the store, so files whose hash changed are left
+        # orphaned. Sweep them now that every version index (the reachability source) is on
+        # disk. Skipped after --clean, which already wiped everything.
+        if not clean:
+            db_writer.remove_orphans()
+
         global_configurations = build_global_configurations([backfilled_inventories[v] for v in versions])
         db_writer.write_global_configurations(global_configurations)
 

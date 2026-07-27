@@ -19,12 +19,17 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { CollectorDetailPage } from "./collector-detail-page";
-import { useCollectorComponent, useCollectorVersions } from "@/hooks/use-collector-data";
+import {
+  useCollectorComponent,
+  useCollectorVersions,
+  useComponentReadme,
+} from "@/hooks/use-collector-data";
 import type { CollectorComponent } from "@/types/collector";
 
 vi.mock("@/hooks/use-collector-data", () => ({
   useCollectorComponent: vi.fn(),
   useCollectorVersions: vi.fn(),
+  useComponentReadme: vi.fn(),
 }));
 
 const mockComponentWithoutTelemetry: CollectorComponent = {
@@ -59,6 +64,11 @@ const mockComponentWithTelemetry: CollectorComponent = {
   },
 };
 
+const mockComponentWithReadme: CollectorComponent = {
+  ...mockComponentWithoutTelemetry,
+  markdown_hash: "abc123def456",
+};
+
 function renderAtRoute(path: string) {
   return render(
     <MemoryRouter initialEntries={[path]}>
@@ -72,6 +82,7 @@ function renderAtRoute(path: string) {
 describe("CollectorDetailPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(useComponentReadme).mockReturnValue({ data: null, loading: false, error: null });
   });
 
   it("shows an error state instead of an infinite loading spinner when the versions fetch fails and no ?version= is present", () => {
@@ -217,5 +228,52 @@ describe("CollectorDetailPage", () => {
     await user.click(telemetryTab);
 
     expect(screen.getByText("my.metric.name")).toBeInTheDocument();
+  });
+
+  it("does not render Readme tab when component has no markdown_hash", () => {
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: mockComponentWithoutTelemetry,
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    expect(screen.queryByRole("tab", { name: /readme/i })).not.toBeInTheDocument();
+  });
+
+  it("renders Readme tab when component has markdown_hash and displays content on click", async () => {
+    const user = userEvent.setup();
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: mockComponentWithReadme,
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useComponentReadme).mockReturnValue({
+      data: "# Usage Notes\n\nSome readme content.",
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    const readmeTab = screen.getByRole("tab", { name: /readme/i });
+    expect(readmeTab).toBeInTheDocument();
+
+    await user.click(readmeTab);
+
+    expect(useComponentReadme).toHaveBeenCalledWith("otlpreceiver", "abc123def456");
+    expect(screen.getByText("Usage Notes")).toBeInTheDocument();
+    expect(screen.getByText("Some readme content.")).toBeInTheDocument();
   });
 });

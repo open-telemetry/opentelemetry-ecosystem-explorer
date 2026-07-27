@@ -277,6 +277,45 @@ class TestRunCollectorBuilder:
 
         assert not stale.exists()
 
+    def test_removes_orphans_when_incremental(self):
+        manager = _make_mock_inventory_manager()
+        db_writer = MagicMock()
+        db_writer.write_components.return_value = {"core-nop": "hash1"}
+        db_writer.write_version_bundle.return_value = "bundlehash"
+        db_writer.get_stats.return_value = {"files_written": 1, "total_bytes": 10}
+
+        run_collector_builder(inventory_manager=manager, db_writer=db_writer, clean=False)
+
+        db_writer.remove_orphans.assert_called_once()
+
+    def test_skips_orphan_gc_when_clean(self):
+        manager = _make_mock_inventory_manager()
+        db_writer = MagicMock()
+        db_writer.write_components.return_value = {"core-nop": "hash1"}
+        db_writer.write_version_bundle.return_value = "bundlehash"
+        db_writer.get_stats.return_value = {"files_written": 1, "total_bytes": 10}
+
+        run_collector_builder(inventory_manager=manager, db_writer=db_writer, clean=True)
+
+        db_writer.remove_orphans.assert_not_called()
+
+    def test_orphaned_component_removed_on_incremental_rebuild(self, tmp_path):
+        """End-to-end: a stale component file from a prior run is swept on the next incremental build."""
+        manager = _make_mock_inventory_manager()
+        out_dir = tmp_path / "collector"
+        db_writer = CollectorDatabaseWriter(database_dir=str(out_dir))
+        run_collector_builder(inventory_manager=manager, db_writer=db_writer)
+
+        # Simulate a stale content-addressed file left by an earlier build.
+        stale = out_dir / "components" / "core-nop" / "core-nop-staleoldhash1.json"
+        stale.parent.mkdir(parents=True, exist_ok=True)
+        stale.write_text("{}", encoding="utf-8")
+
+        db_writer2 = CollectorDatabaseWriter(database_dir=str(out_dir))
+        run_collector_builder(inventory_manager=manager, db_writer=db_writer2, clean=False)
+
+        assert not stale.exists()
+
     def test_returns_1_on_no_versions(self, tmp_path):
         manager = MagicMock()
         manager.list_release_versions.return_value = []

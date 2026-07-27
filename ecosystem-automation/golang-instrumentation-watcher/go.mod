@@ -2,7 +2,7 @@ module github.com/open-telemetry/opentelemetry-ecosystem-explorer/golang-instrum
 
 go 1.26
 
-toolchain go1.26.3
+toolchain go1.26.5
 
 require (
 	github.com/joho/godotenv v1.5.1

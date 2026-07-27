@@ -808,3 +808,80 @@ def test_backfill_processes_all_distributions_when_none_specified(
 
     distributions_processed = {item["distribution"] for item in summary["backfilled"]}
     assert distributions_processed == {"core", "contrib"}
+
+
+def _seed(inventory_manager, distribution, version, sample_components):
+    inventory_manager.save_versioned_inventory(
+        distribution=distribution,
+        version=version,
+        components=sample_components,
+        repository=CollectorSync.get_repository_name(distribution),
+    )
+
+
+def test_backfill_prune_unlisted_removes_unlisted_release_versions(
+    collector_sync, sample_components, temp_inventory_dir
+):
+    im = collector_sync.inventory_manager
+    keep = Version("0.112.0")
+    snapshot = Version(major=0, minor=113, patch=0, prerelease=("SNAPSHOT",))
+    for version in [Version("0.110.0"), Version("0.111.0"), keep, snapshot]:
+        _seed(im, "core", version, sample_components)
+
+    with patch("collector_watcher.collector_sync.ComponentScanner") as mock_scanner:
+        mock_instance = Mock()
+        mock_instance.scan_all_components.return_value = sample_components
+        mock_scanner.return_value = mock_instance
+
+        summary = collector_sync.backfill(versions_by_dist={"core": [keep]}, prune_unlisted=True)
+
+    # Only the listed version is regenerated.
+    assert summary["backfilled"][0]["versions_processed"] == ["0.112.0"]
+    # Unlisted release versions are deleted.
+    assert not im.version_exists("core", Version("0.110.0"))
+    assert not im.version_exists("core", Version("0.111.0"))
+    # Listed version survives (regenerated).
+    assert im.version_exists("core", keep)
+    # The SNAPSHOT is preserved even though it is not in the keep list.
+    assert im.version_exists("core", snapshot)
+
+
+def test_backfill_without_prune_keeps_unlisted_versions(collector_sync, sample_components, temp_inventory_dir):
+    im = collector_sync.inventory_manager
+    keep = Version("0.112.0")
+    other = Version("0.110.0")
+    _seed(im, "core", keep, sample_components)
+    _seed(im, "core", other, sample_components)
+
+    with patch("collector_watcher.collector_sync.ComponentScanner") as mock_scanner:
+        mock_instance = Mock()
+        mock_instance.scan_all_components.return_value = sample_components
+        mock_scanner.return_value = mock_instance
+
+        collector_sync.backfill(versions_by_dist={"core": [keep]})
+
+    # Default behaviour leaves the unlisted version untouched.
+    assert im.version_exists("core", keep)
+    assert im.version_exists("core", other)
+
+
+def test_backfill_prune_unlisted_resets_deprecations_for_distribution(
+    collector_sync, sample_components, temp_inventory_dir
+):
+    im = collector_sync.inventory_manager
+    keep = Version("0.112.0")
+    _seed(im, "core", Version("0.110.0"), sample_components)
+    _seed(im, "core", keep, sample_components)
+
+    # Pre-existing deprecation entry that references a now-pruned version.
+    collector_sync.deprecations["core"]["receiver"] = [{"name": "gonereceiver", "deprecated_in_version": "0.111.0"}]
+
+    with patch("collector_watcher.collector_sync.ComponentScanner") as mock_scanner:
+        mock_instance = Mock()
+        mock_instance.scan_all_components.return_value = sample_components
+        mock_scanner.return_value = mock_instance
+
+        collector_sync.backfill(versions_by_dist={"core": [keep]}, prune_unlisted=True)
+
+    # The stale entry is cleared so deprecations.yaml reflects only surviving versions.
+    assert collector_sync.deprecations["core"]["receiver"] == []

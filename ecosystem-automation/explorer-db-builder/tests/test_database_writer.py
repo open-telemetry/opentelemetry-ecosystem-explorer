@@ -747,3 +747,115 @@ class TestWriteEcosystemStats:
         stats = db_writer.get_stats()
         assert stats["files_written"] == 1
         assert stats["total_bytes"] > 0
+
+
+class TestRemoveOrphans:
+    """Tests for the incremental orphan-GC sweep."""
+
+    def test_no_op_when_versions_dir_missing(self, db_writer):
+        # Nothing has been written yet, so there is no reachability source.
+        assert db_writer.remove_orphans() == 0
+
+    def test_no_op_when_everything_referenced(self, db_writer):
+        version = Version("1.0.0")
+        library_map = db_writer.write_libraries([{"name": "lib1", "version": "1.0"}])
+        db_writer.write_version_index(version, library_map)
+
+        assert db_writer.remove_orphans() == 0
+
+    def test_removes_rehashed_instrumentation(self, db_writer):
+        version = Version("2.0.0")
+        # First run: content A, referenced by the version index.
+        map_a = db_writer.write_libraries([{"name": "lib1", "version": "1.0"}])
+        db_writer.write_version_index(version, map_a)
+        # Second run: content changed -> content B, index rewritten to reference B only.
+        map_b = db_writer.write_libraries([{"name": "lib1", "version": "2.0"}])
+        db_writer.write_version_index(version, map_b)
+
+        file_a = db_writer._instrumentation_file("lib1", map_a["lib1"])
+        file_b = db_writer._instrumentation_file("lib1", map_b["lib1"])
+        assert file_a.exists() and file_b.exists()
+
+        removed = db_writer.remove_orphans()
+
+        assert removed == 1
+        assert not file_a.exists()
+        assert file_b.exists()
+
+    def test_keeps_custom_instrumentations(self, db_writer):
+        version = Version("1.0.0")
+        library_map = db_writer.write_libraries([{"name": "lib1", "version": "1.0"}])
+        custom_map = db_writer.write_libraries([{"name": "custom1", "version": "1.0"}])
+        db_writer.write_version_index(version, library_map, custom_map)
+
+        assert db_writer.remove_orphans() == 0
+        assert db_writer._instrumentation_file("custom1", custom_map["custom1"]).exists()
+
+    def test_prunes_emptied_instrumentation_dir(self, db_writer, temp_db_dir):
+        version = Version("1.0.0")
+        keep_map = db_writer.write_libraries([{"name": "keep", "version": "1.0"}])
+        # "drop" is written to disk but referenced by no index.
+        db_writer.write_libraries([{"name": "drop", "version": "1.0"}])
+        db_writer.write_version_index(version, keep_map)
+
+        removed = db_writer.remove_orphans()
+
+        assert removed == 1
+        assert not (temp_db_dir / "instrumentations" / "drop").exists()
+        assert (temp_db_dir / "instrumentations" / "keep").exists()
+
+    def test_removes_orphaned_bundle(self, db_writer, temp_db_dir):
+        version = Version("2.0.0")
+        library_map = db_writer.write_libraries([{"name": "lib1", "version": "1.0"}])
+        db_writer.write_version_index(version, library_map)
+        bundle_hash = db_writer.write_version_bundle(version, [{"name": "lib1", "_is_custom": False}])
+        db_writer.write_version_list([version], {version: bundle_hash})
+
+        # A stale bundle from a prior run, referenced by no versions-index entry.
+        orphan = temp_db_dir / "bundles" / "2.0.0-deadbeefcafe.json"
+        orphan.write_text("[]", encoding="utf-8")
+
+        removed = db_writer.remove_orphans()
+
+        assert removed == 1
+        assert not orphan.exists()
+        assert (temp_db_dir / "bundles" / f"2.0.0-{bundle_hash}.json").exists()
+
+    def test_removes_orphaned_markdown(self, db_writer, temp_db_dir):
+        version = Version("1.0.0")
+        live_hash = "livehash1234"
+        orphan_hash = "orphanhash56"
+        db_writer.write_markdown("lib1", live_hash, "# live")
+        db_writer.write_markdown("lib1", orphan_hash, "# orphan")
+        # The live instrumentation carries markdown_hash, making the live README reachable.
+        library_map = db_writer.write_libraries([{"name": "lib1", "version": "1.0", "markdown_hash": live_hash}])
+        db_writer.write_version_index(version, library_map)
+
+        removed = db_writer.remove_orphans()
+
+        assert removed == 1
+        assert (temp_db_dir / "markdown" / f"lib1-{live_hash}.md").exists()
+        assert not (temp_db_dir / "markdown" / f"lib1-{orphan_hash}.md").exists()
+
+    def test_skips_unreadable_index(self, db_writer, temp_db_dir, caplog):
+        version = Version("1.0.0")
+        library_map = db_writer.write_libraries([{"name": "lib1", "version": "1.0"}])
+        db_writer.write_version_index(version, library_map)
+        # A corrupt sibling index must not abort the sweep.
+        (temp_db_dir / "versions" / "9.9.9-index.json").write_text("{ not json", encoding="utf-8")
+
+        # lib1 is still referenced by the valid index, so nothing is removed.
+        assert db_writer.remove_orphans() == 0
+        assert "Skipping unreadable file during orphan GC" in caplog.text
+        assert db_writer._instrumentation_file("lib1", library_map["lib1"]).exists()
+
+    def test_skips_gc_when_no_index_readable(self, db_writer, temp_db_dir, caplog):
+        # Store has content on disk but every version index is unreadable, so
+        # reachability is unknown. GC must skip rather than sweep the whole store.
+        library_map = db_writer.write_libraries([{"name": "lib1", "version": "1.0"}])
+        (temp_db_dir / "versions").mkdir(exist_ok=True)
+        (temp_db_dir / "versions" / "1.0.0-index.json").write_text("{ not json", encoding="utf-8")
+
+        assert db_writer.remove_orphans() == 0
+        assert "Skipping orphan GC: no readable version index found" in caplog.text
+        assert db_writer._instrumentation_file("lib1", library_map["lib1"]).exists()

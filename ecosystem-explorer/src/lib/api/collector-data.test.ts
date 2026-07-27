@@ -71,6 +71,7 @@ describe("collector-data", () => {
     distribution: "core",
     type: "receiver",
     stability: "beta",
+    has_readme: false,
     signals: ["traces", "metrics"],
   };
   const otlpHttpExporterIndex = {
@@ -79,6 +80,7 @@ describe("collector-data", () => {
     distribution: "contrib",
     type: "exporter",
     stability: null,
+    has_readme: false,
     signals: [],
   };
 
@@ -161,6 +163,22 @@ describe("collector-data", () => {
       expect(result[1]).toEqual(otlpHttpExporterIndex);
     });
 
+    it("derives has_readme: true when the source component has a markdown_hash", async () => {
+      const withReadme: CollectorComponent = { ...otlpReceiver, markdown_hash: "abc123def456" };
+      vi.spyOn(idbCache, "getCached").mockImplementation(async (key: string) => {
+        if (key === "collector-versions-index") return versionsIndexNoBundle;
+        if (key === "collector-manifest-0.150.0") return mockVersionManifest;
+        if (key === "collector-component-hash1") return withReadme;
+        if (key === "collector-component-hash2") return otlpHttpExporter;
+        return null;
+      });
+
+      const result = await collectorData.loadAllComponents("0.150.0");
+
+      expect(result[0].has_readme).toBe(true);
+      expect(result[1].has_readme).toBe(false);
+    });
+
     it("loads the manifest only once for all components", async () => {
       const getCachedSpy = vi
         .spyOn(idbCache, "getCached")
@@ -220,6 +238,49 @@ describe("collector-data", () => {
       const result = await collectorData.loadAllComponents("0.150.0");
 
       expect(result[0].signals).toEqual(["traces", "metrics", "profiles"]);
+    });
+  });
+
+  describe("loadComponentReadme", () => {
+    it("fetches the content-addressed markdown file and returns its text", async () => {
+      vi.spyOn(idbCache, "getCached").mockResolvedValue(null);
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ok: true,
+        text: async () => "# OTLP Receiver\n\nSome docs.",
+      });
+
+      const result = await collectorData.loadComponentReadme("otlpreceiver", "abc123def456");
+
+      expect(result).toBe("# OTLP Receiver\n\nSome docs.");
+      const fetchedUrl = (global.fetch as ReturnType<typeof vi.fn>).mock.calls[0][0];
+      expect(fetchedUrl).toContain("/data/collector/markdown/otlpreceiver-abc123def456.md");
+    });
+
+    it("propagates fetch errors when loading README", async () => {
+      vi.spyOn(idbCache, "getCached").mockResolvedValue(null);
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ok: false,
+        status: 404,
+        statusText: "Not Found",
+      });
+
+      await expect(
+        collectorData.loadComponentReadme("otlpreceiver", "abc123def456")
+      ).rejects.toThrow(
+        /Failed to load collector-readme-otlpreceiver-abc123def456 from.*: 404 Not Found/
+      );
+    });
+
+    it("throws when the fetch resolves to null", async () => {
+      vi.spyOn(idbCache, "getCached").mockResolvedValue(null);
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ok: true,
+        text: async () => null,
+      });
+
+      await expect(
+        collectorData.loadComponentReadme("otlpreceiver", "abc123def456")
+      ).rejects.toThrow(/returned null unexpectedly/);
     });
   });
 });

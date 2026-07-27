@@ -166,7 +166,8 @@
     "tabs": {
       "details": "Details",
       "stability": "Stability",
-      "telemetry": "Telemetry"
+      "telemetry": "Telemetry",
+      "readme": "Readme"
     },
     "sections": {
       "componentInfo": "Component Info",
@@ -314,6 +315,10 @@
         "githubCore": "GitHub (Core)",
         "githubContrib": "GitHub (Contrib)"
       }
+    },
+    "readme": {
+      "loading": "Loading component documentation...",
+      "error": "Component documentation is not available for this version."
     },
     "loading": "Loading Collector ecosystem data...",
     "error": "Error loading Collector data"

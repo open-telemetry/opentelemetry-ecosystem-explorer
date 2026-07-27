@@ -42,6 +42,7 @@ import {
   getSemanticConventionInfo,
   getFeatureInfo,
 } from "./utils/format";
+import { isSafeUrl } from "./utils/url";
 import { TelemetrySection } from "./components/telemetry-section";
 import { TelemetryComparisonSection } from "./components/telemetry-comparison/telemetry-comparison-section";
 import { VersionSelector } from "./components/version-selector";
@@ -61,19 +62,6 @@ function buildSourceUrl(sourcePath: string): string {
     const baseUrl =
       "https://github.com/open-telemetry/opentelemetry-java-instrumentation/tree/main/";
     return new URL(sourcePath, baseUrl).toString();
-  }
-}
-
-/**
- * Returns true only when the URL uses http: or https: protocol.
- * Prevents link-based XSS from non-http(s) schemes such as javascript: or data:.
- */
-function isSafeUrl(url: string): boolean {
-  try {
-    const parsed = new URL(url);
-    return parsed.protocol === "https:" || parsed.protocol === "http:";
-  } catch {
-    return false;
   }
 }
 

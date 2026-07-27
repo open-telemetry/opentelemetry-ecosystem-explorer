@@ -399,6 +399,30 @@ class TestRunJavaagentBuilder:
         assert call_order[0] == "clean"
         assert call_order[1] == "list_versions"
 
+    def test_run_builder_removes_orphans_when_incremental(self, mock_inventory_manager, mock_db_writer):
+        versions = [Version("1.0.0")]
+        inventory_data = {"file_format": 0.2, "libraries": [{"name": "lib1"}]}
+
+        mock_inventory_manager.list_versions.return_value = versions
+        mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
+        mock_db_writer.write_libraries.return_value = {"lib1": "hash1"}
+
+        run_javaagent_builder(mock_inventory_manager, mock_db_writer, clean=False)
+
+        mock_db_writer.remove_orphans.assert_called_once()
+
+    def test_run_builder_skips_orphan_gc_when_clean(self, mock_inventory_manager, mock_db_writer):
+        versions = [Version("1.0.0")]
+        inventory_data = {"file_format": 0.2, "libraries": [{"name": "lib1"}]}
+
+        mock_inventory_manager.list_versions.return_value = versions
+        mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
+        mock_db_writer.write_libraries.return_value = {"lib1": "hash1"}
+
+        run_javaagent_builder(mock_inventory_manager, mock_db_writer, clean=True)
+
+        mock_db_writer.remove_orphans.assert_not_called()
+
     def test_aggregates_global_configurations(self, tmp_path):
         """run_javaagent_builder writes global-configurations.json with newest-version-wins."""
         inventory_manager = MagicMock()
