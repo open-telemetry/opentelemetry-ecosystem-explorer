@@ -72,7 +72,7 @@
     "pixelmatch": "7.2.0",
     "playwright": "1.61.1",
     "pngjs": "7.0.0",
-    "postcss": "8.5.19",
+    "postcss": "8.5.22",
     "prettier": "3.9.5",
     "prettier-plugin-tailwindcss": "0.8.1",
     "tailwindcss": "4.3.3",
