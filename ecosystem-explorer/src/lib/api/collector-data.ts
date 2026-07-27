@@ -112,6 +112,31 @@ export async function loadVersionManifest(version: string): Promise<VersionManif
   return data;
 }
 
+/**
+ * Resolves the releases a single component appears in, newest first.
+ *
+ * The global versions index lists every Collector release, but a component is
+ * only present from the release that introduced it onward, and a release the
+ * distributions did not tag in lockstep carries a manifest covering just the
+ * distributions that did. Callers that build per-version links need this list
+ * rather than the global one — otherwise a link resolves to a version whose
+ * manifest has no entry for the component and loadComponent throws.
+ *
+ * Manifests are small and already IndexedDB-cached by loadVersionManifest, so
+ * this is a bounded fan-out over data a detail page mostly holds already. A
+ * failed manifest rejects the whole call rather than dropping that version
+ * silently: a partial list is indistinguishable from "the component was never
+ * released there", which is the exact confusion this function exists to fix.
+ */
+export async function loadComponentVersions(distribution: string, name: string): Promise<string[]> {
+  const id = `${distribution}-${name}`;
+  const { versions } = await loadVersions();
+  const manifests = await mapWithConcurrency(versions, MAX_COMPONENT_FETCH_CONCURRENCY, (v) =>
+    loadVersionManifest(v.version)
+  );
+  return versions.filter((_, i) => Boolean(manifests[i]?.components?.[id])).map((v) => v.version);
+}
+
 export async function loadComponent(
   distribution: string,
   name: string,

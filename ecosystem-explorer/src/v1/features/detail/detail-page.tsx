@@ -42,6 +42,7 @@ import {
   useCollectorComponent,
   useCollectorComponents,
   useCollectorVersions,
+  useComponentVersions,
 } from "@/hooks/use-collector-data";
 import type { CollectorComponent } from "@/types/collector";
 import { SubNav } from "@/v1/components/layout/sub-nav";
@@ -147,11 +148,13 @@ export function CollectorDetailPageV1() {
   // bare `/collector/components/:distribution/:name` link (how the list page
   // links) resolves instead of showing "not found".
   const rawVersion = searchParams.get("version");
-  const version = rawVersion || versionsQ.data?.versions.find((v) => v.is_latest)?.version || "";
+  const latestVersion = versionsQ.data?.versions.find((v) => v.is_latest)?.version ?? "";
+  const version = rawVersion || latestVersion;
   const versionLoading = !version && !versionsQ.error;
 
   const componentQ = useCollectorComponent(distribution ?? "", name ?? "", version);
   const componentsQ = useCollectorComponents(version);
+  const componentVersionsQ = useComponentVersions(distribution ?? "", name ?? "");
 
   const component = componentQ.data;
   const loading = componentQ.loading;
@@ -224,12 +227,20 @@ export function CollectorDetailPageV1() {
     { id: "examples", label: t("anchors.examples"), tab: "examples" },
   ];
 
-  // Right-rail data. `is_latest` is the only per-version summary the registry
-  // exposes today; per-version change one-liners are deferred. Timeline and
-  // diff links target the current component's canonical distribution/name.
-  const versionEntries = (versionsQ.data?.versions ?? []).map((v) => ({
-    version: v.version,
-    summary: v.is_latest ? t("timeline.latest") : undefined,
+  // Right-rail data. Only the releases this component actually appears in: the
+  // global versions index covers every Collector release, so offering it whole
+  // links to versions whose manifest has no entry for the component and the
+  // page fails to load. While presence is in flight — or if it errored — the
+  // timeline falls back to the version being viewed, the one release known to
+  // exist, rather than making dead links clickable for the duration.
+  //
+  // `is_latest` is the only per-version summary the registry exposes today;
+  // per-version change one-liners are deferred. Timeline and diff links target
+  // the current component's canonical distribution/name.
+  const availableVersions = componentVersionsQ.data ?? [version];
+  const versionEntries = availableVersions.map((v) => ({
+    version: v,
+    summary: v === latestVersion ? t("timeline.latest") : undefined,
   }));
   const detailBase = `/collector/components/${component.distribution}/${component.name}`;
 
@@ -289,7 +300,12 @@ export function CollectorDetailPageV1() {
             buildHref={(v) => `${detailBase}?version=${encodeURIComponent(v)}`}
           />
           <DiffSelector
-            versions={versionEntries.map((v) => v.version)}
+            // The selector seeds its from/to state on first render, and the
+            // version list resolves asynchronously. Keying on the list remounts
+            // it once presence lands, so the dropdowns can't keep the values
+            // derived from the single-version fallback.
+            key={availableVersions.join(",")}
+            versions={availableVersions}
             defaultTo={version}
             buildHref={(from, to) =>
               `${detailBase}/diff?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`

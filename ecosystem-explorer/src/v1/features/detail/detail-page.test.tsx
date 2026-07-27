@@ -24,6 +24,7 @@ import {
   useCollectorComponent,
   useCollectorComponents,
   useCollectorVersions,
+  useComponentVersions,
 } from "@/hooks/use-collector-data";
 import type { CollectorComponent, IndexComponent } from "@/types/collector";
 
@@ -31,6 +32,7 @@ vi.mock("@/hooks/use-collector-data", () => ({
   useCollectorComponent: vi.fn(),
   useCollectorComponents: vi.fn(),
   useCollectorVersions: vi.fn(),
+  useComponentVersions: vi.fn(),
 }));
 
 const component: CollectorComponent = {
@@ -72,7 +74,14 @@ function mockHooks(overrides?: {
   componentState?: Partial<ReturnType<typeof useCollectorComponent>>;
   versionsState?: Partial<ReturnType<typeof useCollectorVersions>>;
   componentsState?: Partial<ReturnType<typeof useCollectorComponents>>;
+  componentVersionsState?: Partial<ReturnType<typeof useComponentVersions>>;
 }) {
+  vi.mocked(useComponentVersions).mockReturnValue({
+    data: ["0.150.0", "0.149.0"],
+    loading: false,
+    error: null,
+    ...overrides?.componentVersionsState,
+  });
   vi.mocked(useCollectorVersions).mockReturnValue({
     data: {
       versions: [
@@ -202,6 +211,53 @@ describe("CollectorDetailPageV1", () => {
 
     // Compatibility card renders (it returns null unless distributions exist).
     expect(screen.getByRole("heading", { name: "Compatibility" })).toBeInTheDocument();
+  });
+
+  it("lists only the releases the component actually appears in", () => {
+    // Regression: the rail was fed the global versions index, so a component
+    // introduced in the newest release still linked every older version. Those
+    // links resolve to a manifest with no entry for the component, and the page
+    // renders "not found".
+    mockHooks({ componentVersionsState: { data: ["0.150.0"] } });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    expect(screen.getByRole("link", { name: "0.150.0" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "0.149.0" })).not.toBeInTheDocument();
+  });
+
+  it("hides the diff selector when the component exists in a single release", () => {
+    // Nothing to compare against, so the selector renders nothing rather than
+    // offering a diff whose `from` version has no manifest entry.
+    mockHooks({ componentVersionsState: { data: ["0.150.0"] } });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    expect(screen.queryByRole("link", { name: /Diff/ })).not.toBeInTheDocument();
+  });
+
+  it("shows only the viewed release while component versions are in flight", () => {
+    // The fallback must not be the global index: rendering it during the fetch
+    // would make the dead links clickable for exactly that window.
+    mockHooks({ componentVersionsState: { data: null, loading: true, error: null } });
+
+    renderAtRoute("/collector/components/core/otlpreceiver?version=0.149.0");
+
+    expect(screen.getByRole("link", { name: "0.149.0" })).toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "0.150.0" })).not.toBeInTheDocument();
+  });
+
+  it("defaults the diff selector to a pair drawn from the filtered releases", () => {
+    // 0.148.0 is in the component's own history but not in the two-entry global
+    // index the other tests mock, proving the selector reads the filtered list.
+    mockHooks({ componentVersionsState: { data: ["0.150.0", "0.148.0"] } });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    expect(screen.getByRole("link", { name: /Diff/ })).toHaveAttribute(
+      "href",
+      "/collector/components/core/otlpreceiver/diff?from=0.148.0&to=0.150.0"
+    );
   });
 
   it("wires component telemetry into the attributes tab", async () => {
