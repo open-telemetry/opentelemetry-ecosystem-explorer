@@ -48,7 +48,6 @@
   "diff": {
     "breadcrumbLabel": "Diff",
     "componentFallback": "Component",
-    "title": "Comparing",
     "loading": "Loading both versions…",
     "errorTitle": "Couldn't load the diff",
     "invalidTitle": "Pick two versions to compare",
@@ -70,7 +69,8 @@
     "notReleasedTitle": "Not in both releases",
     "notReleasedLead_one": "{{component}} isn't part of the {{versions}} release, so there's nothing to compare.",
     "notReleasedLead_other": "{{component}} isn't part of the {{versions}} releases, so there's nothing to compare.",
-    "errorLead": "Those two versions couldn't be loaded. Check the version numbers in the URL, or head back to the component and pick the pair again."
+    "errorLead": "Those two versions couldn't be loaded. Check the version numbers in the URL, or head back to the component and pick the pair again.",
+    "heading": "Comparing <name>{{name}}</name>"
   },
   "anchors": {
     "placement": "Where this fits",

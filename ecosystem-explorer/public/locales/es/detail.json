@@ -48,7 +48,6 @@
   "diff": {
     "breadcrumbLabel": "Comparación",
     "componentFallback": "Componente",
-    "title": "Comparando",
     "loading": "Cargando ambas versiones…",
     "errorTitle": "No se pudo cargar la comparación",
     "invalidTitle": "Elige dos versiones para comparar",
@@ -70,7 +69,8 @@
     "notReleasedTitle": "No está en ambas versiones",
     "notReleasedLead_one": "{{component}} no forma parte de la versión {{versions}}, así que no hay nada que comparar.",
     "notReleasedLead_other": "{{component}} no forma parte de las versiones {{versions}}, así que no hay nada que comparar.",
-    "errorLead": "No se pudieron cargar esas dos versiones. Revisa los números de versión en la URL o vuelve al componente y elige el par de nuevo."
+    "errorLead": "No se pudieron cargar esas dos versiones. Revisa los números de versión en la URL o vuelve al componente y elige el par de nuevo.",
+    "heading": "Comparando <name>{{name}}</name>"
   },
   "anchors": {
     "placement": "Dónde encaja",

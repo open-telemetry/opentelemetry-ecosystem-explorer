@@ -30,7 +30,7 @@
 import { ArrowRight, Loader2 } from "lucide-react";
 import { useMemo } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { useCollectorComponent, useComponentVersions } from "@/hooks/use-collector-data";
 import type { CollectorComponent } from "@/types/collector";
 import { SubNav } from "@/v1/components/layout/sub-nav";
@@ -122,7 +122,14 @@ export function CollectorDiffPageV1() {
         <div className="td-box__container">
           <header className="td-diff__header">
             <h1 className="td-diff__title">
-              {t("diff.title")} <code>{name}</code>
+              {/* One key, not a verb concatenated onto a <code> span: languages
+                  order the component name and the verb differently. */}
+              <Trans
+                i18nKey="diff.heading"
+                ns="detail"
+                values={{ name: name ?? t("diff.componentFallback") }}
+                components={{ name: <code /> }}
+              />
             </h1>
             <p className="td-diff__versions">
               <strong>{from || "—"}</strong>

@@ -103,6 +103,17 @@ describe("CollectorDiffPageV1", () => {
     expect(screen.queryByText("Configuration schema")).not.toBeInTheDocument();
   });
 
+  it("renders the heading as one interpolated string, not a concatenation", () => {
+    mockByVersion({
+      "0.149.0": { data: FROM, loading: false, error: null },
+      "0.150.0": { data: TO, loading: false, error: null },
+    });
+
+    renderAtRoute(`${BASE}?from=0.149.0&to=0.150.0`);
+
+    expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent("Comparing otlpreceiver");
+  });
+
   it("renders the live metadata diff between two versions", () => {
     mockByVersion({
       "0.149.0": { data: FROM, loading: false, error: null },
