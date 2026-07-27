@@ -73,7 +73,7 @@
     "playwright": "1.61.1",
     "pngjs": "7.0.0",
     "postcss": "8.5.22",
-    "prettier": "3.9.5",
+    "prettier": "3.9.6",
     "prettier-plugin-tailwindcss": "0.8.1",
     "tailwindcss": "4.3.3",
     "typescript": "6.0.3",
