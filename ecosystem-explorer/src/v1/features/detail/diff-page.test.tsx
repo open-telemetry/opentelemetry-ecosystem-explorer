@@ -122,8 +122,12 @@ describe("CollectorDiffPageV1", () => {
 
     renderAtRoute(`${BASE}?from=0.149.0&to=0.150.0`);
 
-    // Stability signal set changed (alpha -> beta).
-    expect(screen.getByText("Stability signals:")).toBeInTheDocument();
+    // Stability levels changed (alpha -> beta), rendered as a readable list —
+    // never the "|"-joined form used internally to compare the two sets.
+    expect(screen.getByText("Stability levels:").closest("li")).toHaveTextContent(
+      "Stability levels: alpha → beta"
+    );
+    expect(screen.queryByText(/\|/)).not.toBeInTheDocument();
     // A metrics signal was added between the two versions.
     expect(screen.getByText("+ signal metrics")).toBeInTheDocument();
     // The description was reworded.

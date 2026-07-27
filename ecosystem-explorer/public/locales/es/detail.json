@@ -53,7 +53,6 @@
     "configTitle": "Esquema de configuración",
     "configEmpty": "El registro todavía no expone un esquema de configuración por versión para este componente; la comparación de esquemas se completará cuando lleguen esos datos.",
     "metadataTitle": "Metadatos",
-    "stabilityLabel": "Señales de estabilidad:",
     "signalAdded": "+ señal {{signal}}",
     "signalRemoved": "− señal {{signal}}",
     "descriptionChanged": "Se actualizó la descripción.",
@@ -68,7 +67,9 @@
     "notReleasedLead_one": "{{component}} no forma parte de la versión {{versions}}, así que no hay nada que comparar.",
     "notReleasedLead_other": "{{component}} no forma parte de las versiones {{versions}}, así que no hay nada que comparar.",
     "errorLead": "No se pudieron cargar esas dos versiones. Revisa los números de versión en la URL o vuelve al componente y elige el par de nuevo.",
-    "heading": "Comparando <name>{{name}}</name>"
+    "heading": "Comparando <name>{{name}}</name>",
+    "stabilityLevelsChanged": "<label>Niveles de estabilidad:</label> {{from}} → {{to}}",
+    "stabilityNone": "ninguno"
   },
   "anchors": {
     "placement": "Dónde encaja",

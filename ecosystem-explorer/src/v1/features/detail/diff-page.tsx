@@ -30,6 +30,7 @@
 import { ArrowRight, Loader2 } from "lucide-react";
 import { useMemo } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
+import type { TFunction } from "i18next";
 import { Trans, useTranslation } from "react-i18next";
 import { useCollectorComponent, useComponentVersions } from "@/hooks/use-collector-data";
 import type { CollectorComponent } from "@/types/collector";
@@ -45,7 +46,11 @@ function extractKeys(): SchemaKey[] {
 }
 
 interface MetadataDelta {
-  stabilityChanged?: { from: string; to: string };
+  /**
+   * The component's declared stability levels (alpha, beta, stable…), not the
+   * signals those levels cover — `signalsAdded`/`signalsRemoved` carry those.
+   */
+  stabilityLevelsChanged?: { from: string[]; to: string[] };
   descriptionChanged?: { from: string; to: string };
   signalsAdded: string[];
   signalsRemoved: string[];
@@ -53,13 +58,13 @@ interface MetadataDelta {
 
 function metadataDiff(a: CollectorComponent, b: CollectorComponent): MetadataDelta {
   const out: MetadataDelta = { signalsAdded: [], signalsRemoved: [] };
-  const aStab = Object.keys(a.status?.stability ?? {})
-    .sort()
-    .join("|");
-  const bStab = Object.keys(b.status?.stability ?? {})
-    .sort()
-    .join("|");
-  if (aStab !== bStab) out.stabilityChanged = { from: aStab || "—", to: bStab || "—" };
+  const aLevels = Object.keys(a.status?.stability ?? {}).sort();
+  const bLevels = Object.keys(b.status?.stability ?? {}).sort();
+  // Joined only to compare. The joined form is an internal encoding and must
+  // never reach the page — callers format the arrays as a readable list.
+  if (aLevels.join("|") !== bLevels.join("|")) {
+    out.stabilityLevelsChanged = { from: aLevels, to: bLevels };
+  }
   if ((a.description ?? "") !== (b.description ?? "")) {
     out.descriptionChanged = { from: a.description ?? "", to: b.description ?? "" };
   }
@@ -70,6 +75,21 @@ function metadataDiff(a: CollectorComponent, b: CollectorComponent): MetadataDel
   out.signalsAdded.sort();
   out.signalsRemoved.sort();
   return out;
+}
+
+/** Renders a stability-level set as display copy, never as the joined key. */
+function formatLevels(levels: string[], t: TFunction<"detail">): string {
+  return levels.length > 0 ? levels.join(", ") : t("diff.stabilityNone");
+}
+
+/** True when the two snapshots differ in any way this view surfaces. */
+function hasMetadataChanges(delta: MetadataDelta): boolean {
+  return Boolean(
+    delta.stabilityLevelsChanged ||
+    delta.descriptionChanged ||
+    delta.signalsAdded.length > 0 ||
+    delta.signalsRemoved.length > 0
+  );
 }
 
 export function CollectorDiffPageV1() {
@@ -191,10 +211,17 @@ export function CollectorDiffPageV1() {
               <section className="td-diff-section">
                 <h2 className="td-diff-section__title">{t("diff.metadataTitle")}</h2>
                 <ul className="td-diff-section__list">
-                  {metaDelta.stabilityChanged && (
+                  {metaDelta.stabilityLevelsChanged && (
                     <li>
-                      <strong>{t("diff.stabilityLabel")}</strong> {metaDelta.stabilityChanged.from}{" "}
-                      → {metaDelta.stabilityChanged.to}
+                      <Trans
+                        i18nKey="diff.stabilityLevelsChanged"
+                        ns="detail"
+                        values={{
+                          from: formatLevels(metaDelta.stabilityLevelsChanged.from, t),
+                          to: formatLevels(metaDelta.stabilityLevelsChanged.to, t),
+                        }}
+                        components={{ label: <strong /> }}
+                      />
                     </li>
                   )}
                   {metaDelta.signalsAdded.map((s) => (
@@ -208,10 +235,7 @@ export function CollectorDiffPageV1() {
                     </li>
                   ))}
                   {metaDelta.descriptionChanged && <li>{t("diff.descriptionChanged")}</li>}
-                  {!metaDelta.stabilityChanged &&
-                    metaDelta.signalsAdded.length === 0 &&
-                    metaDelta.signalsRemoved.length === 0 &&
-                    !metaDelta.descriptionChanged && <li>{t("diff.noMetadataChanges")}</li>}
+                  {!hasMetadataChanges(metaDelta) && <li>{t("diff.noMetadataChanges")}</li>}
                 </ul>
               </section>
             </div>
