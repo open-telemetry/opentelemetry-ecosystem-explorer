@@ -19,11 +19,12 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { CollectorDiffPageV1 } from "./diff-page";
-import { useCollectorComponent } from "@/hooks/use-collector-data";
+import { useCollectorComponent, useComponentVersions } from "@/hooks/use-collector-data";
 import type { CollectorComponent } from "@/types/collector";
 
 vi.mock("@/hooks/use-collector-data", () => ({
   useCollectorComponent: vi.fn(),
+  useComponentVersions: vi.fn(),
 }));
 
 function makeComponent(overrides: Partial<CollectorComponent>): CollectorComponent {
@@ -84,6 +85,12 @@ const BASE = "/collector/components/core/otlpreceiver/diff";
 describe("CollectorDiffPageV1", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Both releases carry the component unless a test says otherwise.
+    vi.mocked(useComponentVersions).mockReturnValue({
+      data: ["0.150.0", "0.149.0"],
+      loading: false,
+      error: null,
+    });
   });
 
   it("renders the invalid-params state when from/to are missing", () => {
@@ -155,6 +162,44 @@ describe("CollectorDiffPageV1", () => {
     renderAtRoute(`${BASE}?from=0.149.0&to=0.150.0`);
 
     expect(screen.getByRole("alert")).toHaveTextContent("Couldn't load the diff");
-    expect(screen.getByText("boom")).toBeInTheDocument();
+    // The raw exception text is a stack-trace-grade string; users get guidance.
+    expect(screen.queryByText("boom")).not.toBeInTheDocument();
+    expect(screen.getByRole("alert")).toHaveTextContent(/Check the version numbers in the URL/);
+  });
+
+  it("names the release the component is missing from instead of erroring", () => {
+    // The component was introduced in 0.150.0, so a `from` of 0.149.0 is not a
+    // failure to report — it is a release the component was never part of.
+    vi.mocked(useComponentVersions).mockReturnValue({
+      data: ["0.150.0"],
+      loading: false,
+      error: null,
+    });
+    mockByVersion({
+      "0.149.0": { data: null, loading: false, error: new Error("not found in version 0.149.0") },
+      "0.150.0": { data: TO, loading: false, error: null },
+    });
+
+    renderAtRoute(`${BASE}?from=0.149.0&to=0.150.0`);
+
+    const alert = screen.getByRole("alert");
+    expect(alert).toHaveTextContent("Not in both releases");
+    expect(alert).toHaveTextContent(/0\.149\.0/);
+    expect(alert).not.toHaveTextContent("not found in version");
+    expect(screen.queryByText("Couldn't load the diff")).not.toBeInTheDocument();
+  });
+
+  it("waits for the release list before classifying a failed load", () => {
+    // Without the wait, the generic error flashes and is replaced a tick later.
+    vi.mocked(useComponentVersions).mockReturnValue({ data: null, loading: true, error: null });
+    mockByVersion({
+      "0.149.0": { data: null, loading: false, error: new Error("boom") },
+      "0.150.0": { data: TO, loading: false, error: null },
+    });
+
+    renderAtRoute(`${BASE}?from=0.149.0&to=0.150.0`);
+
+    expect(screen.getByRole("status")).toHaveTextContent("Loading both versions…");
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 });

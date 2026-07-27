@@ -31,7 +31,7 @@ import { ArrowRight, Loader2 } from "lucide-react";
 import { useMemo } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useCollectorComponent } from "@/hooks/use-collector-data";
+import { useCollectorComponent, useComponentVersions } from "@/hooks/use-collector-data";
 import type { CollectorComponent } from "@/types/collector";
 import { SubNav } from "@/v1/components/layout/sub-nav";
 import { diffSchemas, type SchemaKey } from "@/v1/lib/schema-diff";
@@ -83,8 +83,16 @@ export function CollectorDiffPageV1() {
 
   const fromQ = useCollectorComponent(distribution ?? "", name ?? "", from);
   const toQ = useCollectorComponent(distribution ?? "", name ?? "", to);
+  const versionsQ = useComponentVersions(distribution ?? "", name ?? "");
   const loading = fromQ.loading || toQ.loading;
   const error = fromQ.error ?? toQ.error;
+
+  // `from` and `to` are user-editable and few components span every release,
+  // so "that release doesn't have this component" is the ordinary way this URL
+  // fails. Name the offending release rather than reporting a generic error.
+  const released = versionsQ.data;
+  const missingVersions = released ? [from, to].filter((v) => !released.includes(v)) : [];
+  const classifying = Boolean(error) && versionsQ.loading;
 
   const schemaDelta = useMemo(() => {
     if (!fromQ.data || !toQ.data) return null;
@@ -130,17 +138,30 @@ export function CollectorDiffPageV1() {
             </div>
           )}
 
-          {paramsValid && loading && (
+          {paramsValid && (loading || classifying) && (
             <div className="td-detail__loading" role="status" aria-live="polite">
               <Loader2 className="h-5 w-5 animate-spin" aria-hidden focusable="false" />
               <span>{t("diff.loading")}</span>
             </div>
           )}
 
-          {paramsValid && error && (
+          {paramsValid && !loading && !classifying && missingVersions.length > 0 && (
+            <div role="alert" className="td-empty">
+              <p className="td-empty__title">{t("diff.notReleasedTitle")}</p>
+              <p className="td-empty__lead">
+                {t("diff.notReleasedLead", {
+                  component: name,
+                  versions: missingVersions.join(", "),
+                  count: missingVersions.length,
+                })}
+              </p>
+            </div>
+          )}
+
+          {paramsValid && !loading && !classifying && error && missingVersions.length === 0 && (
             <div role="alert" className="td-empty">
               <p className="td-empty__title">{t("diff.errorTitle")}</p>
-              <p className="td-empty__lead">{error.message}</p>
+              <p className="td-empty__lead">{t("diff.errorLead")}</p>
             </div>
           )}
 

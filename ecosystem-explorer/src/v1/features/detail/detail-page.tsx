@@ -35,7 +35,7 @@
 
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { CollectorComponentType } from "@/components/ui/type-stripe-colors";
 import {
@@ -160,7 +160,16 @@ export function CollectorDetailPageV1() {
   const loading = componentQ.loading;
   const error = componentQ.error;
 
-  if (loading || versionLoading) {
+  // A component missing from the requested release is an expected state, not a
+  // failure, so it gets its own designed answer below. Deciding which of the
+  // two a failed load is needs the release list, so wait for it rather than
+  // flashing the generic message and swapping it a moment later.
+  const releasedVersions = componentVersionsQ.data;
+  const notReleasedHere = Boolean(
+    version && releasedVersions && !releasedVersions.includes(version)
+  );
+
+  if (loading || versionLoading || (error && componentVersionsQ.loading)) {
     return (
       <div className="td-detail">
         <div className="td-detail__loading" role="status" aria-live="polite">
@@ -171,7 +180,10 @@ export function CollectorDetailPageV1() {
     );
   }
 
-  if (error || (!version && versionsQ.error) || !component) {
+  if (notReleasedHere || error || (!version && versionsQ.error) || !component) {
+    // The registry simply has no entry here: name the release, and offer the
+    // newest one that does carry the component so the user isn't dead-ended.
+    const suggestion = notReleasedHere ? releasedVersions?.[0] : undefined;
     return (
       <div className="td-detail">
         <SubNav
@@ -186,10 +198,24 @@ export function CollectorDetailPageV1() {
           <div className="td-box__container">
             <div className="td-empty" role="alert">
               <AlertCircle className="h-6 w-6" aria-hidden focusable="false" />
-              <p className="td-empty__title">{t("notFound.title")}</p>
-              <p className="td-empty__lead">
-                {(error ?? versionsQ.error)?.message ?? t("notFound.lead")}
+              <p className="td-empty__title">
+                {notReleasedHere ? t("notReleased.title") : t("notFound.title")}
               </p>
+              <p className="td-empty__lead">
+                {notReleasedHere
+                  ? t("notReleased.lead", { component: name, version })
+                  : t("notFound.lead")}
+              </p>
+              {suggestion && (
+                <Link
+                  className="td-btn td-btn--outline-dark"
+                  to={`/collector/components/${distribution}/${name}?version=${encodeURIComponent(
+                    suggestion
+                  )}`}
+                >
+                  {t("notReleased.cta", { version: suggestion })}
+                </Link>
+              )}
             </div>
           </div>
         </div>

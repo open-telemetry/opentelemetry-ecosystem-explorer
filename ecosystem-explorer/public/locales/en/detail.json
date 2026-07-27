@@ -66,7 +66,11 @@
       "removed": "Removed",
       "renamed": "Renamed",
       "typeChanged": "Type changed"
-    }
+    },
+    "notReleasedTitle": "Not in both releases",
+    "notReleasedLead_one": "{{component}} isn't part of the {{versions}} release, so there's nothing to compare.",
+    "notReleasedLead_other": "{{component}} isn't part of the {{versions}} releases, so there's nothing to compare.",
+    "errorLead": "Those two versions couldn't be loaded. Check the version numbers in the URL, or head back to the component and pick the pair again."
   },
   "anchors": {
     "placement": "Where this fits",
@@ -116,5 +120,10 @@
     "emptyTitle": "No curated examples yet",
     "emptyLead": "For now, see the component's source repository for example configurations and deployments.",
     "openSource": "Open examples directory →"
+  },
+  "notReleased": {
+    "title": "Not in this release",
+    "lead": "{{component}} isn't part of the {{version}} release of the Collector.",
+    "cta": "View {{version}} instead"
   }
 }

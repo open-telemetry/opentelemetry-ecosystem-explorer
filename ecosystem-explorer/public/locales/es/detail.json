@@ -66,7 +66,11 @@
       "removed": "Eliminado",
       "renamed": "Renombrado",
       "typeChanged": "Tipo cambiado"
-    }
+    },
+    "notReleasedTitle": "No está en ambas versiones",
+    "notReleasedLead_one": "{{component}} no forma parte de la versión {{versions}}, así que no hay nada que comparar.",
+    "notReleasedLead_other": "{{component}} no forma parte de las versiones {{versions}}, así que no hay nada que comparar.",
+    "errorLead": "No se pudieron cargar esas dos versiones. Revisa los números de versión en la URL o vuelve al componente y elige el par de nuevo."
   },
   "anchors": {
     "placement": "Dónde encaja",
@@ -116,5 +120,10 @@
     "emptyTitle": "Aún no hay ejemplos curados",
     "emptyLead": "Por ahora, consulta el repositorio de código fuente del componente para ver ejemplos de configuración e implementaciones.",
     "openSource": "Abrir directorio de ejemplos →"
+  },
+  "notReleased": {
+    "title": "No está en esta versión",
+    "lead": "{{component}} no forma parte de la versión {{version}} del Collector.",
+    "cta": "Ver {{version}} en su lugar"
   }
 }

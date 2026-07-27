@@ -158,7 +158,42 @@ describe("CollectorDetailPageV1", () => {
     renderAtRoute("/collector/components/core/otlpreceiver");
 
     expect(screen.getByRole("alert")).toHaveTextContent("Component not found");
-    expect(screen.getByText("boom")).toBeInTheDocument();
+    // The raw exception text is a stack-trace-grade string; users get the copy.
+    expect(screen.queryByText("boom")).not.toBeInTheDocument();
+    expect(screen.getByRole("alert")).toHaveTextContent(/The registry has no entry/);
+  });
+
+  it("names the release a component is missing from and links one that has it", () => {
+    // Reaching a version the component was never in is an expected state, not
+    // a load failure, so it gets its own answer plus a way out.
+    mockHooks({
+      componentVersionsState: { data: ["0.150.0"] },
+      componentState: { data: null, loading: false, error: new Error("not found in 0.149.0") },
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver?version=0.149.0");
+
+    const alert = screen.getByRole("alert");
+    expect(alert).toHaveTextContent("Not in this release");
+    expect(alert).toHaveTextContent(/0\.149\.0/);
+    expect(alert).not.toHaveTextContent("not found in 0.149.0");
+    expect(screen.getByRole("link", { name: "View 0.150.0 instead" })).toHaveAttribute(
+      "href",
+      "/collector/components/core/otlpreceiver?version=0.150.0"
+    );
+  });
+
+  it("waits for the release list before classifying a failed load", () => {
+    // Without the wait, the generic not-found flashes and is replaced a tick later.
+    mockHooks({
+      componentVersionsState: { data: null, loading: true, error: null },
+      componentState: { data: null, loading: false, error: new Error("boom") },
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver?version=0.149.0");
+
+    expect(screen.getByRole("status")).toHaveTextContent("Loading component…");
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
   it("builds sibling links as /distribution/name and drops non-matching types", () => {
