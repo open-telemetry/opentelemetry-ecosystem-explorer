@@ -6997,6 +6997,10 @@ components:
       kafka.cluster.alias:
         description: The alias name (string) of the cluster
         type: string
+      kafka.cluster.id:
+        description: The unique ID (string) of the Kafka cluster, as reported in cluster
+          metadata.
+        type: string
 - name: kafkareceiver
   metadata:
     type: kafka
