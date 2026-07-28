@@ -71,17 +71,25 @@ class MetadataParserV1(BaseMetadataParser):
     """Parser for the current collector metadata schema (pre-file_format era).
 
     Gives dedicated normalization (sanitized descriptions, deterministic key/
-    list ordering) to: type, display_name, description, status, attributes,
-    metrics, resource_attributes, telemetry. Every other field present in the
-    source file — `tests`, `sem_conv_version`, `config`, `entities`, `events`,
-    `feature_gates`, or anything the upstream mdatagen schema adds later — is
-    passed through verbatim rather than dropped, so new top-level fields do
-    not require a code change here. The same pass-through-unless-normalized
-    rule applies one level down inside `status`, each `attributes`/
-    `resource_attributes` entry, and each `metrics` entry: only the specific
-    sub-fields that need sanitization or stable ordering are enumerated, and
-    anything else on those objects is preserved as-is.
+    list ordering) to: description, status, attributes, metrics,
+    resource_attributes, telemetry.metrics. Every other field present in the
+    source file — `type`, `display_name`, `sem_conv_version`, `config`,
+    `entities`, `events`, `feature_gates`, or anything the upstream mdatagen
+    schema adds later — is passed through verbatim rather than dropped (see
+    `_merge_known_fields`), so new fields do not require a code change here.
+    The same pass-through-unless-normalized rule applies one level down
+    inside `status`, each `attributes`/`resource_attributes` entry, each
+    `metrics` entry, and `telemetry`: only the specific sub-fields that need
+    sanitization or stable ordering are enumerated, and anything else on
+    those objects is preserved as-is. `EXCLUDED_FIELDS` names top-level
+    fields dropped entirely instead of passed through.
     """
+
+    #: Top-level metadata.yaml fields dropped from parsed output entirely,
+    #: rather than passed through generically. `tests` is fixture/test-only
+    #: config with no value to the registry. Extend this set to exclude
+    #: additional fields in the future.
+    EXCLUDED_FIELDS: frozenset[str] = frozenset({"tests"})
 
     def get_schema_version(self) -> str:
         return "v1"
@@ -90,42 +98,31 @@ class MetadataParserV1(BaseMetadataParser):
         if not raw:
             return None
 
-        parsed: dict[str, Any] = {}
-
-        if "type" in raw:
-            parsed["type"] = raw["type"]
-
-        if "display_name" in raw:
-            parsed["display_name"] = raw["display_name"]
+        normalized: dict[str, Any] = {}
 
         if "description" in raw:
-            parsed["description"] = self._sanitize_description(raw["description"])
+            normalized["description"] = self._sanitize_description(raw["description"])
 
         if "status" in raw:
-            parsed["status"] = self._parse_status(raw["status"])
+            normalized["status"] = self._parse_status(raw["status"])
 
         if "attributes" in raw:
-            parsed["attributes"] = self._parse_attributes(raw["attributes"])
+            normalized["attributes"] = self._parse_attributes(raw["attributes"])
 
         if "metrics" in raw:
-            parsed["metrics"] = self._parse_metrics(raw["metrics"])
+            normalized["metrics"] = self._parse_metrics(raw["metrics"])
 
         if "resource_attributes" in raw:
-            parsed["resource_attributes"] = self._parse_attributes(raw["resource_attributes"])
+            normalized["resource_attributes"] = self._parse_attributes(raw["resource_attributes"])
 
-        if "telemetry" in raw:
-            parsed["telemetry"] = self._parse_telemetry(raw["telemetry"])
+        if isinstance(raw.get("telemetry"), dict):
+            telemetry = raw["telemetry"]
+            telemetry_normalized: dict[str, Any] = {}
+            if "metrics" in telemetry:
+                telemetry_normalized["metrics"] = self._parse_metrics(telemetry["metrics"])
+            normalized["telemetry"] = self._merge_known_fields(telemetry, telemetry_normalized)
 
-        # Anything else on the file - present today or added upstream later -
-        # has no sanitization or ordering requirement of its own, so it is
-        # copied through unchanged instead of being silently dropped. This is
-        # what lets the parser absorb future mdatagen schema growth without a
-        # code change per field; only fields needing bespoke handling (above)
-        # get one.
-        for key, value in raw.items():
-            if key not in parsed:
-                parsed[key] = value
-
+        parsed = self._merge_known_fields(raw, normalized, exclude=self.EXCLUDED_FIELDS)
         return parsed or None
 
     @staticmethod
@@ -136,37 +133,44 @@ class MetadataParserV1(BaseMetadataParser):
         cleaned = description.strip().replace("\n", " ")
         return re.sub(r"\s+", " ", cleaned)
 
-    def _parse_status(self, status: dict[str, Any]) -> dict[str, Any]:
-        parsed: dict[str, Any] = {}
+    @staticmethod
+    def _merge_known_fields(
+        source: dict[str, Any], normalized: dict[str, Any], exclude: frozenset[str] = frozenset()
+    ) -> dict[str, Any]:
+        """Layer normalized values over a verbatim copy of `source`, key-sorted.
 
-        if "class" in status:
-            parsed["class"] = status["class"]
+        Fields present in `normalized` (dedicated sanitization/ordering) win;
+        every other field from `source` is copied through unchanged so
+        unrecognized or future schema fields are never silently dropped.
+        `exclude` names fields to drop entirely rather than pass through.
+        Output keys are sorted alphabetically so the same input always
+        produces the same key order, independent of the source YAML's field
+        order, keeping the content-addressed registry output deterministic.
+        """
+        merged = {**source, **normalized}
+        for key in exclude:
+            merged.pop(key, None)
+        return dict(sorted(merged.items()))
+
+    def _parse_status(self, status: dict[str, Any]) -> dict[str, Any]:
+        normalized: dict[str, Any] = {}
 
         if "stability" in status:
             stability: dict[str, Any] = {}
             for level in sorted(status["stability"].keys()):
                 signals = status["stability"][level]
                 stability[level] = sorted(signals) if isinstance(signals, list) else signals
-            parsed["stability"] = stability
+            normalized["stability"] = stability
 
         if "distributions" in status:
             dists = status["distributions"]
-            parsed["distributions"] = sorted(dists) if isinstance(dists, list) else dists
-
-        if "codeowners" in status:
-            parsed["codeowners"] = status["codeowners"]
+            normalized["distributions"] = sorted(dists) if isinstance(dists, list) else dists
 
         if "unsupported_platforms" in status:
             platforms = status["unsupported_platforms"]
-            parsed["unsupported_platforms"] = sorted(platforms) if isinstance(platforms, list) else platforms
+            normalized["unsupported_platforms"] = sorted(platforms) if isinstance(platforms, list) else platforms
 
-        # e.g. `deprecation`, `warnings`, or any future addition to the status
-        # object: no ordering/sanitization need of its own, so preserve as-is.
-        for key, value in status.items():
-            if key not in parsed:
-                parsed[key] = value
-
-        return parsed
+        return self._merge_known_fields(status, normalized)
 
     def _parse_attributes(self, attributes: dict[str, Any]) -> dict[str, Any]:
         if not attributes:
@@ -176,20 +180,12 @@ class MetadataParserV1(BaseMetadataParser):
         for attr_name in sorted(attributes.keys()):
             attr = attributes[attr_name]
             if isinstance(attr, dict):
-                parsed_attr: dict[str, Any] = {}
+                normalized: dict[str, Any] = {}
                 if "description" in attr:
-                    parsed_attr["description"] = self._sanitize_description(attr["description"])
-                if "type" in attr:
-                    parsed_attr["type"] = attr["type"]
-                if "name_override" in attr:
-                    parsed_attr["name_override"] = attr["name_override"]
+                    normalized["description"] = self._sanitize_description(attr["description"])
                 if "enum" in attr:
-                    parsed_attr["enum"] = sorted(attr["enum"]) if isinstance(attr["enum"], list) else attr["enum"]
-                # e.g. `requirement_level`, `semantic_convention`: preserve as-is.
-                for key, value in attr.items():
-                    if key not in parsed_attr:
-                        parsed_attr[key] = value
-                parsed[attr_name] = parsed_attr
+                    normalized["enum"] = sorted(attr["enum"]) if isinstance(attr["enum"], list) else attr["enum"]
+                parsed[attr_name] = self._merge_known_fields(attr, normalized)
             else:
                 parsed[attr_name] = attr
 
@@ -203,51 +199,15 @@ class MetadataParserV1(BaseMetadataParser):
         for metric_name in sorted(metrics.keys()):
             metric = metrics[metric_name]
             if isinstance(metric, dict):
-                parsed_metric: dict[str, Any] = {}
+                normalized: dict[str, Any] = {}
                 if "description" in metric:
-                    parsed_metric["description"] = self._sanitize_description(metric["description"])
-                if "unit" in metric:
-                    parsed_metric["unit"] = metric["unit"]
-                if "enabled" in metric:
-                    parsed_metric["enabled"] = metric["enabled"]
-                for metric_type in ["sum", "gauge", "histogram"]:
-                    if metric_type in metric:
-                        parsed_metric[metric_type] = metric[metric_type]
+                    normalized["description"] = self._sanitize_description(metric["description"])
                 if "attributes" in metric:
                     attrs = metric["attributes"]
-                    parsed_metric["attributes"] = sorted(attrs) if isinstance(attrs, list) else attrs
-                if "stability" in metric:
-                    parsed_metric["stability"] = metric["stability"]
-                # e.g. `extended_documentation`, `warnings`, `entity`,
-                # `deprecated`, `semantic_convention`, `migration`: preserve as-is.
-                for key, value in metric.items():
-                    if key not in parsed_metric:
-                        parsed_metric[key] = value
-                parsed[metric_name] = parsed_metric
+                    normalized["attributes"] = sorted(attrs) if isinstance(attrs, list) else attrs
+                parsed[metric_name] = self._merge_known_fields(metric, normalized)
             else:
                 parsed[metric_name] = metric
-
-        return parsed
-
-    def _parse_telemetry(self, telemetry: dict[str, Any]) -> dict[str, Any]:
-        """Parse the `telemetry` block: internal metrics the component itself emits.
-
-        `telemetry.metrics` has the same per-metric shape as the top-level
-        `metrics` field (name -> description/unit/sum.../attributes/stability),
-        so it reuses `_parse_metrics` for the same determinism and description
-        sanitization. Any other key on `telemetry` is preserved as-is.
-        """
-        if not telemetry:
-            return {}
-
-        parsed: dict[str, Any] = {}
-
-        if "metrics" in telemetry:
-            parsed["metrics"] = self._parse_metrics(telemetry["metrics"])
-
-        for key, value in telemetry.items():
-            if key not in parsed:
-                parsed[key] = value
 
         return parsed
 

@@ -272,10 +272,9 @@ metrics:
 
 
 def test_parse_memorylimiterprocessor_fixture_includes_telemetry(temp_component_dir):
-    """Regression test for GH-876: a real-shaped metadata.yaml (mirroring
-    opentelemetry-collector's memorylimiterprocessor, the file cited in the
-    issue) must retain its `telemetry` block through the full file-I/O path,
-    not just the in-memory parser unit tests above."""
+    """A real-shaped metadata.yaml (mirroring opentelemetry-collector's
+    memorylimiterprocessor) must retain its `telemetry` block through the
+    full file-I/O path, not just the in-memory parser unit tests above."""
     content = """
 display_name: Memory Limiter Processor
 type: memory_limiter
@@ -319,7 +318,6 @@ telemetry:
     metadata = parser.parse()
 
     assert metadata is not None
-    # The field the issue reports as missing.
     assert "telemetry" in metadata
     telemetry_metrics = metadata["telemetry"]["metrics"]
     assert set(telemetry_metrics.keys()) == {
@@ -328,11 +326,12 @@ telemetry:
     }
     assert telemetry_metrics["processor_memory_limiter_accepted_log_records"]["unit"] == "{record}"
 
-    # Fields with no dedicated normalizer, also silently dropped before this
-    # fix, are preserved too - this was not a telemetry-only bug.
+    # Fields with no dedicated normalizer are preserved too, not just telemetry.
     assert metadata["github_project"] == "open-telemetry/opentelemetry-collector"
-    assert metadata["tests"] == {"config": {"check_interval": "5s", "limit_mib": 400, "spike_limit_mib": 50}}
     assert metadata["status"]["disable_codecov_badge"] is True
+
+    # The `tests` node is excluded entirely.
+    assert "tests" not in metadata
 
 
 def test_has_metadata_returns_false_for_missing_file(temp_component_dir):
@@ -484,18 +483,124 @@ def test_parser_v1_passes_through_unknown_top_level_fields():
 
 def test_parser_v1_passes_through_known_but_unhandled_top_level_fields():
     """Fields that exist in the upstream schema today but have no dedicated
-    normalizer (e.g. `tests`, `sem_conv_version`, `config`) are preserved
-    verbatim rather than requiring bespoke handling."""
+    normalizer (e.g. `sem_conv_version`, `config`) are preserved verbatim
+    rather than requiring bespoke handling."""
     raw = {
         "type": "test",
         "sem_conv_version": "1.9.0",
-        "tests": {"config": {"endpoint": "localhost:1234"}},
         "config": {"type": "object", "properties": {}},
     }
     result = MetadataParserV1().parse(raw)
     assert result["sem_conv_version"] == "1.9.0"
-    assert result["tests"] == {"config": {"endpoint": "localhost:1234"}}
     assert result["config"] == {"type": "object", "properties": {}}
+
+
+def test_parser_v1_excludes_tests_node():
+    """The `tests` node is dropped entirely rather than passed through,
+    while other unknown fields are still preserved."""
+    raw = {
+        "type": "test",
+        "tests": {"config": {"endpoint": "localhost:1234"}},
+        "sem_conv_version": "1.9.0",
+    }
+    result = MetadataParserV1().parse(raw)
+    assert "tests" not in result
+    assert result["sem_conv_version"] == "1.9.0"
+
+
+def test_parser_v1_excluded_fields_is_easy_to_extend():
+    """EXCLUDED_FIELDS is a plain class-level set, so adding another
+    exclusion is a one-line change with no parsing logic to touch."""
+    assert MetadataParserV1.EXCLUDED_FIELDS == frozenset({"tests"})
+
+
+def test_parser_v1_output_keys_are_sorted():
+    """Top-level parsed output keys are sorted alphabetically, independent
+    of the source dict's insertion order, so the same logical content always
+    serializes identically for the content-addressed registry."""
+    raw_a = {"type": "test", "display_name": "Test", "description": "A component."}
+    raw_b = {"description": "A component.", "display_name": "Test", "type": "test"}
+
+    result_a = MetadataParserV1().parse(raw_a)
+    result_b = MetadataParserV1().parse(raw_b)
+
+    assert list(result_a.keys()) == sorted(result_a.keys())
+    assert result_a == result_b
+    assert list(result_a.keys()) == list(result_b.keys())
+
+
+def test_parser_v1_nested_dict_keys_are_sorted():
+    """Ordering determinism also applies to nested objects that mix
+    dedicated normalization with passthrough fields: status and telemetry."""
+    raw = {
+        "type": "test",
+        "status": {"distributions": ["core"], "class": "receiver", "codeowners": {"active": ["a"]}},
+        "telemetry": {"future_telemetry_field": "value", "metrics": {}},
+    }
+    result = MetadataParserV1().parse(raw)
+    assert list(result["status"].keys()) == sorted(result["status"].keys())
+    assert list(result["telemetry"].keys()) == sorted(result["telemetry"].keys())
+
+
+def test_parser_v1_attribute_and_metric_dict_keys_are_sorted():
+    """Ordering determinism also applies within each attribute/metric entry."""
+    raw = {
+        "type": "test",
+        "attributes": {"a": {"type": "string", "description": "d", "requirement_level": "required"}},
+        "metrics": {"m": {"unit": "1", "description": "d", "gauge": {"value_type": "int"}, "stability": "beta"}},
+    }
+    result = MetadataParserV1().parse(raw)
+    assert list(result["attributes"]["a"].keys()) == sorted(result["attributes"]["a"].keys())
+    assert list(result["metrics"]["m"].keys()) == sorted(result["metrics"]["m"].keys())
+
+
+def test_parser_v1_preserves_fields_that_previously_had_no_op_normalizers():
+    """`type`/`display_name` at the top level, `status.class`/`codeowners`,
+    `attribute.type`/`name_override`, and `metric.unit`/`enabled`/`sum`/
+    `gauge`/`histogram`/`stability` used to be copied via explicit
+    single-line reassignment with no actual processing. That reassignment
+    code was removed in favor of the generic passthrough merge, so this
+    verifies those fields still come through correctly via the public
+    parser behavior."""
+    raw = {
+        "type": "otlp",
+        "display_name": "OTLP Receiver",
+        "status": {
+            "class": "receiver",
+            "codeowners": {"active": ["someone"]},
+        },
+        "attributes": {
+            "http.method": {
+                "type": "string",
+                "name_override": "method",
+            }
+        },
+        "metrics": {
+            "requests.count": {
+                "unit": "1",
+                "enabled": True,
+                "sum": {"value_type": "int", "monotonic": True},
+                "gauge": {"value_type": "double"},
+                "histogram": {"value_type": "int"},
+                "stability": "beta",
+            }
+        },
+    }
+    result = MetadataParserV1().parse(raw)
+
+    assert result["type"] == "otlp"
+    assert result["display_name"] == "OTLP Receiver"
+    assert result["status"]["class"] == "receiver"
+    assert result["status"]["codeowners"] == {"active": ["someone"]}
+    assert result["attributes"]["http.method"]["type"] == "string"
+    assert result["attributes"]["http.method"]["name_override"] == "method"
+    metric = result["metrics"]["requests.count"]
+    assert metric["unit"] == "1"
+    assert metric["enabled"] is True
+    assert metric["sum"] == {"value_type": "int", "monotonic": True}
+    assert metric["gauge"] == {"value_type": "double"}
+    assert metric["histogram"] == {"value_type": "int"}
+    assert metric["stability"] == "beta"
 
 
 def test_parser_v1_parses_telemetry_metrics():
