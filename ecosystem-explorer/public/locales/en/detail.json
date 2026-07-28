@@ -23,8 +23,53 @@
     "empty": "No matches."
   },
   "railLabel": "Siblings and on-page navigation",
+  "rightRailLabel": "Version history and compatibility",
   "onPage": {
     "title": "On this page"
+  },
+  "timeline": {
+    "title": "Version history",
+    "latest": "Latest release",
+    "showAll": "Show all {{count}} versions",
+    "showFewer": "Show fewer"
+  },
+  "diffSelector": {
+    "title": "Compare versions",
+    "from": "From",
+    "to": "To",
+    "submit": "Diff →"
+  },
+  "compat": {
+    "title": "Compatibility",
+    "distributions": "Distributions"
+  },
+  "diff": {
+    "breadcrumbLabel": "Diff",
+    "componentFallback": "Component",
+    "loading": "Loading both versions…",
+    "errorTitle": "Couldn't load the diff",
+    "invalidTitle": "Pick two versions to compare",
+    "invalidLead": "This page needs a `from` and a `to` version in the URL. Head back to the component and use the version comparison selector to choose two releases.",
+    "configTitle": "Configuration schema",
+    "configEmpty": "The registry doesn't yet expose a per-version config schema for this component — the schema diff will populate when that data lands.",
+    "metadataTitle": "Metadata",
+    "signalAdded": "+ signal {{signal}}",
+    "signalRemoved": "− signal {{signal}}",
+    "descriptionChanged": "Description was updated.",
+    "noMetadataChanges": "No metadata changes between these versions.",
+    "buckets": {
+      "added": "Added",
+      "removed": "Removed",
+      "renamed": "Renamed",
+      "typeChanged": "Type changed"
+    },
+    "notReleasedTitle": "Not in both releases",
+    "notReleasedLead_one": "{{component}} isn't part of the {{versions}} release, so there's nothing to compare.",
+    "notReleasedLead_other": "{{component}} isn't part of the {{versions}} releases, so there's nothing to compare.",
+    "errorLead": "Those two versions couldn't be loaded. Check the version numbers in the URL, or head back to the component and pick the pair again.",
+    "heading": "Comparing <name>{{name}}</name>",
+    "stabilityLevelsChanged": "<label>Stability levels:</label> {{from}} → {{to}}",
+    "stabilityNone": "none"
   },
   "anchors": {
     "placement": "Where this fits",
@@ -74,5 +119,10 @@
     "emptyTitle": "No curated examples yet",
     "emptyLead": "For now, see the component's source repository for example configurations and deployments.",
     "openSource": "Open examples directory →"
+  },
+  "notReleased": {
+    "title": "Not in this release",
+    "lead": "{{component}} isn't part of the {{version}} release of the Collector.",
+    "cta": "View {{version}} instead"
   }
 }

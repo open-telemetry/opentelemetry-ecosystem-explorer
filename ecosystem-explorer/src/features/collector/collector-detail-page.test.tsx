@@ -86,6 +86,11 @@ const mockComponentWithInternalTelemetry: CollectorComponent = {
   },
 };
 
+const mockComponentWithBacktickDescription: CollectorComponent = {
+  ...mockComponentWithoutTelemetry,
+  description: "Fetches metrics via the `/metrics/json` endpoint.",
+};
+
 function renderAtRoute(path: string) {
   return render(
     <MemoryRouter initialEntries={[path]}>
@@ -167,6 +172,23 @@ describe("CollectorDetailPage", () => {
     expect(
       screen.queryByRole("heading", { name: "Error loading component" })
     ).not.toBeInTheDocument();
+  });
+
+  it("renders backtick-wrapped text in the description as code elements", () => {
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: mockComponentWithBacktickDescription,
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    expect(screen.getByText("/metrics/json").tagName).toBe("CODE");
   });
 
   it("preserves the existing error UI when the component fetch itself fails with a valid version", () => {

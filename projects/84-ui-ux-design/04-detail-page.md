@@ -3,8 +3,8 @@ title: "Phase 5 — Component detail page"
 issue: 84
 type: plan
 phase: 5
-status: planning
-last_updated: "2026-05-06"
+status: in-progress
+last_updated: "2026-07-20"
 ---
 
 > [!NOTE]
@@ -33,6 +33,13 @@ pipeline diagram), right version timeline + diff + compatibility card.
 - **PR 04a** — Three-pane shell + embedded docs (header, sibling nav, tabbed content,
   pipeline-placement diagram).
 - **PR 04b** — Version timeline + diff view + compatibility card.
+
+**As executed (2026-07-20):** 04a opened as
+[#869](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/869) (PR A) and 04b
+as [#870](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/870) (PR B,
+stacked on A), consolidating the 10-PR breakdown that #374 originally carried. Deferred out of the
+phase: per-version config schemas (decision #9), README rendering, the README diff toggle, and
+per-version timeline summaries — see the `NEXT-STEPS.md` decision log.
 
 ## Goal
 

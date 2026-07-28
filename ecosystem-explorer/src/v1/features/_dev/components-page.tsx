@@ -63,6 +63,11 @@ import {
   ExamplesTab,
   ReadmeTab,
 } from "@/v1/components/detail/tabs";
+import {
+  CompatibilityCard,
+  DiffSelector,
+  VersionTimeline,
+} from "@/v1/components/detail/version-timeline";
 import { CoverBlock } from "@/v1/components/home/cover-block";
 import { EcosystemsGrid } from "@/v1/components/home/ecosystems-grid";
 import { GlobalSearch } from "@/v1/components/home/global-search";
@@ -412,6 +417,16 @@ const SIBLING_ITEMS: SiblingItem[] = [
   },
 ];
 
+// Right-rail fixture: a handful of releases with the newest marked latest, so
+// the timeline highlights the current entry and the diff selector has >=2
+// versions to offer.
+const RIGHT_RAIL_VERSIONS = [
+  { version: "v0.150.0", summary: "Latest release" },
+  { version: "v0.149.0" },
+  { version: "v0.148.0" },
+  { version: "v0.147.0" },
+];
+
 // DetailTabs owns the selected-tab state on the real page; the showcase holds
 // it locally so every panel is reachable under the screenshot/a11y capture.
 function DetailTabsShowcase() {
@@ -727,6 +742,30 @@ export function DevComponentsPage() {
         bare
       >
         <DetailTabsShowcase />
+      </Section>
+
+      <Section
+        id="version-timeline"
+        title="VersionTimeline + DiffSelector + CompatibilityCard (detail page — right rail)"
+        bare
+      >
+        <div
+          style={{ maxWidth: "280px", display: "flex", flexDirection: "column", gap: "1.25rem" }}
+        >
+          <VersionTimeline
+            versions={RIGHT_RAIL_VERSIONS}
+            currentVersion="v0.150.0"
+            buildHref={(v) => `/collector/components/core/otlpreceiver?version=${v}`}
+          />
+          <DiffSelector
+            versions={RIGHT_RAIL_VERSIONS.map((v) => v.version)}
+            defaultTo="v0.150.0"
+            buildHref={(from, to) =>
+              `/collector/components/core/otlpreceiver/diff?from=${from}&to=${to}`
+            }
+          />
+          <CompatibilityCard distributions={["core", "contrib"]} />
+        </div>
       </Section>
 
       <Section

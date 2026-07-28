@@ -28,6 +28,7 @@ import { SectionHeader } from "@/components/ui/section-header";
 import { PageContainer } from "@/components/layout/page-container";
 import { Seo } from "@/components/seo/seo";
 import { deriveCollectorMeta } from "@/lib/seo/derive";
+import { renderWithInlineCode } from "@/lib/render-inline-code";
 import { useCollectorComponent, useCollectorVersions } from "@/hooks/use-collector-data";
 import { CollectorTelemetryTab } from "./components/collector-telemetry-tab";
 import { CollectorReadmeTab } from "./components/collector-readme-tab";
@@ -218,7 +219,7 @@ export function CollectorDetailPage() {
 
             {component.description && (
               <p className="text-muted-foreground max-w-4xl text-base leading-relaxed">
-                {component.description}
+                {renderWithInlineCode(component.description)}
               </p>
             )}
           </div>
