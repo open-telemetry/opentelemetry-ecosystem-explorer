@@ -36,6 +36,22 @@ components:
       - contrib
       - core
       - k8s
+- name: queuebatchprocessor
+  metadata:
+    type: queuebatch
+    status:
+      class: processor
+      stability:
+        development:
+        - logs
+        - metrics
+        - profiles
+        - traces
+      distributions: []
+      codeowners:
+        active:
+        - jmacd
+        - iblancasa
 - name: xprocessor
   metadata:
     type: xprocessor
