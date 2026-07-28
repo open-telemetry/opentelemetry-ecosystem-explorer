@@ -154,6 +154,7 @@ export interface IndexComponent {
   id: string;
   name: string;
   distribution: string;
+  distributions?: string[];
   type: string;
   display_name?: string | null;
   description?: string | null;

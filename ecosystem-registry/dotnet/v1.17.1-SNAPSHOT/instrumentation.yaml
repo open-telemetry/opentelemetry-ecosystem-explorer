@@ -50,7 +50,7 @@ modules:
 - name: OpenTelemetry.Exporter.InfluxDB
   description: An OpenTelemetry .NET exporter that exports to InfluxDB.
   type: exporter
-  version: 1.0.0-alpha.10
+  version: 1.0.0-alpha.11
 - name: OpenTelemetry.Exporter.OneCollector
   description: An OpenTelemetry .NET exporter that sends telemetry to Microsoft OneCollector.
   type: exporter

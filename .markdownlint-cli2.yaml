@@ -3,6 +3,7 @@ globs:
 ignores:
   - CLAUDE.md
   - "**/AGENTS.md"
+  - ".ai/**"
   - "ecosystem-explorer/DESIGN.md"
   - "ecosystem-registry/**"
   - "**/tmp_repos/**"

@@ -68,6 +68,7 @@ function toIndexComponent(component: CollectorComponent): IndexComponent {
     id: component.id,
     name: component.name,
     distribution: component.distribution,
+    distributions: component.status?.distributions,
     type: component.type,
     display_name: component.display_name,
     description: component.description,
