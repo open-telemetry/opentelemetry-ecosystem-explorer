@@ -1,0 +1,34 @@
+{
+  "description": null,
+  "display_name": "Attributes Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-attributesprocessor",
+  "markdown_hash": "88cada31bed4",
+  "name": "attributesprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "boostchicken"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    },
+    "warnings": [
+      "Identity Conflict"
+    ]
+  },
+  "type": "processor"
+}

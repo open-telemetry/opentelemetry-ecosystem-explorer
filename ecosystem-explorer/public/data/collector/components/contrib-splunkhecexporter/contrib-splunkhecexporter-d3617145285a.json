@@ -1,0 +1,33 @@
+{
+  "description": null,
+  "display_name": "Splunk HTTP Event Collector (HEC) Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-splunkhecexporter",
+  "markdown_hash": "1668091b3125",
+  "name": "splunkhecexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "atoulme",
+        "dmitryax"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ],
+      "development": [
+        "profiles"
+      ]
+    }
+  },
+  "type": "exporter"
+}

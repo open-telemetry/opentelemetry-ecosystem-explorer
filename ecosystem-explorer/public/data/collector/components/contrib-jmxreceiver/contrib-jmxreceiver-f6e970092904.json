@@ -1,0 +1,37 @@
+{
+  "description": null,
+  "display_name": "JMX Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-jmxreceiver",
+  "markdown_hash": "e88c4dc6340b",
+  "name": "jmxreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "atoulme",
+        "rogercoll"
+      ],
+      "emeritus": [
+        "rmfitzpatrick"
+      ]
+    },
+    "deprecation": {
+      "metrics": {
+        "date": "2026-01-30",
+        "migration": "use JMX Gatherer Java program"
+      }
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "deprecated": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver"
+}

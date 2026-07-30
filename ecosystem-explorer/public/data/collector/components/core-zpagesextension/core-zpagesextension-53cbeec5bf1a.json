@@ -1,0 +1,27 @@
+{
+  "description": null,
+  "display_name": "zPages Extension",
+  "distribution": "core",
+  "ecosystem": "collector",
+  "id": "core-zpagesextension",
+  "markdown_hash": "23b462a61b1a",
+  "name": "zpagesextension",
+  "repository": "opentelemetry-collector",
+  "status": {
+    "class": "extension",
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "extension"
+      ]
+    },
+    "warnings": [
+      "The zPages extension is incompatible with `service::telemetry::traces::level` set to `none`"
+    ]
+  },
+  "type": "extension"
+}

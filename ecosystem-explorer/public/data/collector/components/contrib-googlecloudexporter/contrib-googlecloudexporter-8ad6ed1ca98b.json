@@ -1,0 +1,34 @@
+{
+  "description": null,
+  "display_name": "Google Cloud Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-googlecloudexporter",
+  "markdown_hash": "6e563a24edaa",
+  "name": "googlecloudexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "aabmass",
+        "dashpole",
+        "braydonk",
+        "jsuereth",
+        "psx95",
+        "ridwanmsharif"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "exporter"
+}

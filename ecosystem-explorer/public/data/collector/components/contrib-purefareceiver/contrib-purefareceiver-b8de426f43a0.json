@@ -1,0 +1,31 @@
+{
+  "description": "The Pure Storage FlashArray Receiver receives metrics from the Pure Storage FlashArray.",
+  "display_name": "Pure Storage FlashArray Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-purefareceiver",
+  "markdown_hash": "477fab42d3de",
+  "name": "purefareceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "dgoscn",
+        "chrroberts-pure"
+      ],
+      "emeritus": [
+        "jpkrohling"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver"
+}

@@ -1,0 +1,33 @@
+{
+  "description": null,
+  "display_name": "Kafka Topics Observer Extension",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-kafkatopicsobserver",
+  "markdown_hash": "ed72909c3fde",
+  "name": "kafkatopicsobserver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "MovieStoreGuy"
+      ]
+    },
+    "deprecation": {
+      "extension": {
+        "date": "2026-05-07",
+        "migration": "Use the `kafkareceiver` with topic regex support instead. This component will be removed in a future release."
+      }
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "deprecated": [
+        "extension"
+      ]
+    }
+  },
+  "type": "extension"
+}

@@ -1,0 +1,28 @@
+{
+  "description": null,
+  "display_name": "JSON Log Encoding Extension",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-jsonlogencodingextension",
+  "markdown_hash": "acaab7ecfff9",
+  "name": "jsonlogencodingextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "VihasMakwana",
+        "atoulme"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "extension"
+      ]
+    }
+  },
+  "type": "extension"
+}

@@ -1,0 +1,38 @@
+{
+  "description": null,
+  "display_name": "File Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-fileexporter",
+  "markdown_hash": "dcc4ce9e415c",
+  "name": "fileexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "paulojmdias"
+      ],
+      "emeritus": [
+        "atingchen"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "metrics",
+        "traces"
+      ],
+      "development": [
+        "profiles"
+      ]
+    }
+  },
+  "type": "exporter"
+}

@@ -1,0 +1,30 @@
+{
+  "description": null,
+  "display_name": "OTLP Receiver",
+  "distribution": "core",
+  "ecosystem": "collector",
+  "id": "core-otlpreceiver",
+  "markdown_hash": "776e28d0ac0f",
+  "name": "otlpreceiver",
+  "repository": "opentelemetry-collector",
+  "status": {
+    "class": "receiver",
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s",
+      "otlp"
+    ],
+    "stability": {
+      "alpha": [
+        "profiles"
+      ],
+      "stable": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "receiver"
+}

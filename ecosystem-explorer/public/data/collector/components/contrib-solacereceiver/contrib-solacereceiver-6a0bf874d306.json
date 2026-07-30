@@ -1,0 +1,27 @@
+{
+  "description": "The Solace Receiver receives trace data from a [Solace PubSub+ Event Broker](https://solace.com/products/event-broker/).",
+  "display_name": "Solace Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-solacereceiver",
+  "markdown_hash": "cbb6494ddb14",
+  "name": "solacereceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "mcardy"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "traces"
+      ]
+    }
+  },
+  "type": "receiver"
+}
