@@ -6,10 +6,16 @@ schema_hash: 5f02f63b26d4
 components:
 - name: nopreceiver
   metadata:
-    type: nop
     display_name: No-op Receiver
+    github_project: open-telemetry/opentelemetry-collector
     status:
       class: receiver
+      codeowners:
+        active:
+        - evan-bradley
+      distributions:
+      - contrib
+      - core
       stability:
         alpha:
         - profiles
@@ -17,18 +23,18 @@ components:
         - logs
         - metrics
         - traces
+    type: nop
+- name: otlpreceiver
+  metadata:
+    display_name: OTLP Receiver
+    github_project: open-telemetry/opentelemetry-collector
+    status:
+      class: receiver
       distributions:
       - contrib
       - core
-      codeowners:
-        active:
-        - evan-bradley
-- name: otlpreceiver
-  metadata:
-    type: otlp
-    display_name: OTLP Receiver
-    status:
-      class: receiver
+      - k8s
+      - otlp
       stability:
         alpha:
         - profiles
@@ -36,20 +42,17 @@ components:
         - logs
         - metrics
         - traces
-      distributions:
-      - contrib
-      - core
-      - k8s
-      - otlp
+    type: otlp
 - name: xreceiver
   metadata:
-    type: xreceiver
+    github_project: open-telemetry/opentelemetry-collector
     status:
       class: pkg
-      stability:
-        alpha:
-        - profiles
       codeowners:
         active:
         - mx-psi
         - dmathieu
+      stability:
+        alpha:
+        - profiles
+    type: xreceiver

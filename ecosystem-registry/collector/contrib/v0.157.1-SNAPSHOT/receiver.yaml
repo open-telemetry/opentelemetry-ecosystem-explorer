@@ -2,7 +2,7 @@ distribution: contrib
 version: 0.157.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: receiver
-schema_hash: cb7aa934b19a
+schema_hash: a0135ca939d9
 components:
 - name: activedirectorydsreceiver
   metadata:
@@ -2086,6 +2086,96 @@ components:
         - MovieStoreGuy
         emeritus:
         - gouthamve
+- name: dnscheckreceiver
+  metadata:
+    type: dns_check
+    display_name: DNS Check Receiver
+    description: The DNS Check Receiver can be used for synthetic checks against DNS
+      servers.
+    status:
+      class: receiver
+      stability:
+        development:
+        - metrics
+      distributions: []
+      codeowners:
+        active:
+        - dmitryax
+    attributes:
+      dns.domain:
+        description: Domain name queried.
+        type: string
+      dns.rcode:
+        description: DNS response code (RCODE) returned for the query. Only present
+          when a response was received from the server, including non-success responses
+          such as NXDOMAIN, SERVFAIL, or REFUSED. Absent when no response was received
+          at all (e.g. timeout or network unreachable). See the RCODE Reference table
+          in the README for the meaning of each value, based on the IANA DNS Parameters
+          registry (https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-6).
+        type: int
+      dns.record.type:
+        description: Record type queried.
+        type: string
+      dns.resolved.all.ips:
+        description: All resolved IP addresses.
+        type: string
+      dns.resolved.ip:
+        description: First/primary resolved IP address.
+        type: string
+      dns.server:
+        description: Address of the DNS server queried.
+        type: string
+      error.message:
+        description: Error message recorded when the DNS check fails.
+        type: string
+    metrics:
+      dnscheck.duration:
+        description: Round-trip duration of the DNS query.
+        unit: ms
+        enabled: true
+        gauge:
+          value_type: int
+        attributes:
+        - dns.domain
+        - dns.record.type
+        - dns.server
+        stability: development
+      dnscheck.error:
+        description: Number of errors recorded during the DNS check.
+        unit: '{error}'
+        enabled: false
+        sum:
+          value_type: int
+          aggregation_temporality: cumulative
+          monotonic: false
+        attributes:
+        - dns.domain
+        - dns.record.type
+        - dns.server
+        - error.message
+        stability: development
+      dnscheck.status:
+        description: 1 if the DNS query returned successfully, 0 otherwise. The dns.resolved.ip
+          and dns.resolved.all.ips attributes are only present when the value is 1.
+          The dns.rcode attribute is present whenever a response was received from
+          the server, including non-success responses such as NXDOMAIN, SERVFAIL,
+          or REFUSED; it is absent only when no response was received at all (e.g.
+          timeout or network unreachable).
+        unit: '1'
+        enabled: true
+        sum:
+          value_type: int
+          aggregation_temporality: cumulative
+          monotonic: false
+        attributes:
+        - dns.domain
+        - dns.rcode
+        - dns.record.type
+        - dns.resolved.all.ips
+        - dns.resolved.ip
+        - dns.server
+        stability: development
+    resource_attributes: {}
 - name: dockerstatsreceiver
   metadata:
     type: docker_stats
@@ -17396,6 +17486,12 @@ components:
         enum:
         - read
         - write
+      disk.io.direction:
+        description: The direction of disk I/O operations.
+        type: string
+        enum:
+        - read
+        - write
       file_type:
         description: The type of file being monitored.
         type: string
@@ -17519,6 +17615,10 @@ components:
         enum:
         - allocated
         - deallocated
+      sqlserver.file.path.prefix:
+        description: The path prefix identifying the storage location of SQL Server
+          database files.
+        type: string
       sqlserver.index.id:
         description: The identifier of the index.
         type: int
@@ -17696,6 +17796,12 @@ components:
       sqlserver.writes:
         description: Number of writes performed by the query.
         type: int
+      system.memory.state:
+        description: The state of the physical memory on the host.
+        type: string
+        enum:
+        - free
+        - used
       table.state:
         description: The state of the table.
         type: string
@@ -17863,6 +17969,15 @@ components:
           value_type: int
           input_type: string
         stability: development
+      sqlserver.cpu.utilization:
+        description: System-wide CPU utilization on the host that SQL Server is running
+          on, expressed as a fraction between 0 and 1.
+        unit: '1'
+        enabled: false
+        gauge:
+          value_type: double
+        attributes: []
+        stability: development
       sqlserver.cursor.count:
         description: Number of cursors by state.
         unit: '{cursor}'
@@ -18001,6 +18116,34 @@ components:
           value_type: double
         attributes: []
         stability: development
+      sqlserver.disk.io:
+        description: Cumulative bytes transferred to or from files backing SQL Server
+          databases, per I/O direction. Counters reset when the file becomes unavailable
+          (detached, taken offline, or database restart).
+        unit: By
+        enabled: false
+        sum:
+          monotonic: true
+          aggregation_temporality: cumulative
+          value_type: int
+        attributes:
+        - disk.io.direction
+        - sqlserver.file.path.prefix
+        stability: development
+      sqlserver.disk.operations:
+        description: Cumulative I/O operation count on files backing SQL Server databases,
+          per I/O direction. Counters reset when the file becomes unavailable (detached,
+          taken offline, or database restart).
+        unit: '{operation}'
+        enabled: false
+        sum:
+          monotonic: true
+          aggregation_temporality: cumulative
+          value_type: int
+        attributes:
+        - disk.io.direction
+        - sqlserver.file.path.prefix
+        stability: development
       sqlserver.error.rate:
         description: Number of errors raised per second.
         unit: '{error}/s'
@@ -18026,6 +18169,24 @@ components:
         gauge:
           value_type: double
         attributes: []
+        stability: development
+      sqlserver.host.memory.limit:
+        description: Total physical memory available to SQL Server on the host.
+        unit: By
+        enabled: false
+        gauge:
+          value_type: int
+        attributes: []
+        stability: development
+      sqlserver.host.memory.usage:
+        description: Physical memory usage available to SQL Server on the host, broken
+          down by state.
+        unit: By
+        enabled: false
+        gauge:
+          value_type: int
+        attributes:
+        - system.memory.state
         stability: development
       sqlserver.index.fragmentation:
         description: Average fragmentation percentage of the index.
@@ -18628,8 +18789,9 @@ components:
         type: int
       service.instance.id:
         description: A unique identifier of the SQL Server instance in the format
-          host:port. This resource attribute is only available when the receiver is
-          configured to directly connect to SQL Server.
+          host:port. In Windows Performance Counter mode the host is derived from
+          computer_name (falling back to the collector host when monitoring locally),
+          with a default port of 1433.
         type: string
       service.name:
         description: Logical name of the service. When enabled, defaults to unknown_service:microsoft.sql_server.

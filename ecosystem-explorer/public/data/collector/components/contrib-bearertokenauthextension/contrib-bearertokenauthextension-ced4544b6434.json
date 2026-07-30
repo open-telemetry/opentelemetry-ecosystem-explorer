@@ -1,0 +1,33 @@
+{
+  "description": null,
+  "display_name": "Bearer Token Authenticator Extension",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-bearertokenauthextension",
+  "markdown_hash": "f9c66d327358",
+  "name": "bearertokenauthextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "frzifus"
+      ],
+      "emeritus": [
+        "jpkrohling",
+        "pavankrish123"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "extension"
+      ]
+    }
+  },
+  "type": "extension"
+}

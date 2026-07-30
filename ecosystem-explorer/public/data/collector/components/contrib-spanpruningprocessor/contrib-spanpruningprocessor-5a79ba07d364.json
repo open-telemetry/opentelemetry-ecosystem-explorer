@@ -1,0 +1,28 @@
+{
+  "description": null,
+  "display_name": "Span Pruning Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-spanpruningprocessor",
+  "markdown_hash": "56db9566c22f",
+  "name": "spanpruningprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "portertech",
+        "csmarchbanks"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "traces"
+      ]
+    }
+  },
+  "type": "processor"
+}

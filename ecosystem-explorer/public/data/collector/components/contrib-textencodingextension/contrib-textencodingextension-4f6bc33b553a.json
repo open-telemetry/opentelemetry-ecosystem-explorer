@@ -1,0 +1,28 @@
+{
+  "description": "The `text_encoding` extension is an encoding extension that can unmarshal and marshal logs.",
+  "display_name": "Text Encoding Extension",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-textencodingextension",
+  "markdown_hash": "c67e02537a76",
+  "name": "textencodingextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "MovieStoreGuy",
+        "atoulme"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "extension"
+      ]
+    }
+  },
+  "type": "extension"
+}

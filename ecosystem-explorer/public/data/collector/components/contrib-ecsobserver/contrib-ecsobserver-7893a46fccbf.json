@@ -1,0 +1,30 @@
+{
+  "description": null,
+  "display_name": "Amazon Elastic Container Service Observer",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-ecsobserver",
+  "markdown_hash": "3866653a5f5d",
+  "name": "ecsobserver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "dmitryax"
+      ],
+      "emeritus": [
+        "rmfitzpatrick"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "extension"
+      ]
+    }
+  },
+  "type": "extension"
+}

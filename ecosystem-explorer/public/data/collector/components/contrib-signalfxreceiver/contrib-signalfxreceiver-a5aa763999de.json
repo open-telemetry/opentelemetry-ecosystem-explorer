@@ -1,0 +1,39 @@
+{
+  "description": null,
+  "display_name": "SignalFx Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-signalfxreceiver",
+  "markdown_hash": "a3afb864c4d9",
+  "name": "signalfxreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "dmitryax"
+      ],
+      "emeritus": null
+    },
+    "deprecation": {
+      "logs": {
+        "date": "2026-02-13",
+        "migration": "Use the OTLP receiver instead. This component will be removed in a future release."
+      },
+      "metrics": {
+        "date": "2026-02-13",
+        "migration": "Use the OTLP receiver instead. This component will be removed in a future release."
+      }
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "deprecated": [
+        "logs",
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver"
+}
