@@ -557,9 +557,8 @@ class TestWriteMarkdown:
         assert written == "# Spring Web MVC\n\n```xml\n<!-- OpenTelemetry instrumentation -->\n<dep/>\n```\n"
 
     def test_write_markdown_rewrites_a_stale_published_copy(self, db_writer, temp_db_dir):
-        # markdown_hash tracks upstream content, so it stays put when only our
-        # sanitizing changes. A file published before the scrub existed must
-        # still be replaced rather than skipped as "already exists".
+        # markdown_hash doesn't move when only sanitizing changes, so a file
+        # published before the scrub must be replaced, not skipped as existing.
         markdown_file = temp_db_dir / "markdown" / "test-lib-abc123def456.md"
         markdown_file.parent.mkdir(parents=True, exist_ok=True)
         markdown_file.write_text("<!-- hidden note -->\n# Test README\n", encoding="utf-8")
