@@ -1019,7 +1019,8 @@
     "signals": [
       "traces",
       "metrics",
-      "logs"
+      "logs",
+      "profiles"
     ],
     "stability": "beta",
     "type": "exporter"
@@ -1279,7 +1280,7 @@
     "description": null,
     "display_name": "Jaeger Encoding Extension",
     "distribution": "contrib",
-    "has_readme": true,
+    "has_readme": false,
     "id": "contrib-jaegerencodingextension",
     "name": "jaegerencodingextension",
     "signals": [
@@ -1719,7 +1720,7 @@
     "signals": [
       "metrics"
     ],
-    "stability": "development",
+    "stability": "alpha",
     "type": "processor"
   },
   {
@@ -2168,6 +2169,19 @@
       "metrics"
     ],
     "stability": "beta",
+    "type": "receiver"
+  },
+  {
+    "description": null,
+    "display_name": null,
+    "distribution": "contrib",
+    "has_readme": true,
+    "id": "contrib-activedirectoryinvreceiver",
+    "name": "activedirectoryinvreceiver",
+    "signals": [
+      "logs"
+    ],
+    "stability": "alpha",
     "type": "receiver"
   },
   {

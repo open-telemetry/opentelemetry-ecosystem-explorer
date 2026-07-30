@@ -117,7 +117,7 @@
     "contrib-influxdbreceiver": "aec841219db5",
     "contrib-intervalprocessor": "96f8cd8ba521",
     "contrib-isolationforestprocessor": "5a928443fdba",
-    "contrib-jaegerencodingextension": "8333c11aee00",
+    "contrib-jaegerencodingextension": "b629d116b498",
     "contrib-jaegerreceiver": "7f9c465f593e",
     "contrib-jaegerremotesampling": "2ddd4b7d4f73",
     "contrib-jmxreceiver": "f6e970092904",

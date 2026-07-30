@@ -38,8 +38,6 @@ RuntimeMetrics runtimeMetrics = RuntimeMetrics.builder(openTelemetry)
 The following table describes the set of `JfrFeatures` available, whether each is enabled by
 default, and the telemetry each produces:
 
-<!-- DO NOT MANUALLY EDIT. Regenerate table following changes to instrumentation using ./gradlew generateDocs -->
-<!-- generateDocsStart -->
 
 **Warning**: JFR events might not be available for all JVMs or with a GraalVM native image, therefore limiting the produced metrics. The original implementation was done for Hotspot. OpenJ9 currently (Nov. 2025) only has the VM-level JFR implementation. So events emitted at the Java level (ie. in jdk.jfr) will not be present. Meaning, jdk.SocketRead, jdk.SocketWrite won't work.
 
