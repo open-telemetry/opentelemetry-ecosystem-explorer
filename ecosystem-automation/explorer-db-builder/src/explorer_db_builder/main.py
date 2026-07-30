@@ -175,16 +175,21 @@ def run_javaagent_builder(
         # Pre-load README maps for all versions to enable augmentation and backfilling
         readme_maps = {v: inventory_manager.load_library_readme_map(v) for v in versions}
 
-        # Publish all READMEs to the database
+        # Publish all READMEs to the database. Only those that actually landed get a
+        # markdown_hash below - sanitizing can leave a README empty, and stamping one
+        # that was never written would point the frontend at a missing file.
+        published_readmes: dict[Version, dict[str, str]] = {}
         for version, readme_map in readme_maps.items():
+            published = {}
             for library_name, markdown_hash in readme_map.items():
                 content = inventory_manager.load_library_readme_content(version, library_name, markdown_hash)
-                if content is not None:
-                    db_writer.write_markdown(library_name, markdown_hash, content)
+                if content is not None and db_writer.write_markdown(library_name, markdown_hash, content):
+                    published[library_name] = markdown_hash
+            published_readmes[version] = published
 
         def load_and_augment_inventory(version: Version) -> dict:
             inventory = inventory_manager.load_versioned_inventory(version)
-            readme_map = readme_maps.get(version, {})
+            readme_map = published_readmes.get(version, {})
 
             # Resolve catalog/ref file formats (e.g. 0.6) to the inline 0.5 shape up front so every
             # downstream correction/backfill step operates on inline `configurations`/`metrics`

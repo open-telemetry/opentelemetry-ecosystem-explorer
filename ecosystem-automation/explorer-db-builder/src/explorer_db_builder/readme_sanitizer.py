@@ -47,6 +47,11 @@ _REF_USE_RE = re.compile(r"\[([^\]\[]+)\](?![(:])")
 _REMOVED = "\x00"
 
 
+def _normalize_label(label: str) -> str:
+    """Fold a link label the way CommonMark matches them: case- and whitespace-insensitive."""
+    return " ".join(label.split()).lower()
+
+
 def _clean(chunk: str, dropped_refs: dict[str, str]) -> list[str]:
     """Strip sections and comments from a run of non-code lines.
 
@@ -58,7 +63,7 @@ def _clean(chunk: str, dropped_refs: dict[str, str]) -> list[str]:
 
     def record_refs(match: re.Match[str]) -> str:
         for definition in _REF_DEF_RE.finditer(match.group(0)):
-            dropped_refs.setdefault(definition.group("label").lower(), definition.group(0).strip())
+            dropped_refs.setdefault(_normalize_label(definition.group("label")), definition.group(0).strip())
         return ""
 
     chunk = _SECTION_RE.sub(record_refs, chunk)
@@ -87,6 +92,8 @@ def sanitize_readme(markdown: str) -> str:
 
     out: list[str] = []
     prose: list[str] = []
+    # Only the non-code lines, so a reference "use" can't be found in a code sample.
+    cleaned_prose: list[str] = []
     dropped_refs: dict[str, str] = {}
     fence_char: str | None = None
     fence_len = 0
@@ -94,7 +101,9 @@ def sanitize_readme(markdown: str) -> str:
     def flush() -> None:
         # Guarded: cleaning an empty buffer would yield a spurious blank line.
         if prose:
-            out.extend(_clean("\n".join(prose), dropped_refs))
+            cleaned = _clean("\n".join(prose), dropped_refs)
+            out.extend(cleaned)
+            cleaned_prose.extend(cleaned)
             prose.clear()
 
     for line in markdown.split("\n"):
@@ -125,21 +134,25 @@ def sanitize_readme(markdown: str) -> str:
 
     # lstrip: removing a leading section otherwise leaves the blank line that
     # followed it, so the file would open on whitespace.
-    return _restore_used_refs("\n".join(out).lstrip("\n"), dropped_refs)
+    return _restore_used_refs("\n".join(out).lstrip("\n"), "\n".join(cleaned_prose), dropped_refs)
 
 
-def _restore_used_refs(markdown: str, dropped_refs: dict[str, str]) -> str:
+def _restore_used_refs(markdown: str, prose: str, dropped_refs: dict[str, str]) -> str:
     """Re-append link definitions the surviving content still references.
 
     A status section owns the definitions for its own badge rows, but a body
     occasionally reuses one further down (countconnector's
     ``[Exporter Pipeline Type]``), which would otherwise render as literal
     bracketed text.
+
+    Usage is looked for in ``prose`` rather than the whole document: bracketed
+    text is common in code samples, and restoring a definition on that evidence
+    would silently turn matching prose text into a link.
     """
     if not dropped_refs:
         return markdown
 
-    used = {label.lower() for label in _REF_USE_RE.findall(markdown)}
+    used = {_normalize_label(label) for label in _REF_USE_RE.findall(prose)}
     restored = [definition for label, definition in dropped_refs.items() if label in used]
     if not restored:
         return markdown
