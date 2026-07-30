@@ -545,6 +545,30 @@ class TestWriteMarkdown:
                 args, _ = mock_logger.error.call_args
                 assert "Failed to write markdown" in args[0]
 
+    def test_write_markdown_strips_html_comments_outside_code_fences(self, db_writer, temp_db_dir):
+        # The pom.xml comment is part of the snippet users copy, so it survives.
+        content = (
+            "<!-- hidden note -->\n# Spring Web MVC\n\n```xml\n<!-- OpenTelemetry instrumentation -->\n<dep/>\n```\n"
+        )
+
+        db_writer.write_markdown("spring-webmvc-6.0", "abc123def456", content)
+
+        written = (temp_db_dir / "markdown" / "spring-webmvc-6.0-abc123def456.md").read_text(encoding="utf-8")
+        assert written == "# Spring Web MVC\n\n```xml\n<!-- OpenTelemetry instrumentation -->\n<dep/>\n```\n"
+
+    def test_write_markdown_rewrites_a_stale_published_copy(self, db_writer, temp_db_dir):
+        # markdown_hash tracks upstream content, so it stays put when only our
+        # sanitizing changes. A file published before the scrub existed must
+        # still be replaced rather than skipped as "already exists".
+        markdown_file = temp_db_dir / "markdown" / "test-lib-abc123def456.md"
+        markdown_file.parent.mkdir(parents=True, exist_ok=True)
+        markdown_file.write_text("<!-- hidden note -->\n# Test README\n", encoding="utf-8")
+
+        db_writer.write_markdown("test-lib", "abc123def456", "<!-- hidden note -->\n# Test README\n")
+
+        assert markdown_file.read_text(encoding="utf-8") == "# Test README\n"
+        assert db_writer.files_written == 1
+
 
 @pytest.fixture
 def sample_index_instrumentations():
