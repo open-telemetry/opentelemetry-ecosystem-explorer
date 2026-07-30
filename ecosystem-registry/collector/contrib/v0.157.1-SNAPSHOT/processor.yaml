@@ -170,6 +170,11 @@ components:
         - MikeGoldsmith
         - atoulme
         - martinjt
+    attributes:
+      mask:
+        description: The mask name that matched more than one position in a single
+          template.
+        type: string
 - name: dynamicsamplingprocessor
   metadata:
     type: dynamic_sampling
