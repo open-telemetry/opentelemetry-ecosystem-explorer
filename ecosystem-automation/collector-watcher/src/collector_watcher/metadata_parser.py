@@ -19,10 +19,18 @@ The upstream schema lives at:
 
 The upstream schema does not yet carry a file_format/schema_version field.
 Until one is contributed upstream, all files are routed to MetadataParserV1
-(the current schema shape). When a file_format field is added upstream, add
-a new parser class, register it in MetadataParserFactory, and leave V1 untouched.
+(the current schema shape).
 
-Adding a required output field to any parser requires re-extracting all
+Two kinds of change touch this file, and they are handled differently:
+- An upstream schema version change (the shape of metadata.yaml itself
+  changes) gets a new parser class registered in MetadataParserFactory,
+  leaving existing parser classes untouched so historical registry versions
+  stay reproducible from the parser that originally produced them.
+- A parser bug fix or read-completeness fix (this parser mis-reading or
+  mis-normalizing the *current* schema, as opposed to the schema itself
+  changing) instead modifies the existing parser class directly.
+
+Either kind of change that alters output requires re-extracting all
 historical registry versions via: uv run collector-watcher --backfill
 """
 
@@ -72,24 +80,40 @@ class MetadataParserV1(BaseMetadataParser):
 
     Gives dedicated normalization (sanitized descriptions, deterministic key/
     list ordering) to: description, status, attributes, metrics,
-    resource_attributes, telemetry.metrics. Every other field present in the
-    source file — `type`, `display_name`, `sem_conv_version`, `config`,
-    `entities`, `events`, `feature_gates`, or anything the upstream mdatagen
-    schema adds later — is passed through verbatim rather than dropped (see
+    resource_attributes, telemetry.metrics, events. Every other field present
+    in the source file — `type`, `display_name`, `sem_conv_version`, `config`,
+    `entities`, `feature_gates`, or anything the upstream mdatagen schema adds
+    later — is passed through verbatim rather than dropped (see
     `_merge_known_fields`), so new fields do not require a code change here.
     The same pass-through-unless-normalized rule applies one level down
     inside `status`, each `attributes`/`resource_attributes` entry, each
-    `metrics` entry, and `telemetry`: only the specific sub-fields that need
-    sanitization or stable ordering are enumerated, and anything else on
-    those objects is preserved as-is. `EXCLUDED_FIELDS` names top-level
-    fields dropped entirely instead of passed through.
+    `metrics`/`events` entry, and `telemetry`: only the specific sub-fields
+    that need sanitization or stable ordering are enumerated, and anything
+    else on those objects is preserved as-is. Output is key-sorted at every
+    depth (`_sorted_deep`) without ever reordering sequences, so the same
+    input always serializes identically regardless of upstream field order.
+
+    `EXCLUDED_FIELDS` names fields dropped entirely instead of passed
+    through, as dotted paths relative to the parsed output root (e.g.
+    `"status.disable_codecov_badge"` drops that one field from the nested
+    `status` object while leaving `status.warnings`/`status.deprecation`
+    alone; a bare name like `"tests"` drops a top-level field).
+
+    This is a parser bug/read-completeness fix, not an upstream schema
+    version change, so it modifies this class directly rather than adding a
+    MetadataParserV2 (see the module and MetadataParserFactory docstrings);
+    it requires a backfill to apply to already-extracted registry versions.
     """
 
-    #: Top-level metadata.yaml fields dropped from parsed output entirely,
-    #: rather than passed through generically. `tests` is fixture/test-only
-    #: config with no value to the registry. Extend this set to exclude
-    #: additional fields in the future.
-    EXCLUDED_FIELDS: frozenset[str] = frozenset({"tests"})
+    #: Fields dropped from parsed output entirely, rather than passed through
+    #: generically. Entries are dotted paths relative to the parsed output
+    #: root: a bare name (`"tests"`) excludes a top-level field, while
+    #: `"status.disable_codecov_badge"` excludes only that field from within
+    #: the nested `status` object. `tests` is fixture/test-only config, and
+    #: `status.disable_codecov_badge` is a repo-housekeeping flag on the
+    #: upstream file's status block — neither has value to the registry.
+    #: Extend this set to exclude additional fields in the future.
+    EXCLUDED_FIELDS: frozenset[str] = frozenset({"tests", "status.disable_codecov_badge"})
 
     def get_schema_version(self) -> str:
         return "v1"
@@ -122,6 +146,12 @@ class MetadataParserV1(BaseMetadataParser):
                 telemetry_normalized["metrics"] = self._parse_metrics(telemetry["metrics"])
             normalized["telemetry"] = self._merge_known_fields(telemetry, telemetry_normalized)
 
+        if "events" in raw:
+            # `events` entries have the same shape as `metrics` entries
+            # (enabled/description/extended_documentation/warnings/attributes),
+            # so they get the same normalization.
+            normalized["events"] = self._parse_metrics(raw["events"])
+
         parsed = self._merge_known_fields(raw, normalized, exclude=self.EXCLUDED_FIELDS)
         return parsed or None
 
@@ -135,22 +165,50 @@ class MetadataParserV1(BaseMetadataParser):
 
     @staticmethod
     def _merge_known_fields(
-        source: dict[str, Any], normalized: dict[str, Any], exclude: frozenset[str] = frozenset()
+        source: dict[str, Any],
+        normalized: dict[str, Any],
+        exclude: frozenset[str] = frozenset(),
+        path_prefix: str = "",
     ) -> dict[str, Any]:
-        """Layer normalized values over a verbatim copy of `source`, key-sorted.
+        """Layer normalized values over a verbatim copy of `source`, deep-sorted.
 
         Fields present in `normalized` (dedicated sanitization/ordering) win;
         every other field from `source` is copied through unchanged so
         unrecognized or future schema fields are never silently dropped.
-        `exclude` names fields to drop entirely rather than pass through.
-        Output keys are sorted alphabetically so the same input always
-        produces the same key order, independent of the source YAML's field
-        order, keeping the content-addressed registry output deterministic.
+
+        `exclude` names dotted paths, relative to the parsed output root, to
+        drop entirely rather than pass through (e.g.
+        `"status.disable_codecov_badge"`). `path_prefix` is this call's own
+        location in that dotted-path space — `""` at the top level, `"status"`
+        when merging the nested status object — so a single exclusion set
+        can reach into nested objects without each nested caller needing its
+        own exclusion logic.
+
+        The result is key-sorted at every depth via `_sorted_deep` (without
+        reordering any sequences), so the same input always produces the same
+        output regardless of the source YAML's field order, keeping the
+        content-addressed registry output deterministic.
         """
         merged = {**source, **normalized}
-        for key in exclude:
-            merged.pop(key, None)
-        return dict(sorted(merged.items()))
+        for key in list(merged):
+            path = f"{path_prefix}.{key}" if path_prefix else key
+            if path in exclude:
+                del merged[key]
+        return MetadataParserV1._sorted_deep(merged)
+
+    @staticmethod
+    def _sorted_deep(value: Any) -> Any:
+        """Recursively key-sort mappings at any depth.
+
+        Sequence *order* is never changed — some upstream lists are
+        order-significant (e.g. `histogram.bucket_boundaries`); only the keys
+        of mappings inside them are sorted.
+        """
+        if isinstance(value, dict):
+            return {k: MetadataParserV1._sorted_deep(v) for k, v in sorted(value.items())}
+        if isinstance(value, list):
+            return [MetadataParserV1._sorted_deep(v) for v in value]
+        return value
 
     def _parse_status(self, status: dict[str, Any]) -> dict[str, Any]:
         normalized: dict[str, Any] = {}
@@ -170,7 +228,7 @@ class MetadataParserV1(BaseMetadataParser):
             platforms = status["unsupported_platforms"]
             normalized["unsupported_platforms"] = sorted(platforms) if isinstance(platforms, list) else platforms
 
-        return self._merge_known_fields(status, normalized)
+        return self._merge_known_fields(status, normalized, exclude=self.EXCLUDED_FIELDS, path_prefix="status")
 
     def _parse_attributes(self, attributes: dict[str, Any]) -> dict[str, Any]:
         if not attributes:
@@ -220,10 +278,17 @@ class MetadataParserV1(BaseMetadataParser):
 class MetadataParserFactory:
     """Routes metadata.yaml content to the correct version-specific parser.
 
-    To add support for a new schema version:
+    To add support for a new upstream schema version (the shape of
+    metadata.yaml itself changes):
     1. Create MetadataParserV2(BaseMetadataParser) with the new extraction logic.
     2. Register it: _parsers["v2"] = MetadataParserV2
-    3. Do NOT modify MetadataParserV1.
+    3. Leave MetadataParserV1 untouched, so historical registry versions stay
+       reproducible from the parser that originally produced them.
+
+    A parser bug fix or read-completeness fix for the *current* schema (as
+    opposed to the schema itself changing) instead modifies the existing
+    parser class directly and requires a backfill; it does not need a new
+    parser class.
     """
 
     _parsers: dict[str, type[BaseMetadataParser]] = {

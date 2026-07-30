@@ -328,10 +328,11 @@ telemetry:
 
     # Fields with no dedicated normalizer are preserved too, not just telemetry.
     assert metadata["github_project"] == "open-telemetry/opentelemetry-collector"
-    assert metadata["status"]["disable_codecov_badge"] is True
+    assert metadata["status"]["class"] == "processor"
 
-    # The `tests` node is excluded entirely.
+    # Excluded fields are dropped: `tests` entirely, `status.disable_codecov_badge` only.
     assert "tests" not in metadata
+    assert "disable_codecov_badge" not in metadata["status"]
 
 
 def test_has_metadata_returns_false_for_missing_file(temp_component_dir):
@@ -508,10 +509,34 @@ def test_parser_v1_excludes_tests_node():
     assert result["sem_conv_version"] == "1.9.0"
 
 
-def test_parser_v1_excluded_fields_is_easy_to_extend():
-    """EXCLUDED_FIELDS is a plain class-level set, so adding another
-    exclusion is a one-line change with no parsing logic to touch."""
-    assert MetadataParserV1.EXCLUDED_FIELDS == frozenset({"tests"})
+def test_parser_v1_excludes_dotted_nested_field():
+    """A dotted-path entry in EXCLUDED_FIELDS (`status.disable_codecov_badge`)
+    drops only that field from within the nested `status` object, leaving
+    other `status` fields — including other previously-unhandled ones like
+    `warnings`/`deprecation` — untouched."""
+    raw = {
+        "type": "test",
+        "status": {
+            "class": "processor",
+            "disable_codecov_badge": True,
+            "warnings": ["This component is unmaintained."],
+            "deprecation": {"traces": {"date": "2026-01-01", "migration": "use X instead"}},
+        },
+    }
+    result = MetadataParserV1().parse(raw)
+    status = result["status"]
+    assert "disable_codecov_badge" not in status
+    assert status["class"] == "processor"
+    assert status["warnings"] == ["This component is unmaintained."]
+    assert status["deprecation"] == {"traces": {"date": "2026-01-01", "migration": "use X instead"}}
+
+
+def test_parser_v1_dotted_exclusion_does_not_affect_same_key_at_top_level():
+    """`status.disable_codecov_badge` only matches that key inside `status`;
+    a top-level field with the same bare name is unaffected."""
+    raw = {"type": "test", "disable_codecov_badge": True}
+    result = MetadataParserV1().parse(raw)
+    assert result["disable_codecov_badge"] is True
 
 
 def test_parser_v1_output_keys_are_sorted():
@@ -552,6 +577,130 @@ def test_parser_v1_attribute_and_metric_dict_keys_are_sorted():
     result = MetadataParserV1().parse(raw)
     assert list(result["attributes"]["a"].keys()) == sorted(result["attributes"]["a"].keys())
     assert list(result["metrics"]["m"].keys()) == sorted(result["metrics"]["m"].keys())
+
+
+def test_parser_v1_sorts_deeply_nested_passthrough_dicts():
+    """Passthrough content with no dedicated normalizer of its own —
+    `status.codeowners`, a metric's `sum`/`gauge`/`histogram` descriptor
+    body, and arbitrarily-shaped `config` — is still key-sorted at every
+    depth, not just one level in from its nearest `_merge_known_fields`
+    call."""
+    raw = {
+        "type": "test",
+        "status": {
+            "class": "receiver",
+            "codeowners": {"seeking_new": True, "active": ["z", "a"], "emeritus": []},
+        },
+        "metrics": {
+            "m": {
+                "description": "d",
+                "unit": "1",
+                "sum": {"monotonic": True, "aggregation_temporality": "cumulative", "value_type": "int"},
+            }
+        },
+        "config": {
+            "type": "object",
+            "properties": {"z_field": {"type": "string"}, "a_field": {"type": "int", "default": 0}},
+        },
+    }
+    result = MetadataParserV1().parse(raw)
+
+    assert list(result["status"]["codeowners"].keys()) == sorted(result["status"]["codeowners"].keys())
+    assert list(result["metrics"]["m"]["sum"].keys()) == sorted(result["metrics"]["m"]["sum"].keys())
+    assert list(result["config"]["properties"].keys()) == sorted(result["config"]["properties"].keys())
+    assert list(result["config"]["properties"]["a_field"].keys()) == sorted(
+        result["config"]["properties"]["a_field"].keys()
+    )
+
+
+def test_parser_v1_sorts_dict_keys_inside_list_elements_without_reordering_the_list():
+    """`entities` and `feature_gates` are lists of dicts with no dedicated
+    normalizer. Recursive sorting must key-sort each dict *inside* the list
+    without changing which element comes first — upstream list order (e.g.
+    grouping in `entities`) is preserved on purpose."""
+    raw = {
+        "type": "test",
+        "entities": [
+            {"type": "z_entity", "brief": "Z", "stability": "beta"},
+            {"type": "a_entity", "brief": "A", "stability": "alpha"},
+        ],
+        "feature_gates": [
+            {"id": "gate.two", "stage": "beta", "description": "Second"},
+            {"id": "gate.one", "stage": "alpha", "description": "First"},
+        ],
+    }
+    result = MetadataParserV1().parse(raw)
+
+    # List element order is untouched: z_entity/gate.two still come first.
+    assert [e["type"] for e in result["entities"]] == ["z_entity", "a_entity"]
+    assert [g["id"] for g in result["feature_gates"]] == ["gate.two", "gate.one"]
+    # But each dict's own keys are sorted.
+    for entity in result["entities"]:
+        assert list(entity.keys()) == sorted(entity.keys())
+    for gate in result["feature_gates"]:
+        assert list(gate.keys()) == sorted(gate.keys())
+
+
+def test_parser_v1_does_not_reorder_order_significant_lists():
+    """Sequence values that are order-significant, like a histogram's
+    `bucket_boundaries`, must never be reordered by deep sorting — only
+    mapping keys are sorted, never list elements."""
+    raw = {
+        "type": "test",
+        "metrics": {
+            "m": {
+                "description": "d",
+                "unit": "1",
+                "histogram": {"value_type": "double", "bucket_boundaries": [100.0, 10.0, 1.0]},
+            }
+        },
+    }
+    result = MetadataParserV1().parse(raw)
+    assert result["metrics"]["m"]["histogram"]["bucket_boundaries"] == [100.0, 10.0, 1.0]
+
+
+def test_parser_v1_normalizes_events_like_metrics():
+    """`events` entries share the exact per-entry shape as `metrics` entries
+    (enabled/description/attributes/...), so they reuse `_parse_metrics`:
+    sorted keys, sanitized descriptions, sorted attribute lists."""
+    raw = {
+        "type": "test",
+        "events": {
+            "zebra.event": {
+                "enabled": True,
+                "description": "Zebra event.",
+                "attributes": ["z_attr", "a_attr"],
+            },
+            "alpha.event": {
+                "enabled": True,
+                "description": "Multi-line\ndescription.",
+                "attributes": ["b_attr"],
+            },
+        },
+    }
+    result = MetadataParserV1().parse(raw)
+
+    events = result["events"]
+    assert list(events.keys()) == ["alpha.event", "zebra.event"]
+    assert events["alpha.event"]["description"] == "Multi-line description."
+    assert events["zebra.event"]["attributes"] == ["a_attr", "z_attr"]
+
+
+def test_parser_v1_events_passes_through_unknown_subfields():
+    """Event sub-fields with no dedicated normalizer (e.g. `entity`) are
+    preserved, not dropped, just like on metrics."""
+    raw = {
+        "type": "test",
+        "events": {
+            "some.event": {
+                "enabled": True,
+                "description": "An event.",
+                "entity": "host",
+            }
+        },
+    }
+    result = MetadataParserV1().parse(raw)
+    assert result["events"]["some.event"]["entity"] == "host"
 
 
 def test_parser_v1_preserves_fields_that_previously_had_no_op_normalizers():
