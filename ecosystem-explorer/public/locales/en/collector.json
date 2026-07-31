@@ -167,7 +167,12 @@
       "details": "Details",
       "stability": "Stability",
       "telemetry": "Telemetry",
-      "readme": "Readme"
+      "readme": "Readme",
+      "internalTelemetry": "Internal Telemetry"
+    },
+    "view": {
+      "current": "Current View",
+      "comparison": "Version Comparison"
     },
     "sections": {
       "componentInfo": "Component Info",
@@ -257,6 +262,59 @@
         "type": "Type",
         "description": "Description"
       }
+    },
+    "internalTelemetryTab": {
+      "empty": "No internal telemetry metrics are defined for this component."
+    }
+  },
+  "telemetryComparison": {
+    "loading": "Loading comparison data...",
+    "error": {
+      "title": "Comparison Error",
+      "bothVersionsFailed": "Both versions could not be loaded. The component may not exist in these versions."
+    },
+    "warnings": {
+      "availability": {
+        "title": "Version Availability Note",
+        "fromNotFound": "The component was not available in version {{fromVersion}}. All telemetry from the \"to\" version is shown as added.",
+        "toNotFound": "The component was not available in version {{toVersion}}. All telemetry from the \"from\" version is shown as removed."
+      },
+      "sameVersion": {
+        "title": "Same Version Selected",
+        "message": "Please select different versions to compare telemetry."
+      }
+    },
+    "versionSelectorPanel": {
+      "banner": "Compare internal telemetry between two releases",
+      "from": "From",
+      "to": "To"
+    },
+    "diffResults": {
+      "addedRemovedHeader": "Telemetry Added/Removed",
+      "changedHeader": "Telemetry Changed",
+      "empty": {
+        "title": "No differences found",
+        "description": "Internal telemetry is identical between the selected versions."
+      }
+    },
+    "diffCard": {
+      "status": {
+        "added": "Added",
+        "removed": "Removed",
+        "changed": "Changed"
+      },
+      "unit": "Unit",
+      "attributeChanges": "Attribute Changes",
+      "descriptionChanged": "Description Changed",
+      "typeChanged": "Type Changed",
+      "enabledChanged": "Enabled Changed",
+      "stabilityChanged": "Stability Changed",
+      "metricRemoved": "This metric is no longer emitted in the comparison version."
+    },
+    "diffAttributeList": {
+      "ariaLabel": "Attribute changes",
+      "added": "Added",
+      "removed": "Removed"
     }
   },
   "explore": {

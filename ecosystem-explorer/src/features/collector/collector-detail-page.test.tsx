@@ -69,6 +69,23 @@ const mockComponentWithReadme: CollectorComponent = {
   markdown_hash: "abc123def456",
 };
 
+const mockComponentWithInternalTelemetry: CollectorComponent = {
+  ...mockComponentWithoutTelemetry,
+  telemetry: {
+    metrics: {
+      processor_memory_limiter_refused_spans: {
+        description: "Number of spans refused.",
+        enabled: true,
+        unit: "{span}",
+        sum: {
+          monotonic: true,
+          value_type: "int",
+        },
+      },
+    },
+  },
+};
+
 const mockComponentWithBacktickDescription: CollectorComponent = {
   ...mockComponentWithoutTelemetry,
   description: "Fetches metrics via the `/metrics/json` endpoint.",
@@ -297,5 +314,94 @@ describe("CollectorDetailPage", () => {
     expect(useComponentReadme).toHaveBeenCalledWith("otlpreceiver", "abc123def456");
     expect(screen.getByText("Usage Notes")).toBeInTheDocument();
     expect(screen.getByText("Some readme content.")).toBeInTheDocument();
+  });
+
+  it("does not render the Internal Telemetry tab when the component has no telemetry field", () => {
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: mockComponentWithoutTelemetry,
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    expect(screen.queryByRole("tab", { name: /internal telemetry/i })).not.toBeInTheDocument();
+  });
+
+  it("does not render the Internal Telemetry tab for a component that only has signal metrics", () => {
+    // Regression guard: the pre-existing "Telemetry" tab (signal metrics) must
+    // not be conflated with the new "Internal Telemetry" tab (telemetry.metrics).
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: mockComponentWithTelemetry,
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    expect(screen.getByRole("tab", { name: "Telemetry" })).toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: /internal telemetry/i })).not.toBeInTheDocument();
+  });
+
+  it("renders the Internal Telemetry tab and its Current view when the component has telemetry.metrics", async () => {
+    const user = userEvent.setup();
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: mockComponentWithInternalTelemetry,
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    const internalTelemetryTab = screen.getByRole("tab", { name: /internal telemetry/i });
+    expect(internalTelemetryTab).toBeInTheDocument();
+
+    await user.click(internalTelemetryTab);
+
+    expect(screen.getByText("processor_memory_limiter_refused_spans")).toBeInTheDocument();
+  });
+
+  it("switches the Internal Telemetry tab to the Comparison view on toggle", async () => {
+    const user = userEvent.setup();
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: {
+        versions: [
+          { version: "0.150.0", is_latest: true },
+          { version: "0.149.0", is_latest: false },
+        ],
+      },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: mockComponentWithInternalTelemetry,
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver?version=0.150.0");
+
+    await user.click(screen.getByRole("tab", { name: /internal telemetry/i }));
+    await user.click(screen.getByRole("button", { name: "Version Comparison" }));
+
+    // The comparison view renders the From/To version selectors instead of
+    // the flat metric list from the Current view.
+    expect(screen.getByLabelText("From")).toBeInTheDocument();
+    expect(screen.getByLabelText("To")).toBeInTheDocument();
   });
 });

@@ -19,18 +19,12 @@ import { ChevronDown, ChevronUp, Maximize2, Minimize2 } from "lucide-react";
 import { SectionDivider } from "@/components/ui/section-divider";
 import { GlowBadge } from "@/components/ui/glow-badge";
 import type { CollectorMetric, CollectorAttribute } from "@/types/collector";
+import { getMetricType } from "../utils/metric-type";
 
 interface CollectorTelemetryTabProps {
   metrics: Record<string, CollectorMetric>;
   attributes?: Record<string, CollectorAttribute>;
   resourceAttributes?: Record<string, CollectorAttribute>;
-}
-
-function getMetricType(metric: CollectorMetric): "sum" | "gauge" | "histogram" | null {
-  if (metric.sum) return "sum";
-  if (metric.gauge) return "gauge";
-  if (metric.histogram) return "histogram";
-  return null;
 }
 
 function getStabilityVariant(
