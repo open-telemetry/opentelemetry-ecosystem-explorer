@@ -14,11 +14,7 @@ on:
   push:
     branches: ["main"]
 
-permissions:
-  contents: read
-  pull-requests: write
-  issues: write
-  statuses: write
+permissions: {}
 
 # Cancels any in-flight scan for the same PR (or branch, on push) the moment a new commit arrives, so reviewers only ever see the latest run.
 concurrency:
@@ -27,7 +23,13 @@ concurrency:
 
 jobs:
   react-doctor:
+    name: React Doctor
     runs-on: ubuntu-latest
+    permissions:
+      contents: read # Checkout the repository
+      pull-requests: write # Post the sticky PR summary comment and inline review comments
+      issues: write # GitHub models PR conversation comments as issue comments, so posting the summary comment needs this scope too
+      statuses: write # Report the health-score commit status
     steps:
       # fetch-depth: 0 gives React Doctor the full git history it needs to find the merge base with the target branch. Without it a shallow checkout has no merge base, so PR runs can't compare against the base and fall back to reporting every issue in the changed files (pre-existing ones included) instead of only the ones the PR introduced.
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
