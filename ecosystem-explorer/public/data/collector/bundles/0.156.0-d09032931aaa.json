@@ -1281,7 +1281,7 @@
     "description": null,
     "display_name": "Jaeger Encoding Extension",
     "distribution": "contrib",
-    "has_readme": true,
+    "has_readme": false,
     "id": "contrib-jaegerencodingextension",
     "name": "jaegerencodingextension",
     "signals": [

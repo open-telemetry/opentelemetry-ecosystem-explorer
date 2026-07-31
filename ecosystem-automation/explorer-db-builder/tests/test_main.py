@@ -294,6 +294,31 @@ class TestRunJavaagentBuilder:
         assert custom[0]["name"] == "custom1"
         assert custom[0]["markdown_hash"] == "fed4321cba98"
 
+    def test_run_builder_skips_markdown_hash_when_readme_was_not_published(
+        self, mock_inventory_manager, mock_db_writer
+    ):
+        """A README that sanitizes to nothing must not leave a hash pointing at a missing file."""
+        versions = [Version("1.0.0")]
+        inventory_data = {"file_format": 0.2, "libraries": [{"name": "lib1"}], "custom": [{"name": "custom1"}]}
+
+        mock_inventory_manager.list_versions.return_value = versions
+        mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
+        mock_inventory_manager.load_library_readme_map.return_value = {
+            "lib1": "abc123def456",
+            "custom1": "fed4321cba98",
+        }
+        mock_inventory_manager.load_library_readme_content.return_value = "# README content"
+        mock_db_writer.write_libraries.return_value = {"lib1": "hash1"}
+        # lib1 publishes, custom1 comes back empty after sanitizing.
+        mock_db_writer.write_markdown.side_effect = lambda name, _hash, _content: name == "lib1"
+
+        exit_code = run_javaagent_builder(mock_inventory_manager, mock_db_writer)
+
+        assert exit_code == 0
+        write_calls = mock_db_writer.write_libraries.call_args_list
+        assert write_calls[0][0][0][0]["markdown_hash"] == "abc123def456"
+        assert "markdown_hash" not in write_calls[1][0][0][0]
+
     def test_run_builder_none_instrumentation_side_does_not_crash(self, mock_inventory_manager, mock_db_writer):
         """An explicit None on one side (malformed/partial inventory) is normalized to a list
         during README augmentation instead of raising TypeError while iterating."""
