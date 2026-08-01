@@ -74,7 +74,7 @@ describe("ConfigurationBuilderPage — actions", () => {
   // Merge-safe preservation of already-customized leaves is covered exhaustively
   // at the unit level (reducer MERGE_DEFAULTS + hook mergeDefaults tests); this
   // integration case verifies the end-to-end button → YAML wiring on the tab.
-  it("Instrumentation 'Add all configs' merges the instrumentation section into the YAML", async () => {
+  it("Instrumentation 'Add all instrumentation configs' merges the instrumentation section into the YAML", async () => {
     const confirmSpy = vi.spyOn(window, "confirm").mockReturnValue(true);
     renderPage();
     const user = userEvent.setup();
@@ -88,7 +88,7 @@ describe("ConfigurationBuilderPage — actions", () => {
     // disabled while `entries.length === 0`).
     const addAllConfigs = await screen.findByRole(
       "button",
-      { name: "Add all configs" },
+      { name: "Add all instrumentation configs" },
       { timeout: 10_000 }
     );
     await waitFor(() => expect(addAllConfigs).toBeEnabled(), { timeout: 10_000 });
