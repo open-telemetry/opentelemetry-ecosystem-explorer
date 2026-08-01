@@ -178,9 +178,7 @@ describe("defaultConfigValue", () => {
   });
 
   it("delegates to parseDefault for plain entries", () => {
-    expect(
-      defaultConfigValue({ ...structuredListEntry, declarative_type: undefined })
-    ).toEqual({});
+    expect(defaultConfigValue({ ...structuredListEntry, declarative_type: undefined })).toEqual({});
     expect(
       defaultConfigValue({
         name: "otel.x",
