@@ -17,6 +17,7 @@ import type { InstrumentationModule } from "@/types/javaagent";
 import type { ConfigValue, Path } from "@/types/configuration-builder";
 import { aggregateConfigurations } from "./configurations-aggregate";
 import { defaultConfigValue, type DeclarativeScope } from "./declarative-name";
+import { hasMeaningfulLeaf } from "./state-hydrate";
 
 export interface DefaultEntry {
   path: Path;
@@ -32,7 +33,8 @@ export interface BuildDefaultEntriesOptions {
  * Builds the merge-safe entry list for the Instrumentation tab's "Add all configs"
  * action: every instrumentation-module config option (in the requested scopes),
  * deduped by declarative name across all modules, mapped to its value path and
- * parsed default value.
+ * parsed default value. Options whose default is empty are omitted — they
+ * would not contribute to the generated YAML.
  *
  * Reuses `aggregateConfigurations` (per-module dedupe + scope classification +
  * path) and `defaultConfigValue`, so a bulk-added leaf is byte-identical to
@@ -52,10 +54,12 @@ export function buildInstrumentationDefaultEntries(
       // declarative_name.
       const key = cfg.path.join(".");
       if (byPathKey.has(key)) continue;
-      byPathKey.set(key, {
-        path: cfg.path,
-        value: defaultConfigValue(cfg.entry),
-      });
+      const value = defaultConfigValue(cfg.entry);
+      // Skip empty defaults ("", [], {}): stripEmpties drops them from the
+      // YAML anyway, so adding them would only mark fields as customized
+      // (Reset button, inflated counts) without producing any output.
+      if (!hasMeaningfulLeaf(value)) continue;
+      byPathKey.set(key, { path: cfg.path, value });
     }
   }
   return [...byPathKey.values()];

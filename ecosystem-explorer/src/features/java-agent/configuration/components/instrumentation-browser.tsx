@@ -30,6 +30,7 @@ import { buildInstrumentationDefaultEntries } from "@/lib/instrumentation-defaul
 import type { DeclarativeScope } from "@/lib/declarative-name";
 import { SectionCardShell } from "./section-card-shell";
 import { InstrumentationRow } from "./instrumentation-row";
+import { HeaderActionButton } from "./preview-card";
 
 // "Add all configs" includes every scope; general.* maps to a real, editable
 // instrumentation/development.general.* path (see the plan §9.1).
@@ -135,12 +136,11 @@ export function InstrumentationBrowser({
   const handleAddAll = useCallback(() => {
     if (defaultEntries.length === 0) return;
     const ok = window.confirm(
-      `Add ${defaultEntries.length} instrumentation config options with their defaults? ` +
-        `Values you've already customized will be kept.`
+      t("builder.browser.addAll.confirm", { count: defaultEntries.length })
     );
     if (!ok) return;
     mergeDefaults(defaultEntries);
-  }, [defaultEntries, mergeDefaults]);
+  }, [defaultEntries, mergeDefaults, t]);
 
   return (
     <SectionCardShell sectionKey="instrumentations">
@@ -156,15 +156,12 @@ export function InstrumentationBrowser({
             </span>
           ) : null}
         </h3>
-        <button
-          type="button"
+        <HeaderActionButton
+          icon={CopyPlus}
+          label={t("builder.browser.addAll.button")}
           onClick={handleAddAll}
           disabled={defaultEntries.length === 0}
-          className="border-border/60 bg-card text-foreground hover:bg-card/80 flex items-center gap-1 rounded-md border px-3 py-1 text-xs disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <CopyPlus className="h-3 w-3" aria-hidden="true" />
-          Add all configs
-        </button>
+        />
       </header>
 
       {loading ? (

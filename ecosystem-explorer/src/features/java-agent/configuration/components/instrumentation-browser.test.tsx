@@ -383,7 +383,7 @@ describe("InstrumentationBrowser — Add all configs", () => {
     }),
   ];
 
-  it("renders an 'Add all configs' button distinct from the SDK 'Add all'", () => {
+  it("renders an 'Add all instrumentation configs' button distinct from the SDK 'Add all'", () => {
     render(
       <InstrumentationBrowser
         instrumentations={modulesWithConfigs}
@@ -392,7 +392,9 @@ describe("InstrumentationBrowser — Add all configs", () => {
         {...browserDefaults}
       />
     );
-    expect(screen.getByRole("button", { name: "Add all configs" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Add all instrumentation configs" })
+    ).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /^Add all$/ })).toBeNull();
   });
 
@@ -406,7 +408,7 @@ describe("InstrumentationBrowser — Add all configs", () => {
         {...browserDefaults}
       />
     );
-    fireEvent.click(screen.getByRole("button", { name: "Add all configs" }));
+    fireEvent.click(screen.getByRole("button", { name: "Add all instrumentation configs" }));
     expect(mergeDefaults).toHaveBeenCalledTimes(1);
     expect(mergeDefaults.mock.calls[0][0]).toHaveLength(3);
     confirmSpy.mockRestore();
@@ -422,7 +424,7 @@ describe("InstrumentationBrowser — Add all configs", () => {
         {...browserDefaults}
       />
     );
-    fireEvent.click(screen.getByRole("button", { name: "Add all configs" }));
+    fireEvent.click(screen.getByRole("button", { name: "Add all instrumentation configs" }));
     expect(mergeDefaults).not.toHaveBeenCalled();
     confirmSpy.mockRestore();
   });
@@ -440,7 +442,7 @@ describe("InstrumentationBrowser — Add all configs", () => {
     // graphql_java is filtered out of the list...
     expect(screen.queryByTestId("instrumentation-row-graphql_java")).toBeNull();
     // ...but Add all still adds the full deduped set (3), not just cassandra's.
-    fireEvent.click(screen.getByRole("button", { name: "Add all configs" }));
+    fireEvent.click(screen.getByRole("button", { name: "Add all instrumentation configs" }));
     expect(mergeDefaults.mock.calls[0][0]).toHaveLength(3);
     confirmSpy.mockRestore();
   });
@@ -454,6 +456,6 @@ describe("InstrumentationBrowser — Add all configs", () => {
         {...browserDefaults}
       />
     );
-    expect(screen.getByRole("button", { name: "Add all configs" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Add all instrumentation configs" })).toBeDisabled();
   });
 });

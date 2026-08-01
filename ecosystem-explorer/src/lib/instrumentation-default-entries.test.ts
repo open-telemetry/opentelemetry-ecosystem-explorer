@@ -82,14 +82,14 @@ describe("buildInstrumentationDefaultEntries", () => {
             declarative_name: "general.http.server.request_captured_headers",
             description: "",
             type: "list",
-            default: "",
+            default: "Content-Type",
           },
           {
             name: "common-1",
             declarative_name: "java.common.http.known_methods",
             description: "",
             type: "list",
-            default: "",
+            default: "GET,POST",
           },
         ]),
       ]),
@@ -130,7 +130,7 @@ describe("buildInstrumentationDefaultEntries", () => {
             declarative_name: "java.m.headers",
             description: "",
             type: "map",
-            default: "",
+            default: "host1=serviceA",
           },
         ]),
       ]),
@@ -139,10 +139,51 @@ describe("buildInstrumentationDefaultEntries", () => {
     const byLeaf = Object.fromEntries(entries.map((e) => [e.path[e.path.length - 1], e.value]));
     expect(byLeaf.flag).toBe(true);
     expect(byLeaf.methods).toEqual(["a", "b", "c"]);
-    expect(byLeaf.headers).toEqual({});
+    expect(byLeaf.headers).toEqual({ host1: "serviceA" });
   });
 
-  it("seeds structured_list configs as an empty array, not the parsed map default", () => {
+  it("omits options whose default is empty (they would not reach the YAML)", () => {
+    const modules = [
+      makeModule("m", [
+        makeEntry("m-1.0", [
+          {
+            name: "kept",
+            declarative_name: "java.m.flag",
+            description: "",
+            type: "boolean",
+            default: false,
+          },
+          {
+            name: "empty-string",
+            declarative_name: "java.m.name",
+            description: "",
+            type: "string",
+            default: "",
+          },
+          {
+            name: "empty-list",
+            declarative_name: "java.m.methods",
+            description: "",
+            type: "list",
+            default: "",
+          },
+          {
+            name: "empty-map",
+            declarative_name: "java.m.headers",
+            description: "",
+            type: "map",
+            default: "",
+          },
+        ]),
+      ]),
+    ];
+    const entries = buildInstrumentationDefaultEntries(modules, { includeScopes: ALL_SCOPES });
+    expect(entries).toHaveLength(1);
+    // false is a meaningful default and must survive the empty-value skip.
+    expect(entries[0].value).toBe(false);
+  });
+
+  it("omits structured_list configs: they seed as an empty array, which is an empty default", () => {
     const modules = [
       makeModule("m", [
         makeEntry("m-1.0", [
@@ -162,9 +203,10 @@ describe("buildInstrumentationDefaultEntries", () => {
         ]),
       ]),
     ];
+    // defaultConfigValue seeds structured lists as [] (not the parsed map
+    // default {}), and [] is empty, so the entry is skipped from bulk add.
     const entries = buildInstrumentationDefaultEntries(modules, { includeScopes: ALL_SCOPES });
-    expect(entries).toHaveLength(1);
-    expect(entries[0].value).toEqual([]);
+    expect(entries).toEqual([]);
   });
 
   it("skips configs without a declarative_name", () => {
