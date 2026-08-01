@@ -63,7 +63,6 @@ export interface ConfigurationBuilderActionsContextValue {
   setValue: (path: string, value: ConfigValue) => void;
   setValueByPath: (path: Path, value: ConfigValue) => void;
   mergeDefaults: (entries: { path: Path; value: ConfigValue }[]) => void;
-  setOverride: (module: string, status: "enabled" | "disabled" | "none") => void;
   setCustomization: (module: string, status: "enabled" | "disabled" | "none") => void;
   pruneInstrumentations: (validModules: readonly string[]) => void;
   setEnabled: (section: string, enabled: boolean) => void;
@@ -179,10 +178,6 @@ export function useConfigurationBuilderState(
     },
     []
   );
-
-  const setOverride = useCallback((module: string, status: "enabled" | "disabled" | "none") => {
-    dispatch({ type: "SET_OVERRIDE", module, status });
-  }, []);
 
   const pruneInstrumentations = useCallback((validModules: readonly string[]) => {
     dispatch({ type: "PRUNE_INSTRUMENTATIONS", validModules });
@@ -333,7 +328,6 @@ export function useConfigurationBuilderState(
       setValue,
       setValueByPath,
       mergeDefaults,
-      setOverride,
       setCustomization,
       pruneInstrumentations,
       setEnabled,
