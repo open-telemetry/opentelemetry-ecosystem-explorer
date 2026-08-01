@@ -6,25 +6,113 @@ schema_hash: a0135ca939d9
 components:
 - name: batchprocessor
   metadata:
-    type: batch
     display_name: Batch Processor
+    github_project: open-telemetry/opentelemetry-collector
     status:
       class: processor
+      distributions:
+      - contrib
+      - core
+      - k8s
       stability:
         beta:
         - logs
         - metrics
         - traces
+    telemetry:
+      metrics:
+        processor_batch_batch_send_size:
+          description: Number of units in the batch
+          enabled: true
+          histogram:
+            bucket_boundaries:
+            - 10
+            - 25
+            - 50
+            - 75
+            - 100
+            - 250
+            - 500
+            - 750
+            - 1000
+            - 2000
+            - 3000
+            - 4000
+            - 5000
+            - 6000
+            - 7000
+            - 8000
+            - 9000
+            - 10000
+            - 20000
+            - 30000
+            - 50000
+            - 100000
+            value_type: int
+          stability: development
+          unit: '{unit}'
+        processor_batch_batch_send_size_bytes:
+          description: Number of bytes in batch that was sent. Only available on detailed
+            level.
+          enabled: true
+          histogram:
+            bucket_boundaries:
+            - 128
+            - 256
+            - 512
+            - 1024
+            - 2048
+            - 4096
+            - 8192
+            - 16384
+            - 32768
+            - 65536
+            - 131072
+            - 262144
+            - 524288
+            - 1048576
+            - 2097152
+            - 4194304
+            - 8388608
+            - 16777216
+            value_type: int
+          stability: development
+          unit: By
+        processor_batch_batch_size_trigger_send:
+          description: Number of times the batch was sent due to a size trigger
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{time}'
+        processor_batch_metadata_cardinality:
+          description: Number of distinct metadata value combinations being processed
+          enabled: true
+          stability: development
+          sum:
+            async: true
+            value_type: int
+          unit: '{combination}'
+        processor_batch_timeout_trigger_send:
+          description: Number of times the batch was sent due to a timeout trigger
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{time}'
+    type: batch
+- name: memorylimiterprocessor
+  metadata:
+    display_name: Memory Limiter Processor
+    github_project: open-telemetry/opentelemetry-collector
+    status:
+      class: processor
       distributions:
       - contrib
       - core
       - k8s
-- name: memorylimiterprocessor
-  metadata:
-    type: memory_limiter
-    display_name: Memory Limiter Processor
-    status:
-      class: processor
       stability:
         alpha:
         - profiles
@@ -32,35 +120,90 @@ components:
         - logs
         - metrics
         - traces
-      distributions:
-      - contrib
-      - core
-      - k8s
+    telemetry:
+      metrics:
+        processor_memory_limiter_accepted_log_records:
+          description: Number of log records successfully pushed into the next component
+            in the pipeline.
+          enabled: true
+          stability: alpha
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{record}'
+        processor_memory_limiter_accepted_metric_points:
+          description: Number of metric points successfully pushed into the next component
+            in the pipeline.
+          enabled: true
+          stability: alpha
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{datapoint}'
+        processor_memory_limiter_accepted_spans:
+          description: Number of spans successfully pushed into the next component
+            in the pipeline.
+          enabled: true
+          stability: alpha
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{span}'
+        processor_memory_limiter_refused_log_records:
+          description: Number of log records that were rejected by the next component
+            in the pipeline.
+          enabled: true
+          stability: alpha
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{record}'
+        processor_memory_limiter_refused_metric_points:
+          description: Number of metric points that were rejected by the next component
+            in the pipeline.
+          enabled: true
+          stability: alpha
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{datapoint}'
+        processor_memory_limiter_refused_spans:
+          description: Number of spans that were rejected by the next component in
+            the pipeline.
+          enabled: true
+          stability: alpha
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{span}'
+    type: memory_limiter
 - name: queuebatchprocessor
   metadata:
-    type: queuebatch
+    github_project: open-telemetry/opentelemetry-collector
     status:
       class: processor
+      codeowners:
+        active:
+        - jmacd
+        - iblancasa
+      distributions: []
       stability:
         development:
         - logs
         - metrics
         - profiles
         - traces
-      distributions: []
-      codeowners:
-        active:
-        - jmacd
-        - iblancasa
+    type: queuebatch
 - name: xprocessor
   metadata:
-    type: xprocessor
+    github_project: open-telemetry/opentelemetry-collector
     status:
       class: pkg
-      stability:
-        alpha:
-        - profiles
       codeowners:
         active:
         - mx-psi
         - dmathieu
+      stability:
+        alpha:
+        - profiles
+    type: xprocessor
