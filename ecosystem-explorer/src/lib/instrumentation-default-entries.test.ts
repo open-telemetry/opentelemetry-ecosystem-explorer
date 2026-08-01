@@ -142,6 +142,31 @@ describe("buildInstrumentationDefaultEntries", () => {
     expect(byLeaf.headers).toEqual({});
   });
 
+  it("seeds structured_list configs as an empty array, not the parsed map default", () => {
+    const modules = [
+      makeModule("m", [
+        makeEntry("m-1.0", [
+          {
+            name: "otel.instrumentation.common.peer-service-mapping",
+            declarative_name: "java.common.service_peer_mapping",
+            description: "",
+            type: "map",
+            default: "",
+            declarative_type: "structured_list",
+            declarative_schema: {
+              type: "object",
+              required: ["peer", "service"],
+              properties: { peer: { type: "string" }, service: { type: "string" } },
+            },
+          },
+        ]),
+      ]),
+    ];
+    const entries = buildInstrumentationDefaultEntries(modules, { includeScopes: ALL_SCOPES });
+    expect(entries).toHaveLength(1);
+    expect(entries[0].value).toEqual([]);
+  });
+
   it("skips configs without a declarative_name", () => {
     const modules = [
       makeModule("m", [

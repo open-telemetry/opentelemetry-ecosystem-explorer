@@ -16,7 +16,7 @@
 import type { InstrumentationModule } from "@/types/javaagent";
 import type { ConfigValue, Path } from "@/types/configuration-builder";
 import { aggregateConfigurations } from "./configurations-aggregate";
-import { parseDefault, type DeclarativeScope } from "./declarative-name";
+import { defaultConfigValue, type DeclarativeScope } from "./declarative-name";
 
 export interface DefaultEntry {
   path: Path;
@@ -35,8 +35,8 @@ export interface BuildDefaultEntriesOptions {
  * parsed default value.
  *
  * Reuses `aggregateConfigurations` (per-module dedupe + scope classification +
- * path) and `parseDefault`, so a bulk-added leaf is byte-identical to clicking
- * Override on that field individually.
+ * path) and `defaultConfigValue`, so a bulk-added leaf is byte-identical to
+ * clicking Override on that field individually.
  */
 export function buildInstrumentationDefaultEntries(
   modules: InstrumentationModule[],
@@ -54,7 +54,7 @@ export function buildInstrumentationDefaultEntries(
       if (byPathKey.has(key)) continue;
       byPathKey.set(key, {
         path: cfg.path,
-        value: parseDefault(cfg.entry.type, cfg.entry.default),
+        value: defaultConfigValue(cfg.entry),
       });
     }
   }
