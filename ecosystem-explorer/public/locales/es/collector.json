@@ -179,7 +179,8 @@
     "labels": {
       "type": "Tipo",
       "version": "Versión",
-      "distribution": "Distribución"
+      "sourceRepository": "Repositorio de origen",
+      "sourceRepositoryHint": "El repositorio del Collector en el que vive el código de este componente, no las distribuciones que lo incluyen."
     },
     "links": {
       "sourceCode": "Código fuente",

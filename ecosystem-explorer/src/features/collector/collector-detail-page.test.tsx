@@ -298,4 +298,65 @@ describe("CollectorDetailPage", () => {
     expect(screen.getByText("Usage Notes")).toBeInTheDocument();
     expect(screen.getByText("Some readme content.")).toBeInTheDocument();
   });
+
+  it("shows Distribution Availability under the Details tab instead of Stability", () => {
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: {
+        ...mockComponentWithoutTelemetry,
+        status: {
+          class: "receiver",
+          stability: { stable: ["traces", "metrics", "logs"] },
+          distributions: ["core", "contrib", "k8s"],
+        },
+      },
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    // Details is the default active tab, so Distribution Availability should
+    // already be visible without switching tabs.
+    expect(screen.getByText("Distribution Availability")).toBeInTheDocument();
+    expect(screen.getByText("OpenTelemetry Collector Contrib")).toBeInTheDocument();
+    expect(screen.getByText("OpenTelemetry Operator for Kubernetes")).toBeInTheDocument();
+
+    // The renamed source-repo field replaces the old ambiguous "Distribution" label.
+    expect(screen.getByText("Source Repository")).toBeInTheDocument();
+    expect(screen.queryByText("Distribution", { selector: "h4" })).not.toBeInTheDocument();
+  });
+
+  it("no longer renders Distribution Availability under the Stability tab", async () => {
+    const user = userEvent.setup();
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: {
+        ...mockComponentWithoutTelemetry,
+        status: {
+          class: "receiver",
+          stability: { stable: ["traces", "metrics", "logs"] },
+          distributions: ["core", "contrib"],
+        },
+      },
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    const stabilityTab = screen.getByRole("tab", { name: /stability/i });
+    await user.click(stabilityTab);
+
+    expect(screen.getByText("Stability Levels")).toBeInTheDocument();
+    expect(screen.queryByText("Distribution Availability")).not.toBeInTheDocument();
+  });
 });

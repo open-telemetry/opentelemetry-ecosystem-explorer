@@ -179,7 +179,8 @@
     "labels": {
       "type": "Type",
       "version": "Version",
-      "distribution": "Distribution"
+      "sourceRepository": "Source Repository",
+      "sourceRepositoryHint": "The Collector repository this component's code lives in, not the distributions that package it."
     },
     "links": {
       "sourceCode": "Source Code",

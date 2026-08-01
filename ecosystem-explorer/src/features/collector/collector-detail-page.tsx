@@ -262,68 +262,131 @@ export function CollectorDetailPage() {
             </div>
 
             <TabsContent value="details" className="mt-0 p-6">
-              <div className="grid gap-6 md:grid-cols-2">
-                <DetailCard withGrid>
-                  <div className="space-y-4">
-                    <h3 className="border-border/50 mb-4 border-b pb-2 text-lg font-semibold">
-                      {t("detail.sections.componentInfo")}
-                    </h3>
-                    <div>
-                      <h4 className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-                        {t("detail.labels.type")}
-                      </h4>
-                      <div className="mt-1 flex items-start gap-2 text-sm">
-                        <Check
-                          className="text-secondary mt-0.5 h-4 w-4 flex-shrink-0"
-                          aria-hidden="true"
-                        />
-                        <div>
-                          <span className="font-medium capitalize">{component.type}</span>
-                          {typeDesc && (
-                            <p className="text-muted-foreground mt-0.5 text-xs">{typeDesc}</p>
-                          )}
+              <div className="space-y-10">
+                <div className="grid gap-6 md:grid-cols-2">
+                  <DetailCard withGrid>
+                    <div className="space-y-4">
+                      <h2 className="border-border/50 mb-4 border-b pb-2 text-lg font-semibold">
+                        {t("detail.sections.componentInfo")}
+                      </h2>
+                      <div>
+                        <h4 className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+                          {t("detail.labels.type")}
+                        </h4>
+                        <div className="mt-1 flex items-start gap-2 text-sm">
+                          <Check
+                            className="text-secondary mt-0.5 h-4 w-4 flex-shrink-0"
+                            aria-hidden="true"
+                          />
+                          <div>
+                            <span className="font-medium capitalize">{component.type}</span>
+                            {typeDesc && (
+                              <p className="text-muted-foreground mt-0.5 text-xs">{typeDesc}</p>
+                            )}
+                          </div>
                         </div>
                       </div>
+                      <div>
+                        <h4 className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+                          {t("detail.labels.version")}
+                        </h4>
+                        <p className="mt-1 text-sm font-medium">{version}</p>
+                      </div>
+                      <div>
+                        <h4 className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
+                          {t("detail.labels.sourceRepository")}
+                        </h4>
+                        <p className="mt-1 text-sm font-medium capitalize">
+                          {component.distribution}
+                        </p>
+                        <p className="text-muted-foreground mt-0.5 text-xs">
+                          {t("detail.labels.sourceRepositoryHint")}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-                        {t("detail.labels.version")}
-                      </h4>
-                      <p className="mt-1 text-sm font-medium">{version}</p>
+                  </DetailCard>
+
+                  <DetailCard>
+                    <div className="space-y-4">
+                      <h2 className="border-border/50 mb-4 border-b pb-2 text-lg font-semibold">
+                        {t("detail.sections.linksResources")}
+                      </h2>
+                      <a
+                        href={`https://github.com/open-telemetry/${component.repository}/tree/main/${component.type}/${component.name}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="border-border/50 hover:bg-muted/50 group flex items-center gap-3 rounded-lg border p-3 transition-colors"
+                      >
+                        <GitHubIcon className="text-secondary h-5 w-5 transition-transform group-hover:scale-110" />
+                        <div>
+                          <p className="text-sm font-medium">{t("detail.links.sourceCode")}</p>
+                          <p className="text-muted-foreground text-xs">
+                            {t("detail.links.viewOnGithub")}
+                          </p>
+                        </div>
+                        <ExternalLink className="text-muted-foreground ml-auto h-4 w-4" />
+                      </a>
                     </div>
+                  </DetailCard>
+                </div>
+
+                {component.status?.distributions && component.status.distributions.length > 0 ? (
+                  <div className="space-y-6">
                     <div>
-                      <h4 className="text-muted-foreground text-xs font-semibold tracking-wider uppercase">
-                        {t("detail.labels.distribution")}
-                      </h4>
-                      <p className="mt-1 text-sm font-medium capitalize">
-                        {component.distribution}
+                      <SectionHeader>{t("detail.sections.distributionAvailability")}</SectionHeader>
+                      <p className="text-muted-foreground mt-2 text-sm">
+                        {t("detail.distributions.packaged")}
+                      </p>
+                    </div>
+
+                    <div className="grid gap-6 md:grid-cols-2">
+                      {component.status.distributions.map((dist) => {
+                        const distInfo = getDistributionInfo(dist);
+                        return (
+                          <div
+                            key={dist}
+                            className="border-border/60 bg-card flex flex-col justify-between rounded-lg border p-5 shadow-sm"
+                          >
+                            <div>
+                              <h3 className="mb-2 text-lg font-bold capitalize">{distInfo.name}</h3>
+                              <p className="text-muted-foreground mb-4 text-sm">{distInfo.desc}</p>
+                            </div>
+
+                            <div className="mt-auto space-y-3">
+                              {distInfo.cmd && (
+                                <div className="bg-muted text-foreground overflow-x-auto rounded-md p-3 font-mono text-xs">
+                                  <span className="text-muted-foreground">{distInfo.cmdLabel}</span>
+                                  <br />
+                                  {distInfo.cmd}
+                                </div>
+                              )}
+                              {distInfo.url && (
+                                <a
+                                  href={distInfo.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-primary inline-flex items-center gap-1 text-sm font-medium hover:underline"
+                                >
+                                  {t("detail.links.viewDocumentation")}{" "}
+                                  <ExternalLink className="h-3 w-3" />
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    <SectionHeader>{t("detail.sections.distributionAvailability")}</SectionHeader>
+                    <div className="border-border/60 bg-card flex items-center justify-center rounded-lg border p-8 shadow-sm">
+                      <p className="text-muted-foreground text-sm">
+                        {t("detail.distributions.noInfo")}
                       </p>
                     </div>
                   </div>
-                </DetailCard>
-
-                <DetailCard>
-                  <div className="space-y-4">
-                    <h3 className="border-border/50 mb-4 border-b pb-2 text-lg font-semibold">
-                      {t("detail.sections.linksResources")}
-                    </h3>
-                    <a
-                      href={`https://github.com/open-telemetry/${component.repository}/tree/main/${component.type}/${component.name}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="border-border/50 hover:bg-muted/50 group flex items-center gap-3 rounded-lg border p-3 transition-colors"
-                    >
-                      <GitHubIcon className="text-secondary h-5 w-5 transition-transform group-hover:scale-110" />
-                      <div>
-                        <p className="text-sm font-medium">{t("detail.links.sourceCode")}</p>
-                        <p className="text-muted-foreground text-xs">
-                          {t("detail.links.viewOnGithub")}
-                        </p>
-                      </div>
-                      <ExternalLink className="text-muted-foreground ml-auto h-4 w-4" />
-                    </a>
-                  </div>
-                </DetailCard>
+                )}
               </div>
             </TabsContent>
 
@@ -398,72 +461,6 @@ export function CollectorDetailPage() {
                             </div>
                           );
                         })}
-                      </div>
-                    </div>
-                  )}
-
-                  {component.status.distributions && component.status.distributions.length > 0 ? (
-                    <div className="space-y-6">
-                      <div>
-                        <SectionHeader>
-                          {t("detail.sections.distributionAvailability")}
-                        </SectionHeader>
-                        <p className="text-muted-foreground mt-2 text-sm">
-                          {t("detail.distributions.packaged")}
-                        </p>
-                      </div>
-
-                      <div className="grid gap-6 md:grid-cols-2">
-                        {component.status.distributions.map((dist) => {
-                          const distInfo = getDistributionInfo(dist);
-                          return (
-                            <div
-                              key={dist}
-                              className="border-border/60 bg-card flex flex-col justify-between rounded-lg border p-5 shadow-sm"
-                            >
-                              <div>
-                                <h3 className="mb-2 text-lg font-bold capitalize">
-                                  {distInfo.name}
-                                </h3>
-                                <p className="text-muted-foreground mb-4 text-sm">
-                                  {distInfo.desc}
-                                </p>
-                              </div>
-
-                              <div className="mt-auto space-y-3">
-                                {distInfo.cmd && (
-                                  <div className="bg-muted text-foreground overflow-x-auto rounded-md p-3 font-mono text-xs">
-                                    <span className="text-muted-foreground">
-                                      {distInfo.cmdLabel}
-                                    </span>
-                                    <br />
-                                    {distInfo.cmd}
-                                  </div>
-                                )}
-                                {distInfo.url && (
-                                  <a
-                                    href={distInfo.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-primary inline-flex items-center gap-1 text-sm font-medium hover:underline"
-                                  >
-                                    {t("detail.links.viewDocumentation")}{" "}
-                                    <ExternalLink className="h-3 w-3" />
-                                  </a>
-                                )}
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="space-y-6">
-                      <SectionHeader>{t("detail.sections.distributionAvailability")}</SectionHeader>
-                      <div className="border-border/60 bg-card flex items-center justify-center rounded-lg border p-8 shadow-sm">
-                        <p className="text-muted-foreground text-sm">
-                          {t("detail.distributions.noInfo")}
-                        </p>
                       </div>
                     </div>
                   )}
