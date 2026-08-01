@@ -50,25 +50,21 @@ enough that the right structure depends on what you find.
 
 ## Lessons from prior research
 
-jaydeluca wrote up the Java instrumentation metadata project in detail. Worth reading before
-starting a survey of your own, these are hard-won lessons rather than guesses:
+The Java instrumentation metadata project surfaced a few hard-won lessons worth carrying into any
+new survey:
 
 - **A third data-gathering technique, beyond automation and manual files**: intercepting real
   telemetry during integration test runs. Instrumentations already exercised in tests become
-  metadata sources without any static code analysis. See the
-  [project overview](https://sensorsandsignals.io/posts/2025/otel-instrumentation-metadata-project/).
+  metadata sources without any static code analysis.
 - **Telemetry output isn't static.** It can change based on upstream configuration, not just which
-  library version is in use. A concrete example from
-  [the telemetry-variations writeup](https://sensorsandsignals.io/posts/2025/otel-instrumentation-metadata-telemetry-variations/):
-  toggling Java's semconv-stability opt-in flag renamed `db.client.connections.usage` to
-  `db.client.connection.count` and restructured attribute names. This is why the real registry
-  schema conditions telemetry on a `when:` field rather than assuming one fixed shape per
-  instrumentation.
+  library version is in use. A concrete example: toggling Java's semconv-stability opt-in flag
+  renamed `db.client.connections.usage` to `db.client.connection.count` and restructured attribute
+  names. This is why the real registry schema conditions telemetry on a `when:` field rather than
+  assuming one fixed shape per instrumentation.
 - **Set realistic expectations for how complete this gets.** Even a mature, well-resourced effort
   like the Java one started with roughly 10% of modules having descriptions, and had reached about
-  45% completion by the point it called
-  [phase 1 done](https://sensorsandsignals.io/posts/2025/otel-instrumentation-metadata-phase1-completed/).
-  Treat this phase as iterative, not a one-shot audit.
+  45% completion by the point it called phase 1 done. Treat this phase as iterative, not a one-shot
+  audit.
 
 ## Next
 
