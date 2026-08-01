@@ -38,7 +38,8 @@ its own `<Routes>` table and its own chrome — legacy uses `Header`/`Footer`, v
 `NavBar`/`CncfCallout`/`FooterV1`. The two route tables mirror each other verbatim. To add a feature
 route: create a `*-page.tsx` under `src/features/{feature}/`, then register the **same** `<Route>`
 in **both** `LegacyApp.tsx` and `V1App.tsx` to keep them in sync. The chrome wraps all routes
-globally, so do not duplicate it per page.
+globally, so do not duplicate it per page. A new static route also needs an entry in
+`STATIC_ROUTE_META` (see [SEO and agent delivery](#seo-and-agent-delivery)).
 
 ## Testing
 
@@ -52,6 +53,25 @@ globally, so do not duplicate it per page.
 Wrap data fetching in custom hooks with explicit loading/data/error state. Do not fetch directly
 inside components. IndexedDB is used for client-side caching with a 24-hour expiry. Bump the
 IndexedDB schema version when changing it, or integration tests will fail with stale schema.
+
+## SEO and agent delivery
+
+The app serves per-route metadata and Markdown to non-browser clients (search engines, social
+scrapers, and HTTP-only AI agents). See `docs/seo-and-agent-delivery.md` for the full architecture.
+Key rules when working here:
+
+- `src/lib/seo/` (`constants.ts`, `derive.ts`) is the single source of truth for per-URL titles,
+  descriptions, and canonical paths. It is imported by the build scripts, the client `<Seo>`
+  component, and the Netlify edge function, so it **must stay dependency-free** — no framework,
+  Node, or Deno APIs.
+- Add new static routes to `STATIC_ROUTE_META` in `src/lib/seo/derive.ts`. Render `<Seo>` on pages
+  that need non-default metadata.
+- The edge function (`netlify/edge-functions/agent-negotiation.ts`) runs in Deno and cannot import
+  from `src/`, so it duplicates a few constants (site origin, default title/description). When you
+  change those, update the edge copy in the same commit.
+- `scripts/generate-agent-docs.mjs` and `scripts/generate-seo.mjs` run as part of `bun run build`
+  and emit the Markdown pages, `dist/seo/routes.json`, `dist/sitemap.xml`, and `llms.txt`. Run a
+  build and inspect `dist/` after changing generation or edge logic.
 
 ## Styling
 

@@ -37,16 +37,7 @@
   },
   "listV1": {
     "facets": {
-      "panel": {
-        "label": "Filters",
-        "close": "Close filters"
-      },
-      "search": {
-        "title": "Search",
-        "placeholder": "Search name or description…"
-      },
       "type": {
-        "title": "Type",
         "options": {
           "receiver": "Receiver",
           "processor": "Processor",
@@ -55,17 +46,7 @@
           "extension": "Extension"
         }
       },
-      "signal": {
-        "title": "Signal",
-        "options": {
-          "traces": "Traces",
-          "metrics": "Metrics",
-          "logs": "Logs",
-          "baggage": "Baggage"
-        }
-      },
       "stability": {
-        "title": "Stability",
         "options": {
           "stable": "Stable",
           "beta": "Beta",
@@ -76,15 +57,10 @@
         }
       },
       "distribution": {
-        "title": "Distribution",
         "options": {
           "core": "Core",
           "contrib": "Contrib"
         }
-      },
-      "version": {
-        "title": "Version",
-        "latest": "Latest"
       }
     }
   },
@@ -190,7 +166,8 @@
     "tabs": {
       "details": "Details",
       "stability": "Stability",
-      "telemetry": "Telemetry"
+      "telemetry": "Telemetry",
+      "readme": "Readme"
     },
     "sections": {
       "componentInfo": "Component Info",
@@ -208,6 +185,13 @@
       "sourceCode": "Source Code",
       "viewOnGithub": "View on GitHub",
       "viewDocumentation": "View Documentation"
+    },
+    "typeLabels": {
+      "receiver": "Receivers",
+      "processor": "Processors",
+      "exporter": "Exporters",
+      "connector": "Connectors",
+      "extension": "Extensions"
     },
     "typeDescriptions": {
       "receiver": "Receivers collect telemetry data from various sources and formats.",
@@ -331,6 +315,10 @@
         "githubCore": "GitHub (Core)",
         "githubContrib": "GitHub (Contrib)"
       }
+    },
+    "readme": {
+      "loading": "Loading component documentation...",
+      "error": "Component documentation is not available for this version."
     },
     "loading": "Loading Collector ecosystem data...",
     "error": "Error loading Collector data"

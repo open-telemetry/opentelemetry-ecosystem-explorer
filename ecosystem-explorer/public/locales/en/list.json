@@ -41,5 +41,48 @@
     "openAriaLabel": "Open filters",
     "openWithCountAriaLabel_one": "Open filters ({{count}} active)",
     "openWithCountAriaLabel_other": "Open filters ({{count}} active)"
+  },
+  "views": {
+    "table": {
+      "columns": {
+        "name": "Name",
+        "type": "Type",
+        "signals": "Signals",
+        "distribution": "Distribution",
+        "stability": "Stability"
+      }
+    }
+  },
+  "facets": {
+    "panel": {
+      "label": "Filters",
+      "close": "Close filters"
+    },
+    "search": {
+      "title": "Search",
+      "placeholder": "Search name or description…"
+    },
+    "type": {
+      "title": "Type"
+    },
+    "signal": {
+      "title": "Signal",
+      "options": {
+        "traces": "Traces",
+        "metrics": "Metrics",
+        "logs": "Logs",
+        "baggage": "Baggage"
+      }
+    },
+    "stability": {
+      "title": "Stability"
+    },
+    "distribution": {
+      "title": "Distribution"
+    },
+    "version": {
+      "title": "Version",
+      "latest": "Latest"
+    }
   }
 }

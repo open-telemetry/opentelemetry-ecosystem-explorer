@@ -232,6 +232,28 @@ describe("useConfigurationBuilderState", () => {
       });
       expect(result.current.state.values).toEqual({});
     });
+
+    it("should treat blank YAML as a no-op", async () => {
+      const { result } = renderHook(() => useConfigurationBuilderState(mockSchema, "1.0.0", null));
+      vi.useRealTimers();
+      await act(async () => {
+        await result.current.loadFromYaml("  \n  ");
+      });
+      expect(result.current.state.values).toEqual({});
+      expect(result.current.state.isDirty).toBe(false);
+    });
+
+    it("should resolve YAML merge keys (`<<`)", async () => {
+      const { result } = renderHook(() => useConfigurationBuilderState(mockSchema, "1.0.0", null));
+      vi.useRealTimers();
+      await act(async () => {
+        await result.current.loadFromYaml(
+          "_base: &base\n  attribute_count_limit: 256\nattribute_limits:\n  <<: *base\n"
+        );
+      });
+      // Without merge-key support the `<<` would survive as a literal key.
+      expect(result.current.state.values.attribute_limits).toEqual({ attribute_count_limit: 256 });
+    });
   });
 
   describe("localStorage persistence", () => {

@@ -645,3 +645,243 @@ def test_save_version_readme_failure_does_not_block_inventory_save(
 
     version_dir = temp_inventory_dir / "core" / "v0.112.0"
     assert (version_dir / "receiver.yaml").exists()
+
+
+# --- backfill / backfill_versions ---
+
+
+def test_backfill_versions_reprocesses_specified_versions(collector_sync, sample_components, temp_inventory_dir):
+    version = Version("0.111.0")
+    collector_sync.save_version("core", version, sample_components)
+
+    with patch("collector_watcher.collector_sync.ComponentScanner") as mock_scanner:
+        mock_instance = Mock()
+        mock_instance.scan_all_components.return_value = sample_components
+        mock_scanner.return_value = mock_instance
+
+        result = collector_sync.backfill_versions("core", versions=[version])
+
+    assert result == {"distribution": "core", "versions_processed": ["0.111.0"]}
+    assert collector_sync.inventory_manager.version_exists("core", version)
+
+
+def test_backfill_versions_auto_detects_all_existing_versions_when_none_given(
+    collector_sync, sample_components, temp_inventory_dir
+):
+    collector_sync.save_version("core", Version("0.110.0"), sample_components)
+    collector_sync.save_version("core", Version("0.111.0"), sample_components)
+
+    with patch("collector_watcher.collector_sync.ComponentScanner") as mock_scanner:
+        mock_instance = Mock()
+        mock_instance.scan_all_components.return_value = sample_components
+        mock_scanner.return_value = mock_instance
+
+        result = collector_sync.backfill_versions("core", versions=None)
+
+    assert sorted(result["versions_processed"]) == ["0.110.0", "0.111.0"]
+
+
+def test_backfill_versions_with_nothing_tracked_returns_early(collector_sync, temp_inventory_dir):
+    result = collector_sync.backfill_versions("core", versions=None)
+
+    assert result == {"distribution": "core", "versions_processed": []}
+
+
+def test_backfill_versions_deletes_stale_readmes_before_rescanning(
+    collector_sync, sample_components, temp_inventory_dir, temp_git_repos
+):
+    """
+    save_versioned_inventory() already fully overwrites every component-type
+    YAML on every call, so it's self-cleaning regardless of deletion. What
+    delete_version() actually guards is component_readmes/: it's purely
+    additive and content-addressed (save_component_readmes never removes old
+    hash-named files), so if a README's content changes between the original
+    tracking and a backfill run, the old hash-named file would otherwise
+    linger forever as an orphan rather than being replaced.
+    """
+    version = Version("0.111.0")
+    repo_path = Path(temp_git_repos["core"])
+    run_git(repo_path, "checkout", "v0.111.0")
+    readme_dir = repo_path / "receiver" / "otlpreceiver"
+    readme_dir.mkdir(parents=True, exist_ok=True)
+    (readme_dir / "README.md").write_text("# Original content")
+    run_git(repo_path, "add", "-A")
+    run_git(repo_path, "commit", "-m", "add readme")
+    run_git(repo_path, "tag", "-f", "v0.111.0")
+    run_git(repo_path, "checkout", "main")
+
+    with patch("collector_watcher.collector_sync.ComponentScanner") as mock_scanner:
+        mock_instance = Mock()
+        mock_instance.scan_all_components.return_value = sample_components
+        mock_scanner.return_value = mock_instance
+        # First pass establishes the baseline (backfill_versions checks out
+        # the tag itself; save_version() alone would not).
+        collector_sync.backfill_versions("core", versions=[version])
+
+    original_map = collector_sync.inventory_manager.load_component_readme_map("core", version)
+    original_hash = original_map["otlpreceiver"]
+
+    # Content changes upstream before the real backfill run under test.
+    run_git(repo_path, "checkout", "v0.111.0")
+    (readme_dir / "README.md").write_text("# Updated content")
+    run_git(repo_path, "add", "-A")
+    run_git(repo_path, "commit", "-m", "update readme")
+    run_git(repo_path, "tag", "-f", "v0.111.0")
+    run_git(repo_path, "checkout", "main")
+
+    with patch("collector_watcher.collector_sync.ComponentScanner") as mock_scanner:
+        mock_instance = Mock()
+        mock_instance.scan_all_components.return_value = sample_components
+        mock_scanner.return_value = mock_instance
+
+        collector_sync.backfill_versions("core", versions=[version])
+
+    readme_dir_on_disk = temp_inventory_dir / "core" / "v0.111.0" / "component_readmes"
+    files = [p.name for p in readme_dir_on_disk.glob("otlpreceiver-*.md")]
+    assert len(files) == 1, f"expected exactly one otlpreceiver readme file after backfill, found: {files}"
+    assert original_hash not in files[0]
+
+    new_map = collector_sync.inventory_manager.load_component_readme_map("core", version)
+    content = collector_sync.inventory_manager.load_component_readme_content(
+        "core", version, "otlpreceiver", new_map["otlpreceiver"]
+    )
+    assert content == "# Updated content"
+
+
+def test_backfill_versions_picks_up_readmes_for_a_previously_tracked_version(
+    collector_sync, sample_components, temp_inventory_dir, temp_git_repos
+):
+    """
+    Regression guard for the actual production scenario this feature exists
+    for: a version was tracked before readme discovery existed in
+    save_version(), so it has real component data but no component_readmes.
+    Running --backfill on it must pick up the readme now, with no watcher
+    code changes beyond what's already in backfill_versions().
+    """
+    version = Version("0.111.0")
+    collector_sync.save_version("core", version, sample_components)
+    assert collector_sync.inventory_manager.version_exists("core", version)
+    # save_component_readmes always mkdirs component_readmes/, check for
+    # absence of actual content rather than absence of the directory.
+    assert collector_sync.inventory_manager.load_component_readme_map("core", version) == {}
+
+    # A README.md genuinely exists in the repo at this tag, it just was never
+    # discovered because readme_scanner didn't exist when this version was
+    # first tracked (simulated here by adding it retroactively at the tag).
+    repo_path = Path(temp_git_repos["core"])
+    run_git(repo_path, "checkout", "v0.111.0")
+    readme_dir = repo_path / "receiver" / "otlpreceiver"
+    readme_dir.mkdir(parents=True, exist_ok=True)
+    (readme_dir / "README.md").write_text("# OTLP Receiver\n\nBackfilled readme content.")
+    run_git(repo_path, "add", "-A")
+    run_git(repo_path, "commit", "-m", "add readme")
+    run_git(repo_path, "tag", "-f", "v0.111.0")
+    run_git(repo_path, "checkout", "main")
+
+    with patch("collector_watcher.collector_sync.ComponentScanner") as mock_scanner:
+        mock_instance = Mock()
+        mock_instance.scan_all_components.return_value = sample_components
+        mock_scanner.return_value = mock_instance
+
+        collector_sync.backfill_versions("core", versions=[version])
+
+    readme_map = collector_sync.inventory_manager.load_component_readme_map("core", version)
+    assert "otlpreceiver" in readme_map
+    content = collector_sync.inventory_manager.load_component_readme_content(
+        "core", version, "otlpreceiver", readme_map["otlpreceiver"]
+    )
+    assert content == "# OTLP Receiver\n\nBackfilled readme content."
+
+
+def test_backfill_processes_all_distributions_when_none_specified(
+    collector_sync, sample_components, temp_inventory_dir
+):
+    collector_sync.save_version("core", Version("0.111.0"), sample_components)
+    collector_sync.save_version("contrib", Version("0.111.0"), sample_components)
+
+    with patch("collector_watcher.collector_sync.ComponentScanner") as mock_scanner:
+        mock_instance = Mock()
+        mock_instance.scan_all_components.return_value = sample_components
+        mock_scanner.return_value = mock_instance
+
+        summary = collector_sync.backfill(versions_by_dist=None)
+
+    distributions_processed = {item["distribution"] for item in summary["backfilled"]}
+    assert distributions_processed == {"core", "contrib"}
+
+
+def _seed(inventory_manager, distribution, version, sample_components):
+    inventory_manager.save_versioned_inventory(
+        distribution=distribution,
+        version=version,
+        components=sample_components,
+        repository=CollectorSync.get_repository_name(distribution),
+    )
+
+
+def test_backfill_prune_unlisted_removes_unlisted_release_versions(
+    collector_sync, sample_components, temp_inventory_dir
+):
+    im = collector_sync.inventory_manager
+    keep = Version("0.112.0")
+    snapshot = Version(major=0, minor=113, patch=0, prerelease=("SNAPSHOT",))
+    for version in [Version("0.110.0"), Version("0.111.0"), keep, snapshot]:
+        _seed(im, "core", version, sample_components)
+
+    with patch("collector_watcher.collector_sync.ComponentScanner") as mock_scanner:
+        mock_instance = Mock()
+        mock_instance.scan_all_components.return_value = sample_components
+        mock_scanner.return_value = mock_instance
+
+        summary = collector_sync.backfill(versions_by_dist={"core": [keep]}, prune_unlisted=True)
+
+    # Only the listed version is regenerated.
+    assert summary["backfilled"][0]["versions_processed"] == ["0.112.0"]
+    # Unlisted release versions are deleted.
+    assert not im.version_exists("core", Version("0.110.0"))
+    assert not im.version_exists("core", Version("0.111.0"))
+    # Listed version survives (regenerated).
+    assert im.version_exists("core", keep)
+    # The SNAPSHOT is preserved even though it is not in the keep list.
+    assert im.version_exists("core", snapshot)
+
+
+def test_backfill_without_prune_keeps_unlisted_versions(collector_sync, sample_components, temp_inventory_dir):
+    im = collector_sync.inventory_manager
+    keep = Version("0.112.0")
+    other = Version("0.110.0")
+    _seed(im, "core", keep, sample_components)
+    _seed(im, "core", other, sample_components)
+
+    with patch("collector_watcher.collector_sync.ComponentScanner") as mock_scanner:
+        mock_instance = Mock()
+        mock_instance.scan_all_components.return_value = sample_components
+        mock_scanner.return_value = mock_instance
+
+        collector_sync.backfill(versions_by_dist={"core": [keep]})
+
+    # Default behaviour leaves the unlisted version untouched.
+    assert im.version_exists("core", keep)
+    assert im.version_exists("core", other)
+
+
+def test_backfill_prune_unlisted_resets_deprecations_for_distribution(
+    collector_sync, sample_components, temp_inventory_dir
+):
+    im = collector_sync.inventory_manager
+    keep = Version("0.112.0")
+    _seed(im, "core", Version("0.110.0"), sample_components)
+    _seed(im, "core", keep, sample_components)
+
+    # Pre-existing deprecation entry that references a now-pruned version.
+    collector_sync.deprecations["core"]["receiver"] = [{"name": "gonereceiver", "deprecated_in_version": "0.111.0"}]
+
+    with patch("collector_watcher.collector_sync.ComponentScanner") as mock_scanner:
+        mock_instance = Mock()
+        mock_instance.scan_all_components.return_value = sample_components
+        mock_scanner.return_value = mock_instance
+
+        collector_sync.backfill(versions_by_dist={"core": [keep]}, prune_unlisted=True)
+
+    # The stale entry is cleared so deprecations.yaml reflects only surviving versions.
+    assert collector_sync.deprecations["core"]["receiver"] == []

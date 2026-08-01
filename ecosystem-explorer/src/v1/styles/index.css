@@ -36,6 +36,9 @@
  * - facets.css       — v1 list-page facet primitives (`.td-facet*`, minus `.td-facet-panel*`)
  * - facet-panel.css  — v1 list-page facet panel chrome (`.td-facet-panel*`)
  * - list-controls.css — v1 list-page controls (`.td-chip*`, `.td-density*`, `.td-sort*`, `.td-pagination*`, `.td-empty*`, `.td-facet-toggle*`)
+ * - list-views.css   — v1 list page result views (`.td-row*`, `.td-card*`, `.td-table*`)
+ * - list-page.css    — v1 list page shell (`.td-list-page*`, `.td-list-loading`)
+ * - detail.css       — v1 detail page (`.td-detail*`, `.td-detail-header*`, `.td-sibling-nav*`, `.td-on-page*`, `.td-placement*`, `.td-tabs*`, `.td-example*`); timeline/diff/compat rules land with PR B
  * - cncf-callout.css — sitewide CNCF band above the footer
  * - footer.css       — v1 footer (`.td-footer`) — mirrors opentelemetry.io
  *
@@ -64,5 +67,8 @@
 @import "./facets.css";
 @import "./facet-panel.css";
 @import "./list-controls.css";
+@import "./list-views.css";
+@import "./list-page.css";
+@import "./detail.css";
 @import "./cncf-callout.css";
 @import "./footer.css";

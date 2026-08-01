@@ -35,6 +35,7 @@ class ComponentScanner:
         "extensioncapabilities",  # Capabilities framework
         "extensionmiddleware",  # Middleware framework
         "opampcustommessages",  # OpAMP utilities
+        "dbauth",  # Database auth interface
     ]
 
     EXCLUDED_COMPONENTS = [

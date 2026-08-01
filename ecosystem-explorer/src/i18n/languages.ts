@@ -41,4 +41,5 @@ export const NAMESPACES = [
   "about",
   "ecosystem",
   "list",
+  "detail",
 ] as const;

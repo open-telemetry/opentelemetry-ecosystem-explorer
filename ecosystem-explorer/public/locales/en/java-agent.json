@@ -58,6 +58,12 @@
     }
   },
   "explore": {
+    "infoBar": {
+      "instrumentationCount_one": "Available instrumentation",
+      "instrumentationCount_other": "Available instrumentations",
+      "latestRelease": "Latest release version",
+      "error": "Failed to load summary stats: {{message}}"
+    },
     "resources": {
       "heading": "Resources & Documentation",
       "items": {
@@ -65,6 +71,10 @@
         "configReference": "Java Agent Configuration Reference",
         "githubRepo": "GitHub Repository"
       }
+    },
+    "announcements": {
+      "heading": "News & Announcements",
+      "readMore": "Read more"
     }
   },
   "list": {
@@ -179,7 +189,9 @@
     "metricName": "Metric Name",
     "metricDescription": "Description",
     "emittedBy": "Emitted By",
-    "release": "Release {{version}}"
+    "release": "Release {{version}}",
+    "noFilteredResults": "No modules match the selected filters.",
+    "noFilteredResultsDesc": "Try selecting a different status, or clear the filter to see all changes."
   },
   "configList": {
     "title": "Configuration Options Explorer",
@@ -220,7 +232,14 @@
     "spans": "Spans",
     "metrics": "Metrics",
     "javaAgent": "Java Agent",
-    "standalone": "Standalone"
+    "standalone": "Standalone",
+    "status": {
+      "label": "Status",
+      "all": "All Statuses",
+      "added": "Added",
+      "changed": "Changed",
+      "removed": "Removed"
+    }
   },
   "badges": {
     "agent": {

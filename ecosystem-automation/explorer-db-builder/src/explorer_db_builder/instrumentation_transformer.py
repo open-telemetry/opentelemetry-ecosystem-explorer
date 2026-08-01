@@ -14,6 +14,7 @@
 #
 """Transforms instrumentation data from different file format versions to a common schema."""
 
+import copy
 import logging
 from typing import Any
 
@@ -40,6 +41,9 @@ def transform_instrumentation_format(inventory_data: dict[str, Any]) -> dict[str
 
     file_format = inventory_data["file_format"]
 
+    if file_format == 0.6:
+        logger.debug("File format 0.6 detected, resolving definition references to 0.5 inline shape")
+        return _transform_0_6_to_0_5(inventory_data)
     if file_format == 0.5:
         logger.debug("File format 0.5 detected, no transformation needed")
         return inventory_data
@@ -177,6 +181,89 @@ def _transform_0_3_to_0_5(inventory_data: dict[str, Any]) -> dict[str, Any]:
     transformed_data = inventory_data.copy()
     transformed_data["file_format"] = 0.5
     logger.info("Transformed inventory from format 0.3 to 0.5")
+    return transformed_data
+
+
+def _resolve_refs(
+    library: dict[str, Any],
+    configuration_defs: dict[str, Any],
+    metric_defs: dict[str, Any],
+) -> dict[str, Any]:
+    """Resolve a single library's ``*_refs`` into the inline 0.5 shape.
+
+    ``configuration_refs`` becomes an inline ``configurations`` list and each
+    telemetry entry's ``metric_refs`` becomes an inline ``metrics`` list, looked
+    up in the top-level definitions catalog. Definitions are deep-copied so the
+    same shared definition referenced by multiple libraries yields independent
+    objects (downstream passes mutate these in place). Refs with no matching
+    definition are logged and skipped rather than crashing the build.
+    """
+    resolved = library.copy()
+
+    config_refs = resolved.pop("configuration_refs", None)
+    if config_refs is not None:
+        configurations = []
+        for ref in config_refs:
+            definition = configuration_defs.get(ref)
+            if definition is None:
+                logger.warning("Library %s references unknown configuration '%s'", library.get("name"), ref)
+                continue
+            configurations.append(copy.deepcopy(definition))
+        resolved["configurations"] = configurations
+
+    telemetry = resolved.get("telemetry")
+    if telemetry is not None:
+        resolved_telemetry = []
+        for entry in telemetry:
+            resolved_entry = entry.copy()
+            metric_refs = resolved_entry.pop("metric_refs", None)
+            if metric_refs is not None:
+                metrics = []
+                for ref in metric_refs:
+                    definition = metric_defs.get(ref)
+                    if definition is None:
+                        logger.warning("Library %s references unknown metric '%s'", library.get("name"), ref)
+                        continue
+                    metrics.append(copy.deepcopy(definition))
+                resolved_entry["metrics"] = metrics
+            resolved_telemetry.append(resolved_entry)
+        resolved["telemetry"] = resolved_telemetry
+
+    return resolved
+
+
+def _transform_0_6_to_0_5(inventory_data: dict[str, Any]) -> dict[str, Any]:
+    """Transform file_format 0.6 to the inline 0.5 common schema.
+
+    0.6 hoists shared metrics and configurations into a top-level ``definitions``
+    catalog; libraries reference them by id via ``configuration_refs`` and
+    ``telemetry[].metric_refs``. Downstream consumers (list/index projection,
+    configuration aggregator, and the frontend) all expect the fully-inline 0.5
+    shape, so we resolve every reference against the catalog, drop the ``*_refs``
+    keys and the ``definitions`` block, and tag the result as 0.5.
+
+    Args:
+        inventory_data: Inventory data in format 0.6
+
+    Returns:
+        Inventory data with references resolved inline, tagged as format 0.5
+    """
+    definitions = inventory_data.get("definitions") or {}
+    configuration_defs = definitions.get("configurations") or {}
+    metric_defs = definitions.get("metrics") or {}
+
+    transformed_data = inventory_data.copy()
+    transformed_data.pop("definitions", None)
+
+    for key in ("libraries", "custom"):
+        library_list = inventory_data.get(key)
+        if library_list is not None:
+            transformed_data[key] = [
+                _resolve_refs(library, configuration_defs, metric_defs) for library in library_list
+            ]
+
+    transformed_data["file_format"] = 0.5
+    logger.info("Transformed inventory from format 0.6 to 0.5")
     return transformed_data
 
 

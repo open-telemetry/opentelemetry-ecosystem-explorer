@@ -72,6 +72,7 @@ function toIndexComponent(component: CollectorComponent): IndexComponent {
     display_name: component.display_name,
     description: component.description,
     stability: deriveStability(component.status?.stability),
+    has_readme: Boolean(component.markdown_hash),
     signals: deriveSignals(component.status?.stability),
   };
 }
@@ -190,4 +191,22 @@ export async function loadAllComponents(version: string): Promise<IndexComponent
     }
   );
   return components.map(toIndexComponent);
+}
+
+/**
+ * Loads a component's README markdown content, content-addressed by name and hash.
+ * Mirrors loadLibraryReadme's fetch pattern on the javaagent side.
+ */
+export async function loadComponentReadme(name: string, markdownHash: string): Promise<string> {
+  const url = `${BASE_PATH}/markdown/${name}-${markdownHash}.md`;
+  const data = await fetchWithCache<string>(
+    `collector-readme-${name}-${markdownHash}`,
+    url,
+    STORES.METADATA,
+    { format: "text" }
+  );
+  if (data === null) {
+    throw new Error(`README for ${name} returned null unexpectedly`);
+  }
+  return data;
 }

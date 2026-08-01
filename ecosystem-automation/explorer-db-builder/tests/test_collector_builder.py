@@ -33,18 +33,18 @@ def _make_mock_inventory_manager(versions_by_distribution=None, inventories=None
 
     if versions_by_distribution is None:
         versions_by_distribution = {
-            "core": [Version("0.151.0"), Version("0.150.0")],
-            "contrib": [Version("0.151.0"), Version("0.150.0")],
+            "core": [Version("0.156.0"), Version("0.155.0")],
+            "contrib": [Version("0.156.0"), Version("0.155.0")],
         }
 
     manager.list_release_versions.side_effect = lambda dist: versions_by_distribution.get(dist, [])
 
     if inventories is None:
         inventories = {
-            ("core", Version("0.151.0")): _make_core_inventory("0.151.0"),
-            ("core", Version("0.150.0")): _make_core_inventory("0.150.0"),
-            ("contrib", Version("0.151.0")): _make_contrib_inventory("0.151.0"),
-            ("contrib", Version("0.150.0")): _make_contrib_inventory("0.150.0"),
+            ("core", Version("0.156.0")): _make_core_inventory("0.156.0"),
+            ("core", Version("0.155.0")): _make_core_inventory("0.155.0"),
+            ("contrib", Version("0.156.0")): _make_contrib_inventory("0.156.0"),
+            ("contrib", Version("0.155.0")): _make_contrib_inventory("0.155.0"),
         }
 
     manager.load_versioned_inventory.side_effect = lambda dist, ver: inventories.get(
@@ -118,12 +118,12 @@ class TestGetMergedReleaseVersions:
     def test_returns_union_sorted_newest_first(self):
         manager = _make_mock_inventory_manager(
             versions_by_distribution={
-                "core": [Version("0.152.0"), Version("0.150.0")],
-                "contrib": [Version("0.152.0"), Version("0.151.0")],
+                "core": [Version("0.156.0"), Version("0.154.0")],
+                "contrib": [Version("0.156.0"), Version("0.155.0")],
             }
         )
         result = _get_merged_release_versions(manager)
-        assert result == [Version("0.152.0"), Version("0.151.0"), Version("0.150.0")]
+        assert result == [Version("0.156.0"), Version("0.155.0"), Version("0.154.0")]
 
     def test_raises_when_no_versions(self):
         manager = MagicMock()
@@ -134,21 +134,22 @@ class TestGetMergedReleaseVersions:
     def test_deduplicates_shared_versions(self):
         manager = _make_mock_inventory_manager(
             versions_by_distribution={
-                "core": [Version("0.150.0")],
-                "contrib": [Version("0.150.0")],
+                "core": [Version("0.155.0")],
+                "contrib": [Version("0.155.0")],
             }
         )
         result = _get_merged_release_versions(manager)
-        assert result == [Version("0.150.0")]
+        assert result == [Version("0.155.0")]
 
     def test_excludes_versions_below_minimum(self):
         manager = _make_mock_inventory_manager(
             versions_by_distribution={
-                "core": [Version("0.151.0"), Version("0.150.0"), Version("0.100.0")],
-                "contrib": [Version("0.151.0"), Version("0.99.0")],
+                "core": [Version("0.155.0"), Version("0.154.0"), Version("0.100.0")],
+                "contrib": [Version("0.155.0"), Version("0.99.0")],
             }
         )
         result = _get_merged_release_versions(manager)
+        assert result, "expected at least one version above MINIMUM_VERSION to remain"
         assert all(v >= MINIMUM_VERSION for v in result)
         assert Version("0.100.0") not in result
         assert Version("0.99.0") not in result
@@ -196,7 +197,7 @@ class TestRunCollectorBuilder:
             data = json.load(f)
 
         assert len(data["versions"]) == 2
-        assert data["versions"][0]["version"] == "0.151.0"
+        assert data["versions"][0]["version"] == "0.156.0"
         assert data["versions"][0]["is_latest"] is True
 
     def test_component_files_created(self, tmp_path):
@@ -276,6 +277,45 @@ class TestRunCollectorBuilder:
 
         assert not stale.exists()
 
+    def test_removes_orphans_when_incremental(self):
+        manager = _make_mock_inventory_manager()
+        db_writer = MagicMock()
+        db_writer.write_components.return_value = {"core-nop": "hash1"}
+        db_writer.write_version_bundle.return_value = "bundlehash"
+        db_writer.get_stats.return_value = {"files_written": 1, "total_bytes": 10}
+
+        run_collector_builder(inventory_manager=manager, db_writer=db_writer, clean=False)
+
+        db_writer.remove_orphans.assert_called_once()
+
+    def test_skips_orphan_gc_when_clean(self):
+        manager = _make_mock_inventory_manager()
+        db_writer = MagicMock()
+        db_writer.write_components.return_value = {"core-nop": "hash1"}
+        db_writer.write_version_bundle.return_value = "bundlehash"
+        db_writer.get_stats.return_value = {"files_written": 1, "total_bytes": 10}
+
+        run_collector_builder(inventory_manager=manager, db_writer=db_writer, clean=True)
+
+        db_writer.remove_orphans.assert_not_called()
+
+    def test_orphaned_component_removed_on_incremental_rebuild(self, tmp_path):
+        """End-to-end: a stale component file from a prior run is swept on the next incremental build."""
+        manager = _make_mock_inventory_manager()
+        out_dir = tmp_path / "collector"
+        db_writer = CollectorDatabaseWriter(database_dir=str(out_dir))
+        run_collector_builder(inventory_manager=manager, db_writer=db_writer)
+
+        # Simulate a stale content-addressed file left by an earlier build.
+        stale = out_dir / "components" / "core-nop" / "core-nop-staleoldhash1.json"
+        stale.parent.mkdir(parents=True, exist_ok=True)
+        stale.write_text("{}", encoding="utf-8")
+
+        db_writer2 = CollectorDatabaseWriter(database_dir=str(out_dir))
+        run_collector_builder(inventory_manager=manager, db_writer=db_writer2, clean=False)
+
+        assert not stale.exists()
+
     def test_returns_1_on_no_versions(self, tmp_path):
         manager = MagicMock()
         manager.list_release_versions.return_value = []
@@ -286,24 +326,30 @@ class TestRunCollectorBuilder:
         assert result == 1
 
     def test_versions_index_excludes_empty_versions(self, tmp_path):
-        # 0.151.0 has components; 0.150.0 returns an empty inventory
+        # 0.156.0 has components; 0.155.0 returns an empty inventory
         inventories = {
-            ("core", Version("0.151.0")): _make_core_inventory("0.151.0"),
-            ("contrib", Version("0.151.0")): _make_contrib_inventory("0.151.0"),
-            ("core", Version("0.150.0")): {
+            ("core", Version("0.156.0")): _make_core_inventory("0.156.0"),
+            ("contrib", Version("0.156.0")): _make_contrib_inventory("0.156.0"),
+            ("core", Version("0.155.0")): {
                 "distribution": "core",
-                "version": "0.150.0",
+                "version": "0.155.0",
                 "repository": "",
                 "components": {},
             },
-            ("contrib", Version("0.150.0")): {
+            ("contrib", Version("0.155.0")): {
                 "distribution": "contrib",
-                "version": "0.150.0",
+                "version": "0.155.0",
                 "repository": "",
                 "components": {},
             },
         }
-        manager = _make_mock_inventory_manager(inventories=inventories)
+        manager = _make_mock_inventory_manager(
+            versions_by_distribution={
+                "core": [Version("0.156.0"), Version("0.155.0")],
+                "contrib": [Version("0.156.0"), Version("0.155.0")],
+            },
+            inventories=inventories,
+        )
         db_writer = CollectorDatabaseWriter(database_dir=str(tmp_path / "collector"))
 
         result = run_collector_builder(inventory_manager=manager, db_writer=db_writer)
@@ -313,8 +359,8 @@ class TestRunCollectorBuilder:
             data = json.load(f)
 
         versions_listed = [v["version"] for v in data["versions"]]
-        assert versions_listed == ["0.151.0"]
-        assert not (tmp_path / "collector" / "versions" / "0.150.0-index.json").exists()
+        assert versions_listed == ["0.156.0"]
+        assert not (tmp_path / "collector" / "versions" / "0.155.0-index.json").exists()
 
     def test_writes_ecosystem_stats(self, tmp_path):
         manager = _make_mock_inventory_manager()
@@ -333,24 +379,41 @@ class TestRunCollectorBuilder:
 
     def test_ecosystem_stats_counts_components_removed_in_newer_versions(self, tmp_path):
         """A component present only in an older version still contributes to the total."""
-        inventories = {
-            ("core", Version("0.151.0")): _make_core_inventory("0.151.0"),
-            ("contrib", Version("0.151.0")): {
-                "distribution": "contrib",
-                "version": "0.151.0",
-                "repository": "opentelemetry-collector-contrib",
-                "components": {
-                    "receiver": [],
-                    "processor": [],
-                    "exporter": [],
-                    "connector": [],
-                    "extension": [],
-                },
+        core_newer = _make_core_inventory("0.156.0")
+        core_older = _make_core_inventory("0.155.0")
+        # 0.156.0 (newer) only has otlpreceiver, prometheusreceiver existed in
+        # 0.155.0 (older) and was removed since, but must still be counted.
+        contrib_newer = {
+            "distribution": "contrib",
+            "version": "0.156.0",
+            "repository": "opentelemetry-collector-contrib",
+            "components": {
+                "receiver": [
+                    {
+                        "name": "otlpreceiver",
+                        "metadata": {"type": "otlp", "display_name": "OTLP Receiver"},
+                    }
+                ],
+                "processor": [],
+                "exporter": [],
+                "connector": [],
+                "extension": [],
             },
-            ("core", Version("0.150.0")): _make_core_inventory("0.150.0"),
-            ("contrib", Version("0.150.0")): _make_contrib_inventory("0.150.0"),
         }
-        manager = _make_mock_inventory_manager(inventories=inventories)
+        contrib_older = _make_contrib_inventory("0.155.0")
+        inventories = {
+            ("core", Version("0.156.0")): core_newer,
+            ("contrib", Version("0.156.0")): contrib_newer,
+            ("core", Version("0.155.0")): core_older,
+            ("contrib", Version("0.155.0")): contrib_older,
+        }
+        manager = _make_mock_inventory_manager(
+            versions_by_distribution={
+                "core": [Version("0.156.0"), Version("0.155.0")],
+                "contrib": [Version("0.156.0"), Version("0.155.0")],
+            },
+            inventories=inventories,
+        )
         db_writer = CollectorDatabaseWriter(database_dir=str(tmp_path / "collector"))
 
         result = run_collector_builder(inventory_manager=manager, db_writer=db_writer)
@@ -359,7 +422,8 @@ class TestRunCollectorBuilder:
         with open(tmp_path / "collector" / "ecosystem-stats.json") as f:
             data = json.load(f)
 
-        # 0.151.0 has only core's 1 receiver; 0.150.0 additionally has contrib's 2 receivers.
+        # Latest (0.156.0) alone only has core-nopreceiver + contrib-otlpreceiver.
+        # contrib-prometheusreceiver only exists in 0.155.0, and must still be counted.
         assert data["component_count"] == 3
 
     def test_returns_1_when_all_versions_empty(self, tmp_path):
@@ -376,15 +440,15 @@ class TestRunCollectorBuilder:
                 "repository": "",
                 "components": {},
             },
-            ("core", Version("0.150.0")): {
+            ("core", Version("0.155.0")): {
                 "distribution": "core",
-                "version": "0.150.0",
+                "version": "0.155.0",
                 "repository": "",
                 "components": {},
             },
-            ("contrib", Version("0.150.0")): {
+            ("contrib", Version("0.155.0")): {
                 "distribution": "contrib",
-                "version": "0.150.0",
+                "version": "0.155.0",
                 "repository": "",
                 "components": {},
             },
@@ -408,11 +472,11 @@ class TestRunCollectorBuilderAuditReport:
         assert list(tmp_path.glob("*.json")) == []
 
     def test_report_lists_only_latest_release_missing_components(self, tmp_path):
-        # Latest (0.151.0): one component without display_name; an older version has none
+        # Latest (0.156.0): one component without display_name; an older version has none
         # missing, and must not leak into the latest-only report.
         core_latest = {
             "distribution": "core",
-            "version": "0.151.0",
+            "version": "0.156.0",
             "repository": "opentelemetry-collector",
             "components": {
                 "receiver": [
@@ -427,17 +491,41 @@ class TestRunCollectorBuilderAuditReport:
         }
         contrib_latest = {
             "distribution": "contrib",
-            "version": "0.151.0",
+            "version": "0.156.0",
+            "repository": "opentelemetry-collector-contrib",
+            "components": {t: [] for t in ["receiver", "processor", "exporter", "connector", "extension"]},
+        }
+        core_older = {
+            "distribution": "core",
+            "version": "0.155.0",
+            "repository": "opentelemetry-collector",
+            "components": {
+                "receiver": [{"name": "nopreceiver", "metadata": {"display_name": "No-op Receiver"}}],
+                "processor": [],
+                "exporter": [],
+                "connector": [],
+                "extension": [],
+            },
+        }
+        contrib_older = {
+            "distribution": "contrib",
+            "version": "0.155.0",
             "repository": "opentelemetry-collector-contrib",
             "components": {t: [] for t in ["receiver", "processor", "exporter", "connector", "extension"]},
         }
         inventories = {
-            ("core", Version("0.151.0")): core_latest,
-            ("contrib", Version("0.151.0")): contrib_latest,
-            ("core", Version("0.150.0")): _make_core_inventory("0.150.0"),
-            ("contrib", Version("0.150.0")): _make_contrib_inventory("0.150.0"),
+            ("core", Version("0.156.0")): core_latest,
+            ("contrib", Version("0.156.0")): contrib_latest,
+            ("core", Version("0.155.0")): core_older,
+            ("contrib", Version("0.155.0")): contrib_older,
         }
-        manager = _make_mock_inventory_manager(inventories=inventories)
+        manager = _make_mock_inventory_manager(
+            versions_by_distribution={
+                "core": [Version("0.156.0"), Version("0.155.0")],
+                "contrib": [Version("0.156.0"), Version("0.155.0")],
+            },
+            inventories=inventories,
+        )
         db_writer = CollectorDatabaseWriter(database_dir=str(tmp_path / "collector"))
         report_path = tmp_path / "missing.json"
 
@@ -450,7 +538,7 @@ class TestRunCollectorBuilderAuditReport:
             report = json.load(f)
 
         assert report["ecosystem"] == "collector"
-        assert report["version"] == "0.151.0"
+        assert report["version"] == "0.156.0"
         assert [c["name"] for c in report["missing"]] == ["mysteryreceiver"]
 
     def test_report_empty_when_all_have_display_name(self, tmp_path):
@@ -483,10 +571,10 @@ class TestRunCollectorBuilderReadmes:
     """Mirrors test_main.py's test_run_builder_processes_readmes for the javaagent builder."""
 
     def test_processes_readmes_and_stamps_markdown_hash(self, tmp_path):
-        version = Version("0.150.0")
+        version = Version("0.155.0")
         core_inventory = {
             "distribution": "core",
-            "version": "0.150.0",
+            "version": "0.155.0",
             "repository": "opentelemetry-collector",
             "components": {
                 "receiver": [{"name": "otlpreceiver", "metadata": {"display_name": "OTLP Receiver"}}],
@@ -498,7 +586,7 @@ class TestRunCollectorBuilderReadmes:
         }
         contrib_inventory = {
             "distribution": "contrib",
-            "version": "0.150.0",
+            "version": "0.155.0",
             "repository": "opentelemetry-collector-contrib",
             "components": {t: [] for t in ["receiver", "processor", "exporter", "connector", "extension"]},
         }
@@ -531,7 +619,7 @@ class TestRunCollectorBuilderReadmes:
 
     def test_readme_load_failure_does_not_fail_the_build(self, tmp_path):
         """A README-loading failure for one distribution must not block the whole build."""
-        version = Version("0.150.0")
+        version = Version("0.155.0")
         manager = _make_mock_inventory_manager(versions_by_distribution={"core": [version], "contrib": [version]})
         manager.load_component_readme_map.side_effect = OSError("simulated disk error")
 
@@ -554,10 +642,10 @@ class TestReadmePublishingIsolation:
         test_failed_readme_load_does_not_stamp_markdown_hash below for that
         real, non-raising path). This test guards the isolation itself
         staying correct if that ever changes, not current production behavior."""
-        version = Version("0.150.0")
+        version = Version("0.155.0")
         core_inventory = {
             "distribution": "core",
-            "version": "0.150.0",
+            "version": "0.155.0",
             "repository": "opentelemetry-collector",
             "components": {
                 "receiver": [
@@ -572,7 +660,7 @@ class TestReadmePublishingIsolation:
         }
         contrib_inventory = {
             "distribution": "contrib",
-            "version": "0.150.0",
+            "version": "0.155.0",
             "repository": "opentelemetry-collector-contrib",
             "components": {t: [] for t in ["receiver", "processor", "exporter", "connector", "extension"]},
         }
@@ -606,10 +694,10 @@ class TestReadmePublishingIsolation:
     def test_failed_readme_load_does_not_stamp_markdown_hash(self, tmp_path):
         """If content comes back None, the component must not get markdown_hash
         even though its name was present in the readme map."""
-        version = Version("0.150.0")
+        version = Version("0.155.0")
         core_inventory = {
             "distribution": "core",
-            "version": "0.150.0",
+            "version": "0.155.0",
             "repository": "opentelemetry-collector",
             "components": {
                 "receiver": [{"name": "otlpreceiver", "metadata": {"display_name": "OTLP"}}],
@@ -621,7 +709,7 @@ class TestReadmePublishingIsolation:
         }
         contrib_inventory = {
             "distribution": "contrib",
-            "version": "0.150.0",
+            "version": "0.155.0",
             "repository": "opentelemetry-collector-contrib",
             "components": {t: [] for t in ["receiver", "processor", "exporter", "connector", "extension"]},
         }
@@ -658,10 +746,10 @@ class TestReadmePublishingIsolation:
         fake that raises, since the real method swallows OSError internally
         and communicates failure via its return value, not an exception.
         """
-        version = Version("0.150.0")
+        version = Version("0.155.0")
         core_inventory = {
             "distribution": "core",
-            "version": "0.150.0",
+            "version": "0.155.0",
             "repository": "opentelemetry-collector",
             "components": {
                 "receiver": [
@@ -676,7 +764,7 @@ class TestReadmePublishingIsolation:
         }
         contrib_inventory = {
             "distribution": "contrib",
-            "version": "0.150.0",
+            "version": "0.155.0",
             "repository": "opentelemetry-collector-contrib",
             "components": {t: [] for t in ["receiver", "processor", "exporter", "connector", "extension"]},
         }

@@ -390,3 +390,110 @@ class TestWriteMarkdown:
                 mock_logger.error.assert_called()
                 args, _ = mock_logger.error.call_args
                 assert "Failed to write markdown" in args[0]
+
+
+class TestRemoveOrphans:
+    """Tests for the incremental orphan-GC sweep."""
+
+    def test_no_op_when_versions_dir_missing(self, db_writer):
+        assert db_writer.remove_orphans() == 0
+
+    def test_no_op_when_everything_referenced(self, db_writer, sample_components):
+        version = Version("0.150.0")
+        component_map = db_writer.write_components(sample_components)
+        db_writer.write_version_index(version, component_map)
+
+        assert db_writer.remove_orphans() == 0
+
+    def test_removes_rehashed_component(self, db_writer):
+        version = Version("0.150.0")
+        component = {"id": "core-batch", "name": "batchprocessor", "distribution": "core", "type": "processor"}
+        map_a = db_writer.write_components([component])
+        db_writer.write_version_index(version, map_a)
+        # Content changes -> new hash; index rewritten to reference the new file only.
+        map_b = db_writer.write_components([{**component, "description": "now documented"}])
+        db_writer.write_version_index(version, map_b)
+
+        file_a = db_writer._component_file("core-batch", map_a["core-batch"])
+        file_b = db_writer._component_file("core-batch", map_b["core-batch"])
+        assert file_a.exists() and file_b.exists()
+
+        removed = db_writer.remove_orphans()
+
+        assert removed == 1
+        assert not file_a.exists()
+        assert file_b.exists()
+
+    def test_prunes_emptied_component_dir(self, db_writer, temp_db_dir):
+        version = Version("0.150.0")
+        keep = {"id": "core-keep", "name": "keep", "distribution": "core", "type": "processor"}
+        drop = {"id": "core-drop", "name": "drop", "distribution": "core", "type": "processor"}
+        keep_map = db_writer.write_components([keep])
+        db_writer.write_components([drop])  # written but referenced by no index
+        db_writer.write_version_index(version, keep_map)
+
+        removed = db_writer.remove_orphans()
+
+        assert removed == 1
+        assert not (temp_db_dir / "components" / "core-drop").exists()
+        assert (temp_db_dir / "components" / "core-keep").exists()
+
+    def test_removes_orphaned_bundle(self, db_writer, temp_db_dir, sample_components):
+        version = Version("0.150.0")
+        component_map = db_writer.write_components(sample_components)
+        db_writer.write_version_index(version, component_map)
+        bundle_hash = db_writer.write_version_bundle(version, sample_components)
+        db_writer.write_version_list([version], {version: bundle_hash})
+
+        orphan = temp_db_dir / "bundles" / "0.150.0-deadbeefcafe.json"
+        orphan.write_text("[]", encoding="utf-8")
+
+        removed = db_writer.remove_orphans()
+
+        assert removed == 1
+        assert not orphan.exists()
+        assert (temp_db_dir / "bundles" / f"0.150.0-{bundle_hash}.json").exists()
+
+    def test_removes_orphaned_markdown_keyed_by_name(self, db_writer, temp_db_dir):
+        version = Version("0.150.0")
+        live_hash = "livehash1234"
+        orphan_hash = "orphanhash56"
+        # Markdown is keyed by the component's name ("otlpreceiver"), not its id ("contrib-otlp").
+        db_writer.write_markdown("otlpreceiver", live_hash, "# live")
+        db_writer.write_markdown("otlpreceiver", orphan_hash, "# orphan")
+        component = {
+            "id": "contrib-otlp",
+            "name": "otlpreceiver",
+            "distribution": "contrib",
+            "type": "receiver",
+            "markdown_hash": live_hash,
+        }
+        component_map = db_writer.write_components([component])
+        db_writer.write_version_index(version, component_map)
+
+        removed = db_writer.remove_orphans()
+
+        assert removed == 1
+        assert (temp_db_dir / "markdown" / f"otlpreceiver-{live_hash}.md").exists()
+        assert not (temp_db_dir / "markdown" / f"otlpreceiver-{orphan_hash}.md").exists()
+
+    def test_skips_unreadable_index(self, db_writer, temp_db_dir, sample_components, caplog):
+        version = Version("0.150.0")
+        component_map = db_writer.write_components(sample_components)
+        db_writer.write_version_index(version, component_map)
+        (temp_db_dir / "versions" / "9.9.9-index.json").write_text("{ not json", encoding="utf-8")
+
+        assert db_writer.remove_orphans() == 0
+        assert "Skipping unreadable file during orphan GC" in caplog.text
+
+    def test_skips_gc_when_no_index_readable(self, db_writer, temp_db_dir, sample_components, caplog):
+        # Store has content on disk but every version index is unreadable, so
+        # reachability is unknown. GC must skip rather than sweep the whole store.
+        component_map = db_writer.write_components(sample_components)
+        (temp_db_dir / "versions").mkdir(exist_ok=True)
+        (temp_db_dir / "versions" / "0.150.0-index.json").write_text("{ not json", encoding="utf-8")
+
+        assert db_writer.remove_orphans() == 0
+        assert "Skipping orphan GC: no readable version index found" in caplog.text
+        first_id = next(iter(component_map))
+        assert db_writer._component_file(first_id, component_map[first_id]).exists()

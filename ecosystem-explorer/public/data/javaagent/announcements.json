@@ -1,0 +1,8 @@
+[
+  {
+    "id": "welcome-announcement",
+    "date": "2026-07-20",
+    "title": "Welcome to the Java Agent Explorer",
+    "body": "We've added a new announcements section to keep you updated on the latest news and releases for the OpenTelemetry Java Agent."
+  }
+]

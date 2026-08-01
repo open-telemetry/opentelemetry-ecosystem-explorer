@@ -16,7 +16,10 @@
 
 from explorer_db_builder.declarative_name_corrections import (
     apply_declarative_name_corrections,
+    backfill_underdocumented_configs,
+    normalize_config_descriptions,
 )
+from semantic_version import Version
 
 
 def _config(name, declarative_name):
@@ -235,3 +238,186 @@ class TestApplyDeclarativeNameCorrections:
         assert "pattern" in config["declarative_schema"]["required"]
         assert "template" in config["declarative_schema"]["required"]
         assert "override" in config["declarative_schema"]["properties"]
+
+
+class TestConfigNameFallback:
+    def test_declarative_only_config_gets_name_from_declarative_name(self):
+        """A config with a declarative_name but no name falls back to the declarative_name."""
+        inventory = {
+            "libraries": [
+                {
+                    "name": "apache-httpasyncclient-4.1",
+                    "configurations": [{"declarative_name": "java.common.http.client.url_template_rules"}],
+                }
+            ]
+        }
+
+        apply_declarative_name_corrections(inventory)
+
+        config = inventory["libraries"][0]["configurations"][0]
+        assert config["name"] == "java.common.http.client.url_template_rules"
+
+    def test_existing_name_is_not_overwritten(self):
+        """A config that already has a name keeps it; the fallback only fills a missing name."""
+        inventory = {
+            "libraries": [
+                {
+                    "name": "lib",
+                    "configurations": [_config("otel.instrumentation.real.name", "java.common.real")],
+                }
+            ]
+        }
+
+        apply_declarative_name_corrections(inventory)
+
+        assert inventory["libraries"][0]["configurations"][0]["name"] == "otel.instrumentation.real.name"
+
+    def test_config_without_name_or_declarative_name_stays_nameless(self):
+        """No declarative_name means there's nothing to fall back to; name stays absent."""
+        inventory = {"libraries": [{"name": "lib", "configurations": [{"description": "x"}]}]}
+
+        apply_declarative_name_corrections(inventory)
+
+        assert "name" not in inventory["libraries"][0]["configurations"][0]
+
+
+class TestNormalizeConfigDescriptions:
+    _DN = "java.common.db.query_sanitization.enabled"
+
+    def _inventory(self, description):
+        return {
+            "libraries": [
+                {
+                    "name": "some-lib",
+                    "configurations": [
+                        {
+                            "name": "otel.instrumentation.common.db.query-sanitization.enabled",
+                            "declarative_name": self._DN,
+                            "description": description,
+                        }
+                    ],
+                }
+            ]
+        }
+
+    def test_pins_older_description_to_newest(self):
+        """Whitelisted configs get the newest version's description in every version."""
+        newest = self._inventory("Enables query sanitization for database queries.")
+        older = self._inventory("Enables or disables query sanitization for database queries.")
+
+        normalize_config_descriptions([newest, older])  # newest-first
+
+        assert older["libraries"][0]["configurations"][0]["description"] == (
+            "Enables query sanitization for database queries."
+        )
+        # Newest is unchanged.
+        assert newest["libraries"][0]["configurations"][0]["description"] == (
+            "Enables query sanitization for database queries."
+        )
+
+    def test_does_not_touch_non_whitelisted_configs(self):
+        """A config whose declarative_name isn't whitelisted keeps its per-version description."""
+
+        def inv(description):
+            config = _config("c", "java.common.not_whitelisted") | {"description": description}
+            return {"libraries": [{"name": "lib", "configurations": [config]}]}
+
+        newest = inv("new")
+        older = inv("old")
+
+        normalize_config_descriptions([newest, older])
+
+        assert older["libraries"][0]["configurations"][0]["description"] == "old"
+
+    def test_scoped_per_instrumentation(self):
+        """Two libraries referencing the same whitelisted config each keep their own newest value."""
+        newest = {
+            "libraries": [
+                {
+                    "name": "lib-a",
+                    "configurations": [
+                        {"name": "n", "declarative_name": self._DN, "description": "A newest"},
+                    ],
+                },
+                {
+                    "name": "lib-b",
+                    "configurations": [
+                        {"name": "n", "declarative_name": self._DN, "description": "B newest"},
+                    ],
+                },
+            ]
+        }
+        older = {
+            "libraries": [
+                {
+                    "name": "lib-a",
+                    "configurations": [
+                        {"name": "n", "declarative_name": self._DN, "description": "A old"},
+                    ],
+                },
+                {
+                    "name": "lib-b",
+                    "configurations": [
+                        {"name": "n", "declarative_name": self._DN, "description": "B old"},
+                    ],
+                },
+            ]
+        }
+
+        normalize_config_descriptions([newest, older])
+
+        assert older["libraries"][0]["configurations"][0]["description"] == "A newest"
+        assert older["libraries"][1]["configurations"][0]["description"] == "B newest"
+
+    def test_returns_same_list_and_handles_empty(self):
+        inventories: list = []
+        assert normalize_config_descriptions(inventories) is inventories
+
+
+class TestBackfillUnderdocumentedConfigs:
+    _DN = "java.common.http.client.url_template_rules"
+
+    def _lib(self, name, has_config):
+        configs = []
+        if has_config:
+            configs.append(
+                {
+                    "name": self._DN,
+                    "declarative_name": self._DN,
+                    "type": "list",
+                    "default": "",
+                }
+            )
+        return {"name": name, "configurations": configs}
+
+    def test_backfills_config_into_earlier_version(self):
+        """A config present only in the newest version is injected into earlier versions."""
+        newest = {"libraries": [self._lib("apache-httpasyncclient-4.1", has_config=True)]}
+        older = {"libraries": [self._lib("apache-httpasyncclient-4.1", has_config=False)]}
+
+        backfill_underdocumented_configs([(Version("2.29.1"), newest), (Version("2.29.0"), older)])
+
+        older_configs = older["libraries"][0]["configurations"]
+        assert [c["declarative_name"] for c in older_configs] == [self._DN]
+        # Injected config is an independent deep copy, not the template object.
+        assert older_configs[0] is not newest["libraries"][0]["configurations"][0]
+
+    def test_does_not_duplicate_when_already_present(self):
+        """A version that already carries the config is left untouched."""
+        newest = {"libraries": [self._lib("lib", has_config=True)]}
+        older = {"libraries": [self._lib("lib", has_config=True)]}
+
+        backfill_underdocumented_configs([(Version("2.29.1"), newest), (Version("2.29.0"), older)])
+
+        assert len(older["libraries"][0]["configurations"]) == 1
+
+    def test_does_not_add_to_instrumentation_absent_from_older_version(self):
+        """Only instrumentations already present in the older version receive the config."""
+        newest = {"libraries": [self._lib("new-lib", has_config=True)]}
+        older = {"libraries": [self._lib("other-lib", has_config=False)]}
+
+        backfill_underdocumented_configs([(Version("2.29.1"), newest), (Version("2.29.0"), older)])
+
+        # other-lib doesn't carry the config in the newest version, so it isn't a template target.
+        assert older["libraries"][0]["configurations"] == []
+        assert len(older["libraries"]) == 1

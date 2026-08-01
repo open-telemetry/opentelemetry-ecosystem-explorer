@@ -24,6 +24,12 @@ interface GlowBadgeProps {
   className?: string;
 }
 
+/*
+ * Light-mode text shades must clear WCAG AA (4.5:1) against the /10 tint
+ * composited over the app's tinted light surfaces (slate list rows, not just
+ * white cards) — that worst case is what pushes orange/green to -800 and
+ * blue/red to -700 while slate passes at -600.
+ */
 const variantStyles: Record<BadgeVariant, { base: string; glow: string }> = {
   accent: {
     base: "bg-secondary/10 border-secondary/30 text-secondary",
@@ -34,19 +40,19 @@ const variantStyles: Record<BadgeVariant, { base: string; glow: string }> = {
     glow: "shadow-sm shadow-slate-500/20",
   },
   success: {
-    base: "bg-green-500/10 border-green-500/30 text-green-600 dark:text-green-400",
+    base: "bg-green-500/10 border-green-500/30 text-green-800 dark:text-green-400",
     glow: "shadow-sm shadow-green-500/20",
   },
   info: {
-    base: "bg-blue-500/10 border-blue-500/30 text-blue-600 dark:text-blue-400",
+    base: "bg-blue-500/10 border-blue-500/30 text-blue-700 dark:text-blue-400",
     glow: "shadow-sm shadow-blue-500/20",
   },
   warning: {
-    base: "bg-orange-500/10 border-orange-500/30 text-orange-600 dark:text-orange-400",
+    base: "bg-orange-500/10 border-orange-500/30 text-orange-800 dark:text-orange-400",
     glow: "shadow-sm shadow-orange-500/20",
   },
   error: {
-    base: "bg-red-500/10 border-red-500/30 text-red-600 dark:text-red-400",
+    base: "bg-red-500/10 border-red-500/30 text-red-700 dark:text-red-400",
     glow: "shadow-sm shadow-red-500/20",
   },
   muted: {
