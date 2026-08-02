@@ -15,7 +15,14 @@
  */
 
 export type TokenKind =
-  "comment" | "key" | "string" | "number" | "keyword" | "punct" | "plain" | "ws";
+  | "comment"
+  | "key"
+  | "string"
+  | "number"
+  | "keyword"
+  | "punct"
+  | "plain"
+  | "ws";
 
 export interface Token {
   kind: TokenKind;

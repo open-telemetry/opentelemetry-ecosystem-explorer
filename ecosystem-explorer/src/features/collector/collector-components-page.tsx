@@ -41,7 +41,12 @@ import { SIGNAL_STYLES, getSignalFilterClasses } from "./styles/signal-styles";
 import type { Stability } from "@/types/collector";
 
 type ComponentTypeFilter =
-  "all" | "receiver" | "processor" | "exporter" | "extension" | "connector";
+  | "all"
+  | "receiver"
+  | "processor"
+  | "exporter"
+  | "extension"
+  | "connector";
 type DistributionFilter = "all" | "core" | "contrib";
 type StabilityFilter = Stability | "all";
 

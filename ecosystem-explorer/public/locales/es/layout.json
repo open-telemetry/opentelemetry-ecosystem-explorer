@@ -17,11 +17,49 @@
       "github": "GitHub",
       "otelWebsite": "opentelemetry.io"
     },
-    "copyright": "© 2026–Present OpenTelemetry Authors"
+    "copyright": "© 2026-Present OpenTelemetry Authors"
   },
   "theme": {
     "light": "Claro",
     "dark": "Oscuro",
     "auto": "Automático"
+  },
+  "v1": {
+    "navBar": {
+      "homeAriaLabel": "OpenTelemetry - Inicio",
+      "toggleAriaLabel": "Alternar navegación",
+      "primaryAriaLabel": "Principal",
+      "docs": "Docs"
+    },
+    "subNav": {
+      "breadcrumbAriaLabel": "Ruta de navegación"
+    },
+    "cncfCallout": {
+      "lead": "OpenTelemetry es un proyecto graduado de <cncf>CNCF</cncf>.",
+      "detail": "Formado a partir de la fusión de los proyectos OpenTracing y OpenCensus."
+    },
+    "footer": {
+      "userLinks": {
+        "mailingLists": "Listas de correo",
+        "bluesky": "Bluesky",
+        "mastodon": "Mastodon",
+        "stackOverflow": "Stack Overflow",
+        "otelLogos": "Logos de OTel",
+        "meetingRecordings": "Grabaciones de reuniones",
+        "siteAnalytics": "Estadísticas del sitio"
+      },
+      "developerLinks": {
+        "github": "GitHub",
+        "slack": "Slack #opentelemetry",
+        "devstats": "CNCF DevStats",
+        "privacyPolicy": "Política de privacidad",
+        "trademarkUsage": "Uso de marca registrada",
+        "marketingGuidelines": "Directrices de marketing",
+        "siteBuildInfo": "Información de compilación del sitio"
+      },
+      "authors": "OpenTelemetry Authors",
+      "docsLicense": "Docs",
+      "ccBy": "CC BY 4.0"
+    }
   }
 }

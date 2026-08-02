@@ -15,19 +15,20 @@
  */
 
 /*
- * FooterV1 — mirrors opentelemetry.io's `.td-footer` chrome verbatim.
+ * FooterV1 - mirrors opentelemetry.io's `.td-footer` chrome verbatim.
  *
  * Source rules (in the local opentelemetry.io clone):
- *   themes/docsy/layouts/_partials/footer.html        — three-column layout
+ *   themes/docsy/layouts/_partials/footer.html        - three-column layout
  *   themes/docsy/layouts/_partials/footer/{left,right,center,links,copyright}.html
- *   themes/docsy/assets/scss/td/_footer.scss          — dark surface + spacing
- *   config/_default/hugo.yaml                         — link inventory + copyright
+ *   themes/docsy/assets/scss/td/_footer.scss          - dark surface + spacing
+ *   config/_default/hugo.yaml                         - link inventory + copyright
  *
  * Link inventory is locked against the upstream YAML (7 user + 7 developer).
  * Icons follow the locked decision (foundation-audit Q3, 2026-05-06): inline
  * SVG for brand marks Lucide doesn't ship; Lucide for everything else.
  */
 
+import { useTranslation } from "react-i18next";
 import { AreaChart, Book, Hammer, Image, LineChart, Mail, Megaphone, Video } from "lucide-react";
 import { BlueskyIcon } from "@/v1/components/icons/bluesky-icon";
 import { GitHubIcon } from "@/v1/components/icons/github-icon";
@@ -37,7 +38,8 @@ import { StackOverflowIcon } from "@/v1/components/icons/stack-overflow-icon";
 import { TrademarkIcon } from "@/v1/components/icons/trademark-icon";
 
 type FooterLink = {
-  name: string;
+  /** Stable id - also the translation key under v1.footer.{userLinks,developerLinks}.* */
+  id: string;
   url: string;
   icon: React.ReactNode;
   rel?: string;
@@ -45,38 +47,38 @@ type FooterLink = {
 
 const userLinks: FooterLink[] = [
   {
-    name: "Mailing Lists",
+    id: "mailingLists",
     url: "https://github.com/open-telemetry/community#mailing-lists",
     icon: <Mail className="td-footer__icon" aria-hidden />,
   },
   {
-    name: "Bluesky",
+    id: "bluesky",
     url: "https://bsky.app/profile/opentelemetry.io",
     icon: <BlueskyIcon className="td-footer__icon" />,
   },
   {
-    name: "Mastodon",
+    id: "mastodon",
     url: "https://fosstodon.org/@opentelemetry",
     icon: <MastodonIcon className="td-footer__icon" />,
     rel: "me",
   },
   {
-    name: "Stack Overflow",
+    id: "stackOverflow",
     url: "https://stackoverflow.com/questions/tagged/open-telemetry",
     icon: <StackOverflowIcon className="td-footer__icon" />,
   },
   {
-    name: "OTel logos",
+    id: "otelLogos",
     url: "https://github.com/cncf/artwork/tree/master/projects/opentelemetry",
     icon: <Image className="td-footer__icon" aria-hidden />,
   },
   {
-    name: "Meeting Recordings",
+    id: "meetingRecordings",
     url: "https://docs.google.com/spreadsheets/d/1SYKfjYhZdm2Wh2Cl6KVQalKg_m4NhTPZqq-8SzEVO6s",
     icon: <Video className="td-footer__icon" aria-hidden />,
   },
   {
-    name: "Site analytics",
+    id: "siteAnalytics",
     url: "https://lookerstudio.google.com/s/tSTKxK1ECeU",
     icon: <LineChart className="td-footer__icon" aria-hidden />,
   },
@@ -84,37 +86,37 @@ const userLinks: FooterLink[] = [
 
 const developerLinks: FooterLink[] = [
   {
-    name: "GitHub",
+    id: "github",
     url: "https://github.com/open-telemetry",
     icon: <GitHubIcon className="td-footer__icon" />,
   },
   {
-    name: "Slack #opentelemetry",
+    id: "slack",
     url: "https://cloud-native.slack.com/archives/CJFCJHG4Q",
     icon: <SlackIcon className="td-footer__icon" />,
   },
   {
-    name: "CNCF DevStats",
+    id: "devstats",
     url: "https://opentelemetry.devstats.cncf.io/d/8/dashboards?orgId=1&refresh=15m",
     icon: <AreaChart className="td-footer__icon" aria-hidden />,
   },
   {
-    name: "Privacy Policy",
+    id: "privacyPolicy",
     url: "https://www.linuxfoundation.org/legal/privacy-policy",
     icon: <Book className="td-footer__icon" aria-hidden />,
   },
   {
-    name: "Trademark Usage",
+    id: "trademarkUsage",
     url: "https://www.linuxfoundation.org/legal/trademark-usage",
     icon: <TrademarkIcon className="td-footer__icon" />,
   },
   {
-    name: "Marketing Guidelines",
+    id: "marketingGuidelines",
     url: "/community/marketing-guidelines/",
     icon: <Megaphone className="td-footer__icon" aria-hidden />,
   },
   {
-    name: "Site-build info",
+    id: "siteBuildInfo",
     url: "/site/",
     icon: <Hammer className="td-footer__icon" aria-hidden />,
   },
@@ -122,7 +124,14 @@ const developerLinks: FooterLink[] = [
 
 const EXTERNAL_URL = /^https?:\/\//;
 
-function FooterLinks({ items }: { items: FooterLink[] }) {
+function FooterLinks({
+  items,
+  section,
+}: {
+  items: FooterLink[];
+  section: "userLinks" | "developerLinks";
+}) {
+  const { t } = useTranslation("layout");
   return (
     <ul className="td-footer__links-list">
       {items.map((link) => {
@@ -130,12 +139,13 @@ function FooterLinks({ items }: { items: FooterLink[] }) {
         const rel = [link.rel, isExternal ? "noopener noreferrer" : undefined]
           .filter(Boolean)
           .join(" ");
+        const name = t(`v1.footer.${section}.${link.id}`);
         return (
-          <li key={link.name} className="td-footer__links-item">
+          <li key={link.id} className="td-footer__links-item">
             <a
               href={link.url}
-              title={link.name}
-              aria-label={link.name}
+              title={name}
+              aria-label={name}
               target={isExternal ? "_blank" : undefined}
               rel={rel || undefined}
             >
@@ -149,27 +159,28 @@ function FooterLinks({ items }: { items: FooterLink[] }) {
 }
 
 export function FooterV1() {
+  const { t } = useTranslation("layout");
   return (
     <footer className="td-footer">
       <div className="td-footer__container">
         <div className="td-footer__row">
           <div className="td-footer__left">
-            <FooterLinks items={userLinks} />
+            <FooterLinks items={userLinks} section="userLinks" />
           </div>
           <div className="td-footer__right">
-            <FooterLinks items={developerLinks} />
+            <FooterLinks items={developerLinks} section="developerLinks" />
           </div>
           <div className="td-footer__center">
             <span className="td-footer__copyright">
               &copy; 2019&ndash;present{" "}
               <span className="td-footer__authors">
-                OpenTelemetry Authors | Docs{" "}
+                {t("v1.footer.authors")} | {t("v1.footer.docsLicense")}{" "}
                 <a
                   href="https://creativecommons.org/licenses/by/4.0"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  CC BY 4.0
+                  {t("v1.footer.ccBy")}
                 </a>
               </span>
             </span>
