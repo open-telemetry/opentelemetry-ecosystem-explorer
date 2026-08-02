@@ -1697,8 +1697,8 @@
       "type": "processor"
     },
     {
-      "description": null,
-      "display_name": null,
+      "description": "The `aws_ecs_attributes` processor enriches logs, metrics, traces and profiles with AWS ECS metadata for daemonset-style deployments on EC2, where a single collector runs per host and processes telemetry for all containers on that host.",
+      "display_name": "AWS ECS Attributes Processor",
       "distribution": "contrib",
       "has_readme": true,
       "id": "contrib-awsecsattributesprocessor",
@@ -1713,8 +1713,8 @@
       "type": "processor"
     },
     {
-      "description": null,
-      "display_name": null,
+      "description": "An OpenTelemetry Collector processor that catches metric cardinality explosions before they reach your TSDB.",
+      "display_name": "Cardinality Guardian Processor",
       "distribution": "contrib",
       "has_readme": true,
       "id": "contrib-cardinalityguardianprocessor",
@@ -2187,8 +2187,8 @@
       "type": "receiver"
     },
     {
-      "description": null,
-      "display_name": null,
+      "description": "The Windows Active Directory Inventory receiver collects inventory data from Active Directory. This includes information such as computer names, user names, email addresses, and location information. This receiver is only supported on Windows servers.",
+      "display_name": "Windows Active Directory Inventory Receiver",
       "distribution": "contrib",
       "has_readme": true,
       "id": "contrib-activedirectoryinvreceiver",
@@ -2798,19 +2798,6 @@
         "traces"
       ],
       "stability": "beta",
-      "type": "receiver"
-    },
-    {
-      "description": null,
-      "display_name": "JMX Receiver",
-      "distribution": "contrib",
-      "has_readme": true,
-      "id": "contrib-jmxreceiver",
-      "name": "jmxreceiver",
-      "signals": [
-        "metrics"
-      ],
-      "stability": "deprecated",
       "type": "receiver"
     },
     {

@@ -1,0 +1,31 @@
+{
+  "description": "The Unroll Processor takes log records with slice bodies and expands each element of the slice into its own log record. This allows for better processing and analysis of structured log data that contains arrays or lists.",
+  "display_name": "Unroll Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-unrollprocessor",
+  "markdown_hash": "7421d6ff0f0a",
+  "name": "unrollprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "schmikei",
+        "rnishtala-sumo"
+      ],
+      "emeritus": [
+        "axw"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs"
+      ]
+    }
+  },
+  "type": "processor"
+}
