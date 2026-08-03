@@ -192,7 +192,9 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
       const compDistributions = comp.distributions ?? [comp.distribution];
       const matchesDistribution =
         distributionFilter === "all" || compDistributions.includes(distributionFilter);
-      const matchesStability = stabilityFilter === "all" || comp.stability === stabilityFilter;
+      const matchesStability =
+        stabilityFilter === "all" ||
+        (deprecatedView ? stabilityFilter === "deprecated" : comp.stability === stabilityFilter);
       // AND semantics, matching the Java Agent telemetry filter: a component matches only if it
       // supports every currently-selected signal.
       const presentSignals = getPresentSignals(comp);
@@ -203,7 +205,15 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
         matchesSearch && matchesType && matchesDistribution && matchesStability && matchesSignal
       );
     });
-  }, [components, distributionFilter, searchQuery, typeFilter, stabilityFilter, signalFilter]);
+  }, [
+    components,
+    deprecatedView,
+    distributionFilter,
+    searchQuery,
+    typeFilter,
+    stabilityFilter,
+    signalFilter,
+  ]);
 
   const handleVersionChange = (val: string) => {
     const currentSearch = searchParams.toString();
