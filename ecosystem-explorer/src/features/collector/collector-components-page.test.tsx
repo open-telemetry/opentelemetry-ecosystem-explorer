@@ -183,6 +183,21 @@ describe("CollectorComponentsPage", () => {
     expect(useCollectorComponents).toHaveBeenCalledWith("");
   });
 
+  it("treats deprecated catalog entries as deprecated when filtering", () => {
+    vi.mocked(useCollectorDeprecations).mockReturnValue({
+      data: {
+        ecosystem: "collector",
+        components: [{ ...deprecatedComponent, stability: "beta" }],
+      },
+      loading: false,
+      error: null,
+    });
+
+    renderPage("/collector/components/deprecated?stability=deprecated");
+
+    expect(screen.getByText("JMX Receiver")).toBeInTheDocument();
+  });
+
   it("applies stability query filter", () => {
     renderPage("/collector/components?stability=beta");
 
