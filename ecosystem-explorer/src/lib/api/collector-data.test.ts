@@ -98,6 +98,35 @@ describe("collector-data", () => {
     idbCache.closeDB();
   });
 
+  describe("loadDeprecationsIndex", () => {
+    it("loads and caches the deprecated component catalog", async () => {
+      const index = {
+        ecosystem: "collector",
+        components: [
+          {
+            id: "contrib-jmxreceiver",
+            name: "jmxreceiver",
+            distribution: "contrib",
+            type: "receiver",
+            component_hash: "abc123def456",
+            last_version: "0.156.0",
+            deprecated_in_version: "0.157.0",
+          },
+        ],
+      };
+      vi.spyOn(idbCache, "getCached").mockResolvedValue(null);
+      vi.spyOn(idbCache, "setCached").mockResolvedValue();
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ok: true,
+        headers: new Headers({ "content-type": "application/json" }),
+        json: async () => index,
+      });
+
+      await expect(collectorData.loadDeprecationsIndex()).resolves.toEqual(index);
+      expect(global.fetch).toHaveBeenCalledWith("/data/collector/deprecations-index.json");
+    });
+  });
+
   describe("loadAllComponents (bundle path)", () => {
     it("loads the single per-version bundle when the index advertises a bundle hash", async () => {
       const bundle = [otlpReceiverIndex, otlpHttpExporterIndex];

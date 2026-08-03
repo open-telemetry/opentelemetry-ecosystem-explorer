@@ -171,6 +171,11 @@ export interface CollectorIndex {
   components: IndexComponent[];
 }
 
+export interface CollectorDeprecationsIndex {
+  ecosystem: string;
+  components: DeprecatedIndexComponent[];
+}
+
 export interface IndexComponent {
   id: string;
   name: string;
@@ -183,4 +188,11 @@ export interface IndexComponent {
   has_readme?: boolean;
   /** Telemetry signals supported across all stability levels (e.g. ["metrics", "traces"]). */
   signals?: string[];
+}
+
+/** Removed component entry pointing to its existing last-version record. */
+export interface DeprecatedIndexComponent extends IndexComponent {
+  component_hash: string;
+  last_version: string;
+  deprecated_in_version: string;
 }

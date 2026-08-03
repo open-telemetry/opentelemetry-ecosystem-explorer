@@ -15,6 +15,7 @@
  */
 import type {
   CollectorComponent,
+  CollectorDeprecationsIndex,
   CollectorIndex,
   IndexComponent,
   Stability,
@@ -99,6 +100,19 @@ export async function loadIndex(): Promise<CollectorIndex> {
     STORES.METADATA
   );
   if (!data) throw new Error("Collector component index returned null unexpectedly");
+  return data;
+}
+
+export async function loadDeprecationsIndex(): Promise<CollectorDeprecationsIndex> {
+  const data = await fetchWithCache<CollectorDeprecationsIndex>(
+    "collector-deprecations-index",
+    `${BASE_PATH}/deprecations-index.json`,
+    STORES.METADATA,
+    {
+      validate: (d) => d !== null && typeof d === "object" && Array.isArray(d.components),
+    }
+  );
+  if (!data) throw new Error("Collector deprecations index returned null unexpectedly");
   return data;
 }
 
