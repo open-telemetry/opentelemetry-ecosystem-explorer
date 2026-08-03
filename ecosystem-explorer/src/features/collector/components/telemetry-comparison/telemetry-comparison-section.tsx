@@ -1,0 +1,132 @@
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import { AlertCircle } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { Loader } from "@/components/ui/loader";
+import type { VersionInfo } from "@/types/collector";
+import { useTelemetryComparison } from "../../hooks/use-telemetry-comparison";
+import { VersionSelectorPanel } from "./version-selector-panel";
+import { DiffResultsSection } from "./diff-results-section";
+
+interface TelemetryComparisonSectionProps {
+  distribution: string;
+  name: string;
+  versions: VersionInfo[];
+  currentVersion: string;
+}
+
+export function TelemetryComparisonSection({
+  distribution,
+  name,
+  versions,
+  currentVersion,
+}: TelemetryComparisonSectionProps) {
+  const { t } = useTranslation("collector");
+  // "To" defaults to the version being viewed. "From" defaults to the previous release,
+  // or falls back to currentVersion (triggering a same-version warning) if viewing the oldest version.
+  const currentIndex = versions.findIndex((v) => v.version === currentVersion);
+  const defaultFromVersion =
+    currentIndex < versions.length - 1 ? versions[currentIndex + 1].version : currentVersion;
+
+  const {
+    fromVersion,
+    toVersion,
+    setFromVersion,
+    setToVersion,
+    diffResult,
+    loading,
+    error,
+    fromNotFound,
+    toNotFound,
+  } = useTelemetryComparison(distribution, name, defaultFromVersion, currentVersion);
+
+  return (
+    <div className="space-y-8">
+      <VersionSelectorPanel
+        versions={versions}
+        fromVersion={fromVersion}
+        toVersion={toVersion}
+        onFromVersionChange={setFromVersion}
+        onToVersionChange={setToVersion}
+      />
+
+      {loading && (
+        <div className="flex min-h-[300px] items-center justify-center">
+          <Loader size="sm" label={t("telemetryComparison.loading")} />
+        </div>
+      )}
+
+      {error && !loading && (
+        <div className="flex min-h-[200px] items-center justify-center">
+          <div className="max-w-2xl rounded-lg border border-red-400/30 bg-red-400/10 p-6">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-red-400" />
+              <div className="space-y-1">
+                <p className="font-medium text-red-400">{t("telemetryComparison.error.title")}</p>
+                <p className="text-sm text-red-400/80">{error.message}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {!loading && !error && (fromNotFound || toNotFound) && (
+        <div className="rounded-lg border border-yellow-400/30 bg-yellow-400/10 p-6">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-yellow-400" />
+            <div className="space-y-1">
+              <p className="font-medium text-yellow-400">
+                {t("telemetryComparison.warnings.availability.title")}
+              </p>
+              {fromNotFound && (
+                <p className="text-sm text-yellow-400/80">
+                  {t("telemetryComparison.warnings.availability.fromNotFound", { fromVersion })}
+                </p>
+              )}
+              {toNotFound && !fromNotFound && (
+                <p className="text-sm text-yellow-400/80">
+                  {t("telemetryComparison.warnings.availability.toNotFound", { toVersion })}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {!loading && !error && fromVersion === toVersion && (
+        <div className="flex min-h-[200px] items-center justify-center">
+          <div className="rounded-lg border border-yellow-400/30 bg-yellow-400/10 p-6">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="mt-0.5 h-5 w-5 flex-shrink-0 text-yellow-400" />
+              <div className="space-y-1">
+                <p className="font-medium text-yellow-400">
+                  {t("telemetryComparison.warnings.sameVersion.title")}
+                </p>
+                <p className="text-sm text-yellow-400/80">
+                  {t("telemetryComparison.warnings.sameVersion.message")}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {!loading && !error && diffResult && fromVersion !== toVersion && (
+        <DiffResultsSection diffResult={diffResult} />
+      )}
+    </div>
+  );
+}

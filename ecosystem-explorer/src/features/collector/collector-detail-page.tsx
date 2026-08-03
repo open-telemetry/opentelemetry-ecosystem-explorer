@@ -16,7 +16,7 @@
 import { useState } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Info, ExternalLink, AlertCircle, Check, Activity, BookOpen } from "lucide-react";
+import { Info, ExternalLink, AlertCircle, Check, Activity, BookOpen, Gauge } from "lucide-react";
 import { Loader } from "@/components/ui/loader";
 import { GitHubIcon } from "@/components/icons/github-icon";
 import { BackButton } from "@/components/ui/back-button";
@@ -32,6 +32,7 @@ import { renderWithInlineCode } from "@/lib/render-inline-code";
 import { useCollectorComponent, useCollectorVersions } from "@/hooks/use-collector-data";
 import { CollectorTelemetryTab } from "./components/collector-telemetry-tab";
 import { CollectorReadmeTab } from "./components/collector-readme-tab";
+import { TelemetryComparisonSection } from "./components/telemetry-comparison/telemetry-comparison-section";
 
 const getBadgeVariant = (level: string): "success" | "info" | "warning" | "muted" => {
   const lower = level.toLowerCase();
@@ -69,6 +70,7 @@ export function CollectorDetailPage() {
     error,
   } = useCollectorComponent(distribution ?? "", name ?? "", version);
   const [activeTab, setActiveTab] = useState("details");
+  const [showInternalTelemetryComparison, setShowInternalTelemetryComparison] = useState(false);
 
   const getStabilityLabel = (level: string) =>
     t(`detail.stabilityLabels.${level.toLowerCase()}`, { defaultValue: level });
@@ -254,6 +256,16 @@ export function CollectorDetailPage() {
                           value: "readme",
                           label: t("detail.tabs.readme"),
                           icon: <BookOpen className="h-4 w-4" aria-hidden="true" />,
+                        },
+                      ]
+                    : []),
+                  ...(component.telemetry?.metrics &&
+                  Object.keys(component.telemetry.metrics).length > 0
+                    ? [
+                        {
+                          value: "internal-telemetry",
+                          label: t("detail.tabs.internalTelemetry"),
+                          icon: <Gauge className="h-4 w-4" aria-hidden="true" />,
                         },
                       ]
                     : []),
@@ -488,6 +500,62 @@ export function CollectorDetailPage() {
                 <CollectorReadmeTab name={component.name} markdownHash={component.markdown_hash} />
               </TabsContent>
             )}
+
+            {component.telemetry?.metrics &&
+              Object.keys(component.telemetry.metrics).length > 0 && (
+                <TabsContent value="internal-telemetry" className="mt-0 p-6">
+                  <div className="space-y-8">
+                    <div className="flex justify-center">
+                      <div
+                        className="border-border inline-flex w-full rounded-lg border bg-transparent p-1 sm:w-auto"
+                        role="group"
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setShowInternalTelemetryComparison(false)}
+                          aria-pressed={!showInternalTelemetryComparison}
+                          className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 ease-in-out sm:flex-none ${
+                            !showInternalTelemetryComparison
+                              ? "bg-card text-foreground shadow-sm"
+                              : "text-muted-foreground hover:text-foreground"
+                          }`}
+                        >
+                          {t("detail.view.current")}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setShowInternalTelemetryComparison(true)}
+                          aria-pressed={showInternalTelemetryComparison}
+                          className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-300 ease-in-out sm:flex-none ${
+                            showInternalTelemetryComparison
+                              ? "bg-card text-foreground shadow-sm"
+                              : "text-muted-foreground hover:text-foreground"
+                          }`}
+                        >
+                          {t("detail.view.comparison")}
+                        </button>
+                      </div>
+                    </div>
+
+                    {!showInternalTelemetryComparison ? (
+                      <CollectorTelemetryTab
+                        metrics={component.telemetry.metrics}
+                        attributes={component.attributes}
+                        resourceAttributes={component.resource_attributes}
+                      />
+                    ) : (
+                      versionData && (
+                        <TelemetryComparisonSection
+                          distribution={distribution ?? ""}
+                          name={name ?? ""}
+                          versions={versionData.versions}
+                          currentVersion={version}
+                        />
+                      )
+                    )}
+                  </div>
+                </TabsContent>
+              )}
           </Tabs>
         </div>
       </div>
