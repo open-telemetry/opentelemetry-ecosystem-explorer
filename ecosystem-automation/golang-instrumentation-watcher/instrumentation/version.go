@@ -24,9 +24,14 @@ func ModuleVersions(tags []string) map[string]string {
 // repo-relative path. Libraries without a matching entry are left unchanged.
 func ApplyModuleVersions(libs []Library, versions map[string]string) {
 	for i := range libs {
-		rel := strings.TrimPrefix(libs[i].Module.Path, otelContribPrefix)
-		if v, ok := versions[rel]; ok {
-			libs[i].Module.Version = v
+		for j := range libs[i].Modules {
+			modPath := libs[i].Modules[j].Path
+			for prefix, v := range versions {
+				if modPath == prefix || strings.HasSuffix(modPath, "/"+prefix) {
+					libs[i].Modules[j].Version = v
+					break
+				}
+			}
 		}
 	}
 }

@@ -32,12 +32,12 @@ func TestModuleVersions(t *testing.T) {
 func TestApplyModuleVersions(t *testing.T) {
 	libs := []Library{
 		{Metadata: metadata.Metadata{
-			Name:   "otelgin",
-			Module: metadata.Module{Path: "go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"},
+			Name:    "otelgin",
+			Modules: []metadata.Module{{Path: "go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"}},
 		}},
 		{Metadata: metadata.Metadata{
-			Name:   "otelunknown",
-			Module: metadata.Module{Path: "go.opentelemetry.io/contrib/instrumentation/example/otelunknown"},
+			Name:    "otelunknown",
+			Modules: []metadata.Module{{Path: "go.opentelemetry.io/contrib/instrumentation/example/otelunknown"}},
 		}},
 	}
 	versions := map[string]string{
@@ -46,10 +46,10 @@ func TestApplyModuleVersions(t *testing.T) {
 
 	ApplyModuleVersions(libs, versions)
 
-	if libs[0].Module.Version != "v0.62.0" {
-		t.Errorf("otelgin version = %q, want v0.62.0", libs[0].Module.Version)
+	if len(libs[0].Modules) == 0 || libs[0].Modules[0].Version != "v0.62.0" {
+		t.Errorf("otelgin version = %v, want v0.62.0", libs[0].Modules)
 	}
-	if libs[1].Module.Version != "" {
-		t.Errorf("otelunknown version = %q, want empty (no matching tag)", libs[1].Module.Version)
+	if len(libs[1].Modules) == 0 || libs[1].Modules[0].Version != "" {
+		t.Errorf("otelunknown version = %v, want empty (no matching tag)", libs[1].Modules)
 	}
 }
