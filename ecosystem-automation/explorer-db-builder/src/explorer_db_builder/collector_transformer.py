@@ -124,6 +124,10 @@ def transform_collector_components(
             if metrics:
                 component["metrics"] = metrics
 
+            telemetry = metadata.get("telemetry")
+            if telemetry:
+                component["telemetry"] = telemetry
+
             if name in readme_map:
                 component["markdown_hash"] = readme_map[name]
 
