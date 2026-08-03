@@ -32,12 +32,12 @@ func TestModuleVersions(t *testing.T) {
 func TestApplyModuleVersions(t *testing.T) {
 	libs := []Library{
 		{Metadata: metadata.Metadata{
-			Name:   "otelgin",
-			Module: metadata.Module{Path: "go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"},
+			Name:    "otelgin",
+			Modules: []metadata.Module{{Path: "go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"}},
 		}},
 		{Metadata: metadata.Metadata{
-			Name:   "otelunknown",
-			Module: metadata.Module{Path: "go.opentelemetry.io/contrib/instrumentation/example/otelunknown"},
+			Name:    "otelunknown",
+			Modules: []metadata.Module{{Path: "go.opentelemetry.io/contrib/instrumentation/example/otelunknown"}},
 		}},
 	}
 	versions := map[string]string{
@@ -46,10 +46,53 @@ func TestApplyModuleVersions(t *testing.T) {
 
 	ApplyModuleVersions(libs, versions)
 
-	if libs[0].Module.Version != "v0.62.0" {
-		t.Errorf("otelgin version = %q, want v0.62.0", libs[0].Module.Version)
+	if len(libs[0].Modules) == 0 || libs[0].Modules[0].Version != "v0.62.0" {
+		t.Errorf("otelgin version = %v, want v0.62.0", libs[0].Modules)
 	}
-	if libs[1].Module.Version != "" {
-		t.Errorf("otelunknown version = %q, want empty (no matching tag)", libs[1].Module.Version)
+	if len(libs[1].Modules) == 0 || libs[1].Modules[0].Version != "" {
+		t.Errorf("otelunknown version = %v, want empty (no matching tag)", libs[1].Modules)
+	}
+}
+
+func TestApplyModuleVersions_StabilityInference(t *testing.T) {
+	libs := []Library{
+		{Metadata: metadata.Metadata{
+			Name:      "stable-lib",
+			Stability: metadata.StabilityUnknown,
+			Modules: []metadata.Module{
+				{Path: "go.opentelemetry.io/otelc/stable"},
+			},
+		}},
+		{Metadata: metadata.Metadata{
+			Name:      "experimental-lib",
+			Stability: metadata.StabilityUnknown,
+			Modules: []metadata.Module{
+				{Path: "go.opentelemetry.io/otelc/experimental"},
+			},
+		}},
+		{Metadata: metadata.Metadata{
+			Name:      "explicitly-stable-lib",
+			Stability: metadata.StabilityStable, // Explicitly set to stable, should not be inferred
+			Modules: []metadata.Module{
+				{Path: "go.opentelemetry.io/otelc/explicit"},
+			},
+		}},
+	}
+	versions := map[string]string{
+		"otelc/stable":       "v1.0.0",
+		"otelc/experimental": "v0.10.0",
+		"otelc/explicit":     "v0.5.0",
+	}
+
+	ApplyModuleVersions(libs, versions)
+
+	if libs[0].Stability != metadata.StabilityStable {
+		t.Errorf("stable-lib stability = %v, want Stable", libs[0].Stability)
+	}
+	if libs[1].Stability != metadata.StabilityExperimental {
+		t.Errorf("experimental-lib stability = %v, want Experimental", libs[1].Stability)
+	}
+	if libs[2].Stability != metadata.StabilityStable {
+		t.Errorf("explicitly-stable-lib stability = %v, want Stable (should not be overwritten)", libs[2].Stability)
 	}
 }

@@ -90,6 +90,85 @@ func TestAnalyzeLibrary(t *testing.T) {
 	}
 }
 
+// writeMetadata writes content as a metadata.yaml under root/relDir, creating the dir.
+func writeMetadata(t *testing.T, root, relDir, content string) {
+	t.Helper()
+	dir := filepath.Join(root, relDir)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "metadata.yaml"), []byte(content), 0644); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestScanMetadataRepo(t *testing.T) {
+	tests := []struct {
+		name      string
+		setup     func(t *testing.T) string
+		wantLibs  int
+		assertLib func(*testing.T, Library)
+	}{
+		{
+			name: "infers GoMinVersion from go.mod",
+			setup: func(t *testing.T) string {
+				root := t.TempDir()
+				// Setup go.mod with 1.25.0
+				writeGoMod(t, root, "instrumentation/dummy", "module go.opentelemetry.io/otelc/dummy\n\ngo 1.25.0\n")
+				
+				// Setup metadata with empty GoMinVersion
+				metaContent := `name: test-lib
+modules:
+  - path: go.opentelemetry.io/otelc/dummy
+`
+				writeMetadata(t, root, "instrumentation/dummy", metaContent)
+				return root
+			},
+			wantLibs: 1,
+			assertLib: func(t *testing.T, l Library) {
+				if l.GoMinVersion != "1.25.0" {
+					t.Errorf("GoMinVersion = %q, want 1.25.0", l.GoMinVersion)
+				}
+			},
+		},
+		{
+			name: "respects explicitly authored GoMinVersion",
+			setup: func(t *testing.T) string {
+				root := t.TempDir()
+				writeGoMod(t, root, "instrumentation/dummy", "module go.opentelemetry.io/otelc/dummy\n\ngo 1.25.0\n")
+				
+				metaContent := `name: test-lib
+go_min_version: "1.20"
+modules:
+  - path: go.opentelemetry.io/otelc/dummy
+`
+				writeMetadata(t, root, "instrumentation/dummy", metaContent)
+				return root
+			},
+			wantLibs: 1,
+			assertLib: func(t *testing.T, l Library) {
+				if l.GoMinVersion != "1.20" {
+					t.Errorf("GoMinVersion = %q, want 1.20 (should not be overwritten)", l.GoMinVersion)
+				}
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			res, err := ScanMetadataRepo(tt.setup(t))
+			if err != nil {
+				t.Fatalf("ScanMetadataRepo() error = %v", err)
+			}
+			if len(res.Libraries) != tt.wantLibs {
+				t.Fatalf("Got %d libraries, want %d", len(res.Libraries), tt.wantLibs)
+			}
+			if tt.wantLibs > 0 {
+				tt.assertLib(t, res.Libraries[0])
+			}
+		})
+	}
+}
 func TestScanRepo(t *testing.T) {
 	const contrib = "go.opentelemetry.io/contrib/"
 

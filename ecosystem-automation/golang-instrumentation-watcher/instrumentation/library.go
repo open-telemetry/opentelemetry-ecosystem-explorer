@@ -7,8 +7,13 @@ package instrumentation
 
 import (
 	"cmp"
+	"fmt"
+	"go/version"
+	"os"
 	"path/filepath"
 	"slices"
+
+	"gopkg.in/yaml.v3"
 
 	"github.com/open-telemetry/opentelemetry-ecosystem-explorer/golang-instrumentation-watcher/metadata"
 )
@@ -77,4 +82,68 @@ func analyzeLibrary(goModPath string) (*Library, error) {
 	}
 	meta := DeriveMetadata(mod)
 	return &Library{Metadata: *meta}, nil
+}
+
+// ScanMetadataRepo walks the repository rooted at repoPath looking for
+// metadata.yaml files. It parses each file into a [Library] record, fusing
+// it into a [ScanResult].
+func ScanMetadataRepo(repoPath string) (*ScanResult, error) {
+	metaFiles, err := WalkMetadata(repoPath)
+	if err != nil {
+		return nil, err
+	}
+
+	// Pre-scan all go.mod files to infer GoMinVersion if blank.
+	modVersions := make(map[string]string)
+	if packages, err := Walk(repoPath); err == nil {
+		for _, pkg := range packages {
+			if mod, err := ParseModule(pkg.GoModPath); err == nil && mod.Path != "" {
+				modVersions[mod.Path] = mod.GoVersion
+			}
+		}
+	}
+
+	var libraries []Library
+	for _, mf := range metaFiles {
+		lib, err := analyzeMetadataLibrary(mf.MetadataPath)
+		if err != nil {
+			return nil, err
+		}
+		if lib == nil {
+			continue
+		}
+
+		// Infer GoMinVersion from go.mod if not specified in metadata.
+		if lib.GoMinVersion == "" {
+			var highest string
+			for _, m := range lib.Modules {
+				if gv, ok := modVersions[m.Path]; ok && gv != "" {
+					if highest == "" || version.Compare(gv, highest) > 0 {
+						highest = gv
+					}
+				}
+			}
+			lib.GoMinVersion = highest
+		}
+
+		libraries = append(libraries, *lib)
+	}
+
+	slices.SortFunc(libraries, func(a, b Library) int { return cmp.Compare(a.Name, b.Name) })
+
+	return &ScanResult{Libraries: libraries}, nil
+}
+
+func analyzeMetadataLibrary(metadataPath string) (*Library, error) {
+	data, err := os.ReadFile(metadataPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read %s: %w", metadataPath, err)
+	}
+
+	var lib Library
+	if err := yaml.Unmarshal(data, &lib); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal %s: %w", metadataPath, err)
+	}
+
+	return &lib, nil
 }
