@@ -19,11 +19,16 @@ import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { CollectorExploreLanding } from "./collector-explore-landing";
-import { useCollectorIndex, useCollectorVersions } from "@/hooks/use-collector-data";
+import {
+  useCollectorDeprecations,
+  useCollectorIndex,
+  useCollectorVersions,
+} from "@/hooks/use-collector-data";
 import type { CollectorIndex } from "@/types/collector";
 
 vi.mock("@/hooks/use-collector-data", () => ({
   useCollectorIndex: vi.fn(),
+  useCollectorDeprecations: vi.fn(),
   useCollectorVersions: vi.fn(),
 }));
 
@@ -104,6 +109,24 @@ describe("CollectorExploreLanding", () => {
       loading: false,
       error: null,
     });
+    vi.mocked(useCollectorDeprecations).mockReturnValue({
+      data: {
+        ecosystem: "collector",
+        components: [
+          {
+            id: "contrib-jmxreceiver",
+            name: "jmxreceiver",
+            distribution: "contrib",
+            type: "receiver",
+            component_hash: "abc123def456",
+            last_version: "0.156.0",
+            deprecated_in_version: "0.157.0",
+          },
+        ],
+      },
+      loading: false,
+      error: null,
+    });
   });
 
   it("renders counts, links, and the latest version from Collector data", () => {
@@ -119,6 +142,10 @@ describe("CollectorExploreLanding", () => {
     expect(screen.getByRole("link", { name: /Receiver/i })).toHaveAttribute(
       "href",
       "/collector/components?type=receiver"
+    );
+    expect(screen.getByRole("link", { name: /Deprecated/i })).toHaveAttribute(
+      "href",
+      "/collector/components/deprecated"
     );
     expect(screen.getByRole("link", { name: /View Core Components/i })).toHaveAttribute(
       "href",

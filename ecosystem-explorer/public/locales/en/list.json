@@ -82,7 +82,8 @@
     },
     "version": {
       "title": "Version",
-      "latest": "Latest"
+      "latest": "Latest",
+      "deprecated": "Deprecated"
     }
   }
 }

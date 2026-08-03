@@ -16,7 +16,15 @@
 import { useState } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Info, ExternalLink, AlertCircle, Check, Activity, BookOpen } from "lucide-react";
+import {
+  Info,
+  ExternalLink,
+  AlertCircle,
+  AlertTriangle,
+  Check,
+  Activity,
+  BookOpen,
+} from "lucide-react";
 import { Loader } from "@/components/ui/loader";
 import { GitHubIcon } from "@/components/icons/github-icon";
 import { BackButton } from "@/components/ui/back-button";
@@ -29,7 +37,11 @@ import { PageContainer } from "@/components/layout/page-container";
 import { Seo } from "@/components/seo/seo";
 import { deriveCollectorMeta } from "@/lib/seo/derive";
 import { renderWithInlineCode } from "@/lib/render-inline-code";
-import { useCollectorComponent, useCollectorVersions } from "@/hooks/use-collector-data";
+import {
+  useCollectorComponent,
+  useCollectorDeprecations,
+  useCollectorVersions,
+} from "@/hooks/use-collector-data";
 import { CollectorTelemetryTab } from "./components/collector-telemetry-tab";
 import { CollectorReadmeTab } from "./components/collector-readme-tab";
 
@@ -56,18 +68,26 @@ export function CollectorDetailPage() {
   const navigate = useNavigate();
   const { data: versionData, error: versionsError } = useCollectorVersions();
 
-  const version =
-    searchParams.get("version") || versionData?.versions.find((v) => v.is_latest)?.version || "";
+  const rawVersion = searchParams.get("version");
+  const deprecatedView = rawVersion === "deprecated";
+  const deprecationsQuery = useCollectorDeprecations(deprecatedView);
+  const deprecatedEntry = deprecationsQuery.data?.components.find(
+    (entry) => entry.distribution === distribution && entry.name === name
+  );
+  const version = deprecatedView
+    ? (deprecatedEntry?.last_version ?? "")
+    : rawVersion || versionData?.versions.find((v) => v.is_latest)?.version || "";
 
   // Once the versions fetch has settled with an error, stop waiting for a
   // version to resolve — `version` will never become non-empty otherwise,
   // which would leave this stuck on the loading state forever.
-  const versionLoading = !version && !versionsError;
+  const versionLoading = deprecatedView ? deprecationsQuery.loading : !version && !versionsError;
   const {
     data: component,
     loading,
-    error,
+    error: componentError,
   } = useCollectorComponent(distribution ?? "", name ?? "", version);
+  const error = componentError ?? (deprecatedView ? deprecationsQuery.error : null);
   const [activeTab, setActiveTab] = useState("details");
 
   const getStabilityLabel = (level: string) =>
@@ -184,6 +204,25 @@ export function CollectorDetailPage() {
       <BackButton />
 
       <div className="mt-3 space-y-6">
+        {deprecatedEntry && (
+          <DetailCard className="border-amber-500/50 bg-amber-500/5">
+            <div className="flex gap-4" role="note">
+              <AlertTriangle
+                className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-700 dark:text-amber-400"
+                aria-hidden="true"
+              />
+              <div>
+                <h2 className="font-semibold">{t("deprecated.title")}</h2>
+                <p className="text-muted-foreground mt-1 text-sm">
+                  {t("deprecated.lead", {
+                    lastVersion: deprecatedEntry.last_version,
+                    removedVersion: deprecatedEntry.deprecated_in_version,
+                  })}
+                </p>
+              </div>
+            </div>
+          </DetailCard>
+        )}
         <header className="border-border/60 bg-card/80 relative overflow-hidden rounded-lg border p-8">
           <div className="bg-gradient-radial from-otel-blue/5 via-otel-orange/2 absolute inset-0 to-transparent opacity-50" />
 
@@ -201,6 +240,11 @@ export function CollectorDetailPage() {
                   <GlowBadge variant="muted" className="text-xs tracking-wider uppercase">
                     {component.distribution}
                   </GlowBadge>
+                  {deprecatedView && (
+                    <GlowBadge variant="warning" className="text-xs tracking-wider uppercase">
+                      {t("filters.version.deprecated")}
+                    </GlowBadge>
+                  )}
                 </div>
                 <h1 className="text-3xl leading-tight font-bold md:text-4xl">
                   <span className="from-otel-orange to-otel-blue bg-gradient-to-r bg-clip-text text-transparent">
@@ -312,7 +356,7 @@ export function CollectorDetailPage() {
                         {t("detail.sections.linksResources")}
                       </h2>
                       <a
-                        href={`https://github.com/open-telemetry/${component.repository}/tree/main/${component.type}/${component.name}`}
+                        href={`https://github.com/open-telemetry/${component.repository}/tree/${deprecatedView ? `v${version}` : "main"}/${component.type}/${component.name}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="border-border/50 hover:bg-muted/50 group flex items-center gap-3 rounded-lg border p-3 transition-colors"
