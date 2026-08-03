@@ -1,0 +1,27 @@
+{
+  "description": null,
+  "display_name": "AWS ECS Container Metrics Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-awsecscontainermetricsreceiver",
+  "markdown_hash": "2b9afade3858",
+  "name": "awsecscontainermetricsreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "Aneurysm9"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver"
+}

@@ -1,0 +1,31 @@
+{
+  "description": "Parses Syslogs received over TCP or UDP.",
+  "display_name": "Syslog Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-syslogreceiver",
+  "markdown_hash": "18f4b2c4f330",
+  "name": "syslogreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "andrzej-stencel"
+      ],
+      "emeritus": [
+        "djaglowski"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "logs"
+      ]
+    }
+  },
+  "type": "receiver"
+}

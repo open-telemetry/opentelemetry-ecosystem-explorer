@@ -1,0 +1,27 @@
+{
+  "description": null,
+  "display_name": "MCP Server",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-mcp",
+  "markdown_hash": "d5560d0dee64",
+  "name": "mcp",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "pavolloffay",
+        "codeboten",
+        "dmitryax"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "extension"
+      ]
+    }
+  },
+  "type": "extension"
+}

@@ -1,0 +1,29 @@
+{
+  "description": "The Windows Active Directory Inventory receiver collects inventory data from Active Directory. This includes information such as computer names, user names, email addresses, and location information. This receiver is only supported on Windows servers.",
+  "display_name": "Windows Active Directory Inventory Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-activedirectoryinvreceiver",
+  "markdown_hash": "ce8dd20d2629",
+  "name": "activedirectoryinvreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "pjanotti",
+        "pankaj101A",
+        "jagan2221"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs"
+      ]
+    }
+  },
+  "type": "receiver"
+}

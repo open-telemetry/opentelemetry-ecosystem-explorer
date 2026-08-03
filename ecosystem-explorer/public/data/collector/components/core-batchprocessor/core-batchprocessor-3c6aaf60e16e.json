@@ -1,0 +1,26 @@
+{
+  "description": null,
+  "display_name": "Batch Processor",
+  "distribution": "core",
+  "ecosystem": "collector",
+  "id": "core-batchprocessor",
+  "markdown_hash": "c0822f91eabb",
+  "name": "batchprocessor",
+  "repository": "opentelemetry-collector",
+  "status": {
+    "class": "processor",
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "processor"
+}

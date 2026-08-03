@@ -15,10 +15,12 @@
  */
 
 /*
- * Detail page (Phase 5) — two-pane shell: sibling navigator + on-page anchors
- * on the left, header + placement + tabs in the centre. The right rail
- * (version timeline, diff selector, compatibility card) and the diff page
- * arrive with PR B, which also promotes the layout grid to three columns.
+ * Detail page (Phase 5) — three-pane shell: sibling navigator + on-page anchors
+ * on the left, header + placement + tabs in the centre, and the right rail
+ * (version timeline, diff selector, compatibility card) on the right. Below
+ * 1280px the right rail spans the full width beneath the two remaining
+ * columns; below 992px everything stacks. The diff page (`.td-diff*`) reuses
+ * the same box chrome for the version-comparison route.
  */
 
 .td-detail {
@@ -34,7 +36,10 @@
   color: hsl(var(--muted-foreground-hsl));
 }
 
-/* Layout: stacks on mobile, 2 columns at md (rail + content). */
+/*
+ * Layout: stacks on mobile, 2 columns at md (rail + content) with the right
+ * rail spanning full width beneath, then 3 columns at xl.
+ */
 .td-detail__layout {
   display: grid;
   grid-template-columns: 1fr;
@@ -45,16 +50,30 @@
   .td-detail__layout {
     grid-template-columns: 260px minmax(0, 1fr);
   }
+  .td-detail__rail-right {
+    grid-column: 1 / -1;
+  }
 }
 
-.td-detail__rail-left {
+@media (min-width: 1280px) {
+  .td-detail__layout {
+    grid-template-columns: 260px minmax(0, 1fr) 280px;
+  }
+  .td-detail__rail-right {
+    grid-column: auto;
+  }
+}
+
+.td-detail__rail-left,
+.td-detail__rail-right {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
 }
 
 @media (min-width: 1280px) {
-  .td-detail__rail-left {
+  .td-detail__rail-left,
+  .td-detail__rail-right {
     position: sticky;
     top: 5rem;
     max-height: calc(100vh - 6rem);
@@ -437,4 +456,272 @@
   font-size: 0.8125rem;
   font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
   white-space: pre-wrap;
+}
+
+/* ---------- Version timeline ---------- */
+
+.td-timeline {
+  padding: 0.875rem;
+  background-color: hsl(var(--card-hsl));
+  border: 1px solid hsl(var(--border-hsl));
+  border-radius: 0.5rem;
+}
+
+.td-timeline__title {
+  margin: 0 0 0.75rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
+.td-timeline__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.td-timeline__item {
+  display: grid;
+  grid-template-columns: 12px 1fr;
+  gap: 0.5rem;
+  align-items: start;
+}
+
+.td-timeline__dot {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  background-color: hsl(var(--muted-foreground-hsl));
+  margin-top: 0.4rem;
+}
+
+.td-timeline__item--current .td-timeline__dot {
+  background-color: hsl(var(--secondary-hsl));
+  box-shadow: 0 0 0 4px hsl(var(--secondary-hsl) / 0.2);
+}
+
+.td-timeline__version {
+  font-weight: 600;
+  text-decoration: none;
+  color: hsl(var(--foreground-hsl));
+}
+
+.td-timeline__version--current {
+  color: hsl(var(--secondary-hsl));
+}
+
+.td-timeline__summary {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground-hsl));
+}
+
+.td-timeline__expand {
+  background: transparent;
+  border: none;
+  color: hsl(var(--primary-hsl));
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0.5rem 0 0;
+  font-family: inherit;
+}
+
+.td-timeline__expand:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Diff selector ---------- */
+
+.td-diff-selector {
+  padding: 0.875rem;
+  background-color: hsl(var(--card-hsl));
+  border: 1px solid hsl(var(--border-hsl));
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.td-diff-selector__title {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
+.td-diff-selector__row {
+  display: flex;
+  align-items: end;
+  gap: 0.5rem;
+}
+
+.td-diff-selector__label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground-hsl));
+  flex: 1;
+  min-width: 0;
+}
+
+.td-diff-selector__arrow {
+  width: 1rem;
+  height: 1rem;
+  color: hsl(var(--muted-foreground-hsl));
+  margin-bottom: 0.5rem;
+}
+
+/* ---------- Compatibility ---------- */
+
+.td-compat {
+  padding: 0.875rem;
+  background-color: hsl(var(--card-hsl));
+  border: 1px solid hsl(var(--border-hsl));
+  border-radius: 0.5rem;
+}
+
+.td-compat__title {
+  margin: 0 0 0.5rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+}
+
+.td-compat__list {
+  margin: 0;
+  font-size: 0.8125rem;
+}
+
+.td-compat__row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem;
+  padding: 0.25rem 0;
+  border-bottom: 1px solid hsl(var(--border-hsl) / 0.5);
+}
+
+.td-compat__row:last-child {
+  border-bottom: none;
+}
+
+.td-compat__label {
+  margin: 0;
+  color: hsl(var(--muted-foreground-hsl));
+}
+
+.td-compat__value {
+  margin: 0;
+  font-weight: 600;
+}
+
+/* ---------- Diff page ---------- */
+
+.td-diff__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.td-diff__title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.td-diff__versions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 0.9375rem;
+  color: hsl(var(--muted-foreground-hsl));
+}
+
+.td-diff__sections {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.td-diff-section {
+  background-color: hsl(var(--card-hsl));
+  border: 1px solid hsl(var(--border-hsl));
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+}
+
+.td-diff-section__title {
+  margin: 0 0 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.td-diff-section__empty {
+  color: hsl(var(--muted-foreground-hsl));
+  margin: 0;
+}
+
+.td-diff-section__list {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.td-diff-section__add {
+  color: hsl(145 63% 42%);
+}
+
+.td-diff-section__remove {
+  color: hsl(0 70% 50%);
+}
+
+.td-diff-buckets {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.td-diff-bucket {
+  background-color: hsl(var(--background-hsl));
+  border: 1px solid hsl(var(--border-hsl));
+  border-radius: 0.375rem;
+  padding: 0.875rem;
+}
+
+.td-diff-bucket__title {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.td-diff-bucket--add {
+  border-color: hsl(145 63% 42% / 0.4);
+}
+
+.td-diff-bucket--remove {
+  border-color: hsl(0 70% 50% / 0.4);
+}
+
+.td-diff-bucket--type {
+  border-color: hsl(38 95% 52% / 0.4);
+}
+
+.td-diff-bucket__list {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-size: 0.8125rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.td-diff-bucket__type {
+  margin-left: 0.5rem;
+  color: hsl(var(--muted-foreground-hsl));
+  font-size: 0.75rem;
 }

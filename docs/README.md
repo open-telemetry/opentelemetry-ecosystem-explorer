@@ -29,6 +29,8 @@ additional information.
   agents
 - [Upstream Metadata](./upstream-metadata.md) - How component metadata is managed upstream and how
   to fix `upstream-metadata` issues
+- [Mapping a New Ecosystem](./ecosystem-mapping-guide.md) - Process for bringing a new ecosystem
+  into the registry
 
 **Deployment**: The web app deploys automatically to production when changes merge to `main`.
 Registry updates run nightly via GitHub Actions.

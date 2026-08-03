@@ -1,0 +1,34 @@
+{
+  "description": "The Delta to Cumulative Processor (`deltatocumulativeprocessor`) converts metrics from delta temporality to cumulative, by accumulating samples in memory.",
+  "display_name": "Delta to Cumulative Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-deltatocumulativeprocessor",
+  "markdown_hash": "f281ea4461ff",
+  "name": "deltatocumulativeprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "RichieSams"
+      ],
+      "emeritus": [
+        "tombrk"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    },
+    "warnings": [
+      "Statefulness"
+    ]
+  },
+  "type": "processor"
+}

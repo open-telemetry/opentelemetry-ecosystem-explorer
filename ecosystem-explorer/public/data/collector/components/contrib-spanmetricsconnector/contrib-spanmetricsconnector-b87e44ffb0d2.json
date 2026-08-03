@@ -1,0 +1,33 @@
+{
+  "description": null,
+  "display_name": "Span Metrics Connector",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-spanmetricsconnector",
+  "markdown_hash": "ae95c2ce1a96",
+  "name": "spanmetricsconnector",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "connector",
+    "codeowners": {
+      "active": [
+        "portertech",
+        "Frapschen",
+        "iblancasa"
+      ],
+      "emeritus": [
+        "albertteoh"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "traces_to_metrics"
+      ]
+    }
+  },
+  "type": "connector"
+}

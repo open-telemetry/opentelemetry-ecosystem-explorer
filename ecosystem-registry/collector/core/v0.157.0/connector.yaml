@@ -6,10 +6,14 @@ schema_hash: cb7aa934b19a
 components:
 - name: forwardconnector
   metadata:
-    type: forward
     display_name: Forward Connector
+    github_project: open-telemetry/opentelemetry-collector
     status:
       class: connector
+      distributions:
+      - contrib
+      - core
+      - k8s
       stability:
         alpha:
         - profiles_to_profiles
@@ -17,19 +21,17 @@ components:
         - logs_to_logs
         - metrics_to_metrics
         - traces_to_traces
-      distributions:
-      - contrib
-      - core
-      - k8s
+    type: forward
 - name: xconnector
   metadata:
-    type: xconnector
+    github_project: open-telemetry/opentelemetry-collector
     status:
       class: pkg
-      stability:
-        alpha:
-        - profiles
       codeowners:
         active:
         - mx-psi
         - dmathieu
+      stability:
+        alpha:
+        - profiles
+    type: xconnector

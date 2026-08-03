@@ -1,0 +1,30 @@
+{
+  "description": "The `aws_ecs_attributes` processor enriches logs, metrics, traces and profiles with AWS ECS metadata for daemonset-style deployments on EC2, where a single collector runs per host and processes telemetry for all containers on that host.",
+  "display_name": "AWS ECS Attributes Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-awsecsattributesprocessor",
+  "markdown_hash": "ca1354922384",
+  "name": "awsecsattributesprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "povilasv",
+        "iblancasa",
+        "dmitryax"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "logs",
+        "metrics",
+        "profiles",
+        "traces"
+      ]
+    }
+  },
+  "type": "processor"
+}

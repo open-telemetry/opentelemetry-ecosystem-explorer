@@ -64,12 +64,26 @@ function resolveLatestVersion(indexPath) {
   return latest.version;
 }
 
+// Resolve the two most recent Collector versions for the diff route. `to` is
+// the latest release; `from` is the next-newest so the comparison spans a real
+// version gap. Falls back to the single available version if only one exists.
+function resolveCollectorDiffPair(indexPath) {
+  const index = JSON.parse(fs.readFileSync(indexPath, "utf-8"));
+  const versions = index.versions.map((v) => v.version);
+  const to = index.versions.find((v) => v.is_latest)?.version ?? versions[0];
+  const from = versions.find((v) => v !== to) ?? to;
+  return { from, to };
+}
+
 const DETAIL_VERSION = resolveLatestVersion(
   path.resolve("public/data/javaagent/versions-index.json")
 );
 const DETAIL_NAME = "spring-webmvc-6.0";
 const COLLECTOR_DISTRIBUTION = "core";
 const COLLECTOR_DETAIL_NAME = "otlpreceiver";
+const COLLECTOR_DIFF = resolveCollectorDiffPair(
+  path.resolve("public/data/collector/versions-index.json")
+);
 
 // Collector list densities (Phase 4). The bare URL renders the default
 // density (compact); the others are URL-driven via `?density=`.
@@ -314,6 +328,19 @@ async function takeScreenshots() {
           await assertNoError(page, collectorDetailUrl);
           await page.screenshot({ path: p("collector-detail"), fullPage: true });
           if (isFirstViewport) await recordA11y(page, "collector-detail", theme);
+
+          // 9b. Collector version diff — comparing the two most recent releases.
+          const collectorDiffUrl =
+            `${BASE_URL}/collector/components/${COLLECTOR_DISTRIBUTION}/${COLLECTOR_DETAIL_NAME}/diff` +
+            `?from=${COLLECTOR_DIFF.from}&to=${COLLECTOR_DIFF.to}`;
+          await page.goto(collectorDiffUrl, {
+            waitUntil: "domcontentloaded",
+            timeout: 10000,
+          });
+          await settle(page);
+          await assertNoError(page, collectorDiffUrl);
+          await page.screenshot({ path: p("collector-diff"), fullPage: true });
+          if (isFirstViewport) await recordA11y(page, "collector-diff", theme);
 
           // 10. Dev component showcase — single page mounting every v1 primitive
           //    in its canonical states. Captured so a11y + pixel-diff can baseline

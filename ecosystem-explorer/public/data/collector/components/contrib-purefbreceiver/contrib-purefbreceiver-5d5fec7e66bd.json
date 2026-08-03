@@ -1,0 +1,31 @@
+{
+  "description": "The Pure Storage FlashBlade receiver, receives metrics from Pure Storage FlashBlade via the [Pure Storage FlashBlade OpenMetrics Exporter](https://github.com/PureStorage-OpenConnect/pure-fb-openmetrics-exporter)",
+  "display_name": "Pure Storage FlashBlade Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-purefbreceiver",
+  "markdown_hash": "690ebe81c526",
+  "name": "purefbreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "dgoscn",
+        "chrroberts-pure"
+      ],
+      "emeritus": [
+        "jpkrohling"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver"
+}

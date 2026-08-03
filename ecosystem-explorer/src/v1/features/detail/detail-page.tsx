@@ -15,17 +15,17 @@
  */
 
 /*
- * CollectorDetailPageV1 — Phase 5 detail page. Two-pane layout for PR A:
- *   ┌──────────┬──────────────────┐
- *   │ Sibling  │  Header / tabs   │
- *   │ navigator│  (configuration, │
- *   │ + on-page│   README,        │
- *   │ anchors  │   attributes,    │
- *   │          │   examples)      │
- *   └──────────┴──────────────────┘
+ * CollectorDetailPageV1 — Phase 5 detail page, three-pane layout:
+ *   ┌──────────┬──────────────────┬───────────┐
+ *   │ Sibling  │  Header / tabs   │  Version  │
+ *   │ navigator│  (configuration, │  timeline │
+ *   │ + on-page│   README,        │  + diff   │
+ *   │ anchors  │   attributes,    │  + compat │
+ *   │          │   examples)      │           │
+ *   └──────────┴──────────────────┴───────────┘
  *
- * The right rail (version timeline + diff selector + compatibility card) is
- * added by PR B, which promotes the grid to three columns.
+ * The grid collapses to two columns below 1280px (the right rail spanning the
+ * full width beneath) and to a single column below 992px.
  *
  * Data: reuses `useCollectorComponent` + `useCollectorComponents` from the
  * existing hooks so the v1 view is a re-skin, not a reimplementation. The
@@ -35,16 +35,22 @@
 
 import { AlertCircle, Loader2 } from "lucide-react";
 import { useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { CollectorComponentType } from "@/components/ui/type-stripe-colors";
 import {
   useCollectorComponent,
   useCollectorComponents,
   useCollectorVersions,
+  useComponentVersions,
 } from "@/hooks/use-collector-data";
 import type { CollectorComponent } from "@/types/collector";
 import { SubNav } from "@/v1/components/layout/sub-nav";
+import {
+  CompatibilityCard,
+  DiffSelector,
+  VersionTimeline,
+} from "@/v1/components/detail/version-timeline";
 import { DetailHeader } from "@/v1/components/detail/detail-header";
 import {
   type OnPageAnchor,
@@ -142,17 +148,28 @@ export function CollectorDetailPageV1() {
   // bare `/collector/components/:distribution/:name` link (how the list page
   // links) resolves instead of showing "not found".
   const rawVersion = searchParams.get("version");
-  const version = rawVersion || versionsQ.data?.versions.find((v) => v.is_latest)?.version || "";
+  const latestVersion = versionsQ.data?.versions.find((v) => v.is_latest)?.version ?? "";
+  const version = rawVersion || latestVersion;
   const versionLoading = !version && !versionsQ.error;
 
   const componentQ = useCollectorComponent(distribution ?? "", name ?? "", version);
   const componentsQ = useCollectorComponents(version);
+  const componentVersionsQ = useComponentVersions(distribution ?? "", name ?? "");
 
   const component = componentQ.data;
   const loading = componentQ.loading;
   const error = componentQ.error;
 
-  if (loading || versionLoading) {
+  // A component missing from the requested release is an expected state, not a
+  // failure, so it gets its own designed answer below. Deciding which of the
+  // two a failed load is needs the release list, so wait for it rather than
+  // flashing the generic message and swapping it a moment later.
+  const releasedVersions = componentVersionsQ.data;
+  const notReleasedHere = Boolean(
+    version && releasedVersions && !releasedVersions.includes(version)
+  );
+
+  if (loading || versionLoading || (error && componentVersionsQ.loading)) {
     return (
       <div className="td-detail">
         <div className="td-detail__loading" role="status" aria-live="polite">
@@ -163,7 +180,10 @@ export function CollectorDetailPageV1() {
     );
   }
 
-  if (error || (!version && versionsQ.error) || !component) {
+  if (notReleasedHere || error || (!version && versionsQ.error) || !component) {
+    // The registry simply has no entry here: name the release, and offer the
+    // newest one that does carry the component so the user isn't dead-ended.
+    const suggestion = notReleasedHere ? releasedVersions?.[0] : undefined;
     return (
       <div className="td-detail">
         <SubNav
@@ -178,10 +198,24 @@ export function CollectorDetailPageV1() {
           <div className="td-box__container">
             <div className="td-empty" role="alert">
               <AlertCircle className="h-6 w-6" aria-hidden focusable="false" />
-              <p className="td-empty__title">{t("notFound.title")}</p>
-              <p className="td-empty__lead">
-                {(error ?? versionsQ.error)?.message ?? t("notFound.lead")}
+              <p className="td-empty__title">
+                {notReleasedHere ? t("notReleased.title") : t("notFound.title")}
               </p>
+              <p className="td-empty__lead">
+                {notReleasedHere
+                  ? t("notReleased.lead", { component: name, version })
+                  : t("notFound.lead")}
+              </p>
+              {suggestion && (
+                <Link
+                  className="td-btn td-btn--outline-dark"
+                  to={`/collector/components/${distribution}/${name}?version=${encodeURIComponent(
+                    suggestion
+                  )}`}
+                >
+                  {t("notReleased.cta", { version: suggestion })}
+                </Link>
+              )}
             </div>
           </div>
         </div>
@@ -218,6 +252,23 @@ export function CollectorDetailPageV1() {
     { id: "attributes", label: t("anchors.attributes"), tab: "attributes" },
     { id: "examples", label: t("anchors.examples"), tab: "examples" },
   ];
+
+  // Right-rail data. Only the releases this component actually appears in: the
+  // global versions index covers every Collector release, so offering it whole
+  // links to versions whose manifest has no entry for the component and the
+  // page fails to load. While presence is in flight — or if it errored — the
+  // timeline falls back to the version being viewed, the one release known to
+  // exist, rather than making dead links clickable for the duration.
+  //
+  // `is_latest` is the only per-version summary the registry exposes today;
+  // per-version change one-liners are deferred. Timeline and diff links target
+  // the current component's canonical distribution/name.
+  const availableVersions = componentVersionsQ.data ?? [version];
+  const versionEntries = availableVersions.map((v) => ({
+    version: v,
+    summary: v === latestVersion ? t("timeline.latest") : undefined,
+  }));
+  const detailBase = `/collector/components/${component.distribution}/${component.name}`;
 
   return (
     <div className="td-detail">
@@ -267,6 +318,27 @@ export function CollectorDetailPageV1() {
             </DetailTabs>
           </section>
         </main>
+
+        <aside className="td-detail__rail-right" aria-label={t("rightRailLabel")}>
+          <VersionTimeline
+            versions={versionEntries}
+            currentVersion={version}
+            buildHref={(v) => `${detailBase}?version=${encodeURIComponent(v)}`}
+          />
+          <DiffSelector
+            // The selector seeds its from/to state on first render, and the
+            // version list resolves asynchronously. Keying on the list remounts
+            // it once presence lands, so the dropdowns can't keep the values
+            // derived from the single-version fallback.
+            key={availableVersions.join(",")}
+            versions={availableVersions}
+            defaultTo={version}
+            buildHref={(from, to) =>
+              `${detailBase}/diff?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`
+            }
+          />
+          <CompatibilityCard distributions={component.status?.distributions} />
+        </aside>
       </div>
     </div>
   );
