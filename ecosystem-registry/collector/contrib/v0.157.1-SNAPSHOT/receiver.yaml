@@ -1779,6 +1779,17 @@ components:
 - name: awsxrayreceiver
   metadata:
     display_name: AWS X-Ray Receiver
+    feature_gates:
+    - description: When enabled, semconv legacy HTTP attributes are disabled.
+      from_version: v0.158.0
+      id: receiver.awsxray.DontEmitV0HttpConventions
+      reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45085
+      stage: alpha
+    - description: When enabled, semconv stable HTTP attributes are enabled.
+      from_version: v0.158.0
+      id: receiver.awsxray.EmitV1HttpConventions
+      reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45085
+      stage: alpha
     status:
       class: receiver
       codeowners:
@@ -14677,7 +14688,10 @@ components:
       postgresql.backends:
         attributes:
         - db.namespace
-        description: The number of backends.
+        description: The number of backend processes associated with each database.
+          Counts backends across all connection states (active, idle, idle-in-transaction)
+          and all backend types, including non-client backends such as autovacuum
+          and parallel workers.
         enabled: true
         stability: development
         sum:
@@ -14802,6 +14816,7 @@ components:
         unit: '{databases}'
       postgresql.database.locks:
         attributes:
+        - db.namespace
         - lock_type
         - mode
         - relation

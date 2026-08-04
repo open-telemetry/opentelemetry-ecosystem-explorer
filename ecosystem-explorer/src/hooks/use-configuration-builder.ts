@@ -62,6 +62,7 @@ export interface ConfigurationBuilderStateContextValue {
 export interface ConfigurationBuilderActionsContextValue {
   setValue: (path: string, value: ConfigValue) => void;
   setValueByPath: (path: Path, value: ConfigValue) => void;
+  mergeDefaults: (entries: { path: Path; value: ConfigValue }[]) => void;
   setCustomization: (module: string, status: "enabled" | "disabled" | "none") => void;
   pruneInstrumentations: (validModules: readonly string[]) => void;
   setEnabled: (section: string, enabled: boolean) => void;
@@ -180,6 +181,10 @@ export function useConfigurationBuilderState(
 
   const pruneInstrumentations = useCallback((validModules: readonly string[]) => {
     dispatch({ type: "PRUNE_INSTRUMENTATIONS", validModules });
+  }, []);
+
+  const mergeDefaults = useCallback((entries: { path: Path; value: ConfigValue }[]) => {
+    dispatch({ type: "MERGE_DEFAULTS", entries });
   }, []);
 
   const setEnabled = useCallback((section: string, enabled: boolean) => {
@@ -322,6 +327,7 @@ export function useConfigurationBuilderState(
     () => ({
       setValue,
       setValueByPath,
+      mergeDefaults,
       setCustomization,
       pruneInstrumentations,
       setEnabled,

@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 import { describe, it, expect } from "vitest";
-import { classifyScope, toValuePath, parseDefault } from "./declarative-name";
+import type { Configuration } from "@/types/javaagent";
+import {
+  classifyScope,
+  toValuePath,
+  parseDefault,
+  isStructuredListEntry,
+  defaultConfigValue,
+} from "./declarative-name";
 
 describe("classifyScope", () => {
   it("returns 'general' for a name leading with general.", () => {
@@ -129,5 +136,57 @@ describe("parseDefault", () => {
 
   it("trims whitespace inside list CSV", () => {
     expect(parseDefault("list", "A, B ,C")).toEqual(["A", "B", "C"]);
+  });
+});
+
+// Mirrors java.common.service_peer_mapping: a map-typed config rendered as a structured list.
+const structuredListEntry: Configuration = {
+  name: "otel.instrumentation.common.peer-service-mapping",
+  declarative_name: "java.common.service_peer_mapping",
+  description: "",
+  type: "map",
+  default: "",
+  declarative_type: "structured_list",
+  declarative_schema: {
+    type: "object",
+    required: ["peer", "service"],
+    properties: { peer: { type: "string" }, service: { type: "string" } },
+  },
+};
+
+describe("isStructuredListEntry", () => {
+  it("is true when declarative_type and declarative_schema are both set", () => {
+    expect(isStructuredListEntry(structuredListEntry)).toBe(true);
+  });
+
+  it("is false without declarative_type", () => {
+    expect(isStructuredListEntry({ ...structuredListEntry, declarative_type: undefined })).toBe(
+      false
+    );
+  });
+
+  it("is false without declarative_schema", () => {
+    expect(isStructuredListEntry({ ...structuredListEntry, declarative_schema: undefined })).toBe(
+      false
+    );
+  });
+});
+
+describe("defaultConfigValue", () => {
+  it("seeds structured lists as an empty array, not the map default", () => {
+    expect(defaultConfigValue(structuredListEntry)).toEqual([]);
+  });
+
+  it("delegates to parseDefault for plain entries", () => {
+    expect(defaultConfigValue({ ...structuredListEntry, declarative_type: undefined })).toEqual({});
+    expect(
+      defaultConfigValue({
+        name: "otel.x",
+        declarative_name: "java.m.flag",
+        description: "",
+        type: "boolean",
+        default: true,
+      })
+    ).toBe(true);
   });
 });

@@ -30,6 +30,16 @@ export function toValuePath(declarativeName: string): Path {
   return [ROOT_SECTION, ...declarativeName.split(".")];
 }
 
+/** True when the entry renders as a structured list (array of objects) rather than its raw type. */
+export function isStructuredListEntry(entry: Configuration): boolean {
+  return entry.declarative_type === "structured_list" && entry.declarative_schema != null;
+}
+
+/** The value seeded when a config is overridden or bulk-added — structured lists start empty. */
+export function defaultConfigValue(entry: Configuration): ConfigValue {
+  return isStructuredListEntry(entry) ? [] : parseDefault(entry.type, entry.default);
+}
+
 export function parseDefault(
   type: Configuration["type"],
   raw: string | boolean | number

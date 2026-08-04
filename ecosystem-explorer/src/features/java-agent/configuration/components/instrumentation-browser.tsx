@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { useState, useCallback, useMemo, type JSX } from "react";
+import { CopyPlus } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useSectionExpansion } from "./section-expansion-context";
 import type { InstrumentationListEntry, InstrumentationModule } from "@/types/javaagent";
@@ -25,8 +26,15 @@ import {
 } from "@/hooks/use-customization-status";
 import { useCustomizedModules } from "@/hooks/use-customized-modules";
 import { groupByModule } from "@/lib/normalize-instrumentation";
+import { buildInstrumentationDefaultEntries } from "@/lib/instrumentation-default-entries";
+import type { DeclarativeScope } from "@/lib/declarative-name";
 import { SectionCardShell } from "./section-card-shell";
 import { InstrumentationRow } from "./instrumentation-row";
+import { HeaderActionButton } from "./preview-card";
+
+// "Add all configs" includes every scope; general.* maps to a real, editable
+// instrumentation/development.general.* path (see the plan §9.1).
+const ALL_SCOPES: DeclarativeScope[] = ["general", "common", "owned"];
 
 export interface InstrumentationBrowserProps {
   instrumentations: InstrumentationListEntry[] | null;
@@ -45,13 +53,20 @@ export function InstrumentationBrowser({
   statusFilter,
   onJumpToGeneral,
 }: InstrumentationBrowserProps): JSX.Element {
+  const { setCustomization, mergeDefaults } = useConfigurationBuilder();
   const { t } = useTranslation("java-agent");
-  const { setCustomization } = useConfigurationBuilder();
   const customizationMap = useCustomizationStatusMap();
 
   const modules = useMemo<InstrumentationModule[]>(
     () => (instrumentations ? groupByModule(instrumentations) : []),
     [instrumentations]
+  );
+
+  // Built from the full module list (all modules, not the active filter) so
+  // "Add all configs" always adds every instrumentation config option.
+  const defaultEntries = useMemo(
+    () => buildInstrumentationDefaultEntries(modules, { includeScopes: ALL_SCOPES }),
+    [modules]
   );
 
   const customizedSet = useCustomizedModules(modules);
@@ -118,6 +133,15 @@ export function InstrumentationBrowser({
     [setCustomization]
   );
 
+  const handleAddAll = useCallback(() => {
+    if (defaultEntries.length === 0) return;
+    const ok = window.confirm(
+      t("builder.browser.addAll.confirm", { count: defaultEntries.length })
+    );
+    if (!ok) return;
+    mergeDefaults(defaultEntries);
+  }, [defaultEntries, mergeDefaults, t]);
+
   return (
     <SectionCardShell sectionKey="instrumentations">
       <header className="flex flex-wrap items-baseline justify-between gap-2">
@@ -132,6 +156,12 @@ export function InstrumentationBrowser({
             </span>
           ) : null}
         </h3>
+        <HeaderActionButton
+          icon={CopyPlus}
+          label={t("builder.browser.addAll.button")}
+          onClick={handleAddAll}
+          disabled={defaultEntries.length === 0}
+        />
       </header>
 
       {loading ? (

@@ -39,7 +39,7 @@ interface HeaderActionButtonProps extends React.ButtonHTMLAttributes<HTMLButtonE
   label: string;
 }
 
-function HeaderActionButton({
+export function HeaderActionButton({
   icon: Icon,
   label,
   className = "",

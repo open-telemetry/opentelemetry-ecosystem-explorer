@@ -1,0 +1,29 @@
+{
+  "description": "An OpenTelemetry Collector processor that catches metric cardinality explosions before they reach your TSDB.",
+  "display_name": "Cardinality Guardian Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-cardinalityguardianprocessor",
+  "markdown_hash": "7f5718df0a82",
+  "name": "cardinalityguardianprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "atoulme",
+        "YElayyat",
+        "jmacd"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "processor"
+}

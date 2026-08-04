@@ -439,6 +439,11 @@
       "customized_other": "· {{count}} customized",
       "loading": "Loading instrumentations…",
       "error": "Failed to load instrumentations.",
+      "addAll": {
+        "button": "Add all instrumentation configs",
+        "confirm_one": "Add {{count}} instrumentation config option with its default? Values you've already customized will be kept.",
+        "confirm_other": "Add {{count}} instrumentation config options with their defaults? Values you've already customized will be kept."
+      },
       "readout": {
         "search": "Search \"{{search}}\" · {{shown}} of {{total}}",
         "customized": "Customized · {{count}} of {{total}}",

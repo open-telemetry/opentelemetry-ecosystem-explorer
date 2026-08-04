@@ -1,0 +1,32 @@
+{
+  "description": "This extension unmarshalls logs encoded in formats produced by AWS services.",
+  "display_name": "AWS Logs Encoding Extension",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-awslogsencodingextension",
+  "markdown_hash": "b039f4c2688c",
+  "name": "awslogsencodingextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "constanca-m",
+        "Kavindu-Dodan",
+        "MichaelKatsoulis"
+      ],
+      "emeritus": [
+        "axw"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "extension"
+      ]
+    }
+  },
+  "type": "extension"
+}

@@ -1,8 +1,13 @@
 {
   "versions": [
     {
-      "bundle_hash": "d09032931aaa",
+      "bundle_hash": "504eb3c1870c",
       "is_latest": true,
+      "version": "0.157.0"
+    },
+    {
+      "bundle_hash": "d09032931aaa",
+      "is_latest": false,
       "version": "0.156.0"
     },
     {
