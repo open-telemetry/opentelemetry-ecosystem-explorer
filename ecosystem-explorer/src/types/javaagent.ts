@@ -214,13 +214,7 @@ export interface Metric {
   instrument: "updowncounter" | "counter" | "gauge" | "histogram";
   /** The OpenTelemetry data type for the metric. */
   data_type:
-    | "LONG_SUM"
-    | "DOUBLE_SUM"
-    | "LONG_GAUGE"
-    | "DOUBLE_GAUGE"
-    | "COUNTER"
-    | "HISTOGRAM"
-    | "SUMMARY";
+    "LONG_SUM" | "DOUBLE_SUM" | "LONG_GAUGE" | "DOUBLE_GAUGE" | "COUNTER" | "HISTOGRAM" | "SUMMARY";
   /** The unit of measurement (e.g., ms, bytes). */
   unit: string;
   /** Attributes associated with the metric. */
