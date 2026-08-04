@@ -125,7 +125,8 @@ def transform_collector_components(
                 component["metrics"] = metrics
 
             telemetry = metadata.get("telemetry")
-            if telemetry:
+            telemetry_metrics = telemetry.get("metrics") if isinstance(telemetry, dict) else None
+            if telemetry_metrics:
                 component["telemetry"] = telemetry
 
             if name in readme_map:
