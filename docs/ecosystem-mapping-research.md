@@ -40,9 +40,6 @@ enough that the right structure depends on what you find.
 - [JavaScript instrumentation metadata audit](../projects/9-javascript-instrumentation/01-metadata-audit.md) -
   surveys a many-small-independently-versioned-packages ecosystem (js-contrib), breaking down what's
   machine-readable, what's inconsistent, and what's missing per package.
-- [Legacy registry research](../projects/119-legacy-registry-research/00-research.md) - a different
-  shape of research: comparing two existing metadata sources (the V1 and V2 collector registries)
-  head to head, rather than surveying a single upstream from scratch.
 - [#916](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/916) - research
   happening as open discussion on an issue thread instead of a written document first. Worth reading
   as an example of this phase being collaborative and public rather than a solo write-up handed over
