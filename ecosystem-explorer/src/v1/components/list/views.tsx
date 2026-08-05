@@ -48,7 +48,7 @@ export interface CompactRowProps {
 }
 
 export function CompactRow({ row }: CompactRowProps) {
-  const { t } = useTranslation("collector");
+  const { t } = useTranslation("list");
   return (
     <Link to={row.href} className="td-row td-row--compact">
       <span
@@ -94,7 +94,7 @@ export function CompactList({ rows }: ListViewProps) {
 }
 
 export function CardView({ rows }: ListViewProps) {
-  const { t } = useTranslation("collector");
+  const { t } = useTranslation("list");
   return (
     <div className="td-list td-list--cards">
       {rows.map((row) => (

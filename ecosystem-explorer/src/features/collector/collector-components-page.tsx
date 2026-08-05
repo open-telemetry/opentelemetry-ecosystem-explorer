@@ -115,8 +115,10 @@ const getIcon = (type: string) => {
 
 function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
   const { t } = useTranslation("collector");
+  const { t: tList } = useTranslation("list");
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const versionQuery = searchParams.get("version");
   const typeQuery = searchParams.get("type");
   const distributionQuery = searchParams.get("distribution");
   const stabilityQuery = searchParams.get("stability");
@@ -152,8 +154,9 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
 
   const currentVersion = useMemo(() => {
     if (urlVersion) return urlVersion;
+    if (versionQuery) return versionQuery;
     return versionData?.versions.find((v) => v.is_latest)?.version || "";
-  }, [urlVersion, versionData]);
+  }, [urlVersion, versionData, versionQuery]);
   const deprecatedView = currentVersion === "deprecated";
 
   const componentsQuery = useCollectorComponents(deprecatedView ? "" : currentVersion);
@@ -216,10 +219,16 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
   ]);
 
   const handleVersionChange = (val: string) => {
-    const currentSearch = searchParams.toString();
+    const params = new URLSearchParams(searchParams);
+    if (val === "deprecated") {
+      params.set("version", val);
+    } else {
+      params.delete("version");
+    }
+
     navigate({
-      pathname: `/collector/components/${val}`,
-      search: currentSearch ? `?${currentSearch}` : "",
+      pathname: val === "deprecated" ? "/collector/components" : `/collector/components/${val}`,
+      search: params.size > 0 ? `?${params.toString()}` : "",
     });
   };
 
@@ -544,12 +553,12 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
                             }
                             className="px-2 py-0 text-[9px]"
                           >
-                            {deprecatedView ? t("filters.version.deprecated") : comp.stability}
+                            {deprecatedView ? t("filters.stability.deprecated") : comp.stability}
                           </GlowBadge>
                         )}
                         {deprecatedView && "deprecated_in_version" in comp && (
                           <span className="text-muted-foreground text-xs">
-                            {t("deprecated.removedIn", {
+                            {tList("deprecated.removedIn", {
                               version: comp.deprecated_in_version,
                             })}
                           </span>

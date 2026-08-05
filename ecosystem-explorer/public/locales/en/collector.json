@@ -160,8 +160,7 @@
   },
   "deprecated": {
     "title": "This component has been removed",
-    "lead": "Last available in {{lastVersion}}. Removed in {{removedVersion}}.",
-    "removedIn": "Removed in {{version}}"
+    "lead": "Last available in {{lastVersion}}. Removed in {{removedVersion}}."
   },
   "detail": {
     "loading": {
