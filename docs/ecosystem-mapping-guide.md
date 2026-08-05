@@ -21,9 +21,9 @@ ongoing design discussion for Go compile-time instrumentation
 Every ecosystem that has made it into the registry so far went through the same rough sequence, even
 though nobody wrote it down as a formal process until now:
 
-1. **Research** - survey the upstream project(s): what metadata exists, where it lives, how
-   consistently it's structured, and what's missing entirely. Produces an audit and a proposed
-   registry schema. _(detailed guidance: follow-up PR)_
+1. [**Research**](./ecosystem-mapping-research.md) - survey the upstream project(s): what metadata
+   exists, where it lives, how consistently it's structured, and what's missing entirely. Produces
+   an audit and a proposed registry schema.
 
 2. **Schema design** - decide what fields the registry actually needs beyond what any existing
    upstream format already provides, and how versioning works for this ecosystem (one aggregated

@@ -19,7 +19,7 @@ import { Plus, RotateCcw, X } from "lucide-react";
 import type { Configuration } from "@/types/javaagent";
 import type { ConfigValue, ConfigValues } from "@/types/configuration-builder";
 import type { AggregatedConfig } from "@/lib/configurations-aggregate";
-import { parseDefault } from "@/lib/declarative-name";
+import { defaultConfigValue, isStructuredListEntry } from "@/lib/declarative-name";
 import { getByPath } from "@/lib/config-path";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
 import { SwitchPill } from "@/components/ui/switch-pill";
@@ -353,8 +353,7 @@ export function InstrumentationConfigField({
   const currentValue = getByPath(state.values, path);
 
   const isCustomized = currentValue !== undefined && currentValue !== null;
-  const isStructuredList =
-    entry.declarative_type === "structured_list" && entry.declarative_schema != null;
+  const isStructuredList = isStructuredListEntry(entry);
   const typeMismatch =
     isCustomized && !valueMatchesType(currentValue, entry.type, isStructuredList);
 
@@ -362,7 +361,7 @@ export function InstrumentationConfigField({
   const leafKey = String(path[path.length - 1]);
 
   const handleCustomization = () => {
-    setValueByPath(path, isStructuredList ? [] : parseDefault(entry.type, entry.default));
+    setValueByPath(path, defaultConfigValue(entry));
   };
 
   const handleReset = () => {

@@ -439,6 +439,11 @@
       "customized_other": "· {{count}} personalizados",
       "loading": "Cargando instrumentaciones…",
       "error": "Error al cargar instrumentaciones.",
+      "addAll": {
+        "button": "Añadir todas las configuraciones de instrumentación",
+        "confirm_one": "¿Añadir {{count}} opción de configuración de instrumentación con su valor predeterminado? Los valores que ya hayas personalizado se conservarán.",
+        "confirm_other": "¿Añadir {{count}} opciones de configuración de instrumentación con sus valores predeterminados? Los valores que ya hayas personalizado se conservarán."
+      },
       "readout": {
         "search": "Buscar \"{{search}}\" · {{shown}} de {{total}}",
         "customized": "Personalizado · {{count}} de {{total}}",
