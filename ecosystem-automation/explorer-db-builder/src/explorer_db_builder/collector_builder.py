@@ -71,9 +71,9 @@ def _build_deprecations_index(
         for component_type in COMPONENT_TYPES:
             for deprecated in by_type.get(component_type, []):
                 name = deprecated.get("name")
-                component_id = f"{distribution}-{name}" if name else f"{distribution}-<missing-name>"
                 if not name:
                     raise ValueError(f"Deprecated {distribution}/{component_type} component is missing a name")
+                component_id = f"{distribution}-{name}"
 
                 last_version = _registry_version(deprecated.get("last_version"), "last_version", component_id)
                 removed_version = _registry_version(

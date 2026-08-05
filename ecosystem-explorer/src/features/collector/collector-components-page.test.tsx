@@ -156,6 +156,17 @@ describe("CollectorComponentsPage", () => {
     );
   });
 
+  it("uses the version query when selecting deprecated components", async () => {
+    const user = userEvent.setup();
+    renderPage("/collector/components?type=receiver");
+
+    await user.selectOptions(screen.getByRole("combobox", { name: "Version" }), "deprecated");
+
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "/collector/components?type=receiver&version=deprecated"
+    );
+  });
+
   it("builds detail links with distribution, component name, version, and filters", () => {
     renderPage("/collector/components?type=receiver");
 
@@ -172,7 +183,7 @@ describe("CollectorComponentsPage", () => {
       error: null,
     });
 
-    renderPage("/collector/components/deprecated");
+    renderPage("/collector/components?version=deprecated");
 
     expect(screen.getByText("JMX Receiver")).toBeInTheDocument();
     expect(screen.getByText("Removed in 0.157.0")).toBeInTheDocument();
@@ -193,7 +204,7 @@ describe("CollectorComponentsPage", () => {
       error: null,
     });
 
-    renderPage("/collector/components/deprecated?stability=deprecated");
+    renderPage("/collector/components?version=deprecated&stability=deprecated");
 
     expect(screen.getByText("JMX Receiver")).toBeInTheDocument();
   });

@@ -145,7 +145,7 @@ describe("CollectorExploreLanding", () => {
     );
     expect(screen.getByRole("link", { name: /Deprecated/i })).toHaveAttribute(
       "href",
-      "/collector/components/deprecated"
+      "/collector/components?version=deprecated"
     );
     expect(screen.getByRole("link", { name: /View Core Components/i })).toHaveAttribute(
       "href",
@@ -197,6 +197,42 @@ describe("CollectorExploreLanding", () => {
 
     expect(await screen.findByRole("alert")).toHaveTextContent("Error loading Collector data");
     expect(screen.getByText("Collector index request failed with 404.")).toBeInTheDocument();
+  });
+
+  it("renders the landing page while deprecated data is loading", () => {
+    vi.mocked(useCollectorDeprecations).mockReturnValue({
+      data: null,
+      loading: true,
+      error: null,
+    });
+
+    render(
+      <MemoryRouter>
+        <CollectorExploreLanding />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByRole("heading", { name: "Component Types" })).toBeInTheDocument();
+    expect(screen.queryByText("Loading Collector ecosystem data...")).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Deprecated/i })).toBeInTheDocument();
+  });
+
+  it("renders the landing page when deprecated data fails", () => {
+    vi.mocked(useCollectorDeprecations).mockReturnValue({
+      data: null,
+      loading: false,
+      error: new Error("Deprecated index request failed with 404."),
+    });
+
+    render(
+      <MemoryRouter>
+        <CollectorExploreLanding />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByRole("heading", { name: "Component Types" })).toBeInTheDocument();
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Deprecated/i })).toBeInTheDocument();
   });
 
   it("renders translated content when the language is switched to Spanish", async () => {

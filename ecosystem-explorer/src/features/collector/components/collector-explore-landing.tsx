@@ -133,11 +133,7 @@ function buildCollectorLandingStats(
 export function CollectorExploreLanding() {
   const { t, i18n } = useTranslation("collector");
   const { data: collectorIndex, loading: indexLoading, error: indexError } = useCollectorIndex();
-  const {
-    data: deprecationsIndex,
-    loading: deprecationsLoading,
-    error: deprecationsError,
-  } = useCollectorDeprecations();
+  const { data: deprecationsIndex } = useCollectorDeprecations();
   const {
     data: versionData,
     loading: versionsLoading,
@@ -160,7 +156,7 @@ export function CollectorExploreLanding() {
     );
   }, [collectorIndex, versionData]);
 
-  const error = indexError ?? versionsError ?? deprecationsError;
+  const error = indexError ?? versionsError;
 
   if (error) {
     return (
@@ -175,7 +171,7 @@ export function CollectorExploreLanding() {
     );
   }
 
-  if (indexLoading || versionsLoading || deprecationsLoading || !stats) {
+  if (indexLoading || versionsLoading || !stats) {
     return (
       <section
         aria-live="polite"
@@ -236,7 +232,7 @@ export function CollectorExploreLanding() {
               </Link>
             ))}
             <Link
-              to="/collector/components/deprecated"
+              to="/collector/components?version=deprecated"
               className="group focus-visible:ring-primary block rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
             >
               <article className="border-border/60 bg-card/80 hover:border-primary/40 hover:bg-card h-full rounded-lg border p-6 transition-all duration-200 hover:-translate-y-0.5">
@@ -254,9 +250,11 @@ export function CollectorExploreLanding() {
                     <h3 className="text-foreground group-hover:text-primary text-lg font-semibold transition-colors">
                       {t("explore.componentTypes.deprecated.label")}
                     </h3>
-                    <p className="text-3xl font-bold">
-                      {numberFormatter.format(deprecationsIndex?.components.length ?? 0)}
-                    </p>
+                    {deprecationsIndex && (
+                      <p className="text-3xl font-bold">
+                        {numberFormatter.format(deprecationsIndex.components.length)}
+                      </p>
+                    )}
                   </div>
                   <p className="text-muted-foreground text-sm leading-relaxed">
                     {t("explore.componentTypes.deprecated.description")}

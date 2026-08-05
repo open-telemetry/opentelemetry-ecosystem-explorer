@@ -242,7 +242,7 @@ export function CollectorDetailPage() {
                   </GlowBadge>
                   {deprecatedView && (
                     <GlowBadge variant="warning" className="text-xs tracking-wider uppercase">
-                      {t("filters.version.deprecated")}
+                      {t("filters.stability.deprecated")}
                     </GlowBadge>
                   )}
                 </div>
