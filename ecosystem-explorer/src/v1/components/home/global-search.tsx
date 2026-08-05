@@ -77,7 +77,7 @@ export interface GlobalSearchProps {
 export function GlobalSearch({ placeholder, onSelect }: GlobalSearchProps) {
   const { t } = useTranslation("home");
   const resolvedPlaceholder =
-    placeholder ?? t("homeV1.search.placeholder", { count: INTEGRATIONS_STAT_VALUE });
+    placeholder ?? t("homeV1.search.placeholder", { total: INTEGRATIONS_STAT_VALUE });
   const [query, setQuery] = useState<string>(() => {
     if (typeof window === "undefined") return "";
     try {

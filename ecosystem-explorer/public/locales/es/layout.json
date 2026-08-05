@@ -29,7 +29,7 @@
       "homeAriaLabel": "OpenTelemetry - Inicio",
       "toggleAriaLabel": "Alternar navegación",
       "primaryAriaLabel": "Principal",
-      "docs": "Docs"
+      "docs": "Documentación"
     },
     "subNav": {
       "breadcrumbAriaLabel": "Ruta de navegación"

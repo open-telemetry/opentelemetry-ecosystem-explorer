@@ -35,7 +35,7 @@
     "ecosystems": {
       "title": "Ecosystems",
       "lead": "Browse the projects that make up OpenTelemetry.",
-      "viewAll": "View all projects ->",
+      "viewAll": "View all projects →",
       "active": {
         "collector": {
           "name": "OpenTelemetry Collector",
@@ -106,7 +106,7 @@
       }
     },
     "search": {
-      "placeholder": "Search {{count}} components, instrumentations, vendors…",
+      "placeholder": "Search {{total}} components, instrumentations, vendors…",
       "ariaLabel": "Search the ecosystem",
       "resultsAriaLabel": "Search results",
       "tryLabel": "Try:",
