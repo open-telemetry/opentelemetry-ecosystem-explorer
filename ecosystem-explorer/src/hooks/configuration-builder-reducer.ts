@@ -35,32 +35,56 @@ export const INITIAL_STATE: ConfigurationBuilderState = {
 
 const INSTRUMENTATION_PATH = ["distribution", "javaagent", "instrumentation"];
 
-function readInstrumentationLists(values: ConfigValues): {
-  enabled: string[];
-  disabled: string[];
-} {
-  const current = getByPath(values, INSTRUMENTATION_PATH);
-  const inst = isPlainObject(current) ? current : {};
-  return {
-    enabled: Array.isArray(inst.enabled) ? (inst.enabled as string[]) : [],
-    disabled: Array.isArray(inst.disabled) ? (inst.disabled as string[]) : [],
-  };
-}
+function cleanInstrumentation(values: ConfigValues): ConfigValues {
+  if (!values.distribution || typeof values.distribution !== "object") return values;
+  const dist = { ...values.distribution } as ConfigValues;
+  if (!dist.javaagent || typeof dist.javaagent !== "object") return values;
+  const ja = { ...dist.javaagent } as ConfigValues;
+  if (!ja.instrumentation || typeof ja.instrumentation !== "object") return values;
 
-function withInstrumentationLists(
-  values: ConfigValues,
-  nextEnabled: string[],
-  nextDisabled: string[]
-): ConfigValues {
-  if (nextEnabled.length === 0 && nextDisabled.length === 0) {
-    const { distribution: _omit, ...rest } = values;
-    void _omit;
-    return rest;
+  const inst = { ...ja.instrumentation } as ConfigValues;
+  let changed = false;
+
+  for (const [moduleName, moduleVal] of Object.entries(inst)) {
+    if (moduleVal && typeof moduleVal === "object" && !Array.isArray(moduleVal)) {
+      const modObj = { ...moduleVal } as ConfigValues;
+      if (modObj.enabled === null || modObj.enabled === undefined) {
+        delete modObj.enabled;
+        changed = true;
+      }
+      if (Object.keys(modObj).length === 0) {
+        delete inst[moduleName];
+        changed = true;
+      } else {
+        inst[moduleName] = modObj;
+      }
+    } else if (moduleVal === null || moduleVal === undefined) {
+      delete inst[moduleName];
+      changed = true;
+    }
   }
-  const inst: ConfigValues = {};
-  if (nextEnabled.length > 0) inst.enabled = nextEnabled;
-  if (nextDisabled.length > 0) inst.disabled = nextDisabled;
-  return setByPath(values, INSTRUMENTATION_PATH, inst);
+
+  if (!changed && Object.keys(inst).length > 0) return values;
+
+  if (Object.keys(inst).length === 0) {
+    delete ja.instrumentation;
+  } else {
+    ja.instrumentation = inst;
+  }
+
+  if (Object.keys(ja).length === 0) {
+    delete dist.javaagent;
+  } else {
+    dist.javaagent = ja;
+  }
+
+  if (Object.keys(dist).length === 0) {
+    const copy = { ...values };
+    delete copy.distribution;
+    return copy;
+  } else {
+    return { ...values, distribution: dist };
+  }
 }
 
 export function configurationBuilderReducer(
@@ -74,7 +98,7 @@ export function configurationBuilderReducer(
       delete remainingErrors[pathKey];
       return {
         ...state,
-        values: setByPath(state.values, action.path, action.value),
+        values: cleanInstrumentation(setByPath(state.values, action.path, action.value)),
         validationErrors: remainingErrors,
         isDirty: true,
       };
@@ -201,36 +225,42 @@ export function configurationBuilderReducer(
       return { ...state, values: newValues, enabledSections: newEnabled, isDirty: true };
     }
 
-    case "PRUNE_INSTRUMENTATIONS": {
-      const { enabled, disabled } = readInstrumentationLists(state.values);
-      if (enabled.length === 0 && disabled.length === 0) return state;
-      const valid = new Set(action.validModules);
-      const nextEnabled = enabled.filter((m) => valid.has(m));
-      const nextDisabled = disabled.filter((m) => valid.has(m));
-      if (nextEnabled.length === enabled.length && nextDisabled.length === disabled.length) {
-        return state;
+    case "MERGE_DEFAULTS": {
+      // Merge-safe bulk add: write each entry's default only where the leaf is
+      // currently undefined, so values the user has already set are preserved.
+      // Each setByPath builds on the previous result, so entries sharing a
+      // parent path accumulate instead of clobbering each other.
+      let values = state.values;
+      let changed = false;
+      for (const { path, value } of action.entries) {
+        if (getByPath(values, path) !== undefined) continue;
+        values = setByPath(values, path, value);
+        changed = true;
       }
-      return {
-        ...state,
-        values: withInstrumentationLists(state.values, nextEnabled, nextDisabled),
-      };
+      if (!changed) return state;
+      return { ...state, values, isDirty: true };
     }
 
-    case "SET_CUSTOMIZATION": {
-      const { enabled, disabled } = readInstrumentationLists(state.values);
-      const remainingEnabled = enabled.filter((m) => m !== action.module);
-      const remainingDisabled = disabled.filter((m) => m !== action.module);
-      let nextEnabled = remainingEnabled;
-      let nextDisabled = remainingDisabled;
-      if (action.status === "enabled") {
-        nextEnabled = [...remainingEnabled, action.module].sort();
-      } else if (action.status === "disabled") {
-        nextDisabled = [...remainingDisabled, action.module].sort();
+    case "PRUNE_INSTRUMENTATIONS": {
+      const current = getByPath(state.values, INSTRUMENTATION_PATH);
+      if (!isPlainObject(current)) return state;
+
+      const valid = new Set(action.validModules);
+      let changed = false;
+      const nextInst: ConfigValues = { ...current };
+
+      for (const key of Object.keys(nextInst)) {
+        if (!valid.has(key)) {
+          delete nextInst[key];
+          changed = true;
+        }
       }
+
+      if (!changed) return state;
+
       return {
         ...state,
-        values: withInstrumentationLists(state.values, nextEnabled, nextDisabled),
-        isDirty: true,
+        values: cleanInstrumentation(setByPath(state.values, INSTRUMENTATION_PATH, nextInst)),
       };
     }
 

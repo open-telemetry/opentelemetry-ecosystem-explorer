@@ -105,6 +105,26 @@ describe("YamlCodeBlock", () => {
     expect(distributionSection?.className).toContain("border-l-transparent");
   });
 
+  it("renders spring_starter-style wrapped output (otel: wrapper + indented sections)", () => {
+    const structured = {
+      header: "",
+      fileFormat: 'otel:\n  file_format: "1.0"\n',
+      sections: [
+        {
+          key: "distribution",
+          content: "# Distribution\ndistribution:\n  spring_starter:\n    instrumentation: {}\n"
+            .split("\n")
+            .map((l, i, arr) => (l === "" || i === arr.length - 1 ? l : `  ${l}`))
+            .join("\n"),
+        },
+      ],
+    };
+    const { container } = render(<YamlCodeBlock structured={structured} activePreviewKey={null} />);
+    const preContent = container.querySelector("pre")?.textContent ?? "";
+    expect(preContent).toContain("otel:");
+    expect(preContent).toContain("spring_starter:");
+  });
+
   it("forwards className to the <pre> element", () => {
     const structured = makeStructured();
     const { container } = render(

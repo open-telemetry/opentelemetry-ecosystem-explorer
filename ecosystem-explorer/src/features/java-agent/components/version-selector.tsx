@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { ChevronDown } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { VersionInfo } from "@/types/javaagent";
 
 interface VersionSelectorProps {
@@ -30,13 +31,15 @@ export function VersionSelector({
   currentVersion,
   onVersionChange,
   disabled = false,
-  label = "Version",
+  label,
   id = "version-select",
 }: VersionSelectorProps) {
+  const { t } = useTranslation("java-agent");
+  const resolvedLabel = label ?? t("versionSelector.label");
   return (
     <div className="ml-auto flex items-center gap-2">
       <label htmlFor={id} className="text-muted-foreground text-sm font-medium whitespace-nowrap">
-        {label}
+        {resolvedLabel}
       </label>
 
       <div className="relative min-w-fit">

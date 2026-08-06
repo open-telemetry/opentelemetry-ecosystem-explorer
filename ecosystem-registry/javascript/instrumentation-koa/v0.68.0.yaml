@@ -1,0 +1,29 @@
+component_owners: []
+description: OpenTelemetry instrumentation for `koa` http web application framework
+in_auto_instrumentations_node: true
+name: instrumentation-koa
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-koa'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-koa
+supported_versions:
+- package: '@koa/router'
+  source: README.md
+  version_range: '>=8.0.0'
+- package: koa
+  source: README.md
+  version_range: '>=2.0.0 <4'
+tested_versions:
+- mode: latest-minors
+  package: '@koa/router'
+  range: '>=13 <14'
+  source: .tav.yml
+- mode: latest-minors
+  package: '@koa/router'
+  range: '>=8.0.0 <13'
+  source: .tav.yml
+- mode: latest-minors
+  package: koa
+  range: '>=2.7.0 <4'
+  source: .tav.yml
+version: 0.68.0

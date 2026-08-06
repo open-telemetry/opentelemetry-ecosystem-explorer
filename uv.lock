@@ -9,6 +9,7 @@ members = [
     "dotnet-instrumentation-watcher",
     "explorer-db-builder",
     "java-instrumentation-watcher",
+    "js-instrumentation-watcher",
     "opentelemetry-ecosystem-explorer",
     "v1-registry-sync",
     "watcher-common",
@@ -376,14 +377,14 @@ wheels = [
 
 [[package]]
 name = "gitpython"
-version = "3.1.50"
+version = "3.1.58"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "gitdb" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/33/f6/354ae6491228b5eb40e10d89c4d13c651fe1cf7556e35ebdded50cff57ce/gitpython-3.1.50.tar.gz", hash = "sha256:80da2d12504d52e1f998772dc5baf6e553f8d2fcfe1fcc226c9d9a2ee3372dcc", size = 219798, upload-time = "2026-05-06T04:01:26.571Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/26/d6/5f358ff283325580c2003a6d953aea18cfe10ae87b46f5ebc80fa3a386dc/gitpython-3.1.58.tar.gz", hash = "sha256:621416df10ef3fd0e19fabf9172ddeed0fa704d353d04f194eec56a625a95b22", size = 228498, upload-time = "2026-08-04T15:05:49.47Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/20/7a/1c6e3562dfd8950adbb11ffbc65d21e7c89d01a6e4f137fa981056de25c5/gitpython-3.1.50-py3-none-any.whl", hash = "sha256:d352abe2908d07355014abdd21ddf798c2a961469239afec4962e9da884858f9", size = 212507, upload-time = "2026-05-06T04:01:23.799Z" },
+    { url = "https://files.pythonhosted.org/packages/ec/0c/9d8752098bc442f0726e64aa6135940b3a96809915d1aa4206c1bb97881d/gitpython-3.1.58-py3-none-any.whl", hash = "sha256:d331e722577f0fd7fc1f857419b3ecc07af66282b933d2a4d95f84a042fdd50f", size = 220183, upload-time = "2026-08-04T15:05:48.025Z" },
 ]
 
 [[package]]
@@ -442,6 +443,30 @@ requires-dist = [
 provides-extras = ["dev"]
 
 [[package]]
+name = "js-instrumentation-watcher"
+version = "0.1.0"
+source = { editable = "ecosystem-automation/js-instrumentation-watcher" }
+dependencies = [
+    { name = "pyyaml" },
+    { name = "watcher-common" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "pytest" },
+    { name = "pytest-cov" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
+    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.1.0" },
+    { name = "pyyaml", specifier = ">=6.0.1" },
+    { name = "watcher-common", editable = "ecosystem-automation/watcher-common" },
+]
+provides-extras = ["dev"]
+
+[[package]]
 name = "nodeenv"
 version = "1.10.0"
 source = { registry = "https://pypi.org/simple" }
@@ -460,6 +485,7 @@ dependencies = [
     { name = "dotnet-instrumentation-watcher" },
     { name = "explorer-db-builder" },
     { name = "java-instrumentation-watcher" },
+    { name = "js-instrumentation-watcher" },
     { name = "v1-registry-sync" },
 ]
 
@@ -478,6 +504,7 @@ requires-dist = [
     { name = "dotnet-instrumentation-watcher", editable = "ecosystem-automation/dotnet-instrumentation-watcher" },
     { name = "explorer-db-builder", editable = "ecosystem-automation/explorer-db-builder" },
     { name = "java-instrumentation-watcher", editable = "ecosystem-automation/java-instrumentation-watcher" },
+    { name = "js-instrumentation-watcher", editable = "ecosystem-automation/js-instrumentation-watcher" },
     { name = "v1-registry-sync", editable = "ecosystem-automation/v1-registry-sync" },
 ]
 

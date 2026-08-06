@@ -612,6 +612,167 @@ describe("generateYaml", () => {
     expect(output).toContain("endpoint: http://localhost:4318");
   });
 
+  describe("spring_starter target", () => {
+    const distributionSchema: ConfigNode = {
+      controlType: "group",
+      key: "root",
+      label: "Root",
+      path: "",
+      children: [
+        {
+          controlType: "text_input",
+          key: "file_format",
+          label: "File Format",
+          path: "file_format",
+          required: true,
+        },
+        {
+          // Matches the real schema: `distribution` is a key_value_map, not a
+          // group, so it flows through the non-group emit branch. Using "group"
+          // here would mask the missing rename in that branch.
+          controlType: "key_value_map",
+          key: "distribution",
+          label: "Distribution",
+          path: "distribution",
+        },
+        {
+          controlType: "group",
+          key: "resource",
+          label: "Resource",
+          path: "resource",
+          children: [],
+        },
+      ],
+    };
+
+    const distributionState: ConfigurationBuilderState = {
+      version: "1.0.0",
+      values: {
+        distribution: {
+          javaagent: { instrumentation: { enabled: ["jdbc"] } },
+        },
+        resource: { service_name: "demo" },
+      },
+      enabledSections: { distribution: true, resource: true },
+      validationErrors: {},
+      isDirty: false,
+    };
+
+    it("wraps body under top-level `otel:` and renames distribution.javaagent → distribution.spring_starter", () => {
+      const output = generateYaml(distributionState, distributionSchema, {
+        header: "",
+        target: "spring_starter",
+      });
+
+      expect(output).toMatch(/^otel:$/m);
+      expect(output).toMatch(/^ {2}file_format: "1\.0"$/m);
+      expect(output).toMatch(/^ {2}distribution:$/m);
+      expect(output).toMatch(/^ {4}spring_starter:$/m);
+      expect(output).toMatch(/^ {2}resource:$/m);
+      expect(output).toMatch(/^ {4}service_name: demo$/m);
+      // Comments are indented alongside their section body.
+      expect(output).toMatch(/^ {2}# Distribution$/m);
+      // Old key must not leak.
+      expect(output).not.toMatch(/javaagent/);
+    });
+
+    it("emits a spring-specific default header (no agent -Dotel.config.file line)", () => {
+      const output = generateYaml(distributionState, distributionSchema, {
+        target: "spring_starter",
+        javaAgentVersion: "2.30.0",
+      });
+      expect(output).toContain("# OpenTelemetry Spring Boot starter configuration");
+      expect(output).toContain("# Paste at the top level of your Spring Boot application.yaml");
+      expect(output).toContain("# Requires the OpenTelemetry Spring Boot starter >= 2.26.0.");
+      expect(output).toContain(
+        "# Docs: https://opentelemetry.io/docs/zero-code/java/spring-boot-starter/declarative-configuration/"
+      );
+      // The agent-oriented guidance must not appear for spring_starter output.
+      expect(output).not.toContain("-Dotel.config.file");
+      expect(output).not.toContain("# OpenTelemetry SDK Configuration");
+    });
+
+    it("keeps the agent-oriented default header for the javaagent target", () => {
+      const output = generateYaml(distributionState, distributionSchema, {
+        javaAgentVersion: "2.30.0",
+      });
+      expect(output).toContain("# OpenTelemetry SDK Configuration");
+      expect(output).toContain("-Dotel.config.file");
+      expect(output).not.toContain("Spring Boot starter configuration");
+    });
+
+    it("default target is javaagent and emits no `otel:` wrapper or rename", () => {
+      const output = generateYaml(distributionState, distributionSchema, { header: "" });
+      expect(output).not.toMatch(/^otel:$/m);
+      expect(output).toMatch(/^ {2}javaagent:$/m);
+      expect(output).not.toMatch(/spring_starter/);
+    });
+
+    const placeholderSchema: ConfigNode = {
+      controlType: "group",
+      key: "root",
+      label: "Root",
+      path: "",
+      children: [
+        {
+          controlType: "group",
+          key: "resource",
+          label: "Resource",
+          path: "resource",
+          children: [],
+        },
+      ],
+    };
+
+    const placeholderState: ConfigurationBuilderState = {
+      version: "1.0.0",
+      values: {
+        resource: {
+          service_name: "${OTEL_SERVICE_NAME:-my-service}",
+          endpoint: "${OTEL_EXPORTER_OTLP_ENDPOINT:-http://localhost:4318}/v1/traces",
+          bare: "${OTEL_RESOURCE_ATTRIBUTES}",
+          env_prefixed: "${env:OTEL_SERVICE_NAME:-fallback}",
+          sys_prefixed: "${sys:otel.service.name:-fallback}",
+        },
+      },
+      enabledSections: { resource: true },
+      validationErrors: {},
+      isDirty: false,
+    };
+
+    it("rewrites `${VAR:-default}` to Spring's `${VAR:default}` for spring_starter target", () => {
+      const output = generateYaml(placeholderState, placeholderSchema, {
+        header: "",
+        target: "spring_starter",
+      });
+      expect(output).toContain("${OTEL_SERVICE_NAME:my-service}");
+      expect(output).toContain("${OTEL_EXPORTER_OTLP_ENDPOINT:http://localhost:4318}/v1/traces");
+      // Bare placeholders without a default are unchanged.
+      expect(output).toContain("${OTEL_RESOURCE_ATTRIBUTES}");
+      // The SDK syntax must not survive in spring_starter output.
+      expect(output).not.toContain(":-my-service");
+      expect(output).not.toContain(":-http://localhost:4318");
+    });
+
+    it("leaves SDK-prefixed `${env:...:-default}` / `${sys:...:-default}` untouched for spring_starter", () => {
+      const output = generateYaml(placeholderState, placeholderSchema, {
+        header: "",
+        target: "spring_starter",
+      });
+      // env:/sys: forms carry semantics that Spring does not have; preserve so
+      // the user notices the mismatch rather than silently losing info.
+      expect(output).toContain("${env:OTEL_SERVICE_NAME:-fallback}");
+      expect(output).toContain("${sys:otel.service.name:-fallback}");
+    });
+
+    it("leaves `${VAR:-default}` unchanged for javaagent target", () => {
+      const output = generateYaml(placeholderState, placeholderSchema, { header: "" });
+      expect(output).toContain("${OTEL_SERVICE_NAME:-my-service}");
+      expect(output).toContain("${OTEL_EXPORTER_OTLP_ENDPOINT:-http://localhost:4318}/v1/traces");
+      expect(output).not.toContain("${OTEL_SERVICE_NAME:my-service}");
+    });
+  });
+
   describe("generateYamlSections", () => {
     it("returns structured sections mapping to expected keys and content", () => {
       const state: ConfigurationBuilderState = {

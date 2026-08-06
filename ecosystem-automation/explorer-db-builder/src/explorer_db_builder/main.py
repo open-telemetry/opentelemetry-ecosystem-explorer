@@ -26,13 +26,19 @@ from explorer_db_builder.collector_builder import run_collector_builder
 from explorer_db_builder.configuration_aggregator import build_global_configurations
 from explorer_db_builder.configuration_builder import run_configuration_builder
 from explorer_db_builder.database_writer import DatabaseWriter
-from explorer_db_builder.declarative_name_corrections import apply_declarative_name_corrections
+from explorer_db_builder.declarative_name_corrections import (
+    apply_declarative_name_corrections,
+    backfill_underdocumented_configs,
+    normalize_config_descriptions,
+)
+from explorer_db_builder.ecosystem_stats import count_unique_java_library_names
 from explorer_db_builder.instrumentation_transformer import (
     make_list_instrumentation,
     transform_instrumentation_format,
 )
 from explorer_db_builder.metadata_backfiller import backfill_metadata
 from explorer_db_builder.semconv_enricher import SemconvEnricher
+from explorer_db_builder.telemetry_when_corrections import apply_telemetry_when_corrections
 
 logger = logging.getLogger(__name__)
 
@@ -177,20 +183,36 @@ def run_javaagent_builder(
         # Pre-load README maps for all versions to enable augmentation and backfilling
         readme_maps = {v: inventory_manager.load_library_readme_map(v) for v in versions}
 
-        # Publish all READMEs to the database
+        # Publish all READMEs to the database. Only those that actually landed get a
+        # markdown_hash below - sanitizing can leave a README empty, and stamping one
+        # that was never written would point the frontend at a missing file.
+        published_readmes: dict[Version, dict[str, str]] = {}
         for version, readme_map in readme_maps.items():
+            published = {}
             for library_name, markdown_hash in readme_map.items():
                 content = inventory_manager.load_library_readme_content(version, library_name, markdown_hash)
-                if content is not None:
-                    db_writer.write_markdown(library_name, markdown_hash, content)
+                if content is not None and db_writer.write_markdown(library_name, markdown_hash, content):
+                    published[library_name] = markdown_hash
+            published_readmes[version] = published
 
         def load_and_augment_inventory(version: Version) -> dict:
             inventory = inventory_manager.load_versioned_inventory(version)
-            readme_map = readme_maps.get(version, {})
+            readme_map = published_readmes.get(version, {})
 
-            # Correct known-bad declarative_name values before backfill and aggregation so the
-            # fix lands in both the per-version files and global-configurations.json.
+            # Resolve catalog/ref file formats (e.g. 0.6) to the inline 0.5 shape up front so every
+            # downstream correction/backfill step operates on inline `configurations`/`metrics`
+            # regardless of the registry file format. Corrections that walk inline configs were
+            # silent no-ops for 0.6 when this transform still ran later in process_version.
+            inventory = transform_instrumentation_format(inventory)
+
+            # Correct known-bad declarative_name values (and backfill missing config names) before
+            # backfill and aggregation so the fix lands in both the per-version files and
+            # global-configurations.json.
             apply_declarative_name_corrections(inventory)
+            # Correct known-bad telemetry when-conditions:
+            # - fold known test-harness artifact when-conditions back into "default"
+            # - move specific signals from "default" into their correct feature-gated when blocks
+            apply_telemetry_when_corrections(inventory, version)
 
             # Normalize an explicit "libraries": None / "custom": None (malformed or
             # partial inventory, since YAML `libraries:` parses as None) to [] up front.
@@ -220,6 +242,17 @@ def run_javaagent_builder(
             item_key="custom",
         )
 
+        # Pin reworded-but-unchanged config descriptions to their newest value across versions so
+        # cosmetic upstream rewordings of shared configs don't show as per-library changes in the
+        # release comparison. Runs after backfill (so config names are populated) and before both
+        # per-version writes and global-configurations aggregation. versions is newest-first.
+        normalize_config_descriptions([backfilled_inventories[v] for v in versions])
+
+        # Back-populate configs the agent supported before upstream documented them (e.g.
+        # url_template_rules, new in 2.29.1) into earlier versions, so they don't read as spuriously
+        # "added" in the release comparison.
+        backfill_underdocumented_configs([(v, backfilled_inventories[v]) for v in versions])
+
         # versions[0] is the latest release (the same version write_version_list
         # flags as is_latest), so the first processed version's instrumentations
         # feed the lightweight index.
@@ -235,8 +268,21 @@ def run_javaagent_builder(
         db_writer.write_version_list(versions, bundle_hashes)
         db_writer.write_index(latest_instrumentations)
 
+        # Incremental runs never overwrite the store, so files whose hash changed are left
+        # orphaned. Sweep them now that every version index (the reachability source) is on
+        # disk. Skipped after --clean, which already wiped everything.
+        if not clean:
+            db_writer.remove_orphans()
+
         global_configurations = build_global_configurations([backfilled_inventories[v] for v in versions])
         db_writer.write_global_configurations(global_configurations)
+
+        db_writer.write_ecosystem_stats(
+            {
+                "version_count": len(versions),
+                "library_count": count_unique_java_library_names([backfilled_inventories[v] for v in versions]),
+            }
+        )
 
         stats = db_writer.get_stats()
         total_mb = stats["total_bytes"] / (1024 * 1024)
@@ -263,12 +309,14 @@ def run_javaagent_builder(
         return 1
 
 
-def run_builder(clean: bool = False, ecosystem: str = "all") -> int:
+def run_builder(clean: bool = False, ecosystem: str = "all", collector_audit_report: Optional[str] = None) -> int:
     """Run the selected database builder pipelines.
 
     Args:
         clean: If True, wipe the output directories before building.
         ecosystem: Which pipeline to run: "javaagent", "configuration", "collector", or "all".
+        collector_audit_report: If set, the collector build writes a JSON report of
+            latest-release components missing a display_name to this path.
 
     Returns:
         0 if all selected pipelines succeed, 1 if any fail.
@@ -287,7 +335,7 @@ def run_builder(clean: bool = False, ecosystem: str = "all") -> int:
 
     if ecosystem in ("collector", "all"):
         logger.info("--- Collector ---")
-        results.append(run_collector_builder(clean=clean))
+        results.append(run_collector_builder(clean=clean, audit_report_path=collector_audit_report))
         logger.info("")
 
     return 1 if any(r != 0 for r in results) else 0
@@ -310,6 +358,15 @@ def main() -> None:
         default="all",
         help="Which ecosystem pipeline to run (default: all)",
     )
+    parser.add_argument(
+        "--collector-audit-report",
+        default=None,
+        metavar="PATH",
+        help=(
+            "Write a JSON report of latest-release collector components missing a "
+            "display_name to PATH. Only produced when the collector pipeline runs."
+        ),
+    )
 
     args = parser.parse_args()
 
@@ -320,7 +377,11 @@ def main() -> None:
     logger.info("=" * 60)
     logger.info("")
 
-    exit_code = run_builder(clean=args.clean, ecosystem=args.ecosystem)
+    exit_code = run_builder(
+        clean=args.clean,
+        ecosystem=args.ecosystem,
+        collector_audit_report=args.collector_audit_report,
+    )
     sys.exit(exit_code)
 
 

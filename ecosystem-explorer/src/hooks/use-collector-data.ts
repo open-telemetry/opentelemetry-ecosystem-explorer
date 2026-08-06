@@ -141,6 +141,58 @@ export function useCollectorComponents(version: string): DataState<IndexComponen
   return state;
 }
 
+/**
+ * The releases a single component appears in, newest first.
+ *
+ * Consumers that render per-version links must use this rather than
+ * `useCollectorVersions`, whose index covers every Collector release —
+ * including ones that predate the component and core-only patch releases that
+ * carry no contrib entries at all.
+ */
+export function useComponentVersions(distribution: string, name: string): DataState<string[]> {
+  const [state, setState] = useState<DataState<string[]>>({
+    data: null,
+    loading: true,
+    error: null,
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadData() {
+      if (!distribution || !name) {
+        setState({ data: null, loading: false, error: null });
+        return;
+      }
+
+      setState({ data: null, loading: true, error: null });
+
+      try {
+        const data = await collectorData.loadComponentVersions(distribution, name);
+        if (!cancelled) {
+          setState({ data, loading: false, error: null });
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setState({
+            data: null,
+            loading: false,
+            error: error instanceof Error ? error : new Error(String(error)),
+          });
+        }
+      }
+    }
+
+    loadData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [distribution, name]);
+
+  return state;
+}
+
 export function useCollectorComponent(
   distribution: string,
   name: string,
@@ -185,6 +237,56 @@ export function useCollectorComponent(
       cancelled = true;
     };
   }, [distribution, name, version]);
+
+  return state;
+}
+
+export function useComponentReadme(
+  name: string,
+  markdownHash: string | null | undefined
+): DataState<string> {
+  // Starts in loading, not idle - if this started false, a consumer would
+  // briefly render its "no readme" state before the fetch even begins. See
+  // the identical fix on the javaagent side (useLibraryReadme).
+  const [state, setState] = useState<DataState<string>>({
+    data: null,
+    loading: true,
+    error: null,
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadData() {
+      if (!name || !markdownHash) {
+        setState({ data: null, loading: false, error: null });
+        return;
+      }
+
+      setState({ data: null, loading: true, error: null });
+
+      try {
+        const data = await collectorData.loadComponentReadme(name, markdownHash);
+        if (!cancelled) {
+          setState({ data, loading: false, error: null });
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setState({
+            data: null,
+            loading: false,
+            error: error instanceof Error ? error : new Error(String(error)),
+          });
+        }
+      }
+    }
+
+    loadData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [name, markdownHash]);
 
   return state;
 }

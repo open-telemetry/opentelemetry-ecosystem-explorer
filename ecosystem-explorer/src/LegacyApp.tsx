@@ -42,6 +42,12 @@ const CollectorDetailPage = lazy(() =>
     default: m.CollectorDetailPage,
   }))
 );
+// v1-only route: the diff page has no legacy counterpart, so both route tables
+// import the v1 component (same pattern as /_dev/components below). Kept in
+// sync per the route-table mirror rule until this file is deleted.
+const CollectorDiffPage = lazy(() =>
+  import("@/v1/features/detail/diff-page").then((m) => ({ default: m.CollectorDiffPageV1 }))
+);
 const NotFoundPage = lazy(() =>
   import("@/features/not-found/not-found-page").then((m) => ({ default: m.NotFoundPage }))
 );
@@ -104,27 +110,22 @@ export function LegacyApp() {
                 element={<LegacyNameVersionRedirect />}
               />
               <Route path="/java-agent/configuration" element={<JavaConfigurationListPage />} />
-              {isEnabled("JAVA_RELEASE_COMPARISON") && (
-                <Route path="/java-agent/releases" element={<JavaReleaseComparisonPage />} />
-              )}
+              <Route path="/java-agent/releases" element={<JavaReleaseComparisonPage />} />
               <Route
                 path="/java-agent/configuration/builder"
                 element={<ConfigurationBuilderPage />}
               />
               <Route path="/collector" element={<CollectorPage />} />
-              {isEnabled("COLLECTOR_PAGE") && (
-                <>
-                  <Route path="/collector/components" element={<CollectorComponentsPage />} />
-                  <Route
-                    path="/collector/components/:version"
-                    element={<CollectorComponentsPage />}
-                  />
-                  <Route
-                    path="/collector/components/:distribution/:name"
-                    element={<CollectorDetailPage />}
-                  />
-                </>
-              )}
+              <Route path="/collector/components" element={<CollectorComponentsPage />} />
+              <Route path="/collector/components/:version" element={<CollectorComponentsPage />} />
+              <Route
+                path="/collector/components/:distribution/:name"
+                element={<CollectorDetailPage />}
+              />
+              <Route
+                path="/collector/components/:distribution/:name/diff"
+                element={<CollectorDiffPage />}
+              />
               <Route path="/about" element={<AboutPage />} />
               {isEnabled("DEV_SHOWCASE") && (
                 <Route path="/_dev/components" element={<DevComponentsPage />} />

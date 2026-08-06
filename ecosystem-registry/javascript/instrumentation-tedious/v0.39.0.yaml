@@ -1,0 +1,41 @@
+component_owners: []
+description: OpenTelemetry instrumentation for `tedious` database client for Microsoft
+  SQL Server
+in_auto_instrumentations_node: true
+name: instrumentation-tedious
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-tedious'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-tedious
+supported_versions: []
+tested_versions:
+- mode: latest-majors
+  package: tedious
+  range: '>=1.11.0 <2'
+  source: .tav.yml
+- mode: latest-majors
+  package: tedious
+  range: '>=12 <17'
+  source: .tav.yml
+- mode: latest-majors
+  package: tedious
+  range: '>=17 <18'
+  source: .tav.yml
+- mode: latest-majors
+  package: tedious
+  range: '>=18 <19'
+  source: .tav.yml
+- mode: latest-majors
+  package: tedious
+  range: '>=19 <20'
+  source: .tav.yml
+- exclude: 4.0.0
+  mode: latest-majors
+  package: tedious
+  range: '>=2 <12'
+  source: .tav.yml
+- mode: latest-majors
+  package: tedious
+  range: '>=20 <21'
+  source: .tav.yml
+version: 0.39.0

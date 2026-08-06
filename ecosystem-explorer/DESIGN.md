@@ -4,14 +4,19 @@ This document outlines the design principles, patterns, and tokens used in the O
 Ecosystem Explorer. It serves as a guide for AI agents and developers working on UI elements to
 ensure visual consistency and quality.
 
-> **Note:** This describes the **legacy** dark-first explorer (the current default UI). A redesign
-> is underway behind the `V1_REDESIGN` feature flag — see `DESIGN_V1.md` for the v1 design system,
-> which will eventually replace this document. The two share the same brand primitives
-> (`--otel-blue-hsl` / `--otel-orange-hsl`) defined in `src/styles/tokens.css`.
+> **Note:** This describes the **legacy** explorer (the current default UI). Its visual language
+> originated dark-first, but the legacy app now ships a light/dark/auto theme switcher in the
+> header, and `src/styles/tokens.css` defines both `[data-theme="dark"]` and `[data-theme="light"]`
+> token sets. The token values quoted below are the dark-theme values; light-theme equivalents live
+> alongside them in `tokens.css`. A redesign is underway behind the `V1_REDESIGN` feature flag — see
+> `DESIGN_V1.md` for the v1 design system, which will eventually replace this document. The two
+> share the same brand primitives (`--otel-blue-hsl` / `--otel-orange-hsl`) defined in
+> `src/styles/tokens.css`.
 
 ## Overview
 
-The Ecosystem Explorer uses a **dark-first design system** optimized for readability and visual
+The Ecosystem Explorer's design language **originated dark-first** and now supports both light and
+dark themes (with an auto mode that follows the OS preference), optimized for readability and visual
 hierarchy. The design emphasizes:
 
 - **Depth through subtlety** - Layered backgrounds, soft shadows, and ambient glows
@@ -50,14 +55,20 @@ All animations follow a unified timing system:
 - Complex animations: `400ms ease-in-out`
 - Use `transform` and `opacity` for performant animations
 
-### 4. Dark-First Design
+### 4. Theming (Dark and Light)
 
-Optimized for extended viewing in low-light environments:
+The system is theme-aware via `[data-theme]` token sets, with a header switcher offering light,
+dark, and auto modes. The dark theme — the original design basis — is optimized for extended viewing
+in low-light environments:
 
 - Deep navy base (`--background-hsl`)
 - Bright, high-contrast text (`--foreground-hsl`)
 - Reduced blue light through warm accent colors
 - Subtle glows instead of harsh borders
+
+The light theme reuses the same semantic role tokens (`--primary-hsl`, `--secondary-hsl`, the
+surface and text tokens) with light-mode values defined under `[data-theme="light"]` in
+`src/styles/tokens.css`, so components styled with the tokens adapt automatically.
 
 ---
 
@@ -123,23 +134,31 @@ structural vs. accent role (dark-theme values shown):
 
 ## Depth and Elevation
 
-### Shadow Scale
+### Shadows
 
-Shadows establish elevation and focus:
+Shadows establish elevation and focus. There are no `--shadow-*` custom properties; use Tailwind's
+built-in shadow utilities (`shadow-sm` / `shadow-md` / `shadow-lg`) or an arbitrary value when a
+specific shadow is needed, e.g.:
 
-```css
---shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.05);
---shadow-md: 0 4px 6px -1px hsl(0 0% 0% / 0.1);
---shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.1);
+```tsx
+<div className="shadow-[0_4px_6px_-1px_hsl(0_0%_0%_/_0.1)]" />
 ```
 
 ### Glow Effects
 
-Glows create ambient lighting and highlight interactive elements:
+Glows create ambient lighting and highlight interactive elements. They are likewise applied with
+arbitrary Tailwind shadow values built from the brand tokens rather than dedicated `--glow-*`
+properties:
 
-```css
---glow-primary: 0 0 40px hsl(var(--primary-hsl) / 0.15);
---glow-secondary: 0 0 40px hsl(var(--secondary-hsl) / 0.15);
+```tsx
+{
+  /* Primary glow */
+}
+<div className="shadow-[0_0_40px_hsl(var(--primary-hsl)/0.15)]" />;
+{
+  /* Secondary glow */
+}
+<div className="shadow-[0_0_40px_hsl(var(--secondary-hsl)/0.15)]" />;
 ```
 
 **Usage patterns:**
@@ -171,7 +190,7 @@ Standard card pattern for elevated content:
 <div className="border-border bg-card hover:bg-card-secondary relative overflow-hidden rounded-lg border p-6 transition-all duration-300">
   {/* Grid pattern background */}
   <div className="absolute inset-0 opacity-20">
-    <div className="grid-pattern" />
+    <div className="h-full w-full bg-[linear-gradient(hsl(var(--color-border))_1px,transparent_1px),linear-gradient(90deg,hsl(var(--color-border))_1px,transparent_1px)] bg-[size:20px_20px]" />
   </div>
 
   {/* Content */}

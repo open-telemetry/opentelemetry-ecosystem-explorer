@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 import { useState, useCallback, useMemo, type JSX } from "react";
-import type { InstrumentationData, InstrumentationModule } from "@/types/javaagent";
+import { CopyPlus } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { useSectionExpansion } from "./section-expansion-context";
+import type { InstrumentationListEntry, InstrumentationModule } from "@/types/javaagent";
 import { Loader } from "@/components/ui/loader";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
 import {
@@ -23,11 +26,18 @@ import {
 } from "@/hooks/use-customization-status";
 import { useCustomizedModules } from "@/hooks/use-customized-modules";
 import { groupByModule } from "@/lib/normalize-instrumentation";
+import { buildInstrumentationDefaultEntries } from "@/lib/instrumentation-default-entries";
+import type { DeclarativeScope } from "@/lib/declarative-name";
 import { SectionCardShell } from "./section-card-shell";
 import { InstrumentationRow } from "./instrumentation-row";
+import { HeaderActionButton } from "./preview-card";
+
+// "Add all configs" includes every scope; general.* maps to a real, editable
+// instrumentation/development.general.* path (see the plan §9.1).
+const ALL_SCOPES: DeclarativeScope[] = ["general", "common", "owned"];
 
 export interface InstrumentationBrowserProps {
-  instrumentations: InstrumentationData[] | null;
+  instrumentations: InstrumentationListEntry[] | null;
   loading: boolean;
   error: Error | null;
   search: string;
@@ -43,7 +53,8 @@ export function InstrumentationBrowser({
   statusFilter,
   onJumpToGeneral,
 }: InstrumentationBrowserProps): JSX.Element {
-  const { setCustomization } = useConfigurationBuilder();
+  const { setCustomization, mergeDefaults } = useConfigurationBuilder();
+  const { t } = useTranslation("java-agent");
   const customizationMap = useCustomizationStatusMap();
 
   const modules = useMemo<InstrumentationModule[]>(
@@ -51,19 +62,52 @@ export function InstrumentationBrowser({
     [instrumentations]
   );
 
+  // Built from the full module list (all modules, not the active filter) so
+  // "Add all configs" always adds every instrumentation config option.
+  const defaultEntries = useMemo(
+    () => buildInstrumentationDefaultEntries(modules, { includeScopes: ALL_SCOPES }),
+    [modules]
+  );
+
   const customizedSet = useCustomizedModules(modules);
   const customizationCount = customizedSet.size;
 
+  const { bulkAction, overrides, setOverride } = useSectionExpansion();
+
   const [expandedSet, setExpandedSet] = useState<Set<string>>(() => new Set());
 
-  const toggleExpand = useCallback((name: string) => {
-    setExpandedSet((prev) => {
-      const next = new Set(prev);
-      if (next.has(name)) next.delete(name);
-      else next.add(name);
-      return next;
-    });
-  }, []);
+  const resolvedExpandedSet = useMemo(() => {
+    if (bulkAction === "expand") {
+      const all = new Set(modules.map((m) => m.name));
+      // apply individual overrides on top
+      for (const [key, val] of Object.entries(overrides)) {
+        if (!val) all.delete(key);
+      }
+      return all;
+    }
+    if (bulkAction === "collapse") {
+      const overrideExpanded = new Set<string>();
+      for (const [key, val] of Object.entries(overrides)) {
+        if (val) overrideExpanded.add(key);
+      }
+      return overrideExpanded;
+    }
+    return expandedSet;
+  }, [bulkAction, overrides, modules, expandedSet]);
+
+  const toggleExpand = useCallback(
+    (name: string) => {
+      const currentlyExpanded = resolvedExpandedSet.has(name);
+      setOverride(name, !currentlyExpanded);
+      setExpandedSet((prev) => {
+        const next = new Set(prev);
+        if (next.has(name)) next.delete(name);
+        else next.add(name);
+        return next;
+      });
+    },
+    [resolvedExpandedSet, setOverride]
+  );
 
   const trimmedSearch = search.trim();
   const filtered = useMemo(() => {
@@ -74,13 +118,6 @@ export function InstrumentationBrowser({
       return true;
     });
   }, [modules, customizedSet, trimmedSearch, statusFilter]);
-
-  const handleAddCustomization = useCallback(
-    (m: InstrumentationModule) => {
-      setCustomization(m.name, m.defaultDisabled ? "enabled" : "disabled");
-    },
-    [setCustomization]
-  );
 
   const handleSetEnabled = useCallback(
     (name: string, enabled: boolean) => {
@@ -96,34 +133,50 @@ export function InstrumentationBrowser({
     [setCustomization]
   );
 
+  const handleAddAll = useCallback(() => {
+    if (defaultEntries.length === 0) return;
+    const ok = window.confirm(
+      t("builder.browser.addAll.confirm", { count: defaultEntries.length })
+    );
+    if (!ok) return;
+    mergeDefaults(defaultEntries);
+  }, [defaultEntries, mergeDefaults, t]);
+
   return (
     <SectionCardShell sectionKey="instrumentations">
       <header className="flex flex-wrap items-baseline justify-between gap-2">
         <h3 className="text-foreground text-base font-semibold">
-          Instrumentations
+          {t("builder.browser.title")}
           {modules.length > 0 ? (
             <span className="text-muted-foreground ml-2 text-xs font-normal">
-              · {modules.length} modules
-              {customizationCount > 0 ? ` · ${customizationCount} customized` : ""}
+              {t("builder.browser.count", { count: modules.length })}
+              {customizationCount > 0
+                ? t("builder.browser.customized", { count: customizationCount })
+                : ""}
             </span>
           ) : null}
         </h3>
+        <HeaderActionButton
+          icon={CopyPlus}
+          label={t("builder.browser.addAll.button")}
+          onClick={handleAddAll}
+          disabled={defaultEntries.length === 0}
+        />
       </header>
 
       {loading ? (
-        <Loader size="sm" label="Loading instrumentations…" />
+        <Loader size="sm" label={t("builder.browser.loading")} />
       ) : error ? (
-        <p className="text-sm text-red-400">Failed to load instrumentations.</p>
+        <p className="text-sm text-red-400">{t("builder.browser.error")}</p>
       ) : (
         <Body
           total={modules.length}
           filtered={filtered}
           customizationMap={customizationMap}
-          expandedSet={expandedSet}
+          expandedSet={resolvedExpandedSet}
           search={trimmedSearch}
           statusFilter={statusFilter}
           customizationCount={customizationCount}
-          onAddCustomization={handleAddCustomization}
           onSetEnabled={handleSetEnabled}
           onRemoveCustomization={handleRemoveCustomization}
           onToggleExpand={toggleExpand}
@@ -142,7 +195,6 @@ interface BodyProps {
   search: string;
   statusFilter: "all" | "customized";
   customizationCount: number;
-  onAddCustomization: (m: InstrumentationModule) => void;
   onSetEnabled: (name: string, enabled: boolean) => void;
   onRemoveCustomization: (name: string) => void;
   onToggleExpand: (name: string) => void;
@@ -157,16 +209,20 @@ function Body({
   search,
   statusFilter,
   customizationCount,
-  onAddCustomization,
   onSetEnabled,
   onRemoveCustomization,
   onToggleExpand,
   onJumpToGeneral,
 }: BodyProps): JSX.Element {
+  const { t } = useTranslation("java-agent");
   return (
     <div className="space-y-3">
       <div className="border-border/40 bg-background/30 text-muted-foreground rounded-md border px-3 py-2 text-xs">
-        {readout(total, filtered.length, search, statusFilter, customizationCount)}
+        {search
+          ? t("builder.browser.readout.search", { search, shown: filtered.length, total })
+          : statusFilter === "customized"
+            ? t("builder.browser.readout.customized", { count: customizationCount, total })
+            : t("builder.browser.readout.noFilter", { count: total })}
       </div>
 
       {filtered.length === 0 ? (
@@ -181,7 +237,6 @@ function Body({
                   module={m}
                   status={status}
                   isExpanded={expandedSet.has(m.name)}
-                  onAddCustomization={() => onAddCustomization(m)}
                   onSetEnabled={(enabled) => onSetEnabled(m.name, enabled)}
                   onRemoveCustomization={() => onRemoveCustomization(m.name)}
                   onToggleExpand={() => onToggleExpand(m.name)}
@@ -205,34 +260,18 @@ function EmptyState({
   statusFilter: "all" | "customized";
   total: number;
 }): JSX.Element {
+  const { t } = useTranslation("java-agent");
   if (search) {
     return (
       <p className="text-muted-foreground text-sm">
-        No instrumentations match &ldquo;{search}&rdquo;. Clear the search to show all {total}.
+        {t("builder.browser.empty.search", { search, total })}
       </p>
     );
   }
   if (statusFilter === "customized") {
-    return (
-      <p className="text-muted-foreground text-sm">
-        You haven&rsquo;t customized any instrumentation yet. Click &ldquo;+ Customize&rdquo; on a
-        row to add one.
-      </p>
-    );
+    return <p className="text-muted-foreground text-sm">{t("builder.browser.empty.customized")}</p>;
   }
-  return <p className="text-muted-foreground text-sm">No instrumentations available.</p>;
-}
-
-function readout(
-  total: number,
-  shown: number,
-  search: string,
-  statusFilter: "all" | "customized",
-  customizationCount: number
-): string {
-  if (search) return `Search "${search}" · ${shown} of ${total}`;
-  if (statusFilter === "customized") return `Customized · ${customizationCount} of ${total}`;
-  return `No filter · ${total} modules`;
+  return <p className="text-muted-foreground text-sm">{t("builder.browser.empty.empty")}</p>;
 }
 
 function matchesQuery(m: InstrumentationModule, q: string): boolean {

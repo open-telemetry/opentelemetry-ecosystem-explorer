@@ -150,7 +150,7 @@ describe("tokenize", () => {
       { instrumentation: { java: { enabled: true, debug: false, log_level: "info" } } },
     ];
     for (const input of inputs) {
-      const yaml = dump(input, { lineWidth: -1, noRefs: true, quotingType: '"' });
+      const yaml = dump(input, { lineWidth: -1, noRefs: true, quoteStyle: "double" });
       expect(reassemble(tokenize(yaml))).toBe(yaml);
     }
   });

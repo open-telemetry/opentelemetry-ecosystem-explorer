@@ -27,13 +27,15 @@ export function useCustomizationStatusMap(): Map<string, "enabled" | "disabled">
     const inst = getByPath(state.values, [...PATH]);
     const map = new Map<string, "enabled" | "disabled">();
     if (!inst || typeof inst !== "object" || Array.isArray(inst)) return map;
-    const enabled = (inst as Record<string, unknown>).enabled;
-    const disabled = (inst as Record<string, unknown>).disabled;
-    if (Array.isArray(enabled)) {
-      for (const m of enabled) if (typeof m === "string") map.set(m, "enabled");
-    }
-    if (Array.isArray(disabled)) {
-      for (const m of disabled) if (typeof m === "string") map.set(m, "disabled");
+    for (const [moduleName, moduleConfig] of Object.entries(inst)) {
+      if (moduleConfig && typeof moduleConfig === "object" && !Array.isArray(moduleConfig)) {
+        const enabled = (moduleConfig as Record<string, unknown>).enabled;
+        if (enabled === true) {
+          map.set(moduleName, "enabled");
+        } else if (enabled === false) {
+          map.set(moduleName, "disabled");
+        }
+      }
     }
     return map;
   }, [state.values]);

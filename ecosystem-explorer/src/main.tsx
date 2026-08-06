@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import "./faro";
-import { StrictMode } from "react";
+import "./i18n/config";
+import { StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import "./styles/index.css";
 import App from "./App.tsx";
@@ -41,7 +42,9 @@ if (isEnabled("V1_REDESIGN")) {
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <ThemeProvider>
-      <App />
+      <Suspense fallback={null}>
+        <App />
+      </Suspense>
     </ThemeProvider>
   </StrictMode>
 );

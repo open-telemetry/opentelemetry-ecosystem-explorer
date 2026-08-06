@@ -1,0 +1,362 @@
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+import { CollectorDetailPage } from "./collector-detail-page";
+import {
+  useCollectorComponent,
+  useCollectorVersions,
+  useComponentReadme,
+} from "@/hooks/use-collector-data";
+import type { CollectorComponent } from "@/types/collector";
+
+vi.mock("@/hooks/use-collector-data", () => ({
+  useCollectorComponent: vi.fn(),
+  useCollectorVersions: vi.fn(),
+  useComponentReadme: vi.fn(),
+}));
+
+const mockComponentWithoutTelemetry: CollectorComponent = {
+  id: "core-otlpreceiver",
+  name: "otlpreceiver",
+  ecosystem: "collector",
+  type: "receiver",
+  distribution: "core",
+  display_name: "OTLP Receiver",
+  description: "Receives data via OTLP.",
+  repository: "opentelemetry-collector",
+  status: {
+    class: "receiver",
+    stability: { stable: ["traces", "metrics", "logs"] },
+    distributions: ["core"],
+  },
+};
+
+const mockComponentWithTelemetry: CollectorComponent = {
+  ...mockComponentWithoutTelemetry,
+  metrics: {
+    "my.metric.name": {
+      description: "A test metric",
+      enabled: true,
+      unit: "bytes",
+      sum: {
+        monotonic: true,
+        value_type: "int",
+        aggregation_temporality: "cumulative",
+      },
+    },
+  },
+};
+
+const mockComponentWithReadme: CollectorComponent = {
+  ...mockComponentWithoutTelemetry,
+  markdown_hash: "abc123def456",
+};
+
+const mockComponentWithBacktickDescription: CollectorComponent = {
+  ...mockComponentWithoutTelemetry,
+  description: "Fetches metrics via the `/metrics/json` endpoint.",
+};
+
+function renderAtRoute(path: string) {
+  return render(
+    <MemoryRouter initialEntries={[path]}>
+      <Routes>
+        <Route path="/collector/components/:distribution/:name" element={<CollectorDetailPage />} />
+      </Routes>
+    </MemoryRouter>
+  );
+}
+
+describe("CollectorDetailPage", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(useComponentReadme).mockReturnValue({ data: null, loading: false, error: null });
+  });
+
+  it("shows an error state instead of an infinite loading spinner when the versions fetch fails and no ?version= is present", () => {
+    // Regression guard for the versions-fetch-failure deadlock: with no
+    // ?version= in the URL, `version` can only ever be resolved from
+    // useCollectorVersions()'s data. If that fetch fails, the page must
+    // fall through to the error UI instead of spinning forever.
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: null,
+      loading: false,
+      error: new Error("Failed to load collector-versions-index: 500 Internal Server Error"),
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: null,
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    expect(screen.getByRole("heading", { name: "Error loading component" })).toBeInTheDocument();
+    expect(
+      screen.getByText("Failed to load collector-versions-index: 500 Internal Server Error")
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Loading component...")).not.toBeInTheDocument();
+    // The error state must still offer a way out.
+    expect(screen.getByRole("button", { name: /go back/i })).toBeInTheDocument();
+  });
+
+  it("still shows the loading state while versions are genuinely in flight (no error yet)", () => {
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: null,
+      loading: true,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: null,
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    expect(screen.getByText("Loading component...")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Error loading component" })
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders the component when the version resolves and the component loads successfully", () => {
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: mockComponentWithoutTelemetry,
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    expect(screen.getByText("OTLP Receiver")).toBeInTheDocument();
+    expect(
+      screen.queryByRole("heading", { name: "Error loading component" })
+    ).not.toBeInTheDocument();
+  });
+
+  it("renders backtick-wrapped text in the description as code elements", () => {
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: mockComponentWithBacktickDescription,
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    expect(screen.getByText("/metrics/json").tagName).toBe("CODE");
+  });
+
+  it("preserves the existing error UI when the component fetch itself fails with a valid version", () => {
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: null,
+      loading: false,
+      error: new Error('Collector component "core-otlpreceiver" not found in version 0.150.0'),
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver?version=0.150.0");
+
+    expect(screen.getByRole("heading", { name: "Error loading component" })).toBeInTheDocument();
+    expect(
+      screen.getByText('Collector component "core-otlpreceiver" not found in version 0.150.0')
+    ).toBeInTheDocument();
+  });
+
+  it("resolves the version from the URL immediately when ?version= is present, independent of the versions fetch", () => {
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: null,
+      loading: false,
+      error: new Error("Failed to load collector-versions-index"),
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: mockComponentWithoutTelemetry,
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver?version=0.150.0");
+
+    expect(useCollectorComponent).toHaveBeenCalledWith("core", "otlpreceiver", "0.150.0");
+    expect(screen.getByText("OTLP Receiver")).toBeInTheDocument();
+  });
+
+  it("does not render Telemetry tab when component has no metrics", () => {
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: mockComponentWithoutTelemetry,
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    expect(screen.queryByRole("tab", { name: /telemetry/i })).not.toBeInTheDocument();
+  });
+
+  it("renders Telemetry tab when component has metrics and displays content on click", async () => {
+    const user = userEvent.setup();
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: mockComponentWithTelemetry,
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    const telemetryTab = screen.getByRole("tab", { name: /telemetry/i });
+    expect(telemetryTab).toBeInTheDocument();
+
+    await user.click(telemetryTab);
+
+    expect(screen.getByText("my.metric.name")).toBeInTheDocument();
+  });
+
+  it("does not render Readme tab when component has no markdown_hash", () => {
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: mockComponentWithoutTelemetry,
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    expect(screen.queryByRole("tab", { name: /readme/i })).not.toBeInTheDocument();
+  });
+
+  it("renders Readme tab when component has markdown_hash and displays content on click", async () => {
+    const user = userEvent.setup();
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: mockComponentWithReadme,
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useComponentReadme).mockReturnValue({
+      data: "# Usage Notes\n\nSome readme content.",
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    const readmeTab = screen.getByRole("tab", { name: /readme/i });
+    expect(readmeTab).toBeInTheDocument();
+
+    await user.click(readmeTab);
+
+    expect(useComponentReadme).toHaveBeenCalledWith("otlpreceiver", "abc123def456");
+    expect(screen.getByText("Usage Notes")).toBeInTheDocument();
+    expect(screen.getByText("Some readme content.")).toBeInTheDocument();
+  });
+
+  it("shows Distribution Availability under the Details tab instead of Stability", () => {
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: {
+        ...mockComponentWithoutTelemetry,
+        status: {
+          class: "receiver",
+          stability: { stable: ["traces", "metrics", "logs"] },
+          distributions: ["core", "contrib", "k8s"],
+        },
+      },
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    // Details is the default active tab, so Distribution Availability should
+    // already be visible without switching tabs.
+    expect(screen.getByText("Distribution Availability")).toBeInTheDocument();
+    expect(screen.getByText("OpenTelemetry Collector Contrib")).toBeInTheDocument();
+    expect(screen.getByText("OpenTelemetry Operator for Kubernetes")).toBeInTheDocument();
+
+    // The renamed source-repo field replaces the old ambiguous "Distribution" label.
+    expect(screen.getByText("Source Repository")).toBeInTheDocument();
+    expect(screen.queryByText("Distribution", { selector: "h4" })).not.toBeInTheDocument();
+  });
+
+  it("no longer renders Distribution Availability under the Stability tab", async () => {
+    const user = userEvent.setup();
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: {
+        ...mockComponentWithoutTelemetry,
+        status: {
+          class: "receiver",
+          stability: { stable: ["traces", "metrics", "logs"] },
+          distributions: ["core", "contrib"],
+        },
+      },
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    const stabilityTab = screen.getByRole("tab", { name: /stability/i });
+    await user.click(stabilityTab);
+
+    expect(screen.getByText("Stability Levels")).toBeInTheDocument();
+    expect(screen.queryByText("Distribution Availability")).not.toBeInTheDocument();
+  });
+});

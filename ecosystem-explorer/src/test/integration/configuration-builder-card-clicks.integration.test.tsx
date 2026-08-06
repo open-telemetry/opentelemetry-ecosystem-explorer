@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { describe, it, expect, beforeAll, beforeEach, afterAll } from "vitest";
-import { screen, within, cleanup, waitFor } from "@testing-library/react";
+import { describe, it, expect, beforeAll, beforeEach, afterAll, vi } from "vitest";
+import { screen, within, cleanup, waitFor, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { installFetchInterceptor, uninstallFetchInterceptor } from "./helpers/fetch-interceptor";
 import { renderBuilderPage as renderPage } from "./helpers/render-builder-page";
@@ -30,6 +30,59 @@ beforeEach(() => {
   localStorage.clear();
   cleanup();
 });
+
+function mockYamlSectionVisibility(sectionKey: string, isVisible: boolean) {
+  const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect;
+  const getBoundingClientRectSpy = vi
+    .spyOn(Element.prototype, "getBoundingClientRect")
+    .mockImplementation(function (this: Element) {
+      if (this.tagName === "PRE") {
+        return {
+          top: 0,
+          bottom: 500,
+          left: 0,
+          right: 500,
+          width: 500,
+          height: 500,
+          x: 0,
+          y: 0,
+          toJSON: () => {},
+        };
+      }
+      if (this.getAttribute("data-yaml-section") === sectionKey) {
+        return isVisible
+          ? {
+              top: 100,
+              bottom: 200,
+              left: 0,
+              right: 500,
+              width: 500,
+              height: 100,
+              x: 0,
+              y: 0,
+              toJSON: () => {},
+            }
+          : {
+              top: 600,
+              bottom: 700,
+              left: 0,
+              right: 500,
+              width: 500,
+              height: 100,
+              x: 0,
+              y: 0,
+              toJSON: () => {},
+            };
+      }
+      return originalGetBoundingClientRect.call(this);
+    });
+
+  return {
+    restore: () => {
+      getBoundingClientRectSpy.mockRestore();
+    },
+  };
+}
 
 describe("ConfigurationBuilderPage card click behavior", () => {
   it("clicking an input inside an expanded card does not steal focus or scroll", async () => {
@@ -89,6 +142,63 @@ describe("ConfigurationBuilderPage card click behavior", () => {
     });
   });
 
+  it("interacting with a section card scrolls the corresponding YAML section into view if it is not visible", async () => {
+    renderPage();
+    const user = userEvent.setup();
+
+    await screen.findByRole("switch", { name: /Enable Resource/i }, { timeout: 10_000 });
+
+    const resourceSection = document.querySelector<HTMLElement>('[data-section-key="resource"]');
+    expect(resourceSection).not.toBeNull();
+
+    // Force scrollY > 0 so a "jump to top" would be detectable.
+    Object.defineProperty(window, "scrollY", { configurable: true, value: 400 });
+    const scrollYBefore = window.scrollY;
+
+    const { restore } = mockYamlSectionVisibility("resource", false);
+
+    try {
+      await user.click(resourceSection!);
+
+      await waitFor(() => {
+        expect(Element.prototype.scrollBy).toHaveBeenCalledWith({
+          top: 200,
+          behavior: "smooth",
+        });
+        expect(window.scrollY).toBe(scrollYBefore);
+      });
+    } finally {
+      restore();
+    }
+  });
+
+  it("interacting with a section card does not scroll the YAML section if it is already visible", async () => {
+    renderPage();
+    const user = userEvent.setup();
+
+    await screen.findByRole("switch", { name: /Enable Resource/i }, { timeout: 10_000 });
+
+    const resourceSection = document.querySelector<HTMLElement>('[data-section-key="resource"]');
+    expect(resourceSection).not.toBeNull();
+
+    const { restore } = mockYamlSectionVisibility("resource", true);
+
+    try {
+      await user.click(resourceSection!);
+
+      await waitFor(() => {
+        const resourceYamlSection = document.querySelector<HTMLElement>(
+          '[data-yaml-section="resource"]'
+        );
+        expect(resourceYamlSection?.className).toContain("bg-otel-orange/10");
+      });
+
+      expect(Element.prototype.scrollBy).not.toHaveBeenCalled();
+    } finally {
+      restore();
+    }
+  });
+
   it("interacting with a leaf field inside the General card highlights the matching YAML block", async () => {
     renderPage();
     const user = userEvent.setup();
@@ -146,7 +256,12 @@ describe("ConfigurationBuilderPage card click behavior", () => {
       { timeout: 10_000 }
     )) as HTMLElement;
 
-    await user.click(within(row).getByRole("button", { name: /Customize reactor/i }));
+    // Expand the row first
+    await user.click(within(row).getByRole("heading", { name: "reactor" }));
+    // Disable it to trigger customization
+    await user.click(within(row).getByRole("button", { name: /Disabled/i }));
+    // Trigger pointerDown on the row to highlight the distribution section
+    fireEvent.pointerDown(row);
 
     await waitFor(() => {
       const distributionYaml = document.querySelector<HTMLElement>(

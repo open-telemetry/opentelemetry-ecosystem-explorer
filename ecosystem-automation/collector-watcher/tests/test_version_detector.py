@@ -168,6 +168,34 @@ class TestVersionDetector:
         current_branch = run_git(temp_git_repo, "branch", "--show-current")
         assert current_branch == "main"
 
+    def test_read_file_at_ref_returns_content_at_tag(self, temp_git_repo):
+        detector = VersionDetector(temp_git_repo)
+
+        # Each tag pins a different revision of test.txt.
+        assert detector.read_file_at_ref("v0.110.0", "test.txt") == "initial content"
+        assert detector.read_file_at_ref("v0.111.0", "test.txt") == "update 1"
+        assert detector.read_file_at_ref("v0.112.0", "test.txt") == "update 2"
+
+    def test_read_file_at_ref_does_not_change_checkout(self, temp_git_repo):
+        """Reading an old ref must not disturb the working-tree checkout."""
+        detector = VersionDetector(temp_git_repo)
+        detector.checkout_main()
+
+        content = detector.read_file_at_ref("v0.110.0", "test.txt")
+
+        assert content == "initial content"
+        # Still on main, working tree unchanged.
+        assert run_git(temp_git_repo, "branch", "--show-current") == "main"
+        assert (temp_git_repo / "test.txt").read_text() == "update 3"
+
+    def test_read_file_at_ref_missing_path_returns_none(self, temp_git_repo):
+        detector = VersionDetector(temp_git_repo)
+        assert detector.read_file_at_ref("v0.110.0", "does/not/exist.yaml") is None
+
+    def test_read_file_at_ref_missing_ref_returns_none(self, temp_git_repo):
+        detector = VersionDetector(temp_git_repo)
+        assert detector.read_file_at_ref("v9.9.9", "test.txt") is None
+
     def test_determine_next_snapshot_version(self, temp_git_repo):
         detector = VersionDetector(temp_git_repo)
         next_version = detector.determine_next_snapshot_version()

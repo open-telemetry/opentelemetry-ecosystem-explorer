@@ -40,6 +40,10 @@ const MAX_COMPONENT_FETCH_CONCURRENCY = 8;
 // derives the same primary stability the bundle (make_index_component) carries.
 const STABILITY_RANK: Record<string, number> = { stable: 3, beta: 2, alpha: 1, development: 0 };
 
+// Mirrors _SIGNAL_ORDER in collector_transformer.py so the fan-out fallback derives
+// signals in the same order as the bundle (make_index_component).
+const SIGNAL_ORDER = ["traces", "metrics", "logs", "profiles"];
+
 function deriveStability(stability?: Partial<Record<Stability, string[]>>): Stability | null {
   const levels = stability ? Object.keys(stability) : [];
   if (levels.length === 0) return null;
@@ -48,16 +52,29 @@ function deriveStability(stability?: Partial<Record<Stability, string[]>>): Stab
   ) as Stability;
 }
 
+// Mirrors _derive_signals in collector_transformer.py: dedupes signal names across
+// all stability levels, known signals first in canonical order, then any
+// unrecognized signal names sorted alphabetically.
+function deriveSignals(stability?: Partial<Record<Stability, string[]>>): string[] {
+  const signals = new Set(Object.values(stability ?? {}).flat());
+  const known = SIGNAL_ORDER.filter((s) => signals.has(s));
+  const unknown = [...signals].filter((s) => !SIGNAL_ORDER.includes(s)).sort();
+  return [...known, ...unknown];
+}
+
 /** Projects a full component down to the slim list shape (matches make_index_component). */
 function toIndexComponent(component: CollectorComponent): IndexComponent {
   return {
     id: component.id,
     name: component.name,
     distribution: component.distribution,
+    distributions: component.status?.distributions,
     type: component.type,
     display_name: component.display_name,
     description: component.description,
     stability: deriveStability(component.status?.stability),
+    has_readme: Boolean(component.markdown_hash),
+    signals: deriveSignals(component.status?.stability),
   };
 }
 
@@ -65,7 +82,11 @@ export async function loadVersions(): Promise<VersionsIndex> {
   const data = await fetchWithCache<VersionsIndex>(
     "collector-versions-index",
     `${BASE_PATH}/versions-index.json`,
-    STORES.METADATA
+    STORES.METADATA,
+    {
+      validate: (d) =>
+        d !== null && typeof d === "object" && Array.isArray(d.versions) && d.versions.length > 0,
+    }
   );
   if (!data) throw new Error("Collector versions index returned null unexpectedly");
   return data;
@@ -90,6 +111,31 @@ export async function loadVersionManifest(version: string): Promise<VersionManif
   if (!data)
     throw new Error(`Collector manifest for version ${version} returned null unexpectedly`);
   return data;
+}
+
+/**
+ * Resolves the releases a single component appears in, newest first.
+ *
+ * The global versions index lists every Collector release, but a component is
+ * only present from the release that introduced it onward, and a release the
+ * distributions did not tag in lockstep carries a manifest covering just the
+ * distributions that did. Callers that build per-version links need this list
+ * rather than the global one — otherwise a link resolves to a version whose
+ * manifest has no entry for the component and loadComponent throws.
+ *
+ * Manifests are small and already IndexedDB-cached by loadVersionManifest, so
+ * this is a bounded fan-out over data a detail page mostly holds already. A
+ * failed manifest rejects the whole call rather than dropping that version
+ * silently: a partial list is indistinguishable from "the component was never
+ * released there", which is the exact confusion this function exists to fix.
+ */
+export async function loadComponentVersions(distribution: string, name: string): Promise<string[]> {
+  const id = `${distribution}-${name}`;
+  const { versions } = await loadVersions();
+  const manifests = await mapWithConcurrency(versions, MAX_COMPONENT_FETCH_CONCURRENCY, (v) =>
+    loadVersionManifest(v.version)
+  );
+  return versions.filter((_, i) => Boolean(manifests[i]?.components?.[id])).map((v) => v.version);
 }
 
 export async function loadComponent(
@@ -171,4 +217,22 @@ export async function loadAllComponents(version: string): Promise<IndexComponent
     }
   );
   return components.map(toIndexComponent);
+}
+
+/**
+ * Loads a component's README markdown content, content-addressed by name and hash.
+ * Mirrors loadLibraryReadme's fetch pattern on the javaagent side.
+ */
+export async function loadComponentReadme(name: string, markdownHash: string): Promise<string> {
+  const url = `${BASE_PATH}/markdown/${name}-${markdownHash}.md`;
+  const data = await fetchWithCache<string>(
+    `collector-readme-${name}-${markdownHash}`,
+    url,
+    STORES.METADATA,
+    { format: "text" }
+  );
+  if (data === null) {
+    throw new Error(`README for ${name} returned null unexpectedly`);
+  }
+  return data;
 }

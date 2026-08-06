@@ -15,6 +15,7 @@
  */
 
 import { Info, ChevronDown } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type { VersionInfo } from "@/types/javaagent";
 
 interface VersionSelectorPanelProps {
@@ -38,6 +39,7 @@ export function VersionSelectorPanel({
   onWhenConditionChange,
   availableConditions,
 }: VersionSelectorPanelProps) {
+  const { t } = useTranslation("java-agent");
   return (
     <div className="mx-auto max-w-4xl">
       <div className="border-border/30 bg-card/40 flex flex-col gap-6 rounded-xl border p-6 shadow-sm backdrop-blur-sm">
@@ -45,7 +47,7 @@ export function VersionSelectorPanel({
         <div className="bg-secondary/10 border-secondary/20 flex w-fit items-center gap-2 rounded-lg border px-3 py-2">
           <Info className="text-secondary h-4 w-4" aria-hidden="true" />
           <span className="text-foreground/90 text-xs font-medium">
-            Compare telemetry between two releases
+            {t("versionSelectorPanel.banner")}
           </span>
         </div>
 
@@ -57,7 +59,7 @@ export function VersionSelectorPanel({
               htmlFor="from-version-select"
               className="bg-muted/50 text-foreground/70 block w-fit rounded-md px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase"
             >
-              From
+              {t("versionSelectorPanel.from")}
             </label>
             <div className="relative">
               <select
@@ -85,7 +87,7 @@ export function VersionSelectorPanel({
               htmlFor="to-version-select"
               className="bg-muted/50 text-foreground/70 block w-fit rounded-md px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase"
             >
-              To
+              {t("versionSelectorPanel.to")}
             </label>
             <div className="relative">
               <select
@@ -114,7 +116,7 @@ export function VersionSelectorPanel({
               htmlFor="when-condition-select"
               className="bg-muted/50 text-foreground/70 block w-fit rounded-md px-3 py-1.5 text-[10px] font-bold tracking-widest uppercase"
             >
-              Configuration
+              {t("versionSelectorPanel.configuration")}
             </label>
             <div className="relative">
               <select
@@ -125,7 +127,7 @@ export function VersionSelectorPanel({
               >
                 {availableConditions.map((c) => (
                   <option key={c} value={c}>
-                    {c === "default" ? "Default" : c}
+                    {c === "default" ? t("versionSelectorPanel.defaultOption") : c}
                   </option>
                 ))}
               </select>

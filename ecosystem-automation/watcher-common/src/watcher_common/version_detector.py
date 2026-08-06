@@ -116,6 +116,37 @@ class VersionDetector:
         except subprocess.CalledProcessError as e:
             raise ValueError(f"Failed to checkout main branch: {e.stderr}") from e
 
+    def read_file_at_ref(self, ref: str, rel_path: str) -> str | None:
+        """Return the text content of ``rel_path`` at git ``ref``.
+
+        Reads the blob directly via ``git show`` without touching the working
+        tree, so the result depends only on ``ref`` — not on whatever revision
+        the repository is currently checked out to. This makes it safe to read a
+        file at one version while the clone is checked out to another (e.g.
+        resolving a per-version schema during a multi-version backfill).
+
+        Args:
+            ref: Git ref to read from (tag like ``v0.145.0``, branch like
+                ``main``, or any commit-ish).
+            rel_path: Repository-relative path to the file.
+
+        Returns:
+            The file's text content, or None if ``ref`` does not exist or the
+            file is absent at that ref.
+        """
+        result = subprocess.run(
+            [_GIT, "show", f"{ref}:{rel_path}"],
+            cwd=self.repo_path,
+            check=False,
+            capture_output=True,
+            text=True,
+            encoding="utf-8",
+            errors="replace",
+        )
+        if result.returncode != 0:
+            return None
+        return result.stdout
+
     def determine_next_snapshot_version(self) -> Version:
         """Determine the next snapshot version based on latest release.
 

@@ -385,9 +385,9 @@ describe("InstrumentationConfigField — map entries grow", () => {
     );
     await user.click(screen.getByRole("button", { name: /customize/i }));
     rerender(<InstrumentationConfigField config={cfg} onJumpToGeneral={vi.fn()} />);
-    await user.click(screen.getByRole("button", { name: /add entry/i }));
+    await user.click(screen.getByRole("button", { name: /^add$/i }));
     rerender(<InstrumentationConfigField config={cfg} onJumpToGeneral={vi.fn()} />);
-    await user.click(screen.getByRole("button", { name: /add entry/i }));
+    await user.click(screen.getByRole("button", { name: /^add$/i }));
     rerender(<InstrumentationConfigField config={cfg} onJumpToGeneral={vi.fn()} />);
     expect(screen.getAllByRole("button", { name: /remove entry/i })).toHaveLength(2);
     void stored;

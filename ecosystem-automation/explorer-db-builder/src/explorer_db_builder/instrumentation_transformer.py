@@ -14,6 +14,7 @@
 #
 """Transforms instrumentation data from different file format versions to a common schema."""
 
+import copy
 import logging
 from typing import Any
 
@@ -40,6 +41,9 @@ def transform_instrumentation_format(inventory_data: dict[str, Any]) -> dict[str
 
     file_format = inventory_data["file_format"]
 
+    if file_format == 0.6:
+        logger.debug("File format 0.6 detected, resolving definition references to 0.5 inline shape")
+        return _transform_0_6_to_0_5(inventory_data)
     if file_format == 0.5:
         logger.debug("File format 0.5 detected, no transformation needed")
         return inventory_data
@@ -180,6 +184,136 @@ def _transform_0_3_to_0_5(inventory_data: dict[str, Any]) -> dict[str, Any]:
     return transformed_data
 
 
+def _resolve_refs(
+    library: dict[str, Any],
+    configuration_defs: dict[str, Any],
+    metric_defs: dict[str, Any],
+) -> dict[str, Any]:
+    """Resolve a single library's ``*_refs`` into the inline 0.5 shape.
+
+    ``configuration_refs`` becomes an inline ``configurations`` list and each
+    telemetry entry's ``metric_refs`` becomes an inline ``metrics`` list, looked
+    up in the top-level definitions catalog. Definitions are deep-copied so the
+    same shared definition referenced by multiple libraries yields independent
+    objects (downstream passes mutate these in place). Refs with no matching
+    definition are logged and skipped rather than crashing the build.
+    """
+    resolved = library.copy()
+
+    config_refs = resolved.pop("configuration_refs", None)
+    if config_refs is not None:
+        configurations = []
+        for ref in config_refs:
+            definition = configuration_defs.get(ref)
+            if definition is None:
+                logger.warning("Library %s references unknown configuration '%s'", library.get("name"), ref)
+                continue
+            configurations.append(copy.deepcopy(definition))
+        resolved["configurations"] = configurations
+
+    telemetry = resolved.get("telemetry")
+    if telemetry is not None:
+        resolved_telemetry = []
+        for entry in telemetry:
+            resolved_entry = entry.copy()
+            metric_refs = resolved_entry.pop("metric_refs", None)
+            if metric_refs is not None:
+                metrics = []
+                for ref in metric_refs:
+                    definition = metric_defs.get(ref)
+                    if definition is None:
+                        logger.warning("Library %s references unknown metric '%s'", library.get("name"), ref)
+                        continue
+                    metrics.append(copy.deepcopy(definition))
+                resolved_entry["metrics"] = metrics
+            resolved_telemetry.append(resolved_entry)
+        resolved["telemetry"] = resolved_telemetry
+
+    return resolved
+
+
+def _transform_0_6_to_0_5(inventory_data: dict[str, Any]) -> dict[str, Any]:
+    """Transform file_format 0.6 to the inline 0.5 common schema.
+
+    0.6 hoists shared metrics and configurations into a top-level ``definitions``
+    catalog; libraries reference them by id via ``configuration_refs`` and
+    ``telemetry[].metric_refs``. Downstream consumers (list/index projection,
+    configuration aggregator, and the frontend) all expect the fully-inline 0.5
+    shape, so we resolve every reference against the catalog, drop the ``*_refs``
+    keys and the ``definitions`` block, and tag the result as 0.5.
+
+    Args:
+        inventory_data: Inventory data in format 0.6
+
+    Returns:
+        Inventory data with references resolved inline, tagged as format 0.5
+    """
+    definitions = inventory_data.get("definitions") or {}
+    configuration_defs = definitions.get("configurations") or {}
+    metric_defs = definitions.get("metrics") or {}
+
+    transformed_data = inventory_data.copy()
+    transformed_data.pop("definitions", None)
+
+    for key in ("libraries", "custom"):
+        library_list = inventory_data.get(key)
+        if library_list is not None:
+            transformed_data[key] = [
+                _resolve_refs(library, configuration_defs, metric_defs) for library in library_list
+            ]
+
+    transformed_data["file_format"] = 0.5
+    logger.info("Transformed inventory from format 0.6 to 0.5")
+    return transformed_data
+
+
+def _strip_version_range(coordinate: str) -> str:
+    """Drop the version range from a Maven coordinate (``group:artifact:[6.0.0,)``
+    -> ``group:artifact``); non-coordinate strings (e.g. ``Java 8+``) pass through."""
+    parts = coordinate.split(":")
+    return ":".join(parts[:2]) if len(parts) >= 3 else coordinate
+
+
+def _collect_search_terms(instrumentation: dict[str, Any]) -> list[str]:
+    """Distinctive, searchable identifiers for the index.json ``search_terms`` field.
+
+    Limited to high-signal terms (scope name, semantic conventions, features, Maven
+    coordinate, config name/declarative_name/description, metric name/description);
+    noisy fields and the seeded name/display_name/description are excluded. Returns
+    ``sorted(set(...))`` for a stable content hash.
+    """
+    terms: set[str] = set()
+
+    def add(value: Any) -> None:
+        if value is None or isinstance(value, (dict, list)):
+            return
+        text = str(value).strip()
+        if text:
+            terms.add(text)
+
+    scope = instrumentation.get("scope") or {}
+    add(scope.get("name"))
+
+    for value in instrumentation.get("semantic_conventions") or []:
+        add(value)
+    for value in instrumentation.get("features") or []:
+        add(value)
+    for value in instrumentation.get("javaagent_target_versions") or []:
+        add(_strip_version_range(value) if isinstance(value, str) else value)
+
+    for configuration in instrumentation.get("configurations") or []:
+        add(configuration.get("name"))
+        add(configuration.get("declarative_name"))
+        add(configuration.get("description"))
+
+    for telemetry in instrumentation.get("telemetry") or []:
+        for metric in telemetry.get("metrics") or []:
+            add(metric.get("name"))
+            add(metric.get("description"))
+
+    return sorted(terms)
+
+
 def make_index_instrumentation(instrumentation: dict[str, Any]) -> dict[str, Any]:
     """Extract lightweight metadata for the javaagent index.json.
 
@@ -201,6 +335,9 @@ def make_index_instrumentation(instrumentation: dict[str, Any]) -> dict[str, Any
         # Booleans the browse/search UI filters on without loading full detail.
         "has_telemetry": bool(telemetry),
         "has_standalone_library": bool(instrumentation.get("has_standalone_library")),
+        # Precomputed global-search terms (sorted, deduped) so the frontend search
+        # source reads the slim index instead of fanning out to full detail.
+        "search_terms": _collect_search_terms(instrumentation),
     }
 
 

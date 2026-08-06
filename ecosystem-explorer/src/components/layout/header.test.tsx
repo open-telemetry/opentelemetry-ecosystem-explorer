@@ -17,13 +17,16 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect } from "vitest";
+import { ThemeProvider } from "@/theme-context";
 import { Header } from "./header";
 
 describe("Header", () => {
   it("renders the app name", () => {
     render(
       <MemoryRouter>
-        <Header />
+        <ThemeProvider>
+          <Header />
+        </ThemeProvider>
       </MemoryRouter>
     );
 
@@ -33,7 +36,9 @@ describe("Header", () => {
   it("renders navigation links", () => {
     render(
       <MemoryRouter>
-        <Header />
+        <ThemeProvider>
+          <Header />
+        </ThemeProvider>
       </MemoryRouter>
     );
 
@@ -47,7 +52,9 @@ describe("Header", () => {
   it("navigation links point to correct routes", () => {
     render(
       <MemoryRouter>
-        <Header />
+        <ThemeProvider>
+          <Header />
+        </ThemeProvider>
       </MemoryRouter>
     );
 
@@ -61,7 +68,9 @@ describe("Header", () => {
   it("renders the logo as a link to home", () => {
     render(
       <MemoryRouter>
-        <Header />
+        <ThemeProvider>
+          <Header />
+        </ThemeProvider>
       </MemoryRouter>
     );
 
@@ -72,7 +81,9 @@ describe("Header", () => {
   it("shows hamburger button", () => {
     render(
       <MemoryRouter>
-        <Header />
+        <ThemeProvider>
+          <Header />
+        </ThemeProvider>
       </MemoryRouter>
     );
 
@@ -83,7 +94,9 @@ describe("Header", () => {
     const user = userEvent.setup();
     render(
       <MemoryRouter>
-        <Header />
+        <ThemeProvider>
+          <Header />
+        </ThemeProvider>
       </MemoryRouter>
     );
 
@@ -103,7 +116,9 @@ describe("Header", () => {
     const user = userEvent.setup();
     render(
       <MemoryRouter>
-        <Header />
+        <ThemeProvider>
+          <Header />
+        </ThemeProvider>
       </MemoryRouter>
     );
 
@@ -122,7 +137,9 @@ describe("Header", () => {
     const user = userEvent.setup();
     render(
       <MemoryRouter>
-        <Header />
+        <ThemeProvider>
+          <Header />
+        </ThemeProvider>
       </MemoryRouter>
     );
 
@@ -132,5 +149,51 @@ describe("Header", () => {
     await user.click(screen.getByTestId("mobile-nav-backdrop"));
 
     expect(screen.queryByRole("navigation", { name: /mobile main/i })).not.toBeInTheDocument();
+  });
+
+  it("opens theme menu and updates selected theme option", async () => {
+    const user = userEvent.setup();
+    localStorage.clear();
+    document.documentElement.removeAttribute("data-theme");
+
+    render(
+      <MemoryRouter>
+        <ThemeProvider>
+          <Header />
+        </ThemeProvider>
+      </MemoryRouter>
+    );
+
+    // There should be two Toggle theme buttons (desktop and mobile)
+    const toggleButtons = screen.getAllByRole("button", { name: /toggle theme/i });
+    expect(toggleButtons.length).toBeGreaterThan(0);
+    const trigger = toggleButtons[0];
+
+    // Click the toggle button to open the dropdown
+    await user.click(trigger);
+
+    // Verify Light, Dark, Auto dropdown menu items are in document
+    const lightOption = await screen.findByRole("menuitem", { name: /light/i });
+    const darkOption = screen.getByRole("menuitem", { name: /dark/i });
+    const autoOption = screen.getByRole("menuitem", { name: /auto/i });
+
+    expect(lightOption).toBeInTheDocument();
+    expect(darkOption).toBeInTheDocument();
+    expect(autoOption).toBeInTheDocument();
+
+    // Click light option
+    await user.click(lightOption);
+
+    // Assert that theme updates are persisted in localStorage and document dataset theme
+    expect(localStorage.getItem("td-color-theme")).toBe("light");
+    expect(document.documentElement.dataset.theme).toBe("light");
+
+    // Click trigger again to switch to dark
+    await user.click(trigger);
+    const updatedDarkOption = await screen.findByRole("menuitem", { name: /dark/i });
+    await user.click(updatedDarkOption);
+
+    expect(localStorage.getItem("td-color-theme")).toBe("dark");
+    expect(document.documentElement.dataset.theme).toBe("dark");
   });
 });

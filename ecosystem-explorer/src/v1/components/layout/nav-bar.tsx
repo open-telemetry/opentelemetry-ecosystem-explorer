@@ -16,6 +16,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { OpenTelemetryWordmark } from "@/v1/components/icons/opentelemetry-wordmark";
+import { LanguageToggle } from "@/v1/components/ui/language-toggle";
 import { ThemeToggle } from "@/v1/components/ui/theme-toggle";
 
 /*
@@ -115,6 +116,9 @@ export function NavBar() {
                   >
                     Docs
                   </a>
+                </li>
+                <li className="nav-item">
+                  <LanguageToggle />
                 </li>
                 <li className="nav-item">
                   <ThemeToggle />

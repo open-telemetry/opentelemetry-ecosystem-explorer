@@ -42,6 +42,9 @@ function makeModule(name: string, declarativeNames: string[]): InstrumentationMo
       {
         name: `${name}-x`,
         scope: { name: `io.opentelemetry.${name}` },
+        has_spans: false,
+        has_metrics: false,
+        _is_custom: false,
         configurations: declarativeNames.map((d) => ({
           name: "otel.x",
           declarative_name: d,
@@ -69,8 +72,9 @@ describe("useCustomizedModules", () => {
       distribution: {
         javaagent: {
           instrumentation: {
-            enabled: ["tomcat", "spring_webmvc"],
-            disabled: ["armeria_grpc"],
+            tomcat: { enabled: true },
+            spring_webmvc: { enabled: true },
+            armeria_grpc: { enabled: false },
           },
         },
       },
@@ -138,7 +142,7 @@ describe("useCustomizedModules", () => {
     const cassandra = makeModule("cassandra", ["java.cassandra.query_sanitization.enabled"]);
     mockState.values = {
       distribution: {
-        javaagent: { instrumentation: { enabled: ["tomcat"] } },
+        javaagent: { instrumentation: { tomcat: { enabled: true } } },
       },
       "instrumentation/development": {
         java: { cassandra: { query_sanitization: { enabled: false } } },

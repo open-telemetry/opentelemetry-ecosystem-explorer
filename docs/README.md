@@ -23,6 +23,14 @@ additional information.
 - [Content-Addressed Storage](./content-addressed-storage.md) - Storage pattern for multi-version
   support
 - [Frontend Architecture](./frontend-architecture.md) - Web app caching and data loading
+- [SEO and Agent Delivery](./seo-and-agent-delivery.md) - Per-route metadata and Markdown for
+  crawlers and non-JS AI agents
+- [Agent Readiness](./AGENT_READINESS.md) - `llms.txt`, JSON schemas, and structured metadata for AI
+  agents
+- [Upstream Metadata](./upstream-metadata.md) - How component metadata is managed upstream and how
+  to fix `upstream-metadata` issues
+- [Mapping a New Ecosystem](./ecosystem-mapping-guide.md) - Process for bringing a new ecosystem
+  into the registry
 
 **Deployment**: The web app deploys automatically to production when changes merge to `main`.
 Registry updates run nightly via GitHub Actions.

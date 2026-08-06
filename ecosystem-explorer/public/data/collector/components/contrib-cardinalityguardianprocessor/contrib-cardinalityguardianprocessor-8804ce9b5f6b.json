@@ -1,0 +1,27 @@
+{
+  "description": null,
+  "display_name": null,
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-cardinalityguardianprocessor",
+  "markdown_hash": "4e24074b488c",
+  "name": "cardinalityguardianprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "atoulme",
+        "YElayyat",
+        "jmacd"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "processor"
+}

@@ -29,7 +29,7 @@ export function NavigationCard({ title, description, href, icon }: NavigationCar
 
   return (
     <Link to={href} className="group block h-full">
-      <div className="border-border/60 bg-card/80 hover:border-primary/50 hover:bg-card hover:shadow-primary/15 relative h-full overflow-hidden rounded-lg border p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl sm:p-8">
+      <div className="border-border/60 bg-surface-card shadow-surface hover:border-primary/50 hover:bg-card hover:shadow-primary/15 hover:shadow-surface-hover relative h-full overflow-hidden rounded-lg border p-5 transition-all duration-300 hover:-translate-y-1 sm:p-8">
         <div className="absolute inset-0 opacity-10">
           <svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
             <defs>

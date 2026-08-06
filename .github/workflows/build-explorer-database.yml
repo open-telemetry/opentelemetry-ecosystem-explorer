@@ -1,6 +1,9 @@
 name: Build Explorer Database
 
 on:
+  schedule:
+    # Nightly incremental build of all ecosystems at 06:00 UTC.
+    - cron: "0 6 * * *"
   workflow_dispatch:
     inputs:
       build_mode:
@@ -26,27 +29,22 @@ permissions:
   contents: read # Default minimum; the build-database job declares its own elevated scopes
 
 concurrency:
-  # Serialize per ecosystem since each one targets its own
-  # otelbot/automated-explorer-database-update-<ecosystem> branch.
-  group: ${{ github.workflow }}-${{ inputs.ecosystem }}
+  group: ${{ github.workflow }}
   cancel-in-progress: false
 
 jobs:
   build-database:
     name: Build explorer database
+    # Restrict the scheduled trigger to the upstream repository (avoid forks)
+    if:
+      github.event_name != 'schedule' || github.repository ==
+      'open-telemetry/opentelemetry-ecosystem-explorer'
     permissions:
       contents: write # Push generated database to the otelbot/automated-explorer-database-update branch
       pull-requests: write # Create or update the automated database-update PR
+      issues: write # Open/update/close the "collector components missing display_name" tracking issue
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          # Persisted credentials are required so the later `git push -f origin
-          # HEAD:${BRANCH}` step can authenticate.
-          persist-credentials: true
-
       - name: Detect repository type (if on a fork we use different git config)
         id: repo_check
         env:
@@ -58,19 +56,35 @@ jobs:
             echo "is_primary=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Configure git (primary repository)
-        if: steps.repo_check.outputs.is_primary == 'true'
-        run: |
-          .github/scripts/use-cla-approved-bot.sh
-
+      # Mint the otelbot App token for the PR operations below (create / edit /
+      # close-reopen). The otelbot App installed on this repo only holds
+      # `pull-requests: write` and has no `contents: write`, so it cannot push.
+      # The branch push therefore authenticates as GITHUB_TOKEN; we re-trigger
+      # the required checks afterwards by closing and reopening the PR with this
+      # App token (see the "Commit and push changes" step).
       - uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         if: steps.repo_check.outputs.is_primary == 'true'
         id: otelbot-token
         with:
-          app-id: ${{ vars.OTELBOT_APP_ID }}
+          client-id: ${{ vars.OTELBOT_CLIENT_ID }}
           private-key: ${{ secrets.OTELBOT_PRIVATE_KEY }}
           repositories: ${{ github.event.repository.name }}
-          permission-pull-requests: write
+          permission-pull-requests: write # Create / edit / reopen the automated PR
+
+      - name: Checkout code
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          # Persist GITHUB_TOKEN as the git credential for the branch push. A
+          # push authenticated with GITHUB_TOKEN does not start workflows, so the
+          # "Commit and push changes" step re-triggers the required checks on the
+          # new head by closing/reopening the PR with the otelbot App token.
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
+
+      - name: Configure git (primary repository)
+        if: steps.repo_check.outputs.is_primary == 'true'
+        run: |
+          .github/scripts/use-cla-approved-bot.sh
 
       - name: Configure git (fork)
         if: steps.repo_check.outputs.is_primary == 'false'
@@ -79,12 +93,12 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Install uv
-        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
         with:
           enable-cache: true
 
       - name: Set up Python
-        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version-file: ".python-version"
 
@@ -92,16 +106,98 @@ jobs:
         run: uv sync --locked
 
       - name: Build explorer database (incremental)
-        if: inputs.build_mode == 'incremental'
+        # Scheduled runs don't set dispatch inputs, so `inputs.build_mode` is
+        # empty; default to an incremental build in that case.
+        if: ${{ (inputs.build_mode || 'incremental') == 'incremental' }}
         env:
-          ECOSYSTEM: ${{ inputs.ecosystem }}
-        run: uv run explorer-db-builder --ecosystem "$ECOSYSTEM"
+          ECOSYSTEM: ${{ inputs.ecosystem || 'all' }}
+        # --collector-audit-report writes a build artifact (not committed to the database)
+        # consumed by the "Sync missing-display_name tracking issue" step below.
+        run:
+          uv run explorer-db-builder --ecosystem "$ECOSYSTEM" --collector-audit-report
+          "${RUNNER_TEMP}/collector-missing-display-names.json"
 
       - name: Build explorer database (clean)
         if: inputs.build_mode == 'clean'
         env:
           ECOSYSTEM: ${{ inputs.ecosystem }}
-        run: uv run explorer-db-builder --ecosystem "$ECOSYSTEM" --clean
+        run:
+          uv run explorer-db-builder --ecosystem "$ECOSYSTEM" --clean --collector-audit-report
+          "${RUNNER_TEMP}/collector-missing-display-names.json"
+
+      - name: Sync missing-display_name tracking issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPORT_FILE: ${{ runner.temp }}/collector-missing-display-names.json
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          if [ ! -f "$REPORT_FILE" ]; then
+            echo "No collector audit report at $REPORT_FILE (collector not built); skipping."
+            exit 0
+          fi
+
+          ISSUE_TITLE="Collector components missing display_name"
+          LABEL="upstream-metadata"
+
+          # Idempotent: no-op if the label already exists.
+          gh label create "$LABEL" \
+            --description "Metadata that should be fixed in the upstream OpenTelemetry repositories" \
+            --color "d4c5f9" 2>/dev/null || true
+
+          COUNT=$(jq '.missing | length' "$REPORT_FILE")
+          VERSION=$(jq -r '.version' "$REPORT_FILE")
+
+          EXISTING=$(gh issue list \
+            --search "in:title \"$ISSUE_TITLE\"" \
+            --state open \
+            --label "$LABEL" \
+            --json number \
+            --jq '.[0].number // empty')
+
+          if [ "$COUNT" -eq 0 ]; then
+            if [ -n "$EXISTING" ]; then
+              gh issue close "$EXISTING" \
+                --comment "All collector components in \`v${VERSION}\` now have a \`display_name\`. Closing."
+              echo "Closed tracking issue #$EXISTING (no components missing display_name)."
+            else
+              echo "No components missing display_name and no open issue; nothing to do."
+            fi
+            exit 0
+          fi
+
+          BODY_FILE="${RUNNER_TEMP}/missing-display-names-body.md"
+          {
+            jq -r '
+              . as $r
+              | "The following components in the latest collector release (`v\($r.version)`) are missing a `display_name` in their upstream `metadata.yaml`. Fixing them upstream (opentelemetry-collector / opentelemetry-collector-contrib) lets them render with a friendly name in the Ecosystem Explorer.\n\n**Total missing: \($r.missing | length)**\n"
+                + ( $r.missing
+                    | group_by(.distribution)
+                    | map(
+                        "\n## \(.[0].distribution)\n"
+                        + ( group_by(.type)
+                            | map( "\n### \(.[0].type)\n" + ( map("- `\(.name)`") | join("\n") ) )
+                            | join("\n") ) )
+                    | join("\n") )
+            ' "$REPORT_FILE"
+            echo ""
+            echo ""
+            echo "---"
+            echo "_This issue is maintained automatically by the [Build Explorer Database](https://github.com/${REPO}/actions/runs/${RUN_ID}) workflow. It is updated nightly and closed automatically once every component has a display_name._"
+          } > "$BODY_FILE"
+
+          if [ -n "$EXISTING" ]; then
+            # Edit the body rather than comment: this runs nightly and comments would be noisy.
+            gh issue edit "$EXISTING" --body-file "$BODY_FILE" --add-label "contribution welcome"
+            echo "Updated tracking issue #$EXISTING ($COUNT components missing display_name)."
+          else
+            gh issue create \
+              --title "$ISSUE_TITLE" \
+              --body-file "$BODY_FILE" \
+              --label "$LABEL" \
+              --label "contribution welcome"
+            echo "Created tracking issue ($COUNT components missing display_name)."
+          fi
 
       - name: Check for database changes
         id: check_changes
@@ -136,9 +232,11 @@ jobs:
           GH_TOKEN:
             ${{ steps.repo_check.outputs.is_primary == 'true' && steps.otelbot-token.outputs.token
             || secrets.GITHUB_TOKEN }}
-          ECOSYSTEM: ${{ inputs.ecosystem }}
-          BUILD_MODE: ${{ inputs.build_mode }}
-          ACTOR: ${{ github.actor }}
+          ECOSYSTEM: ${{ inputs.ecosystem || 'all' }}
+          BUILD_MODE: ${{ inputs.build_mode || 'incremental' }}
+          # On scheduled runs github.actor doesn't reflect a human who triggered
+          # the build, so attribute those runs to the schedule instead.
+          ACTOR: ${{ github.event_name == 'schedule' && 'nightly schedule' || github.actor }}
         run: |
           BRANCH="otelbot/automated-explorer-database-update-${ECOSYSTEM}"
 
@@ -150,7 +248,7 @@ jobs:
 
           PR_TITLE="[automated] Update explorer database (${ECOSYSTEM})"
           PR_BODY="$(cat <<EOF
-          Automated database build requested via workflow dispatch.
+          Automated database build.
 
           Build mode: ${BUILD_MODE}
           Ecosystem: ${ECOSYSTEM}
@@ -172,6 +270,14 @@ jobs:
                 exit 1
               fi
               gh pr edit "$PR_NUMBER" --title "${PR_TITLE}" --body "${PR_BODY}"
+              # The force-push above is authenticated with GITHUB_TOKEN, which
+              # does not start workflows, so CodeQL never re-runs for the new
+              # head and the PR stays blocked on the "Code scanning results"
+              # merge rule. Closing and reopening the PR with the otelbot App
+              # token emits a `pull_request: reopened` event that re-runs the
+              # required checks against the updated head.
+              gh pr close "$PR_NUMBER"
+              gh pr reopen "$PR_NUMBER"
             else
               echo "Failed to create PR"
               cat pr-output.txt

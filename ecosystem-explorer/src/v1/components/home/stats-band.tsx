@@ -48,7 +48,7 @@ export function StatsBand({
         </h2>
         <div className="td-stats-band__grid">
           {stats.map((stat) => (
-            <div key={stat.label} className="td-stats-band__item">
+            <div key={stat.key} className="td-stats-band__item">
               <div className="td-stats-band__number">
                 {stat.external ? (
                   <a

@@ -16,7 +16,6 @@
 
 import pytest
 import yaml
-
 from v1_registry_sync.reader import (
     _build_go_module_path,
     _build_v1_index,
@@ -182,9 +181,7 @@ class TestReadLatestV2Components:
             assert component.v1_entry_exists is False
 
     def test_target_v1_file_matched_via_go_module_path(self, fake_registry, fake_v1_dir):
-        report = read_latest_v2_components(
-            str(fake_registry), distribution="contrib", v1_registry_dir=str(fake_v1_dir)
-        )
+        report = read_latest_v2_components(str(fake_registry), distribution="contrib", v1_registry_dir=str(fake_v1_dir))
 
         foo = next(c for c in report.components if c.name == "fooreceiver")
         assert foo.target_v1_file == "collector-receiver-fooreceiver.yml"
@@ -206,9 +203,7 @@ class TestReadLatestV2Components:
             "component_type": "receiver",
             "components": [{"name": "snapshotreceiver", "metadata": {}}],
         }
-        with open(
-            tmp_path / "contrib" / "v0.10.0-SNAPSHOT" / "receiver.yaml", "w", encoding="utf-8"
-        ) as f:
+        with open(tmp_path / "contrib" / "v0.10.0-SNAPSHOT" / "receiver.yaml", "w", encoding="utf-8") as f:
             yaml.dump(receiver_data, f)
 
         report = read_latest_v2_components(str(tmp_path), distribution="contrib")

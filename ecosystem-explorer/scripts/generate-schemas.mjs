@@ -42,7 +42,8 @@ const compilerOptions = {
   skipLibCheck: true,
   target: "ESNext",
   module: "ESNext",
-  moduleResolution: "node",
+  // Match the app's tsconfig. "bundler" sidesteps the legacy "node" resolution
+  moduleResolution: "bundler",
 };
 
 async function generateSchema(filePath, typeName, outputName) {

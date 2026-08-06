@@ -22,42 +22,42 @@ describe("isEnabled", () => {
   });
 
   it("should return true for 'true'", () => {
-    vi.stubEnv("VITE_FEATURE_FLAG_COLLECTOR_PAGE", "true");
-    expect(isEnabled("COLLECTOR_PAGE")).toBe(true);
+    vi.stubEnv("VITE_FEATURE_FLAG_V1_REDESIGN", "true");
+    expect(isEnabled("V1_REDESIGN")).toBe(true);
   });
 
   it("should return true for '1'", () => {
-    vi.stubEnv("VITE_FEATURE_FLAG_COLLECTOR_PAGE", "1");
-    expect(isEnabled("COLLECTOR_PAGE")).toBe(true);
+    vi.stubEnv("VITE_FEATURE_FLAG_V1_REDESIGN", "1");
+    expect(isEnabled("V1_REDESIGN")).toBe(true);
   });
 
   it("should return true for 'yes'", () => {
-    vi.stubEnv("VITE_FEATURE_FLAG_COLLECTOR_PAGE", "yes");
-    expect(isEnabled("COLLECTOR_PAGE")).toBe(true);
+    vi.stubEnv("VITE_FEATURE_FLAG_V1_REDESIGN", "yes");
+    expect(isEnabled("V1_REDESIGN")).toBe(true);
   });
 
   it("should return true for uppercase truthy values", () => {
-    vi.stubEnv("VITE_FEATURE_FLAG_COLLECTOR_PAGE", "TRUE");
-    expect(isEnabled("COLLECTOR_PAGE")).toBe(true);
+    vi.stubEnv("VITE_FEATURE_FLAG_V1_REDESIGN", "TRUE");
+    expect(isEnabled("V1_REDESIGN")).toBe(true);
   });
 
   it("should return false for 'false'", () => {
-    vi.stubEnv("VITE_FEATURE_FLAG_COLLECTOR_PAGE", "false");
-    expect(isEnabled("COLLECTOR_PAGE")).toBe(false);
+    vi.stubEnv("VITE_FEATURE_FLAG_V1_REDESIGN", "false");
+    expect(isEnabled("V1_REDESIGN")).toBe(false);
   });
 
   it("should return false for '0'", () => {
-    vi.stubEnv("VITE_FEATURE_FLAG_COLLECTOR_PAGE", "0");
-    expect(isEnabled("COLLECTOR_PAGE")).toBe(false);
+    vi.stubEnv("VITE_FEATURE_FLAG_V1_REDESIGN", "0");
+    expect(isEnabled("V1_REDESIGN")).toBe(false);
   });
 
   it("should return false for 'no'", () => {
-    vi.stubEnv("VITE_FEATURE_FLAG_COLLECTOR_PAGE", "no");
-    expect(isEnabled("COLLECTOR_PAGE")).toBe(false);
+    vi.stubEnv("VITE_FEATURE_FLAG_V1_REDESIGN", "no");
+    expect(isEnabled("V1_REDESIGN")).toBe(false);
   });
 
   it("should return false for an empty string", () => {
-    vi.stubEnv("VITE_FEATURE_FLAG_COLLECTOR_PAGE", "");
-    expect(isEnabled("COLLECTOR_PAGE")).toBe(false);
+    vi.stubEnv("VITE_FEATURE_FLAG_V1_REDESIGN", "");
+    expect(isEnabled("V1_REDESIGN")).toBe(false);
   });
 });

@@ -1,0 +1,23 @@
+component_owners: []
+description: OpenTelemetry instrumentation for `knex` database SQL query builder
+in_auto_instrumentations_node: true
+name: instrumentation-knex
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-knex'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-knex
+supported_versions:
+- package: knex
+  source: README.md
+  version_range: '>=0.10.0 <4'
+tested_versions:
+- mode: max-3
+  package: knex
+  range: '>=1.0.0 <2'
+  source: .tav.yml
+- exclude: 3.0.0
+  mode: max-3
+  package: knex
+  range: '>=2.0.0 <4'
+  source: .tav.yml
+version: 0.64.0

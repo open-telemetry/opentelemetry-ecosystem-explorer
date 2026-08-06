@@ -1,0 +1,34 @@
+{
+  "description": "The Kubernetes Objects Receiver collects (pull/watch) objects from the Kubernetes API server.",
+  "display_name": "Kubernetes Objects Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-k8sobjectsreceiver",
+  "markdown_hash": "0ca2b37eaebb",
+  "name": "k8sobjectsreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "dmitryax",
+        "TylerHelmuth",
+        "ChrsMark",
+        "krisztianfekete"
+      ],
+      "emeritus": [
+        "hvaghani221"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "logs"
+      ]
+    }
+  },
+  "type": "receiver"
+}

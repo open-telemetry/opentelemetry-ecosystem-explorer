@@ -19,7 +19,6 @@ import json
 
 import pytest
 import yaml
-
 from v1_registry_sync.models import ComponentSyncData, V1SyncReport
 from v1_registry_sync.reporter import write_report
 

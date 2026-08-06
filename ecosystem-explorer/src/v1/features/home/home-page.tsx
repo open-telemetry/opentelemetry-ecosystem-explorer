@@ -17,8 +17,10 @@
 import { Link } from "react-router-dom";
 
 import { Compass } from "@/components/icons/compass";
+import { Seo } from "@/components/seo/seo";
 import { CoverBlock } from "@/v1/components/home/cover-block";
 import { EcosystemsGrid } from "@/v1/components/home/ecosystems-grid";
+import { GlobalSearch } from "@/v1/components/home/global-search";
 import { RecentActivityRail } from "@/v1/components/home/recent-activity-rail";
 import { SignalsRow } from "@/v1/components/home/signals-row";
 import { StatsBand } from "@/v1/components/home/stats-band";
@@ -47,6 +49,7 @@ const COVER_CTAS = (
 export function HomeV1() {
   return (
     <div className="td-home">
+      <Seo />
       <CoverBlock
         logo={<Compass />}
         title={
@@ -57,7 +60,7 @@ export function HomeV1() {
         lead="Navigate every receiver, processor, exporter, and instrumentation across the OpenTelemetry project — searchable, comparable, version-aware."
         ctas={COVER_CTAS}
       >
-        <div className="td-home__skeleton td-home__skeleton--search" aria-hidden="true" />
+        <GlobalSearch />
       </CoverBlock>
 
       <StatsBand />

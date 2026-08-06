@@ -38,7 +38,11 @@
 .td-cover-block {
   font-size: 16px;
   position: relative;
-  overflow: hidden;
+  /* No overflow clipping — the GlobalSearch results dropdown anchors to the
+     input inside the hero and needs to spill out past the cover-block edge
+     into the section below. The two decorative pseudos (::before radials and
+     ::after grid) are pinned with `inset: 0`, so they stay inside the box on
+     their own without needing the parent to clip. */
   background: linear-gradient(
     135deg,
     hsl(var(--cover-block-bg-from-hsl)) 0%,

@@ -15,7 +15,6 @@
 """Collector metadata synchronization to registry."""
 
 import logging
-from pathlib import Path
 from typing import Any
 
 from semantic_version import Version
@@ -24,8 +23,9 @@ from watcher_common.version_detector import VersionDetector
 from .component_scanner import ComponentScanner
 from .deprecation_detector import DeprecationDetector
 from .inventory_manager import InventoryManager
-from .schema_copier import CollectorSchemaCopier
-from .type_defs import DistributionName
+from .readme_scanner import discover_component_readmes
+from .schema_copier import SCHEMA_RELATIVE_PATH, UNKNOWN_HASH, CollectorSchemaCopier
+from .type_defs import COMPONENT_TYPES, DistributionName
 
 logger = logging.getLogger(__name__)
 
@@ -59,10 +59,15 @@ class CollectorSync:
         self.repos = repos
         self.inventory_manager = inventory_manager
         self.version_detectors = {dist: VersionDetector(path) for dist, path in repos.items()}
+        self.schema_copier = CollectorSchemaCopier()
         self.deprecation_detector = DeprecationDetector()
         self.deprecations = inventory_manager.load_deprecations()
         self.previous_versions: dict[DistributionName, Version | None] = {}
         self.previous_components: dict[DistributionName, dict[str, list[dict[str, Any]]]] = {}
+        # Cache of core release tags for the lifetime of the sync run. get_all_release_tags()
+        # shells out to `git tag --list`, and _core_schema_refs() is called once per version;
+        # caching avoids an extra git process per saved version during a backfill.
+        self._core_release_tags: list[Version] | None = None
 
     @staticmethod
     def get_repository_name(distribution: DistributionName) -> str:
@@ -170,24 +175,28 @@ class CollectorSync:
         distributions) and records that hash in every component YAML for
         drift detection and parser routing.
 
+        Also discovers and stores each component's README.md, if present,
+        content-addressed under ``component_readmes/``. README publishing
+        is best-effort: a failure here is logged and does not fail the sync.
+        This always runs after the inventory write below, never before -
+        see the comment at that call site for why the order matters.
+
         Schema is always read from the core repo: ``mdatagen`` lives only in
         ``opentelemetry-collector``, and the schema is identical across
         distributions, so contrib carries the same ``schema_hash`` as core.
 
         Registry layout after this call:
             ecosystem-registry/collector/
-                {distribution}/v{version}/*.yaml   (component data, each with schema_hash)
-                meta/schemas/{hash}.yaml           (one file per distinct schema)
+                {distribution}/v{version}/*.yaml               (component data, each with schema_hash)
+                {distribution}/v{version}/component_readmes/    (one file per distinct README content)
+                meta/schemas/{hash}.yaml                        (one file per distinct schema)
 
         Args:
             distribution: Distribution name
             version: Version being saved
             components: Scanned components
         """
-        copier = CollectorSchemaCopier()
-        core_repo_path = Path(self.repos["core"])
-        stored_hash = copier.store_schema(core_repo_path, self.inventory_manager.meta_schemas_dir())
-        schema_hash = stored_hash if stored_hash is not None else "unknown"
+        schema_hash = self._resolve_schema_hash(version)
 
         repository = self.get_repository_name(distribution)
         self.inventory_manager.save_versioned_inventory(
@@ -198,7 +207,81 @@ class CollectorSync:
             schema_hash=schema_hash,
         )
 
+        # Readme discovery/save runs after the critical inventory write, not
+        # before: save_versioned_inventory() is what version_exists() treats
+        # as the "this version is tracked" signal, since it just checks
+        # whether the version directory exists. If readme saving (which also
+        # mkdirs that directory as a side effect of writing into it) ran
+        # first and the process crashed before save_versioned_inventory
+        # completed, version_exists() would incorrectly report the version
+        # as already tracked despite zero real component data ever being
+        # written - causing process_latest_release() to skip it forever.
+        repo_path = self.repos[distribution]
+        try:
+            readmes = discover_component_readmes(repo_path, components)
+            written = self.inventory_manager.save_component_readmes(distribution, version, readmes.items())
+            if written:
+                logger.info("  Saved %d component README(s)", written)
+        except OSError as e:
+            # README publishing is best-effort and must never fail the sync -
+            # the component inventory itself is the critical data.
+            logger.warning("  Failed to save component READMEs for %s %s: %s", distribution, version, e)
+
         logger.info("  Saved %s %s (schema_hash=%s)", distribution, version, schema_hash)
+
+    def _resolve_schema_hash(self, version: Version) -> str:
+        """Store and return the core schema hash for ``version``.
+
+        ``mdatagen`` lives only in core, so every distribution records the core
+        schema at its version. The schema is read from the core repo at that
+        version's git ref, not the clone's current checkout — a backfill leaves
+        the core clone on ``main``, which would otherwise stamp every version
+        with the latest schema. Falls back through ``_core_schema_refs`` (with a
+        warning) and returns ``UNKNOWN_HASH`` if no ref yields the schema.
+        """
+        core = self.version_detectors["core"]
+        schemas_dir = self.inventory_manager.meta_schemas_dir()
+
+        candidate_refs = self._core_schema_refs(version)
+        for index, ref in enumerate(candidate_refs):
+            content = core.read_file_at_ref(ref, SCHEMA_RELATIVE_PATH)
+            if content is None:
+                continue
+            if index > 0:
+                logger.warning(
+                    "Core schema not found at %s for %s; using %s instead",
+                    candidate_refs[0],
+                    version,
+                    ref,
+                )
+            stored = self.schema_copier.store_schema_content(content, schemas_dir)
+            return stored if stored is not None else UNKNOWN_HASH
+
+        logger.warning(
+            "No core schema found for %s (tried: %s); recording %s",
+            version,
+            ", ".join(candidate_refs),
+            UNKNOWN_HASH,
+        )
+        return UNKNOWN_HASH
+
+    def _core_schema_refs(self, version: Version) -> list[str]:
+        """Ordered core refs to try for ``version``'s schema: exact tag, then the
+        nearest earlier core release (for versions core never tagged), then
+        ``main``. Prereleases (SNAPSHOTs) are built from ``main`` only.
+        """
+        if version.prerelease:
+            return ["main"]
+
+        if self._core_release_tags is None:
+            self._core_release_tags = self.version_detectors["core"].get_all_release_tags()
+
+        refs = [f"v{version}"]
+        earlier = [v for v in self._core_release_tags if not v.prerelease and v < version]
+        if earlier:
+            refs.append(f"v{max(earlier)}")
+        refs.append("main")
+        return refs
 
     def initialize_previous_version(self, distribution: DistributionName) -> None:
         """
@@ -341,9 +424,9 @@ class CollectorSync:
 
     def _process_distribution_sync(self, distribution: DistributionName) -> tuple[Version | None, Version]:
         latest = self.process_latest_release(distribution)
-        
+
         snapshot = self.update_snapshot(distribution)
-        
+
         return (latest, snapshot)
 
     def sync(self) -> dict[str, Any]:
@@ -376,7 +459,7 @@ class CollectorSync:
 
                 latest, snapshot = self._process_distribution_sync(distribution)
                 distribution_results[distribution] = (latest, snapshot)
-                
+
         except Exception as e:
             logger.error("Error processing distributions: %s", e)
             raise
@@ -461,13 +544,21 @@ class CollectorSync:
             "versions_processed": processed,
         }
 
-    def backfill(self, versions_by_dist: dict[DistributionName, list[Version] | None] | None = None) -> dict[str, Any]:
+    def backfill(
+        self,
+        versions_by_dist: dict[DistributionName, list[Version] | None] | None = None,
+        prune_unlisted: bool = False,
+    ) -> dict[str, Any]:
         """
         Backfill versions across all distributions.
 
         Args:
             versions_by_dist: Dictionary mapping distribution to list of versions to backfill,
                             or None to auto-detect all existing versions for all distributions
+            prune_unlisted: When True, delete existing release versions not in the provided
+                            list for each distribution before backfilling. Requires an explicit
+                            version list per distribution (distributions mapped to None are left
+                            untouched). SNAPSHOT versions are always kept.
 
         Returns:
             Summary of backfill operation
@@ -482,7 +573,16 @@ class CollectorSync:
         logger.info("=" * 60)
 
         for distribution in versions_by_dist.keys():
-            result = self.backfill_versions(distribution, versions_by_dist[distribution])
+            keep = versions_by_dist[distribution]
+            if prune_unlisted and keep is not None:
+                # Reset this distribution's deprecation index so it is recomputed cleanly over
+                # only the surviving versions. Otherwise entries referencing now-deleted versions
+                # would linger in deprecations.yaml (backfill_versions appends, never clears).
+                self.deprecations[distribution] = {component_type: [] for component_type in COMPONENT_TYPES}
+                removed = self.inventory_manager.prune_release_versions_not_in(distribution, keep)
+                if removed:
+                    logger.info("Pruned %d unlisted release version(s) from %s", removed, distribution)
+            result = self.backfill_versions(distribution, keep)
             summary["backfilled"].append(result)
 
         logger.info("")

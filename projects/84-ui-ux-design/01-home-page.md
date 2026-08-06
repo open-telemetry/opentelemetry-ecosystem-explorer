@@ -4,7 +4,7 @@ issue: 84
 type: plan
 phase: 2
 status: in-progress
-last_updated: "2026-05-19"
+last_updated: "2026-05-30"
 ---
 
 > [!NOTE]
@@ -60,9 +60,14 @@ A returning user should land directly on the ⌘K search or the recent activity 
 
 ## Out of scope
 
-- The actual search backend — wire to a stub that returns canned results, or fall back to
-  client-side filtering across a static index. A real search engine is a follow-up.
-- Live ingestion of the "recent activity" feed — rely on a periodically-built JSON for v1.
+- ~~The actual search backend — wire to a stub that returns canned results, or fall back to
+  client-side filtering across a static index. A real search engine is a follow-up.~~ **Resolved
+  2026-05-25:** the cross-ecosystem engine (page registry + Collector index + Java Agent
+  instrumentations) shipped in PR 2. See the Follow-ups section for the remaining Java Agent index
+  endpoint work.
+- Live ingestion of the "recent activity" feed — rely on a periodically-built JSON for v1. (PR 6
+  ships a static stub `public/data/activity/feed.json`; the generated pipeline is in the Follow-ups
+  section below.)
 - Personalization (e.g., "your favorites").
 - Multi-language localization beyond reuse of foundation language dropdown.
 
@@ -91,8 +96,14 @@ A returning user should land directly on the ⌘K search or the recent activity 
 7. **Home route** — composes the above in order: hero → search → stats → ecosystems → signals +
    activity → CNCF callout.
 8. **Empty / loading states** for the recent-activity feed (foundation has the empty-state pattern).
+   **Shipped: PR 6 (#555)** — `RecentActivityRail` renders loading (`role="status" aria-live`),
+   empty, and error states off `useActivityFeed`'s `DataState`; loading + error covered by tests.
 9. **Tests** — visual regression on hero + stats; unit tests on ⌘K binding; integration test that
-   clicking a stat link goes to the right route.
+   clicking a stat link goes to the right route. **Mostly shipped:** the `/_dev/components` showcase
+   captures all six home components (visual-regression baseline updates on merge via
+   `screenshots-baseline.yml`), and `global-search.test.tsx` covers the ⌘K/Ctrl+K binding. **Still
+   open:** the StatsBand stat-link routing integration test — tracked as the lone remaining #371
+   item (small follow-up PR).
 
 ### PR 1 — implementation notes (locked 2026-05-19)
 
@@ -190,7 +201,32 @@ Locked decisions (per the 2026-05-19 grilling session — full rationale in
 
 ## Open questions
 
-- Does the global search actually search across ecosystems, or just narrow within the current one?
-  (The brief proposes cross-ecosystem; we should confirm scope before building the index.)
-- Is there an existing `activity.json` or similar in `ecosystem-automation`, or do we need to
-  generate one as part of this project?
+- ~~Does the global search actually search across ecosystems, or just narrow within the current
+  one?~~ **Answered 2026-05-25:** cross-ecosystem. PR 2's engine indexes pages, Java Agent
+  instrumentations, and Collector components in one shared `SearchResult[]`.
+- ~~Is there an existing `activity.json` or similar in `ecosystem-automation`, or do we need to
+  generate one as part of this project?~~ **Partially answered:** no existing pipeline. PR 6 ships a
+  static stub (`public/data/activity/feed.json`) so the rail renders the populated state; the real
+  registry-diff pipeline is tracked in the Follow-ups section.
+
+## Follow-ups (deferred to separate issues / later phases)
+
+Tracked here so the work stays visible after #371 closes and through the end-of-redesign cleanup.
+None of these block closing the Phase 2 issue.
+
+- **Java Agent index endpoint (`/data/javaagent/index.json`).** PR 2's engine currently calls
+  `loadAllInstrumentations(latest)` for Java Agent, which fans out to one fetch per instrumentation
+  (~1000 requests on first GlobalSearch open). Mirror the Collector pattern by emitting a flat
+  `index.json` from `ecosystem-automation` with `id / name / display_name / description / features`;
+  then the engine swaps to a single `loadIndex()` call (same shape as the Collector side already
+  does). Flagged by Copilot on PR 2; no existing issue. Scope: `ecosystem-automation` watcher work +
+  a small `src/lib/api/javaagent-data.ts` addition + a swap in `src/lib/search.ts`.
+- **Real recent-activity feed pipeline.** PR 6 ships `public/data/activity/feed.json` as a static
+  5-entry stub. The generated version should be derived from registry diffs (component added /
+  promoted / deprecated / changed) in `ecosystem-automation`, with the same JSON shape the rail
+  already consumes. Scope: watcher work; no client-side changes once the file is generated.
+- **"See all results" page for GlobalSearch overflow.** PR 2 caps the dropdown to 10 results with a
+  `Showing N of M matches` footer that's currently informational only. A future surface (likely
+  under `/search?q=...` or folded into Phase 4's list page, which already has faceted filters)
+  should let users browse beyond the cap. Scope: new route in `V1App`, reuses the engine in
+  `src/lib/search.ts` unchanged.

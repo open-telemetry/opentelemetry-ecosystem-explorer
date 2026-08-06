@@ -100,15 +100,17 @@
 }
 
 /*
- * Shared hover/active affordance. The theme-toggle trigger lives inside
- * `.td-navbar` and visually behaves like a nav-link (it carries class
- * `nav-link` upstream), so we apply the same rule here rather than
- * duplicating the property list in `theme-toggle.css`.
+ * Shared hover/active affordance. The theme-toggle and language-toggle triggers
+ * live inside `.td-navbar` and visually behave like a nav-link (they carry class
+ * `nav-link` upstream), so we apply the same rule here rather than duplicating
+ * the property list in `theme-toggle.css` / `language-toggle.css`.
  */
 .td-navbar .nav-link:hover,
 .td-navbar .nav-link.active,
 .td-navbar .td-light-dark-menu__trigger:hover,
-.td-navbar .td-light-dark-menu__trigger[data-state="open"] {
+.td-navbar .td-light-dark-menu__trigger[data-state="open"],
+.td-navbar .td-lang-menu__trigger:hover,
+.td-navbar .td-lang-menu__trigger[data-state="open"] {
   color: hsl(var(--navbar-accent-hsl));
   text-decoration: underline;
   text-decoration-thickness: 3px;

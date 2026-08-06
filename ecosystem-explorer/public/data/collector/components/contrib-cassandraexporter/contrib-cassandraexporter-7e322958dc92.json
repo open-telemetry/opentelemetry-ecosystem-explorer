@@ -1,0 +1,29 @@
+{
+  "description": null,
+  "display_name": "Cassandra Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-cassandraexporter",
+  "markdown_hash": "d5a68683a543",
+  "name": "cassandraexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "atoulme",
+        "emreyalvac"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "traces"
+      ]
+    }
+  },
+  "type": "exporter"
+}

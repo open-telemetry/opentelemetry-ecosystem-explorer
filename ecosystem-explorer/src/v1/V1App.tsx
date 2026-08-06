@@ -45,20 +45,23 @@ const HomePage = lazy(() =>
   import("@/v1/features/home/home-page").then((m) => ({ default: m.HomeV1 }))
 );
 const JavaAgentPage = lazy(() =>
-  import("@/features/java-agent/java-agent-page").then((m) => ({ default: m.JavaAgentPage }))
+  import("@/v1/features/ecosystem/java-agent-landing").then((m) => ({
+    default: m.JavaAgentLandingV1,
+  }))
 );
 const CollectorPage = lazy(() =>
-  import("@/features/collector/collector-page").then((m) => ({ default: m.CollectorPage }))
-);
-const CollectorComponentsPage = lazy(() =>
-  import("@/features/collector/collector-components-page").then((m) => ({
-    default: m.CollectorComponentsPage,
+  import("@/v1/features/ecosystem/collector-landing").then((m) => ({
+    default: m.CollectorLandingV1,
   }))
+);
+const CollectorListPage = lazy(() =>
+  import("@/v1/features/list/list-page").then((m) => ({ default: m.CollectorListPageV1 }))
 );
 const CollectorDetailPage = lazy(() =>
-  import("@/features/collector/collector-detail-page").then((m) => ({
-    default: m.CollectorDetailPage,
-  }))
+  import("@/v1/features/detail/detail-page").then((m) => ({ default: m.CollectorDetailPageV1 }))
+);
+const CollectorDiffPage = lazy(() =>
+  import("@/v1/features/detail/diff-page").then((m) => ({ default: m.CollectorDiffPageV1 }))
 );
 const NotFoundPage = lazy(() =>
   import("@/features/not-found/not-found-page").then((m) => ({ default: m.NotFoundPage }))
@@ -113,27 +116,22 @@ export function V1App() {
               />
 
               <Route path="/java-agent/configuration" element={<JavaConfigurationListPage />} />
-              {isEnabled("JAVA_RELEASE_COMPARISON") && (
-                <Route path="/java-agent/releases" element={<JavaReleaseComparisonPage />} />
-              )}
+              <Route path="/java-agent/releases" element={<JavaReleaseComparisonPage />} />
               <Route
                 path="/java-agent/configuration/builder"
                 element={<ConfigurationBuilderPage />}
               />
               <Route path="/collector" element={<CollectorPage />} />
-              {isEnabled("COLLECTOR_PAGE") && (
-                <>
-                  <Route path="/collector/components" element={<CollectorComponentsPage />} />
-                  <Route
-                    path="/collector/components/:version"
-                    element={<CollectorComponentsPage />}
-                  />
-                  <Route
-                    path="/collector/components/:distribution/:name"
-                    element={<CollectorDetailPage />}
-                  />
-                </>
-              )}
+              <Route path="/collector/components" element={<CollectorListPage />} />
+              <Route path="/collector/components/:version" element={<CollectorListPage />} />
+              <Route
+                path="/collector/components/:distribution/:name"
+                element={<CollectorDetailPage />}
+              />
+              <Route
+                path="/collector/components/:distribution/:name/diff"
+                element={<CollectorDiffPage />}
+              />
               <Route path="/about" element={<AboutPage />} />
               {isEnabled("DEV_SHOWCASE") && (
                 <Route path="/_dev/components" element={<DevComponentsPage />} />

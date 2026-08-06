@@ -106,6 +106,7 @@ class TestTransformCollectorComponents:
         assert component["description"] is None
         assert "attributes" not in component
         assert "metrics" not in component
+        assert "telemetry" not in component
 
     def test_attributes_and_metrics_included(self):
         inventory = _make_inventory(
@@ -135,6 +136,71 @@ class TestTransformCollectorComponents:
         assert "attr1" in component["attributes"]
         assert "metrics" in component
         assert "metric.one" in component["metrics"]
+
+    def test_telemetry_included(self):
+        inventory = _make_inventory(
+            components={
+                "processor": [
+                    {
+                        "name": "memorylimiterprocessor",
+                        "metadata": {
+                            "status": {},
+                            "telemetry": {
+                                "metrics": {
+                                    "processor_memory_limiter_refused_spans": {
+                                        "enabled": True,
+                                        "description": "Number of spans refused.",
+                                        "unit": "{span}",
+                                        "sum": {"value_type": "int", "monotonic": True},
+                                    }
+                                }
+                            },
+                        },
+                    }
+                ],
+                "receiver": [],
+                "exporter": [],
+                "connector": [],
+                "extension": [],
+            }
+        )
+
+        result = transform_collector_components(inventory, "contrib")
+
+        assert len(result) == 1
+        component = result[0]
+        assert "telemetry" in component
+        assert "processor_memory_limiter_refused_spans" in component["telemetry"]["metrics"]
+
+    def test_telemetry_absent_when_not_in_metadata(self):
+        inventory = _make_inventory(
+            components={
+                "receiver": [{"name": "minimalreceiver", "metadata": {"status": {}}}],
+                "processor": [],
+                "exporter": [],
+                "connector": [],
+                "extension": [],
+            }
+        )
+
+        result = transform_collector_components(inventory, "core")
+
+        assert "telemetry" not in result[0]
+
+    def test_telemetry_absent_when_empty_dict(self):
+        inventory = _make_inventory(
+            components={
+                "receiver": [{"name": "minimalreceiver", "metadata": {"status": {}, "telemetry": {}}}],
+                "processor": [],
+                "exporter": [],
+                "connector": [],
+                "extension": [],
+            }
+        )
+
+        result = transform_collector_components(inventory, "core")
+
+        assert "telemetry" not in result[0]
 
     def test_id_format(self):
         inventory = _make_inventory(
@@ -256,6 +322,7 @@ class TestMakeIndexComponent:
         assert result["display_name"] == "OTLP Receiver"
         assert result["description"] == "Receives data."
         assert result["stability"] == "beta"
+        assert result["signals"] == ["traces", "metrics"]
         # heavy fields should be absent
         assert "repository" not in result
         assert "attributes" not in result
@@ -307,3 +374,159 @@ class TestMakeIndexComponent:
         }
         result = make_index_component(component)
         assert result["stability"] == "alpha"
+
+
+class TestMakeIndexComponentSignals:
+    def test_signals_dedupe_and_canonical_order(self):
+        component = {
+            "id": "x",
+            "name": "x",
+            "distribution": "contrib",
+            "type": "receiver",
+            "display_name": None,
+            "description": None,
+            "status": {
+                "stability": {
+                    "beta": ["metrics", "traces"],
+                    "alpha": ["profiles", "metrics"],
+                },
+            },
+        }
+        result = make_index_component(component)
+        assert result["signals"] == ["traces", "metrics", "profiles"]
+
+    def test_signals_single_signal(self):
+        component = {
+            "id": "x",
+            "name": "x",
+            "distribution": "contrib",
+            "type": "receiver",
+            "display_name": None,
+            "description": None,
+            "status": {"stability": {"alpha": ["metrics"]}},
+        }
+        result = make_index_component(component)
+        assert result["signals"] == ["metrics"]
+
+    def test_signals_empty_when_stability_missing(self):
+        component = {
+            "id": "x",
+            "name": "x",
+            "distribution": "contrib",
+            "type": "receiver",
+            "display_name": None,
+            "description": None,
+            "status": {},
+        }
+        result = make_index_component(component)
+        assert result["signals"] == []
+
+    def test_signals_unknown_signal_appended_alphabetically(self):
+        component = {
+            "id": "x",
+            "name": "x",
+            "distribution": "contrib",
+            "type": "receiver",
+            "display_name": None,
+            "description": None,
+            "status": {"stability": {"alpha": ["metrics", "zsignal", "asignal"]}},
+        }
+        result = make_index_component(component)
+        assert result["signals"] == ["metrics", "asignal", "zsignal"]
+
+
+class TestTransformCollectorComponentsReadmes:
+    def test_stamps_markdown_hash_when_name_in_readme_map(self):
+        inventory = _make_inventory(
+            components={
+                "receiver": [{"name": "otlpreceiver", "metadata": {"display_name": "OTLP Receiver"}}],
+                "processor": [],
+                "exporter": [],
+                "connector": [],
+                "extension": [],
+            }
+        )
+
+        result = transform_collector_components(inventory, "contrib", readme_map={"otlpreceiver": "abc123def456"})
+
+        assert result[0]["markdown_hash"] == "abc123def456"
+
+    def test_no_markdown_hash_when_name_not_in_readme_map(self):
+        inventory = _make_inventory(
+            components={
+                "receiver": [{"name": "otlpreceiver", "metadata": {"display_name": "OTLP Receiver"}}],
+                "processor": [],
+                "exporter": [],
+                "connector": [],
+                "extension": [],
+            }
+        )
+
+        result = transform_collector_components(inventory, "contrib", readme_map={"someotherreceiver": "abc123def456"})
+
+        assert "markdown_hash" not in result[0]
+
+    def test_no_markdown_hash_when_readme_map_omitted(self):
+        """readme_map is optional - callers that don't pass it get the old behavior."""
+        inventory = _make_inventory(
+            components={
+                "receiver": [{"name": "otlpreceiver", "metadata": {"display_name": "OTLP Receiver"}}],
+                "processor": [],
+                "exporter": [],
+                "connector": [],
+                "extension": [],
+            }
+        )
+
+        result = transform_collector_components(inventory, "contrib")
+
+        assert "markdown_hash" not in result[0]
+
+    def test_only_matching_components_get_stamped(self):
+        inventory = _make_inventory(
+            components={
+                "receiver": [
+                    {"name": "otlpreceiver", "metadata": {"display_name": "OTLP"}},
+                    {"name": "prometheusreceiver", "metadata": {"display_name": "Prometheus"}},
+                ],
+                "processor": [],
+                "exporter": [],
+                "connector": [],
+                "extension": [],
+            }
+        )
+
+        result = transform_collector_components(inventory, "contrib", readme_map={"otlpreceiver": "abc123def456"})
+
+        by_name = {c["name"]: c for c in result}
+        assert by_name["otlpreceiver"]["markdown_hash"] == "abc123def456"
+        assert "markdown_hash" not in by_name["prometheusreceiver"]
+
+
+class TestMakeIndexComponentHasReadme:
+    def test_has_readme_true_when_markdown_hash_present(self):
+        component = {
+            "id": "x",
+            "name": "x",
+            "distribution": "contrib",
+            "type": "receiver",
+            "display_name": None,
+            "description": None,
+            "status": {},
+            "markdown_hash": "abc123def456",
+        }
+        result = make_index_component(component)
+        assert result["has_readme"] is True
+
+    def test_has_readme_false_when_markdown_hash_absent(self):
+        component = {
+            "id": "x",
+            "name": "x",
+            "distribution": "contrib",
+            "type": "receiver",
+            "display_name": None,
+            "description": None,
+            "status": {},
+        }
+        result = make_index_component(component)
+        assert result["has_readme"] is False

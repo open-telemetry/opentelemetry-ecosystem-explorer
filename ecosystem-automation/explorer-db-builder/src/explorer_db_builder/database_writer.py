@@ -23,8 +23,10 @@ from typing import Any
 
 from semantic_version import Version
 
+from explorer_db_builder import orphan_gc
 from explorer_db_builder.content_hashing import content_hash
 from explorer_db_builder.instrumentation_transformer import make_index_instrumentation
+from explorer_db_builder.readme_sanitizer import sanitize_readme
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +54,19 @@ class DatabaseWriter:
         """Sanitizes a name for use as a filename to prevent path traversal."""
         return re.sub(r"[^a-zA-Z0-9._\-]", "_", name)
 
+    def _instrumentation_file(self, library_name: str, library_hash: str) -> Path:
+        """Content-addressed path for a library, without creating its directory (unlike _get_file_path).
+
+        Lets callers that only need the path (e.g. orphan GC) avoid materializing empty dirs.
+        """
+        safe_name = self._sanitize_name(library_name)
+        return self.database_dir / "instrumentations" / safe_name / f"{safe_name}-{library_hash}.json"
+
+    def _markdown_file(self, library_name: str, markdown_hash: str) -> Path:
+        """Content-addressed path for a README (does not create its directory)."""
+        safe_name = self._sanitize_name(library_name)
+        return self.database_dir / "markdown" / f"{safe_name}-{markdown_hash}.md"
+
     def _get_file_path(self, library_name: str, library_hash: str) -> Path:
         """Get the file path for a library with the given name and hash.
 
@@ -64,10 +79,9 @@ class DatabaseWriter:
         Returns:
             Path to the library JSON file
         """
-        safe_name = self._sanitize_name(library_name)
-        instrumentations_dir = self.database_dir / "instrumentations" / safe_name
-        instrumentations_dir.mkdir(parents=True, exist_ok=True)
-        return instrumentations_dir / f"{safe_name}-{library_hash}.json"
+        file_path = self._instrumentation_file(library_name, library_hash)
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        return file_path
 
     def write_libraries(self, libraries: list[dict[str, Any]]) -> dict[str, str]:
         """Write library data to content-addressed files.
@@ -295,23 +309,73 @@ class DatabaseWriter:
             logger.error(f"Failed to write global configurations: {e}")
             raise
 
-    def write_markdown(self, library_name: str, markdown_hash: str, content: str) -> None:
+    def write_ecosystem_stats(self, stats: dict[str, Any]) -> None:
+        """Write the javaagent ecosystem-stats.json summary file.
+
+        Args:
+            stats: Dict with "version_count" and "library_count".
+
+        Raises:
+            OSError: If file writing fails.
+        """
+        self.database_dir.mkdir(parents=True, exist_ok=True)
+
+        output_file = self.database_dir / "ecosystem-stats.json"
+        try:
+            content = json.dumps(stats, indent=2, sort_keys=True)
+            with open(output_file, "w", encoding="utf-8") as f:
+                f.write(content)
+            file_size = len(content.encode("utf-8"))
+            self.files_written += 1
+            self.total_bytes += file_size
+            logger.info(f"Wrote javaagent ecosystem stats: {stats}")
+        except OSError as e:
+            logger.error(f"Failed to write ecosystem stats: {e}")
+            raise
+
+    def _is_current(self, file_path: Path, content: str) -> bool:
+        """Whether the published markdown already matches what we would write.
+
+        markdown_hash tracks the *upstream* README, so it does not move when only
+        our sanitizing changes - without this check, already-published files would
+        keep their stale text until upstream happened to edit the README.
+        """
+        try:
+            return file_path.read_text(encoding="utf-8") == content
+        except OSError as e:
+            logger.warning(f"Could not read existing markdown at {file_path}, rewriting: {e}")
+            return False
+
+    def write_markdown(self, library_name: str, markdown_hash: str, content: str) -> bool:
         """Write markdown file to the database.
+
+        Content is run through :func:`sanitize_readme` first.
 
         Args:
             library_name: Name of the library
             markdown_hash: Hash of the markdown content
             content: Markdown content string
+
+        Returns:
+            True if the markdown is present on disk after this call. False if the
+            write failed, or if sanitizing left nothing worth publishing - callers
+            must check this before stamping markdown_hash.
         """
-        markdown_dir = self.database_dir / "markdown"
-        markdown_dir.mkdir(parents=True, exist_ok=True)
-
         safe_name = self._sanitize_name(library_name)
-        file_path = markdown_dir / f"{safe_name}-{markdown_hash}.md"
+        content = sanitize_readme(content)
 
-        if file_path.exists():
+        if not content.strip():
+            # Nothing left once the status section is gone. Reporting failure keeps
+            # markdown_hash unstamped, so no README tab is offered for an empty page.
+            logger.info(f"README for '{safe_name}' is empty after sanitizing, not publishing")
+            return False
+
+        file_path = self._markdown_file(library_name, markdown_hash)
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+
+        if file_path.exists() and self._is_current(file_path, content):
             logger.debug(f"Markdown for '{safe_name}' with hash {markdown_hash} already exists, skipping write")
-            return
+            return True
 
         try:
             with open(file_path, "w", encoding="utf-8") as f:
@@ -320,9 +384,11 @@ class DatabaseWriter:
             self.files_written += 1
             self.total_bytes += file_size
             logger.debug(f"Wrote markdown for '{safe_name}' with hash {markdown_hash}")
+            return True
         except OSError as e:
             logger.error(f"Failed to write markdown for '{safe_name}': {e}")
             # README publishing failures must never fail DB generation as per requirements
+            return False
 
     def write_index(self, latest_instrumentations: list[dict[str, Any]]) -> None:
         """Write the javaagent index.json: a flat, lightweight list of the latest
@@ -368,6 +434,21 @@ class DatabaseWriter:
             Dictionary with 'files_written' (int) and 'total_bytes' (int)
         """
         return {"files_written": self.files_written, "total_bytes": self.total_bytes}
+
+    def remove_orphans(self) -> int:
+        """Delete content-addressed files no longer referenced by any version index.
+
+        See :func:`explorer_db_builder.orphan_gc.remove_orphans`. Java
+        instrumentations are referenced from two index sections (regular and
+        custom); markdown is keyed by the instrumentation's ``name``.
+        """
+        return orphan_gc.remove_orphans(
+            self.database_dir,
+            content_dir="instrumentations",
+            index_sections=("instrumentations", "custom_instrumentations"),
+            content_file=self._instrumentation_file,
+            markdown_file=self._markdown_file,
+        )
 
     def clean(self) -> None:
         """Remove all files in the database directory.

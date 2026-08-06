@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 import { useMemo, type JSX } from "react";
+import { useTranslation } from "react-i18next";
 import { Download, RefreshCcw, ListPlus, Maximize2 } from "lucide-react";
 import type { ConfigNode } from "@/types/configuration";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
-import { generateYamlSections, structuredToString } from "@/lib/yaml-generator";
+import {
+  generateYamlSections,
+  structuredToString,
+  type ConfigurationTarget,
+} from "@/lib/yaml-generator";
 import { downloadText } from "@/lib/download-text";
 import { CopyButton } from "@/components/ui/copy-button";
 import {
@@ -34,7 +39,7 @@ interface HeaderActionButtonProps extends React.ButtonHTMLAttributes<HTMLButtonE
   label: string;
 }
 
-function HeaderActionButton({
+export function HeaderActionButton({
   icon: Icon,
   label,
   className = "",
@@ -44,7 +49,7 @@ function HeaderActionButton({
     <button
       {...props}
       type="button"
-      className={`border-border/60 bg-card text-foreground hover:bg-card/80 focus-visible:ring-primary inline-flex cursor-pointer items-center gap-1 rounded-md border px-3 py-1.5 text-xs focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
+      className={`border-border/60 bg-card text-foreground hover:bg-muted/50 focus-visible:ring-primary inline-flex cursor-pointer items-center gap-1 rounded-md border px-3 py-1.5 text-xs focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
     >
       <Icon className="h-3 w-3" aria-hidden="true" />
       {label}
@@ -60,18 +65,19 @@ interface PreviewActionsProps {
 }
 
 function PreviewActions({ yaml, filename, onValidate, hasErrors }: PreviewActionsProps) {
+  const { t } = useTranslation("java-agent");
   return (
     <>
       <CopyButton
         text={yaml}
         onClick={onValidate}
-        className="border-border/60 bg-card text-foreground hover:bg-card/80 focus-visible:ring-primary inline-flex cursor-pointer items-center gap-1 rounded-md border px-3 py-1.5 text-xs focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+        className="border-border/60 bg-card text-foreground hover:bg-muted/50 focus-visible:ring-primary inline-flex cursor-pointer items-center gap-1 rounded-md border px-3 py-1.5 text-xs focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
       />
       <HeaderActionButton
         icon={Download}
-        label="Download"
+        label={t("builder.preview.download")}
         disabled={hasErrors}
-        title={hasErrors ? "Fix validation errors before downloading" : undefined}
+        title={hasErrors ? t("builder.preview.downloadErrorTitle") : undefined}
         onClick={() => {
           onValidate();
           if (!hasErrors) downloadText(filename, yaml, "text/yaml");
@@ -85,18 +91,25 @@ interface PreviewCardProps {
   schema: ConfigNode;
   javaAgentVersion: string;
   activePreviewKey: string | null;
+  target?: ConfigurationTarget;
 }
 
 export function PreviewCard({
   schema,
   javaAgentVersion,
   activePreviewKey,
+  target = "javaagent",
 }: PreviewCardProps): JSX.Element {
+  const { t } = useTranslation("java-agent");
   const { state, enableAllSections, resetToDefaults, validateAll } = useConfigurationBuilder();
   const hasErrors = Object.keys(state.validationErrors).length > 0;
   const structured = useMemo(
-    () => generateYamlSections(state, schema, { javaAgentVersion: javaAgentVersion || undefined }),
-    [state, schema, javaAgentVersion]
+    () =>
+      generateYamlSections(state, schema, {
+        javaAgentVersion: javaAgentVersion || undefined,
+        target,
+      }),
+    [state, schema, javaAgentVersion, target]
   );
 
   const yaml = useMemo(() => structuredToString(structured), [structured]);
@@ -113,11 +126,11 @@ export function PreviewCard({
 
   return (
     <section
-      aria-label="Output Preview"
-      className="border-border/50 bg-card/40 space-y-3 rounded-xl border p-5 lg:sticky lg:top-20 lg:self-start"
+      aria-label={t("builder.preview.title")}
+      className="border-border/50 bg-surface-card shadow-surface space-y-3 rounded-xl border p-5 lg:sticky lg:top-20 lg:self-start"
     >
       <header className="flex flex-wrap items-center justify-between gap-3">
-        <h3 className="text-foreground text-sm font-medium">Output Preview</h3>
+        <h3 className="text-foreground text-sm font-medium">{t("builder.preview.title")}</h3>
         <div className="flex flex-wrap items-center gap-2">
           <PreviewActions
             yaml={yaml}
@@ -126,15 +139,23 @@ export function PreviewCard({
             hasErrors={hasErrors}
           />
           <span className="bg-border/60 mx-1 h-4 w-px" aria-hidden="true" />
-          <HeaderActionButton icon={ListPlus} label="Add all" onClick={enableAllSections} />
-          <HeaderActionButton icon={RefreshCcw} label="Reset" onClick={handleReset} />
+          <HeaderActionButton
+            icon={ListPlus}
+            label={t("builder.preview.addAll")}
+            onClick={enableAllSections}
+          />
+          <HeaderActionButton
+            icon={RefreshCcw}
+            label={t("builder.preview.reset")}
+            onClick={handleReset}
+          />
           <span className="bg-border/60 mx-1 h-4 w-px" aria-hidden="true" />
           <Dialog>
             <DialogTrigger asChild>
               <button
                 type="button"
-                aria-label="Expand YAML preview"
-                className="border-border/60 bg-card text-foreground hover:bg-card/80 focus-visible:ring-primary flex cursor-pointer items-center justify-center rounded-md border p-1.5 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+                aria-label={t("builder.preview.expandAriaLabel")}
+                className="border-border/60 bg-card text-foreground hover:bg-muted/50 focus-visible:ring-primary flex cursor-pointer items-center justify-center rounded-md border p-1.5 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
               >
                 <Maximize2 className="h-3.5 w-3.5" aria-hidden="true" />
               </button>
@@ -143,10 +164,10 @@ export function PreviewCard({
               <header className="border-border/30 flex flex-wrap items-center justify-between gap-4 border-b pr-8 pb-3">
                 <div className="space-y-1">
                   <DialogTitle className="text-xl font-semibold">
-                    YAML Configuration Preview
+                    {t("builder.preview.dialogTitle")}
                   </DialogTitle>
                   <DialogDescription className="text-muted-foreground text-xs">
-                    Complete generated YAML configuration for your OpenTelemetry Java Agent.
+                    {t("builder.preview.dialogDescription")}
                   </DialogDescription>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
@@ -158,8 +179,8 @@ export function PreviewCard({
                   />
                 </div>
               </header>
-              <div className="bg-background/60 border-border/30 min-h-0 flex-1 overflow-auto rounded-md border p-4">
-                <YamlCodeBlock code={yaml} className="text-foreground font-mono text-xs" />
+              <div className="bg-code-bg border-border/30 min-h-0 flex-1 overflow-auto rounded-md border p-4">
+                <YamlCodeBlock code={yaml} className="text-code-fg font-mono text-xs" />
               </div>
             </DialogContent>
           </Dialog>
@@ -168,7 +189,7 @@ export function PreviewCard({
       <YamlCodeBlock
         structured={structured}
         activePreviewKey={activePreviewKey}
-        className="bg-background/60 text-foreground max-h-[calc(100vh-8rem)] overflow-auto rounded-md p-4 font-mono text-xs"
+        className="bg-code-bg text-code-fg max-h-[calc(100vh-8rem)] overflow-auto rounded-md p-4 font-mono text-xs"
       />
       <div aria-live="polite" aria-atomic="true" className="sr-only">
         {activePreviewKey ? `Highlighting ${activePreviewKey} section` : ""}

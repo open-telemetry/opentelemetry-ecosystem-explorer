@@ -2,7 +2,8 @@
 
 React 19 + Vite + TypeScript frontend that provides search and exploration for the OpenTelemetry
 ecosystem. Tailwind CSS v4 for styling, Radix UI primitives, Vitest for both unit and integration
-tests (Playwright is used only by `scripts/take-screenshots.mjs`).
+tests (Playwright is used by `scripts/take-screenshots.mjs` and `scripts/generate-test-config.mjs`
+for acceptance tests).
 
 For design system reference (colors, typography, spacing, component patterns) see `DESIGN.md` in
 this directory.
@@ -37,7 +38,8 @@ its own `<Routes>` table and its own chrome — legacy uses `Header`/`Footer`, v
 `NavBar`/`CncfCallout`/`FooterV1`. The two route tables mirror each other verbatim. To add a feature
 route: create a `*-page.tsx` under `src/features/{feature}/`, then register the **same** `<Route>`
 in **both** `LegacyApp.tsx` and `V1App.tsx` to keep them in sync. The chrome wraps all routes
-globally, so do not duplicate it per page.
+globally, so do not duplicate it per page. A new static route also needs an entry in
+`STATIC_ROUTE_META` (see [SEO and agent delivery](#seo-and-agent-delivery)).
 
 ## Testing
 
@@ -52,6 +54,25 @@ Wrap data fetching in custom hooks with explicit loading/data/error state. Do no
 inside components. IndexedDB is used for client-side caching with a 24-hour expiry. Bump the
 IndexedDB schema version when changing it, or integration tests will fail with stale schema.
 
+## SEO and agent delivery
+
+The app serves per-route metadata and Markdown to non-browser clients (search engines, social
+scrapers, and HTTP-only AI agents). See `docs/seo-and-agent-delivery.md` for the full architecture.
+Key rules when working here:
+
+- `src/lib/seo/` (`constants.ts`, `derive.ts`) is the single source of truth for per-URL titles,
+  descriptions, and canonical paths. It is imported by the build scripts, the client `<Seo>`
+  component, and the Netlify edge function, so it **must stay dependency-free** — no framework,
+  Node, or Deno APIs.
+- Add new static routes to `STATIC_ROUTE_META` in `src/lib/seo/derive.ts`. Render `<Seo>` on pages
+  that need non-default metadata.
+- The edge function (`netlify/edge-functions/agent-negotiation.ts`) runs in Deno and cannot import
+  from `src/`, so it duplicates a few constants (site origin, default title/description). When you
+  change those, update the edge copy in the same commit.
+- `scripts/generate-agent-docs.mjs` and `scripts/generate-seo.mjs` run as part of `bun run build`
+  and emit the Markdown pages, `dist/seo/routes.json`, `dist/sitemap.xml`, and `llms.txt`. Run a
+  build and inspect `dist/` after changing generation or edge logic.
+
 ## Styling
 
 - Color tokens are defined in `src/themes.ts` and applied via Tailwind classes. Do not hardcode
@@ -64,6 +85,75 @@ IndexedDB schema version when changing it, or integration tests will fail with s
 Feature flags live in `src/lib/feature-flags.ts` and are accessed via `isEnabled("FLAG_NAME")`.
 They're read from `import.meta.env.VITE_FEATURE_FLAG_*` and baked at build time, so they cannot be
 toggled at runtime. Document new flags in `.env.development` for local testing.
+
+## Internationalization (i18n)
+
+The app uses [i18next](https://www.i18next.com/) + [react-i18next](https://react.i18next.com/).
+Runtime config lives in `src/i18n/config.ts`. Locale files are served as static JSON:
+
+```text
+public/locales/{lng}/{namespace}.json
+```
+
+Currently supported languages: `en`, `es`. Active namespaces: `common`, `layout`, `home`,
+`collector`, `java-agent`, `about`, `ecosystem`, `list`.
+
+### Patterns
+
+**Inside a React component** — call the hook with the namespace closest to the component:
+
+```tsx
+const { t } = useTranslation("java-agent");
+// ...
+<button>{t("builder.controls.reset")}</button>;
+```
+
+**Text with embedded JSX** (links, formatted spans) — use the `Trans` component:
+
+```tsx
+import { Trans } from "react-i18next";
+
+<Trans
+  i18nKey="intro.description"
+  ns="about"
+  components={{ otelLink: <a href="https://opentelemetry.io" /> }}
+/>;
+```
+
+The locale value uses the component name as a placeholder tag:
+`"Visit <otelLink>OpenTelemetry</otelLink> to learn more."`
+
+**Outside React** (module-level functions, utilities) — import `getI18n`:
+
+```ts
+import { getI18n } from "react-i18next";
+getI18n().t("namespace:some.key");
+```
+
+### Adding a new namespace
+
+1. Create `public/locales/{lng}/{ns}.json` for every supported language (currently `en` and `es`).
+2. Add `"{ns}"` to the `ns` array in `src/i18n/config.ts`.
+3. Add the import and entry to **both** test setup files:
+   - `src/test/setup.ts` (unit tests)
+   - `src/test/integration/setup.ts` (integration tests)
+
+### Rules
+
+- Never hardcode user-visible strings. Every label, tooltip, `aria-label`, and button text must go
+  through `t()`.
+- Do not use `getI18n()` inside a component — use `useTranslation()` instead.
+- When adding a key to `en`, add the equivalent key to every other language file in the same commit.
+  If a real translation is not yet available, copy the English value verbatim as a placeholder —
+  this keeps all files structurally identical and gives translators a clear starting point. Do not
+  omit the key; a missing key is harder to discover than an untranslated one.
+- When removing a UI string, delete its key from **every** language file in the same commit. Search
+  for the key literal across `public/locales/` to find all copies. Dead keys accumulate silently and
+  make future audits harder.
+- When reviewing a PR that touches locale files or translatable components, verify: every key added
+  to `en` has a counterpart in all other language files; every key removed from `en` is also removed
+  from all other language files; no key exists only in a non-English file (orphan keys with no `en`
+  counterpart).
 
 ## Accessibility Guidelines
 
@@ -166,3 +256,7 @@ Run before submitting changes:
 - `bun run typecheck`
 - `bun run lint`
 - `bun run test`
+
+If your change added, removed, or renamed any locale keys: verify that every language file under
+`public/locales/` has the same key structure as `en`. Every key present in `en` must exist in all
+other language files, and no orphan keys should exist only in a non-English file.

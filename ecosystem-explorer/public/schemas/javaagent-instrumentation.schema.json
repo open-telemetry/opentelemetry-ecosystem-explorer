@@ -109,9 +109,45 @@
             "items": {
               "type": "string"
             }
+          },
+          "declarative_type": {
+            "description": "When set to \"structured_list\", each entry is an object described by declarative_schema.",
+            "const": "structured_list",
+            "type": "string"
+          },
+          "declarative_schema": {
+            "description": "Per-item schema used when declarative_type is \"structured_list\".",
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "const": "object"
+              },
+              "required": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "properties": {
+                "type": "object",
+                "propertyOrder": []
+              }
+            },
+            "propertyOrder": ["type", "required", "properties"],
+            "required": ["properties", "type"]
           }
         },
-        "propertyOrder": ["name", "declarative_name", "description", "type", "default", "examples"],
+        "propertyOrder": [
+          "name",
+          "declarative_name",
+          "description",
+          "type",
+          "default",
+          "examples",
+          "declarative_type",
+          "declarative_schema"
+        ],
         "required": ["default", "description", "name", "type"]
       }
     },

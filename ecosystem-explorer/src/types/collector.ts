@@ -62,6 +62,14 @@ export interface CollectorComponent {
   repository?: string;
   /** Detailed status including codeowners and signal stability. */
   status?: ComponentStatus;
+  /** Telemetry metrics emitted by this component. Keyed by metric name. */
+  metrics?: { [key: string]: CollectorMetric };
+  /** Attribute definitions referenced by metrics. Keyed by attribute name. */
+  attributes?: { [key: string]: CollectorAttribute };
+  /** Resource attributes associated with the component. Keyed by attribute name. */
+  resource_attributes?: { [key: string]: CollectorAttribute };
+  /** Content hash of the component's README, if one was found. Used to lazily fetch the markdown file. */
+  markdown_hash?: string;
 }
 
 /**
@@ -79,6 +87,60 @@ export interface ComponentStatus {
   };
 }
 
+/**
+ * A single metric emitted by a Collector component.
+ * Modeled after the metadata.yaml schema used by the collector-contrib repo.
+ */
+export interface CollectorMetric {
+  /** Description of what this metric measures. */
+  description: string;
+  /** Whether the metric is collected by default. */
+  enabled: boolean;
+  /** Metric unit as defined by https://ucum.org/ucum.html. */
+  unit: string;
+  /** Stability level of this specific metric. */
+  stability?: Stability;
+  /** Extended documentation beyond the description. */
+  extended_documentation?: string;
+  /** Whether this metric is optional (only initialized under certain conditions). */
+  optional?: boolean;
+  /** Sum metric type descriptor. Present when the metric is a sum. */
+  sum?: MetricValueDescriptor & { monotonic: boolean };
+  /** Gauge metric type descriptor. Present when the metric is a gauge. */
+  gauge?: MetricValueDescriptor;
+  /** Histogram metric type descriptor. Present when the metric is a histogram. */
+  histogram?: MetricValueDescriptor & { bucket_boundaries?: number[] };
+  /** Attribute keys referencing the component-level attributes map. */
+  attributes?: string[];
+}
+
+/**
+ * Shared fields across sum, gauge, and histogram metric type descriptors.
+ */
+export interface MetricValueDescriptor {
+  /** The numeric type of the metric's data points. */
+  value_type: string;
+  /** Aggregation temporality (e.g., "cumulative", "delta"). Only present on sum metrics. */
+  aggregation_temporality?: string;
+  /** Whether this metric is observed asynchronously. */
+  async?: boolean;
+}
+
+/**
+ * Attribute definition at the component level.
+ * Metrics reference these by key name in their `attributes` array.
+ */
+export interface CollectorAttribute {
+  /** Human-readable description of the attribute. */
+  description: string;
+  /** Data type of the attribute (e.g., "string", "int", "double", "bool"). */
+  type: string;
+  /** If set, the exported attribute name differs from the map key. */
+  name_override?: string;
+  /** Allowed values when the attribute is an enum. */
+  enum?: string[];
+}
+
 export interface CollectorIndex {
   ecosystem: string;
   taxonomy: {
@@ -92,8 +154,12 @@ export interface IndexComponent {
   id: string;
   name: string;
   distribution: string;
+  distributions?: string[];
   type: string;
   display_name?: string | null;
   description?: string | null;
   stability?: Stability | null;
+  has_readme?: boolean;
+  /** Telemetry signals supported across all stability levels (e.g. ["metrics", "traces"]). */
+  signals?: string[];
 }

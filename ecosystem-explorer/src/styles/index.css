@@ -50,4 +50,15 @@
   --color-muted: hsl(var(--muted-hsl));
   --color-muted-foreground: hsl(var(--muted-foreground-hsl));
   --color-border: hsl(var(--border-hsl));
+
+  /* Theme-aware layout classes */
+  --color-surface-card: var(--surface-card-bg);
+  --shadow-surface: var(--surface-shadow);
+  --shadow-surface-hover: var(--surface-shadow-hover);
+  --color-code-bg: hsl(var(--code-bg-hsl));
+  --color-code-fg: hsl(var(--code-fg-hsl));
+}
+
+@utility text-gradient-brand {
+  @apply from-otel-orange to-otel-blue bg-gradient-to-r bg-clip-text text-transparent;
 }

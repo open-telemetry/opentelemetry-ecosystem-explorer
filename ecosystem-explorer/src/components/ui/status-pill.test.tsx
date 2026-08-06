@@ -34,14 +34,14 @@ const VARIANTS: ReadonlyArray<{
     base: "text-slate-600",
     dark: "dark:text-slate-400",
   },
-  { stability: "alpha", label: "Alpha", base: "text-orange-600", dark: "dark:text-orange-400" },
-  { stability: "beta", label: "Beta", base: "text-blue-600", dark: "dark:text-blue-400" },
-  { stability: "stable", label: "Stable", base: "text-green-600", dark: "dark:text-green-400" },
-  { stability: "deprecated", label: "Deprecated", base: "text-red-600", dark: "dark:text-red-400" },
+  { stability: "alpha", label: "Alpha", base: "text-orange-800", dark: "dark:text-orange-400" },
+  { stability: "beta", label: "Beta", base: "text-blue-700", dark: "dark:text-blue-400" },
+  { stability: "stable", label: "Stable", base: "text-green-800", dark: "dark:text-green-400" },
+  { stability: "deprecated", label: "Deprecated", base: "text-red-700", dark: "dark:text-red-400" },
   {
     stability: "unmaintained",
     label: "Unmaintained",
-    base: "text-red-600",
+    base: "text-red-700",
     dark: "dark:text-red-400",
   },
 ];
@@ -67,9 +67,9 @@ describe("StatusPill", () => {
     const deprecated = screen.getByText("Deprecated");
     const unmaintained = screen.getByText("Unmaintained");
     expect(deprecated).not.toBe(unmaintained);
-    expect(deprecated.className).toContain("text-red-600");
+    expect(deprecated.className).toContain("text-red-700");
     expect(deprecated.className).toContain("dark:text-red-400");
-    expect(unmaintained.className).toContain("text-red-600");
+    expect(unmaintained.className).toContain("text-red-700");
     expect(unmaintained.className).toContain("dark:text-red-400");
   });
 

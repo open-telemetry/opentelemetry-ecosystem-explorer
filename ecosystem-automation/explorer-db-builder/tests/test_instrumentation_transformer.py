@@ -16,7 +16,10 @@
 
 import pytest
 from explorer_db_builder.instrumentation_transformer import (
+    _collect_search_terms,
+    _strip_version_range,
     _transform_0_1_to_0_2,
+    make_index_instrumentation,
     make_list_instrumentation,
     transform_instrumentation_format,
 )
@@ -88,6 +91,134 @@ class TestMakeListInstrumentation:
         assert "semantic_conventions" not in entry
         assert "configurations" not in entry
         assert "disabled_by_default" not in entry
+
+
+class TestMakeIndexInstrumentation:
+    @staticmethod
+    def _full_instrumentation() -> dict:
+        return {
+            "name": "kafka-clients-2.6",
+            "display_name": "Kafka Clients",
+            "description": "Kafka client instrumentation",
+            "has_standalone_library": True,
+            "library_link": "https://kafka.apache.org",
+            "source_path": "instrumentation/kafka/kafka-clients-2.6",
+            "minimum_java_version": 8,
+            "scope": {"name": "io.opentelemetry.kafka-clients-2.6", "schema_url": "https://x/1.0"},
+            "semantic_conventions": ["messaging"],
+            "features": ["TRACING", "METRICS"],
+            "javaagent_target_versions": ["org.apache.kafka:kafka-clients:[2.6,)"],
+            "configurations": [
+                {
+                    "name": "otel.instrumentation.kafka.experimental-span-attributes",
+                    "declarative_name": "experimental_span_attributes",
+                    "description": "Enable experimental span attributes",
+                    "type": "boolean",
+                    "default": False,
+                    "examples": ["true"],
+                }
+            ],
+            "telemetry": [
+                {
+                    "when": "on publish",
+                    "metrics": [
+                        {
+                            "name": "messaging.publish.duration",
+                            "description": "Publish duration.",
+                            "instrument": "histogram",
+                            "data_type": "HISTOGRAM",
+                            "unit": "s",
+                            "attributes": [{"name": "messaging.system", "type": "STRING"}],
+                        }
+                    ],
+                    "spans": [
+                        {"span_kind": "PRODUCER", "attributes": [{"name": "messaging.system", "type": "STRING"}]}
+                    ],
+                }
+            ],
+        }
+
+    def test_collects_distinctive_identifiers(self):
+        terms = _collect_search_terms(self._full_instrumentation())
+        for expected in [
+            "io.opentelemetry.kafka-clients-2.6",  # scope.name
+            "messaging",  # semantic convention
+            "TRACING",
+            "METRICS",
+            "org.apache.kafka:kafka-clients",  # maven coordinate, version range stripped
+            "otel.instrumentation.kafka.experimental-span-attributes",  # config name
+            "experimental_span_attributes",  # config declarative_name
+            "Enable experimental span attributes",  # config description
+            "messaging.publish.duration",  # metric name
+            "Publish duration.",  # metric description
+        ]:
+            assert expected in terms
+
+    def test_excludes_low_signal_and_seeded_fields(self):
+        # Noise (attributes, instrument/unit/data_type, span kind, link/path) is
+        # dropped; name/display_name/description are re-indexed by the frontend.
+        terms = _collect_search_terms(self._full_instrumentation())
+        for excluded in [
+            "https://kafka.apache.org",  # library_link
+            "instrumentation/kafka/kafka-clients-2.6",  # source_path
+            "8",  # minimum_java_version
+            "https://x/1.0",  # scope.schema_url
+            "on publish",  # telemetry.when
+            "histogram",  # metric instrument
+            "HISTOGRAM",  # metric data_type
+            "s",  # metric unit
+            "messaging.system",  # attribute name
+            "STRING",  # attribute type
+            "PRODUCER",  # span kind
+            "org.apache.kafka:kafka-clients:[2.6,)",  # unstripped coordinate
+            "kafka-clients-2.6",
+            "Kafka Clients",
+            "Kafka client instrumentation",
+        ]:
+            assert excluded not in terms
+
+    def test_sorted_deduped_and_deterministic(self):
+        a = self._full_instrumentation()
+        b = self._full_instrumentation()
+        b["features"] = list(reversed(b["features"]))
+        # Two coordinates that strip to the same group:artifact must dedupe to one.
+        b["javaagent_target_versions"] = [
+            "org.apache.kafka:kafka-clients:[2.6,)",
+            "org.apache.kafka:kafka-clients:[3.0,)",
+        ]
+        terms = _collect_search_terms(a)
+        assert terms == sorted(set(terms))
+        b_terms = _collect_search_terms(b)
+        assert b_terms.count("org.apache.kafka:kafka-clients") == 1
+        assert _collect_search_terms(a) == b_terms
+
+    def test_null_safe_on_missing_optional_blocks(self):
+        # No scope, no telemetry, no version metadata -> empty list, never a crash.
+        assert _collect_search_terms({"name": "bare-1.0"}) == []
+        assert _collect_search_terms({"name": "x", "scope": None, "telemetry": None}) == []
+
+    def test_make_index_carries_lightweight_fields_and_search_terms(self):
+        entry = make_index_instrumentation(self._full_instrumentation())
+        assert entry["name"] == "kafka-clients-2.6"
+        assert entry["display_name"] == "Kafka Clients"
+        assert entry["description"] == "Kafka client instrumentation"
+        assert entry["has_telemetry"] is True
+        assert entry["has_standalone_library"] is True
+        assert "messaging.publish.duration" in entry["search_terms"]
+        # Heavy objects must not leak into the index entry.
+        assert "configurations" not in entry
+        assert "scope" not in entry
+        assert "telemetry" not in entry
+
+    def test_make_index_no_telemetry_yields_empty_search_terms(self):
+        entry = make_index_instrumentation({"name": "bare-1.0"})
+        assert entry["has_telemetry"] is False
+        assert entry["search_terms"] == []
+
+    def test_strip_version_range(self):
+        assert _strip_version_range("org.springframework:spring-webmvc:[6.0.0,)") == "org.springframework:spring-webmvc"
+        # Non-coordinate strings (no group:artifact:range shape) are unchanged.
+        assert _strip_version_range("Java 8+") == "Java 8+"
 
 
 class TestTransformInstrumentationFormat:
@@ -219,6 +350,110 @@ class TestTransformInstrumentationFormat:
 
         with pytest.raises(ValueError, match="Unsupported file format: 0.9"):
             transform_instrumentation_format(data)
+
+
+class TestTransform06To05:
+    def _catalog_data(self):
+        """0.6 inventory: two libraries sharing one config/metric via the definitions catalog."""
+        return {
+            "file_format": 0.6,
+            "definitions": {
+                "configurations": {
+                    "http.known-methods": {
+                        "name": "otel.instrumentation.http.known-methods",
+                        "declarative_name": "java.common.http.known_methods",
+                        "description": "Configures known methods.",
+                        "type": "list",
+                        "default": "GET,POST",
+                    },
+                },
+                "metrics": {
+                    "http.server.request.duration-639e2d0b": {
+                        "name": "http.server.request.duration",
+                        "description": "Duration of HTTP server requests.",
+                        "instrument": "histogram",
+                        "data_type": "HISTOGRAM",
+                        "unit": "s",
+                    },
+                },
+            },
+            "libraries": [
+                {
+                    "name": "activej-http-6.0",
+                    "configuration_refs": ["http.known-methods"],
+                    "telemetry": [
+                        {"when": "default", "metric_refs": ["http.server.request.duration-639e2d0b"]},
+                    ],
+                },
+                {
+                    "name": "akka-http-10.0",
+                    "configuration_refs": ["http.known-methods"],
+                    "telemetry": [
+                        {"when": "default", "metric_refs": ["http.server.request.duration-639e2d0b"]},
+                    ],
+                },
+            ],
+        }
+
+    def test_resolves_refs_to_inline_shape(self):
+        result = transform_instrumentation_format(self._catalog_data())
+
+        assert result["file_format"] == 0.5
+        # Catalog and ref keys are dropped after resolution.
+        assert "definitions" not in result
+        lib = result["libraries"][0]
+        assert "configuration_refs" not in lib
+        assert "metric_refs" not in lib["telemetry"][0]
+        # References resolved into the inline 0.5 shape consumers expect.
+        assert lib["configurations"][0]["name"] == "otel.instrumentation.http.known-methods"
+        assert lib["telemetry"][0]["metrics"][0]["data_type"] == "HISTOGRAM"
+
+    def test_shared_definition_yields_independent_copies(self):
+        result = transform_instrumentation_format(self._catalog_data())
+
+        config_a = result["libraries"][0]["configurations"][0]
+        config_b = result["libraries"][1]["configurations"][0]
+        metric_a = result["libraries"][0]["telemetry"][0]["metrics"][0]
+        metric_b = result["libraries"][1]["telemetry"][0]["metrics"][0]
+
+        # Same values, but distinct objects so later in-place mutation can't leak across libraries.
+        assert config_a == config_b
+        assert config_a is not config_b
+        assert metric_a is not metric_b
+
+    def test_unknown_ref_is_skipped(self):
+        data = {
+            "file_format": 0.6,
+            "definitions": {"configurations": {}, "metrics": {}},
+            "libraries": [
+                {
+                    "name": "test-lib",
+                    "configuration_refs": ["does.not.exist"],
+                    "telemetry": [{"when": "default", "metric_refs": ["missing-metric"]}],
+                }
+            ],
+        }
+
+        result = transform_instrumentation_format(data)
+
+        lib = result["libraries"][0]
+        assert lib["configurations"] == []
+        assert lib["telemetry"][0]["metrics"] == []
+
+    def test_resolves_custom_libraries(self):
+        data = self._catalog_data()
+        data["custom"] = [
+            {
+                "name": "custom-lib",
+                "configuration_refs": ["http.known-methods"],
+                "telemetry": [],
+            }
+        ]
+
+        result = transform_instrumentation_format(data)
+
+        assert result["custom"][0]["configurations"][0]["name"] == "otel.instrumentation.http.known-methods"
+        assert "configuration_refs" not in result["custom"][0]
 
 
 class TestTransform01To02:

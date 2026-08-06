@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { ChevronsDownUp, ChevronsUpDown } from "lucide-react";
 import { Loader } from "@/components/ui/loader";
 import { BackButton } from "@/components/ui/back-button";
 import { BetaBadge } from "@/components/ui/beta-badge";
 import { PageContainer } from "@/components/layout/page-container";
+import { Seo } from "@/components/seo/seo";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { VersionSelector } from "@/features/java-agent/components/version-selector";
 import {
@@ -30,22 +33,25 @@ import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
 import { useInstrumentations, useVersions } from "@/hooks/use-javaagent-data";
 import { groupByModule } from "@/lib/normalize-instrumentation";
 import { useCustomizedModules } from "@/hooks/use-customized-modules";
+import { filterSupportedConfigVersions } from "@/lib/config-schema-version";
 import type { GroupNode } from "@/types/configuration";
 import { hasMeaningfulLeaf } from "@/lib/state-hydrate";
 import { SchemaRenderer } from "./components/schema-renderer";
 import { PreviewCard } from "./components/preview-card";
+import type { ConfigurationTarget } from "@/lib/yaml-generator";
+import { TargetSelector } from "./components/target-selector";
 import {
   ConfigurationTocSidebar,
   type StatusFilter,
   type TocSection,
 } from "./components/configuration-toc-sidebar";
-import {
-  GeneralSectionCard,
-  GENERAL_SECTION_KEY,
-  GENERAL_SECTION_LABEL,
-} from "./components/general-section-card";
+import { GeneralSectionCard, GENERAL_SECTION_KEY } from "./components/general-section-card";
 import { InstrumentationBrowser } from "./components/instrumentation-browser";
 import { useActiveSection } from "./hooks/use-active-section";
+import {
+  SectionExpansionProvider,
+  useSectionExpansion,
+} from "./components/section-expansion-context";
 
 // Per-tab hidden-keys: SDK hides the entire `instrumentation/development`
 // subtree (the Instrumentation tab owns it), while the Instrumentation tab
@@ -68,8 +74,6 @@ const BUILDER_GRID = "grid grid-cols-1 gap-6 lg:grid-cols-[256px_minmax(0,1fr)_4
 const INSTRUMENTATION_DEV_KEY = "instrumentation/development";
 const GENERAL_SUBKEY = "general";
 const INSTRUMENTATIONS_SECTION_KEY = "instrumentations";
-const INSTRUMENTATIONS_SECTION_LABEL = "Instrumentations";
-const GENERAL_SETTINGS_LABEL = "General settings";
 
 // Drops instrumentation customizations that reference modules not present in the
 // selected agent version. Without this, switching from a newer agent (where a
@@ -84,27 +88,36 @@ function PruneInstrumentationsForAgentVersion({ javaAgentVersion }: { javaAgentV
   return null;
 }
 
-interface SdkTabContentProps {
-  schema: GroupNode;
-  starter: ReturnType<typeof useConfigStarter>["data"];
-  schemaVersion: string;
-  javaAgentVersion: string;
-  activeTab: string;
+const EXPAND_TOOLBAR_BUTTON =
+  "border-border/60 bg-card text-foreground hover:bg-card/80 focus-visible:ring-primary inline-flex cursor-pointer items-center gap-1 rounded-md border px-3 py-1.5 text-xs focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none";
+
+function ExpandCollapseToolbar() {
+  const { expandAll, collapseAll } = useSectionExpansion();
+  return (
+    <div className="flex items-center gap-2">
+      <button type="button" onClick={expandAll} className={EXPAND_TOOLBAR_BUTTON}>
+        <ChevronsUpDown className="h-3 w-3" aria-hidden="true" />
+        Expand all
+      </button>
+      <button type="button" onClick={collapseAll} className={EXPAND_TOOLBAR_BUTTON}>
+        <ChevronsDownUp className="h-3 w-3" aria-hidden="true" />
+        Collapse all
+      </button>
+    </div>
+  );
 }
 
-function SdkTabContent({
-  schema,
-  starter,
-  schemaVersion,
-  javaAgentVersion,
-  activeTab,
-}: SdkTabContentProps) {
+interface SdkTabContentProps {
+  schema: GroupNode;
+  javaAgentVersion: string;
+  activeTab: string;
+  target: ConfigurationTarget;
+}
+
+function SdkTabContent({ schema, javaAgentVersion, activeTab, target }: SdkTabContentProps) {
+  const { t } = useTranslation("java-agent");
   const [activePreviewKey, setActivePreviewKey] = useState<string | null>(null);
 
-  // Leaf keys take precedence over the enclosing section key. The General card uses
-  // a synthetic section key ("general") that doesn't map to any top-level YAML key,
-  // so its individual leaf fields (`disabled`, `log_level`, ...) tag themselves with
-  // `data-yaml-section-key` so their real YAML key can be highlighted instead.
   const handleInteraction = (e: React.BaseSyntheticEvent) => {
     const target = e.target as HTMLElement;
     const leafKey = target
@@ -129,65 +142,68 @@ function SdkTabContent({
   const tocSections: TocSection[] = useMemo(() => {
     const groups = groupChildren.map((c) => ({ key: c.key, label: c.label }));
     return hasGeneralLeaves
-      ? [{ key: GENERAL_SECTION_KEY, label: GENERAL_SECTION_LABEL }, ...groups]
+      ? [{ key: GENERAL_SECTION_KEY, label: t("builder.general.label") }, ...groups]
       : groups;
-  }, [groupChildren, hasGeneralLeaves]);
+  }, [groupChildren, hasGeneralLeaves, t]);
   const sectionKeys = useMemo(() => tocSections.map((s) => s.key), [tocSections]);
   const sectionsContainerRef = useRef<HTMLDivElement>(null);
   const { activeKey, scrollToSection } = useActiveSection(sectionKeys, sectionsContainerRef);
 
   return (
-    <ConfigurationBuilderProvider
-      key={schemaVersion}
-      schema={schema}
-      version={schemaVersion}
-      starter={starter}
-    >
+    <>
       <PruneInstrumentationsForAgentVersion javaAgentVersion={javaAgentVersion} />
-      <div className={BUILDER_GRID}>
-        <ConfigurationTocSidebar
-          activeTab={activeTab}
-          sections={tocSections}
-          activeKey={activeKey}
-          onSectionClick={scrollToSection}
-        />
-        <div
-          ref={sectionsContainerRef}
-          className="space-y-4"
-          onFocusCapture={handleInteraction}
-          onPointerDown={handleInteraction}
-        >
-          {hasGeneralLeaves && (
-            <GeneralSectionCard label={GENERAL_SECTION_LABEL}>{leafChildren}</GeneralSectionCard>
-          )}
-          {groupChildren.map((child) => (
-            <SchemaRenderer key={child.key} node={child} depth={0} path={child.key} />
-          ))}
+      <SectionExpansionProvider>
+        <div className={BUILDER_GRID}>
+          <ConfigurationTocSidebar
+            activeTab={activeTab}
+            sections={tocSections}
+            activeKey={activeKey}
+            onSectionClick={scrollToSection}
+          />
+          <div className="space-y-4">
+            <div className="flex justify-end">
+              <ExpandCollapseToolbar />
+            </div>
+            <div
+              ref={sectionsContainerRef}
+              className="space-y-4"
+              onFocusCapture={handleInteraction}
+              onPointerDown={handleInteraction}
+            >
+              {hasGeneralLeaves && (
+                <GeneralSectionCard label={t("builder.general.label")}>
+                  {leafChildren}
+                </GeneralSectionCard>
+              )}
+              {groupChildren.map((child) => (
+                <SchemaRenderer key={child.key} node={child} depth={0} path={child.key} />
+              ))}
+            </div>
+          </div>
+          <PreviewCard
+            schema={schema}
+            javaAgentVersion={javaAgentVersion}
+            activePreviewKey={activePreviewKey}
+            target={target}
+          />
         </div>
-        <PreviewCard
-          schema={schema}
-          javaAgentVersion={javaAgentVersion}
-          activePreviewKey={activePreviewKey}
-        />
-      </div>
-    </ConfigurationBuilderProvider>
+      </SectionExpansionProvider>
+    </>
   );
 }
 
 interface InstrumentationTabContentProps {
   schema: GroupNode;
-  starter: ReturnType<typeof useConfigStarter>["data"];
-  schemaVersion: string;
   javaAgentVersion: string;
   activeTab: string;
+  target: ConfigurationTarget;
 }
 
 function InstrumentationTabContent({
   schema,
-  starter,
-  schemaVersion,
   javaAgentVersion,
   activeTab,
+  target,
 }: InstrumentationTabContentProps) {
   const generalNode = useMemo<GroupNode | null>(() => {
     const devNode = schema.children.find((c) => c.key === INSTRUMENTATION_DEV_KEY);
@@ -198,19 +214,13 @@ function InstrumentationTabContent({
   }, [schema]);
 
   return (
-    <ConfigurationBuilderProvider
-      key={schemaVersion}
+    <InstrumentationTabBody
+      activeTab={activeTab}
       schema={schema}
-      version={schemaVersion}
-      starter={starter}
-    >
-      <InstrumentationTabBody
-        activeTab={activeTab}
-        schema={schema}
-        generalNode={generalNode}
-        javaAgentVersion={javaAgentVersion}
-      />
-    </ConfigurationBuilderProvider>
+      generalNode={generalNode}
+      javaAgentVersion={javaAgentVersion}
+      target={target}
+    />
   );
 }
 
@@ -219,6 +229,7 @@ interface InstrumentationTabBodyProps {
   schema: GroupNode;
   generalNode: GroupNode | null;
   javaAgentVersion: string;
+  target: ConfigurationTarget;
 }
 
 function InstrumentationTabBody({
@@ -226,7 +237,9 @@ function InstrumentationTabBody({
   schema,
   generalNode,
   javaAgentVersion,
+  target,
 }: InstrumentationTabBodyProps) {
+  const { t } = useTranslation("java-agent");
   const [activePreviewKey, setActivePreviewKey] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
@@ -246,12 +259,13 @@ function InstrumentationTabBody({
       setActivePreviewKey(key);
     }
   };
+
   const tocSections: TocSection[] = useMemo(
     () => [
-      { key: GENERAL_SECTION_KEY, label: GENERAL_SETTINGS_LABEL },
-      { key: INSTRUMENTATIONS_SECTION_KEY, label: INSTRUMENTATIONS_SECTION_LABEL },
+      { key: GENERAL_SECTION_KEY, label: t("builder.sections.generalSettings") },
+      { key: INSTRUMENTATIONS_SECTION_KEY, label: t("builder.sections.instrumentations") },
     ],
-    []
+    [t]
   );
   const sectionKeys = useMemo(() => tocSections.map((s) => s.key), [tocSections]);
   const sectionsContainerRef = useRef<HTMLDivElement>(null);
@@ -294,59 +308,73 @@ function InstrumentationTabBody({
   }, [hasDistributionContent, isDistributionEnabled, setEnabled]);
 
   return (
-    <div className={BUILDER_GRID}>
-      <ConfigurationTocSidebar
-        activeTab={activeTab}
-        sections={tocSections}
-        activeKey={activeKey}
-        onSectionClick={scrollToSection}
-        search={search}
-        onSearchChange={setSearch}
-        statusFilter={statusFilter}
-        onStatusFilterChange={setStatusFilter}
-        customizationCount={customizationCount}
-      />
-      <div
-        ref={sectionsContainerRef}
-        className="space-y-4"
-        onFocusCapture={handleInteraction}
-        onPointerDown={handleInteraction}
-      >
-        <GeneralSectionCard
-          label={GENERAL_SETTINGS_LABEL}
-          sectionKey={GENERAL_SECTION_KEY}
-          pathPrefix={`${INSTRUMENTATION_DEV_KEY}.${GENERAL_SUBKEY}`}
-          defaultExpanded={true}
-          emptyMessage="The schema for this version does not expose general instrumentation settings."
-        >
-          {generalNode?.children ?? []}
-        </GeneralSectionCard>
-        <InstrumentationBrowser
-          instrumentations={instrumentationsState.data}
-          loading={instrumentationsState.loading}
-          error={instrumentationsState.error}
+    <SectionExpansionProvider>
+      <div className={BUILDER_GRID}>
+        <ConfigurationTocSidebar
+          activeTab={activeTab}
+          sections={tocSections}
+          activeKey={activeKey}
+          onSectionClick={scrollToSection}
           search={search}
+          onSearchChange={setSearch}
           statusFilter={statusFilter}
-          onJumpToGeneral={scrollToSection}
+          onStatusFilterChange={setStatusFilter}
+          customizationCount={customizationCount}
+        />
+        <div className="space-y-4">
+          <div className="flex justify-end">
+            <ExpandCollapseToolbar />
+          </div>
+          <div
+            ref={sectionsContainerRef}
+            className="space-y-4"
+            onFocusCapture={handleInteraction}
+            onPointerDown={handleInteraction}
+          >
+            <GeneralSectionCard
+              label={t("builder.sections.generalSettings")}
+              sectionKey={GENERAL_SECTION_KEY}
+              pathPrefix={`${INSTRUMENTATION_DEV_KEY}.${GENERAL_SUBKEY}`}
+              defaultExpanded={true}
+              emptyMessage={t("builder.general.empty")}
+            >
+              {generalNode?.children ?? []}
+            </GeneralSectionCard>
+            <InstrumentationBrowser
+              instrumentations={instrumentationsState.data}
+              loading={instrumentationsState.loading}
+              error={instrumentationsState.error}
+              search={search}
+              statusFilter={statusFilter}
+              onJumpToGeneral={scrollToSection}
+            />
+          </div>
+        </div>
+        <PreviewCard
+          schema={schema}
+          javaAgentVersion={javaAgentVersion}
+          activePreviewKey={activePreviewKey}
+          target={target}
         />
       </div>
-      <PreviewCard
-        schema={schema}
-        javaAgentVersion={javaAgentVersion}
-        activePreviewKey={activePreviewKey}
-      />
-    </div>
+    </SectionExpansionProvider>
   );
 }
 
 export function ConfigurationBuilderPage() {
+  const { t } = useTranslation("java-agent");
   const schemaVersionsState = useConfigVersions();
+  // The Java Agent needs time to implement support for the latest schema versions.
+  const supportedSchemaVersions = useMemo(
+    () => filterSupportedConfigVersions(schemaVersionsState.data?.versions ?? []),
+    [schemaVersionsState.data]
+  );
   const latestSchemaVersion = useMemo(
     () =>
-      schemaVersionsState.data?.versions.find((v) => v.is_latest)?.version ??
-      schemaVersionsState.data?.versions[0]?.version ??
+      supportedSchemaVersions.find((v) => v.is_latest)?.version ??
+      supportedSchemaVersions[0]?.version ??
       "",
-    [schemaVersionsState.data]
+    [supportedSchemaVersions]
   );
   const [currentSchemaVersion, setCurrentSchemaVersion] = useState<string>("");
   const schemaVersion = currentSchemaVersion || latestSchemaVersion;
@@ -364,6 +392,7 @@ export function ConfigurationBuilderPage() {
   );
   const [currentJavaAgentVersion, setCurrentJavaAgentVersion] = useState<string>("");
   const javaAgentVersion = currentJavaAgentVersion || latestJavaAgentVersion;
+  const [target, setTarget] = useState<ConfigurationTarget>("javaagent");
 
   const schema = useConfigSchema(schemaVersion);
   const starter = useConfigStarter(schemaVersion);
@@ -371,27 +400,26 @@ export function ConfigurationBuilderPage() {
 
   return (
     <PageContainer>
+      <Seo />
       <div className="space-y-6">
         <BackButton />
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-3xl font-semibold md:text-4xl">
-                <span className="from-otel-orange to-otel-blue bg-gradient-to-r bg-clip-text text-transparent">
-                  Configuration Builder
-                </span>
+                <span className="text-gradient-brand">{t("builder.title")}</span>
               </h1>
               <BetaBadge />
             </div>
             <p className="text-muted-foreground text-base">
-              Build and customize your OpenTelemetry Java Agent configuration.{" "}
+              {t("builder.description")}{" "}
               <a
                 href="https://opentelemetry.io/docs/zero-code/java/agent/declarative-configuration/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-foreground underline"
               >
-                Learn more about declarative configuration
+                {t("builder.links.declarativeConfig")}
               </a>{" "}
               ·{" "}
               <a
@@ -400,17 +428,17 @@ export function ConfigurationBuilderPage() {
                 rel="noopener noreferrer"
                 className="hover:text-foreground underline"
               >
-                Report an issue
+                {t("builder.links.reportIssue")}
               </a>
             </p>
           </div>
           <div className="flex flex-wrap items-center gap-4">
-            {schemaVersionsState.data && schemaVersion ? (
+            {supportedSchemaVersions.length > 0 && schemaVersion ? (
               <VersionSelector
-                versions={schemaVersionsState.data.versions}
+                versions={supportedSchemaVersions}
                 currentVersion={schemaVersion}
                 onVersionChange={setCurrentSchemaVersion}
-                label="Schema"
+                label={t("builder.sections.schema")}
                 id="schema-version-select"
               />
             ) : null}
@@ -419,62 +447,59 @@ export function ConfigurationBuilderPage() {
                 versions={javaAgentVersions}
                 currentVersion={javaAgentVersion}
                 onVersionChange={setCurrentJavaAgentVersion}
-                label="Agent"
+                label={t("builder.sections.agent")}
                 id="java-agent-version-select"
               />
             ) : null}
+            <TargetSelector value={target} onChange={setTarget} />
           </div>
         </div>
+        {/*
+         * Loading and error states are handled here, OUTSIDE the provider, so
+         * the schema-loading Loader and schema/starter error messages stay
+         * reachable. The provider is mounted only once data is ready, and it is
+         * hoisted above <Tabs> (not nested per-tab) so builder state survives
+         * tab switches — Radix unmounts the inactive TabsContent, which would
+         * otherwise discard unsaved edits. `key={schemaVersion}` remounts (and
+         * resets) state only when the schema version changes.
+         */}
         {schemaVersionsState.loading ? (
-          <Loader size="lg" label="Loading versions…" className="mt-4" />
+          <Loader size="lg" label={t("builder.loading.versions")} className="mt-4" />
         ) : schemaVersionsState.error ? (
-          <p className="mt-4 text-sm text-red-400">Failed to load available versions.</p>
-        ) : (
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsContent value="sdk">
-              {!schemaVersion || schema.loading || starter.loading || (!schema.error && !root) ? (
-                <Loader
-                  size={root ? "sm" : "lg"}
-                  label="Loading schema…"
-                  className={root ? "mt-4" : undefined}
-                />
-              ) : schema.error ? (
-                <p className="mt-4 text-sm text-red-400">Failed to load schema.</p>
-              ) : starter.error ? (
-                <p className="mt-4 text-sm text-red-400">Failed to load starter template.</p>
-              ) : root ? (
+          <p className="mt-4 text-sm text-red-400">{t("builder.error.versions")}</p>
+        ) : schema.loading || starter.loading || (!schema.error && !root) ? (
+          <Loader size="lg" label={t("builder.loading.schema")} className="mt-4" />
+        ) : schema.error ? (
+          <p className="mt-4 text-sm text-red-400">{t("builder.error.schema")}</p>
+        ) : starter.error ? (
+          <p className="mt-4 text-sm text-red-400">{t("builder.error.template")}</p>
+        ) : root ? (
+          <ConfigurationBuilderProvider
+            key={schemaVersion}
+            schema={root}
+            version={schemaVersion}
+            starter={starter.data}
+          >
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsContent value="sdk">
                 <SdkTabContent
                   schema={root}
-                  starter={starter.data}
-                  schemaVersion={schemaVersion}
                   javaAgentVersion={javaAgentVersion}
                   activeTab={activeTab}
+                  target={target}
                 />
-              ) : null}
-            </TabsContent>
-            <TabsContent value="instrumentation">
-              {!schemaVersion || schema.loading || starter.loading || (!schema.error && !root) ? (
-                <Loader
-                  size={root ? "sm" : "lg"}
-                  label="Loading schema…"
-                  className={root ? "mt-4" : undefined}
-                />
-              ) : schema.error ? (
-                <p className="mt-4 text-sm text-red-400">Failed to load schema.</p>
-              ) : starter.error ? (
-                <p className="mt-4 text-sm text-red-400">Failed to load starter template.</p>
-              ) : root ? (
+              </TabsContent>
+              <TabsContent value="instrumentation">
                 <InstrumentationTabContent
                   schema={root}
-                  starter={starter.data}
-                  schemaVersion={schemaVersion}
                   javaAgentVersion={javaAgentVersion}
                   activeTab={activeTab}
+                  target={target}
                 />
-              ) : null}
-            </TabsContent>
-          </Tabs>
-        )}
+              </TabsContent>
+            </Tabs>
+          </ConfigurationBuilderProvider>
+        ) : null}
       </div>
     </PageContainer>
   );

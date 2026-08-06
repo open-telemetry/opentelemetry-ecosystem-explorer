@@ -16,18 +16,18 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
-import type { InstrumentationData } from "@/types/javaagent";
+import type { InstrumentationListEntry } from "@/types/javaagent";
 import { groupByModule, normalizeRegistryName } from "./normalize-instrumentation";
 
 const REGISTRY_DIR = "public/data/javaagent/instrumentations";
 
 function makeEntry(
-  overrides: Partial<InstrumentationData> & { name: string }
-): InstrumentationData {
+  overrides: Partial<InstrumentationListEntry> & { name: string }
+): InstrumentationListEntry {
   return {
     scope: { name: `io.opentelemetry.${overrides.name}` },
     ...overrides,
-  } as InstrumentationData;
+  } as InstrumentationListEntry;
 }
 
 describe("normalizeRegistryName", () => {
@@ -135,8 +135,8 @@ describe("groupByModule", () => {
 });
 
 describe("snapshot: full registry", () => {
-  function loadAllEntries(): InstrumentationData[] {
-    const entries: InstrumentationData[] = [];
+  function loadAllEntries(): InstrumentationListEntry[] {
+    const entries: InstrumentationListEntry[] = [];
     for (const dir of readdirSync(REGISTRY_DIR)) {
       const dirPath = join(REGISTRY_DIR, dir);
       if (!statSync(dirPath).isDirectory()) continue;

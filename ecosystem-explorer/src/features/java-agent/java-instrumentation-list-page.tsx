@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useTranslation } from "react-i18next";
 import { AlertCircle, X } from "lucide-react";
 import { Loader } from "@/components/ui/loader";
 import { BackButton } from "@/components/ui/back-button";
@@ -29,8 +30,10 @@ import { VersionSelector } from "@/features/java-agent/components/version-select
 import { getInstrumentationDisplayName } from "./utils/format";
 import { groupInstrumentationsByDisplayName } from "./utils/group-instrumentations";
 import { PageContainer } from "@/components/layout/page-container";
+import { Seo } from "@/components/seo/seo";
 
 export function JavaInstrumentationListPage() {
+  const { t } = useTranslation("java-agent");
   const [searchParams, setSearchParams] = useSearchParams();
 
   const navigate = useNavigate();
@@ -188,17 +191,10 @@ export function JavaInstrumentationListPage() {
       }
 
       if (filters.telemetry.size > 0) {
-        // Prefer the precomputed flags from slim list-bundle entries; fall back
-        // to scanning telemetry for full detail objects (which omit the flags).
-        const hasSpans =
-          instr.has_spans ?? instr.telemetry?.some((t) => t.spans && t.spans.length > 0);
-        const hasMetrics =
-          instr.has_metrics ?? instr.telemetry?.some((t) => t.metrics && t.metrics.length > 0);
-
-        if (filters.telemetry.has("spans") && !hasSpans) {
+        if (filters.telemetry.has("spans") && !instr.has_spans) {
           return false;
         }
-        if (filters.telemetry.has("metrics") && !hasMetrics) {
+        if (filters.telemetry.has("metrics") && !instr.has_metrics) {
           return false;
         }
       }
@@ -305,18 +301,16 @@ export function JavaInstrumentationListPage() {
 
   return (
     <PageContainer>
+      <Seo />
       <div className="space-y-4">
         <BackButton />
 
         {invalidVersion && !bannerDismissed && (
           <div className="flex items-start justify-between gap-2 rounded-lg border border-yellow-500/50 bg-yellow-500/10 px-4 py-3 text-sm text-yellow-700 dark:text-yellow-400">
-            <p>
-              Version &quot;{invalidVersion}&quot; was not found. Showing the latest version (
-              {latestVersion}) instead.
-            </p>
+            <p>{t("list.invalidVersion", { version: invalidVersion, latest: latestVersion })}</p>
             <button
               onClick={() => setBannerDismissed(true)}
-              aria-label="Dismiss"
+              aria-label={t("list.dismiss")}
               className="mt-0.5 shrink-0 hover:opacity-70"
             >
               <X className="h-4 w-4" aria-hidden="true" />
@@ -327,13 +321,11 @@ export function JavaInstrumentationListPage() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="space-y-3">
             <h1 className="text-3xl font-bold md:text-4xl">
-              <span className="from-otel-orange to-otel-blue bg-gradient-to-r bg-clip-text text-transparent">
-                OpenTelemetry Java Agent
-              </span>
+              <span className="text-gradient-brand">OpenTelemetry Java Agent</span>
             </h1>
             {instrumentations != null && (
               <p className="text-muted-foreground text-base">
-                Explore {instrumentations.length} available instrumentations.
+                {t("list.description", { count: instrumentations.length })}
               </p>
             )}
           </div>
@@ -355,31 +347,31 @@ export function JavaInstrumentationListPage() {
         {versionsError || error ? (
           <div className="flex flex-col items-center justify-center space-y-4 py-32 text-center text-red-500">
             <AlertCircle className="mx-auto h-12 w-12 opacity-50" aria-hidden="true" />
-            <h3 className="text-xl font-semibold">Error loading data</h3>
+            <h3 className="text-xl font-semibold">{t("list.error.title")}</h3>
             {(versionsError ?? error)?.message && (
               <p className="text-muted-foreground text-sm">{(versionsError ?? error)!.message}</p>
             )}
-            <p className="text-muted-foreground">Please try refreshing the page.</p>
+            <p className="text-muted-foreground">{t("list.error.description")}</p>
           </div>
         ) : versionsLoading || instrumentationsLoading || (!resolvedVersion && !versionsError) ? (
-          <Loader label="Loading instrumentations..." />
+          <Loader label={t("list.loading")} />
         ) : (
           <>
             <div className="border-border/50 flex items-center justify-between border-b pb-4">
               <div className="text-muted-foreground text-sm">
-                Showing {filteredInstrumentations.length} of {instrumentations?.length ?? 0}{" "}
-                instrumentations
+                {t("list.results.showing", {
+                  shown: filteredInstrumentations.length,
+                  total: instrumentations?.length ?? 0,
+                })}
               </div>
             </div>
 
             {filteredInstrumentations.length === 0 ? (
               <div className="border-border/50 bg-card/30 flex min-h-[300px] items-center justify-center rounded-lg border">
                 <div className="text-center">
-                  <p className="text-muted-foreground text-base">
-                    No instrumentations found matching your filters.
-                  </p>
+                  <p className="text-muted-foreground text-base">{t("list.results.empty")}</p>
                   <p className="text-muted-foreground/70 mt-2 text-sm">
-                    Try adjusting your search or filter criteria
+                    {t("list.results.emptySuggestion")}
                   </p>
                 </div>
               </div>
@@ -412,11 +404,10 @@ export function JavaInstrumentationListPage() {
                   <div className="space-y-6">
                     <div className="border-border/50 border-b pb-2">
                       <h2 className="text-foreground text-2xl font-semibold tracking-tight">
-                        Custom Instrumentations
+                        {t("list.customSection.title")}
                       </h2>
                       <p className="text-muted-foreground mt-1 text-sm">
-                        Non-library instrumentations such as methods, JMX metrics, and external
-                        annotations.
+                        {t("list.customSection.description")}
                       </p>
                     </div>
                     <div className="space-y-4">

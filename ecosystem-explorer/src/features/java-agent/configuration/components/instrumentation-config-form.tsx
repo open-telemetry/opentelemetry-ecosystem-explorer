@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { useMemo, type JSX } from "react";
+import { useTranslation } from "react-i18next";
 import type { InstrumentationModule } from "@/types/javaagent";
 import { aggregateConfigurations } from "@/lib/configurations-aggregate";
 import { InstrumentationConfigField } from "./instrumentation-config-field";
@@ -27,12 +28,13 @@ export function InstrumentationConfigForm({
   module: mod,
   onJumpToGeneral,
 }: InstrumentationConfigFormProps): JSX.Element {
+  const { t } = useTranslation("java-agent");
   const aggregated = useMemo(() => aggregateConfigurations(mod), [mod]);
 
   if (aggregated.length === 0) {
     return (
       <p className="text-muted-foreground border-border/40 bg-background/30 rounded-md border border-dashed px-3 py-3 text-xs">
-        No configurable options for this module.
+        {t("builder.form.empty")}
       </p>
     );
   }

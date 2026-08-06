@@ -74,7 +74,7 @@ describe("ConfigurationBuilderPage basic", () => {
       { name: /Configuration Builder/i, level: 1 },
       { timeout: 10_000 }
     );
-    const span = title.querySelector("span.bg-gradient-to-r");
+    const span = title.querySelector("span.text-gradient-brand");
     expect(span).not.toBeNull();
   });
 

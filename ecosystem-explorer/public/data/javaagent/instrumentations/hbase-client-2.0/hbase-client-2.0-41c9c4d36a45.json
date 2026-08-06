@@ -1,0 +1,18 @@
+{
+  "description": "This instrumentation enables database client spans and database client metrics for the Apache HBase client.",
+  "display_name": "HBase Client",
+  "has_javaagent": true,
+  "javaagent_target_versions": [
+    "org.apache.hbase:hbase-client:[2.0.0, 2.5.0)"
+  ],
+  "library_link": "https://hbase.apache.org/",
+  "name": "hbase-client-2.0",
+  "scope": {
+    "name": "io.opentelemetry.hbase-client-2.0"
+  },
+  "semantic_conventions": [
+    "DATABASE_CLIENT_SPANS",
+    "DATABASE_CLIENT_METRICS"
+  ],
+  "source_path": "instrumentation/hbase-client-2.0"
+}

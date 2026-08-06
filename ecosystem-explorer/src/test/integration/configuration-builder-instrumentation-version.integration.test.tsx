@@ -19,14 +19,13 @@ import { fileURLToPath } from "node:url";
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import schemaVersionsIndex from "../../../public/data/configuration/versions-index.json";
 import javaAgentVersionsIndex from "../../../public/data/javaagent/versions-index.json";
 import { normalizeRegistryName } from "@/lib/normalize-instrumentation";
 import { installFetchInterceptor, uninstallFetchInterceptor } from "./helpers/fetch-interceptor";
 import { renderBuilderPage as renderPage } from "./helpers/render-builder-page";
 import { openInstrumentationTab } from "./helpers/open-instrumentation-tab";
 
-const latestSchemaVersion = schemaVersionsIndex.versions.find((v) => v.is_latest)!.version;
+const latestSchemaVersion = "1.0.0";
 const latestAgentVersion = javaAgentVersionsIndex.versions.find((v) => v.is_latest)!.version;
 const otherAgentVersion = javaAgentVersionsIndex.versions.find((v) => !v.is_latest)?.version;
 
@@ -141,7 +140,7 @@ describe("ConfigurationBuilderPage version selectors", () => {
   it("prunes instrumentation customizations referencing modules absent from the selected Agent version", async () => {
     if (!otherAgentVersion || !moduleOnlyInLatest) return;
     const orphan = moduleOnlyInLatest;
-    const orphanLineRe = new RegExp(`- ${orphan}\\b`);
+    const orphanLineRe = new RegExp(`\\b${orphan}:`);
     renderPage();
     const user = userEvent.setup();
     const agent = await findAgentSelector();
@@ -152,10 +151,12 @@ describe("ConfigurationBuilderPage version selectors", () => {
       {},
       { timeout: 10_000 }
     )) as HTMLElement;
-    const customize = within(row).getByRole("button", {
-      name: new RegExp(`Customize ${orphan}`, "i"),
-    });
-    await user.click(customize);
+
+    // Expand the row
+    await user.click(within(row).getByRole("heading", { name: orphan }));
+    // Disable to customize it
+    await user.click(within(row).getByRole("button", { name: /Disabled/i }));
+
     const preview = (await screen.findByLabelText(
       "Output Preview",
       {},

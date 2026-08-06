@@ -205,6 +205,25 @@ class ParserV05(ParserV03):
             raise ValueError(f"Error parsing instrumentation YAML: {e}") from e
 
 
+class ParserV06(ParserV05):
+    """Parser for file_format 0.6.
+
+    Changes from 0.5:
+    - Common metrics and configurations are hoisted into a top-level ``definitions``
+      catalog. Each library references them by id via ``metric_refs`` (inside
+      ``telemetry`` entries) and ``configuration_refs`` (at the library level)
+      instead of inlining them.
+
+    The parser preserves this compact catalog-and-refs shape verbatim in the
+    registry (only cleaning whitespace); reference resolution back to the inline
+    shape happens downstream in the explorer-db-builder. See
+    https://github.com/open-telemetry/opentelemetry-java-instrumentation/issues/13468
+    """
+
+    def get_file_format(self) -> float:
+        return 0.6
+
+
 class ParserFactory:
     """Factory for creating version-specific parsers."""
 
@@ -213,6 +232,7 @@ class ParserFactory:
         0.2: ParserV02,
         0.3: ParserV03,
         0.5: ParserV05,
+        0.6: ParserV06,
     }
 
     @classmethod

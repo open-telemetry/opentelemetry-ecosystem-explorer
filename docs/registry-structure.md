@@ -21,6 +21,10 @@ ecosystem-registry/
 │   │   └── instrumentation.yaml          # All .NET instrumentations/exporters/extensions
 │   └── v1.15.4-SNAPSHOT/
 │       └── instrumentation.yaml
+├── javascript/                           # Per-package, per-version (NOT aggregated)
+│   └── instrumentation-express/
+│       ├── v0.66.0.yaml                  # One file per version of this package
+│       └── v0.65.0.yaml
 ├── configuration/
 │   ├── v1.0.0/
 │   │   ├── opentelemetry_configuration.yaml   # Root declarative-config schema
@@ -57,7 +61,10 @@ ecosystem-registry/
 
 ## Key Principles
 
-- **Aggregated YAML files**: One file per component type per version (human-readable, git-friendly)
+- **Aggregated YAML files**: One file per component type per version (human-readable, git-friendly).
+  The JavaScript ecosystem is the exception — its packages version independently, so it stores one
+  file per package version rather than an aggregated per-version file (see
+  [JavaScript Structure](#javascript-structure)).
 - **Version-scoped**: Each version has a complete, independent snapshot that can be regenerated from
   source
 
@@ -150,6 +157,54 @@ dotnet/
 
 **One aggregated file** per version containing all .NET automatic-instrumentation components
 (instrumentations, exporters, and extensions). Unlike Java, there is no distribution sub-directory.
+
+## JavaScript Structure
+
+Unlike the other ecosystems, JavaScript instrumentations are **not** aggregated into a single
+per-version file. The `opentelemetry-js-contrib` packages version independently, so each package
+gets its own directory and one YAML file per version of that package.
+
+### JavaScript Version Directory Layout
+
+```text
+javascript/
+└── {package-name}/                 # e.g. instrumentation-express
+    └── v{version}.yaml             # e.g. v0.66.0.yaml — one file per version of this package
+```
+
+### JavaScript File Format
+
+**Example**: `javascript/instrumentation-express/v0.66.0.yaml`
+
+```yaml
+component_owners:
+  - JamieDanielson
+  - pkanal
+description: OpenTelemetry instrumentation for `express` http web application framework
+in_auto_instrumentations_node: true
+name: instrumentation-express
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: "@opentelemetry/instrumentation-express"
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-express
+supported_versions: # parsed from the package README "Supported Versions" section
+  - package: express
+    source: README.md
+    version_range: ">=4.0.0 <6"
+tested_versions: # parsed from the package .tav.yml
+  - mode: latest-minors
+    package: express
+    range: ">=4.16.2 <6"
+    source: .tav.yml
+version: 0.66.0
+```
+
+**Key Features**:
+
+- One file per package version, keyed by the package directory name (e.g. `instrumentation-express`)
+- `supported_versions` is scraped from the package README; `tested_versions` from `.tav.yml`
+- `in_auto_instrumentations_node` records whether the package is part of the Node
+  auto-instrumentation bundle
 
 ## Configuration Structure
 

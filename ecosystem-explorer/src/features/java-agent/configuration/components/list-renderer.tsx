@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { JSX } from "react";
+import { useTranslation } from "react-i18next";
 import { Plus, X } from "lucide-react";
 import type { ListNode } from "@/types/configuration";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
@@ -22,6 +23,7 @@ import { parsePath, getByPath } from "@/lib/config-path";
 import { deriveListItemLabel } from "@/lib/derive-list-item-label";
 import { FieldSection } from "./field-section";
 import { ListItemContext, useStarterPaths } from "./configuration-ui-context";
+import { useCollapsibleExpansion } from "./section-expansion-context";
 
 export interface ListRendererProps {
   node: ListNode;
@@ -30,6 +32,7 @@ export interface ListRendererProps {
 }
 
 export function ListRenderer({ node, depth, path }: ListRendererProps): JSX.Element {
+  const { t } = useTranslation("java-agent");
   const { state, addListItem, removeListItem } = useConfigurationBuilder();
   const starterPaths = useStarterPaths();
   const raw = getByPath(state.values, parsePath(path));
@@ -42,9 +45,10 @@ export function ListRenderer({ node, depth, path }: ListRendererProps): JSX.Elem
       ? storedIds
       : items.map((_, i) => `${path}#${i}`);
   const itemHasTablist = node.itemSchema.controlType === "plugin_select";
+  const { open, onOpenChange } = useCollapsibleExpansion(path, starterPaths.has(path));
 
   return (
-    <FieldSection node={node} level="field" value={items} defaultExpanded={starterPaths.has(path)}>
+    <FieldSection node={node} level="field" value={items} open={open} onOpenChange={onOpenChange}>
       <FieldSection.Header>
         <FieldSection.Chevron />
         <FieldSection.Label />
@@ -53,18 +57,18 @@ export function ListRenderer({ node, depth, path }: ListRendererProps): JSX.Elem
         <FieldSection.Action>
           <button
             type="button"
-            aria-label={`Add item to ${node.label}`}
+            aria-label={t("builder.listRenderer.addTooltip", { label: node.label })}
             onClick={() => addListItem(path)}
             className="border-border/60 hover:border-primary/40 text-foreground inline-flex items-center gap-1 rounded-md border px-2 py-1 text-xs"
           >
             <Plus className="text-primary h-3 w-3" aria-hidden="true" />
-            Add
+            {t("builder.listRenderer.add")}
           </button>
         </FieldSection.Action>
       </FieldSection.Header>
       <FieldSection.Body>
         {items.length === 0 ? (
-          <FieldSection.Empty />
+          <FieldSection.Empty>{t("builder.listRenderer.default")}</FieldSection.Empty>
         ) : (
           <ul className="space-y-3">
             {items.map((itemValue, i) => {
@@ -73,7 +77,7 @@ export function ListRenderer({ node, depth, path }: ListRendererProps): JSX.Elem
               const removeButton = canRemove ? (
                 <button
                   type="button"
-                  aria-label={`Remove item ${i + 1}`}
+                  aria-label={t("builder.listRenderer.removeTooltip", { index: i + 1 })}
                   onClick={() => removeListItem(path, i)}
                   className="border-border/60 text-muted-foreground rounded-md border p-1 hover:border-red-500/40 hover:text-red-400"
                 >

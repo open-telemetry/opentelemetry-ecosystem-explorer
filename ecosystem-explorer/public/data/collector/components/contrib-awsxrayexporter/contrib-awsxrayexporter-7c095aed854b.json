@@ -1,0 +1,28 @@
+{
+  "description": null,
+  "display_name": "AWS X-Ray Tracing Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-awsxrayexporter",
+  "markdown_hash": "2a22b6f15062",
+  "name": "awsxrayexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "wangzlei",
+        "srprash"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "traces"
+      ]
+    }
+  },
+  "type": "exporter"
+}

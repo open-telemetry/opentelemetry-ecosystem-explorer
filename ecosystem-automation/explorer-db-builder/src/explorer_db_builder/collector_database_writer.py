@@ -16,14 +16,17 @@
 
 import json
 import logging
+import re
 import shutil
 from pathlib import Path
 from typing import Any
 
 from semantic_version import Version
 
+from explorer_db_builder import orphan_gc
 from explorer_db_builder.collector_transformer import COMPONENT_TYPES, make_index_component
 from explorer_db_builder.content_hashing import content_hash
+from explorer_db_builder.readme_sanitizer import sanitize_readme
 
 logger = logging.getLogger(__name__)
 
@@ -36,6 +39,72 @@ class CollectorDatabaseWriter:
         self.files_written = 0
         self.total_bytes = 0
 
+    def _sanitize_name(self, name: str) -> str:
+        """Sanitizes a name for use as a filename to prevent path traversal."""
+        return re.sub(r"[^a-zA-Z0-9._\-]", "_", name)
+
+    def _is_current(self, file_path: Path, content: str) -> bool:
+        """Whether the published markdown already matches what we would write.
+
+        markdown_hash tracks the *upstream* README, so it does not move when only
+        our sanitizing changes - without this check, already-published files would
+        keep their stale text until upstream happened to edit the README.
+        """
+        try:
+            return file_path.read_text(encoding="utf-8") == content
+        except OSError as e:
+            logger.warning("Could not read existing markdown at %s, rewriting: %s", file_path, e)
+            return False
+
+    def write_markdown(self, component_name: str, markdown_hash: str, content: str) -> bool:
+        """Write a component README to the database, content-addressed.
+
+        Content is run through :func:`sanitize_readme` first.
+
+        Args:
+            component_name: Name of the component
+            markdown_hash: Hash of the markdown content
+            content: Markdown content string
+
+        Returns:
+            True if the markdown is present on disk after this call (either
+            just written, or already existed at the content-addressed path).
+            False if the write failed, or if sanitizing left nothing worth
+            publishing. Failures are logged here rather than raised - README
+            publishing must never fail DB generation - so callers must check
+            this return value to know whether to stamp markdown_hash, rather
+            than assuming success.
+        """
+        safe_name = self._sanitize_name(component_name)
+        content = sanitize_readme(content)
+
+        if not content.strip():
+            # Some READMEs (e.g. jaegerencodingextension) are nothing but the status
+            # section. Returning False leaves markdown_hash unstamped, so the detail
+            # page shows no README tab rather than an empty one.
+            logger.info("README for '%s' is empty after sanitizing, not publishing", safe_name)
+            return False
+
+        file_path = self._markdown_file(component_name, markdown_hash)
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+
+        if file_path.exists() and self._is_current(file_path, content):
+            logger.debug("Markdown for '%s' with hash %s already exists, skipping write", safe_name, markdown_hash)
+            return True
+
+        try:
+            with open(file_path, "w", encoding="utf-8") as f:
+                f.write(content)
+            self.files_written += 1
+            self.total_bytes += len(content.encode("utf-8"))
+            logger.debug("Wrote markdown for '%s' with hash %s", safe_name, markdown_hash)
+            return True
+        except OSError as e:
+            logger.error("Failed to write markdown for '%s': %s", safe_name, e)
+            # README publishing failures must never fail DB generation, matching
+            # the same principle already established for the javaagent writer.
+            return False
+
     def _write_json(self, path: Path, data: Any) -> None:
         content = json.dumps(data, indent=2, sort_keys=True)
         with open(path, "w", encoding="utf-8") as f:
@@ -43,10 +112,22 @@ class CollectorDatabaseWriter:
         self.files_written += 1
         self.total_bytes += len(content.encode("utf-8"))
 
+    def _component_file(self, component_id: str, component_hash: str) -> Path:
+        """Content-addressed path for a component, without creating its directory (unlike _get_component_path).
+
+        Lets callers that only need the path (e.g. orphan GC) avoid materializing empty dirs.
+        """
+        return self.database_dir / "components" / component_id / f"{component_id}-{component_hash}.json"
+
+    def _markdown_file(self, component_name: str, markdown_hash: str) -> Path:
+        """Content-addressed path for a component README (does not create its directory)."""
+        safe_name = self._sanitize_name(component_name)
+        return self.database_dir / "markdown" / f"{safe_name}-{markdown_hash}.md"
+
     def _get_component_path(self, component_id: str, component_hash: str) -> Path:
-        component_dir = self.database_dir / "components" / component_id
-        component_dir.mkdir(parents=True, exist_ok=True)
-        return component_dir / f"{component_id}-{component_hash}.json"
+        file_path = self._component_file(component_id, component_hash)
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        return file_path
 
     def write_components(self, components: list[dict[str, Any]]) -> dict[str, str]:
         """Write component data to content-addressed files.
@@ -250,8 +331,41 @@ class CollectorDatabaseWriter:
             logger.error("Failed to write index.json: %s", e)
             raise
 
+    def write_ecosystem_stats(self, stats: dict[str, Any]) -> None:
+        """Write the collector ecosystem-stats.json summary file.
+
+        Args:
+            stats: Dict with "version_count" and "component_count".
+
+        Raises:
+            OSError: If file writing fails.
+        """
+        self.database_dir.mkdir(parents=True, exist_ok=True)
+
+        output_file = self.database_dir / "ecosystem-stats.json"
+        try:
+            self._write_json(output_file, stats)
+            logger.info("Wrote collector ecosystem stats: %s", stats)
+        except OSError as e:
+            logger.error("Failed to write ecosystem stats: %s", e)
+            raise
+
     def get_stats(self) -> dict[str, Any]:
         return {"files_written": self.files_written, "total_bytes": self.total_bytes}
+
+    def remove_orphans(self) -> int:
+        """Delete content-addressed files no longer referenced by any version index.
+
+        See :func:`explorer_db_builder.orphan_gc.remove_orphans`. Markdown is keyed
+        by the component's ``name``, not its ``id``.
+        """
+        return orphan_gc.remove_orphans(
+            self.database_dir,
+            content_dir="components",
+            index_sections=("components",),
+            content_file=self._component_file,
+            markdown_file=self._markdown_file,
+        )
 
     def clean(self) -> None:
         """Remove the collector database directory and recreate it empty."""

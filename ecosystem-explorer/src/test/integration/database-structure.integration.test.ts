@@ -20,7 +20,9 @@ import {
   loadVersionManifest,
   loadInstrumentation,
   loadInstrumentationBundle,
+  loadIndex,
 } from "@/lib/api/javaagent-data";
+import { toJavaAgentResult } from "@/lib/search/sources/java-agent";
 
 beforeAll(() => installFetchInterceptor());
 afterAll(() => uninstallFetchInterceptor());
@@ -150,8 +152,38 @@ describe("database structure", () => {
         expect(typeof entry.has_spans).toBe("boolean");
         expect(typeof entry.has_metrics).toBe("boolean");
         expect(typeof entry._is_custom).toBe("boolean");
-        // The heavy detail arrays must be dropped from the slim bundle.
-        expect(entry.telemetry).toBeUndefined();
+        // The heavy detail arrays must be dropped from the slim bundle. The slim
+        // type has no `telemetry` field, so probe the raw object to assert absence.
+        expect((entry as unknown as Record<string, unknown>).telemetry).toBeUndefined();
+      }
+    });
+  });
+
+  describe("instrumentation index (global search source)", () => {
+    // index.json is the sole input to the search source; tested against committed
+    // data so a future field drop is caught here, not in prod.
+    it("loads a non-empty index whose entries have a string name", async () => {
+      const index = await loadIndex();
+
+      expect(index.ecosystem).toBe("javaagent");
+      expect(index.components.length).toBeGreaterThan(0);
+      for (const entry of index.components) {
+        expect(typeof entry.name).toBe("string");
+        expect(entry.name.length).toBeGreaterThan(0);
+        if (entry.search_terms !== undefined) {
+          expect(Array.isArray(entry.search_terms)).toBe(true);
+          expect(entry.search_terms.every((t) => typeof t === "string")).toBe(true);
+        }
+      }
+    });
+
+    it("every entry produces a search result whose keywords include the index name", async () => {
+      const index = await loadIndex();
+
+      // Exercises the real search source, including the no-search_terms graceful path.
+      for (const entry of index.components) {
+        const result = toJavaAgentResult(entry, "latest");
+        expect(result.keywords).toContain(entry.name);
       }
     });
   });

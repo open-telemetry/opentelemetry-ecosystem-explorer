@@ -294,6 +294,31 @@ class TestRunJavaagentBuilder:
         assert custom[0]["name"] == "custom1"
         assert custom[0]["markdown_hash"] == "fed4321cba98"
 
+    def test_run_builder_skips_markdown_hash_when_readme_was_not_published(
+        self, mock_inventory_manager, mock_db_writer
+    ):
+        """A README that sanitizes to nothing must not leave a hash pointing at a missing file."""
+        versions = [Version("1.0.0")]
+        inventory_data = {"file_format": 0.2, "libraries": [{"name": "lib1"}], "custom": [{"name": "custom1"}]}
+
+        mock_inventory_manager.list_versions.return_value = versions
+        mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
+        mock_inventory_manager.load_library_readme_map.return_value = {
+            "lib1": "abc123def456",
+            "custom1": "fed4321cba98",
+        }
+        mock_inventory_manager.load_library_readme_content.return_value = "# README content"
+        mock_db_writer.write_libraries.return_value = {"lib1": "hash1"}
+        # lib1 publishes, custom1 comes back empty after sanitizing.
+        mock_db_writer.write_markdown.side_effect = lambda name, _hash, _content: name == "lib1"
+
+        exit_code = run_javaagent_builder(mock_inventory_manager, mock_db_writer)
+
+        assert exit_code == 0
+        write_calls = mock_db_writer.write_libraries.call_args_list
+        assert write_calls[0][0][0][0]["markdown_hash"] == "abc123def456"
+        assert "markdown_hash" not in write_calls[1][0][0][0]
+
     def test_run_builder_none_instrumentation_side_does_not_crash(self, mock_inventory_manager, mock_db_writer):
         """An explicit None on one side (malformed/partial inventory) is normalized to a list
         during README augmentation instead of raising TypeError while iterating."""
@@ -399,6 +424,30 @@ class TestRunJavaagentBuilder:
         assert call_order[0] == "clean"
         assert call_order[1] == "list_versions"
 
+    def test_run_builder_removes_orphans_when_incremental(self, mock_inventory_manager, mock_db_writer):
+        versions = [Version("1.0.0")]
+        inventory_data = {"file_format": 0.2, "libraries": [{"name": "lib1"}]}
+
+        mock_inventory_manager.list_versions.return_value = versions
+        mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
+        mock_db_writer.write_libraries.return_value = {"lib1": "hash1"}
+
+        run_javaagent_builder(mock_inventory_manager, mock_db_writer, clean=False)
+
+        mock_db_writer.remove_orphans.assert_called_once()
+
+    def test_run_builder_skips_orphan_gc_when_clean(self, mock_inventory_manager, mock_db_writer):
+        versions = [Version("1.0.0")]
+        inventory_data = {"file_format": 0.2, "libraries": [{"name": "lib1"}]}
+
+        mock_inventory_manager.list_versions.return_value = versions
+        mock_inventory_manager.load_versioned_inventory.return_value = inventory_data
+        mock_db_writer.write_libraries.return_value = {"lib1": "hash1"}
+
+        run_javaagent_builder(mock_inventory_manager, mock_db_writer, clean=True)
+
+        mock_db_writer.remove_orphans.assert_not_called()
+
     def test_aggregates_global_configurations(self, tmp_path):
         """run_javaagent_builder writes global-configurations.json with newest-version-wins."""
         inventory_manager = MagicMock()
@@ -426,6 +475,33 @@ class TestRunJavaagentBuilder:
         assert data[0]["type"] == "list"
         assert data[0]["instrumentations"] == ["jdbc"]
 
+    def test_writes_ecosystem_stats(self, tmp_path):
+        """run_javaagent_builder writes ecosystem-stats.json with version and unique library counts."""
+        inventory_manager = MagicMock()
+        inventory_manager.list_versions.return_value = [Version("2.1.0"), Version("2.0.0")]
+        inventory_manager.load_library_readme_map.return_value = {}
+        inventory_manager.load_versioned_inventory.side_effect = lambda v: {
+            Version("2.1.0"): {
+                "file_format": 0.5,
+                "libraries": [{"name": "jdbc"}],
+                "custom": [{"name": "custom-a"}],
+            },
+            Version("2.0.0"): {
+                "file_format": 0.5,
+                "libraries": [{"name": "jdbc"}, {"name": "removed-lib"}],
+            },
+        }[v]
+
+        db_writer = DatabaseWriter(database_dir=str(tmp_path))
+
+        exit_code = run_javaagent_builder(inventory_manager, db_writer)
+
+        assert exit_code == 0
+        data = json.loads((tmp_path / "ecosystem-stats.json").read_text(encoding="utf-8"))
+        assert data["version_count"] == 2
+        # jdbc, custom-a, removed-lib: unioned across versions and across libraries/custom.
+        assert data["library_count"] == 3
+
 
 class TestMain:
     @patch("explorer_db_builder.main.run_builder")
@@ -437,12 +513,13 @@ class TestMain:
         mock_args = MagicMock()
         mock_args.clean = False
         mock_args.ecosystem = "all"
+        mock_args.collector_audit_report = None
         mock_parse_args.return_value = mock_args
         mock_run_builder.return_value = 0
 
         main()
 
-        mock_run_builder.assert_called_once_with(clean=False, ecosystem="all")
+        mock_run_builder.assert_called_once_with(clean=False, ecosystem="all", collector_audit_report=None)
         mock_exit.assert_called_once_with(0)
 
     @patch("explorer_db_builder.main.run_builder")
@@ -454,12 +531,13 @@ class TestMain:
         mock_args = MagicMock()
         mock_args.clean = False
         mock_args.ecosystem = "all"
+        mock_args.collector_audit_report = None
         mock_parse_args.return_value = mock_args
         mock_run_builder.return_value = 1
 
         main()
 
-        mock_run_builder.assert_called_once_with(clean=False, ecosystem="all")
+        mock_run_builder.assert_called_once_with(clean=False, ecosystem="all", collector_audit_report=None)
         mock_exit.assert_called_once_with(1)
 
     @patch("explorer_db_builder.main.run_builder")
@@ -471,12 +549,13 @@ class TestMain:
         mock_args = MagicMock()
         mock_args.clean = True
         mock_args.ecosystem = "all"
+        mock_args.collector_audit_report = None
         mock_parse_args.return_value = mock_args
         mock_run_builder.return_value = 0
 
         main()
 
-        mock_run_builder.assert_called_once_with(clean=True, ecosystem="all")
+        mock_run_builder.assert_called_once_with(clean=True, ecosystem="all", collector_audit_report=None)
         mock_exit.assert_called_once_with(0)
 
     @patch("explorer_db_builder.main.run_builder")
@@ -489,12 +568,13 @@ class TestMain:
         mock_args = MagicMock()
         mock_args.clean = False
         mock_args.ecosystem = "collector"
+        mock_args.collector_audit_report = None
         mock_parse_args.return_value = mock_args
         mock_run_builder.return_value = 0
 
         main()
 
-        mock_run_builder.assert_called_once_with(clean=False, ecosystem="collector")
+        mock_run_builder.assert_called_once_with(clean=False, ecosystem="collector", collector_audit_report=None)
         mock_exit.assert_called_once_with(0)
 
 
@@ -565,7 +645,7 @@ class TestRunBuilderOrchestrator:
 
         mock_java.assert_called_once_with(clean=True)
         mock_config.assert_called_once_with(clean=True)
-        mock_collector.assert_called_once_with(clean=True)
+        mock_collector.assert_called_once_with(clean=True, audit_report_path=None)
 
     @patch("explorer_db_builder.main.run_collector_builder")
     @patch("explorer_db_builder.main.run_configuration_builder")
@@ -605,3 +685,13 @@ class TestRunBuilderOrchestrator:
         mock_java.assert_not_called()
         mock_config.assert_not_called()
         mock_collector.assert_called_once()
+
+    @patch("explorer_db_builder.main.run_collector_builder")
+    @patch("explorer_db_builder.main.run_configuration_builder")
+    @patch("explorer_db_builder.main.run_javaagent_builder")
+    def test_collector_audit_report_passed_to_collector(self, mock_java, mock_config, mock_collector):
+        mock_collector.return_value = 0
+
+        run_builder(clean=False, ecosystem="collector", collector_audit_report="audit/report.json")
+
+        mock_collector.assert_called_once_with(clean=False, audit_report_path="audit/report.json")

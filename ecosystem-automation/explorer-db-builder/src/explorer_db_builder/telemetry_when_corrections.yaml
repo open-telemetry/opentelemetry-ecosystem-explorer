@@ -1,0 +1,348 @@
+ignore_conditions:
+  # servlet-5.0: jetty12-testing set capture-request-parameters=test-parameter, so the metadata
+  # generator relabeled the whole default block (SERVER + controller INTERNAL spans) under this
+  # condition in 2.28.0 (#18389). It is a test artifact, not a real gate — strip it back to default.
+  - otel.instrumentation.servlet.experimental.capture-request-parameters=test-parameter
+
+# Signal identity: span = (span_kind, frozenset(attribute names)), metric = name.
+# from_when is always "default" for every entry.
+# upstream_pr references the upstream metadata cleanup that introduced the correct when-condition.
+corrections:
+  # --- controller / view telemetry; applies_to_versions_before: 2.28.0 ---
+  - {
+      instrumentation: jaxrs-1.0,
+      span_kind: INTERNAL,
+      attributes: [code.function, code.namespace],
+      to_when: "otel.instrumentation.common.experimental.controller-telemetry.enabled=true",
+      applies_to_versions_before: "2.28.0",
+      upstream_pr: "#18552",
+    }
+  - {
+      instrumentation: jaxrs-3.0-resteasy-6.0,
+      span_kind: INTERNAL,
+      attributes: [code.function, code.namespace],
+      to_when: "otel.instrumentation.common.experimental.controller-telemetry.enabled=true",
+      applies_to_versions_before: "2.28.0",
+      upstream_pr: "#18555",
+    }
+  - {
+      instrumentation: jfinal-3.2,
+      span_kind: INTERNAL,
+      attributes: [code.function, code.namespace],
+      to_when: "otel.instrumentation.common.experimental.controller-telemetry.enabled=true",
+      applies_to_versions_before: "2.28.0",
+      upstream_pr: "#18452",
+    }
+  - {
+      instrumentation: play-mvc-2.4,
+      span_kind: INTERNAL,
+      attributes: [],
+      to_when: "otel.instrumentation.common.experimental.controller-telemetry.enabled=true",
+      applies_to_versions_before: "2.28.0",
+      upstream_pr: "#18366",
+    }
+  - {
+      instrumentation: play-mvc-2.6,
+      span_kind: INTERNAL,
+      attributes: [],
+      to_when: "otel.instrumentation.common.experimental.controller-telemetry.enabled=true",
+      applies_to_versions_before: "2.28.0",
+      upstream_pr: "#18624",
+    }
+  - {
+      instrumentation: ratpack-1.4,
+      span_kind: INTERNAL,
+      attributes: [],
+      to_when: "otel.instrumentation.common.experimental.controller-telemetry.enabled=true",
+      applies_to_versions_before: "2.28.0",
+      upstream_pr: "#18252",
+    }
+  - {
+      instrumentation: ratpack-1.7,
+      span_kind: CLIENT,
+      attributes:
+        [
+          error.type,
+          http.request.method,
+          http.request.method_original,
+          http.response.status_code,
+          http.route,
+          peer.service,
+          server.address,
+          server.port,
+          url.full,
+        ],
+      to_when: "otel.instrumentation.common.experimental.controller-telemetry.enabled=true",
+      applies_to_versions_before: "2.28.0",
+      upstream_pr: "#18252",
+    }
+  - {
+      instrumentation: spring-webmvc-3.1,
+      span_kind: INTERNAL,
+      attributes: [code.function, code.namespace],
+      to_when: "otel.instrumentation.common.experimental.controller-telemetry.enabled=true,otel.instrumentation.common.experimental.view-telemetry.enabled=true",
+      applies_to_versions_before: "2.28.0",
+      upstream_pr: "#18513",
+    }
+  - {
+      instrumentation: spring-webmvc-6.0,
+      span_kind: INTERNAL,
+      attributes: [code.function, code.namespace],
+      to_when: "otel.instrumentation.common.experimental.controller-telemetry.enabled=true,otel.instrumentation.common.experimental.view-telemetry.enabled=true",
+      applies_to_versions_before: "2.28.0",
+      upstream_pr: "#18398",
+    }
+  # servlet-5.0 controller span: NO applies_to_versions_before => all versions, because the
+  # ignore_conditions step folds its block into `default` in every version first.
+  - {
+      instrumentation: servlet-5.0,
+      span_kind: INTERNAL,
+      attributes: [code.function, code.namespace],
+      to_when: "otel.instrumentation.common.experimental.controller-telemetry.enabled=true",
+      upstream_pr: "#18389",
+    }
+
+  # --- messaging receive-telemetry; applies_to_versions_before: 2.28.0 ---
+  - {
+      instrumentation: jms-1.1,
+      span_kind: CONSUMER,
+      attributes:
+        [
+          messaging.destination.name,
+          messaging.destination.temporary,
+          messaging.message.id,
+          messaging.operation,
+          messaging.system,
+        ],
+      to_when: "otel.instrumentation.messaging.experimental.receive-telemetry.enabled=true",
+      applies_to_versions_before: "2.28.0",
+      upstream_pr: "#18457",
+    }
+  - {
+      instrumentation: jms-1.1,
+      span_kind: PRODUCER,
+      attributes:
+        [
+          messaging.destination.name,
+          messaging.destination.temporary,
+          messaging.message.id,
+          messaging.operation,
+          messaging.system,
+        ],
+      to_when: "otel.instrumentation.messaging.experimental.receive-telemetry.enabled=true",
+      applies_to_versions_before: "2.28.0",
+      upstream_pr: "#18457",
+    }
+  - {
+      instrumentation: jms-3.0,
+      span_kind: CONSUMER,
+      attributes:
+        [messaging.destination.name, messaging.message.id, messaging.operation, messaging.system],
+      to_when: "otel.instrumentation.messaging.experimental.receive-telemetry.enabled=true",
+      applies_to_versions_before: "2.28.0",
+      upstream_pr: "#18562",
+    }
+  - {
+      instrumentation: jms-3.0,
+      span_kind: PRODUCER,
+      attributes:
+        [
+          messaging.destination.name,
+          messaging.destination.temporary,
+          messaging.message.id,
+          messaging.operation,
+          messaging.system,
+        ],
+      to_when: "otel.instrumentation.messaging.experimental.receive-telemetry.enabled=true",
+      applies_to_versions_before: "2.28.0",
+      upstream_pr: "#18562",
+    }
+  - {
+      instrumentation: pulsar-2.8,
+      metric: messaging.publish.duration,
+      to_when: "otel.instrumentation.messaging.experimental.receive-telemetry.enabled=true,otel.instrumentation.pulsar.experimental-span-attributes=true",
+      applies_to_versions_before: "2.28.0",
+      upstream_pr: "#18587",
+    }
+  - {
+      instrumentation: pulsar-2.8,
+      metric: messaging.receive.duration,
+      to_when: "otel.instrumentation.messaging.experimental.receive-telemetry.enabled=true,otel.instrumentation.pulsar.experimental-span-attributes=true",
+      applies_to_versions_before: "2.28.0",
+      upstream_pr: "#18587",
+    }
+  - {
+      instrumentation: pulsar-2.8,
+      metric: messaging.receive.messages,
+      to_when: "otel.instrumentation.messaging.experimental.receive-telemetry.enabled=true,otel.instrumentation.pulsar.experimental-span-attributes=true",
+      applies_to_versions_before: "2.28.0",
+      upstream_pr: "#18587",
+    }
+  - {
+      instrumentation: pulsar-2.8,
+      span_kind: CONSUMER,
+      attributes:
+        [
+          messaging.batch.message_count,
+          messaging.destination.name,
+          messaging.destination.partition.id,
+          messaging.message.body.size,
+          messaging.message.id,
+          messaging.operation,
+          messaging.system,
+          server.address,
+          server.port,
+        ],
+      to_when: "otel.instrumentation.messaging.experimental.receive-telemetry.enabled=true,otel.instrumentation.pulsar.experimental-span-attributes=true",
+      applies_to_versions_before: "2.28.0",
+      upstream_pr: "#18587",
+    }
+  - {
+      instrumentation: pulsar-2.8,
+      span_kind: PRODUCER,
+      attributes:
+        [
+          messaging.destination.name,
+          messaging.destination.partition.id,
+          messaging.message.body.size,
+          messaging.message.id,
+          messaging.operation,
+          messaging.system,
+          server.address,
+          server.port,
+        ],
+      to_when: "otel.instrumentation.messaging.experimental.receive-telemetry.enabled=true",
+      applies_to_versions_before: "2.28.0",
+      upstream_pr: "#18587",
+    }
+  - {
+      instrumentation: reactor-kafka-1.0,
+      span_kind: CONSUMER,
+      attributes:
+        [
+          messaging.client_id,
+          messaging.destination.name,
+          messaging.destination.partition.id,
+          messaging.kafka.message.key,
+          messaging.kafka.message.offset,
+          messaging.message.body.size,
+          messaging.operation,
+          messaging.system,
+        ],
+      to_when: "otel.instrumentation.messaging.experimental.receive-telemetry.enabled=true",
+      applies_to_versions_before: "2.28.0",
+      upstream_pr: "#18490",
+    }
+  - {
+      instrumentation: rocketmq-client-5.0,
+      span_kind: CONSUMER,
+      attributes:
+        [
+          messaging.batch.message_count,
+          messaging.destination.name,
+          messaging.message.body.size,
+          messaging.message.id,
+          messaging.operation,
+          messaging.rocketmq.client_group,
+          messaging.rocketmq.message.delivery_timestamp,
+          messaging.rocketmq.message.group,
+          messaging.rocketmq.message.keys,
+          messaging.rocketmq.message.tag,
+          messaging.system,
+        ],
+      to_when: "otel.instrumentation.messaging.experimental.receive-telemetry.enabled=true",
+      applies_to_versions_before: "2.28.0",
+      upstream_pr: "#18496",
+    }
+  - {
+      instrumentation: rocketmq-client-5.0,
+      span_kind: PRODUCER,
+      attributes:
+        [
+          messaging.destination.name,
+          messaging.message.body.size,
+          messaging.message.id,
+          messaging.operation,
+          messaging.rocketmq.message.delivery_timestamp,
+          messaging.rocketmq.message.group,
+          messaging.rocketmq.message.keys,
+          messaging.rocketmq.message.tag,
+          messaging.rocketmq.message.type,
+          messaging.system,
+        ],
+      to_when: "otel.instrumentation.messaging.experimental.receive-telemetry.enabled=true",
+      applies_to_versions_before: "2.28.0",
+      upstream_pr: "#18496",
+    }
+  - {
+      instrumentation: spring-jms-2.0,
+      span_kind: CONSUMER,
+      attributes:
+        [messaging.destination.name, messaging.message.id, messaging.operation, messaging.system],
+      to_when: "otel.instrumentation.messaging.experimental.receive-telemetry.enabled=true",
+      applies_to_versions_before: "2.28.0",
+      upstream_pr: "#18393",
+    }
+  - {
+      instrumentation: spring-jms-6.0,
+      span_kind: CONSUMER,
+      attributes:
+        [messaging.destination.name, messaging.message.id, messaging.operation, messaging.system],
+      to_when: "otel.instrumentation.messaging.experimental.receive-telemetry.enabled=true",
+      applies_to_versions_before: "2.28.0",
+      upstream_pr: "#18393",
+    }
+  - {
+      instrumentation: spring-kafka-2.7,
+      span_kind: CONSUMER,
+      attributes:
+        [
+          messaging.batch.message_count,
+          messaging.client_id,
+          messaging.destination.name,
+          messaging.destination.partition.id,
+          messaging.kafka.consumer.group,
+          messaging.kafka.message.key,
+          messaging.kafka.message.offset,
+          messaging.message.body.size,
+          messaging.operation,
+          messaging.system,
+        ],
+      to_when: "otel.instrumentation.messaging.experimental.receive-telemetry.enabled=true",
+      applies_to_versions_before: "2.28.0",
+      upstream_pr: "#18507",
+    }
+  - {
+      instrumentation: spring-pulsar-1.0,
+      span_kind: CONSUMER,
+      attributes:
+        [
+          messaging.destination.name,
+          messaging.message.body.size,
+          messaging.message.id,
+          messaging.operation,
+          messaging.system,
+        ],
+      to_when: "otel.instrumentation.messaging.experimental.receive-telemetry.enabled=true",
+      applies_to_versions_before: "2.28.0",
+      upstream_pr: "#18507",
+    }
+  - {
+      instrumentation: vertx-kafka-client-3.6,
+      span_kind: CONSUMER,
+      attributes:
+        [
+          messaging.batch.message_count,
+          messaging.client_id,
+          messaging.destination.name,
+          messaging.destination.partition.id,
+          messaging.kafka.message.key,
+          messaging.kafka.message.offset,
+          messaging.message.body.size,
+          messaging.operation,
+          messaging.system,
+        ],
+      to_when: "otel.instrumentation.messaging.experimental.receive-telemetry.enabled=true",
+      applies_to_versions_before: "2.28.0",
+      upstream_pr: "#18402",
+    }

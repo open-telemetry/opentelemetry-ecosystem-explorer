@@ -59,6 +59,12 @@ describe("NavBar", () => {
     expect(screen.getByRole("button", { name: /toggle theme/i })).toBeInTheDocument();
   });
 
+  it("renders the language toggle", () => {
+    renderNavBar();
+
+    expect(screen.getByRole("button", { name: /select language/i })).toBeInTheDocument();
+  });
+
   it("renders the hamburger toggler collapsed by default", () => {
     renderNavBar();
 

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronDown, ChevronUp, Maximize2, Minimize2 } from "lucide-react";
 import { SectionDivider } from "@/components/ui/section-divider";
 import { GlowBadge } from "@/components/ui/glow-badge";
@@ -38,6 +39,7 @@ function ExpandCollapseToggle({
   onExpandAll,
   onCollapseAll,
 }: ExpandCollapseToggleProps) {
+  const { t } = useTranslation("java-agent");
   return (
     <div className="mt-4 flex justify-center">
       <div className="border-border/50 bg-muted/80 inline-flex items-center rounded-xl border p-1 shadow-sm backdrop-blur-sm">
@@ -51,7 +53,7 @@ function ExpandCollapseToggle({
           }`}
         >
           <Maximize2 className="h-3 w-3" />
-          Expand All
+          {t("telemetrySection.expandAll")}
         </button>
         <button
           type="button"
@@ -63,7 +65,7 @@ function ExpandCollapseToggle({
           }`}
         >
           <Minimize2 className="h-3 w-3" />
-          Collapse All
+          {t("telemetrySection.collapseAll")}
         </button>
       </div>
     </div>
@@ -71,6 +73,7 @@ function ExpandCollapseToggle({
 }
 
 export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
+  const { t } = useTranslation("java-agent");
   const [selectedWhen, setSelectedWhen] = useState(telemetry[0]?.when ?? "default");
 
   // Validate selected value and fall back to first option if invalid
@@ -161,7 +164,7 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
         {/* Metrics Section */}
         {hasMetrics && (
           <div className="space-y-6">
-            <SectionDivider className="mb-0">Metrics</SectionDivider>
+            <SectionDivider className="mb-0">{t("telemetrySection.metrics")}</SectionDivider>
             <ExpandCollapseToggle
               expandedCount={expandedMetrics.size}
               totalCount={currentTelemetry.metrics?.length || 0}
@@ -177,13 +180,19 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                   return (
                     <div
                       key={`${metric.name}-${index}`}
-                      className="border-border/30 bg-card/30 rounded-2xl border transition-all duration-200"
+                      className={`overflow-hidden rounded-2xl border transition-all duration-200 ${
+                        isExpanded
+                          ? "border-primary/20 bg-surface-card shadow-md"
+                          : "border-border/40 bg-surface-card hover:border-border/60 shadow-sm"
+                      }`}
                     >
                       <button
                         type="button"
                         onClick={() => toggleMetric(metricId)}
                         aria-expanded={isExpanded}
-                        className="flex w-full cursor-pointer items-center justify-between gap-4 p-4 transition-colors hover:bg-white/[0.02] sm:px-6 sm:py-5"
+                        className={`hover:bg-muted/30 flex w-full cursor-pointer items-center justify-between gap-4 p-4 transition-colors sm:px-6 sm:py-5 ${
+                          isExpanded ? "border-border/40 bg-muted/20 border-b" : ""
+                        }`}
                       >
                         <code className="text-foreground min-w-0 flex-1 text-left font-mono text-sm font-semibold break-all sm:text-base">
                           {metric.name}
@@ -211,9 +220,9 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                             {/* Unit section with border */}
                             <div className="border-border/30 flex items-center gap-3 border-b pb-6">
                               <span className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
-                                Unit
+                                {t("telemetrySection.unit")}
                               </span>
-                              <code className="border-border/30 text-foreground/80 rounded border bg-white/[0.03] px-2 py-1 text-sm">
+                              <code className="border-border/30 text-foreground/80 bg-muted/40 rounded border px-2 py-1 text-sm">
                                 {metric.unit}
                               </code>
                             </div>
@@ -222,7 +231,7 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                             {metric.attributes && metric.attributes.length > 0 && (
                               <div className="space-y-4">
                                 <h4 className="text-muted-foreground text-xs font-black tracking-[0.2em] uppercase">
-                                  Attributes
+                                  {t("telemetrySection.attributes")}
                                 </h4>
                                 <AttributeTable attributes={metric.attributes} />
                               </div>
@@ -240,7 +249,7 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
         {/* Spans Section */}
         {hasSpans && (
           <div className="space-y-6">
-            <SectionDivider className="mb-0">Spans</SectionDivider>
+            <SectionDivider className="mb-0">{t("telemetrySection.spans")}</SectionDivider>
             <ExpandCollapseToggle
               expandedCount={expandedSpans.size}
               totalCount={currentTelemetry.spans?.length || 0}
@@ -256,16 +265,22 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                   return (
                     <div
                       key={spanId}
-                      className="border-border/30 bg-card/30 rounded-2xl border transition-all duration-200"
+                      className={`overflow-hidden rounded-2xl border transition-all duration-200 ${
+                        isExpanded
+                          ? "border-primary/20 bg-surface-card shadow-md"
+                          : "border-border/40 bg-surface-card hover:border-border/60 shadow-sm"
+                      }`}
                     >
                       <button
                         type="button"
                         onClick={() => toggleSpan(spanId)}
                         aria-expanded={isExpanded}
-                        className="flex w-full cursor-pointer items-center justify-between gap-4 p-4 transition-colors hover:bg-white/[0.02] sm:px-6 sm:py-5"
+                        className={`hover:bg-muted/30 flex w-full cursor-pointer items-center justify-between gap-4 p-4 transition-colors sm:px-6 sm:py-5 ${
+                          isExpanded ? "border-border/40 bg-muted/20 border-b" : ""
+                        }`}
                       >
                         <h3 className="text-foreground flex-1 text-left text-sm font-bold sm:text-base md:text-lg">
-                          {span.span_kind} Span
+                          {t("telemetrySection.spanTitle", { kind: span.span_kind })}
                         </h3>
                         <div className="flex flex-shrink-0 items-center gap-3">
                           <GlowBadge variant="info" withGlow className="py-0.5 text-[9px]">
@@ -286,7 +301,7 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
                             {span.attributes && span.attributes.length > 0 && (
                               <div className="space-y-4">
                                 <h4 className="text-muted-foreground text-xs font-black tracking-[0.2em] uppercase">
-                                  Attributes
+                                  {t("telemetrySection.attributes")}
                                 </h4>
                                 <AttributeTable attributes={span.attributes} />
                               </div>
@@ -305,9 +320,7 @@ export function TelemetrySection({ telemetry }: TelemetrySectionProps) {
       {/* Empty state */}
       {!hasMetrics && !hasSpans && (
         <div className="flex min-h-[200px] items-center justify-center">
-          <p className="text-muted-foreground text-sm">
-            No metrics or spans defined for this configuration.
-          </p>
+          <p className="text-muted-foreground text-sm">{t("telemetrySection.empty")}</p>
         </div>
       )}
     </div>

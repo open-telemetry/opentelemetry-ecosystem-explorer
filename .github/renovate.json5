@@ -5,17 +5,45 @@
   internalChecksFilter: "strict",
   labels: ["dependencies"],
   schedule: ["before 8am on Monday"],
-
   lockFileMaintenance: {
     enabled: true,
     schedule: ["before 4am on Monday"],
   },
-
   packageRules: [
-    // Pre-commit hooks (digest-pin to commit SHA for supply chain hardening)
     {
       matchManagers: ["pre-commit"],
       pinDigests: true,
+    },
+    // package.json is managed by Renovate's "bun" manager here (bun.lock +
+    // .bun-version), not "npm", so the pin rule must target "bun" or it is inert.
+    {
+      matchManagers: ["bun", "npm"],
+      matchDepTypes: ["dependencies"],
+      rangeStrategy: "pin",
+    },
+    // The faro packages are version-locked to each other, so group them into a
+    // single PR to avoid mismatched partial upgrades.
+    {
+      matchPackageNames: ["@grafana/faro-react", "@grafana/faro-web-tracing"],
+      groupName: "faro",
+    },
+  ],
+  customManagers: [
+    {
+      customType: "regex",
+      managerFilePatterns: ["/^\\.bun-version$/"],
+      matchStrings: ["(?<currentValue>\\d+\\.\\d+\\.\\d+)"],
+      depNameTemplate: "oven-sh/bun",
+      datasourceTemplate: "github-releases",
+      extractVersionTemplate: "^bun-v(?<version>.+)$",
+    },
+    {
+      customType: "regex",
+      managerFilePatterns: ["/(^|/)netlify\\.toml$/"],
+      matchStrings: ['BUN_VERSION\\s*=\\s*"(?<currentValue>[^"]+)"'],
+      depNameTemplate: "oven-sh/bun",
+      datasourceTemplate: "github-releases",
+      extractVersionTemplate: "^bun-v(?<version>.+)$",
     },
   ],
 }

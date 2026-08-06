@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import type { JSX } from "react";
+import { useTranslation } from "react-i18next";
 import type {
   ConfigNode,
   ConfigNodeBase,
@@ -38,6 +39,7 @@ import { UnionRenderer } from "./union-renderer";
 import { CircularRefPlaceholder } from "./circular-ref-placeholder";
 import { FieldSection } from "./field-section";
 import { useStarterPaths } from "./configuration-ui-context";
+import { useCollapsibleExpansion } from "./section-expansion-context";
 
 export interface SchemaRendererProps {
   node: ConfigNode;
@@ -57,6 +59,32 @@ function withHiddenLabel<T extends ConfigNodeBase>(node: T): T {
   return { ...node, hideLabel: true };
 }
 
+function WrappedLeaf({
+  node,
+  path,
+  defaultExp,
+  children,
+}: {
+  node: ConfigNodeBase;
+  path: string;
+  defaultExp: boolean;
+  children: JSX.Element;
+}) {
+  const { open, onOpenChange } = useCollapsibleExpansion(path, defaultExp);
+
+  return (
+    <FieldSection node={node} level="field" open={open} onOpenChange={onOpenChange}>
+      <FieldSection.Header>
+        <FieldSection.Chevron />
+        <FieldSection.Label />
+        <FieldSection.Stability />
+        <FieldSection.Info />
+      </FieldSection.Header>
+      <FieldSection.Body>{children}</FieldSection.Body>
+    </FieldSection>
+  );
+}
+
 export function SchemaRenderer({
   node,
   depth,
@@ -64,6 +92,7 @@ export function SchemaRenderer({
   headless = false,
   inline = false,
 }: SchemaRendererProps): JSX.Element | null {
+  const { t } = useTranslation("java-agent");
   const { state, setValue } = useConfigurationBuilder();
   const starterPaths = useStarterPaths();
   const value = getByPath(state.values, parsePath(path));
@@ -79,15 +108,9 @@ export function SchemaRenderer({
   function wrap(control: JSX.Element): JSX.Element {
     if (!wrappable) return control;
     return (
-      <FieldSection node={node} level="field" defaultExpanded={starterPaths.has(path)}>
-        <FieldSection.Header>
-          <FieldSection.Chevron />
-          <FieldSection.Label />
-          <FieldSection.Stability />
-          <FieldSection.Info />
-        </FieldSection.Header>
-        <FieldSection.Body>{control}</FieldSection.Body>
-      </FieldSection>
+      <WrappedLeaf node={node} path={path} defaultExp={starterPaths.has(path)}>
+        {control}
+      </WrappedLeaf>
     );
   }
 
@@ -161,7 +184,7 @@ export function SchemaRenderer({
       const itemSchema: TextInputNode = {
         controlType: "text_input",
         key: "item",
-        label: "Item",
+        label: t("builder.schemaRenderer.itemLabel"),
         path: `${path}.item`,
       };
       const synthetic: ListNode = { ...node, controlType: "list", itemSchema };
@@ -179,7 +202,7 @@ export function SchemaRenderer({
       const itemSchema: NumberInputNode = {
         controlType: "number_input",
         key: "item",
-        label: "Item",
+        label: t("builder.schemaRenderer.itemLabel"),
         path: `${path}.item`,
       };
       const synthetic: ListNode = { ...node, controlType: "list", itemSchema };

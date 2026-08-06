@@ -134,7 +134,7 @@ export async function fetchWithCache<T>(
           if (staleData !== null) {
             if (options?.validate && !options.validate(staleData)) {
               throw new Error(
-                `Failed to load ${cacheKey}: ${response.status} ${response.statusText}`
+                `Failed to load ${cacheKey} from ${url}: ${response.status} ${response.statusText}`
               );
             }
             console.warn("HTTP error, serving stale cache:", { cacheKey, status: response.status });
@@ -170,6 +170,23 @@ export async function fetchWithCache<T>(
 
       const format = options?.format ?? "json";
       const data = format === "json" ? await response.json() : await response.text();
+
+      // Validate fresh data unconditionally after parsing, before any caching
+      if (options?.validate) {
+        if (!options.validate(data)) {
+          if (isIDBAvailable()) {
+            const staleData = await getCached<T>(cacheKey, storeType, { allowExpired: true });
+            if (staleData !== null && options.validate(staleData)) {
+              console.warn("Fresh response failed validation, serving stale cache:", cacheKey);
+              return staleData;
+            }
+          }
+          throw new Error(
+            `Failed to validate fresh response for ${cacheKey} from ${url} (response shape mismatch)`
+          );
+        }
+      }
+
       if (isIDBAvailable()) {
         try {
           await setCached(cacheKey, data, storeType);

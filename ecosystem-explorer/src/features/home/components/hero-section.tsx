@@ -13,9 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useTranslation } from "react-i18next";
 import { Compass } from "@/components/icons/compass";
 
 export function HeroSection() {
+  const { t } = useTranslation("home");
   return (
     <section className="bg-background relative flex items-center justify-center overflow-hidden py-12">
       {/* Ambient radial gradient background */}
@@ -23,12 +25,12 @@ export function HeroSection() {
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(circle at center, hsl(var(--hero-accent-hsl) / 0.08) 0%, hsl(var(--hero-accent-alt-hsl) / 0.04) 30%, transparent 70%)",
+            "radial-gradient(circle at center, hsl(var(--hero-accent-hsl) / var(--hero-gradient-opacity)) 0%, hsl(var(--hero-accent-alt-hsl) / calc(var(--hero-gradient-opacity) / 2)) 30%, transparent 70%)",
         }}
       />
 
       {/* Grid pattern overlay */}
-      <div className="absolute inset-0 opacity-10">
+      <div className="absolute inset-0" style={{ opacity: "var(--hero-grid-opacity)" }}>
         <div
           className="h-full w-full"
           style={{
@@ -53,15 +55,15 @@ export function HeroSection() {
 
         <div className="space-y-2">
           <h1 className="text-3xl leading-tight font-bold tracking-tight text-balance md:text-4xl">
-            <span className="text-foreground">OpenTelemetry</span>
+            <span className="text-foreground">{t("hero.titlePrefix")}</span>
             <br />
             <span className="from-otel-blue to-otel-orange bg-gradient-to-r bg-clip-text text-transparent">
-              Ecosystem Explorer
+              {t("hero.titleSuffix")}
             </span>
           </h1>
 
           <p className="text-muted-foreground mx-auto max-w-2xl text-sm leading-relaxed text-balance md:text-base">
-            Navigate the vast landscape of OpenTelemetry.
+            {t("hero.tagline")}
           </p>
         </div>
       </div>

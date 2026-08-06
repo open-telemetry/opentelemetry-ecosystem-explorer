@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 import { AgentExploreLanding } from "@/features/java-agent/components/agent-explore-landing.tsx";
+import { JavaAgentInfoBar } from "@/features/java-agent/components/java-agent-info-bar.tsx";
+import { JavaAgentAnnouncements } from "@/features/java-agent/components/java-agent-announcements.tsx";
 import { BackButton } from "@/components/ui/back-button";
 import { PageContainer } from "@/components/layout/page-container";
+import { Seo } from "@/components/seo/seo";
+import { useTranslation } from "react-i18next";
 
 export function JavaAgentPage() {
+  const { t } = useTranslation("java-agent");
   return (
     <PageContainer>
+      <Seo />
       <div className="space-y-6">
         <BackButton />
         <div>
           <h1 className="mb-2 text-3xl font-bold md:text-4xl">
-            <span className="from-otel-orange to-otel-blue bg-gradient-to-r bg-clip-text text-transparent">
-              OpenTelemetry Java Agent
-            </span>
+            <span className="text-gradient-brand">{t("page.title")}</span>
           </h1>
-          <p className="text-muted-foreground">
-            Explore auto-instrumentation for Java applications. Discover supported libraries,
-            configuration options, and emitted telemetry.
-          </p>
+          <p className="text-muted-foreground">{t("page.description")}</p>
         </div>
+        <JavaAgentInfoBar />
+        <JavaAgentAnnouncements />
         <AgentExploreLanding />
       </div>
     </PageContainer>

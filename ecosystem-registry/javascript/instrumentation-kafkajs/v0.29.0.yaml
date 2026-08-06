@@ -1,0 +1,20 @@
+component_owners:
+- seemk
+description: OpenTelemetry instrumentation for `kafkajs` messaging client for Apache
+  Kafka
+in_auto_instrumentations_node: true
+name: instrumentation-kafkajs
+node_engine: ^18.19.0 || >=20.6.0
+npm_package: '@opentelemetry/instrumentation-kafkajs'
+repository: open-telemetry/opentelemetry-js-contrib
+source_path: packages/instrumentation-kafkajs
+supported_versions:
+- package: kafkajs
+  source: README.md
+  version_range: '>=0.3.0 <3'
+tested_versions:
+- mode: latest-minors
+  package: kafkajs
+  range: '>=0.3.0 <3'
+  source: .tav.yml
+version: 0.29.0

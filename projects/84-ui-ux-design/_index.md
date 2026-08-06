@@ -3,8 +3,8 @@ title: "Issue #84 — Explorer UI/UX Design"
 issue: 84
 type: index
 phase: meta
-status: planning
-last_updated: "2026-05-19"
+status: in-progress
+last_updated: "2026-07-20"
 ---
 
 > [!NOTE]
@@ -81,10 +81,10 @@ open questions.
 | 1     | [`00-foundation.md`](./00-foundation.md)               | complete    |
 | 1     | [`00-foundation-audit.md`](./00-foundation-audit.md)   | complete    |
 | 1     | [`v1-routing-pivot.md`](./v1-routing-pivot.md)         | complete    |
-| 2     | [`01-home-page.md`](./01-home-page.md)                 | in-progress |
-| 3     | [`02-ecosystem-landing.md`](./02-ecosystem-landing.md) | planning    |
-| 4     | [`03-list-page.md`](./03-list-page.md)                 | planning    |
-| 5     | [`04-detail-page.md`](./04-detail-page.md)             | planning    |
+| 2     | [`01-home-page.md`](./01-home-page.md)                 | complete    |
+| 3     | [`02-ecosystem-landing.md`](./02-ecosystem-landing.md) | complete    |
+| 4     | [`03-list-page.md`](./03-list-page.md)                 | complete    |
+| 5     | [`04-detail-page.md`](./04-detail-page.md)             | in-progress |
 
 `status` reflects the work the document describes (not the document itself). When the first PR for a
 phase opens, bump status to `in-progress`. When the cleanup PR for that phase merges, bump to
@@ -114,7 +114,7 @@ Phase 4 — List page         (03-list-page.md)
 
 Phase 5 — Component detail  (04-detail-page.md)
    └─ Three-pane shell, sibling navigator, embedded docs, version timeline + diff.
-      Split into PR 04a (shell + docs) and PR 04b (timeline + diff).
+      Consolidated into PR A (#869, shell + docs) and PR B (#870, timeline + diff).
 ```
 
 ---

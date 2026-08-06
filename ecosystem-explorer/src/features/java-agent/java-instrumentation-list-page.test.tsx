@@ -17,7 +17,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
-import type { InstrumentationData } from "@/types/javaagent";
+import type { InstrumentationListEntry } from "@/types/javaagent";
 import { JavaInstrumentationListPage } from "./java-instrumentation-list-page";
 
 vi.mock("@/hooks/use-javaagent-data", () => ({
@@ -58,15 +58,16 @@ const mockVersions = {
   error: null,
 };
 
-const mockInstrumentations: InstrumentationData[] = [
+const mockInstrumentations: InstrumentationListEntry[] = [
   {
     name: "http-client",
     display_name: "HTTP Client",
     description: "Instrumentation for HTTP clients",
     scope: { name: "http" },
     has_javaagent: true,
-    javaagent_target_versions: ["1.0.0"],
-    telemetry: [{ when: "always", spans: [{ span_kind: "CLIENT" }] }],
+    has_spans: true,
+    has_metrics: false,
+    _is_custom: false,
     semantic_conventions: ["http"],
     features: ["stable"],
   },
@@ -76,20 +77,9 @@ const mockInstrumentations: InstrumentationData[] = [
     description: "Database instrumentation for JDBC",
     scope: { name: "jdbc" },
     has_standalone_library: true,
-    telemetry: [
-      {
-        when: "always",
-        metrics: [
-          {
-            name: "db.connections",
-            description: "DB connections",
-            instrument: "counter",
-            data_type: "LONG_SUM",
-            unit: "1",
-          },
-        ],
-      },
-    ],
+    has_metrics: true,
+    has_spans: false,
+    _is_custom: false,
     semantic_conventions: ["db"],
   },
   {
@@ -98,23 +88,10 @@ const mockInstrumentations: InstrumentationData[] = [
     description: "Messaging instrumentation for Kafka",
     scope: { name: "kafka" },
     has_javaagent: true,
-    javaagent_target_versions: ["1.0.0"],
     has_standalone_library: true,
-    telemetry: [
-      {
-        when: "always",
-        spans: [{ span_kind: "PRODUCER" }],
-        metrics: [
-          {
-            name: "kafka.messages",
-            description: "Messages sent",
-            data_type: "COUNTER",
-            instrument: "counter",
-            unit: "1",
-          },
-        ],
-      },
-    ],
+    has_spans: true,
+    has_metrics: true,
+    _is_custom: false,
     semantic_conventions: ["messaging"],
     features: ["stable"],
   },
@@ -124,7 +101,9 @@ const mockInstrumentations: InstrumentationData[] = [
     description: "Instrumentation for Spring Web applications",
     scope: { name: "spring" },
     has_javaagent: true,
-    javaagent_target_versions: ["1.0.0"],
+    has_spans: false,
+    has_metrics: false,
+    _is_custom: false,
     features: ["experimental"],
   },
 ];
@@ -309,6 +288,9 @@ describe("JavaInstrumentationListPage - Filtering", () => {
         {
           name: "redis-client-3.2.1",
           scope: { name: "redis" },
+          has_spans: false,
+          has_metrics: false,
+          _is_custom: false,
         },
       ],
       loading: false,
@@ -529,7 +511,7 @@ describe("JavaInstrumentationListPage - Pagination", () => {
   let instances: IOInstance[] = [];
   const originalIO = globalThis.IntersectionObserver;
 
-  function makeInstrumentations(count: number, prefix = "lib"): InstrumentationData[] {
+  function makeInstrumentations(count: number, prefix = "lib"): InstrumentationListEntry[] {
     return Array.from({ length: count }, (_, i) => {
       const idx = String(i).padStart(3, "0");
       return {
@@ -539,7 +521,7 @@ describe("JavaInstrumentationListPage - Pagination", () => {
         scope: { name: `${prefix}-${idx}` },
         has_javaagent: true,
         ...(prefix === "custom" ? { _is_custom: true } : {}),
-      } as InstrumentationData;
+      } as InstrumentationListEntry;
     });
   }
 

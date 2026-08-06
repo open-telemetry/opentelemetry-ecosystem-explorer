@@ -1,0 +1,88 @@
+{
+  "chips": {
+    "ariaLabel": "Filtros activos",
+    "removeAriaLabel": "Quitar filtro {{label}}",
+    "search": "Búsqueda: {{value}}",
+    "type": "Tipo: {{value}}",
+    "signal": "Señal: {{value}}",
+    "stability": "Estabilidad: {{value}}",
+    "distribution": "Distribución: {{value}}",
+    "version": "Versión: {{value}}",
+    "clearAll": "Borrar todo"
+  },
+  "density": {
+    "ariaLabel": "Densidad de la vista",
+    "cards": "Tarjetas",
+    "compact": "Compacta",
+    "table": "Tabla"
+  },
+  "sort": {
+    "label": "Ordenar por",
+    "name": "Nombre",
+    "updated": "Actualizados recientemente",
+    "stability": "Estabilidad"
+  },
+  "pagination": {
+    "ariaLabel": "Paginación",
+    "previous": "Anterior",
+    "previousAriaLabel": "Página anterior",
+    "next": "Siguiente",
+    "nextAriaLabel": "Página siguiente",
+    "status": "Página {{page}} de {{totalPages}}"
+  },
+  "emptyState": {
+    "title": "No hay componentes que coincidan",
+    "leadFiltered": "Prueba a quitar uno o dos filtros para ver más resultados.",
+    "leadUnfiltered": "No hay componentes que mostrar por el momento.",
+    "clearAll": "Borrar todos los filtros"
+  },
+  "facetToggle": {
+    "label": "Filtros",
+    "openAriaLabel": "Abrir filtros",
+    "openWithCountAriaLabel_one": "Abrir filtros ({{count}} activo)",
+    "openWithCountAriaLabel_other": "Abrir filtros ({{count}} activos)"
+  },
+  "views": {
+    "table": {
+      "columns": {
+        "name": "Nombre",
+        "type": "Tipo",
+        "signals": "Señales",
+        "distribution": "Distribución",
+        "stability": "Estabilidad"
+      }
+    }
+  },
+  "facets": {
+    "panel": {
+      "label": "Filtros",
+      "close": "Cerrar filtros"
+    },
+    "search": {
+      "title": "Buscar",
+      "placeholder": "Buscar por nombre o descripción…"
+    },
+    "type": {
+      "title": "Tipo"
+    },
+    "signal": {
+      "title": "Señal",
+      "options": {
+        "traces": "Trazas",
+        "metrics": "Métricas",
+        "logs": "Logs",
+        "baggage": "Baggage"
+      }
+    },
+    "stability": {
+      "title": "Estabilidad"
+    },
+    "distribution": {
+      "title": "Distribución"
+    },
+    "version": {
+      "title": "Versión",
+      "latest": "Más reciente"
+    }
+  }
+}

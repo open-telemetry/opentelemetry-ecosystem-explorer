@@ -1,9 +1,9 @@
 # System Architecture Overview
 
 This system collects metadata about OpenTelemetry components (Java Agent instrumentations, .NET
-instrumentations, Collector components, and the declarative configuration schema) and makes it
-searchable through a web app. Data flows from source repositories → automation scripts → versioned
-registry → web application.
+instrumentations, JavaScript instrumentations, Collector components, and the declarative
+configuration schema) and makes it searchable through a web app. Data flows from source repositories
+→ automation scripts → versioned registry → web application.
 
 The OpenTelemetry Ecosystem Explorer is built as a three-component system comprising the
 `ecosystem-automation`, `ecosystem-registry`, and `ecosystem-explorer` components. Each component
@@ -23,7 +23,8 @@ Automated pipelines that extract metadata from upstream OpenTelemetry projects.
 - Generates content-addressed storage files for the web app
 
 **Tools**: collector-watcher, java-instrumentation-watcher, dotnet-instrumentation-watcher,
-configuration-watcher, explorer-db-builder, v1-registry-sync
+js-instrumentation-watcher, configuration-watcher, explorer-db-builder, v1-registry-sync, plus
+watcher-common (shared base classes for inventory, version detection, and content hashing)
 
 ### ecosystem-registry
 
@@ -32,7 +33,7 @@ Versioned storage of normalized metadata.
 **What it does**:
 
 - Stores historical metadata for all versions
-- Organized by ecosystem (Java Agent, .NET, Collector, Configuration)
+- Organized by ecosystem (Java Agent, .NET, JavaScript, Collector, Configuration)
 
 **Format**: YAML files organized by version
 
@@ -46,7 +47,7 @@ React web app for browsing and exploring the registry.
 - View detailed metadata (supported signals, library versions, etc.)
 - Compare versions
 
-**Tech**: React 19, TypeScript, Vite, Tailwind CSS
+**Tech**: React 19, TypeScript, Vite, Tailwind CSS, i18next
 
 ## Data Flow
 

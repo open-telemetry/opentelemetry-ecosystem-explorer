@@ -14,14 +14,17 @@
 #
 """Tests for inventory manager."""
 
+import os
 import shutil
 import tempfile
+import time
 from pathlib import Path
 
 import pytest
 import yaml
 from collector_watcher.inventory_manager import InventoryManager
 from semantic_version import Version
+from watcher_common.content_hashing import compute_content_hash
 
 
 @pytest.fixture
@@ -381,6 +384,89 @@ def test_cleanup_snapshots(temp_inventory_dir, sample_components):
     assert not manager.version_exists("contrib", v3)
 
 
+def test_prune_release_versions_not_in(temp_inventory_dir, sample_components):
+    manager = InventoryManager(str(temp_inventory_dir))
+
+    keep = Version("0.112.0")
+    drop_older = Version("0.110.0")
+    drop_newer = Version("0.113.0")
+    snapshot = Version(major=0, minor=114, patch=0, prerelease=("SNAPSHOT",))
+
+    for version in [keep, drop_older, drop_newer, snapshot]:
+        manager.save_versioned_inventory(
+            distribution="core",
+            version=version,
+            components=sample_components,
+            repository="opentelemetry-collector",
+        )
+
+    removed = manager.prune_release_versions_not_in("core", [keep])
+
+    assert removed == 2
+    # Listed release survives
+    assert manager.version_exists("core", keep)
+    # Unlisted releases are gone
+    assert not manager.version_exists("core", drop_older)
+    assert not manager.version_exists("core", drop_newer)
+    # Snapshots are always preserved, even though they are not in the keep list
+    assert manager.version_exists("core", snapshot)
+
+
+def test_prune_release_versions_not_in_keeps_all_listed(temp_inventory_dir, sample_components):
+    manager = InventoryManager(str(temp_inventory_dir))
+
+    v1 = Version("0.111.0")
+    v2 = Version("0.112.0")
+
+    for version in [v1, v2]:
+        manager.save_versioned_inventory(
+            distribution="contrib",
+            version=version,
+            components=sample_components,
+            repository="opentelemetry-collector-contrib",
+        )
+
+    removed = manager.prune_release_versions_not_in("contrib", [v1, v2])
+
+    assert removed == 0
+    assert manager.version_exists("contrib", v1)
+    assert manager.version_exists("contrib", v2)
+
+
+def test_prune_release_versions_not_in_prunes_orphan_schemas(temp_inventory_dir, sample_components):
+    """Pruning the last version that referenced a schema removes the schema file."""
+    manager = InventoryManager(str(temp_inventory_dir))
+
+    keep = Version("0.112.0")
+    drop = Version("0.110.0")
+
+    manager.save_versioned_inventory(
+        distribution="core",
+        version=keep,
+        components=sample_components,
+        repository="opentelemetry-collector",
+        schema_hash="keepkeepkeep",
+    )
+    manager.save_versioned_inventory(
+        distribution="core",
+        version=drop,
+        components=sample_components,
+        repository="opentelemetry-collector",
+        schema_hash="dropdropdrop",
+    )
+
+    schemas_dir = manager.meta_schemas_dir()
+    schemas_dir.mkdir(parents=True, exist_ok=True)
+    (schemas_dir / "keepkeepkeep.yaml").write_text("type: object\n")
+    (schemas_dir / "dropdropdrop.yaml").write_text("type: object\n")
+
+    manager.prune_release_versions_not_in("core", [keep])
+
+    # Schema referenced only by the pruned version is removed; the kept one stays.
+    assert (schemas_dir / "keepkeepkeep.yaml").exists()
+    assert not (schemas_dir / "dropdropdrop.yaml").exists()
+
+
 def test_version_exists(temp_inventory_dir, sample_components, sample_version):
     manager = InventoryManager(str(temp_inventory_dir))
 
@@ -607,3 +693,205 @@ def test_add_deprecated_components_multiple_distributions(temp_inventory_dir):
     assert deprecations["core"]["receiver"][0]["name"] == "corereceiver"
     assert len(deprecations["contrib"]["exporter"]) == 1
     assert deprecations["contrib"]["exporter"][0]["name"] == "contribexporter"
+
+
+# --- save_component_readmes / load_component_readme_* ---
+#
+# Ported from java-instrumentation-watcher's JavaagentInventoryManager readme
+# tests (see watcher_common.inventory_manager), adapted for collector's
+# (distribution, version) two-key model instead of java's version-only key.
+
+
+def test_readme_dir_exists_false_when_no_readmes(temp_inventory_dir, sample_components, sample_version):
+    manager = InventoryManager(str(temp_inventory_dir))
+    manager.save_versioned_inventory(
+        distribution="core",
+        version=sample_version,
+        components=sample_components,
+        repository="opentelemetry-collector",
+    )
+    assert not manager.readme_dir_exists("core", sample_version)
+
+
+def test_readme_dir_exists_true_after_save(temp_inventory_dir, sample_version):
+    manager = InventoryManager(str(temp_inventory_dir))
+    manager.save_component_readmes("core", sample_version, [("otlpreceiver", "# content")])
+    assert manager.readme_dir_exists("core", sample_version)
+
+
+def test_save_component_readmes_writes_content_addressed_files(temp_inventory_dir, sample_version):
+    manager = InventoryManager(str(temp_inventory_dir))
+    readmes = [
+        ("otlpreceiver", "# OTLP Receiver"),
+        ("batchprocessor", "# Batch Processor"),
+    ]
+
+    written = manager.save_component_readmes("core", sample_version, readmes)
+
+    assert written == 2
+    readme_dir = manager.get_version_dir("core", sample_version) / "component_readmes"
+    files = list(readme_dir.glob("*.md"))
+    assert len(files) == 2
+
+
+def test_save_component_readmes_filename_format(temp_inventory_dir, sample_version):
+    manager = InventoryManager(str(temp_inventory_dir))
+    content = "# Hello"
+    expected_hash = compute_content_hash(content)
+
+    manager.save_component_readmes("core", sample_version, [("otlpreceiver", content)])
+
+    readme_dir = manager.get_version_dir("core", sample_version) / "component_readmes"
+    expected_file = readme_dir / f"otlpreceiver-{expected_hash}.md"
+    assert expected_file.exists()
+    assert expected_file.read_text(encoding="utf-8") == content
+
+
+def test_save_component_readmes_idempotent(temp_inventory_dir, sample_version):
+    manager = InventoryManager(str(temp_inventory_dir))
+    readmes = [("otlpreceiver", "# Content")]
+
+    first = manager.save_component_readmes("core", sample_version, readmes)
+    second = manager.save_component_readmes("core", sample_version, readmes)
+
+    assert first == 1
+    assert second == 0
+
+
+def test_save_component_readmes_different_content_same_name(temp_inventory_dir, sample_version):
+    manager = InventoryManager(str(temp_inventory_dir))
+
+    first = manager.save_component_readmes("core", sample_version, [("otlpreceiver", "# v1")])
+    second = manager.save_component_readmes("core", sample_version, [("otlpreceiver", "# v2")])
+
+    assert first == 1
+    assert second == 1
+    readme_dir = manager.get_version_dir("core", sample_version) / "component_readmes"
+    assert len(list(readme_dir.glob("*.md"))) == 2
+
+
+def test_component_readmes_are_isolated_per_distribution(temp_inventory_dir, sample_version):
+    """core and contrib must not share a component_readmes directory, unlike java which has no distribution axis."""
+    manager = InventoryManager(str(temp_inventory_dir))
+
+    manager.save_component_readmes("core", sample_version, [("otlpreceiver", "# core version")])
+    manager.save_component_readmes("contrib", sample_version, [("otlpreceiver", "# contrib version")])
+
+    core_map = manager.load_component_readme_map("core", sample_version)
+    contrib_map = manager.load_component_readme_map("contrib", sample_version)
+
+    core_content = manager.load_component_readme_content(
+        "core", sample_version, "otlpreceiver", core_map["otlpreceiver"]
+    )
+    contrib_content = manager.load_component_readme_content(
+        "contrib", sample_version, "otlpreceiver", contrib_map["otlpreceiver"]
+    )
+
+    assert core_content == "# core version"
+    assert contrib_content == "# contrib version"
+
+
+def test_cleanup_snapshots_removes_component_readmes(temp_inventory_dir, sample_components, sample_snapshot_version):
+    manager = InventoryManager(str(temp_inventory_dir))
+    manager.save_versioned_inventory(
+        distribution="core",
+        version=sample_snapshot_version,
+        components=sample_components,
+        repository="opentelemetry-collector",
+    )
+    manager.save_component_readmes("core", sample_snapshot_version, [("otlpreceiver", "# Content")])
+
+    snapshot_dir = manager.get_version_dir("core", sample_snapshot_version)
+    assert (snapshot_dir / "component_readmes").exists()
+
+    manager.cleanup_snapshots("core")
+
+    assert not snapshot_dir.exists()
+
+
+def test_parse_readme_filename(temp_inventory_dir):
+    manager = InventoryManager(str(temp_inventory_dir))
+
+    # Valid cases (12 char hash)
+    assert manager._parse_readme_filename("otlpreceiver-abc123def456.md") == ("otlpreceiver", "abc123def456")
+    assert manager._parse_readme_filename("my-comp-1.0-abc123def456.md") == ("my-comp-1.0", "abc123def456")
+
+    # Invalid cases
+    assert manager._parse_readme_filename("otlpreceiver-abc123.md") is None  # Too short
+    assert manager._parse_readme_filename("otlpreceiver-abc123def4567.md") is None  # Too long
+    assert manager._parse_readme_filename("-abc123def456.md") is None  # Empty name
+    assert manager._parse_readme_filename("otlpreceiver.md") is None  # No hash
+
+
+def test_load_component_readme_map_deterministic_selection(temp_inventory_dir, sample_version):
+    manager = InventoryManager(str(temp_inventory_dir))
+    readme_dir = manager.get_version_dir("core", sample_version) / "component_readmes"
+    readme_dir.mkdir(parents=True)
+
+    p1 = readme_dir / "otlpreceiver-abc123def456.md"
+    p1.write_text("old content")
+
+    p2 = readme_dir / "otlpreceiver-fed4321cba98.md"
+    p2.write_text("new content")
+
+    p3 = readme_dir / "otlpreceiver-ffffff000000.md"
+    p3.write_text("newest content")
+
+    now = time.time_ns()
+    os.utime(p1, ns=(now - 1000000, now - 1000000))
+    os.utime(p2, ns=(now, now))
+    os.utime(p3, ns=(now + 1000000, now + 1000000))
+
+    readme_map = manager.load_component_readme_map("core", sample_version)
+
+    # Should pick p3 (ffffff...) because it has the newest mtime
+    assert len(readme_map) == 1
+    assert readme_map["otlpreceiver"] == "ffffff000000"
+
+
+def test_load_component_readme_map_lexicographical_fallback(temp_inventory_dir, sample_version):
+    manager = InventoryManager(str(temp_inventory_dir))
+    readme_dir = manager.get_version_dir("core", sample_version) / "component_readmes"
+    readme_dir.mkdir(parents=True)
+
+    p1 = readme_dir / "otlpreceiver-aaaaaa111111.md"
+    p1.write_text("content a")
+
+    p2 = readme_dir / "otlpreceiver-bbbbbb222222.md"
+    p2.write_text("content b")
+
+    now = time.time_ns()
+    os.utime(p1, ns=(now, now))
+    os.utime(p2, ns=(now, now))
+
+    readme_map = manager.load_component_readme_map("core", sample_version)
+
+    # Should pick p2 (bbbbbb...) because b > a lexicographically
+    assert readme_map["otlpreceiver"] == "bbbbbb222222"
+
+
+def test_load_component_readme_content_sanitization(temp_inventory_dir, sample_version):
+    manager = InventoryManager(str(temp_inventory_dir))
+    readme_dir = manager.get_version_dir("core", sample_version) / "component_readmes"
+    readme_dir.mkdir(parents=True)
+
+    # Save a file with a potentially dangerous name that gets sanitized
+    component_name = "../dangerous"
+    sanitized_name = ".._dangerous"
+    markdown_hash = "abc123def456"
+    (readme_dir / f"{sanitized_name}-{markdown_hash}.md").write_text("safe content")
+
+    # Should be able to load it using the original (unsanitized) name
+    content = manager.load_component_readme_content("core", sample_version, component_name, markdown_hash)
+    assert content == "safe content"
+
+
+def test_load_component_readme_content_missing_returns_none(temp_inventory_dir, sample_version):
+    manager = InventoryManager(str(temp_inventory_dir))
+    content = manager.load_component_readme_content("core", sample_version, "nonexistent", "abc123def456")
+    assert content is None
+
+
+def test_load_component_readme_map_missing_dir_returns_empty(temp_inventory_dir, sample_version):
+    manager = InventoryManager(str(temp_inventory_dir))
+    assert manager.load_component_readme_map("core", sample_version) == {}
