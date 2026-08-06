@@ -179,6 +179,7 @@ components:
     type: azuredataexplorer
 - name: azuremonitorexporter
   metadata:
+    deprecated_type: azuremonitor
     display_name: Azure Monitor Exporter
     status:
       class: exporter
@@ -193,7 +194,7 @@ components:
         - logs
         - metrics
         - traces
-    type: azuremonitor
+    type: azure_monitor
 - name: bmchelixexporter
   metadata:
     deprecated_type: bmchelix

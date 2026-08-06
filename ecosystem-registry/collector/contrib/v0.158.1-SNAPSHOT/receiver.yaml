@@ -740,6 +740,16 @@ components:
           value_type: double
         stability: development
         unit: '%'
+      apache.request.rate:
+        attributes: []
+        description: Average number of requests served per second since the server
+          was started, as reported by mod_status.
+        enabled: false
+        gauge:
+          input_type: string
+          value_type: double
+        stability: development
+        unit: '{request}/s'
       apache.request.time:
         attributes: []
         description: Total time spent on handling requests.
@@ -786,6 +796,16 @@ components:
           monotonic: true
           value_type: int
         unit: By
+      apache.traffic.rate:
+        attributes: []
+        description: Average number of bytes transmitted per second since the server
+          was started, as reported by mod_status.
+        enabled: false
+        gauge:
+          input_type: string
+          value_type: double
+        stability: development
+        unit: By/s
       apache.uptime:
         attributes: []
         description: The amount of time that the server has been running in seconds.
@@ -797,6 +817,15 @@ components:
           monotonic: true
           value_type: int
         unit: s
+      apache.worker.limit:
+        attributes: []
+        description: The maximum number of worker slots configured for the HTTP server,
+          derived from the scoreboard length.
+        enabled: true
+        gauge:
+          value_type: int
+        stability: development
+        unit: '{worker}'
       apache.workers:
         attributes:
         - workers_state
@@ -8553,6 +8582,26 @@ components:
           value_type: int
         stability: development
         unit: By
+      k8s.node.filesystem.inode.count:
+        attributes: []
+        description: Total number of inodes in the node's root filesystem.
+        enabled: false
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: false
+          value_type: int
+        unit: '{inode}'
+      k8s.node.filesystem.inode.free:
+        attributes: []
+        description: Number of free inodes in the node's root filesystem.
+        enabled: false
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: false
+          value_type: int
+        unit: '{inode}'
       k8s.node.filesystem.usage:
         attributes: []
         description: Node filesystem usage
@@ -12755,11 +12804,14 @@ components:
           (reporting delta).
         type: double
       oracledb.wait.count:
-        description: Total number of waits for the wait event across all sessions.
+        description: Number of times the session has waited on the wait event.
         type: int
       oracledb.wait.duration:
         description: Total time waited in seconds for the wait event.
         type: double
+      oracledb.wait.timeouts:
+        description: Number of the session's waits on the wait event that timed out.
+        type: int
       oracledb.wait_class:
         description: The category of wait events a query or session is currently experiencing
           in Oracle Database.
@@ -12837,6 +12889,7 @@ components:
         - oracledb.sid
         - oracledb.wait.count
         - oracledb.wait.duration
+        - oracledb.wait.timeouts
         - oracledb.wait_class
         description: Per-session wait event statistics from v$session_event.
         enabled: false
