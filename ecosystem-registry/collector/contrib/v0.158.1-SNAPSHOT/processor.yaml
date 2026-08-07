@@ -2313,6 +2313,8 @@ components:
       stability:
         beta:
         - traces
+      warnings:
+      - Statefulness
     telemetry:
       metrics:
         processor_tail_sampling_count_bytes_sampled:
