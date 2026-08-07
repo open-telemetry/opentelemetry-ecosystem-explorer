@@ -69,6 +69,19 @@ const mockComponentWithReadme: CollectorComponent = {
   markdown_hash: "abc123def456",
 };
 
+const mockComponentWithFeatureGates: CollectorComponent = {
+  ...mockComponentWithoutTelemetry,
+  feature_gates: [
+    {
+      id: "receiver.otlpreceiver.MyGate",
+      stage: "alpha",
+      description: "A test feature gate.",
+      from_version: "v0.158.0",
+      reference_url: "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/1",
+    },
+  ],
+};
+
 const mockComponentWithBacktickDescription: CollectorComponent = {
   ...mockComponentWithoutTelemetry,
   description: "Fetches metrics via the `/metrics/json` endpoint.",
@@ -250,6 +263,46 @@ describe("CollectorDetailPage", () => {
     await user.click(telemetryTab);
 
     expect(screen.getByText("my.metric.name")).toBeInTheDocument();
+  });
+
+  it("does not render Feature Gates tab when component has no feature_gates", () => {
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: mockComponentWithoutTelemetry,
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    expect(screen.queryByRole("tab", { name: /feature gates/i })).not.toBeInTheDocument();
+  });
+
+  it("renders Feature Gates tab when component has feature_gates and displays content on click", async () => {
+    const user = userEvent.setup();
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: mockComponentWithFeatureGates,
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    const featureGatesTab = screen.getByRole("tab", { name: /feature gates/i });
+    expect(featureGatesTab).toBeInTheDocument();
+
+    await user.click(featureGatesTab);
+
+    expect(screen.getByText("receiver.otlpreceiver.MyGate")).toBeInTheDocument();
   });
 
   it("does not render Readme tab when component has no markdown_hash", () => {
