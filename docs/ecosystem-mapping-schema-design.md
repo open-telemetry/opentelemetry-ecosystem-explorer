@@ -12,7 +12,7 @@ for this ecosystem contains and where it lives, before any watcher code gets wri
   of the [JavaScript metadata audit](../projects/9-javascript-instrumentation/01-metadata-audit.md)
   — the same document that did the Phase 1 survey.
 - A first-cut YAML shape for the new ecosystem's registry files, informed by what Phase 1 found
-  machine-readable, inconsistent, and missing upstream, not by copying an existing ecosystem's
+  machine-readable, inconsistent, and missing from upstream, not by copying an existing ecosystem's
   schema field-for-field.
 
 ## Decisions to make
