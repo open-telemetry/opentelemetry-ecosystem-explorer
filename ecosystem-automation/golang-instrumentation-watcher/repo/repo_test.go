@@ -33,20 +33,20 @@ func setupGitRepo(t *testing.T, tmpDir string, cmds [][]string) {
 	}
 }
 
-func TestName(t *testing.T) {
+func TestCloneDirName(t *testing.T) {
 	tests := []struct {
 		name string
 		url  string
 		want string
 	}{
-		{"github ssh url", "git@github.com:open-telemetry/opentelemetry-go.git", "opentelemetry-go"},
-		{"github https url", "https://github.com/open-telemetry/opentelemetry-go.git", "opentelemetry-go"},
-		{"no .git extension", "git@github.com:open-telemetry/opentelemetry-go", "opentelemetry-go"},
+		{"github ssh url", "git@github.com:open-telemetry/opentelemetry-go.git", "open-telemetry-opentelemetry-go"},
+		{"github https url", "https://github.com/open-telemetry/opentelemetry-go.git", "open-telemetry-opentelemetry-go"},
+		{"no .git extension", "git@github.com:open-telemetry/opentelemetry-go", "open-telemetry-opentelemetry-go"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := name(tt.url); got != tt.want {
-				t.Errorf("name(%q) = %q, want %q", tt.url, got, tt.want)
+			if got := CloneDirName(tt.url); got != tt.want {
+				t.Errorf("CloneDirName(%q) = %q, want %q", tt.url, got, tt.want)
 			}
 		})
 	}
@@ -128,7 +128,7 @@ func TestInfo(t *testing.T) {
 
 func TestClone(t *testing.T) {
 	requireGit(t)
-	if err := clone("invalid-url", t.TempDir()); err == nil {
+	if err := clone("invalid-url", t.TempDir(), "repo-name"); err == nil {
 		t.Error("clone() expected error for invalid url, got nil")
 	}
 }

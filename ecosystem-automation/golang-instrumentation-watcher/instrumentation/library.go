@@ -7,8 +7,12 @@ package instrumentation
 
 import (
 	"cmp"
+	"fmt"
+	"os"
 	"path/filepath"
 	"slices"
+
+	"gopkg.in/yaml.v3"
 
 	"github.com/open-telemetry/opentelemetry-ecosystem-explorer/golang-instrumentation-watcher/metadata"
 )
@@ -77,4 +81,44 @@ func analyzeLibrary(goModPath string) (*Library, error) {
 	}
 	meta := DeriveMetadata(mod)
 	return &Library{Metadata: *meta}, nil
+}
+
+// ScanMetadataRepo walks the repository rooted at repoPath looking for
+// metadata.yaml files. It parses each file into a [Library] record, fusing
+// it into a [ScanResult].
+func ScanMetadataRepo(repoPath string) (*ScanResult, error) {
+	metaFiles, err := WalkMetadata(repoPath)
+	if err != nil {
+		return nil, err
+	}
+
+	var libraries []Library
+	for _, mf := range metaFiles {
+		lib, err := analyzeMetadataLibrary(mf.MetadataPath)
+		if err != nil {
+			return nil, err
+		}
+		if lib == nil {
+			continue
+		}
+		libraries = append(libraries, *lib)
+	}
+
+	slices.SortFunc(libraries, func(a, b Library) int { return cmp.Compare(a.Name, b.Name) })
+
+	return &ScanResult{Libraries: libraries}, nil
+}
+
+func analyzeMetadataLibrary(metadataPath string) (*Library, error) {
+	data, err := os.ReadFile(metadataPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read %s: %w", metadataPath, err)
+	}
+
+	var meta metadata.Metadata
+	if err := yaml.Unmarshal(data, &meta); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal %s: %w", metadataPath, err)
+	}
+
+	return &Library{Metadata: meta}, nil
 }

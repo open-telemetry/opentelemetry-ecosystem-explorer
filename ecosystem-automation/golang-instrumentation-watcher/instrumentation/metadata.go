@@ -75,12 +75,12 @@ func DeriveMetadata(r ContribRequire) *metadata.Metadata {
 		DisplayName:         inferDisplayName(leaf),
 		SourcePath:          sourcePath,
 		Scope:               metadata.Scope{Name: r.Path},
-		Module:              metadata.Module{Path: r.Path, Version: r.Version},
+		Modules:             []metadata.Module{{Path: r.Path, Version: r.Version}},
 		TargetModule:        inferTarget(r.Path, leaf),
 		GoMinVersion:        r.GoVersion,
 		LibraryLink:         "https://pkg.go.dev/" + r.Path,
 		InstrumentationType: instrType,
-		Installation:        metadata.Installation{Type: inferInstallType(instrType)},
+		Installation:        metadata.Installation{Methods: []metadata.InstallType{inferInstallType(instrType)}},
 		Stability:           inferStability(r.Version),
 	}
 }

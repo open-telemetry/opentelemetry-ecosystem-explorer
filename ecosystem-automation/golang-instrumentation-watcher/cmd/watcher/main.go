@@ -1,5 +1,5 @@
-// Command watcher scans the upstream opentelemetry-go-contrib repository and
-// writes a versioned instrumentation inventory into the ecosystem registry.
+// Command watcher scans upstream repositories and writes a versioned
+// instrumentation inventory into the ecosystem registry.
 //
 // It inventories two versions per run: the latest bare release tag and a
 // snapshot of the main branch. The release is skipped when it has already been
@@ -7,12 +7,10 @@
 //
 // Usage:
 //
-//	watcher [-base-dir dir] [-inventory-dir dir]
+//	watcher [-base-dir dir]
 //
 // The -base-dir flag sets the directory under which the upstream repositories
-// are cloned (into .repo); it defaults to the working directory. The
-// -inventory-dir flag sets the directory to which the versioned inventory is
-// written; it defaults to ecosystem-registry/go/contrib under the monorepo root.
+// are cloned (into .repo); it defaults to the working directory.
 package main
 
 import (
@@ -20,6 +18,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/open-telemetry/opentelemetry-ecosystem-explorer/golang-instrumentation-watcher/conf"
 	"github.com/open-telemetry/opentelemetry-ecosystem-explorer/golang-instrumentation-watcher/instrumentation"
@@ -28,6 +27,47 @@ import (
 )
 
 const mainBranch = "main"
+
+type ParserStrategy string
+
+const (
+	ParserGoMod    ParserStrategy = "gomod"
+	ParserMetadata ParserStrategy = "metadata"
+)
+
+type Target struct {
+	URL      string
+	Strategy ParserStrategy
+}
+
+var targets = []Target{
+	{
+		URL:      "https://github.com/open-telemetry/opentelemetry-go-contrib.git",
+		Strategy: ParserGoMod,
+	},
+	{
+		URL:      "https://github.com/open-telemetry/opentelemetry-go-compile-instrumentation.git",
+		Strategy: ParserMetadata,
+	},
+	// Other non-otel repos like "https://github.com/alibaba/loongsuite-go.git" could be added here
+}
+
+// registryDirForURL returns the registry directory name for a given GitHub repo URL.
+// For open-telemetry repos, the "opentelemetry-go-" prefix is stripped from the name.
+// For other repos, the name is simply cleaned up by removing slashes and replacing them with hyphens.
+func registryDirForURL(repoURL string) string {
+	s := strings.TrimPrefix(repoURL, "https://github.com/")
+	s = strings.TrimPrefix(s, "git@github.com:")
+	s = strings.TrimSuffix(s, ".git")
+
+	if name, ok := strings.CutPrefix(s, "open-telemetry/"); ok {
+		if name, ok = strings.CutPrefix(name, "opentelemetry-go-"); ok {
+			return name
+		}
+		return name
+	}
+	return strings.ReplaceAll(s, "/", "-")
+}
 
 // repoRoot walks up from dir until it finds a directory that contains an
 // "ecosystem-registry" subdirectory, which is the monorepo root. Returns an
@@ -62,22 +102,22 @@ func main() {
 		os.Exit(1)
 	}
 
-	var (
-		baseDir      = flag.String("base-dir", workDir, "directory under which the upstream repos are cloned (.repo)")
-		inventoryDir = flag.String("inventory-dir", filepath.Join(root, "ecosystem-registry", "go", "contrib"), "directory to write the versioned instrumentation inventory")
-	)
+	var baseDir = flag.String("base-dir", workDir, "directory under which the upstream repos are cloned (.repo)")
 	flag.Parse()
 
-	if err := run(log, *baseDir, *inventoryDir); err != nil {
-		log.WithErrorMsg(err, "sync failed")
-		os.Exit(1)
+	log.Info("🔭OTel Ecosystem Explorer: Golang 🔭")
+
+	for _, target := range targets {
+		inventoryDir := filepath.Join(root, "ecosystem-registry", "go", registryDirForURL(target.URL))
+
+		if err := syncRepo(log, target, *baseDir, inventoryDir); err != nil {
+			log.WithErrorMsg(err, "sync failed for target", "url", target.URL)
+		}
 	}
 }
 
-func run(log *conf.Log, baseDir, inventoryDir string) error {
-	log.Info("🔭OTel Ecosystem Explorer: Golang 🔭")
-
-	releaseTag, err := repo.LatestReleaseTag()
+func syncRepo(log *conf.Log, target Target, baseDir, inventoryDir string) error {
+	releaseTag, err := repo.LatestReleaseTag(target.URL)
 	if err != nil {
 		return err
 	}
@@ -89,24 +129,31 @@ func run(log *conf.Log, baseDir, inventoryDir string) error {
 	mgr := inventory.NewManager(inventoryDir)
 
 	if mgr.VersionExists(releaseTag) {
-		log.Info("Release already inventoried ⏭️", "version", releaseTag)
-	} else if err := syncVersion(log, baseDir, mgr, releaseTag, releaseTag, false); err != nil {
+		log.Info("Release already inventoried ⏭️", "version", releaseTag, "url", target.URL)
+	} else if err := syncVersion(log, target, baseDir, mgr, releaseTag, releaseTag, false); err != nil {
 		return err
 	}
 
-	return syncVersion(log, baseDir, mgr, mainBranch, snapshotVersion, true)
+	return syncVersion(log, target, baseDir, mgr, mainBranch, snapshotVersion, true)
 }
 
-// syncVersion checks the contrib repo out at ref, scans it into fused Library
-// records with per-module versions resolved from the tags at that commit, and
-// writes the versioned inventory. Snapshot writes first clean up the prior snapshot.
-func syncVersion(log *conf.Log, baseDir string, mgr *inventory.Manager, ref, version string, snapshot bool) error {
-	repoInfo, err := repo.CheckoutAt(baseDir, ref)
+func syncVersion(log *conf.Log, target Target, baseDir string, mgr *inventory.Manager, ref, version string, snapshot bool) error {
+	repoInfo, err := repo.CheckoutAt(target.URL, baseDir, ref)
 	if err != nil {
 		return err
 	}
 
-	result, err := instrumentation.ScanRepo(repoInfo.Path)
+	var result *instrumentation.ScanResult
+
+	switch target.Strategy {
+	case ParserGoMod:
+		result, err = instrumentation.ScanRepo(repoInfo.Path)
+	case ParserMetadata:
+		result, err = instrumentation.ScanMetadataRepo(repoInfo.Path)
+	default:
+		return fmt.Errorf("unknown parser strategy: %v", target.Strategy)
+	}
+
 	if err != nil {
 		return err
 	}
@@ -115,6 +162,8 @@ func syncVersion(log *conf.Log, baseDir string, mgr *inventory.Manager, ref, ver
 	if err != nil {
 		return err
 	}
+
+	// Apply module versions.
 	instrumentation.ApplyModuleVersions(result.Libraries, instrumentation.ModuleVersions(tags))
 
 	if err := mgr.Save(version, result.Libraries); err != nil {
@@ -127,6 +176,7 @@ func syncVersion(log *conf.Log, baseDir string, mgr *inventory.Manager, ref, ver
 	}
 
 	log.Info("Inventory written 📦",
+		"url", target.URL,
 		"version", version,
 		"ref", ref,
 		"sha", repoInfo.SHA,

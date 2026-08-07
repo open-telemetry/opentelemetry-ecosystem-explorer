@@ -90,8 +90,8 @@ func TestDeriveMetadata(t *testing.T) {
 		if m.InstrumentationType != tc.wantType {
 			t.Errorf("%s InstrumentationType: got %v, want %v", tc.wantName, m.InstrumentationType, tc.wantType)
 		}
-		if m.Installation.Type != tc.wantInstall {
-			t.Errorf("%s Installation.Type: got %v, want %v", tc.wantName, m.Installation.Type, tc.wantInstall)
+		if len(m.Installation.Methods) == 0 || m.Installation.Methods[0] != tc.wantInstall {
+			t.Errorf("%s Installation.Methods: got %v, want %v", tc.wantName, m.Installation.Methods, tc.wantInstall)
 		}
 		if tc.wantTarget != "" && m.TargetModule != tc.wantTarget {
 			t.Errorf("%s TargetModule: got %q, want %q", tc.wantName, m.TargetModule, tc.wantTarget)
@@ -102,11 +102,11 @@ func TestDeriveMetadata(t *testing.T) {
 		if tc.wantLibLink != "" && m.LibraryLink != tc.wantLibLink {
 			t.Errorf("%s LibraryLink: got %q, want %q", tc.wantName, m.LibraryLink, tc.wantLibLink)
 		}
-		if m.Module.Path != tc.req.Path {
-			t.Errorf("%s Module.Path: got %q, want %q", tc.wantName, m.Module.Path, tc.req.Path)
+		if len(m.Modules) == 0 || m.Modules[0].Path != tc.req.Path {
+			t.Errorf("%s Modules[0].Path: got %v, want %q", tc.wantName, m.Modules, tc.req.Path)
 		}
-		if m.Module.Version != tc.req.Version {
-			t.Errorf("%s Module.Version: got %q, want %q", tc.wantName, m.Module.Version, tc.req.Version)
+		if len(m.Modules) == 0 || m.Modules[0].Version != tc.req.Version {
+			t.Errorf("%s Modules[0].Version: got %v, want %q", tc.wantName, m.Modules, tc.req.Version)
 		}
 	}
 }
