@@ -255,6 +255,31 @@ class TestWriteIndex:
         assert "attributes" not in otlp
 
 
+class TestWriteDeprecationsIndex:
+    def test_writes_pointer_metadata(self, db_writer, temp_db_dir):
+        components = [
+            {
+                "id": "contrib-jmxreceiver",
+                "name": "jmxreceiver",
+                "component_hash": "abc123def456",
+                "last_version": "0.156.0",
+                "deprecated_in_version": "0.157.0",
+            }
+        ]
+
+        db_writer.write_deprecations_index(components)
+
+        with open(temp_db_dir / "deprecations-index.json") as f:
+            data = json.load(f)
+        assert data == {"ecosystem": "collector", "components": components}
+
+    def test_allows_empty_component_list(self, db_writer, temp_db_dir):
+        db_writer.write_deprecations_index([])
+
+        with open(temp_db_dir / "deprecations-index.json") as f:
+            assert json.load(f) == {"ecosystem": "collector", "components": []}
+
+
 class TestWriteEcosystemStats:
     def test_writes_deterministic_file(self, db_writer, temp_db_dir):
         """Serialization is exactly json.dumps(indent=2, sort_keys=True) with no trailing newline."""

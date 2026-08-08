@@ -331,6 +331,24 @@ class CollectorDatabaseWriter:
             logger.error("Failed to write index.json: %s", e)
             raise
 
+    def write_deprecations_index(self, components: list[dict[str, Any]]) -> None:
+        """Write deprecated component metadata with pointers to existing records.
+
+        The full component data remains content-addressed under ``components/``.
+        Each slim entry includes the existing component hash and its last/removal
+        versions, so consumers can resolve details without duplicating metadata.
+        """
+        self.database_dir.mkdir(parents=True, exist_ok=True)
+        output_file = self.database_dir / "deprecations-index.json"
+        data = {"ecosystem": "collector", "components": components}
+
+        try:
+            self._write_json(output_file, data)
+            logger.info("Wrote collector deprecations index with %d components", len(components))
+        except OSError as e:
+            logger.error("Failed to write deprecations-index.json: %s", e)
+            raise
+
     def write_ecosystem_stats(self, stats: dict[str, Any]) -> None:
         """Write the collector ecosystem-stats.json summary file.
 

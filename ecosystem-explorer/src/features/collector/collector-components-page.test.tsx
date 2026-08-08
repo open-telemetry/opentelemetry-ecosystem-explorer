@@ -19,11 +19,16 @@ import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { CollectorComponentsPage } from "./collector-components-page";
-import { useCollectorComponents, useCollectorVersions } from "@/hooks/use-collector-data";
-import type { IndexComponent } from "@/types/collector";
+import {
+  useCollectorComponents,
+  useCollectorDeprecations,
+  useCollectorVersions,
+} from "@/hooks/use-collector-data";
+import type { DeprecatedIndexComponent, IndexComponent } from "@/types/collector";
 
 vi.mock("@/hooks/use-collector-data", () => ({
   useCollectorComponents: vi.fn(),
+  useCollectorDeprecations: vi.fn(),
   useCollectorVersions: vi.fn(),
 }));
 
@@ -59,6 +64,19 @@ const mockComponents: IndexComponent[] = [
     signals: ["logs"],
   },
 ];
+
+const deprecatedComponent: DeprecatedIndexComponent = {
+  id: "contrib-jmxreceiver",
+  name: "jmxreceiver",
+  type: "receiver",
+  distribution: "contrib",
+  display_name: "JMX Receiver",
+  stability: "deprecated",
+  signals: ["metrics"],
+  component_hash: "abc123def456",
+  last_version: "0.156.0",
+  deprecated_in_version: "0.157.0",
+};
 
 function LocationProbe() {
   const location = useLocation();
@@ -110,6 +128,11 @@ describe("CollectorComponentsPage", () => {
       loading: false,
       error: null,
     });
+    vi.mocked(useCollectorDeprecations).mockReturnValue({
+      data: { ecosystem: "collector", components: [] },
+      loading: false,
+      error: null,
+    });
   });
 
   it("applies type and distribution query filters", () => {
@@ -133,6 +156,17 @@ describe("CollectorComponentsPage", () => {
     );
   });
 
+  it("uses the version query when selecting deprecated components", async () => {
+    const user = userEvent.setup();
+    renderPage("/collector/components?type=receiver");
+
+    await user.selectOptions(screen.getByRole("combobox", { name: "Version" }), "deprecated");
+
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "/collector/components?type=receiver&version=deprecated"
+    );
+  });
+
   it("builds detail links with distribution, component name, version, and filters", () => {
     renderPage("/collector/components?type=receiver");
 
@@ -140,6 +174,39 @@ describe("CollectorComponentsPage", () => {
       "href",
       "/collector/components/core/otlpreceiver?type=receiver&version=0.150.0"
     );
+  });
+
+  it("renders deprecated components from the dedicated catalog", () => {
+    vi.mocked(useCollectorDeprecations).mockReturnValue({
+      data: { ecosystem: "collector", components: [deprecatedComponent] },
+      loading: false,
+      error: null,
+    });
+
+    renderPage("/collector/components?version=deprecated");
+
+    expect(screen.getByText("JMX Receiver")).toBeInTheDocument();
+    expect(screen.getByText("Removed in 0.157.0")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /JMX Receiver/i })).toHaveAttribute(
+      "href",
+      "/collector/components/contrib/jmxreceiver?version=deprecated"
+    );
+    expect(useCollectorComponents).toHaveBeenCalledWith("");
+  });
+
+  it("treats deprecated catalog entries as deprecated when filtering", () => {
+    vi.mocked(useCollectorDeprecations).mockReturnValue({
+      data: {
+        ecosystem: "collector",
+        components: [{ ...deprecatedComponent, stability: "beta" }],
+      },
+      loading: false,
+      error: null,
+    });
+
+    renderPage("/collector/components?version=deprecated&stability=deprecated");
+
+    expect(screen.getByText("JMX Receiver")).toBeInTheDocument();
   });
 
   it("applies stability query filter", () => {
