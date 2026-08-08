@@ -1,0 +1,93 @@
+{
+  "description": null,
+  "display_name": "Memory Limiter Processor",
+  "distribution": "core",
+  "ecosystem": "collector",
+  "id": "core-memorylimiterprocessor",
+  "markdown_hash": "c684265071b4",
+  "name": "memorylimiterprocessor",
+  "repository": "opentelemetry-collector",
+  "status": {
+    "class": "processor",
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "profiles"
+      ],
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "telemetry": {
+    "metrics": {
+      "processor_memory_limiter_accepted_log_records": {
+        "description": "Number of log records successfully pushed into the next component in the pipeline.",
+        "enabled": true,
+        "stability": "alpha",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{record}"
+      },
+      "processor_memory_limiter_accepted_metric_points": {
+        "description": "Number of metric points successfully pushed into the next component in the pipeline.",
+        "enabled": true,
+        "stability": "alpha",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{datapoint}"
+      },
+      "processor_memory_limiter_accepted_spans": {
+        "description": "Number of spans successfully pushed into the next component in the pipeline.",
+        "enabled": true,
+        "stability": "alpha",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{span}"
+      },
+      "processor_memory_limiter_refused_log_records": {
+        "description": "Number of log records that were rejected by the next component in the pipeline.",
+        "enabled": true,
+        "stability": "alpha",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{record}"
+      },
+      "processor_memory_limiter_refused_metric_points": {
+        "description": "Number of metric points that were rejected by the next component in the pipeline.",
+        "enabled": true,
+        "stability": "alpha",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{datapoint}"
+      },
+      "processor_memory_limiter_refused_spans": {
+        "description": "Number of spans that were rejected by the next component in the pipeline.",
+        "enabled": true,
+        "stability": "alpha",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{span}"
+      }
+    }
+  },
+  "type": "processor"
+}
