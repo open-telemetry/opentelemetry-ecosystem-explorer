@@ -42,7 +42,7 @@ import type { Stability } from "@/types/collector";
 
 type ComponentTypeFilter =
   "all" | "receiver" | "processor" | "exporter" | "extension" | "connector";
-type DistributionFilter = "all" | "core" | "contrib";
+type DistributionFilter = string;
 type StabilityFilter = Stability | "all";
 
 // Ranked most-to-least stable, matching the detail page's stability legend ordering.
@@ -69,13 +69,7 @@ function getTypeFilter(value: string | null): ComponentTypeFilter {
 }
 
 function getDistributionFilter(value: string | null): DistributionFilter {
-  switch (value) {
-    case "core":
-    case "contrib":
-      return value;
-    default:
-      return "all";
-  }
+  return value?.trim() || "all";
 }
 
 function getStabilityFilter(value: string | null): StabilityFilter {
@@ -162,6 +156,23 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
     error: componentsError,
   } = useCollectorComponents(currentVersion);
 
+  const allDistributions = useMemo(() => {
+    if (!components) return ["core", "contrib"];
+    const set = new Set<string>();
+    for (const comp of components) {
+      if (comp.distributions) {
+        for (const d of comp.distributions) {
+          if (d) set.add(d.toLowerCase());
+        }
+      } else if (comp.distribution) {
+        set.add(comp.distribution.toLowerCase());
+      }
+    }
+    set.add("core");
+    set.add("contrib");
+    return Array.from(set).sort();
+  }, [components]);
+
   const filteredComponents = useMemo(() => {
     if (!components) return [];
 
@@ -171,8 +182,9 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
         comp.display_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         comp.description?.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesType = typeFilter === "all" || comp.type === typeFilter;
+      const compDistributions = comp.distributions ?? [comp.distribution];
       const matchesDistribution =
-        distributionFilter === "all" || comp.distribution === distributionFilter;
+        distributionFilter === "all" || compDistributions.includes(distributionFilter);
       const matchesStability = stabilityFilter === "all" || comp.stability === stabilityFilter;
       // AND semantics, matching the Java Agent telemetry filter: a component matches only if it
       // supports every currently-selected signal.
@@ -388,8 +400,13 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
                   className="border-border/60 bg-background/80 focus:border-primary/50 focus:ring-primary/20 w-[160px] cursor-pointer appearance-none rounded-lg border py-2.5 pr-10 pl-3 text-sm font-medium backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none"
                 >
                   <option value="all">{t("filters.distribution.all")}</option>
-                  <option value="core">{t("filters.distribution.core")}</option>
-                  <option value="contrib">{t("filters.distribution.contrib")}</option>
+                  {allDistributions.map((dist) => (
+                    <option key={dist} value={dist}>
+                      {t(`filters.distribution.${dist}`, {
+                        defaultValue: dist.charAt(0).toUpperCase() + dist.slice(1),
+                      })}
+                    </option>
+                  ))}
                 </select>
                 <ChevronDown
                   className="text-muted-foreground pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2"
