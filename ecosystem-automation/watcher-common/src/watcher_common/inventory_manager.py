@@ -219,9 +219,10 @@ class JavaagentInventoryManager(BaseInventoryManager):
 
         return data
 
-    def readme_dir_exists(self, version: Version) -> bool:
-        """Return True if the library_readmes directory exists for this version."""
-        return (self.get_version_dir(version) / self.README_DIR).exists()
+    def readmes_synced(self, version: Version) -> bool:
+        """Return True if the readmes have been fully synced for this version."""
+        data = self.load_versioned_inventory(version)
+        return bool(data.get("readmes_synced", False))
 
     def _sanitize_name(self, name: str) -> str:
         """Sanitizes a name for use as a filename to prevent path traversal."""
@@ -231,24 +232,25 @@ class JavaagentInventoryManager(BaseInventoryManager):
         self,
         version: Version,
         readmes: Iterable[tuple[str, str]],  # (library_name, content)
-    ) -> int:
-        """Write each README content-addressed. Returns count newly written."""
-        target_dir = self.get_version_dir(version) / self.README_DIR
+    ) -> dict[str, str]:
+        """Write each README content-addressed to global folder. Returns mapping of name to filename."""
+        target_dir = self.inventory_dir / self.README_DIR
         target_dir.mkdir(parents=True, exist_ok=True)
-        written = 0
+        written = {}
         for name, content in readmes:
             digest = compute_content_hash(content)
             safe_name = self._sanitize_name(name)
-            file_path = target_dir / f"{safe_name}-{digest}.md"
-            if file_path.exists():
-                continue
-            file_path.write_text(content, encoding="utf-8")
-            written += 1
+            filename = f"{safe_name}-{digest}.md"
+            file_path = target_dir / filename
+            if not file_path.exists():
+                file_path.write_text(content, encoding="utf-8")
+            written[name] = filename
         return written
 
     def load_library_readme_map(self, version: Version) -> dict[str, str]:
         """
-        Scan library_readmes/ and build a map of sanitized library_name -> markdown_hash.
+        Build a map of sanitized library_name -> markdown_hash by reading
+        the 'readme' field from the version's instrumentation.yaml.
 
         Args:
             version: Version to scan
@@ -256,52 +258,22 @@ class JavaagentInventoryManager(BaseInventoryManager):
         Returns:
             Dictionary mapping sanitized library names to their markdown content hashes
         """
-        readme_dir = self.get_version_dir(version) / self.README_DIR
-        if not readme_dir.exists():
-            return {}
-
-        selected_readmes: dict[str, tuple[str, int, str]] = {}
-        seen_hashes: dict[str, set[str]] = {}
-
-        for item in sorted(readme_dir.iterdir(), key=lambda p: p.name):
-            if item.is_file() and item.suffix == ".md":
-                parsed = self._parse_readme_filename(item.name)
-                if parsed:
-                    library_name, markdown_hash = parsed
-                    seen_hashes.setdefault(library_name, set()).add(markdown_hash)
-
-                    try:
-                        mtime_ns = item.stat().st_mtime_ns
-                    except OSError:
-                        logger.warning("Failed to stat README file in %s: %s", version, item.name)
-                        continue
-
-                    current = selected_readmes.get(library_name)
-                    if current is None:
-                        selected_readmes[library_name] = (markdown_hash, mtime_ns, item.name)
-                    else:
-                        _, current_mtime_ns, current_name = current
-                        if mtime_ns > current_mtime_ns or (mtime_ns == current_mtime_ns and item.name > current_name):
-                            selected_readmes[library_name] = (markdown_hash, mtime_ns, item.name)
-                else:
-                    logger.warning("Malformed README filename in %s: %s", version, item.name)
+        data = self.load_versioned_inventory(version)
+        libraries_raw = data.get("libraries", [])
+        if isinstance(libraries_raw, dict):
+            libraries = [lib for group in libraries_raw.values() for lib in group]
+        else:
+            libraries = libraries_raw
 
         readme_map = {}
-        for library_name, (markdown_hash, _, selected_name) in selected_readmes.items():
-            readme_map[library_name] = markdown_hash
-            hashes = seen_hashes.get(library_name, set())
-            if len(hashes) > 1:
-                logger.warning(
-                    "Multiple README files found for library '%s' in %s; "
-                    "selected '%s' with hash '%s'. "
-                    "Available hashes: %s",
-                    library_name,
-                    version,
-                    selected_name,
-                    markdown_hash,
-                    sorted(hashes),
-                )
-
+        for lib in libraries:
+            readme_file = lib.get("readme")
+            if readme_file:
+                parsed = self._parse_readme_filename(readme_file)
+                if parsed:
+                    _, markdown_hash = parsed
+                    safe_name = self._sanitize_name(lib["name"])
+                    readme_map[safe_name] = markdown_hash
         return readme_map
 
     def load_library_readme_content(self, version: Version, library_name: str, markdown_hash: str) -> str | None:
@@ -309,7 +281,7 @@ class JavaagentInventoryManager(BaseInventoryManager):
         Load the content of a specific library README.
 
         Args:
-            version: Version to load from
+            version: Version to load from (ignored, readmes are global)
             library_name: Name of the library
             markdown_hash: Content hash of the markdown
 
@@ -317,7 +289,7 @@ class JavaagentInventoryManager(BaseInventoryManager):
             The markdown content, or None if it doesn't exist or cannot be read
         """
         safe_name = self._sanitize_name(library_name)
-        file_path = self.get_version_dir(version) / self.README_DIR / f"{safe_name}-{markdown_hash}.md"
+        file_path = self.inventory_dir / self.README_DIR / f"{safe_name}-{markdown_hash}.md"
         if not file_path.exists():
             return None
 
@@ -336,3 +308,40 @@ class JavaagentInventoryManager(BaseInventoryManager):
         if match:
             return match.group(1), match.group(2)
         return None
+
+    def prune_orphan_readmes(self) -> int:
+        """
+        Removes any readme files in the global library_readmes directory
+        that are not referenced by any version's instrumentation.yaml.
+
+        Returns:
+            Number of files removed
+        """
+        readme_dir = self.inventory_dir / self.README_DIR
+        if not readme_dir.exists():
+            return 0
+
+        referenced_files = set()
+        for version in self.list_versions():
+            data = self.load_versioned_inventory(version)
+            libraries_raw = data.get("libraries", [])
+
+            if isinstance(libraries_raw, dict):
+                libraries = [lib for group in libraries_raw.values() for lib in group]
+            else:
+                libraries = libraries_raw
+
+            for lib in libraries:
+                if readme_file := lib.get("readme"):
+                    referenced_files.add(readme_file)
+
+        removed = 0
+        for item in readme_dir.iterdir():
+            if item.is_file() and item.suffix == ".md" and item.name not in referenced_files:
+                try:
+                    item.unlink()
+                    removed += 1
+                except OSError as e:
+                    logger.warning("Failed to delete orphaned README %s: %s", item, e)
+
+        return removed
