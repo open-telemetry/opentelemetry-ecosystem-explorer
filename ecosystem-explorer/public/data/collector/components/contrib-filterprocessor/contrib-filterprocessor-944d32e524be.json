@@ -1,0 +1,88 @@
+{
+  "description": "The Filter Processor allows dropping spans, span events, metrics, datapoints, and logs from the collector.",
+  "display_name": "Filter Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-filterprocessor",
+  "markdown_hash": "6770d74a5237",
+  "name": "filterprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "TylerHelmuth",
+        "evan-bradley",
+        "edmocosta",
+        "bogdandrutu"
+      ],
+      "emeritus": [
+        "boostchicken"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "metrics",
+        "traces"
+      ],
+      "development": [
+        "profiles"
+      ]
+    },
+    "warnings": [
+      "Orphaned Telemetry",
+      "Other"
+    ]
+  },
+  "telemetry": {
+    "metrics": {
+      "processor_filter_datapoints.filtered": {
+        "description": "Number of metric data points dropped by the filter processor",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "processor_filter_logs.filtered": {
+        "description": "Number of logs dropped by the filter processor",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "processor_filter_profiles.filtered": {
+        "description": "Number of profiles dropped by the filter processor",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "processor_filter_spans.filtered": {
+        "description": "Number of spans dropped by the filter processor",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      }
+    }
+  },
+  "type": "processor"
+}

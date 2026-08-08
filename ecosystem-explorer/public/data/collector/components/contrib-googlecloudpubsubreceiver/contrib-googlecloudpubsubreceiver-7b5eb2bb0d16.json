@@ -1,0 +1,55 @@
+{
+  "description": "This receiver gets OTLP messages from a Google Cloud [Pubsub](https://cloud.google.com/pubsub) subscription.",
+  "display_name": "Google Pub/Sub Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-googlecloudpubsubreceiver",
+  "markdown_hash": "b284fd6091fd",
+  "name": "googlecloudpubsubreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "alexvanboxel"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "telemetry": {
+    "metrics": {
+      "receiver.googlecloudpubsub.encoding_error": {
+        "description": "Number of times a message couldn't be decoded by the configured encoder",
+        "enabled": true,
+        "extended_documentation": "The receiver reads messages from Google Cloud Pub/Sub and tries to decode the message using the configured\nencoder. Each time a message fails to decoded the counter is increased.\n",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "receiver.googlecloudpubsub.stream_restarts": {
+        "description": "Number of times the stream (re)starts due to a Pub/Sub servers connection close",
+        "enabled": true,
+        "extended_documentation": "The receiver uses the Google Cloud Pub/Sub StreamingPull API and keeps a open connection. The Pub/Sub servers\nrecurrently close the connection after a time period to avoid a long-running sticky connection. This metric\ncounts the number of the resets that occurred during the lifetime of the container.\n",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      }
+    }
+  },
+  "type": "receiver"
+}
