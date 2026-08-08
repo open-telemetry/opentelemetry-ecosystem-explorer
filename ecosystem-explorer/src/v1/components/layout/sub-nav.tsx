@@ -15,7 +15,7 @@
  */
 
 /*
- * SubNav — breadcrumb row that sits below the navbar on inner pages.
+ * SubNav - breadcrumb row that sits below the navbar on inner pages.
  *
  * Mirrors opentelemetry.io's `.breadcrumb` pattern (Bootstrap), but tightened
  * to the explorer's chrome. The right-side `actions` slot is for page-level
@@ -24,6 +24,7 @@
  */
 import { ChevronRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export interface BreadcrumbItem {
   label: string;
@@ -37,13 +38,14 @@ export interface SubNavProps {
 }
 
 export function SubNav({ crumbs, actions, className }: SubNavProps) {
+  const { t } = useTranslation("layout");
   if (crumbs.length === 0 && !actions) return null;
 
   return (
     <div className={className ? `td-subnav ${className}` : "td-subnav"}>
       <div className="td-subnav__container">
         {crumbs.length > 0 && (
-          <nav className="td-subnav__breadcrumb" aria-label="Breadcrumb">
+          <nav className="td-subnav__breadcrumb" aria-label={t("v1.subNav.breadcrumbAriaLabel")}>
             <ol className="td-subnav__crumbs">
               {crumbs.map((crumb, idx) => {
                 const isLast = idx === crumbs.length - 1;

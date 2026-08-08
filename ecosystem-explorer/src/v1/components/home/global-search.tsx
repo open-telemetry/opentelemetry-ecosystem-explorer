@@ -15,7 +15,7 @@
  */
 
 /*
- * GlobalSearch — top-of-home cross-ecosystem search input.
+ * GlobalSearch - top-of-home cross-ecosystem search input.
  *
  * Controlled input with ⌘K / Ctrl+K shortcut, suggestion chips, and a
  * keyboard-navigable results dropdown backed by `src/lib/search.ts`.
@@ -32,6 +32,7 @@
 import { Search } from "lucide-react";
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { GlowBadge } from "@/components/ui/glow-badge";
 import { StatusPill } from "@/components/ui/status-pill";
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
@@ -43,13 +44,11 @@ const STORAGE_KEY = "explorer:lastSearch";
 const SEARCH_DEBOUNCE_MS = 200;
 const MAX_VISIBLE_RESULTS = 10;
 
-// Built from the canonical "Integrations" stat (see home-stats.ts) instead of a
-// hardcoded literal, so the placeholder count tracks the stats band rather than
-// drifting on its own. Building the real index just to count would re-trigger
-// the mount-time fetch storm the dropdown deliberately defers, so the headline
-// number stays the source of truth here.
-const DEFAULT_PLACEHOLDER = `Search ${INTEGRATIONS_STAT_VALUE} components, instrumentations, vendors…`;
-
+// Search-term examples below (DEFAULT_SUGGESTIONS) are deliberately NOT
+// translated: they're literal query strings meant to match real,
+// English-named component/instrumentation content in the search index, not
+// UI copy. Translating them would make the suggestion chips populate the
+// box with text that returns zero results in a non-English locale.
 const DEFAULT_SUGGESTIONS = [
   { label: "otlp exporter" },
   { label: "redis instrumentation" },
@@ -60,8 +59,8 @@ const DEFAULT_SUGGESTIONS = [
 type GlowVariant = "accent" | "secondary" | "success" | "info" | "warning" | "error" | "muted";
 
 const ECOSYSTEM_VARIANT: Record<SearchResultEcosystem, GlowVariant> = {
-  collector: "info", // blue family — Collector is the technical-platform face
-  "java-agent": "accent", // OTel-secondary (orange) — Java Agent is brand-forward
+  collector: "info", // blue family - Collector is the technical-platform face
+  "java-agent": "accent", // OTel-secondary (orange) - Java Agent is brand-forward
   page: "muted", // navigational chrome, low emphasis
 };
 
@@ -75,7 +74,10 @@ export interface GlobalSearchProps {
   onSelect?: (path: string) => void;
 }
 
-export function GlobalSearch({ placeholder = DEFAULT_PLACEHOLDER, onSelect }: GlobalSearchProps) {
+export function GlobalSearch({ placeholder, onSelect }: GlobalSearchProps) {
+  const { t } = useTranslation("home");
+  const resolvedPlaceholder =
+    placeholder ?? t("homeV1.search.placeholder", { total: INTEGRATIONS_STAT_VALUE });
   const [query, setQuery] = useState<string>(() => {
     if (typeof window === "undefined") return "";
     try {
@@ -119,7 +121,7 @@ export function GlobalSearch({ placeholder = DEFAULT_PLACEHOLDER, onSelect }: Gl
     try {
       window.sessionStorage.setItem(STORAGE_KEY, query);
     } catch {
-      /* sessionStorage may be unavailable (private mode, sandboxing) — ignore */
+      /* sessionStorage may be unavailable (private mode, sandboxing) - ignore */
     }
   }, [query]);
 
@@ -219,13 +221,13 @@ export function GlobalSearch({ placeholder = DEFAULT_PLACEHOLDER, onSelect }: Gl
           className="td-search__input"
           type="search"
           role="combobox"
-          aria-label="Search the ecosystem"
+          aria-label={t("homeV1.search.ariaLabel")}
           aria-expanded={showDropdown}
           aria-controls={listboxRendered ? `${idPrefix}-results` : undefined}
           aria-activedescendant={activeOptionId}
           aria-busy={loading}
           autoComplete="off"
-          placeholder={placeholder}
+          placeholder={resolvedPlaceholder}
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
@@ -241,28 +243,28 @@ export function GlobalSearch({ placeholder = DEFAULT_PLACEHOLDER, onSelect }: Gl
       </div>
 
       {showDropdown && (
-        // Plain panel — `role="listbox"` lives on the inner options-only list
+        // Plain panel - `role="listbox"` lives on the inner options-only list
         // below so the status/empty/error `<p>`s and the overflow footer never
         // sit inside the listbox (a listbox may contain only options).
         <div className="td-search__results">
           {error ? (
             <p className="td-search__result-empty" role="status">
-              Couldn't reach the search index right now. Please try again.
+              {t("homeV1.search.error")}
             </p>
           ) : loading && !hasVisibleResults ? (
             <p className="td-search__result-empty" role="status" aria-live="polite">
-              Searching…
+              {t("homeV1.search.searching")}
             </p>
           ) : !hasVisibleResults ? (
             <p className="td-search__result-empty">
-              No matches for "{query.trim()}". Try one of the suggestions below.
+              {t("homeV1.search.noMatches", { query: query.trim() })}
             </p>
           ) : (
             <>
               <div
                 id={`${idPrefix}-results`}
                 role="listbox"
-                aria-label="Search results"
+                aria-label={t("homeV1.search.resultsAriaLabel")}
                 className={
                   "td-search__result-list" +
                   (isStaleLoading ? " td-search__result-list--stale" : "")
@@ -289,7 +291,7 @@ export function GlobalSearch({ placeholder = DEFAULT_PLACEHOLDER, onSelect }: Gl
                       }
                       onMouseEnter={() => {
                         // Ignore mouseenter that fires within ~150ms of an
-                        // arrow-key nav — programmatic scrollIntoView can
+                        // arrow-key nav - programmatic scrollIntoView can
                         // slide a row under a stationary cursor and yank
                         // the highlight away from the keyboard target.
                         if (Date.now() - lastKeyboardNavAt.current < 150) return;
@@ -336,7 +338,10 @@ export function GlobalSearch({ placeholder = DEFAULT_PLACEHOLDER, onSelect }: Gl
               </div>
               {overflowCount > 0 && (
                 <p className="td-search__result-footer" aria-live="polite">
-                  Showing {visibleResults.length} of {totalMatches} matches
+                  {t("homeV1.search.overflowFooter", {
+                    visible: visibleResults.length,
+                    total: totalMatches,
+                  })}
                 </p>
               )}
             </>
@@ -345,7 +350,7 @@ export function GlobalSearch({ placeholder = DEFAULT_PLACEHOLDER, onSelect }: Gl
       )}
 
       <div className="td-search__suggestions">
-        <span className="td-search__suggest-label">Try:</span>
+        <span className="td-search__suggest-label">{t("homeV1.search.tryLabel")}</span>
         {DEFAULT_SUGGESTIONS.map((s) => (
           <button
             key={s.label}
