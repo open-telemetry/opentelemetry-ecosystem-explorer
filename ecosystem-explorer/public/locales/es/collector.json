@@ -167,7 +167,12 @@
       "details": "Detalles",
       "stability": "Estabilidad",
       "telemetry": "Telemetría",
-      "readme": "Readme"
+      "readme": "Readme",
+      "internalTelemetry": "Telemetría interna"
+    },
+    "view": {
+      "current": "Vista actual",
+      "comparison": "Comparación de versiones"
     },
     "sections": {
       "componentInfo": "Información del componente",
@@ -258,6 +263,59 @@
         "type": "Tipo",
         "description": "Descripción"
       }
+    },
+    "internalTelemetryTab": {
+      "empty": "No hay métricas de telemetría interna definidas para este componente."
+    }
+  },
+  "telemetryComparison": {
+    "loading": "Cargando datos de comparación...",
+    "error": {
+      "title": "Error de comparación",
+      "bothVersionsFailed": "No se pudieron cargar ambas versiones. Es posible que el componente no exista en estas versiones."
+    },
+    "warnings": {
+      "availability": {
+        "title": "Nota de disponibilidad de versión",
+        "fromNotFound": "El componente no estaba disponible en la versión {{fromVersion}}. Toda la telemetría de la versión \"a\" se muestra como añadida.",
+        "toNotFound": "El componente no estaba disponible en la versión {{toVersion}}. Toda la telemetría de la versión \"desde\" se muestra como eliminada."
+      },
+      "sameVersion": {
+        "title": "Misma versión seleccionada",
+        "message": "Selecciona versiones diferentes para comparar la telemetría."
+      }
+    },
+    "versionSelectorPanel": {
+      "banner": "Compara la telemetría interna entre dos versiones",
+      "from": "Desde",
+      "to": "A"
+    },
+    "diffResults": {
+      "addedRemovedHeader": "Telemetría añadida/eliminada",
+      "changedHeader": "Telemetría modificada",
+      "empty": {
+        "title": "No se encontraron diferencias",
+        "description": "La telemetría interna es idéntica entre las versiones seleccionadas."
+      }
+    },
+    "diffCard": {
+      "status": {
+        "added": "Añadido",
+        "removed": "Eliminado",
+        "changed": "Modificado"
+      },
+      "unit": "Unidad",
+      "attributeChanges": "Cambios de atributos",
+      "descriptionChanged": "Descripción modificada",
+      "typeChanged": "Tipo modificado",
+      "enabledChanged": "Habilitado modificado",
+      "stabilityChanged": "Estabilidad modificada",
+      "metricRemoved": "Esta métrica ya no se emite en la versión de comparación."
+    },
+    "diffAttributeList": {
+      "ariaLabel": "Cambios de atributos",
+      "added": "Añadido",
+      "removed": "Eliminado"
     }
   },
   "explore": {
