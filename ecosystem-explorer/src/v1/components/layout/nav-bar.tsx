@@ -23,7 +23,7 @@ import { ThemeToggle } from "@/v1/components/ui/theme-toggle";
 /*
  * Markup mirrors opentelemetry.io's `themes/docsy/layouts/_partials/navbar.html`
  * (logo lockup + nav-scroll wrapper that gets `margin-left: auto` at md+).
- * All visuals live in `src/v1/styles/navbar.css` - Tailwind utilities are
+ * All visuals live in `src/v1/styles/navbar.css` — Tailwind utilities are
  * intentionally avoided here so the chrome stays in sync with the upstream
  * SCSS without rem-scaling guesswork.
  *

@@ -26,7 +26,7 @@
   },
   "v1": {
     "navBar": {
-      "homeAriaLabel": "OpenTelemetry - Inicio",
+      "homeAriaLabel": "OpenTelemetry — Inicio",
       "toggleAriaLabel": "Alternar navegación",
       "primaryAriaLabel": "Principal",
       "docs": "Documentación"

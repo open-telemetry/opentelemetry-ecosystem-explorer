@@ -18,7 +18,7 @@
     "hero": {
       "titlePrefix": "OpenTelemetry",
       "titleAccent": "Ecosystem Explorer",
-      "lead": "Navigate every receiver, processor, exporter, and instrumentation across the OpenTelemetry project - searchable, comparable, version-aware.",
+      "lead": "Navigate every receiver, processor, exporter, and instrumentation across the OpenTelemetry project — searchable, comparable, version-aware.",
       "ctaBrowse": "Browse components",
       "ctaOverview": "Read the overview"
     },
@@ -67,7 +67,7 @@
     "signals": {
       "title": "Browse by signal",
       "lead": "Cuts across ecosystems, matching opentelemetry.io's canonical signal taxonomy.",
-      "cardAriaLabel": "{{name}} - {{description}}",
+      "cardAriaLabel": "{{name}} — {{description}}",
       "items": {
         "traces": {
           "name": "Traces",

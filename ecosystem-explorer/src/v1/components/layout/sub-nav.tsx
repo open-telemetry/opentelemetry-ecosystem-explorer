@@ -15,7 +15,7 @@
  */
 
 /*
- * SubNav - breadcrumb row that sits below the navbar on inner pages.
+ * SubNav — breadcrumb row that sits below the navbar on inner pages.
  *
  * Mirrors opentelemetry.io's `.breadcrumb` pattern (Bootstrap), but tightened
  * to the explorer's chrome. The right-side `actions` slot is for page-level

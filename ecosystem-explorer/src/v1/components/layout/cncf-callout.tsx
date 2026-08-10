@@ -15,7 +15,7 @@
  */
 
 /*
- * CncfCallout - explorer-original chrome that sits above FooterV1 on every
+ * CncfCallout — explorer-original chrome that sits above FooterV1 on every
  * v1 route. No upstream opentelemetry.io equivalent (grep'd: zero hits in
  * `layouts/_partials/` or `themes/docsy/`). Content follows the redesign
  * brief (`projects/84-ui-ux-design/ecosystem-explorer-v1-design-brief.md`

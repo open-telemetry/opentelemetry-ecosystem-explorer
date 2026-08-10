@@ -15,7 +15,7 @@
  */
 
 /*
- * GlobalSearch - top-of-home cross-ecosystem search input.
+ * GlobalSearch — top-of-home cross-ecosystem search input.
  *
  * Controlled input with ⌘K / Ctrl+K shortcut, suggestion chips, and a
  * keyboard-navigable results dropdown backed by `src/lib/search.ts`.
@@ -59,8 +59,8 @@ const DEFAULT_SUGGESTIONS = [
 type GlowVariant = "accent" | "secondary" | "success" | "info" | "warning" | "error" | "muted";
 
 const ECOSYSTEM_VARIANT: Record<SearchResultEcosystem, GlowVariant> = {
-  collector: "info", // blue family - Collector is the technical-platform face
-  "java-agent": "accent", // OTel-secondary (orange) - Java Agent is brand-forward
+  collector: "info", // blue family — Collector is the technical-platform face
+  "java-agent": "accent", // OTel-secondary (orange) — Java Agent is brand-forward
   page: "muted", // navigational chrome, low emphasis
 };
 
@@ -121,7 +121,7 @@ export function GlobalSearch({ placeholder, onSelect }: GlobalSearchProps) {
     try {
       window.sessionStorage.setItem(STORAGE_KEY, query);
     } catch {
-      /* sessionStorage may be unavailable (private mode, sandboxing) - ignore */
+      /* sessionStorage may be unavailable (private mode, sandboxing) — ignore */
     }
   }, [query]);
 
@@ -243,7 +243,7 @@ export function GlobalSearch({ placeholder, onSelect }: GlobalSearchProps) {
       </div>
 
       {showDropdown && (
-        // Plain panel - `role="listbox"` lives on the inner options-only list
+        // Plain panel — `role="listbox"` lives on the inner options-only list
         // below so the status/empty/error `<p>`s and the overflow footer never
         // sit inside the listbox (a listbox may contain only options).
         <div className="td-search__results">
@@ -291,7 +291,7 @@ export function GlobalSearch({ placeholder, onSelect }: GlobalSearchProps) {
                       }
                       onMouseEnter={() => {
                         // Ignore mouseenter that fires within ~150ms of an
-                        // arrow-key nav - programmatic scrollIntoView can
+                        // arrow-key nav — programmatic scrollIntoView can
                         // slide a row under a stationary cursor and yank
                         // the highlight away from the keyboard target.
                         if (Date.now() - lastKeyboardNavAt.current < 150) return;

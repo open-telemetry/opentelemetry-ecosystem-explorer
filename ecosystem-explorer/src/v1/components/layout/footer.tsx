@@ -15,13 +15,13 @@
  */
 
 /*
- * FooterV1 - mirrors opentelemetry.io's `.td-footer` chrome verbatim.
+ * FooterV1 — mirrors opentelemetry.io's `.td-footer` chrome verbatim.
  *
  * Source rules (in the local opentelemetry.io clone):
- *   themes/docsy/layouts/_partials/footer.html        - three-column layout
+ *   themes/docsy/layouts/_partials/footer.html        — three-column layout
  *   themes/docsy/layouts/_partials/footer/{left,right,center,links,copyright}.html
- *   themes/docsy/assets/scss/td/_footer.scss          - dark surface + spacing
- *   config/_default/hugo.yaml                         - link inventory + copyright
+ *   themes/docsy/assets/scss/td/_footer.scss          — dark surface + spacing
+ *   config/_default/hugo.yaml                         — link inventory + copyright
  *
  * Link inventory is locked against the upstream YAML (7 user + 7 developer).
  * Icons follow the locked decision (foundation-audit Q3, 2026-05-06): inline

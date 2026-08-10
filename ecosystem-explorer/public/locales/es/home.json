@@ -67,7 +67,7 @@
     "signals": {
       "title": "Explora por señal",
       "lead": "Cruza todos los ecosistemas, siguiendo la taxonomía de señales de opentelemetry.io.",
-      "cardAriaLabel": "{{name}} - {{description}}",
+      "cardAriaLabel": "{{name}} — {{description}}",
       "items": {
         "traces": {
           "name": "Trazas",

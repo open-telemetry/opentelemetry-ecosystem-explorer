@@ -15,7 +15,7 @@
  */
 
 /*
- * SignalsRow - four signal cards (Traces / Metrics / Logs / Baggage)
+ * SignalsRow — four signal cards (Traces / Metrics / Logs / Baggage)
  * matching opentelemetry.io's canonical signal taxonomy (deliberately NOT
  * "Profiles"). Each card links to a cross-ecosystem signal-filter URL
  * (`/collector/components?signal=<id>`); the destination list page treats

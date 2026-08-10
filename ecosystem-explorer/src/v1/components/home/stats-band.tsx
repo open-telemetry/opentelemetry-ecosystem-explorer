@@ -15,7 +15,7 @@
  */
 
 /*
- * StatsBand - OTel-purple counter strip on the home page. Self-scoped via
+ * StatsBand — OTel-purple counter strip on the home page. Self-scoped via
  * `--stats-band-bg-hsl` / `--stats-band-fg-hsl` (declared in
  * `src/v1/styles/tokens.css`), so the surface contract lives in one place
  * for both themes.

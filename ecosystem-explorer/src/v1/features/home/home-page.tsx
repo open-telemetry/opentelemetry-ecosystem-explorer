@@ -27,7 +27,7 @@ import { SignalsRow } from "@/v1/components/home/signals-row";
 import { StatsBand } from "@/v1/components/home/stats-band";
 
 /**
- * Home page (v1) - composes the v1 chrome with home-specific sections.
+ * Home page (v1) — composes the v1 chrome with home-specific sections.
  * Only the GlobalSearch slot inside CoverBlock is still a skeleton.
  * The CncfCallout and FooterV1 are mounted by `<V1App />`, not here.
  */

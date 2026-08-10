@@ -15,7 +15,7 @@
  */
 
 /*
- * EcosystemsGrid - two active cards (Collector, Java Agent) plus four
+ * EcosystemsGrid — two active cards (Collector, Java Agent) plus four
  * dashed "coming soon" placeholders. Counts are the canonical 2026-05-19
  * values from `projects/84-ui-ux-design/ecosystem-explorer-v1-mockups.html`;
  * they stay hardcoded until the data layer exposes synchronous totals.
@@ -121,7 +121,7 @@ export function EcosystemsGrid({
                 key={eco.id}
                 to={eco.href}
                 className="td-ecosystem-card"
-                aria-label={`${name} - ${tagline}`}
+                aria-label={`${name} — ${tagline}`}
               >
                 <div className="td-ecosystem-card__head">
                   <div className="td-ecosystem-card__id">
