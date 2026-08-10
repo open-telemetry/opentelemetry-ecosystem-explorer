@@ -16,7 +16,7 @@
 import { useState } from "react";
 import { useParams, useSearchParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Info, ExternalLink, AlertCircle, Check, Activity, BookOpen } from "lucide-react";
+import { Info, ExternalLink, AlertCircle, Check, Activity, BookOpen, Flag } from "lucide-react";
 import { Loader } from "@/components/ui/loader";
 import { GitHubIcon } from "@/components/icons/github-icon";
 import { BackButton } from "@/components/ui/back-button";
@@ -31,6 +31,7 @@ import { deriveCollectorMeta } from "@/lib/seo/derive";
 import { renderWithInlineCode } from "@/lib/render-inline-code";
 import { useCollectorComponent, useCollectorVersions } from "@/hooks/use-collector-data";
 import { CollectorTelemetryTab } from "./components/collector-telemetry-tab";
+import { CollectorFeatureGatesTab } from "./components/collector-feature-gates-tab";
 import { CollectorReadmeTab } from "./components/collector-readme-tab";
 
 const getBadgeVariant = (level: string): "success" | "info" | "warning" | "muted" => {
@@ -245,6 +246,15 @@ export function CollectorDetailPage() {
                           value: "telemetry",
                           label: t("detail.tabs.telemetry"),
                           icon: <Activity className="h-4 w-4" aria-hidden="true" />,
+                        },
+                      ]
+                    : []),
+                  ...(component.feature_gates && component.feature_gates.length > 0
+                    ? [
+                        {
+                          value: "feature-gates",
+                          label: t("detail.tabs.featureGates"),
+                          icon: <Flag className="h-4 w-4" aria-hidden="true" />,
                         },
                       ]
                     : []),
@@ -479,6 +489,15 @@ export function CollectorDetailPage() {
                   metrics={component.metrics}
                   attributes={component.attributes}
                   resourceAttributes={component.resource_attributes}
+                />
+              </TabsContent>
+            )}
+
+            {component.feature_gates && component.feature_gates.length > 0 && (
+              <TabsContent value="feature-gates" className="mt-0 p-6">
+                <CollectorFeatureGatesTab
+                  key={`${component.id}-${version}`}
+                  featureGates={component.feature_gates}
                 />
               </TabsContent>
             )}

@@ -46,6 +46,26 @@ const compilerOptions = {
   moduleResolution: "bundler",
 };
 
+function cleanSchema(obj) {
+  if (typeof obj !== "object" || obj === null) {
+    return;
+  }
+  if (Array.isArray(obj)) {
+    for (const item of obj) {
+      cleanSchema(item);
+    }
+  } else {
+    if (obj.description === "Construct a type with a set of properties K of type T") {
+      delete obj.description;
+    }
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        cleanSchema(obj[key]);
+      }
+    }
+  }
+}
+
 async function generateSchema(filePath, typeName, outputName) {
   console.log(`Generating schema for ${typeName} from ${path.basename(filePath)}...`);
 
@@ -58,6 +78,9 @@ async function generateSchema(filePath, typeName, outputName) {
 
   // Add standard header
   schema.$schema = "https://json-schema.org/draft-07/schema#";
+
+  // Clean up JSDoc description for Record<K, T> to prevent environment-specific diffs
+  cleanSchema(schema);
 
   const outputPath = path.resolve(ROOT_DIR, "public/schemas", outputName);
   await fs.writeFile(outputPath, JSON.stringify(schema, null, 2), "utf-8");

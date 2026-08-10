@@ -42,7 +42,7 @@ modules:
 - name: OpenTelemetry.Exporter.Geneva
   description: An OpenTelemetry .NET exporter that exports to local ETW or UDS.
   type: exporter
-  version: 1.17.0
+  version: 1.16.0
 - name: OpenTelemetry.Exporter.InMemory
   description: In-memory exporter for OpenTelemetry .NET
   type: exporter
