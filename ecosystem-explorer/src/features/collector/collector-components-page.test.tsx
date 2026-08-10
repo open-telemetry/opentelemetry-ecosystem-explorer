@@ -321,4 +321,27 @@ describe("CollectorComponentsPage", () => {
       expect(screen.queryByText("Profiles", { selector: "span" })).not.toBeInTheDocument();
     });
   });
+
+  it("renders backtick-wrapped text in a card description as code elements", () => {
+    vi.mocked(useCollectorComponents).mockReturnValue({
+      data: [
+        {
+          id: "contrib-apachesparkreceiver",
+          name: "apachesparkreceiver",
+          type: "receiver",
+          distribution: "contrib",
+          display_name: "Apache Spark Receiver",
+          description: "Fetches metrics via the `/metrics/json` endpoint.",
+          stability: "beta",
+          signals: ["metrics"],
+        },
+      ],
+      loading: false,
+      error: null,
+    });
+
+    renderPage();
+
+    expect(screen.getByText("/metrics/json").tagName).toBe("CODE");
+  });
 });

@@ -35,6 +35,7 @@ import { BackButton } from "@/components/ui/back-button";
 import { GlowBadge } from "@/components/ui/glow-badge";
 import { DetailCard } from "@/components/ui/detail-card";
 import { SignalBadge } from "@/components/ui/signal-badge";
+import { renderWithInlineCode } from "@/lib/render-inline-code";
 import { useCollectorVersions, useCollectorComponents } from "@/hooks/use-collector-data";
 import { getPresentSignals, SIGNAL_ORDER, type CollectorSignal } from "./utils/signal-badge-info";
 import { SIGNAL_STYLES, getSignalFilterClasses } from "./styles/signal-styles";
@@ -492,7 +493,9 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
                       </div>
 
                       <p className="text-muted-foreground/80 line-clamp-3 flex-1 text-sm leading-relaxed">
-                        {comp.description || t("card.defaultDescription")}
+                        {comp.description
+                          ? renderWithInlineCode(comp.description)
+                          : t("card.defaultDescription")}
                       </p>
 
                       <div className="border-border/10 flex flex-wrap items-center gap-2 border-t pt-2">
