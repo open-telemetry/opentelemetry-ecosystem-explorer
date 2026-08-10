@@ -63,6 +63,14 @@ describe("httpBackend", () => {
     expect(fetchMock).toHaveBeenCalledWith("/locales/..%2F..%2Fetc%2Fpasswd/common.json");
   });
 
+  it("percent-encodes the namespace too, so neither URL segment can be traversed", async () => {
+    const fetchMock = mockFetch({ ok: true, status: 200, json: () => Promise.resolve({}) });
+
+    await read("en", "../../etc/passwd");
+
+    expect(fetchMock).toHaveBeenCalledWith("/locales/en/..%2F..%2Fetc%2Fpasswd.json");
+  });
+
   it("does not ask i18next to retry a 404 - the file is genuinely absent", async () => {
     mockFetch({ ok: false, status: 404 });
 

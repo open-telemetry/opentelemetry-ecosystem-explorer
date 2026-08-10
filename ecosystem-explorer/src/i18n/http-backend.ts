@@ -45,7 +45,8 @@ async function loadResource(url: string, callback: ReadCallback): Promise<void> 
   try {
     response = await fetch(url);
   } catch (error) {
-    callback(error as Error, true);
+    // A thrown value is only conventionally an Error; i18next logs `.message`.
+    callback(error instanceof Error ? error : new Error(String(error)), true);
     return;
   }
 
@@ -59,7 +60,7 @@ async function loadResource(url: string, callback: ReadCallback): Promise<void> 
   try {
     data = await response.json();
   } catch {
-    callback(new Error(`failed parsing ${url} to json`), false);
+    callback(new Error(`failed parsing ${url} to JSON`), false);
     return;
   }
 

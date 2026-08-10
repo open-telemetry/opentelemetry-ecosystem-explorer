@@ -45,6 +45,7 @@ function fromQueryString(): string | undefined {
 
 /** Reading localStorage throws (not returns null) when storage is disabled, e.g. Safari private browsing. */
 function fromLocalStorage(): string | undefined {
+  if (typeof window === "undefined") return undefined;
   try {
     return window.localStorage.getItem(STORAGE_KEY) ?? undefined;
   } catch {
@@ -74,6 +75,7 @@ export const languageDetector: LanguageDetectorModule = {
 
   cacheUserLanguage(language: string): void {
     if (NEVER_CACHED.includes(language)) return;
+    if (typeof window === "undefined") return;
     try {
       window.localStorage.setItem(STORAGE_KEY, language);
     } catch {
