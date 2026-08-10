@@ -5,6 +5,7 @@
   internalChecksFilter: "strict",
   labels: ["dependencies"],
   schedule: ["before 8am on Monday"],
+  prHourlyLimit: 10,
   lockFileMaintenance: {
     enabled: true,
     schedule: ["before 4am on Monday"],
