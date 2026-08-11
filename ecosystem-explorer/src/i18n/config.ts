@@ -15,13 +15,13 @@
  */
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import LanguageDetector from "i18next-browser-languagedetector";
-import HttpBackend from "i18next-http-backend";
+import { languageDetector } from "@/i18n/language-detector";
+import { httpBackend } from "@/i18n/http-backend";
 import { NAMESPACES, SUPPORTED_LANGUAGES } from "@/i18n/languages";
 
 i18n
-  .use(HttpBackend)
-  .use(LanguageDetector)
+  .use(httpBackend)
+  .use(languageDetector)
   .use(initReactI18next)
   .init({
     fallbackLng: "en",
@@ -29,7 +29,7 @@ i18n
     load: "languageOnly",
     ns: [...NAMESPACES],
     defaultNS: "common",
-    backend: { loadPath: "/locales/{{lng}}/{{ns}}.json" },
+    // No `backend` block: the load path is a constant inside http-backend.ts.
     interpolation: { escapeValue: false },
   });
 

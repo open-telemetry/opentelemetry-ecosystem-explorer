@@ -26,27 +26,33 @@
  * The mockup uses a neutral `box-muted`; the brief is the more recent intent.
  */
 
+import { Trans, useTranslation } from "react-i18next";
 import { CncfLogo } from "@/v1/components/icons/cncf-logo";
 
 export function CncfCallout() {
+  const { t } = useTranslation("layout");
   return (
     <section className="td-cncf-callout" aria-labelledby="cncf-callout-heading">
       <div className="td-cncf-callout__container">
         <p id="cncf-callout-heading" className="td-cncf-callout__lead">
           <strong>
-            OpenTelemetry is a{" "}
-            <a
-              href="https://cncf.io"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="td-cncf-callout__link"
-            >
-              CNCF
-            </a>{" "}
-            graduated project.
+            <Trans
+              i18nKey="v1.cncfCallout.lead"
+              ns="layout"
+              components={{
+                cncf: (
+                  <a
+                    href="https://cncf.io"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="td-cncf-callout__link"
+                  />
+                ),
+              }}
+            />
           </strong>
           <br />
-          Formed through a merger of the OpenTracing and OpenCensus projects.
+          {t("v1.cncfCallout.detail")}
         </p>
         <CncfLogo className="td-cncf-callout__logo" />
       </div>

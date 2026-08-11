@@ -23,5 +23,43 @@
     "light": "Light",
     "dark": "Dark",
     "auto": "Auto"
+  },
+  "v1": {
+    "navBar": {
+      "homeAriaLabel": "OpenTelemetry — Home",
+      "toggleAriaLabel": "Toggle navigation",
+      "primaryAriaLabel": "Primary",
+      "docs": "Docs"
+    },
+    "subNav": {
+      "breadcrumbAriaLabel": "Breadcrumb"
+    },
+    "cncfCallout": {
+      "lead": "OpenTelemetry is a <cncf>CNCF</cncf> graduated project.",
+      "detail": "Formed through a merger of the OpenTracing and OpenCensus projects."
+    },
+    "footer": {
+      "userLinks": {
+        "mailingLists": "Mailing Lists",
+        "bluesky": "Bluesky",
+        "mastodon": "Mastodon",
+        "stackOverflow": "Stack Overflow",
+        "otelLogos": "OTel logos",
+        "meetingRecordings": "Meeting Recordings",
+        "siteAnalytics": "Site analytics"
+      },
+      "developerLinks": {
+        "github": "GitHub",
+        "slack": "Slack #opentelemetry",
+        "devstats": "CNCF DevStats",
+        "privacyPolicy": "Privacy Policy",
+        "trademarkUsage": "Trademark Usage",
+        "marketingGuidelines": "Marketing Guidelines",
+        "siteBuildInfo": "Site-build info"
+      },
+      "authors": "OpenTelemetry Authors",
+      "docsLicense": "Docs",
+      "ccBy": "CC BY 4.0"
+    }
   }
 }

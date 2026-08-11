@@ -15,6 +15,7 @@
  */
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { OpenTelemetryWordmark } from "@/v1/components/icons/opentelemetry-wordmark";
 import { LanguageToggle } from "@/v1/components/ui/language-toggle";
 import { ThemeToggle } from "@/v1/components/ui/theme-toggle";
@@ -32,6 +33,7 @@ import { ThemeToggle } from "@/v1/components/ui/theme-toggle";
  * an overlay panel anchored to the bottom of the bar.
  */
 export function NavBar() {
+  const { t } = useTranslation("layout");
   const [isOpen, setIsOpen] = useState(false);
 
   // When internal links land inside the collapsed panel, close it from each
@@ -49,7 +51,7 @@ export function NavBar() {
   return (
     <header className="td-navbar">
       <div className="td-navbar-container">
-        <Link to="/" aria-label="OpenTelemetry — Home" className="navbar-brand">
+        <Link to="/" aria-label={t("v1.navBar.homeAriaLabel")} className="navbar-brand">
           <OpenTelemetryWordmark />
         </Link>
         <button
@@ -57,7 +59,7 @@ export function NavBar() {
           className="td-navbar-toggler"
           aria-controls="td-navbar-collapse"
           aria-expanded={isOpen}
-          aria-label="Toggle navigation"
+          aria-label={t("v1.navBar.toggleAriaLabel")}
           onClick={() => setIsOpen((open) => !open)}
         >
           {isOpen ? (
@@ -105,7 +107,7 @@ export function NavBar() {
           data-state={isOpen ? "open" : "closed"}
         >
           <div className="td-navbar-nav-scroll">
-            <nav aria-label="Primary">
+            <nav aria-label={t("v1.navBar.primaryAriaLabel")}>
               <ul className="navbar-nav">
                 <li className="nav-item">
                   <a
@@ -114,7 +116,7 @@ export function NavBar() {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Docs
+                    {t("v1.navBar.docs")}
                   </a>
                 </li>
                 <li className="nav-item">

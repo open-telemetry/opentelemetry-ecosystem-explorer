@@ -124,6 +124,9 @@ def transform_collector_components(
             if metrics:
                 component["metrics"] = metrics
 
+            feature_gates = metadata.get("feature_gates")
+            if feature_gates:
+                component["feature_gates"] = feature_gates
             telemetry = metadata.get("telemetry")
             telemetry_metrics = telemetry.get("metrics") if isinstance(telemetry, dict) else None
             if telemetry_metrics:

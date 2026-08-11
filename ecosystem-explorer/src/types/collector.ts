@@ -68,6 +68,8 @@ export interface CollectorComponent {
   attributes?: { [key: string]: CollectorAttribute };
   /** Resource attributes associated with the component. Keyed by attribute name. */
   resource_attributes?: { [key: string]: CollectorAttribute };
+  /** Feature gates controlling opt-in/opt-out behavior changes for this component. */
+  feature_gates?: FeatureGate[];
   /** Content hash of the component's README, if one was found. Used to lazily fetch the markdown file. */
   markdown_hash?: string;
 }
@@ -139,6 +141,25 @@ export interface CollectorAttribute {
   name_override?: string;
   /** Allowed values when the attribute is an enum. */
   enum?: string[];
+}
+
+/**
+ * A feature gate exposed by a Collector component, controlling an opt-in/opt-out behavior change.
+ * Modeled after the `feature_gates` entries in the metadata.yaml schema used by the collector-contrib repo.
+ */
+export interface FeatureGate {
+  /** Unique, namespaced identifier for the feature gate (e.g., receiver.awsxray.DontEmitV1HttpConventions). */
+  id: string;
+  /** Lifecycle stage of the feature gate. */
+  stage: Stability;
+  /** Description of the behavior change controlled by this gate. */
+  description?: string;
+  /** Version when the feature gate was introduced. */
+  from_version?: string;
+  /** Version when the feature gate reached stable/deprecated status. */
+  to_version?: string;
+  /** URL with contextual information about the feature gate (e.g., a GitHub issue). */
+  reference_url?: string;
 }
 
 export interface CollectorIndex {

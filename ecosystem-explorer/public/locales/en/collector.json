@@ -167,6 +167,7 @@
       "details": "Details",
       "stability": "Stability",
       "telemetry": "Telemetry",
+      "featureGates": "Feature Gates",
       "readme": "Readme"
     },
     "sections": {
@@ -258,6 +259,12 @@
         "type": "Type",
         "description": "Description"
       }
+    },
+    "featureGatesTab": {
+      "introducedIn": "Introduced in {{version}}",
+      "stableIn": "Stable in {{version}}",
+      "deprecatedIn": "Deprecated in {{version}}",
+      "reference": "Reference"
     }
   },
   "explore": {
