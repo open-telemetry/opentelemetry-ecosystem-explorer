@@ -2299,10 +2299,6 @@ components:
 - name: dnscheckreceiver
   metadata:
     attributes:
-      dns.domain:
-        description: Domain name queried.
-        requirement_level: recommended
-        type: string
       dns.rcode:
         description: DNS response code (RCODE) returned for the query. Only present
           when a response was received from the server, including non-success responses
@@ -2312,20 +2308,12 @@ components:
           registry (https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-6).
         requirement_level: recommended
         type: int
-      dns.record.type:
-        description: Record type queried.
-        requirement_level: recommended
-        type: string
       dns.resolved.all.ips:
         description: All resolved IP addresses.
         requirement_level: recommended
         type: string
       dns.resolved.ip:
         description: First/primary resolved IP address.
-        requirement_level: recommended
-        type: string
-      dns.server:
-        description: Address of the DNS server queried.
         requirement_level: recommended
         type: string
       error.message:
@@ -2337,10 +2325,7 @@ components:
     display_name: DNS Check Receiver
     metrics:
       dnscheck.duration:
-        attributes:
-        - dns.domain
-        - dns.record.type
-        - dns.server
+        attributes: []
         description: Round-trip duration of the DNS query.
         enabled: true
         gauge:
@@ -2349,9 +2334,6 @@ components:
         unit: ms
       dnscheck.error:
         attributes:
-        - dns.domain
-        - dns.record.type
-        - dns.server
         - error.message
         description: Number of errors recorded during the DNS check.
         enabled: false
@@ -2363,18 +2345,15 @@ components:
         unit: '{error}'
       dnscheck.status:
         attributes:
-        - dns.domain
         - dns.rcode
-        - dns.record.type
         - dns.resolved.all.ips
         - dns.resolved.ip
-        - dns.server
         description: 1 if the DNS query returned successfully, 0 otherwise. The dns.resolved.ip
-          and dns.resolved.all.ips attributes are only present when the value is 1.
-          The dns.rcode attribute is present whenever a response was received from
-          the server, including non-success responses such as NXDOMAIN, SERVFAIL,
-          or REFUSED; it is absent only when no response was received at all (e.g.
-          timeout or network unreachable).
+          and dns.resolved.all.ips attributes are only present when the value is 1
+          and the record type is A or AAAA. The dns.rcode attribute is present whenever
+          a response was received from the server, including non-success responses
+          such as NXDOMAIN, SERVFAIL, or REFUSED; it is absent only when no response
+          was received at all (e.g. timeout or network unreachable).
         enabled: true
         stability: development
         sum:
@@ -2382,7 +2361,19 @@ components:
           monotonic: false
           value_type: int
         unit: '1'
-    resource_attributes: {}
+    resource_attributes:
+      dns.domain:
+        description: Domain name queried.
+        enabled: true
+        type: string
+      dns.record.type:
+        description: Record type queried.
+        enabled: true
+        type: string
+      dns.server:
+        description: Address of the DNS server queried.
+        enabled: true
+        type: string
     status:
       class: receiver
       codeowners:
@@ -5626,8 +5617,10 @@ components:
         - constanca-m
         emeritus:
         - axw
+      distributions:
+      - contrib
       stability:
-        development:
+        alpha:
         - logs
     telemetry:
       metrics:
