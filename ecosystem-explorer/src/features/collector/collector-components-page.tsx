@@ -46,12 +46,7 @@ import { SIGNAL_STYLES, getSignalFilterClasses } from "./styles/signal-styles";
 import type { DeprecatedIndexComponent, IndexComponent, Stability } from "@/types/collector";
 
 type ComponentTypeFilter =
-  | "all"
-  | "receiver"
-  | "processor"
-  | "exporter"
-  | "extension"
-  | "connector";
+  "all" | "receiver" | "processor" | "exporter" | "extension" | "connector";
 type DistributionFilter = string;
 type StabilityFilter = Stability | "all";
 
