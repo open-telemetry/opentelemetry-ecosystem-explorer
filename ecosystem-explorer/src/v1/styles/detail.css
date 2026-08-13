@@ -88,6 +88,40 @@
   min-width: 0;
 }
 
+/* ---------- Removed-component notice ---------- */
+
+.td-detail-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background-color: hsl(var(--color-error-hsl) / 0.1);
+  border: 1px solid hsl(var(--color-error-hsl) / 0.3);
+  border-radius: 0.5rem;
+}
+
+.td-detail-notice__icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.125rem;
+  flex: none;
+  color: hsl(var(--color-error-hsl));
+}
+
+.td-detail-notice__body {
+  min-width: 0;
+}
+
+.td-detail-notice__title {
+  margin: 0;
+  font-weight: 600;
+}
+
+.td-detail-notice__description {
+  margin: 0.25rem 0 0;
+  color: hsl(var(--muted-foreground-hsl));
+}
+
 /* ---------- Detail header card ---------- */
 
 .td-detail-header {

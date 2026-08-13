@@ -154,7 +154,7 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
 
   const currentVersion = useMemo(() => {
     if (urlVersion) return urlVersion;
-    if (versionQuery) return versionQuery;
+    if (versionQuery === "deprecated") return versionQuery;
     return versionData?.versions.find((v) => v.is_latest)?.version || "";
   }, [urlVersion, versionData, versionQuery]);
   const deprecatedView = currentVersion === "deprecated";

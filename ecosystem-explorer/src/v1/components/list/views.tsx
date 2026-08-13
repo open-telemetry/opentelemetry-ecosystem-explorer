@@ -65,13 +65,13 @@ export function CompactRow({ row }: CompactRowProps) {
       </div>
       <div className="td-row__meta">
         <span className="td-row__type">{row.type}</span>
-        {row.deprecatedInVersion && (
-          <span className="td-row__signals">
-            {t("deprecated.removedIn", { version: row.deprecatedInVersion })}
-          </span>
-        )}
         {row.signals.length > 0 && (
           <span className="td-row__signals">{row.signals.join(", ")}</span>
+        )}
+        {row.deprecatedInVersion && (
+          <span className="td-row__removed">
+            {t("deprecated.removedIn", { version: row.deprecatedInVersion })}
+          </span>
         )}
       </div>
       <StatusPill stability={row.stability} />
@@ -117,7 +117,7 @@ export function CardView({ rows }: ListViewProps) {
             )}
             <span className="td-card__dist">{row.distribution}</span>
             {row.deprecatedInVersion && (
-              <span className="td-card__signals">
+              <span className="td-card__removed">
                 {t("deprecated.removedIn", { version: row.deprecatedInVersion })}
               </span>
             )}

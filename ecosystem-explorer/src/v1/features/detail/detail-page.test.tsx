@@ -255,7 +255,10 @@ describe("CollectorDetailPageV1", () => {
     renderAtRoute("/collector/components/core/otlpreceiver?version=deprecated");
 
     expect(useCollectorComponent).toHaveBeenCalledWith("core", "otlpreceiver", "0.149.0");
-    expect(screen.getByRole("note")).toHaveTextContent(/0\.149\.0.*0\.150\.0/);
+    const notice = screen.getByRole("note");
+    expect(notice).toHaveClass("td-detail-notice");
+    expect(notice).not.toHaveClass("td-detail-header");
+    expect(notice).toHaveTextContent(/0\.149\.0.*0\.150\.0/);
   });
 
   it("renders the preserved README from the deprecated component's last version", async () => {

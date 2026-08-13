@@ -167,6 +167,13 @@ describe("CollectorComponentsPage", () => {
     );
   });
 
+  it("ignores real Collector versions in the version query", () => {
+    renderPage("/collector/components?version=0.149.0");
+
+    expect(useCollectorComponents).toHaveBeenCalledWith("0.150.0");
+    expect(screen.getByRole("combobox", { name: "Version" })).toHaveValue("0.150.0");
+  });
+
   it("builds detail links with distribution, component name, version, and filters", () => {
     renderPage("/collector/components?type=receiver");
 

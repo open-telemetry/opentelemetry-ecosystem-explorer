@@ -266,6 +266,9 @@ describe("CollectorDetailPage", () => {
 
     expect(useCollectorComponent).toHaveBeenCalledWith("core", "otlpreceiver", "0.149.0");
     expect(screen.getByRole("note")).toHaveTextContent(/0\.149\.0.*0\.150\.0/);
+    expect(
+      screen.queryByRole("heading", { name: "This component has been removed" })
+    ).not.toBeInTheDocument();
     expect(screen.getByText("Deprecated")).toBeInTheDocument();
   });
 

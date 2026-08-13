@@ -207,14 +207,14 @@ export function CollectorDetailPage() {
 
       <div className="mt-3 space-y-6">
         {deprecatedEntry && (
-          <DetailCard className="border-amber-500/50 bg-amber-500/5">
+          <DetailCard className="border-[hsl(var(--color-error-hsl)/0.3)] bg-[hsl(var(--color-error-hsl)/0.1)]">
             <div className="flex gap-4" role="note">
               <AlertTriangle
-                className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-700 dark:text-amber-400"
+                className="mt-0.5 h-5 w-5 flex-shrink-0 text-[hsl(var(--color-error-hsl))]"
                 aria-hidden="true"
               />
               <div>
-                <h2 className="font-semibold">{t("deprecated.title")}</h2>
+                <p className="font-semibold">{t("deprecated.title")}</p>
                 <p className="text-muted-foreground mt-1 text-sm">
                   {t("deprecated.lead", {
                     lastVersion: deprecatedEntry.last_version,
@@ -243,7 +243,7 @@ export function CollectorDetailPage() {
                     {component.distribution}
                   </GlowBadge>
                   {deprecatedView && (
-                    <GlowBadge variant="warning" className="text-xs tracking-wider uppercase">
+                    <GlowBadge variant="error" className="text-xs tracking-wider uppercase">
                       {t("filters.stability.deprecated")}
                     </GlowBadge>
                   )}

@@ -306,18 +306,16 @@ export function CollectorDetailPageV1() {
 
         <main className="td-detail__main">
           {deprecatedEntry && (
-            <div className="td-detail-header" role="note">
-              <div className="flex items-start gap-3">
-                <AlertTriangle className="mt-0.5 h-5 w-5 flex-none" aria-hidden />
-                <div>
-                  <strong>{tc("deprecated.title")}</strong>
-                  <p className="td-detail-header__description">
-                    {tc("deprecated.lead", {
-                      lastVersion: deprecatedEntry.last_version,
-                      removedVersion: deprecatedEntry.deprecated_in_version,
-                    })}
-                  </p>
-                </div>
+            <div className="td-detail-notice" role="note">
+              <AlertTriangle className="td-detail-notice__icon" aria-hidden />
+              <div className="td-detail-notice__body">
+                <p className="td-detail-notice__title">{tc("deprecated.title")}</p>
+                <p className="td-detail-notice__description">
+                  {tc("deprecated.lead", {
+                    lastVersion: deprecatedEntry.last_version,
+                    removedVersion: deprecatedEntry.deprecated_in_version,
+                  })}
+                </p>
               </div>
             </div>
           )}
