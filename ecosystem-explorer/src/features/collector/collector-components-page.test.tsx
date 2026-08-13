@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render, screen } from "@testing-library/react";
+import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -172,6 +172,20 @@ describe("CollectorComponentsPage", () => {
 
     expect(useCollectorComponents).toHaveBeenCalledWith("0.150.0");
     expect(screen.getByRole("combobox", { name: "Version" })).toHaveValue("0.150.0");
+  });
+
+  it("does not label the version select 'Deprecated' while the version list loads", () => {
+    vi.mocked(useCollectorVersions).mockReturnValue({ data: null, loading: true, error: null });
+
+    renderPage("/collector/components");
+
+    // `currentVersion` is "" until the version list resolves. A select falls back to displaying its
+    // first option when its value matches none, so an ungated "deprecated" option would make the
+    // control read "Deprecated" while the latest-components view is what's actually loading.
+    // Scoped to the version select: the stability filter has its own "Deprecated" option.
+    const select = screen.getByRole("combobox", { name: "Version" }) as HTMLSelectElement;
+    expect(within(select).queryByRole("option", { name: "Deprecated" })).not.toBeInTheDocument();
+    expect(select.value).toBe("");
   });
 
   it("builds detail links with distribution, component name, version, and filters", () => {

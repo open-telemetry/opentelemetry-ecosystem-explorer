@@ -46,7 +46,12 @@ import { SIGNAL_STYLES, getSignalFilterClasses } from "./styles/signal-styles";
 import type { DeprecatedIndexComponent, IndexComponent, Stability } from "@/types/collector";
 
 type ComponentTypeFilter =
-  "all" | "receiver" | "processor" | "exporter" | "extension" | "connector";
+  | "all"
+  | "receiver"
+  | "processor"
+  | "exporter"
+  | "extension"
+  | "connector";
 type DistributionFilter = string;
 type StabilityFilter = Stability | "all";
 
@@ -398,7 +403,12 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
                   disabled={versionsLoading}
                   className="border-border/60 bg-background/80 focus:border-primary/50 focus:ring-primary/20 w-[160px] cursor-pointer appearance-none rounded-lg border py-2.5 pr-10 pl-3 text-sm font-medium backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none disabled:opacity-50"
                 >
-                  <option value="deprecated">{t("filters.version.deprecated")}</option>
+                  {/* Gated on the version list: `currentVersion` is "" until it resolves, and a
+                      select falls back to displaying its first option when the value matches none —
+                      so an ungated option here labels the loading state "Deprecated". */}
+                  {versionData && (
+                    <option value="deprecated">{t("filters.version.deprecated")}</option>
+                  )}
                   {versionData?.versions.map((v) => (
                     <option key={v.version} value={v.version}>
                       v{v.version} {v.is_latest ? t("filters.version.latest") : ""}
