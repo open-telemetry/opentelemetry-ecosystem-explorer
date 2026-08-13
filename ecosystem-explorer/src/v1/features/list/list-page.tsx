@@ -37,8 +37,12 @@ import { Loader2 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import type { CollectorComponentType } from "@/components/ui/type-stripe-colors";
-import { useCollectorComponents, useCollectorVersions } from "@/hooks/use-collector-data";
-import type { IndexComponent } from "@/types/collector";
+import {
+  useCollectorComponents,
+  useCollectorDeprecations,
+  useCollectorVersions,
+} from "@/hooks/use-collector-data";
+import type { DeprecatedIndexComponent, IndexComponent } from "@/types/collector";
 import { SubNav } from "@/v1/components/layout/sub-nav";
 import {
   ActiveFilterChips,
@@ -71,7 +75,11 @@ function toDistribution(raw: string): Distribution {
   return KNOWN_DISTRIBUTIONS.has(raw) ? (raw as Distribution) : "core";
 }
 
-function componentToRow(c: IndexComponent, basePath: string): ListRow {
+function componentToRow(
+  c: IndexComponent | DeprecatedIndexComponent,
+  basePath: string,
+  deprecated = false
+): ListRow {
   const signals = (c.signals ?? [])
     .map((s) => s.toLowerCase())
     .filter((s): s is Signal => KNOWN_SIGNALS.has(s));
@@ -82,9 +90,12 @@ function componentToRow(c: IndexComponent, basePath: string): ListRow {
     type: c.type as CollectorComponentType,
     distribution: toDistribution(c.distribution),
     description: c.description ?? null,
-    stability: (c.stability ?? "development") as StabilityFacet,
+    stability: deprecated ? "deprecated" : ((c.stability ?? "development") as StabilityFacet),
     signals,
-    href: `${basePath}/${c.distribution}/${c.name}`,
+    href: `${basePath}/${c.distribution}/${c.name}${deprecated ? "?version=deprecated" : ""}`,
+    deprecatedInVersion: deprecated
+      ? (c as DeprecatedIndexComponent).deprecated_in_version
+      : undefined,
   };
 }
 
@@ -196,21 +207,22 @@ export function CollectorListPageV1() {
   } = useCollectorVersions();
   const currentVersion =
     filters.version ?? versionsData?.versions.find((v) => v.is_latest)?.version ?? "";
+  const deprecatedView = currentVersion === "deprecated";
   const allVersions = useMemo(
-    () => versionsData?.versions.map((v) => v.version) ?? [],
+    () => ["deprecated", ...(versionsData?.versions.map((v) => v.version) ?? [])],
     [versionsData]
   );
 
-  const {
-    data: componentsData,
-    loading: componentsLoading,
-    error: componentsError,
-  } = useCollectorComponents(currentVersion);
+  const componentsQuery = useCollectorComponents(deprecatedView ? "" : currentVersion);
+  const deprecationsQuery = useCollectorDeprecations(deprecatedView);
+  const componentsData = deprecatedView ? deprecationsQuery.data?.components : componentsQuery.data;
+  const componentsLoading = deprecatedView ? deprecationsQuery.loading : componentsQuery.loading;
+  const componentsError = deprecatedView ? deprecationsQuery.error : componentsQuery.error;
 
   const allRows = useMemo(() => {
     if (!componentsData) return [];
-    return componentsData.map((c) => componentToRow(c, "/collector/components"));
-  }, [componentsData]);
+    return componentsData.map((c) => componentToRow(c, "/collector/components", deprecatedView));
+  }, [componentsData, deprecatedView]);
   const filteredRows = useMemo(
     () => sortRows(applyFilters(allRows, filters), filters.sort),
     [allRows, filters]

@@ -68,6 +68,7 @@
     --muted-hsl: 232 28% 22%;
     --muted-foreground-hsl: 220 14% 65%;
     --border-hsl: 232 22% 28%;
+    --color-error-hsl: 0 91% 71%;
 
     /* Theme-aware layout values */
     --surface-shadow: none;
@@ -110,6 +111,7 @@
     --muted-hsl: 214 32% 91%; /* Slate-200 */
     --muted-foreground-hsl: 215 16% 40%; /* Slate-500 darkened to 40% lightness: 47% only clears WCAG AA on pure white, not on tinted surfaces (list rows, bg-muted chips) */
     --border-hsl: 214 32% 85%; /* Slate-300 for visible structural lines */
+    --color-error-hsl: 0 74% 42%;
 
     /* Theme-aware layout values */
     --surface-shadow: 0 2px 8px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);

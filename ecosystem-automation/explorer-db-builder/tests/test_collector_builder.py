@@ -54,6 +54,12 @@ def _make_mock_inventory_manager(versions_by_distribution=None, inventories=None
     # Default to "no readmes" so existing tests that don't care about readme
     # handling aren't affected. Tests that do care override this explicitly.
     manager.load_component_readme_map.return_value = {}
+    manager.load_deprecations.return_value = {
+        distribution: {
+            component_type: [] for component_type in ["connector", "exporter", "extension", "processor", "receiver"]
+        }
+        for distribution in ["core", "contrib"]
+    }
 
     return manager
 
@@ -185,7 +191,71 @@ class TestRunCollectorBuilder:
         assert result == 0
         assert (tmp_path / "collector" / "versions-index.json").exists()
         assert (tmp_path / "collector" / "index.json").exists()
+        assert (tmp_path / "collector" / "deprecations-index.json").exists()
         assert (tmp_path / "collector" / "versions").exists()
+
+    def test_deprecations_index_points_to_last_version_component(self, tmp_path):
+        contrib_latest = _make_contrib_inventory("0.156.0")
+        contrib_latest["components"]["receiver"] = [contrib_latest["components"]["receiver"][0]]
+        inventories = {
+            ("core", Version("0.156.0")): _make_core_inventory("0.156.0"),
+            ("contrib", Version("0.156.0")): contrib_latest,
+            ("core", Version("0.155.0")): _make_core_inventory("0.155.0"),
+            ("contrib", Version("0.155.0")): _make_contrib_inventory("0.155.0"),
+        }
+        manager = _make_mock_inventory_manager(inventories=inventories)
+        manager.load_deprecations.return_value["contrib"]["receiver"] = [
+            {
+                "name": "prometheusreceiver",
+                "last_version": "v0.155.0",
+                "deprecated_in_version": "v0.156.0",
+                "source_repo": "opentelemetry-collector-contrib",
+            }
+        ]
+        db_writer = CollectorDatabaseWriter(database_dir=str(tmp_path / "collector"))
+
+        result = run_collector_builder(inventory_manager=manager, db_writer=db_writer)
+
+        assert result == 0
+        with open(tmp_path / "collector" / "deprecations-index.json") as f:
+            data = json.load(f)
+        assert data["ecosystem"] == "collector"
+        assert len(data["components"]) == 1
+        entry = data["components"][0]
+        assert entry["id"] == "contrib-prometheusreceiver"
+        assert entry["last_version"] == "0.155.0"
+        assert entry["deprecated_in_version"] == "0.156.0"
+
+        with open(tmp_path / "collector" / "versions" / "0.155.0-index.json") as f:
+            manifest = json.load(f)
+        assert entry["component_hash"] == manifest["components"][entry["id"]]
+        assert entry["stability"] == "beta"
+
+    def test_empty_deprecations_index_has_stable_shape(self, tmp_path):
+        manager = _make_mock_inventory_manager()
+        db_writer = CollectorDatabaseWriter(database_dir=str(tmp_path / "collector"))
+
+        result = run_collector_builder(inventory_manager=manager, db_writer=db_writer)
+
+        assert result == 0
+        with open(tmp_path / "collector" / "deprecations-index.json") as f:
+            assert json.load(f) == {"ecosystem": "collector", "components": []}
+
+    def test_fails_when_deprecation_cannot_resolve_last_version_component(self, tmp_path):
+        manager = _make_mock_inventory_manager()
+        manager.load_deprecations.return_value["contrib"]["receiver"] = [
+            {
+                "name": "missingreceiver",
+                "last_version": "v0.155.0",
+                "deprecated_in_version": "v0.156.0",
+            }
+        ]
+        db_writer = CollectorDatabaseWriter(database_dir=str(tmp_path / "collector"))
+
+        result = run_collector_builder(inventory_manager=manager, db_writer=db_writer)
+
+        assert result == 1
+        assert not (tmp_path / "collector" / "deprecations-index.json").exists()
 
     def test_versions_index_content(self, tmp_path):
         manager = _make_mock_inventory_manager()

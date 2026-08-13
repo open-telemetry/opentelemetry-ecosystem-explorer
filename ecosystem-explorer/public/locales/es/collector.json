@@ -32,6 +32,10 @@
       "diff": {
         "title": "Diferencias entre versiones",
         "description": "Mira qué cambió entre dos versiones del Collector."
+      },
+      "deprecated": {
+        "title": "Componentes obsoletos",
+        "description": "Explora componentes eliminados de las versiones actuales del Collector."
       }
     }
   },
@@ -90,7 +94,8 @@
     },
     "version": {
       "label": "Versión",
-      "latest": "(más reciente)"
+      "latest": "(más reciente)",
+      "deprecated": "Obsoletos"
     },
     "distribution": {
       "label": "Distribución",
@@ -152,6 +157,10 @@
       "title": "Error al cargar datos",
       "description": "Intenta recargar la página."
     }
+  },
+  "deprecated": {
+    "title": "Este componente se ha eliminado",
+    "lead": "Disponible por última vez en {{lastVersion}}. Eliminado en {{removedVersion}}."
   },
   "detail": {
     "loading": {
@@ -271,6 +280,10 @@
     "componentTypes": {
       "heading": "Tipos de componentes",
       "latestVersion": "Última versión de datos",
+      "deprecated": {
+        "label": "Obsoletos",
+        "description": "Explora componentes eliminados de las versiones actuales del Collector"
+      },
       "types": {
         "receiver": {
           "label": "Receptor",

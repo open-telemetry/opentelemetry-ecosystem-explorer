@@ -36,13 +36,22 @@ import { GlowBadge } from "@/components/ui/glow-badge";
 import { DetailCard } from "@/components/ui/detail-card";
 import { SignalBadge } from "@/components/ui/signal-badge";
 import { renderWithInlineCode } from "@/lib/render-inline-code";
-import { useCollectorVersions, useCollectorComponents } from "@/hooks/use-collector-data";
+import {
+  useCollectorComponents,
+  useCollectorDeprecations,
+  useCollectorVersions,
+} from "@/hooks/use-collector-data";
 import { getPresentSignals, SIGNAL_ORDER, type CollectorSignal } from "./utils/signal-badge-info";
 import { SIGNAL_STYLES, getSignalFilterClasses } from "./styles/signal-styles";
-import type { Stability } from "@/types/collector";
+import type { DeprecatedIndexComponent, IndexComponent, Stability } from "@/types/collector";
 
 type ComponentTypeFilter =
-  "all" | "receiver" | "processor" | "exporter" | "extension" | "connector";
+  | "all"
+  | "receiver"
+  | "processor"
+  | "exporter"
+  | "extension"
+  | "connector";
 type DistributionFilter = string;
 type StabilityFilter = Stability | "all";
 
@@ -111,8 +120,10 @@ const getIcon = (type: string) => {
 
 function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
   const { t } = useTranslation("collector");
+  const { t: tList } = useTranslation("list");
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const versionQuery = searchParams.get("version");
   const typeQuery = searchParams.get("type");
   const distributionQuery = searchParams.get("distribution");
   const stabilityQuery = searchParams.get("stability");
@@ -148,14 +159,17 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
 
   const currentVersion = useMemo(() => {
     if (urlVersion) return urlVersion;
+    if (versionQuery === "deprecated") return versionQuery;
     return versionData?.versions.find((v) => v.is_latest)?.version || "";
-  }, [urlVersion, versionData]);
+  }, [urlVersion, versionData, versionQuery]);
+  const deprecatedView = currentVersion === "deprecated";
 
-  const {
-    data: components,
-    loading: componentsLoading,
-    error: componentsError,
-  } = useCollectorComponents(currentVersion);
+  const componentsQuery = useCollectorComponents(deprecatedView ? "" : currentVersion);
+  const deprecationsQuery = useCollectorDeprecations(deprecatedView);
+  const components: (IndexComponent | DeprecatedIndexComponent)[] | null | undefined =
+    deprecatedView ? deprecationsQuery.data?.components : componentsQuery.data;
+  const componentsLoading = deprecatedView ? deprecationsQuery.loading : componentsQuery.loading;
+  const componentsError = deprecatedView ? deprecationsQuery.error : componentsQuery.error;
 
   const allDistributions = useMemo(() => {
     if (!components) return ["core", "contrib"];
@@ -186,7 +200,9 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
       const compDistributions = comp.distributions ?? [comp.distribution];
       const matchesDistribution =
         distributionFilter === "all" || compDistributions.includes(distributionFilter);
-      const matchesStability = stabilityFilter === "all" || comp.stability === stabilityFilter;
+      const matchesStability =
+        stabilityFilter === "all" ||
+        (deprecatedView ? stabilityFilter === "deprecated" : comp.stability === stabilityFilter);
       // AND semantics, matching the Java Agent telemetry filter: a component matches only if it
       // supports every currently-selected signal.
       const presentSignals = getPresentSignals(comp);
@@ -197,13 +213,27 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
         matchesSearch && matchesType && matchesDistribution && matchesStability && matchesSignal
       );
     });
-  }, [components, distributionFilter, searchQuery, typeFilter, stabilityFilter, signalFilter]);
+  }, [
+    components,
+    deprecatedView,
+    distributionFilter,
+    searchQuery,
+    typeFilter,
+    stabilityFilter,
+    signalFilter,
+  ]);
 
   const handleVersionChange = (val: string) => {
-    const currentSearch = searchParams.toString();
+    const params = new URLSearchParams(searchParams);
+    if (val === "deprecated") {
+      params.set("version", val);
+    } else {
+      params.delete("version");
+    }
+
     navigate({
-      pathname: `/collector/components/${val}`,
-      search: currentSearch ? `?${currentSearch}` : "",
+      pathname: val === "deprecated" ? "/collector/components" : `/collector/components/${val}`,
+      search: params.size > 0 ? `?${params.toString()}` : "",
     });
   };
 
@@ -373,6 +403,12 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
                   disabled={versionsLoading}
                   className="border-border/60 bg-background/80 focus:border-primary/50 focus:ring-primary/20 w-[160px] cursor-pointer appearance-none rounded-lg border py-2.5 pr-10 pl-3 text-sm font-medium backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none disabled:opacity-50"
                 >
+                  {/* Gated on the version list: `currentVersion` is "" until it resolves, and a
+                      select falls back to displaying its first option when the value matches none —
+                      so an ungated option here labels the loading state "Deprecated". */}
+                  {versionData && (
+                    <option value="deprecated">{t("filters.version.deprecated")}</option>
+                  )}
                   {versionData?.versions.map((v) => (
                     <option key={v.version} value={v.version}>
                       v{v.version} {v.is_latest ? t("filters.version.latest") : ""}
@@ -516,13 +552,26 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
                       </p>
 
                       <div className="border-border/10 flex flex-wrap items-center gap-2 border-t pt-2">
-                        {comp.stability && (
+                        {(deprecatedView || comp.stability) && (
                           <GlowBadge
-                            variant={comp.stability === "stable" ? "success" : "info"}
+                            variant={
+                              deprecatedView
+                                ? "warning"
+                                : comp.stability === "stable"
+                                  ? "success"
+                                  : "info"
+                            }
                             className="px-2 py-0 text-[9px]"
                           >
-                            {comp.stability}
+                            {deprecatedView ? t("filters.stability.deprecated") : comp.stability}
                           </GlowBadge>
+                        )}
+                        {deprecatedView && "deprecated_in_version" in comp && (
+                          <span className="text-muted-foreground text-xs">
+                            {tList("deprecated.removedIn", {
+                              version: comp.deprecated_in_version,
+                            })}
+                          </span>
                         )}
                         {getPresentSignals(comp).map((signal) => (
                           <SignalBadge

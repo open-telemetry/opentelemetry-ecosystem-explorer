@@ -15,9 +15,10 @@
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
-import { useComponentReadme } from "./use-collector-data";
+import { useCollectorDeprecations, useComponentReadme } from "./use-collector-data";
 
 vi.mock("@/lib/api/collector-data", () => ({
+  loadDeprecationsIndex: vi.fn(),
   loadComponentReadme: vi.fn(),
 }));
 
@@ -80,5 +81,24 @@ describe("useComponentReadme", () => {
 
     expect(result.current.data).toBeNull();
     expect(result.current.error).toBeInstanceOf(Error);
+  });
+});
+
+describe("useCollectorDeprecations", () => {
+  it("loads the deprecations index when enabled", async () => {
+    const index = { ecosystem: "collector", components: [] };
+    vi.mocked(collectorData.loadDeprecationsIndex).mockResolvedValue(index);
+
+    const { result } = renderHook(() => useCollectorDeprecations(true));
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.data).toEqual(index);
+  });
+
+  it("does not fetch when disabled", async () => {
+    const { result } = renderHook(() => useCollectorDeprecations(false));
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(collectorData.loadDeprecationsIndex).not.toHaveBeenCalled();
   });
 });

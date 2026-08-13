@@ -32,6 +32,10 @@
       "diff": {
         "title": "Diff across versions",
         "description": "See what changed between two Collector releases."
+      },
+      "deprecated": {
+        "title": "Deprecated components",
+        "description": "Browse components removed from current Collector releases."
       }
     }
   },
@@ -90,7 +94,8 @@
     },
     "version": {
       "label": "Version",
-      "latest": "(latest)"
+      "latest": "(latest)",
+      "deprecated": "Deprecated"
     },
     "distribution": {
       "label": "Distribution",
@@ -152,6 +157,10 @@
       "title": "Error loading data",
       "description": "Please try refreshing the page."
     }
+  },
+  "deprecated": {
+    "title": "This component has been removed",
+    "lead": "Last available in {{lastVersion}}. Removed in {{removedVersion}}."
   },
   "detail": {
     "loading": {
@@ -271,6 +280,10 @@
     "componentTypes": {
       "heading": "Component Types",
       "latestVersion": "Latest data version",
+      "deprecated": {
+        "label": "Deprecated",
+        "description": "Browse components removed from current Collector releases"
+      },
       "types": {
         "receiver": {
           "label": "Receiver",

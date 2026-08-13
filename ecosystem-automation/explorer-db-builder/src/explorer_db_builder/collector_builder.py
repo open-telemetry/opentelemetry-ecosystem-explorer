@@ -26,7 +26,11 @@ from explorer_db_builder.collector_display_name_audit import (
     find_missing_display_names,
     write_missing_display_name_report,
 )
-from explorer_db_builder.collector_transformer import make_index_component, transform_collector_components
+from explorer_db_builder.collector_transformer import (
+    COMPONENT_TYPES,
+    make_index_component,
+    transform_collector_components,
+)
 from explorer_db_builder.ecosystem_stats import count_unique_collector_component_ids
 
 logger = logging.getLogger(__name__)
@@ -38,6 +42,76 @@ DISTRIBUTIONS = ["core", "contrib"]
 # matured (raised from 0.150.0 to 0.154.0 to start the catalog from where
 # metadata quality has been consistently reliable).
 MINIMUM_VERSION = Version("0.154.0")
+
+
+def _registry_version(value: str, field: str, component_id: str) -> Version:
+    """Parse a registry version, whose canonical form includes a leading ``v``."""
+    try:
+        return Version(value.removeprefix("v"))
+    except (AttributeError, ValueError) as e:
+        raise ValueError(f"Invalid {field} for deprecated component {component_id}: {value!r}") from e
+
+
+def _build_deprecations_index(
+    deprecations: dict[str, dict[str, list[dict]]],
+    component_maps_by_version: dict[Version, dict[str, str]],
+    components_by_version: dict[Version, dict[str, dict]],
+) -> list[dict]:
+    """Build slim deprecated entries pointing at existing component records.
+
+    Deprecations can only resolve to releases included in the bounded Collector
+    database. Older records are skipped; a record that claims to reference an
+    included release but cannot be resolved indicates inconsistent registry data
+    and fails the build.
+    """
+    entries: list[dict] = []
+
+    for distribution in DISTRIBUTIONS:
+        by_type = deprecations.get(distribution, {})
+        for component_type in COMPONENT_TYPES:
+            for deprecated in by_type.get(component_type, []):
+                name = deprecated.get("name")
+                if not name:
+                    raise ValueError(f"Deprecated {distribution}/{component_type} component is missing a name")
+                component_id = f"{distribution}-{name}"
+
+                last_version = _registry_version(deprecated.get("last_version"), "last_version", component_id)
+                removed_version = _registry_version(
+                    deprecated.get("deprecated_in_version"), "deprecated_in_version", component_id
+                )
+
+                if last_version < MINIMUM_VERSION:
+                    logger.info(
+                        "Skipping deprecated component %s: last version %s is below database minimum %s",
+                        component_id,
+                        last_version,
+                        MINIMUM_VERSION,
+                    )
+                    continue
+
+                component_hash = component_maps_by_version.get(last_version, {}).get(component_id)
+                component = components_by_version.get(last_version, {}).get(component_id)
+                if not component_hash or not component:
+                    raise ValueError(
+                        f"Deprecated component {component_id} not found in its last version {last_version}"
+                    )
+                if component.get("type") != component_type:
+                    raise ValueError(
+                        f"Deprecated component {component_id} is listed as {component_type}, "
+                        f"but version {last_version} records it as {component.get('type')}"
+                    )
+
+                entry = make_index_component(component)
+                entry.update(
+                    {
+                        "component_hash": component_hash,
+                        "last_version": str(last_version),
+                        "deprecated_in_version": str(removed_version),
+                    }
+                )
+                entries.append(entry)
+
+    return sorted(entries, key=lambda entry: entry["id"])
 
 
 def _get_merged_release_versions(inventory_manager: InventoryManager) -> list[Version]:
@@ -182,6 +256,8 @@ def run_collector_builder(
         processed_versions: list[Version] = []
         latest_components: list[dict] = []
         components_by_version: list[list[dict]] = []
+        components_by_version_id: dict[Version, dict[str, dict]] = {}
+        component_maps_by_version: dict[Version, dict[str, str]] = {}
         bundle_hashes: dict[Version, str] = {}
 
         for version in versions:
@@ -192,6 +268,8 @@ def run_collector_builder(
             processed_versions.append(version)
             bundle_hashes[version] = bundle_hash
             components_by_version.append(components)
+            components_by_version_id[version] = {component["id"]: component for component in components}
+            component_maps_by_version[version] = component_map
             if not latest_components:
                 latest_components = components
 
@@ -200,6 +278,10 @@ def run_collector_builder(
 
         db_writer.write_version_list(processed_versions, bundle_hashes)
         db_writer.write_index(latest_components)
+        deprecated_components = _build_deprecations_index(
+            inventory_manager.load_deprecations(), component_maps_by_version, components_by_version_id
+        )
+        db_writer.write_deprecations_index(deprecated_components)
 
         # Incremental runs never overwrite the store, so files whose hash changed are left
         # orphaned. Sweep them now that every version index (the reachability source) is on

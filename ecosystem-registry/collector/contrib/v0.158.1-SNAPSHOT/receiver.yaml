@@ -11171,6 +11171,13 @@ components:
         name_override: kind
         requirement_level: recommended
         type: string
+      disk.io.direction:
+        description: The disk IO operation direction.
+        enum:
+        - read
+        - write
+        requirement_level: recommended
+        type: string
       double_writes:
         description: The doublewrite types.
         enum:
@@ -11297,6 +11304,17 @@ components:
       mysql.query_plan.hash:
         description: This attribute is set to the same value as mysql.events_statements_summary_by_digest.digest
           (query digest) by design.
+        type: string
+      mysql.replica.channel.name:
+        description: The replication channel name.
+        requirement_level: recommended
+        type: string
+      mysql.replica.thread.type:
+        description: The replica thread type.
+        enum:
+        - io
+        - sql
+        requirement_level: recommended
         type: string
       mysql.session.id:
         description: The unique identifier for the session associated with the event.
@@ -11680,6 +11698,30 @@ components:
           monotonic: true
           value_type: int
         unit: ns
+      mysql.innodb.data_file.io:
+        attributes:
+        - disk.io.direction
+        description: The total bytes read from and written to InnoDB data files.
+        enabled: false
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          input_type: string
+          monotonic: true
+          value_type: int
+        unit: By
+      mysql.innodb.operation.pending:
+        attributes:
+        - operations
+        description: The number of pending InnoDB data file operations.
+        enabled: false
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          input_type: string
+          monotonic: false
+          value_type: int
+        unit: '1'
       mysql.joins:
         attributes:
         - join_kind
@@ -11855,6 +11897,29 @@ components:
           monotonic: false
           value_type: int
         unit: s
+      mysql.replica.temp_table.open:
+        description: The number of temporary tables currently open by the replica
+          while applying replicated events.
+        enabled: false
+        gauge:
+          value_type: int
+        stability: development
+        unit: '{table}'
+      mysql.replica.thread.running:
+        attributes:
+        - mysql.replica.channel.name
+        - mysql.replica.thread.type
+        description: Whether the replica IO and SQL threads report a running status.
+          A value of 1 means the thread reports Yes; 0 means any other status, including
+          No or Connecting.
+        enabled: false
+        extended_documentation: If the thread type or channel name attributes are
+          disabled or dropped, configure the aggregation strategy as min or max based
+          on the desired collapsed status.
+        gauge:
+          value_type: int
+        stability: development
+        unit: '1'
       mysql.replica.time_behind_source:
         attributes: []
         description: This field is an indication of how “late” the replica is.
@@ -19028,7 +19093,7 @@ components:
           store using the introspection endpoint
         requirement_level: recommended
         type: string
-      splunk.kvstore.storage.engine:
+      splunk.kvstore.storage_engine:
         description: The backend storage used by the KV store
         requirement_level: recommended
         type: string
@@ -19371,6 +19436,7 @@ components:
       splunk.kvstore.replication.status:
         attributes:
         - splunk.kvstore.status.value
+        - splunk.kvstore.storage_engine
         - splunk.splunkd.build
         - splunk.splunkd.version
         description: Replication status of the KV store.
@@ -19383,7 +19449,7 @@ components:
         attributes:
         - splunk.kvstore.external
         - splunk.kvstore.status.value
-        - splunk.kvstore.storage.engine
+        - splunk.kvstore.storage_engine
         - splunk.splunkd.build
         - splunk.splunkd.version
         description: This is the overall status of the kvstore for the given deployment.
@@ -19782,6 +19848,7 @@ components:
     type: splunk_hec
 - name: sqlqueryreceiver
   metadata:
+    deprecated_type: sqlquery
     description: The SQL Query Receiver uses custom SQL queries to generate logs and/or
       metrics from a database connection.
     display_name: SQL Query Receiver
@@ -19800,7 +19867,7 @@ components:
         - metrics
         development:
         - logs
-    type: sqlquery
+    type: sql_query
 - name: sqlserverreceiver
   metadata:
     attributes:
