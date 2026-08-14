@@ -44,6 +44,13 @@ func CloneDirName(url string) string {
 	s := strings.TrimPrefix(url, "https://github.com/")
 	s = strings.TrimPrefix(s, "git@github.com:")
 	s = strings.TrimSuffix(s, ".git")
+
+	if name, ok := strings.CutPrefix(s, "open-telemetry/"); ok {
+		if name, ok = strings.CutPrefix(name, "opentelemetry-go-"); ok {
+			return name
+		}
+		return name
+	}
 	return strings.ReplaceAll(s, "/", "-")
 }
 

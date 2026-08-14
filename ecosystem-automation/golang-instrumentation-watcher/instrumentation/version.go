@@ -1,6 +1,7 @@
 package instrumentation
 
 import (
+	"path"
 	"strings"
 
 	"golang.org/x/mod/semver"
@@ -33,11 +34,17 @@ func ApplyModuleVersions(libs []Library, versions map[string]string) {
 	for i := range libs {
 		for j := range libs[i].Modules {
 			modPath := libs[i].Modules[j].Path
+			var bestPrefix, bestVersion string
 			for prefix, v := range versions {
-				if strings.HasSuffix(modPath, "/"+prefix) {
-					libs[i].Modules[j].Version = v
-					break
+				if strings.HasSuffix(modPath, path.Join("/", prefix)) {
+					if len(prefix) > len(bestPrefix) {
+						bestPrefix = prefix
+						bestVersion = v
+					}
 				}
+			}
+			if bestVersion != "" {
+				libs[i].Modules[j].Version = bestVersion
 			}
 		}
 

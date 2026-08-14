@@ -39,9 +39,13 @@ func TestCloneDirName(t *testing.T) {
 		url  string
 		want string
 	}{
-		{"github ssh url", "git@github.com:open-telemetry/opentelemetry-go.git", "open-telemetry-opentelemetry-go"},
-		{"github https url", "https://github.com/open-telemetry/opentelemetry-go.git", "open-telemetry-opentelemetry-go"},
-		{"no .git extension", "git@github.com:open-telemetry/opentelemetry-go", "open-telemetry-opentelemetry-go"},
+		{"github ssh url", "git@github.com:open-telemetry/opentelemetry-go.git", "opentelemetry-go"},
+		{"github https url", "https://github.com/open-telemetry/opentelemetry-go.git", "opentelemetry-go"},
+		{"no .git extension", "git@github.com:open-telemetry/opentelemetry-go", "opentelemetry-go"},
+		{"contrib https url", "https://github.com/open-telemetry/opentelemetry-go-contrib.git", "contrib"},
+		{"compile instrumentation ssh url", "git@github.com:open-telemetry/opentelemetry-go-compile-instrumentation.git", "compile-instrumentation"},
+		{"custom fork https url", "https://github.com/amazingakai/opentelemetry-go-compile-instrumentation.git", "amazingakai-opentelemetry-go-compile-instrumentation"},
+		{"non otel repo", "https://github.com/alibaba/loongsuite-go", "alibaba-loongsuite-go"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -97,9 +97,15 @@ func ScanMetadataRepo(repoPath string) (*ScanResult, error) {
 	modVersions := make(map[string]string)
 	if packages, err := Walk(repoPath); err == nil {
 		for _, pkg := range packages {
-			if mod, err := ParseModule(pkg.GoModPath); err == nil && mod.Path != "" {
-				modVersions[mod.Path] = mod.GoVersion
+			mod, err := ParseModule(pkg.GoModPath)
+			if err != nil {
+				return nil, err
 			}
+			if mod.Path == "" {
+				return nil, fmt.Errorf("failed to parse module path: %s", pkg.GoModPath)
+			}
+
+			modVersions[mod.Path] = mod.GoVersion
 		}
 	}
 
@@ -114,17 +120,7 @@ func ScanMetadataRepo(repoPath string) (*ScanResult, error) {
 		}
 
 		// Infer GoMinVersion from go.mod if not specified in metadata.
-		if lib.GoMinVersion == "" {
-			var highest string
-			for _, m := range lib.Modules {
-				if gv, ok := modVersions[m.Path]; ok && gv != "" {
-					if highest == "" || version.Compare(gv, highest) > 0 {
-						highest = gv
-					}
-				}
-			}
-			lib.GoMinVersion = highest
-		}
+		lib.inferGoMinVersion(modVersions)
 
 		libraries = append(libraries, *lib)
 	}
@@ -132,6 +128,21 @@ func ScanMetadataRepo(repoPath string) (*ScanResult, error) {
 	slices.SortFunc(libraries, func(a, b Library) int { return cmp.Compare(a.Name, b.Name) })
 
 	return &ScanResult{Libraries: libraries}, nil
+}
+
+func (l *Library) inferGoMinVersion(modVersions map[string]string) {
+	if l.GoMinVersion != "" {
+		return
+	}
+	var highest string
+	for _, m := range l.Modules {
+		if gv, ok := modVersions[m.Path]; ok && gv != "" {
+			if highest == "" || version.Compare(gv, highest) > 0 {
+				highest = gv
+			}
+		}
+	}
+	l.GoMinVersion = highest
 }
 
 func analyzeMetadataLibrary(metadataPath string) (*Library, error) {

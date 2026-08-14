@@ -47,22 +47,6 @@ type TargetsConfig struct {
 	Targets []Target `yaml:"targets"`
 }
 
-// registryDirForURL returns the registry directory name for a given GitHub repo URL.
-// For open-telemetry repos, the "opentelemetry-go-" prefix is stripped from the name.
-// For other repos, the name is simply cleaned up by removing slashes and replacing them with hyphens.
-func registryDirForURL(repoURL string) string {
-	s := strings.TrimPrefix(repoURL, "https://github.com/")
-	s = strings.TrimPrefix(s, "git@github.com:")
-	s = strings.TrimSuffix(s, ".git")
-
-	if name, ok := strings.CutPrefix(s, "open-telemetry/"); ok {
-		if name, ok = strings.CutPrefix(name, "opentelemetry-go-"); ok {
-			return name
-		}
-		return name
-	}
-	return strings.ReplaceAll(s, "/", "-")
-}
 
 // repoRoot walks up from dir until it finds a directory that contains an
 // "ecosystem-registry" subdirectory, which is the monorepo root. Returns an
@@ -122,7 +106,7 @@ func main() {
 	}
 
 	for _, target := range config.Targets {
-		inventoryDir := filepath.Join(root, "ecosystem-registry", "go", registryDirForURL(target.URL))
+		inventoryDir := filepath.Join(root, "ecosystem-registry", "go", repo.CloneDirName(target.URL))
 
 		if err := syncRepo(log, target, *baseDir, inventoryDir); err != nil {
 			log.WithErrorMsg(err, "sync failed for target", "url", target.URL)
@@ -159,7 +143,8 @@ func syncRepo(log *conf.Log, target Target, baseDir, inventoryDir string) error 
 	}
 
 	// No tags found, so just sync the branch as a snapshot
-	return syncVersion(log, target, baseDir, mgr, branch, "v0.0.1-SNAPSHOT", true)
+	const snapshotVersion = "v0.0.1-SNAPSHOT"
+	return syncVersion(log, target, baseDir, mgr, branch, snapshotVersion, true)
 }
 
 func syncVersion(log *conf.Log, target Target, baseDir string, mgr *inventory.Manager, ref, version string, snapshot bool) error {
