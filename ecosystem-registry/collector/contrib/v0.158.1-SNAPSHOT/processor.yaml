@@ -360,7 +360,7 @@ components:
           unit: '{rate}'
         processor_dynamic_sampling_decision_triggers:
           description: Number of trace decisions made, labelled by which event triggered
-            the decision (root_span, trace_timeout, eviction).
+            the decision (root_span, trace_timeout, eviction, shutdown).
           enabled: true
           stability: development
           sum:
@@ -378,7 +378,8 @@ components:
           unit: '{spans}'
         processor_dynamic_sampling_ottl_eval_errors:
           description: Number of OTTL condition evaluation errors, labelled by the
-            rule the condition belongs to.
+            rule the condition belongs to (_root_span_condition for the root-span
+            condition).
           enabled: true
           stability: development
           sum:
@@ -395,7 +396,8 @@ components:
           unit: '{traces}'
         processor_dynamic_sampling_traces_dropped:
           description: Number of traces that were dropped, labelled by the rule that
-            selected them.
+            selected them. Sentinel rule values are prefixed with an underscore (e.g.
+            _unmatched, _eviction).
           enabled: true
           stability: development
           sum:
@@ -414,7 +416,8 @@ components:
           unit: '{traces}'
         processor_dynamic_sampling_traces_sampled:
           description: Number of traces that were sampled, labelled by the rule that
-            selected them.
+            selected them. Sentinel rule values are prefixed with an underscore (e.g.
+            _eviction).
           enabled: true
           stability: development
           sum:

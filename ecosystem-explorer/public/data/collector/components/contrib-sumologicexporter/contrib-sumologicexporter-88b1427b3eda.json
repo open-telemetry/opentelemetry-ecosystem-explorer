@@ -1,0 +1,84 @@
+{
+  "description": null,
+  "display_name": "Sumo Logic Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-sumologicexporter",
+  "markdown_hash": "57f33d74683e",
+  "name": "sumologicexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "rnishtala-sumo",
+        "pankaj101A",
+        "jagan2221"
+      ],
+      "emeritus": [
+        "aboguszewski-sumo",
+        "kasia-kujawa",
+        "mat-rumian",
+        "sumo-drosiek",
+        "chan-tim-sumo",
+        "echlebek",
+        "amdprophet"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "telemetry": {
+    "metrics": {
+      "exporter_requests_bytes": {
+        "description": "Total size of requests (in bytes)",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "By"
+      },
+      "exporter_requests_duration": {
+        "description": "Duration of HTTP requests (in milliseconds)",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "ms"
+      },
+      "exporter_requests_records": {
+        "description": "Total size of requests (in number of records)",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{records}"
+      },
+      "exporter_requests_sent": {
+        "description": "Number of requests",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      }
+    }
+  },
+  "type": "exporter"
+}

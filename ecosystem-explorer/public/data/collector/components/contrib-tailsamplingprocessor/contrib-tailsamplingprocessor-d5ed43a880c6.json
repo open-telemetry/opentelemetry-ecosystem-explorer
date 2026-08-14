@@ -1,0 +1,292 @@
+{
+  "attributes": {
+    "decision": {
+      "description": "The sampling decision",
+      "enum": [
+        "dropped",
+        "not_sampled",
+        "sampled"
+      ],
+      "type": "string"
+    },
+    "policy": {
+      "description": "Name of the policy",
+      "type": "string"
+    },
+    "sampled": {
+      "description": "Whether the sampling decision was sampled or not, false can mean either not sampled or dropped",
+      "type": "bool"
+    }
+  },
+  "description": null,
+  "display_name": "Tail Sampling Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "feature_gates": [
+    {
+      "description": "When enabled, a new metric stat_count_bytes_sampled will be available in the tail sampling processor. Differently from stat_count_traces_sampled, this metric will count the number of bytes sampled or not per sampling policy, where the original counts traces.",
+      "from_version": "v0.152.0",
+      "id": "processor.tailsamplingprocessor.metricstatcountbytessampled",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/48348",
+      "skip_strict_validation": true,
+      "stage": "alpha"
+    },
+    {
+      "description": "When enabled, a new metric stat_count_spans_sampled will be available in the tail sampling processor. Differently from stat_count_traces_sampled, this metric will count the number of spans sampled or not per sampling policy, where the original counts traces.",
+      "from_version": "v0.95.0",
+      "id": "processor.tailsamplingprocessor.metricstatcountspanssampled",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/30482",
+      "skip_strict_validation": true,
+      "stage": "alpha"
+    },
+    {
+      "description": "When enabled, attaches the name of the policy (and if applicable, composite policy) responsible for sampling a trace in the 'tailsampling.policy', 'tailsampling.composite_policy', and `tailsampling.cached_decision` attributes.",
+      "from_version": "v0.120.0",
+      "id": "processor.tailsamplingprocessor.recordpolicy",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/35180",
+      "skip_strict_validation": true,
+      "stage": "alpha"
+    },
+    {
+      "description": "When enabled, allows configuring tail_storage to use a tail storage extension implementation.",
+      "from_version": "v0.150.0",
+      "id": "processor.tailsamplingprocessor.tailstorageextension",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/47331",
+      "skip_strict_validation": true,
+      "stage": "alpha"
+    }
+  ],
+  "id": "contrib-tailsamplingprocessor",
+  "markdown_hash": "57c5e469746e",
+  "name": "tailsamplingprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "portertech",
+        "jmacd",
+        "csmarchbanks",
+        "carsonip"
+      ],
+      "emeritus": [
+        "jpkrohling",
+        "Logiraptor"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "traces"
+      ]
+    }
+  },
+  "telemetry": {
+    "metrics": {
+      "processor_tail_sampling_count_bytes_sampled": {
+        "attributes": [
+          "decision",
+          "policy",
+          "sampled"
+        ],
+        "description": "Count of bytes that were sampled or not per sampling policy",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "By"
+      },
+      "processor_tail_sampling_count_spans_sampled": {
+        "attributes": [
+          "decision",
+          "policy",
+          "sampled"
+        ],
+        "description": "Count of spans that were sampled or not per sampling policy",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{spans}"
+      },
+      "processor_tail_sampling_count_traces_sampled": {
+        "attributes": [
+          "decision",
+          "policy",
+          "sampled"
+        ],
+        "description": "Count of traces that were sampled or not per sampling policy",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{traces}"
+      },
+      "processor_tail_sampling_early_releases_from_cache_decision": {
+        "attributes": [
+          "sampled"
+        ],
+        "description": "Number of spans that were able to be immediately released due to a decision cache hit.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{spans}"
+      },
+      "processor_tail_sampling_global_count_traces_sampled": {
+        "attributes": [
+          "decision",
+          "sampled"
+        ],
+        "description": "Global count of traces that were sampled or not by at least one policy",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{traces}"
+      },
+      "processor_tail_sampling_new_trace_id_received": {
+        "description": "Counts the arrival of new traces",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{traces}"
+      },
+      "processor_tail_sampling_sampling_decision_timer_latency": {
+        "description": "Latency (in milliseconds) of each run of the sampling decision timer",
+        "enabled": true,
+        "histogram": {
+          "bucket_boundaries": [
+            1,
+            2,
+            5,
+            10,
+            25,
+            50,
+            75,
+            100,
+            150,
+            200,
+            300,
+            400,
+            500,
+            750,
+            1000,
+            2000,
+            3000,
+            4000,
+            5000,
+            10000,
+            20000,
+            30000,
+            50000
+          ],
+          "value_type": "int"
+        },
+        "stability": "development",
+        "unit": "ms"
+      },
+      "processor_tail_sampling_sampling_late_span_age": {
+        "description": "Time (in seconds) from the sampling decision was taken and the arrival of a late span",
+        "enabled": true,
+        "histogram": {
+          "value_type": "int"
+        },
+        "stability": "development",
+        "unit": "s"
+      },
+      "processor_tail_sampling_sampling_policy_evaluation_error": {
+        "description": "Count of sampling policy evaluation errors",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{errors}"
+      },
+      "processor_tail_sampling_sampling_policy_execution_count": {
+        "attributes": [
+          "policy"
+        ],
+        "description": "Total number of executions of a specific sampling policy",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{executions}"
+      },
+      "processor_tail_sampling_sampling_policy_execution_time_sum": {
+        "attributes": [
+          "policy"
+        ],
+        "description": "Total time spent (in microseconds) executing a specific sampling policy",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "\u00b5s"
+      },
+      "processor_tail_sampling_sampling_trace_dropped_too_early": {
+        "description": "Count of traces that needed to be dropped before the configured wait time",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{traces}"
+      },
+      "processor_tail_sampling_sampling_trace_removal_age": {
+        "description": "Time (in seconds) from arrival of a new trace until its removal from memory",
+        "enabled": true,
+        "histogram": {
+          "value_type": "int"
+        },
+        "stability": "development",
+        "unit": "s"
+      },
+      "processor_tail_sampling_sampling_traces_on_memory": {
+        "description": "Tracks the number of traces current on memory",
+        "enabled": true,
+        "gauge": {
+          "value_type": "int"
+        },
+        "stability": "development",
+        "unit": "{traces}"
+      },
+      "processor_tail_sampling_traces_dropped_too_large": {
+        "description": "Count of traces that were dropped because they were too large",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{traces}"
+      }
+    }
+  },
+  "type": "processor"
+}

@@ -33,14 +33,16 @@
  * data — they render their empty states with a link out to the source.
  */
 
-import { AlertCircle, Loader2 } from "lucide-react";
+import { AlertCircle, AlertTriangle, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { CollectorComponentType } from "@/components/ui/type-stripe-colors";
+import { CollectorReadmeTab } from "@/features/collector/components/collector-readme-tab";
 import {
   useCollectorComponent,
   useCollectorComponents,
+  useCollectorDeprecations,
   useCollectorVersions,
   useComponentVersions,
 } from "@/hooks/use-collector-data";
@@ -118,9 +120,10 @@ function attributeRows(c: CollectorComponent): AttributeRow[] {
   return rows;
 }
 
-function sourceHref(c: CollectorComponent): string | null {
+function sourceHref(c: CollectorComponent, version?: string): string | null {
   if (!c.repository) return null;
-  return `https://github.com/open-telemetry/${c.repository}/tree/main/${c.type}/${c.name}`;
+  const ref = version ? `v${version}` : "main";
+  return `https://github.com/open-telemetry/${c.repository}/tree/${ref}/${c.type}/${c.name}`;
 }
 
 // Prefer the human-friendly display name, falling back to the slug.
@@ -148,17 +151,24 @@ export function CollectorDetailPageV1() {
   // bare `/collector/components/:distribution/:name` link (how the list page
   // links) resolves instead of showing "not found".
   const rawVersion = searchParams.get("version");
+  const deprecatedView = rawVersion === "deprecated";
+  const deprecationsQuery = useCollectorDeprecations(deprecatedView);
+  const deprecatedEntry = deprecationsQuery.data?.components.find(
+    (entry) => entry.distribution === distribution && entry.name === name
+  );
   const latestVersion = versionsQ.data?.versions.find((v) => v.is_latest)?.version ?? "";
-  const version = rawVersion || latestVersion;
-  const versionLoading = !version && !versionsQ.error;
+  const version = deprecatedView
+    ? (deprecatedEntry?.last_version ?? "")
+    : rawVersion || latestVersion;
+  const versionLoading = deprecatedView ? deprecationsQuery.loading : !version && !versionsQ.error;
 
   const componentQ = useCollectorComponent(distribution ?? "", name ?? "", version);
-  const componentsQ = useCollectorComponents(version);
+  const componentsQ = useCollectorComponents(deprecatedView ? "" : version);
   const componentVersionsQ = useComponentVersions(distribution ?? "", name ?? "");
 
   const component = componentQ.data;
   const loading = componentQ.loading;
-  const error = componentQ.error;
+  const error = componentQ.error || (deprecatedView ? deprecationsQuery.error : null);
 
   // A component missing from the requested release is an expected state, not a
   // failure, so it gets its own designed answer below. Deciding which of the
@@ -225,14 +235,17 @@ export function CollectorDetailPageV1() {
 
   const componentType = component.type as CollectorComponentType;
   const displayName = displayLabel(component);
-  const stability = topStability(component);
+  const stability = deprecatedView ? "deprecated" : topStability(component);
   const signals = emittedSignals(component);
-  const href = sourceHref(component);
+  const href = sourceHref(component, deprecatedView ? version : undefined);
 
   // Sibling links preserve the explicit `?version=` when present, but never
   // synthesize one for the latest view (so latest-view links stay bare).
   const siblingSuffix = rawVersion ? `?version=${encodeURIComponent(rawVersion)}` : "";
-  const siblings: SiblingItem[] = (componentsQ.data ?? []).flatMap((c) =>
+  const siblingComponents = deprecatedView
+    ? (deprecationsQuery.data?.components ?? [])
+    : (componentsQ.data ?? []);
+  const siblings: SiblingItem[] = siblingComponents.flatMap((c) =>
     c.type === component.type
       ? [
           {
@@ -292,6 +305,20 @@ export function CollectorDetailPageV1() {
         </aside>
 
         <main className="td-detail__main">
+          {deprecatedEntry && (
+            <div className="td-detail-notice" role="note">
+              <AlertTriangle className="td-detail-notice__icon" aria-hidden />
+              <div className="td-detail-notice__body">
+                <p className="td-detail-notice__title">{tc("deprecated.title")}</p>
+                <p className="td-detail-notice__description">
+                  {tc("deprecated.lead", {
+                    lastVersion: deprecatedEntry.last_version,
+                    removedVersion: deprecatedEntry.deprecated_in_version,
+                  })}
+                </p>
+              </div>
+            </div>
+          )}
           <DetailHeader
             type={componentType}
             distribution={component.distribution}
@@ -312,7 +339,15 @@ export function CollectorDetailPageV1() {
           <section id="content">
             <DetailTabs active={activeTab} onChange={selectTab}>
               {activeTab === "configuration" && <ConfigurationTab rows={null} hrefSource={href} />}
-              {activeTab === "readme" && <ReadmeTab hrefSource={href} />}
+              {activeTab === "readme" &&
+                (deprecatedView && component.markdown_hash ? (
+                  <CollectorReadmeTab
+                    name={component.name}
+                    markdownHash={component.markdown_hash}
+                  />
+                ) : (
+                  <ReadmeTab hrefSource={href} />
+                ))}
               {activeTab === "attributes" && <AttributesTab rows={attributeRows(component)} />}
               {activeTab === "examples" && <ExamplesTab snippets={[]} hrefExamples={href} />}
             </DetailTabs>

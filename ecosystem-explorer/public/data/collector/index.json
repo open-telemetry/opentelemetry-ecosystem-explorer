@@ -116,7 +116,7 @@
       "signals": [
         "extension"
       ],
-      "stability": "development",
+      "stability": "beta",
       "type": "extension"
     },
     {
@@ -174,6 +174,22 @@
         "profiles"
       ],
       "stability": "beta",
+      "type": "processor"
+    },
+    {
+      "description": null,
+      "display_name": null,
+      "distribution": "core",
+      "has_readme": true,
+      "id": "core-queuebatchprocessor",
+      "name": "queuebatchprocessor",
+      "signals": [
+        "traces",
+        "metrics",
+        "logs",
+        "profiles"
+      ],
+      "stability": "development",
       "type": "processor"
     },
     {
@@ -880,7 +896,7 @@
       "signals": [
         "logs"
       ],
-      "stability": "beta",
+      "stability": "deprecated",
       "type": "exporter"
     },
     {
@@ -2494,6 +2510,19 @@
         "logs"
       ],
       "stability": "alpha",
+      "type": "receiver"
+    },
+    {
+      "description": "The DNS Check Receiver can be used for synthetic checks against DNS servers.",
+      "display_name": "DNS Check Receiver",
+      "distribution": "contrib",
+      "has_readme": true,
+      "id": "contrib-dnscheckreceiver",
+      "name": "dnscheckreceiver",
+      "signals": [
+        "metrics"
+      ],
+      "stability": "development",
       "type": "receiver"
     },
     {

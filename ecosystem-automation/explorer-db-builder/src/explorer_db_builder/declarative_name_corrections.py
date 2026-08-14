@@ -45,6 +45,18 @@ logger = logging.getLogger(__name__)
 
 DECLARATIVE_NAME_CORRECTIONS: dict[str, str] = {
     "java.common.peer_service_mapping": "java.common.service_peer_mapping",
+    # The declarative config schema defines this field as `sensitive_query_parameters` (no
+    # `/development` suffix) in every released version, and `instrumentation/development.general`
+    # is a strictly typed model (`additionalProperties: false` all the way down) — unlike the
+    # free-form `instrumentation/development.java` map, where an unknown key is ignored. So the
+    # suffixed name makes the agent reject the whole file at startup:
+    #   Unrecognized field "sensitive_query_parameters/development"
+    #   (class ExperimentalUrlSanitizationModel), not marked as ignorable
+    # which aborts SDK autoconfiguration ("OpenTelemetry Javaagent failed to start") while leaving
+    # the JVM running uninstrumented.
+    "general.sanitization.url.sensitive_query_parameters/development": (
+        "general.sanitization.url.sensitive_query_parameters"
+    ),
 }
 
 # Configs (keyed by ``declarative_name``) whose ``description`` is normalized to the newest

@@ -23,7 +23,9 @@ import { CollectorDetailPageV1 } from "./detail-page";
 import {
   useCollectorComponent,
   useCollectorComponents,
+  useCollectorDeprecations,
   useCollectorVersions,
+  useComponentReadme,
   useComponentVersions,
 } from "@/hooks/use-collector-data";
 import type { CollectorComponent, IndexComponent } from "@/types/collector";
@@ -31,7 +33,9 @@ import type { CollectorComponent, IndexComponent } from "@/types/collector";
 vi.mock("@/hooks/use-collector-data", () => ({
   useCollectorComponent: vi.fn(),
   useCollectorComponents: vi.fn(),
+  useCollectorDeprecations: vi.fn(),
   useCollectorVersions: vi.fn(),
+  useComponentReadme: vi.fn(),
   useComponentVersions: vi.fn(),
 }));
 
@@ -105,6 +109,12 @@ function mockHooks(overrides?: {
     error: null,
     ...overrides?.componentsState,
   });
+  vi.mocked(useCollectorDeprecations).mockReturnValue({
+    data: { ecosystem: "collector", components: [] },
+    loading: false,
+    error: null,
+  });
+  vi.mocked(useComponentReadme).mockReturnValue({ data: null, loading: false, error: null });
 }
 
 function renderAtRoute(path: string) {
@@ -219,6 +229,73 @@ describe("CollectorDetailPageV1", () => {
       "href",
       "/collector/components/contrib/kafkareceiver?version=0.149.0"
     );
+  });
+
+  it("resolves deprecated details through the last available version", () => {
+    mockHooks({ componentVersionsState: { data: ["0.149.0"] } });
+    vi.mocked(useCollectorDeprecations).mockReturnValue({
+      data: {
+        ecosystem: "collector",
+        components: [
+          {
+            id: "core-otlpreceiver",
+            name: "otlpreceiver",
+            distribution: "core",
+            type: "receiver",
+            component_hash: "abc123def456",
+            last_version: "0.149.0",
+            deprecated_in_version: "0.150.0",
+          },
+        ],
+      },
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver?version=deprecated");
+
+    expect(useCollectorComponent).toHaveBeenCalledWith("core", "otlpreceiver", "0.149.0");
+    const notice = screen.getByRole("note");
+    expect(notice).toHaveClass("td-detail-notice");
+    expect(notice).not.toHaveClass("td-detail-header");
+    expect(notice).toHaveTextContent(/0\.149\.0.*0\.150\.0/);
+  });
+
+  it("renders the preserved README from the deprecated component's last version", async () => {
+    const user = userEvent.setup();
+    mockHooks({
+      componentState: { data: { ...component, markdown_hash: "readmehash123" } },
+      componentVersionsState: { data: ["0.149.0"] },
+    });
+    vi.mocked(useCollectorDeprecations).mockReturnValue({
+      data: {
+        ecosystem: "collector",
+        components: [
+          {
+            id: "core-otlpreceiver",
+            name: "otlpreceiver",
+            distribution: "core",
+            type: "receiver",
+            component_hash: "abc123def456",
+            last_version: "0.149.0",
+            deprecated_in_version: "0.150.0",
+          },
+        ],
+      },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useComponentReadme).mockReturnValue({
+      data: "# Preserved README",
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver?version=deprecated");
+    await user.click(screen.getByRole("tab", { name: "README" }));
+
+    expect(screen.getByRole("heading", { name: "Preserved README" })).toBeInTheDocument();
+    expect(useComponentReadme).toHaveBeenCalledWith("otlpreceiver", "readmehash123");
   });
 
   it("renders the right rail: version timeline, diff selector, and compatibility card", () => {

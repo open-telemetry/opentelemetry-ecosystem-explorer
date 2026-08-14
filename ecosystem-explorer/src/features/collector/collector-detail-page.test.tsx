@@ -21,6 +21,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CollectorDetailPage } from "./collector-detail-page";
 import {
   useCollectorComponent,
+  useCollectorDeprecations,
   useCollectorVersions,
   useComponentReadme,
 } from "@/hooks/use-collector-data";
@@ -28,6 +29,7 @@ import type { CollectorComponent } from "@/types/collector";
 
 vi.mock("@/hooks/use-collector-data", () => ({
   useCollectorComponent: vi.fn(),
+  useCollectorDeprecations: vi.fn(),
   useCollectorVersions: vi.fn(),
   useComponentReadme: vi.fn(),
 }));
@@ -101,6 +103,11 @@ describe("CollectorDetailPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(useComponentReadme).mockReturnValue({ data: null, loading: false, error: null });
+    vi.mocked(useCollectorDeprecations).mockReturnValue({
+      data: { ecosystem: "collector", components: [] },
+      loading: false,
+      error: null,
+    });
   });
 
   it("shows an error state instead of an infinite loading spinner when the versions fetch fails and no ?version= is present", () => {
@@ -223,6 +230,46 @@ describe("CollectorDetailPage", () => {
 
     expect(useCollectorComponent).toHaveBeenCalledWith("core", "otlpreceiver", "0.150.0");
     expect(screen.getByText("OTLP Receiver")).toBeInTheDocument();
+  });
+
+  it("resolves a deprecated component through its last version and shows removal details", () => {
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.157.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorDeprecations).mockReturnValue({
+      data: {
+        ecosystem: "collector",
+        components: [
+          {
+            id: "core-otlpreceiver",
+            name: "otlpreceiver",
+            distribution: "core",
+            type: "receiver",
+            component_hash: "abc123def456",
+            last_version: "0.149.0",
+            deprecated_in_version: "0.150.0",
+          },
+        ],
+      },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: mockComponentWithReadme,
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver?version=deprecated");
+
+    expect(useCollectorComponent).toHaveBeenCalledWith("core", "otlpreceiver", "0.149.0");
+    expect(screen.getByRole("note")).toHaveTextContent(/0\.149\.0.*0\.150\.0/);
+    expect(
+      screen.queryByRole("heading", { name: "This component has been removed" })
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("Deprecated")).toBeInTheDocument();
   });
 
   it("does not render Telemetry tab when component has no metrics", () => {
