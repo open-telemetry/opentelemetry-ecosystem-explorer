@@ -1,0 +1,99 @@
+{
+  "description": "The Dynamic Sampling Processor performs adaptive trace sampling using first-match rules-based routing to dynamic samplers. Each sampler produces a known sample rate which is encoded as `ot=th` in W3C TraceState for correct downstream metric weighting.",
+  "display_name": "Dynamic Sampling Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-dynamicsamplingprocessor",
+  "markdown_hash": "f39722666612",
+  "name": "dynamicsamplingprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "MikeGoldsmith",
+        "VinozzZ",
+        "jmacd"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "traces"
+      ]
+    }
+  },
+  "telemetry": {
+    "metrics": {
+      "processor_dynamic_sampling_decision_sample_rate": {
+        "description": "Distribution of effective sample rates produced per rule. Useful for detecting adaptive samplers settling at unexpected rates.",
+        "enabled": true,
+        "histogram": {
+          "value_type": "int"
+        },
+        "stability": "development",
+        "unit": "{rate}"
+      },
+      "processor_dynamic_sampling_decision_triggers": {
+        "description": "Number of trace decisions made, labelled by which event triggered the decision (root_span, trace_timeout).",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{decisions}"
+      },
+      "processor_dynamic_sampling_incoming_tracestate_unparseable": {
+        "description": "Number of spans whose incoming W3C tracestate could not be parsed when applying the sampling threshold.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{spans}"
+      },
+      "processor_dynamic_sampling_traces_active": {
+        "description": "Number of traces currently in the accumulation buffer awaiting a decision.",
+        "enabled": true,
+        "gauge": {
+          "value_type": "int"
+        },
+        "stability": "development",
+        "unit": "{traces}"
+      },
+      "processor_dynamic_sampling_traces_dropped": {
+        "description": "Number of traces that were dropped, labelled by the rule that selected them.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{traces}"
+      },
+      "processor_dynamic_sampling_traces_evicted": {
+        "description": "Number of traces evicted from the buffer before a decision could be made.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{traces}"
+      },
+      "processor_dynamic_sampling_traces_sampled": {
+        "description": "Number of traces that were sampled, labelled by the rule that selected them.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{traces}"
+      }
+    }
+  },
+  "type": "processor"
+}

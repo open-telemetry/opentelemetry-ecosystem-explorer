@@ -1,0 +1,40 @@
+{
+  "description": null,
+  "display_name": "Health Check Extension",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "feature_gates": [
+    {
+      "description": "Switch to the shared healthcheck implementation powered by component status events",
+      "from_version": "v0.142.0",
+      "id": "extension.healthcheck.useComponentStatus",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42256",
+      "skip_strict_validation": true,
+      "stage": "alpha"
+    }
+  ],
+  "id": "contrib-healthcheckextension",
+  "markdown_hash": "84e314f4bbe7",
+  "name": "healthcheckextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "evan-bradley"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "extension"
+      ]
+    }
+  },
+  "type": "extension"
+}

@@ -1,0 +1,93 @@
+{
+  "attributes": {
+    "metric_type": {
+      "description": "The pdata metric type of the datapoint.",
+      "enum": [
+        "exponential_histogram",
+        "histogram",
+        "sum"
+      ],
+      "type": "string"
+    },
+    "reason": {
+      "description": "The reason a datapoint was dropped instead of converted.",
+      "enum": [
+        "bucket_mismatch",
+        "initial",
+        "reset"
+      ],
+      "type": "string"
+    }
+  },
+  "description": "The cumulative to delta processor (`cumulativetodeltaprocessor`) converts monotonic sum, histogram, and exponential histogram metrics from cumulative to delta aggregation temporality. Non-monotonic sums are excluded. Delta metrics are excluded from any conversion and forwarded without changes.",
+  "display_name": "Cumulative to Delta Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-cumulativetodeltaprocessor",
+  "markdown_hash": "e5acc41cb4e0",
+  "name": "cumulativetodeltaprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "TylerHelmuth"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    },
+    "warnings": [
+      "Statefulness"
+    ]
+  },
+  "telemetry": {
+    "metrics": {
+      "cumulativetodelta_datapoints": {
+        "attributes": [
+          "metric_type"
+        ],
+        "description": "Number of datapoints converted from cumulative to delta temporality.",
+        "enabled": false,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{datapoint}"
+      },
+      "cumulativetodelta_datapoints_dropped": {
+        "attributes": [
+          "metric_type",
+          "reason"
+        ],
+        "description": "Number of datapoints dropped instead of being converted.",
+        "enabled": false,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{datapoint}"
+      },
+      "cumulativetodelta_streams_tracked": {
+        "description": "Number of metric streams currently tracked in memory for cumulative-to-delta conversion.",
+        "enabled": false,
+        "stability": "development",
+        "sum": {
+          "async": true,
+          "monotonic": false,
+          "value_type": "int"
+        },
+        "unit": "{stream}"
+      }
+    }
+  },
+  "type": "processor"
+}

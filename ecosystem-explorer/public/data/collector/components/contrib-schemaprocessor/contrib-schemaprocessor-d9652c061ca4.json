@@ -1,0 +1,155 @@
+{
+  "attributes": {
+    "from_schema_url": {
+      "description": "The schema URL the signal arrived with",
+      "type": "string"
+    },
+    "migration_from_schema_url": {
+      "description": "The migration from version boundary (only present when migration is active)",
+      "type": "string"
+    },
+    "to_schema_url": {
+      "description": "The target schema URL the signal was translated to",
+      "type": "string"
+    }
+  },
+  "description": null,
+  "display_name": "Schema Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-schemaprocessor",
+  "markdown_hash": "0c30801fc953",
+  "name": "schemaprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "MovieStoreGuy",
+        "ankitpatel96",
+        "dineshg13",
+        "MikeGoldsmith"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "telemetry": {
+    "metrics": {
+      "processor_schema.translated": {
+        "attributes": [
+          "from_schema_url",
+          "migration_from_schema_url",
+          "to_schema_url"
+        ],
+        "description": "Number of schema translations",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{translations}"
+      },
+      "processor_schema_cache.hits": {
+        "description": "Number of schema cache hits",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{requests}"
+      },
+      "processor_schema_cache.misses": {
+        "description": "Number of schema cache misses",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{requests}"
+      },
+      "processor_schema_logs.failed": {
+        "description": "Number of log scope translation requests that failed",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{translations}"
+      },
+      "processor_schema_logs.skipped": {
+        "description": "Number of log scope translation requests skipped because no schema URL was present on the scope or its resource",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{translations}"
+      },
+      "processor_schema_metrics.failed": {
+        "description": "Number of metric scope translation requests that failed",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{translations}"
+      },
+      "processor_schema_metrics.skipped": {
+        "description": "Number of metric scope translation requests skipped because no schema URL was present on the scope or its resource",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{translations}"
+      },
+      "processor_schema_resource.failed": {
+        "description": "Number of resource translation requests that failed",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{translations}"
+      },
+      "processor_schema_traces.failed": {
+        "description": "Number of trace scope translation requests that failed",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{translations}"
+      },
+      "processor_schema_traces.skipped": {
+        "description": "Number of trace scope translation requests skipped because no schema URL was present on the scope or its resource",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{translations}"
+      }
+    }
+  },
+  "type": "processor"
+}

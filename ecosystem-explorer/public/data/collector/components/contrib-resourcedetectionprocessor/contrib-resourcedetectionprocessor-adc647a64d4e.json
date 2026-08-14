@@ -1,0 +1,148 @@
+{
+  "attributes": {
+    "detector": {
+      "description": "The resource detector that produced the result.",
+      "enum": [
+        "akamai",
+        "aks",
+        "alibaba_ecs",
+        "azure",
+        "consul",
+        "digitalocean",
+        "docker",
+        "dynatrace",
+        "ec2",
+        "ecs",
+        "eks",
+        "elastic_beanstalk",
+        "env",
+        "gcp",
+        "heroku",
+        "hetzner",
+        "ibmcloud_classic",
+        "ibmcloud_vpc",
+        "k8s_api",
+        "k8snode",
+        "kubeadm",
+        "lambda",
+        "nova",
+        "openshift",
+        "oraclecloud",
+        "scaleway",
+        "system",
+        "tencent_cvm",
+        "upcloud",
+        "vultr"
+      ],
+      "type": "string"
+    },
+    "error.type": {
+      "description": "The type of error that caused detection to fail. Absent on success.",
+      "type": "string"
+    },
+    "outcome": {
+      "description": "Whether the detection operation succeeded or failed.",
+      "enum": [
+        "failure",
+        "success"
+      ],
+      "type": "string"
+    }
+  },
+  "description": null,
+  "display_name": "Resource Detection Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-resourcedetectionprocessor",
+  "markdown_hash": "3cb5dfd6b5a3",
+  "name": "resourcedetectionprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "Aneurysm9",
+        "dashpole"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ],
+      "development": [
+        "profiles"
+      ]
+    }
+  },
+  "telemetry": {
+    "metrics": {
+      "resourcedetection.attributes.detected": {
+        "description": "Number of resource attributes in the currently detected resource.",
+        "enabled": true,
+        "prefix": "otelcol.",
+        "stability": "development",
+        "sum": {
+          "async": true,
+          "monotonic": false,
+          "value_type": "int"
+        },
+        "unit": "{attribute}"
+      },
+      "resourcedetection.detector.duration": {
+        "attributes": [
+          "detector",
+          "outcome"
+        ],
+        "description": "Time taken by an individual detector to run, including backoff between retries.",
+        "enabled": true,
+        "histogram": {
+          "bucket_boundaries": [
+            0.005,
+            0.01,
+            0.025,
+            0.05,
+            0.075,
+            0.1,
+            0.25,
+            0.5,
+            0.75,
+            1,
+            2.5,
+            5,
+            7.5,
+            10,
+            30
+          ],
+          "value_type": "double"
+        },
+        "prefix": "otelcol.",
+        "stability": "development",
+        "unit": "s"
+      },
+      "resourcedetection.detector.results": {
+        "attributes": [
+          "detector",
+          "error.type",
+          "outcome"
+        ],
+        "description": "Number of resource detection results, by detector and outcome. On failure, error.type carries the error class.",
+        "enabled": true,
+        "prefix": "otelcol.",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{detection}"
+      }
+    }
+  },
+  "type": "processor"
+}

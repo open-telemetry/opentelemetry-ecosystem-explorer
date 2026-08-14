@@ -1,0 +1,40 @@
+{
+  "description": null,
+  "display_name": "Prometheus Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "feature_gates": [
+    {
+      "description": "When enabled, the deprecated add_metric_suffixes configuration option is ignored and translation_strategy is always used",
+      "from_version": "v0.132.0",
+      "id": "exporter.prometheusexporter.DisableAddMetricSuffixes",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-specification/pull/4533",
+      "skip_strict_validation": true,
+      "stage": "beta"
+    }
+  ],
+  "id": "contrib-prometheusexporter",
+  "markdown_hash": "040bf34d4f0d",
+  "name": "prometheusexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "Aneurysm9",
+        "dashpole",
+        "ArthurSens"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "core"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "exporter"
+}
