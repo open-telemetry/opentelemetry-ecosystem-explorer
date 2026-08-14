@@ -1,0 +1,42 @@
+{
+  "description": null,
+  "display_name": "AWS CloudWatch EMF Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "feature_gates": [
+    {
+      "description": "Changes the default AWS EMF Exporter Dimension rollup option to NoDimensionRollup",
+      "from_version": "v0.83.0",
+      "id": "awsemf.nodimrollupdefault",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/23997",
+      "skip_strict_validation": true,
+      "stage": "alpha"
+    }
+  ],
+  "id": "contrib-awsemfexporter",
+  "markdown_hash": "02cb355a2b1d",
+  "name": "awsemfexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "Aneurysm9",
+        "mxiamxia"
+      ],
+      "emeritus": [
+        "shaochengwang",
+        "bryan-aguilar"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "exporter"
+}

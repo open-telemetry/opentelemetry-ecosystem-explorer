@@ -1,0 +1,44 @@
+{
+  "description": null,
+  "display_name": "AWS X-Ray Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "feature_gates": [
+    {
+      "description": "When enabled, semconv legacy HTTP attributes are disabled.",
+      "from_version": "v0.158.0",
+      "id": "receiver.awsxray.DontEmitV0HttpConventions",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45085",
+      "stage": "alpha"
+    },
+    {
+      "description": "When enabled, semconv stable HTTP attributes are enabled.",
+      "from_version": "v0.158.0",
+      "id": "receiver.awsxray.EmitV1HttpConventions",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45085",
+      "stage": "alpha"
+    }
+  ],
+  "id": "contrib-awsxrayreceiver",
+  "markdown_hash": "de4147e74e5d",
+  "name": "awsxrayreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "wangzlei",
+        "srprash"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "traces"
+      ]
+    }
+  },
+  "type": "receiver"
+}

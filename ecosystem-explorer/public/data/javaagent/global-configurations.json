@@ -1923,7 +1923,7 @@
     "type": "boolean"
   },
   {
-    "declarative_name": "general.sanitization.url.sensitive_query_parameters/development",
+    "declarative_name": "general.sanitization.url.sensitive_query_parameters",
     "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
     "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
     "instrumentations": [

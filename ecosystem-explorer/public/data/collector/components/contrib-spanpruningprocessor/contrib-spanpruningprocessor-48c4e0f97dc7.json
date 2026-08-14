@@ -1,0 +1,178 @@
+{
+  "description": null,
+  "display_name": "Span Pruning Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-spanpruningprocessor",
+  "markdown_hash": "56db9566c22f",
+  "name": "spanpruningprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "portertech",
+        "csmarchbanks"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "traces"
+      ]
+    }
+  },
+  "telemetry": {
+    "metrics": {
+      "processor_spanpruning_aggregation_group_size": {
+        "description": "Distribution of spans per aggregation group",
+        "enabled": true,
+        "histogram": {
+          "value_type": "int"
+        },
+        "stability": "development",
+        "unit": "{spans}"
+      },
+      "processor_spanpruning_aggregations_created": {
+        "description": "Total aggregation summary spans created",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{spans}"
+      },
+      "processor_spanpruning_leaf_attribute_diversity_loss": {
+        "description": "Attribute values lost due to diversity per leaf aggregation",
+        "enabled": false,
+        "histogram": {
+          "bucket_boundaries": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            8,
+            10,
+            15,
+            20
+          ],
+          "value_type": "int"
+        },
+        "stability": "development",
+        "unit": "{values}"
+      },
+      "processor_spanpruning_leaf_attribute_loss": {
+        "description": "Attribute keys lost due to absence per leaf aggregation",
+        "enabled": false,
+        "histogram": {
+          "bucket_boundaries": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            8,
+            10,
+            15,
+            20
+          ],
+          "value_type": "int"
+        },
+        "stability": "development",
+        "unit": "{keys}"
+      },
+      "processor_spanpruning_parent_attribute_diversity_loss": {
+        "description": "Attribute values lost due to diversity per parent aggregation",
+        "enabled": false,
+        "histogram": {
+          "bucket_boundaries": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            8,
+            10,
+            15,
+            20
+          ],
+          "value_type": "int"
+        },
+        "stability": "development",
+        "unit": "{values}"
+      },
+      "processor_spanpruning_parent_attribute_loss": {
+        "description": "Attribute keys lost due to absence per parent aggregation",
+        "enabled": false,
+        "histogram": {
+          "bucket_boundaries": [
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            8,
+            10,
+            15,
+            20
+          ],
+          "value_type": "int"
+        },
+        "stability": "development",
+        "unit": "{keys}"
+      },
+      "processor_spanpruning_processing_duration": {
+        "description": "Time to process each batch of traces",
+        "enabled": true,
+        "histogram": {
+          "value_type": "double"
+        },
+        "stability": "development",
+        "unit": "s"
+      },
+      "processor_spanpruning_spans_pruned": {
+        "description": "Total spans pruned/removed by aggregation",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{spans}"
+      },
+      "processor_spanpruning_spans_received": {
+        "description": "Total spans received by the processor",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{spans}"
+      },
+      "processor_spanpruning_traces_processed": {
+        "description": "Total traces processed",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{traces}"
+      }
+    }
+  },
+  "type": "processor"
+}
