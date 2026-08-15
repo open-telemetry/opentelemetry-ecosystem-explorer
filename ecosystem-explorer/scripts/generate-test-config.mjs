@@ -94,8 +94,9 @@ async function generateConfig() {
     });
 
     // "Add all instrumentation configs" is gated behind window.confirm.
-    page.on("dialog", (dialog) => dialog.accept());
-
+    page.once("dialog", async (dialog) => {
+      await dialog.accept();
+    });
     await page.goto(`${BASE_URL}/java-agent/configuration/builder`, {
       waitUntil: "networkidle",
       timeout: 20000,
