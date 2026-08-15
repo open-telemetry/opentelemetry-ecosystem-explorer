@@ -1,0 +1,21 @@
+{
+  "components": [
+    {
+      "component_hash": "f6e970092904",
+      "deprecated_in_version": "0.157.0",
+      "description": null,
+      "display_name": "JMX Receiver",
+      "distribution": "contrib",
+      "has_readme": true,
+      "id": "contrib-jmxreceiver",
+      "last_version": "0.156.0",
+      "name": "jmxreceiver",
+      "signals": [
+        "metrics"
+      ],
+      "stability": "deprecated",
+      "type": "receiver"
+    }
+  ],
+  "ecosystem": "collector"
+}

@@ -661,26 +661,6 @@ components:
         alpha:
         - extension
     type: k8s_observer
-- name: kafkatopicsobserver
-  subtype: observer
-  metadata:
-    display_name: Kafka Topics Observer Extension
-    status:
-      class: extension
-      codeowners:
-        active:
-        - MovieStoreGuy
-      deprecation:
-        extension:
-          date: '2026-05-07'
-          migration: Use the `kafkareceiver` with topic regex support instead. This
-            component will be removed in a future release.
-      distributions:
-      - contrib
-      stability:
-        deprecated:
-        - extension
-    type: kafkatopics_observer
 - name: oidcauthextension
   metadata:
     display_name: OIDC Authenticator Extension
@@ -756,6 +736,21 @@ components:
         development:
         - extension
     type: remotetap
+- name: sdnotifyextension
+  metadata:
+    display_name: sd_notify Extension
+    status:
+      class: extension
+      codeowners:
+        active:
+        - VihasMakwana
+        - iypetrov
+      distributions:
+      - contrib
+      stability:
+        development:
+        - extension
+    type: sd_notify
 - name: sigv4authextension
   metadata:
     description: This extension provides Sigv4 authentication for making requests

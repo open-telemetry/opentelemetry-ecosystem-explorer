@@ -1,0 +1,207 @@
+{
+  "attributes": {
+    "error.type": {
+      "description": "The type of error that occurred when processing the documents.",
+      "type": "string"
+    },
+    "failure_store": {
+      "description": "The status of the failure store.",
+      "enum": [
+        "failed",
+        "not_enabled",
+        "unknown",
+        "used"
+      ],
+      "type": "string"
+    },
+    "http.response.status_code": {
+      "description": "HTTP status code.",
+      "type": "int"
+    },
+    "outcome": {
+      "description": "The operation outcome.",
+      "enum": [
+        "failed_client",
+        "failed_server",
+        "failure_store",
+        "internal_server_error",
+        "success",
+        "timeout",
+        "too_many"
+      ],
+      "type": "string"
+    }
+  },
+  "description": null,
+  "display_name": "Elasticsearch Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-elasticsearchexporter",
+  "markdown_hash": "9b9f6b51a6c4",
+  "name": "elasticsearchexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "JaredTan95",
+        "carsonip",
+        "lahsivjar"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "traces"
+      ],
+      "development": [
+        "metrics",
+        "profiles"
+      ]
+    }
+  },
+  "telemetry": {
+    "metrics": {
+      "elasticsearch.bulk_requests.count": {
+        "attributes": [
+          "http.response.status_code",
+          "outcome"
+        ],
+        "description": "Count of the completed bulk requests.",
+        "enabled": true,
+        "prefix": "otelcol.",
+        "stability": "alpha",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "elasticsearch.bulk_requests.latency": {
+        "attributes": [
+          "http.response.status_code",
+          "outcome"
+        ],
+        "description": "Latency of Elasticsearch bulk operations in seconds.",
+        "enabled": true,
+        "histogram": {
+          "bucket_boundaries": [
+            0,
+            0.005,
+            0.01,
+            0.025,
+            0.05,
+            0.075,
+            0.1,
+            0.25,
+            0.5,
+            0.75,
+            1,
+            2.5,
+            5,
+            7.5,
+            10,
+            25,
+            50,
+            75,
+            100,
+            250,
+            500,
+            750,
+            1000,
+            2500,
+            5000,
+            7500,
+            10000
+          ],
+          "value_type": "double"
+        },
+        "prefix": "otelcol.",
+        "stability": "alpha",
+        "unit": "s"
+      },
+      "elasticsearch.docs.processed": {
+        "attributes": [
+          "error.type",
+          "failure_store",
+          "http.response.status_code",
+          "outcome"
+        ],
+        "description": "Count of documents flushed to Elasticsearch.",
+        "enabled": true,
+        "prefix": "otelcol.",
+        "stability": "alpha",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "elasticsearch.docs.received": {
+        "description": "Count of Elasticsearch documents successfully received to be buffered.",
+        "enabled": true,
+        "prefix": "otelcol.",
+        "stability": "alpha",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "elasticsearch.docs.retried": {
+        "description": "Count of document retries.",
+        "enabled": true,
+        "extended_documentation": "Only document level retries are captured, whole bulk request retries are not captured.",
+        "prefix": "otelcol.",
+        "stability": "alpha",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "elasticsearch.docs.retried_http_request": {
+        "attributes": [
+          "http.response.status_code",
+          "outcome"
+        ],
+        "description": "Count of documents retried due to HTTP request-level failures.",
+        "enabled": true,
+        "extended_documentation": "Counts documents that are retried because an entire bulk HTTP\nrequest failed with a retryable status code (as configured in\n`retry_on_status`) and was retried by the Elasticsearch client,\nup to the `max_retries` limit.\n\nIn contrast, `elasticsearch.docs.retried` counts documents retried\nindividually within otherwise successful bulk requests due to\ndocument-specific failures such as mapping conflicts.\n",
+        "prefix": "otelcol.",
+        "stability": "alpha",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "elasticsearch.flushed.bytes": {
+        "description": "Number of bytes flushed by the indexer.",
+        "enabled": true,
+        "prefix": "otelcol.",
+        "stability": "alpha",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "By"
+      },
+      "elasticsearch.flushed.uncompressed_bytes": {
+        "description": "Number of uncompressed bytes flushed by the indexer.",
+        "enabled": true,
+        "prefix": "otelcol.",
+        "stability": "alpha",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "By"
+      }
+    }
+  },
+  "type": "exporter"
+}

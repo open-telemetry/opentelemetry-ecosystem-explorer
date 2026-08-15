@@ -822,9 +822,11 @@ components:
         description: The maximum number of worker slots configured for the HTTP server,
           derived from the scoreboard length.
         enabled: true
-        gauge:
-          value_type: int
         stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: false
+          value_type: int
         unit: '{worker}'
       apache.workers:
         attributes:
@@ -2299,10 +2301,6 @@ components:
 - name: dnscheckreceiver
   metadata:
     attributes:
-      dns.domain:
-        description: Domain name queried.
-        requirement_level: recommended
-        type: string
       dns.rcode:
         description: DNS response code (RCODE) returned for the query. Only present
           when a response was received from the server, including non-success responses
@@ -2312,20 +2310,12 @@ components:
           registry (https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-6).
         requirement_level: recommended
         type: int
-      dns.record.type:
-        description: Record type queried.
-        requirement_level: recommended
-        type: string
       dns.resolved.all.ips:
         description: All resolved IP addresses.
         requirement_level: recommended
         type: string
       dns.resolved.ip:
         description: First/primary resolved IP address.
-        requirement_level: recommended
-        type: string
-      dns.server:
-        description: Address of the DNS server queried.
         requirement_level: recommended
         type: string
       error.message:
@@ -2337,10 +2327,7 @@ components:
     display_name: DNS Check Receiver
     metrics:
       dnscheck.duration:
-        attributes:
-        - dns.domain
-        - dns.record.type
-        - dns.server
+        attributes: []
         description: Round-trip duration of the DNS query.
         enabled: true
         gauge:
@@ -2349,9 +2336,6 @@ components:
         unit: ms
       dnscheck.error:
         attributes:
-        - dns.domain
-        - dns.record.type
-        - dns.server
         - error.message
         description: Number of errors recorded during the DNS check.
         enabled: false
@@ -2363,18 +2347,15 @@ components:
         unit: '{error}'
       dnscheck.status:
         attributes:
-        - dns.domain
         - dns.rcode
-        - dns.record.type
         - dns.resolved.all.ips
         - dns.resolved.ip
-        - dns.server
         description: 1 if the DNS query returned successfully, 0 otherwise. The dns.resolved.ip
-          and dns.resolved.all.ips attributes are only present when the value is 1.
-          The dns.rcode attribute is present whenever a response was received from
-          the server, including non-success responses such as NXDOMAIN, SERVFAIL,
-          or REFUSED; it is absent only when no response was received at all (e.g.
-          timeout or network unreachable).
+          and dns.resolved.all.ips attributes are only present when the value is 1
+          and the record type is A or AAAA. The dns.rcode attribute is present whenever
+          a response was received from the server, including non-success responses
+          such as NXDOMAIN, SERVFAIL, or REFUSED; it is absent only when no response
+          was received at all (e.g. timeout or network unreachable).
         enabled: true
         stability: development
         sum:
@@ -2382,7 +2363,19 @@ components:
           monotonic: false
           value_type: int
         unit: '1'
-    resource_attributes: {}
+    resource_attributes:
+      dns.domain:
+        description: Domain name queried.
+        enabled: true
+        type: string
+      dns.record.type:
+        description: Record type queried.
+        enabled: true
+        type: string
+      dns.server:
+        description: Address of the DNS server queried.
+        enabled: true
+        type: string
     status:
       class: receiver
       codeowners:
@@ -5626,8 +5619,10 @@ components:
         - constanca-m
         emeritus:
         - axw
+      distributions:
+      - contrib
       stability:
-        development:
+        alpha:
         - logs
     telemetry:
       metrics:
@@ -11053,6 +11048,7 @@ components:
         - justinianvoss22
         - dyl10s
         - ishleenk17
+        - shrenikjain38
         seeking_new: true
       distributions:
       - contrib
@@ -11114,9 +11110,13 @@ components:
       command:
         description: The command types.
         enum:
+        - alter_table
+        - create_index
+        - create_table
         - delete
         - delete_multi
         - insert
+        - optimize
         - select
         - update
         - update_multi
@@ -11172,6 +11172,13 @@ components:
         - received
         - sent
         name_override: kind
+        requirement_level: recommended
+        type: string
+      disk.io.direction:
+        description: The disk IO operation direction.
+        enum:
+        - read
+        - write
         requirement_level: recommended
         type: string
       double_writes:
@@ -11300,6 +11307,17 @@ components:
       mysql.query_plan.hash:
         description: This attribute is set to the same value as mysql.events_statements_summary_by_digest.digest
           (query digest) by design.
+        type: string
+      mysql.replica.channel.name:
+        description: The replication channel name.
+        requirement_level: recommended
+        type: string
+      mysql.replica.thread.type:
+        description: The replica thread type.
+        enum:
+        - io
+        - sql
+        requirement_level: recommended
         type: string
       mysql.session.id:
         description: The unique identifier for the session associated with the event.
@@ -11634,6 +11652,15 @@ components:
           monotonic: true
           value_type: int
         unit: '1'
+      mysql.file.open:
+        attributes: []
+        description: The number of currently open files.
+        enabled: false
+        gauge:
+          input_type: string
+          value_type: int
+        stability: development
+        unit: '1'
       mysql.handlers:
         attributes:
         - handler
@@ -11674,6 +11701,30 @@ components:
           monotonic: true
           value_type: int
         unit: ns
+      mysql.innodb.data_file.io:
+        attributes:
+        - disk.io.direction
+        description: The total bytes read from and written to InnoDB data files.
+        enabled: false
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          input_type: string
+          monotonic: true
+          value_type: int
+        unit: By
+      mysql.innodb.operation.pending:
+        attributes:
+        - operations
+        description: The number of pending InnoDB data file operations.
+        enabled: false
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          input_type: string
+          monotonic: false
+          value_type: int
+        unit: '1'
       mysql.joins:
         attributes:
         - join_kind
@@ -11849,6 +11900,29 @@ components:
           monotonic: false
           value_type: int
         unit: s
+      mysql.replica.temp_table.open:
+        description: The number of temporary tables currently open by the replica
+          while applying replicated events.
+        enabled: false
+        gauge:
+          value_type: int
+        stability: development
+        unit: '{table}'
+      mysql.replica.thread.running:
+        attributes:
+        - mysql.replica.channel.name
+        - mysql.replica.thread.type
+        description: Whether the replica IO and SQL threads report a running status.
+          A value of 1 means the thread reports Yes; 0 means any other status, including
+          No or Connecting.
+        enabled: false
+        extended_documentation: If the thread type or channel name attributes are
+          disabled or dropped, configure the aggregation strategy as min or max based
+          on the desired collapsed status.
+        gauge:
+          value_type: int
+        stability: development
+        unit: '1'
       mysql.replica.time_behind_source:
         attributes: []
         description: This field is an indication of how “late” the replica is.
@@ -12012,6 +12086,15 @@ components:
           monotonic: false
           value_type: int
         unit: ns
+      mysql.table.open:
+        attributes: []
+        description: The number of currently open tables.
+        enabled: false
+        gauge:
+          input_type: string
+          value_type: int
+        stability: development
+        unit: '1'
       mysql.table.rows:
         attributes:
         - schema
@@ -12042,6 +12125,18 @@ components:
         - cache_status
         description: The number of hits, misses or overflows for open tables cache
           lookups.
+        enabled: false
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          input_type: string
+          monotonic: true
+          value_type: int
+        unit: '1'
+      mysql.thread.slow_launch:
+        attributes: []
+        description: The number of threads that have taken more than slow_launch_time
+          seconds to create.
         enabled: false
         stability: development
         sum:
@@ -12791,6 +12886,15 @@ components:
         type: string
       oracledb.status:
         description: Execution state or result of a database query or session.
+        type: string
+      oracledb.tablespace.state:
+        description: Tablespace state as reported by Oracle (e.g. online, offline,
+          read only)
+        enum:
+        - offline
+        - online
+        - read only
+        requirement_level: recommended
         type: string
       oracledb.transaction.type:
         description: The type of user transaction.
@@ -14178,6 +14282,43 @@ components:
           value_type: double
         stability: development
         unit: '{process}'
+      oracledb.tablespace.limit:
+        attributes:
+        - oracle.db.pdb
+        - tablespace_name
+        description: Maximum autoextend size of tablespace in bytes. Returns 0 for
+          temporary tablespaces and tablespaces without autoextend enabled.
+        enabled: false
+        gauge:
+          value_type: int
+        stability: development
+        unit: By
+      oracledb.tablespace.status:
+        attributes:
+        - oracle.db.pdb
+        - oracledb.tablespace.state
+        - tablespace_name
+        description: Current status of tablespaces, broken down by state. A timeseries
+          is produced for every possible value of oracledb.tablespace.state; the value
+          is 1 for a tablespace's current state, and 0 for all other states.
+        enabled: false
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: false
+          value_type: int
+        unit: '{tablespace}'
+      oracledb.tablespace.utilization:
+        attributes:
+        - oracle.db.pdb
+        - tablespace_name
+        description: Fraction of tablespace currently in use, expressed as a value
+          between 0 and 1.
+        enabled: false
+        gauge:
+          value_type: double
+        stability: development
+        unit: '1'
       oracledb.tablespace_size.limit:
         attributes:
         - oracle.db.pdb
@@ -18955,7 +19096,7 @@ components:
           store using the introspection endpoint
         requirement_level: recommended
         type: string
-      splunk.kvstore.storage.engine:
+      splunk.kvstore.storage_engine:
         description: The backend storage used by the KV store
         requirement_level: recommended
         type: string
@@ -19298,6 +19439,7 @@ components:
       splunk.kvstore.replication.status:
         attributes:
         - splunk.kvstore.status.value
+        - splunk.kvstore.storage_engine
         - splunk.splunkd.build
         - splunk.splunkd.version
         description: Replication status of the KV store.
@@ -19310,7 +19452,7 @@ components:
         attributes:
         - splunk.kvstore.external
         - splunk.kvstore.status.value
-        - splunk.kvstore.storage.engine
+        - splunk.kvstore.storage_engine
         - splunk.splunkd.build
         - splunk.splunkd.version
         description: This is the overall status of the kvstore for the given deployment.
@@ -19709,6 +19851,7 @@ components:
     type: splunk_hec
 - name: sqlqueryreceiver
   metadata:
+    deprecated_type: sqlquery
     description: The SQL Query Receiver uses custom SQL queries to generate logs and/or
       metrics from a database connection.
     display_name: SQL Query Receiver
@@ -19727,7 +19870,7 @@ components:
         - metrics
         development:
         - logs
-    type: sqlquery
+    type: sql_query
 - name: sqlserverreceiver
   metadata:
     attributes:

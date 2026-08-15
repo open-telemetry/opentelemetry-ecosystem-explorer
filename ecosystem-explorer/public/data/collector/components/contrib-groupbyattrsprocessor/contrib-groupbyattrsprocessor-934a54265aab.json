@@ -1,0 +1,126 @@
+{
+  "description": "This processor re-associates spans, log records and metric datapoints to a *Resource* that matches with the specified attributes. As a result, all spans, log records or metric datapoints with the same values for the specified attributes are \"grouped\" under the same *Resource*.",
+  "display_name": "Group by Attributes Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-groupbyattrsprocessor",
+  "markdown_hash": "1d7a9b8c9fff",
+  "name": "groupbyattrsprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "rnishtala-sumo",
+        "amdprophet"
+      ],
+      "emeritus": [
+        "echlebek"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    },
+    "warnings": []
+  },
+  "telemetry": {
+    "metrics": {
+      "processor_groupbyattrs_log_groups": {
+        "description": "Distribution of groups extracted for logs",
+        "enabled": true,
+        "histogram": {
+          "value_type": "int"
+        },
+        "stability": "development",
+        "unit": "1"
+      },
+      "processor_groupbyattrs_metric_groups": {
+        "description": "Distribution of groups extracted for metrics",
+        "enabled": true,
+        "histogram": {
+          "value_type": "int"
+        },
+        "stability": "development",
+        "unit": "1"
+      },
+      "processor_groupbyattrs_num_grouped_logs": {
+        "description": "Number of logs that had attributes grouped",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "processor_groupbyattrs_num_grouped_metrics": {
+        "description": "Number of metrics that had attributes grouped",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "processor_groupbyattrs_num_grouped_spans": {
+        "description": "Number of spans that had attributes grouped",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "processor_groupbyattrs_num_non_grouped_logs": {
+        "description": "Number of logs that did not have attributes grouped",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "processor_groupbyattrs_num_non_grouped_metrics": {
+        "description": "Number of metrics that did not have attributes grouped",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "processor_groupbyattrs_num_non_grouped_spans": {
+        "description": "Number of spans that did not have attributes grouped",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "processor_groupbyattrs_span_groups": {
+        "description": "Distribution of groups extracted for spans",
+        "enabled": true,
+        "histogram": {
+          "value_type": "int"
+        },
+        "stability": "development",
+        "unit": "1"
+      }
+    }
+  },
+  "type": "processor"
+}

@@ -18,12 +18,17 @@ import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { useCollectorComponents, useCollectorVersions } from "@/hooks/use-collector-data";
-import type { IndexComponent } from "@/types/collector";
+import {
+  useCollectorComponents,
+  useCollectorDeprecations,
+  useCollectorVersions,
+} from "@/hooks/use-collector-data";
+import type { DeprecatedIndexComponent, IndexComponent } from "@/types/collector";
 import { CollectorListPageV1 } from "./list-page";
 
 vi.mock("@/hooks/use-collector-data", () => ({
   useCollectorComponents: vi.fn(),
+  useCollectorDeprecations: vi.fn(),
   useCollectorVersions: vi.fn(),
 }));
 
@@ -70,6 +75,19 @@ const mockComponents: IndexComponent[] = [
   },
 ];
 
+const deprecatedComponent: DeprecatedIndexComponent = {
+  id: "contrib-jmxreceiver",
+  name: "jmxreceiver",
+  type: "receiver",
+  distribution: "contrib",
+  display_name: "JMX Receiver",
+  stability: "deprecated",
+  signals: ["metrics"],
+  component_hash: "abc123def456",
+  last_version: "0.156.0",
+  deprecated_in_version: "0.157.0",
+};
+
 function LocationProbe() {
   const location = useLocation();
   return <div data-testid="location">{`${location.pathname}${location.search}`}</div>;
@@ -112,6 +130,11 @@ describe("CollectorListPageV1", () => {
       loading: false,
       error: null,
     });
+    vi.mocked(useCollectorDeprecations).mockReturnValue({
+      data: { ecosystem: "collector", components: [] },
+      loading: false,
+      error: null,
+    });
   });
 
   it("renders all rows with no filters applied", () => {
@@ -131,6 +154,24 @@ describe("CollectorListPageV1", () => {
     expect(screen.getByText("Prometheus Receiver")).toBeInTheDocument();
     expect(screen.queryByText("Batch Processor")).not.toBeInTheDocument();
     expect(screen.queryByText("Count Connector")).not.toBeInTheDocument();
+  });
+
+  it("renders the deprecated catalog without changing the list layout", () => {
+    vi.mocked(useCollectorDeprecations).mockReturnValue({
+      data: { ecosystem: "collector", components: [deprecatedComponent] },
+      loading: false,
+      error: null,
+    });
+
+    renderPage("/collector/components?version=deprecated");
+
+    expect(screen.getByText("JMX Receiver")).toBeInTheDocument();
+    expect(screen.getByText("Removed in 0.157.0")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /JMX Receiver/ })).toHaveAttribute(
+      "href",
+      "/collector/components/contrib/jmxreceiver?version=deprecated"
+    );
+    expect(useCollectorComponents).toHaveBeenCalledWith("");
   });
 
   it("only matches the four known Signal literals — profiles and connector compound tokens don't count (decision #10)", () => {

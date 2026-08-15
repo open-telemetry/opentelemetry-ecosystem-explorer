@@ -179,6 +179,7 @@ components:
     type: memory_limiter
 - name: queuebatchprocessor
   metadata:
+    display_name: Queue Batch Processor
     github_project: open-telemetry/opentelemetry-collector
     status:
       class: processor

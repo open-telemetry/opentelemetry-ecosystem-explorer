@@ -1,0 +1,53 @@
+{
+  "description": "The Drain Processor applies the Drain log clustering algorithm to log records as they pass through the pipeline, deriving a template string (e.g. \"user <*> logged in from <*>\") and attaching it as an attribute on each record.",
+  "display_name": "Drain Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-drainprocessor",
+  "markdown_hash": "506946054f1a",
+  "name": "drainprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "MikeGoldsmith",
+        "atoulme",
+        "martinjt"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "logs"
+      ]
+    }
+  },
+  "telemetry": {
+    "metrics": {
+      "processor_drain_clusters_active": {
+        "description": "Current number of active clusters in the Drain parse tree.",
+        "enabled": true,
+        "gauge": {
+          "value_type": "int"
+        },
+        "stability": "development",
+        "unit": "{clusters}"
+      },
+      "processor_drain_log_records_annotated": {
+        "description": "Number of log records successfully annotated with a template.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{records}"
+      }
+    }
+  },
+  "type": "processor"
+}

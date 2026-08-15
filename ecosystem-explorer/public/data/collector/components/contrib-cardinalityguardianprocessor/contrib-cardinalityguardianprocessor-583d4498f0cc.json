@@ -1,0 +1,86 @@
+{
+  "description": null,
+  "display_name": null,
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-cardinalityguardianprocessor",
+  "markdown_hash": "3012b4844002",
+  "name": "cardinalityguardianprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "atoulme",
+        "YElayyat",
+        "jmacd"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    }
+  },
+  "telemetry": {
+    "metrics": {
+      "processor_cardinality_labels.stripped": {
+        "description": "Total number of high-cardinality labels stripped or tagged.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "async": true,
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{labels}"
+      },
+      "processor_cardinality_savings.estimated": {
+        "description": "Cumulative estimated dollar value of time-series churn prevented by the processor.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "async": true,
+          "monotonic": true,
+          "value_type": "double"
+        },
+        "unit": "{dollars}"
+      },
+      "processor_cardinality_top.offenders": {
+        "description": "Cardinality delta of the top-N highest-growth (metric, label) pairs from the last epoch rotation.",
+        "enabled": true,
+        "gauge": {
+          "async": true,
+          "value_type": "int"
+        },
+        "stability": "development",
+        "unit": "{pairs}"
+      },
+      "processor_cardinality_trackers.active": {
+        "description": "Current number of active cardinality trackers across all shards.",
+        "enabled": true,
+        "gauge": {
+          "async": true,
+          "value_type": "int"
+        },
+        "stability": "development",
+        "unit": "{trackers}"
+      },
+      "processor_cardinality_trackers.rejected": {
+        "description": "Number of new (metric, label) pairs ignored because max_tracker_count was reached.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "async": true,
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{trackers}"
+      }
+    }
+  },
+  "type": "processor"
+}

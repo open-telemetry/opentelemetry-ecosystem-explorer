@@ -35,14 +35,19 @@ import { BackButton } from "@/components/ui/back-button";
 import { GlowBadge } from "@/components/ui/glow-badge";
 import { DetailCard } from "@/components/ui/detail-card";
 import { SignalBadge } from "@/components/ui/signal-badge";
-import { useCollectorVersions, useCollectorComponents } from "@/hooks/use-collector-data";
+import { renderWithInlineCode } from "@/lib/render-inline-code";
+import {
+  useCollectorComponents,
+  useCollectorDeprecations,
+  useCollectorVersions,
+} from "@/hooks/use-collector-data";
 import { getPresentSignals, SIGNAL_ORDER, type CollectorSignal } from "./utils/signal-badge-info";
 import { SIGNAL_STYLES, getSignalFilterClasses } from "./styles/signal-styles";
-import type { Stability } from "@/types/collector";
+import type { DeprecatedIndexComponent, IndexComponent, Stability } from "@/types/collector";
 
 type ComponentTypeFilter =
   "all" | "receiver" | "processor" | "exporter" | "extension" | "connector";
-type DistributionFilter = "all" | "core" | "contrib";
+type DistributionFilter = string;
 type StabilityFilter = Stability | "all";
 
 // Ranked most-to-least stable, matching the detail page's stability legend ordering.
@@ -69,13 +74,7 @@ function getTypeFilter(value: string | null): ComponentTypeFilter {
 }
 
 function getDistributionFilter(value: string | null): DistributionFilter {
-  switch (value) {
-    case "core":
-    case "contrib":
-      return value;
-    default:
-      return "all";
-  }
+  return value?.trim() || "all";
 }
 
 function getStabilityFilter(value: string | null): StabilityFilter {
@@ -116,8 +115,10 @@ const getIcon = (type: string) => {
 
 function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
   const { t } = useTranslation("collector");
+  const { t: tList } = useTranslation("list");
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const versionQuery = searchParams.get("version");
   const typeQuery = searchParams.get("type");
   const distributionQuery = searchParams.get("distribution");
   const stabilityQuery = searchParams.get("stability");
@@ -153,14 +154,34 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
 
   const currentVersion = useMemo(() => {
     if (urlVersion) return urlVersion;
+    if (versionQuery === "deprecated") return versionQuery;
     return versionData?.versions.find((v) => v.is_latest)?.version || "";
-  }, [urlVersion, versionData]);
+  }, [urlVersion, versionData, versionQuery]);
+  const deprecatedView = currentVersion === "deprecated";
 
-  const {
-    data: components,
-    loading: componentsLoading,
-    error: componentsError,
-  } = useCollectorComponents(currentVersion);
+  const componentsQuery = useCollectorComponents(deprecatedView ? "" : currentVersion);
+  const deprecationsQuery = useCollectorDeprecations(deprecatedView);
+  const components: (IndexComponent | DeprecatedIndexComponent)[] | null | undefined =
+    deprecatedView ? deprecationsQuery.data?.components : componentsQuery.data;
+  const componentsLoading = deprecatedView ? deprecationsQuery.loading : componentsQuery.loading;
+  const componentsError = deprecatedView ? deprecationsQuery.error : componentsQuery.error;
+
+  const allDistributions = useMemo(() => {
+    if (!components) return ["core", "contrib"];
+    const set = new Set<string>();
+    for (const comp of components) {
+      if (comp.distributions) {
+        for (const d of comp.distributions) {
+          if (d) set.add(d.toLowerCase());
+        }
+      } else if (comp.distribution) {
+        set.add(comp.distribution.toLowerCase());
+      }
+    }
+    set.add("core");
+    set.add("contrib");
+    return Array.from(set).sort();
+  }, [components]);
 
   const filteredComponents = useMemo(() => {
     if (!components) return [];
@@ -171,9 +192,12 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
         comp.display_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         comp.description?.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesType = typeFilter === "all" || comp.type === typeFilter;
+      const compDistributions = comp.distributions ?? [comp.distribution];
       const matchesDistribution =
-        distributionFilter === "all" || comp.distribution === distributionFilter;
-      const matchesStability = stabilityFilter === "all" || comp.stability === stabilityFilter;
+        distributionFilter === "all" || compDistributions.includes(distributionFilter);
+      const matchesStability =
+        stabilityFilter === "all" ||
+        (deprecatedView ? stabilityFilter === "deprecated" : comp.stability === stabilityFilter);
       // AND semantics, matching the Java Agent telemetry filter: a component matches only if it
       // supports every currently-selected signal.
       const presentSignals = getPresentSignals(comp);
@@ -184,13 +208,27 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
         matchesSearch && matchesType && matchesDistribution && matchesStability && matchesSignal
       );
     });
-  }, [components, distributionFilter, searchQuery, typeFilter, stabilityFilter, signalFilter]);
+  }, [
+    components,
+    deprecatedView,
+    distributionFilter,
+    searchQuery,
+    typeFilter,
+    stabilityFilter,
+    signalFilter,
+  ]);
 
   const handleVersionChange = (val: string) => {
-    const currentSearch = searchParams.toString();
+    const params = new URLSearchParams(searchParams);
+    if (val === "deprecated") {
+      params.set("version", val);
+    } else {
+      params.delete("version");
+    }
+
     navigate({
-      pathname: `/collector/components/${val}`,
-      search: currentSearch ? `?${currentSearch}` : "",
+      pathname: val === "deprecated" ? "/collector/components" : `/collector/components/${val}`,
+      search: params.size > 0 ? `?${params.toString()}` : "",
     });
   };
 
@@ -360,6 +398,12 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
                   disabled={versionsLoading}
                   className="border-border/60 bg-background/80 focus:border-primary/50 focus:ring-primary/20 w-[160px] cursor-pointer appearance-none rounded-lg border py-2.5 pr-10 pl-3 text-sm font-medium backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none disabled:opacity-50"
                 >
+                  {/* Gated on the version list: `currentVersion` is "" until it resolves, and a
+                      select falls back to displaying its first option when the value matches none —
+                      so an ungated option here labels the loading state "Deprecated". */}
+                  {versionData && (
+                    <option value="deprecated">{t("filters.version.deprecated")}</option>
+                  )}
                   {versionData?.versions.map((v) => (
                     <option key={v.version} value={v.version}>
                       v{v.version} {v.is_latest ? t("filters.version.latest") : ""}
@@ -388,8 +432,13 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
                   className="border-border/60 bg-background/80 focus:border-primary/50 focus:ring-primary/20 w-[160px] cursor-pointer appearance-none rounded-lg border py-2.5 pr-10 pl-3 text-sm font-medium backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none"
                 >
                   <option value="all">{t("filters.distribution.all")}</option>
-                  <option value="core">{t("filters.distribution.core")}</option>
-                  <option value="contrib">{t("filters.distribution.contrib")}</option>
+                  {allDistributions.map((dist) => (
+                    <option key={dist} value={dist}>
+                      {t(`filters.distribution.${dist}`, {
+                        defaultValue: dist.charAt(0).toUpperCase() + dist.slice(1),
+                      })}
+                    </option>
+                  ))}
                 </select>
                 <ChevronDown
                   className="text-muted-foreground pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2"
@@ -492,17 +541,32 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
                       </div>
 
                       <p className="text-muted-foreground/80 line-clamp-3 flex-1 text-sm leading-relaxed">
-                        {comp.description || t("card.defaultDescription")}
+                        {comp.description
+                          ? renderWithInlineCode(comp.description)
+                          : t("card.defaultDescription")}
                       </p>
 
                       <div className="border-border/10 flex flex-wrap items-center gap-2 border-t pt-2">
-                        {comp.stability && (
+                        {(deprecatedView || comp.stability) && (
                           <GlowBadge
-                            variant={comp.stability === "stable" ? "success" : "info"}
+                            variant={
+                              deprecatedView
+                                ? "warning"
+                                : comp.stability === "stable"
+                                  ? "success"
+                                  : "info"
+                            }
                             className="px-2 py-0 text-[9px]"
                           >
-                            {comp.stability}
+                            {deprecatedView ? t("filters.stability.deprecated") : comp.stability}
                           </GlowBadge>
+                        )}
+                        {deprecatedView && "deprecated_in_version" in comp && (
+                          <span className="text-muted-foreground text-xs">
+                            {tList("deprecated.removedIn", {
+                              version: comp.deprecated_in_version,
+                            })}
+                          </span>
                         )}
                         {getPresentSignals(comp).map((signal) => (
                           <SignalBadge

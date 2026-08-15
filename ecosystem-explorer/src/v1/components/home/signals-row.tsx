@@ -24,39 +24,19 @@
  */
 
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 interface Signal {
   id: "traces" | "metrics" | "logs" | "baggage";
-  name: string;
-  description: string;
+  count?: number;
   href: string;
 }
 
 const SIGNALS: Signal[] = [
-  {
-    id: "traces",
-    name: "Traces",
-    description: "Distributed traces · 312 components",
-    href: "/collector/components?signal=traces",
-  },
-  {
-    id: "metrics",
-    name: "Metrics",
-    description: "Measurements over time · 218 components",
-    href: "/collector/components?signal=metrics",
-  },
-  {
-    id: "logs",
-    name: "Logs",
-    description: "Timestamped records · 147 components",
-    href: "/collector/components?signal=logs",
-  },
-  {
-    id: "baggage",
-    name: "Baggage",
-    description: "Contextual metadata",
-    href: "/collector/components?signal=baggage",
-  },
+  { id: "traces", count: 312, href: "/collector/components?signal=traces" },
+  { id: "metrics", count: 218, href: "/collector/components?signal=metrics" },
+  { id: "logs", count: 147, href: "/collector/components?signal=logs" },
+  { id: "baggage", href: "/collector/components?signal=baggage" },
 ];
 
 export interface SignalsRowProps {
@@ -65,28 +45,35 @@ export interface SignalsRowProps {
 }
 
 export function SignalsRow({ headingId = "signals-row-title" }: SignalsRowProps) {
+  const { t } = useTranslation("home");
+
   return (
     <section className="td-signals-row" aria-labelledby={headingId}>
       <div className="td-signals-row__container">
         <h2 id={headingId} className="td-signals-row__title">
-          Browse by signal
+          {t("homeV1.signals.title")}
         </h2>
-        <p className="td-signals-row__lead">
-          Cuts across ecosystems, matching opentelemetry.io&apos;s canonical signal taxonomy.
-        </p>
+        <p className="td-signals-row__lead">{t("homeV1.signals.lead")}</p>
         <div className="td-signals-row__cards">
-          {SIGNALS.map((s) => (
-            <Link
-              key={s.id}
-              to={s.href}
-              className="td-signal-card"
-              aria-label={`${s.name} — ${s.description}`}
-            >
-              <span className={`td-signal-card__dot td-signal-card__dot--${s.id}`} aria-hidden />
-              <div className="td-signal-card__name">{s.name}</div>
-              <div className="td-signal-card__description">{s.description}</div>
-            </Link>
-          ))}
+          {SIGNALS.map((s) => {
+            const name = t(`homeV1.signals.items.${s.id}.name`);
+            const description =
+              s.count === undefined
+                ? t(`homeV1.signals.items.${s.id}.description`)
+                : t(`homeV1.signals.items.${s.id}.description`, { count: s.count });
+            return (
+              <Link
+                key={s.id}
+                to={s.href}
+                className="td-signal-card"
+                aria-label={t("homeV1.signals.cardAriaLabel", { name, description })}
+              >
+                <span className={`td-signal-card__dot td-signal-card__dot--${s.id}`} aria-hidden />
+                <div className="td-signal-card__name">{name}</div>
+                <div className="td-signal-card__description">{description}</div>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>

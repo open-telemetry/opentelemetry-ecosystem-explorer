@@ -1,0 +1,50 @@
+{
+  "description": "The Prometheus Receiver receives metric data in [Prometheus](https://prometheus.io/) format.",
+  "display_name": "Prometheus Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "feature_gates": [
+    {
+      "description": "Enables the Prometheus created-timestamps-zero-injection feature. Created timestamps are injected as 0-valued samples when appropriate. This is disabled by default due to worse CPU performance with higher metric volumes.",
+      "from_version": "v0.113.0",
+      "id": "receiver.prometheusreceiver.EnableCreatedTimestampZeroIngestion",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40355",
+      "skip_strict_validation": true,
+      "stage": "alpha"
+    },
+    {
+      "description": "When enabled, the `otel_scope_info` metric is ignored for scope attribute extraction.",
+      "from_version": "v0.148.0",
+      "id": "receiver.prometheusreceiver.IgnoreScopeInfoMetric",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41502",
+      "skip_strict_validation": true,
+      "stage": "alpha"
+    }
+  ],
+  "id": "contrib-prometheusreceiver",
+  "markdown_hash": "4250dcae8f79",
+  "name": "prometheusreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "Aneurysm9",
+        "dashpole",
+        "ArthurSens",
+        "krajorama"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver"
+}
