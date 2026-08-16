@@ -248,18 +248,25 @@ class TestInventoryManager:
 
     # --- save_library_readmes ---
 
-    def test_readme_dir_exists_false_when_no_readmes(self, inventory_manager):
+    def test_readmes_synced_false_when_not_set(self, inventory_manager):
         version = Version("2.10.0")
         inventory_manager.save_versioned_inventory(
             version=version,
-            instrumentations={"file_format": 0.1, "libraries": []},
+            instrumentations={"file_format": 0.1, "libraries": [{"name": "mylib"}]},
         )
-        assert not inventory_manager.readme_dir_exists(version)
+        assert not inventory_manager.readmes_synced(version)
 
-    def test_readme_dir_exists_true_after_save(self, inventory_manager):
+    def test_readmes_synced_true_when_flag_present(self, inventory_manager):
         version = Version("2.10.0")
-        inventory_manager.save_library_readmes(version, [("mylib", "# content")])
-        assert inventory_manager.readme_dir_exists(version)
+        inventory_manager.save_versioned_inventory(
+            version=version,
+            instrumentations={
+                "file_format": 0.1,
+                "readmes_synced": True,
+                "libraries": [{"name": "mylib", "readme": "mylib-abc123def456.md"}],
+            },
+        )
+        assert inventory_manager.readmes_synced(version)
 
     def test_save_library_readmes_writes_content_addressed_files(self, inventory_manager):
         version = Version("2.10.0")
@@ -270,12 +277,15 @@ class TestInventoryManager:
 
         written = inventory_manager.save_library_readmes(version, readmes)
 
-        assert written == 2
-        readme_dir = inventory_manager.get_version_dir(version) / "library_readmes"
+        # Returns a dict mapping library name -> filename
+        assert isinstance(written, dict)
+        assert len(written) == 2
+        assert "akka-actor-2.3" in written
+        assert "apache-httpclient-4.3" in written
+        # Files should be in the global library_readmes dir, not in the version dir
+        readme_dir = inventory_manager.inventory_dir / "library_readmes"
         files = list(readme_dir.glob("*.md"))
         assert len(files) == 2
-        names = {f.stem.split("-")[0] for f in files}
-        assert "akka" in names or any("akka-actor" in f.name for f in files)
 
     def test_save_library_readmes_filename_format(self, inventory_manager):
         from watcher_common.content_hashing import compute_content_hash
@@ -284,12 +294,13 @@ class TestInventoryManager:
         content = "# Hello"
         expected_hash = compute_content_hash(content)
 
-        inventory_manager.save_library_readmes(version, [("mylib-1.0", content)])
+        written = inventory_manager.save_library_readmes(version, [("mylib-1.0", content)])
 
-        readme_dir = inventory_manager.get_version_dir(version) / "library_readmes"
+        readme_dir = inventory_manager.inventory_dir / "library_readmes"
         expected_file = readme_dir / f"mylib-1.0-{expected_hash}.md"
         assert expected_file.exists()
         assert expected_file.read_text(encoding="utf-8") == content
+        assert written["mylib-1.0"] == f"mylib-1.0-{expected_hash}.md"
 
     def test_save_library_readmes_idempotent(self, inventory_manager):
         version = Version("2.10.0")
@@ -298,8 +309,10 @@ class TestInventoryManager:
         first = inventory_manager.save_library_readmes(version, readmes)
         second = inventory_manager.save_library_readmes(version, readmes)
 
-        assert first == 1
-        assert second == 0
+        assert first == second
+        assert "mylib-1.0" in first
+        readme_dir = inventory_manager.inventory_dir / "library_readmes"
+        assert len(list(readme_dir.glob("*.md"))) == 1
 
     def test_save_library_readmes_different_content_same_name(self, inventory_manager):
         version = Version("2.10.0")
@@ -307,12 +320,11 @@ class TestInventoryManager:
         first = inventory_manager.save_library_readmes(version, [("mylib-1.0", "# v1")])
         second = inventory_manager.save_library_readmes(version, [("mylib-1.0", "# v2")])
 
-        assert first == 1
-        assert second == 1
-        readme_dir = inventory_manager.get_version_dir(version) / "library_readmes"
+        assert first["mylib-1.0"] != second["mylib-1.0"]
+        readme_dir = inventory_manager.inventory_dir / "library_readmes"
         assert len(list(readme_dir.glob("*.md"))) == 2
 
-    def test_cleanup_snapshots_removes_library_readmes(self, inventory_manager):
+    def test_cleanup_snapshots_does_not_affect_global_readmes(self, inventory_manager):
         snapshot = Version("2.10.0-SNAPSHOT")
         inventory_manager.save_versioned_inventory(
             version=snapshot,
@@ -320,12 +332,17 @@ class TestInventoryManager:
         )
         inventory_manager.save_library_readmes(snapshot, [("mylib-1.0", "# Content")])
 
-        snapshot_dir = inventory_manager.get_version_dir(snapshot)
-        assert (snapshot_dir / "library_readmes").exists()
+        # Global readme dir should have the file
+        global_readme_dir = inventory_manager.inventory_dir / "library_readmes"
+        assert global_readme_dir.exists()
+        assert len(list(global_readme_dir.glob("*.md"))) == 1
 
         inventory_manager.cleanup_snapshots()
 
+        # Snapshot version dir is gone, but global readmes remain
+        snapshot_dir = inventory_manager.get_version_dir(snapshot)
         assert not snapshot_dir.exists()
+        assert len(list(global_readme_dir.glob("*.md"))) == 1
 
 
 class TestLibraryReadme:
@@ -342,77 +359,110 @@ class TestLibraryReadme:
         assert inventory_manager._parse_readme_filename("-abc123def456.md") is None  # Empty name
         assert inventory_manager._parse_readme_filename("mylib.md") is None  # No hash
 
-    def test_load_library_readme_map_deterministic_selection(self, inventory_manager, tmp_path):
-        import time
-
+    def test_load_library_readme_map_reads_from_yaml(self, inventory_manager):
+        """load_library_readme_map should read from instrumentation.yaml, not the filesystem."""
         version = Version("1.0.0")
-        readme_dir = inventory_manager.get_version_dir(version) / "library_readmes"
-        readme_dir.mkdir(parents=True)
-
-        # Create three files for the same library with different mtimes
-        # We need to sleep slightly to ensure different mtimes if the OS resolution is low,
-        # but for unit tests we can also mock or just hope the filesystem is fast enough to show diffs
-        # actually stat.st_mtime_ns is very precise.
-
-        p1 = readme_dir / "mylib-abc123def456.md"
-        p1.write_text("old content")
-        # Ensure p1 is definitely older
-
-        p2 = readme_dir / "mylib-fed4321cba98.md"
-        p2.write_text("new content")
-
-        p3 = readme_dir / "mylib-ffffff000000.md"
-        p3.write_text("newest content")
-
-        # Manually set mtimes to be sure
-        import os
-
-        now = time.time_ns()
-        os.utime(p1, ns=(now - 1000000, now - 1000000))
-        os.utime(p2, ns=(now, now))
-        os.utime(p3, ns=(now + 1000000, now + 1000000))
+        inventory_manager.save_versioned_inventory(
+            version=version,
+            instrumentations={
+                "file_format": 0.1,
+                "libraries": [
+                    {"name": "mylib", "readme": "mylib-abc123def456.md"},
+                    {"name": "other-lib", "readme": "other_lib-ffffff000000.md"},
+                    {"name": "no-readme-lib"},
+                ],
+            },
+        )
 
         readme_map = inventory_manager.load_library_readme_map(version)
 
-        # Should pick p3 (ffffff...) because it has the newest mtime
-        assert len(readme_map) == 1
-        assert readme_map["mylib"] == "ffffff000000"
+        assert len(readme_map) == 2
+        assert readme_map["mylib"] == "abc123def456"
+        # Key is the raw library name from YAML (not sanitized)
+        assert readme_map["other-lib"] == "ffffff000000"
+        assert "no-readme-lib" not in readme_map
 
-    def test_load_library_readme_map_lexicographical_fallback(self, inventory_manager):
+    def test_load_library_readme_map_empty_when_no_readme_fields(self, inventory_manager):
         version = Version("1.0.0")
-        readme_dir = inventory_manager.get_version_dir(version) / "library_readmes"
-        readme_dir.mkdir(parents=True)
-
-        p1 = readme_dir / "mylib-aaaaaa111111.md"
-        p1.write_text("content a")
-
-        p2 = readme_dir / "mylib-bbbbbb222222.md"
-        p2.write_text("content b")
-
-        # Set same mtime
-        import os
-        import time
-
-        now = time.time_ns()
-        os.utime(p1, ns=(now, now))
-        os.utime(p2, ns=(now, now))
-
+        inventory_manager.save_versioned_inventory(
+            version=version,
+            instrumentations={
+                "file_format": 0.1,
+                "libraries": [{"name": "mylib"}, {"name": "other-lib"}],
+            },
+        )
         readme_map = inventory_manager.load_library_readme_map(version)
+        # No libraries have a 'readme' field (pre-migration state), and no legacy
+        # per-version library_readmes/ directory exists in this fixture, so both
+        # the new YAML path and the legacy fallback return {} – which is correct.
+        assert readme_map == {}
 
-        # Should pick p2 (bbbbbb...) because b > a lexicographically
-        assert readme_map["mylib"] == "bbbbbb222222"
-
-    def test_load_library_readme_content_sanitization(self, inventory_manager, tmp_path):
-        version = Version("1.0.0")
-        readme_dir = inventory_manager.get_version_dir(version) / "library_readmes"
-        readme_dir.mkdir(parents=True)
-
-        # Save a file with a potentially dangerous name that gets sanitized
+    def test_load_library_readme_content_reads_from_global_dir(self, inventory_manager):
+        """load_library_readme_content should read from global library_readmes dir."""
         library_name = "../dangerous"
         sanitized_name = ".._dangerous"
         markdown_hash = "abc123def456"
-        (readme_dir / f"{sanitized_name}-{markdown_hash}.md").write_text("safe content")
 
-        # Should be able to load it using the original (unsanitized) name
+        # Write the file in the GLOBAL readmes dir (not version-specific)
+        global_readme_dir = inventory_manager.inventory_dir / "library_readmes"
+        global_readme_dir.mkdir(parents=True, exist_ok=True)
+        (global_readme_dir / f"{sanitized_name}-{markdown_hash}.md").write_text("safe content")
+
+        version = Version("1.0.0")
         content = inventory_manager.load_library_readme_content(version, library_name, markdown_hash)
         assert content == "safe content"
+
+    def test_prune_orphan_readmes(self, inventory_manager):
+        """prune_orphan_readmes should delete files not referenced by any instrumentation.yaml."""
+        version = Version("1.0.0")
+        inventory_manager.save_versioned_inventory(
+            version=version,
+            instrumentations={
+                "file_format": 0.1,
+                "libraries": [{"name": "mylib", "readme": "mylib-abc123def456.md"}],
+            },
+        )
+
+        global_readme_dir = inventory_manager.inventory_dir / "library_readmes"
+        global_readme_dir.mkdir(parents=True, exist_ok=True)
+        (global_readme_dir / "mylib-abc123def456.md").write_text("# Mylib")
+        (global_readme_dir / "orphan1-deadbeef0001.md").write_text("# Orphan1")
+        (global_readme_dir / "orphan2-deadbeef0002.md").write_text("# Orphan2")
+
+        removed = inventory_manager.prune_orphan_readmes()
+
+        assert removed == 2
+        assert (global_readme_dir / "mylib-abc123def456.md").exists()
+        assert not (global_readme_dir / "orphan1-deadbeef0001.md").exists()
+        assert not (global_readme_dir / "orphan2-deadbeef0002.md").exists()
+
+    def test_prune_orphan_readmes_no_refs_returns_zero(self, inventory_manager):
+        """prune_orphan_readmes must NOT delete anything when no version references any README.
+
+        This is the state of the registry before the #883 migration: no instrumentation.yaml
+        has a 'readme' field, so referenced_files is empty.  Deleting every file in the
+        global directory would be destructive and wrong.
+        """
+        version = Version("1.0.0")
+        inventory_manager.save_versioned_inventory(
+            version=version,
+            instrumentations={
+                "file_format": 0.1,
+                # No 'readme' fields – mirrors today's registry state pre-migration.
+                "libraries": [{"name": "mylib"}, {"name": "other-lib"}],
+            },
+        )
+
+        global_readme_dir = inventory_manager.inventory_dir / "library_readmes"
+        global_readme_dir.mkdir(parents=True, exist_ok=True)
+        kept1 = global_readme_dir / "mylib-abc123def456.md"
+        kept2 = global_readme_dir / "other_lib-ffffff000000.md"
+        kept1.write_text("# Mylib")
+        kept2.write_text("# Other")
+
+        removed = inventory_manager.prune_orphan_readmes()
+
+        # Must return 0 and leave all files intact.
+        assert removed == 0
+        assert kept1.exists()
+        assert kept2.exists()
