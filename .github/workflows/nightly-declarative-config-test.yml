@@ -58,6 +58,11 @@ jobs:
         run: |
           gh release download --repo open-telemetry/opentelemetry-java-instrumentation --pattern 'opentelemetry-javaagent.jar' --dir acceptance-tests/declarative-config-acceptance
 
+      # Runs before OATS: a config the agent rejects leaves the app running but uninstrumented,
+      # which OATS can only report as missing telemetry.
+      - name: Assert the Java agent starts cleanly
+        run: acceptance-tests/declarative-config-acceptance/assert-agent-startup.sh
+
       - name: Run OATS acceptance tests
         run: |
           go install github.com/grafana/oats@v0.7.0

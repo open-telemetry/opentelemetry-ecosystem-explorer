@@ -822,9 +822,11 @@ components:
         description: The maximum number of worker slots configured for the HTTP server,
           derived from the scoreboard length.
         enabled: true
-        gauge:
-          value_type: int
         stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: false
+          value_type: int
         unit: '{worker}'
       apache.workers:
         attributes:
