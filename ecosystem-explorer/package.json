@@ -40,7 +40,7 @@
     "i18next": "26.3.6",
     "idb": "8.0.3",
     "js-yaml": "5.2.3",
-    "lucide-react": "1.25.0",
+    "lucide-react": "1.31.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-i18next": "17.0.11",
