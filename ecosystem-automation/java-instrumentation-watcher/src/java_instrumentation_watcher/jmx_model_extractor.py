@@ -33,7 +33,7 @@ class JmxModelExtractor:
         models: dict[str, str] = {}
         manifest_path: str | None = None
 
-        for entry in sorted(tree, key=lambda item: str(item.get("path", ""))):
+        for entry in tree:
             if entry.get("type") != "blob":
                 continue
             path = entry.get("path")

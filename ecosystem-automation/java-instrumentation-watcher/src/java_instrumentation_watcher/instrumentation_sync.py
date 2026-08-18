@@ -160,7 +160,6 @@ class InstrumentationSync:
             instrumentations=instrumentations,
         )
         self._sync_library_readmes(snapshot_version, main_ref, instrumentations)
-        self._sync_jmx_models(snapshot_version, main_ref)
 
         return snapshot_version
 
@@ -246,10 +245,6 @@ class InstrumentationSync:
             models=models,
             manifest=manifest_content,
         )
-
-        if not written_models and manifest_file is None:
-            logger.info(f"  No JMX model index written for v{version}")
-            return
 
         suffix = " and manifest" if manifest_file else ""
         logger.info(f"  Stored {len(written_models)} JMX model file(s){suffix} for v{version}")

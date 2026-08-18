@@ -42,6 +42,7 @@ class JavaInstrumentationClient:
         """
         self.github_token = github_token
         self._session = requests.Session()
+        self._tree_cache: dict[str, list[dict]] = {}
 
         retry_strategy = Retry(
             total=3,
@@ -88,14 +89,19 @@ class JavaInstrumentationClient:
 
     def fetch_tree(self, sha: str) -> list[dict]:
         """Recursively fetch the git tree at a commit SHA. Returns the `tree` array."""
+        if sha in self._tree_cache:
+            return self._tree_cache[sha]
+
         url = f"https://api.github.com/repos/{self.REPO}/git/trees/{sha}?recursive=1"
         try:
             resp = self._session.get(url, timeout=self.TIMEOUT)
             resp.raise_for_status()
             data = resp.json()
             if data.get("truncated"):
-                raise GithubAPIError(f"Tree at {sha} was truncated; README discovery aborted")
-            return data.get("tree", [])
+                raise GithubAPIError(f"Tree at {sha} was truncated")
+            tree = data.get("tree", [])
+            self._tree_cache[sha] = tree
+            return tree
         except (requests.RequestException, ValueError) as e:
             raise GithubAPIError(f"Failed to fetch tree for {sha}: {e}") from e
 

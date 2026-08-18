@@ -18,6 +18,7 @@ import tempfile
 from unittest.mock import Mock
 
 import pytest
+import yaml
 from java_instrumentation_watcher.instrumentation_sync import InstrumentationSync
 from java_instrumentation_watcher.inventory_manager import InventoryManager
 from semantic_version import Version
@@ -279,9 +280,11 @@ libraries:
 
         readme_dir = inventory_manager.get_version_dir(snapshot_version) / "library_readmes"
         assert readme_dir.exists()
-        # Called three times: once in update_snapshot, then README and JMX sync
-        assert mock_client.resolve_ref_to_sha.call_count == 3
+        # Called twice: once in update_snapshot, once in _sync_library_readmes
+        assert mock_client.resolve_ref_to_sha.call_count == 2
         mock_client.fetch_instrumentation_list.assert_called_once_with(ref="sha123")
+        assert not inventory_manager.jmx_models_index_exists(snapshot_version)
+        mock_jmx_model_extractor.discover_jmx_model_paths.assert_not_called()
 
     def test_process_latest_release_backfills_missing_readmes(
         self, mock_client, inventory_manager, mock_jmx_model_extractor
@@ -401,6 +404,10 @@ libraries:
         index_path = sync.inventory_manager.get_version_dir(version) / "jmx-models.yaml"
         assert index_path.exists()
         assert sync.inventory_manager.get_jmx_store_dir().exists()
+        index = yaml.safe_load(index_path.read_text(encoding="utf-8"))
+        assert set(index["models"]) == {"jvm", "tomcat"}
+        assert "manifest" not in index["models"]
+        assert index["manifest"]
 
     def test_process_latest_release_backfills_missing_jmx_index(self, sync, mock_client, inventory_manager):
         version = Version("2.30.0")
@@ -444,6 +451,20 @@ libraries:
                 "jvm-model",
                 GithubAPIError("manifest fetch failed"),
             ]
+
+        version = sync.process_latest_release()
+
+        assert version == Version("2.30.0")
+        assert not inventory_manager.jmx_models_index_exists(version)
+        assert not inventory_manager.get_jmx_store_dir().exists()
+
+    def test_jmx_tree_discovery_failure_does_not_abort_release_sync(self, sync, mock_client, inventory_manager):
+        from java_instrumentation_watcher.java_instrumentation_client import GithubAPIError
+
+        mock_client.get_latest_release_tag.return_value = "v2.30.0"
+        mock_client.fetch_instrumentation_list.return_value = "file_format: 0.5\nlibraries: []\n"
+        mock_client.resolve_ref_to_sha.return_value = "sha123"
+        sync.jmx_model_extractor.discover_jmx_model_paths.side_effect = GithubAPIError("tree fetch failed")
 
         version = sync.process_latest_release()
 

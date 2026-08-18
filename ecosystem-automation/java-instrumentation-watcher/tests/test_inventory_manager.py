@@ -478,3 +478,4 @@ class TestJmxModels:
         assert models == {}
         assert manifest is None
         assert not inventory_manager.jmx_models_index_exists(version)
+        assert not inventory_manager.get_jmx_store_dir().exists()

@@ -50,7 +50,6 @@ class InventoryManager(JavaagentInventoryManager):
             persisted, returns ({}, None) and does not write an index file.
         """
         jmx_dir = self.get_jmx_store_dir()
-        jmx_dir.mkdir(parents=True, exist_ok=True)
 
         indexed_models: dict[str, str] = {}
         for target_system in sorted(models):
@@ -79,6 +78,7 @@ class InventoryManager(JavaagentInventoryManager):
 
     def _save_jmx_content_addressed_file(self, jmx_dir: Path, name: str, content: str) -> str:
         """Save one JMX YAML file content-addressed in shared JMX directory."""
+        jmx_dir.mkdir(parents=True, exist_ok=True)
         safe_name = self._sanitize_name(name)
         digest = compute_content_hash(content)
         filename = f"{safe_name}-{digest}.yaml"

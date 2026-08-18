@@ -19,15 +19,15 @@ Process:
 - Create or update versioned snapshots of instrumentation metadata in YAML format
 - Discover and fetch each instrumentation's upstream `library/README.md` and store it in the
   version's `library_readmes/` directory (content-addressed)
-- Discover and fetch JMX weaver model YAML files from `instrumentation/jmx-metrics/model/*.yaml`,
-  store them content-addressed once in a shared `jmx/` directory, and write a per-version
-  `jmx-models.yaml` index
+- For releases, discover and fetch JMX weaver model YAML files from
+  `instrumentation/jmx-metrics/model/*.yaml`, store them content-addressed once in a shared `jmx/`
+  directory, and write a per-release `jmx-models.yaml` index
 - Update snapshot from the `main` branch
 
 It maintains a versioned inventory of instrumentation snapshots in the
 `ecosystem-registry/java/javaagent` directory. Each version directory contains the aggregated
 `instrumentation.yaml` plus a `library_readmes/` subdirectory of content-addressed README markdown
-files (one per instrumentation that ships a README upstream). Versions that include JMX weaver
+files (one per instrumentation that ships a README upstream). Releases that include JMX weaver
 models also contain `jmx-models.yaml`, which points at shared content-addressed files in
 `ecosystem-registry/java/javaagent/jmx/`.
 
