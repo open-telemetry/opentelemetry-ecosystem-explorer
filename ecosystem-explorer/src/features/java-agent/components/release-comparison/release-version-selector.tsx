@@ -53,10 +53,10 @@ function VersionSelect({
         id={id}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="border-primary/20 bg-primary/5 text-foreground hover:border-primary/40 hover:bg-primary/10 focus:ring-primary/50 focus:border-primary/50 w-full cursor-pointer rounded-lg border-2 px-4 py-2.5 text-sm font-medium shadow-sm transition-all duration-200 hover:shadow-md focus:ring-2 focus:outline-none"
+        className="border-primary/20 bg-card text-foreground hover:border-primary/40 hover:bg-primary/5 focus:ring-primary/50 focus:border-primary/50 w-full cursor-pointer rounded-lg border-2 px-4 py-2.5 text-sm font-medium shadow-sm transition-all duration-200 hover:shadow-md focus:ring-2 focus:outline-none"
       >
         {versions.map((v) => (
-          <option key={v.version} value={v.version}>
+          <option key={v.version} value={v.version} className="bg-card text-foreground">
             {v.version} {v.is_latest ? latestLabel : ""}
           </option>
         ))}
