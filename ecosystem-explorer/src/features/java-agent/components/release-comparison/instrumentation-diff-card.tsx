@@ -50,7 +50,7 @@ const STATUS_CONFIG: Record<
  * ("1 Metric" vs "12 Metrics"), so pin a common min-width and centre the
  * label. min-w (not w) keeps longer translated nouns from being clipped.
  */
-const COUNT_BADGE_CLASS = "min-w-[5.5rem] justify-center tabular-nums";
+const COUNT_BADGE_CLASS = "min-w-[5.5rem] justify-center whitespace-nowrap tabular-nums";
 
 interface InstrumentationDiffCardProps {
   diff: InstrumentationDiff;
