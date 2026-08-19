@@ -198,8 +198,10 @@ def test_fetch_tree_success(mock_session_class):
 
     client = JavaInstrumentationClient()
     tree = client.fetch_tree("abc123")
+    cached_tree = client.fetch_tree("abc123")
 
     assert tree == tree_entries
+    assert cached_tree == tree_entries
     mock_session.get.assert_called_once_with(
         "https://api.github.com/repos/open-telemetry/opentelemetry-java-instrumentation/git/trees/abc123?recursive=1",
         timeout=30,
@@ -216,7 +218,7 @@ def test_fetch_tree_truncated_raises(mock_session_class):
     mock_session.get.return_value = mock_response
 
     client = JavaInstrumentationClient()
-    with pytest.raises(GithubAPIError, match="truncated"):
+    with pytest.raises(GithubAPIError, match=r"Tree at abc123 was truncated$"):
         client.fetch_tree("abc123")
 
 

@@ -23,6 +23,19 @@ clean: ## 🧹 Cleanup build artifacts
 fmt: ## ✨ Format code
 	go fmt ./...
 
+.PHONY: fmt-check
+fmt-check: ## 🔍 Fail if any file needs gofmt (what CI runs)
+	@unformatted=$$(gofmt -l $$(find . -name '*.go' -not -path './.repo/*')); \
+	if [ -n "$$unformatted" ]; then \
+		echo "Not gofmt'd, run 'make fmt':"; \
+		echo "$$unformatted"; \
+		exit 1; \
+	fi
+
+.PHONY: lint
+lint: ## 🔍 Vet code
+	go vet ./...
+
 .PHONY: tidy
 tidy: ## 📚 Tidy modules
 	go mod tidy
