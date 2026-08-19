@@ -185,6 +185,12 @@ Before you begin contributing, ensure you have the following tools installed:
   - Installed automatically with development dependencies
   - Helps catch issues before they're committed
 
+- **Go**: Only needed to work on `ecosystem-automation/golang-instrumentation-watcher`
+  - The version is pinned by that module's `go.mod`; check yours with `go version`
+  - Download from [go.dev/dl](https://go.dev/dl/)
+  - The `gofmt` and `go vet` pre-commit hooks only run when you stage `.go` files, so you can skip
+    this if you never touch the Go watcher
+
 ## Getting Started
 
 ### Fork and Clone the Repository

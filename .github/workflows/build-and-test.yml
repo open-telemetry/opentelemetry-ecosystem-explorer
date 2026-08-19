@@ -72,6 +72,57 @@ jobs:
       - name: Run ruff format check
         run: uv run ruff format --check ecosystem-automation scripts
 
+  lint-go:
+    name: Lint Go (gofmt, vet)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ecosystem-automation/golang-instrumentation-watcher
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # go-version-file and cache-dependency-path are resolved from the workspace
+      # root, not the job's working-directory, so they need full paths.
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: ecosystem-automation/golang-instrumentation-watcher/go.mod
+          cache-dependency-path: ecosystem-automation/golang-instrumentation-watcher/go.sum
+      - name: Run gofmt check
+        run: |
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "::error::Go files are not gofmt'd. Run 'make fmt' in ecosystem-automation/golang-instrumentation-watcher/ and commit the result."
+            echo "$unformatted"
+            gofmt -d .
+            exit 1
+          fi
+      - name: Run go vet
+        run: go vet ./...
+
+  test-automation-golang-instrumentation-watcher:
+    name: Test golang-instrumentation-watcher
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ecosystem-automation/golang-instrumentation-watcher
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: ecosystem-automation/golang-instrumentation-watcher/go.mod
+          cache-dependency-path: ecosystem-automation/golang-instrumentation-watcher/go.sum
+      - name: Build
+        run: go build ./...
+      # Integration tests (-tags=integration) clone upstream repos, so they stay
+      # out of the PR path.
+      - name: Run tests
+        run: go test -race -covermode=atomic -coverprofile=coverage.out ./...
+
   test-automation-collector-watcher:
     name: Test collector-watcher
     runs-on: ubuntu-latest
