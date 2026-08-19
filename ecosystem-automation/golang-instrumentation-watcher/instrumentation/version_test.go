@@ -32,12 +32,14 @@ func TestModuleVersions(t *testing.T) {
 func TestApplyModuleVersions(t *testing.T) {
 	libs := []Library{
 		{Metadata: metadata.Metadata{
-			Name:    "otelgin",
-			Modules: []metadata.Module{{Path: "go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"}},
+			Name:       "otelgin",
+			SourcePath: "instrumentation/github.com/gin-gonic/gin/otelgin",
+			Modules:    []metadata.Module{{Path: "go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"}},
 		}},
 		{Metadata: metadata.Metadata{
-			Name:    "otelunknown",
-			Modules: []metadata.Module{{Path: "go.opentelemetry.io/contrib/instrumentation/example/otelunknown"}},
+			Name:       "otelunknown",
+			SourcePath: "instrumentation/example/otelunknown",
+			Modules:    []metadata.Module{{Path: "go.opentelemetry.io/contrib/instrumentation/example/otelunknown"}},
 		}},
 	}
 	versions := map[string]string{
@@ -57,25 +59,22 @@ func TestApplyModuleVersions(t *testing.T) {
 func TestApplyModuleVersions_StabilityInference(t *testing.T) {
 	libs := []Library{
 		{Metadata: metadata.Metadata{
-			Name:      "stable-lib",
-			Stability: metadata.StabilityUnknown,
-			Modules: []metadata.Module{
-				{Path: "go.opentelemetry.io/otelc/stable"},
-			},
+			Name:       "stable-lib",
+			SourcePath: "otelc/stable",
+			Stability:  metadata.StabilityUnknown,
+			Modules:    []metadata.Module{{Path: "go.opentelemetry.io/otelc/stable"}},
 		}},
 		{Metadata: metadata.Metadata{
-			Name:      "experimental-lib",
-			Stability: metadata.StabilityUnknown,
-			Modules: []metadata.Module{
-				{Path: "go.opentelemetry.io/otelc/experimental"},
-			},
+			Name:       "experimental-lib",
+			SourcePath: "otelc/experimental",
+			Stability:  metadata.StabilityUnknown,
+			Modules:    []metadata.Module{{Path: "go.opentelemetry.io/otelc/experimental"}},
 		}},
 		{Metadata: metadata.Metadata{
-			Name:      "explicitly-stable-lib",
-			Stability: metadata.StabilityStable, // Explicitly set to stable, should not be inferred
-			Modules: []metadata.Module{
-				{Path: "go.opentelemetry.io/otelc/explicit"},
-			},
+			Name:       "explicitly-stable-lib",
+			SourcePath: "otelc/explicit",
+			Stability:  metadata.StabilityStable, // Explicitly set to stable, should not be inferred
+			Modules:    []metadata.Module{{Path: "go.opentelemetry.io/otelc/explicit"}},
 		}},
 	}
 	versions := map[string]string{

@@ -109,11 +109,13 @@ func writeMetadata(t *testing.T, root, relDir, content string) {
 
 func TestScanMetadataRepo(t *testing.T) {
 	tests := []struct {
-		name       string
-		goVersion  string
-		metaConfig string
-		wantLibs   int
-		assertLib  func(*testing.T, Library)
+		name          string
+		goVersion     string
+		metaConfig    string
+		wantLibs      int
+		wantError     bool
+		setupOverride func(*testing.T, string)
+		assertLib     func(*testing.T, Library)
 	}{
 		{
 			name:      "infers GoMinVersion from go.mod",
@@ -144,15 +146,88 @@ modules:
 				}
 			},
 		},
+		{
+			name:      "multi-module picks highest go version",
+			goVersion: "1.20.0", // Ignored because we define two specific modules
+			metaConfig: `name: multi-lib
+modules:
+  - path: go.opentelemetry.io/otelc/mod1
+  - path: go.opentelemetry.io/otelc/mod2
+`,
+			wantLibs: 1,
+			setupOverride: func(t *testing.T, root string) {
+				writeGoMod(t, root, "instrumentation/mod1", "module go.opentelemetry.io/otelc/mod1\n\ngo 1.20\n")
+				writeGoMod(t, root, "instrumentation/mod2", "module go.opentelemetry.io/otelc/mod2\n\ngo 1.25.0\n")
+			},
+			assertLib: func(t *testing.T, l Library) {
+				if l.GoMinVersion != "1.25.0" {
+					t.Errorf("GoMinVersion = %q, want 1.25.0", l.GoMinVersion)
+				}
+				if l.SourcePath == "" {
+					t.Errorf("SourcePath was not injected")
+				}
+			},
+		},
+		{
+			name:      "round-trips new fields and respects authored source_path",
+			goVersion: "1.25.0",
+			metaConfig: `name: exhaustive-lib
+source_path: custom/path
+hidden: true
+otelc_min_version: v0.10.0
+installation:
+  methods:
+    - automatic
+    - wrapper
+modules:
+  - path: go.opentelemetry.io/otelc/exhaustive
+`,
+			wantLibs: 1,
+			assertLib: func(t *testing.T, l Library) {
+				if l.SourcePath != "custom/path" {
+					t.Errorf("SourcePath = %q, want custom/path", l.SourcePath)
+				}
+				if !l.Hidden {
+					t.Errorf("Hidden = false, want true")
+				}
+				if l.OtelcMinVersion != "v0.10.0" {
+					t.Errorf("OtelcMinVersion = %q, want v0.10.0", l.OtelcMinVersion)
+				}
+				if len(l.Installation.Methods) != 2 {
+					t.Fatalf("Installation methods len = %d, want 2", len(l.Installation.Methods))
+				}
+			},
+		},
+		{
+			name:      "malformed metadata yields error",
+			goVersion: "1.25.0",
+			metaConfig: `name: bad-lib
+instalation: # typo should fail strict decoding
+  methods: [automatic]
+`,
+			wantError: true,
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			root := t.TempDir()
-			writeGoMod(t, root, "instrumentation/dummy", "module go.opentelemetry.io/otelc/dummy\n\ngo "+tt.goVersion+"\n")
+
+			if tt.setupOverride != nil {
+				tt.setupOverride(t, root)
+			} else {
+				writeGoMod(t, root, "instrumentation/dummy", "module go.opentelemetry.io/otelc/dummy\n\ngo "+tt.goVersion+"\n")
+			}
+
 			writeMetadata(t, root, "instrumentation/dummy", tt.metaConfig)
 
 			res, err := ScanMetadataRepo(root)
+			if tt.wantError {
+				if err == nil {
+					t.Fatal("expected error, got nil")
+				}
+				return
+			}
 			if err != nil {
 				t.Fatalf("ScanMetadataRepo() error = %v", err)
 			}

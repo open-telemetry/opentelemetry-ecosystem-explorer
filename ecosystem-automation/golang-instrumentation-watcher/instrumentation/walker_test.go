@@ -34,10 +34,10 @@ func TestWalk(t *testing.T) {
 			tmpDir := t.TempDir()
 			for _, dir := range tt.dirs {
 				dirPath := filepath.Join(tmpDir, dir)
-				if err := os.MkdirAll(dirPath, 0755); err != nil {
+				if err := os.MkdirAll(dirPath, dirPerm); err != nil {
 					t.Fatal(err)
 				}
-				if err := os.WriteFile(filepath.Join(dirPath, "go.mod"), []byte("module test"), 0644); err != nil {
+				if err := os.WriteFile(filepath.Join(dirPath, "go.mod"), []byte("module test"), filePerm); err != nil {
 					t.Fatal(err)
 				}
 			}
@@ -83,10 +83,10 @@ func TestWalkMetadata(t *testing.T) {
 			tmpDir := t.TempDir()
 			for _, dir := range tt.dirs {
 				dirPath := filepath.Join(tmpDir, dir)
-				if err := os.MkdirAll(dirPath, 0755); err != nil {
+				if err := os.MkdirAll(dirPath, dirPerm); err != nil {
 					t.Fatal(err)
 				}
-				if err := os.WriteFile(filepath.Join(dirPath, "metadata.yaml"), []byte("name: test"), 0644); err != nil {
+				if err := os.WriteFile(filepath.Join(dirPath, "metadata.yaml"), []byte("name: test"), filePerm); err != nil {
 					t.Fatal(err)
 				}
 			}

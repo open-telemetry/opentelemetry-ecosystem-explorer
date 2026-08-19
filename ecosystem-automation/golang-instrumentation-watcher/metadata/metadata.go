@@ -7,7 +7,11 @@
 // and from a fixed set of YAML tokens.
 package metadata
 
-import "gopkg.in/yaml.v3"
+import (
+	"fmt"
+
+	"gopkg.in/yaml.v3"
+)
 
 // InstrType classifies how an instrumentation library participates in telemetry.
 // Its YAML tokens are "wrapper", "bridge", "exporter", "propagator", and
@@ -30,8 +34,8 @@ func (t InstrType) String() string { return instrTypeStrings[t] }
 // MarshalYAML encodes the [InstrType] as its YAML token.
 func (t InstrType) MarshalYAML() (interface{}, error) { return t.String(), nil }
 
-// UnmarshalYAML decodes an [InstrType] from its YAML token, leaving the value
-// unchanged when the token is unrecognized.
+// UnmarshalYAML decodes an [InstrType] from its YAML token, returning an
+// error if the token is unrecognized.
 func (t *InstrType) UnmarshalYAML(value *yaml.Node) error {
 	for i, s := range instrTypeStrings {
 		if value.Value == s {
@@ -39,7 +43,7 @@ func (t *InstrType) UnmarshalYAML(value *yaml.Node) error {
 			return nil
 		}
 	}
-	return nil
+	return fmt.Errorf("unknown instrumentation_type %q: must be one of %v", value.Value, instrTypeStrings)
 }
 
 // InstallType describes the integration effort required to adopt a library.
@@ -60,8 +64,8 @@ func (t InstallType) String() string { return installTypeStrings[t] }
 // MarshalYAML encodes the [InstallType] as its YAML token.
 func (t InstallType) MarshalYAML() (interface{}, error) { return t.String(), nil }
 
-// UnmarshalYAML decodes an [InstallType] from its YAML token, leaving the value
-// unchanged when the token is unrecognized.
+// UnmarshalYAML decodes an [InstallType] from its YAML token, returning an
+// error if the token is unrecognized.
 func (t *InstallType) UnmarshalYAML(value *yaml.Node) error {
 	for i, s := range installTypeStrings {
 		if value.Value == s {
@@ -69,17 +73,17 @@ func (t *InstallType) UnmarshalYAML(value *yaml.Node) error {
 			return nil
 		}
 	}
-	return nil
+	return fmt.Errorf("unknown install type %q: must be one of %v", value.Value, installTypeStrings)
 }
 
 // Stability is the maturity level of an instrumentation library. Its YAML
-// tokens are "experimental" and "stable".
+// tokens are "unknown", "experimental", and "stable".
 type Stability int
 
 const (
-	StabilityUnknown Stability = iota // unspecified, should be inferred
-	StabilityExperimental             // feature-complete but not yet production-ready
-	StabilityStable                   // stable API, production-ready
+	StabilityUnknown      Stability = iota // unspecified, should be inferred
+	StabilityExperimental                  // feature-complete but not yet production-ready
+	StabilityStable                        // stable API, production-ready
 )
 
 var stabilityStrings = [...]string{"unknown", "experimental", "stable"}
@@ -90,8 +94,8 @@ func (s Stability) String() string { return stabilityStrings[s] }
 // MarshalYAML encodes the [Stability] as its YAML token.
 func (s Stability) MarshalYAML() (interface{}, error) { return s.String(), nil }
 
-// UnmarshalYAML decodes a [Stability] from its YAML token, leaving the value
-// unchanged when the token is unrecognized.
+// UnmarshalYAML decodes a [Stability] from its YAML token, returning an
+// error if the token is unrecognized.
 func (s *Stability) UnmarshalYAML(value *yaml.Node) error {
 	for i, str := range stabilityStrings {
 		if value.Value == str {
@@ -99,11 +103,11 @@ func (s *Stability) UnmarshalYAML(value *yaml.Node) error {
 			return nil
 		}
 	}
-	return nil
+	return fmt.Errorf("unknown stability %q: must be one of %v", value.Value, stabilityStrings)
 }
 
 // Metadata is the descriptive record for a single instrumentation library. It
-// embeds [Scope], [Module], and [Installation], and carries an
+// embeds [Scope], [Modules], and [Installation], and carries an
 // [InstrType], optional [Configuration] list, and a [Stability] level.
 type Metadata struct {
 	// Name is the unique identifier for the instrumentation library, often derived from its path.
@@ -123,6 +127,7 @@ type Metadata struct {
 	// GoMinVersion specifies the minimum Go version required to compile and use the library (e.g., "1.21").
 	GoMinVersion string `yaml:"go_min_version,omitempty"`
 	// OtelcMinVersion specifies the minimum compile-time instrumentation tool (otelc) version required.
+	// Must be a valid semver (e.g. "v0.10.0").
 	OtelcMinVersion string `yaml:"otelc_min_version,omitempty"`
 	// Hidden indicates whether the instrumentation should be omitted from user-facing discovery UI.
 	Hidden bool `yaml:"hidden,omitempty"`

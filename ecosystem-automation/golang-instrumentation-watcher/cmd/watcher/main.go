@@ -1,24 +1,25 @@
 // Command watcher scans upstream repositories and writes a versioned
 // instrumentation inventory into the ecosystem registry.
 //
-// It inventories two versions per run: the latest bare release tag and a
-// snapshot of the main branch. The release is skipped when it has already been
-// inventoried.
+// For each target it inventories two versions: the latest bare release tag and
+// a snapshot of the main branch. The release is skipped when it has already
+// been inventoried. Tagless repositories get a snapshot only.
 //
 // Usage:
 //
-//	watcher [-base-dir dir]
+//	watcher [-base-dir dir] [-targets file]
 //
 // The -base-dir flag sets the directory under which the upstream repositories
 // are cloned (into .repo); it defaults to the working directory.
 package main
 
 import (
+	"bytes"
+	"errors"
 	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"gopkg.in/yaml.v3"
 
@@ -37,6 +38,17 @@ const (
 	ParserMetadata ParserStrategy = "metadata"
 )
 
+// UnmarshalYAML decodes a [ParserStrategy] from its YAML token, returning an
+// error if the value is not a recognized strategy.
+func (p *ParserStrategy) UnmarshalYAML(value *yaml.Node) error {
+	switch ParserStrategy(value.Value) {
+	case ParserGoMod, ParserMetadata:
+		*p = ParserStrategy(value.Value)
+		return nil
+	}
+	return fmt.Errorf("unknown parser strategy %q: must be one of %q, %q", value.Value, ParserGoMod, ParserMetadata)
+}
+
 type Target struct {
 	URL      string         `yaml:"url"`
 	Strategy ParserStrategy `yaml:"strategy"`
@@ -46,7 +58,6 @@ type Target struct {
 type TargetsConfig struct {
 	Targets []Target `yaml:"targets"`
 }
-
 
 // repoRoot walks up from dir until it finds a directory that contains an
 // "ecosystem-registry" subdirectory, which is the monorepo root. Returns an
@@ -96,7 +107,9 @@ func main() {
 	}
 
 	var config TargetsConfig
-	if err := yaml.Unmarshal(data, &config); err != nil {
+	dec := yaml.NewDecoder(bytes.NewReader(data))
+	dec.KnownFields(true)
+	if err := dec.Decode(&config); err != nil {
 		log.WithErrorMsg(err, "failed to parse targets file", "file", *targetsFile)
 		os.Exit(1)
 	}
@@ -105,12 +118,18 @@ func main() {
 		log.Warn("No targets found in configuration", "file", *targetsFile)
 	}
 
+	failed := false
 	for _, target := range config.Targets {
 		inventoryDir := filepath.Join(root, "ecosystem-registry", "go", repo.CloneDirName(target.URL))
 
 		if err := syncRepo(log, target, *baseDir, inventoryDir); err != nil {
 			log.WithErrorMsg(err, "sync failed for target", "url", target.URL)
+			failed = true
 		}
+	}
+
+	if failed {
+		os.Exit(1)
 	}
 }
 
@@ -121,7 +140,7 @@ func syncRepo(log *conf.Log, target Target, baseDir, inventoryDir string) error 
 	}
 
 	releaseTag, err := repo.LatestReleaseTag(target.URL)
-	if err != nil && !strings.Contains(err.Error(), "no release tag found") {
+	if err != nil && !errors.Is(err, repo.ErrNoReleaseTag) {
 		return err
 	}
 
@@ -160,8 +179,6 @@ func syncVersion(log *conf.Log, target Target, baseDir string, mgr *inventory.Ma
 		result, err = instrumentation.ScanRepo(repoInfo.Path)
 	case ParserMetadata:
 		result, err = instrumentation.ScanMetadataRepo(repoInfo.Path)
-	default:
-		return fmt.Errorf("unknown parser strategy: %v", target.Strategy)
 	}
 
 	if err != nil {

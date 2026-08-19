@@ -1,7 +1,6 @@
 package instrumentation
 
 import (
-	"path"
 	"strings"
 
 	"golang.org/x/mod/semver"
@@ -34,17 +33,22 @@ func ApplyModuleVersions(libs []Library, versions map[string]string) {
 	for i := range libs {
 		for j := range libs[i].Modules {
 			modPath := libs[i].Modules[j].Path
-			var bestPrefix, bestVersion string
-			for prefix, v := range versions {
-				if strings.HasSuffix(modPath, path.Join("/", prefix)) {
-					if len(prefix) > len(bestPrefix) {
-						bestPrefix = prefix
-						bestVersion = v
-					}
-				}
+			// Derive the tag key by locating SourcePath inside the full module
+			// path. For go-contrib, SourcePath == tag key exactly. For
+			// multi-module libraries (e.g. go-compile-instrumentation),
+			// SourcePath is the parent directory and the module appends its own
+			// sub-path (e.g. SourcePath="instrumentation/net/http",
+			// modPath=".../instrumentation/net/http/client" ->
+			// tagKey="instrumentation/net/http/client").
+			// Note: strings.Index could mis-anchor if SourcePath appears as a
+			// substring of a path component, but SourcePath is always a
+			// multi-segment repo-relative directory so this is unlikely in practice.
+			tagKey := libs[i].SourcePath
+			if idx := strings.Index(modPath, libs[i].SourcePath); idx != -1 {
+				tagKey = modPath[idx:]
 			}
-			if bestVersion != "" {
-				libs[i].Modules[j].Version = bestVersion
+			if v, ok := versions[tagKey]; ok {
+				libs[i].Modules[j].Version = v
 			}
 		}
 

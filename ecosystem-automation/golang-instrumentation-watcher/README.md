@@ -55,7 +55,6 @@ libraries:
       methods:
         - wrapper
     stability: experimental
-    hidden: false
 ```
 
 `name` is the repo-relative module path with slashes replaced by hyphens, so modules that share a

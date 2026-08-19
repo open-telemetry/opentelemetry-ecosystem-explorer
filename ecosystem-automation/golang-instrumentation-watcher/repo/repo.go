@@ -3,6 +3,7 @@
 package repo
 
 import (
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -45,11 +46,9 @@ func CloneDirName(url string) string {
 	s = strings.TrimPrefix(s, "git@github.com:")
 	s = strings.TrimSuffix(s, ".git")
 
-	if name, ok := strings.CutPrefix(s, "open-telemetry/"); ok {
-		if name, ok = strings.CutPrefix(name, "opentelemetry-go-"); ok {
-			return name
-		}
-		return name
+	var ok bool
+	if s, ok = strings.CutPrefix(s, "open-telemetry/"); ok {
+		s, _ = strings.CutPrefix(s, "opentelemetry-go-")
 	}
 	return strings.ReplaceAll(s, "/", "-")
 }
@@ -167,6 +166,9 @@ func CheckoutAt(url, baseDir, ref string) (*RepoInfo, error) {
 	return repoInfo, nil
 }
 
+// ErrNoReleaseTag is returned by LatestReleaseTag when a repository has no releases.
+var ErrNoReleaseTag = errors.New("no release tag found")
+
 // LatestReleaseTag returns the latest bare repo-wide release tag of
 // the specified repository (e.g. "v1.44.0") by listing remote tags over git
 // (no GitHub API, so no token or rate limit).
@@ -177,7 +179,7 @@ func LatestReleaseTag(url string) (string, error) {
 	}
 	latest := latestReleaseTag(tags)
 	if latest == "" {
-		return "", fmt.Errorf("no release tag found for %s", url)
+		return "", fmt.Errorf("%w for %s", ErrNoReleaseTag, url)
 	}
 	return latest, nil
 }
