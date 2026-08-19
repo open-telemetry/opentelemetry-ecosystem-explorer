@@ -91,11 +91,11 @@ jobs:
           cache-dependency-path: ecosystem-automation/golang-instrumentation-watcher/go.sum
       - name: Run gofmt check
         run: |
-          unformatted=$(gofmt -l .)
+          unformatted=$(gofmt -l $(find . -name '*.go' -not -path './.repo/*'))
           if [ -n "$unformatted" ]; then
             echo "::error::Go files are not gofmt'd. Run 'make fmt' in ecosystem-automation/golang-instrumentation-watcher/ and commit the result."
             echo "$unformatted"
-            gofmt -d .
+            gofmt -d $(find . -name '*.go' -not -path './.repo/*')
             exit 1
           fi
       - name: Run go vet

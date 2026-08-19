@@ -52,11 +52,9 @@ repos:
       # the installer rather than a bare "command not found".
       - id: gofmt
         name: gofmt (golang-instrumentation-watcher)
-        entry:
-          bash -c 'command -v gofmt >/dev/null || { echo "gofmt not found. Install Go
-          (https://go.dev/dl/) to commit changes to .go files."; exit 1; }; gofmt -l -w "$@"' --
+        entry: bash -c 'command -v gofmt >/dev/null || { echo "gofmt not found. Install Go (https://go.dev/dl/) to commit changes to .go files."; exit 1; }; gofmt -l -w "$@"' --
         language: system
-        files: \.go$
+        files: ^ecosystem-automation/golang-instrumentation-watcher/.*\.go$
         stages: [pre-commit]
 
       - id: govet-golang-instrumentation-watcher

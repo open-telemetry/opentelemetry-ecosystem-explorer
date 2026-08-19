@@ -25,7 +25,7 @@ fmt: ## ✨ Format code
 
 .PHONY: fmt-check
 fmt-check: ## 🔍 Fail if any file needs gofmt (what CI runs)
-	@unformatted=$$(gofmt -l .); \
+	@unformatted=$$(gofmt -l $$(find . -name '*.go' -not -path './.repo/*')); \
 	if [ -n "$$unformatted" ]; then \
 		echo "Not gofmt'd, run 'make fmt':"; \
 		echo "$$unformatted"; \
