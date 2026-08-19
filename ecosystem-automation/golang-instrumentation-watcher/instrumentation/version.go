@@ -26,8 +26,9 @@ func ModuleVersions(tags []string) map[string]string {
 }
 
 // ApplyModuleVersions sets each [Library]'s Module.Version from versions, the
-// per-module map produced by [ModuleVersions], keyed by the module's
-// repo-relative path. Libraries without a matching entry are left unchanged.
+// per-module map produced by [ModuleVersions]. The exact tag key is derived
+// by locating the library's SourcePath within the full module path. Libraries
+// without a matching entry are left unchanged.
 // It also infers library stability if currently unspecified.
 func ApplyModuleVersions(libs []Library, versions map[string]string) {
 	for i := range libs {
