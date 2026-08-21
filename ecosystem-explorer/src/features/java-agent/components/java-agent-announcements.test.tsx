@@ -25,14 +25,34 @@ vi.mock("../hooks/use-java-agent-announcements", () => ({
 }));
 
 describe("JavaAgentAnnouncements", () => {
-  it("renders nothing when loading", () => {
+  it("renders a loading skeleton when announcements are loading", () => {
     vi.mocked(useJavaAgentAnnouncements).mockReturnValue({
       data: null,
       loading: true,
       error: null,
     });
     const { container } = render(<JavaAgentAnnouncements />);
-    expect(container).toBeEmptyDOMElement();
+
+    expect(screen.getByRole("heading", { name: "News & Announcements" })).toBeInTheDocument();
+    expect(container.querySelectorAll(".animate-pulse").length).toBeGreaterThan(0);
+    expect(screen.getAllByTestId("announcement-skeleton-card")).toHaveLength(3);
+  });
+
+  it("matches the announcement count when loading with more than one skeleton row", () => {
+    vi.mocked(useJavaAgentAnnouncements).mockReturnValue({
+      data: [
+        { id: "1", date: "2026-07-20", title: "One", body: "One body" },
+        { id: "2", date: "2026-07-21", title: "Two", body: "Two body" },
+        { id: "3", date: "2026-07-22", title: "Three", body: "Three body" },
+        { id: "4", date: "2026-07-23", title: "Four", body: "Four body" },
+      ],
+      loading: true,
+      error: null,
+    });
+
+    render(<JavaAgentAnnouncements />);
+
+    expect(screen.getAllByTestId("announcement-skeleton-card")).toHaveLength(4);
   });
 
   it("renders nothing when data is empty", () => {
