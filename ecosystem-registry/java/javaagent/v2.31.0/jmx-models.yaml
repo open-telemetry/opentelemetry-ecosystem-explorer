@@ -1,0 +1,10 @@
+models:
+  activemq: activemq-b53895ef8a81.yaml
+  camel: camel-5ddb9f72b147.yaml
+  cassandra: cassandra-940fe36306cc.yaml
+  hadoop: hadoop-0325c3029a0e.yaml
+  jetty: jetty-ed0f6c4f8d48.yaml
+  jvm: jvm-cc62f69a3ba6.yaml
+  tomcat: tomcat-f4911414c4e6.yaml
+  wildfly: wildfly-589608f38fce.yaml
+manifest: manifest-23e092f2f632.yaml
