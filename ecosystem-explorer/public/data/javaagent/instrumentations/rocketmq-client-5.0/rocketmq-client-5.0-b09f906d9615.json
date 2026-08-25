@@ -1,0 +1,414 @@
+{
+  "configurations": [
+    {
+      "declarative_name": "java.common.messaging.capture_headers/development",
+      "default": "",
+      "description": "Deprecated: use `otel.instrumentation.messaging.experimental.headers.included` instead. A comma-separated list of header names to capture as span attributes. It does not support glob patterns: an entry containing `*` or `?` is ignored with a warning, and every other entry is matched as a literal header name.",
+      "name": "otel.instrumentation.messaging.experimental.capture-headers",
+      "type": "list"
+    },
+    {
+      "declarative_name": "java.common.messaging.headers/development.excluded",
+      "default": "",
+      "description": "A comma-separated list of message header name patterns to exclude from span attributes. Excluded patterns take precedence over included patterns. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters. If included is not configured, all non-excluded headers are captured, which may expose sensitive information.",
+      "name": "otel.instrumentation.messaging.experimental.headers.excluded",
+      "type": "list"
+    },
+    {
+      "declarative_name": "java.common.messaging.headers/development.included",
+      "default": "",
+      "description": "A comma-separated list of message header name patterns to capture as span attributes. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters.",
+      "name": "otel.instrumentation.messaging.experimental.headers.included",
+      "type": "list"
+    },
+    {
+      "declarative_name": "java.common.messaging.receive_telemetry/development.enabled",
+      "default": false,
+      "description": "Enables experimental receive telemetry, which will cause consumers to start a new trace, with only a span link connecting it to the producer trace.",
+      "name": "otel.instrumentation.messaging.experimental.receive-telemetry.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enables messaging spans for Apache RocketMQ message producers and consumers using the gRPC/Protobuf Protocol.",
+  "display_name": "Apache RocketMQ Client - gRPC Protocol",
+  "has_javaagent": true,
+  "javaagent_target_versions": [
+    "org.apache.rocketmq:rocketmq-client-java:[5.0.0,)"
+  ],
+  "library_link": "https://rocketmq.apache.org/",
+  "name": "rocketmq-client-5.0",
+  "scope": {
+    "name": "io.opentelemetry.rocketmq-client-5.0"
+  },
+  "semantic_conventions": [
+    "MESSAGING_SPANS"
+  ],
+  "source_path": "instrumentation/rocketmq/rocketmq-client-5.0",
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "messaging.batch.message_count",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.message.body.size",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.message.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.rocketmq.client_group",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.rocketmq.message.delivery_timestamp",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.rocketmq.message.group",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.rocketmq.message.keys",
+              "type": "STRING_ARRAY"
+            },
+            {
+              "name": "messaging.rocketmq.message.tag",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CONSUMER"
+        },
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.message.body.size",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.message.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.rocketmq.message.delivery_timestamp",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.rocketmq.message.group",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.rocketmq.message.keys",
+              "type": "STRING_ARRAY"
+            },
+            {
+              "name": "messaging.rocketmq.message.tag",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.rocketmq.message.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "PRODUCER"
+        }
+      ],
+      "when": "otel.instrumentation.messaging.experimental.receive-telemetry.enabled=true"
+    },
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "messaging.consumer.group.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "Number of messages that were delivered to the application.",
+          "instrument": "counter",
+          "name": "messaging.client.consumed.messages",
+          "unit": "{message}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "messaging.consumer.group.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "HISTOGRAM",
+          "description": "Duration of messaging operation initiated by a producer or consumer client.",
+          "instrument": "histogram",
+          "name": "messaging.client.operation.duration",
+          "unit": "s"
+        },
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "Number of messages producer attempted to send to the broker.",
+          "instrument": "counter",
+          "name": "messaging.client.sent.messages",
+          "unit": "{message}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "error.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.consumer.group.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "HISTOGRAM",
+          "description": "Duration of processing operation.",
+          "instrument": "histogram",
+          "name": "messaging.process.duration",
+          "unit": "s"
+        }
+      ],
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "error.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.batch.message_count",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.consumer.group.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.rocketmq.message.delivery_timestamp",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.rocketmq.message.group",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.rocketmq.message.keys",
+              "type": "STRING_ARRAY"
+            },
+            {
+              "name": "messaging.rocketmq.message.tag",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.rocketmq.namespace",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CLIENT"
+        },
+        {
+          "attributes": [
+            {
+              "name": "error.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.consumer.group.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.message.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.rocketmq.message.delivery_timestamp",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.rocketmq.message.group",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.rocketmq.message.keys",
+              "type": "STRING_ARRAY"
+            },
+            {
+              "name": "messaging.rocketmq.message.tag",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.rocketmq.namespace",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CONSUMER"
+        },
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.message.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.rocketmq.message.delivery_timestamp",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.rocketmq.message.group",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.rocketmq.message.keys",
+              "type": "STRING_ARRAY"
+            },
+            {
+              "name": "messaging.rocketmq.message.tag",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.rocketmq.message.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.rocketmq.namespace",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "PRODUCER"
+        }
+      ],
+      "when": "otel.semconv-stability.preview=messaging"
+    }
+  ]
+}
