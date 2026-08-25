@@ -218,7 +218,6 @@ components:
       from_version: v0.80.0
       id: connector.servicegraph.legacyLatencyMetricNames
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/18743
-      skip_strict_validation: true
       stage: deprecated
       to_version: v0.154.0
     - description: When enabled, connector reports latency in milliseconds, instead
@@ -226,7 +225,6 @@ components:
       from_version: v0.89.0
       id: connector.servicegraph.legacyLatencyUnitMs
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/27488
-      skip_strict_validation: true
       stage: deprecated
       to_version: v0.154.0
     - description: When enabled and setting `virtual_node_peer_attributes` is not
@@ -235,7 +233,6 @@ components:
       from_version: v0.73.0
       id: connector.servicegraph.virtualNode
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/17196
-      skip_strict_validation: true
       stage: stable
       to_version: v0.154.0
     status:
@@ -322,33 +319,28 @@ components:
       from_version: v0.137.0
       id: connector.spanmetrics.excludeResourceMetrics
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42103
-      skip_strict_validation: true
       stage: alpha
     - description: When enabled, connector add collector.instance.id to default dimensions.
       from_version: v0.136.0
       id: connector.spanmetrics.includeCollectorInstanceID
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40400
-      skip_strict_validation: true
       stage: beta
     - description: When enabled, connector uses legacy metric names.
       from_version: v0.109.0
       id: connector.spanmetrics.legacyMetricNames
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/33227
-      skip_strict_validation: true
       stage: alpha
     - description: When enabled, connector use second as default unit for duration
         metrics.
       from_version: v0.137.0
       id: connector.spanmetrics.useSecondAsDefaultMetricsUnit
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42462
-      skip_strict_validation: true
       stage: alpha
     - description: When enabled, generated metrics will use `otel.status_code=ERROR`
         instead of `status.code=STATUS_CODE_ERROR`
       from_version: v0.141.0
       id: spanmetrics.statusCodeConvention.useOtelPrefix
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/43000
-      skip_strict_validation: true
       stage: alpha
     status:
       class: connector

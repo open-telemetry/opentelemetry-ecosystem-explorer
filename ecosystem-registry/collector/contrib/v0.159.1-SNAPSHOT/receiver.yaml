@@ -699,7 +699,6 @@ components:
       from_version: v0.159.0
       id: receiver.apache.disableOldFormatMetrics
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47327
-      skip_strict_validation: true
       stage: alpha
     - description: When enabled, the receiver emits the new, consistently named metrics
         and attributes (e.g. apache.request.count, apache.worker.status, cpu.mode)
@@ -708,7 +707,6 @@ components:
       from_version: v0.159.0
       id: receiver.apache.enableNewFormatMetrics
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47327
-      skip_strict_validation: true
       stage: alpha
     metrics:
       apache.connection.active:
@@ -1846,14 +1844,12 @@ components:
       from_version: v0.157.0
       id: receiver.awsecscontainermetrics.DontEmitV0ContainerConventions
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45087
-      skip_strict_validation: true
       stage: alpha
     - description: When enabled, the receiver emits container.image.tags (semconv
         v1.42.0) instead of the deprecated container.image.tag (semconv v1.21.0).
       from_version: v0.157.0
       id: receiver.awsecscontainermetrics.EmitV1ContainerConventions
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45087
-      skip_strict_validation: true
       stage: alpha
     status:
       class: receiver
@@ -2198,7 +2194,6 @@ components:
       from_version: v0.117.0
       id: cloudfoundry.resourceAttributes.allow
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/34824
-      skip_strict_validation: true
       stage: beta
     status:
       class: receiver
@@ -2381,7 +2376,6 @@ components:
       from_version: v0.154.0
       id: receiver.datadogreceiver.DontEmitDeprecatedRPCServiceAttr
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/22095
-      skip_strict_validation: true
       stage: alpha
     - description: When enabled, reconstructs full 128-bit TraceIDs for spans coming
         from Datadog instrumented services so they correlate with OpenTelemetry spans.
@@ -2389,14 +2383,12 @@ components:
       from_version: v0.125.0
       id: receiver.datadogreceiver.Enable128BitTraceID
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/36926
-      skip_strict_validation: true
       stage: beta
     - description: When enabled, parses `key:value` tags with duplicate keys into
         a slice attribute.
       from_version: v0.142.0
       id: receiver.datadogreceiver.EnableMultiTagParsing
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/44747
-      skip_strict_validation: true
       stage: alpha
     status:
       class: receiver
@@ -5559,7 +5551,6 @@ components:
       from_version: v0.151.0
       id: receiver.githubreceiver.UseCheckRunID
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44856
-      skip_strict_validation: true
       stage: beta
     metrics:
       vcs.change.count:
@@ -6320,7 +6311,6 @@ components:
       from_version: v0.98.0
       id: hostmetrics.process.bootTimeCache
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/28849
-      skip_strict_validation: true
       stage: beta
     - description: When enabled, the used value for the system.memory.usage and system.memory.utilization
         metrics will be based on the Linux kernel's MemAvailable statistic instead
@@ -6328,7 +6318,6 @@ components:
       from_version: v0.137.0
       id: receiver.hostmetricsreceiver.UseLinuxMemAvailable
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42221
-      skip_strict_validation: true
       stage: beta
     status:
       class: receiver
@@ -7940,7 +7929,6 @@ components:
       from_version: v0.137.0
       id: receiver.kafkametricsreceiver.UseFranzGo
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41480
-      skip_strict_validation: true
       stage: stable
       to_version: v0.154.0
     metrics:
@@ -8521,7 +8509,6 @@ components:
       from_version: v0.156.0
       id: receiver.kubeletstats.cpuUsageScrapeBased
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49477
-      skip_strict_validation: true
       stage: alpha
     metrics:
       container.cpu.time:
@@ -15150,7 +15137,6 @@ components:
       from_version: v0.89.0
       id: postgresqlreceiver.preciselagmetrics
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/30831
-      skip_strict_validation: true
       stage: beta
     - description: Use of connection pooling
       from_version: v0.96.0
@@ -15802,14 +15788,12 @@ components:
       from_version: v0.113.0
       id: receiver.prometheusreceiver.EnableCreatedTimestampZeroIngestion
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40355
-      skip_strict_validation: true
       stage: alpha
     - description: When enabled, the `otel_scope_info` metric is ignored for scope
         attribute extraction.
       from_version: v0.148.0
       id: receiver.prometheusreceiver.IgnoreScopeInfoMetric
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41502
-      skip_strict_validation: true
       stage: beta
     status:
       class: receiver
@@ -20633,7 +20617,6 @@ components:
       from_version: v0.129.0
       id: receiver.sqlserver.RemoveServerResourceAttribute
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/40141
-      skip_strict_validation: true
       stage: alpha
     metrics:
       sqlserver.access.scan.rate:
@@ -22311,7 +22294,6 @@ components:
       from_version: v0.153.0
       id: receiver.vcenter.resourcePoolMemoryUsageAttribute
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/33741
-      skip_strict_validation: true
       stage: beta
     metrics:
       vcenter.cluster.cpu.effective:
@@ -23207,7 +23189,6 @@ components:
       from_version: v0.150.0
       id: domainControllers.autodiscovery
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44156
-      skip_strict_validation: true
       stage: alpha
     status:
       class: receiver
