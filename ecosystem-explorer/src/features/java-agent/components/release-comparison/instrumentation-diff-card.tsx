@@ -45,6 +45,13 @@ const STATUS_CONFIG: Record<
   },
 };
 
+/*
+ * Count badges sit in a row and would otherwise resize with their text
+ * ("1 Metric" vs "12 Metrics"), so pin a common min-width and centre the
+ * label. min-w (not w) keeps longer translated nouns from being clipped.
+ */
+const COUNT_BADGE_CLASS = "min-w-[5.5rem] justify-center whitespace-nowrap tabular-nums";
+
 interface InstrumentationDiffCardProps {
   diff: InstrumentationDiff;
 }
@@ -105,17 +112,17 @@ export function InstrumentationDiffCard({ diff }: InstrumentationDiffCardProps) 
         >
           <div className="flex items-center gap-2">
             {changedMetricsCount > 0 && (
-              <GlowBadge variant="success">
+              <GlowBadge variant="success" className={COUNT_BADGE_CLASS}>
                 {t("diffCard.metricCount", { count: changedMetricsCount })}
               </GlowBadge>
             )}
             {changedSpansCount > 0 && (
-              <GlowBadge variant="info">
+              <GlowBadge variant="info" className={COUNT_BADGE_CLASS}>
                 {t("diffCard.spanCount", { count: changedSpansCount })}
               </GlowBadge>
             )}
             {configChangesCount > 0 && (
-              <GlowBadge variant="warning">
+              <GlowBadge variant="warning" className={COUNT_BADGE_CLASS}>
                 {t("diffCard.configCount", { count: configChangesCount })}
               </GlowBadge>
             )}

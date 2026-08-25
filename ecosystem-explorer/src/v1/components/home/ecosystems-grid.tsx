@@ -24,6 +24,7 @@
 import type { ReactNode } from "react";
 import { Boxes, Network } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { JavaIcon } from "@/components/icons/java-icon";
 import { type Stability, StatusPill } from "@/components/ui/status-pill";
@@ -33,12 +34,8 @@ export type ComingSoonEcosystemId = "python" | "go" | "js" | "dotnet";
 
 export interface ActiveEcosystem {
   id: ActiveEcosystemId;
-  name: string;
-  tagline: string;
-  description: string;
   stability: Stability;
   components: string;
-  unit: "components" | "instrumentations";
   version: string;
   weeklyDelta: string;
   href: string;
@@ -47,19 +44,13 @@ export interface ActiveEcosystem {
 
 export interface ComingSoonEcosystem {
   id: ComingSoonEcosystemId;
-  name: string;
 }
 
 const DEFAULT_ACTIVE: ActiveEcosystem[] = [
   {
     id: "collector",
-    name: "OpenTelemetry Collector",
-    tagline: "Vendor-agnostic agent",
-    description:
-      "Receive, process, and export telemetry data. 200+ receivers, processors, exporters, connectors and extensions.",
     stability: "stable",
     components: "200+",
-    unit: "components",
     version: "v0.150.0",
     weeklyDelta: "12",
     href: "/collector",
@@ -67,13 +58,8 @@ const DEFAULT_ACTIVE: ActiveEcosystem[] = [
   },
   {
     id: "java-agent",
-    name: "OpenTelemetry Java Agent",
-    tagline: "Auto-instrumentation",
-    description:
-      "Discover supported libraries, configuration options, and emitted telemetry for the Java auto-instrumentation agent.",
     stability: "stable",
     components: "187",
-    unit: "instrumentations",
     version: "v2.10.0",
     weeklyDelta: "8",
     href: "/java-agent",
@@ -84,10 +70,10 @@ const DEFAULT_ACTIVE: ActiveEcosystem[] = [
 const PLACEHOLDER_ICON = <Boxes className="td-ecosystem-card__placeholder-icon" aria-hidden />;
 
 const DEFAULT_COMING_SOON: ComingSoonEcosystem[] = [
-  { id: "python", name: "Python SDK" },
-  { id: "go", name: "Go SDK" },
-  { id: "js", name: "JS / Node" },
-  { id: "dotnet", name: ".NET" },
+  { id: "python" },
+  { id: "go" },
+  { id: "js" },
+  { id: "dotnet" },
 ];
 
 export interface EcosystemsGridProps {
@@ -102,17 +88,17 @@ export function EcosystemsGrid({
   comingSoon = DEFAULT_COMING_SOON,
   headingId = "ecosystems-grid-title",
 }: EcosystemsGridProps) {
+  const { t } = useTranslation("home");
+
   return (
     <section className="td-ecosystems-grid" aria-labelledby={headingId}>
       <div className="td-ecosystems-grid__container">
         <div className="td-section-header">
           <div>
             <h2 id={headingId} className="td-section-header__title">
-              Ecosystems
+              {t("homeV1.ecosystems.title")}
             </h2>
-            <p className="td-section-header__lead">
-              Browse the projects that make up OpenTelemetry.
-            </p>
+            <p className="td-section-header__lead">{t("homeV1.ecosystems.lead")}</p>
           </div>
           <a
             className="td-section-header__action"
@@ -120,58 +106,66 @@ export function EcosystemsGrid({
             target="_blank"
             rel="noopener noreferrer"
           >
-            View all projects →
+            {t("homeV1.ecosystems.viewAll")}
           </a>
         </div>
 
         <div className="td-ecosystems-grid__cards">
-          {active.map((eco) => (
-            <Link
-              key={eco.id}
-              to={eco.href}
-              className="td-ecosystem-card"
-              aria-label={`${eco.name} — ${eco.tagline}`}
-            >
-              <div className="td-ecosystem-card__head">
-                <div className="td-ecosystem-card__id">
-                  <div
-                    className={`td-ecosystem-card__icon td-ecosystem-card__icon--${eco.id}`}
-                    aria-hidden
-                  >
-                    {eco.icon}
+          {active.map((eco) => {
+            const name = t(`homeV1.ecosystems.active.${eco.id}.name`);
+            const tagline = t(`homeV1.ecosystems.active.${eco.id}.tagline`);
+            const description = t(`homeV1.ecosystems.active.${eco.id}.description`);
+            const unit = t(`homeV1.ecosystems.active.${eco.id}.unit`);
+            return (
+              <Link
+                key={eco.id}
+                to={eco.href}
+                className="td-ecosystem-card"
+                aria-label={`${name} — ${tagline}`}
+              >
+                <div className="td-ecosystem-card__head">
+                  <div className="td-ecosystem-card__id">
+                    <div
+                      className={`td-ecosystem-card__icon td-ecosystem-card__icon--${eco.id}`}
+                      aria-hidden
+                    >
+                      {eco.icon}
+                    </div>
+                    <div>
+                      <h3 className="td-ecosystem-card__name">{name}</h3>
+                      <p className="td-ecosystem-card__tagline">{tagline}</p>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="td-ecosystem-card__name">{eco.name}</h3>
-                    <p className="td-ecosystem-card__tagline">{eco.tagline}</p>
-                  </div>
+                  <StatusPill stability={eco.stability} />
                 </div>
-                <StatusPill stability={eco.stability} />
-              </div>
-              <p className="td-ecosystem-card__description">{eco.description}</p>
-              <div className="td-ecosystem-card__metrics">
-                {(
-                  [
-                    [eco.components, eco.unit],
-                    [eco.version, "latest"],
-                    [eco.weeklyDelta, "updated this week"],
-                  ] as const
-                ).map(([value, label]) => (
-                  <span key={label}>
-                    <span className="td-ecosystem-card__metric-value">{value}</span>{" "}
-                    <span className="td-ecosystem-card__metric-label">{label}</span>
-                  </span>
-                ))}
-              </div>
-            </Link>
-          ))}
+                <p className="td-ecosystem-card__description">{description}</p>
+                <div className="td-ecosystem-card__metrics">
+                  {(
+                    [
+                      [eco.components, unit],
+                      [eco.version, t("homeV1.ecosystems.metricLabels.latest")],
+                      [eco.weeklyDelta, t("homeV1.ecosystems.metricLabels.updatedThisWeek")],
+                    ] as const
+                  ).map(([value, label]) => (
+                    <span key={label}>
+                      <span className="td-ecosystem-card__metric-value">{value}</span>{" "}
+                      <span className="td-ecosystem-card__metric-label">{label}</span>
+                    </span>
+                  ))}
+                </div>
+              </Link>
+            );
+          })}
 
           {comingSoon.map((eco) => (
             <div key={eco.id} className="td-ecosystem-card td-ecosystem-card--placeholder">
               {PLACEHOLDER_ICON}
               <div className="td-ecosystem-card__name td-ecosystem-card__name--placeholder">
-                {eco.name}
+                {t(`homeV1.ecosystems.comingSoon.items.${eco.id}`)}
               </div>
-              <small className="td-ecosystem-card__tagline">Coming soon</small>
+              <small className="td-ecosystem-card__tagline">
+                {t("homeV1.ecosystems.comingSoon.label")}
+              </small>
             </div>
           ))}
         </div>

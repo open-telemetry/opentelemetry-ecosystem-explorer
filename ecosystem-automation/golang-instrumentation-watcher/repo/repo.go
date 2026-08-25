@@ -1,8 +1,9 @@
-// Package repo clones and checks out the upstream OpenTelemetry repositories
+// Package repo clones and checks out the upstream repositories
 // that the watcher scans.
 package repo
 
 import (
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -18,19 +19,12 @@ import (
 const (
 	cwd   = ".repo"
 	perms = 0755
-
-	// RepoContrib is the upstream opentelemetry-go-contrib repository name.
-	RepoContrib = "opentelemetry-go-contrib"
 )
-
-var repos = []string{
-	"https://github.com/open-telemetry/opentelemetry-go-contrib.git",
-}
 
 // RepoInfo identifies a checked-out repository and its current commit. It is
 // returned by [CheckoutAt].
 type RepoInfo struct {
-	Name    string // repository name (e.g. "opentelemetry-go-contrib")
+	Name    string // repository clone directory name
 	Path    string // absolute filesystem path to the checkout
 	Head    string // short SHA of the checked-out commit
 	SHA     string // full commit SHA
@@ -47,9 +41,16 @@ func (r RepoInfo) LogValue() slog.Value {
 	)
 }
 
-func name(url string) string {
-	name := filepath.Base(url)
-	return strings.TrimSuffix(name, ".git")
+func CloneDirName(url string) string {
+	s := strings.TrimPrefix(url, "https://github.com/")
+	s = strings.TrimPrefix(s, "git@github.com:")
+	s = strings.TrimSuffix(s, ".git")
+
+	var ok bool
+	if s, ok = strings.CutPrefix(s, "open-telemetry/"); ok {
+		s, _ = strings.CutPrefix(s, "opentelemetry-go-")
+	}
+	return strings.ReplaceAll(s, "/", "-")
 }
 
 func exists(path string) bool {
@@ -57,9 +58,9 @@ func exists(path string) bool {
 	return err == nil
 }
 
-func clone(url, dir string) error {
-	cmd := exec.Command("git", "clone", url)
-	cmd.Dir = dir
+func clone(url, cloneDir, repoName string) error {
+	cmd := exec.Command("git", "clone", url, repoName)
+	cmd.Dir = cloneDir
 	return cmd.Run()
 }
 
@@ -117,10 +118,10 @@ func info(path string) (*RepoInfo, error) {
 	}, nil
 }
 
-// CheckoutAt ensures opentelemetry-go-contrib is cloned under baseDir/.repo and
+// CheckoutAt ensures a repository is cloned under baseDir/.repo and
 // checks the working tree out at ref (a bare release tag like "v1.44.0" or a
 // branch like "main"), returning the resolved [RepoInfo].
-func CheckoutAt(baseDir, ref string) (*RepoInfo, error) {
+func CheckoutAt(url, baseDir, ref string) (*RepoInfo, error) {
 	log := conf.NewLog()
 
 	cloneDir := filepath.Join(baseDir, cwd)
@@ -129,12 +130,11 @@ func CheckoutAt(baseDir, ref string) (*RepoInfo, error) {
 		return nil, err
 	}
 
-	url := repos[0]
-	repoName := name(url)
+	repoName := CloneDirName(url)
 	repoPath := filepath.Join(cloneDir, repoName)
 
 	if !exists(repoPath) {
-		if err := clone(url, cloneDir); err != nil {
+		if err := clone(url, cloneDir, repoName); err != nil {
 			log.WithErrorMsg(err, "Failed to clone repo", "repo", repoName)
 			return nil, err
 		}
@@ -166,19 +166,20 @@ func CheckoutAt(baseDir, ref string) (*RepoInfo, error) {
 	return repoInfo, nil
 }
 
+// ErrNoReleaseTag is returned by LatestReleaseTag when a repository has no releases.
+var ErrNoReleaseTag = errors.New("no release tag found")
+
 // LatestReleaseTag returns the latest bare repo-wide release tag of
-// opentelemetry-go-contrib (e.g. "v1.44.0") by listing remote tags over git
-// (no GitHub API, so no token or rate limit). go-contrib uses dual versioning:
-// this bare stable tag is the repo-wide release marker and git checkout ref,
-// distinct from the per-module instrumentation tags on the v0.x line.
-func LatestReleaseTag() (string, error) {
-	tags, err := listRemoteTags(repos[0])
+// the specified repository (e.g. "v1.44.0") by listing remote tags over git
+// (no GitHub API, so no token or rate limit).
+func LatestReleaseTag(url string) (string, error) {
+	tags, err := listRemoteTags(url)
 	if err != nil {
 		return "", err
 	}
 	latest := latestReleaseTag(tags)
 	if latest == "" {
-		return "", fmt.Errorf("no release tag found for %s", name(repos[0]))
+		return "", fmt.Errorf("%w for %s", ErrNoReleaseTag, url)
 	}
 	return latest, nil
 }

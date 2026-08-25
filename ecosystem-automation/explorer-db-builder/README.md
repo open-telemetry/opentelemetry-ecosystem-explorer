@@ -35,6 +35,7 @@ ecosystem-explorer/
         defaults/                    # Resolved default values
       collector/
         index.json                  # Lightweight index for collector components
+        deprecations-index.json     # Removed components pointing to their last-version data
         versions-index.json         # List of available collector versions
         versions/                    # Per-version manifests: {component-id: content-hash}
         components/                  # Content-addressed component data

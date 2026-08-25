@@ -32,6 +32,10 @@
       "diff": {
         "title": "Diff across versions",
         "description": "See what changed between two Collector releases."
+      },
+      "deprecated": {
+        "title": "Deprecated components",
+        "description": "Browse components removed from current Collector releases."
       }
     }
   },
@@ -90,7 +94,8 @@
     },
     "version": {
       "label": "Version",
-      "latest": "(latest)"
+      "latest": "(latest)",
+      "deprecated": "Deprecated"
     },
     "distribution": {
       "label": "Distribution",
@@ -153,6 +158,10 @@
       "description": "Please try refreshing the page."
     }
   },
+  "deprecated": {
+    "title": "This component has been removed",
+    "lead": "Last available in {{lastVersion}}. Removed in {{removedVersion}}."
+  },
   "detail": {
     "loading": {
       "title": "Loading component...",
@@ -167,6 +176,7 @@
       "details": "Details",
       "stability": "Stability",
       "telemetry": "Telemetry",
+      "featureGates": "Feature Gates",
       "readme": "Readme"
     },
     "sections": {
@@ -179,7 +189,8 @@
     "labels": {
       "type": "Type",
       "version": "Version",
-      "distribution": "Distribution"
+      "sourceRepository": "Source Repository",
+      "sourceRepositoryHint": "The Collector repository this component's code lives in, not the distributions that package it."
     },
     "links": {
       "sourceCode": "Source Code",
@@ -257,12 +268,22 @@
         "type": "Type",
         "description": "Description"
       }
+    },
+    "featureGatesTab": {
+      "introducedIn": "Introduced in {{version}}",
+      "stableIn": "Stable in {{version}}",
+      "deprecatedIn": "Deprecated in {{version}}",
+      "reference": "Reference"
     }
   },
   "explore": {
     "componentTypes": {
       "heading": "Component Types",
       "latestVersion": "Latest data version",
+      "deprecated": {
+        "label": "Deprecated",
+        "description": "Browse components removed from current Collector releases"
+      },
       "types": {
         "receiver": {
           "label": "Receiver",

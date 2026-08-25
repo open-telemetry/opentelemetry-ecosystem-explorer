@@ -6,9 +6,16 @@
 package instrumentation
 
 import (
+	"bytes"
 	"cmp"
+	"fmt"
+	"go/version"
+	"os"
 	"path/filepath"
 	"slices"
+
+	"golang.org/x/mod/semver"
+	"gopkg.in/yaml.v3"
 
 	"github.com/open-telemetry/opentelemetry-ecosystem-explorer/golang-instrumentation-watcher/metadata"
 )
@@ -77,4 +84,125 @@ func analyzeLibrary(goModPath string) (*Library, error) {
 	}
 	meta := DeriveMetadata(mod)
 	return &Library{Metadata: *meta}, nil
+}
+
+// ScanMetadataRepo walks the repository rooted at repoPath looking for
+// metadata.yaml files. It parses each file into a [Library] record, fusing
+// it into a [ScanResult].
+func ScanMetadataRepo(repoPath string) (*ScanResult, error) {
+	metaFiles, err := WalkMetadata(repoPath)
+	if err != nil {
+		return nil, err
+	}
+
+	// Pre-scan all go.mod files to infer GoMinVersion if blank.
+	modVersions := make(map[string]string)
+	if packages, err := Walk(repoPath); err == nil {
+		for _, pkg := range packages {
+			mod, err := ParseModule(pkg.GoModPath)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "failed to parse go.mod %s: %v\n", pkg.GoModPath, err)
+				continue
+			}
+			if mod.Path == "" {
+				fmt.Fprintf(os.Stderr, "missing module path in go.mod: %s\n", pkg.GoModPath)
+				continue
+			}
+
+			modVersions[mod.Path] = mod.GoVersion
+		}
+	} else {
+		fmt.Fprintf(os.Stderr, "failed to walk repository for go.mod files: %v\n", err)
+	}
+
+	var libraries []Library
+	seenNames := make(map[string]bool)
+
+	for _, mf := range metaFiles {
+		lib, err := analyzeMetadataLibrary(mf.MetadataPath)
+		if err != nil {
+			return nil, err
+		}
+		if lib == nil {
+			continue
+		}
+
+		if lib.Name == "" {
+			return nil, fmt.Errorf("empty name field in %s", mf.MetadataPath)
+		}
+		if seenNames[lib.Name] {
+			return nil, fmt.Errorf("duplicate library name %q in %s", lib.Name, mf.MetadataPath)
+		}
+		seenNames[lib.Name] = true
+
+		if lib.SourcePath == "" {
+			lib.SourcePath = mf.Path
+		}
+
+		// Infer GoMinVersion from go.mod if not specified in metadata.
+		lib.inferGoMinVersion(modVersions)
+
+		// Strictly validate explicitly authored versions
+		if err := lib.validateVersions(mf.MetadataPath); err != nil {
+			return nil, err
+		}
+
+		libraries = append(libraries, *lib)
+	}
+
+	slices.SortFunc(libraries, func(a, b Library) int { return cmp.Compare(a.Name, b.Name) })
+
+	return &ScanResult{Libraries: libraries}, nil
+}
+
+func (l *Library) validateVersions(metadataPath string) error {
+	if l.GoMinVersion != "" {
+		if !version.IsValid("go" + l.GoMinVersion) {
+			return fmt.Errorf("invalid go_min_version %q in %s", l.GoMinVersion, metadataPath)
+		}
+	}
+
+	if l.OtelcMinVersion != "" {
+		if !semver.IsValid(l.OtelcMinVersion) {
+			return fmt.Errorf("invalid otelc_min_version %q in %s: must be a valid semver", l.OtelcMinVersion, metadataPath)
+		}
+	}
+
+	for _, m := range l.Modules {
+		if m.Version != "" && !semver.IsValid(m.Version) {
+			return fmt.Errorf("invalid module version %q in %s", m.Version, metadataPath)
+		}
+	}
+	return nil
+}
+
+func (l *Library) inferGoMinVersion(modVersions map[string]string) {
+	if l.GoMinVersion != "" {
+		return
+	}
+	var highest string
+	for _, m := range l.Modules {
+		if gv, ok := modVersions[m.Path]; ok && gv != "" {
+			if highest == "" || version.Compare("go"+gv, "go"+highest) > 0 {
+				highest = gv
+			}
+		}
+	}
+	l.GoMinVersion = highest
+}
+
+func analyzeMetadataLibrary(metadataPath string) (*Library, error) {
+	data, err := os.ReadFile(metadataPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read %s: %w", metadataPath, err)
+	}
+
+	var lib Library
+	dec := yaml.NewDecoder(bytes.NewReader(data))
+	dec.KnownFields(true)
+	if err := dec.Decode(&lib); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal %s: %w", metadataPath, err)
+	}
+
+	return &lib, nil
 }

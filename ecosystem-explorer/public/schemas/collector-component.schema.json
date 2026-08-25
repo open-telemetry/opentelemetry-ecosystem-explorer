@@ -326,6 +326,50 @@
       },
       "propertyOrder": []
     },
+    "feature_gates": {
+      "description": "Feature gates controlling opt-in/opt-out behavior changes for this component.",
+      "type": "array",
+      "items": {
+        "description": "A feature gate exposed by a Collector component, controlling an opt-in/opt-out behavior change.\nModeled after the `feature_gates` entries in the metadata.yaml schema used by the collector-contrib repo.",
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Unique, namespaced identifier for the feature gate (e.g., receiver.awsxray.DontEmitV1HttpConventions).",
+            "type": "string"
+          },
+          "stage": {
+            "description": "Lifecycle stage of the feature gate.",
+            "enum": ["alpha", "beta", "deprecated", "development", "stable", "unmaintained"],
+            "type": "string"
+          },
+          "description": {
+            "description": "Description of the behavior change controlled by this gate.",
+            "type": "string"
+          },
+          "from_version": {
+            "description": "Version when the feature gate was introduced.",
+            "type": "string"
+          },
+          "to_version": {
+            "description": "Version when the feature gate reached stable/deprecated status.",
+            "type": "string"
+          },
+          "reference_url": {
+            "description": "URL with contextual information about the feature gate (e.g., a GitHub issue).",
+            "type": "string"
+          }
+        },
+        "propertyOrder": [
+          "id",
+          "stage",
+          "description",
+          "from_version",
+          "to_version",
+          "reference_url"
+        ],
+        "required": ["id", "stage"]
+      }
+    },
     "markdown_hash": {
       "description": "Content hash of the component's README, if one was found. Used to lazily fetch the markdown file.",
       "type": "string"
@@ -344,6 +388,7 @@
     "metrics",
     "attributes",
     "resource_attributes",
+    "feature_gates",
     "markdown_hash"
   ],
   "required": ["distribution", "ecosystem", "id", "name", "type"],

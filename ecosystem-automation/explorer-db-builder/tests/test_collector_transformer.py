@@ -106,6 +106,8 @@ class TestTransformCollectorComponents:
         assert component["description"] is None
         assert "attributes" not in component
         assert "metrics" not in component
+        assert "feature_gates" not in component
+        assert "telemetry" not in component
 
     def test_attributes_and_metrics_included(self):
         inventory = _make_inventory(
@@ -135,6 +137,125 @@ class TestTransformCollectorComponents:
         assert "attr1" in component["attributes"]
         assert "metrics" in component
         assert "metric.one" in component["metrics"]
+
+    def test_feature_gates_included(self):
+        inventory = _make_inventory(
+            components={
+                "receiver": [
+                    {
+                        "name": "awsxrayreceiver",
+                        "metadata": {
+                            "status": {},
+                            "feature_gates": [
+                                {
+                                    "id": "receiver.awsxray.DontEmitV1HttpConventions",
+                                    "stage": "alpha",
+                                    "description": "Disables semconv legacy HTTP attributes.",
+                                    "from_version": "v0.158.0",
+                                    "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/1",
+                                }
+                            ],
+                        },
+                    }
+                ],
+                "processor": [],
+                "exporter": [],
+                "connector": [],
+                "extension": [],
+            }
+        )
+
+        result = transform_collector_components(inventory, "contrib")
+
+        assert len(result) == 1
+        component = result[0]
+        assert "feature_gates" in component
+        assert component["feature_gates"][0]["id"] == "receiver.awsxray.DontEmitV1HttpConventions"
+
+    def test_feature_gates_omitted_when_empty_list(self):
+        inventory = _make_inventory(
+            components={
+                "receiver": [
+                    {
+                        "name": "otlpreceiver",
+                        "metadata": {"status": {}, "feature_gates": []},
+                    }
+                ],
+                "processor": [],
+                "exporter": [],
+                "connector": [],
+                "extension": [],
+            }
+        )
+
+        result = transform_collector_components(inventory, "contrib")
+
+        assert "feature_gates" not in result[0]
+
+    def test_telemetry_included(self):
+        inventory = _make_inventory(
+            components={
+                "processor": [
+                    {
+                        "name": "memorylimiterprocessor",
+                        "metadata": {
+                            "status": {},
+                            "telemetry": {
+                                "metrics": {
+                                    "processor_memory_limiter_refused_spans": {
+                                        "enabled": True,
+                                        "description": "Number of spans refused.",
+                                        "unit": "{span}",
+                                        "sum": {"value_type": "int", "monotonic": True},
+                                    }
+                                }
+                            },
+                        },
+                    }
+                ],
+                "receiver": [],
+                "exporter": [],
+                "connector": [],
+                "extension": [],
+            }
+        )
+
+        result = transform_collector_components(inventory, "contrib")
+
+        assert len(result) == 1
+        component = result[0]
+        assert "telemetry" in component
+        assert "processor_memory_limiter_refused_spans" in component["telemetry"]["metrics"]
+
+    def test_telemetry_absent_when_not_in_metadata(self):
+        inventory = _make_inventory(
+            components={
+                "receiver": [{"name": "minimalreceiver", "metadata": {"status": {}}}],
+                "processor": [],
+                "exporter": [],
+                "connector": [],
+                "extension": [],
+            }
+        )
+
+        result = transform_collector_components(inventory, "core")
+
+        assert "telemetry" not in result[0]
+
+    def test_telemetry_absent_when_empty_dict(self):
+        inventory = _make_inventory(
+            components={
+                "receiver": [{"name": "minimalreceiver", "metadata": {"status": {}, "telemetry": {}}}],
+                "processor": [],
+                "exporter": [],
+                "connector": [],
+                "extension": [],
+            }
+        )
+
+        result = transform_collector_components(inventory, "core")
+
+        assert "telemetry" not in result[0]
 
     def test_id_format(self):
         inventory = _make_inventory(

@@ -1,0 +1,31 @@
+{
+  "description": null,
+  "display_name": "AWS Container Insights Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-awscontainerinsightreceiver",
+  "markdown_hash": "f84da2162e0f",
+  "name": "awscontainerinsightreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "Aneurysm9",
+        "pxaws"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    },
+    "warnings": [
+      "Other"
+    ]
+  },
+  "type": "receiver"
+}

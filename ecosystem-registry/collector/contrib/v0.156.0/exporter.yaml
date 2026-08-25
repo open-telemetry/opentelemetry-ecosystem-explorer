@@ -6,32 +6,24 @@ schema_hash: 5f02f63b26d4
 components:
 - name: alertmanagerexporter
   metadata:
-    type: alertmanager
     display_name: Alertmanager Exporter
     status:
       class: exporter
-      stability:
-        development:
-        - logs
-        - traces
-      distributions: []
       codeowners:
         active:
         - sokoide
         - mcube8
+      distributions: []
+      stability:
+        development:
+        - logs
+        - traces
+    type: alertmanager
 - name: alibabacloudlogserviceexporter
   metadata:
-    type: alibabacloud_logservice
     display_name: AlibabaCloud LogService Exporter
     status:
       class: exporter
-      stability:
-        beta:
-        - logs
-        - metrics
-        - traces
-      distributions:
-      - contrib
       codeowners:
         active:
         - vyagh
@@ -39,17 +31,19 @@ components:
         - shabicheng
         - kongluoxing
         - qiansheng91
+      distributions:
+      - contrib
+      stability:
+        beta:
+        - logs
+        - metrics
+        - traces
+    type: alibabacloud_logservice
 - name: awscloudwatchlogsexporter
   metadata:
-    type: awscloudwatchlogs
     display_name: AWS CloudWatch Logs Exporter
     status:
       class: exporter
-      stability:
-        alpha:
-        - logs
-      distributions:
-      - contrib
       codeowners:
         active:
         - yaten2302
@@ -58,17 +52,17 @@ components:
         - boostchicken
         - rapphil
         seeking_new: true
+      distributions:
+      - contrib
+      stability:
+        alpha:
+        - logs
+    type: awscloudwatchlogs
 - name: awsemfexporter
   metadata:
-    type: awsemf
     display_name: AWS CloudWatch EMF Exporter
     status:
       class: exporter
-      stability:
-        beta:
-        - metrics
-      distributions:
-      - contrib
       codeowners:
         active:
         - Aneurysm9
@@ -76,146 +70,163 @@ components:
         emeritus:
         - shaochengwang
         - bryan-aguilar
+      distributions:
+      - contrib
+      stability:
+        beta:
+        - metrics
+    type: awsemf
 - name: awskinesisexporter
   metadata:
-    type: awskinesis
     display_name: AWS Kinesis Exporter
     status:
       class: exporter
+      codeowners:
+        active:
+        - Aneurysm9
+        - MovieStoreGuy
+      distributions:
+      - contrib
       stability:
         beta:
         - logs
         - metrics
         - traces
-      distributions:
-      - contrib
-      codeowners:
-        active:
-        - Aneurysm9
-        - MovieStoreGuy
+    type: awskinesis
 - name: awss3exporter
   metadata:
-    type: awss3
     display_name: AWS S3 Exporter
     status:
       class: exporter
-      stability:
-        alpha:
-        - logs
-        - metrics
-        - traces
-      distributions:
-      - contrib
       codeowners:
         active:
         - atoulme
         - pdelewski
         - Erog38
-- name: awsxrayexporter
-  metadata:
-    type: awsxray
-    display_name: AWS X-Ray Tracing Exporter
-    status:
-      class: exporter
-      stability:
-        beta:
-        - traces
       distributions:
       - contrib
-      codeowners:
-        active:
-        - wangzlei
-        - srprash
-- name: azureblobexporter
-  metadata:
-    type: azure_blob
-    display_name: Azure Blob Storage Exporter
-    status:
-      class: exporter
       stability:
         alpha:
         - logs
         - metrics
         - traces
+    type: awss3
+- name: awsxrayexporter
+  metadata:
+    display_name: AWS X-Ray Tracing Exporter
+    status:
+      class: exporter
+      codeowners:
+        active:
+        - wangzlei
+        - srprash
       distributions:
       - contrib
+      stability:
+        beta:
+        - traces
+    type: awsxray
+- name: azureblobexporter
+  metadata:
+    deprecated_type: azureblob
+    display_name: Azure Blob Storage Exporter
+    scope_name: otelcol/azureblobexporter
+    status:
+      class: exporter
       codeowners:
         active:
         - hgaol
         - MovieStoreGuy
-- name: azuredataexplorerexporter
-  metadata:
-    type: azuredataexplorer
-    display_name: Azure Data Explorer Exporter
-    status:
-      class: exporter
+      distributions:
+      - contrib
       stability:
-        beta:
+        alpha:
         - logs
         - metrics
         - traces
-      distributions:
-      - contrib
+    type: azure_blob
+- name: azuredataexplorerexporter
+  metadata:
+    display_name: Azure Data Explorer Exporter
+    status:
+      class: exporter
       codeowners:
         active:
         - ag-ramachandran
         emeritus:
         - asaharn
-- name: azuremonitorexporter
-  metadata:
-    type: azuremonitor
-    display_name: Azure Monitor Exporter
-    status:
-      class: exporter
+      distributions:
+      - contrib
       stability:
         beta:
         - logs
         - metrics
         - traces
-      distributions:
-      - contrib
+    type: azuredataexplorer
+- name: azuremonitorexporter
+  metadata:
+    display_name: Azure Monitor Exporter
+    status:
+      class: exporter
       codeowners:
         active:
         - pcwiese
         - hgaol
+      distributions:
+      - contrib
+      stability:
+        beta:
+        - logs
+        - metrics
+        - traces
+    type: azuremonitor
 - name: bmchelixexporter
   metadata:
-    type: bmc_helix
+    deprecated_type: bmchelix
     display_name: BMC Helix Exporter
     status:
       class: exporter
-      stability:
-        alpha:
-        - metrics
-      distributions:
-      - contrib
       codeowners:
         active:
         - bertysentry
         - NassimBtk
         - MovieStoreGuy
+      distributions:
+      - contrib
+      stability:
+        alpha:
+        - metrics
+    type: bmc_helix
 - name: cassandraexporter
   metadata:
-    type: cassandra
     display_name: Cassandra Exporter
     status:
       class: exporter
-      stability:
-        alpha:
-        - logs
-        - traces
-      distributions:
-      - contrib
       codeowners:
         active:
         - atoulme
         - emreyalvac
+      distributions:
+      - contrib
+      stability:
+        alpha:
+        - logs
+        - traces
+    type: cassandra
 - name: clickhouseexporter
   metadata:
-    type: clickhouse
     display_name: ClickHouse Exporter
     status:
       class: exporter
+      codeowners:
+        active:
+        - hanjm
+        - Frapschen
+        - SpencerTorres
+        emeritus:
+        - dmitryax
+      distributions:
+      - contrib
       stability:
         alpha:
         - metrics
@@ -224,21 +235,19 @@ components:
         - traces
         development:
         - profiles
-      distributions:
-      - contrib
-      codeowners:
-        active:
-        - hanjm
-        - Frapschen
-        - SpencerTorres
-        emeritus:
-        - dmitryax
+    type: clickhouse
 - name: coralogixexporter
   metadata:
-    type: coralogix
     display_name: Coralogix Exporter
     status:
       class: exporter
+      codeowners:
+        active:
+        - povilasv
+        - iblancasa
+        - douglascamata
+      distributions:
+      - contrib
       stability:
         alpha:
         - profiles
@@ -246,26 +255,35 @@ components:
         - logs
         - metrics
         - traces
-      distributions:
-      - contrib
-      codeowners:
-        active:
-        - povilasv
-        - iblancasa
-        - douglascamata
+      warnings:
+      - Authentication issues in v0.127.0
+    type: coralogix
 - name: datadogexporter
   metadata:
-    type: datadog
     display_name: Datadog Exporter
+    feature_gates:
+    - description: Datadog Exporter will not compute APM Stats
+      from_version: v0.89.0
+      id: exporter.datadogexporter.DisableAPMStats
+      reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/28616
+      skip_strict_validation: true
+      stage: beta
+    - description: When enabled, trace export uses the HTTP client from the exporter
+        HTTP configs
+      from_version: v0.105.0
+      id: exporter.datadogexporter.TraceExportUseCustomHTTPClient
+      reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/34025
+      skip_strict_validation: true
+      stage: alpha
+    - description: When enabled, metric export in datadogexporter uses the serializer
+        exporter from the Datadog Agent.
+      from_version: v0.122.0
+      id: exporter.datadogexporter.metricexportserializerclient
+      reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37930
+      skip_strict_validation: true
+      stage: beta
     status:
       class: exporter
-      stability:
-        beta:
-        - logs
-        - metrics
-        - traces
-      distributions:
-      - contrib
       codeowners:
         active:
         - mx-psi
@@ -279,81 +297,71 @@ components:
         - gbbr
         - jackgopack4
         - ankitpatel96
+      distributions:
+      - contrib
+      stability:
+        beta:
+        - logs
+        - metrics
+        - traces
       unsupported_platforms:
       - aix
+    type: datadog
 - name: datasetexporter
   metadata:
-    type: dataset
     display_name: DataSet Exporter
     status:
       class: exporter
-      stability:
-        alpha:
-        - logs
-        - traces
-      distributions:
-      - contrib
       codeowners:
         active:
         - atoulme
         - martin-majlis-s1
         - zdaratom-s1
         - tomaz-s1
+      distributions:
+      - contrib
+      stability:
+        alpha:
+        - logs
+        - traces
+    type: dataset
 - name: dorisexporter
   metadata:
-    type: doris
     display_name: Apache Doris Exporter
+    scope_name: otelcol/doris
     status:
       class: exporter
+      codeowners:
+        active:
+        - atoulme
+        - joker-star-l
+      distributions:
+      - contrib
       stability:
         alpha:
         - logs
         - metrics
         - traces
-      distributions:
-      - contrib
-      codeowners:
-        active:
-        - atoulme
-        - joker-star-l
+    type: doris
 - name: elasticsearchexporter
   metadata:
-    type: elasticsearch
-    display_name: Elasticsearch Exporter
-    status:
-      class: exporter
-      stability:
-        beta:
-        - logs
-        - traces
-        development:
-        - metrics
-        - profiles
-      distributions:
-      - contrib
-      codeowners:
-        active:
-        - JaredTan95
-        - carsonip
-        - lahsivjar
     attributes:
       error.type:
         description: The type of error that occurred when processing the documents.
         type: string
       failure_store:
         description: The status of the failure store.
-        type: string
         enum:
         - failed
         - not_enabled
         - unknown
         - used
+        type: string
       http.response.status_code:
         description: HTTP status code.
         type: int
       outcome:
         description: The operation outcome.
-        type: string
         enum:
         - failed_client
         - failed_server
@@ -362,29 +370,200 @@ components:
         - success
         - timeout
         - too_many
+        type: string
+    display_name: Elasticsearch Exporter
+    status:
+      class: exporter
+      codeowners:
+        active:
+        - JaredTan95
+        - carsonip
+        - lahsivjar
+      distributions:
+      - contrib
+      stability:
+        beta:
+        - logs
+        - traces
+        development:
+        - metrics
+        - profiles
+    telemetry:
+      metrics:
+        elasticsearch.bulk_requests.count:
+          attributes:
+          - http.response.status_code
+          - outcome
+          description: Count of the completed bulk requests.
+          enabled: true
+          prefix: otelcol.
+          stability: alpha
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '1'
+        elasticsearch.bulk_requests.latency:
+          attributes:
+          - http.response.status_code
+          - outcome
+          description: Latency of Elasticsearch bulk operations in seconds.
+          enabled: true
+          histogram:
+            bucket_boundaries:
+            - 0
+            - 0.005
+            - 0.01
+            - 0.025
+            - 0.05
+            - 0.075
+            - 0.1
+            - 0.25
+            - 0.5
+            - 0.75
+            - 1
+            - 2.5
+            - 5
+            - 7.5
+            - 10
+            - 25
+            - 50
+            - 75
+            - 100
+            - 250
+            - 500
+            - 750
+            - 1000
+            - 2500
+            - 5000
+            - 7500
+            - 10000
+            value_type: double
+          prefix: otelcol.
+          stability: alpha
+          unit: s
+        elasticsearch.docs.processed:
+          attributes:
+          - error.type
+          - failure_store
+          - http.response.status_code
+          - outcome
+          description: Count of documents flushed to Elasticsearch.
+          enabled: true
+          prefix: otelcol.
+          stability: alpha
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '1'
+        elasticsearch.docs.received:
+          description: Count of Elasticsearch documents successfully received to be
+            buffered.
+          enabled: true
+          prefix: otelcol.
+          stability: alpha
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '1'
+        elasticsearch.docs.retried:
+          description: Count of document retries.
+          enabled: true
+          extended_documentation: Only document level retries are captured, whole
+            bulk request retries are not captured.
+          prefix: otelcol.
+          stability: alpha
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '1'
+        elasticsearch.docs.retried_http_request:
+          attributes:
+          - http.response.status_code
+          - outcome
+          description: Count of documents retried due to HTTP request-level failures.
+          enabled: true
+          extended_documentation: 'Counts documents that are retried because an entire
+            bulk HTTP
+
+            request failed with a retryable status code (as configured in
+
+            `retry_on_status`) and was retried by the Elasticsearch client,
+
+            up to the `max_retries` limit.
+
+
+            In contrast, `elasticsearch.docs.retried` counts documents retried
+
+            individually within otherwise successful bulk requests due to
+
+            document-specific failures such as mapping conflicts.
+
+            '
+          prefix: otelcol.
+          stability: alpha
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '1'
+        elasticsearch.flushed.bytes:
+          description: Number of bytes flushed by the indexer.
+          enabled: true
+          prefix: otelcol.
+          stability: alpha
+          sum:
+            monotonic: true
+            value_type: int
+          unit: By
+        elasticsearch.flushed.uncompressed_bytes:
+          description: Number of uncompressed bytes flushed by the indexer.
+          enabled: true
+          prefix: otelcol.
+          stability: alpha
+          sum:
+            monotonic: true
+            value_type: int
+          unit: By
+    type: elasticsearch
 - name: faroexporter
   metadata:
-    type: faro
     display_name: Faro Exporter
     status:
       class: exporter
-      stability:
-        alpha:
-        - logs
-        - traces
-      distributions:
-      - contrib
       codeowners:
         active:
         - dehaansa
         - rlankfo
         - mar4uk
+      distributions:
+      - contrib
+      stability:
+        alpha:
+        - logs
+        - traces
+    type: faro
 - name: fileexporter
   metadata:
-    type: file
     display_name: File Exporter
+    feature_gates:
+    - description: Use native file-level compression (zstd) instead of message-level
+        compression. Creates standard .zst files compatible with standard decompression
+        tools
+      from_version: v0.154.0
+      id: exporter.file.nativeCompression
+      reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44077
+      stage: alpha
     status:
       class: exporter
+      codeowners:
+        active:
+        - paulojmdias
+        emeritus:
+        - atingchen
+        seeking_new: true
+      distributions:
+      - contrib
+      - core
+      - k8s
       stability:
         alpha:
         - logs
@@ -392,29 +571,21 @@ components:
         - traces
         development:
         - profiles
-      distributions:
-      - contrib
-      - core
-      - k8s
-      codeowners:
-        active:
-        - paulojmdias
-        emeritus:
-        - atingchen
-        seeking_new: true
+    type: file
 - name: googlecloudexporter
   metadata:
-    type: googlecloud
     display_name: Google Cloud Exporter
+    feature_gates:
+    - description: When enabled, the googlecloudexporter will map the OTLP metrics
+        to the monitored resource type defined by the resource label gcp.resource_type.
+        The MR labels are defined by resource labels with the prefix gcp.<monitored_resource_type>.
+      from_version: v0.122.0
+      id: exporter.googlecloud.CustomMonitoredResources
+      reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/38331
+      skip_strict_validation: true
+      stage: alpha
     status:
       class: exporter
-      stability:
-        beta:
-        - logs
-        - metrics
-        - traces
-      distributions:
-      - contrib
       codeowners:
         active:
         - aabmass
@@ -423,51 +594,54 @@ components:
         - jsuereth
         - psx95
         - ridwanmsharif
-- name: googlecloudpubsubexporter
-  metadata:
-    type: googlecloudpubsub
-    display_name: Google Cloud Pub/Sub Exporter
-    status:
-      class: exporter
+      distributions:
+      - contrib
       stability:
         beta:
         - logs
         - metrics
         - traces
-      distributions:
-      - contrib
+    type: googlecloud
+- name: googlecloudpubsubexporter
+  metadata:
+    display_name: Google Cloud Pub/Sub Exporter
+    status:
+      class: exporter
       codeowners:
         active:
         - alexvanboxel
+      distributions:
+      - contrib
+      stability:
+        beta:
+        - logs
+        - metrics
+        - traces
+    type: googlecloudpubsub
 - name: googlecloudstorageexporter
   metadata:
-    type: google_cloud_storage
+    deprecated_type: googlecloudstorage
     display_name: Google Cloud Storage Exporter
     status:
       class: exporter
-      stability:
-        alpha:
-        - logs
-        development:
-        - traces
-      distributions:
-      - contrib
       codeowners:
         active:
         - constanca-m
         - braydonk
         seeking_new: true
+      distributions:
+      - contrib
+      stability:
+        alpha:
+        - logs
+        development:
+        - traces
+    type: google_cloud_storage
 - name: googlemanagedprometheusexporter
   metadata:
-    type: googlemanagedprometheus
     display_name: Google Cloud Managed Prometheus Exporter
     status:
       class: exporter
-      stability:
-        beta:
-        - metrics
-      distributions:
-      - contrib
       codeowners:
         active:
         - aabmass
@@ -476,17 +650,18 @@ components:
         - jsuereth
         - psx95
         - ridwanmsharif
+      distributions:
+      - contrib
+      stability:
+        beta:
+        - metrics
+    type: googlemanagedprometheus
 - name: honeycombmarkerexporter
   metadata:
-    type: honeycomb_marker
+    deprecated_type: honeycombmarker
     display_name: Honeycomb Marker Exporter
     status:
       class: exporter
-      stability:
-        alpha:
-        - logs
-      distributions:
-      - contrib
       codeowners:
         active:
         - VinozzZ
@@ -494,54 +669,40 @@ components:
         emeritus:
         - TylerHelmuth
         - fchikwekwe
+      distributions:
+      - contrib
+      stability:
+        alpha:
+        - logs
+    type: honeycomb_marker
 - name: influxdbexporter
   metadata:
-    type: influxdb
     display_name: InfluxDB Exporter
     status:
       class: exporter
-      stability:
-        beta:
-        - logs
-        - metrics
-        - traces
-      distributions:
-      - contrib
       codeowners:
         active:
         - jacobmarble
-- name: kafkaexporter
-  metadata:
-    type: kafka
-    display_name: Kafka Exporter
-    status:
-      class: exporter
+      distributions:
+      - contrib
       stability:
         beta:
         - logs
         - metrics
         - traces
-        development:
-        - profiles
-      distributions:
-      - contrib
-      - core
-      codeowners:
-        active:
-        - pavolloffay
-        - MovieStoreGuy
-        - axw
-        - paulojmdias
+    type: influxdb
+- name: kafkaexporter
+  metadata:
     attributes:
       node_id:
         description: The Kafka node ID.
         type: int
       outcome:
         description: The operation outcome.
-        type: string
         enum:
         - failure
         - success
+        type: string
       partition:
         description: The Kafka topic partition.
         type: int
@@ -551,21 +712,239 @@ components:
       topic:
         description: The Kafka topic.
         type: string
-- name: loadbalancingexporter
-  metadata:
-    type: load_balancing
-    display_name: Load Balancing Exporter
+    display_name: Kafka Exporter
     status:
       class: exporter
+      codeowners:
+        active:
+        - pavolloffay
+        - MovieStoreGuy
+        - axw
+        - paulojmdias
+      distributions:
+      - contrib
+      - core
       stability:
         beta:
         - logs
+        - metrics
         - traces
         development:
-        - metrics
-      distributions:
-      - contrib
-      - k8s
+        - profiles
+    telemetry:
+      metrics:
+        kafka_broker_closed:
+          attributes:
+          - node_id
+          - server.address
+          description: The total number of connections closed.
+          enabled: true
+          extended_documentation: Only produced when franz-go is enabled.
+          optional: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '1'
+        kafka_broker_connects:
+          attributes:
+          - node_id
+          - outcome
+          - server.address
+          description: The total number of connections opened.
+          enabled: true
+          extended_documentation: Only produced when franz-go is enabled.
+          optional: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '1'
+        kafka_broker_throttling_duration:
+          attributes:
+          - node_id
+          - server.address
+          description: The throttling duration in ms imposed by the broker when exporting
+            messages.
+          enabled: true
+          extended_documentation: Only produced when franz-go is enabled. Deprecated
+            in favor of kafka_broker_throttling_latency.
+          histogram:
+            value_type: int
+          optional: true
+          stability: deprecated
+          unit: ms
+          warnings:
+            if_enabled: This metric is deprecated in favor of kafka_broker_throttling_latency
+              and will be removed soon.
+        kafka_broker_throttling_latency:
+          attributes:
+          - node_id
+          - server.address
+          description: The throttling latency in seconds imposed by the broker when
+            exporting records.
+          enabled: true
+          extended_documentation: Only produced when franz-go is enabled.
+          histogram:
+            bucket_boundaries:
+            - 0
+            - 0.005
+            - 0.01
+            - 0.025
+            - 0.05
+            - 0.075
+            - 0.1
+            - 0.25
+            - 0.5
+            - 0.75
+            - 1
+            - 2.5
+            - 5
+            - 7.5
+            - 10
+            - 25
+            - 50
+            - 75
+            - 100
+            value_type: double
+          optional: true
+          stability: development
+          unit: s
+        kafka_exporter_bytes:
+          attributes:
+          - node_id
+          - outcome
+          - partition
+          - server.address
+          - topic
+          description: The size in bytes of exported records seen by the broker.
+          enabled: true
+          extended_documentation: Only produced when franz-go is enabled.
+          optional: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: By
+        kafka_exporter_bytes_uncompressed:
+          attributes:
+          - node_id
+          - outcome
+          - partition
+          - server.address
+          - topic
+          description: The uncompressed size in bytes of exported messages seen by
+            the client.
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: By
+        kafka_exporter_latency:
+          attributes:
+          - node_id
+          - outcome
+          - partition
+          - server.address
+          - topic
+          description: The time it took in ms to export a batch of messages.
+          enabled: true
+          extended_documentation: Deprecated in favor of kafka_exporter_write_latency.
+          histogram:
+            value_type: int
+          stability: deprecated
+          unit: ms
+          warnings:
+            if_enabled: This metric is deprecated in favor of kafka_exporter_write_latency
+              and will be removed soon.
+        kafka_exporter_messages:
+          attributes:
+          - node_id
+          - outcome
+          - partition
+          - server.address
+          - topic
+          description: The number of exported messages.
+          enabled: true
+          extended_documentation: Deprecated in favor of kafka_exporter_records.
+          stability: deprecated
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '1'
+          warnings:
+            if_enabled: This metric is deprecated in favor of kafka_exporter_records
+              and will be removed soon.
+        kafka_exporter_records:
+          attributes:
+          - node_id
+          - outcome
+          - partition
+          - server.address
+          - topic
+          description: The number of exported records.
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '1'
+        kafka_exporter_write_latency:
+          attributes:
+          - node_id
+          - outcome
+          - partition
+          - server.address
+          - topic
+          description: The time it took in seconds to export a batch of records.
+          enabled: true
+          histogram:
+            bucket_boundaries:
+            - 0
+            - 0.005
+            - 0.01
+            - 0.025
+            - 0.05
+            - 0.075
+            - 0.1
+            - 0.25
+            - 0.5
+            - 0.75
+            - 1
+            - 2.5
+            - 5
+            - 7.5
+            - 10
+            - 25
+            - 50
+            - 75
+            - 100
+            value_type: double
+          stability: development
+          unit: s
+    type: kafka
+- name: loadbalancingexporter
+  metadata:
+    attributes:
+      endpoint:
+        description: The endpoint of the backend
+        type: string
+      resolver:
+        description: Resolver used
+        enum:
+        - aws
+        - dns
+        - k8s
+        - static
+        type: string
+      success:
+        description: Whether an outcome was successful
+        type: bool
+    deprecated_type: loadbalancing
+    display_name: Load Balancing Exporter
+    status:
+      class: exporter
       codeowners:
         active:
         - rlankfo
@@ -573,81 +952,131 @@ components:
         emeritus:
         - jpkrohling
         seeking_new: true
-    attributes:
-      endpoint:
-        description: The endpoint of the backend
-        type: string
-      resolver:
-        description: Resolver used
-        type: string
-        enum:
-        - aws
-        - dns
-        - k8s
-        - static
-      success:
-        description: Whether an outcome was successful
-        type: bool
+      distributions:
+      - contrib
+      - k8s
+      stability:
+        beta:
+        - logs
+        - traces
+        development:
+        - metrics
+    telemetry:
+      metrics:
+        loadbalancer_backend_latency:
+          attributes:
+          - endpoint
+          description: Response latency in ms for the backends.
+          enabled: true
+          histogram:
+            bucket_boundaries:
+            - 5
+            - 10
+            - 20
+            - 50
+            - 100
+            - 200
+            - 500
+            - 1000
+            - 2000
+            - 5000
+            value_type: int
+          stability: development
+          unit: ms
+        loadbalancer_backend_outcome:
+          attributes:
+          - success
+          description: Number of successes and failures for each endpoint.
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{outcomes}'
+        loadbalancer_num_backend_updates:
+          attributes:
+          - resolver
+          description: Number of times the list of backends was updated.
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{updates}'
+        loadbalancer_num_backends:
+          attributes:
+          - resolver
+          description: Current number of backends in use.
+          enabled: true
+          gauge:
+            value_type: int
+          stability: development
+          unit: '{backends}'
+        loadbalancer_num_resolutions:
+          attributes:
+          - resolver
+          - success
+          description: Number of times the resolver has triggered new resolutions.
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{resolutions}'
+    type: load_balancing
 - name: logicmonitorexporter
   metadata:
-    type: logicmonitor
     display_name: LogicMonitor Exporter
     status:
       class: exporter
-      stability:
-        alpha:
-        - logs
-        - traces
-      distributions:
-      - contrib
       codeowners:
         active:
         - bogdandrutu
         - khyatigandhi6
         - avadhut123pisal
+      distributions:
+      - contrib
+      stability:
+        alpha:
+        - logs
+        - traces
+    type: logicmonitor
 - name: logzioexporter
   metadata:
-    type: logzio
     display_name: Logz.io Exporter
     status:
       class: exporter
+      codeowners:
+        active:
+        - yotamloe
+      distributions:
+      - contrib
       stability:
         beta:
         - logs
         - traces
-      distributions:
-      - contrib
-      codeowners:
-        active:
-        - yotamloe
+    type: logzio
 - name: mezmoexporter
   metadata:
-    type: mezmo
     display_name: Mezmo Exporter
     status:
       class: exporter
-      stability:
-        beta:
-        - logs
-      distributions:
-      - contrib
       codeowners:
         active:
         - dashpole
         - billmeyer
         - gjanco
+      distributions:
+      - contrib
+      stability:
+        beta:
+        - logs
+    type: mezmo
 - name: opensearchexporter
   metadata:
-    type: opensearch
     display_name: OpenSearch Exporter
     status:
       class: exporter
-      stability:
-        alpha:
-        - logs
-        - traces
-      distributions:
-      - contrib
       codeowners:
         active:
         - ps48
@@ -657,55 +1086,89 @@ components:
         - MaxKsyunz
         - YANG-DB
         seeking_new: true
+      distributions:
+      - contrib
+      stability:
+        alpha:
+        - logs
+        - traces
+    type: opensearch
 - name: otelarrowexporter
   metadata:
-    type: otelarrow
     display_name: OpenTelemetry Arrow Exporter
     status:
       class: exporter
-      stability:
-        beta:
-        - logs
-        - metrics
-        - traces
-      distributions:
-      - contrib
-      - k8s
       codeowners:
         active:
         - jmacd
         - JakeDern
         emeritus:
         - moh-osman3
-- name: prometheusexporter
-  metadata:
-    type: prometheus
-    display_name: Prometheus Exporter
-    status:
-      class: exporter
-      stability:
-        beta:
-        - metrics
       distributions:
       - contrib
-      - core
+      - k8s
+      stability:
+        beta:
+        - logs
+        - metrics
+        - traces
+    type: otelarrow
+- name: prometheusexporter
+  metadata:
+    display_name: Prometheus Exporter
+    feature_gates:
+    - description: When enabled, the deprecated add_metric_suffixes configuration
+        option is ignored and translation_strategy is always used
+      from_version: v0.132.0
+      id: exporter.prometheusexporter.DisableAddMetricSuffixes
+      reference_url: https://github.com/open-telemetry/opentelemetry-specification/pull/4533
+      skip_strict_validation: true
+      stage: beta
+    status:
+      class: exporter
       codeowners:
         active:
         - Aneurysm9
         - dashpole
         - ArthurSens
-- name: prometheusremotewriteexporter
-  metadata:
-    type: prometheus_remote_write
-    display_name: Prometheus Remote Write Exporter
-    status:
-      class: exporter
-      stability:
-        beta:
-        - metrics
       distributions:
       - contrib
       - core
+      stability:
+        beta:
+        - metrics
+    type: prometheus
+- name: prometheusremotewriteexporter
+  metadata:
+    deprecated_type: prometheusremotewrite
+    display_name: Prometheus Remote Write Exporter
+    feature_gates:
+    - description: When enabled and settings configured, the Prometheus remote exporter
+        will spawn multiple workers/goroutines to handle incoming metrics batches
+        concurrently.
+      from_version: v0.118.0
+      id: exporter.prometheusremotewritexporter.EnableMultipleWorkers
+      reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/36134
+      skip_strict_validation: true
+      stage: alpha
+    - description: When enabled, the Prometheus remote write exporter will retry 429
+        http status code. Requires exporter.prometheusremotewritexporter.metrics.RetryOn429
+        to be enabled.
+      from_version: v0.101.0
+      id: exporter.prometheusremotewritexporter.RetryOn429
+      reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/31924
+      skip_strict_validation: true
+      stage: alpha
+    - description: When enabled, the Prometheus remote write exporter will support
+        sending rw2. Extra configuration is still required besides enabling this feature
+        gate.
+      from_version: v0.125.0
+      id: exporter.prometheusremotewritexporter.enableSendingRW2
+      reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/35888
+      skip_strict_validation: true
+      stage: alpha
+    status:
+      class: exporter
       codeowners:
         active:
         - Aneurysm9
@@ -713,98 +1176,280 @@ components:
         - dashpole
         - ArthurSens
         - ywwg
+      distributions:
+      - contrib
+      - core
+      stability:
+        beta:
+        - metrics
+    telemetry:
+      metrics:
+        exporter_prometheusremotewrite_consumers:
+          description: Number of configured workers to use to fan out the outgoing
+            requests
+          enabled: true
+          stability: development
+          sum:
+            monotonic: false
+            value_type: int
+          unit: '{consumer}'
+        exporter_prometheusremotewrite_failed_translations:
+          description: Number of translation operations that failed to translate metrics
+            from Otel to Prometheus
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '1'
+        exporter_prometheusremotewrite_sent_batches:
+          description: Number of remote write request batches sent to the remote write
+            endpoint regardless of success or failure
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{batch}'
+        exporter_prometheusremotewrite_translated_time_series:
+          description: Number of Prometheus time series that were translated from
+            OTel metrics
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '1'
+        exporter_prometheusremotewrite_wal_bytes_read:
+          description: Total number of bytes read from the WAL
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: By
+        exporter_prometheusremotewrite_wal_bytes_written:
+          description: Total number of bytes written to the WAL
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: By
+        exporter_prometheusremotewrite_wal_lag:
+          description: WAL lag
+          enabled: true
+          gauge:
+            value_type: int
+          stability: development
+          unit: '1'
+        exporter_prometheusremotewrite_wal_read_latency:
+          description: Response latency in ms for the WAL reads.
+          enabled: true
+          histogram:
+            bucket_boundaries:
+            - 5
+            - 10
+            - 20
+            - 50
+            - 100
+            - 200
+            - 500
+            - 1000
+            - 2000
+            - 5000
+            value_type: int
+          stability: development
+          unit: ms
+        exporter_prometheusremotewrite_wal_reads:
+          description: Number of WAL reads
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '1'
+        exporter_prometheusremotewrite_wal_reads_failures:
+          description: Number of WAL reads that failed
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '1'
+        exporter_prometheusremotewrite_wal_write_latency:
+          description: Response latency in ms for the WAL writes.
+          enabled: true
+          histogram:
+            bucket_boundaries:
+            - 5
+            - 10
+            - 20
+            - 50
+            - 100
+            - 200
+            - 500
+            - 1000
+            - 2000
+            - 5000
+            value_type: int
+          stability: development
+          unit: ms
+        exporter_prometheusremotewrite_wal_writes:
+          description: Number of WAL writes
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '1'
+        exporter_prometheusremotewrite_wal_writes_failures:
+          description: Number of WAL writes that failed
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '1'
+        exporter_prometheusremotewrite_written_exemplars:
+          description: Number of Prometheus Exemplars that were successfully written
+            to the remote write endpoint (only available when using remote write v2)
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{exemplar}'
+        exporter_prometheusremotewrite_written_histograms:
+          description: Number of Prometheus Histograms that were successfully written
+            to the remote write endpoint (only available when using remote write v2)
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{histogram}'
+        exporter_prometheusremotewrite_written_samples:
+          description: Number of Prometheus Samples that were successfully written
+            to the remote write endpoint (only available when using remote write v2)
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{sample}'
+    type: prometheus_remote_write
 - name: pulsarexporter
   metadata:
-    type: pulsar
     display_name: Pulsar Exporter
     status:
       class: exporter
-      stability:
-        alpha:
-        - logs
-        - metrics
-        - traces
-      distributions:
-      - contrib
       codeowners:
         active:
         - dao-jun
         emeritus:
         - dmitryax
-      unsupported_platforms:
-      - aix
-- name: rabbitmqexporter
-  metadata:
-    type: rabbitmq
-    display_name: RabbitMQ Exporter
-    status:
-      class: exporter
+      distributions:
+      - contrib
       stability:
         alpha:
         - logs
         - metrics
         - traces
-      distributions:
-      - contrib
+      unsupported_platforms:
+      - aix
+    type: pulsar
+- name: rabbitmqexporter
+  metadata:
+    display_name: RabbitMQ Exporter
+    status:
+      class: exporter
       codeowners:
         active:
         - atoulme
         emeritus:
         - swar8080
+      distributions:
+      - contrib
+      stability:
+        alpha:
+        - logs
+        - metrics
+        - traces
+    type: rabbitmq
 - name: sematextexporter
   metadata:
-    type: sematext
     display_name: Sematext Exporter
     status:
       class: exporter
+      codeowners:
+        active:
+        - AkhigbeEromo
+      distributions: []
       stability:
         development:
         - logs
         - metrics
-      distributions: []
-      codeowners:
-        active:
-        - AkhigbeEromo
+    type: sematext
 - name: sentryexporter
   metadata:
-    type: sentry
     display_name: Sentry Exporter
     status:
       class: exporter
-      stability:
-        alpha:
-        - logs
-        - traces
-      distributions:
-      - contrib
       codeowners:
         active:
         - AbhiPrasad
         - giortzisg
+      distributions:
+      - contrib
+      stability:
+        alpha:
+        - logs
+        - traces
+    type: sentry
 - name: signalfxexporter
   metadata:
-    type: signalfx
     display_name: SignalFx Exporter
+    feature_gates:
+    - description: Process entity events from logs pipeline and convert to dimension
+        property updates
+      from_version: v0.145.0
+      id: exporter.signalfx.consumeEntityEvents
+      reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45595
+      skip_strict_validation: true
+      stage: alpha
     status:
       class: exporter
+      codeowners:
+        active:
+        - dmitryax
+        - crobert-1
+      deprecation:
+        traces:
+          date: '2026-05-29'
+          migration: Traces pipeline is no longer necessary for trace correlation,
+            trace correlation is supported via OTLP. Trace functionality will be removed
+            from this exporter in December 2026.
+      distributions:
+      - contrib
       stability:
         beta:
         - logs
         - metrics
         deprecated:
         - traces
-      distributions:
-      - contrib
-      codeowners:
-        active:
-        - dmitryax
-        - crobert-1
+    type: signalfx
 - name: splunkhecexporter
   metadata:
-    type: splunk_hec
     display_name: Splunk HTTP Event Collector (HEC) Exporter
     status:
       class: exporter
+      codeowners:
+        active:
+        - atoulme
+        - dmitryax
+      distributions:
+      - contrib
       stability:
         beta:
         - logs
@@ -812,40 +1457,27 @@ components:
         - traces
         development:
         - profiles
-      distributions:
-      - contrib
-      codeowners:
-        active:
-        - atoulme
-        - dmitryax
+    type: splunk_hec
 - name: stefexporter
   metadata:
-    type: stef
     display_name: STEF Exporter
     status:
       class: exporter
-      stability:
-        alpha:
-        - metrics
-      distributions:
-      - contrib
       codeowners:
         active:
         - tigrannajaryan
         - dmitryax
+      distributions:
+      - contrib
+      stability:
+        alpha:
+        - metrics
+    type: stef
 - name: sumologicexporter
   metadata:
-    type: sumologic
     display_name: Sumo Logic Exporter
     status:
       class: exporter
-      stability:
-        beta:
-        - logs
-        - metrics
-        - traces
-      distributions:
-      - contrib
       codeowners:
         active:
         - rnishtala-sumo
@@ -859,70 +1491,112 @@ components:
         - chan-tim-sumo
         - echlebek
         - amdprophet
+      distributions:
+      - contrib
+      stability:
+        beta:
+        - logs
+        - metrics
+        - traces
+    telemetry:
+      metrics:
+        exporter_requests_bytes:
+          description: Total size of requests (in bytes)
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: By
+        exporter_requests_duration:
+          description: Duration of HTTP requests (in milliseconds)
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: ms
+        exporter_requests_records:
+          description: Total size of requests (in number of records)
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{records}'
+        exporter_requests_sent:
+          description: Number of requests
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '1'
+    type: sumologic
 - name: syslogexporter
   metadata:
-    type: syslog
     display_name: Syslog Exporter
     status:
       class: exporter
-      stability:
-        alpha:
-        - logs
-      distributions:
-      - contrib
       codeowners:
         active:
         - kasia-kujawa
         - rnishtala-sumo
         - andrzej-stencel
+      distributions:
+      - contrib
+      stability:
+        alpha:
+        - logs
+    type: syslog
 - name: tencentcloudlogserviceexporter
   metadata:
-    type: tencentcloud_logservice
     display_name: TencentCloud LogService Exporter
     status:
       class: exporter
-      stability:
-        beta:
-        - logs
-      distributions:
-      - contrib
       codeowners:
         active:
         - wgliang
         emeritus:
         - yiyang5055
+      distributions:
+      - contrib
+      stability:
+        beta:
+        - logs
+    type: tencentcloud_logservice
 - name: tinybirdexporter
   metadata:
-    type: tinybird
     display_name: Tinybird Exporter
     status:
       class: exporter
-      stability:
-        alpha:
-        - logs
-        - metrics
-        - traces
-      distributions:
-      - contrib
       codeowners:
         active:
         - mx-psi
         - jordivilaseca
         - MoreraAlejandro
+      distributions:
+      - contrib
+      stability:
+        alpha:
+        - logs
+        - metrics
+        - traces
+    type: tinybird
 - name: zipkinexporter
   metadata:
-    type: zipkin
     display_name: Zipkin Exporter
     status:
       class: exporter
-      stability:
-        beta:
-        - traces
-      distributions:
-      - contrib
-      - core
       codeowners:
         active:
         - MovieStoreGuy
         - andrzej-stencel
         - crobert-1
+      distributions:
+      - contrib
+      - core
+      stability:
+        beta:
+        - traces
+    type: zipkin

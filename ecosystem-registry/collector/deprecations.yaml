@@ -1,53 +1,52 @@
 core:
-  connector: []
-  exporter: []
-  extension: []
-  processor: []
-  receiver: []
-contrib:
-  connector: []
+  connector:
+  - name: xconnector
+    last_version: v0.158.0
+    deprecated_in_version: v0.159.0
+    source_repo: opentelemetry-collector
+    distributions: []
+    subtype: null
   exporter:
-  - name: sapmexporter
-    last_version: v0.147.0
-    deprecated_in_version: v0.148.0
-    source_repo: opentelemetry-collector-contrib
-    distributions:
-    - contrib
-    subtype: null
-  - name: googlesecopsexporter
-    last_version: v0.153.0
-    deprecated_in_version: v0.154.0
-    source_repo: opentelemetry-collector-contrib
+  - name: xexporter
+    last_version: v0.158.0
+    deprecated_in_version: v0.159.0
+    source_repo: opentelemetry-collector
     distributions: []
     subtype: null
-  extension: []
+  extension:
+  - name: xextension
+    last_version: v0.158.0
+    deprecated_in_version: v0.159.0
+    source_repo: opentelemetry-collector
+    distributions: []
+    subtype: null
   processor:
-  - name: datadogsemanticsprocessor
-    last_version: v0.147.0
-    deprecated_in_version: v0.148.0
-    source_repo: opentelemetry-collector-contrib
-    distributions: []
-    subtype: null
-  - name: dnslookupprocessor
-    last_version: v0.150.0
-    deprecated_in_version: v0.151.0
-    source_repo: opentelemetry-collector-contrib
+  - name: xprocessor
+    last_version: v0.158.0
+    deprecated_in_version: v0.159.0
+    source_repo: opentelemetry-collector
     distributions: []
     subtype: null
   receiver:
-  - name: bigipreceiver
-    last_version: v0.146.0
-    deprecated_in_version: v0.147.0
+  - name: xreceiver
+    last_version: v0.158.0
+    deprecated_in_version: v0.159.0
+    source_repo: opentelemetry-collector
+    distributions: []
+    subtype: null
+contrib:
+  connector: []
+  exporter: []
+  extension:
+  - name: kafkatopicsobserver
+    last_version: v0.158.0
+    deprecated_in_version: v0.159.0
     source_repo: opentelemetry-collector-contrib
     distributions:
     - contrib
-    subtype: null
-  - name: k8slogreceiver
-    last_version: v0.147.0
-    deprecated_in_version: v0.148.0
-    source_repo: opentelemetry-collector-contrib
-    distributions: []
-    subtype: null
+    subtype: observer
+  processor: []
+  receiver:
   - name: jmxreceiver
     last_version: v0.156.0
     deprecated_in_version: v0.157.0

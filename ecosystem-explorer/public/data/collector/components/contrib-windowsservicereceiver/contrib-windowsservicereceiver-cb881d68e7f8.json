@@ -1,0 +1,67 @@
+{
+  "attributes": {
+    "name": {
+      "description": "The name of the windows Service being reported.",
+      "requirement_level": "required",
+      "type": "string"
+    },
+    "startup_mode": {
+      "description": "Startup mode of Windows Service",
+      "enum": [
+        "auto_start",
+        "boot_start",
+        "demand_start",
+        "disabled",
+        "system_start"
+      ],
+      "requirement_level": "required",
+      "type": "string"
+    }
+  },
+  "description": "The Windows Service Receiver is a receiver for scraping information about the state of services running on a Windows machine.",
+  "display_name": "Windows Service Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-windowsservicereceiver",
+  "markdown_hash": "cf3eff88b286",
+  "metrics": {
+    "windows.service.status": {
+      "attributes": [
+        "name",
+        "startup_mode"
+      ],
+      "description": "Gauge value containing service status as an integer value.",
+      "enabled": true,
+      "extended_documentation": "Gauge values map to service status as follows: 0 - Failed to retrieve service status, 1 - Stopped, 2 - Start Pending, 3 - Stop Pending, 4 - Service Running, 5 - Continue Pending, 6 - Pause Pending, 7 - Service Paused\n",
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "{status}"
+    }
+  },
+  "name": "windowsservicereceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "pjanotti",
+        "shalper2"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    },
+    "unsupported_platforms": [
+      "darwin",
+      "linux"
+    ]
+  },
+  "type": "receiver"
+}

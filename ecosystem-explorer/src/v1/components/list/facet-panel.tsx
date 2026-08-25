@@ -225,7 +225,10 @@ export function FacetPanel({
         {versions && versions.length > 0 && (
           <SelectFacet
             title={t("facets.version.title")}
-            options={versions.map((v) => ({ value: v, label: v }))}
+            options={versions.map((v) => ({
+              value: v,
+              label: v === "deprecated" ? t("facets.version.deprecated") : v,
+            }))}
             value={filters.version}
             onChange={(version) => change({ version })}
             emptyLabel={t("facets.version.latest")}

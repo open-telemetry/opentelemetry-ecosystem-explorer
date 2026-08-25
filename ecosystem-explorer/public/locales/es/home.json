@@ -13,5 +13,107 @@
       "title": "OpenTelemetry Collector",
       "description": "Navega los componentes del Collector como receptores, procesadores y exportadores."
     }
+  },
+  "homeV1": {
+    "hero": {
+      "titlePrefix": "OpenTelemetry",
+      "titleAccent": "Ecosystem Explorer",
+      "lead": "Navega cada receptor, procesador, exportador e instrumentación del proyecto OpenTelemetry, con búsqueda, comparación y control de versiones integrados.",
+      "ctaBrowse": "Explorar componentes",
+      "ctaOverview": "Leer la introducción"
+    },
+    "sectionsAriaLabel": "Señales y actividad reciente",
+    "stats": {
+      "title": "El ecosistema de OpenTelemetry",
+      "items": {
+        "languages": "Lenguajes",
+        "collector-components": "Componentes del Collector",
+        "integrations": "Integraciones",
+        "vendors": "Proveedores"
+      }
+    },
+    "ecosystems": {
+      "title": "Ecosistemas",
+      "lead": "Explora los proyectos que forman OpenTelemetry.",
+      "viewAll": "Ver todos los proyectos →",
+      "active": {
+        "collector": {
+          "name": "OpenTelemetry Collector",
+          "tagline": "Agente agnóstico al proveedor",
+          "description": "Recibe, procesa y exporta datos de telemetría. Más de 200 receptores, procesadores, exportadores, conectores y extensiones.",
+          "unit": "componentes"
+        },
+        "java-agent": {
+          "name": "OpenTelemetry Java Agent",
+          "tagline": "Auto-instrumentación",
+          "description": "Descubre las bibliotecas compatibles, las opciones de configuración y la telemetría emitida para el agente de auto-instrumentación de Java.",
+          "unit": "instrumentaciones"
+        }
+      },
+      "metricLabels": {
+        "latest": "más reciente",
+        "updatedThisWeek": "actualizado esta semana"
+      },
+      "comingSoon": {
+        "label": "Próximamente",
+        "items": {
+          "python": "Python SDK",
+          "go": "Go SDK",
+          "js": "JS / Node",
+          "dotnet": ".NET"
+        }
+      }
+    },
+    "signals": {
+      "title": "Explora por señal",
+      "lead": "Cruza todos los ecosistemas, siguiendo la taxonomía de señales de opentelemetry.io.",
+      "cardAriaLabel": "{{name}} — {{description}}",
+      "items": {
+        "traces": {
+          "name": "Trazas",
+          "description": "Trazas distribuidas · {{count}} componentes"
+        },
+        "metrics": {
+          "name": "Métricas",
+          "description": "Mediciones a lo largo del tiempo · {{count}} componentes"
+        },
+        "logs": {
+          "name": "Logs",
+          "description": "Registros con marca de tiempo · {{count}} componentes"
+        },
+        "baggage": {
+          "name": "Baggage",
+          "description": "Metadatos contextuales"
+        }
+      }
+    },
+    "activity": {
+      "heading": "Actividad reciente",
+      "lead": "Lo que cambió en los últimos 30 días, en todos los ecosistemas.",
+      "error": "No pudimos cargar el feed de actividad en este momento. Vuelve a intentarlo más tarde.",
+      "loading": "Cargando actividad reciente…",
+      "empty": "No hay actividad reciente para mostrar.",
+      "relative": {
+        "justNow": "justo ahora",
+        "today": "hoy",
+        "yesterday": "ayer",
+        "daysAgo_one": "hace {{count}} día",
+        "daysAgo_other": "hace {{count}} días",
+        "weeksAgo_one": "hace {{count}} semana",
+        "weeksAgo_other": "hace {{count}} semanas",
+        "monthsAgo_one": "hace {{count}} mes",
+        "monthsAgo_other": "hace {{count}} meses"
+      }
+    },
+    "search": {
+      "placeholder": "Buscar entre {{total}} componentes, instrumentaciones, proveedores…",
+      "ariaLabel": "Buscar en el ecosistema",
+      "resultsAriaLabel": "Resultados de búsqueda",
+      "tryLabel": "Prueba:",
+      "error": "No se pudo acceder al índice de búsqueda en este momento. Inténtalo de nuevo.",
+      "searching": "Buscando…",
+      "noMatches": "Sin resultados para \"{{query}}\". Prueba una de las sugerencias de abajo.",
+      "overflowFooter": "Mostrando {{visible}} de {{total}} resultados"
+    }
   }
 }

@@ -3,8 +3,8 @@ title: "Phase 4 — List pages"
 issue: 84
 type: plan
 phase: 4
-status: in-progress
-last_updated: "2026-07-07"
+status: complete
+last_updated: "2026-07-20"
 ---
 
 > [!NOTE]

@@ -1,0 +1,38 @@
+{
+  "description": null,
+  "display_name": "Datadog Extension",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-datadogextension",
+  "markdown_hash": "c454a8ed0906",
+  "name": "datadogextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "dineshg13",
+        "IbraheemA",
+        "jade-guiton-dd",
+        "mx-psi",
+        "songy23"
+      ],
+      "emeritus": [
+        "jackgopack4",
+        "ankitpatel96"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "extension"
+      ]
+    },
+    "unsupported_platforms": [
+      "aix"
+    ]
+  },
+  "type": "extension"
+}

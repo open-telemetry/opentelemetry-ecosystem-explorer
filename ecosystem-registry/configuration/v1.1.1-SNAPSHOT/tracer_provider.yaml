@@ -117,6 +117,10 @@ $defs:
         $ref: "#/$defs/AlwaysOnSampler"
         description: Configure sampler to be always_on.
         defaultBehavior: ignore
+      always_record:
+        $ref: "#/$defs/AlwaysRecordSampler"
+        description: Configure sampler to be always_record.
+        defaultBehavior: ignore
       composite/development:
         $ref: "#/$defs/ExperimentalComposableSampler"
         description: Configure sampler to be composite.
@@ -148,6 +152,19 @@ $defs:
       - object
       - "null"
     additionalProperties: false
+  AlwaysRecordSampler:
+    type:
+      - object
+    additionalProperties: false
+    properties:
+      root:
+        $ref: "#/$defs/Sampler"
+        description: |
+          Configure the wrapped sampler which provides the original sampling
+          decision that AlwaysRecord modifies. DROP decisions are converted
+          to RECORD_ONLY, allowing processors to see all spans without sending them to exporters.
+    required:
+      - root
   ExperimentalJaegerRemoteSampler:
     type:
       - object
@@ -469,6 +486,17 @@ $defs:
           Configure max attribute value size. Overrides .attribute_limits.attribute_value_length_limit. 
           Value must be non-negative.
         defaultBehavior: there is no limit
+      attribute_value_depth_limit:
+        type:
+          - integer
+          - "null"
+        minimum: 1
+        description: |
+          Configure the maximum attribute value depth for nested array and map values. Overrides .attribute_limits.attribute_value_depth_limit.
+          Depth starts at 1 for the top-level attribute value and increments when descending into array elements or map values.
+          Array or map values deeper than the limit are replaced with an empty value.
+          Value must be positive.
+        defaultBehavior: 64 is used
       attribute_count_limit:
         type:
           - integer

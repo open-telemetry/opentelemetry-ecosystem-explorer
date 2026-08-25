@@ -1,0 +1,99 @@
+{
+  "attributes": {
+    "file.include": {
+      "description": "The glob pattern configured via the `include` option that produced this count.",
+      "requirement_level": "opt_in",
+      "type": "string"
+    },
+    "file.permissions": {
+      "description": "the permissions associated with the file, using an octal format.",
+      "requirement_level": "recommended",
+      "type": "string"
+    }
+  },
+  "description": "The File Stats receiver collects metrics from files specified with a glob pattern.",
+  "display_name": "File Stats Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-filestatsreceiver",
+  "markdown_hash": "d5a57c615231",
+  "metrics": {
+    "file.atime": {
+      "description": "Elapsed time since last access of the file or folder, in seconds since Epoch.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "s"
+    },
+    "file.count": {
+      "attributes": [
+        "file.include"
+      ],
+      "description": "The number of files matched",
+      "enabled": false,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "{file}"
+    },
+    "file.ctime": {
+      "attributes": [
+        "file.permissions"
+      ],
+      "description": "Elapsed time since the last change of the file or folder, in seconds since Epoch. In addition to `file.mtime`, this metric tracks metadata changes such as permissions or renaming the file.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "s"
+    },
+    "file.mtime": {
+      "description": "Elapsed time since the last modification of the file or folder, in seconds since Epoch.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "s"
+    },
+    "file.size": {
+      "description": "The size of the file or folder, in bytes.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "b"
+    }
+  },
+  "name": "filestatsreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "atoulme"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver"
+}

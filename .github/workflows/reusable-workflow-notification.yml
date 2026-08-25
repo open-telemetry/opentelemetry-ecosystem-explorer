@@ -25,7 +25,7 @@ jobs:
       issues: write # Open or comment on the failure-tracking issue
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -43,7 +43,7 @@ jobs:
             ISSUE_TITLE="Workflow failed: $GITHUB_WORKFLOW (#$GITHUB_RUN_NUMBER)"
           fi
 
-          number=$(gh issue list --search "in:title $ISSUE_TITLE" --limit 1 --json number -q .[].number)
+          number=$(gh issue list --search "in:title \"$ISSUE_TITLE\"" --limit 1 --json number -q .[].number)
 
           if [[ -n "$FAILURE_DETAILS" ]]; then
             issue_body="See [$GITHUB_WORKFLOW #$GITHUB_RUN_NUMBER](https://github.com/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)."$'\n\n'"## Failure Details"$'\n\n'"$FAILURE_DETAILS"

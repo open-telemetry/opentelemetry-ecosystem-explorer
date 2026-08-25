@@ -15,6 +15,7 @@
  */
 
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { Compass } from "@/components/icons/compass";
 import { Seo } from "@/components/seo/seo";
@@ -25,28 +26,30 @@ import { RecentActivityRail } from "@/v1/components/home/recent-activity-rail";
 import { SignalsRow } from "@/v1/components/home/signals-row";
 import { StatsBand } from "@/v1/components/home/stats-band";
 
-const COVER_CTAS = (
-  <>
-    <Link className="td-btn td-btn--primary" to="/collector">
-      Browse components
-    </Link>
-    <a
-      className="td-btn td-btn--outline-light"
-      href="https://opentelemetry.io/docs/what-is-opentelemetry/"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      Read the overview
-    </a>
-  </>
-);
-
 /**
  * Home page (v1) — composes the v1 chrome with home-specific sections.
  * Only the GlobalSearch slot inside CoverBlock is still a skeleton.
  * The CncfCallout and FooterV1 are mounted by `<V1App />`, not here.
  */
 export function HomeV1() {
+  const { t } = useTranslation("home");
+
+  const coverCtas = (
+    <>
+      <Link className="td-btn td-btn--primary" to="/collector">
+        {t("homeV1.hero.ctaBrowse")}
+      </Link>
+      <a
+        className="td-btn td-btn--outline-light"
+        href="https://opentelemetry.io/docs/what-is-opentelemetry/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {t("homeV1.hero.ctaOverview")}
+      </a>
+    </>
+  );
+
   return (
     <div className="td-home">
       <Seo />
@@ -54,11 +57,12 @@ export function HomeV1() {
         logo={<Compass />}
         title={
           <>
-            OpenTelemetry <span className="td-cover-block__title-accent">Ecosystem Explorer</span>
+            {t("homeV1.hero.titlePrefix")}{" "}
+            <span className="td-cover-block__title-accent">{t("homeV1.hero.titleAccent")}</span>
           </>
         }
-        lead="Navigate every receiver, processor, exporter, and instrumentation across the OpenTelemetry project — searchable, comparable, version-aware."
-        ctas={COVER_CTAS}
+        lead={t("homeV1.hero.lead")}
+        ctas={coverCtas}
       >
         <GlobalSearch />
       </CoverBlock>
@@ -67,7 +71,7 @@ export function HomeV1() {
 
       <EcosystemsGrid />
 
-      <section className="td-box td-box--muted" aria-label="Signals and recent activity">
+      <section className="td-box td-box--muted" aria-label={t("homeV1.sectionsAriaLabel")}>
         <div className="td-box__container">
           <div className="td-two-col">
             <SignalsRow />

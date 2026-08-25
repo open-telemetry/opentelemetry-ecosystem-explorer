@@ -65,6 +65,32 @@ class TestApplyDeclarativeNameCorrections:
 
         assert inventory["custom"][0]["configurations"][0]["declarative_name"] == "java.common.service_peer_mapping"
 
+    def test_strips_development_suffix_from_general_url_sanitization(self):
+        """The general.* URL sanitization config loses its bogus `/development` suffix.
+
+        The suffixed name is not in the declarative config schema's strictly typed
+        `instrumentation/development.general` model, so the agent rejects the whole config file.
+        """
+        inventory = {
+            "libraries": [
+                {
+                    "name": "http-url-connection",
+                    "configurations": [
+                        _config(
+                            "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters",
+                            "general.sanitization.url.sensitive_query_parameters/development",
+                        )
+                    ],
+                }
+            ]
+        }
+
+        apply_declarative_name_corrections(inventory)
+
+        config = inventory["libraries"][0]["configurations"][0]
+        assert config["declarative_name"] == "general.sanitization.url.sensitive_query_parameters"
+        assert config["name"] == "otel.instrumentation.sanitization.url.experimental.sensitive-query-parameters"
+
     def test_leaves_unrelated_declarative_names_untouched(self):
         """Declarative names without a correction entry are left as-is."""
         inventory = {

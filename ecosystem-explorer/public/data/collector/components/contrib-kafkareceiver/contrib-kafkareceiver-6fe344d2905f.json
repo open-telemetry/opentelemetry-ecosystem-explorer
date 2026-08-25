@@ -1,0 +1,417 @@
+{
+  "attributes": {
+    "node_id": {
+      "description": "The Kafka node ID.",
+      "type": "int"
+    },
+    "outcome": {
+      "description": "The operation outcome.",
+      "enum": [
+        "failure",
+        "success"
+      ],
+      "type": "string"
+    },
+    "partition": {
+      "description": "The Kafka topic partition.",
+      "type": "int"
+    },
+    "topic": {
+      "description": "The Kafka topic.",
+      "type": "string"
+    }
+  },
+  "description": "The Kafka Receiver receives telemetry data from Kafka, with configurable topics and encodings. If used in conjunction with the `kafkaexporter` configured with `include_metadata_keys`, The Kafka Receiver will also propagate the Kafka headers to the downstream pipeline, giving access to the rest of the pipeline to arbitrary metadata keys and values.",
+  "display_name": "Kafka Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-kafkareceiver",
+  "markdown_hash": "169ab94d73f6",
+  "name": "kafkareceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "pavolloffay",
+        "MovieStoreGuy",
+        "axw",
+        "paulojmdias"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "core"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ],
+      "development": [
+        "profiles"
+      ]
+    }
+  },
+  "telemetry": {
+    "metrics": {
+      "kafka_broker_closed": {
+        "attributes": [
+          "node_id"
+        ],
+        "description": "The total number of connections closed.",
+        "enabled": true,
+        "extended_documentation": "Only produced when franz-go is enabled.",
+        "optional": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "kafka_broker_connects": {
+        "attributes": [
+          "node_id",
+          "outcome"
+        ],
+        "description": "The total number of connections opened.",
+        "enabled": true,
+        "extended_documentation": "Only produced when franz-go is enabled.",
+        "optional": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "kafka_broker_throttling_duration": {
+        "attributes": [
+          "node_id"
+        ],
+        "description": "The throttling duration in ms imposed by the broker when receiving messages.",
+        "enabled": true,
+        "extended_documentation": "Only produced when franz-go is enabled. Deprecated in favor of kafka_broker_throttling_latency.",
+        "histogram": {
+          "value_type": "int"
+        },
+        "optional": true,
+        "stability": "deprecated",
+        "unit": "ms",
+        "warnings": {
+          "if_enabled": "This metric is deprecated in favor of kafka_broker_throttling_latency and will be removed soon."
+        }
+      },
+      "kafka_broker_throttling_latency": {
+        "attributes": [
+          "node_id"
+        ],
+        "description": "The throttling latency in seconds imposed by the broker when receiving records.",
+        "enabled": true,
+        "extended_documentation": "Only produced when franz-go is enabled.",
+        "histogram": {
+          "bucket_boundaries": [
+            0,
+            0.005,
+            0.01,
+            0.025,
+            0.05,
+            0.075,
+            0.1,
+            0.25,
+            0.5,
+            0.75,
+            1,
+            2.5,
+            5,
+            7.5,
+            10,
+            25,
+            50,
+            75,
+            100
+          ],
+          "value_type": "double"
+        },
+        "optional": true,
+        "stability": "development",
+        "unit": "s"
+      },
+      "kafka_receiver_bytes": {
+        "attributes": [
+          "node_id",
+          "outcome",
+          "partition",
+          "topic"
+        ],
+        "description": "The size in bytes of received records seen by the broker.",
+        "enabled": true,
+        "extended_documentation": "Only produced when franz-go is enabled.",
+        "optional": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "By"
+      },
+      "kafka_receiver_bytes_uncompressed": {
+        "attributes": [
+          "node_id",
+          "outcome",
+          "partition",
+          "topic"
+        ],
+        "description": "The uncompressed size in bytes of received records seen by the client.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "By"
+      },
+      "kafka_receiver_current_offset": {
+        "attributes": [
+          "partition",
+          "topic"
+        ],
+        "description": "Current message offset",
+        "enabled": true,
+        "gauge": {
+          "value_type": "int"
+        },
+        "stability": "development",
+        "unit": "1"
+      },
+      "kafka_receiver_latency": {
+        "attributes": [
+          "node_id",
+          "outcome",
+          "partition",
+          "topic"
+        ],
+        "description": "The time it took in ms to receive a batch of messages.",
+        "enabled": true,
+        "extended_documentation": "Only produced when franz-go is enabled. Deprecated in favor of kafka_receiver_read_latency.",
+        "histogram": {
+          "value_type": "int"
+        },
+        "stability": "deprecated",
+        "unit": "ms",
+        "warnings": {
+          "if_enabled": "This metric is deprecated in favor of kafka_receiver_read_latency and will be removed soon."
+        }
+      },
+      "kafka_receiver_messages": {
+        "attributes": [
+          "node_id",
+          "outcome",
+          "partition",
+          "topic"
+        ],
+        "description": "The number of received messages.",
+        "enabled": true,
+        "extended_documentation": "Deprecated in favor of kafka_receiver_records.",
+        "stability": "deprecated",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1",
+        "warnings": {
+          "if_enabled": "This metric is deprecated in favor of kafka_receiver_records and will be removed soon."
+        }
+      },
+      "kafka_receiver_offset_lag": {
+        "attributes": [
+          "partition",
+          "topic"
+        ],
+        "description": "Current offset lag",
+        "enabled": true,
+        "gauge": {
+          "value_type": "int"
+        },
+        "stability": "development",
+        "unit": "1"
+      },
+      "kafka_receiver_partition_close": {
+        "description": "Number of finished partitions",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "kafka_receiver_partition_start": {
+        "description": "Number of started partitions",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "kafka_receiver_read_latency": {
+        "attributes": [
+          "node_id",
+          "outcome",
+          "partition",
+          "topic"
+        ],
+        "description": "The time it took in seconds to receive a batch of records.",
+        "enabled": true,
+        "extended_documentation": "Only produced when franz-go is enabled.",
+        "histogram": {
+          "bucket_boundaries": [
+            0,
+            0.005,
+            0.01,
+            0.025,
+            0.05,
+            0.075,
+            0.1,
+            0.25,
+            0.5,
+            0.75,
+            1,
+            2.5,
+            5,
+            7.5,
+            10,
+            25,
+            50,
+            75,
+            100
+          ],
+          "value_type": "double"
+        },
+        "stability": "development",
+        "unit": "s"
+      },
+      "kafka_receiver_records": {
+        "attributes": [
+          "node_id",
+          "outcome",
+          "partition",
+          "topic"
+        ],
+        "description": "The number of received records.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "kafka_receiver_records_delay": {
+        "attributes": [
+          "partition",
+          "topic"
+        ],
+        "description": "The time in seconds between producing and receiving a batch of records.",
+        "enabled": true,
+        "extended_documentation": "Optional, only reported when enabled via config.\nNote that this metric may slow down high-volume consuming.\nOnly produced when franz-go is enabled.\nThis metric is reported with an assumption that the exporter and the receiver clocks are synchronized.\n",
+        "histogram": {
+          "bucket_boundaries": [
+            0,
+            0.005,
+            0.01,
+            0.025,
+            0.05,
+            0.075,
+            0.1,
+            0.25,
+            0.5,
+            0.75,
+            1,
+            2.5,
+            5,
+            7.5,
+            10,
+            25,
+            50,
+            75,
+            100,
+            250,
+            500,
+            750,
+            1000,
+            2500,
+            5000,
+            7500,
+            10000
+          ],
+          "value_type": "double"
+        },
+        "optional": true,
+        "stability": "development",
+        "unit": "s"
+      },
+      "kafka_receiver_unmarshal_failed_log_records": {
+        "attributes": [
+          "partition",
+          "topic"
+        ],
+        "description": "Number of log records failed to be unmarshaled",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "kafka_receiver_unmarshal_failed_metric_points": {
+        "attributes": [
+          "partition",
+          "topic"
+        ],
+        "description": "Number of metric points failed to be unmarshaled",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "kafka_receiver_unmarshal_failed_profiles": {
+        "attributes": [
+          "partition",
+          "topic"
+        ],
+        "description": "Number of profiles failed to be unmarshaled",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "kafka_receiver_unmarshal_failed_spans": {
+        "attributes": [
+          "partition",
+          "topic"
+        ],
+        "description": "Number of spans failed to be unmarshaled",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      }
+    }
+  },
+  "type": "receiver"
+}

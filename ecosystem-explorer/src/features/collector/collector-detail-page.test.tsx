@@ -21,6 +21,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { CollectorDetailPage } from "./collector-detail-page";
 import {
   useCollectorComponent,
+  useCollectorDeprecations,
   useCollectorVersions,
   useComponentReadme,
 } from "@/hooks/use-collector-data";
@@ -28,6 +29,7 @@ import type { CollectorComponent } from "@/types/collector";
 
 vi.mock("@/hooks/use-collector-data", () => ({
   useCollectorComponent: vi.fn(),
+  useCollectorDeprecations: vi.fn(),
   useCollectorVersions: vi.fn(),
   useComponentReadme: vi.fn(),
 }));
@@ -69,6 +71,19 @@ const mockComponentWithReadme: CollectorComponent = {
   markdown_hash: "abc123def456",
 };
 
+const mockComponentWithFeatureGates: CollectorComponent = {
+  ...mockComponentWithoutTelemetry,
+  feature_gates: [
+    {
+      id: "receiver.otlpreceiver.MyGate",
+      stage: "alpha",
+      description: "A test feature gate.",
+      from_version: "v0.158.0",
+      reference_url: "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/1",
+    },
+  ],
+};
+
 const mockComponentWithBacktickDescription: CollectorComponent = {
   ...mockComponentWithoutTelemetry,
   description: "Fetches metrics via the `/metrics/json` endpoint.",
@@ -88,6 +103,11 @@ describe("CollectorDetailPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(useComponentReadme).mockReturnValue({ data: null, loading: false, error: null });
+    vi.mocked(useCollectorDeprecations).mockReturnValue({
+      data: { ecosystem: "collector", components: [] },
+      loading: false,
+      error: null,
+    });
   });
 
   it("shows an error state instead of an infinite loading spinner when the versions fetch fails and no ?version= is present", () => {
@@ -212,6 +232,46 @@ describe("CollectorDetailPage", () => {
     expect(screen.getByText("OTLP Receiver")).toBeInTheDocument();
   });
 
+  it("resolves a deprecated component through its last version and shows removal details", () => {
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.157.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorDeprecations).mockReturnValue({
+      data: {
+        ecosystem: "collector",
+        components: [
+          {
+            id: "core-otlpreceiver",
+            name: "otlpreceiver",
+            distribution: "core",
+            type: "receiver",
+            component_hash: "abc123def456",
+            last_version: "0.149.0",
+            deprecated_in_version: "0.150.0",
+          },
+        ],
+      },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: mockComponentWithReadme,
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver?version=deprecated");
+
+    expect(useCollectorComponent).toHaveBeenCalledWith("core", "otlpreceiver", "0.149.0");
+    expect(screen.getByRole("note")).toHaveTextContent(/0\.149\.0.*0\.150\.0/);
+    expect(
+      screen.queryByRole("heading", { name: "This component has been removed" })
+    ).not.toBeInTheDocument();
+    expect(screen.getByText("Deprecated")).toBeInTheDocument();
+  });
+
   it("does not render Telemetry tab when component has no metrics", () => {
     vi.mocked(useCollectorVersions).mockReturnValue({
       data: { versions: [{ version: "0.150.0", is_latest: true }] },
@@ -250,6 +310,46 @@ describe("CollectorDetailPage", () => {
     await user.click(telemetryTab);
 
     expect(screen.getByText("my.metric.name")).toBeInTheDocument();
+  });
+
+  it("does not render Feature Gates tab when component has no feature_gates", () => {
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: mockComponentWithoutTelemetry,
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    expect(screen.queryByRole("tab", { name: /feature gates/i })).not.toBeInTheDocument();
+  });
+
+  it("renders Feature Gates tab when component has feature_gates and displays content on click", async () => {
+    const user = userEvent.setup();
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: mockComponentWithFeatureGates,
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    const featureGatesTab = screen.getByRole("tab", { name: /feature gates/i });
+    expect(featureGatesTab).toBeInTheDocument();
+
+    await user.click(featureGatesTab);
+
+    expect(screen.getByText("receiver.otlpreceiver.MyGate")).toBeInTheDocument();
   });
 
   it("does not render Readme tab when component has no markdown_hash", () => {
@@ -297,5 +397,66 @@ describe("CollectorDetailPage", () => {
     expect(useComponentReadme).toHaveBeenCalledWith("otlpreceiver", "abc123def456");
     expect(screen.getByText("Usage Notes")).toBeInTheDocument();
     expect(screen.getByText("Some readme content.")).toBeInTheDocument();
+  });
+
+  it("shows Distribution Availability under the Details tab instead of Stability", () => {
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: {
+        ...mockComponentWithoutTelemetry,
+        status: {
+          class: "receiver",
+          stability: { stable: ["traces", "metrics", "logs"] },
+          distributions: ["core", "contrib", "k8s"],
+        },
+      },
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    // Details is the default active tab, so Distribution Availability should
+    // already be visible without switching tabs.
+    expect(screen.getByText("Distribution Availability")).toBeInTheDocument();
+    expect(screen.getByText("OpenTelemetry Collector Contrib")).toBeInTheDocument();
+    expect(screen.getByText("OpenTelemetry Operator for Kubernetes")).toBeInTheDocument();
+
+    // The renamed source-repo field replaces the old ambiguous "Distribution" label.
+    expect(screen.getByText("Source Repository")).toBeInTheDocument();
+    expect(screen.queryByText("Distribution", { selector: "h4" })).not.toBeInTheDocument();
+  });
+
+  it("no longer renders Distribution Availability under the Stability tab", async () => {
+    const user = userEvent.setup();
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: {
+        ...mockComponentWithoutTelemetry,
+        status: {
+          class: "receiver",
+          stability: { stable: ["traces", "metrics", "logs"] },
+          distributions: ["core", "contrib"],
+        },
+      },
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    const stabilityTab = screen.getByRole("tab", { name: /stability/i });
+    await user.click(stabilityTab);
+
+    expect(screen.getByText("Stability Levels")).toBeInTheDocument();
+    expect(screen.queryByText("Distribution Availability")).not.toBeInTheDocument();
   });
 });

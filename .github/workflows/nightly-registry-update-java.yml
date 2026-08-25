@@ -1,0 +1,45 @@
+name: Nightly Registry Update - Java
+
+on:
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read # Default minimum; jobs declare their own elevated scopes below
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  synchronize-inventory:
+    name: Synchronize java registry inventory
+    if:
+      github.event_name != 'schedule' || github.repository ==
+      'open-telemetry/opentelemetry-ecosystem-explorer'
+    permissions:
+      contents: write # Push registry updates to the ecosystem branch
+      pull-requests: write # Create or update the automated inventory-update PR
+    uses: ./.github/workflows/reusable-registry-sync.yml
+    with:
+      watcher-command: "uv run java-instrumentation-watcher"
+      registry-path: "ecosystem-registry/java/"
+      branch-name: "otelbot/automated-inventory-update-java"
+      pr-title: "[automated] Update java registry inventory"
+      cache-key-suffix: "java"
+    secrets:
+      OTELBOT_PRIVATE_KEY: ${{ secrets.OTELBOT_PRIVATE_KEY }}
+
+  notify:
+    name: Notify on java-instrumentation-watcher failure
+    permissions:
+      contents: read # Checkout reusable workflow source
+      issues: write # Open or comment on the java-instrumentation-watcher failure-tracking issue
+    needs: [synchronize-inventory]
+    if: ${{ !cancelled() && needs.synchronize-inventory.result != 'skipped' }}
+    uses: ./.github/workflows/reusable-workflow-notification.yml
+    with:
+      success: ${{ needs.synchronize-inventory.result == 'success' }}
+      watcher-name: "java-instrumentation-watcher"

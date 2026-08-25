@@ -17,6 +17,7 @@ import { useState, useEffect } from "react";
 import type {
   VersionsIndex,
   CollectorComponent,
+  CollectorDeprecationsIndex,
   CollectorIndex,
   IndexComponent,
 } from "@/types/collector";
@@ -97,6 +98,46 @@ export function useCollectorIndex(): DataState<CollectorIndex> {
   return state;
 }
 
+export function useCollectorDeprecations(enabled = true): DataState<CollectorDeprecationsIndex> {
+  const [state, setState] = useState<DataState<CollectorDeprecationsIndex>>({
+    data: null,
+    loading: enabled,
+    error: null,
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadData() {
+      if (!enabled) {
+        setState({ data: null, loading: false, error: null });
+        return;
+      }
+
+      setState({ data: null, loading: true, error: null });
+      try {
+        const data = await collectorData.loadDeprecationsIndex();
+        if (!cancelled) setState({ data, loading: false, error: null });
+      } catch (error) {
+        if (!cancelled) {
+          setState({
+            data: null,
+            loading: false,
+            error: error instanceof Error ? error : new Error(String(error)),
+          });
+        }
+      }
+    }
+
+    loadData();
+    return () => {
+      cancelled = true;
+    };
+  }, [enabled]);
+
+  return state;
+}
+
 export function useCollectorComponents(version: string): DataState<IndexComponent[]> {
   const [state, setState] = useState<DataState<IndexComponent[]>>({
     data: null,
@@ -137,6 +178,58 @@ export function useCollectorComponents(version: string): DataState<IndexComponen
       cancelled = true;
     };
   }, [version]);
+
+  return state;
+}
+
+/**
+ * The releases a single component appears in, newest first.
+ *
+ * Consumers that render per-version links must use this rather than
+ * `useCollectorVersions`, whose index covers every Collector release —
+ * including ones that predate the component and core-only patch releases that
+ * carry no contrib entries at all.
+ */
+export function useComponentVersions(distribution: string, name: string): DataState<string[]> {
+  const [state, setState] = useState<DataState<string[]>>({
+    data: null,
+    loading: true,
+    error: null,
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadData() {
+      if (!distribution || !name) {
+        setState({ data: null, loading: false, error: null });
+        return;
+      }
+
+      setState({ data: null, loading: true, error: null });
+
+      try {
+        const data = await collectorData.loadComponentVersions(distribution, name);
+        if (!cancelled) {
+          setState({ data, loading: false, error: null });
+        }
+      } catch (error) {
+        if (!cancelled) {
+          setState({
+            data: null,
+            loading: false,
+            error: error instanceof Error ? error : new Error(String(error)),
+          });
+        }
+      }
+    }
+
+    loadData();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [distribution, name]);
 
   return state;
 }

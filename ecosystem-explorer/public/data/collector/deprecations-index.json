@@ -1,0 +1,117 @@
+{
+  "components": [
+    {
+      "component_hash": "f6e970092904",
+      "deprecated_in_version": "0.157.0",
+      "description": null,
+      "display_name": "JMX Receiver",
+      "distribution": "contrib",
+      "has_readme": true,
+      "id": "contrib-jmxreceiver",
+      "last_version": "0.156.0",
+      "name": "jmxreceiver",
+      "signals": [
+        "metrics"
+      ],
+      "stability": "deprecated",
+      "type": "receiver"
+    },
+    {
+      "component_hash": "bfc81c0e9812",
+      "deprecated_in_version": "0.159.0",
+      "description": null,
+      "display_name": "Kafka Topics Observer Extension",
+      "distribution": "contrib",
+      "has_readme": true,
+      "id": "contrib-kafkatopicsobserver",
+      "last_version": "0.158.0",
+      "name": "kafkatopicsobserver",
+      "signals": [
+        "extension"
+      ],
+      "stability": "deprecated",
+      "type": "extension"
+    },
+    {
+      "component_hash": "5a07ac237fdd",
+      "deprecated_in_version": "0.159.0",
+      "description": null,
+      "display_name": null,
+      "distribution": "core",
+      "has_readme": false,
+      "id": "core-xconnector",
+      "last_version": "0.158.0",
+      "name": "xconnector",
+      "signals": [
+        "profiles"
+      ],
+      "stability": "alpha",
+      "type": "connector"
+    },
+    {
+      "component_hash": "be39518d8b6a",
+      "deprecated_in_version": "0.159.0",
+      "description": null,
+      "display_name": null,
+      "distribution": "core",
+      "has_readme": false,
+      "id": "core-xexporter",
+      "last_version": "0.158.0",
+      "name": "xexporter",
+      "signals": [
+        "profiles"
+      ],
+      "stability": "alpha",
+      "type": "exporter"
+    },
+    {
+      "component_hash": "a061ec4c6ec5",
+      "deprecated_in_version": "0.159.0",
+      "description": null,
+      "display_name": null,
+      "distribution": "core",
+      "has_readme": false,
+      "id": "core-xextension",
+      "last_version": "0.158.0",
+      "name": "xextension",
+      "signals": [
+        "profiles"
+      ],
+      "stability": "alpha",
+      "type": "extension"
+    },
+    {
+      "component_hash": "729a97839957",
+      "deprecated_in_version": "0.159.0",
+      "description": null,
+      "display_name": null,
+      "distribution": "core",
+      "has_readme": false,
+      "id": "core-xprocessor",
+      "last_version": "0.158.0",
+      "name": "xprocessor",
+      "signals": [
+        "profiles"
+      ],
+      "stability": "alpha",
+      "type": "processor"
+    },
+    {
+      "component_hash": "1bb2e858e266",
+      "deprecated_in_version": "0.159.0",
+      "description": null,
+      "display_name": null,
+      "distribution": "core",
+      "has_readme": false,
+      "id": "core-xreceiver",
+      "last_version": "0.158.0",
+      "name": "xreceiver",
+      "signals": [
+        "profiles"
+      ],
+      "stability": "alpha",
+      "type": "receiver"
+    }
+  ],
+  "ecosystem": "collector"
+}

@@ -1,0 +1,31 @@
+{
+  "description": null,
+  "display_name": "AWS Lambda Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-awslambdareceiver",
+  "markdown_hash": "0ee6ebeb52e4",
+  "name": "awslambdareceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "MichaelKatsoulis",
+        "Kavindu-Dodan",
+        "axw",
+        "pjanotti"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver"
+}

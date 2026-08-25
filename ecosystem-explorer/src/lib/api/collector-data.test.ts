@@ -98,6 +98,35 @@ describe("collector-data", () => {
     idbCache.closeDB();
   });
 
+  describe("loadDeprecationsIndex", () => {
+    it("loads and caches the deprecated component catalog", async () => {
+      const index = {
+        ecosystem: "collector",
+        components: [
+          {
+            id: "contrib-jmxreceiver",
+            name: "jmxreceiver",
+            distribution: "contrib",
+            type: "receiver",
+            component_hash: "abc123def456",
+            last_version: "0.156.0",
+            deprecated_in_version: "0.157.0",
+          },
+        ],
+      };
+      vi.spyOn(idbCache, "getCached").mockResolvedValue(null);
+      vi.spyOn(idbCache, "setCached").mockResolvedValue();
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ok: true,
+        headers: new Headers({ "content-type": "application/json" }),
+        json: async () => index,
+      });
+
+      await expect(collectorData.loadDeprecationsIndex()).resolves.toEqual(index);
+      expect(global.fetch).toHaveBeenCalledWith("/data/collector/deprecations-index.json");
+    });
+  });
+
   describe("loadAllComponents (bundle path)", () => {
     it("loads the single per-version bundle when the index advertises a bundle hash", async () => {
       const bundle = [otlpReceiverIndex, otlpHttpExporterIndex];
@@ -240,6 +269,73 @@ describe("collector-data", () => {
       const result = await collectorData.loadAllComponents("0.150.0");
 
       expect(result[0].signals).toEqual(["traces", "metrics", "profiles"]);
+    });
+  });
+
+  describe("loadComponentVersions", () => {
+    // Three releases covering both ways a component can be absent: 0.152.1 is
+    // tagged by core alone, so its manifest carries no contrib entries, and
+    // some components only appear from the newest release onward.
+    const multiVersionIndex: VersionsIndex = {
+      versions: [
+        { version: "0.153.0", is_latest: true },
+        { version: "0.152.1", is_latest: false },
+        { version: "0.152.0", is_latest: false },
+      ],
+    };
+
+    function mockManifests() {
+      return vi.spyOn(idbCache, "getCached").mockImplementation(async (key: string) => {
+        if (key === "collector-versions-index") return multiVersionIndex;
+        if (key === "collector-manifest-0.153.0")
+          return {
+            version: "0.153.0",
+            components: { "core-otlpreceiver": "h1", "contrib-newprocessor": "h2" },
+          };
+        // Core-only patch release: no contrib entries at all.
+        if (key === "collector-manifest-0.152.1")
+          return { version: "0.152.1", components: { "core-otlpreceiver": "h1" } };
+        if (key === "collector-manifest-0.152.0")
+          return {
+            version: "0.152.0",
+            components: { "core-otlpreceiver": "h1", "contrib-oldprocessor": "h3" },
+          };
+        return null;
+      });
+    }
+
+    it("returns only the releases whose manifest carries the component, newest first", async () => {
+      mockManifests();
+
+      const result = await collectorData.loadComponentVersions("core", "otlpreceiver");
+
+      expect(result).toEqual(["0.153.0", "0.152.1", "0.152.0"]);
+    });
+
+    it("omits releases that predate the component", async () => {
+      mockManifests();
+
+      const result = await collectorData.loadComponentVersions("contrib", "newprocessor");
+
+      expect(result).toEqual(["0.153.0"]);
+    });
+
+    it("omits a core-only patch release for a contrib component", async () => {
+      // 0.152.1's manifest has no contrib entries, so a contrib component that
+      // exists either side of it must not be linked at that version.
+      mockManifests();
+
+      const result = await collectorData.loadComponentVersions("contrib", "oldprocessor");
+
+      expect(result).toEqual(["0.152.0"]);
+    });
+
+    it("returns an empty list for a component in no manifest", async () => {
+      mockManifests();
+
+      const result = await collectorData.loadComponentVersions("contrib", "ghost");
+
+      expect(result).toEqual([]);
     });
   });
 

@@ -4,7 +4,7 @@ issue: 84
 type: roadmap
 phase: meta
 status: in-progress
-last_updated: "2026-07-20"
+last_updated: "2026-07-27"
 ---
 
 ## Next steps
@@ -190,6 +190,26 @@ This is a _living_ document. Update it as decisions land and PRs ship. Cross-ref
   Phase 4** — once it merges, close
   [#373](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/373) and Phase 5
   ([`04-detail-page.md`](./04-detail-page.md)) starts.
+- **2026-07-20 snapshot (Phase 4 complete, Phase 5 opened):** PR 6 (#841) merged and #373 closed —
+  Phase 4 done. `feat/84-tmp-full-layout` rebased onto refreshed `main` (new hash `149c61f3`; prior
+  state preserved as `feat/84-tmp-full-layout-backup-2026-07-20`): all 7 conflicts were list files
+  Phase 4 had already shipped improved on `main`, resolved keeping `main`'s versions; `index.css`
+  keeps the split list partials and adds only the reference's `detail.css` import (the bundled
+  `list.css` joins `ecosystem.css` as dead superseded CSS). Typecheck clean — no #645-style drift
+  left; the reference now carries only Phase 5 files. Phase 5 then consolidated from #374's original
+  10-PR breakdown into two mega-PRs (Jay is comfortable with mega-PRs plus a holistic review once
+  everything is in place — Slack thread, 2026-07-20): **PR A**
+  ([#869](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/869), draft) —
+  three-pane shell + route swap, live Attributes tab, designed empty states for
+  Configuration/README/Examples, new `detail` i18n namespace (en + es), tablist arrow-key nav,
+  corrected `:distribution/:name?version=` link scheme; **PR B**
+  ([#870](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/870), draft,
+  stacked on A) — right rail (VersionTimeline / DiffSelector / CompatibilityCard trimmed to
+  distributions), `/diff?from=&to=` route with live metadata diff, schema-diff engine ported with
+  tests. Issue #374's body rewritten to the 2-PR plan (an embedded prompt-injection HTML comment was
+  also removed). Deferred to the post-phase reconciliation pass: config-schema pipeline (decision
+  #9), README publishing (watcher/builder shipped in #775, publish pending), README diff toggle,
+  per-version timeline summaries.
 
 ## Immediate next steps
 
@@ -209,12 +229,9 @@ In order:
       (2026-07-02), including the bare `/collector` / `/java-agent` landing routes in
       `scripts/take-screenshots.mjs`.
 - [x] **Close #372** — closed 2026-07-07. Phase 3 (ecosystem landing) complete.
-- [ ] **Phase 4 — List page**
+- [x] **Phase 4 — List page**
       ([#373](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/373),
-      [`03-list-page.md`](./03-list-page.md)). Six PRs re-derived from `feat/84-tmp-full-layout`
-      (rebased 2026-07-07, `af0326da`); slicing locked with Vitor 2026-07-07 (see decision log). PRs
-      1, 3, and 4 are mutually independent and can ship in parallel; each PR extracts its own CSS
-      partial from the reference's bundled `list.css`.
+      [`03-list-page.md`](./03-list-page.md)). All six PRs merged; **#373 closed 2026-07-20**.
 - [x] **Phase 4 PR 1 — Facet primitives** (`facets.tsx`: CheckboxFacet, SearchFacet, SelectFacet).
       Merged as [#784](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/784)
       (2026-07-10), carrying the Phase 3 close-out doc updates.
@@ -235,15 +252,25 @@ In order:
       matching only the four `Signal` literals against `IndexComponent.signals` (decision #10) and
       split FacetPanel/controls copy between the `list` and `collector` namespaces (decision #11) —
       both confirmed by the merge.
-- [ ] **Phase 4 PR 6 — States + visual regression. Last PR of Phase 4.** Rebased onto post-PR-5
-      `main` and taken out of draft 2026-07-20 — open for review at
-      [#841](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/841). Drawer
-      modal a11y (PR 2 follow-up), per-density + mobile-drawer captures in `take-screenshots.mjs`,
-      light-theme contrast fixes (GlowBadge shades, `--muted-foreground-hsl`, DensityToggle). Once
-      merged: close
-      [#373](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/373), flip
-      `03-list-page.md` and the `_index.md` phase table to `complete`, and start Phase 5
-      (`04-detail-page.md`, PR 04a — three-pane shell).
+- [x] **Phase 4 PR 6 — States + visual regression.** Merged as
+      [#841](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/841)
+      (2026-07-20). #373 closed; `03-list-page.md` and the `_index.md` phase table flipped to
+      `complete`. Phase 4 done.
+- [ ] **Phase 5 PR A — Detail page shell + route.** Draft open at
+      [#869](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/869): three-
+      pane shell, SiblingNavigator + OnPageAnchors, DetailHeader, PipelinePlacement, DetailTabs
+      (live Attributes; designed empty states for Configuration/README/Examples), `detail` i18n
+      namespace. Undraft after screenshot review.
+- [ ] **Phase 5 PR B — Version timeline + diff.** Draft open at
+      [#870](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/870), stacked
+      on PR A (diff shows A's commit until #869 merges): right rail, `/diff?from=&to=` route with
+      live metadata diff, schema-diff engine. Undraft after PR A merges.
+- [ ] **Post-phase reconciliation pass** (agreed with Jay on Slack 2026-07-20): reconcile
+      developments that landed on `main` during the redesign, usability details, and small fixes —
+      including the Phase 5 deferrals (README publishing + renderer, per-version timeline summaries)
+      and the accumulated `/simplify` follow-ups.
+- [ ] **PR 8 — end-of-redesign cleanup (go-live).** Unchanged; lands after Phase 5 and the
+      reconciliation pass (see the Phase 1 table).
 
 ---
 
@@ -413,16 +440,22 @@ The biggest UX win. See [`03-list-page.md`](./03-list-page.md). Big rocks:
 
 ## Phase 5 — Detail page (Project 04)
 
-The atom of the explorer. See [`04-detail-page.md`](./04-detail-page.md). Split into two PRs to keep
-review manageable:
+The atom of the explorer. See [`04-detail-page.md`](./04-detail-page.md). Consolidated 2026-07-20
+from #374's original 10-PR breakdown into two PRs (see decision log):
 
-- **PR 04a** — Three-pane shell, sibling navigator, tabbed embedded docs (Configuration / README /
-  Attributes / Examples), pipeline placement diagram.
-- **PR 04b** — Version timeline + diff view + compatibility card.
+- **PR A** ([#869](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/869)) —
+  three-pane shell + route: SiblingNavigator + OnPageAnchors, DetailHeader, PipelinePlacement,
+  DetailTabs (live Attributes tab; designed empty states for Configuration / README / Examples),
+  `detail` i18n namespace.
+- **PR B** ([#870](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/870),
+  stacked on A) — right rail (VersionTimeline / DiffSelector / CompatibilityCard), `/diff` route
+  with live metadata diff, schema-diff engine.
 
-**Hard dependency on data:** per-version config schemas, emitted attributes, and version history
-must be exposed by `ecosystem-registry` / `ecosystem-automation` for PR 04b. May require a separate
-data-pipeline PR before 04b can ship.
+**Data reality (2026-07-20 audit):** emitted attributes/metrics already ship in the per-component
+JSON; version history exists in `versions-index.json`; metadata diffs are client-derivable via the
+content-addressed version manifests. Per-version config schemas need new pipeline work (decision #9,
+deferred) and collector READMEs are one builder-run away (#775 shipped the watcher/builder;
+publishing is pending) — both land in the post-phase reconciliation pass.
 
 ---
 
@@ -466,20 +499,20 @@ question.
 
 These are the ones that still need to land before the PRs they block:
 
-| #   | Decision                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Owner                | Blocks                              | Status                                                                                                                                                                                |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 7   | Cross-ecosystem search architecture (client-side vs. dedicated index)                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Vitor + maintainers  | Phase 2 (home)                      | ✅ Resolved 2026-05-25 — client-side index in `src/lib/search.ts` (see decision log)                                                                                                  |
-| 8   | Activity-feed source (build-time JSON vs. runtime API)                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Vitor + maintainers  | Phase 2 (home recent activity rail) | ✅ Resolved — build-time JSON stub shipped (#555); generated-feed watcher work is a follow-up                                                                                         |
-| 9   | Per-version config schema availability in `ecosystem-registry`                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Registry maintainers | Phase 5 PR 04b (diff view)          | Open                                                                                                                                                                                  |
-| 10  | Signals for the list page's Signal facet: expose in the collector index (builder work in `ecosystem-automation`) vs. fetch the per-version bundle client-side                                                                                                                                                                                                                                                                                                                                                                   | Vitor + maintainers  | Phase 4 PR 5 (list page + route)    | ✅ Resolved 2026-07-20 — PR 5 (#834) matches only the four `Signal` literals against `IndexComponent.signals`, no builder work; merged with no review pushback                        |
-| 11  | FacetPanel i18n namespace: `useTranslation("collector")` is hardwired, but the plan's list route is `/<ecosystem>/components` parameterized by slug — a Java Agent list would render collector-namespace copy. Options: namespace-as-prop, per-ecosystem panel config, or accept collector-only until a second ecosystem list ships. New input 2026-07-14: draft PR 3 (#786) introduces an ecosystem-agnostic `list` namespace for the controls — migrating the panel's non-Type copy there would resolve most of this decision | Vitor                | Phase 4 PR 5 (list page + route)    | ✅ Resolved 2026-07-20 — PR 5 (#834) splits copy between the `list` (ecosystem-agnostic) and `collector.listV1.facets` (domain vocabulary) namespaces; merged with no review pushback |
+| #   | Decision                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Owner                | Blocks                              | Status                                                                                                                                                                                                                                                                              |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------- | ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 7   | Cross-ecosystem search architecture (client-side vs. dedicated index)                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Vitor + maintainers  | Phase 2 (home)                      | ✅ Resolved 2026-05-25 — client-side index in `src/lib/search.ts` (see decision log)                                                                                                                                                                                                |
+| 8   | Activity-feed source (build-time JSON vs. runtime API)                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Vitor + maintainers  | Phase 2 (home recent activity rail) | ✅ Resolved — build-time JSON stub shipped (#555); generated-feed watcher work is a follow-up                                                                                                                                                                                       |
+| 9   | Per-version config schema availability in `ecosystem-registry`                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Registry maintainers | Phase 5 PR 04b (diff view)          | ✅ Resolved 2026-07-20 by deferral — nothing in the pipeline extracts Go config structs, so the Configuration tab and the diff view's schema section ship designed empty states; the schema-diff engine ships ready (#870) and the extraction pipeline is a post-redesign follow-up |
+| 10  | Signals for the list page's Signal facet: expose in the collector index (builder work in `ecosystem-automation`) vs. fetch the per-version bundle client-side                                                                                                                                                                                                                                                                                                                                                                   | Vitor + maintainers  | Phase 4 PR 5 (list page + route)    | ✅ Resolved 2026-07-20 — PR 5 (#834) matches only the four `Signal` literals against `IndexComponent.signals`, no builder work; merged with no review pushback                                                                                                                      |
+| 11  | FacetPanel i18n namespace: `useTranslation("collector")` is hardwired, but the plan's list route is `/<ecosystem>/components` parameterized by slug — a Java Agent list would render collector-namespace copy. Options: namespace-as-prop, per-ecosystem panel config, or accept collector-only until a second ecosystem list ships. New input 2026-07-14: draft PR 3 (#786) introduces an ecosystem-agnostic `list` namespace for the controls — migrating the panel's non-Type copy there would resolve most of this decision | Vitor                | Phase 4 PR 5 (list page + route)    | ✅ Resolved 2026-07-20 — PR 5 (#834) splits copy between the `list` (ecosystem-agnostic) and `collector.listV1.facets` (domain vocabulary) namespaces; merged with no review pushback                                                                                               |
 
-(Numbering preserved for traceability against earlier conversations.) The longest-tail remaining
-decision is **#9** — depends on `ecosystem-registry` maintainers and gates the Phase 5 diff view.
-Surface early so it's not blocking when PR 04b is ready. **#10** is the Phase 4 equivalent: the
-`IndexComponent` shape (#645) carries no `status`, and the Signal facet derives from
-`status.stability` — decide before PR 5 is derived (PRs 1-4 are unaffected). **#11** also gates only
-PR 5 and is cheap to resolve in either direction.
+(Numbering preserved for traceability against earlier conversations.) No blocking decisions remain
+open — #9, the longest-tail one, was resolved by deferral on 2026-07-20. Surface early so it's not
+blocking when PR 04b is ready. **#10** is the Phase 4 equivalent: the `IndexComponent` shape (#645)
+carries no `status`, and the Signal facet derives from `status.stability` — decide before PR 5 is
+derived (PRs 1-4 are unaffected). **#11** also gates only PR 5 and is cheap to resolve in either
+direction.
 
 ---
 
@@ -565,5 +598,8 @@ PR 5 and is cheap to resolve in either direction.
 | 2026-07-18 | Phase 4 PR 5 opened as [#834](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/834) after rebasing `feat/84-phase4-pr5-list-page` with `git rebase --onto upstream/main f27a3fe1` — drops the stale stacked PR 4 commits (squash-merged upstream as #787) and replays only the PR 5 commit, which applied with zero conflicts. Same recipe as the 2026-05-21 Phase 2 PR 5 rebase.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | PR body flags the proposed dispositions for blocking decisions #10 (Signal facet matches only the four `Signal` literals; `profiles`/`extension`/connector compound tokens excluded, not remapped) and #11 (ecosystem-agnostic copy in the `list` namespace, collector-domain vocabulary in `collector.listV1.facets`); both stay open until review confirms. Typecheck + lint clean; 1275 tests pass.                                                                                                                                                                                                                                                                                                                                                                                               |
 | 2026-07-20 | Phase 4 PR 6 opened as [#841](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/841), a draft against upstream `main` stacked on #834 (per Vitor; a first draft on the fork with base `feat/84-phase4-pr5-list-page` was closed as superseded — GitHub requires a PR's base branch to live in the PR's repo, and that branch only exists on the fork, so the upstream diff shows the PR 5 commit until #834 merges). Label `add-screenshots` applied, same as PR 5. Light-theme contrast fixes computed against the worst-case slate row background, not white: GlowBadge orange/green shades to `-800` and blue/red to `-700`, `--muted-foreground-hsl` light 47% → 40% lightness, DensityToggle active label to `foreground`.                                                                                                                                                                                                                                                                    | Post-fix, all 8 list-page axe reports (3 densities + drawer × 2 themes) are violation-free; the token change also clears the pre-existing `bg-muted` chip failures on detail pages. Out-of-scope light findings left on their phases' surfaces; `error-boundary.tsx`'s `text-red-600` noted for the end-of-redesign cleanup. Also caught: #834's body references #374 but Phase 4 is #373.                                                                                                                                                                                                                                                                                                                                                                                                           |
 | 2026-07-20 | Phase 4 PR 5 (#834) merged with Jay's approval and no review comments — decisions #10 and #11 confirmed as-proposed, resolved. `feat/84-phase4-pr6-states-visual-regression` rebased onto refreshed `main` (`git rebase main <branch>`; git auto-skipped the already-applied PR 5 commit, zero conflicts) and force-pushed; tsc/lint/tests reverified green. PR 6 (#841) taken out of draft via `gh pr ready 841` — now `MERGEABLE` and open for review.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | PR 6 is the last PR of Phase 4 ([#373](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/373)). Once it merges: close #373, flip `03-list-page.md` and the `_index.md` phase table to `complete`, and Phase 5 (`04-detail-page.md`) starts.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| 2026-07-20 | Phase 4 complete — PR 6 (#841) merged, #373 closed. `feat/84-tmp-full-layout` rebased onto current `main` (new hash `149c61f3`; backup `feat/84-tmp-full-layout-backup-2026-07-20`): all 7 conflicts were list files Phase 4 had already shipped improved on `main`, resolved keeping `main`'s versions; `index.css` keeps the split list partials and adds only the reference's `detail.css` import. Typecheck clean against current `main` — the reference now carries only Phase 5 files, with no known drift.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | The reference's bundled `list.css` joins `ecosystem.css` as dead superseded CSS kept in-tree. Full suite on the rebased reference: 1295/1296 with only the known `java-instrumentation-list-page` full-suite flake (passes in isolation).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| 2026-07-20 | Phase 5 consolidated from #374's 10-PR breakdown into two mega-PRs, opened as drafts: PR A ([#869](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/869)) — three-pane shell + route swap, live Attributes tab (`metrics`/`attributes`/`resource_attributes` already ship in the per-component JSON), designed empty states for Configuration/README/Examples, new `detail` i18n namespace (en + es), corrected `:distribution/:name?version=` link scheme, tablist arrow-key nav; PR B ([#870](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/870), stacked on A) — right rail with CompatibilityCard trimmed to distributions, `/diff?from=&to=` route (URL shape locked as query params) with live client-side metadata diff, schema-diff engine ported with tests. Decision #9 resolved by deferral (config schemas need a new extraction pipeline; empty states until then).                                                                                        | Backed by Jay's mega-PR + holistic-review stance (Slack, 2026-07-20) and a 3-agent audit of #374, the reference code, and the data layer. Deferred to the post-phase reconciliation pass: README publishing (#775 pipeline shipped, publish pending) + renderer, README diff toggle, per-version timeline summaries. #374's body rewritten to the 2-PR plan; an embedded prompt-injection HTML comment ("Sir Vitor") was removed from it.                                                                                                                                                                                                                                                                                                                                                            |
+| 2026-07-27 | PR B (#870) review round 1. Jay reported the version timeline linking releases a component isn't in (`contrib/dynamicsamplingprocessor`) — the rail was fed the global versions index. Locked: **hide** absent releases rather than grey them out, so the timeline reads as "versions of this component". New `loadComponentVersions` + `useComponentVersions` filter the rail by per-version manifest presence; a release the distributions didn't tag in lockstep is legitimately absent for the distributions that skipped it. Four follow-up commits from a two-axis review: designed "not in this release" empty states replacing raw `error.message` on both detail and diff pages, `Trans` for the diff heading, a WCAG 2.5.3 fix on the diff selects, and the joined stability-level comparison key no longer rendered to users.                                                                                                                                                                                 | Verified against the real registry in the dev server, not just mocks: the reported component shows one release and no diff selector; a contrib component correctly skips the core-only patch release while core shows it. Copilot never reviewed #870 (quota limit), so Jay's comment was the only external coverage — the four follow-ups came from running the review locally. Open: whether the CompatibilityCard trim (4 spec fields → distributions only) was agreed with Jay.                                                                                                                                                                                                                                                                                                                  |
 
 Add a row whenever a decision lands. Keeps the doc honest.

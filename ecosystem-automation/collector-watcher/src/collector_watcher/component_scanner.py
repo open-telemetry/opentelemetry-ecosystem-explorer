@@ -89,7 +89,8 @@ class ComponentScanner:
                     components.extend(nested_components)
                 elif self._is_component_directory(item):
                     component_info = self._extract_component_info(item, component_type)
-                    components.append(component_info)
+                    if component_info is not None:
+                        components.append(component_info)
 
         return components
 
@@ -109,7 +110,8 @@ class ComponentScanner:
         for item in sorted(nested_dir.iterdir()):
             if item.is_dir() and self._is_nested_component_directory(item):
                 component_info = self._extract_component_info(item, component_type, subtype=subtype)
-                components.append(component_info)
+                if component_info is not None:
+                    components.append(component_info)
         return components
 
     def _is_valid_component_name(self, path: Path) -> bool:
@@ -191,7 +193,7 @@ class ComponentScanner:
 
     def _extract_component_info(
         self, component_path: Path, component_type: str, subtype: str | None = None
-    ) -> dict[str, Any]:
+    ) -> dict[str, Any] | None:
         """
         Extract information about a component.
 
@@ -201,7 +203,10 @@ class ComponentScanner:
             subtype: Optional subtype (e.g., "encoding", "observer", "storage")
 
         Returns:
-            Dictionary with component information
+            Dictionary with component information, or None if the upstream metadata's
+            ``status.class`` identifies this directory as something other than a real
+            component of ``component_type`` (e.g. an internal ``pkg`` interface package)
+            and should be skipped rather than cataloged.
         """
         parser = MetadataParser(component_path)
         has_metadata = parser.has_metadata()
@@ -217,6 +222,8 @@ class ComponentScanner:
         if has_metadata:
             parsed_metadata = parser.parse()
             if parsed_metadata:
+                if not self._matches_component_type(parsed_metadata, component_type):
+                    return None
                 component_info["metadata"] = parsed_metadata
             else:
                 component_info["has_metadata"] = False
@@ -224,3 +231,34 @@ class ComponentScanner:
             component_info["has_metadata"] = False
 
         return component_info
+
+    @staticmethod
+    def _matches_component_type(parsed_metadata: dict[str, Any], component_type: str) -> bool:
+        """
+        Check whether parsed metadata's ``status.class`` is consistent with the directory
+        it was found in, rather than an internal interface package (upstream ``class: pkg``,
+        or ``cmd``/``scraper``/``converter``/``provider``) that happens to live under a
+        component-type directory.
+
+        Nested/subtype components (e.g. ``extension/storage/filestorage``) declare
+        ``status.class`` equal to their *parent* type ("extension"), not their subtype
+        ("storage"), so comparing against ``component_type`` is correct for those too.
+
+        A missing ``status`` or ``status.class`` is treated as a match (fail-open): the
+        upstream schema documents ``class`` as optional for subcomponents, and the scanner
+        must not exclude a real component just because it lacks this field.
+
+        Args:
+            parsed_metadata: The parsed metadata.yaml content.
+            component_type: The directory-derived component type (e.g. "receiver").
+
+        Returns:
+            False only when ``status.class`` is present and differs from ``component_type``.
+        """
+        status = parsed_metadata.get("status")
+        if not isinstance(status, dict):
+            return True
+        status_class = status.get("class")
+        if status_class is None:
+            return True
+        return status_class == component_type

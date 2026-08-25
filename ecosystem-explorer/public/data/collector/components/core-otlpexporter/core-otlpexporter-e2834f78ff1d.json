@@ -1,0 +1,30 @@
+{
+  "description": null,
+  "display_name": "OTLP gRPC Exporter",
+  "distribution": "core",
+  "ecosystem": "collector",
+  "id": "core-otlpexporter",
+  "markdown_hash": "5c285c9c839d",
+  "name": "otlpexporter",
+  "repository": "opentelemetry-collector",
+  "status": {
+    "class": "exporter",
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s",
+      "otlp"
+    ],
+    "stability": {
+      "alpha": [
+        "profiles"
+      ],
+      "stable": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "exporter"
+}
