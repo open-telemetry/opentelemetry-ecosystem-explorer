@@ -63,18 +63,6 @@ requirement for watcher output generally; this phase is where the specific sort 
 array field gets chosen. See [Content-Addressed Storage](./content-addressed-storage.md) for how the
 hash is used downstream.
 
-## What the watcher contract does and doesn't give you for free
-
-`watcher-common`'s `BaseInventoryManager` (see
-`ecosystem-automation/watcher-common/src/watcher_common/inventory_manager.py`) provides directory
-listing, version-existence checks, and snapshot cleanup — but it has no abstract methods enforcing
-their use. `version_exists()` has to be called by the watcher itself before processing a version,
-and domain-specific save/load (what `JavaagentInventoryManager` adds on top of the base class) is
-written per ecosystem, not inherited. The Collector watcher doesn't use `BaseInventoryManager` at
-all; its distribution-aware layout needed a different inventory manager. Decide during this phase
-whether the new ecosystem's versioning model fits the base class's flat `v{version}/` assumption, or
-needs a custom inventory manager the way Collector did — that decision belongs here, not as
-something discovered mid-implementation in Phase 3.
 
 ## Worked examples
 
