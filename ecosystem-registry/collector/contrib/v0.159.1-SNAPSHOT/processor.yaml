@@ -4,6 +4,120 @@ repository: opentelemetry-collector-contrib
 component_type: processor
 schema_hash: a0135ca939d9
 components:
+- name: adaptivetailsamplingprocessor
+  metadata:
+    description: The Adaptive Tail Sampling Processor performs adaptive trace sampling
+      using first-match rules-based routing to adaptive samplers. Each sampler produces
+      a known sample rate which is encoded as `ot=th` in W3C TraceState for correct
+      downstream metric weighting.
+    display_name: Adaptive Tail Sampling Processor
+    status:
+      class: processor
+      codeowners:
+        active:
+        - MikeGoldsmith
+        - VinozzZ
+        - jmacd
+      distributions: []
+      stability:
+        development:
+        - traces
+    telemetry:
+      metrics:
+        processor_adaptive_tail_sampling_decision_sample_rate:
+          description: Distribution of effective sample rates produced per rule. Useful
+            for detecting adaptive samplers settling at unexpected rates.
+          enabled: true
+          histogram:
+            value_type: int
+          stability: development
+          unit: '{rate}'
+        processor_adaptive_tail_sampling_decision_triggers:
+          description: Number of trace decisions made, labelled by which event triggered
+            the decision (root_span, trace_timeout, eviction, shutdown, span_limit).
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{decisions}'
+        processor_adaptive_tail_sampling_fingerprint_duration:
+          description: Time spent extracting a rule's fingerprint per decision, in
+            microseconds, labelled by rule. A relative signal for spotting expensive
+            fingerprints (wide scopes such as any. on large traces); absolute values
+            depend on host and load.
+          enabled: true
+          histogram:
+            value_type: int
+          stability: development
+          unit: us
+        processor_adaptive_tail_sampling_incoming_tracestate_unparseable:
+          description: Number of spans whose incoming W3C tracestate could not be
+            parsed when applying the sampling threshold.
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{spans}'
+        processor_adaptive_tail_sampling_ottl_eval_errors:
+          description: Number of OTTL condition evaluation errors, labelled by the
+            rule the condition belongs to (_root_span_condition for the root-span
+            condition).
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{errors}'
+        processor_adaptive_tail_sampling_trace_span_count:
+          description: Distribution of buffered span counts per trace at decision
+            time, labelled by rule. Useful for sizing span_limit against the real
+            trace-size distribution.
+          enabled: true
+          histogram:
+            value_type: int
+          stability: development
+          unit: '{spans}'
+        processor_adaptive_tail_sampling_traces_active:
+          description: Number of traces currently in the accumulation buffer awaiting
+            a decision.
+          enabled: true
+          gauge:
+            value_type: int
+          stability: development
+          unit: '{traces}'
+        processor_adaptive_tail_sampling_traces_dropped:
+          description: Number of traces that were dropped, labelled by the rule that
+            selected them. Sentinel rule values are prefixed with an underscore (e.g.
+            _unmatched, _eviction).
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{traces}'
+        processor_adaptive_tail_sampling_traces_evicted:
+          description: Number of traces evicted from the buffer due to num_traces
+            pressure. Evicted traces are decided immediately per the configured eviction
+            policy.
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{traces}'
+        processor_adaptive_tail_sampling_traces_sampled:
+          description: Number of traces that were sampled, labelled by the rule that
+            selected them. Sentinel rule values are prefixed with an underscore (e.g.
+            _eviction).
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{traces}'
+    type: adaptive_tail_sampling
 - name: attributesprocessor
   metadata:
     display_name: Attributes Processor
@@ -330,111 +444,6 @@ components:
             value_type: int
           unit: '{records}'
     type: drain
-- name: dynamicsamplingprocessor
-  metadata:
-    description: The Dynamic Sampling Processor performs adaptive trace sampling using
-      first-match rules-based routing to dynamic samplers. Each sampler produces a
-      known sample rate which is encoded as `ot=th` in W3C TraceState for correct
-      downstream metric weighting.
-    display_name: Dynamic Sampling Processor
-    status:
-      class: processor
-      codeowners:
-        active:
-        - MikeGoldsmith
-        - VinozzZ
-        - jmacd
-      distributions: []
-      stability:
-        development:
-        - traces
-    telemetry:
-      metrics:
-        processor_dynamic_sampling_decision_sample_rate:
-          description: Distribution of effective sample rates produced per rule. Useful
-            for detecting adaptive samplers settling at unexpected rates.
-          enabled: true
-          histogram:
-            value_type: int
-          stability: development
-          unit: '{rate}'
-        processor_dynamic_sampling_decision_triggers:
-          description: Number of trace decisions made, labelled by which event triggered
-            the decision (root_span, trace_timeout, eviction, shutdown).
-          enabled: true
-          stability: development
-          sum:
-            monotonic: true
-            value_type: int
-          unit: '{decisions}'
-        processor_dynamic_sampling_fingerprint_duration:
-          description: Time spent extracting a rule's fingerprint per decision, in
-            microseconds, labelled by rule. A relative signal for spotting expensive
-            fingerprints (wide scopes such as any. on large traces); absolute values
-            depend on host and load.
-          enabled: true
-          histogram:
-            value_type: int
-          stability: development
-          unit: us
-        processor_dynamic_sampling_incoming_tracestate_unparseable:
-          description: Number of spans whose incoming W3C tracestate could not be
-            parsed when applying the sampling threshold.
-          enabled: true
-          stability: development
-          sum:
-            monotonic: true
-            value_type: int
-          unit: '{spans}'
-        processor_dynamic_sampling_ottl_eval_errors:
-          description: Number of OTTL condition evaluation errors, labelled by the
-            rule the condition belongs to (_root_span_condition for the root-span
-            condition).
-          enabled: true
-          stability: development
-          sum:
-            monotonic: true
-            value_type: int
-          unit: '{errors}'
-        processor_dynamic_sampling_traces_active:
-          description: Number of traces currently in the accumulation buffer awaiting
-            a decision.
-          enabled: true
-          gauge:
-            value_type: int
-          stability: development
-          unit: '{traces}'
-        processor_dynamic_sampling_traces_dropped:
-          description: Number of traces that were dropped, labelled by the rule that
-            selected them. Sentinel rule values are prefixed with an underscore (e.g.
-            _unmatched, _eviction).
-          enabled: true
-          stability: development
-          sum:
-            monotonic: true
-            value_type: int
-          unit: '{traces}'
-        processor_dynamic_sampling_traces_evicted:
-          description: Number of traces evicted from the buffer due to num_traces
-            pressure. Evicted traces are decided immediately per the configured eviction
-            policy.
-          enabled: true
-          stability: development
-          sum:
-            monotonic: true
-            value_type: int
-          unit: '{traces}'
-        processor_dynamic_sampling_traces_sampled:
-          description: Number of traces that were sampled, labelled by the rule that
-            selected them. Sentinel rule values are prefixed with an underscore (e.g.
-            _eviction).
-          enabled: true
-          stability: development
-          sum:
-            monotonic: true
-            value_type: int
-          unit: '{traces}'
-    type: dynamic_sampling
 - name: filterprocessor
   metadata:
     description: The Filter Processor allows dropping spans, span events, metrics,
@@ -1742,6 +1751,8 @@ components:
         - aks
         - alibaba_ecs
         - azure
+        - azureappservice
+        - azurecontainerapps
         - consul
         - digitalocean
         - docker
@@ -1992,6 +2003,20 @@ components:
             value_type: int
           unit: '{translations}'
     type: schema
+- name: signingprocessor
+  metadata:
+    status:
+      class: processor
+      codeowners:
+        active:
+        - hilmarf
+        - jmacd
+      distributions: []
+      stability:
+        development:
+        - logs
+      warnings: []
+    type: signing
 - name: spanprocessor
   metadata:
     display_name: Span Processor
