@@ -1119,6 +1119,8 @@ components:
         alpha:
         - logs
         - traces
+        development:
+        - metrics
     type: opensearch
 - name: otelarrowexporter
   metadata:

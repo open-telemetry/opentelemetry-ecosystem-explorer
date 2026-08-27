@@ -11432,6 +11432,14 @@ components:
         description: Timing information for the event, indicating elapsed time the
           event waited in seconds.
         type: double
+      mysql.myisam.key_cache.operation.type:
+        description: The MyISAM key cache operation type.
+        enum:
+        - read
+        - write
+        name_override: operation
+        requirement_level: recommended
+        type: string
       mysql.query_plan:
         description: The query plan for the statement, if available.
         type: string
@@ -11928,6 +11936,47 @@ components:
           monotonic: false
           value_type: int
         unit: '1'
+      mysql.myisam.key_cache.block.unused:
+        description: The number of unused MyISAM key cache blocks.
+        enabled: false
+        gauge:
+          input_type: string
+          value_type: int
+        stability: development
+        unit: '{block}'
+      mysql.myisam.key_cache.block.used.max:
+        description: The maximum number of MyISAM key cache blocks simultaneously
+          in use since the server started or status counters were reset.
+        enabled: false
+        gauge:
+          input_type: string
+          value_type: int
+        stability: development
+        unit: '{block}'
+      mysql.myisam.key_cache.disk.operation:
+        attributes:
+        - mysql.myisam.key_cache.operation.type
+        description: The number of physical MyISAM key cache disk operations.
+        enabled: false
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          input_type: string
+          monotonic: true
+          value_type: int
+        unit: '{operation}'
+      mysql.myisam.key_cache.request:
+        attributes:
+        - mysql.myisam.key_cache.operation.type
+        description: The number of logical MyISAM key cache requests.
+        enabled: false
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          input_type: string
+          monotonic: true
+          value_type: int
+        unit: '{request}'
       mysql.mysqlx_connections:
         attributes:
         - connection_status
@@ -12749,6 +12798,12 @@ components:
         description: The total time (in seconds) a query spent waiting on the application
           before it could proceed with execution (reporting delta).
         type: double
+      oracledb.asm.disk.name:
+        description: The name of the ASM disk.
+        type: string
+      oracledb.asm.disk_group.name:
+        description: The name of the ASM diskgroup.
+        type: string
       oracledb.blocking.blocker.root_sid:
         description: The session ID (SID) of the root/head blocker at the top of the
           blocking chain. Empty string when there is no blocking.
@@ -12905,8 +12960,7 @@ components:
         description: 'Plan load time in the server''s local timezone. Format: YYYY-MM-DD/HH:MM:SS'
         type: string
       oracledb.plan_hash_value:
-        description: Binary hash value calculated on the query execution plan and
-          used to identify similar query execution plans, reported in the HEX format.
+        description: Numeric representation of the execution plan.
         type: string
       oracledb.procedure_execution_count:
         description: The number of times the stored procedure has been executed, derived
@@ -13193,6 +13247,57 @@ components:
           on the highest CPU time consumed (oracledb.elapsed_time).
         enabled: false
     metrics:
+      oracledb.asm.disk.errors:
+        attributes:
+        - disk.io.direction
+        - oracledb.asm.disk.name
+        - oracledb.asm.disk_group.name
+        description: Count of I/O errors on an ASM disk.
+        enabled: false
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          input_type: string
+          monotonic: true
+          value_type: int
+        unit: '{error}'
+      oracledb.asm.disk_group.capacity:
+        attributes:
+        - oracledb.asm.disk_group.name
+        description: Total space in an ASM diskgroup.
+        enabled: false
+        gauge:
+          value_type: int
+        stability: development
+        unit: By
+      oracledb.asm.disk_group.free:
+        attributes:
+        - oracledb.asm.disk_group.name
+        description: Free space in an ASM diskgroup.
+        enabled: false
+        gauge:
+          value_type: int
+        stability: development
+        unit: By
+      oracledb.asm.disk_group.offline_disks:
+        attributes:
+        - oracledb.asm.disk_group.name
+        description: Count of disks currently offline within an ASM diskgroup.
+        enabled: false
+        gauge:
+          value_type: int
+        stability: development
+        unit: '{disk}'
+      oracledb.asm.disk_group.usable_free:
+        attributes:
+        - oracledb.asm.disk_group.name
+        description: Free space that can safely be used for files after accounting
+          for ASM redundancy and required mirror recovery capacity.
+        enabled: false
+        gauge:
+          value_type: int
+        stability: development
+        unit: By
       oracledb.buffer.inspected:
         attributes:
         - oracledb.buffer.state

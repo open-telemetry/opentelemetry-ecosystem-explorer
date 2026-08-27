@@ -1097,6 +1097,33 @@ components:
             monotonic: true
             value_type: int
           unit: '{resources}'
+        k8s.watcher.cronjob.added:
+          description: Number of cronjob add events received
+          enabled: true
+          prefix: otelcol.
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '1'
+        k8s.watcher.cronjob.deleted:
+          description: Number of cronjob delete events received
+          enabled: true
+          prefix: otelcol.
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '1'
+        k8s.watcher.cronjob.updated:
+          description: Number of cronjob update events received
+          enabled: true
+          prefix: otelcol.
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '1'
         k8s.watcher.daemonset.added:
           description: Number of daemonset add events received
           enabled: false
