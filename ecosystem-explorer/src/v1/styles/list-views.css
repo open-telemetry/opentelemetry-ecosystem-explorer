@@ -108,6 +108,10 @@
   text-transform: capitalize;
 }
 
+.td-row__removed {
+  white-space: nowrap;
+}
+
 /* ---------- Result cards ---------- */
 
 .td-list--cards {
@@ -187,6 +191,10 @@
 
 .td-card__type {
   text-transform: capitalize;
+}
+
+.td-card__removed {
+  white-space: nowrap;
 }
 
 /* ---------- Table view ---------- */

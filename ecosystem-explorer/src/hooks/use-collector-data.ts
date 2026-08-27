@@ -17,6 +17,7 @@ import { useState, useEffect } from "react";
 import type {
   VersionsIndex,
   CollectorComponent,
+  CollectorDeprecationsIndex,
   CollectorIndex,
   IndexComponent,
 } from "@/types/collector";
@@ -93,6 +94,46 @@ export function useCollectorIndex(): DataState<CollectorIndex> {
       cancelled = true;
     };
   }, []);
+
+  return state;
+}
+
+export function useCollectorDeprecations(enabled = true): DataState<CollectorDeprecationsIndex> {
+  const [state, setState] = useState<DataState<CollectorDeprecationsIndex>>({
+    data: null,
+    loading: enabled,
+    error: null,
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadData() {
+      if (!enabled) {
+        setState({ data: null, loading: false, error: null });
+        return;
+      }
+
+      setState({ data: null, loading: true, error: null });
+      try {
+        const data = await collectorData.loadDeprecationsIndex();
+        if (!cancelled) setState({ data, loading: false, error: null });
+      } catch (error) {
+        if (!cancelled) {
+          setState({
+            data: null,
+            loading: false,
+            error: error instanceof Error ? error : new Error(String(error)),
+          });
+        }
+      }
+    }
+
+    loadData();
+    return () => {
+      cancelled = true;
+    };
+  }, [enabled]);
 
   return state;
 }

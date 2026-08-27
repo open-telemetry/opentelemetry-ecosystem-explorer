@@ -2,10 +2,11 @@
 
 A watcher for the
 [OpenTelemetry Ecosystem Explorer](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer).
-It scans **opentelemetry-go-contrib**, derives metadata for each instrumentation library, and writes
-a versioned inventory that `explorer-db-builder` consumes.
+It scans upstream instrumentation repositories (like **opentelemetry-go-contrib** and
+**opentelemetry-go-compile-instrumentation**), derives metadata for each instrumentation library,
+and writes a versioned inventory that `explorer-db-builder` consumes.
 
-Scope is go-contrib's `instrumentation/` and `bridges/` subtrees — the components that instrument a
+Scope includes `instrumentation/` and `bridges/` subtrees — the components that instrument a
 developer's code. Exporters, propagators, samplers, and detectors configure the SDK pipeline and are
 out of scope.
 
@@ -21,16 +22,16 @@ make test              # go test -race with coverage
 make pre-commit        # fmt, tidy, lint, test
 ```
 
-Optional flags: `-base-dir` (where upstream repos are cloned, the `.repo/` working dir; defaults to
-the cwd) and `-inventory-dir` (defaults to `<repo-root>/ecosystem-registry/go/contrib`). Cloning
-uses HTTPS over the public repo, so no SSH key or token is needed.
+Optional flags: `-targets` (path to the YAML targets config; defaults to `targets.yaml`) and
+`-base-dir` (where upstream repos are cloned, the `.repo/` working dir; defaults to the cwd).
+Cloning uses HTTPS over the public repos, so no SSH key or token is needed.
 
 ## What it produces
 
-One inventory file per version, keyed by go-contrib's repo-wide release tag:
+One inventory file per version, keyed by the repository's release tag:
 
 ```text
-ecosystem-registry/go/contrib/v{version}/instrumentation.yaml
+ecosystem-registry/go/{repo}/v{version}/instrumentation.yaml
 ```
 
 Each file is an envelope of `Library` records:
@@ -41,14 +42,18 @@ libraries:
   - name: instrumentation-github.com-aws-aws-lambda-go-otellambda
     display_name: Lambda
     source_path: instrumentation/github.com/aws/aws-lambda-go/otellambda
-    module:
-      path: go.opentelemetry.io/contrib/instrumentation/github.com/aws/aws-lambda-go/otellambda
-      version: v0.69.0
+    scope:
+      name: go.opentelemetry.io/contrib/instrumentation/github.com/aws/aws-lambda-go/otellambda
+    modules:
+      - path: go.opentelemetry.io/contrib/instrumentation/github.com/aws/aws-lambda-go/otellambda
+        version: v0.69.0
     target_module: github.com/aws/aws-lambda-go
     go_min_version: 1.25.0
+    library_link: https://pkg.go.dev/go.opentelemetry.io/contrib/instrumentation/github.com/aws/aws-lambda-go/otellambda
     instrumentation_type: wrapper
     installation:
-      type: wrapper
+      methods:
+        - wrapper
     stability: experimental
 ```
 
@@ -61,24 +66,26 @@ a follow-up branch; the schema reserves a `telemetry` field for it.
 
 `cmd/watcher` runs two extractions per invocation:
 
-1. **Latest release.** `repo.LatestReleaseTag` lists go-contrib's remote tags over `git` (no GitHub
-   API, so no token or rate limit) and picks the highest bare, non-prerelease semver. An
-   already-inventoried version is skipped; otherwise it is checked out and extracted.
+1. **Latest release.** `repo.LatestReleaseTag` lists the remote tags over `git` (no GitHub API, so
+   no token or rate limit) and picks the highest bare, non-prerelease semver. An already-inventoried
+   version is skipped; otherwise it is checked out and extracted.
 2. **`main` snapshot.** `main` is published as the next patch-bumped `-SNAPSHOT` (e.g. `v1.44.0` →
    `v1.44.1-SNAPSHOT`), replacing the prior snapshot so only one exists.
 
-Each extraction checks out the ref, runs `instrumentation.ScanRepo`, backfills per-module versions
-from the git tags at that commit, and writes the inventory. `ScanRepo` walks the two subtrees for
-`go.mod` files (skipping `example`, `internal`, and `test`), keeps modules under
-`go.opentelemetry.io/contrib/`, and derives each `Library` from its `module`/`go` directives plus
-path heuristics (`instrumentation_type`, `target_module`, `display_name`).
+Each extraction checks out the ref, runs the appropriate scanner (`instrumentation.ScanRepo` or
+`instrumentation.ScanMetadataRepo`), backfills per-module versions from the git tags at that commit,
+and writes the inventory. `ScanRepo` walks the two subtrees for `go.mod` files (skipping `example`,
+`internal`, and `test`), keeps modules under `go.opentelemetry.io/contrib/`, and derives each
+`Library` from its `module`/`go` directives plus path heuristics (`instrumentation_type`,
+`target_module`, `display_name`). `ScanMetadataRepo` instead walks the repository for
+`metadata.yaml` files and parses them directly.
 
 ## Package layout
 
 | Package           | Responsibility                                                                   |
 | ----------------- | -------------------------------------------------------------------------------- |
 | `cmd/watcher`     | Entry point; orchestrates the release + snapshot extractions                     |
-| `repo`            | Clone/checkout go-contrib at a ref, list tags                                    |
+| `repo`            | Clone/checkout upstream repos at a ref, list tags                                |
 | `instrumentation` | Walk modules, parse `go.mod`, derive metadata, build `Library` records           |
 | `metadata`        | Shared `Metadata` struct and its enums (`InstrType`, `InstallType`, `Stability`) |
 | `inventory`       | Versioned inventory manager (save/load/list/cleanup), snapshot versioning        |
@@ -86,11 +93,13 @@ path heuristics (`instrumentation_type`, `target_module`, `display_name`).
 
 ## Things to know
 
-- **Dual versioning.** The directory uses go-contrib's bare repo-wide tag (`v1.44.0`); each
-  library's `module.version` comes from its own per-module tag at that commit (`v0.x`). The two
+- **Dual versioning.** Repositories like go-contrib use a bare repo-wide tag (`v1.44.0`), while each
+  library's `modules[].version` comes from its own per-module tags at that commit (`v0.x`). The two
   lines are independent.
-- **Metadata is derived, not authored.** Fields come from each module's own directives plus path
-  heuristics; prose fields are omitted when empty.
+- **Metadata extraction.** Depending on the repository's parsing strategy, metadata is either
+  derived from module directives and path heuristics (e.g. `go-contrib`, where prose fields are left
+  empty), or it is manually authored and read directly from a `metadata.yaml` file (e.g.
+  `go-compile-instrumentation`).
 - **Output is deterministic.** Records are sorted by stable keys and no timestamps are written, so
   re-running produces byte-identical output.
 

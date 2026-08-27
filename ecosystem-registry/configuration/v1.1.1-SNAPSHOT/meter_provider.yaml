@@ -26,6 +26,11 @@ properties:
     description: |
       Configure meters.
     defaultBehavior: all meters use default values as described in ExperimentalMeterConfig
+  view_matching_mode/development:
+    $ref: "#/$defs/ExperimentalViewMatchingMode"
+    description: |
+      Controls how multiple matching Views are applied to an Instrument.
+    defaultBehavior: independent is used
 required:
   - readers
 $defs:
@@ -389,6 +394,24 @@ $defs:
           Configure compression.
           Known values include: gzip, none. Implementations may support other compression algorithms.
         defaultBehavior: none is used
+      max_request_size:
+        type:
+          - integer
+          - "null"
+        minimum: 0
+        description: |
+          Configure the maximum size of each export request body in bytes, before compression.
+          Value must be non-negative. A value of 0 indicates no limit (infinity) and is not recommended.
+        defaultBehavior: 67108864 (64 MiB) is used
+      max_response_size:
+        type:
+          - integer
+          - "null"
+        minimum: 1
+        description: |
+          Configure the maximum size of each export response in bytes, after decompression.
+          Value must be positive.
+        defaultBehavior: 4194304 (4 MiB) is used
       timeout:
         type:
           - integer
@@ -456,6 +479,24 @@ $defs:
           Configure compression.
           Known values include: gzip, none. Implementations may support other compression algorithms.
         defaultBehavior: none is used
+      max_request_size:
+        type:
+          - integer
+          - "null"
+        minimum: 0
+        description: |
+          Configure the maximum size of each export request message in bytes, before compression.
+          Value must be non-negative. A value of 0 indicates no limit (infinity) and is not recommended.
+        defaultBehavior: 67108864 (64 MiB) is used
+      max_response_size:
+        type:
+          - integer
+          - "null"
+        minimum: 1
+        description: |
+          Configure the maximum size of each export response in bytes, after decompression.
+          Value must be positive.
+        defaultBehavior: 4194304 (4 MiB) is used
       timeout:
         type:
           - integer
@@ -773,3 +814,13 @@ $defs:
           - boolean
         description: Configure if the meter is enabled or not.
         defaultBehavior: true is used
+  ExperimentalViewMatchingMode:
+    type:
+      - string
+      - "null"
+    enum:
+      - independent
+      - composable
+    enumDescriptions:
+      composable: Combines (merges) matching Views into unified metric streams unless distinct stream names are configured.
+      independent: Creates separate metric streams independently for each matching View.

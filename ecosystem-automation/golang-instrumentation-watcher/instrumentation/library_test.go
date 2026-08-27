@@ -9,6 +9,11 @@ import (
 	"github.com/open-telemetry/opentelemetry-ecosystem-explorer/golang-instrumentation-watcher/metadata"
 )
 
+const (
+	dirPerm  = 0o744
+	filePerm = 0o644
+)
+
 // modFile returns minimal go.mod source declaring modulePath.
 func modFile(modulePath string) string {
 	return "module " + modulePath + "\n\ngo 1.24.0\n"
@@ -19,12 +24,12 @@ func modFile(modulePath string) string {
 func writeModule(t *testing.T, modulePath string) string {
 	t.Helper()
 	dir := t.TempDir()
-	if err := os.WriteFile(filepath.Join(dir, "go.mod"), []byte(modFile(modulePath)), 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(dir, "go.mod"), []byte(modFile(modulePath)), filePerm); err != nil {
 		t.Fatal(err)
 	}
 	pkgName := filepath.Base(modulePath)
 	doc := "// Package " + pkgName + " is a test fixture.\npackage " + pkgName + "\n"
-	if err := os.WriteFile(filepath.Join(dir, "doc.go"), []byte(doc), 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(dir, "doc.go"), []byte(doc), filePerm); err != nil {
 		t.Fatal(err)
 	}
 	return filepath.Join(dir, "go.mod")
@@ -34,10 +39,10 @@ func writeModule(t *testing.T, modulePath string) string {
 func writeGoMod(t *testing.T, root, relDir, content string) {
 	t.Helper()
 	dir := filepath.Join(root, relDir)
-	if err := os.MkdirAll(dir, 0755); err != nil {
+	if err := os.MkdirAll(dir, dirPerm); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(filepath.Join(dir, "go.mod"), []byte(content), 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(dir, "go.mod"), []byte(content), filePerm); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -90,6 +95,151 @@ func TestAnalyzeLibrary(t *testing.T) {
 	}
 }
 
+// writeMetadata writes content as a metadata.yaml under root/relDir, creating the dir.
+func writeMetadata(t *testing.T, root, relDir, content string) {
+	t.Helper()
+	dir := filepath.Join(root, relDir)
+	if err := os.MkdirAll(dir, dirPerm); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "metadata.yaml"), []byte(content), filePerm); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestScanMetadataRepo(t *testing.T) {
+	tests := []struct {
+		name          string
+		goVersion     string
+		metaConfig    string
+		wantLibs      int
+		wantError     bool
+		setupOverride func(*testing.T, string)
+		assertLib     func(*testing.T, Library)
+	}{
+		{
+			name:      "infers GoMinVersion from go.mod",
+			goVersion: "1.25.0",
+			metaConfig: `name: test-lib
+modules:
+  - path: go.opentelemetry.io/otelc/dummy
+`,
+			wantLibs: 1,
+			assertLib: func(t *testing.T, l Library) {
+				if l.GoMinVersion != "1.25.0" {
+					t.Errorf("GoMinVersion = %q, want 1.25.0", l.GoMinVersion)
+				}
+			},
+		},
+		{
+			name:      "respects explicitly authored GoMinVersion",
+			goVersion: "1.25.0",
+			metaConfig: `name: test-lib
+go_min_version: "1.20"
+modules:
+  - path: go.opentelemetry.io/otelc/dummy
+`,
+			wantLibs: 1,
+			assertLib: func(t *testing.T, l Library) {
+				if l.GoMinVersion != "1.20" {
+					t.Errorf("GoMinVersion = %q, want 1.20 (should not be overwritten)", l.GoMinVersion)
+				}
+			},
+		},
+		{
+			name:      "multi-module picks highest go version",
+			goVersion: "1.20.0", // Ignored because we define two specific modules
+			metaConfig: `name: multi-lib
+modules:
+  - path: go.opentelemetry.io/otelc/mod1
+  - path: go.opentelemetry.io/otelc/mod2
+`,
+			wantLibs: 1,
+			setupOverride: func(t *testing.T, root string) {
+				writeGoMod(t, root, "instrumentation/mod1", "module go.opentelemetry.io/otelc/mod1\n\ngo 1.20\n")
+				writeGoMod(t, root, "instrumentation/mod2", "module go.opentelemetry.io/otelc/mod2\n\ngo 1.25.0\n")
+			},
+			assertLib: func(t *testing.T, l Library) {
+				if l.GoMinVersion != "1.25.0" {
+					t.Errorf("GoMinVersion = %q, want 1.25.0", l.GoMinVersion)
+				}
+				if l.SourcePath == "" {
+					t.Errorf("SourcePath was not injected")
+				}
+			},
+		},
+		{
+			name:      "round-trips new fields and respects authored source_path",
+			goVersion: "1.25.0",
+			metaConfig: `name: exhaustive-lib
+source_path: custom/path
+hidden: true
+otelc_min_version: v0.10.0
+installation:
+  methods:
+    - automatic
+    - wrapper
+modules:
+  - path: go.opentelemetry.io/otelc/exhaustive
+`,
+			wantLibs: 1,
+			assertLib: func(t *testing.T, l Library) {
+				if l.SourcePath != "custom/path" {
+					t.Errorf("SourcePath = %q, want custom/path", l.SourcePath)
+				}
+				if !l.Hidden {
+					t.Errorf("Hidden = false, want true")
+				}
+				if l.OtelcMinVersion != "v0.10.0" {
+					t.Errorf("OtelcMinVersion = %q, want v0.10.0", l.OtelcMinVersion)
+				}
+				if len(l.Installation.Methods) != 2 {
+					t.Fatalf("Installation methods len = %d, want 2", len(l.Installation.Methods))
+				}
+			},
+		},
+		{
+			name:      "malformed metadata yields error",
+			goVersion: "1.25.0",
+			metaConfig: `name: bad-lib
+instalation: # typo should fail strict decoding
+  methods: [automatic]
+`,
+			wantError: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			root := t.TempDir()
+
+			if tt.setupOverride != nil {
+				tt.setupOverride(t, root)
+			} else {
+				writeGoMod(t, root, "instrumentation/dummy", "module go.opentelemetry.io/otelc/dummy\n\ngo "+tt.goVersion+"\n")
+			}
+
+			writeMetadata(t, root, "instrumentation/dummy", tt.metaConfig)
+
+			res, err := ScanMetadataRepo(root)
+			if tt.wantError {
+				if err == nil {
+					t.Fatal("expected error, got nil")
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("ScanMetadataRepo() error = %v", err)
+			}
+			if len(res.Libraries) != tt.wantLibs {
+				t.Fatalf("Got %d libraries, want %d", len(res.Libraries), tt.wantLibs)
+			}
+			if tt.wantLibs > 0 {
+				tt.assertLib(t, res.Libraries[0])
+			}
+		})
+	}
+}
 func TestScanRepo(t *testing.T) {
 	const contrib = "go.opentelemetry.io/contrib/"
 

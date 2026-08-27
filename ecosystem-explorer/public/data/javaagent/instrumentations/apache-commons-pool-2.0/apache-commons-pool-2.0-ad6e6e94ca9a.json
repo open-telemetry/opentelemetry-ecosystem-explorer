@@ -1,0 +1,102 @@
+{
+  "configurations": [
+    {
+      "declarative_name": "java.apache_commons_pool.enabled",
+      "default": false,
+      "description": "Enables the Apache Commons Pool instrumentation.",
+      "name": "otel.instrumentation.apache-commons-pool.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enables object pool metrics for Apache Commons Pool GenericObjectPool and GenericKeyedObjectPool instances.",
+  "disabled_by_default": true,
+  "display_name": "Apache Commons Pool",
+  "has_javaagent": true,
+  "has_standalone_library": true,
+  "javaagent_target_versions": [
+    "org.apache.commons:commons-pool2:[2.0,)"
+  ],
+  "library_link": "https://commons.apache.org/proper/commons-pool/",
+  "markdown_hash": "b18f830f10e9",
+  "name": "apache-commons-pool-2.0",
+  "scope": {
+    "name": "io.opentelemetry.apache-commons-pool-2.0"
+  },
+  "source_path": "instrumentation/apache-commons-pool-2.0",
+  "telemetry": [
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "apache_commons_pool.object.state",
+              "type": "STRING"
+            },
+            {
+              "name": "apache_commons_pool.pool.name",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The number of objects currently in the state described by the state attribute.",
+          "instrument": "updowncounter",
+          "name": "apache_commons_pool.object.count",
+          "unit": "{object}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "apache_commons_pool.pool.name",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The maximum number of idle objects allowed in the pool.",
+          "instrument": "updowncounter",
+          "name": "apache_commons_pool.object.idle.max",
+          "unit": "{object}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "apache_commons_pool.pool.name",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The minimum number of idle objects allowed in the pool.",
+          "instrument": "updowncounter",
+          "name": "apache_commons_pool.object.idle.min",
+          "unit": "{object}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "apache_commons_pool.pool.name",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The maximum number of objects allowed in the pool.",
+          "instrument": "updowncounter",
+          "name": "apache_commons_pool.object.max",
+          "unit": "{object}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "apache_commons_pool.pool.name",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The number of requests currently waiting for an object from the pool.",
+          "instrument": "updowncounter",
+          "name": "apache_commons_pool.object.pending_requests",
+          "unit": "{request}"
+        }
+      ],
+      "when": "otel.instrumentation.apache-commons-pool.enabled=true"
+    }
+  ]
+}

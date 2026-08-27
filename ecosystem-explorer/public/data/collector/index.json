@@ -18,19 +18,6 @@
     },
     {
       "description": null,
-      "display_name": null,
-      "distribution": "core",
-      "has_readme": false,
-      "id": "core-xconnector",
-      "name": "xconnector",
-      "signals": [
-        "profiles"
-      ],
-      "stability": "alpha",
-      "type": "connector"
-    },
-    {
-      "description": null,
       "display_name": "Debug Exporter",
       "distribution": "core",
       "has_readme": true,
@@ -95,19 +82,6 @@
     },
     {
       "description": null,
-      "display_name": null,
-      "distribution": "core",
-      "has_readme": false,
-      "id": "core-xexporter",
-      "name": "xexporter",
-      "signals": [
-        "profiles"
-      ],
-      "stability": "alpha",
-      "type": "exporter"
-    },
-    {
-      "description": null,
       "display_name": "Memory Limiter Extension",
       "distribution": "core",
       "has_readme": true,
@@ -116,20 +90,7 @@
       "signals": [
         "extension"
       ],
-      "stability": "development",
-      "type": "extension"
-    },
-    {
-      "description": null,
-      "display_name": null,
-      "distribution": "core",
-      "has_readme": false,
-      "id": "core-xextension",
-      "name": "xextension",
-      "signals": [
-        "profiles"
-      ],
-      "stability": "alpha",
+      "stability": "beta",
       "type": "extension"
     },
     {
@@ -178,15 +139,18 @@
     },
     {
       "description": null,
-      "display_name": null,
+      "display_name": "Queue Batch Processor",
       "distribution": "core",
-      "has_readme": false,
-      "id": "core-xprocessor",
-      "name": "xprocessor",
+      "has_readme": true,
+      "id": "core-queuebatchprocessor",
+      "name": "queuebatchprocessor",
       "signals": [
+        "traces",
+        "metrics",
+        "logs",
         "profiles"
       ],
-      "stability": "alpha",
+      "stability": "development",
       "type": "processor"
     },
     {
@@ -219,19 +183,6 @@
         "profiles"
       ],
       "stability": "stable",
-      "type": "receiver"
-    },
-    {
-      "description": null,
-      "display_name": null,
-      "distribution": "core",
-      "has_readme": false,
-      "id": "core-xreceiver",
-      "name": "xreceiver",
-      "signals": [
-        "profiles"
-      ],
-      "stability": "alpha",
       "type": "receiver"
     },
     {
@@ -880,7 +831,7 @@
       "signals": [
         "logs"
       ],
-      "stability": "beta",
+      "stability": "deprecated",
       "type": "exporter"
     },
     {
@@ -1540,19 +1491,6 @@
     },
     {
       "description": null,
-      "display_name": "Kafka Topics Observer Extension",
-      "distribution": "contrib",
-      "has_readme": true,
-      "id": "contrib-kafkatopicsobserver",
-      "name": "kafkatopicsobserver",
-      "signals": [
-        "extension"
-      ],
-      "stability": "deprecated",
-      "type": "extension"
-    },
-    {
-      "description": null,
       "display_name": "OIDC Authenticator Extension",
       "distribution": "contrib",
       "has_readme": true,
@@ -1597,6 +1535,19 @@
       "has_readme": true,
       "id": "contrib-remotetapextension",
       "name": "remotetapextension",
+      "signals": [
+        "extension"
+      ],
+      "stability": "development",
+      "type": "extension"
+    },
+    {
+      "description": null,
+      "display_name": "sd_notify Extension",
+      "distribution": "contrib",
+      "has_readme": true,
+      "id": "contrib-sdnotifyextension",
+      "name": "sdnotifyextension",
       "signals": [
         "extension"
       ],
@@ -2497,6 +2448,19 @@
       "type": "receiver"
     },
     {
+      "description": "The DNS Check Receiver can be used for synthetic checks against DNS servers.",
+      "display_name": "DNS Check Receiver",
+      "distribution": "contrib",
+      "has_readme": true,
+      "id": "contrib-dnscheckreceiver",
+      "name": "dnscheckreceiver",
+      "signals": [
+        "metrics"
+      ],
+      "stability": "development",
+      "type": "receiver"
+    },
+    {
       "description": "The Docker Stats receiver queries the local Docker daemon's container stats API for all desired running containers on a configured interval. These stats are for container resource usage of cpu, memory, network, and the [blkio controller](https://www.kernel.org/doc/Documentation/cgroup-v1/blkio-controller.txt).",
       "display_name": "Docker Stats Receiver",
       "distribution": "contrib",
@@ -2664,7 +2628,7 @@
       "signals": [
         "logs"
       ],
-      "stability": "development",
+      "stability": "alpha",
       "type": "receiver"
     },
     {

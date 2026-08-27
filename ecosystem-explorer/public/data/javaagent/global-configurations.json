@@ -80,6 +80,16 @@
     "type": "string"
   },
   {
+    "declarative_name": "java.apache_commons_pool.enabled",
+    "default": false,
+    "description": "Enables the Apache Commons Pool instrumentation.",
+    "instrumentations": [
+      "apache-commons-pool-2.0"
+    ],
+    "name": "otel.instrumentation.apache-commons-pool.enabled",
+    "type": "boolean"
+  },
+  {
     "declarative_name": "java.apache_elasticjob.experimental_span_attributes/development",
     "default": false,
     "description": "Enables experimental span attributes `job.system`, `scheduling.apache-elasticjob.job.name`, `scheduling.apache-elasticjob.task.id`, `scheduling.apache-elasticjob.sharding.item.index`, `scheduling.apache-elasticjob.sharding.total.count`, `scheduling.apache-elasticjob.sharding.item.parameter`, and `scheduling.apache-elasticjob.job.type`.",
@@ -701,7 +711,7 @@
   {
     "declarative_name": "java.grpc.capture_metadata.client.request",
     "default": "",
-    "description": "A comma-separated list of request metadata keys. gRPC client instrumentation will capture metadata values corresponding to configured keys as span attributes.",
+    "description": "Deprecated: use `otel.instrumentation.grpc.client.request-metadata.included` instead. A comma-separated list of request metadata keys to capture on client spans. It does not support glob patterns: an entry containing `*` or `?` is ignored with a warning, and every other entry is matched as a literal metadata key.",
     "examples": [
       "custom-request-header",
       "my-metadata-key,another-metadata-key"
@@ -715,11 +725,38 @@
   {
     "declarative_name": "java.grpc.capture_metadata.server.request",
     "default": "",
-    "description": "A comma-separated list of request metadata keys. gRPC server instrumentation will capture metadata values corresponding to configured keys as span attributes.",
+    "description": "Deprecated: use `otel.instrumentation.grpc.server.request-metadata.included` instead. A comma-separated list of request metadata keys to capture on server spans. It does not support glob patterns: an entry containing `*` or `?` is ignored with a warning, and every other entry is matched as a literal metadata key.",
     "instrumentations": [
       "grpc-1.6"
     ],
     "name": "otel.instrumentation.grpc.capture-metadata.server.request",
+    "type": "list"
+  },
+  {
+    "declarative_name": "java.grpc.client.request_metadata.excluded",
+    "default": "",
+    "description": "A comma-separated list of ASCII request metadata key patterns to exclude from client spans. Excluded patterns take precedence over included patterns. Matching is case-insensitive. `?` matches one character and `*` matches zero or more characters. If included is not configured, all non-excluded ASCII metadata is captured, which may expose sensitive information.",
+    "examples": [
+      "authorization,*-token"
+    ],
+    "instrumentations": [
+      "grpc-1.6"
+    ],
+    "name": "otel.instrumentation.grpc.client.request-metadata.excluded",
+    "type": "list"
+  },
+  {
+    "declarative_name": "java.grpc.client.request_metadata.included",
+    "default": "",
+    "description": "A comma-separated list of ASCII request metadata key patterns to capture on client spans. Matching is case-insensitive. `?` matches one character and `*` matches zero or more characters.",
+    "examples": [
+      "custom-request-header",
+      "my-*-key,another-metadata-key"
+    ],
+    "instrumentations": [
+      "grpc-1.6"
+    ],
+    "name": "otel.instrumentation.grpc.client.request-metadata.included",
     "type": "list"
   },
   {
@@ -741,6 +778,33 @@
     ],
     "name": "otel.instrumentation.grpc.experimental-span-attributes",
     "type": "boolean"
+  },
+  {
+    "declarative_name": "java.grpc.server.request_metadata.excluded",
+    "default": "",
+    "description": "A comma-separated list of ASCII request metadata key patterns to exclude from server spans. Excluded patterns take precedence over included patterns. Matching is case-insensitive. `?` matches one character and `*` matches zero or more characters. If included is not configured, all non-excluded ASCII metadata is captured, which may expose sensitive information.",
+    "examples": [
+      "authorization,*-token"
+    ],
+    "instrumentations": [
+      "grpc-1.6"
+    ],
+    "name": "otel.instrumentation.grpc.server.request-metadata.excluded",
+    "type": "list"
+  },
+  {
+    "declarative_name": "java.grpc.server.request_metadata.included",
+    "default": "",
+    "description": "A comma-separated list of ASCII request metadata key patterns to capture on server spans. Matching is case-insensitive. `?` matches one character and `*` matches zero or more characters.",
+    "examples": [
+      "custom-request-header",
+      "my-*-key,another-metadata-key"
+    ],
+    "instrumentations": [
+      "grpc-1.6"
+    ],
+    "name": "otel.instrumentation.grpc.server.request-metadata.included",
+    "type": "list"
   },
   {
     "declarative_name": "java.guava.experimental_span_attributes/development",
@@ -1097,6 +1161,16 @@
     "type": "boolean"
   },
   {
+    "declarative_name": "java.influxdb.query_sanitization.enabled",
+    "default": true,
+    "description": "Enables query sanitization for InfluxDB queries. Takes precedence over otel.instrumentation.common.db.query-sanitization.enabled.",
+    "instrumentations": [
+      "influxdb-2.4"
+    ],
+    "name": "otel.instrumentation.influxdb.query-sanitization.enabled",
+    "type": "boolean"
+  },
+  {
     "declarative_name": "java.java_util_logging.experimental_log_attributes/development",
     "default": false,
     "description": "Enables capturing the experimental `thread.name` and `thread.id` log attributes.",
@@ -1176,7 +1250,7 @@
   {
     "declarative_name": "java.jboss_logmanager.capture_mdc_attributes/development",
     "default": "",
-    "description": "Controls which MDC attributes to capture. Use \"*\" to capture all MDC attributes or provide a comma-separated list of specific keys.",
+    "description": "Deprecated: use `otel.instrumentation.jboss-logmanager.experimental.mdc-attributes.included` instead. Entries are matched as exact MDC keys rather than as glob patterns, except that a list containing only `*` captures all MDC attributes; in a multi-entry list, `*` and `?` are literal characters. It is ignored when an included or excluded pattern is configured, and it may be removed in the next minor release.",
     "examples": [
       "custom-mdc-key",
       "key1,key2,key3"
@@ -1196,6 +1270,33 @@
     ],
     "name": "otel.instrumentation.jboss-logmanager.experimental.capture-template",
     "type": "boolean"
+  },
+  {
+    "declarative_name": "java.jboss_logmanager.mdc_attributes/development.excluded",
+    "default": "",
+    "description": "A comma-separated list of case-sensitive glob patterns for MDC keys not to capture as log attributes. `*` matches any number of characters and `?` matches one character. Excluded patterns take precedence over included patterns. No MDC attributes are captured unless an included or excluded pattern, or the deprecated setting, is configured; configuring only excluded patterns captures all MDC attributes that do not match them. Captured MDC attributes may contain sensitive information.",
+    "examples": [
+      "password,*-token"
+    ],
+    "instrumentations": [
+      "jboss-logmanager-appender-1.1"
+    ],
+    "name": "otel.instrumentation.jboss-logmanager.experimental.mdc-attributes.excluded",
+    "type": "list"
+  },
+  {
+    "declarative_name": "java.jboss_logmanager.mdc_attributes/development.included",
+    "default": "",
+    "description": "A comma-separated list of case-sensitive glob patterns for MDC keys to capture as log attributes. `*` matches any number of characters and `?` matches one character. Excluded patterns take precedence over included patterns. No MDC attributes are captured unless an included or excluded pattern, or the deprecated setting, is configured; configuring only excluded patterns captures all MDC attributes that do not match them. Captured MDC attributes may contain sensitive information.",
+    "examples": [
+      "custom-mdc-key",
+      "request.*,user-?"
+    ],
+    "instrumentations": [
+      "jboss-logmanager-appender-1.1"
+    ],
+    "name": "otel.instrumentation.jboss-logmanager.experimental.mdc-attributes.included",
+    "type": "list"
   },
   {
     "declarative_name": "java.jdbc_datasource.enabled",
@@ -1378,7 +1479,7 @@
   {
     "declarative_name": "java.log4j_appender.capture_map_message_attributes/development",
     "default": false,
-    "description": "Enables the capture of attributes from Log4j MapMessage instances.",
+    "description": "Deprecated boolean alias for otel.instrumentation.log4j-appender.experimental.map-message-attributes.included, where true captures all MapMessage attributes and false captures none. It is ignored when an included or excluded pattern is configured, and it may be removed in the next minor release.",
     "instrumentations": [
       "log4j-appender-2.17"
     ],
@@ -1398,7 +1499,7 @@
   {
     "declarative_name": "java.log4j_appender.capture_mdc_attributes/development",
     "default": "",
-    "description": "Controls which MDC attributes to capture. Use \"*\" to capture all MDC attributes or provide a comma-separated list of specific keys.",
+    "description": "Deprecated include-only alias for otel.instrumentation.log4j-appender.experimental.mdc-attributes.included. It does not support glob patterns: a list containing only \"*\" captures all MDC attributes, and otherwise every entry, including one containing \"*\" or \"?\", is matched as a literal MDC key. It is ignored when an included or excluded pattern is configured, and it may be removed in the next minor release.",
     "examples": [
       "custom-mdc-key",
       "key1,key2,key3"
@@ -1419,6 +1520,64 @@
     ],
     "name": "otel.instrumentation.log4j-appender.experimental.capture-template",
     "type": "boolean"
+  },
+  {
+    "declarative_name": "java.log4j_appender.map_message_attributes/development.excluded",
+    "default": "",
+    "description": "Comma-separated list of case-sensitive glob patterns for MapMessage keys not to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No MapMessage attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.log4j-appender.experimental.capture-map-message-attributes setting is configured; configuring only excluded patterns captures all MapMessage attributes that do not match them. Captured MapMessage attributes may contain sensitive information.",
+    "examples": [
+      "*-secret",
+      "password,token"
+    ],
+    "instrumentations": [
+      "log4j-appender-2.17"
+    ],
+    "name": "otel.instrumentation.log4j-appender.experimental.map-message-attributes.excluded",
+    "type": "list"
+  },
+  {
+    "declarative_name": "java.log4j_appender.map_message_attributes/development.included",
+    "default": "",
+    "description": "Comma-separated list of case-sensitive glob patterns for MapMessage keys to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No MapMessage attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.log4j-appender.experimental.capture-map-message-attributes setting is configured; configuring only excluded patterns captures all MapMessage attributes that do not match them. Captured MapMessage attributes may contain sensitive information.",
+    "examples": [
+      "custom-map-message-key",
+      "request-*,user-?"
+    ],
+    "instrumentations": [
+      "log4j-appender-2.17"
+    ],
+    "name": "otel.instrumentation.log4j-appender.experimental.map-message-attributes.included",
+    "type": "list"
+  },
+  {
+    "declarative_name": "java.log4j_appender.mdc_attributes/development.excluded",
+    "default": "",
+    "description": "Comma-separated list of case-sensitive glob patterns for MDC keys not to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No MDC attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.log4j-appender.experimental.capture-mdc-attributes setting is configured; configuring only excluded patterns captures all MDC attributes that do not match them. Captured MDC attributes may contain sensitive information.",
+    "examples": [
+      "*-secret",
+      "password,token"
+    ],
+    "instrumentations": [
+      "log4j-appender-1.2",
+      "log4j-appender-2.17"
+    ],
+    "name": "otel.instrumentation.log4j-appender.experimental.mdc-attributes.excluded",
+    "type": "list"
+  },
+  {
+    "declarative_name": "java.log4j_appender.mdc_attributes/development.included",
+    "default": "",
+    "description": "Comma-separated list of case-sensitive glob patterns for MDC keys to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No MDC attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.log4j-appender.experimental.capture-mdc-attributes setting is configured; configuring only excluded patterns captures all MDC attributes that do not match them. Captured MDC attributes may contain sensitive information.",
+    "examples": [
+      "custom-mdc-key",
+      "request-*,user-?"
+    ],
+    "instrumentations": [
+      "log4j-appender-1.2",
+      "log4j-appender-2.17"
+    ],
+    "name": "otel.instrumentation.log4j-appender.experimental.mdc-attributes.included",
+    "type": "list"
   },
   {
     "declarative_name": "java.log4j_context_data.add_baggage",
@@ -1474,7 +1633,7 @@
   {
     "declarative_name": "java.logback_appender.capture_key_value_pair_attributes/development",
     "default": false,
-    "description": "Enables the capture of attributes from Logback key-value pairs.",
+    "description": "Deprecated setting that enables the capture of all attributes from Logback key value pairs. It is ignored when otel.instrumentation.logback-appender.experimental.key-value-pair-attributes.included or otel.instrumentation.logback-appender.experimental.key-value-pair-attributes.excluded is configured, and it may be removed in the next minor release. Use otel.instrumentation.logback-appender.experimental.key-value-pair-attributes.included instead.",
     "instrumentations": [
       "logback-appender-1.0"
     ],
@@ -1484,7 +1643,7 @@
   {
     "declarative_name": "java.logback_appender.capture_logger_context_attributes/development",
     "default": false,
-    "description": "Enables the capture of attributes from the Logback logger context.",
+    "description": "Deprecated setting that enables the capture of all attributes from the Logback logger context. It is ignored when otel.instrumentation.logback-appender.experimental.logger-context-attributes.included or otel.instrumentation.logback-appender.experimental.logger-context-attributes.excluded is configured, and it may be removed in the next minor release. Use otel.instrumentation.logback-appender.experimental.logger-context-attributes.included instead.",
     "instrumentations": [
       "logback-appender-1.0"
     ],
@@ -1494,7 +1653,7 @@
   {
     "declarative_name": "java.logback_appender.capture_logstash_marker_attributes/development",
     "default": false,
-    "description": "Enables the capture of attributes from Logstash markers.",
+    "description": "Deprecated setting that enables the capture of all attributes from Logstash markers, supported are those added to logs via Markers.append(), Markers.appendEntries(), Markers.appendArray() and Markers.appendRaw() methods. It is ignored when otel.instrumentation.logback-appender.experimental.logstash-marker-attributes.included or otel.instrumentation.logback-appender.experimental.logstash-marker-attributes.excluded is configured, and it may be removed in the next minor release. Use otel.instrumentation.logback-appender.experimental.logstash-marker-attributes.included instead.",
     "instrumentations": [
       "logback-appender-1.0"
     ],
@@ -1504,7 +1663,7 @@
   {
     "declarative_name": "java.logback_appender.capture_logstash_structured_arguments/development",
     "default": false,
-    "description": "Enables the capture of attributes from Logstash structured arguments.",
+    "description": "Deprecated setting that enables the capture of all attributes from Logstash structured arguments (e.g., StructuredArguments.v() and StructuredArguments.keyValue()). It is ignored when otel.instrumentation.logback-appender.experimental.logstash-structured-argument-attributes.included or otel.instrumentation.logback-appender.experimental.logstash-structured-argument-attributes.excluded is configured, and it may be removed in the next minor release. Use otel.instrumentation.logback-appender.experimental.logstash-structured-argument-attributes.included instead.",
     "instrumentations": [
       "logback-appender-1.0"
     ],
@@ -1524,7 +1683,7 @@
   {
     "declarative_name": "java.logback_appender.capture_mdc_attributes/development",
     "default": "",
-    "description": "Controls which MDC attributes to capture. Use \"*\" to capture all MDC attributes or provide a comma-separated list of specific keys.",
+    "description": "Deprecated comma-separated list of MDC keys to capture as log attributes. Keys are matched literally, including \"*\" and \"?\", except that the single value \"*\" captures all MDC attributes. It is ignored when otel.instrumentation.logback-appender.experimental.mdc-attributes.included or otel.instrumentation.logback-appender.experimental.mdc-attributes.excluded is configured, and it may be removed in the next minor release. Use otel.instrumentation.logback-appender.experimental.mdc-attributes.included instead.",
     "examples": [
       "custom-mdc-key",
       "key1,key2,key3"
@@ -1546,6 +1705,146 @@
     "type": "boolean"
   },
   {
+    "declarative_name": "java.logback_appender.key_value_pair_attributes/development.excluded",
+    "default": "",
+    "description": "Comma-separated list of case-sensitive glob patterns for Logback key value pair keys not to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No key value pair attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-key-value-pair-attributes setting is configured; configuring only excluded patterns captures all key value pair attributes that do not match them. Captured key value pair attributes may contain sensitive information.",
+    "examples": [
+      "*-secret",
+      "password,token"
+    ],
+    "instrumentations": [
+      "logback-appender-1.0"
+    ],
+    "name": "otel.instrumentation.logback-appender.experimental.key-value-pair-attributes.excluded",
+    "type": "list"
+  },
+  {
+    "declarative_name": "java.logback_appender.key_value_pair_attributes/development.included",
+    "default": "",
+    "description": "Comma-separated list of case-sensitive glob patterns for Logback key value pair keys to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character, so \"*\" captures all key value pair attributes. Excluded patterns take precedence over included patterns. No key value pair attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-key-value-pair-attributes setting is configured; configuring only excluded patterns captures all key value pair attributes that do not match them. Captured key value pair attributes may contain sensitive information.",
+    "examples": [
+      "custom-key",
+      "request-*,user-?"
+    ],
+    "instrumentations": [
+      "logback-appender-1.0"
+    ],
+    "name": "otel.instrumentation.logback-appender.experimental.key-value-pair-attributes.included",
+    "type": "list"
+  },
+  {
+    "declarative_name": "java.logback_appender.logger_context_attributes/development.excluded",
+    "default": "",
+    "description": "Comma-separated list of case-sensitive glob patterns for Logback logger context property keys not to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No logger context attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-logger-context-attributes setting is configured; configuring only excluded patterns captures all logger context attributes that do not match them. Captured logger context attributes may contain sensitive information.",
+    "examples": [
+      "*-secret",
+      "password,token"
+    ],
+    "instrumentations": [
+      "logback-appender-1.0"
+    ],
+    "name": "otel.instrumentation.logback-appender.experimental.logger-context-attributes.excluded",
+    "type": "list"
+  },
+  {
+    "declarative_name": "java.logback_appender.logger_context_attributes/development.included",
+    "default": "",
+    "description": "Comma-separated list of case-sensitive glob patterns for Logback logger context property keys to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character, so \"*\" captures all logger context attributes. Excluded patterns take precedence over included patterns. No logger context attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-logger-context-attributes setting is configured; configuring only excluded patterns captures all logger context attributes that do not match them. Captured logger context attributes may contain sensitive information.",
+    "examples": [
+      "app.version",
+      "app.*,deployment-?"
+    ],
+    "instrumentations": [
+      "logback-appender-1.0"
+    ],
+    "name": "otel.instrumentation.logback-appender.experimental.logger-context-attributes.included",
+    "type": "list"
+  },
+  {
+    "declarative_name": "java.logback_appender.logstash_marker_attributes/development.excluded",
+    "default": "",
+    "description": "Comma-separated list of case-sensitive glob patterns for Logstash marker keys not to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No Logstash marker attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-logstash-marker-attributes setting is configured; configuring only excluded patterns captures all Logstash marker attributes that do not match them. Captured Logstash marker attributes may contain sensitive information.",
+    "examples": [
+      "*-secret",
+      "password,token"
+    ],
+    "instrumentations": [
+      "logback-appender-1.0"
+    ],
+    "name": "otel.instrumentation.logback-appender.experimental.logstash-marker-attributes.excluded",
+    "type": "list"
+  },
+  {
+    "declarative_name": "java.logback_appender.logstash_marker_attributes/development.included",
+    "default": "",
+    "description": "Comma-separated list of case-sensitive glob patterns for Logstash marker keys to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character, so \"*\" captures all Logstash marker attributes. Excluded patterns take precedence over included patterns. No Logstash marker attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-logstash-marker-attributes setting is configured; configuring only excluded patterns captures all Logstash marker attributes that do not match them. Captured Logstash marker attributes may contain sensitive information.",
+    "examples": [
+      "custom-key",
+      "request-*,user-?"
+    ],
+    "instrumentations": [
+      "logback-appender-1.0"
+    ],
+    "name": "otel.instrumentation.logback-appender.experimental.logstash-marker-attributes.included",
+    "type": "list"
+  },
+  {
+    "declarative_name": "java.logback_appender.logstash_structured_argument_attributes/development.excluded",
+    "default": "",
+    "description": "Comma-separated list of case-sensitive glob patterns for Logstash structured argument keys not to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No Logstash structured argument attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-logstash-structured-arguments setting is configured; configuring only excluded patterns captures all Logstash structured argument attributes that do not match them. Captured Logstash structured argument attributes may contain sensitive information.",
+    "examples": [
+      "*-secret",
+      "password,token"
+    ],
+    "instrumentations": [
+      "logback-appender-1.0"
+    ],
+    "name": "otel.instrumentation.logback-appender.experimental.logstash-structured-argument-attributes.excluded",
+    "type": "list"
+  },
+  {
+    "declarative_name": "java.logback_appender.logstash_structured_argument_attributes/development.included",
+    "default": "",
+    "description": "Comma-separated list of case-sensitive glob patterns for Logstash structured argument keys to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character, so \"*\" captures all Logstash structured argument attributes. Excluded patterns take precedence over included patterns. No Logstash structured argument attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-logstash-structured-arguments setting is configured; configuring only excluded patterns captures all Logstash structured argument attributes that do not match them. Captured Logstash structured argument attributes may contain sensitive information.",
+    "examples": [
+      "custom-key",
+      "request-*,user-?"
+    ],
+    "instrumentations": [
+      "logback-appender-1.0"
+    ],
+    "name": "otel.instrumentation.logback-appender.experimental.logstash-structured-argument-attributes.included",
+    "type": "list"
+  },
+  {
+    "declarative_name": "java.logback_appender.mdc_attributes/development.excluded",
+    "default": "",
+    "description": "Comma-separated list of case-sensitive glob patterns for MDC keys not to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No MDC attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-mdc-attributes setting is configured; configuring only excluded patterns captures all MDC attributes that do not match them. Captured MDC attributes may contain sensitive information.",
+    "examples": [
+      "*-secret",
+      "password,token"
+    ],
+    "instrumentations": [
+      "logback-appender-1.0"
+    ],
+    "name": "otel.instrumentation.logback-appender.experimental.mdc-attributes.excluded",
+    "type": "list"
+  },
+  {
+    "declarative_name": "java.logback_appender.mdc_attributes/development.included",
+    "default": "",
+    "description": "Comma-separated list of case-sensitive glob patterns for MDC keys to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character, so \"*\" captures all MDC attributes. Excluded patterns take precedence over included patterns. No MDC attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-mdc-attributes setting is configured; configuring only excluded patterns captures all MDC attributes that do not match them. Captured MDC attributes may contain sensitive information.",
+    "examples": [
+      "custom-mdc-key",
+      "request-*,user-?"
+    ],
+    "instrumentations": [
+      "logback-appender-1.0"
+    ],
+    "name": "otel.instrumentation.logback-appender.experimental.mdc-attributes.included",
+    "type": "list"
+  },
+  {
     "declarative_name": "java.logback_mdc.add_baggage",
     "default": false,
     "description": "Enables adding baggage entries to the Logback MDC, prefixed with \"baggage.\".",
@@ -1558,7 +1857,7 @@
   {
     "declarative_name": "java.common.messaging.capture_headers/development",
     "default": "",
-    "description": "A comma-separated list of header names to capture as span attributes.",
+    "description": "Deprecated: use `otel.instrumentation.messaging.experimental.headers.included` instead. A comma-separated list of header names to capture as span attributes. It does not support glob patterns: an entry containing `*` or `?` is ignored with a warning, and every other entry is matched as a literal header name.",
     "instrumentations": [
       "aws-sdk-1.11",
       "aws-sdk-2.2",
@@ -1581,6 +1880,62 @@
       "vertx-kafka-client-3.6"
     ],
     "name": "otel.instrumentation.messaging.experimental.capture-headers",
+    "type": "list"
+  },
+  {
+    "declarative_name": "java.common.messaging.headers/development.excluded",
+    "default": "",
+    "description": "A comma-separated list of message header name patterns to exclude from span attributes. Excluded patterns take precedence over included patterns. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters. If included is not configured, all non-excluded headers are captured, which may expose sensitive information.",
+    "instrumentations": [
+      "aws-sdk-1.11",
+      "aws-sdk-2.2",
+      "jms-1.1",
+      "jms-3.0",
+      "kafka-clients-0.11",
+      "kafka-streams-0.11",
+      "nats-2.17",
+      "pulsar-2.8",
+      "rabbitmq-2.7",
+      "reactor-kafka-1.0",
+      "rocketmq-client-4.8",
+      "rocketmq-client-5.0",
+      "spring-integration-4.1",
+      "spring-jms-2.0",
+      "spring-jms-6.0",
+      "spring-kafka-2.7",
+      "spring-pulsar-1.0",
+      "spring-rabbit-1.0",
+      "vertx-kafka-client-3.6"
+    ],
+    "name": "otel.instrumentation.messaging.experimental.headers.excluded",
+    "type": "list"
+  },
+  {
+    "declarative_name": "java.common.messaging.headers/development.included",
+    "default": "",
+    "description": "A comma-separated list of message header name patterns to capture as span attributes. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters.",
+    "instrumentations": [
+      "aws-sdk-1.11",
+      "aws-sdk-2.2",
+      "jms-1.1",
+      "jms-3.0",
+      "kafka-clients-0.11",
+      "kafka-streams-0.11",
+      "nats-2.17",
+      "pulsar-2.8",
+      "rabbitmq-2.7",
+      "reactor-kafka-1.0",
+      "rocketmq-client-4.8",
+      "rocketmq-client-5.0",
+      "spring-integration-4.1",
+      "spring-jms-2.0",
+      "spring-jms-6.0",
+      "spring-kafka-2.7",
+      "spring-pulsar-1.0",
+      "spring-rabbit-1.0",
+      "vertx-kafka-client-3.6"
+    ],
+    "name": "otel.instrumentation.messaging.experimental.headers.included",
     "type": "list"
   },
   {
@@ -1636,9 +1991,19 @@
     "type": "string"
   },
   {
-    "declarative_name": "java.micrometer.histogram_gauges.enabled",
+    "declarative_name": "java.micrometer.histogram_gauges/development.enabled",
     "default": false,
     "description": "Enables gauge-based Micrometer histograms for DistributionSummary and Timer instruments.",
+    "instrumentations": [
+      "micrometer-1.5"
+    ],
+    "name": "otel.instrumentation.micrometer.experimental.histogram-gauges.enabled",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.micrometer.histogram_gauges.enabled",
+    "default": false,
+    "description": "Deprecated alias for `otel.instrumentation.micrometer.experimental.histogram-gauges.enabled`. It will be removed in 3.0.",
     "instrumentations": [
       "micrometer-1.5"
     ],
@@ -1881,6 +2246,32 @@
     "type": "boolean"
   },
   {
+    "declarative_name": "java.runtime_telemetry.jfr_metrics/development.excluded",
+    "default": "",
+    "description": "Excludes JVM runtime metrics from JFR on Java 17+ using exact names or glob patterns with * and ?. Excluded patterns take precedence over included patterns, including over shorthand and legacy selections. Configuring this property without included selects all metrics except those excluded.",
+    "examples": [
+      "jvm.memory.allocation,jvm.network.*"
+    ],
+    "instrumentations": [
+      "runtime-telemetry"
+    ],
+    "name": "otel.instrumentation.runtime-telemetry.experimental.jfr-metrics.excluded",
+    "type": "list"
+  },
+  {
+    "declarative_name": "java.runtime_telemetry.jfr_metrics/development.included",
+    "default": "",
+    "description": "Selects JVM runtime metrics to source from JFR on Java 17+. Supports exact names and glob patterns with * and ?. Configuring either JFR metric selector property activates JFR. Use * to select all metrics.",
+    "examples": [
+      "jvm.memory.*,jvm.cpu.longlock"
+    ],
+    "instrumentations": [
+      "runtime-telemetry"
+    ],
+    "name": "otel.instrumentation.runtime-telemetry.experimental.jfr-metrics.included",
+    "type": "list"
+  },
+  {
     "declarative_name": "java.runtime_telemetry.package_emitter/development.enabled",
     "default": false,
     "description": "Enables creating events for JAR libraries used by the application.",
@@ -1903,7 +2294,7 @@
   {
     "declarative_name": "java.runtime_telemetry.prefer_jfr/development",
     "default": false,
-    "description": "Prefer JFR over JMX for metrics available from both sources, on Java 17+. When enabled, overlapping metrics are collected via JFR and the corresponding JMX metrics are suppressed.",
+    "description": "Deprecated: use `otel.instrumentation.runtime-telemetry.experimental.jfr-metrics.included` instead. Prefer JFR over JMX for metrics available from both sources, on Java 17+.",
     "instrumentations": [
       "runtime-telemetry"
     ],
@@ -1923,8 +2314,8 @@
     "type": "boolean"
   },
   {
-    "declarative_name": "general.sanitization.url.sensitive_query_parameters/development",
-    "default": "AWSAccessKeyId,Signature,sig,X-Goog-Signature",
+    "declarative_name": "general.sanitization.url.sensitive_query_parameters",
+    "default": "AWSAccessKeyId,Signature,X-Amz-Signature,X-Amz-Credential,X-Amz-Security-Token,sig,X-Goog-Signature",
     "description": "List of URL query parameter names whose values are redacted in URL attributes. See https://opentelemetry.io/docs/specs/semconv/http/http-spans.",
     "instrumentations": [
       "akka-http-10.0",
@@ -2004,7 +2395,7 @@
   {
     "declarative_name": "java.servlet.capture_request_parameters/development",
     "default": "",
-    "description": "List of request parameter names to capture as span attributes.",
+    "description": "Deprecated include-only alias for `otel.instrumentation.servlet.experimental.request-parameters.included`. It does not support glob patterns: an entry containing `*` or `?` is ignored with a warning, and every other entry is matched as a literal request parameter name. It may be removed in the next minor release.",
     "instrumentations": [
       "liberty-20.0",
       "servlet-2.2",
@@ -2014,6 +2405,43 @@
       "tomcat-7.0"
     ],
     "name": "otel.instrumentation.servlet.experimental.capture-request-parameters",
+    "type": "list"
+  },
+  {
+    "declarative_name": "java.servlet.request_parameters/development.excluded",
+    "default": "",
+    "description": "A comma-separated list of case-sensitive request parameter name patterns to exclude from span attributes. `?` matches one character and `*` matches zero or more characters. Excluded patterns take precedence over included patterns. No request parameters are captured unless an included or excluded pattern is configured; configuring only excluded patterns captures all request parameters that do not match them, which may expose sensitive information.",
+    "examples": [
+      "password,*-token"
+    ],
+    "instrumentations": [
+      "liberty-20.0",
+      "servlet-2.2",
+      "servlet-3.0",
+      "servlet-5.0",
+      "tomcat-10.0",
+      "tomcat-7.0"
+    ],
+    "name": "otel.instrumentation.servlet.experimental.request-parameters.excluded",
+    "type": "list"
+  },
+  {
+    "declarative_name": "java.servlet.request_parameters/development.included",
+    "default": "",
+    "description": "A comma-separated list of case-sensitive request parameter name patterns to capture as span attributes. `?` matches one character and `*` matches zero or more characters. Excluded patterns take precedence over included patterns. No request parameters are captured unless an included or excluded pattern is configured; configuring only excluded patterns captures all request parameters that do not match them, which may expose sensitive information.",
+    "examples": [
+      "request-id",
+      "user-*,search-?"
+    ],
+    "instrumentations": [
+      "liberty-20.0",
+      "servlet-2.2",
+      "servlet-3.0",
+      "servlet-5.0",
+      "tomcat-10.0",
+      "tomcat-7.0"
+    ],
+    "name": "otel.instrumentation.servlet.experimental.request-parameters.included",
     "type": "list"
   },
   {
@@ -2222,12 +2650,15 @@
     "type": "list"
   },
   {
-    "declarative_name": "general.semconv_stability.opt_in",
+    "declarative_name": "general.stability_opt_in_list",
+    "declarative_type": "string",
     "default": "",
     "description": "Opt-in to emit stable semantic conventions instead of the old experimental semantic conventions. Accepts a comma-separated list of semantic convention groups (e.g., `database`, `http`, `messaging`). Use `<group>/dup` to emit both old and new conventions simultaneously. Stable semantic conventions will become the default in version 3.0 of the agent.",
     "instrumentations": [
       "alibaba-druid-1.0",
       "apache-dbcp-2.0",
+      "redisson-metrics-3.26",
+      "tomcat-dbcp-8.0",
       "tomcat-jdbc",
       "tomcat-jdbc-8.5"
     ],

@@ -21,7 +21,7 @@ jobs:
       contents: read # Required to checkout the repository
       issues: write # Required to create bug report issues on test failure
     steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -57,6 +57,11 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release download --repo open-telemetry/opentelemetry-java-instrumentation --pattern 'opentelemetry-javaagent.jar' --dir acceptance-tests/declarative-config-acceptance
+
+      # Runs before OATS: a config the agent rejects leaves the app running but uninstrumented,
+      # which OATS can only report as missing telemetry.
+      - name: Assert the Java agent starts cleanly
+        run: acceptance-tests/declarative-config-acceptance/assert-agent-startup.sh
 
       - name: Run OATS acceptance tests
         run: |

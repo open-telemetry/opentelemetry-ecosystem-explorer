@@ -1,13 +1,50 @@
 core:
-  connector: []
-  exporter: []
-  extension: []
-  processor: []
-  receiver: []
+  connector:
+  - name: xconnector
+    last_version: v0.158.0
+    deprecated_in_version: v0.159.0
+    source_repo: opentelemetry-collector
+    distributions: []
+    subtype: null
+  exporter:
+  - name: xexporter
+    last_version: v0.158.0
+    deprecated_in_version: v0.159.0
+    source_repo: opentelemetry-collector
+    distributions: []
+    subtype: null
+  extension:
+  - name: xextension
+    last_version: v0.158.0
+    deprecated_in_version: v0.159.0
+    source_repo: opentelemetry-collector
+    distributions: []
+    subtype: null
+  processor:
+  - name: xprocessor
+    last_version: v0.158.0
+    deprecated_in_version: v0.159.0
+    source_repo: opentelemetry-collector
+    distributions: []
+    subtype: null
+  receiver:
+  - name: xreceiver
+    last_version: v0.158.0
+    deprecated_in_version: v0.159.0
+    source_repo: opentelemetry-collector
+    distributions: []
+    subtype: null
 contrib:
   connector: []
   exporter: []
-  extension: []
+  extension:
+  - name: kafkatopicsobserver
+    last_version: v0.158.0
+    deprecated_in_version: v0.159.0
+    source_repo: opentelemetry-collector-contrib
+    distributions:
+    - contrib
+    subtype: observer
   processor: []
   receiver:
   - name: jmxreceiver

@@ -18,6 +18,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import {
   AlertCircle,
+  ArchiveX,
   ArrowRight,
   Box,
   ExternalLink,
@@ -28,7 +29,11 @@ import {
   Workflow,
 } from "lucide-react";
 
-import { useCollectorIndex, useCollectorVersions } from "@/hooks/use-collector-data";
+import {
+  useCollectorDeprecations,
+  useCollectorIndex,
+  useCollectorVersions,
+} from "@/hooks/use-collector-data";
 import type { IndexComponent } from "@/types/collector";
 
 const COMPONENT_TYPES = [
@@ -128,6 +133,7 @@ function buildCollectorLandingStats(
 export function CollectorExploreLanding() {
   const { t, i18n } = useTranslation("collector");
   const { data: collectorIndex, loading: indexLoading, error: indexError } = useCollectorIndex();
+  const { data: deprecationsIndex } = useCollectorDeprecations();
   const {
     data: versionData,
     loading: versionsLoading,
@@ -225,6 +231,37 @@ export function CollectorExploreLanding() {
                 </article>
               </Link>
             ))}
+            <Link
+              to="/collector/components?version=deprecated"
+              className="group focus-visible:ring-primary block rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+            >
+              <article className="border-border/60 bg-card/80 hover:border-primary/40 hover:bg-card h-full rounded-lg border p-6 transition-all duration-200 hover:-translate-y-0.5">
+                <div className="flex h-full flex-col gap-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="bg-primary/10 text-primary flex h-11 w-11 items-center justify-center rounded-lg">
+                      <ArchiveX className="h-5 w-5" aria-hidden="true" />
+                    </div>
+                    <ArrowRight
+                      className="text-muted-foreground/50 group-hover:text-primary h-5 w-5 transition-all duration-200 group-hover:translate-x-1"
+                      aria-hidden="true"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <h3 className="text-foreground group-hover:text-primary text-lg font-semibold transition-colors">
+                      {t("explore.componentTypes.deprecated.label")}
+                    </h3>
+                    {deprecationsIndex && (
+                      <p className="text-3xl font-bold">
+                        {numberFormatter.format(deprecationsIndex.components.length)}
+                      </p>
+                    )}
+                  </div>
+                  <p className="text-muted-foreground text-sm leading-relaxed">
+                    {t("explore.componentTypes.deprecated.description")}
+                  </p>
+                </div>
+              </article>
+            </Link>
           </div>
         </section>
 

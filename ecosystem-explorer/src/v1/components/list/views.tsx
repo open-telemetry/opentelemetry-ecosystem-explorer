@@ -40,6 +40,7 @@ export interface ListRow {
   stability: StabilityFacet;
   signals: Signal[];
   href: string;
+  deprecatedInVersion?: string;
 }
 
 export interface CompactRowProps {
@@ -47,6 +48,7 @@ export interface CompactRowProps {
 }
 
 export function CompactRow({ row }: CompactRowProps) {
+  const { t } = useTranslation("list");
   return (
     <Link to={row.href} className="td-row td-row--compact">
       <span
@@ -65,6 +67,11 @@ export function CompactRow({ row }: CompactRowProps) {
         <span className="td-row__type">{row.type}</span>
         {row.signals.length > 0 && (
           <span className="td-row__signals">{row.signals.join(", ")}</span>
+        )}
+        {row.deprecatedInVersion && (
+          <span className="td-row__removed">
+            {t("deprecated.removedIn", { version: row.deprecatedInVersion })}
+          </span>
         )}
       </div>
       <StatusPill stability={row.stability} />
@@ -87,6 +94,7 @@ export function CompactList({ rows }: ListViewProps) {
 }
 
 export function CardView({ rows }: ListViewProps) {
+  const { t } = useTranslation("list");
   return (
     <div className="td-list td-list--cards">
       {rows.map((row) => (
@@ -108,6 +116,11 @@ export function CardView({ rows }: ListViewProps) {
               <span className="td-card__signals">{row.signals.join(", ")}</span>
             )}
             <span className="td-card__dist">{row.distribution}</span>
+            {row.deprecatedInVersion && (
+              <span className="td-card__removed">
+                {t("deprecated.removedIn", { version: row.deprecatedInVersion })}
+              </span>
+            )}
           </div>
         </Link>
       ))}

@@ -1,0 +1,232 @@
+{
+  "configurations": [
+    {
+      "declarative_name": "java.common.messaging.capture_headers/development",
+      "default": "",
+      "description": "Deprecated: use `otel.instrumentation.messaging.experimental.headers.included` instead. A comma-separated list of header names to capture as span attributes. It does not support glob patterns: an entry containing `*` or `?` is ignored with a warning, and every other entry is matched as a literal header name.",
+      "name": "otel.instrumentation.messaging.experimental.capture-headers",
+      "type": "list"
+    },
+    {
+      "declarative_name": "java.common.messaging.headers/development.excluded",
+      "default": "",
+      "description": "A comma-separated list of message header name patterns to exclude from span attributes. Excluded patterns take precedence over included patterns. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters. If included is not configured, all non-excluded headers are captured, which may expose sensitive information.",
+      "name": "otel.instrumentation.messaging.experimental.headers.excluded",
+      "type": "list"
+    },
+    {
+      "declarative_name": "java.common.messaging.headers/development.included",
+      "default": "",
+      "description": "A comma-separated list of message header name patterns to capture as span attributes. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters.",
+      "name": "otel.instrumentation.messaging.experimental.headers.included",
+      "type": "list"
+    },
+    {
+      "declarative_name": "java.spring_integration.global_channel_interceptor_patterns",
+      "default": "*",
+      "description": "A list of Spring channel name patterns that will be intercepted.",
+      "name": "otel.instrumentation.spring-integration.global-channel-interceptor-patterns",
+      "type": "list"
+    },
+    {
+      "declarative_name": "java.spring_integration.producer.enabled",
+      "default": false,
+      "description": "Create producer spans when messages are sent to an output channel. Enable when you're using a messaging library that doesn't have its own instrumentation for generating producer spans. Note that the detection of output channels only works for Spring Cloud Stream `DirectWithAttributesChannel`.",
+      "name": "otel.instrumentation.spring-integration.producer.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enables producer and consumer messaging spans for Spring Integration.",
+  "display_name": "Spring Integration",
+  "has_javaagent": true,
+  "has_standalone_library": true,
+  "javaagent_target_versions": [
+    "org.springframework.integration:spring-integration-core:[4.1.0.RELEASE,)"
+  ],
+  "library_link": "https://spring.io/projects/spring-integration",
+  "markdown_hash": "1e7a5f390454",
+  "name": "spring-integration-4.1",
+  "scope": {
+    "name": "io.opentelemetry.spring-integration-4.1"
+  },
+  "semantic_conventions": [
+    "MESSAGING_SPANS"
+  ],
+  "source_path": "instrumentation/spring/spring-integration-4.1",
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "messaging.operation",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CONSUMER"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "messaging.operation",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CONSUMER"
+        },
+        {
+          "attributes": [
+            {
+              "name": "messaging.operation",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "PRODUCER"
+        }
+      ],
+      "when": "otel.instrumentation.spring-integration.producer.enabled=true"
+    },
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "Number of messages that were delivered to the application.",
+          "instrument": "counter",
+          "name": "messaging.client.consumed.messages",
+          "unit": "{message}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "HISTOGRAM",
+          "description": "Duration of messaging operation initiated by a producer or consumer client.",
+          "instrument": "histogram",
+          "name": "messaging.client.operation.duration",
+          "unit": "s"
+        },
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "Number of messages producer attempted to send to the broker.",
+          "instrument": "counter",
+          "name": "messaging.client.sent.messages",
+          "unit": "{message}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "HISTOGRAM",
+          "description": "Duration of processing operation.",
+          "instrument": "histogram",
+          "name": "messaging.process.duration",
+          "unit": "s"
+        }
+      ],
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CONSUMER"
+        },
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "PRODUCER"
+        }
+      ],
+      "when": "otel.semconv-stability.preview=messaging"
+    }
+  ]
+}

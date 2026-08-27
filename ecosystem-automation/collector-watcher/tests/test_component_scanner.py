@@ -14,19 +14,14 @@
 #
 """Tests for component scanner."""
 
-import shutil
-import tempfile
-from pathlib import Path
-
 import pytest
 from collector_watcher.component_scanner import ComponentScanner
 
 
 @pytest.fixture
-def mock_repo():
+def mock_repo(tmp_path):
     """Create a temporary mock repository structure."""
-    temp_dir = tempfile.mkdtemp()
-    repo_path = Path(temp_dir)
+    repo_path = tmp_path
 
     receiver_with_meta = repo_path / "receiver" / "otlpreceiver"
     receiver_with_meta.mkdir(parents=True)
@@ -63,9 +58,7 @@ def mock_repo():
     hidden_dir.mkdir(parents=True)
     (hidden_dir / "go.mod").touch()
 
-    yield repo_path
-
-    shutil.rmtree(temp_dir)
+    return repo_path
 
 
 def test_scan_receivers(mock_repo):
@@ -127,10 +120,9 @@ def test_scan_all_components(mock_repo):
 
 
 @pytest.fixture
-def mock_repo_with_nested():
+def mock_repo_with_nested(tmp_path):
     """Create a temporary mock repository with nested extension directories."""
-    temp_dir = tempfile.mkdtemp()
-    repo_path = Path(temp_dir)
+    repo_path = tmp_path
 
     # Create a regular extension
     regular_ext = repo_path / "extension" / "healthcheckextension"
@@ -176,10 +168,7 @@ def mock_repo_with_nested():
     internal_dir.mkdir(parents=True)
     (internal_dir / "go.mod").touch()
 
-    yield repo_path
-
-    # Cleanup
-    shutil.rmtree(temp_dir)
+    return repo_path
 
 
 def test_scan_nested_encoding_extensions(mock_repo_with_nested):
@@ -268,3 +257,161 @@ def test_scan_empty_component_type_directory(mock_repo):
     scanner = ComponentScanner(str(mock_repo))
     connectors = scanner.scan_component_type("connector")
     assert len(connectors) == 0
+
+
+# ---------------------------------------------------------------------------
+# status.class based filtering (#991)
+#
+# Internal interface packages (e.g. receiver/xreceiver) live under a real
+# component-type directory and pass go.mod/name checks, but declare
+# status.class: pkg upstream rather than the matching component type. These
+# tests exercise the _extract_component_info status.class check that skips
+# such directories instead of cataloging them as real components.
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def mock_repo_with_class_metadata(tmp_path):
+    """Mock repo covering status.class match / mismatch / absence for a top-level type."""
+    repo_path = tmp_path
+
+    # Real component: status.class matches its directory's component_type.
+    real_receiver = repo_path / "receiver" / "otlpreceiver"
+    real_receiver.mkdir(parents=True)
+    (real_receiver / "go.mod").touch()
+    (real_receiver / "metadata.yaml").write_text("type: otlp\nstatus:\n  class: receiver\n")
+
+    # Internal interface package: status.class is "pkg", not "receiver" (the #991 case).
+    pkg_receiver = repo_path / "receiver" / "xreceiver"
+    pkg_receiver.mkdir(parents=True)
+    (pkg_receiver / "go.mod").touch()
+    (pkg_receiver / "metadata.yaml").write_text("type: xreceiver\nstatus:\n  class: pkg\n")
+
+    # metadata.yaml present with a status block but no class field: must fail open.
+    no_class_receiver = repo_path / "receiver" / "noclassreceiver"
+    no_class_receiver.mkdir(parents=True)
+    (no_class_receiver / "go.mod").touch()
+    (no_class_receiver / "metadata.yaml").write_text("type: noclass\nstatus:\n  stability:\n    beta: [traces]\n")
+
+    # metadata.yaml present with no status block at all: must also fail open.
+    no_status_receiver = repo_path / "receiver" / "nostatusreceiver"
+    no_status_receiver.mkdir(parents=True)
+    (no_status_receiver / "go.mod").touch()
+    (no_status_receiver / "metadata.yaml").write_text("type: nostatus\n")
+
+    # metadata.yaml present with non-dict status block (e.g. string): must fail open.
+    non_dict_status_receiver = repo_path / "receiver" / "nondictstatusreceiver"
+    non_dict_status_receiver.mkdir(parents=True)
+    (non_dict_status_receiver / "go.mod").touch()
+    (non_dict_status_receiver / "metadata.yaml").write_text("type: nondictstatus\nstatus: invalid_string\n")
+
+    return repo_path
+
+
+def test_excludes_pkg_class_component(mock_repo_with_class_metadata):
+    """A directory whose upstream status.class is "pkg" (an internal interface package,
+    not a real component) must not be discovered."""
+    scanner = ComponentScanner(str(mock_repo_with_class_metadata))
+    receivers = scanner.scan_component_type("receiver")
+
+    assert not any(r["name"] == "xreceiver" for r in receivers)
+
+
+def test_includes_component_with_matching_class(mock_repo_with_class_metadata):
+    """A real component whose status.class matches its directory's component_type
+    is still discovered."""
+    scanner = ComponentScanner(str(mock_repo_with_class_metadata))
+    receivers = scanner.scan_component_type("receiver")
+
+    assert any(r["name"] == "otlpreceiver" for r in receivers)
+
+
+def test_includes_component_with_missing_status_class(mock_repo_with_class_metadata):
+    """A component with a status block but no class field must fail open (stay
+    included) - class is documented upstream as optional for subcomponents."""
+    scanner = ComponentScanner(str(mock_repo_with_class_metadata))
+    receivers = scanner.scan_component_type("receiver")
+
+    assert any(r["name"] == "noclassreceiver" for r in receivers)
+
+
+def test_includes_component_with_no_status_block(mock_repo_with_class_metadata):
+    """A component with metadata.yaml but no status block at all must fail open."""
+    scanner = ComponentScanner(str(mock_repo_with_class_metadata))
+    receivers = scanner.scan_component_type("receiver")
+
+    assert any(r["name"] == "nostatusreceiver" for r in receivers)
+
+
+def test_includes_component_with_non_dict_status(mock_repo_with_class_metadata):
+    """A component with a non-dict status field (e.g., status: string) must fail open
+    without raising an AttributeError when accessing status.class."""
+    scanner = ComponentScanner(str(mock_repo_with_class_metadata))
+    receivers = scanner.scan_component_type("receiver")
+
+    assert any(r["name"] == "nondictstatusreceiver" for r in receivers)
+
+
+@pytest.fixture
+def mock_repo_with_nested_class_metadata(tmp_path):
+    """Mock repo covering status.class match / mismatch for a nested subtype directory."""
+    repo_path = tmp_path
+
+    storage_dir = repo_path / "extension" / "storage"
+    storage_dir.mkdir(parents=True)
+
+    # Real nested component: status.class equals the *parent* type ("extension"), not
+    # the subtype ("storage") - matches real upstream shape (e.g. filestorage).
+    real_storage_ext = storage_dir / "filestorage"
+    real_storage_ext.mkdir(parents=True)
+    (real_storage_ext / "go.mod").touch()
+    (real_storage_ext / "metadata.yaml").write_text("type: file_storage\nstatus:\n  class: extension\n")
+
+    # Internal interface package nested under a subtype dir: status.class is "pkg".
+    pkg_storage_ext = storage_dir / "xstorage"
+    pkg_storage_ext.mkdir(parents=True)
+    (pkg_storage_ext / "go.mod").touch()
+    (pkg_storage_ext / "metadata.yaml").write_text("type: xstorage\nstatus:\n  class: pkg\n")
+
+    return repo_path
+
+
+def test_nested_component_with_matching_parent_class_included(mock_repo_with_nested_class_metadata):
+    """Nested/subtype components declare status.class equal to their parent
+    component_type (e.g. "extension", not "storage") - this must still match."""
+    scanner = ComponentScanner(str(mock_repo_with_nested_class_metadata))
+    extensions = scanner.scan_component_type("extension")
+
+    assert any(e["name"] == "filestorage" for e in extensions)
+
+
+def test_nested_pkg_class_component_excluded(mock_repo_with_nested_class_metadata):
+    """A pkg-class package nested under a subtype directory must also be excluded."""
+    scanner = ComponentScanner(str(mock_repo_with_nested_class_metadata))
+    extensions = scanner.scan_component_type("extension")
+
+    assert not any(e["name"] == "xstorage" for e in extensions)
+
+
+@pytest.mark.parametrize(
+    ("component_type", "name"),
+    [
+        ("receiver", "xreceiver"),
+        ("exporter", "xexporter"),
+        ("processor", "xprocessor"),
+        ("connector", "xconnector"),
+        ("extension", "xextension"),
+    ],
+)
+def test_excludes_known_pkg_class_interface_packages(tmp_path, component_type, name):
+    """Regression test for #991: the five internal interface packages upstream marks
+    status.class: pkg must not be discovered as real components of any type."""
+    component_dir = tmp_path / component_type / name
+    component_dir.mkdir(parents=True)
+    (component_dir / "go.mod").touch()
+    (component_dir / "metadata.yaml").write_text(f"type: {name}\nstatus:\n  class: pkg\n")
+
+    scanner = ComponentScanner(str(tmp_path))
+    components = scanner.scan_component_type(component_type)
+
+    assert components == []

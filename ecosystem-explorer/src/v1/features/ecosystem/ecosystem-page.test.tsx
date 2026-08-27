@@ -107,12 +107,16 @@ describe("Collector ecosystem landing", () => {
     expect(nav).toHaveTextContent(/OpenTelemetry Collector/);
   });
 
-  it("renders the three quick-entry cards", () => {
+  it("renders the existing quick entries plus deprecated components", () => {
     useEcosystemLandingData.mockReturnValue(errorState);
     renderRouter(<CollectorLandingV1 />);
     expect(screen.getByRole("heading", { name: /Most-used components/i })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /Core vs\. Contrib/i })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /Diff across versions/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Deprecated components/i })).toHaveAttribute(
+      "href",
+      "/collector/components?version=deprecated"
+    );
   });
 });
 

@@ -1,0 +1,5 @@
+targets:
+  - url: "https://github.com/open-telemetry/opentelemetry-go-contrib.git"
+    strategy: "gomod"
+  - url: "https://github.com/open-telemetry/opentelemetry-go-compile-instrumentation.git"
+    strategy: "metadata"

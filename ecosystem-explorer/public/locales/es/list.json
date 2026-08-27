@@ -30,6 +30,9 @@
     "nextAriaLabel": "Página siguiente",
     "status": "Página {{page}} de {{totalPages}}"
   },
+  "deprecated": {
+    "removedIn": "Eliminado en {{version}}"
+  },
   "emptyState": {
     "title": "No hay componentes que coincidan",
     "leadFiltered": "Prueba a quitar uno o dos filtros para ver más resultados.",
@@ -82,7 +85,8 @@
     },
     "version": {
       "title": "Versión",
-      "latest": "Más reciente"
+      "latest": "Más reciente",
+      "deprecated": "Obsoletos"
     }
   }
 }
