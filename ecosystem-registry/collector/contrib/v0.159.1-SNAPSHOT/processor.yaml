@@ -830,12 +830,12 @@ components:
       from_version: v0.146.0
       id: processor.k8sattributes.telemetry.disableOldFormatMetrics
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45871
-      stage: alpha
+      stage: beta
     - description: When enabled, new formatted internal telemetry metrics are enabled.
       from_version: v0.146.0
       id: processor.k8sattributes.telemetry.enableNewFormatMetrics
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45871
-      stage: alpha
+      stage: beta
     resource_attributes:
       container.id:
         description: Container ID. Usually a UUID, as for example used to identify

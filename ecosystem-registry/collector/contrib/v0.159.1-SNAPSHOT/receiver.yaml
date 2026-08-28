@@ -6542,10 +6542,11 @@ components:
       class: receiver
       codeowners:
         active:
-        - heitorganzeli
-        - narcis96
+        - vyagh
         emeritus:
+        - heitorganzeli
         - mwear
+        - narcis96
       distributions: []
       stability:
         alpha:
@@ -6782,8 +6783,9 @@ components:
       codeowners:
         active:
         - ishleenk17
-        - Mrod1598
         - pjanotti
+        emeritus:
+        - Mrod1598
         seeking_new: true
       distributions:
       - contrib
