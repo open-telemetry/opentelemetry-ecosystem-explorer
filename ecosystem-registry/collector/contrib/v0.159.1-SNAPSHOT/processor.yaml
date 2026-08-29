@@ -2125,6 +2125,14 @@ components:
             monotonic: true
             value_type: int
           unit: By
+        processor_spanpruning_exemplars_sampled:
+          description: Spans randomly sampled as exemplars (excluded from aggregation)
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{spans}'
         processor_spanpruning_leaf_attribute_diversity_loss:
           description: Attribute values lost due to diversity per leaf aggregation
           enabled: false
