@@ -214,11 +214,85 @@ const escapeCell = (value) =>
     .trim();
 
 /**
+ * Renders a Java telemetry attribute list as `` `name` (TYPE) `` cells. Java
+ * attributes carry their type inline, unlike the Collector's key references.
+ */
+const formatJavaAttributes = (attributes) =>
+  (attributes ?? [])
+    .map((attr) =>
+      attr?.type
+        ? `\`${escapeCell(attr.name)}\` (${escapeCell(attr.type)})`
+        : `\`${escapeCell(attr?.name)}\``
+    )
+    .join(", ");
+
+/**
+ * Derives a Collector metric's type and value type from whichever of the
+ * `sum` / `gauge` / `histogram` descriptor blocks is present.
+ */
+function collectorMetricType(metric) {
+  if (metric?.sum) {
+    return {
+      type: metric.sum.monotonic ? "sum (monotonic)" : "sum",
+      valueType: metric.sum.value_type,
+    };
+  }
+  if (metric?.gauge) return { type: "gauge", valueType: metric.gauge.value_type };
+  if (metric?.histogram) return { type: "histogram", valueType: metric.histogram.value_type };
+  return { type: "unknown", valueType: "" };
+}
+
+/**
+ * Renders a Collector metric map as a GFM table, or `[]` when the map is empty.
+ *
+ * Collector metric data arrives in two disjoint shapes: `component.metrics`
+ * (what the component scrapes or emits) and `component.telemetry.metrics` (the
+ * component's own internal metrics). Both use this per-metric shape.
+ *
+ * `metric.attributes` holds string keys into the component-level `attributes`
+ * map rather than inline definitions, so types are resolved from `attributeDefs`.
+ */
+function collectorMetricsTable(heading, metrics, attributeDefs) {
+  if (!metrics || typeof metrics !== "object" || !Object.keys(metrics).length) return [];
+  const lines = [
+    `## ${heading}`,
+    "",
+    "| Metric | Type | Value type | Unit | Stability | Enabled | Attributes | Description |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- |",
+  ];
+  for (const [metricName, metric] of Object.entries(metrics)) {
+    const { type, valueType } = collectorMetricType(metric);
+    const attrs = (metric?.attributes ?? [])
+      .map((key) => {
+        const def = attributeDefs?.[key];
+        return def?.type
+          ? `\`${escapeCell(key)}\` (${escapeCell(def.type)})`
+          : `\`${escapeCell(key)}\``;
+      })
+      .join(", ");
+    // extended_documentation is multi-line prose on some metrics; escapeCell
+    // flattens whitespace so it cannot break out of the table row.
+    const description = [metric?.description, metric?.extended_documentation]
+      .filter(Boolean)
+      .join(" ");
+    lines.push(
+      `| \`${escapeCell(metricName)}\` | ${escapeCell(type)} | ${escapeCell(
+        valueType
+      )} | ${escapeCell(metric?.unit)} | ${escapeCell(metric?.stability)} | ${
+        metric?.enabled ? "yes" : "no"
+      } | ${attrs} | ${escapeCell(description)} |`
+    );
+  }
+  lines.push("");
+  return lines;
+}
+
+/**
  * Builds a per-component Markdown page for a Collector component. Gives agents
  * real, parseable content (name, stability, attributes) at a stable URL instead
  * of the client-rendered SPA shell.
  */
-function buildCollectorComponentPage(component, jsonUrl) {
+export function buildCollectorComponentPage(component, jsonUrl) {
   const label = component.display_name || component.name || component.id;
   const pageUrl = `/collector/components/${component.distribution}/${component.name}`;
   const lines = [
@@ -252,6 +326,15 @@ function buildCollectorComponentPage(component, jsonUrl) {
     lines.push("");
   }
 
+  lines.push(...collectorMetricsTable("Metrics", component.metrics, component.attributes));
+  lines.push(
+    ...collectorMetricsTable(
+      "Internal telemetry",
+      component.telemetry?.metrics,
+      component.attributes
+    )
+  );
+
   const attributes = component.attributes;
   if (attributes && typeof attributes === "object" && Object.keys(attributes).length) {
     lines.push("## Attributes", "", "| Attribute | Type | Description |", "| --- | --- | --- |");
@@ -276,7 +359,7 @@ function buildCollectorComponentPage(component, jsonUrl) {
 /**
  * Builds a per-instrumentation Markdown page for a Java agent instrumentation.
  */
-function buildJavaInstrumentationPage(instr, jsonUrl) {
+export function buildJavaInstrumentationPage(instr, jsonUrl) {
   const label = instr.display_name || instr.name;
   const pageUrl = `/java-agent/instrumentation/${instr.name}`;
   const lines = [
@@ -304,29 +387,64 @@ function buildJavaInstrumentationPage(instr, jsonUrl) {
   }
   lines.push("");
 
-  // Telemetry: collect emitted metric names and span attribute names across groups.
+  // Telemetry: one subsection per `when` group. Unioning the groups into flat
+  // lists would advertise mutually exclusive signals as if they were emitted
+  // together -- Apache Dubbo emits `rpc.client.duration` by default but
+  // `rpc.client.call.duration` under `otel.semconv-stability.opt-in=rpc`, and a
+  // flattened page lists both. Groups are emitted in source order; the registry
+  // guarantees each group carries a `when` and that no two share one.
   const telemetry = Array.isArray(instr.telemetry) ? instr.telemetry : [];
-  const metricNames = new Set();
-  const spanAttrNames = new Set();
+  const telemetryLines = [];
   for (const group of telemetry) {
-    for (const metric of group?.metrics ?? []) {
-      if (metric?.name) metricNames.add(metric.name);
-    }
-    for (const span of group?.spans ?? []) {
-      for (const attr of span?.attributes ?? []) {
-        if (attr?.name) spanAttrNames.add(attr.name);
+    const metrics = group?.metrics ?? [];
+    const spans = group?.spans ?? [];
+    if (!metrics.length && !spans.length) continue;
+    telemetryLines.push(`### When \`${escapeCell(group?.when ?? "default")}\``, "");
+
+    if (metrics.length) {
+      telemetryLines.push(
+        "**Metrics**",
+        "",
+        "| Metric | Instrument | Type | Unit | Description |",
+        "| --- | --- | --- | --- | --- |"
+      );
+      for (const metric of metrics) {
+        telemetryLines.push(
+          `| \`${escapeCell(metric?.name)}\` | ${escapeCell(metric?.instrument)} | ${escapeCell(
+            metric?.data_type
+          )} | ${escapeCell(metric?.unit)} | ${escapeCell(metric?.description)} |`
+        );
+      }
+      telemetryLines.push("");
+
+      // Metric attributes get their own table so the main one stays narrow.
+      // Metrics without attributes are skipped rather than given an empty row.
+      const withAttributes = metrics.filter((m) => (m?.attributes ?? []).length);
+      if (withAttributes.length) {
+        telemetryLines.push("| Metric | Attributes |", "| --- | --- |");
+        for (const metric of withAttributes) {
+          telemetryLines.push(
+            `| \`${escapeCell(metric?.name)}\` | ${formatJavaAttributes(metric.attributes)} |`
+          );
+        }
+        telemetryLines.push("");
       }
     }
+
+    if (spans.length) {
+      telemetryLines.push("**Spans**", "", "| Span kind | Attributes |", "| --- | --- |");
+      for (const span of spans) {
+        telemetryLines.push(
+          `| ${escapeCell(span?.span_kind ?? "unknown")} | ${formatJavaAttributes(
+            span?.attributes
+          )} |`
+        );
+      }
+      telemetryLines.push("");
+    }
   }
-  if (metricNames.size || spanAttrNames.size) {
-    lines.push("## Telemetry", "");
-    if (metricNames.size) {
-      lines.push(`- **Metrics**: ${[...metricNames].map((n) => `\`${n}\``).join(", ")}`);
-    }
-    if (spanAttrNames.size) {
-      lines.push(`- **Span attributes**: ${[...spanAttrNames].map((n) => `\`${n}\``).join(", ")}`);
-    }
-    lines.push("");
+  if (telemetryLines.length) {
+    lines.push("## Telemetry", "", ...telemetryLines);
   }
 
   const configs = Array.isArray(instr.configurations) ? instr.configurations : [];
@@ -562,4 +680,11 @@ async function generateDocs() {
   console.log(" - Generated dist/llms-full.txt");
 }
 
-generateDocs().catch(console.error);
+// Only self-execute when run as a script. Tests import the page builders above,
+// and `process.argv[1]` (rather than `import.meta.main`, which is undefined
+// under Node and under Vitest's transform) keeps that check correct in both
+// Bun and Node so the build step can never silently become a no-op.
+const isMain = process.argv[1] && path.resolve(process.argv[1]) === __filename;
+if (isMain) {
+  generateDocs().catch(console.error);
+}
