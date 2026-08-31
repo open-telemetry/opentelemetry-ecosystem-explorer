@@ -55,7 +55,8 @@ export function ThemeToggle() {
         <ActiveIcon />
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
-        <DropdownMenu.Content align="end" sideOffset={8} className="td-light-dark-menu__menu">
+        {/* Bootstrap dropdown popper offset: [0, 2] */}
+        <DropdownMenu.Content align="end" sideOffset={2} className="td-light-dark-menu__menu">
           {OPTIONS.map(({ mode: optMode, label, Icon }) => (
             <DropdownMenu.Item
               key={optMode}

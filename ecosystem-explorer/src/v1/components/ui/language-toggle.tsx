@@ -47,7 +47,8 @@ export function LanguageToggle() {
         <span className="td-lang-menu__code">{current.toUpperCase()}</span>
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
-        <DropdownMenu.Content align="start" sideOffset={8} className="td-lang-menu__menu">
+        {/* Bootstrap dropdown popper offset: [0, 2] */}
+        <DropdownMenu.Content align="start" sideOffset={2} className="td-lang-menu__menu">
           {LANGUAGES.map(({ code, label }) => (
             <DropdownMenu.Item
               key={code}

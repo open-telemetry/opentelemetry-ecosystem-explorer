@@ -21,7 +21,7 @@
   border: 0;
   color: inherit;
   cursor: pointer;
-  padding: 8px;
+  padding: 8px 0; /* upstream `.td-lang-menu__title`: nav-link padding-y, no x padding */
   border-radius: 4px;
   line-height: 1;
   font-weight: 600; /* matches `.nav-link` upstream — trigger is a nav-link */
