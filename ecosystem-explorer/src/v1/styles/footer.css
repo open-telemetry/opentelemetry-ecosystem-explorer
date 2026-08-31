@@ -109,8 +109,15 @@
 .td-footer__links-item {
   display: inline-block;
   margin-right: 0.5rem;
-  font-size: 1.25rem; /* map-get($font-sizes, 4) */
+  /* map-get($font-sizes, 4) = $h4-font-size (1.5rem), emitted through Bootstrap's RFS. */
+  font-size: calc(1.275rem + 0.3vw);
   line-height: 1;
+}
+
+@media (min-width: 1200px) {
+  .td-footer__links-item {
+    font-size: 1.5rem;
+  }
 }
 
 .td-footer__links-item:last-child {

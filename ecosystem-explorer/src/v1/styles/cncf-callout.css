@@ -44,13 +44,13 @@
 }
 
 .td-cncf-callout__lead {
-  font-size: 0.875rem;
+  font-size: 1.2rem; /* upstream `.cncf p` */
   line-height: 1.5;
   margin: 0;
 }
 
 .td-cncf-callout__lead strong {
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .td-cncf-callout__link {
@@ -66,8 +66,10 @@
 }
 
 .td-cncf-callout__logo {
-  height: 32px;
-  width: auto;
+  /* upstream `.cncf img` */
+  width: 20rem;
+  max-width: 80%;
+  height: auto;
   color: #fff;
   opacity: 0.95;
 }
