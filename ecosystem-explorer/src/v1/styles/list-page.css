@@ -34,14 +34,14 @@
 
 .td-list-page__title {
   margin: 0;
-  font-size: 1.75rem;
+  font-size: var(--td-fs-h2);
   font-weight: 700;
 }
 
 .td-list-page__count {
   margin: 0;
   color: hsl(var(--muted-foreground-hsl));
-  font-size: 0.875rem;
+  font-size: var(--td-fs-sm);
 }
 
 .td-list-page__controls {

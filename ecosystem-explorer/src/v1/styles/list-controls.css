@@ -39,7 +39,7 @@
   align-items: center;
   gap: 0.25rem;
   padding: 0.125rem 0.625rem;
-  font-size: 0.75rem;
+  font-size: var(--td-fs-xs);
   font-weight: 600;
   background-color: hsl(var(--secondary-hsl) / 0.15);
   color: hsl(var(--secondary-hsl));
@@ -86,7 +86,7 @@
   align-items: center;
   gap: 0.375rem;
   padding: 0.375rem 0.75rem;
-  font-size: 0.875rem;
+  font-size: var(--td-fs-sm);
   background: transparent;
   border: none;
   color: hsl(var(--muted-foreground-hsl));
@@ -122,7 +122,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.875rem;
+  font-size: var(--td-fs-sm);
 }
 
 .td-sort__label {
@@ -146,7 +146,7 @@
   justify-content: center;
   gap: 1rem;
   margin: 1.5rem 0 0.5rem;
-  font-size: 0.875rem;
+  font-size: var(--td-fs-sm);
 }
 
 .td-pagination__btn {
@@ -193,7 +193,7 @@
 
 .td-empty__title {
   margin: 0;
-  font-size: 1.125rem;
+  font-size: var(--td-fs-h5);
   font-weight: 700;
 }
 
@@ -212,7 +212,7 @@
   background-color: hsl(var(--card-hsl));
   border: 1px solid hsl(var(--border-hsl));
   border-radius: 0.375rem;
-  font-size: 0.875rem;
+  font-size: var(--td-fs-sm);
   cursor: pointer;
   color: hsl(var(--foreground-hsl));
   font-family: inherit;
@@ -234,6 +234,6 @@
   border-radius: 999px;
   background-color: hsl(var(--secondary-hsl) / 0.18);
   color: hsl(var(--secondary-hsl));
-  font-size: 0.6875rem;
+  font-size: var(--td-fs-xs);
   font-weight: 700;
 }

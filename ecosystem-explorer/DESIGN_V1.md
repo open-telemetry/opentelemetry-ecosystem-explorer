@@ -463,6 +463,30 @@ opentelemetry.io, which runs on Bootstrap's default 16px root — resolve at ups
 through that root override. Do not pin `font-size: 16px` on individual partials: it re-anchors `em`
 but never `rem`.
 
+### Type scale
+
+Content partials size text only through the `--td-fs-*` tokens declared on `.v1-app` in
+`src/v1/styles/tokens.css` (`src/v1/styles/type-scale.test.ts` enforces it). The scale is Bootstrap
+5.3's — the one the v1 mockups are built on — and h1–h4 / `display-*` are fluid below 1200px like
+Bootstrap's RFS output.
+
+| Token                      | ≥ 1200px      | Role                                                        |
+| -------------------------- | ------------- | ----------------------------------------------------------- |
+| `--td-fs-display-4` / `-5` | 3.5rem / 3rem | hero title (home / landings)                                |
+| `--td-fs-h2`               | 2rem          | page titles (list, detail, diff)                            |
+| `--td-fs-h3`               | 1.75rem       | section titles, release version                             |
+| `--td-fs-h4`               | 1.5rem        | pipeline stage counts                                       |
+| `--td-fs-h5`               | 1.25rem       | subsection and in-page section titles, large card titles    |
+| `--td-fs-lead`             | 1.25rem       | hero lead                                                   |
+| `--td-fs-base`             | 1rem          | card titles, row names, sidebar titles, tabs, inputs, links |
+| `--td-fs-sm`               | 0.875rem      | descriptions, taglines, leads, meta copy, list controls     |
+| `--td-fs-xs`               | 0.75rem       | pills, chips, slugs, counts, overlines                      |
+| `--td-fs-stat-number`      | 3rem          | stats-band numbers                                          |
+
+`--td-fs-h1` / `--td-fs-h6` complete the scale for future use. Chrome partials (`navbar`, `sub-nav`,
+`footer`, `cncf-callout`, `language-toggle`, `theme-toggle`, `buttons`) are exempt: they carry
+opentelemetry.io's literal metrics verbatim.
+
 Font stack stays at `system-ui, -apple-system, sans-serif` — no custom typeface.
 
 Weight conventions follow the legacy doc:
@@ -635,8 +659,9 @@ When adding new v1 UI components:
 2. Use existing color tokens from `src/styles/tokens.css` and `src/v1/styles/tokens.css`. Don't
    hardcode hexes outside those two files.
 3. v1-only components live under `src/v1/`; shared primitives live in `src/components/ui/`.
-4. Chrome components prefix their CSS classes with `.td-` and pin their subtree at `font-size: 16px`
-   to match opentelemetry.io's metrics.
+4. Chrome components prefix their CSS classes with `.td-` and copy opentelemetry.io's metrics
+   verbatim. Do not pin `font-size: 16px` on a subtree — the v1 root is already 16px. Content
+   partials size text through the `--td-fs-*` type-scale tokens.
 5. Register new primitives on `/_dev/components` so the visual-regression baseline covers them in
    both themes.
 6. Add or update tests next to the source (`*.test.tsx` for unit, `*.integration.test.tsx` for

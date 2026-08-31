@@ -123,7 +123,7 @@
 }
 
 .td-cover-block__eyebrow {
-  font-size: 0.875rem;
+  font-size: var(--td-fs-sm);
   font-weight: 600;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -131,10 +131,15 @@
 }
 
 .td-cover-block__title {
-  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-size: var(--td-fs-display-4);
   font-weight: 700;
   line-height: 1.15;
   margin: 0;
+}
+
+/* Landing heroes (the split layout with the release aside) use the mockup's `display-5`. */
+.td-cover-block--split .td-cover-block__title {
+  font-size: var(--td-fs-display-5);
 }
 
 .td-cover-block__title-accent {
@@ -150,7 +155,7 @@
 }
 
 .td-cover-block__lead {
-  font-size: 1.125rem;
+  font-size: var(--td-fs-lead);
   line-height: 1.5;
   margin: 0;
   max-width: 40rem;
