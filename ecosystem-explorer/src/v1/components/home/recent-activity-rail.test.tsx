@@ -95,6 +95,19 @@ describe("RecentActivityRail", () => {
     );
   });
 
+  it("falls back to the raw feed values for unknown ecosystem ids and stability levels", async () => {
+    const feed = {
+      generatedAt: SAMPLE_FEED.generatedAt,
+      items: [{ ...SAMPLE_FEED.items[0], ecosystem: "erlang", stability: "experimental" }],
+    };
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => feed }));
+
+    renderRail();
+
+    await waitFor(() => expect(screen.getByText("experimental")).toBeInTheDocument());
+    expect(screen.getByText(/^erlang · v0\.150\.0/)).toBeInTheDocument();
+  });
+
   it("pluralises relative dates (1 week ago vs 2 weeks ago)", async () => {
     const day = 86_400_000;
     const feed = {

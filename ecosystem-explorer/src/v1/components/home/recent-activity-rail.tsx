@@ -94,7 +94,7 @@ export function RecentActivityRail({ limit = 5, feedUrl }: RecentActivityRailPro
               <li key={item.id} className="td-activity-item">
                 <Link to={item.href} className="td-activity-link">
                   <span className={pillClass(item.stability)}>
-                    {t(`common:stability.${item.stability}`)}
+                    {t(`common:stability.${item.stability}`, { defaultValue: item.stability })}
                   </span>
                   <div className="td-activity-body">
                     <div className="td-activity-title">{item.title}</div>
