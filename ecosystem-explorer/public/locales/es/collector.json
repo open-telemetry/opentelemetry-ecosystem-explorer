@@ -1,5 +1,9 @@
 {
   "landingV1": {
+    "seo": {
+      "title": "OpenTelemetry Collector — Ecosystem Explorer",
+      "description": "Explora el OpenTelemetry Collector: navega receptores, procesadores, exportadores y conectores en distintas distribuciones y versiones."
+    },
     "hero": {
       "eyebrow": "Infraestructura · Agente agnóstico al proveedor",
       "lead": "Recibe, procesa y exporta datos de telemetría. Un agente agnóstico al proveedor para ingerir, procesar y exportar métricas, trazas y registros.",

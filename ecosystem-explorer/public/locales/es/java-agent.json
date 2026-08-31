@@ -1,5 +1,9 @@
 {
   "landingV1": {
+    "seo": {
+      "title": "OpenTelemetry Java Agent — Ecosystem Explorer",
+      "description": "Explora la auto-instrumentación del agente Java de OpenTelemetry: bibliotecas compatibles, telemetría emitida y opciones de configuración."
+    },
     "hero": {
       "eyebrow": "Auto-instrumentación · JVM",
       "lead": "Auto-instrumentación sin código para aplicaciones Java. Cientos de bibliotecas y frameworks compatibles; configurable mediante propiedades del sistema o variables de entorno.",

@@ -1,5 +1,9 @@
 {
   "landingV1": {
+    "seo": {
+      "title": "OpenTelemetry Collector — Ecosystem Explorer",
+      "description": "Explore the OpenTelemetry Collector: browse receivers, processors, exporters, and connectors across distributions and versions."
+    },
     "hero": {
       "eyebrow": "Infrastructure · Vendor-agnostic agent",
       "lead": "Receive, process, and export telemetry data. A vendor-agnostic agent for ingesting, processing, and exporting metrics, traces, and logs.",

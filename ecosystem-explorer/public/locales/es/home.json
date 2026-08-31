@@ -15,6 +15,10 @@
     }
   },
   "homeV1": {
+    "seo": {
+      "title": "OpenTelemetry Ecosystem Explorer",
+      "description": "Busca y explora el ecosistema OpenTelemetry: componentes del Collector e instrumentaciones del agente Java, con detalles de telemetría, configuración y versiones."
+    },
     "hero": {
       "titlePrefix": "OpenTelemetry",
       "titleAccent": "Ecosystem Explorer",

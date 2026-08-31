@@ -52,7 +52,7 @@ export function HomeV1() {
 
   return (
     <div className="td-home">
-      <Seo />
+      <Seo title={t("homeV1.seo.title")} description={t("homeV1.seo.description")} />
       <CoverBlock
         logo={<Compass />}
         title={

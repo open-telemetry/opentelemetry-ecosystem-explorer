@@ -15,6 +15,10 @@
     }
   },
   "homeV1": {
+    "seo": {
+      "title": "OpenTelemetry Ecosystem Explorer",
+      "description": "Search and explore the OpenTelemetry ecosystem: Collector components and Java agent instrumentations, with telemetry, configuration, and version details."
+    },
     "hero": {
       "titlePrefix": "OpenTelemetry",
       "titleAccent": "Ecosystem Explorer",
