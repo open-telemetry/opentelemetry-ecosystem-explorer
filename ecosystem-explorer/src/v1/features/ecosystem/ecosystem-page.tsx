@@ -116,7 +116,7 @@ export function EcosystemPage({ config }: EcosystemPageProps) {
               href={cta.href}
               target="_blank"
               rel="noopener noreferrer"
-              className={`td-btn ${cta.primary ? "td-btn--primary" : "td-btn--outline-light"}`}
+              className={`td-btn td-btn--lg ${cta.primary ? "td-btn--primary" : "td-btn--outline-light"}`}
             >
               {t(cta.label)}
             </a>
@@ -124,7 +124,7 @@ export function EcosystemPage({ config }: EcosystemPageProps) {
             <Link
               key={cta.label}
               to={cta.href}
-              className={`td-btn ${cta.primary ? "td-btn--primary" : "td-btn--outline-light"}`}
+              className={`td-btn td-btn--lg ${cta.primary ? "td-btn--primary" : "td-btn--outline-light"}`}
             >
               {t(cta.label)}
             </Link>
