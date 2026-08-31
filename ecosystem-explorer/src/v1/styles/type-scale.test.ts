@@ -42,7 +42,8 @@ describe("v1 type scale", () => {
     for (const file of files) {
       const lines = readFileSync(join(STYLES_DIR, file), "utf8").split("\n");
       lines.forEach((line, index) => {
-        const match = /font-size:\s*([^;]+);/.exec(line);
+        // Also matches the `font:` shorthand so a literal size can't slip in through it.
+        const match = /\bfont(?:-size)?:\s*([^;]+);/.exec(line);
         if (!match) return;
         const value = match[1].trim();
         if (value.startsWith("var(--td-fs-") || value === "inherit") return;

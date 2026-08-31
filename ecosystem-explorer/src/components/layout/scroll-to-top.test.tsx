@@ -16,9 +16,14 @@
 
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { Link, MemoryRouter, Route, Routes } from "react-router-dom";
+import { Link, MemoryRouter, Route, Routes, useNavigate } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ScrollToTop } from "./scroll-to-top";
+
+function Back() {
+  const navigate = useNavigate();
+  return <button onClick={() => navigate(-1)}>back</button>;
+}
 
 function renderApp() {
   return render(
@@ -26,6 +31,7 @@ function renderApp() {
       <ScrollToTop />
       <Link to="/b">go b</Link>
       <Link to="/a?x=1">filter a</Link>
+      <Back />
       <Routes>
         <Route path="/a" element={<p>page a</p>} />
         <Route path="/b" element={<p>page b</p>} />
@@ -52,5 +58,18 @@ describe("ScrollToTop", () => {
     expect(screen.getByText("page b")).toBeInTheDocument();
     expect(scrollTo).toHaveBeenCalledTimes(1);
     expect(scrollTo).toHaveBeenCalledWith(0, 0);
+  });
+
+  it("leaves back/forward navigation to the browser's scroll restoration", async () => {
+    const scrollTo = vi.spyOn(window, "scrollTo").mockImplementation(() => {});
+    const user = userEvent.setup();
+    renderApp();
+
+    await user.click(screen.getByRole("link", { name: "go b" }));
+    expect(scrollTo).toHaveBeenCalledTimes(1);
+
+    await user.click(screen.getByRole("button", { name: "back" }));
+    expect(screen.getByText("page a")).toBeInTheDocument();
+    expect(scrollTo).toHaveBeenCalledTimes(1);
   });
 });
