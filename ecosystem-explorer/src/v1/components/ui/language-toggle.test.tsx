@@ -40,8 +40,14 @@ describe("LanguageToggle", () => {
 
     await user.click(screen.getByRole("button", { name: /select language/i }));
 
-    expect(await screen.findByRole("menuitem", { name: /english/i })).toBeInTheDocument();
-    expect(screen.getByRole("menuitem", { name: /español/i })).toBeInTheDocument();
+    const english = await screen.findByRole("menuitem", { name: /english/i });
+    const spanish = screen.getByRole("menuitem", { name: /español/i });
+    expect(english).toBeInTheDocument();
+    expect(spanish).toBeInTheDocument();
+    // Only the active locale carries the check glyph, like upstream's
+    // `.dropdown-item.active`.
+    expect(english.querySelector(".td-lang-menu__check")).not.toBeNull();
+    expect(spanish.querySelector(".td-lang-menu__check")).toBeNull();
   });
 
   it("requests a language change when a locale is selected", async () => {

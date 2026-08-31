@@ -102,14 +102,21 @@
 .td-navbar .nav-link:hover,
 .td-navbar .nav-link.active,
 .td-navbar .td-light-dark-menu__trigger:hover,
-.td-navbar .td-light-dark-menu__trigger[data-state="open"],
-.td-navbar .td-lang-menu__trigger:hover,
-.td-navbar .td-lang-menu__trigger[data-state="open"] {
+.td-navbar .td-lang-menu__trigger:hover {
   color: hsl(var(--navbar-accent-hsl));
   text-decoration: underline;
   text-decoration-thickness: 3px;
   text-decoration-color: hsl(var(--navbar-accent-hsl) / 0.75);
   text-underline-offset: 0.5em;
+}
+
+/*
+ * Open dropdown trigger — Bootstrap's `.show` only switches the colour; the
+ * underline stays a hover affordance upstream.
+ */
+.td-navbar .td-light-dark-menu__trigger[data-state="open"],
+.td-navbar .td-lang-menu__trigger[data-state="open"] {
+  color: hsl(var(--navbar-accent-hsl));
 }
 
 /* Active (non-hovered) nav-link sits tighter at 0.375em offset, matching upstream. */

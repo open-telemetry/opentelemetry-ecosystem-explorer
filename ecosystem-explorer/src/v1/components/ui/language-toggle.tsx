@@ -15,14 +15,17 @@
  */
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useTranslation } from "react-i18next";
-import { BsTranslate } from "@/v1/components/icons/bs-icon-translate";
+import { FaCheck } from "@/v1/components/icons/fa-icon-check";
+import { FaGlobe } from "@/v1/components/icons/fa-icon-globe";
 import { LANGUAGES } from "@/i18n/languages";
 
 /*
  * Language dropdown for the v1 navbar, structured like ThemeToggle (Radix
  * DropdownMenu + `td-*` chrome in `src/v1/styles/language-toggle.css`).
  *
- * The trigger shows the active locale's endonym; rows list every entry in
+ * Mirrors Docsy's `.td-lang-menu` on opentelemetry.io: globe glyph + the
+ * active locale's endonym on the trigger (language code below `lg`), a
+ * start-aligned menu, and a check on the active row. Rows list every entry in
  * LANGUAGES. Option labels are endonyms ("English", "Español"), so they read
  * the same in any locale and stay out of the translation files. The rest of
  * the v1 chrome (Docs link, theme labels) is still English-only — wiring it
@@ -39,11 +42,12 @@ export function LanguageToggle() {
         className="td-lang-menu__trigger"
         aria-label={`Select language (${activeLabel})`}
       >
-        <BsTranslate />
-        <span className="td-lang-menu__current">{activeLabel}</span>
+        <FaGlobe className="td-lang-menu__globe" />
+        <span className="td-lang-menu__label">{activeLabel}</span>
+        <span className="td-lang-menu__code">{current.toUpperCase()}</span>
       </DropdownMenu.Trigger>
       <DropdownMenu.Portal>
-        <DropdownMenu.Content align="end" sideOffset={8} className="td-lang-menu__menu">
+        <DropdownMenu.Content align="start" sideOffset={8} className="td-lang-menu__menu">
           {LANGUAGES.map(({ code, label }) => (
             <DropdownMenu.Item
               key={code}
@@ -51,6 +55,7 @@ export function LanguageToggle() {
               data-active={code === current}
               onSelect={() => i18n.changeLanguage(code)}
             >
+              {code === current && <FaCheck className="td-lang-menu__check" />}
               <span>{label}</span>
             </DropdownMenu.Item>
           ))}
