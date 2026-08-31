@@ -9,7 +9,8 @@
     "beta": "Beta",
     "stable": "Estable",
     "deprecated": "Obsoleto",
-    "unmaintained": "Sin mantenimiento"
+    "unmaintained": "Sin mantenimiento",
+    "new": "Nuevo"
   },
   "notFound": {
     "title": "404 - Página no encontrada",

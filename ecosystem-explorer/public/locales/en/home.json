@@ -27,6 +27,13 @@
       "ctaOverview": "Read the overview"
     },
     "sectionsAriaLabel": "Signals and recent activity",
+    "ecosystemNames": {
+      "collector": "Collector",
+      "collector-contrib": "Collector Contrib",
+      "java-agent": "Java Agent",
+      "dotnet": ".NET",
+      "page": "Page"
+    },
     "stats": {
       "title": "The OpenTelemetry Ecosystem",
       "items": {
