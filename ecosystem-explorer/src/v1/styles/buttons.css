@@ -90,6 +90,24 @@
   border-color: hsl(var(--primary-hsl));
 }
 
+/*
+ * Bootstrap `.btn-outline-dark` for controls on the page surface (detail header
+ * links, tab CTAs, version compare). Keyed on the page foreground token so the
+ * outline stays legible in both themes.
+ */
+.td-btn--outline-dark {
+  background-color: transparent;
+  color: hsl(var(--foreground-hsl));
+  border-color: hsl(var(--foreground-hsl) / 0.5);
+}
+
+.td-btn--outline-dark:hover,
+.td-btn--outline-dark:focus-visible {
+  background-color: hsl(var(--foreground-hsl) / 0.1);
+  border-color: hsl(var(--foreground-hsl));
+  color: hsl(var(--foreground-hsl));
+}
+
 .td-btn:focus-visible {
   outline: 2px solid hsl(var(--otel-orange-hsl));
   outline-offset: 3px;
