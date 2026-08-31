@@ -200,7 +200,6 @@
 .td-search__result-meta {
   color: hsl(var(--muted-foreground-hsl));
   font-size: var(--td-fs-xs);
-  text-transform: lowercase;
 }
 
 .td-search__result-footer {
