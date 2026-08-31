@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { render, screen } from "@testing-library/react";
+import i18n from "i18next";
 import { describe, it, expect } from "vitest";
 import { StatusPill, type Stability } from "./status-pill";
 
@@ -76,5 +77,20 @@ describe("StatusPill", () => {
   it("forwards className to the rendered element", () => {
     render(<StatusPill stability="stable" className="custom-class" />);
     expect(screen.getByText("Stable").className).toContain("custom-class");
+  });
+
+  // Labels resolve through `common:stability.*`: render in Spanish and assert
+  // the translated label appears.
+  it("renders the Spanish label when the language is switched", async () => {
+    const commonEs = await import("../../../public/locales/es/common.json");
+    i18n.addResourceBundle("es", "common", commonEs.default, true, true);
+    await i18n.changeLanguage("es");
+
+    try {
+      render(<StatusPill stability="stable" />);
+      expect(screen.getByText(i18n.t("stability.stable", { ns: "common" }))).toBeInTheDocument();
+    } finally {
+      await i18n.changeLanguage("en");
+    }
   });
 });

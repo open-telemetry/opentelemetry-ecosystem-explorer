@@ -13,15 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useTranslation } from "react-i18next";
 import { GlowBadge } from "./glow-badge";
 
+/* `label` is an i18n key in the `common` namespace (`stability.*`), resolved on render. */
 const STABILITY = {
-  development: { variant: "secondary", label: "Development" },
-  alpha: { variant: "warning", label: "Alpha" },
-  beta: { variant: "info", label: "Beta" },
-  stable: { variant: "success", label: "Stable" },
-  deprecated: { variant: "error", label: "Deprecated" },
-  unmaintained: { variant: "error", label: "Unmaintained" },
+  development: { variant: "secondary", label: "stability.development" },
+  alpha: { variant: "warning", label: "stability.alpha" },
+  beta: { variant: "info", label: "stability.beta" },
+  stable: { variant: "success", label: "stability.stable" },
+  deprecated: { variant: "error", label: "stability.deprecated" },
+  unmaintained: { variant: "error", label: "stability.unmaintained" },
 } as const;
 
 export type Stability = keyof typeof STABILITY;
@@ -32,10 +34,11 @@ interface StatusPillProps {
 }
 
 export function StatusPill({ stability, className }: StatusPillProps) {
+  const { t } = useTranslation("common");
   const { variant, label } = STABILITY[stability];
   return (
     <GlowBadge variant={variant} className={className}>
-      {label}
+      {t(label)}
     </GlowBadge>
   );
 }
