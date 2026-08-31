@@ -138,10 +138,10 @@
  * 0,3,0, so the active rule needs an equivalent or higher path in dark mode
  * for active to win when the row is *also* hovered/keyboard-highlighted.
  */
-.td-lang-menu__item[data-active="true"],
-.td-lang-menu__item[data-active="true"][data-highlighted],
-[data-theme="dark"] .td-lang-menu__item[data-active="true"],
-[data-theme="dark"] .td-lang-menu__item[data-active="true"][data-highlighted] {
+.td-lang-menu__item[data-state="checked"],
+.td-lang-menu__item[data-state="checked"][data-highlighted],
+[data-theme="dark"] .td-lang-menu__item[data-state="checked"],
+[data-theme="dark"] .td-lang-menu__item[data-state="checked"][data-highlighted] {
   background-color: hsl(var(--otel-blue-hsl));
   color: #fff;
 }

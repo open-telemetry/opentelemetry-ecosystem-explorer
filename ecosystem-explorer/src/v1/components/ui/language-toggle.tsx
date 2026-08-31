@@ -49,17 +49,20 @@ export function LanguageToggle() {
       <DropdownMenu.Portal>
         {/* Bootstrap dropdown popper offset: [0, 2] */}
         <DropdownMenu.Content align="start" sideOffset={2} className="td-lang-menu__menu">
-          {LANGUAGES.map(({ code, label }) => (
-            <DropdownMenu.Item
-              key={code}
-              className="td-lang-menu__item"
-              data-active={code === current}
-              onSelect={() => i18n.changeLanguage(code)}
-            >
-              {code === current && <FaCheck className="td-lang-menu__check" />}
-              <span>{label}</span>
-            </DropdownMenu.Item>
-          ))}
+          {/* Radio semantics expose the active locale as `aria-checked`, not just the glyph. */}
+          <DropdownMenu.RadioGroup
+            value={current}
+            onValueChange={(code) => i18n.changeLanguage(code)}
+          >
+            {LANGUAGES.map(({ code, label }) => (
+              <DropdownMenu.RadioItem key={code} value={code} className="td-lang-menu__item">
+                <DropdownMenu.ItemIndicator>
+                  <FaCheck className="td-lang-menu__check" />
+                </DropdownMenu.ItemIndicator>
+                <span>{label}</span>
+              </DropdownMenu.RadioItem>
+            ))}
+          </DropdownMenu.RadioGroup>
         </DropdownMenu.Content>
       </DropdownMenu.Portal>
     </DropdownMenu.Root>

@@ -40,12 +40,14 @@ describe("LanguageToggle", () => {
 
     await user.click(screen.getByRole("button", { name: /select language/i }));
 
-    const english = await screen.findByRole("menuitem", { name: /english/i });
-    const spanish = screen.getByRole("menuitem", { name: /español/i });
+    const english = await screen.findByRole("menuitemradio", { name: /english/i });
+    const spanish = screen.getByRole("menuitemradio", { name: /español/i });
     expect(english).toBeInTheDocument();
     expect(spanish).toBeInTheDocument();
-    // Only the active locale carries the check glyph, like upstream's
-    // `.dropdown-item.active`.
+    // The active locale is announced as checked and carries the check glyph,
+    // like upstream's `.dropdown-item.active`.
+    expect(english).toHaveAttribute("aria-checked", "true");
+    expect(spanish).toHaveAttribute("aria-checked", "false");
     expect(english.querySelector(".td-lang-menu__check")).not.toBeNull();
     expect(spanish.querySelector(".td-lang-menu__check")).toBeNull();
   });
@@ -60,7 +62,7 @@ describe("LanguageToggle", () => {
     const user = userEvent.setup();
 
     await user.click(screen.getByRole("button", { name: /select language/i }));
-    await user.click(await screen.findByRole("menuitem", { name: /español/i }));
+    await user.click(await screen.findByRole("menuitemradio", { name: /español/i }));
 
     expect(changeLanguage).toHaveBeenCalledWith("es");
     expect(i18n.language).toBe("es");
