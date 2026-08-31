@@ -94,4 +94,21 @@ describe("RecentActivityRail", () => {
       expect(screen.getByText(/We couldn't load the activity feed/i)).toBeInTheDocument()
     );
   });
+
+  it("pluralises relative dates (1 week ago vs 2 weeks ago)", async () => {
+    const day = 86_400_000;
+    const feed = {
+      generatedAt: new Date().toISOString(),
+      items: [
+        { ...SAMPLE_FEED.items[0], occurredAt: new Date(Date.now() - 8 * day).toISOString() },
+        { ...SAMPLE_FEED.items[1], occurredAt: new Date(Date.now() - 15 * day).toISOString() },
+      ],
+    };
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => feed }));
+
+    renderRail();
+
+    await waitFor(() => expect(screen.getByText(/1 week ago/)).toBeInTheDocument());
+    expect(screen.getByText(/2 weeks ago/)).toBeInTheDocument();
+  });
 });
