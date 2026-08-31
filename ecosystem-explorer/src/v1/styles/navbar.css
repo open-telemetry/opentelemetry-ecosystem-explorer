@@ -7,15 +7,9 @@
  *   themes/docsy/assets/scss/td/_navbar-mobile-scroll.scss — right-alignment
  *   assets/scss/_navbar.scss                           — project overrides
  *   assets/scss/_variables_project.scss                — bg / hover colours
- *
- * Pixel-anchored at 16px-rem: the explorer sets `html { font-size: 14px }`
- * globally (see base.css), so rem-based descendants here would shrink. We
- * pin the navbar subtree at 16px so `em` resolves correctly, and use absolute
- * `px` literals for values that would otherwise need `rem`.
  */
 
 .td-navbar {
-  font-size: 16px;
   position: fixed;
   top: 0;
   left: 0;

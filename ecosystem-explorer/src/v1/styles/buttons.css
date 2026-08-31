@@ -45,6 +45,13 @@
     color 150ms ease;
 }
 
+/* Mirrors Bootstrap `.btn-lg` (`$btn-font-size-lg: 1.25rem`, `$btn-padding-y-lg/x-lg: .5rem 1rem`)
+   — opentelemetry.io's hero CTAs. Size only; colour variants compose as usual. */
+.td-btn--lg {
+  font-size: 1.25rem;
+  padding: 0.5rem 1rem;
+}
+
 .td-btn--primary {
   background-color: hsl(var(--otel-orange-hsl));
   color: #000;

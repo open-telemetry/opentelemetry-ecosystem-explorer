@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-/* Pixel-anchored at 16px-rem like the rest of v1 chrome. */
-
 .td-subnav {
-  font-size: 16px;
   background-color: hsl(var(--card-hsl));
   border-bottom: 1px solid hsl(var(--border-hsl));
 }

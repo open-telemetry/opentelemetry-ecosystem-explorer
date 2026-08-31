@@ -30,13 +30,9 @@
  *
  * The `--cover-block--split` modifier turns the content column into a
  * 2-column grid with the `aside` slot on the right (stacks under on mobile).
- *
- * Pixel-anchored at 16px-rem like the rest of v1 chrome — the explorer's
- * global font-size is 14px and we want this hero to read at upstream sizing.
  */
 
 .td-cover-block {
-  font-size: 16px;
   position: relative;
   /* No overflow clipping — the GlobalSearch results dropdown anchors to the
      input inside the hero and needs to spill out past the cover-block edge

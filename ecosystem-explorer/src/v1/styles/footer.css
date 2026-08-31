@@ -22,10 +22,6 @@
  *   themes/docsy/assets/scss/td/_boxes.scss  — `.td-box--dark` surface tokens
  *   themes/docsy/layouts/_partials/footer.html — 3-column responsive layout
  *
- * Pixel-anchored at 16px-rem (the explorer sets `html { font-size: 14px }`
- * globally, so rem-based descendants would shrink). We pin the footer subtree
- * at 16px so `em` resolves correctly and `rem` values match Bootstrap's scale.
- *
  * Surface stays dark in both themes — upstream `.td-footer @extend .td-box--dark`
  * imposes the dark background regardless of `data-bs-theme`. Upstream's top
  * border color flips per theme; the explorer collapses this to a single dark
@@ -33,7 +29,6 @@
  */
 
 .td-footer {
-  font-size: 16px;
   background-color: #212529; /* $dark / $gray-900 — `.td-box--dark` */
   color: #fff; /* color-contrast($gray-900) */
   min-height: 10rem;

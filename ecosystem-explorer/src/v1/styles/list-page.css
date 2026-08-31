@@ -16,14 +16,10 @@
 
 /*
  * List page (Phase 4, PR 5) — page shell: header + facet-rail/main grid.
- * Pixel-anchored at 16px-rem. The facet rail's desktop sticky rule lives in
- * facet-panel.css (`.td-list-page__rail .td-facet-panel`), shipped inert in
- * PR 2 ahead of this wrapper.
+ * The facet rail's desktop sticky rule lives in facet-panel.css
+ * (`.td-list-page__rail .td-facet-panel`), shipped inert in PR 2 ahead of
+ * this wrapper.
  */
-
-.td-list-page {
-  font-size: 16px;
-}
 
 .td-list-page__header {
   border-bottom: 1px solid hsl(var(--border-hsl));

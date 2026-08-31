@@ -456,13 +456,12 @@ Component-level hover transitions (`transition-all duration-300`,
 
 ## Typography
 
-v1 inherits the legacy typography scale. The explorer sets `html { font-size: 14px }` globally in
-`src/styles/base.css`, so Tailwind's rem-based sizes (`text-xs` through `text-4xl`) scale
-proportionally.
-
-Chrome partials override this to 16px-rem (`.td-navbar`, `.td-subnav`, `.td-footer`,
-`.td-cncf-callout` all carry `font-size: 16px`) so they match opentelemetry.io's metrics exactly
-without rem-scaling guesswork. Within those subtrees, `em` and `rem` resolve as upstream designed.
+v1 runs on a 16px root. `src/styles/base.css` keeps `html { font-size: 14px }` for the legacy app
+and adds `html.v1-app { font-size: 16px }` for v1 (`main.tsx` puts the class on `<html>` pre-mount
+when `V1_REDESIGN` is on). `rem` is root-relative, so the v1 partials' rem values — copied from
+opentelemetry.io, which runs on Bootstrap's default 16px root — resolve at upstream size only
+through that root override. Do not pin `font-size: 16px` on individual partials: it re-anchors `em`
+but never `rem`.
 
 Font stack stays at `system-ui, -apple-system, sans-serif` — no custom typeface.
 

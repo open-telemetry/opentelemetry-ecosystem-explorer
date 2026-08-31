@@ -24,7 +24,6 @@
  */
 
 .td-cncf-callout {
-  font-size: 16px;
   background-color: hsl(var(--otel-purple-hsl)); /* OTel purple — secondary */
   color: #fff;
   padding: 2rem 0;

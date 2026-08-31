@@ -64,6 +64,7 @@ describe("HomeV1 (composition)", () => {
 
     const primary = screen.getByRole("link", { name: "Browse components" });
     expect(primary).toHaveAttribute("href", "/collector");
+    expect(primary).toHaveClass("td-btn--lg");
   });
 
   it("renders the secondary CTA with the locked text, href, target, and rel", () => {
@@ -76,6 +77,7 @@ describe("HomeV1 (composition)", () => {
     );
     expect(secondary).toHaveAttribute("target", "_blank");
     expect(secondary).toHaveAttribute("rel", "noopener noreferrer");
+    expect(secondary).toHaveClass("td-btn--lg");
   });
 
   it("co-mounts SignalsRow and RecentActivityRail inside a single labelled box", () => {
