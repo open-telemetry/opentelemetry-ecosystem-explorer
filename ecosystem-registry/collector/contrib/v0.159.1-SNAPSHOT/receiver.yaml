@@ -2505,6 +2505,17 @@ components:
         - unhealthy
         requirement_level: recommended
         type: string
+      container.state.status:
+        description: Container State
+        enum:
+        - created
+        - dead
+        - exited
+        - paused
+        - removing
+        - restarting
+        - running
+        type: string
       core:
         description: The CPU core number when utilising per-CPU metrics.
         requirement_level: recommended
@@ -3292,6 +3303,18 @@ components:
           monotonic: false
           value_type: int
         unit: '{container}'
+      container.state.status:
+        attributes:
+        - container.state.status
+        description: Number of containers in a given state. State is one of - created,
+          running, paused, restarting, removing, exited and dead
+        enabled: false
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: false
+          value_type: int
+        unit: '{status}'
       container.uptime:
         description: Time elapsed since container start time.
         enabled: false
@@ -6312,6 +6335,20 @@ components:
       id: hostmetrics.process.bootTimeCache
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/28849
       stage: beta
+    - description: When enabled, all scrapers stop emitting legacy semantic convention
+        metrics, superseding per-scraper gates.
+      from_version: v0.160.0
+      id: receiver.hostmetrics.DontEmitV0SystemConventions
+      reference_url: https://github.com/open-telemetry/semantic-conventions/issues/3041
+      skip_strict_validation: true
+      stage: alpha
+    - description: When enabled, all scrapers emit metrics aligned with the latest
+        semantic conventions, superseding per-scraper gates.
+      from_version: v0.160.0
+      id: receiver.hostmetrics.EmitV1SystemConventions
+      reference_url: https://github.com/open-telemetry/semantic-conventions/issues/3041
+      skip_strict_validation: true
+      stage: alpha
     - description: When enabled, the used value for the system.memory.usage and system.memory.utilization
         metrics will be based on the Linux kernel's MemAvailable statistic instead
         of MemFree, Buffers, and Cached.
@@ -10560,6 +10597,21 @@ components:
         description: Whether the value carried by db.query.text is a truncated rendering
           of the MongoDB command, as indicated by `$truncated` in the currentOp output.
         type: bool
+      mongodb.wt.concurrent_transaction.ticket.type:
+        description: The WiredTiger concurrent-transaction ticket type.
+        enum:
+        - read
+        - write
+        requirement_level: recommended
+        type: string
+      mongodb.wt.log.operation.type:
+        description: The WiredTiger journal operation type.
+        enum:
+        - flush
+        - sync
+        - write
+        requirement_level: recommended
+        type: string
       operation:
         description: The MongoDB operation being counted.
         enum:
@@ -11140,6 +11192,60 @@ components:
           monotonic: true
           value_type: int
         unit: ms
+      mongodb.wt.concurrent_transaction.ticket.in_use:
+        attributes:
+        - mongodb.wt.concurrent_transaction.ticket.type
+        description: The number of in-flight WiredTiger read/write concurrent-transaction
+          tickets.
+        enabled: false
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: false
+          value_type: int
+        unit: '{ticket}'
+      mongodb.wt.fsync.count:
+        attributes: []
+        description: The total number of fsync I/Os issued by the WiredTiger storage
+          engine.
+        enabled: false
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+        unit: '{fsync}'
+      mongodb.wt.log.operation.count:
+        attributes:
+        - mongodb.wt.log.operation.type
+        description: The total number of WiredTiger journal operations.
+        enabled: false
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+        unit: '{operation}'
+      mongodb.wt.log.sync.time:
+        attributes: []
+        description: The cumulative time spent syncing the WiredTiger journal.
+        enabled: false
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: double
+        unit: s
+      mongodb.wt.log.write:
+        attributes: []
+        description: The total number of bytes written to the WiredTiger journal.
+        enabled: false
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+        unit: By
       mongodb.wtcache.bytes.read:
         attributes: []
         description: The number of bytes read into the WiredTiger cache.
@@ -22687,6 +22793,29 @@ components:
           monotonic: false
           value_type: int
         unit: '{KiBy/s}'
+      vcenter.host.memory.active:
+        attributes: []
+        description: The amount of memory the host's powered-on VMs are actively using.
+        enabled: false
+        extended_documentation: As measured over the most recent 20s interval.
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: false
+          value_type: int
+        unit: MiBy
+      vcenter.host.memory.ballooned:
+        attributes: []
+        description: The amount of guest physical memory reclaimed from the host's
+          VMs via the balloon driver.
+        enabled: false
+        extended_documentation: As measured over the most recent 20s interval.
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: false
+          value_type: int
+        unit: MiBy
       vcenter.host.memory.capacity:
         attributes: []
         description: Total memory capacity of the host system.
@@ -22696,6 +22825,18 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: double
+        unit: MiBy
+      vcenter.host.memory.granted:
+        attributes: []
+        description: The amount of machine memory that is granted to the powered-on
+          VMs on the host.
+        enabled: false
+        extended_documentation: As measured over the most recent 20s interval.
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: false
+          value_type: int
         unit: MiBy
       vcenter.host.memory.usage:
         attributes: []
