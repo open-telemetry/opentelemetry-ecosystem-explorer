@@ -67,6 +67,14 @@ components:
       from_version: v0.83.0
       id: awsemf.nodimrollupdefault
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/23997
+      skip_strict_validation: true
+      stage: alpha
+    - description: When enabled, the deprecated enabled and exclude_service_attributes
+        fields in resource_to_telemetry_conversion are disabled, and included/excluded
+        patterns must be used instead
+      from_version: v0.160.0
+      id: exporter.awsemf.DisableLegacyResourceToTelemetryConversion
+      reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48861
       stage: alpha
     status:
       class: exporter
@@ -1146,6 +1154,13 @@ components:
   metadata:
     display_name: Prometheus Exporter
     feature_gates:
+    - description: When enabled, the deprecated resource_to_telemetry_conversion section
+        and legacy conversion fields are disabled, and resource_constant_labels must
+        be used instead
+      from_version: v0.160.0
+      id: exporter.prometheus.DisableResourceToTelemetryConversion
+      reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48861
+      stage: alpha
     - description: When enabled, the deprecated add_metric_suffixes configuration
         option is ignored and translation_strategy is always used
       from_version: v0.132.0
@@ -1171,6 +1186,14 @@ components:
     deprecated_type: prometheusremotewrite
     display_name: Prometheus Remote Write Exporter
     feature_gates:
+    - description: When enabled, the deprecated resource_to_telemetry_conversion section
+        and legacy conversion fields are disabled, and resource_constant_labels must
+        be used instead
+      from_version: v0.160.0
+      id: exporter.prometheusremotewrite.DisableResourceToTelemetryConversion
+      reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48862
+      skip_strict_validation: true
+      stage: alpha
     - description: When enabled and settings configured, the Prometheus remote exporter
         will spawn multiple workers/goroutines to handle incoming metrics batches
         concurrently.

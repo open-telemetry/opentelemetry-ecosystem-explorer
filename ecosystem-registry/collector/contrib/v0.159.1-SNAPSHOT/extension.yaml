@@ -224,7 +224,7 @@ components:
       from_version: v0.150.0
       id: extension.encoding.awslogsencoding.EmitV1RPCConventions
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47549
-      stage: alpha
+      stage: beta
     status:
       class: extension
       codeowners:
