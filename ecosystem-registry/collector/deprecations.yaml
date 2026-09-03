@@ -45,7 +45,13 @@ contrib:
     distributions:
     - contrib
     subtype: observer
-  processor: []
+  processor:
+  - name: dynamicsamplingprocessor
+    last_version: v0.159.0
+    deprecated_in_version: v0.160.0
+    source_repo: opentelemetry-collector-contrib
+    distributions: []
+    subtype: null
   receiver:
   - name: jmxreceiver
     last_version: v0.156.0
