@@ -813,12 +813,12 @@ components:
       from_version: v0.145.0
       id: processor.k8sattributes.DontEmitV0K8sConventions
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44589
-      stage: alpha
+      stage: beta
     - description: When enabled, semconv stable attributes are enabled.
       from_version: v0.145.0
       id: processor.k8sattributes.EmitV1K8sConventions
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44589
-      stage: alpha
+      stage: beta
     - description: When enabled, processor instances with identical configuration
         are shared across different signal type pipelines, reducing duplicate Kubernetes
         API watchers.
@@ -1073,12 +1073,12 @@ components:
       - contrib
       - k8s
       stability:
-        beta:
+        development:
+        - profiles
+        stable:
         - logs
         - metrics
         - traces
-        development:
-        - profiles
       warnings:
       - Memory consumption
       - Other
@@ -1911,6 +1911,41 @@ components:
         development:
         - profiles
     type: resource
+- name: rollingspanlatencyprocessor
+  metadata:
+    status:
+      class: processor
+      codeowners:
+        active:
+        - atoulme
+        - rnterbush
+        - pavankrish123
+      distributions: []
+      stability:
+        development:
+        - traces
+    telemetry:
+      metrics:
+        processor_rolling_span_latency_active_baselines:
+          description: Current number of active per-key latency baselines tracked
+            by the processor.
+          enabled: true
+          gauge:
+            async: true
+            value_type: int
+          stability: development
+          unit: '{baselines}'
+        processor_rolling_span_latency_dropped_keys_total:
+          description: Number of new baseline keys dropped because max_baselines was
+            reached.
+          enabled: true
+          stability: development
+          sum:
+            async: true
+            monotonic: true
+            value_type: int
+          unit: '{keys}'
+    type: rolling_span_latency
 - name: schemaprocessor
   metadata:
     attributes:

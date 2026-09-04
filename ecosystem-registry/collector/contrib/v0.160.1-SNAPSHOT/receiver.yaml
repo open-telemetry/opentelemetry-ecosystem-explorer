@@ -5920,13 +5920,13 @@ components:
       codeowners:
         active:
         - dashpole
-        - KiranmayiB
         - nsj07
         emeritus:
         - architjugran
-        - varunraiko
-        - harishbohara11
         - dsimil
+        - harishbohara11
+        - KiranmayiB
+        - varunraiko
       distributions:
       - contrib
       stability:
