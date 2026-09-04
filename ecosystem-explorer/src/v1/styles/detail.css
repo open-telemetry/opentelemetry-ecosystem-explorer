@@ -23,10 +23,6 @@
  * the same box chrome for the version-comparison route.
  */
 
-.td-detail {
-  font-size: 16px;
-}
-
 .td-detail__loading {
   display: flex;
   align-items: center;
@@ -148,7 +144,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  font-size: 0.8125rem;
+  font-size: var(--td-fs-sm);
   color: hsl(var(--muted-foreground-hsl));
   text-transform: capitalize;
 }
@@ -166,13 +162,13 @@
 
 .td-detail-header__title {
   margin: 0;
-  font-size: 1.75rem;
+  font-size: var(--td-fs-h2);
   font-weight: 700;
 }
 
 .td-detail-header__slug {
   font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
-  font-size: 0.875rem;
+  font-size: var(--td-fs-sm);
   color: hsl(var(--muted-foreground-hsl));
 }
 
@@ -189,7 +185,7 @@
 }
 
 .td-detail-header__signal {
-  font-size: 0.75rem;
+  font-size: var(--td-fs-xs);
   font-weight: 600;
   padding: 0.125rem 0.5rem;
   border-radius: 999px;
@@ -222,7 +218,7 @@
 }
 
 .td-sibling-nav__title {
-  font-size: 0.8125rem;
+  font-size: var(--td-fs-xs);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -230,14 +226,14 @@
 }
 
 .td-sibling-nav__count {
-  font-size: 0.75rem;
+  font-size: var(--td-fs-xs);
   color: hsl(var(--muted-foreground-hsl));
   font-variant-numeric: tabular-nums;
 }
 
 .td-sibling-nav__search {
   padding: 0.375rem 0.5rem;
-  font-size: 0.8125rem;
+  font-size: var(--td-fs-sm);
   background-color: hsl(var(--background-hsl));
   border: 1px solid hsl(var(--border-hsl));
   border-radius: 0.375rem;
@@ -276,12 +272,12 @@
 }
 
 .td-sibling-nav__name {
-  font-size: 0.875rem;
+  font-size: var(--td-fs-sm);
 }
 
 .td-sibling-nav__slug {
   font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
-  font-size: 0.6875rem;
+  font-size: var(--td-fs-xs);
   color: hsl(var(--muted-foreground-hsl));
 }
 
@@ -290,7 +286,7 @@
 }
 
 .td-sibling-nav__empty {
-  font-size: 0.8125rem;
+  font-size: var(--td-fs-sm);
   color: hsl(var(--muted-foreground-hsl));
   padding: 0.5rem;
 }
@@ -305,7 +301,7 @@
 }
 
 .td-on-page__title {
-  font-size: 0.8125rem;
+  font-size: var(--td-fs-xs);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -330,7 +326,7 @@
   border-radius: 0.25rem;
   background: none;
   font: inherit;
-  font-size: 0.875rem;
+  font-size: var(--td-fs-sm);
   text-align: left;
   color: hsl(var(--muted-foreground-hsl));
   text-decoration: none;
@@ -354,13 +350,13 @@
 
 .td-placement__title {
   margin: 0 0 0.25rem;
-  font-size: 1.125rem;
+  font-size: var(--td-fs-h5);
   font-weight: 700;
 }
 
 .td-placement__lead {
   margin: 0 0 1rem;
-  font-size: 0.875rem;
+  font-size: var(--td-fs-sm);
   color: hsl(var(--muted-foreground-hsl));
 }
 
@@ -402,7 +398,7 @@
 }
 
 .td-placement__stage-label {
-  font-size: 0.75rem;
+  font-size: var(--td-fs-xs);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: hsl(var(--muted-foreground-hsl));
@@ -442,7 +438,7 @@
   color: hsl(var(--muted-foreground-hsl));
   cursor: pointer;
   font-family: inherit;
-  font-size: 0.9375rem;
+  font-size: var(--td-fs-base);
   font-weight: 600;
   white-space: nowrap;
 }
@@ -477,7 +473,7 @@
 
 .td-example__title {
   margin: 0 0 0.5rem;
-  font-size: 1rem;
+  font-size: var(--td-fs-base);
   font-weight: 700;
 }
 
@@ -487,7 +483,7 @@
   border-radius: 0.375rem;
   padding: 0.75rem;
   overflow-x: auto;
-  font-size: 0.8125rem;
+  font-size: var(--td-fs-sm);
   font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
   white-space: pre-wrap;
 }
@@ -503,7 +499,7 @@
 
 .td-timeline__title {
   margin: 0 0 0.75rem;
-  font-size: 0.9375rem;
+  font-size: var(--td-fs-base);
   font-weight: 700;
 }
 
@@ -548,7 +544,7 @@
 }
 
 .td-timeline__summary {
-  font-size: 0.75rem;
+  font-size: var(--td-fs-xs);
   color: hsl(var(--muted-foreground-hsl));
 }
 
@@ -556,7 +552,7 @@
   background: transparent;
   border: none;
   color: hsl(var(--primary-hsl));
-  font-size: 0.8125rem;
+  font-size: var(--td-fs-sm);
   font-weight: 600;
   cursor: pointer;
   padding: 0.5rem 0 0;
@@ -581,7 +577,7 @@
 
 .td-diff-selector__title {
   margin: 0;
-  font-size: 0.9375rem;
+  font-size: var(--td-fs-base);
   font-weight: 700;
 }
 
@@ -595,7 +591,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  font-size: 0.75rem;
+  font-size: var(--td-fs-xs);
   color: hsl(var(--muted-foreground-hsl));
   flex: 1;
   min-width: 0;
@@ -619,13 +615,13 @@
 
 .td-compat__title {
   margin: 0 0 0.5rem;
-  font-size: 0.9375rem;
+  font-size: var(--td-fs-base);
   font-weight: 700;
 }
 
 .td-compat__list {
   margin: 0;
-  font-size: 0.8125rem;
+  font-size: var(--td-fs-sm);
 }
 
 .td-compat__row {
@@ -661,7 +657,7 @@
 
 .td-diff__title {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: var(--td-fs-h2);
   font-weight: 700;
 }
 
@@ -670,7 +666,7 @@
   align-items: center;
   gap: 0.5rem;
   margin: 0;
-  font-size: 0.9375rem;
+  font-size: var(--td-fs-base);
   color: hsl(var(--muted-foreground-hsl));
 }
 
@@ -689,7 +685,7 @@
 
 .td-diff-section__title {
   margin: 0 0 0.75rem;
-  font-size: 1.125rem;
+  font-size: var(--td-fs-h5);
   font-weight: 700;
 }
 
@@ -729,7 +725,7 @@
 
 .td-diff-bucket__title {
   margin: 0 0 0.5rem;
-  font-size: 0.875rem;
+  font-size: var(--td-fs-sm);
   font-weight: 700;
 }
 
@@ -748,7 +744,7 @@
 .td-diff-bucket__list {
   margin: 0;
   padding-left: 1.25rem;
-  font-size: 0.8125rem;
+  font-size: var(--td-fs-sm);
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -757,5 +753,5 @@
 .td-diff-bucket__type {
   margin-left: 0.5rem;
   color: hsl(var(--muted-foreground-hsl));
-  font-size: 0.75rem;
+  font-size: var(--td-fs-xs);
 }

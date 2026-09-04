@@ -36,11 +36,11 @@ export function HomeV1() {
 
   const coverCtas = (
     <>
-      <Link className="td-btn td-btn--primary" to="/collector">
+      <Link className="td-btn td-btn--primary td-btn--lg" to="/collector">
         {t("homeV1.hero.ctaBrowse")}
       </Link>
       <a
-        className="td-btn td-btn--outline-light"
+        className="td-btn td-btn--outline-light td-btn--lg"
         href="https://opentelemetry.io/docs/what-is-opentelemetry/"
         target="_blank"
         rel="noopener noreferrer"
@@ -52,7 +52,7 @@ export function HomeV1() {
 
   return (
     <div className="td-home">
-      <Seo />
+      <Seo title={t("homeV1.seo.title")} description={t("homeV1.seo.description")} />
       <CoverBlock
         logo={<Compass />}
         title={

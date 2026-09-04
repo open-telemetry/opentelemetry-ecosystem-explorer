@@ -34,7 +34,7 @@
 
 .td-stats-band__title {
   text-align: center;
-  font-size: 1.5rem;
+  font-size: var(--td-fs-h3);
   font-weight: 700;
   margin: 0 0 2rem;
 }
@@ -59,7 +59,7 @@
 }
 
 .td-stats-band__number {
-  font-size: 3rem;
+  font-size: var(--td-fs-stat-number);
   font-weight: 700;
   line-height: 1;
 }
@@ -78,7 +78,7 @@
 
 .td-stats-band__label {
   margin-top: 0.5rem;
-  font-size: 0.875rem;
+  font-size: var(--td-fs-sm);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   opacity: 0.9;

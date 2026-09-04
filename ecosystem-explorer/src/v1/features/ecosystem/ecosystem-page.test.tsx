@@ -168,3 +168,13 @@ describe("Ecosystem landing i18n", () => {
     }
   });
 });
+
+describe("Ecosystem landing hero CTAs", () => {
+  it("sizes every hero CTA like upstream's .btn-lg", () => {
+    useEcosystemLandingData.mockReturnValue(errorState);
+    const { container } = renderRouter(<CollectorLandingV1 />);
+    const ctas = container.querySelectorAll(".td-cover-block .td-btn");
+    expect(ctas.length).toBeGreaterThan(0);
+    for (const cta of ctas) expect(cta).toHaveClass("td-btn--lg");
+  });
+});

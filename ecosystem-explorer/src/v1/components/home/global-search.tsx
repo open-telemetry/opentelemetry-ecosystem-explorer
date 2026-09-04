@@ -64,8 +64,14 @@ const ECOSYSTEM_VARIANT: Record<SearchResultEcosystem, GlowVariant> = {
   page: "muted", // navigational chrome, low emphasis
 };
 
-function metaLine(result: SearchResult): string {
-  return [result.ecosystem, ...(result.facets ?? []), result.version].filter(Boolean).join(" · ");
+function metaLine(result: SearchResult, ecosystemLabel: (id: string) => string): string {
+  return [
+    result.ecosystem && ecosystemLabel(result.ecosystem),
+    ...(result.facets ?? []),
+    result.version,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 }
 
 export interface GlobalSearchProps {
@@ -76,6 +82,8 @@ export interface GlobalSearchProps {
 
 export function GlobalSearch({ placeholder, onSelect }: GlobalSearchProps) {
   const { t } = useTranslation("home");
+  // Display names for ecosystem ids; ids without a translation fall back to the raw id.
+  const ecosystemLabel = (id: string) => t(`homeV1.ecosystemNames.${id}`, { defaultValue: id });
   const resolvedPlaceholder =
     placeholder ?? t("homeV1.search.placeholder", { total: INTEGRATIONS_STAT_VALUE });
   const [query, setQuery] = useState<string>(() => {
@@ -320,14 +328,14 @@ export function GlobalSearch({ placeholder, onSelect }: GlobalSearchProps) {
                       <div className="td-search__result-pill td-search__result-pill--lead">
                         {r.ecosystem ? (
                           <GlowBadge variant={ECOSYSTEM_VARIANT[r.ecosystem]}>
-                            {r.ecosystem}
+                            {ecosystemLabel(r.ecosystem)}
                           </GlowBadge>
                         ) : null}
                       </div>
                       <div className="td-search__result-body">
                         <div className="td-search__result-title">{r.title}</div>
                         <div className="td-search__result-description">{r.description}</div>
-                        <div className="td-search__result-meta">{metaLine(r)}</div>
+                        <div className="td-search__result-meta">{metaLine(r, ecosystemLabel)}</div>
                       </div>
                       <div className="td-search__result-pill td-search__result-pill--trail">
                         {r.stability ? <StatusPill stability={r.stability} /> : null}

@@ -92,8 +92,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 4px 16px;
-  font-size: 14px;
+  padding: 0.25rem 1rem; /* Bootstrap `.dropdown-item` */
+  font-size: 1rem;
   cursor: pointer;
   outline: none;
   user-select: none;

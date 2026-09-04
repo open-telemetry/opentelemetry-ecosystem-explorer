@@ -28,6 +28,16 @@ html {
   scroll-padding-top: 5rem;
 }
 
+/*
+ * V1 chrome mirrors opentelemetry.io, which runs on Bootstrap's default 16px
+ * root. `rem` is root-relative, so the v1 partials' rem values only match
+ * upstream when the root itself is 16px. `main.tsx` adds `.v1-app` to <html>
+ * pre-mount when V1_REDESIGN is on; legacy keeps the 14px root above.
+ */
+html.v1-app {
+  font-size: 16px;
+}
+
 /* Tab trigger border color override */
 [role="tab"] {
   border-top-color: transparent !important;

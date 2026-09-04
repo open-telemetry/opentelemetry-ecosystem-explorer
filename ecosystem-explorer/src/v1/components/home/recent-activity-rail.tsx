@@ -94,12 +94,19 @@ export function RecentActivityRail({ limit = 5, feedUrl }: RecentActivityRailPro
               <li key={item.id} className="td-activity-item">
                 <Link to={item.href} className="td-activity-link">
                   <span className={pillClass(item.stability)}>
-                    {item.stability === "new" ? "new" : item.stability}
+                    {t(`common:stability.${item.stability}`, { defaultValue: item.stability })}
                   </span>
                   <div className="td-activity-body">
                     <div className="td-activity-title">{item.title}</div>
                     <span className="td-activity-meta">
-                      {[item.ecosystem, item.version, formatRelative(item.occurredAt, t)]
+                      {[
+                        // Feed ecosystems are free-form ids; unknown ones fall back to the raw id.
+                        t(`homeV1.ecosystemNames.${item.ecosystem}`, {
+                          defaultValue: item.ecosystem,
+                        }),
+                        item.version,
+                        formatRelative(item.occurredAt, t),
+                      ]
                         .filter(Boolean)
                         .join(" · ")}
                     </span>

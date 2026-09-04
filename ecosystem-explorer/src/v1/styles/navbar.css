@@ -7,15 +7,9 @@
  *   themes/docsy/assets/scss/td/_navbar-mobile-scroll.scss — right-alignment
  *   assets/scss/_navbar.scss                           — project overrides
  *   assets/scss/_variables_project.scss                — bg / hover colours
- *
- * Pixel-anchored at 16px-rem: the explorer sets `html { font-size: 14px }`
- * globally (see base.css), so rem-based descendants here would shrink. We
- * pin the navbar subtree at 16px so `em` resolves correctly, and use absolute
- * `px` literals for values that would otherwise need `rem`.
  */
 
 .td-navbar {
-  font-size: 16px;
   position: fixed;
   top: 0;
   left: 0;
@@ -108,14 +102,21 @@
 .td-navbar .nav-link:hover,
 .td-navbar .nav-link.active,
 .td-navbar .td-light-dark-menu__trigger:hover,
-.td-navbar .td-light-dark-menu__trigger[data-state="open"],
-.td-navbar .td-lang-menu__trigger:hover,
-.td-navbar .td-lang-menu__trigger[data-state="open"] {
+.td-navbar .td-lang-menu__trigger:hover {
   color: hsl(var(--navbar-accent-hsl));
   text-decoration: underline;
   text-decoration-thickness: 3px;
   text-decoration-color: hsl(var(--navbar-accent-hsl) / 0.75);
   text-underline-offset: 0.5em;
+}
+
+/*
+ * Open dropdown trigger — Bootstrap's `.show` only switches the colour; the
+ * underline stays a hover affordance upstream.
+ */
+.td-navbar .td-light-dark-menu__trigger[data-state="open"],
+.td-navbar .td-lang-menu__trigger[data-state="open"] {
+  color: hsl(var(--navbar-accent-hsl));
 }
 
 /* Active (non-hovered) nav-link sits tighter at 0.375em offset, matching upstream. */
