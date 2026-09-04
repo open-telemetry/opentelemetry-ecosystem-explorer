@@ -21,14 +21,27 @@ import { compareReleases, type ReleaseDiff } from "../utils/release-diff";
 /**
  * Custom hook to fetch instrumentation data for two Java Agent versions and compute the difference.
  *
+ * Loads only the modules whose content hash differs between the two versions
+ * (see `loadComparisonDetails`), so `diff.aggregateMetrics` is intentionally
+ * empty — the "all metrics" table is a whole-release rollup and is loaded
+ * separately by `useAggregateMetrics` when that tab is opened.
+ *
  * @param fromVersion The base version for comparison
  * @param toVersion The target version for comparison
+ * @param validVersions Known versions, newest first. While empty the hook stays
+ *   idle rather than comparing against an unvalidated pair — the version list
+ *   arrives a moment after first render, and starting early would throw the
+ *   whole comparison away when it lands.
+ * @param versionsLoading Whether the version list itself is still being fetched.
+ *   Distinguishes "not arrived yet" (keep waiting) from "finished loading and
+ *   still empty" (the fetch failed — stop waiting, since it isn't coming).
  * @returns An object containing the diff results, loading state, and any error encountered
  */
 export function useReleaseComparison(
   fromVersion: string,
   toVersion: string,
-  validVersions: string[] = []
+  validVersions: string[] = [],
+  versionsLoading: boolean = false
 ) {
   const [diff, setDiff] = useState<ReleaseDiff | null>(null);
   const [loading, setLoading] = useState(false);
@@ -51,15 +64,32 @@ export function useReleaseComparison(
         return;
       }
 
-      if (validVersions.length > 0) {
-        const fromIndex = validVersions.indexOf(fromVersion);
-        const toIndex = validVersions.indexOf(toVersion);
-        if (fromIndex === -1 || toIndex === -1 || fromIndex <= toIndex) {
-          setDiff(null);
-          setLoading(false);
+      // Stay idle until the version list is known. It lands one request after
+      // first render; comparing before it arrives would start a full load that
+      // the very next render discards, doubling the work on every page open.
+      if (validVersions.length === 0) {
+        setDiff(null);
+        if (versionsLoading) {
+          // Genuinely still waiting on the version list - keep spinning.
+          setLoading(true);
           setError(null);
-          return;
+        } else {
+          // The version list finished loading (or failed) and is still
+          // empty, so it isn't coming - stop waiting instead of spinning
+          // forever on a request that will never resolve.
+          setLoading(false);
+          setError(new Error("Failed to load the list of available versions."));
         }
+        return;
+      }
+
+      const fromIndex = validVersions.indexOf(fromVersion);
+      const toIndex = validVersions.indexOf(toVersion);
+      if (fromIndex === -1 || toIndex === -1 || fromIndex <= toIndex) {
+        setDiff(null);
+        setLoading(false);
+        setError(null);
+        return;
       }
 
       setLoading(true);
@@ -67,10 +97,10 @@ export function useReleaseComparison(
       setDiff(null); // Clear previous diff to avoid showing stale data
 
       try {
-        const [fromData, toData] = await Promise.all([
-          javaagentData.loadAllInstrumentationDetails(fromVersion),
-          javaagentData.loadAllInstrumentationDetails(toVersion),
-        ]);
+        const { fromData, toData } = await javaagentData.loadComparisonDetails(
+          fromVersion,
+          toVersion
+        );
 
         if (cancelled) return;
 
@@ -78,7 +108,9 @@ export function useReleaseComparison(
           throw new Error("Failed to load instrumentation data for one or both versions.");
         }
 
-        const result = compareReleases(fromVersion, toVersion, fromData, toData);
+        const result = compareReleases(fromVersion, toVersion, fromData, toData, {
+          includeAggregateMetrics: false,
+        });
         setDiff(result);
         setLoading(false);
       } catch (err) {
@@ -95,7 +127,7 @@ export function useReleaseComparison(
     return () => {
       cancelled = true;
     };
-  }, [fromVersion, toVersion, validVersions]);
+  }, [fromVersion, toVersion, validVersions, versionsLoading]);
 
   return { diff, loading, error };
 }

@@ -23,6 +23,7 @@ import { Seo } from "@/components/seo/seo";
 import { BackButton } from "@/components/ui/back-button";
 import { useVersions } from "@/hooks/use-javaagent-data";
 import { useReleaseComparison } from "./hooks/use-release-comparison";
+import { useAggregateMetrics } from "./hooks/use-aggregate-metrics";
 import { ReleaseVersionSelector } from "./components/release-comparison/release-version-selector";
 import { InstrumentationDiffCard } from "./components/release-comparison/instrumentation-diff-card";
 import {
@@ -94,7 +95,15 @@ export function JavaReleaseComparisonPage() {
     diff,
     loading: diffLoading,
     error,
-  } = useReleaseComparison(fromVersion, toVersion, validVersionStrings);
+  } = useReleaseComparison(fromVersion, toVersion, validVersionStrings, versionsLoading);
+
+  // The metrics tab is a whole-release rollup and costs far more to load than
+  // the diff, so it stays unloaded until the reader opens that tab.
+  const {
+    metrics: aggregateMetrics,
+    loading: metricsLoading,
+    error: metricsError,
+  } = useAggregateMetrics(toVersion, activeTab === "metrics" && !!diff);
 
   const handleFromVersionChange = (version: string) => {
     setSearchParams((prev) => {
@@ -481,57 +490,83 @@ export function JavaReleaseComparisonPage() {
                     </h2>
                     <div className="bg-muted/50 text-foreground/70 rounded-full px-4 py-1 text-xs font-bold">
                       {t("releaseComparison.totalMetrics", {
-                        count: diff.aggregateMetrics.length,
+                        count: aggregateMetrics?.length ?? 0,
                         version: toVersion,
                       })}
                     </div>
                   </div>
 
-                  <div className="border-border/30 overflow-hidden rounded-2xl border">
-                    <table className="w-full border-collapse text-left">
-                      <thead>
-                        <tr className="bg-muted/30 border-border/30 border-b">
-                          <th className="p-4 text-xs font-bold tracking-widest uppercase">
-                            {t("releaseComparison.metricName")}
-                          </th>
-                          <th className="p-4 text-xs font-bold tracking-widest uppercase">
-                            {t("releaseComparison.metricDescription")}
-                          </th>
-                          <th className="p-4 text-xs font-bold tracking-widest uppercase">
-                            {t("releaseComparison.emittedBy")}
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {diff.aggregateMetrics.map((metric, index) => (
-                          <tr
-                            key={metric.name}
-                            className={`border-border/10 hover:bg-muted/50 border-b transition-colors ${
-                              index % 2 === 1 ? "bg-muted/40" : ""
-                            }`}
-                          >
-                            <td className="p-4">
-                              <code className="text-primary font-mono text-sm font-bold">
-                                {metric.name}
-                              </code>
-                            </td>
-                            <td className="text-muted-foreground p-4 text-sm">
-                              {metric.description}
-                            </td>
-                            <td className="p-4">
-                              <div className="flex flex-wrap gap-2">
-                                {metric.emittedBy.map((instr) => (
-                                  <GlowBadge key={instr} variant="info">
-                                    {instr}
-                                  </GlowBadge>
-                                ))}
-                              </div>
-                            </td>
+                  {metricsLoading && (
+                    <div className="flex min-h-[300px] items-center justify-center">
+                      <div className="flex flex-col items-center gap-4">
+                        <Loader2 className="text-primary h-10 w-10 animate-spin" />
+                        <p className="text-muted-foreground text-sm">
+                          {t("releaseComparison.loadingMetrics", { version: toVersion })}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {metricsError && (
+                    <div className="rounded-lg border border-red-400/30 bg-red-400/10 p-6 text-red-400">
+                      <div className="flex items-center gap-3">
+                        <AlertCircle className="h-5 w-5" />
+                        <p className="font-medium">
+                          {t("releaseComparison.errorLoadingMetrics", {
+                            message: metricsError.message,
+                          })}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {aggregateMetrics && !metricsLoading && !metricsError && (
+                    <div className="border-border/30 overflow-hidden rounded-2xl border">
+                      <table className="w-full border-collapse text-left">
+                        <thead>
+                          <tr className="bg-muted/30 border-border/30 border-b">
+                            <th className="p-4 text-xs font-bold tracking-widest uppercase">
+                              {t("releaseComparison.metricName")}
+                            </th>
+                            <th className="p-4 text-xs font-bold tracking-widest uppercase">
+                              {t("releaseComparison.metricDescription")}
+                            </th>
+                            <th className="p-4 text-xs font-bold tracking-widest uppercase">
+                              {t("releaseComparison.emittedBy")}
+                            </th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                        </thead>
+                        <tbody>
+                          {aggregateMetrics.map((metric, index) => (
+                            <tr
+                              key={metric.name}
+                              className={`border-border/10 hover:bg-muted/50 border-b transition-colors ${
+                                index % 2 === 1 ? "bg-muted/40" : ""
+                              }`}
+                            >
+                              <td className="p-4">
+                                <code className="text-primary font-mono text-sm font-bold">
+                                  {metric.name}
+                                </code>
+                              </td>
+                              <td className="text-muted-foreground p-4 text-sm">
+                                {metric.description}
+                              </td>
+                              <td className="p-4">
+                                <div className="flex flex-wrap gap-2">
+                                  {metric.emittedBy.map((instr) => (
+                                    <GlowBadge key={instr} variant="info">
+                                      {instr}
+                                    </GlowBadge>
+                                  ))}
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
