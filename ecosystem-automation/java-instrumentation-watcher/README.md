@@ -17,8 +17,9 @@ Process:
 - Download the `instrumentation-list.yaml` file for the release
 - Parse and normalize the data using version-specific parsers
 - Create or update versioned snapshots of instrumentation metadata in YAML format
-- Discover and fetch each instrumentation's upstream `library/README.md` and store it in the
-  version's `library_readmes/` directory (content-addressed)
+- Discover and fetch each instrumentation's upstream `library/README.md` and store it
+  content-addressed in the shared `ecosystem-registry/java/javaagent/library_readmes/` directory;
+  each library entry in `instrumentation.yaml` carries a `readme:` field pointing at the filename
 - For releases, discover and fetch JMX weaver model YAML files from
   `instrumentation/jmx-metrics/model/*.yaml`, store them content-addressed once in a shared `jmx/`
   directory, and write a per-release `jmx-models.yaml` index
@@ -26,8 +27,10 @@ Process:
 
 It maintains a versioned inventory of instrumentation snapshots in the
 `ecosystem-registry/java/javaagent` directory. Each version directory contains the aggregated
-`instrumentation.yaml` plus a `library_readmes/` subdirectory of content-addressed README markdown
-files (one per instrumentation that ships a README upstream). Releases that include JMX weaver
+`instrumentation.yaml` (with `readme:` refs for each library that ships a README upstream). A shared
+`library_readmes/` directory at the root of the registry holds all README files content-addressed
+across every version. A `readme-sync-state.json` file records which versions have been fully synced
+and tracks per-library fetch-failure counts for the retry logic. Releases that include JMX weaver
 models also contain `jmx-models.yaml`, which points at shared content-addressed files in
 `ecosystem-registry/java/javaagent/jmx/`.
 
