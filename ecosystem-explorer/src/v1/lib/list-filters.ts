@@ -38,7 +38,7 @@ import type { Stability } from "@/types/collector";
 export type Signal = "traces" | "metrics" | "logs" | "baggage";
 /** Stability facet vocabulary — the canonical six OTel levels from the registry types. */
 export type StabilityFacet = Stability;
-export type Distribution = "core" | "contrib";
+export type Distribution = string;
 export type SortMode = "name" | "updated" | "stability";
 export type DensityMode = "cards" | "compact" | "table";
 
@@ -86,7 +86,13 @@ export const STABILITIES: readonly StabilityFacet[] = [
   "deprecated",
   "unmaintained",
 ];
-export const DISTRIBUTIONS: readonly Distribution[] = ["core", "contrib"];
+/** @deprecated `Distribution` is now an open string type. This list covers the four
+ * distributions shipped with the official releases and is kept for backwards
+ * compatibility with callers that render a static list of checkbox options (e.g.
+ * the facet panel). URL parsing and row-level filtering are already open-ended
+ * via `parseCsvOpen`, so any distribution value in the index is filterable from
+ * the URL even if it is not listed here. */
+export const DISTRIBUTIONS: readonly Distribution[] = ["core", "contrib", "k8s", "otlp"];
 const SORTS: readonly SortMode[] = ["name", "updated", "stability"];
 const DENSITIES: readonly DensityMode[] = ["cards", "compact", "table"];
 
@@ -105,6 +111,19 @@ function parseCsv<T extends string>(raw: readonly string[], allowed: readonly T[
     }
   }
   // Sort to match `serializeFilters` so parse → serialize → parse round-trips.
+  return Array.from(seen).sort();
+}
+
+// Like `parseCsv` but without an allowlist — used for open-ended facets like
+// `distribution` where new values appear in the index without a code change.
+function parseCsvOpen(raw: readonly string[]): string[] {
+  const seen = new Set<string>();
+  for (const part of raw) {
+    for (const token of part.split(",")) {
+      const trimmed = token.trim().toLowerCase();
+      if (trimmed) seen.add(trimmed);
+    }
+  }
   return Array.from(seen).sort();
 }
 
@@ -130,7 +149,7 @@ export function parseFilters(input: string | URLSearchParams): ListFilters {
     types: parseCsv(params.getAll("type"), TYPES),
     signals: parseCsv(params.getAll("signal"), SIGNALS),
     stabilities: parseCsv(params.getAll("stability"), STABILITIES),
-    distributions: parseCsv(params.getAll("distribution"), DISTRIBUTIONS),
+    distributions: parseCsvOpen(params.getAll("distribution")),
     version: params.get("version")?.trim() || null,
     q: params.get("q")?.trim() ?? "",
     sort: parseEnum(params.get("sort"), SORTS, "name"),

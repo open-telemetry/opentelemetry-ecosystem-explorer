@@ -63,7 +63,9 @@
       "distribution": {
         "options": {
           "core": "Core",
-          "contrib": "Contrib"
+          "contrib": "Contrib",
+          "k8s": "Kubernetes",
+          "otlp": "OTLP"
         }
       }
     }
@@ -101,7 +103,9 @@
       "label": "Distribución",
       "all": "Todas las distribuciones",
       "core": "Core",
-      "contrib": "Contrib"
+      "contrib": "Contrib",
+      "k8s": "Kubernetes",
+      "otlp": "OTLP"
     },
     "stability": {
       "label": "Estabilidad",
@@ -242,6 +246,10 @@
         "name": "OpenTelemetry Operator para Kubernetes",
         "desc": "El Operador oficial de Kubernetes diseñado para gestionar y proveer el OpenTelemetry Collector."
       },
+      "otlp": {
+        "name": "OpenTelemetry Collector OTLP",
+        "desc": "Distribución ultra mínima que contiene solo receptores y exportadores OTLP, diseñada para un proxy ligero."
+      },
       "generic": {
         "desc": "Una distribución especializada de OpenTelemetry."
       }
@@ -318,7 +326,20 @@
         },
         "contrib": {
           "description": "Componentes aportados por la comunidad. Pueden tener distintos niveles de estabilidad. Mayor cobertura del ecosistema.",
-          "button": "Ver componentes Contrib"
+          "button": "Ver componentes Contrib",
+          "notice": "Algunos componentes contrib son altamente experimentales. Por favor, revise sus niveles de estabilidad cuidadosamente antes de implementarlos en producción."
+        },
+        "k8s": {
+          "description": "Distribución optimizada para Kubernetes que contiene componentes para monitoreo de contenedores, nodos y clústeres.",
+          "button": "Ver componentes de Kubernetes"
+        },
+        "otlp": {
+          "description": "Distribución ultra mínima que contiene solo receptores y exportadores OTLP, diseñada para un proxy ligero.",
+          "button": "Ver componentes OTLP"
+        },
+        "generic": {
+          "desc": "Una distribución de OpenTelemetry Collector gestionada por la comunidad.",
+          "button": "Ver componentes {{distribution}}"
         }
       }
     },
