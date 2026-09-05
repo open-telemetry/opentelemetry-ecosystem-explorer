@@ -1,6 +1,22 @@
 {
   "components": [
     {
+      "component_hash": "29afaaa391d6",
+      "deprecated_in_version": "0.160.0",
+      "description": "The Dynamic Sampling Processor performs adaptive trace sampling using first-match rules-based routing to dynamic samplers. Each sampler produces a known sample rate which is encoded as `ot=th` in W3C TraceState for correct downstream metric weighting.",
+      "display_name": "Dynamic Sampling Processor",
+      "distribution": "contrib",
+      "has_readme": true,
+      "id": "contrib-dynamicsamplingprocessor",
+      "last_version": "0.159.0",
+      "name": "dynamicsamplingprocessor",
+      "signals": [
+        "traces"
+      ],
+      "stability": "development",
+      "type": "processor"
+    },
+    {
       "component_hash": "f6e970092904",
       "deprecated_in_version": "0.157.0",
       "description": null,

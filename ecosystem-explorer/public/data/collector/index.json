@@ -843,6 +843,7 @@
       "name": "opensearchexporter",
       "signals": [
         "traces",
+        "metrics",
         "logs"
       ],
       "stability": "alpha",
@@ -1633,6 +1634,19 @@
       "type": "extension"
     },
     {
+      "description": "The Adaptive Tail Sampling Processor performs adaptive trace sampling using first-match rules-based routing to adaptive samplers. Each sampler produces a known sample rate which is encoded as `ot=th` in W3C TraceState for correct downstream metric weighting.",
+      "display_name": "Adaptive Tail Sampling Processor",
+      "distribution": "contrib",
+      "has_readme": true,
+      "id": "contrib-adaptivetailsamplingprocessor",
+      "name": "adaptivetailsamplingprocessor",
+      "signals": [
+        "traces"
+      ],
+      "stability": "development",
+      "type": "processor"
+    },
+    {
       "description": null,
       "display_name": "Attributes Processor",
       "distribution": "contrib",
@@ -1739,19 +1753,6 @@
         "logs"
       ],
       "stability": "alpha",
-      "type": "processor"
-    },
-    {
-      "description": "The Dynamic Sampling Processor performs adaptive trace sampling using first-match rules-based routing to dynamic samplers. Each sampler produces a known sample rate which is encoded as `ot=th` in W3C TraceState for correct downstream metric weighting.",
-      "display_name": "Dynamic Sampling Processor",
-      "distribution": "contrib",
-      "has_readme": true,
-      "id": "contrib-dynamicsamplingprocessor",
-      "name": "dynamicsamplingprocessor",
-      "signals": [
-        "traces"
-      ],
-      "stability": "development",
       "type": "processor"
     },
     {
@@ -2043,6 +2044,19 @@
     },
     {
       "description": null,
+      "display_name": null,
+      "distribution": "contrib",
+      "has_readme": true,
+      "id": "contrib-signingprocessor",
+      "name": "signingprocessor",
+      "signals": [
+        "logs"
+      ],
+      "stability": "development",
+      "type": "processor"
+    },
+    {
+      "description": null,
       "display_name": "Span Processor",
       "distribution": "contrib",
       "has_readme": true,
@@ -2322,6 +2336,7 @@
       "id": "contrib-azurefunctionsreceiver",
       "name": "azurefunctionsreceiver",
       "signals": [
+        "metrics",
         "logs"
       ],
       "stability": "development",

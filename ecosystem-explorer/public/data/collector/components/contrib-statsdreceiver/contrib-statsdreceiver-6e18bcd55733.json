@@ -1,0 +1,51 @@
+{
+  "description": "StatsD receiver for ingesting StatsD messages(https://github.com/statsd/statsd/blob/master/docs/metric_types.md) into the OpenTelemetry Collector. Note: This receiver does not support horizontally scaled collector deployments. It is intended to run in agent mode, where a single collector instance receives StatsD input.",
+  "display_name": "StatsD Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "feature_gates": [
+    {
+      "description": "When enabled, changes the default value of is_monotonic_counter to true, so that statsd counters are treated as monotonic sums by default. Explicitly setting is_monotonic_counter in the receiver config always takes precedence over this feature gate.",
+      "from_version": "v0.159.0",
+      "id": "receiver.statsd.monotonicCounterDefault",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/14956",
+      "stage": "alpha"
+    }
+  ],
+  "id": "contrib-statsdreceiver",
+  "markdown_hash": "7ce0ad1bb678",
+  "name": "statsdreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "jmacd",
+        "dmitryax"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "telemetry": {
+    "metrics": {
+      "receiver_received_statsd_metrics": {
+        "description": "Number of statsd metrics received.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      }
+    }
+  },
+  "type": "receiver"
+}
