@@ -7598,6 +7598,17 @@ components:
           value_type: int
         stability: development
         unit: '{pod}'
+      k8s.statefulset.pod.available:
+        description: The number of available pods per stateful set (the `status.availableReplicas`
+          field). A pod is available once it has been `Ready` for at least `spec.minReadySeconds`.
+        enabled: false
+        entity: k8s.statefulset
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: false
+          value_type: int
+        unit: '{pod}'
       k8s.statefulset.ready_pods:
         description: Number of pods created by the stateful set that have the `Ready`
           condition
@@ -20391,14 +20402,6 @@ components:
         - waiting
         requirement_level: recommended
         type: string
-      server.address:
-        description: The network address of the server hosting the database.
-        requirement_level: recommended
-        type: string
-      server.port:
-        description: The port number on which the server is listening.
-        requirement_level: recommended
-        type: int
       sqlserver.access.scan.type:
         description: The type of access method scan being performed.
         enum:
@@ -20826,8 +20829,6 @@ components:
         - db.namespace
         - db.query.text
         - db.system.name
-        - server.address
-        - server.port
         - sqlserver.execution_count
         - sqlserver.procedure_execution_count
         - sqlserver.procedure_id
@@ -20846,13 +20847,6 @@ components:
         - sqlserver.total_worker_time
         description: top query
         enabled: false
-    feature_gates:
-    - description: When enabled, the server.address and server.port resource attributes
-        are removed from metrics.
-      from_version: v0.129.0
-      id: receiver.sqlserver.RemoveServerResourceAttribute
-      reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/40141
-      stage: alpha
     metrics:
       sqlserver.access.scan.rate:
         attributes:
@@ -21912,11 +21906,11 @@ components:
         type: string
       server.address:
         description: Name of the database host.
-        enabled: false
+        enabled: true
         type: string
       server.port:
         description: Server port number.
-        enabled: false
+        enabled: true
         type: int
       service.instance.id:
         description: A unique identifier of the SQL Server instance. When using direct
@@ -22330,6 +22324,10 @@ components:
         description: The commonName in the subject of the certificate.
         requirement_level: recommended
         type: string
+      tlscheck.x509.fingerprint:
+        description: The SHA256 fingerprint of the certificate.
+        requirement_level: opt_in
+        type: string
       tlscheck.x509.issuer:
         description: The entity that issued the certificate.
         requirement_level: recommended
@@ -22345,6 +22343,7 @@ components:
       tlscheck.time_left:
         attributes:
         - tlscheck.x509.cn
+        - tlscheck.x509.fingerprint
         - tlscheck.x509.issuer
         - tlscheck.x509.san
         description: Time in seconds until certificate expiry, as specified by `NotAfter`

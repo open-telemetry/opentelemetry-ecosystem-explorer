@@ -1675,6 +1675,7 @@ components:
       codeowners:
         active:
         - dmitryax
+        - himanshu130700
       distributions:
       - contrib
       - k8s
