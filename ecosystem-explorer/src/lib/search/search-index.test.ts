@@ -75,14 +75,14 @@ describe("search (orchestration)", () => {
     const javaAgentResults = await search("kafka");
     expect(javaAgentResults[0]).toMatchObject({
       title: "Kafka Client",
-      path: "/java-agent/instrumentation/1.2.3/kafka-client",
+      path: "/java-agent/instrumentation/kafka-client?version=1.2.3",
       type: "item",
       ecosystem: "java-agent",
       version: "1.2.3",
     });
 
     // The instrumentation path itself is searchable via its keywords.
-    const pathQuery = "/java-agent/instrumentation/1.2.3/kafka-client";
+    const pathQuery = "/java-agent/instrumentation/kafka-client?version=1.2.3";
     const pathResults = await search(pathQuery);
     expect(pathResults[0]).toMatchObject({ title: "Kafka Client", path: pathQuery, type: "item" });
 

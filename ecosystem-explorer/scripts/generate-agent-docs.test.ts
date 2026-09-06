@@ -14,18 +14,26 @@
  * limitations under the License.
  */
 import { describe, it, expect } from "vitest";
-import { readFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 // @ts-expect-error -- untyped build script, imported for its pure page builders.
 import {
   buildJavaInstrumentationPage,
   buildCollectorComponentPage,
+  writeLatestJsonAliases,
 } from "./generate-agent-docs.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const dataDir = resolve(__dirname, "../public/data");
+const publicDir = resolve(__dirname, "../public");
+const dataDir = resolve(publicDir, "data");
 const readJson = (p: string) => JSON.parse(readFileSync(p, "utf-8"));
+
+const latestVersion = (ecosystem: string): string => {
+  const { versions } = readJson(resolve(dataDir, ecosystem, "versions-index.json"));
+  return versions.find((v: { is_latest: boolean }) => v.is_latest).version;
+};
 
 describe("agent docs: Java telemetry rendering", () => {
   // Mirrors Apache Dubbo: two `when` groups whose metrics are mutually
@@ -165,11 +173,6 @@ describe("agent docs: Collector metric rendering", () => {
  * metrics at build time.
  */
 describe("agent docs: fidelity against the registry corpus", () => {
-  const latestVersion = (ecosystem: string): string => {
-    const { versions } = readJson(resolve(dataDir, ecosystem, "versions-index.json"));
-    return versions.find((v: { is_latest: boolean }) => v.is_latest).version;
-  };
-
   it("preserves every Java metric name, span kind, and `when` condition", () => {
     const version = latestVersion("javaagent");
     const manifest = readJson(resolve(dataDir, `javaagent/versions/${version}-index.json`));
@@ -213,5 +216,77 @@ describe("agent docs: fidelity against the registry corpus", () => {
       }
     }
     expect(missing).toEqual([]);
+  });
+});
+
+describe("agent docs: stable JSON alias", () => {
+  it("links the latest.json alias alongside the pinned hashed URL (Collector)", () => {
+    const md = buildCollectorComponentPage(
+      { id: "kafkareceiver", name: "kafkareceiver", distribution: "contrib" },
+      "/data/collector/components/kafkareceiver/kafkareceiver-abc123def456.json",
+      "/data/collector/components/kafkareceiver/latest.json"
+    );
+    expect(md).toContain(
+      "- **JSON (latest)**: [/data/collector/components/kafkareceiver/latest.json]"
+    );
+    expect(md).toContain(
+      "- **JSON (pinned)**: [/data/collector/components/kafkareceiver/kafkareceiver-abc123def456.json]"
+    );
+  });
+
+  it("links the latest.json alias alongside the pinned hashed URL (Java agent)", () => {
+    const md = buildJavaInstrumentationPage(
+      { name: "apache-dubbo-2.7" },
+      "/data/javaagent/instrumentations/apache-dubbo-2.7/apache-dubbo-2.7-abc123def456.json",
+      "/data/javaagent/instrumentations/apache-dubbo-2.7/latest.json"
+    );
+    expect(md).toContain(
+      "- **JSON (latest)**: [/data/javaagent/instrumentations/apache-dubbo-2.7/latest.json]"
+    );
+    expect(md).toContain(
+      "- **JSON (pinned)**: [/data/javaagent/instrumentations/apache-dubbo-2.7/"
+    );
+  });
+
+  it("omits the alias line when no alias is supplied", () => {
+    const md = buildCollectorComponentPage({ name: "x", distribution: "core" }, "/data/x.json");
+    expect(md).not.toContain("**JSON (latest)**");
+    expect(md).toContain("- **JSON (pinned)**: [/data/x.json](/data/x.json)");
+  });
+
+  // The alias is what makes a component readable in one request; if the copy
+  // silently produced nothing, only a manual `curl` against a deploy would notice.
+  it("writes a latest.json copy of every latest-release component", async () => {
+    const outDir = mkdtempSync(resolve(tmpdir(), "agent-docs-aliases-"));
+    try {
+      await writeLatestJsonAliases(publicDir, outDir);
+
+      for (const [ecosystem, contentDir, sections] of [
+        ["collector", "components", ["components"]],
+        ["javaagent", "instrumentations", ["instrumentations", "custom_instrumentations"]],
+      ] as const) {
+        const version = latestVersion(ecosystem);
+        const manifest = readJson(resolve(dataDir, `${ecosystem}/versions/${version}-index.json`));
+        const hashes: Record<string, string> = Object.assign(
+          {},
+          ...sections.map((section) => manifest[section] ?? {})
+        );
+        expect(Object.keys(hashes).length).toBeGreaterThan(0);
+
+        for (const [id, hash] of Object.entries(hashes)) {
+          const alias = readFileSync(
+            resolve(outDir, `data/${ecosystem}/${contentDir}/${id}/latest.json`),
+            "utf-8"
+          );
+          const pinned = readFileSync(
+            resolve(dataDir, `${ecosystem}/${contentDir}/${id}/${id}-${hash}.json`),
+            "utf-8"
+          );
+          expect(alias).toBe(pinned);
+        }
+      }
+    } finally {
+      rmSync(outDir, { recursive: true, force: true });
+    }
   });
 });

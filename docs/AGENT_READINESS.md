@@ -23,6 +23,20 @@ hashed to ensure consistency.
 - **Collector Components**: `/data/collector/components/{id}/{id}-{hash}.json`
 - **Java Agent Instrumentations**: `/data/javaagent/instrumentations/{id}/{id}-{hash}.json`
 
+### Stable `latest.json` alias
+
+The hashed URL above is immutable but unguessable: reaching one costs three requests
+(`versions-index.json` → the version manifest → the hashed file), and it changes on every rebuild.
+Each component directory therefore also carries a `latest.json` copy of its current-release file:
+
+- **Collector Components**: `/data/collector/components/{id}/latest.json`
+- **Java Agent Instrumentations**: `/data/javaagent/instrumentations/{id}/latest.json`
+
+An agent that knows only the component id reads it in one request. The alias is written into `dist`
+by `generate-agent-docs.mjs` — not into `public/data`, which is the committed content-addressed
+store owned by `explorer-db-builder`. Use the hashed URL when a response must be pinned to a
+specific build.
+
 ### JSON Schemas
 
 All structured metadata follows strict JSON schemas:
@@ -62,7 +76,8 @@ Agents are instructed via `llms.txt` to follow these patterns:
 
 - Use `/agent/collector/index.md` as the primary index for collector components.
 - Use `/agent/javaagent/index.md` as the primary index for javaagent instrumentations.
-- Navigate to specific component metadata using the versioned JSON URLs found in these indices.
+- Navigate to specific component metadata using the versioned JSON URLs found in these indices, or
+  construct `/data/{ecosystem}/{content-dir}/{id}/latest.json` directly from a component id.
 
 ### Per-page Markdown and content negotiation
 

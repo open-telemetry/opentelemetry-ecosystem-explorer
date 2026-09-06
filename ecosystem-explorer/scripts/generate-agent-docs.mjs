@@ -49,7 +49,7 @@ async function buildCollectorIndex(components, publicPath) {
     componentHashes = manifest.components || {};
   }
 
-  let md = `> For the complete documentation index, see [llms.txt](/llms.txt)\n\n# Collector Components\n\n<!-- llms-txt-link: /llms.txt -->\n\nThis is an index of all OpenTelemetry Collector components.\nFor full configuration details, please refer to the raw JSON data.\n\n**JSON Schema**: [collector-component.schema.json](/schemas/collector-component.schema.json)\n\n## Components\n\n| Display Name | ID | Stability | JSON Data URL |\n| --- | --- | --- | --- |\n`;
+  let md = `> For the complete documentation index, see [llms.txt](/llms.txt)\n\n# Collector Components\n\n<!-- llms-txt-link: /llms.txt -->\n\nThis is an index of all OpenTelemetry Collector components.\nFor full configuration details, please refer to the raw JSON data.\n\n**JSON Schema**: [collector-component.schema.json](/schemas/collector-component.schema.json)\n\nThe JSON Data URLs below are content-addressed and change whenever a component changes. Every component also answers at the stable alias \`/data/collector/components/{id}/latest.json\`, which always serves the current release.\n\n## Components\n\n| Display Name | ID | Stability | JSON Data URL |\n| --- | --- | --- | --- |\n`;
 
   for (const comp of components) {
     const displayName = comp.display_name || comp.name || "Unknown";
@@ -86,7 +86,7 @@ function buildCollectorVersions(versions) {
  */
 async function buildJavaAgentIndex(versions, publicPath) {
   const latestVersion = versions.find((v) => v.is_latest)?.version;
-  let md = `> For the complete documentation index, see [llms.txt](/llms.txt)\n\n# Java Agent Instrumentations\n\n<!-- llms-txt-link: /llms.txt -->\n\nThis is an index of all OpenTelemetry Java Agent instrumentations.\nFor full configuration details, please refer to the raw JSON data.\n\n**JSON Schema**: [javaagent-instrumentation.schema.json](/schemas/javaagent-instrumentation.schema.json)\n\n## Components\n\n| Display Name | ID | JSON Data URL |\n| --- | --- | --- |\n`;
+  let md = `> For the complete documentation index, see [llms.txt](/llms.txt)\n\n# Java Agent Instrumentations\n\n<!-- llms-txt-link: /llms.txt -->\n\nThis is an index of all OpenTelemetry Java Agent instrumentations.\nFor full configuration details, please refer to the raw JSON data.\n\n**JSON Schema**: [javaagent-instrumentation.schema.json](/schemas/javaagent-instrumentation.schema.json)\n\nThe JSON Data URLs below are content-addressed and change whenever an instrumentation changes. Every instrumentation also answers at the stable alias \`/data/javaagent/instrumentations/{id}/latest.json\`, which always serves the current release.\n\n## Components\n\n| Display Name | ID | JSON Data URL |\n| --- | --- | --- |\n`;
 
   if (latestVersion) {
     const manifestRaw = await fs.readFile(
@@ -176,6 +176,11 @@ To help agents parse our JSON data, we provide the following JSON Schemas:
 ## Navigation Patterns
 
 Agents can fetch specific component data using the following URL patterns:
+
+- **Collector Components**: \`/data/collector/components/{id}/latest.json\`
+- **Java Agent Instrumentations**: \`/data/javaagent/instrumentations/{id}/latest.json\`
+
+\`latest.json\` always serves the current release, so \`{id}\` is the only thing you need to know. To pin a specific build instead, use the content-addressed sibling, which never changes once published:
 
 - **Collector Components**: \`/data/collector/components/{id}/{id}-{hash}.json\`
 - **Java Agent Instrumentations**: \`/data/javaagent/instrumentations/{id}/{id}-{hash}.json\`
@@ -292,7 +297,7 @@ function collectorMetricsTable(heading, metrics, attributeDefs) {
  * real, parseable content (name, stability, attributes) at a stable URL instead
  * of the client-rendered SPA shell.
  */
-export function buildCollectorComponentPage(component, jsonUrl) {
+export function buildCollectorComponentPage(component, jsonUrl, latestJsonUrl) {
   const label = component.display_name || component.name || component.id;
   const pageUrl = `/collector/components/${component.distribution}/${component.name}`;
   const lines = [
@@ -346,10 +351,15 @@ export function buildCollectorComponentPage(component, jsonUrl) {
     lines.push("");
   }
 
+  lines.push("## Data", "");
+  if (latestJsonUrl) {
+    // Stable alias for the current release. Constructible from the component name
+    // alone, so an agent does not have to walk versions-index -> version manifest
+    // to resolve the content hash.
+    lines.push(`- **JSON (latest)**: [${latestJsonUrl}](${latestJsonUrl})`);
+  }
   lines.push(
-    "## Data",
-    "",
-    `- **JSON**: [${jsonUrl}](${jsonUrl})`,
+    `- **JSON (pinned)**: [${jsonUrl}](${jsonUrl})`,
     `- **Explore**: [${pageUrl}](${pageUrl})`,
     ""
   );
@@ -359,7 +369,7 @@ export function buildCollectorComponentPage(component, jsonUrl) {
 /**
  * Builds a per-instrumentation Markdown page for a Java agent instrumentation.
  */
-export function buildJavaInstrumentationPage(instr, jsonUrl) {
+export function buildJavaInstrumentationPage(instr, jsonUrl, latestJsonUrl) {
   const label = instr.display_name || instr.name;
   const pageUrl = `/java-agent/instrumentation/${instr.name}`;
   const lines = [
@@ -465,10 +475,15 @@ export function buildJavaInstrumentationPage(instr, jsonUrl) {
     lines.push("");
   }
 
+  lines.push("## Data", "");
+  if (latestJsonUrl) {
+    // Stable alias for the current release. Constructible from the component name
+    // alone, so an agent does not have to walk versions-index -> version manifest
+    // to resolve the content hash.
+    lines.push(`- **JSON (latest)**: [${latestJsonUrl}](${latestJsonUrl})`);
+  }
   lines.push(
-    "## Data",
-    "",
-    `- **JSON**: [${jsonUrl}](${jsonUrl})`,
+    `- **JSON (pinned)**: [${jsonUrl}](${jsonUrl})`,
     `- **Explore**: [${pageUrl}](${pageUrl})`,
     ""
   );
@@ -493,6 +508,94 @@ ${description}
 - [All Java agent instrumentations](/agent/javaagent/index.md)
 - [Full documentation index](/llms.txt)
 `;
+}
+
+/**
+ * The content-addressed stores under `/data` (`{id}/{id}-{hash}.json`) have no
+ * URL an agent can construct from a component name: reaching one file costs a
+ * versions index, then a version manifest, then the hashed file, and the URL
+ * changes on every rebuild. These two entries describe the stores so the alias
+ * below can be emitted for both.
+ */
+const DATA_STORES = [
+  {
+    ecosystem: "collector",
+    contentDir: "components",
+    manifestSections: ["components"],
+  },
+  {
+    ecosystem: "javaagent",
+    contentDir: "instrumentations",
+    manifestSections: ["instrumentations", "custom_instrumentations"],
+  },
+];
+
+/** Stable alias URL for a component's latest-release JSON. */
+function latestJsonUrl(ecosystem, contentDir, id) {
+  return `/data/${ecosystem}/${contentDir}/${id}/latest.json`;
+}
+
+/**
+ * Reads a store's latest release version and its `{id: hash}` manifest.
+ * Returns `null` (with a warning) when no version is flagged latest.
+ */
+async function readLatestManifest(publicPath, { ecosystem, manifestSections }) {
+  const { versions } = JSON.parse(
+    await fs.readFile(path.join(publicPath, `data/${ecosystem}/versions-index.json`), "utf-8")
+  );
+  const latestVersion = versions.find((v) => v.is_latest)?.version;
+  if (!latestVersion) {
+    console.warn(`[WARN] No latest ${ecosystem} version; skipping latest.json aliases.`);
+    return null;
+  }
+
+  const manifest = JSON.parse(
+    await fs.readFile(
+      path.join(publicPath, `data/${ecosystem}/versions/${latestVersion}-index.json`),
+      "utf-8"
+    )
+  );
+  const hashes = Object.assign({}, ...manifestSections.map((section) => manifest[section] || {}));
+  return { latestVersion, hashes };
+}
+
+/**
+ * Copies every latest-release component JSON to `latest.json` beside its hashed
+ * sibling, giving each component one stable, guessable URL. A copy rather than a
+ * redirect so the read stays a single request; the hashed files remain for
+ * callers that want an immutable, pinned URL.
+ *
+ * Written into the build output only — `public/data` is the committed
+ * content-addressed store that the Python `explorer-db-builder` owns and
+ * garbage-collects.
+ *
+ * Exported for tests; `outDir` defaults to `dist`.
+ */
+export async function writeLatestJsonAliases(publicPath, outDir = distDir) {
+  for (const store of DATA_STORES) {
+    const latest = await readLatestManifest(publicPath, store);
+    if (!latest) continue;
+
+    const { ecosystem, contentDir } = store;
+    let written = 0;
+    for (const [id, hash] of Object.entries(latest.hashes)) {
+      const source = path.join(
+        publicPath,
+        `data/${ecosystem}/${contentDir}/${id}/${id}-${hash}.json`
+      );
+      const target = path.join(outDir, `data/${ecosystem}/${contentDir}/${id}/latest.json`);
+      try {
+        await fs.mkdir(path.dirname(target), { recursive: true });
+        await fs.copyFile(source, target);
+        written += 1;
+      } catch (e) {
+        console.warn(
+          `[WARN] Could not write latest.json alias for ${ecosystem}/${id}: ${e.message}`
+        );
+      }
+    }
+    console.log(` - Wrote ${written} ${ecosystem} latest.json aliases (${latest.latestVersion})`);
+  }
 }
 
 /** Maps a route pathname to its Markdown file path in dist (\`/\` -> index.md). */
@@ -553,7 +656,11 @@ async function generateCollectorPages(publicPath) {
       await fs.mkdir(outDir, { recursive: true });
       await fs.writeFile(
         path.join(outDir, `${component.name}.md`),
-        buildCollectorComponentPage(component, jsonUrl)
+        buildCollectorComponentPage(
+          component,
+          jsonUrl,
+          latestJsonUrl("collector", "components", id)
+        )
       );
       pages.push({
         label: component.display_name || component.name,
@@ -603,7 +710,11 @@ async function generateJavaPages(publicPath) {
       const jsonUrl = `/data/javaagent/instrumentations/${name}/${name}-${hash}.json`;
       await fs.writeFile(
         path.join(outDir, `${name}.md`),
-        buildJavaInstrumentationPage(instr, jsonUrl)
+        buildJavaInstrumentationPage(
+          instr,
+          jsonUrl,
+          latestJsonUrl("javaagent", "instrumentations", name)
+        )
       );
       pages.push({
         label: instr.display_name || instr.name,
@@ -646,6 +757,7 @@ async function generateDocs() {
   console.log(` - Generated ${collectorPages.length} Collector component pages`);
   const javaPages = await generateJavaPages(publicDir);
   console.log(` - Generated ${javaPages.length} Java agent instrumentation pages`);
+  await writeLatestJsonAliases(publicDir);
 
   const llmsTxt = buildLlmsTxt(staticPages, collectorPages, javaPages);
 
