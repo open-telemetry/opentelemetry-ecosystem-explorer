@@ -79,6 +79,26 @@ function htmlContextWithMd(
   });
 }
 
+// Mirrors a HEAD request reaching origin: context.rewrite() carries the method
+// through, so both the shell and the Markdown probe resolve with headers only.
+function headContextWithMd(
+  routes: Record<string, { title: string; description: string }>,
+  mdPaths: string[]
+) {
+  return contextWith(async (path) => {
+    if (path === "/seo/routes.json") {
+      return new Response(JSON.stringify(routes), { status: 200 });
+    }
+    if (mdPaths.includes(path)) {
+      return new Response(null, { status: 200, headers: { "content-type": "text/markdown" } });
+    }
+    return new Response(null, { status: 200, headers: { "content-type": "text/html" } });
+  });
+}
+
+const head = (path: string) =>
+  new Request(`https://explorer.opentelemetry.io${path}`, { method: "HEAD" });
+
 describe("agent-negotiation edge function", () => {
   it("passes a 304 Not Modified through for /data instead of converting it to 404", async () => {
     const context = contextWith(async () => new Response(null, { status: 304 }));
@@ -109,6 +129,29 @@ describe("agent-negotiation edge function", () => {
     );
     const res = await handler(get("/data/configuration/versions-index.json"), context);
     expect(res?.status).toBe(404);
+  });
+
+  it("keeps the 404 explanation in the body for GET", async () => {
+    const context = contextWith(
+      async () =>
+        new Response("<!doctype html><html></html>", {
+          status: 200,
+          headers: { "content-type": "text/html" },
+        })
+    );
+    const res = await handler(get("/agent/nope.md"), context);
+    expect(res?.status).toBe(404);
+    expect(await res!.text()).toBe("Not Found");
+  });
+
+  it("returns a bodyless 404 for HEAD on an asset path", async () => {
+    const context = contextWith(
+      async () => new Response(null, { status: 200, headers: { "content-type": "text/html" } })
+    );
+    const res = await handler(head("/agent/nope.md"), context);
+    expect(res?.status).toBe(404);
+    expect(res?.body).toBeNull();
+    expect(await res!.text()).toBe("");
   });
 
   it("serves markdown for /javaagent with Accept: text/markdown", async () => {
@@ -611,10 +654,49 @@ describe("agent-negotiation Markdown alternate advertising", () => {
 
   it("answers a HEAD request with the same header", async () => {
     const handler = await freshHandler();
-    const req = new Request("https://explorer.opentelemetry.io/collector", { method: "HEAD" });
-    const res = await handler(req, htmlContextWithMd(routes, { "/collector.md": "# Collector" }));
+    const res = await handler(
+      head("/collector"),
+      htmlContextWithMd(routes, { "/collector.md": "# Collector" })
+    );
     expect(res?.status).toBe(200);
     expect(res?.headers.get("link")).toContain('rel="alternate"');
+  });
+
+  it("answers a HEAD request with headers only, no body", async () => {
+    const handler = await freshHandler();
+    const res = await handler(
+      head("/collector"),
+      htmlContextWithMd(routes, { "/collector.md": "# Collector" })
+    );
+    expect(res?.status).toBe(200);
+    expect(res?.body).toBeNull();
+    expect(await res!.text()).toBe("");
+    expect(res?.headers.get("content-type")).toBe("text/html; charset=utf-8");
+    expect(res?.headers.get("content-length")).toBeNull();
+  });
+
+  it("advertises the alternate on HEAD even though the rewrites come back bodyless", async () => {
+    const handler = await freshHandler();
+    const res = await handler(head("/collector"), headContextWithMd(routes, ["/collector.md"]));
+    expect(res?.status).toBe(200);
+    expect(res?.headers.get("link")).toBe(
+      '<https://explorer.opentelemetry.io/collector.md>; rel="alternate"; type="text/markdown"'
+    );
+    expect(res?.body).toBeNull();
+  });
+
+  it("advertises no alternate on HEAD for a known route without Markdown", async () => {
+    const handler = await freshHandler();
+    const res = await handler(head("/collector"), headContextWithMd(routes, []));
+    expect(res?.status).toBe(200);
+    expect(res?.headers.get("link")).toBeNull();
+  });
+
+  it("returns a bodyless 404 for an unknown route on HEAD", async () => {
+    const handler = await freshHandler();
+    const res = await handler(head("/nope-xyz"), headContextWithMd(routes, []));
+    expect(res?.status).toBe(404);
+    expect(res?.body).toBeNull();
   });
 
   it("advertises no alternate for a known route without a Markdown page", async () => {

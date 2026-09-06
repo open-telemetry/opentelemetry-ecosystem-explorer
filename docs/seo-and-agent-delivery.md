@@ -107,7 +107,8 @@ and is the delivery layer for non-JS clients. It:
   Markdown `alternate` link, and JSON-LD. The alternate is advertised in both `<head>` and a
   `Link: <url>; rel="alternate"; type="text/markdown"` response header (so `HEAD` alone reveals it),
   and only when the Markdown page actually exists — a route without one advertises no alternate.
-  `HEAD` is handled alongside `GET` for this reason.
+  `HEAD` is handled alongside `GET` for this reason, and answers with the same status and headers as
+  the `GET` but no body.
 - **Injects real body content** — it renders the route's generated Markdown into the empty `#root`
   (visually hidden and `aria-hidden` so human visitors never see it), so HTTP-only agents receive
   actual page content instead of an empty shell.

@@ -16,7 +16,11 @@
 
 import type { Context } from "@netlify/edge-functions";
 
-const notFound = () => new Response("Not Found", { status: 404 });
+// A HEAD response must not carry a body, so the 404 explanation is omitted for
+// that method. Content-Length is left off rather than set to the length the GET
+// body would have — it is optional here, and a wrong value is worse than none.
+const notFound = (request: Request) =>
+  new Response(request.method === "HEAD" ? null : "Not Found", { status: 404 });
 
 // Rewrites to a static asset and normalizes its Content-Type. Returns null when
 // the rewrite resolves to the SPA HTML shell (the catch-all serves /index.html
@@ -92,7 +96,9 @@ async function loadRoutes(context: Context): Promise<Record<string, RouteMeta>> 
 // Fetches the pre-generated Markdown for a route (served at `${path}.md`).
 // Returns null when the file doesn't exist — the SPA catch-all serves
 // /index.html (200, text/html) for unknown paths, which we detect and treat as
-// "no Markdown for this route".
+// "no Markdown for this route". The text is empty (but non-null) when the
+// rewrite inherits a HEAD request, so callers that only need existence must test
+// for null rather than for truthiness.
 async function fetchMarkdown(context: Context, mdPath: string): Promise<string | null> {
   try {
     const response = await context.rewrite(mdPath);
@@ -378,25 +384,23 @@ function buildJsonLd(title: string, description: string, canonicalUrl: string): 
   return JSON.stringify(data).replace(/</g, "\\u003c");
 }
 
+interface InjectOptions {
+  title: string;
+  description: string;
+  canonicalUrl: string;
+  mdUrl: string | null;
+  status: number;
+  // null for HEAD requests, which must answer with headers only: the shell body
+  // is neither read nor rewritten.
+  bodyHtml: string | null;
+}
+
 // Rewrites the SPA shell's <head> with per-route title/description/OG/canonical,
-// a Markdown alternate link, and JSON-LD; injects `bodyHtml` into the empty
-// `#root` so non-JS agents see real content (not a bare SPA shell); then returns
-// it with `status` (200 for known routes, 404 for unknown ones so crawlers don't
-// see soft 404s). `mdUrl` is null when no Markdown page exists for the route, in
-// which case no alternate is advertised in either the <head> or the Link header.
-async function injectHead(
-  shell: Response,
-  opts: {
-    title: string;
-    description: string;
-    canonicalUrl: string;
-    mdUrl: string | null;
-    status: number;
-    bodyHtml: string;
-  }
-): Promise<Response> {
-  const { title, description, canonicalUrl, mdUrl, status, bodyHtml } = opts;
-  let html = await shell.text();
+// a Markdown alternate link, and JSON-LD, and injects `bodyHtml` into the empty
+// `#root` so non-JS agents see real content (not a bare SPA shell).
+function rewriteShell(shellHtml: string, opts: InjectOptions & { bodyHtml: string }): string {
+  const { title, description, canonicalUrl, mdUrl, bodyHtml } = opts;
+  let html = shellHtml;
 
   html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(title)}</title>`);
   html = setMetaContent(html, 'name="description"', description);
@@ -414,7 +418,25 @@ async function injectHead(
 
   // Populate the SPA root so HTTP-only agents see content. A function replacer
   // avoids `$`-sequence interpretation in bodyHtml (which can contain `$`).
-  html = html.replace(/<div id="root">\s*<\/div>/, () => `<div id="root">${bodyHtml}</div>`);
+  return html.replace(/<div id="root">\s*<\/div>/, () => `<div id="root">${bodyHtml}</div>`);
+}
+
+// Returns the rewritten shell with `status` (200 for known routes, 404 for
+// unknown ones so crawlers don't see soft 404s), or a bodyless response with the
+// same headers when `bodyHtml` is null (HEAD). `mdUrl` is null when no Markdown
+// page exists for the route, in which case no alternate is advertised in either
+// the <head> or the Link header.
+async function injectHead(shell: Response, opts: InjectOptions): Promise<Response> {
+  const { mdUrl, status, bodyHtml } = opts;
+
+  let html: string | null = null;
+  if (bodyHtml === null) {
+    // HEAD: a body would be protocol-incorrect, so drop the shell's instead of
+    // leaving its stream dangling.
+    await shell.body?.cancel();
+  } else {
+    html = rewriteShell(await shell.text(), { ...opts, bodyHtml });
+  }
 
   const headers = new Headers(shell.headers);
   headers.delete("content-length");
@@ -459,7 +481,7 @@ export default async (request: Request, context: Context) => {
   if (pathname === "/llms.txt" || pathname === "/llms-full.txt") {
     return (
       (await serveAsset(context, pathname, "text/plain; charset=UTF-8", { Vary: "Accept" })) ??
-      notFound()
+      notFound(request)
     );
   }
 
@@ -477,7 +499,7 @@ export default async (request: Request, context: Context) => {
     if (lookupPath === "/") {
       return (
         (await serveAsset(context, "/llms.txt", "text/plain; charset=UTF-8", { Vary: "Accept" })) ??
-        notFound()
+        notFound(request)
       );
     }
 
@@ -495,7 +517,7 @@ export default async (request: Request, context: Context) => {
       }
     }
     // Strict 404 for unrecognized Markdown requests (Copilot feedback)
-    return notFound();
+    return notFound(request);
   }
 
   // Explicit agent documentation routes
@@ -518,19 +540,19 @@ export default async (request: Request, context: Context) => {
         return response;
       }
     }
-    return notFound();
+    return notFound(request);
   }
 
   // JSON schemas and metadata
   if (pathname.startsWith("/schemas/") || pathname.startsWith("/data/")) {
     const finalContentType = pathname.endsWith(".json") ? "application/json" : "text/plain";
-    return (await serveAsset(context, pathname, finalContentType)) ?? notFound();
+    return (await serveAsset(context, pathname, finalContentType)) ?? notFound(request);
   }
 
   // Sitemap and Robots
   if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
     const finalContentType = pathname.endsWith(".xml") ? "application/xml" : "text/plain";
-    return (await serveAsset(context, pathname, finalContentType)) ?? notFound();
+    return (await serveAsset(context, pathname, finalContentType)) ?? notFound(request);
   }
 
   // HTML page navigation. Inject per-route metadata so non-JS social scrapers
@@ -539,7 +561,8 @@ export default async (request: Request, context: Context) => {
   // alternate header below is discoverable without downloading the page; asset
   // requests and other methods pass through untouched so Netlify serves them (or
   // the SPA shell) as before.
-  if ((request.method !== "GET" && request.method !== "HEAD") || ASSET_EXT.test(pathname)) {
+  const isHead = request.method === "HEAD";
+  if ((request.method !== "GET" && !isHead) || ASSET_EXT.test(pathname)) {
     return undefined;
   }
 
@@ -565,13 +588,22 @@ export default async (request: Request, context: Context) => {
   // title/description stub for known routes without a Markdown page and for 404s.
   // The alternate is advertised only when that Markdown actually exists — a
   // dangling alternate is a 404 the agent has to spend a request to discover.
+  // context.rewrite() carries the request method through, so on HEAD this probe
+  // resolves with an empty body: existence is "the rewrite resolved" (non-null),
+  // not "it returned text".
   const md = known ? await fetchMarkdown(context, mdPath) : null;
-  const mdUrl = md ? `${SITE_ORIGIN}${mdPath}` : null;
-  const contentHtml = md
-    ? markdownToHtml(md)
-    : known
-      ? fallbackContent(title, description)
-      : fallbackContent("Page not found", `The page ${lookupPath} could not be found.`);
+  const mdUrl = (isHead ? md !== null : Boolean(md)) ? `${SITE_ORIGIN}${mdPath}` : null;
+
+  // HEAD gets headers only — same status and Link alternate as the GET, no body.
+  let bodyHtml: string | null = null;
+  if (!isHead) {
+    const contentHtml = md
+      ? markdownToHtml(md)
+      : known
+        ? fallbackContent(title, description)
+        : fallbackContent("Page not found", `The page ${lookupPath} could not be found.`);
+    bodyHtml = buildAgentBody(mdUrl, contentHtml);
+  }
 
   return injectHead(shell, {
     title,
@@ -579,6 +611,6 @@ export default async (request: Request, context: Context) => {
     canonicalUrl,
     mdUrl,
     status: known ? 200 : 404,
-    bodyHtml: buildAgentBody(mdUrl, contentHtml),
+    bodyHtml,
   });
 };

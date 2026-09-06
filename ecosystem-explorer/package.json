@@ -23,6 +23,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test:edge": "vitest run --config vitest.dist.config.ts",
     "test:integration:watch": "vitest --config vitest.integration.config.ts",
     "screenshots:capture": "bun scripts/take-screenshots.mjs",
     "screenshots:diff": "bun scripts/diff-screenshots.mjs"

@@ -314,6 +314,12 @@ jobs:
       - name: Run build
         run: bun run build
 
+      # Runs the edge function against the real dist/ output, so the paths it
+      # builds (`${route}.md`, /seo/routes.json, /agent/**) are checked against
+      # what the build emits — not only against mocked rewrites.
+      - name: Run edge tests against the build output
+        run: bun run test:edge
+
   schemas-up-to-date:
     name: Schemas up to date
     runs-on: ubuntu-latest

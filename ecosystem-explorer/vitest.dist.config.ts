@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 import { defineConfig } from "vitest/config";
-import react from "@vitejs/plugin-react-swc";
-import path from "path";
 
+// Tests that exercise build output in `dist/` rather than source. They run after
+// `bun run build` (see the "Run edge tests" step in .github/workflows/build-and-test.yml)
+// and are excluded from the default unit run, where dist/ does not exist yet.
 export default defineConfig({
-  plugins: [react()],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
   test: {
     globals: true,
-    environment: "jsdom",
-    setupFiles: "./src/test/setup.ts",
-    exclude: ["**/node_modules/**", "**/*.integration.test.{ts,tsx}", "**/*.dist.test.ts"],
+    environment: "node",
+    include: ["**/*.dist.test.ts"],
+    exclude: ["**/node_modules/**"],
   },
 });
