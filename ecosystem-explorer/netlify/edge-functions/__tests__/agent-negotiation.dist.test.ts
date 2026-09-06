@@ -22,8 +22,8 @@
 // and CI builds after the unit tests run.
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import { createServer, type Server } from "node:http";
-import { existsSync, readFileSync, statSync } from "node:fs";
-import { extname, join, resolve, dirname, sep } from "node:path";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { extname, join, resolve, dirname, relative, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { AddressInfo } from "node:net";
 import handler from "../agent-negotiation";
@@ -49,19 +49,25 @@ describe.skipIf(!hasDist)("agent-negotiation against the built dist/", () => {
   let server: Server;
   let base: string;
 
+  // URL path -> absolute file, indexed once from dist/. The request path is only
+  // ever a lookup key here: nothing derived from it reaches the filesystem, so a
+  // "../" in a URL misses the map and falls through to the catch-all like any
+  // other unknown path.
+  const filesByUrlPath = new Map<string, string>();
+
   beforeAll(async () => {
+    for (const entry of readdirSync(distDir, { recursive: true, withFileTypes: true })) {
+      if (!entry.isFile()) continue;
+      const absolute = join(entry.parentPath, entry.name);
+      filesByUrlPath.set(`/${relative(distDir, absolute).split(sep).join("/")}`, absolute);
+    }
+    const indexHtml = join(distDir, "index.html");
+
     server = createServer((req, res) => {
-      const path = decodeURIComponent((req.url ?? "/").split("?")[0]);
-      // resolve() collapses any "../" in the request path before the prefix
-      // check, so a traversal attempt reads index.html like any other unknown path.
-      const candidate = resolve(distDir, `.${path}`);
-      const isFile =
-        candidate.startsWith(distDir + sep) &&
-        existsSync(candidate) &&
-        statSync(candidate).isFile();
+      const urlPath = decodeURIComponent((req.url ?? "/").split("?")[0]);
       // SPA catch-all: unknown paths get index.html with status 200, exactly the
       // shape the handler has to distinguish a real file from.
-      const file = isFile ? candidate : join(distDir, "index.html");
+      const file = filesByUrlPath.get(urlPath) ?? indexHtml;
       res.writeHead(200, {
         "content-type": CONTENT_TYPES[extname(file)] ?? "application/octet-stream",
       });
