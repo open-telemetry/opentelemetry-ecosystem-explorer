@@ -71,15 +71,25 @@ interface RouteMeta {
 
 // Per-route SEO metadata generated at build time (dist/seo/routes.json), cached
 // across invocations within an edge isolate.
+const MANIFEST_PATH = "/seo/routes.json";
 let routesCache: Record<string, RouteMeta> | null = null;
 let routesLoaded = false;
 
-async function loadRoutes(context: Context): Promise<Record<string, RouteMeta>> {
+// The manifest is a build artifact — the same file for every request — so it is
+// fetched with an explicit GET instead of context.rewrite(), which inherits the
+// in-flight method. On a HEAD request the rewrite resolves with no body, json()
+// throws, and the empty manifest would make every fabricated path look known
+// (200 instead of 404). The rewrite is still used for GET: it stays inside the
+// CDN instead of taking a network hop back to the origin.
+async function loadRoutes(request: Request, context: Context): Promise<Record<string, RouteMeta>> {
   if (routesLoaded) {
     return routesCache ?? {};
   }
   try {
-    const response = await context.rewrite("/seo/routes.json");
+    const response =
+      request.method === "GET"
+        ? await context.rewrite(MANIFEST_PATH)
+        : await fetch(new URL(MANIFEST_PATH, request.url), { method: "GET" });
     if (response.status === 200) {
       routesCache = (await response.json()) as Record<string, RouteMeta>;
       // Only latch the cache on success; a transient failure (bad status,
@@ -128,8 +138,12 @@ interface RouteStatus {
 // Resolves a path against the build-time manifest plus the dynamic route
 // patterns. If the manifest failed to load, don't risk false 404s: treat every
 // page as known.
-async function routeStatus(context: Context, lookupPath: string): Promise<RouteStatus> {
-  const routes = await loadRoutes(context);
+async function routeStatus(
+  request: Request,
+  context: Context,
+  lookupPath: string
+): Promise<RouteStatus> {
+  const routes = await loadRoutes(request, context);
   const manifestLoaded = Object.keys(routes).length > 0;
   const meta = routes[lookupPath];
   return { meta, known: !manifestLoaded || Boolean(meta) || isDynamicKnownRoute(lookupPath) };
@@ -508,7 +522,10 @@ export default async (request: Request, context: Context) => {
     // could not tell "your URL is wrong" from "here is your answer" and had no
     // signal to retry with a corrected path.
     const sectionIndex = sectionIndexFor(lookupPath);
-    if (sectionIndex && (await routeStatus(context, canonicalizeAlias(lookupPath))).known) {
+    if (
+      sectionIndex &&
+      (await routeStatus(request, context, canonicalizeAlias(lookupPath))).known
+    ) {
       const response = await serveAsset(context, sectionIndex, "text/markdown; charset=UTF-8", {
         Vary: "Accept",
       });
@@ -573,7 +590,7 @@ export default async (request: Request, context: Context) => {
     return shell.status === 200 ? undefined : shell;
   }
 
-  const { meta, known } = await routeStatus(context, lookupPath);
+  const { meta, known } = await routeStatus(request, context, lookupPath);
 
   const title = meta?.title ?? (known ? DEFAULT_TITLE : `Page not found — ${DEFAULT_TITLE}`);
   const description = meta?.description ?? DEFAULT_DESCRIPTION;

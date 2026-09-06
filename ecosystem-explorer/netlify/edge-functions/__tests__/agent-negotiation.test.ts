@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import handler from "../agent-negotiation";
 
 type Rewrite = (path: string) => Promise<Response>;
@@ -80,21 +80,32 @@ function htmlContextWithMd(
 }
 
 // Mirrors a HEAD request reaching origin: context.rewrite() carries the method
-// through, so both the shell and the Markdown probe resolve with headers only.
+// through, so every rewrite — the shell, the Markdown probe, and the manifest —
+// resolves with headers only. The handler therefore fetches /seo/routes.json
+// with an explicit GET, which this stubs; nothing else may go over fetch().
 function headContextWithMd(
   routes: Record<string, { title: string; description: string }>,
   mdPaths: string[]
 ) {
-  return contextWith(async (path) => {
-    if (path === "/seo/routes.json") {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async (input: URL | RequestInfo, init?: RequestInit) => {
+      expect(String(input)).toBe("https://explorer.opentelemetry.io/seo/routes.json");
+      expect(init?.method).toBe("GET");
       return new Response(JSON.stringify(routes), { status: 200 });
-    }
+    })
+  );
+  return contextWith(async (path) => {
     if (mdPaths.includes(path)) {
       return new Response(null, { status: 200, headers: { "content-type": "text/markdown" } });
     }
     return new Response(null, { status: 200, headers: { "content-type": "text/html" } });
   });
 }
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
 
 const head = (path: string) =>
   new Request(`https://explorer.opentelemetry.io${path}`, { method: "HEAD" });
@@ -654,20 +665,14 @@ describe("agent-negotiation Markdown alternate advertising", () => {
 
   it("answers a HEAD request with the same header", async () => {
     const handler = await freshHandler();
-    const res = await handler(
-      head("/collector"),
-      htmlContextWithMd(routes, { "/collector.md": "# Collector" })
-    );
+    const res = await handler(head("/collector"), headContextWithMd(routes, ["/collector.md"]));
     expect(res?.status).toBe(200);
     expect(res?.headers.get("link")).toContain('rel="alternate"');
   });
 
   it("answers a HEAD request with headers only, no body", async () => {
     const handler = await freshHandler();
-    const res = await handler(
-      head("/collector"),
-      htmlContextWithMd(routes, { "/collector.md": "# Collector" })
-    );
+    const res = await handler(head("/collector"), headContextWithMd(routes, ["/collector.md"]));
     expect(res?.status).toBe(200);
     expect(res?.body).toBeNull();
     expect(await res!.text()).toBe("");
@@ -694,7 +699,23 @@ describe("agent-negotiation Markdown alternate advertising", () => {
 
   it("returns a bodyless 404 for an unknown route on HEAD", async () => {
     const handler = await freshHandler();
-    const res = await handler(head("/nope-xyz"), headContextWithMd(routes, []));
+    const context = headContextWithMd(routes, []);
+    const res = await handler(head("/nope-xyz"), context);
+    expect(res?.status).toBe(404);
+    expect(res?.body).toBeNull();
+    // The manifest must come from the GET fetch, not from a rewrite that HEAD
+    // would answer bodyless — an unparsed manifest makes every path look known.
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(context.rewrite).not.toHaveBeenCalledWith("/seo/routes.json");
+  });
+
+  it("404s a fabricated section path on HEAD with Accept: text/markdown", async () => {
+    const handler = await freshHandler();
+    const request = new Request("https://explorer.opentelemetry.io/collector/nope-xyz", {
+      method: "HEAD",
+      headers: { accept: "text/markdown" },
+    });
+    const res = await handler(request, headContextWithMd(routes, []));
     expect(res?.status).toBe(404);
     expect(res?.body).toBeNull();
   });

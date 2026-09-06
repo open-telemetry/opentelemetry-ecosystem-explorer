@@ -20,10 +20,10 @@
 // branches build (`${route}.md`, /seo/routes.json, /agent/**) match what the
 // build actually emits. Skipped when dist/ is absent, since dist is gitignored
 // and CI builds after the unit tests run.
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import { createServer, type Server } from "node:http";
 import { existsSync, readFileSync, statSync } from "node:fs";
-import { extname, join, resolve, dirname } from "node:path";
+import { extname, join, resolve, dirname, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { AddressInfo } from "node:net";
 import handler from "../agent-negotiation";
@@ -52,9 +52,13 @@ describe.skipIf(!hasDist)("agent-negotiation against the built dist/", () => {
   beforeAll(async () => {
     server = createServer((req, res) => {
       const path = decodeURIComponent((req.url ?? "/").split("?")[0]);
-      const candidate = join(distDir, path);
+      // resolve() collapses any "../" in the request path before the prefix
+      // check, so a traversal attempt reads index.html like any other unknown path.
+      const candidate = resolve(distDir, `.${path}`);
       const isFile =
-        candidate.startsWith(distDir) && existsSync(candidate) && statSync(candidate).isFile();
+        candidate.startsWith(distDir + sep) &&
+        existsSync(candidate) &&
+        statSync(candidate).isFile();
       // SPA catch-all: unknown paths get index.html with status 200, exactly the
       // shape the handler has to distinguish a real file from.
       const file = isFile ? candidate : join(distDir, "index.html");
@@ -84,9 +88,22 @@ describe.skipIf(!hasDist)("agent-negotiation against the built dist/", () => {
       },
     }) as unknown as Parameters<typeof handler>[1];
 
+  // Requests carry the test server's own origin so the handler's explicit GET for
+  // /seo/routes.json (rewrite() would inherit HEAD and come back bodyless) resolves
+  // against dist/. Canonical URLs and the Link alternate stay pinned to the
+  // production origin regardless, which the assertions below rely on.
   const run = (path: string, init?: RequestInit) => {
-    const request = new Request(`https://explorer.opentelemetry.io${path}`, init);
+    const request = new Request(`${base}${path}`, init);
     return handler(request, contextFor(request));
+  };
+
+  // The route manifest is cached in module scope; a fresh instance reproduces the
+  // first request an edge isolate sees.
+  const runCold = async (path: string, init?: RequestInit) => {
+    vi.resetModules();
+    const { default: coldHandler } = await import("../agent-negotiation");
+    const request = new Request(`${base}${path}`, init);
+    return coldHandler(request, contextFor(request));
   };
 
   it("injects the route's real Markdown and advertises the alternate on GET", async () => {
@@ -120,6 +137,20 @@ describe.skipIf(!hasDist)("agent-negotiation against the built dist/", () => {
     const res = await run("/collector/components/contrib/nope-xyz-does-not-exist");
     expect(res?.status).toBe(404);
     expect(res?.headers.get("link")).toBeNull();
+  });
+
+  it("404s a fabricated route on a cold HEAD, when nothing has parsed the manifest yet", async () => {
+    const res = await runCold("/nope-xyz-does-not-exist", { method: "HEAD" });
+    expect(res?.status).toBe(404);
+    expect(res?.body).toBeNull();
+  });
+
+  it("404s a fabricated section path on a cold HEAD asking for Markdown", async () => {
+    const res = await runCold("/collector/nope-xyz-does-not-exist", {
+      method: "HEAD",
+      headers: { accept: "text/markdown" },
+    });
+    expect(res?.status).toBe(404);
   });
 
   it("serves the generated /llms.txt", async () => {

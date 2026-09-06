@@ -115,7 +115,9 @@ and is the delivery layer for non-JS clients. It:
 - **Returns real 404s** for paths absent from the manifest, so crawlers don't index soft 404s.
   Parameterized routes that resolve client-side (versioned lists, instrumentation version routes)
   are allow-listed as known. If the manifest fails to load, every page is treated as known to avoid
-  false 404s.
+  false 404s — which is why the edge reads `routes.json` with an explicit `GET` rather than
+  `context.rewrite()` (that inherits the in-flight method, so a `HEAD` would return a body-less
+  manifest and make every fabricated path look known).
 
 ## Deployment wiring
 
