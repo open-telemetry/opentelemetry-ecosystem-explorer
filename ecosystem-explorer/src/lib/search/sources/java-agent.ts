@@ -48,7 +48,7 @@ export function toJavaAgentResult(
   version: string,
   resultType: SearchResult["type"] = "item"
 ): SearchResult {
-  // `/instrumentation/{version}/{name}` is a deprecated route whose redirect to
+  // `/java-agent/instrumentation/{version}/{name}` is a deprecated route whose redirect to
   // this shape lives in a React <Navigate>, so it only resolves for clients that
   // run JavaScript. Emit the canonical target directly, as the Collector source does.
   const path = `/java-agent/instrumentation/${entry.name}?version=${version}`;

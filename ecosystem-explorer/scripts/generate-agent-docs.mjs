@@ -589,9 +589,8 @@ export async function writeLatestJsonAliases(publicPath, outDir = distDir) {
         await fs.copyFile(source, target);
         written += 1;
       } catch (e) {
-        console.warn(
-          `[WARN] Could not write latest.json alias for ${ecosystem}/${id}: ${e.message}`
-        );
+        const message = e instanceof Error ? e.message : String(e);
+        console.warn(`[WARN] Could not write latest.json alias for ${ecosystem}/${id}: ${message}`);
       }
     }
     console.log(` - Wrote ${written} ${ecosystem} latest.json aliases (${latest.latestVersion})`);
