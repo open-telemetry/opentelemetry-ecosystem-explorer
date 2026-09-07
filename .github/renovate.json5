@@ -38,13 +38,7 @@
     // The package manager resolves these, so they have no release age to wait on.
     // Gating `rollback` is actively harmful: it strands an unpublished version.
     {
-      matchUpdateTypes: [
-        "pin",
-        "bump",
-        "rollback",
-        "replacement",
-        "lockFileMaintenance",
-      ],
+      matchUpdateTypes: ["pin", "bump", "rollback", "replacement", "lockFileMaintenance"],
       minimumReleaseAge: null,
     },
   ],
