@@ -29,6 +29,8 @@ export function collectorReleaseContext({
   pathVersion?: string;
   versions?: VersionsIndex | null;
 }) {
+  // The query string is the canonical carrier; a version in the path is the historical
+  // route form and yields to it when both are present.
   const selectedVersion = searchParams.get("version") || pathVersion || undefined;
   const deprecated = selectedVersion === "deprecated";
   const latestVersion = versions?.versions.find((v) => v.is_latest)?.version ?? "";

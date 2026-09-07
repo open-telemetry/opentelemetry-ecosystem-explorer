@@ -34,6 +34,11 @@ export type DetailTabId = "configuration" | "readme" | "attributes" | "examples"
 
 const TAB_IDS: DetailTabId[] = ["configuration", "readme", "attributes", "examples"];
 
+// eslint-disable-next-line react-refresh/only-export-components -- type guard over the tab list DetailTabs owns
+export function isDetailTabId(value: string): value is DetailTabId {
+  return (TAB_IDS as readonly string[]).includes(value);
+}
+
 export interface DetailTabsProps {
   active: DetailTabId;
   onChange: (next: DetailTabId) => void;

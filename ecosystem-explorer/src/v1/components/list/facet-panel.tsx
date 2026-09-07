@@ -40,12 +40,7 @@ import { TYPE_STRIPE_COLORS } from "@/components/ui/type-stripe-colors";
 import type { CollectorComponentType } from "@/components/ui/type-stripe-colors";
 import { DISTRIBUTIONS, SIGNALS, STABILITIES, TYPES } from "@/v1/lib/list-filters";
 import type { Distribution, ListFilters, Signal, StabilityFacet } from "@/v1/lib/list-filters";
-import {
-  CheckboxFacet,
-  type FacetOption,
-  SearchFacet,
-  SelectFacet,
-} from "@/v1/components/list/facets";
+import { CheckboxFacet, type FacetOption, SearchFacet, SelectFacet } from "./facets";
 
 // Keep this boundary aligned with facet-panel.css: desktop is a persistent rail.
 const DESKTOP_QUERY = "(min-width: 992px)";

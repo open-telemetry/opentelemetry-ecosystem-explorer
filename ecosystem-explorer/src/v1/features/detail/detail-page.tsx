@@ -67,6 +67,7 @@ import {
   DetailTabs,
   type DetailTabId,
   ExamplesTab,
+  isDetailTabId,
   ReadmeTab,
 } from "@/v1/components/detail/tabs";
 import { collectorReleaseContext } from "@/v1/lib/collector-release";
@@ -133,10 +134,7 @@ export function CollectorDetailPageV1() {
   const location = useLocation();
   const navigate = useNavigate();
   const tabHash = location.hash.slice(1);
-  const activeTab: DetailTabId =
-    tabHash === "readme" || tabHash === "attributes" || tabHash === "examples"
-      ? tabHash
-      : "configuration";
+  const activeTab: DetailTabId = isDetailTabId(tabHash) ? tabHash : "configuration";
 
   // Router location is the tab state, including Link, replace and Back/Forward navigation.
   function selectTab(next: DetailTabId) {

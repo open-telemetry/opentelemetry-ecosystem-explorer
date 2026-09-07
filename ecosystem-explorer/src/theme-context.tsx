@@ -21,7 +21,7 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
-import { type ResolvedThemeId } from "@/themes";
+import { type ResolvedThemeId } from "./themes";
 
 export type ThemeMode = "light" | "dark" | "auto";
 
@@ -75,7 +75,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const resolved: ResolvedThemeId = mode === "auto" ? systemTheme : mode;
 
   useEffect(() => {
-    // Both CSS tokens and Tailwind's dark variant follow this resolved value.
+    // The dark custom variant in styles/index.css reads data-theme, so Tailwind dark:
+    // utilities follow the selected mode instead of prefers-color-scheme.
     document.documentElement.dataset.theme = resolved;
   }, [resolved]);
 
