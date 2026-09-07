@@ -34,6 +34,9 @@
 @import "./base.css";
 @import "./syntax.css";
 
+/* ThemeProvider and the pre-paint script resolve Auto into this same attribute. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 /**
  * Tailwind theme — maps --*-hsl triplets to hsl() utility classes.
  * Must live in the same file that imports "tailwindcss".

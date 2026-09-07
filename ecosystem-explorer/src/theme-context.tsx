@@ -21,7 +21,7 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
-import { type ResolvedThemeId } from "./themes";
+import { type ResolvedThemeId } from "@/themes";
 
 export type ThemeMode = "light" | "dark" | "auto";
 
@@ -75,6 +75,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const resolved: ResolvedThemeId = mode === "auto" ? systemTheme : mode;
 
   useEffect(() => {
+    // Both CSS tokens and Tailwind's dark variant follow this resolved value.
     document.documentElement.dataset.theme = resolved;
   }, [resolved]);
 
