@@ -22,6 +22,11 @@ jobs:
     name: Capture PR screenshots
     if: contains(github.event.pull_request.labels.*.name, 'add-screenshots')
     runs-on: ubuntu-latest
+    # The main baseline is v1. Capture the same app on every PR branch; branch
+    # names must not select a different app or incompatible mobile scenarios.
+    env:
+      ACCEPTANCE_APP_MODE: v1
+      ACCEPTANCE_DEV_SHOWCASE: "true"
     defaults:
       run:
         working-directory: ecosystem-explorer
@@ -45,22 +50,11 @@ jobs:
       - name: Install Playwright browsers
         run: bunx playwright install --with-deps chromium
 
-      - name: Resolve feature flags
-        id: flags
-        env:
-          HEAD_REF: ${{ github.event.pull_request.head.ref }}
-        run: |
-          V1_REDESIGN=false
-          if [[ "$HEAD_REF" == feat/84-* ]]; then
-            V1_REDESIGN=true
-          fi
-          echo "v1_redesign=$V1_REDESIGN" >> "$GITHUB_OUTPUT"
-
       - name: Build the frontend
         run: bun run build
         env:
-          VITE_FEATURE_FLAG_V1_REDESIGN: ${{ steps.flags.outputs.v1_redesign }}
-          VITE_FEATURE_FLAG_DEV_SHOWCASE: "true"
+          VITE_FEATURE_FLAG_V1_REDESIGN: ${{ env.ACCEPTANCE_APP_MODE == 'v1' && 'true' || 'false' }}
+          VITE_FEATURE_FLAG_DEV_SHOWCASE: ${{ env.ACCEPTANCE_DEV_SHOWCASE }}
 
       - name: Create screenshots directory
         run: mkdir -p screenshots
