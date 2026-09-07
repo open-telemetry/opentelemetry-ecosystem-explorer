@@ -41,7 +41,8 @@
   gap: 1rem;
 }
 
-@media (max-width: 991px) {
+/* Complement the desktop query exactly, including fractional viewport widths. */
+@media (width < 992px) {
   .td-facet-panel {
     display: none;
     position: fixed;
@@ -61,7 +62,7 @@
   display: none;
 }
 
-@media (max-width: 991px) {
+@media (width < 992px) {
   .td-facet-panel__scrim {
     display: block;
     position: fixed;
