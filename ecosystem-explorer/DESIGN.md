@@ -57,9 +57,13 @@ All animations follow a unified timing system:
 
 ### 4. Theming (Dark and Light)
 
-The system is theme-aware via `[data-theme]` token sets, with a header switcher offering light,
-dark, and auto modes. The dark theme — the original design basis — is optimized for extended viewing
-in low-light environments:
+The header switcher offers light, dark, and auto modes. `ThemeProvider` in `src/theme-context.tsx`
+resolves the selection and sets `data-theme` on `<html>`; the inline initializer in `index.html`
+sets it before React mounts. CSS token selectors and Tailwind `dark:` utilities in
+`src/styles/index.css` follow this resolved attribute. Only Auto follows the OS preference.
+
+The dark theme — the original design basis — is optimized for extended viewing in low-light
+environments:
 
 - Deep navy base (`--background-hsl`)
 - Bright, high-contrast text (`--foreground-hsl`)
@@ -76,8 +80,8 @@ surface and text tokens) with light-mode values defined under `[data-theme="ligh
 
 ### HSL Token Reference
 
-All colors are defined as HSL values in `src/styles/tokens.css` (the source of truth), with
-`src/themes.ts` providing a typed reference. They use an `--*-hsl` naming convention. A two-tier
+Shared color palettes live in `src/styles/tokens.css`. Their HSL tokens use the `--*-hsl` naming
+convention. `src/themes.ts` exports only the `ResolvedThemeId` type (`"light" | "dark"`). A two-tier
 brand system keeps named primitives stable while semantic role tokens decide which hue plays a
 structural vs. accent role (dark-theme values shown):
 
@@ -560,7 +564,7 @@ Refer to `AGENTS.md` for complete accessibility guidelines and code examples.
 When adding new UI components:
 
 1. Follow the design principles outlined above
-2. Use existing color tokens from `src/themes.ts`
+2. Use existing color tokens from `src/styles/tokens.css`
 3. Implement hover and focus states for interactive elements
 4. Verify accessibility (keyboard nav, ARIA labels, contrast)
 5. Test responsive behavior across viewport sizes
