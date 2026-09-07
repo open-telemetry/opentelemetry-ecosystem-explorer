@@ -34,8 +34,7 @@
  */
 
 import { AlertCircle, AlertTriangle, Loader2 } from "lucide-react";
-import { useState } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { CollectorComponentType } from "@/components/ui/type-stripe-colors";
 import { CollectorReadmeTab } from "@/features/collector/components/collector-readme-tab";
@@ -70,6 +69,7 @@ import {
   ExamplesTab,
   ReadmeTab,
 } from "@/v1/components/detail/tabs";
+import { collectorReleaseContext } from "@/v1/lib/collector-release";
 import type { StabilityFacet } from "@/v1/lib/list-filters";
 
 function topStability(c: CollectorComponent): string {
@@ -120,12 +120,6 @@ function attributeRows(c: CollectorComponent): AttributeRow[] {
   return rows;
 }
 
-function sourceHref(c: CollectorComponent, version?: string): string | null {
-  if (!c.repository) return null;
-  const ref = version ? `v${version}` : "main";
-  return `https://github.com/open-telemetry/${c.repository}/tree/${ref}/${c.type}/${c.name}`;
-}
-
 // Prefer the human-friendly display name, falling back to the slug.
 function displayLabel(c: { display_name?: string | null; name: string }): string {
   return c.display_name?.trim() || c.name;
@@ -136,30 +130,31 @@ export function CollectorDetailPageV1() {
   const { t: tc } = useTranslation("collector");
   const { distribution, name } = useParams<{ distribution: string; name: string }>();
   const [searchParams] = useSearchParams();
-  const [activeTab, setActiveTab] = useState<DetailTabId>("configuration");
+  const location = useLocation();
+  const navigate = useNavigate();
+  const tabHash = location.hash.slice(1);
+  const activeTab: DetailTabId =
+    tabHash === "readme" || tabHash === "attributes" || tabHash === "examples"
+      ? tabHash
+      : "configuration";
 
-  // Single writer for the tab deep-link hash: both the tablist and the on-page
-  // anchors change tabs through here so the URL always mirrors the active tab.
-  // DetailTabs still reads the hash on mount/hashchange for direct-link loads.
+  // Router location is the tab state, including Link, replace and Back/Forward navigation.
   function selectTab(next: DetailTabId) {
-    setActiveTab(next);
-    window.history.replaceState(null, "", `#${next}`);
+    navigate(
+      { pathname: location.pathname, search: location.search, hash: `#${next}` },
+      { replace: true, state: location.state }
+    );
   }
 
   const versionsQ = useCollectorVersions();
-  // Explicit `?version=` wins; otherwise fall back to the latest release so a
-  // bare `/collector/components/:distribution/:name` link (how the list page
-  // links) resolves instead of showing "not found".
-  const rawVersion = searchParams.get("version");
-  const deprecatedView = rawVersion === "deprecated";
+  const release = collectorReleaseContext({ searchParams, versions: versionsQ.data });
+  const deprecatedView = release.deprecated;
   const deprecationsQuery = useCollectorDeprecations(deprecatedView);
   const deprecatedEntry = deprecationsQuery.data?.components.find(
     (entry) => entry.distribution === distribution && entry.name === name
   );
-  const latestVersion = versionsQ.data?.versions.find((v) => v.is_latest)?.version ?? "";
-  const version = deprecatedView
-    ? (deprecatedEntry?.last_version ?? "")
-    : rawVersion || latestVersion;
+  const latestVersion = release.latestVersion;
+  const version = release.dataVersion(deprecatedEntry?.last_version);
   const versionLoading = deprecatedView ? deprecationsQuery.loading : !version && !versionsQ.error;
 
   const componentQ = useCollectorComponent(distribution ?? "", name ?? "", version);
@@ -200,7 +195,7 @@ export function CollectorDetailPageV1() {
           crumbs={[
             { label: t("breadcrumbs.explorer"), href: "/" },
             { label: tc("header.title"), href: "/collector" },
-            { label: t("breadcrumbs.components"), href: "/collector/components" },
+            { label: t("breadcrumbs.components"), href: release.listHref },
             { label: name ?? t("breadcrumbs.components") },
           ]}
         />
@@ -219,9 +214,10 @@ export function CollectorDetailPageV1() {
               {suggestion && (
                 <Link
                   className="td-btn td-btn--outline-dark"
-                  to={`/collector/components/${distribution}/${name}?version=${encodeURIComponent(
+                  to={release.detailHref(
+                    { distribution: distribution ?? "", name: name ?? "" },
                     suggestion
-                  )}`}
+                  )}
                 >
                   {t("notReleased.cta", { version: suggestion })}
                 </Link>
@@ -237,11 +233,8 @@ export function CollectorDetailPageV1() {
   const displayName = displayLabel(component);
   const stability = deprecatedView ? "deprecated" : topStability(component);
   const signals = emittedSignals(component);
-  const href = sourceHref(component, deprecatedView ? version : undefined);
+  const href = release.sourceHref(component, deprecatedEntry?.last_version);
 
-  // Sibling links preserve the explicit `?version=` when present, but never
-  // synthesize one for the latest view (so latest-view links stay bare).
-  const siblingSuffix = rawVersion ? `?version=${encodeURIComponent(rawVersion)}` : "";
   const siblingComponents = deprecatedView
     ? (deprecationsQuery.data?.components ?? [])
     : (componentsQ.data ?? []);
@@ -252,7 +245,7 @@ export function CollectorDetailPageV1() {
             id: c.id,
             name: c.name,
             displayName: displayLabel(c),
-            href: `/collector/components/${c.distribution}/${c.name}${siblingSuffix}`,
+            href: release.detailHref(c),
           },
         ]
       : []
@@ -289,7 +282,7 @@ export function CollectorDetailPageV1() {
         crumbs={[
           { label: t("breadcrumbs.explorer"), href: "/" },
           { label: tc("header.title"), href: "/collector" },
-          { label: t("breadcrumbs.components"), href: "/collector/components" },
+          { label: t("breadcrumbs.components"), href: release.listHref },
           { label: displayName },
         ]}
       />
@@ -358,14 +351,11 @@ export function CollectorDetailPageV1() {
           <VersionTimeline
             versions={versionEntries}
             currentVersion={version}
-            buildHref={(v) => `${detailBase}?version=${encodeURIComponent(v)}`}
+            buildHref={(v) => release.detailHref(component, v)}
           />
           <DiffSelector
-            // The selector seeds its from/to state on first render, and the
-            // version list resolves asynchronously. Keying on the list remounts
-            // it once presence lands, so the dropdowns can't keep the values
-            // derived from the single-version fallback.
-            key={availableVersions.join(",")}
+            // Reset the defaults when presence resolves or the viewed release changes.
+            key={`${version}:${availableVersions.join(",")}`}
             versions={availableVersions}
             defaultTo={version}
             buildHref={(from, to) =>
