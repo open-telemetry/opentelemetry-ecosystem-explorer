@@ -130,6 +130,43 @@ describe("agent-negotiation edge function", () => {
     expect(res?.headers.get("content-type")).toBe("application/json");
   });
 
+  // Agents that send `Accept: text/markdown` on every request must still be able
+  // to read the JSON artifacts llms.txt points them at. Negotiation runs first,
+  // so without the /data exemption this asks for by-metric.json.md and 404s.
+  it("serves /data JSON even when the request prefers Markdown", async () => {
+    const context = contextWith(async (path) => {
+      if (path === "/data/collector/by-metric.json") {
+        return new Response('{"entries":{}}', {
+          status: 200,
+          headers: { "content-type": "text/plain" },
+        });
+      }
+      return new Response("<!doctype html><html></html>", {
+        status: 200,
+        headers: { "content-type": "text/html" },
+      });
+    });
+    const res = await handler(
+      get("/data/collector/by-metric.json", { accept: "text/markdown" }),
+      context
+    );
+    expect(res?.status).toBe(200);
+    expect(res?.headers.get("content-type")).toBe("application/json");
+  });
+
+  it("serves the facet file as JSONL, not text/plain", async () => {
+    const context = contextWith(
+      async () =>
+        new Response('{"id":"contrib-kafkareceiver"}\n', {
+          status: 200,
+          headers: { "content-type": "text/plain" },
+        })
+    );
+    const res = await handler(get("/data/collector/facets.jsonl"), context);
+    expect(res?.status).toBe(200);
+    expect(res?.headers.get("content-type")).toBe("application/x-ndjson");
+  });
+
   it("returns 404 when the rewrite falls back to the SPA HTML shell", async () => {
     const context = contextWith(
       async () =>

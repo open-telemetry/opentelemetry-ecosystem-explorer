@@ -23,6 +23,9 @@ import {
   buildJavaInstrumentationPage,
   buildCollectorComponentPage,
   writeLatestJsonAliases,
+  writeFacetArtifacts,
+  collectorSignals,
+  javaSignals,
 } from "./generate-agent-docs.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -285,6 +288,193 @@ describe("agent docs: stable JSON alias", () => {
           expect(alias).toBe(pinned);
         }
       }
+    } finally {
+      rmSync(outDir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("agent docs: signal facets", () => {
+  it("unions a Collector component's signals across stability levels", () => {
+    expect(
+      collectorSignals({
+        status: { stability: { beta: ["logs", "metrics", "traces"], development: ["profiles"] } },
+      })
+    ).toEqual(["logs", "metrics", "profiles", "traces"]);
+  });
+
+  it("returns no Collector signals when stability is absent or malformed", () => {
+    expect(collectorSignals({})).toEqual([]);
+    expect(collectorSignals({ status: { stability: "beta" } })).toEqual([]);
+  });
+
+  it("reports the telemetry kinds a Java instrumentation emits", () => {
+    expect(
+      javaSignals({ telemetry: [{ when: "default", spans: [{ span_kind: "CLIENT" }] }] })
+    ).toEqual(["spans"]);
+    expect(
+      javaSignals({
+        telemetry: [
+          { when: "default", metrics: [{ name: "a" }] },
+          { when: "opt-in", spans: [{ span_kind: "SERVER" }] },
+        ],
+      })
+    ).toEqual(["metrics", "spans"]);
+    expect(javaSignals({ telemetry: [{ when: "default", metrics: [], spans: [] }] })).toEqual([]);
+  });
+});
+
+describe("agent docs: reverse index and facets", () => {
+  // Answering "what emits this metric?" from the reverse index is only safe if
+  // the index is complete; a silently partial map reads as an authoritative "no".
+  it("maps every metric and attribute in the corpus back to its component", async () => {
+    const outDir = mkdtempSync(resolve(tmpdir(), "agent-docs-facets-"));
+    try {
+      await writeFacetArtifacts(publicDir, outDir);
+      const missing: string[] = [];
+
+      const check = (
+        ecosystem: string,
+        docs: Record<string, { metrics: string[]; attributes: string[] }>
+      ) => {
+        const byMetric = readJson(resolve(outDir, `data/${ecosystem}/by-metric.json`));
+        const byAttribute = readJson(resolve(outDir, `data/${ecosystem}/by-attribute.json`));
+        const facetIds = new Set(
+          readFileSync(resolve(outDir, `data/${ecosystem}/facets.jsonl`), "utf-8")
+            .trimEnd()
+            .split("\n")
+            .map((line) => JSON.parse(line).id)
+        );
+
+        for (const [id, keys] of Object.entries(docs)) {
+          if (!facetIds.has(id)) missing.push(`${ecosystem}/${id}: no facet row`);
+          for (const name of keys.metrics) {
+            if (!byMetric.entries[name]?.includes(id)) missing.push(`${ecosystem}/${id}: ${name}`);
+          }
+          for (const name of keys.attributes) {
+            if (!byAttribute.entries[name]?.includes(id)) {
+              missing.push(`${ecosystem}/${id}: ${name}`);
+            }
+          }
+        }
+
+        // `resolve_ids_with` is only a real promise if every id it hands back
+        // has a row in that file.
+        for (const index of [byMetric, byAttribute]) {
+          expect(index.resolve_ids_with).toBe(`/data/${ecosystem}/facets.jsonl`);
+          for (const ids of Object.values(index.entries) as string[][]) {
+            for (const id of ids) {
+              if (!facetIds.has(id)) missing.push(`${ecosystem}: unresolvable id ${id}`);
+            }
+          }
+        }
+      };
+
+      const collectorVersion = latestVersion("collector");
+      const collectorManifest = readJson(
+        resolve(dataDir, `collector/versions/${collectorVersion}-index.json`)
+      );
+      const collectorDocs: Record<string, { metrics: string[]; attributes: string[] }> = {};
+      for (const [id, hash] of Object.entries(collectorManifest.components)) {
+        const doc = readJson(resolve(dataDir, `collector/components/${id}/${id}-${hash}.json`));
+        collectorDocs[id] = {
+          metrics: [
+            ...Object.keys(doc.metrics ?? {}),
+            ...Object.keys(doc.telemetry?.metrics ?? {}),
+          ],
+          attributes: Object.keys(doc.attributes ?? {}),
+        };
+      }
+      check("collector", collectorDocs);
+
+      const javaVersion = latestVersion("javaagent");
+      const javaManifest = readJson(
+        resolve(dataDir, `javaagent/versions/${javaVersion}-index.json`)
+      );
+      const javaDocs: Record<string, { metrics: string[]; attributes: string[] }> = {};
+      for (const [id, hash] of Object.entries({
+        ...javaManifest.instrumentations,
+        ...javaManifest.custom_instrumentations,
+      })) {
+        const doc = readJson(
+          resolve(dataDir, `javaagent/instrumentations/${id}/${id}-${hash}.json`)
+        );
+        const metrics: string[] = [];
+        const attributes: string[] = [];
+        for (const group of doc.telemetry ?? []) {
+          for (const metric of group.metrics ?? []) {
+            metrics.push(metric.name);
+            for (const attr of metric.attributes ?? []) attributes.push(attr.name);
+          }
+          for (const span of group.spans ?? []) {
+            for (const attr of span.attributes ?? []) attributes.push(attr.name);
+          }
+        }
+        javaDocs[id] = { metrics, attributes };
+      }
+      check("javaagent", javaDocs);
+
+      expect(missing).toEqual([]);
+    } finally {
+      rmSync(outDir, { recursive: true, force: true });
+    }
+  });
+
+  it("emits sorted keys and ids so an unchanged corpus rebuilds byte-identically", async () => {
+    const outDir = mkdtempSync(resolve(tmpdir(), "agent-docs-facets-sorted-"));
+    try {
+      await writeFacetArtifacts(publicDir, outDir);
+
+      const byMetric = readJson(resolve(outDir, "data/javaagent/by-metric.json"));
+      const keys = Object.keys(byMetric.entries);
+      expect(keys).toEqual([...keys].sort());
+      for (const ids of Object.values(byMetric.entries) as string[][]) {
+        expect(ids).toEqual([...ids].sort());
+      }
+
+      const rows = readFileSync(resolve(outDir, "data/javaagent/facets.jsonl"), "utf-8")
+        .trimEnd()
+        .split("\n")
+        .map((line) => JSON.parse(line));
+      const ids = rows.map((row) => row.id);
+      expect(ids).toEqual([...ids].sort((a, b) => a.localeCompare(b)));
+      expect(new Set(ids).size).toBe(ids.length);
+    } finally {
+      rmSync(outDir, { recursive: true, force: true });
+    }
+  });
+
+  it("carries the facets an agent filters on, and no derivable URL", async () => {
+    const outDir = mkdtempSync(resolve(tmpdir(), "agent-docs-facets-fields-"));
+    try {
+      await writeFacetArtifacts(publicDir, outDir);
+
+      const row = (ecosystem: string, id: string) =>
+        readFileSync(resolve(outDir, `data/${ecosystem}/facets.jsonl`), "utf-8")
+          .trimEnd()
+          .split("\n")
+          .map((line) => JSON.parse(line))
+          .find((entry) => entry.id === id);
+
+      const kafka = row("collector", "contrib-kafkareceiver");
+      expect(kafka).toMatchObject({
+        name: "kafkareceiver",
+        type: "receiver",
+        distribution: "contrib",
+        page: "/collector/components/contrib/kafkareceiver",
+      });
+      expect(kafka.signals).toContain("logs");
+      expect(kafka.description).toBeTruthy();
+      // Derivable from the id via the documented alias pattern, so not stored.
+      expect(kafka.json).toBeUndefined();
+
+      const dubbo = row("javaagent", "apache-dubbo-2.7");
+      expect(dubbo).toMatchObject({
+        display_name: "Apache Dubbo",
+        page: "/java-agent/instrumentation/apache-dubbo-2.7",
+      });
+      expect(dubbo.signals).toEqual(["metrics", "spans"]);
+      expect(dubbo.json).toBeUndefined();
     } finally {
       rmSync(outDir, { recursive: true, force: true });
     }

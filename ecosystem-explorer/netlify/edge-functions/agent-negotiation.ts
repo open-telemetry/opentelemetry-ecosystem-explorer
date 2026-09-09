@@ -182,6 +182,11 @@ function sectionIndexFor(pathname: string): string | null {
 // it is visible over plain HTTP.
 const LEGACY_JAVA_VERSION_ROUTE = /^\/java-agent\/instrumentation\/(latest|\d[\w.+-]*)\/([^/]+)$/;
 
+// Paths with no Markdown form. An agent that sends `Accept: text/markdown` on
+// every request would otherwise get a 404 for the JSON artifacts llms.txt points
+// it at, since negotiation runs before the /data and /schemas handlers.
+const NO_MARKDOWN_PREFIXES = ["/data/", "/schemas/"];
+
 const escapeHtml = (value: string): string =>
   value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 const escapeAttr = (value: string): string => escapeHtml(value).replace(/"/g, "&quot;");
@@ -501,7 +506,7 @@ export default async (request: Request, context: Context) => {
 
   // Content negotiation for AI agents: prefer the page's own Markdown (generated
   // at the app-route path), falling back to the section index, then the docs root.
-  if (isMarkdownRequested) {
+  if (isMarkdownRequested && !NO_MARKDOWN_PREFIXES.some((prefix) => pathname.startsWith(prefix))) {
     const ownMd = lookupPath === "/" ? "/index.md" : `${lookupPath}.md`;
     const own = await serveAsset(context, ownMd, "text/markdown; charset=UTF-8", {
       Vary: "Accept",
@@ -562,7 +567,11 @@ export default async (request: Request, context: Context) => {
 
   // JSON schemas and metadata
   if (pathname.startsWith("/schemas/") || pathname.startsWith("/data/")) {
-    const finalContentType = pathname.endsWith(".json") ? "application/json" : "text/plain";
+    const finalContentType = pathname.endsWith(".json")
+      ? "application/json"
+      : pathname.endsWith(".jsonl")
+        ? "application/x-ndjson"
+        : "text/plain";
     return (await serveAsset(context, pathname, finalContentType)) ?? notFound(request);
   }
 
