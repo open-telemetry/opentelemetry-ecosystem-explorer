@@ -12225,6 +12225,18 @@ components:
           monotonic: true
           value_type: int
         unit: '1'
+      mysql.query.execution.time:
+        description: The total execution time of SQL statements tracked by the server.
+        enabled: false
+        extended_documentation: This metric reports cumulative statement execution
+          time in seconds, including statements issued by the receiver. Values reset
+          when statement summary state is reset or the server restarts.
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: double
+        unit: s
       mysql.query.slow.count:
         description: The number of slow queries.
         enabled: false
@@ -12302,6 +12314,23 @@ components:
           monotonic: true
           value_type: int
         unit: '1'
+      mysql.server.healthy:
+        description: The health status of the MySQL server.
+        enabled: false
+        extended_documentation: A value of '1' indicates healthy and '0' indicates
+          unhealthy.
+        gauge:
+          value_type: int
+        stability: development
+        unit: '1'
+      mysql.session.active.count:
+        description: The number of active MySQL sessions with query text and state.
+        enabled: false
+        extended_documentation: Idle sessions and the receiver's own query are excluded.
+        gauge:
+          value_type: int
+        stability: development
+        unit: '{session}'
       mysql.sorts:
         attributes:
         - sorts
