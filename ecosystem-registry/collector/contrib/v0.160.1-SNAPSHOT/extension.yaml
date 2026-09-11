@@ -284,7 +284,7 @@ components:
       from_version: v0.154.0
       id: extension.encoding.googlecloudlogentryencoding.DontEmitV0RPCConventions
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/22095
-      stage: alpha
+      stage: beta
     status:
       class: extension
       codeowners:

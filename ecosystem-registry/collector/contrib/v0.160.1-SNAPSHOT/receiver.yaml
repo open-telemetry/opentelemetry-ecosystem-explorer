@@ -11269,6 +11269,11 @@ components:
         unit: By
     override_value_enabled: true
     resource_attributes:
+      db.system.version:
+        description: The database version of the instance. Examples include "5.0.0",
+          "6.0.4".
+        enabled: false
+        type: string
       server.address:
         description: The address of the MongoDB host.
         enabled: true
@@ -11990,6 +11995,40 @@ components:
           monotonic: false
           value_type: int
         unit: '1'
+      mysql.innodb.redo_log.checkpoint.age:
+        description: The difference, in bytes, between the current InnoDB redo log
+          sequence number and the most recent checkpoint log sequence number.
+        enabled: false
+        extended_documentation: Only emitted for MySQL 8.0.11 and later. MySQL 8.0.11
+          through 8.0.29 requires SELECT and BACKUP_ADMIN. MySQL 8.0.30 and later
+          versions do not require BACKUP_ADMIN. MariaDB is not supported for this
+          metric.
+        gauge:
+          value_type: int
+        stability: development
+        unit: By
+      mysql.innodb.redo_log.lsn.checkpoint:
+        description: The InnoDB redo log sequence number of the most recent checkpoint.
+        enabled: false
+        extended_documentation: Only emitted for MySQL 8.0.11 and later. MySQL 8.0.11
+          through 8.0.29 requires SELECT and BACKUP_ADMIN. MySQL 8.0.30 and later
+          versions do not require BACKUP_ADMIN. MariaDB is not supported for this
+          metric.
+        gauge:
+          value_type: int
+        stability: development
+        unit: By
+      mysql.innodb.redo_log.lsn.current:
+        description: The current InnoDB redo log sequence number.
+        enabled: false
+        extended_documentation: Only emitted for MySQL 8.0.11 and later. MySQL 8.0.11
+          through 8.0.29 requires SELECT and BACKUP_ADMIN. MySQL 8.0.30 and later
+          versions do not require BACKUP_ADMIN. MariaDB is not supported for this
+          metric.
+        gauge:
+          value_type: int
+        stability: development
+        unit: By
       mysql.innodb.row_lock.wait.count:
         attributes: []
         description: The number of InnoDB row lock waits currently pending.
@@ -21934,11 +21973,15 @@ components:
         enabled: true
         type: string
       server.address:
-        description: Name of the database host.
+        description: The address of the monitored SQL Server instance. A loopback
+          target (for example localhost or 127.0.0.1) is reported as the host name
+          of the machine running the collector, since the instance is co-located with
+          it.
         enabled: true
         type: string
       server.port:
-        description: Server port number.
+        description: The port of the monitored SQL Server instance, defaulting to
+          1433 when not configured.
         enabled: true
         type: int
       service.instance.id:
