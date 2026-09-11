@@ -16,6 +16,7 @@ on:
       - "ecosystem-explorer/src/**"
       - "ecosystem-explorer/public/**"
       - "ecosystem-explorer/scripts/take-screenshots.mjs"
+      - "ecosystem-explorer/scripts/acceptance.mjs"
       - "ecosystem-explorer/package.json"
       - ".github/workflows/screenshots-baseline.yml"
   workflow_dispatch:
@@ -64,6 +65,8 @@ jobs:
 
       - name: Take baseline screenshots
         working-directory: ecosystem-explorer
+        env:
+          ACCEPTANCE_APP_MODE: v1
         run: |
           mkdir -p screenshots
           bun run screenshots:capture

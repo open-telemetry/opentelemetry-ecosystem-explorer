@@ -19,12 +19,24 @@ import http from "http";
 import path from "path";
 import { AxeBuilder } from "@axe-core/playwright";
 import { chromium } from "playwright";
+import {
+  acceptanceConfig,
+  optionalScenario,
+  waitForReady,
+  clickTab,
+  openCollectorFilters,
+} from "./acceptance.mjs";
+
+const config = acceptanceConfig("v1");
+console.log(`Screenshot app mode: ${config.appMode} (set ACCEPTANCE_APP_MODE to override)`);
 
 const DIST_DIR = path.resolve("dist");
 const SCREENSHOTS_DIR = path.resolve("screenshots");
 const A11Y_DIR = path.resolve("a11y");
 const PORT = 4173;
-const BASE_URL = `http://localhost:${PORT}`;
+// An existing dev/preview server can be used for focused local checks. Its
+// rendered mode is still verified; the env var cannot toggle a built app.
+const BASE_URL = process.env.ACCEPTANCE_BASE_URL || `http://localhost:${PORT}`;
 
 // Track total a11y violations across the run for a summary at the end.
 const a11ySummary = { runs: 0, violations: 0 };
@@ -88,9 +100,9 @@ const COLLECTOR_DIFF = resolveCollectorDiffPair(
 // Collector list densities (Phase 4). The bare URL renders the default
 // density (compact); the others are URL-driven via `?density=`.
 const COLLECTOR_LIST_CAPTURES = [
-  { name: "collector-list", query: "" },
-  { name: "collector-list-cards", query: "?density=cards" },
-  { name: "collector-list-table", query: "?density=table" },
+  { name: "collector-list", query: "", ready: ".td-list--compact a" },
+  { name: "collector-list-cards", query: "?density=cards", ready: ".td-list--cards a" },
+  { name: "collector-list-table", query: "?density=table", ready: ".td-table tbody a" },
 ];
 
 // Viewport sizes captured for each page. Edit here to add, remove, or resize.
@@ -104,7 +116,7 @@ const VIEWPORTS = [
 const THEMES = ["dark", "light"];
 
 async function startServer() {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const server = http.createServer((req, res) => {
       const urlPath = decodeURIComponent(req.url.split("?")[0]);
 
@@ -145,6 +157,7 @@ async function startServer() {
       fs.createReadStream(filePath).pipe(res);
     });
 
+    server.once("error", reject);
     server.listen(PORT, () => {
       console.log(`Server listening on ${BASE_URL}`);
       resolve(server);
@@ -152,38 +165,20 @@ async function startServer() {
   });
 }
 
-async function settle(page, timeout = 10000) {
-  await page.waitForLoadState("networkidle", { timeout }).catch(() => {});
+async function visit(page, scenario, url, selector = "main h1") {
+  await page.goto(url, { waitUntil: "domcontentloaded", timeout: 10000 });
+  await waitForReady(page, { appMode: config.appMode, scenario, selector });
 }
 
-async function clickTab(page, name) {
-  try {
-    const tab = page.getByRole("tab", { name });
-    await tab.waitFor({ state: "visible", timeout: 5000 });
-    await tab.click();
-    await page.waitForSelector('[role="tabpanel"][data-state="active"]', {
-      state: "visible",
-      timeout: 5000,
-    });
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-async function assertNoError(page, url) {
-  const errorHeading = page.getByRole("heading", { name: /error/i });
-  const notFound = page.getByRole("heading", { name: /not found/i });
-  const hasError = await errorHeading.isVisible().catch(() => false);
-  const has404 = await notFound.isVisible().catch(() => false);
-  if (hasError || has404) {
-    throw new Error(`Screenshot aborted: error page detected at ${url}`);
-  }
+function includeOptional(name) {
+  const reason = optionalScenario(config, name);
+  if (reason) console.log(`Skipping ${name}: ${reason}`);
+  return !reason;
 }
 
 async function takeScreenshots() {
-  const server = await startServer();
+  const server = process.env.ACCEPTANCE_BASE_URL ? null : await startServer();
+  fs.mkdirSync(SCREENSHOTS_DIR, { recursive: true });
   let browser;
 
   try {
@@ -233,124 +228,95 @@ async function takeScreenshots() {
           // axe-core runs once per (page × theme) — viewports don't change a11y semantics.
           const isFirstViewport = viewport === VIEWPORTS[0];
 
-          // 1. Home page
-          await page.goto(BASE_URL, { waitUntil: "domcontentloaded", timeout: 10000 });
-          await page.waitForSelector("h1", { state: "visible", timeout: 5000 });
-          await settle(page);
-          await assertNoError(page, BASE_URL);
+          // Shared routes use the chrome selected by the explicit app mode.
+          await visit(page, "home", BASE_URL);
           await page.screenshot({ path: p("home"), fullPage: true });
           if (isFirstViewport) await recordA11y(page, "home", theme);
 
-          // 2. Collector ecosystem landing (v1)
-          await page.goto(`${BASE_URL}/collector`, {
-            waitUntil: "domcontentloaded",
-            timeout: 10000,
-          });
-          await page.waitForSelector("h1", { state: "visible", timeout: 5000 });
-          await settle(page);
-          await assertNoError(page, `${BASE_URL}/collector`);
+          await visit(page, "collector-landing", `${BASE_URL}/collector`);
           await page.screenshot({ path: p("collector-landing"), fullPage: true });
           if (isFirstViewport) await recordA11y(page, "collector-landing", theme);
 
-          // 3. Java Agent ecosystem landing (v1)
-          await page.goto(`${BASE_URL}/java-agent`, {
-            waitUntil: "domcontentloaded",
-            timeout: 10000,
-          });
-          await page.waitForSelector("h1", { state: "visible", timeout: 5000 });
-          await settle(page);
-          await assertNoError(page, `${BASE_URL}/java-agent`);
+          await visit(page, "java-agent-landing", `${BASE_URL}/java-agent`);
           await page.screenshot({ path: p("java-agent-landing"), fullPage: true });
           if (isFirstViewport) await recordA11y(page, "java-agent-landing", theme);
 
-          // 4. Java agent instrumentation list
-          await page.goto(`${BASE_URL}/java-agent/instrumentation`, {
-            waitUntil: "domcontentloaded",
-            timeout: 10000,
-          });
-          await settle(page);
-          await assertNoError(page, `${BASE_URL}/java-agent/instrumentation`);
+          await visit(
+            page,
+            "instrumentation-list",
+            `${BASE_URL}/java-agent/instrumentation`,
+            'main a[href^="/java-agent/instrumentation/"]'
+          );
           await page.screenshot({ path: p("instrumentation-list"), fullPage: true });
           if (isFirstViewport) await recordA11y(page, "instrumentation-list", theme);
 
-          // 5. Java agent instrumentation detail - Details tab
+          // Java detail tabs are required in both apps, which share this page.
           const detailUrl = `${BASE_URL}/java-agent/instrumentation/${DETAIL_VERSION}/${DETAIL_NAME}`;
-          await page.goto(detailUrl, { waitUntil: "domcontentloaded", timeout: 10000 });
-          await settle(page);
-          await assertNoError(page, detailUrl);
+          await visit(page, "detail-details", detailUrl, 'main [role="tabpanel"]');
+          await clickTab(page, "Details", "detail-details");
           await page.screenshot({ path: p("detail-details"), fullPage: true });
           if (isFirstViewport) await recordA11y(page, "detail-details", theme);
 
-          // 6. Telemetry tab (skipped gracefully if tabs aren't present in this branch)
-          await clickTab(page, "Telemetry");
-          await assertNoError(page, detailUrl);
+          await clickTab(page, "Telemetry", "detail-telemetry");
           await page.screenshot({ path: p("detail-telemetry"), fullPage: true });
           if (isFirstViewport) await recordA11y(page, "detail-telemetry", theme);
 
-          // 7. Configuration tab (skipped gracefully if tabs aren't present in this branch)
-          await clickTab(page, "Configuration");
-          await assertNoError(page, detailUrl);
+          await clickTab(page, "Configuration", "detail-configuration");
           await page.screenshot({ path: p("detail-configuration"), fullPage: true });
           if (isFirstViewport) await recordA11y(page, "detail-configuration", theme);
 
-          // 8. Collector list — one capture per density
-          for (const { name, query } of COLLECTOR_LIST_CAPTURES) {
-            const listUrl = `${BASE_URL}/collector/components${query}`;
-            await page.goto(listUrl, { waitUntil: "domcontentloaded", timeout: 10000 });
-            await settle(page);
-            await assertNoError(page, listUrl);
+          for (const { name, query, ready } of COLLECTOR_LIST_CAPTURES) {
+            if (name !== "collector-list" && !includeOptional(name)) continue;
+            await visit(
+              page,
+              name,
+              `${BASE_URL}/collector/components${query}`,
+              config.appMode === "v1" ? ready : 'main a[href^="/collector/components/"]'
+            );
             await page.screenshot({ path: p(name), fullPage: true });
             if (isFirstViewport) await recordA11y(page, name, theme);
           }
 
-          // 8b. Collector list with the facet drawer open. The drawer (and its
-          //    modal a11y surface) only exists on the mobile layout, so this is
-          //    captured on the mobile viewport instead of the first one.
-          if (viewport.name === "mobile") {
-            await page.goto(`${BASE_URL}/collector/components`, {
-              waitUntil: "domcontentloaded",
-              timeout: 10000,
-            });
-            await settle(page);
-            await page.getByRole("button", { name: /open filters/i }).click();
-            await page.waitForSelector('[role="dialog"]', { state: "visible", timeout: 5000 });
+          // The drawer only exists in the v1 mobile layout. A missing v1
+          // control/dialog fails instead of producing a closed-drawer capture.
+          if (viewport.name === "mobile" && includeOptional("collector-list-drawer")) {
+            await visit(
+              page,
+              "collector-list-drawer",
+              `${BASE_URL}/collector/components`,
+              ".td-list--compact a"
+            );
+            await openCollectorFilters(page);
             await page.screenshot({ path: p("collector-list-drawer") });
             await recordA11y(page, "collector-list-drawer", theme);
           }
 
-          // 9. Collector detail
           const collectorDetailUrl = `${BASE_URL}/collector/components/${COLLECTOR_DISTRIBUTION}/${COLLECTOR_DETAIL_NAME}`;
-          await page.goto(collectorDetailUrl, {
-            waitUntil: "domcontentloaded",
-            timeout: 10000,
-          });
-          await settle(page);
-          await assertNoError(page, collectorDetailUrl);
+          await visit(
+            page,
+            "collector-detail",
+            collectorDetailUrl,
+            config.appMode === "v1" ? 'main [role="tabpanel"]' : "main h1"
+          );
           await page.screenshot({ path: p("collector-detail"), fullPage: true });
           if (isFirstViewport) await recordA11y(page, "collector-detail", theme);
 
-          // 9b. Collector version diff — comparing the two most recent releases.
+          // The diff page is shared by both route tables.
           const collectorDiffUrl =
             `${BASE_URL}/collector/components/${COLLECTOR_DISTRIBUTION}/${COLLECTOR_DETAIL_NAME}/diff` +
             `?from=${COLLECTOR_DIFF.from}&to=${COLLECTOR_DIFF.to}`;
-          await page.goto(collectorDiffUrl, {
-            waitUntil: "domcontentloaded",
-            timeout: 10000,
-          });
-          await settle(page);
-          await assertNoError(page, collectorDiffUrl);
+          await visit(page, "collector-diff", collectorDiffUrl, ".td-diff__sections");
           await page.screenshot({ path: p("collector-diff"), fullPage: true });
           if (isFirstViewport) await recordA11y(page, "collector-diff", theme);
 
-          // 10. Dev component showcase — single page mounting every v1 primitive
-          //    in its canonical states. Captured so a11y + pixel-diff can baseline
-          //    the design-system surface independently of feature pages.
-          const devUrl = `${BASE_URL}/_dev/components`;
-          await page.goto(devUrl, { waitUntil: "domcontentloaded", timeout: 10000 });
-          await settle(page);
-          await assertNoError(page, devUrl);
-          await page.screenshot({ path: p("dev-components"), fullPage: true });
-          if (isFirstViewport) await recordA11y(page, "dev-components", theme);
+          // Both route tables expose this optional build-time capability.
+          // Disable explicitly with ACCEPTANCE_DEV_SHOWCASE=false when omitted
+          // from the build; an enabled but missing showcase must fail.
+          if (includeOptional("dev-components")) {
+            await visit(page, "dev-components", `${BASE_URL}/_dev/components`);
+            await page.screenshot({ path: p("dev-components"), fullPage: true });
+            if (isFirstViewport) await recordA11y(page, "dev-components", theme);
+          }
 
           logTime(`  ${theme} / ${viewport.name} done`);
         }
@@ -372,7 +338,7 @@ async function takeScreenshots() {
     if (browser) {
       await browser.close();
     }
-    await new Promise((resolve) => server.close(resolve));
+    if (server) await new Promise((resolve) => server.close(resolve));
   }
 }
 

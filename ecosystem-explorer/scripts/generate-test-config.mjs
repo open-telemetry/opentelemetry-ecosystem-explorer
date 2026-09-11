@@ -17,10 +17,14 @@ import fs from "fs";
 import http from "http";
 import path from "path";
 import { chromium } from "playwright";
+import { acceptanceConfig, waitForReady, requireState, clickTab } from "./acceptance.mjs";
+
+const config = acceptanceConfig("legacy");
+console.log(`Configuration app mode: ${config.appMode} (set ACCEPTANCE_APP_MODE to override)`);
 
 const DIST_DIR = path.resolve("dist");
 const PORT = 4174;
-const BASE_URL = `http://localhost:${PORT}`;
+const BASE_URL = process.env.ACCEPTANCE_BASE_URL || `http://localhost:${PORT}`;
 
 /**
  * Starts a minimal local HTTP server to serve the static frontend assets from the DIST_DIR.
@@ -30,7 +34,7 @@ const BASE_URL = `http://localhost:${PORT}`;
  * @returns {Promise<http.Server>} A promise that resolves to the running HTTP server instance.
  */
 async function startServer() {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const server = http.createServer((req, res) => {
       const urlPath = decodeURIComponent(req.url.split("?")[0]);
       const resolvedPath = path.resolve(DIST_DIR, urlPath.replace(/^\/+/, ""));
@@ -62,6 +66,7 @@ async function startServer() {
       fs.createReadStream(filePath).pipe(res);
     });
 
+    server.once("error", reject);
     server.listen(PORT, () => {
       resolve(server);
     });
@@ -76,7 +81,7 @@ async function startServer() {
  * The YAML is then saved to the specified output file for use in acceptance tests.
  */
 async function generateConfig() {
-  const server = await startServer();
+  const server = process.env.ACCEPTANCE_BASE_URL ? null : await startServer();
   let browser;
 
   try {
@@ -98,34 +103,42 @@ async function generateConfig() {
       await dialog.accept();
     });
     await page.goto(`${BASE_URL}/java-agent/configuration/builder`, {
-      waitUntil: "networkidle",
+      waitUntil: "domcontentloaded",
       timeout: 20000,
+    });
+    await waitForReady(page, {
+      appMode: config.appMode,
+      scenario: "configuration-builder",
+      selector: "#schema-version-select",
     });
 
     // Select schema version 1.0.0 (default 1.1.0 is ahead of released agents)
     await page.locator("#schema-version-select").selectOption("1.0.0");
 
-    try {
+    await requireState(page, "configuration-builder", "OTLP HTTP exporter selection", async () => {
       await page
         .getByRole("button", { name: /Expand Exporter/i })
         .first()
         .click({ timeout: 5000 });
       await page.getByText("otlp_http").first().click({ timeout: 5000 });
-    } catch (e) {
-      console.error("Could not toggle OTLP exporter:", e?.message || String(e));
-      throw e;
-    }
+    });
 
     // Switch to the Instrumentation tab and add every instrumentation config
     // option at its default value, so the acceptance test exercises the full
     // generated surface rather than just the exporter block. Builder state is
     // hoisted above the tabs, so the exporter selection above survives.
-    await page.getByRole("tab", { name: "Instrumentation" }).click({ timeout: 10000 });
+    await clickTab(page, "Instrumentation", "configuration-builder", 10000);
     // click() auto-waits for the button to leave its disabled state, which it
     // does once the instrumentation list has loaded.
-    await page
-      .getByRole("button", { name: "Add all instrumentation configs" })
-      .click({ timeout: 30000 });
+    await requireState(
+      page,
+      "configuration-builder",
+      '"Add all instrumentation configs" button',
+      () =>
+        page
+          .getByRole("button", { name: "Add all instrumentation configs" })
+          .click({ timeout: 30000 })
+    );
 
     const yamlElement = page.locator("pre").first();
     await yamlElement.waitFor({ state: "visible", timeout: 10000 });
@@ -163,7 +176,7 @@ async function generateConfig() {
     if (browser) {
       await browser.close();
     }
-    server.close();
+    if (server) await new Promise((resolve) => server.close(resolve));
   }
 }
 

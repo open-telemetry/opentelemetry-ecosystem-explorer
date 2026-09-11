@@ -16,10 +16,10 @@
 
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { CollectorDetailPageV1 } from "./detail-page";
+import { CollectorDetailPageV1 } from "@/v1/features/detail/detail-page";
 import {
   useCollectorComponent,
   useCollectorComponents,
@@ -117,9 +117,30 @@ function mockHooks(overrides?: {
   vi.mocked(useComponentReadme).mockReturnValue({ data: null, loading: false, error: null });
 }
 
+function DetailNavigationProbe() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  return (
+    <>
+      <div data-testid="location">{location.pathname + location.search + location.hash}</div>
+      <button onClick={() => navigate({ hash: "#readme", search: location.search })}>
+        Test README link
+      </button>
+      <button
+        onClick={() => navigate({ hash: "#examples", search: location.search }, { replace: true })}
+      >
+        Test replace
+      </button>
+      <button onClick={() => navigate(-1)}>Test back</button>
+      <button onClick={() => navigate(1)}>Test forward</button>
+    </>
+  );
+}
+
 function renderAtRoute(path: string) {
   return render(
     <MemoryRouter initialEntries={[path]}>
+      <DetailNavigationProbe />
       <Routes>
         <Route
           path="/collector/components/:distribution/:name"
@@ -403,6 +424,85 @@ describe("CollectorDetailPageV1", () => {
     await user.click(screen.getByRole("button", { name: "Emitted attributes" }));
 
     expect(screen.getByText("otelcol_receiver_accepted_spans")).toBeInTheDocument();
-    expect(window.location.hash).toBe("#attributes");
+    expect(screen.getByTestId("location")).toHaveTextContent("#attributes");
+  });
+});
+
+describe("Collector detail tab routing", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    window.location.hash = "";
+    mockHooks();
+  });
+
+  it("reads direct hashes and follows same-route router navigation and history", async () => {
+    const user = userEvent.setup();
+    renderAtRoute("/collector/components/core/otlpreceiver?version=0.149.0#attributes");
+    expect(screen.getByRole("tab", { name: "Attributes" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+    await user.click(screen.getByRole("button", { name: "Test README link" }));
+    expect(screen.getByRole("tab", { name: "README" })).toHaveAttribute("aria-selected", "true");
+    await user.click(screen.getByRole("button", { name: "Test back" }));
+    expect(screen.getByRole("tab", { name: "Attributes" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+    await user.click(screen.getByRole("button", { name: "Test forward" }));
+    expect(screen.getByRole("tab", { name: "README" })).toHaveAttribute("aria-selected", "true");
+    await user.click(screen.getByRole("button", { name: "Test replace" }));
+    expect(screen.getByRole("tab", { name: "Examples" })).toHaveAttribute("aria-selected", "true");
+    await user.click(screen.getByRole("tab", { name: "Configuration" }));
+    expect(screen.getByTestId("location")).toHaveTextContent("?version=0.149.0#configuration");
+    await user.click(screen.getByRole("button", { name: "Test back" }));
+    expect(screen.getByRole("tab", { name: "Attributes" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+    await user.click(screen.getByRole("button", { name: "Test forward" }));
+    expect(screen.getByRole("tab", { name: "Configuration" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+  });
+
+  it.each(["", "#unknown", "#placement"])(
+    "defaults to Configuration for %s without rewriting the URL",
+    (hash) => {
+      const path = `/collector/components/core/otlpreceiver?version=0.149.0${hash}`;
+      renderAtRoute(path);
+      expect(screen.getByRole("tab", { name: "Configuration" })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+      expect(screen.getByTestId("location").textContent).toBe(path);
+    }
+  );
+});
+
+describe("Collector detail release changes", () => {
+  it("follows timeline links and resets the diff defaults to the viewed release", async () => {
+    const user = userEvent.setup();
+    mockHooks();
+    renderAtRoute("/collector/components/core/otlpreceiver#attributes");
+    await user.click(screen.getByRole("link", { name: "0.149.0" }));
+    expect(screen.getByRole("link", { name: "Source" })).toHaveAttribute(
+      "href",
+      "https://github.com/open-telemetry/opentelemetry-collector/tree/v0.149.0/receiver/otlpreceiver"
+    );
+    expect(screen.getByLabelText("To")).toHaveValue("0.149.0");
+    expect(screen.getByRole("link", { name: /kafkareceiver/ })).toHaveAttribute(
+      "href",
+      "/collector/components/contrib/kafkareceiver?version=0.149.0"
+    );
+    expect(screen.getByRole("link", { name: "Components" })).toHaveAttribute(
+      "href",
+      "/collector/components?version=0.149.0"
+    );
+    expect(screen.getByRole("tab", { name: "Configuration" })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
   });
 });

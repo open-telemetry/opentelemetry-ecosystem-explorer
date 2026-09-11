@@ -16,9 +16,9 @@
 
 /*
  * DetailTabs — Bootstrap-style nav-tabs container for the four content
- * panels (Configuration / README / Attributes / Examples). Selected tab
- * round-trips through `location.hash` so a deep-linkable url like
- * `/collector/components/core/kafkareceiver#configuration` works.
+ * panels (Configuration / README / Attributes / Examples). The page owns
+ * the selected tab and its URL; this container handles presentation and
+ * keyboard activation.
  *
  * Tab-content primitives are co-located here to keep imports flat:
  *   - <ConfigurationTab>  table with empty-state fallback
@@ -27,12 +27,17 @@
  *   - <ExamplesTab>       link-outs + snippet placeholders
  */
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 
 export type DetailTabId = "configuration" | "readme" | "attributes" | "examples";
 
 const TAB_IDS: DetailTabId[] = ["configuration", "readme", "attributes", "examples"];
+
+// eslint-disable-next-line react-refresh/only-export-components -- type guard over the tab list DetailTabs owns
+export function isDetailTabId(value: string): value is DetailTabId {
+  return (TAB_IDS as readonly string[]).includes(value);
+}
 
 export interface DetailTabsProps {
   active: DetailTabId;
@@ -59,18 +64,6 @@ export function DetailTabs({ active, onChange, children }: DetailTabsProps) {
     onChange(nextId);
     tabRefs.current[nextId]?.focus();
   }
-
-  // Hash-sync — on mount and on hash change, reflect the URL into `active`.
-  useEffect(() => {
-    function readHash() {
-      const raw = window.location.hash.replace(/^#/, "");
-      if (raw && TAB_IDS.includes(raw as DetailTabId)) onChange(raw as DetailTabId);
-    }
-    readHash();
-    window.addEventListener("hashchange", readHash);
-    return () => window.removeEventListener("hashchange", readHash);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <section className="td-tabs">

@@ -24,7 +24,7 @@ import {
   useCollectorVersions,
 } from "@/hooks/use-collector-data";
 import type { DeprecatedIndexComponent, IndexComponent } from "@/types/collector";
-import { CollectorListPageV1 } from "./list-page";
+import { CollectorListPageV1 } from "@/v1/features/list/list-page";
 
 vi.mock("@/hooks/use-collector-data", () => ({
   useCollectorComponents: vi.fn(),
@@ -147,6 +147,18 @@ describe("CollectorListPageV1", () => {
     expect(screen.getByText("Showing 4 of 4 (4 total)")).toBeInTheDocument();
   });
 
+  it.each(["compact", "cards", "table"])(
+    "preserves the selected release in %s row links",
+    (density) => {
+      renderPage(`/collector/components?version=0.149.0&density=${density}`);
+      expect(useCollectorComponents).toHaveBeenCalledWith("0.149.0");
+      expect(screen.getByRole("link", { name: /OTLP Receiver/ })).toHaveAttribute(
+        "href",
+        "/collector/components/core/otlpreceiver?version=0.149.0"
+      );
+    }
+  );
+
   it("filters by type via the URL", () => {
     renderPage("/collector/components?type=receiver");
 
@@ -219,6 +231,16 @@ describe("CollectorListPageV1", () => {
 
   it("opens the facet drawer as a modal from the toggle and restores focus on close", async () => {
     const user = userEvent.setup();
+    const matchMedia = vi.spyOn(window, "matchMedia").mockImplementation((media) => ({
+      matches: false,
+      media,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }));
     renderPage();
 
     const toggle = screen.getByRole("button", { name: "Open filters" });
@@ -229,6 +251,7 @@ describe("CollectorListPageV1", () => {
     await user.keyboard("{Escape}");
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(toggle).toHaveFocus();
+    matchMedia.mockRestore();
   });
 
   it("switches density views and persists the choice to localStorage", async () => {

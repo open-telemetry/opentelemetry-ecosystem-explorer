@@ -65,6 +65,7 @@ import {
   parseFilters,
   serializeFilters,
 } from "@/v1/lib/list-filters";
+import { collectorReleaseContext, type CollectorReleaseContext } from "@/v1/lib/collector-release";
 
 const PAGE_SIZE = 50;
 const DENSITY_STORAGE_KEY = "explorer:listDensity";
@@ -77,9 +78,9 @@ function toDistribution(raw: string): Distribution {
 
 function componentToRow(
   c: IndexComponent | DeprecatedIndexComponent,
-  basePath: string,
-  deprecated = false
+  release: CollectorReleaseContext
 ): ListRow {
+  const deprecated = release.deprecated;
   const signals = (c.signals ?? [])
     .map((s) => s.toLowerCase())
     .filter((s): s is Signal => KNOWN_SIGNALS.has(s));
@@ -92,7 +93,7 @@ function componentToRow(
     description: c.description ?? null,
     stability: deprecated ? "deprecated" : ((c.stability ?? "development") as StabilityFacet),
     signals,
-    href: `${basePath}/${c.distribution}/${c.name}${deprecated ? "?version=deprecated" : ""}`,
+    href: release.detailHref(c),
     deprecatedInVersion: deprecated
       ? (c as DeprecatedIndexComponent).deprecated_in_version
       : undefined,
@@ -205,9 +206,12 @@ export function CollectorListPageV1() {
     loading: versionsLoading,
     error: versionsError,
   } = useCollectorVersions();
-  const currentVersion =
-    filters.version ?? versionsData?.versions.find((v) => v.is_latest)?.version ?? "";
-  const deprecatedView = currentVersion === "deprecated";
+  const release = useMemo(
+    () => collectorReleaseContext({ searchParams, versions: versionsData }),
+    [searchParams, versionsData]
+  );
+  const currentVersion = release.dataVersion();
+  const deprecatedView = release.deprecated;
   const allVersions = useMemo(
     () => ["deprecated", ...(versionsData?.versions.map((v) => v.version) ?? [])],
     [versionsData]
@@ -221,8 +225,8 @@ export function CollectorListPageV1() {
 
   const allRows = useMemo(() => {
     if (!componentsData) return [];
-    return componentsData.map((c) => componentToRow(c, "/collector/components", deprecatedView));
-  }, [componentsData, deprecatedView]);
+    return componentsData.map((c) => componentToRow(c, release));
+  }, [componentsData, release]);
   const filteredRows = useMemo(
     () => sortRows(applyFilters(allRows, filters), filters.sort),
     [allRows, filters]
