@@ -8,6 +8,12 @@ On a nightly basis, the tool regenerates data based on the latest registry entri
 pipelines — `javaagent`, `configuration`, and `collector` — each writing into its own directory
 under `ecosystem-explorer/public/data/`.
 
+Those three directories are owned **entirely** by this tool. A `--clean` build `rmtree`s each one
+before rebuilding, so any hand-maintained file placed inside them is deleted without warning — this
+is what silently removed the curated `javaagent/announcements.json` in #882. Curated content that
+the frontend fetches must live in a sibling directory the builder never writes to (for example
+`public/data/announcements/`).
+
 The output file structure looks like:
 
 ```bash

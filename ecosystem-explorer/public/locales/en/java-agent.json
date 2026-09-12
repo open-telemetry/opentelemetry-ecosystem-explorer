@@ -78,6 +78,7 @@
     },
     "announcements": {
       "heading": "News & Announcements",
+      "loading": "Loading announcements...",
       "readMore": "Read more"
     }
   },

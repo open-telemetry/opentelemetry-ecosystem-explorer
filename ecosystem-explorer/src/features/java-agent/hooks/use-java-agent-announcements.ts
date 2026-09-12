@@ -26,6 +26,13 @@ export interface Announcement {
   link?: string;
 }
 
+/*
+ * Curated content, so it deliberately lives outside `data/javaagent/`: the explorer-db-builder
+ * owns that directory and `--clean` rmtree's it wholesale, which silently deleted an earlier
+ * copy of this file (#882). Anything hand-maintained has to sit outside the generated tree.
+ */
+const ANNOUNCEMENTS_PATH = resolveDataPath("data/announcements", "javaagent.json");
+
 export function useJavaAgentAnnouncements(): DataState<Announcement[]> {
   const [state, setState] = useState<DataState<Announcement[]>>({
     data: null,
@@ -38,7 +45,7 @@ export function useJavaAgentAnnouncements(): DataState<Announcement[]> {
 
     async function loadAnnouncements() {
       try {
-        const response = await fetch(resolveDataPath("data/javaagent", "announcements.json"));
+        const response = await fetch(ANNOUNCEMENTS_PATH);
         if (cancelled) return;
 
         if (!response.ok) {

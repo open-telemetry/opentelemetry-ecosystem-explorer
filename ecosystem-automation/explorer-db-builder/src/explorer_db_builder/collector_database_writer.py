@@ -386,7 +386,12 @@ class CollectorDatabaseWriter:
         )
 
     def clean(self) -> None:
-        """Remove the collector database directory and recreate it empty."""
+        """Remove the collector database directory and recreate it empty.
+
+        The directory is builder-owned: everything under it goes, including files this
+        tool did not write. Curated content the frontend fetches must live outside it
+        (see the "Methodology" section of the explorer-db-builder README).
+        """
         if self.database_dir.exists():
             logger.info("Cleaning collector database directory: %s", self.database_dir)
             shutil.rmtree(self.database_dir)

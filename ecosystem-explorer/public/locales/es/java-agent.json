@@ -78,6 +78,7 @@
     },
     "announcements": {
       "heading": "Noticias y Anuncios",
+      "loading": "Cargando anuncios...",
       "readMore": "Leer más"
     }
   },
