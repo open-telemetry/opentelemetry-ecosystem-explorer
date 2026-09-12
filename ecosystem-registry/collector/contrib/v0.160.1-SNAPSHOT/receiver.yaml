@@ -8559,7 +8559,7 @@ components:
       from_version: v0.156.0
       id: receiver.kubeletstats.cpuUsageScrapeBased
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49477
-      stage: alpha
+      stage: beta
     metrics:
       container.cpu.time:
         attributes: []
