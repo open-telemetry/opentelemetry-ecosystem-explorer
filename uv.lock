@@ -11,6 +11,7 @@ members = [
     "java-instrumentation-watcher",
     "js-instrumentation-watcher",
     "opentelemetry-ecosystem-explorer",
+    "python-instrumentation-watcher",
     "v1-registry-sync",
     "watcher-common",
 ]
@@ -533,6 +534,7 @@ dependencies = [
     { name = "explorer-db-builder" },
     { name = "java-instrumentation-watcher" },
     { name = "js-instrumentation-watcher" },
+    { name = "python-instrumentation-watcher" },
     { name = "v1-registry-sync" },
 ]
 
@@ -552,6 +554,7 @@ requires-dist = [
     { name = "explorer-db-builder", editable = "ecosystem-automation/explorer-db-builder" },
     { name = "java-instrumentation-watcher", editable = "ecosystem-automation/java-instrumentation-watcher" },
     { name = "js-instrumentation-watcher", editable = "ecosystem-automation/js-instrumentation-watcher" },
+    { name = "python-instrumentation-watcher", editable = "ecosystem-automation/python-instrumentation-watcher" },
     { name = "v1-registry-sync", editable = "ecosystem-automation/v1-registry-sync" },
 ]
 
@@ -656,6 +659,30 @@ sdist = { url = "https://files.pythonhosted.org/packages/91/96/0f93e27c9f60a6508
 wheels = [
     { url = "https://files.pythonhosted.org/packages/43/5e/21abf578182fb15006a57faf3711a1e659e29d600d19b6e557eae908c81d/python_discovery-1.6.0-py3-none-any.whl", hash = "sha256:d4e244cf17b8b29819ed78003d55fbacf86eda23425b075454fff9271b79377a", size = 38451, upload-time = "2026-08-28T17:30:01.236Z" },
 ]
+
+[[package]]
+name = "python-instrumentation-watcher"
+version = "0.1.0"
+source = { editable = "ecosystem-automation/python-instrumentation-watcher" }
+dependencies = [
+    { name = "pyyaml" },
+    { name = "watcher-common" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "pytest" },
+    { name = "pytest-cov" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
+    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.1.0" },
+    { name = "pyyaml", specifier = ">=6.0.1" },
+    { name = "watcher-common", editable = "ecosystem-automation/watcher-common" },
+]
+provides-extras = ["dev"]
 
 [[package]]
 name = "pyyaml"
