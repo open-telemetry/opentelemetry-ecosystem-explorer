@@ -180,8 +180,13 @@
       "details": "Detalles",
       "stability": "Estabilidad",
       "telemetry": "Telemetría",
+      "internalTelemetry": "Internal Telemetry",
       "featureGates": "Feature Gates",
       "readme": "Readme"
+    },
+    "view": {
+      "current": "Current View",
+      "comparison": "Version Comparison"
     },
     "sections": {
       "componentInfo": "Información del componente",
@@ -278,6 +283,68 @@
       "stableIn": "Estable en {{version}}",
       "deprecatedIn": "Obsoleto en {{version}}",
       "reference": "Referencia"
+    }
+  },
+  "telemetryComparison": {
+    "loading": "Loading comparison...",
+    "error": {
+      "title": "Failed to load comparison"
+    },
+    "warnings": {
+      "availability": {
+        "title": "Version availability",
+        "fromNotFound": "Could not load internal telemetry for version {{fromVersion}}.",
+        "toNotFound": "Could not load internal telemetry for version {{toVersion}}."
+      },
+      "sameVersion": {
+        "title": "Same version selected",
+        "message": "Choose two different versions to see a comparison."
+      }
+    }
+  },
+  "versionSelectorPanel": {
+    "banner": "Compare internal telemetry metrics between two Collector releases.",
+    "from": "From",
+    "to": "To",
+    "latestSuffix": "(latest)"
+  },
+  "diffResults": {
+    "addedRemovedHeader": "Added & Removed",
+    "changedHeader": "Changed",
+    "empty": {
+      "title": "No differences found",
+      "description": "Internal telemetry metrics are identical between these two versions."
+    }
+  },
+  "diffCard": {
+    "status": {
+      "added": "Added",
+      "removed": "Removed",
+      "changed": "Changed"
+    },
+    "unit": "Unit",
+    "descriptionChanged": "Description changed",
+    "enabledChanged": "Enabled state changed",
+    "enabledValue": {
+      "enabled": "Enabled",
+      "disabled": "Disabled"
+    },
+    "stabilityChanged": "Stability changed",
+    "metricTypeChanged": "Metric type changed",
+    "attributeChanges": "Attribute Changes",
+    "metricRemoved": "This metric was removed in the selected \"to\" version."
+  },
+  "diffAttributeTable": {
+    "ariaLabel": "Attribute changes",
+    "columns": {
+      "status": "Status",
+      "key": "Key",
+      "type": "Type"
+    },
+    "status": {
+      "added": "Added",
+      "removed": "Removed",
+      "modified": "Modified"
     }
   },
   "explore": {

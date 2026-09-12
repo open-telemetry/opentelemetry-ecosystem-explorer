@@ -16,21 +16,14 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ChevronDown, ChevronUp, Maximize2, Minimize2 } from "lucide-react";
-import { SectionDivider } from "@/components/ui/section-divider";
 import { GlowBadge } from "@/components/ui/glow-badge";
 import type { CollectorMetric, CollectorAttribute } from "@/types/collector";
+import { getMetricType } from "../utils/metric-type";
 
 interface CollectorTelemetryTabProps {
   metrics: Record<string, CollectorMetric>;
   attributes?: Record<string, CollectorAttribute>;
   resourceAttributes?: Record<string, CollectorAttribute>;
-}
-
-function getMetricType(metric: CollectorMetric): "sum" | "gauge" | "histogram" | null {
-  if (metric.sum) return "sum";
-  if (metric.gauge) return "gauge";
-  if (metric.histogram) return "histogram";
-  return null;
 }
 
 function getStabilityVariant(
@@ -95,18 +88,19 @@ export function CollectorTelemetryTab({
 
   return (
     <div className="space-y-6">
-      <SectionDivider className="mb-0">{t("detail.telemetryTab.metricsHeader")}</SectionDivider>
-
-      <div className="mt-4 flex justify-center">
-        <div className="border-border/50 bg-muted/80 inline-flex items-center rounded-xl border p-1 shadow-sm backdrop-blur-sm">
+      <div className="border-border/50 flex flex-wrap items-center justify-between gap-3 border-b pb-3">
+        <span className="text-muted-foreground text-xs font-bold tracking-[0.2em] uppercase">
+          {t("detail.telemetryTab.metricsHeader")}
+        </span>
+        <div className="border-border/50 bg-muted/50 inline-flex items-center gap-0.5 rounded-lg border p-0.5">
           <button
             type="button"
             aria-pressed={expandedMetrics.size === totalCount && totalCount > 0}
             onClick={expandAll}
-            className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${
+            className={`flex items-center gap-1 rounded-md px-2 py-1 text-[10px] font-bold tracking-widest uppercase transition-colors duration-200 ${
               expandedMetrics.size === totalCount && totalCount > 0
-                ? "border-secondary/40 bg-secondary/12 text-secondary border shadow-sm"
-                : "text-muted-foreground hover:text-foreground border border-transparent"
+                ? "bg-card text-secondary shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <Maximize2 className="h-3 w-3" aria-hidden="true" />
@@ -116,10 +110,10 @@ export function CollectorTelemetryTab({
             type="button"
             aria-pressed={expandedMetrics.size === 0}
             onClick={collapseAll}
-            className={`flex items-center gap-1.5 rounded-lg px-4 py-2 text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${
+            className={`flex items-center gap-1 rounded-md px-2 py-1 text-[10px] font-bold tracking-widest uppercase transition-colors duration-200 ${
               expandedMetrics.size === 0
-                ? "border-secondary/40 bg-secondary/12 text-secondary border shadow-sm"
-                : "text-muted-foreground hover:text-foreground border border-transparent"
+                ? "bg-card text-secondary shadow-sm"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <Minimize2 className="h-3 w-3" aria-hidden="true" />

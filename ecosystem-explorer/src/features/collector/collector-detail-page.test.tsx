@@ -66,6 +66,23 @@ const mockComponentWithTelemetry: CollectorComponent = {
   },
 };
 
+const mockComponentWithInternalTelemetry: CollectorComponent = {
+  ...mockComponentWithoutTelemetry,
+  telemetry: {
+    metrics: {
+      processor_test_internal_metric: {
+        description: "An internal self-observability metric",
+        enabled: true,
+        unit: "1",
+        sum: {
+          monotonic: true,
+          value_type: "int",
+        },
+      },
+    },
+  },
+};
+
 const mockComponentWithReadme: CollectorComponent = {
   ...mockComponentWithoutTelemetry,
   markdown_hash: "abc123def456",
@@ -310,6 +327,86 @@ describe("CollectorDetailPage", () => {
     await user.click(telemetryTab);
 
     expect(screen.getByText("my.metric.name")).toBeInTheDocument();
+  });
+
+  it("does not render Internal Telemetry tab when component has no telemetry field", () => {
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: mockComponentWithoutTelemetry,
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    expect(screen.queryByRole("tab", { name: "Internal Telemetry" })).not.toBeInTheDocument();
+  });
+
+  it("renders Internal Telemetry tab when component has internal telemetry and shows the Current view by default", async () => {
+    const user = userEvent.setup();
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: mockComponentWithInternalTelemetry,
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    const internalTelemetryTab = screen.getByRole("tab", { name: "Internal Telemetry" });
+    expect(internalTelemetryTab).toBeInTheDocument();
+
+    await user.click(internalTelemetryTab);
+
+    expect(screen.getByText("processor_test_internal_metric")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Current View" })).toHaveAttribute(
+      "aria-pressed",
+      "true"
+    );
+    expect(screen.getByRole("button", { name: "Version Comparison" })).toHaveAttribute(
+      "aria-pressed",
+      "false"
+    );
+  });
+
+  it("renders the existing Telemetry tab and the new Internal Telemetry tab independently when a component has both metrics and internal telemetry", async () => {
+    const user = userEvent.setup();
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: {
+        ...mockComponentWithTelemetry,
+        telemetry: mockComponentWithInternalTelemetry.telemetry,
+      },
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    const telemetryTab = screen.getByRole("tab", { name: "Telemetry" });
+    const internalTelemetryTab = screen.getByRole("tab", { name: "Internal Telemetry" });
+    expect(telemetryTab).toBeInTheDocument();
+    expect(internalTelemetryTab).toBeInTheDocument();
+
+    await user.click(telemetryTab);
+    expect(screen.getByText("my.metric.name")).toBeInTheDocument();
+    expect(screen.queryByText("processor_test_internal_metric")).not.toBeInTheDocument();
+
+    await user.click(internalTelemetryTab);
+    expect(screen.getByText("processor_test_internal_metric")).toBeInTheDocument();
+    expect(screen.queryByText("my.metric.name")).not.toBeInTheDocument();
   });
 
   it("does not render Feature Gates tab when component has no feature_gates", () => {

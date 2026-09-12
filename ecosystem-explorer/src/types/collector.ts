@@ -72,6 +72,18 @@ export interface CollectorComponent {
   feature_gates?: FeatureGate[];
   /** Content hash of the component's README, if one was found. Used to lazily fetch the markdown file. */
   markdown_hash?: string;
+  /** Internal telemetry (self-observability metrics) emitted by this component about its own operation. */
+  telemetry?: CollectorTelemetry;
+}
+
+/**
+ * Internal self-observability telemetry emitted by a component about its own operation,
+ * distinct from `CollectorComponent.metrics`, which describes signal data the component
+ * produces about the monitored system.
+ */
+export interface CollectorTelemetry {
+  /** Internal metrics, keyed by metric name. Shares the same shape as top-level `metrics`. */
+  metrics?: { [key: string]: CollectorMetric };
 }
 
 /**
@@ -122,7 +134,7 @@ export interface CollectorMetric {
 export interface MetricValueDescriptor {
   /** The numeric type of the metric's data points. */
   value_type: string;
-  /** Aggregation temporality (e.g., "cumulative", "delta"). Only present on sum metrics. */
+  /** Aggregation temporality (e.g., "cumulative", "delta"), when applicable to this metric type. */
   aggregation_temporality?: string;
   /** Whether this metric is observed asynchronously. */
   async?: boolean;
@@ -195,4 +207,47 @@ export interface DeprecatedIndexComponent extends IndexComponent {
   component_hash: string;
   last_version: string;
   deprecated_in_version: string;
+}
+
+// Internal telemetry comparison types
+
+export type TelemetryDiffStatus = "added" | "removed" | "changed" | "unchanged";
+
+/** A single resolved attribute reference: the metric's attribute key plus its definition, if found. */
+export interface ResolvedCollectorAttribute {
+  key: string;
+  definition?: CollectorAttribute;
+}
+
+export interface CollectorAttributeChange {
+  key: string;
+  before?: CollectorAttribute;
+  after?: CollectorAttribute;
+}
+
+export interface CollectorAttributeChanges {
+  added: ResolvedCollectorAttribute[];
+  removed: ResolvedCollectorAttribute[];
+  changed: CollectorAttributeChange[];
+}
+
+export interface CollectorMetricChanges {
+  description?: { before: string; after: string };
+  unit?: { before: string; after: string };
+  enabled?: { before: boolean; after: boolean };
+  stability?: { before?: Stability; after?: Stability };
+  metricType?: { before: string | null; after: string | null };
+  attributes: CollectorAttributeChanges;
+}
+
+export interface CollectorMetricDiff {
+  status: TelemetryDiffStatus;
+  /** CollectorMetric has no embedded name (it's keyed by name in the metrics map), so the diff entry carries it explicitly. */
+  name: string;
+  metric: CollectorMetric;
+  changes?: CollectorMetricChanges;
+}
+
+export interface CollectorTelemetryDiffResult {
+  metrics: CollectorMetricDiff[];
 }
