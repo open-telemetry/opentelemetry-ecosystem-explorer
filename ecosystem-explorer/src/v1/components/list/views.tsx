@@ -36,6 +36,7 @@ export interface ListRow {
   displayName: string;
   type: CollectorComponentType;
   distribution: Distribution;
+  distributions: Distribution[];
   description: string | null;
   stability: StabilityFacet;
   signals: Signal[];

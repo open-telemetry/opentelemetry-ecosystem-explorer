@@ -44,8 +44,6 @@ const COMPONENT_TYPES = [
   { type: "connector", icon: Workflow },
 ] as const;
 
-const DISTRIBUTIONS = [{ distribution: "core" }, { distribution: "contrib" }] as const;
-
 const RESOURCES = [
   {
     key: "officialDocs",
@@ -70,13 +68,13 @@ const RESOURCES = [
 ] as const;
 
 type CollectorComponentType = (typeof COMPONENT_TYPES)[number]["type"];
-type CollectorDistribution = (typeof DISTRIBUTIONS)[number]["distribution"];
 
 interface CollectorLandingStats {
-  byDistribution: Record<CollectorDistribution, number>;
+  byDistribution: Record<string, number>;
   byType: Record<CollectorComponentType, number>;
   latestVersion: string | null;
   total: number;
+  distributions: string[];
 }
 
 function emptyTypeCounts(): Record<CollectorComponentType, number> {
@@ -89,36 +87,30 @@ function emptyTypeCounts(): Record<CollectorComponentType, number> {
   };
 }
 
-function emptyDistributionCounts(): Record<CollectorDistribution, number> {
-  return {
-    core: 0,
-    contrib: 0,
-  };
-}
-
 function isComponentType(value: unknown): value is CollectorComponentType {
   return typeof value === "string" && COMPONENT_TYPES.some(({ type }) => type === value);
 }
 
-function isDistribution(value: unknown): value is CollectorDistribution {
-  return (
-    typeof value === "string" && DISTRIBUTIONS.some(({ distribution }) => distribution === value)
-  );
-}
-
 function buildCollectorLandingStats(
   components: IndexComponent[],
-  latestVersion: string | null
+  latestVersion: string | null,
+  distributions: string[]
 ): CollectorLandingStats {
   const byType = emptyTypeCounts();
-  const byDistribution = emptyDistributionCounts();
+  const byDistribution: Record<string, number> = Object.fromEntries(
+    distributions.map((d) => [d, 0])
+  );
 
   for (const component of components) {
     if (isComponentType(component.type)) {
       byType[component.type] += 1;
     }
-    if (isDistribution(component.distribution)) {
-      byDistribution[component.distribution] += 1;
+    // Count the component against every distribution it ships in.
+    const memberships = component.distributions ?? [component.distribution];
+    for (const dist of memberships) {
+      if (dist in byDistribution) {
+        byDistribution[dist] += 1;
+      }
     }
   }
 
@@ -127,6 +119,7 @@ function buildCollectorLandingStats(
     byType,
     latestVersion,
     total: components.length,
+    distributions,
   };
 }
 
@@ -152,7 +145,8 @@ export function CollectorExploreLanding() {
       collectorIndex.components,
       versionData.versions.find((version) => version.is_latest)?.version ??
         versionData.versions[0]?.version ??
-        null
+        null,
+      collectorIndex.taxonomy.distributions
     );
   }, [collectorIndex, versionData]);
 
@@ -272,7 +266,7 @@ export function CollectorExploreLanding() {
             </h2>
           </div>
           <div className="grid gap-4 md:grid-cols-2">
-            {DISTRIBUTIONS.map(({ distribution }) => (
+            {stats.distributions.map((distribution) => (
               <article
                 key={distribution}
                 className="border-border/60 bg-card/80 flex h-full flex-col rounded-lg border p-6"
@@ -281,7 +275,7 @@ export function CollectorExploreLanding() {
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <h3 className="text-foreground text-xl font-semibold">
-                        {t(`filters.distribution.${distribution}`)}
+                        {t(`filters.distribution.${distribution}`, { defaultValue: distribution })}
                       </h3>
                       <p className="text-muted-foreground mt-1 text-sm">
                         {t("explore.distributions.componentCount", {
@@ -294,13 +288,31 @@ export function CollectorExploreLanding() {
                     </div>
                   </div>
                   <p className="text-muted-foreground flex-1 text-sm leading-relaxed">
-                    {t(`explore.distributions.items.${distribution}.description`)}
+                    {t(`explore.distributions.items.${distribution}.description`, {
+                      defaultValue: t("explore.distributions.items.generic.desc"),
+                    })}
                   </p>
+                  {t(`explore.distributions.items.${distribution}.notice`, {
+                    defaultValue: "",
+                  }) && (
+                    <div className="bg-warning/10 text-warning-foreground border-warning/20 mb-4 flex items-start gap-2 rounded-md border p-3 text-sm">
+                      <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
+                      <p>
+                        {t(`explore.distributions.items.${distribution}.notice`, {
+                          defaultValue: "",
+                        })}
+                      </p>
+                    </div>
+                  )}
                   <Link
                     to={`/collector/components?distribution=${distribution}`}
                     className="border-border bg-background text-foreground hover:border-primary/40 hover:bg-card-secondary focus-visible:ring-primary inline-flex w-fit items-center gap-2 rounded-md border px-3 py-2 text-sm font-semibold transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
                   >
-                    {t(`explore.distributions.items.${distribution}.button`)}
+                    {t(`explore.distributions.items.${distribution}.button`, {
+                      defaultValue: t("explore.distributions.items.generic.button", {
+                        distribution,
+                      }),
+                    })}
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </Link>
                 </div>
@@ -332,7 +344,9 @@ export function CollectorExploreLanding() {
               <dt className="text-muted-foreground text-sm font-medium">
                 {t("explore.distributions.heading")}
               </dt>
-              <dd className="text-foreground mt-1 text-3xl font-bold">{DISTRIBUTIONS.length}</dd>
+              <dd className="text-foreground mt-1 text-3xl font-bold">
+                {stats.distributions.length}
+              </dd>
             </div>
           </dl>
         </section>

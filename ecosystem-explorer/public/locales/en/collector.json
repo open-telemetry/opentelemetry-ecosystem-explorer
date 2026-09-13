@@ -67,7 +67,9 @@
       "distribution": {
         "options": {
           "core": "Core",
-          "contrib": "Contrib"
+          "contrib": "Contrib",
+          "k8s": "Kubernetes",
+          "otlp": "OTLP"
         }
       }
     }
@@ -105,7 +107,9 @@
       "label": "Distribution",
       "all": "All Distributions",
       "core": "Core",
-      "contrib": "Contrib"
+      "contrib": "Contrib",
+      "k8s": "Kubernetes",
+      "otlp": "OTLP"
     },
     "stability": {
       "label": "Stability",
@@ -246,6 +250,10 @@
         "name": "OpenTelemetry Operator for Kubernetes",
         "desc": "The official Kubernetes Operator designed to manage and provision the OpenTelemetry Collector."
       },
+      "otlp": {
+        "name": "OpenTelemetry Collector OTLP",
+        "desc": "The ultra-minimal distribution containing only OTLP receivers and exporters, designed for lightweight proxying."
+      },
       "generic": {
         "desc": "A specialized OpenTelemetry distribution."
       }
@@ -322,7 +330,20 @@
         },
         "contrib": {
           "description": "Community-contributed components. May have varying stability levels. Broader ecosystem coverage.",
-          "button": "View Contrib Components"
+          "button": "View Contrib Components",
+          "notice": "Some contrib components are highly experimental. Please review their stability levels carefully before deploying to production."
+        },
+        "k8s": {
+          "description": "Kubernetes-optimized distribution containing components for container, node, and cluster monitoring.",
+          "button": "View Kubernetes Components"
+        },
+        "otlp": {
+          "description": "Ultra-minimal distribution containing only OTLP receivers and exporters, designed for lightweight proxying.",
+          "button": "View OTLP Components"
+        },
+        "generic": {
+          "desc": "A community-owned OpenTelemetry Collector distribution.",
+          "button": "View {{distribution}} Components"
         }
       }
     },

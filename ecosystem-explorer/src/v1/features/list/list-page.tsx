@@ -56,8 +56,6 @@ import { FacetPanel, type FacetCounts } from "@/v1/components/list/facet-panel";
 import { CardView, CompactList, type ListRow, TableView } from "@/v1/components/list/views";
 import {
   DEFAULT_FILTERS,
-  DISTRIBUTIONS,
-  type Distribution,
   type ListFilters,
   SIGNALS,
   type Signal,
@@ -69,11 +67,6 @@ import {
 const PAGE_SIZE = 50;
 const DENSITY_STORAGE_KEY = "explorer:listDensity";
 const KNOWN_SIGNALS = new Set<string>(SIGNALS);
-const KNOWN_DISTRIBUTIONS = new Set<string>(DISTRIBUTIONS);
-
-function toDistribution(raw: string): Distribution {
-  return KNOWN_DISTRIBUTIONS.has(raw) ? (raw as Distribution) : "core";
-}
 
 function componentToRow(
   c: IndexComponent | DeprecatedIndexComponent,
@@ -88,7 +81,8 @@ function componentToRow(
     name: c.name,
     displayName: c.display_name?.trim() || c.name,
     type: c.type as CollectorComponentType,
-    distribution: toDistribution(c.distribution),
+    distribution: c.distribution,
+    distributions: c.distributions ?? [c.distribution],
     description: c.description ?? null,
     stability: deprecated ? "deprecated" : ((c.stability ?? "development") as StabilityFacet),
     signals,
@@ -114,8 +108,10 @@ function applyFilters(rows: ListRow[], filters: ListFilters): ListRow[] {
     if (filters.types.length > 0 && !filters.types.includes(row.type)) return false;
     if (filters.stabilities.length > 0 && !filters.stabilities.includes(row.stability))
       return false;
-    if (filters.distributions.length > 0 && !filters.distributions.includes(row.distribution))
-      return false;
+    if (filters.distributions.length > 0) {
+      const hit = filters.distributions.some((d) => row.distributions.includes(d));
+      if (!hit) return false;
+    }
     if (filters.signals.length > 0) {
       const rowSignals = new Set(row.signals);
       const hit = filters.signals.some((s) => rowSignals.has(s));
@@ -157,7 +153,9 @@ function computeCounts(rows: ListRow[]): FacetCounts {
   for (const row of rows) {
     counts.types![row.type] = (counts.types![row.type] ?? 0) + 1;
     counts.stabilities![row.stability] = (counts.stabilities![row.stability] ?? 0) + 1;
-    counts.distributions![row.distribution] = (counts.distributions![row.distribution] ?? 0) + 1;
+    for (const dist of row.distributions) {
+      counts.distributions![dist] = (counts.distributions![dist] ?? 0) + 1;
+    }
     for (const sig of row.signals) {
       counts.signals![sig] = (counts.signals![sig] ?? 0) + 1;
     }
@@ -279,6 +277,7 @@ export function CollectorListPageV1() {
               onChange={updateFilters}
               versions={allVersions}
               counts={counts}
+              distributions={Object.keys(counts.distributions ?? {})}
               isOpen={drawerOpen}
               onClose={() => setDrawerOpen(false)}
             />

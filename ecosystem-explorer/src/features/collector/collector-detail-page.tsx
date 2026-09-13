@@ -124,6 +124,15 @@ export function CollectorDetailPage() {
         url: "https://github.com/open-telemetry/opentelemetry-operator",
       };
     }
+    if (lower === "otlp") {
+      return {
+        name: t("detail.distributions.otlp.name"),
+        desc: t("detail.distributions.otlp.desc"),
+        cmdLabel: "# Docker",
+        cmd: "docker pull otel/opentelemetry-collector-otlp:latest",
+        url: "https://github.com/open-telemetry/opentelemetry-collector-releases/tree/main/distributions/otelcol-otlp",
+      };
+    }
     return {
       name: distroName,
       desc: t("detail.distributions.generic.desc"),
