@@ -37,6 +37,7 @@ from explorer_db_builder.instrumentation_transformer import (
     transform_instrumentation_format,
 )
 from explorer_db_builder.metadata_backfiller import backfill_metadata
+from explorer_db_builder.otelc_builder import run_otelc_builder
 from explorer_db_builder.telemetry_when_corrections import apply_telemetry_when_corrections
 
 logger = logging.getLogger(__name__)
@@ -306,7 +307,7 @@ def run_builder(clean: bool = False, ecosystem: str = "all", collector_audit_rep
 
     Args:
         clean: If True, wipe the output directories before building.
-        ecosystem: Which pipeline to run: "javaagent", "configuration", "collector", or "all".
+        ecosystem: Which pipeline to run: "javaagent", "configuration", "collector", "otelc", or "all".
         collector_audit_report: If set, the collector build writes a JSON report of
             latest-release components missing a display_name to this path.
 
@@ -330,6 +331,12 @@ def run_builder(clean: bool = False, ecosystem: str = "all", collector_audit_rep
         results.append(run_collector_builder(clean=clean, audit_report_path=collector_audit_report))
         logger.info("")
 
+    # Note: 'otelc' is intentionally excluded from 'all' so it does not run by default in CI
+    if ecosystem == "otelc":
+        logger.info("--- OTelc Registry ---")
+        results.append(run_otelc_builder(clean=clean))
+        logger.info("")
+
     return 1 if any(r != 0 for r in results) else 0
 
 
@@ -346,7 +353,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--ecosystem",
-        choices=["javaagent", "configuration", "collector", "all"],
+        choices=["javaagent", "configuration", "collector", "otelc", "all"],
         default="all",
         help="Which ecosystem pipeline to run (default: all)",
     )
