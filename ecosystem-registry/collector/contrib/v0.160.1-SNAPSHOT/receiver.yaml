@@ -13161,14 +13161,25 @@ components:
           delta).
         type: int
       oracledb.plan.first_load:
-        description: 'Time at which the plan was first loaded into the library cache,
-          in the server''s local timezone. Format: YYYY-MM-DD/HH:MM:SS'
+        description: Time at which the plan was first loaded into the library cache,
+          in ISO 8601 format (UTC).
         type: string
       oracledb.plan.last_load:
-        description: 'Plan load time in the server''s local timezone. Format: YYYY-MM-DD/HH:MM:SS'
+        description: Plan load time, in ISO 8601 format (UTC).
         type: string
       oracledb.plan_hash_value:
         description: Numeric representation of the execution plan.
+        type: string
+      oracledb.procedure.first_load_time:
+        description: Earliest load time across the procedure's cached statements,
+          in ISO 8601 format (UTC).
+        type: string
+      oracledb.procedure.last_active_time:
+        description: The most recent time any of the procedure's cached statements
+          were active, in ISO 8601 format (UTC).
+        type: string
+      oracledb.procedure.schema.name:
+        description: The schema (owner) of the stored procedure or function.
         type: string
       oracledb.procedure_execution_count:
         description: The number of times the stored procedure has been executed, derived
@@ -13414,6 +13425,32 @@ components:
         - oracledb.wait.timeouts
         - oracledb.wait_class
         description: Per-session wait event statistics from v$session_event.
+        enabled: false
+      db.server.top_procedure:
+        attributes:
+        - db.namespace
+        - db.server.name
+        - db.system.name
+        - oracle.db.service
+        - oracledb.buffer_gets
+        - oracledb.cpu_time
+        - oracledb.direct_writes
+        - oracledb.disk_reads
+        - oracledb.elapsed_time
+        - oracledb.physical_read_bytes
+        - oracledb.physical_write_bytes
+        - oracledb.procedure.first_load_time
+        - oracledb.procedure.last_active_time
+        - oracledb.procedure.schema.name
+        - oracledb.procedure_execution_count
+        - oracledb.procedure_id
+        - oracledb.procedure_name
+        - oracledb.procedure_type
+        - oracledb.rows_processed
+        description: Aggregated performance metrics for the top stored procedures
+          by elapsed time, derived from V$SQL grouped by PROGRAM_ID and joined to
+          DBA_PROCEDURES, with delta computation on cumulative counters. Correlates
+          with db.server.top_query and db.server.query_sample via oracledb.procedure_id.
         enabled: false
       db.server.top_query:
         attributes:
@@ -14912,9 +14949,24 @@ components:
         description: The name of the instance that data is coming from.
         enabled: true
         type: string
+      server.address:
+        description: The address of the monitored Oracle instance. A loopback target
+          (for example localhost or 127.0.0.1) is reported as the host name of the
+          machine running the collector, since the instance is co-located with it.
+          Omitted when the connection string carries no parseable host, such as a
+          TNS descriptor.
+        enabled: true
+        type: string
+      server.port:
+        description: The port of the monitored Oracle instance, defaulting to 1521
+          when the target does not specify one.
+        enabled: true
+        type: int
       service.instance.id:
-        description: A unique identifier of the Oracle DB instance in the format host:port/serviceName.
-          (defaults to 'unknown:1521', in case of error in generating this value)
+        description: A unique identifier of the Oracle DB instance in the format host:port/serviceName,
+          where host and port are resolved the same way as server.address and server.port.
+          (defaults to 'unknown:1521' when the connection string carries no parseable
+          host)
         enabled: true
         type: string
       service.name:
@@ -20623,6 +20675,27 @@ components:
         - misguided
         requirement_level: recommended
         type: string
+      sqlserver.procedure.last_execution_time:
+        description: ISO 8601 timestamp of the last execution of the procedure.
+        requirement_level: recommended
+        type: string
+      sqlserver.procedure.max_duration:
+        description: Longest elapsed time for a single execution of the procedure,
+          in seconds. Covers the whole period the plan has been cached, so unlike
+          the other durations it is not a delta.
+        requirement_level: recommended
+        type: double
+      sqlserver.procedure.min_duration:
+        description: Shortest elapsed time for a single execution of the procedure,
+          in seconds. Covers the whole period the plan has been cached, so unlike
+          the other durations it is not a delta.
+        requirement_level: recommended
+        type: double
+      sqlserver.procedure.tempdb.spilled_pages:
+        description: Pages spilled to tempdb by the procedure over the collection
+          interval, reported as a delta.
+        requirement_level: recommended
+        type: int
       sqlserver.procedure_execution_count:
         description: Number of times that the procedure has been executed since it
           was last compiled, reported in delta value.
@@ -20847,6 +20920,15 @@ components:
       Performance Counters are only available when running on Windows.
     display_name: Microsoft SQL Server Receiver
     events:
+      db.server.query_plan:
+        attributes:
+        - sqlserver.query_hash
+        - sqlserver.query_plan
+        - sqlserver.query_plan_hash
+        description: query execution plan. When enabled, the plan is reported here
+          instead of on db.server.top_query, so an oversized plan payload cannot drop
+          the lightweight query statistics alongside it
+        enabled: false
       db.server.query_sample:
         attributes:
         - client.address
@@ -20891,6 +20973,27 @@ components:
         - sqlserver.writes
         - user.name
         description: query sample
+        enabled: false
+      db.server.top_procedure:
+        attributes:
+        - db.namespace
+        - db.system.name
+        - sqlserver.procedure.last_execution_time
+        - sqlserver.procedure.max_duration
+        - sqlserver.procedure.min_duration
+        - sqlserver.procedure.tempdb.spilled_pages
+        - sqlserver.procedure_execution_count
+        - sqlserver.procedure_id
+        - sqlserver.procedure_name
+        - sqlserver.schema.name
+        - sqlserver.total_elapsed_time
+        - sqlserver.total_logical_reads
+        - sqlserver.total_logical_writes
+        - sqlserver.total_physical_reads
+        - sqlserver.total_worker_time
+        description: Aggregated performance metrics for the top stored procedures
+          by elapsed time, computed as deltas over the collection interval. Correlates
+          with db.server.top_query and db.server.query_sample via sqlserver.procedure_id.
         enabled: false
       db.server.top_query:
         attributes:
