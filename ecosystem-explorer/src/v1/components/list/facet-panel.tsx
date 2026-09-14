@@ -38,7 +38,7 @@ import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { TYPE_STRIPE_COLORS } from "@/components/ui/type-stripe-colors";
 import type { CollectorComponentType } from "@/components/ui/type-stripe-colors";
-import { DISTRIBUTIONS, SIGNALS, STABILITIES, TYPES } from "@/v1/lib/list-filters";
+import { SIGNALS, STABILITIES, TYPES } from "@/v1/lib/list-filters";
 import type { Distribution, ListFilters, Signal, StabilityFacet } from "@/v1/lib/list-filters";
 import { CheckboxFacet, type FacetOption, SearchFacet, SelectFacet } from "./facets";
 
@@ -68,6 +68,7 @@ export interface FacetPanelProps {
   /** Mobile: when true the panel is rendered inside a drawer overlay. */
   isOpen?: boolean;
   onClose?: () => void;
+  distributions?: readonly string[];
 }
 
 function withCounts<T extends string>(
@@ -85,6 +86,7 @@ export function FacetPanel({
   counts,
   isOpen = false,
   onClose,
+  distributions = [],
 }: FacetPanelProps) {
   const { t } = useTranslation(["list", "collector"]);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -156,7 +158,7 @@ export function FacetPanel({
       label:
         facet === "signal"
           ? t(`facets.signal.options.${value}`)
-          : t(`listV1.facets.${facet}.options.${value}`, { ns: "collector" }),
+          : t(`listV1.facets.${facet}.options.${value}`, { ns: "collector", defaultValue: value }),
     }));
   }
 
@@ -217,9 +219,9 @@ export function FacetPanel({
 
         <CheckboxFacet
           title={t("facets.distribution.title")}
-          options={withCounts(facetOptions("distribution", DISTRIBUTIONS), counts?.distributions)}
+          options={withCounts(facetOptions("distribution", distributions), counts?.distributions)}
           selected={filters.distributions}
-          onChange={(distributions) => change({ distributions })}
+          onChange={(selectedDistributions) => change({ distributions: selectedDistributions })}
         />
 
         {versions && versions.length > 0 && (

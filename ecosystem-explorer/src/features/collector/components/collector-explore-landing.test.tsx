@@ -155,9 +155,15 @@ describe("CollectorExploreLanding", () => {
       "href",
       "/collector/components?distribution=contrib"
     );
+    expect(
+      screen.queryByRole("link", { name: /View Kubernetes Components/i })
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: /View OTLP Components/i })).not.toBeInTheDocument();
 
     const stats = screen.getByLabelText("Collector summary statistics");
+    // 5 total components and 5 component types both render as "5".
     expect(within(stats).getAllByText("5")).toHaveLength(2);
+    // taxonomy.distributions has 2 entries in the mock index.
     expect(within(stats).getByText("2")).toBeInTheDocument();
 
     expect(screen.getByRole("link", { name: /Official Documentation/i })).toHaveAttribute(
