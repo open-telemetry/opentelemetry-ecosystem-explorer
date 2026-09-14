@@ -249,3 +249,256 @@ def test_not_in_bundle_when_absent(tmp_package):
 
     assert result is not None
     assert result["in_auto_instrumentations_node"] is False
+
+
+def test_supported_versions_empty_when_readme_has_no_section(tmp_package):
+    write_package_json(
+        tmp_package,
+        {
+            "name": "@opentelemetry/instrumentation-express",
+            "version": "0.66.0",
+            "description": "test",
+        },
+    )
+    # A README with no "Supported Versions" heading at all - 39/47 packages
+    # in the May audit were prose-only like this.
+    (tmp_package / "README.md").write_text("# Express Instrumentation\n\nSome prose.\n")
+
+    parser = PackageParser(
+        package_path=tmp_package,
+        bundle_membership=set(),
+        component_owners={},
+    )
+    result = parser.parse()
+
+    assert result is not None
+    assert result["supported_versions"] == []
+
+
+def test_supported_versions_empty_when_readme_unreadable(tmp_package):
+    write_package_json(
+        tmp_package,
+        {
+            "name": "@opentelemetry/instrumentation-express",
+            "version": "0.66.0",
+            "description": "test",
+        },
+    )
+    # A directory named README.md passes exists() but raises IsADirectoryError
+    # (an OSError) on read. The package must still parse rather than be dropped.
+    (tmp_package / "README.md").mkdir()
+
+    parser = PackageParser(
+        package_path=tmp_package,
+        bundle_membership=set(),
+        component_owners={},
+    )
+    result = parser.parse()
+
+    assert result is not None
+    assert result["supported_versions"] == []
+
+
+def test_tav_entry_includes_exclude(tmp_package):
+    write_package_json(
+        tmp_package,
+        {
+            "name": "@opentelemetry/instrumentation-aws-sdk",
+            "version": "0.77.0",
+            "description": "test",
+        },
+    )
+    tav = textwrap.dedent("""
+        "@aws-sdk/client-s3":
+          - versions:
+              include: "^3.6.1"
+              exclude: "3.529.0 || >=3.363.0 <=3.377.0"
+              mode: max-7
+            commands: npm test
+    """)
+    (tmp_package / ".tav.yml").write_text(tav)
+
+    parser = PackageParser(
+        package_path=tmp_package,
+        bundle_membership=set(),
+        component_owners={},
+    )
+    result = parser.parse()
+
+    assert result is not None
+    assert result["tested_versions"][0]["exclude"] == "3.529.0 || >=3.363.0 <=3.377.0"
+    assert result["tested_versions"][0]["mode"] == "max-7"
+
+
+def test_tav_jobs_key_inside_list_entry(tmp_package):
+    write_package_json(
+        tmp_package,
+        {
+            "name": "@opentelemetry/instrumentation-aws-sdk",
+            "version": "0.77.0",
+            "description": "test",
+        },
+    )
+    # Structure 2 nested in a list: the entry has no `versions` of its own,
+    # the ranges live under `jobs`.
+    tav = textwrap.dedent("""
+        "@aws-sdk/client-sqs":
+          - jobs:
+              - versions:
+                  include: "^3.24.0"
+                  mode: max-7
+                commands: npm test
+    """)
+    (tmp_package / ".tav.yml").write_text(tav)
+
+    parser = PackageParser(
+        package_path=tmp_package,
+        bundle_membership=set(),
+        component_owners={},
+    )
+    result = parser.parse()
+
+    assert result is not None
+    assert len(result["tested_versions"]) == 1
+    assert result["tested_versions"][0]["package"] == "@aws-sdk/client-sqs"
+    assert result["tested_versions"][0]["range"] == "^3.24.0"
+    assert result["tested_versions"][0]["mode"] == "max-7"
+
+
+def test_tav_top_level_jobs_key(tmp_package):
+    write_package_json(
+        tmp_package,
+        {
+            "name": "@opentelemetry/instrumentation-aws-sdk",
+            "version": "0.77.0",
+            "description": "test",
+        },
+    )
+    # Structure 2 as documented for aws-sdk: the package maps to a dict whose
+    # `jobs` list carries the version ranges. This is the shape behind the
+    # exclude/mode data already in the registry for aws-sdk and 6 other packages.
+    tav = textwrap.dedent("""
+        "@aws-sdk/client-bedrock-runtime":
+          jobs:
+            - versions:
+                include: "^3.587.0"
+                exclude: ">=3.363.0 <=3.377.0"
+                mode: max-7
+              commands: npm test
+            - versions:
+                include: "^3.600.0"
+                mode: latest-minors
+              commands: npm test
+    """)
+    (tmp_package / ".tav.yml").write_text(tav)
+
+    parser = PackageParser(
+        package_path=tmp_package,
+        bundle_membership=set(),
+        component_owners={},
+    )
+    result = parser.parse()
+
+    assert result is not None
+    assert len(result["tested_versions"]) == 2
+    ranges = [entry["range"] for entry in result["tested_versions"]]
+    assert ranges == sorted(ranges)
+    assert result["tested_versions"][0]["exclude"] == ">=3.363.0 <=3.377.0"
+
+
+def test_tav_flat_versions_on_dict_config(tmp_package):
+    write_package_json(
+        tmp_package,
+        {
+            "name": "@opentelemetry/instrumentation-express",
+            "version": "0.66.0",
+            "description": "test",
+        },
+    )
+    # A dict config with no `jobs` - the versions hang directly off the mapping.
+    tav = textwrap.dedent("""
+        express:
+          versions:
+            include: ">=4.16.2 <6"
+            mode: latest-minors
+          commands: npm test
+    """)
+    (tmp_package / ".tav.yml").write_text(tav)
+
+    parser = PackageParser(
+        package_path=tmp_package,
+        bundle_membership=set(),
+        component_owners={},
+    )
+    result = parser.parse()
+
+    assert result is not None
+    assert len(result["tested_versions"]) == 1
+    assert result["tested_versions"][0]["range"] == ">=4.16.2 <6"
+
+
+def test_tav_empty_when_yaml_is_malformed(tmp_package):
+    write_package_json(
+        tmp_package,
+        {
+            "name": "@opentelemetry/instrumentation-express",
+            "version": "0.66.0",
+            "description": "test",
+        },
+    )
+    (tmp_package / ".tav.yml").write_text("express:\n  - versions:\n   include: [unclosed\n")
+
+    parser = PackageParser(
+        package_path=tmp_package,
+        bundle_membership=set(),
+        component_owners={},
+    )
+    result = parser.parse()
+
+    assert result is not None
+    assert result["tested_versions"] == []
+
+
+def test_tav_empty_when_unreadable(tmp_package):
+    write_package_json(
+        tmp_package,
+        {
+            "name": "@opentelemetry/instrumentation-express",
+            "version": "0.66.0",
+            "description": "test",
+        },
+    )
+    # Same OSError path as the README case above.
+    (tmp_package / ".tav.yml").mkdir()
+
+    parser = PackageParser(
+        package_path=tmp_package,
+        bundle_membership=set(),
+        component_owners={},
+    )
+    result = parser.parse()
+
+    assert result is not None
+    assert result["tested_versions"] == []
+
+
+def test_tav_empty_when_yaml_is_not_a_mapping(tmp_package):
+    write_package_json(
+        tmp_package,
+        {
+            "name": "@opentelemetry/instrumentation-express",
+            "version": "0.66.0",
+            "description": "test",
+        },
+    )
+    (tmp_package / ".tav.yml").write_text("- express\n- mongoose\n")
+
+    parser = PackageParser(
+        package_path=tmp_package,
+        bundle_membership=set(),
+        component_owners={},
+    )
+    result = parser.parse()
+
+    assert result is not None
+    assert result["tested_versions"] == []
