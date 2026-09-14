@@ -1,6 +1,6 @@
 module github.com/open-telemetry/opentelemetry-ecosystem-explorer/golang-instrumentation-watcher
 
-go 1.26
+go 1.26.0
 
 toolchain go1.26.6
 
@@ -9,4 +9,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1
 )
 
-require golang.org/x/mod v0.40.0
+require golang.org/x/mod v0.41.0
