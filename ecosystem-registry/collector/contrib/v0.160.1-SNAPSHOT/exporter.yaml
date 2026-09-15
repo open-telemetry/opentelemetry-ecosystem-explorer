@@ -1084,28 +1084,6 @@ components:
         - logs
         - traces
     type: logzio
-- name: mezmoexporter
-  metadata:
-    display_name: Mezmo Exporter
-    status:
-      class: exporter
-      codeowners:
-        active:
-        - dashpole
-        - billmeyer
-        - gjanco
-      deprecation:
-        logs:
-          date: '2026-07-30'
-          migration: Use the OTLP/HTTP exporter to send logs directly to Mezmo instead.
-            See https://docs.mezmo.com/telemetry-pipelines/otel-collector and https://docs.mezmo.com/telemetry-pipelines/open-telemetry-source
-            for migration guidance. This component will be removed in a future release.
-      distributions:
-      - contrib
-      stability:
-        deprecated:
-        - logs
-    type: mezmo
 - name: opensearchexporter
   metadata:
     display_name: OpenSearch Exporter

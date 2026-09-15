@@ -8559,7 +8559,7 @@ components:
       from_version: v0.156.0
       id: receiver.kubeletstats.cpuUsageScrapeBased
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/49477
-      stage: alpha
+      stage: beta
     metrics:
       container.cpu.time:
         attributes: []
@@ -11269,6 +11269,11 @@ components:
         unit: By
     override_value_enabled: true
     resource_attributes:
+      db.system.version:
+        description: The database version of the instance. Examples include "5.0.0",
+          "6.0.4".
+        enabled: false
+        type: string
       server.address:
         description: The address of the MongoDB host.
         enabled: true
@@ -11990,6 +11995,40 @@ components:
           monotonic: false
           value_type: int
         unit: '1'
+      mysql.innodb.redo_log.checkpoint.age:
+        description: The difference, in bytes, between the current InnoDB redo log
+          sequence number and the most recent checkpoint log sequence number.
+        enabled: false
+        extended_documentation: Only emitted for MySQL 8.0.11 and later. MySQL 8.0.11
+          through 8.0.29 requires SELECT and BACKUP_ADMIN. MySQL 8.0.30 and later
+          versions do not require BACKUP_ADMIN. MariaDB is not supported for this
+          metric.
+        gauge:
+          value_type: int
+        stability: development
+        unit: By
+      mysql.innodb.redo_log.lsn.checkpoint:
+        description: The InnoDB redo log sequence number of the most recent checkpoint.
+        enabled: false
+        extended_documentation: Only emitted for MySQL 8.0.11 and later. MySQL 8.0.11
+          through 8.0.29 requires SELECT and BACKUP_ADMIN. MySQL 8.0.30 and later
+          versions do not require BACKUP_ADMIN. MariaDB is not supported for this
+          metric.
+        gauge:
+          value_type: int
+        stability: development
+        unit: By
+      mysql.innodb.redo_log.lsn.current:
+        description: The current InnoDB redo log sequence number.
+        enabled: false
+        extended_documentation: Only emitted for MySQL 8.0.11 and later. MySQL 8.0.11
+          through 8.0.29 requires SELECT and BACKUP_ADMIN. MySQL 8.0.30 and later
+          versions do not require BACKUP_ADMIN. MariaDB is not supported for this
+          metric.
+        gauge:
+          value_type: int
+        stability: development
+        unit: By
       mysql.innodb.row_lock.wait.count:
         attributes: []
         description: The number of InnoDB row lock waits currently pending.
@@ -12225,6 +12264,18 @@ components:
           monotonic: true
           value_type: int
         unit: '1'
+      mysql.query.execution.time:
+        description: The total execution time of SQL statements tracked by the server.
+        enabled: false
+        extended_documentation: This metric reports cumulative statement execution
+          time in seconds, including statements issued by the receiver. Values reset
+          when statement summary state is reset or the server restarts.
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: double
+        unit: s
       mysql.query.slow.count:
         description: The number of slow queries.
         enabled: false
@@ -12302,6 +12353,23 @@ components:
           monotonic: true
           value_type: int
         unit: '1'
+      mysql.server.healthy:
+        description: The health status of the MySQL server.
+        enabled: false
+        extended_documentation: A value of '1' indicates healthy and '0' indicates
+          unhealthy.
+        gauge:
+          value_type: int
+        stability: development
+        unit: '1'
+      mysql.session.active.count:
+        description: The number of active MySQL sessions with query text and state.
+        enabled: false
+        extended_documentation: Idle sessions and the receiver's own query are excluded.
+        gauge:
+          value_type: int
+        stability: development
+        unit: '{session}'
       mysql.sorts:
         attributes:
         - sorts
@@ -13093,14 +13161,25 @@ components:
           delta).
         type: int
       oracledb.plan.first_load:
-        description: 'Time at which the plan was first loaded into the library cache,
-          in the server''s local timezone. Format: YYYY-MM-DD/HH:MM:SS'
+        description: Time at which the plan was first loaded into the library cache,
+          in ISO 8601 format (UTC).
         type: string
       oracledb.plan.last_load:
-        description: 'Plan load time in the server''s local timezone. Format: YYYY-MM-DD/HH:MM:SS'
+        description: Plan load time, in ISO 8601 format (UTC).
         type: string
       oracledb.plan_hash_value:
         description: Numeric representation of the execution plan.
+        type: string
+      oracledb.procedure.first_load_time:
+        description: Earliest load time across the procedure's cached statements,
+          in ISO 8601 format (UTC).
+        type: string
+      oracledb.procedure.last_active_time:
+        description: The most recent time any of the procedure's cached statements
+          were active, in ISO 8601 format (UTC).
+        type: string
+      oracledb.procedure.schema.name:
+        description: The schema (owner) of the stored procedure or function.
         type: string
       oracledb.procedure_execution_count:
         description: The number of times the stored procedure has been executed, derived
@@ -13346,6 +13425,32 @@ components:
         - oracledb.wait.timeouts
         - oracledb.wait_class
         description: Per-session wait event statistics from v$session_event.
+        enabled: false
+      db.server.top_procedure:
+        attributes:
+        - db.namespace
+        - db.server.name
+        - db.system.name
+        - oracle.db.service
+        - oracledb.buffer_gets
+        - oracledb.cpu_time
+        - oracledb.direct_writes
+        - oracledb.disk_reads
+        - oracledb.elapsed_time
+        - oracledb.physical_read_bytes
+        - oracledb.physical_write_bytes
+        - oracledb.procedure.first_load_time
+        - oracledb.procedure.last_active_time
+        - oracledb.procedure.schema.name
+        - oracledb.procedure_execution_count
+        - oracledb.procedure_id
+        - oracledb.procedure_name
+        - oracledb.procedure_type
+        - oracledb.rows_processed
+        description: Aggregated performance metrics for the top stored procedures
+          by elapsed time, derived from V$SQL grouped by PROGRAM_ID and joined to
+          DBA_PROCEDURES, with delta computation on cumulative counters. Correlates
+          with db.server.top_query and db.server.query_sample via oracledb.procedure_id.
         enabled: false
       db.server.top_query:
         attributes:
@@ -14844,9 +14949,24 @@ components:
         description: The name of the instance that data is coming from.
         enabled: true
         type: string
+      server.address:
+        description: The address of the monitored Oracle instance. A loopback target
+          (for example localhost or 127.0.0.1) is reported as the host name of the
+          machine running the collector, since the instance is co-located with it.
+          Omitted when the connection string carries no parseable host, such as a
+          TNS descriptor.
+        enabled: true
+        type: string
+      server.port:
+        description: The port of the monitored Oracle instance, defaulting to 1521
+          when the target does not specify one.
+        enabled: true
+        type: int
       service.instance.id:
-        description: A unique identifier of the Oracle DB instance in the format host:port/serviceName.
-          (defaults to 'unknown:1521', in case of error in generating this value)
+        description: A unique identifier of the Oracle DB instance in the format host:port/serviceName,
+          where host and port are resolved the same way as server.address and server.port.
+          (defaults to 'unknown:1521' when the connection string carries no parseable
+          host)
         enabled: true
         type: string
       service.name:
@@ -15703,7 +15823,8 @@ components:
         attributes:
         - db.collection.name
         - db.namespace
-        description: Disk space used by a table.
+        description: Total disk space used by a table, including its indexes and TOAST
+          data.
         enabled: true
         stability: development
         sum:
@@ -20555,6 +20676,27 @@ components:
         - misguided
         requirement_level: recommended
         type: string
+      sqlserver.procedure.last_execution_time:
+        description: ISO 8601 timestamp of the last execution of the procedure.
+        requirement_level: recommended
+        type: string
+      sqlserver.procedure.max_duration:
+        description: Longest elapsed time for a single execution of the procedure,
+          in seconds. Covers the whole period the plan has been cached, so unlike
+          the other durations it is not a delta.
+        requirement_level: recommended
+        type: double
+      sqlserver.procedure.min_duration:
+        description: Shortest elapsed time for a single execution of the procedure,
+          in seconds. Covers the whole period the plan has been cached, so unlike
+          the other durations it is not a delta.
+        requirement_level: recommended
+        type: double
+      sqlserver.procedure.tempdb.spilled_pages:
+        description: Pages spilled to tempdb by the procedure over the collection
+          interval, reported as a delta.
+        requirement_level: recommended
+        type: int
       sqlserver.procedure_execution_count:
         description: Number of times that the procedure has been executed since it
           was last compiled, reported in delta value.
@@ -20779,6 +20921,15 @@ components:
       Performance Counters are only available when running on Windows.
     display_name: Microsoft SQL Server Receiver
     events:
+      db.server.query_plan:
+        attributes:
+        - sqlserver.query_hash
+        - sqlserver.query_plan
+        - sqlserver.query_plan_hash
+        description: query execution plan. When enabled, the plan is reported here
+          instead of on db.server.top_query, so an oversized plan payload cannot drop
+          the lightweight query statistics alongside it
+        enabled: false
       db.server.query_sample:
         attributes:
         - client.address
@@ -20823,6 +20974,27 @@ components:
         - sqlserver.writes
         - user.name
         description: query sample
+        enabled: false
+      db.server.top_procedure:
+        attributes:
+        - db.namespace
+        - db.system.name
+        - sqlserver.procedure.last_execution_time
+        - sqlserver.procedure.max_duration
+        - sqlserver.procedure.min_duration
+        - sqlserver.procedure.tempdb.spilled_pages
+        - sqlserver.procedure_execution_count
+        - sqlserver.procedure_id
+        - sqlserver.procedure_name
+        - sqlserver.schema.name
+        - sqlserver.total_elapsed_time
+        - sqlserver.total_logical_reads
+        - sqlserver.total_logical_writes
+        - sqlserver.total_physical_reads
+        - sqlserver.total_worker_time
+        description: Aggregated performance metrics for the top stored procedures
+          by elapsed time, computed as deltas over the collection interval. Correlates
+          with db.server.top_query and db.server.query_sample via sqlserver.procedure_id.
         enabled: false
       db.server.top_query:
         attributes:
@@ -21905,11 +22077,15 @@ components:
         enabled: true
         type: string
       server.address:
-        description: Name of the database host.
+        description: The address of the monitored SQL Server instance. A loopback
+          target (for example localhost or 127.0.0.1) is reported as the host name
+          of the machine running the collector, since the instance is co-located with
+          it.
         enabled: true
         type: string
       server.port:
-        description: Server port number.
+        description: The port of the monitored SQL Server instance, defaulting to
+          1433 when not configured.
         enabled: true
         type: int
       service.instance.id:

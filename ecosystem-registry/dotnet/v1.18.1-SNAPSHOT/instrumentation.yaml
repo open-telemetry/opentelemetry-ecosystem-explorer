@@ -184,7 +184,7 @@ modules:
 - name: OpenTelemetry.Instrumentation.ServiceFabricRemoting
   description: ServiceFabric Remoting instrumentation for OpenTelemetry .NET.
   type: instrumentation
-  version: 1.18.0-beta.1
+  version: 1.18.0-beta.2
 - name: OpenTelemetry.Instrumentation.SqlClient
   description: SqlClient instrumentation for OpenTelemetry .NET.
   type: instrumentation
@@ -192,7 +192,7 @@ modules:
 - name: OpenTelemetry.Instrumentation.StackExchangeRedis
   description: StackExchange.Redis instrumentation for OpenTelemetry .NET.
   type: instrumentation
-  version: 1.18.0-beta.1
+  version: 1.18.0-beta.2
 - name: OpenTelemetry.Instrumentation.Wcf
   description: OpenTelemetry instrumentation for WCF.
   type: instrumentation
@@ -201,11 +201,11 @@ modules:
   description: OpenTelemetry Resource Detectors for AWS ElasticBeanstalk, EC2, ECS,
     EKS.
   type: extension
-  version: 1.18.0
+  version: 1.18.1
 - name: OpenTelemetry.Resources.Azure
   description: OpenTelemetry Resource Detectors for Azure cloud environments.
   type: extension
-  version: 1.18.0-beta.1
+  version: 1.18.0-beta.2
 - name: OpenTelemetry.Resources.Container
   description: OpenTelemetry Resource Detectors for Container environment.
   type: extension

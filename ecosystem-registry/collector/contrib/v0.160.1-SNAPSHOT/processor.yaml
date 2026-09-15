@@ -2068,6 +2068,7 @@ components:
     type: schema
 - name: signingprocessor
   metadata:
+    display_name: Signing Processor
     status:
       class: processor
       codeowners:

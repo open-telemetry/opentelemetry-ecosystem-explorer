@@ -16,7 +16,11 @@
 
 import type { Context } from "@netlify/edge-functions";
 
-const notFound = () => new Response("Not Found", { status: 404 });
+// A HEAD response must not carry a body, so the 404 explanation is omitted for
+// that method. Content-Length is left off rather than set to the length the GET
+// body would have — it is optional here, and a wrong value is worse than none.
+const notFound = (request: Request) =>
+  new Response(request.method === "HEAD" ? null : "Not Found", { status: 404 });
 
 // Rewrites to a static asset and normalizes its Content-Type. Returns null when
 // the rewrite resolves to the SPA HTML shell (the catch-all serves /index.html
@@ -67,15 +71,25 @@ interface RouteMeta {
 
 // Per-route SEO metadata generated at build time (dist/seo/routes.json), cached
 // across invocations within an edge isolate.
+const MANIFEST_PATH = "/seo/routes.json";
 let routesCache: Record<string, RouteMeta> | null = null;
 let routesLoaded = false;
 
-async function loadRoutes(context: Context): Promise<Record<string, RouteMeta>> {
+// The manifest is a build artifact — the same file for every request — so it is
+// fetched with an explicit GET instead of context.rewrite(), which inherits the
+// in-flight method. On a HEAD request the rewrite resolves with no body, json()
+// throws, and the empty manifest would make every fabricated path look known
+// (200 instead of 404). The rewrite is still used for GET: it stays inside the
+// CDN instead of taking a network hop back to the origin.
+async function loadRoutes(request: Request, context: Context): Promise<Record<string, RouteMeta>> {
   if (routesLoaded) {
     return routesCache ?? {};
   }
   try {
-    const response = await context.rewrite("/seo/routes.json");
+    const response =
+      request.method === "GET"
+        ? await context.rewrite(MANIFEST_PATH)
+        : await fetch(new URL(MANIFEST_PATH, request.url), { method: "GET" });
     if (response.status === 200) {
       routesCache = (await response.json()) as Record<string, RouteMeta>;
       // Only latch the cache on success; a transient failure (bad status,
@@ -92,7 +106,9 @@ async function loadRoutes(context: Context): Promise<Record<string, RouteMeta>> 
 // Fetches the pre-generated Markdown for a route (served at `${path}.md`).
 // Returns null when the file doesn't exist — the SPA catch-all serves
 // /index.html (200, text/html) for unknown paths, which we detect and treat as
-// "no Markdown for this route".
+// "no Markdown for this route". The text is empty (but non-null) when the
+// rewrite inherits a HEAD request, so callers that only need existence must test
+// for null rather than for truthiness.
 async function fetchMarkdown(context: Context, mdPath: string): Promise<string | null> {
   try {
     const response = await context.rewrite(mdPath);
@@ -106,14 +122,65 @@ async function fetchMarkdown(context: Context, mdPath: string): Promise<string |
 
 // Parameterized routes that are valid but not enumerated in routes.json (they
 // resolve client-side): versioned Collector lists and the Java instrumentation
-// version/redirect routes. Anything else not in the manifest is a real 404.
+// version list. Anything else not in the manifest is a real 404.
 function isDynamicKnownRoute(pathname: string): boolean {
   if (/^\/collector\/components\/[^/]+$/.test(pathname)) return true;
   if (/^\/java-agent\/instrumentation\/(latest|\d[\w.+-]*)$/.test(pathname)) return true;
-  if (/^\/java-agent\/instrumentation\/[^/]+\/[^/]+$/.test(pathname)) return true;
   if (pathname === "/_dev/components") return true;
   return false;
 }
+
+interface RouteStatus {
+  meta?: RouteMeta;
+  known: boolean;
+}
+
+// Resolves a path against the build-time manifest plus the dynamic route
+// patterns. If the manifest failed to load, don't risk false 404s: treat every
+// page as known.
+async function routeStatus(
+  request: Request,
+  context: Context,
+  lookupPath: string
+): Promise<RouteStatus> {
+  const routes = await loadRoutes(request, context);
+  const manifestLoaded = Object.keys(routes).length > 0;
+  const meta = routes[lookupPath];
+  return { meta, known: !manifestLoaded || Boolean(meta) || isDynamicKnownRoute(lookupPath) };
+}
+
+// Normalizes /index.html and trailing slashes to the canonical route key so those
+// variants resolve against the manifest instead of falling to a 404.
+function normalizeLookupPath(pathname: string): string {
+  if (pathname === "/index.html") return "/";
+  return pathname.length > 1 && pathname.endsWith("/") ? pathname.replace(/\/+$/, "") : pathname;
+}
+
+// `/javaagent` is not an app route — it is the spelling agents commonly guess for
+// the Java agent section. Map it onto the real prefix so the known-route check
+// resolves the alias instead of 404ing it.
+const canonicalizeAlias = (pathname: string): string =>
+  pathname === "/javaagent"
+    ? "/java-agent"
+    : pathname.startsWith("/javaagent/")
+      ? `/java-agent${pathname.slice("/javaagent".length)}`
+      : pathname;
+
+// The generated section index for a path, or null when the path is outside both
+// documented sections.
+function sectionIndexFor(pathname: string): string | null {
+  const p = canonicalizeAlias(pathname);
+  if (p === "/java-agent" || p.startsWith("/java-agent/")) return "/agent/javaagent/index.md";
+  if (p === "/collector" || p.startsWith("/collector/")) return "/agent/collector/index.md";
+  return null;
+}
+
+// Deprecated Java route: `/java-agent/instrumentation/:version/:name` moved to
+// `/java-agent/instrumentation/:name?version=:version`. The SPA performs that hop
+// with a React <Navigate>, which HTTP-only clients never execute — they get a 200
+// and a generic shell with no Location header. Issue the redirect at the edge so
+// it is visible over plain HTTP.
+const LEGACY_JAVA_VERSION_ROUTE = /^\/java-agent\/instrumentation\/(latest|\d[\w.+-]*)\/([^/]+)$/;
 
 const escapeHtml = (value: string): string =>
   value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -264,12 +331,15 @@ function markdownToHtml(md: string): string {
 // Kept in the page content area (a <p>, not <nav>/<script>/<style>) so it
 // satisfies the afdocs llms-txt-directive-html check, which scans the <body> for
 // a directive that survives HTML-to-Markdown conversion.
-function llmsDirective(mdUrl: string): string {
-  return (
-    `<p>This documentation has an index for AI agents at ` +
-    `<a href="/llms.txt">/llms.txt</a>. A Markdown version of this page is available at ` +
-    `<a href="${escapeAttr(mdUrl)}">${escapeHtml(mdUrl)}</a>.</p>`
-  );
+// `mdUrl` is null when the route has no generated Markdown page (versioned lists,
+// 404s); the index sentence still renders so the afdocs check keeps passing.
+function llmsDirective(mdUrl: string | null): string {
+  const index = `This documentation has an index for AI agents at <a href="/llms.txt">/llms.txt</a>.`;
+  const alternate = mdUrl
+    ? ` A Markdown version of this page is available at ` +
+      `<a href="${escapeAttr(mdUrl)}">${escapeHtml(mdUrl)}</a>.`
+    : "";
+  return `<p>${index}${alternate}</p>`;
 }
 
 // Wraps the agent-facing body injected into `#root`. It's rendered for HTTP-only
@@ -287,7 +357,7 @@ const SR_ONLY_STYLE =
   "position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;" +
   "clip:rect(0,0,0,0);white-space:nowrap;border:0";
 
-function buildAgentBody(mdUrl: string, contentHtml: string): string {
+function buildAgentBody(mdUrl: string | null, contentHtml: string): string {
   return (
     `<div inert aria-hidden="true" style="${SR_ONLY_STYLE}">` +
     llmsDirective(mdUrl) +
@@ -328,24 +398,23 @@ function buildJsonLd(title: string, description: string, canonicalUrl: string): 
   return JSON.stringify(data).replace(/</g, "\\u003c");
 }
 
+interface InjectOptions {
+  title: string;
+  description: string;
+  canonicalUrl: string;
+  mdUrl: string | null;
+  status: number;
+  // null for HEAD requests, which must answer with headers only: the shell body
+  // is neither read nor rewritten.
+  bodyHtml: string | null;
+}
+
 // Rewrites the SPA shell's <head> with per-route title/description/OG/canonical,
-// a Markdown alternate link, and JSON-LD; injects `bodyHtml` into the empty
-// `#root` so non-JS agents see real content (not a bare SPA shell); then returns
-// it with `status` (200 for known routes, 404 for unknown ones so crawlers don't
-// see soft 404s).
-async function injectHead(
-  shell: Response,
-  opts: {
-    title: string;
-    description: string;
-    canonicalUrl: string;
-    mdUrl: string;
-    status: number;
-    bodyHtml: string;
-  }
-): Promise<Response> {
-  const { title, description, canonicalUrl, mdUrl, status, bodyHtml } = opts;
-  let html = await shell.text();
+// a Markdown alternate link, and JSON-LD, and injects `bodyHtml` into the empty
+// `#root` so non-JS agents see real content (not a bare SPA shell).
+function rewriteShell(shellHtml: string, opts: InjectOptions & { bodyHtml: string }): string {
+  const { title, description, canonicalUrl, mdUrl, bodyHtml } = opts;
+  let html = shellHtml;
 
   html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(title)}</title>`);
   html = setMetaContent(html, 'name="description"', description);
@@ -357,18 +426,42 @@ async function injectHead(
 
   const extraHead =
     `<link rel="canonical" href="${escapeAttr(canonicalUrl)}" />` +
-    `<link rel="alternate" type="text/markdown" href="${escapeAttr(mdUrl)}" />` +
+    (mdUrl ? `<link rel="alternate" type="text/markdown" href="${escapeAttr(mdUrl)}" />` : "") +
     `<script type="application/ld+json">${buildJsonLd(title, description, canonicalUrl)}</script>`;
   html = html.replace(/<\/head>/i, `${extraHead}</head>`);
 
   // Populate the SPA root so HTTP-only agents see content. A function replacer
   // avoids `$`-sequence interpretation in bodyHtml (which can contain `$`).
-  html = html.replace(/<div id="root">\s*<\/div>/, () => `<div id="root">${bodyHtml}</div>`);
+  return html.replace(/<div id="root">\s*<\/div>/, () => `<div id="root">${bodyHtml}</div>`);
+}
+
+// Returns the rewritten shell with `status` (200 for known routes, 404 for
+// unknown ones so crawlers don't see soft 404s), or a bodyless response with the
+// same headers when `bodyHtml` is null (HEAD). `mdUrl` is null when no Markdown
+// page exists for the route, in which case no alternate is advertised in either
+// the <head> or the Link header.
+async function injectHead(shell: Response, opts: InjectOptions): Promise<Response> {
+  const { mdUrl, status, bodyHtml } = opts;
+
+  let html: string | null = null;
+  if (bodyHtml === null) {
+    // HEAD: a body would be protocol-incorrect, so drop the shell's instead of
+    // leaving its stream dangling.
+    await shell.body?.cancel();
+  } else {
+    html = rewriteShell(await shell.text(), { ...opts, bodyHtml });
+  }
 
   const headers = new Headers(shell.headers);
   headers.delete("content-length");
   headers.delete("content-encoding");
   headers.set("content-type", "text/html; charset=utf-8");
+  // Announce the Markdown alternate as a response header as well as in <head>, so
+  // an agent can discover it with a HEAD request instead of fetching and parsing
+  // the HTML.
+  if (mdUrl) {
+    headers.set("link", `<${mdUrl}>; rel="alternate"; type="text/markdown"`);
+  }
   // Merge "Accept" into any existing Vary (the shell may already vary on e.g.
   // Accept-Encoding) rather than clobbering it, to keep caching correct.
   const vary = headers.get("vary");
@@ -385,46 +478,63 @@ export default async (request: Request, context: Context) => {
   const { pathname } = url;
   const acceptHeader = request.headers.get("accept") || "";
   const isMarkdownRequested = acceptHeader.includes("text/markdown");
+  const lookupPath = normalizeLookupPath(pathname);
+
+  const legacyJavaRoute = LEGACY_JAVA_VERSION_ROUTE.exec(lookupPath);
+  if (legacyJavaRoute) {
+    const [, version, name] = legacyJavaRoute;
+    const params = new URLSearchParams(url.search);
+    params.set("version", version);
+    return new Response(null, {
+      status: 301,
+      headers: { Location: `/java-agent/instrumentation/${name}?${params}` },
+    });
+  }
 
   // Documentation root files
   if (pathname === "/llms.txt" || pathname === "/llms-full.txt") {
     return (
       (await serveAsset(context, pathname, "text/plain; charset=UTF-8", { Vary: "Accept" })) ??
-      notFound()
+      notFound(request)
     );
   }
 
   // Content negotiation for AI agents: prefer the page's own Markdown (generated
   // at the app-route path), falling back to the section index, then the docs root.
   if (isMarkdownRequested) {
-    const candidates: string[] = [];
-    if (pathname === "/" || pathname === "/index.html") {
-      candidates.push("/index.md", "/llms.txt");
-    } else {
-      candidates.push(`${pathname}.md`);
-      if (
-        pathname === "/java-agent" ||
-        pathname.startsWith("/java-agent/") ||
-        pathname === "/javaagent" ||
-        pathname.startsWith("/javaagent/")
-      ) {
-        candidates.push("/agent/javaagent/index.md");
-      } else if (pathname === "/collector" || pathname.startsWith("/collector/")) {
-        candidates.push("/agent/collector/index.md");
-      }
+    const ownMd = lookupPath === "/" ? "/index.md" : `${lookupPath}.md`;
+    const own = await serveAsset(context, ownMd, "text/markdown; charset=UTF-8", {
+      Vary: "Accept",
+    });
+    if (own) {
+      return own;
     }
 
-    for (const mdPath of candidates) {
-      const finalContentType = mdPath.endsWith(".md")
-        ? "text/markdown; charset=UTF-8"
-        : "text/plain; charset=UTF-8";
-      const response = await serveAsset(context, mdPath, finalContentType, { Vary: "Accept" });
+    if (lookupPath === "/") {
+      return (
+        (await serveAsset(context, "/llms.txt", "text/plain; charset=UTF-8", { Vary: "Accept" })) ??
+        notFound(request)
+      );
+    }
+
+    // Section-index fallback, but only for paths that are real routes. Serving the
+    // index for a fabricated path returned 200 with a 71 KB body, so an agent
+    // could not tell "your URL is wrong" from "here is your answer" and had no
+    // signal to retry with a corrected path.
+    const sectionIndex = sectionIndexFor(lookupPath);
+    if (
+      sectionIndex &&
+      (await routeStatus(request, context, canonicalizeAlias(lookupPath))).known
+    ) {
+      const response = await serveAsset(context, sectionIndex, "text/markdown; charset=UTF-8", {
+        Vary: "Accept",
+      });
       if (response) {
         return response;
       }
     }
     // Strict 404 for unrecognized Markdown requests (Copilot feedback)
-    return notFound();
+    return notFound(request);
   }
 
   // Explicit agent documentation routes
@@ -447,26 +557,29 @@ export default async (request: Request, context: Context) => {
         return response;
       }
     }
-    return notFound();
+    return notFound(request);
   }
 
   // JSON schemas and metadata
   if (pathname.startsWith("/schemas/") || pathname.startsWith("/data/")) {
     const finalContentType = pathname.endsWith(".json") ? "application/json" : "text/plain";
-    return (await serveAsset(context, pathname, finalContentType)) ?? notFound();
+    return (await serveAsset(context, pathname, finalContentType)) ?? notFound(request);
   }
 
   // Sitemap and Robots
   if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
     const finalContentType = pathname.endsWith(".xml") ? "application/xml" : "text/plain";
-    return (await serveAsset(context, pathname, finalContentType)) ?? notFound();
+    return (await serveAsset(context, pathname, finalContentType)) ?? notFound(request);
   }
 
   // HTML page navigation. Inject per-route metadata so non-JS social scrapers
   // and crawlers get page-specific title/description/OG/canonical, and return a
-  // real 404 for unknown routes. Asset requests and non-GET methods pass through
-  // untouched so Netlify serves them (or the SPA shell) as before.
-  if (request.method !== "GET" || ASSET_EXT.test(pathname)) {
+  // real 404 for unknown routes. HEAD is handled alongside GET so the Link
+  // alternate header below is discoverable without downloading the page; asset
+  // requests and other methods pass through untouched so Netlify serves them (or
+  // the SPA shell) as before.
+  const isHead = request.method === "HEAD";
+  if ((request.method !== "GET" && !isHead) || ASSET_EXT.test(pathname)) {
     return undefined;
   }
 
@@ -477,39 +590,36 @@ export default async (request: Request, context: Context) => {
     return shell.status === 200 ? undefined : shell;
   }
 
-  // Normalize /index.html and trailing slashes to the canonical route key so
-  // those variants resolve against the manifest instead of falling to a 404.
-  const lookupPath =
-    pathname === "/index.html"
-      ? "/"
-      : pathname.length > 1 && pathname.endsWith("/")
-        ? pathname.replace(/\/+$/, "")
-        : pathname;
-
-  const routes = await loadRoutes(context);
-  const manifestLoaded = Object.keys(routes).length > 0;
-  const meta = routes[lookupPath];
-  // If the manifest failed to load, don't risk false 404s: treat every page as known.
-  const known = !manifestLoaded || Boolean(meta) || isDynamicKnownRoute(lookupPath);
+  const { meta, known } = await routeStatus(request, context, lookupPath);
 
   const title = meta?.title ?? (known ? DEFAULT_TITLE : `Page not found — ${DEFAULT_TITLE}`);
   const description = meta?.description ?? DEFAULT_DESCRIPTION;
   const canonicalUrl = `${SITE_ORIGIN}${lookupPath}`;
   // The homepage's Markdown is /index.md (the route's own generated page), not
   // /llms.txt. Keep mdPath (fetched + injected), mdUrl (advertised alternate +
-  // directive), and the Accept negotiation below all pointing at the same file.
+  // directive), and the Accept negotiation above all pointing at the same file.
   const mdPath = lookupPath === "/" ? "/index.md" : `${lookupPath}.md`;
-  const mdUrl = `${SITE_ORIGIN}${mdPath}`;
 
   // Body injected into #root so HTTP-only agents get real content instead of an
   // empty shell. Prefer the route's pre-generated Markdown; fall back to a
   // title/description stub for known routes without a Markdown page and for 404s.
-  let contentHtml: string;
-  if (!known) {
-    contentHtml = fallbackContent("Page not found", `The page ${lookupPath} could not be found.`);
-  } else {
-    const md = await fetchMarkdown(context, mdPath);
-    contentHtml = md ? markdownToHtml(md) : fallbackContent(title, description);
+  // The alternate is advertised only when that Markdown actually exists — a
+  // dangling alternate is a 404 the agent has to spend a request to discover.
+  // context.rewrite() carries the request method through, so on HEAD this probe
+  // resolves with an empty body: existence is "the rewrite resolved" (non-null),
+  // not "it returned text".
+  const md = known ? await fetchMarkdown(context, mdPath) : null;
+  const mdUrl = (isHead ? md !== null : Boolean(md)) ? `${SITE_ORIGIN}${mdPath}` : null;
+
+  // HEAD gets headers only — same status and Link alternate as the GET, no body.
+  let bodyHtml: string | null = null;
+  if (!isHead) {
+    const contentHtml = md
+      ? markdownToHtml(md)
+      : known
+        ? fallbackContent(title, description)
+        : fallbackContent("Page not found", `The page ${lookupPath} could not be found.`);
+    bodyHtml = buildAgentBody(mdUrl, contentHtml);
   }
 
   return injectHead(shell, {
@@ -518,6 +628,6 @@ export default async (request: Request, context: Context) => {
     canonicalUrl,
     mdUrl,
     status: known ? 200 : 404,
-    bodyHtml: buildAgentBody(mdUrl, contentHtml),
+    bodyHtml,
   });
 };

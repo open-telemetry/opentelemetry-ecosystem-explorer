@@ -22,3 +22,5 @@ config:
       - details
       - summary
   MD041: false
+  MD025:
+    front_matter_title: ""

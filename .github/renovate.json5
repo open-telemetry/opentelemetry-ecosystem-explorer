@@ -1,6 +1,10 @@
 {
   $schema: "https://docs.renovatebot.com/renovate-schema.json",
   extends: ["config:best-practices", "helpers:pinGitHubActionDigestsToSemver"],
+  // `config:best-practices` pulls in `security:minimumReleaseAgeNpm`, which caps npm
+  // at 3 days. Preset packageRules are merged last, so only dropping it lets the
+  // window below apply to npm -- a rule added here cannot outrank it.
+  ignorePresets: ["security:minimumReleaseAgeNpm"],
   minimumReleaseAge: "14 days",
   internalChecksFilter: "strict",
   labels: ["dependencies"],
@@ -9,6 +13,9 @@
   lockFileMaintenance: {
     enabled: true,
     schedule: ["before 4am on Monday"],
+    // Lock file refreshes carry no `releaseTimestamp`, so the default
+    // `timestamp-required` leaves `renovate/stability-days` pending forever.
+    minimumReleaseAgeBehaviour: "timestamp-optional",
   },
   packageRules: [
     {
@@ -28,6 +35,12 @@
       matchPackageNames: ["@grafana/faro-react", "@grafana/faro-web-tracing"],
       groupName: "faro",
     },
+    // The package manager resolves these, so they have no release age to wait on.
+    // Gating `rollback` is actively harmful: it strands an unpublished version.
+    {
+      matchUpdateTypes: ["pin", "bump", "rollback", "replacement", "lockFileMaintenance"],
+      minimumReleaseAge: null,
+    },
   ],
   customManagers: [
     {
@@ -40,7 +53,7 @@
     },
     {
       customType: "regex",
-      managerFilePatterns: ["/(^|/)netlify\\.toml$/"],
+      managerFilePatterns: ["netlify.toml"],
       matchStrings: ['BUN_VERSION\\s*=\\s*"(?<currentValue>[^"]+)"'],
       depNameTemplate: "oven-sh/bun",
       datasourceTemplate: "github-releases",

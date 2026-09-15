@@ -23,6 +23,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:integration": "vitest run --config vitest.integration.config.ts",
+    "test:edge": "vitest run --config vitest.dist.config.ts",
     "test:integration:watch": "vitest --config vitest.integration.config.ts",
     "screenshots:capture": "bun scripts/take-screenshots.mjs",
     "screenshots:diff": "bun scripts/diff-screenshots.mjs"
@@ -40,7 +41,7 @@
     "i18next": "26.4.2",
     "idb": "8.0.3",
     "js-yaml": "5.4.1",
-    "lucide-react": "1.34.0",
+    "lucide-react": "1.37.0",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-i18next": "17.0.13",

@@ -455,6 +455,10 @@ class DatabaseWriter:
 
         This completely removes the database directory and recreates it empty.
 
+        The directory is builder-owned: everything under it goes, including files this
+        tool did not write. Curated content the frontend fetches must live outside it
+        (see the "Methodology" section of the explorer-db-builder README).
+
         Raises:
             OSError: If directory removal or creation fails
         """
