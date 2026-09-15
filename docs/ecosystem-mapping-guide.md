@@ -25,10 +25,10 @@ though nobody wrote it down as a formal process until now:
    exists, where it lives, how consistently it's structured, and what's missing entirely. Produces
    an audit and a proposed registry schema.
 
-2. **Schema design** - decide what fields the registry actually needs beyond what any existing
-   upstream format already provides, and how versioning works for this ecosystem (one aggregated
-   file per release, like Java, or independently-versioned per package, like JavaScript). _(detailed
-   guidance: follow-up PR)_
+2. [**Schema design**](./ecosystem-mapping-schema-design.md) - decide what fields the registry
+   actually needs beyond what any existing upstream format already provides, and how versioning
+   works for this ecosystem (one aggregated file per release, like Java, or independently-versioned
+   per package, like JavaScript).
 
 3. **Automation** - build a watcher that extracts metadata from upstream and writes it to the
    registry, following the shared watcher contract in
