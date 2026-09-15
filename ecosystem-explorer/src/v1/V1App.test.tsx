@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, useLocation, useNavigate } from "react-router-dom";
 import { beforeEach, describe, it, expect, vi } from "vitest";
@@ -69,8 +69,16 @@ function NavigationProbe() {
   );
 }
 
-function renderCollectorRoute(path: string) {
-  return render(
+async function waitForRoute() {
+  // A first visit imports its lazy page. Flush the import and the suspended
+  // router transition before checking the destination or navigating again.
+  await act(async () => {
+    await vi.dynamicImportSettled();
+  });
+}
+
+async function renderCollectorRoute(path: string) {
+  render(
     <ThemeProvider>
       <MemoryRouter initialEntries={["/about", path]}>
         <V1App />
@@ -78,6 +86,7 @@ function renderCollectorRoute(path: string) {
       </MemoryRouter>
     </ThemeProvider>
   );
+  await waitForRoute();
 }
 
 describe("V1App", () => {
@@ -156,7 +165,7 @@ describe("Collector release navigation through V1App routes", () => {
     "/collector/components/0.149.0?version=&type=receiver&q=OTLP&density=table",
   ])("preserves release and filters from %s through row, detail, source and Back", async (path) => {
     const user = userEvent.setup();
-    renderCollectorRoute(path);
+    await renderCollectorRoute(path);
     const row = await screen.findByRole("link", { name: /OTLP Receiver/ });
     const listLocation = screen.getByTestId("location").textContent!;
     const canonical = new URL(listLocation, "https://example.test");
@@ -167,6 +176,7 @@ describe("Collector release navigation through V1App routes", () => {
     expect(canonical.searchParams.get("density")).toBe("table");
     expect(row).toHaveAttribute("href", "/collector/components/core/otlpreceiver?version=0.149.0");
     await user.click(row);
+    await waitForRoute();
     expect(await screen.findByRole("heading", { name: "OTLP Receiver" })).toBeInTheDocument();
     expect(screen.getByText("Snapshot 0.149.0")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Source" })).toHaveAttribute(
@@ -174,10 +184,13 @@ describe("Collector release navigation through V1App routes", () => {
       "https://github.com/open-telemetry/opentelemetry-collector/tree/v0.149.0/receiver/otlpreceiver"
     );
     await user.click(screen.getByRole("button", { name: "Test back" }));
+    await waitForRoute();
     await waitFor(() => expect(screen.getByTestId("location")).toHaveTextContent(listLocation));
     await user.click(screen.getByRole("button", { name: "Test back" }));
+    await waitForRoute();
     await waitFor(() => expect(screen.getByTestId("location")).toHaveTextContent("/about"));
     await user.click(screen.getByRole("button", { name: "Test forward" }));
+    await waitForRoute();
     await waitFor(() => expect(screen.getByTestId("location")).toHaveTextContent(listLocation));
   });
 
@@ -185,10 +198,11 @@ describe("Collector release navigation through V1App routes", () => {
     "keeps the implicit latest view at main from %s",
     async (path) => {
       const user = userEvent.setup();
-      renderCollectorRoute(path);
+      await renderCollectorRoute(path);
       const row = await screen.findByRole("link", { name: /OTLP Receiver/ });
       expect(row).toHaveAttribute("href", "/collector/components/core/otlpreceiver");
       await user.click(row);
+      await waitForRoute();
       expect(await screen.findByText("Snapshot 0.150.0")).toBeInTheDocument();
       expect(screen.getByRole("link", { name: "Source" })).toHaveAttribute(
         "href",
@@ -201,13 +215,14 @@ describe("Collector release navigation through V1App routes", () => {
     "keeps deprecated last-release semantics from %s",
     async (path) => {
       const user = userEvent.setup();
-      renderCollectorRoute(path);
+      await renderCollectorRoute(path);
       const row = await screen.findByRole("link", { name: /JMX Receiver/ });
       expect(row).toHaveAttribute(
         "href",
         "/collector/components/contrib/jmxreceiver?version=deprecated"
       );
       await user.click(row);
+      await waitForRoute();
       expect(await screen.findByText("Snapshot 0.149.0")).toBeInTheDocument();
       expect(screen.getByRole("note")).toHaveTextContent(/0\.149\.0.*0\.150\.0/);
       expect(screen.getByRole("link", { name: "Source" })).toHaveAttribute(
