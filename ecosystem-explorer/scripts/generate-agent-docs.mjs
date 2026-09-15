@@ -29,6 +29,25 @@ const collectorAgentDir = path.join(agentDir, "collector");
 const javaagentAgentDir = path.join(agentDir, "javaagent");
 
 /**
+ * The section that points at the facet and reverse-lookup artifacts. Kept out of
+ * the tables themselves: adding a description column to these indexes would grow
+ * them by ~40%, which is the cost the facet file exists to avoid.
+ */
+function facetPointerSection(ecosystem) {
+  return (
+    `\n## Filtering and Reverse Lookup\n\n` +
+    `Answering "which components handle X?" or "what emits metric Y?" does not require this index:\n\n` +
+    `- [/data/${ecosystem}/facets.jsonl](/data/${ecosystem}/facets.jsonl) — one JSON object per line ` +
+    `(id, signals, description, page), for filtering the whole set in a single fetch. Each row's JSON ` +
+    `is \`${latestJsonUrl(ecosystem, ecosystem === "collector" ? "components" : "instrumentations", "{id}")}\`.\n` +
+    `- [/data/${ecosystem}/by-metric.json](/data/${ecosystem}/by-metric.json) — metric name to the ` +
+    `component ids that reference it.\n` +
+    `- [/data/${ecosystem}/by-attribute.json](/data/${ecosystem}/by-attribute.json) — attribute name ` +
+    `to the component ids that reference it.\n`
+  );
+}
+
+/**
  * Builds the Collector components index markdown.
  */
 async function buildCollectorIndex(components, publicPath) {
@@ -49,7 +68,7 @@ async function buildCollectorIndex(components, publicPath) {
     componentHashes = manifest.components || {};
   }
 
-  let md = `> For the complete documentation index, see [llms.txt](/llms.txt)\n\n# Collector Components\n\n<!-- llms-txt-link: /llms.txt -->\n\nThis is an index of all OpenTelemetry Collector components.\nFor full configuration details, please refer to the raw JSON data.\n\n**JSON Schema**: [collector-component.schema.json](/schemas/collector-component.schema.json)\n\nThe JSON Data URLs below are content-addressed and change whenever a component changes. Every component also answers at the stable alias \`/data/collector/components/{id}/latest.json\`, which always serves the current release.\n\n## Components\n\n| Display Name | ID | Stability | JSON Data URL |\n| --- | --- | --- | --- |\n`;
+  let md = `> For the complete documentation index, see [llms.txt](/llms.txt)\n\n# Collector Components\n\n<!-- llms-txt-link: /llms.txt -->\n\nThis is an index of all OpenTelemetry Collector components.\nFor full configuration details, please refer to the raw JSON data.\n\n**JSON Schema**: [collector-component.schema.json](/schemas/collector-component.schema.json)\n\nThe JSON Data URLs below are content-addressed and change whenever a component changes. Every component also answers at the stable alias \`/data/collector/components/{id}/latest.json\`, which always serves the current release.\n\n## Components\n\n| Display Name | ID | Stability | Signals | JSON Data URL |\n| --- | --- | --- | --- | --- |\n`;
 
   for (const comp of components) {
     const displayName = comp.display_name || comp.name || "Unknown";
@@ -63,9 +82,15 @@ async function buildCollectorIndex(components, publicPath) {
       ? `/data/collector/components/${comp.id}/${comp.id}-${hash}.json`
       : `/data/collector/components/${comp.id}.json`; // Fallback (likely broken if files are only hashed)
 
-    md += `| ${displayName} | \`${comp.id}\` | \`${comp.stability}\` | [${jsonUrl}](${jsonUrl}) |\n`;
+    // index.json's `signals` is the union of `status.stability`'s signal lists —
+    // the same set `collectorSignals` derives for the facet rows (verified equal
+    // for every component in the 0.160.0 release). Sorted here for a stable diff.
+    md += `| ${displayName} | \`${comp.id}\` | \`${comp.stability}\` | ${escapeCell(
+      [...(comp.signals ?? [])].sort().join(", ")
+    )} | [${jsonUrl}](${jsonUrl}) |\n`;
   }
 
+  md += facetPointerSection("collector");
   md += `\n## Navigating Versions\n\nTo explore specific versions, refer to the [Versions Index](/agent/collector/versions.md).\n`;
   return md;
 }
@@ -84,9 +109,9 @@ function buildCollectorVersions(versions) {
 /**
  * Builds the Java Agent instrumentations index markdown.
  */
-async function buildJavaAgentIndex(versions, publicPath) {
+async function buildJavaAgentIndex(versions, publicPath, facets) {
   const latestVersion = versions.find((v) => v.is_latest)?.version;
-  let md = `> For the complete documentation index, see [llms.txt](/llms.txt)\n\n# Java Agent Instrumentations\n\n<!-- llms-txt-link: /llms.txt -->\n\nThis is an index of all OpenTelemetry Java Agent instrumentations.\nFor full configuration details, please refer to the raw JSON data.\n\n**JSON Schema**: [javaagent-instrumentation.schema.json](/schemas/javaagent-instrumentation.schema.json)\n\nThe JSON Data URLs below are content-addressed and change whenever an instrumentation changes. Every instrumentation also answers at the stable alias \`/data/javaagent/instrumentations/{id}/latest.json\`, which always serves the current release.\n\n## Components\n\n| Display Name | ID | JSON Data URL |\n| --- | --- | --- |\n`;
+  let md = `> For the complete documentation index, see [llms.txt](/llms.txt)\n\n# Java Agent Instrumentations\n\n<!-- llms-txt-link: /llms.txt -->\n\nThis is an index of all OpenTelemetry Java Agent instrumentations.\nFor full configuration details, please refer to the raw JSON data.\n\n**JSON Schema**: [javaagent-instrumentation.schema.json](/schemas/javaagent-instrumentation.schema.json)\n\nThe JSON Data URLs below are content-addressed and change whenever an instrumentation changes. Every instrumentation also answers at the stable alias \`/data/javaagent/instrumentations/{id}/latest.json\`, which always serves the current release.\n\n## Components\n\n| Display Name | ID | Signals | JSON Data URL |\n| --- | --- | --- | --- |\n`;
 
   if (latestVersion) {
     const manifestRaw = await fs.readFile(
@@ -100,21 +125,20 @@ async function buildJavaAgentIndex(versions, publicPath) {
       ...manifest.custom_instrumentations,
     };
 
-    for (const [id, hash] of Object.entries(allInstrumentations)) {
-      let displayName = id;
-      try {
-        const compRaw = await fs.readFile(
-          path.join(publicPath, `data/javaagent/instrumentations/${id}/${id}-${hash}.json`),
-          "utf-8"
-        );
-        const comp = JSON.parse(compRaw);
-        if (comp.display_name) displayName = comp.display_name;
-      } catch (e) {}
+    // Display name and signals both come from the facet pass, which has already
+    // read every instrumentation JSON for the reverse index.
+    const byId = new Map((facets ?? []).map((facet) => [facet.id, facet]));
 
-      md += `| ${displayName} | \`${id}\` | [/data/javaagent/instrumentations/${id}/${id}-${hash}.json](/data/javaagent/instrumentations/${id}/${id}-${hash}.json) |\n`;
+    for (const [id, hash] of Object.entries(allInstrumentations)) {
+      const facet = byId.get(id);
+      const displayName = facet?.display_name || id;
+      const signals = escapeCell((facet?.signals ?? []).join(", "));
+
+      md += `| ${displayName} | \`${id}\` | ${signals} | [/data/javaagent/instrumentations/${id}/${id}-${hash}.json](/data/javaagent/instrumentations/${id}/${id}-${hash}.json) |\n`;
     }
   }
 
+  md += facetPointerSection("javaagent");
   md += `\n## Navigating Versions\n\nTo explore specific versions or see a changelog of components, refer to the [Versions Index](/agent/javaagent/versions.md).\n`;
   return md;
 }
@@ -190,6 +214,22 @@ The {hash} for the latest version can be obtained from the version index files:
 - **Java Agent**: \`/data/javaagent/versions/{version}-index.json\`
 
 Refer to \`/data/collector/versions-index.json\` or \`/data/javaagent/versions-index.json\` to find the latest {version} and its corresponding component-to-hash mapping.
+
+## Reverse Lookup and Filtering
+
+Questions of the form "which components emit this metric?" or "which use this attribute?" are answered by two generated maps per ecosystem, without downloading the corpus:
+
+- **Collector**: \`/data/collector/by-metric.json\`, \`/data/collector/by-attribute.json\`
+- **Java Agent**: \`/data/javaagent/by-metric.json\`, \`/data/javaagent/by-attribute.json\`
+
+Both map a name to the component ids that reference it. Resolve those ids — to a display name, signals, description, and page — with the facet file, one JSON object per line:
+
+- **Collector**: \`/data/collector/facets.jsonl\`
+- **Java Agent**: \`/data/javaagent/facets.jsonl\`
+
+A row carries no JSON URL, because every id resolves to one by the \`latest.json\` pattern above.
+
+The facet file is also the cheapest way to filter the ecosystem by stability, signals, or type: one fetch instead of a section index plus a request per component.
 
 ## Version Comparison Guide
 
@@ -522,13 +562,76 @@ const DATA_STORES = [
     ecosystem: "collector",
     contentDir: "components",
     manifestSections: ["components"],
+    // Both metric shapes are indexed together: `metrics` is what the component
+    // scrapes or emits, `telemetry.metrics` its own internal metrics. The
+    // component page keeps them in separate sections when the distinction matters.
+    telemetryKeys: (doc) => ({
+      metrics: [...Object.keys(doc.metrics ?? {}), ...Object.keys(doc.telemetry?.metrics ?? {})],
+      attributes: Object.keys(doc.attributes ?? {}),
+    }),
+    facet: (doc, id) => ({
+      id,
+      name: doc.name,
+      display_name: doc.display_name || doc.name || id,
+      type: doc.type,
+      distribution: doc.distribution,
+      stability: doc.status?.stability,
+      signals: collectorSignals(doc),
+      description: doc.description,
+      page: `/collector/components/${doc.distribution}/${doc.name}`,
+    }),
   },
   {
     ecosystem: "javaagent",
     contentDir: "instrumentations",
     manifestSections: ["instrumentations", "custom_instrumentations"],
+    telemetryKeys: (doc) => {
+      const groups = Array.isArray(doc.telemetry) ? doc.telemetry : [];
+      const attributes = [];
+      const metrics = [];
+      for (const group of groups) {
+        for (const metric of group?.metrics ?? []) {
+          metrics.push(metric?.name);
+          attributes.push(...(metric?.attributes ?? []).map((attr) => attr?.name));
+        }
+        for (const span of group?.spans ?? []) {
+          attributes.push(...(span?.attributes ?? []).map((attr) => attr?.name));
+        }
+      }
+      return { metrics, attributes };
+    },
+    facet: (doc, id) => ({
+      id,
+      display_name: doc.display_name || id,
+      signals: javaSignals(doc),
+      tags: doc.tags,
+      semantic_conventions: doc.semantic_conventions,
+      description: doc.description,
+      page: `/java-agent/instrumentation/${id}`,
+    }),
   },
 ];
+
+/** Union of the signals a Collector component declares any stability level for. */
+export function collectorSignals(component) {
+  const stability = component?.status?.stability;
+  if (!stability || typeof stability !== "object") return [];
+  return [...new Set(Object.values(stability).flat().filter(Boolean))].sort();
+}
+
+/**
+ * Telemetry kinds a Java instrumentation actually emits. Java has no stability
+ * field, so this is the only signal-shaped facet available for it.
+ */
+export function javaSignals(instrumentation) {
+  const groups = Array.isArray(instrumentation?.telemetry) ? instrumentation.telemetry : [];
+  const signals = new Set();
+  for (const group of groups) {
+    if (group?.metrics?.length) signals.add("metrics");
+    if (group?.spans?.length) signals.add("spans");
+  }
+  return [...signals].sort();
+}
 
 /** Stable alias URL for a component's latest-release JSON. */
 function latestJsonUrl(ecosystem, contentDir, id) {
@@ -595,6 +698,121 @@ export async function writeLatestJsonAliases(publicPath, outDir = distDir) {
     }
     console.log(` - Wrote ${written} ${ecosystem} latest.json aliases (${latest.latestVersion})`);
   }
+}
+
+/**
+ * Reverse lookups the corpus cannot answer without downloading all of it:
+ * "which components emit `rpc.client.duration`?", "which use `server.address`?".
+ * One pass per store builds both maps plus the facet rows that describe each id,
+ * so either question costs two fetches instead of one per component.
+ *
+ * Returns `null` when the store has no latest release.
+ */
+async function collectStoreFacets(publicPath, store) {
+  const latest = await readLatestManifest(publicPath, store);
+  if (!latest) return null;
+
+  const { ecosystem, contentDir } = store;
+  const metrics = new Map();
+  const attributes = new Map();
+  const facets = [];
+
+  // Insertion order follows the manifest; both outputs are sorted on write so a
+  // rebuild of unchanged data produces a byte-identical artifact.
+  const record = (map, name, id) => {
+    if (!name) return;
+    const ids = map.get(name);
+    if (ids) ids.add(id);
+    else map.set(name, new Set([id]));
+  };
+
+  for (const [id, hash] of Object.entries(latest.hashes)) {
+    let doc;
+    try {
+      doc = JSON.parse(
+        await fs.readFile(
+          path.join(publicPath, `data/${ecosystem}/${contentDir}/${id}/${id}-${hash}.json`),
+          "utf-8"
+        )
+      );
+    } catch (e) {
+      console.warn(`[WARN] Could not read ${ecosystem}/${id} for the reverse index: ${e.message}`);
+      continue;
+    }
+
+    const keys = store.telemetryKeys(doc);
+    for (const name of keys.metrics) record(metrics, name, id);
+    for (const name of keys.attributes) record(attributes, name, id);
+    facets.push(store.facet(doc, id));
+  }
+
+  return { version: latest.latestVersion, metrics, attributes, facets };
+}
+
+/**
+ * Serializes one reverse-lookup map. Values are component ids only — the facet
+ * file resolves an id to its name, page, and description, so the two artifacts
+ * compose without duplicating that text per lookup key.
+ */
+function buildReverseIndexJson(ecosystem, version, key, map) {
+  const entries = {};
+  for (const name of [...map.keys()].sort()) {
+    entries[name] = [...map.get(name)].sort();
+  }
+  return `${JSON.stringify({
+    ecosystem,
+    version,
+    key,
+    describes: "component ids that reference this key in their latest release",
+    resolve_ids_with: `/data/${ecosystem}/facets.jsonl`,
+    entries,
+  })}\n`;
+}
+
+/**
+ * Serializes the facet rows as JSONL — one component per line, so an agent can
+ * filter the corpus (by stability, signals, type, or description text) without
+ * the 70+ KB Markdown index and without a fetch per component.
+ */
+function buildFacetsJsonl(facets) {
+  return facets
+    .slice()
+    .sort((a, b) => a.id.localeCompare(b.id))
+    .map((facet) => JSON.stringify(facet))
+    .join("\n")
+    .concat("\n");
+}
+
+/**
+ * Writes the reverse-lookup and facet artifacts for every store, beside the
+ * `latest.json` aliases in the build output. Returns each store's collected
+ * facets keyed by ecosystem so the section indexes can reuse them.
+ */
+export async function writeFacetArtifacts(publicPath, outDir = distDir) {
+  const collected = {};
+  for (const store of DATA_STORES) {
+    const facets = await collectStoreFacets(publicPath, store);
+    if (!facets) continue;
+
+    const { ecosystem } = store;
+    const dir = path.join(outDir, "data", ecosystem);
+    await fs.mkdir(dir, { recursive: true });
+    await fs.writeFile(
+      path.join(dir, "by-metric.json"),
+      buildReverseIndexJson(ecosystem, facets.version, "metric", facets.metrics)
+    );
+    await fs.writeFile(
+      path.join(dir, "by-attribute.json"),
+      buildReverseIndexJson(ecosystem, facets.version, "attribute", facets.attributes)
+    );
+    await fs.writeFile(path.join(dir, "facets.jsonl"), buildFacetsJsonl(facets.facets));
+    console.log(
+      ` - Wrote ${ecosystem} reverse index (${facets.metrics.size} metrics, ` +
+        `${facets.attributes.size} attributes) and ${facets.facets.length} facet rows`
+    );
+    collected[ecosystem] = facets;
+  }
+  return collected;
 }
 
 /** Maps a route pathname to its Markdown file path in dist (\`/\` -> index.md). */
@@ -745,9 +963,17 @@ async function generateDocs() {
     await fs.readFile(path.join(publicDir, "data/javaagent/versions-index.json"), "utf-8")
   );
 
+  // Runs before the indexes: they cite its artifacts, and the Java index takes
+  // its display names and signals from the rows collected here.
+  const facets = await writeFacetArtifacts(publicDir);
+
   const collectorIndexMd = await buildCollectorIndex(collectorIndex.components, publicDir);
   const collectorVersionsMd = buildCollectorVersions(collectorVersions.versions);
-  const javaagentIndexMd = await buildJavaAgentIndex(javaagentVersions.versions, publicDir);
+  const javaagentIndexMd = await buildJavaAgentIndex(
+    javaagentVersions.versions,
+    publicDir,
+    facets.javaagent?.facets
+  );
   const javaagentVersionsMd = buildJavaAgentVersions(javaagentVersions.versions);
 
   const staticPages = await generateStaticRoutePages();
