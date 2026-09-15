@@ -1,0 +1,17 @@
+{
+  "components": {
+    "core-batchprocessor": "aaa5d8c74490",
+    "core-debugexporter": "4ecf6421b2d4",
+    "core-forwardconnector": "211d8e6d73b5",
+    "core-memorylimiterextension": "19fbb8626b41",
+    "core-memorylimiterprocessor": "4b4e2cf334b9",
+    "core-nopexporter": "51356cd49110",
+    "core-nopreceiver": "dc1f28c68466",
+    "core-otlpexporter": "e2834f78ff1d",
+    "core-otlphttpexporter": "1908d4c1531b",
+    "core-otlpreceiver": "0d0b4eb813d0",
+    "core-queuebatchprocessor": "5022e18eb191",
+    "core-zpagesextension": "53cbeec5bf1a"
+  },
+  "version": "0.161.0"
+}
