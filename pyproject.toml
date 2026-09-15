@@ -13,6 +13,7 @@ dependencies = [
     "explorer-db-builder",
     "v1-registry-sync",
     "js-instrumentation-watcher",
+    "python-instrumentation-watcher",
 ]
 
 [tool.uv.workspace]
@@ -31,6 +32,7 @@ dotnet-instrumentation-watcher = { workspace = true }
 explorer-db-builder = { workspace = true }
 v1-registry-sync = { workspace = true }
 js-instrumentation-watcher = { workspace = true }
+python-instrumentation-watcher = { workspace = true }
 
 [dependency-groups]
 dev = [
