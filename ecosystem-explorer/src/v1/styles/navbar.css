@@ -170,7 +170,7 @@
  * upstream's mobile min-height (6.5rem ≈ 104px) and collapse the nav row
  * into an overlay panel toggled by the hamburger.
  */
-@media (max-width: 767.98px) {
+@media (width < 768px) {
   .td-navbar {
     min-height: 104px;
   }

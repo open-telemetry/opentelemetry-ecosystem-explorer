@@ -50,7 +50,7 @@
   display: none;
 }
 
-@media (max-width: 991.98px) {
+@media (width < 992px) {
   .td-lang-menu__label {
     display: none;
   }
@@ -151,7 +151,7 @@
  * full row so the tap target is comfortable and aligns with the stacked
  * nav-link above it.
  */
-@media (max-width: 767.98px) {
+@media (width < 768px) {
   .td-navbar-collapse .td-lang-menu__trigger {
     width: 100%;
     justify-content: flex-start;
