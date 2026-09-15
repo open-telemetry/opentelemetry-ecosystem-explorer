@@ -38,6 +38,8 @@ jobs:
           bun install --frozen-lockfile
 
       - name: Build explorer
+        env:
+          VITE_FEATURE_FLAG_V1_REDESIGN: "false"
         run: |
           cd ecosystem-explorer
           bun run build

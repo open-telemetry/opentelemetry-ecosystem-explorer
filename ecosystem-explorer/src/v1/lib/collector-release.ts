@@ -31,7 +31,7 @@ export function collectorReleaseContext({
 }) {
   // The query string is the canonical carrier; a version in the path is the historical
   // route form and yields to it when both are present.
-  const selectedVersion = searchParams.get("version") || pathVersion || undefined;
+  const selectedVersion = searchParams.get("version")?.trim() || pathVersion || undefined;
   const deprecated = selectedVersion === "deprecated";
   const latestVersion = versions?.versions.find((v) => v.is_latest)?.version ?? "";
   const listParams = new URLSearchParams(searchParams);
@@ -56,7 +56,7 @@ export function collectorReleaseContext({
       const version = deprecated ? lastVersion : selectedVersion;
       if (deprecated && !version) return null;
       // An implicit latest view follows main; an explicit release is pinned to its tag.
-      const ref = version ? `v${version}` : "main";
+      const ref = version ? `v${version.replace(/^v/, "")}` : "main";
       return `https://github.com/open-telemetry/${component.repository}/tree/${ref}/${component.type}/${component.name}`;
     },
   };

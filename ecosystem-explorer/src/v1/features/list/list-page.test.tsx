@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   useCollectorComponents,
@@ -112,6 +112,12 @@ function renderPage(initialPath = "/collector/components") {
 }
 
 describe("CollectorListPageV1", () => {
+  afterEach(() => {
+    cleanup();
+    document.body.style.overflow = "";
+    vi.restoreAllMocks();
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
     window.localStorage.clear();
@@ -168,23 +174,42 @@ describe("CollectorListPageV1", () => {
     expect(screen.queryByText("Count Connector")).not.toBeInTheDocument();
   });
 
-  it("renders the deprecated catalog without changing the list layout", () => {
-    vi.mocked(useCollectorDeprecations).mockReturnValue({
-      data: { ecosystem: "collector", components: [deprecatedComponent] },
-      loading: false,
-      error: null,
-    });
+  it.each([
+    ["+0.149.0+", "0.149.0", "?version=0.149.0", "0.149.0"],
+    ["+%09+", "0.150.0", "", ""],
+  ])(
+    "uses the same normalized version for the facet, data and links: %s",
+    (query, dataVersion, suffix, facetVersion) => {
+      renderPage(`/collector/components?version=${query}`);
+      expect(useCollectorComponents).toHaveBeenCalledWith(dataVersion);
+      expect(screen.getByRole("combobox", { name: "Version" })).toHaveValue(facetVersion);
+      expect(screen.getByRole("link", { name: /OTLP Receiver/ })).toHaveAttribute(
+        "href",
+        `/collector/components/core/otlpreceiver${suffix}`
+      );
+    }
+  );
 
-    renderPage("/collector/components?version=deprecated");
+  it.each(["deprecated", "+deprecated+"])(
+    "renders the %s catalog without changing the list layout",
+    (version) => {
+      vi.mocked(useCollectorDeprecations).mockReturnValue({
+        data: { ecosystem: "collector", components: [deprecatedComponent] },
+        loading: false,
+        error: null,
+      });
 
-    expect(screen.getByText("JMX Receiver")).toBeInTheDocument();
-    expect(screen.getByText("Removed in 0.157.0")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /JMX Receiver/ })).toHaveAttribute(
-      "href",
-      "/collector/components/contrib/jmxreceiver?version=deprecated"
-    );
-    expect(useCollectorComponents).toHaveBeenCalledWith("");
-  });
+      renderPage(`/collector/components?version=${version}`);
+
+      expect(screen.getByText("JMX Receiver")).toBeInTheDocument();
+      expect(screen.getByText("Removed in 0.157.0")).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: /JMX Receiver/ })).toHaveAttribute(
+        "href",
+        "/collector/components/contrib/jmxreceiver?version=deprecated"
+      );
+      expect(useCollectorComponents).toHaveBeenCalledWith("");
+    }
+  );
 
   it("only matches the four known Signal literals — profiles and connector compound tokens don't count (decision #10)", () => {
     renderPage("/collector/components?signal=metrics");
@@ -231,7 +256,7 @@ describe("CollectorListPageV1", () => {
 
   it("opens the facet drawer as a modal from the toggle and restores focus on close", async () => {
     const user = userEvent.setup();
-    const matchMedia = vi.spyOn(window, "matchMedia").mockImplementation((media) => ({
+    vi.spyOn(window, "matchMedia").mockImplementation((media) => ({
       matches: false,
       media,
       onchange: null,
@@ -251,7 +276,6 @@ describe("CollectorListPageV1", () => {
     await user.keyboard("{Escape}");
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(toggle).toHaveFocus();
-    matchMedia.mockRestore();
   });
 
   it("switches density views and persists the choice to localStorage", async () => {

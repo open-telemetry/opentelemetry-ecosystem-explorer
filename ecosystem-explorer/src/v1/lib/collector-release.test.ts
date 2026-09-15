@@ -29,6 +29,9 @@ const versions = { versions: [{ version: "0.150.0", is_latest: true }] };
 describe("Collector release context", () => {
   it.each([
     ["version=0.148.0", "0.149.0", "0.148.0"],
+    ["version=+0.148.0+", "0.149.0", "0.148.0"],
+    ["version=+%09+", "0.149.0", "0.149.0"],
+    ["version=+%09+", undefined, "0.150.0"],
     ["version=", "0.149.0", "0.149.0"],
     ["", "0.149.0", "0.149.0"],
     ["", undefined, "0.150.0"],
@@ -52,6 +55,41 @@ describe("Collector release context", () => {
     expect(searchParams.get("version")).toBe("");
   });
 
+  it.each([
+    [" 0.149.0 ", "0.149.0", "?version=0.149.0", "v0.149.0"],
+    [" \t ", "0.150.0", "", "main"],
+  ])("keeps normalized data and links consistent for %j", (version, dataVersion, suffix, ref) => {
+    const searchParams = new URLSearchParams("type=receiver&type=processor&q=OTLP+receiver");
+    searchParams.set("version", version);
+    const original = searchParams.toString();
+    const release = collectorReleaseContext({ searchParams, versions });
+    expect(release.dataVersion()).toBe(dataVersion);
+    expect(release.detailHref(component)).toBe(
+      `/collector/components/core/forwardconnector${suffix}`
+    );
+    expect(release.listHref).toBe(
+      `/collector/components?type=receiver&type=processor&q=OTLP+receiver${suffix.replace("?", "&")}`
+    );
+    expect(release.sourceHref(component)).toContain(`/tree/${ref}/`);
+    expect(searchParams.toString()).toBe(original);
+  });
+
+  it.each(["0.149.0", "v0.149.0"])(
+    "formats source tags for %s without changing data versions",
+    (version) => {
+      const release = collectorReleaseContext({ searchParams: new URLSearchParams({ version }) });
+      expect(release.sourceHref(component)).toContain("/tree/v0.149.0/");
+      expect(release.dataVersion()).toBe(version);
+      expect(release.detailHref(component)).toContain(`?version=${version}`);
+
+      const deprecated = collectorReleaseContext({
+        searchParams: new URLSearchParams("version=deprecated"),
+      });
+      expect(deprecated.sourceHref(component, version)).toContain("/tree/v0.149.0/");
+      expect(deprecated.dataVersion(version)).toBe(version);
+    }
+  );
+
   it("keeps implicit latest links bare and source on main, including before versions load", () => {
     const release = collectorReleaseContext({ searchParams: new URLSearchParams() });
     expect(release.dataVersion()).toBe("");
@@ -73,20 +111,24 @@ describe("Collector release context", () => {
     );
   });
 
-  it("retains deprecated navigation but resolves each component to its own last release", () => {
-    const release = collectorReleaseContext({
-      searchParams: new URLSearchParams("version=deprecated"),
-      versions,
-    });
-    expect(release.deprecated).toBe(true);
-    expect(release.detailHref(component)).toContain("?version=deprecated");
-    expect(release.dataVersion()).toBe("");
-    expect(release.sourceHref(component)).toBeNull();
-    expect(release.dataVersion("0.140.0")).toBe("0.140.0");
-    expect(release.sourceHref(component, "0.140.0")).toContain("/tree/v0.140.0/");
-    expect(release.dataVersion("0.149.0")).toBe("0.149.0");
-    expect(release.sourceHref(component, "0.149.0")).toContain("/tree/v0.149.0/");
-  });
+  it.each(["deprecated", " deprecated "])(
+    "retains %j navigation but resolves each component to its own last release",
+    (version) => {
+      const release = collectorReleaseContext({
+        searchParams: new URLSearchParams({ version }),
+        versions,
+      });
+      expect(release.deprecated).toBe(true);
+      expect(release.listHref).toBe("/collector/components?version=deprecated");
+      expect(release.detailHref(component)).toContain("?version=deprecated");
+      expect(release.dataVersion()).toBe("");
+      expect(release.sourceHref(component)).toBeNull();
+      expect(release.dataVersion("0.140.0")).toBe("0.140.0");
+      expect(release.sourceHref(component, "0.140.0")).toContain("/tree/v0.140.0/");
+      expect(release.dataVersion("0.149.0")).toBe("0.149.0");
+      expect(release.sourceHref(component, "0.149.0")).toContain("/tree/v0.149.0/");
+    }
+  );
 
   it("does not invent a source for a component with no repository", () => {
     const release = collectorReleaseContext({

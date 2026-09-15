@@ -482,6 +482,30 @@ describe("Collector detail tab routing", () => {
 });
 
 describe("Collector detail release changes", () => {
+  it.each([
+    ["+0.149.0+", "0.149.0", "?version=0.149.0", "v0.149.0"],
+    ["+%09+", "0.150.0", "", "main"],
+  ])(
+    "keeps data, source and navigation consistent for version=%s",
+    (query, version, suffix, ref) => {
+      mockHooks();
+      renderAtRoute(`/collector/components/core/otlpreceiver?version=${query}`);
+      expect(useCollectorComponent).toHaveBeenCalledWith("core", "otlpreceiver", version);
+      expect(screen.getByRole("link", { name: "Source" })).toHaveAttribute(
+        "href",
+        `https://github.com/open-telemetry/opentelemetry-collector/tree/${ref}/receiver/otlpreceiver`
+      );
+      expect(screen.getByRole("link", { name: /kafkareceiver/ })).toHaveAttribute(
+        "href",
+        `/collector/components/contrib/kafkareceiver${suffix}`
+      );
+      expect(screen.getByRole("link", { name: "Components" })).toHaveAttribute(
+        "href",
+        `/collector/components${suffix}`
+      );
+    }
+  );
+
   it("follows timeline links and resets the diff defaults to the viewed release", async () => {
     const user = userEvent.setup();
     mockHooks();

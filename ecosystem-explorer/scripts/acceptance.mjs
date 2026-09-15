@@ -67,6 +67,10 @@ export async function waitForReady(page, { appMode, scenario, selector }, timeou
       );
     }
     await page.waitForLoadState("networkidle", { timeout });
+    const errorAlert = page.locator('main [role="alert"]:visible').first();
+    if (await errorAlert.isVisible()) {
+      throw new Error(`Error page: ${await errorAlert.textContent()}`);
+    }
     // Exact route failure copy avoids rejecting legitimate headings such as
     // "Error handling" in documentation or the component showcase.
     const errorHeading = page

@@ -106,11 +106,15 @@ async function generateConfig() {
       waitUntil: "domcontentloaded",
       timeout: 20000,
     });
-    await waitForReady(page, {
-      appMode: config.appMode,
-      scenario: "configuration-builder",
-      selector: "#schema-version-select",
-    });
+    await waitForReady(
+      page,
+      {
+        appMode: config.appMode,
+        scenario: "configuration-builder",
+        selector: "#schema-version-select",
+      },
+      20000
+    );
 
     // Select schema version 1.0.0 (default 1.1.0 is ahead of released agents)
     await page.locator("#schema-version-select").selectOption("1.0.0");

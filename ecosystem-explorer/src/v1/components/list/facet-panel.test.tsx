@@ -107,24 +107,24 @@ describe("FacetPanel", () => {
   });
 
   it("renders the version select when versions are provided", () => {
-    renderPanel({ versions: ["v0.150.0", "v0.149.0"] });
+    renderPanel({ versions: ["0.150.0", "0.149.0"] });
 
     expect(screen.getByRole("combobox", { name: "Version" })).toBeInTheDocument();
     expect(screen.getByRole("option", { name: "Latest" })).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "v0.150.0" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "0.150.0" })).toBeInTheDocument();
   });
 
   it("reflects the incoming filters on the facet controls", () => {
     const filters: ListFilters = {
       ...DEFAULT_FILTERS,
       signals: ["traces"],
-      version: "v0.149.0",
+      version: "0.149.0",
     };
-    renderPanel({ filters, versions: ["v0.150.0", "v0.149.0"] });
+    renderPanel({ filters, versions: ["0.150.0", "0.149.0"] });
 
     expect(screen.getByRole("checkbox", { name: /traces/i })).toBeChecked();
     expect(screen.getByRole("checkbox", { name: /metrics/i })).not.toBeChecked();
-    expect(screen.getByRole("combobox", { name: "Version" })).toHaveValue("v0.149.0");
+    expect(screen.getByRole("combobox", { name: "Version" })).toHaveValue("0.149.0");
   });
 
   it("surfaces facet counts next to the matching options", () => {
@@ -296,10 +296,10 @@ describe("FacetPanel", () => {
   it("emits the version and resets to page 1 when the select changes", async () => {
     const onChange = vi.fn();
     const user = userEvent.setup();
-    renderPanel({ onChange, versions: ["v0.150.0", "v0.149.0"] });
+    renderPanel({ onChange, versions: ["0.150.0", "0.149.0"] });
 
-    await user.selectOptions(screen.getByRole("combobox", { name: "Version" }), "v0.149.0");
-    expect(onChange).toHaveBeenCalledWith({ version: "v0.149.0", page: 1 });
+    await user.selectOptions(screen.getByRole("combobox", { name: "Version" }), "0.149.0");
+    expect(onChange).toHaveBeenCalledWith({ version: "0.149.0", page: 1 });
   });
 
   it("emits the debounced query and resets to page 1", () => {
@@ -421,7 +421,7 @@ describe("FacetPanel", () => {
 
   it("wraps Tab focus within the open drawer", async () => {
     const user = userEvent.setup();
-    renderPanel({ isOpen: true, onClose: vi.fn(), versions: ["v0.150.0"] });
+    renderPanel({ isOpen: true, onClose: vi.fn(), versions: ["0.150.0"] });
     const first = screen.getByRole("button", { name: "Close filters" });
     const last = screen.getByRole("combobox", { name: "Version" });
 
@@ -431,5 +431,77 @@ describe("FacetPanel", () => {
 
     await user.tab({ shift: true });
     expect(last).toHaveFocus();
+  });
+
+  it.each([
+    "<button hidden>Hidden</button>",
+    "<button disabled>Disabled</button>",
+    "<fieldset disabled><button>Disabled by fieldset</button></fieldset>",
+    '<button tabindex="-2">Negative tab index</button>',
+    "<div hidden><button>Hidden by ancestor</button></div>",
+    "<div inert><button>Inert by ancestor</button></div>",
+    '<div style="display: none"><button>Display none ancestor</button></div>',
+    '<div style="visibility: hidden"><button>Invisible ancestor</button></div>',
+  ])("skips ineligible controls at both boundaries: %s", (markup) => {
+    renderPanel({ isOpen: true, onClose: vi.fn(), versions: ["0.150.0"] });
+    const panel = screen.getByRole("dialog");
+    panel.insertAdjacentHTML("afterbegin", markup);
+    panel.insertAdjacentHTML("beforeend", markup);
+    const first = screen.getByRole("button", { name: "Close filters" });
+    const last = screen.getByRole("combobox", { name: "Version" });
+
+    last.focus();
+    fireEvent.keyDown(document, { key: "Tab" });
+    expect(first).toHaveFocus();
+    fireEvent.keyDown(document, { key: "Tab", shiftKey: true });
+    expect(last).toHaveFocus();
+  });
+
+  it("recomputes boundaries when controls change during an open drawer session", () => {
+    const { rerender } = renderPanel({ isOpen: true, onClose: vi.fn(), versions: ["0.150.0"] });
+    const close = screen.getByRole("button", { name: "Close filters" });
+    const search = screen.getByRole("searchbox", { name: "Search" });
+    const version = screen.getByRole("combobox", { name: "Version" });
+    const lastCheckbox = screen.getAllByRole("checkbox").at(-1)!;
+
+    close.setAttribute("disabled", "");
+    version.hidden = true;
+    lastCheckbox.focus();
+    fireEvent.keyDown(document, { key: "Tab" });
+    expect(search).toHaveFocus();
+    fireEvent.keyDown(document, { key: "Tab", shiftKey: true });
+    expect(lastCheckbox).toHaveFocus();
+
+    close.removeAttribute("disabled");
+    version.hidden = false;
+    close.focus();
+    fireEvent.keyDown(document, { key: "Tab", shiftKey: true });
+    expect(version).toHaveFocus();
+
+    // Removing the version facet must also refresh the candidates, without
+    // restarting the drawer focus session.
+    search.focus();
+    rerender(<FacetPanel filters={DEFAULT_FILTERS} onChange={vi.fn()} isOpen onClose={vi.fn()} />);
+    expect(search).toHaveFocus();
+    close.focus();
+    fireEvent.keyDown(document, { key: "Tab", shiftKey: true });
+    expect(lastCheckbox).toHaveFocus();
+  });
+
+  it("focuses the first eligible control when opening and when returning to desktop", () => {
+    const { rerender } = renderPanel({ onClose: vi.fn() });
+    const panel = screen.getByRole("complementary");
+    panel.querySelector("button")!.disabled = true;
+    const search = screen.getByRole("searchbox", { name: "Search" });
+    search.setAttribute("disabled", "");
+    const firstCheckbox = screen.getAllByRole("checkbox")[0];
+
+    rerender(<FacetPanel filters={DEFAULT_FILTERS} onChange={vi.fn()} isOpen onClose={vi.fn()} />);
+    expect(firstCheckbox).toHaveFocus();
+
+    firstCheckbox.style.display = "none";
+    resize(992);
+    expect(screen.getAllByRole("checkbox")[0]).toHaveFocus();
+    expect(document.body.style.overflow).toBe("");
   });
 });

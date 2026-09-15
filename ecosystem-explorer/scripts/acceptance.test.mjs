@@ -15,7 +15,7 @@
  */
 
 import { afterAll, afterEach, beforeAll, describe, expect, it, vi } from "vitest";
-import { readFileSync } from "node:fs";
+import { readFile } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
 import { resolve } from "node:path";
 import { load } from "js-yaml";
@@ -27,11 +27,47 @@ import {
   openCollectorFilters,
 } from "./acceptance.mjs";
 
-const workflow = load(
-  readFileSync(resolve("../.github/workflows/screenshots-capture.yml"), "utf8")
-);
+let workflow;
+let baselineWorkflow;
+let nightlyWorkflow;
+beforeAll(async () => {
+  [workflow, baselineWorkflow, nightlyWorkflow] = await Promise.all(
+    ["screenshots-capture", "screenshots-baseline", "nightly-declarative-config-test"].map(
+      async (name) =>
+        load(
+          await readFile(
+            resolve(import.meta.dirname, `../../.github/workflows/${name}.yml`),
+            "utf8"
+          )
+        )
+    )
+  );
+});
 
 describe("acceptance mode and scenario compatibility", () => {
+  it.each(["capture", "baseline", "nightly"])(
+    "keeps the %s workflow build and acceptance modes aligned",
+    (name) => {
+      const workflows = { capture: workflow, baseline: baselineWorkflow, nightly: nightlyWorkflow };
+      const job = Object.values(workflows[name].jobs).find((job) =>
+        job.steps.some((step) => step.run?.includes("bun run build"))
+      );
+      const build = job.steps.find((step) => step.run?.includes("bun run build"));
+      const acceptance = job.steps.find((step) =>
+        /screenshots:capture|scripts\/(take-screenshots|generate-test-config)\.mjs/.test(
+          step.run ?? ""
+        )
+      );
+      const env = { ...job.env, ...acceptance.env };
+      expect(env.ACCEPTANCE_APP_MODE).toBe(name === "nightly" ? "legacy" : "v1");
+      expect(build.env.VITE_FEATURE_FLAG_V1_REDESIGN).toBe(
+        name === "capture"
+          ? "${{ env.ACCEPTANCE_APP_MODE == 'v1' && 'true' || 'false' }}"
+          : String(env.ACCEPTANCE_APP_MODE === "v1")
+      );
+    }
+  );
+
   it.each(["feat/84-redesign", "fix/search", "main"])(
     "captures the v1 baseline on %s",
     (branch) => {
@@ -65,7 +101,7 @@ describe("acceptance mode and scenario compatibility", () => {
   it.each(["take-screenshots.mjs", "generate-test-config.mjs"])(
     "%s rejects an invalid mode before serving or browsing",
     (script) => {
-      const result = spawnSync(process.execPath, [resolve("scripts", script)], {
+      const result = spawnSync(process.execPath, [resolve(import.meta.dirname, script)], {
         env: { ...process.env, ACCEPTANCE_APP_MODE: "invalid" },
         encoding: "utf8",
         timeout: 10000,
@@ -200,6 +236,47 @@ describe.runIf(process.env.ACCEPTANCE_BROWSER_TESTS === "true")(
         '<h1>Error propagation receiver</h1><h2>Error handling</h2><div id="loaded">Ready</div>'
       );
       await waitForReady(page, { appMode: "v1", scenario: "detail", selector: "#loaded" }, 1000);
+    });
+
+    it.each([
+      [
+        "ordinary heading",
+        '<h1>Collector</h1><div role="alert"><p>Component not found</p></div>',
+        "Component not found",
+      ],
+      [
+        "translated alert",
+        '<h1>Collector</h1><div role="alert"><p>No se pudieron cargar los componentes</p></div>',
+        "No se pudieron cargar los componentes",
+      ],
+      [
+        "hidden alert before visible alert",
+        '<h1>Collector</h1><p role="alert" hidden>Old error</p><p role="alert" style="display: none">Stale error</p><p role="alert">Could not load components</p>',
+        "Could not load components",
+      ],
+    ])("rejects a visible alert with %s", async (_name, content, message) => {
+      await fixture("v1", content);
+      await expect(
+        waitForReady(
+          page,
+          { appMode: "v1", scenario: "collector-landing", selector: "main h1" },
+          1000
+        )
+      ).rejects.toThrow(
+        `Acceptance scenario "collector-landing" at http://acceptance.test/detail: required ready v1 page (main h1). Error page: ${message}`
+      );
+    });
+
+    it("accepts hidden alerts and successful status content", async () => {
+      await fixture(
+        "v1",
+        '<h1>Collector</h1><p role="alert" hidden>Old error</p><p role="alert" style="visibility: hidden">Stale error</p><p role="status">Components loaded</p>'
+      );
+      await waitForReady(
+        page,
+        { appMode: "v1", scenario: "collector-landing", selector: "main h1" },
+        1000
+      );
     });
 
     it("fails with the scenario, URL and tab name when Telemetry is absent", async () => {

@@ -60,7 +60,7 @@ function isVisible(element: HTMLElement): boolean {
     const style = getComputedStyle(current);
     if (
       current.hidden ||
-      current.inert ||
+      current.hasAttribute("inert") ||
       style.display === "none" ||
       style.visibility === "hidden"
     ) {
@@ -68,6 +68,16 @@ function isVisible(element: HTMLElement): boolean {
     }
   }
   return true;
+}
+
+function findFocusable(elements: NodeListOf<HTMLElement>, backwards = false) {
+  const step = backwards ? -1 : 1;
+  for (let i = backwards ? elements.length - 1 : 0; i >= 0 && i < elements.length; i += step) {
+    const element = elements[i];
+    if (element.tabIndex >= 0 && !element.matches(":disabled") && isVisible(element)) {
+      return element;
+    }
+  }
 }
 
 // Swatch palette for the stability facet. Typed against the contract union so
@@ -131,20 +141,16 @@ export function FacetPanel({
     const panel = panelRef.current;
     if (!panel) return;
 
-    const focusables = () =>
-      Array.from(
-        panel.querySelectorAll<HTMLElement>(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        )
-      ).filter(
-        (element) => element.tabIndex >= 0 && !element.matches(":disabled") && isVisible(element)
+    const candidates = () =>
+      panel.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
       );
 
     // Retain the original opener across desktop/mobile crossings while the
     // caller still requests an open drawer; rail controls may be hidden on close.
     openerRef.current ??=
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    focusables()[0]?.focus();
+    findFocusable(candidates())?.focus();
     let lastFocused = document.activeElement;
     const onFocus = (event: FocusEvent) => {
       if (event.target instanceof HTMLElement) lastFocused = event.target;
@@ -161,10 +167,12 @@ export function FacetPanel({
         return;
       }
       if (e.key !== "Tab") return;
-      const els = focusables();
-      if (els.length === 0) return;
-      const first = els[0];
-      const last = els[els.length - 1];
+      // Controls can change while open. Search fresh boundaries, checking
+      // ancestor styles only until an eligible control is found at each end.
+      const els = candidates();
+      const first = findFocusable(els);
+      const last = findFocusable(els, true);
+      if (!first || !last) return;
       const active = document.activeElement;
       const inside = active instanceof HTMLElement && panel.contains(active);
       if (e.shiftKey && (active === first || !inside)) {
@@ -187,7 +195,7 @@ export function FacetPanel({
         const active =
           document.activeElement === document.body ? lastFocused : document.activeElement;
         if (active instanceof HTMLElement && panel.contains(active) && !isVisible(active)) {
-          focusables()[0]?.focus();
+          findFocusable(candidates())?.focus();
         }
       } else if (openerRef.current?.isConnected && isVisible(openerRef.current)) {
         openerRef.current.focus();
