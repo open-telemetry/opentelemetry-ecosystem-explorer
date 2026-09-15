@@ -15,7 +15,7 @@
  */
 
 import { describe, it, expect } from "vitest";
-import { compareReleases } from "./release-diff";
+import { compareReleases, computeAggregateMetrics } from "./release-diff";
 import type { InstrumentationData, Metric } from "@/types/javaagent";
 
 describe("release-diff utility", () => {
@@ -161,6 +161,95 @@ describe("release-diff utility", () => {
     expect(diff.aggregateMetrics.length).toBe(2);
     expect(diff.aggregateMetrics.map((m) => m.name)).toEqual(["metric1", "metric2"]);
     expect(diff.aggregateMetrics[0].emittedBy).toEqual(["instr1 Display"]);
+
+    // computeAggregateMetrics is the same rollup, callable without a diff so the
+    // metrics tab can build it from a full version load on demand.
+    expect(computeAggregateMetrics(toData)).toEqual(diff.aggregateMetrics);
+  });
+
+  it("should omit aggregate metrics when the caller opts out", () => {
+    const toData: InstrumentationData[] = [
+      {
+        name: "instr1",
+        display_name: "instr1 Display",
+        scope: { name: "test" },
+        telemetry: [
+          {
+            when: "default",
+            metrics: [
+              {
+                name: "metric1",
+                description: "d1",
+                instrument: "counter",
+                data_type: "COUNTER",
+                unit: "1",
+              },
+            ],
+          },
+        ],
+      },
+    ];
+
+    // The comparison path passes only the changed subset of a release, which
+    // cannot produce a correct release-wide rollup, so it opts out.
+    const diff = compareReleases("1.0.0", "1.1.0", [], toData, {
+      includeAggregateMetrics: false,
+    });
+
+    expect(diff.aggregateMetrics).toEqual([]);
+    expect(diff.instrumentations).toHaveLength(1);
+    expect(diff.totals.added).toBe(1);
+  });
+
+  it("should produce the same diff whether or not unchanged modules are passed in", () => {
+    // The loader skips modules with an identical content hash. This pins the
+    // property that makes that safe: dropping a module that is present and
+    // identical on both sides changes nothing except the metric rollup.
+    const unchanged: InstrumentationData = {
+      name: "steady",
+      display_name: "Steady",
+      scope: { name: "test" },
+      telemetry: [
+        {
+          when: "default",
+          metrics: [
+            {
+              name: "steady.metric",
+              description: "d",
+              instrument: "counter",
+              data_type: "COUNTER",
+              unit: "1",
+            },
+          ],
+        },
+      ],
+    };
+    const changedFrom: InstrumentationData = {
+      name: "shifty",
+      display_name: "Shifty",
+      scope: { name: "test" },
+      configurations: [{ name: "opt", description: "before", type: "boolean", default: "false" }],
+    };
+    const changedTo: InstrumentationData = {
+      ...changedFrom,
+      configurations: [{ name: "opt", description: "after", type: "boolean", default: "false" }],
+    };
+
+    const withUnchanged = compareReleases(
+      "1.0.0",
+      "1.1.0",
+      [unchanged, changedFrom],
+      [unchanged, changedTo],
+      { includeAggregateMetrics: false }
+    );
+    const withoutUnchanged = compareReleases("1.0.0", "1.1.0", [changedFrom], [changedTo], {
+      includeAggregateMetrics: false,
+    });
+
+    expect(withUnchanged.totals).toEqual(withoutUnchanged.totals);
+    expect(withUnchanged.instrumentations.filter((i) => i.status !== "unchanged")).toEqual(
+      withoutUnchanged.instrumentations.filter((i) => i.status !== "unchanged")
+    );
   });
 
   it("should detect configuration changes in declarative_name and example", () => {
