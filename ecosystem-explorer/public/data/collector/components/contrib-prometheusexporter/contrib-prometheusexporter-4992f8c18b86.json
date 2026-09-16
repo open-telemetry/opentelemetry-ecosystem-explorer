@@ -1,0 +1,46 @@
+{
+  "description": null,
+  "display_name": "Prometheus Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "feature_gates": [
+    {
+      "description": "When enabled, the deprecated resource_to_telemetry_conversion section and legacy conversion fields are disabled, and resource_constant_labels must be used instead",
+      "from_version": "v0.160.0",
+      "id": "exporter.prometheus.DisableResourceToTelemetryConversion",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48861",
+      "stage": "alpha"
+    },
+    {
+      "description": "When enabled, the deprecated add_metric_suffixes configuration option is ignored and translation_strategy is always used",
+      "from_version": "v0.132.0",
+      "id": "exporter.prometheusexporter.DisableAddMetricSuffixes",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-specification/pull/4533",
+      "stage": "beta"
+    }
+  ],
+  "id": "contrib-prometheusexporter",
+  "markdown_hash": "2c7fb860a00b",
+  "name": "prometheusexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "Aneurysm9",
+        "dashpole",
+        "ArthurSens"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "core"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "exporter"
+}

@@ -55,6 +55,22 @@
   }
 }
 
+/* Backdrop behind the open mobile drawer. Only mounted while the drawer is
+ * open; hidden on desktop where the panel is a plain rail. */
+.td-facet-panel__scrim {
+  display: none;
+}
+
+@media (max-width: 991px) {
+  .td-facet-panel__scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 39;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+}
+
 .td-facet-panel__close {
   align-self: flex-end;
   background: transparent;

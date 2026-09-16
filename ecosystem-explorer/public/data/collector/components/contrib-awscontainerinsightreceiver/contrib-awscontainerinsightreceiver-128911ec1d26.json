@@ -1,0 +1,40 @@
+{
+  "description": null,
+  "display_name": "AWS Container Insights Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "feature_gates": [
+    {
+      "description": "When enabled, the receiver uses the new component type name 'awscontainerinsight' instead of 'awscontainerinsightreceiver'.",
+      "from_version": "v0.143.0",
+      "id": "receiver.awscontainerinsightreceiver.useNewTypeName",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44052",
+      "stage": "alpha"
+    }
+  ],
+  "id": "contrib-awscontainerinsightreceiver",
+  "markdown_hash": "f84da2162e0f",
+  "name": "awscontainerinsightreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "Aneurysm9",
+        "pxaws"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    },
+    "warnings": [
+      "Other"
+    ]
+  },
+  "type": "receiver"
+}

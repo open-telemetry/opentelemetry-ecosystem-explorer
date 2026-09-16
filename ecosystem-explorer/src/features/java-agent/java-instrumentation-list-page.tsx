@@ -347,11 +347,11 @@ export function JavaInstrumentationListPage() {
         {versionsError || error ? (
           <div className="flex flex-col items-center justify-center space-y-4 py-32 text-center text-red-500">
             <AlertCircle className="mx-auto h-12 w-12 opacity-50" aria-hidden="true" />
-            <h3 className="text-xl font-semibold">Error loading data</h3>
+            <h3 className="text-xl font-semibold">{t("list.error.title")}</h3>
             {(versionsError ?? error)?.message && (
               <p className="text-muted-foreground text-sm">{(versionsError ?? error)!.message}</p>
             )}
-            <p className="text-muted-foreground">Please try refreshing the page.</p>
+            <p className="text-muted-foreground">{t("list.error.description")}</p>
           </div>
         ) : versionsLoading || instrumentationsLoading || (!resolvedVersion && !versionsError) ? (
           <Loader label={t("list.loading")} />
@@ -369,11 +369,9 @@ export function JavaInstrumentationListPage() {
             {filteredInstrumentations.length === 0 ? (
               <div className="border-border/50 bg-card/30 flex min-h-[300px] items-center justify-center rounded-lg border">
                 <div className="text-center">
-                  <p className="text-muted-foreground text-base">
-                    No instrumentations found matching your filters.
-                  </p>
+                  <p className="text-muted-foreground text-base">{t("list.results.empty")}</p>
                   <p className="text-muted-foreground/70 mt-2 text-sm">
-                    Try adjusting your search or filter criteria
+                    {t("list.results.emptySuggestion")}
                   </p>
                 </div>
               </div>
@@ -406,11 +404,10 @@ export function JavaInstrumentationListPage() {
                   <div className="space-y-6">
                     <div className="border-border/50 border-b pb-2">
                       <h2 className="text-foreground text-2xl font-semibold tracking-tight">
-                        Custom Instrumentations
+                        {t("list.customSection.title")}
                       </h2>
                       <p className="text-muted-foreground mt-1 text-sm">
-                        Non-library instrumentations such as methods, JMX metrics, and external
-                        annotations.
+                        {t("list.customSection.description")}
                       </p>
                     </div>
                     <div className="space-y-4">

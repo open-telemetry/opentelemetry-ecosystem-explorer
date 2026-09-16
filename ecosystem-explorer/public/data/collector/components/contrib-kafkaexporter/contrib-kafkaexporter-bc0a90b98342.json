@@ -1,0 +1,284 @@
+{
+  "attributes": {
+    "node_id": {
+      "description": "The Kafka node ID.",
+      "type": "int"
+    },
+    "outcome": {
+      "description": "The operation outcome.",
+      "enum": [
+        "failure",
+        "success"
+      ],
+      "type": "string"
+    },
+    "partition": {
+      "description": "The Kafka topic partition.",
+      "type": "int"
+    },
+    "server.address": {
+      "description": "The Kafka node address.",
+      "type": "string"
+    },
+    "topic": {
+      "description": "The Kafka topic.",
+      "type": "string"
+    }
+  },
+  "description": null,
+  "display_name": "Kafka Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-kafkaexporter",
+  "markdown_hash": "2aff979462d4",
+  "name": "kafkaexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "pavolloffay",
+        "MovieStoreGuy",
+        "axw",
+        "paulojmdias"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "core"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ],
+      "development": [
+        "profiles"
+      ]
+    }
+  },
+  "telemetry": {
+    "metrics": {
+      "kafka_broker_closed": {
+        "attributes": [
+          "node_id",
+          "server.address"
+        ],
+        "description": "The total number of connections closed.",
+        "enabled": true,
+        "extended_documentation": "Only produced when franz-go is enabled.",
+        "optional": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "kafka_broker_connects": {
+        "attributes": [
+          "node_id",
+          "outcome",
+          "server.address"
+        ],
+        "description": "The total number of connections opened.",
+        "enabled": true,
+        "extended_documentation": "Only produced when franz-go is enabled.",
+        "optional": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "kafka_broker_throttling_duration": {
+        "attributes": [
+          "node_id",
+          "server.address"
+        ],
+        "description": "The throttling duration in ms imposed by the broker when exporting messages.",
+        "enabled": true,
+        "extended_documentation": "Only produced when franz-go is enabled. Deprecated in favor of kafka_broker_throttling_latency.",
+        "histogram": {
+          "value_type": "int"
+        },
+        "optional": true,
+        "stability": "deprecated",
+        "unit": "ms",
+        "warnings": {
+          "if_enabled": "This metric is deprecated in favor of kafka_broker_throttling_latency and will be removed soon."
+        }
+      },
+      "kafka_broker_throttling_latency": {
+        "attributes": [
+          "node_id",
+          "server.address"
+        ],
+        "description": "The throttling latency in seconds imposed by the broker when exporting records.",
+        "enabled": true,
+        "extended_documentation": "Only produced when franz-go is enabled.",
+        "histogram": {
+          "bucket_boundaries": [
+            0,
+            0.005,
+            0.01,
+            0.025,
+            0.05,
+            0.075,
+            0.1,
+            0.25,
+            0.5,
+            0.75,
+            1,
+            2.5,
+            5,
+            7.5,
+            10,
+            25,
+            50,
+            75,
+            100
+          ],
+          "value_type": "double"
+        },
+        "optional": true,
+        "stability": "development",
+        "unit": "s"
+      },
+      "kafka_exporter_bytes": {
+        "attributes": [
+          "node_id",
+          "outcome",
+          "partition",
+          "server.address",
+          "topic"
+        ],
+        "description": "The size in bytes of exported records seen by the broker.",
+        "enabled": true,
+        "extended_documentation": "Only produced when franz-go is enabled.",
+        "optional": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "By"
+      },
+      "kafka_exporter_bytes_uncompressed": {
+        "attributes": [
+          "node_id",
+          "outcome",
+          "partition",
+          "server.address",
+          "topic"
+        ],
+        "description": "The uncompressed size in bytes of exported messages seen by the client.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "By"
+      },
+      "kafka_exporter_latency": {
+        "attributes": [
+          "node_id",
+          "outcome",
+          "partition",
+          "server.address",
+          "topic"
+        ],
+        "description": "The time it took in ms to export a batch of messages.",
+        "enabled": true,
+        "extended_documentation": "Deprecated in favor of kafka_exporter_write_latency.",
+        "histogram": {
+          "value_type": "int"
+        },
+        "stability": "deprecated",
+        "unit": "ms",
+        "warnings": {
+          "if_enabled": "This metric is deprecated in favor of kafka_exporter_write_latency and will be removed soon."
+        }
+      },
+      "kafka_exporter_messages": {
+        "attributes": [
+          "node_id",
+          "outcome",
+          "partition",
+          "server.address",
+          "topic"
+        ],
+        "description": "The number of exported messages.",
+        "enabled": true,
+        "extended_documentation": "Deprecated in favor of kafka_exporter_records.",
+        "stability": "deprecated",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1",
+        "warnings": {
+          "if_enabled": "This metric is deprecated in favor of kafka_exporter_records and will be removed soon."
+        }
+      },
+      "kafka_exporter_records": {
+        "attributes": [
+          "node_id",
+          "outcome",
+          "partition",
+          "server.address",
+          "topic"
+        ],
+        "description": "The number of exported records.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "kafka_exporter_write_latency": {
+        "attributes": [
+          "node_id",
+          "outcome",
+          "partition",
+          "server.address",
+          "topic"
+        ],
+        "description": "The time it took in seconds to export a batch of records.",
+        "enabled": true,
+        "histogram": {
+          "bucket_boundaries": [
+            0,
+            0.005,
+            0.01,
+            0.025,
+            0.05,
+            0.075,
+            0.1,
+            0.25,
+            0.5,
+            0.75,
+            1,
+            2.5,
+            5,
+            7.5,
+            10,
+            25,
+            50,
+            75,
+            100
+          ],
+          "value_type": "double"
+        },
+        "stability": "development",
+        "unit": "s"
+      }
+    }
+  },
+  "type": "exporter"
+}

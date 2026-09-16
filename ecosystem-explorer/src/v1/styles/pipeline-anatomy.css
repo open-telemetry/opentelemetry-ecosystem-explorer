@@ -18,7 +18,7 @@
 
 .td-pipeline-anatomy__title {
   margin: 0 0 0.5rem;
-  font-size: 1.5rem;
+  font-size: var(--td-fs-h3);
   font-weight: 700;
 }
 
@@ -103,7 +103,7 @@
 }
 
 .td-pipeline-stage__count {
-  font-size: 1.5rem;
+  font-size: var(--td-fs-h4);
   font-weight: 700;
   color: var(--td-stage-accent);
   line-height: 1;
@@ -111,10 +111,10 @@
 
 .td-pipeline-stage__label {
   font-weight: 600;
-  font-size: 1rem;
+  font-size: var(--td-fs-base);
 }
 
 .td-pipeline-stage__description {
-  font-size: 0.8125rem;
+  font-size: var(--td-fs-sm);
   color: hsl(var(--muted-foreground-hsl));
 }

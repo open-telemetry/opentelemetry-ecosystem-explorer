@@ -1,0 +1,123 @@
+{
+  "attributes": {
+    "leap.status": {
+      "description": "how the chrony is handling leap seconds",
+      "enum": [
+        "delete_second",
+        "insert_second",
+        "normal",
+        "unsynchronised"
+      ],
+      "requirement_level": "recommended",
+      "type": "string"
+    }
+  },
+  "description": null,
+  "display_name": "Chrony Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-chronyreceiver",
+  "markdown_hash": "44f1d6984dbc",
+  "metrics": {
+    "ntp.frequency.offset": {
+      "attributes": [
+        "leap.status"
+      ],
+      "description": "The frequency is the rate by which the system s clock would be wrong if chronyd was not correcting it.",
+      "enabled": false,
+      "extended_documentation": "It is expressed in ppm (parts per million). For example, a value of 1 ppm would mean that when the system\u2019s clock thinks it has advanced 1 second, it has actually advanced by 1.000001 seconds relative to true time.",
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "[ppm]"
+    },
+    "ntp.skew": {
+      "description": "This is the estimated error bound on the frequency.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "[ppm]"
+    },
+    "ntp.stratum": {
+      "description": "The number of hops away from the reference system keeping the reference time",
+      "enabled": false,
+      "extended_documentation": "To read further, refer to https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/system_administrators_guide/ch-configuring_ntp_using_the_chrony_suite#sect-Checking_chrony_tracking",
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "{count}"
+    },
+    "ntp.time.correction": {
+      "attributes": [
+        "leap.status"
+      ],
+      "description": "The number of seconds difference between the system's clock and the reference clock",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "s"
+    },
+    "ntp.time.last_offset": {
+      "attributes": [
+        "leap.status"
+      ],
+      "description": "The estimated local offset on the last clock update",
+      "enabled": true,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "s"
+    },
+    "ntp.time.rms_offset": {
+      "attributes": [
+        "leap.status"
+      ],
+      "description": "the long term average of the offset value",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "s"
+    },
+    "ntp.time.root_delay": {
+      "attributes": [
+        "leap.status"
+      ],
+      "description": "This is the total of the network path delays to the stratum-1 system from which the system is ultimately synchronised.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "s"
+    }
+  },
+  "name": "chronyreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "MovieStoreGuy",
+        "jamesmoessis"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver"
+}

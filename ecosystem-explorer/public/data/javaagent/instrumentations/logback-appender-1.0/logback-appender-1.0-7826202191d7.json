@@ -1,0 +1,205 @@
+{
+  "configurations": [
+    {
+      "declarative_name": "java.logback_appender.experimental_log_attributes/development",
+      "default": false,
+      "description": "Enables the capture of experimental log attributes, including thread name and thread ID.",
+      "name": "otel.instrumentation.logback-appender.experimental-log-attributes",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.logback_appender.capture_arguments/development",
+      "default": false,
+      "description": "Enables the capture of log message arguments as separate attributes.",
+      "name": "otel.instrumentation.logback-appender.experimental.capture-arguments",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.logback_appender.capture_code_attributes/development",
+      "default": false,
+      "description": "Enables the capture of code location attributes, including file path, class name, method name, and line number.",
+      "name": "otel.instrumentation.logback-appender.experimental.capture-code-attributes",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.logback_appender.capture_key_value_pair_attributes/development",
+      "default": false,
+      "description": "Deprecated setting that enables the capture of all attributes from Logback key value pairs. It is ignored when otel.instrumentation.logback-appender.experimental.key-value-pair-attributes.included or otel.instrumentation.logback-appender.experimental.key-value-pair-attributes.excluded is configured, and it may be removed in the next minor release. Use otel.instrumentation.logback-appender.experimental.key-value-pair-attributes.included instead.",
+      "name": "otel.instrumentation.logback-appender.experimental.capture-key-value-pair-attributes",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.logback_appender.capture_logger_context_attributes/development",
+      "default": false,
+      "description": "Deprecated setting that enables the capture of all attributes from the Logback logger context. It is ignored when otel.instrumentation.logback-appender.experimental.logger-context-attributes.included or otel.instrumentation.logback-appender.experimental.logger-context-attributes.excluded is configured, and it may be removed in the next minor release. Use otel.instrumentation.logback-appender.experimental.logger-context-attributes.included instead.",
+      "name": "otel.instrumentation.logback-appender.experimental.capture-logger-context-attributes",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.logback_appender.capture_logstash_marker_attributes/development",
+      "default": false,
+      "description": "Deprecated setting that enables the capture of all attributes from Logstash markers, supported are those added to logs via Markers.append(), Markers.appendEntries(), Markers.appendArray() and Markers.appendRaw() methods. It is ignored when otel.instrumentation.logback-appender.experimental.logstash-marker-attributes.included or otel.instrumentation.logback-appender.experimental.logstash-marker-attributes.excluded is configured, and it may be removed in the next minor release. Use otel.instrumentation.logback-appender.experimental.logstash-marker-attributes.included instead.",
+      "name": "otel.instrumentation.logback-appender.experimental.capture-logstash-marker-attributes",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.logback_appender.capture_logstash_structured_arguments/development",
+      "default": false,
+      "description": "Deprecated setting that enables the capture of all attributes from Logstash structured arguments (e.g., StructuredArguments.v() and StructuredArguments.keyValue()). It is ignored when otel.instrumentation.logback-appender.experimental.logstash-structured-argument-attributes.included or otel.instrumentation.logback-appender.experimental.logstash-structured-argument-attributes.excluded is configured, and it may be removed in the next minor release. Use otel.instrumentation.logback-appender.experimental.logstash-structured-argument-attributes.included instead.",
+      "name": "otel.instrumentation.logback-appender.experimental.capture-logstash-structured-arguments",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.logback_appender.capture_marker_attribute/development",
+      "default": false,
+      "description": "Enables the capture of the Logback marker attribute.",
+      "name": "otel.instrumentation.logback-appender.experimental.capture-marker-attribute",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.logback_appender.capture_mdc_attributes/development",
+      "default": "",
+      "description": "Deprecated comma-separated list of MDC keys to capture as log attributes. Keys are matched literally, including \"*\" and \"?\", except that the single value \"*\" captures all MDC attributes. It is ignored when otel.instrumentation.logback-appender.experimental.mdc-attributes.included or otel.instrumentation.logback-appender.experimental.mdc-attributes.excluded is configured, and it may be removed in the next minor release. Use otel.instrumentation.logback-appender.experimental.mdc-attributes.included instead.",
+      "examples": [
+        "custom-mdc-key",
+        "key1,key2,key3"
+      ],
+      "name": "otel.instrumentation.logback-appender.experimental.capture-mdc-attributes",
+      "type": "list"
+    },
+    {
+      "declarative_name": "java.logback_appender.capture_template/development",
+      "default": false,
+      "description": "Enables the capture of the log message template before parameter substitution.",
+      "name": "otel.instrumentation.logback-appender.experimental.capture-template",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.logback_appender.key_value_pair_attributes/development.excluded",
+      "default": "",
+      "description": "Comma-separated list of case-sensitive glob patterns for Logback key value pair keys not to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No key value pair attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-key-value-pair-attributes setting is configured; configuring only excluded patterns captures all key value pair attributes that do not match them. Captured key value pair attributes may contain sensitive information.",
+      "examples": [
+        "*-secret",
+        "password,token"
+      ],
+      "name": "otel.instrumentation.logback-appender.experimental.key-value-pair-attributes.excluded",
+      "type": "list"
+    },
+    {
+      "declarative_name": "java.logback_appender.key_value_pair_attributes/development.included",
+      "default": "",
+      "description": "Comma-separated list of case-sensitive glob patterns for Logback key value pair keys to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character, so \"*\" captures all key value pair attributes. Excluded patterns take precedence over included patterns. No key value pair attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-key-value-pair-attributes setting is configured; configuring only excluded patterns captures all key value pair attributes that do not match them. Captured key value pair attributes may contain sensitive information.",
+      "examples": [
+        "custom-key",
+        "request-*,user-?"
+      ],
+      "name": "otel.instrumentation.logback-appender.experimental.key-value-pair-attributes.included",
+      "type": "list"
+    },
+    {
+      "declarative_name": "java.logback_appender.logger_context_attributes/development.excluded",
+      "default": "",
+      "description": "Comma-separated list of case-sensitive glob patterns for Logback logger context property keys not to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No logger context attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-logger-context-attributes setting is configured; configuring only excluded patterns captures all logger context attributes that do not match them. Captured logger context attributes may contain sensitive information.",
+      "examples": [
+        "*-secret",
+        "password,token"
+      ],
+      "name": "otel.instrumentation.logback-appender.experimental.logger-context-attributes.excluded",
+      "type": "list"
+    },
+    {
+      "declarative_name": "java.logback_appender.logger_context_attributes/development.included",
+      "default": "",
+      "description": "Comma-separated list of case-sensitive glob patterns for Logback logger context property keys to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character, so \"*\" captures all logger context attributes. Excluded patterns take precedence over included patterns. No logger context attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-logger-context-attributes setting is configured; configuring only excluded patterns captures all logger context attributes that do not match them. Captured logger context attributes may contain sensitive information.",
+      "examples": [
+        "app.version",
+        "app.*,deployment-?"
+      ],
+      "name": "otel.instrumentation.logback-appender.experimental.logger-context-attributes.included",
+      "type": "list"
+    },
+    {
+      "declarative_name": "java.logback_appender.logstash_marker_attributes/development.excluded",
+      "default": "",
+      "description": "Comma-separated list of case-sensitive glob patterns for Logstash marker keys not to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No Logstash marker attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-logstash-marker-attributes setting is configured; configuring only excluded patterns captures all Logstash marker attributes that do not match them. Captured Logstash marker attributes may contain sensitive information.",
+      "examples": [
+        "*-secret",
+        "password,token"
+      ],
+      "name": "otel.instrumentation.logback-appender.experimental.logstash-marker-attributes.excluded",
+      "type": "list"
+    },
+    {
+      "declarative_name": "java.logback_appender.logstash_marker_attributes/development.included",
+      "default": "",
+      "description": "Comma-separated list of case-sensitive glob patterns for Logstash marker keys to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character, so \"*\" captures all Logstash marker attributes. Excluded patterns take precedence over included patterns. No Logstash marker attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-logstash-marker-attributes setting is configured; configuring only excluded patterns captures all Logstash marker attributes that do not match them. Captured Logstash marker attributes may contain sensitive information.",
+      "examples": [
+        "custom-key",
+        "request-*,user-?"
+      ],
+      "name": "otel.instrumentation.logback-appender.experimental.logstash-marker-attributes.included",
+      "type": "list"
+    },
+    {
+      "declarative_name": "java.logback_appender.logstash_structured_argument_attributes/development.excluded",
+      "default": "",
+      "description": "Comma-separated list of case-sensitive glob patterns for Logstash structured argument keys not to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No Logstash structured argument attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-logstash-structured-arguments setting is configured; configuring only excluded patterns captures all Logstash structured argument attributes that do not match them. Captured Logstash structured argument attributes may contain sensitive information.",
+      "examples": [
+        "*-secret",
+        "password,token"
+      ],
+      "name": "otel.instrumentation.logback-appender.experimental.logstash-structured-argument-attributes.excluded",
+      "type": "list"
+    },
+    {
+      "declarative_name": "java.logback_appender.logstash_structured_argument_attributes/development.included",
+      "default": "",
+      "description": "Comma-separated list of case-sensitive glob patterns for Logstash structured argument keys to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character, so \"*\" captures all Logstash structured argument attributes. Excluded patterns take precedence over included patterns. No Logstash structured argument attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-logstash-structured-arguments setting is configured; configuring only excluded patterns captures all Logstash structured argument attributes that do not match them. Captured Logstash structured argument attributes may contain sensitive information.",
+      "examples": [
+        "custom-key",
+        "request-*,user-?"
+      ],
+      "name": "otel.instrumentation.logback-appender.experimental.logstash-structured-argument-attributes.included",
+      "type": "list"
+    },
+    {
+      "declarative_name": "java.logback_appender.mdc_attributes/development.excluded",
+      "default": "",
+      "description": "Comma-separated list of case-sensitive glob patterns for MDC keys not to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No MDC attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-mdc-attributes setting is configured; configuring only excluded patterns captures all MDC attributes that do not match them. Captured MDC attributes may contain sensitive information.",
+      "examples": [
+        "*-secret",
+        "password,token"
+      ],
+      "name": "otel.instrumentation.logback-appender.experimental.mdc-attributes.excluded",
+      "type": "list"
+    },
+    {
+      "declarative_name": "java.logback_appender.mdc_attributes/development.included",
+      "default": "",
+      "description": "Comma-separated list of case-sensitive glob patterns for MDC keys to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character, so \"*\" captures all MDC attributes. Excluded patterns take precedence over included patterns. No MDC attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-mdc-attributes setting is configured; configuring only excluded patterns captures all MDC attributes that do not match them. Captured MDC attributes may contain sensitive information.",
+      "examples": [
+        "custom-mdc-key",
+        "request-*,user-?"
+      ],
+      "name": "otel.instrumentation.logback-appender.experimental.mdc-attributes.included",
+      "type": "list"
+    }
+  ],
+  "description": "This instrumentation bridges Logback log events to OpenTelemetry logs.",
+  "display_name": "Logback",
+  "features": [
+    "LOGGING_BRIDGE"
+  ],
+  "has_javaagent": true,
+  "has_standalone_library": true,
+  "javaagent_target_versions": [
+    "ch.qos.logback:logback-classic:[0.9.16,)"
+  ],
+  "library_link": "https://logback.qos.ch/",
+  "markdown_hash": "14908fa0178b",
+  "name": "logback-appender-1.0",
+  "scope": {
+    "name": "io.opentelemetry.logback-appender-1.0"
+  },
+  "source_path": "instrumentation/logback/logback-appender-1.0"
+}

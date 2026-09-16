@@ -48,6 +48,26 @@ import { type PipelineStage, PipelineAnatomy } from "@/v1/components/ecosystem/p
 import { QuickEntryRow } from "@/v1/components/ecosystem/quick-entry-row";
 import { FacetPanel } from "@/v1/components/list/facet-panel";
 import { CheckboxFacet, SearchFacet, SelectFacet } from "@/v1/components/list/facets";
+import { DetailHeader } from "@/v1/components/detail/detail-header";
+import {
+  OnPageAnchors,
+  SiblingNavigator,
+  type SiblingItem,
+} from "@/v1/components/detail/sibling-navigator";
+import { PipelinePlacement } from "@/v1/components/detail/pipeline-placement";
+import {
+  AttributesTab,
+  ConfigurationTab,
+  DetailTabs,
+  type DetailTabId,
+  ExamplesTab,
+  ReadmeTab,
+} from "@/v1/components/detail/tabs";
+import {
+  CompatibilityCard,
+  DiffSelector,
+  VersionTimeline,
+} from "@/v1/components/detail/version-timeline";
 import { CoverBlock } from "@/v1/components/home/cover-block";
 import { EcosystemsGrid } from "@/v1/components/home/ecosystems-grid";
 import { GlobalSearch } from "@/v1/components/home/global-search";
@@ -374,6 +394,69 @@ function FacetPanelShowcase() {
   );
 }
 
+// Sibling-navigator fixture: a handful of same-type components with the
+// current entry (otlpreceiver) marked active.
+const SIBLING_ITEMS: SiblingItem[] = [
+  {
+    id: "core-otlpreceiver",
+    name: "otlpreceiver",
+    displayName: "OTLP Receiver",
+    href: "/collector/components/core/otlpreceiver",
+  },
+  {
+    id: "contrib-kafkareceiver",
+    name: "kafkareceiver",
+    displayName: "Kafka Receiver",
+    href: "/collector/components/contrib/kafkareceiver",
+  },
+  {
+    id: "contrib-prometheusreceiver",
+    name: "prometheusreceiver",
+    displayName: "Prometheus Receiver",
+    href: "/collector/components/contrib/prometheusreceiver",
+  },
+];
+
+// Right-rail fixture: a handful of releases with the newest marked latest, so
+// the timeline highlights the current entry and the diff selector has >=2
+// versions to offer.
+const RIGHT_RAIL_VERSIONS = [
+  { version: "v0.150.0", summary: "Latest release" },
+  { version: "v0.149.0" },
+  { version: "v0.148.0" },
+  { version: "v0.147.0" },
+];
+
+// DetailTabs owns the selected-tab state on the real page; the showcase holds
+// it locally so every panel is reachable under the screenshot/a11y capture.
+function DetailTabsShowcase() {
+  const [active, setActive] = useState<DetailTabId>("attributes");
+  return (
+    <DetailTabs active={active} onChange={setActive}>
+      {active === "configuration" && (
+        <ConfigurationTab rows={null} hrefSource="https://github.com/open-telemetry" />
+      )}
+      {active === "readme" && <ReadmeTab hrefSource="https://github.com/open-telemetry" />}
+      {active === "attributes" && (
+        <AttributesTab
+          rows={[
+            {
+              name: "otelcol_receiver_accepted_spans",
+              kind: "metric",
+              description: "Number of spans successfully pushed into the pipeline.",
+            },
+            { name: "transport", kind: "attribute", description: "The transport protocol." },
+            { name: "service.name", kind: "resource", description: "The service name." },
+          ]}
+        />
+      )}
+      {active === "examples" && (
+        <ExamplesTab snippets={[]} hrefExamples="https://github.com/open-telemetry" />
+      )}
+    </DetailTabs>
+  );
+}
+
 export function DevComponentsPage() {
   // Wrapper is a <section>, not <main>: V1App.tsx and LegacyApp.tsx already
   // render a <main> around every route, and nested landmarks would fail axe.
@@ -602,6 +685,87 @@ export function DevComponentsPage() {
         bare
       >
         <ListControlsShowcase />
+      </Section>
+
+      <Section
+        id="detail-header"
+        title="DetailHeader (detail page — title card with type-stripe)"
+        bare
+      >
+        <DetailHeader
+          type="receiver"
+          distribution="core"
+          displayName="OTLP Receiver"
+          slug="otlpreceiver"
+          description="Receives telemetry via gRPC or HTTP in OTLP format."
+          stability="stable"
+          version="v0.150.0"
+          signals={["traces", "metrics", "logs"]}
+          hrefRepository="https://github.com/open-telemetry/opentelemetry-collector/tree/main/receiver/otlpreceiver"
+          hrefDocs={null}
+        />
+      </Section>
+
+      <Section
+        id="sibling-navigator"
+        title="SiblingNavigator + OnPageAnchors (detail page — left rail)"
+        bare
+      >
+        <div
+          style={{ maxWidth: "260px", display: "flex", flexDirection: "column", gap: "1.25rem" }}
+        >
+          <SiblingNavigator title="Receivers" items={SIBLING_ITEMS} activeId="core-otlpreceiver" />
+          <OnPageAnchors
+            anchors={[
+              { id: "placement", label: "Where this fits" },
+              { id: "configuration", label: "Configuration" },
+              { id: "readme", label: "README" },
+              { id: "attributes", label: "Emitted attributes" },
+              { id: "examples", label: "Examples" },
+            ]}
+            activeId="attributes"
+          />
+        </div>
+      </Section>
+
+      <Section
+        id="pipeline-placement"
+        title="PipelinePlacement (detail page — 'Where this fits' diagram)"
+        bare
+      >
+        <PipelinePlacement activeType="receiver" activeName="OTLP Receiver" />
+      </Section>
+
+      <Section
+        id="detail-tabs"
+        title="DetailTabs (detail page — configuration / README / attributes / examples)"
+        bare
+      >
+        <DetailTabsShowcase />
+      </Section>
+
+      <Section
+        id="version-timeline"
+        title="VersionTimeline + DiffSelector + CompatibilityCard (detail page — right rail)"
+        bare
+      >
+        <div
+          style={{ maxWidth: "280px", display: "flex", flexDirection: "column", gap: "1.25rem" }}
+        >
+          <VersionTimeline
+            versions={RIGHT_RAIL_VERSIONS}
+            currentVersion="v0.150.0"
+            buildHref={(v) => `/collector/components/core/otlpreceiver?version=${v}`}
+          />
+          <DiffSelector
+            versions={RIGHT_RAIL_VERSIONS.map((v) => v.version)}
+            defaultTo="v0.150.0"
+            buildHref={(from, to) =>
+              `/collector/components/core/otlpreceiver/diff?from=${from}&to=${to}`
+            }
+          />
+          <CompatibilityCard distributions={["core", "contrib"]} />
+        </div>
       </Section>
 
       <Section

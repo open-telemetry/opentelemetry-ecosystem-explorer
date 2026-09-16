@@ -89,11 +89,25 @@ Apply a version list to all distributions:
 uv run collector-watcher --backfill --versions "0.144.0,0.145.0"
 ```
 
+#### Prune Unlisted Versions
+
+Reduce the registry to exactly the listed versions — regenerate them and delete every other release
+version (e.g. after raising the minimum supported version). SNAPSHOT versions are always kept:
+
+```bash
+uv run collector-watcher --backfill --versions "0.156.0,0.157.0" --prune-unlisted
+```
+
+`--prune-unlisted` requires both `--backfill` and `--versions`; running it without a version list
+exits with an error rather than wiping the registry.
+
 #### Options
 
 - `--backfill` - Enable backfill mode (regenerates existing versions)
 - `--distribution {core,contrib}` - Target a specific distribution
 - `--versions VERSION_LIST` - Comma-separated list of versions (e.g., "0.144.0,0.145.0")
+- `--prune-unlisted` - Delete existing release versions not in `--versions` before backfilling
+  (SNAPSHOTs kept); requires `--backfill` and `--versions`
 - `--inventory-dir PATH` - Custom path to inventory directory (default:
   ecosystem-registry/collector)
 

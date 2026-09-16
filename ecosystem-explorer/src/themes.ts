@@ -42,6 +42,7 @@ export interface Theme {
     muted: string;
     mutedForeground: string;
     border: string;
+    error: string;
     syntax: {
       comment: string;
       key: string;
@@ -67,6 +68,7 @@ const dark: Theme = {
     muted: "232 28% 22%",
     mutedForeground: "220 14% 65%",
     border: "232 22% 28%",
+    error: "0 91% 71%",
     syntax: {
       comment: "220 18% 58%",
       key: "28 95% 65%",
@@ -92,6 +94,7 @@ const light: Theme = {
     muted: "210 14% 92%",
     mutedForeground: "220 9% 40%",
     border: "210 14% 88%",
+    error: "0 74% 42%",
     syntax: {
       comment: "220 18% 58%",
       key: "28 95% 65%",

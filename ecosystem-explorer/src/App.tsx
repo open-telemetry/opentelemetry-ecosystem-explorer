@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { isEnabled } from "@/lib/feature-flags";
+import { ScrollToTop } from "@/components/layout/scroll-to-top";
 import { BrowserRouter } from "react-router-dom";
 import { LegacyApp } from "@/LegacyApp";
 import { V1App } from "@/v1";
@@ -25,5 +26,10 @@ import { V1App } from "@/v1";
  * bundle selection is driven by netlify.toml's `feat/84-*` branch pattern.
  */
 export default function App() {
-  return <BrowserRouter>{isEnabled("V1_REDESIGN") ? <V1App /> : <LegacyApp />}</BrowserRouter>;
+  return (
+    <BrowserRouter>
+      <ScrollToTop />
+      {isEnabled("V1_REDESIGN") ? <V1App /> : <LegacyApp />}
+    </BrowserRouter>
+  );
 }

@@ -1,0 +1,28 @@
+{
+  "description": null,
+  "display_name": "STEF Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-stefexporter",
+  "markdown_hash": "d7c9bf4ad178",
+  "name": "stefexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "tigrannajaryan",
+        "dmitryax"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "exporter"
+}

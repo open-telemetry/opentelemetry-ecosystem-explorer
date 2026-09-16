@@ -26,6 +26,7 @@ const COLOR_KEYS = [
   "muted",
   "mutedForeground",
   "border",
+  "error",
 ] as const;
 
 describe("themes", () => {

@@ -1,5 +1,9 @@
 {
   "landingV1": {
+    "seo": {
+      "title": "OpenTelemetry Collector — Ecosystem Explorer",
+      "description": "Explore the OpenTelemetry Collector: browse receivers, processors, exporters, and connectors across distributions and versions."
+    },
     "hero": {
       "eyebrow": "Infrastructure · Vendor-agnostic agent",
       "lead": "Receive, process, and export telemetry data. A vendor-agnostic agent for ingesting, processing, and exporting metrics, traces, and logs.",
@@ -32,21 +36,16 @@
       "diff": {
         "title": "Diff across versions",
         "description": "See what changed between two Collector releases."
+      },
+      "deprecated": {
+        "title": "Deprecated components",
+        "description": "Browse components removed from current Collector releases."
       }
     }
   },
   "listV1": {
     "facets": {
-      "panel": {
-        "label": "Filters",
-        "close": "Close filters"
-      },
-      "search": {
-        "title": "Search",
-        "placeholder": "Search name or description…"
-      },
       "type": {
-        "title": "Type",
         "options": {
           "receiver": "Receiver",
           "processor": "Processor",
@@ -55,17 +54,7 @@
           "extension": "Extension"
         }
       },
-      "signal": {
-        "title": "Signal",
-        "options": {
-          "traces": "Traces",
-          "metrics": "Metrics",
-          "logs": "Logs",
-          "baggage": "Baggage"
-        }
-      },
       "stability": {
-        "title": "Stability",
         "options": {
           "stable": "Stable",
           "beta": "Beta",
@@ -76,15 +65,10 @@
         }
       },
       "distribution": {
-        "title": "Distribution",
         "options": {
           "core": "Core",
           "contrib": "Contrib"
         }
-      },
-      "version": {
-        "title": "Version",
-        "latest": "Latest"
       }
     }
   },
@@ -114,7 +98,8 @@
     },
     "version": {
       "label": "Version",
-      "latest": "(latest)"
+      "latest": "(latest)",
+      "deprecated": "Deprecated"
     },
     "distribution": {
       "label": "Distribution",
@@ -177,6 +162,10 @@
       "description": "Please try refreshing the page."
     }
   },
+  "deprecated": {
+    "title": "This component has been removed",
+    "lead": "Last available in {{lastVersion}}. Removed in {{removedVersion}}."
+  },
   "detail": {
     "loading": {
       "title": "Loading component...",
@@ -190,7 +179,9 @@
     "tabs": {
       "details": "Details",
       "stability": "Stability",
-      "telemetry": "Telemetry"
+      "telemetry": "Telemetry",
+      "featureGates": "Feature Gates",
+      "readme": "Readme"
     },
     "sections": {
       "componentInfo": "Component Info",
@@ -202,12 +193,20 @@
     "labels": {
       "type": "Type",
       "version": "Version",
-      "distribution": "Distribution"
+      "sourceRepository": "Source Repository",
+      "sourceRepositoryHint": "The Collector repository this component's code lives in, not the distributions that package it."
     },
     "links": {
       "sourceCode": "Source Code",
       "viewOnGithub": "View on GitHub",
       "viewDocumentation": "View Documentation"
+    },
+    "typeLabels": {
+      "receiver": "Receivers",
+      "processor": "Processors",
+      "exporter": "Exporters",
+      "connector": "Connectors",
+      "extension": "Extensions"
     },
     "typeDescriptions": {
       "receiver": "Receivers collect telemetry data from various sources and formats.",
@@ -273,12 +272,22 @@
         "type": "Type",
         "description": "Description"
       }
+    },
+    "featureGatesTab": {
+      "introducedIn": "Introduced in {{version}}",
+      "stableIn": "Stable in {{version}}",
+      "deprecatedIn": "Deprecated in {{version}}",
+      "reference": "Reference"
     }
   },
   "explore": {
     "componentTypes": {
       "heading": "Component Types",
       "latestVersion": "Latest data version",
+      "deprecated": {
+        "label": "Deprecated",
+        "description": "Browse components removed from current Collector releases"
+      },
       "types": {
         "receiver": {
           "label": "Receiver",
@@ -331,6 +340,10 @@
         "githubCore": "GitHub (Core)",
         "githubContrib": "GitHub (Contrib)"
       }
+    },
+    "readme": {
+      "loading": "Loading component documentation...",
+      "error": "Component documentation is not available for this version."
     },
     "loading": "Loading Collector ecosystem data...",
     "error": "Error loading Collector data"

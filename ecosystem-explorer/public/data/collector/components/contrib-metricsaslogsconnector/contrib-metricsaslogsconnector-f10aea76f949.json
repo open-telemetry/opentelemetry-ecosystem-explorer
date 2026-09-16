@@ -1,0 +1,25 @@
+{
+  "description": null,
+  "display_name": "Metrics as Logs Connector",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-metricsaslogsconnector",
+  "markdown_hash": "cfd2d64f643f",
+  "name": "metricsaslogsconnector",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "connector",
+    "codeowners": {
+      "active": [
+        "atoulme"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "metrics_to_logs"
+      ]
+    }
+  },
+  "type": "connector"
+}

@@ -27,7 +27,7 @@
  * plus a one-line route swap in `V1App.tsx`.
  */
 
-import { ArrowLeftRight, GitCompare, Layers } from "lucide-react";
+import { ArchiveX, ArrowLeftRight, GitCompare, Layers } from "lucide-react";
 import { TYPE_STRIPE_COLORS } from "@/components/ui/type-stripe-colors";
 import { OtelLogo } from "@/components/icons/otel-logo";
 import { filtersToHref } from "@/v1/lib/list-filters";
@@ -126,6 +126,13 @@ export const collectorConfig: EcosystemConfig = {
       description: "landingV1.quickEntries.diff.description",
       href: filtersToHref(collectorComponentsPath, { sort: "updated" }),
       icon: <GitCompare className="h-5 w-5" aria-hidden />,
+    },
+    {
+      id: "deprecated",
+      title: "landingV1.quickEntries.deprecated.title",
+      description: "landingV1.quickEntries.deprecated.description",
+      href: filtersToHref(collectorComponentsPath, { version: "deprecated" }),
+      icon: <ArchiveX className="h-5 w-5" aria-hidden />,
     },
   ],
   release: {

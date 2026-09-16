@@ -1,9 +1,10 @@
 /*
  * Language toggle — shares the dropdown chrome of the theme toggle
  * (`.td-light-dark-menu`, see `theme-toggle.css`), reusing opentelemetry.io's
- * Bootstrap `.dropdown-menu` / `.dropdown-item` values. The trigger differs:
- * it pairs the translate icon with the active locale's endonym, so it lays out
- * as an icon + label row rather than the theme toggle's icon-only button.
+ * Bootstrap `.dropdown-menu` / `.dropdown-item` values, plus Docsy's
+ * `.td-lang-menu` specifics (`themes/docsy/theme/assets/scss/td/_nav.scss`):
+ * globe glyph before the active locale's endonym (language code below `lg`),
+ * 2.5rem row indent with a check on the active row.
  *
  * Surface colours follow the *page* theme via `[data-theme]` ancestor
  * selectors (Radix portals the menu to <body>, so `<html data-theme=...>`
@@ -20,7 +21,7 @@
   border: 0;
   color: inherit;
   cursor: pointer;
-  padding: 8px;
+  padding: 8px 0; /* upstream `.td-lang-menu__title`: nav-link padding-y, no x padding */
   border-radius: 4px;
   line-height: 1;
   font-weight: 600; /* matches `.nav-link` upstream — trigger is a nav-link */
@@ -37,11 +38,26 @@
   box-shadow: none;
 }
 
-.td-lang-menu__trigger .bi {
+.td-lang-menu__globe {
   width: 1em;
   height: 1em;
   vertical-align: -0.125em;
   fill: currentColor;
+}
+
+/* Upstream shows the language code instead of the full label below `lg`. */
+.td-lang-menu__code {
+  display: none;
+}
+
+@media (max-width: 991.98px) {
+  .td-lang-menu__label {
+    display: none;
+  }
+
+  .td-lang-menu__code {
+    display: inline;
+  }
 }
 
 /* Bootstrap's `.dropdown-toggle::after` chevron, reproduced verbatim. */
@@ -81,14 +97,27 @@
 /* --- Menu items --- */
 
 .td-lang-menu__item {
+  position: relative; /* anchors the active-row check, like upstream's `::before` */
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 4px 16px;
-  font-size: 14px;
+  /* Bootstrap `.dropdown-item` (.25rem 1rem) with Docsy's 2.5rem lang-menu indent. */
+  padding: 0.25rem 1rem 0.25rem 2.5rem;
+  font-size: 1rem;
   cursor: pointer;
   outline: none;
   user-select: none;
+}
+
+/* Docsy `.td-lang-menu .dropdown-item.active::before` — check at 0.75rem, vertically centred. */
+.td-lang-menu__check {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0.875em;
+  height: 1em;
+  fill: currentColor;
 }
 
 /* Hover/keyboard-highlight — Bootstrap defaults */
@@ -103,15 +132,16 @@
 }
 
 /*
- * Active row — coloured background, no checkmark (matches the theme toggle).
+ * Active row — coloured background plus the check above (upstream marks the
+ * active language, unlike the theme toggle).
  * The `[data-theme="dark"] [data-highlighted]` rule above has specificity
  * 0,3,0, so the active rule needs an equivalent or higher path in dark mode
  * for active to win when the row is *also* hovered/keyboard-highlighted.
  */
-.td-lang-menu__item[data-active="true"],
-.td-lang-menu__item[data-active="true"][data-highlighted],
-[data-theme="dark"] .td-lang-menu__item[data-active="true"],
-[data-theme="dark"] .td-lang-menu__item[data-active="true"][data-highlighted] {
+.td-lang-menu__item[data-state="checked"],
+.td-lang-menu__item[data-state="checked"][data-highlighted],
+[data-theme="dark"] .td-lang-menu__item[data-state="checked"],
+[data-theme="dark"] .td-lang-menu__item[data-state="checked"][data-highlighted] {
   background-color: hsl(var(--otel-blue-hsl));
   color: #fff;
 }

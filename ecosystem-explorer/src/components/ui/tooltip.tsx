@@ -62,4 +62,5 @@ export function Tooltip({ children, content, side = "top", className = "" }: Too
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export { TooltipProvider, TooltipRoot, TooltipTrigger, TooltipContent };

@@ -37,13 +37,13 @@ describe("toJavaAgentResult", () => {
     expect(result).toMatchObject({
       title: "Kafka Client",
       description: "Messaging instrumentation for Kafka",
-      path: "/java-agent/instrumentation/1.2.3/kafka-client",
+      path: "/java-agent/instrumentation/kafka-client?version=1.2.3",
       type: "item",
       ecosystem: "java-agent",
       version: "1.2.3",
     });
     // The full instrumentation path is indexed as a keyword so path queries match.
-    expect(result.keywords).toContain("/java-agent/instrumentation/1.2.3/kafka-client");
+    expect(result.keywords).toContain("/java-agent/instrumentation/kafka-client?version=1.2.3");
   });
 
   it("omits stability and surfaces no facet for agent-only instrumentations", () => {
@@ -92,7 +92,7 @@ describe("getInstrumentationSearchTerms via toJavaAgentResult", () => {
       "kafka-client",
       "Kafka Client",
       "Messaging instrumentation for Kafka",
-      "/java-agent/instrumentation/1.2.3/kafka-client",
+      "/java-agent/instrumentation/kafka-client?version=1.2.3",
     ]);
   });
 });

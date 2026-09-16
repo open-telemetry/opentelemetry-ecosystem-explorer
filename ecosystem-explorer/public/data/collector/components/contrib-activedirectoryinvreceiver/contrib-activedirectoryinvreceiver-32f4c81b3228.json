@@ -1,0 +1,29 @@
+{
+  "description": null,
+  "display_name": null,
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-activedirectoryinvreceiver",
+  "markdown_hash": "639782a34a16",
+  "name": "activedirectoryinvreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "pjanotti",
+        "pankaj101A",
+        "jagan2221"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs"
+      ]
+    }
+  },
+  "type": "receiver"
+}

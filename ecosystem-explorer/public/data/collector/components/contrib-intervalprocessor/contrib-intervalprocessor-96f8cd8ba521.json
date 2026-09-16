@@ -1,0 +1,34 @@
+{
+  "description": null,
+  "display_name": "Interval Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-intervalprocessor",
+  "markdown_hash": "71f07160b82d",
+  "name": "intervalprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "RichieSams"
+      ],
+      "emeritus": [
+        "tombrk"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    },
+    "warnings": [
+      "Statefulness"
+    ]
+  },
+  "type": "processor"
+}

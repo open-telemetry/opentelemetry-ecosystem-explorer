@@ -1,0 +1,216 @@
+name: Nightly Registry Update - Collector
+
+on:
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read # Default minimum; jobs declare their own elevated scopes below
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  synchronize-inventory:
+    name: Synchronize collector registry inventory
+    if:
+      github.event_name != 'schedule' || github.repository ==
+      'open-telemetry/opentelemetry-ecosystem-explorer'
+    permissions:
+      contents: write # Push registry updates to the ecosystem branch
+      pull-requests: write # Create or update the automated inventory-update PR
+    uses: ./.github/workflows/reusable-registry-sync.yml
+    with:
+      watcher-command: "uv run collector-watcher"
+      registry-path: "ecosystem-registry/collector/"
+      branch-name: "otelbot/automated-inventory-update-collector"
+      pr-title: "[automated] Update collector registry inventory"
+      cache-key-suffix: "collector"
+    secrets:
+      OTELBOT_PRIVATE_KEY: ${{ secrets.OTELBOT_PRIVATE_KEY }}
+
+  detect-schema-drift:
+    name: Detect collector schema drift
+    if: >-
+      ${{ !cancelled() && needs.synchronize-inventory.result != 'skipped' && (github.event_name !=
+      'schedule' || github.repository == 'open-telemetry/opentelemetry-ecosystem-explorer') }}
+    permissions:
+      contents: read # Checkout repository and read registry
+      issues: write # Open or comment on the schema-drift tracking issue
+    needs: [synchronize-inventory]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout opentelemetry-ecosystem-explorer
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Fetch upstream metadata-schema.yaml at latest release tag
+        id: fetch_schema
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Resolve the latest release tag for opentelemetry-collector, matching
+          # the watcher's schema-resolution logic (_core_schema_refs: exact tag first).
+          LATEST_TAG=$(gh api repos/open-telemetry/opentelemetry-collector/releases/latest \
+            --jq '.tag_name')
+          if [ -z "$LATEST_TAG" ]; then
+            echo "Could not determine latest collector release tag, skipping drift detection"
+            echo "schema_changed=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          echo "Fetching schema at tag: $LATEST_TAG"
+
+          SCHEMA_URL="https://raw.githubusercontent.com/open-telemetry/opentelemetry-collector/${LATEST_TAG}/cmd/mdatagen/metadata-schema.yaml"
+          HTTP_STATUS=$(curl -fsSL -w "%{http_code}" -o /tmp/metadata-schema-fresh.yaml "$SCHEMA_URL")
+          if [ "$HTTP_STATUS" != "200" ] || [ ! -s /tmp/metadata-schema-fresh.yaml ]; then
+            echo "Schema file not found at $LATEST_TAG (HTTP $HTTP_STATUS), skipping drift detection"
+            echo "schema_changed=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+      - name: Detect collector schema drift
+        id: detect_schema_drift
+        run: |
+          FRESH="/tmp/metadata-schema-fresh.yaml"
+          SCHEMAS_DIR="ecosystem-registry/collector/meta/schemas"
+
+          if [ ! -f "$FRESH" ]; then
+            echo "Fresh schema not found, skipping drift detection"
+            echo "schema_changed=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Compute the normalized hash using the same logic as CollectorSchemaCopier.compute_schema_hash():
+          # yaml.safe_load then yaml.safe_dump with pinned options, SHA-256 first 12 hex chars.
+          # This must stay in sync with schema_copier.py and content_hashing.py.
+          cat > /tmp/compute_schema_hash.py << 'PYEOF'
+          import sys, hashlib, yaml
+          content = open(sys.argv[1], encoding="utf-8").read()
+          data = yaml.safe_load(content)
+          normalized = yaml.safe_dump(
+              data,
+              sort_keys=True,
+              default_flow_style=False,
+              allow_unicode=True,
+              width=4096,
+          )
+          print(hashlib.sha256(normalized.encode("utf-8")).hexdigest()[:12])
+          PYEOF
+          FRESH_HASH=$(python3 /tmp/compute_schema_hash.py "$FRESH")
+
+          # Schemas are stored in CAS at meta/schemas/{hash}.yaml. If a file
+          # already exists for the fresh content's hash, we've stored it
+          # before — no drift.
+          if [ -f "$SCHEMAS_DIR/$FRESH_HASH.yaml" ]; then
+            echo "schema_changed=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Drift detected. Diff against the schema referenced by the latest
+          # non-SNAPSHOT release (any component YAML in that version directory
+          # carries the canonical schema_hash) so the issue body shows what
+          # actually changed.
+          LATEST_VERSION=$(ls ecosystem-registry/collector/core 2>/dev/null \
+            | grep -v SNAPSHOT | sort -V | tail -1)
+          STORED=""
+          if [ -n "$LATEST_VERSION" ]; then
+            REF_FILE=$(find "ecosystem-registry/collector/core/$LATEST_VERSION" \
+              -name '*.yaml' 2>/dev/null | head -1)
+            if [ -n "$REF_FILE" ]; then
+              STORED_HASH=$(grep '^schema_hash:' "$REF_FILE" | awk '{print $2}')
+              [ -f "$SCHEMAS_DIR/$STORED_HASH.yaml" ] && STORED="$SCHEMAS_DIR/$STORED_HASH.yaml"
+            fi
+          fi
+
+          echo "schema_changed=true" >> $GITHUB_OUTPUT
+          if [ -n "$STORED" ]; then
+            DIFF_OUTPUT=$(diff "$STORED" "$FRESH" | head -80 || true)
+            {
+              echo "schema_diff<<SCHEMA_DIFF_EOF"
+              echo "$DIFF_OUTPUT"
+              echo "SCHEMA_DIFF_EOF"
+            } >> $GITHUB_OUTPUT
+          fi
+
+      - name: Open or update schema drift issue
+        if: steps.detect_schema_drift.outputs.schema_changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SCHEMA_DIFF: ${{ steps.detect_schema_drift.outputs.schema_diff }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          ISSUE_TITLE="[schema-drift] collector metadata-schema.yaml changed"
+          EXISTING=$(gh issue list \
+            --search "in:title \"$ISSUE_TITLE\"" \
+            --state open \
+            --label schema-drift \
+            --json number \
+            --jq '.[0].number // empty')
+
+          ISSUE_BODY="The upstream \`metadata-schema.yaml\` has changed since the last stored registry snapshot.
+
+          **Action required:** Review the diff below, determine if a new \`MetadataParserV*\` class is needed, and run a backfill if any output fields have changed.
+
+          <details>
+          <summary>Diff (stored → fresh)</summary>
+
+          \`\`\`diff
+          ${SCHEMA_DIFF}
+          \`\`\`
+          </details>
+
+          **To backfill all collector versions after updating the parser:**
+          \`\`\`
+          uv run collector-watcher --backfill
+          \`\`\`
+
+          See [workflow run](https://github.com/${REPO}/actions/runs/${RUN_ID})."
+
+          if [ -n "$EXISTING" ]; then
+            gh issue comment "$EXISTING" --body "$ISSUE_BODY"
+            echo "Added comment to existing schema-drift issue #$EXISTING"
+          else
+            gh issue create \
+              --title "$ISSUE_TITLE" \
+              --body "$ISSUE_BODY" \
+              --label "schema-drift"
+            echo "Created new schema-drift issue"
+          fi
+
+      - name: Close schema drift issue if schema is stable
+        if: steps.detect_schema_drift.outputs.schema_changed == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          ISSUE_TITLE="[schema-drift] collector metadata-schema.yaml changed"
+          EXISTING=$(gh issue list \
+            --search "in:title \"$ISSUE_TITLE\"" \
+            --state open \
+            --label schema-drift \
+            --json number \
+            --jq '.[0].number // empty')
+
+          if [ -n "$EXISTING" ]; then
+            gh issue close "$EXISTING" \
+              --comment "Schema drift resolved: stored snapshot now matches the upstream schema."
+            echo "Closed schema-drift issue #$EXISTING"
+          fi
+
+  notify:
+    name: Notify on collector-watcher failure
+    permissions:
+      contents: read # Checkout reusable workflow source
+      issues: write # Open or comment on the collector-watcher failure-tracking issue
+    needs: [synchronize-inventory, detect-schema-drift]
+    if: ${{ !cancelled() && needs.synchronize-inventory.result != 'skipped' }}
+    uses: ./.github/workflows/reusable-workflow-notification.yml
+    with:
+      success: >-
+        ${{ needs.synchronize-inventory.result == 'success' && needs.detect-schema-drift.result ==
+        'success' }}
+      watcher-name: "collector-watcher"

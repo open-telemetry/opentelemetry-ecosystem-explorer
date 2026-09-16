@@ -13,14 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useTranslation } from "react-i18next";
 import { Seo } from "@/components/seo/seo";
 import { EcosystemPage } from "./ecosystem-page";
 import { collectorConfig } from "./collector-config";
 
 export function CollectorLandingV1() {
+  const { t } = useTranslation("collector");
   return (
     <>
-      <Seo />
+      <Seo title={t("landingV1.seo.title")} description={t("landingV1.seo.description")} />
       <EcosystemPage config={collectorConfig} />
     </>
   );

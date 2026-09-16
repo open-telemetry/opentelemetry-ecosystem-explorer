@@ -384,6 +384,89 @@ def test_cleanup_snapshots(temp_inventory_dir, sample_components):
     assert not manager.version_exists("contrib", v3)
 
 
+def test_prune_release_versions_not_in(temp_inventory_dir, sample_components):
+    manager = InventoryManager(str(temp_inventory_dir))
+
+    keep = Version("0.112.0")
+    drop_older = Version("0.110.0")
+    drop_newer = Version("0.113.0")
+    snapshot = Version(major=0, minor=114, patch=0, prerelease=("SNAPSHOT",))
+
+    for version in [keep, drop_older, drop_newer, snapshot]:
+        manager.save_versioned_inventory(
+            distribution="core",
+            version=version,
+            components=sample_components,
+            repository="opentelemetry-collector",
+        )
+
+    removed = manager.prune_release_versions_not_in("core", [keep])
+
+    assert removed == 2
+    # Listed release survives
+    assert manager.version_exists("core", keep)
+    # Unlisted releases are gone
+    assert not manager.version_exists("core", drop_older)
+    assert not manager.version_exists("core", drop_newer)
+    # Snapshots are always preserved, even though they are not in the keep list
+    assert manager.version_exists("core", snapshot)
+
+
+def test_prune_release_versions_not_in_keeps_all_listed(temp_inventory_dir, sample_components):
+    manager = InventoryManager(str(temp_inventory_dir))
+
+    v1 = Version("0.111.0")
+    v2 = Version("0.112.0")
+
+    for version in [v1, v2]:
+        manager.save_versioned_inventory(
+            distribution="contrib",
+            version=version,
+            components=sample_components,
+            repository="opentelemetry-collector-contrib",
+        )
+
+    removed = manager.prune_release_versions_not_in("contrib", [v1, v2])
+
+    assert removed == 0
+    assert manager.version_exists("contrib", v1)
+    assert manager.version_exists("contrib", v2)
+
+
+def test_prune_release_versions_not_in_prunes_orphan_schemas(temp_inventory_dir, sample_components):
+    """Pruning the last version that referenced a schema removes the schema file."""
+    manager = InventoryManager(str(temp_inventory_dir))
+
+    keep = Version("0.112.0")
+    drop = Version("0.110.0")
+
+    manager.save_versioned_inventory(
+        distribution="core",
+        version=keep,
+        components=sample_components,
+        repository="opentelemetry-collector",
+        schema_hash="keepkeepkeep",
+    )
+    manager.save_versioned_inventory(
+        distribution="core",
+        version=drop,
+        components=sample_components,
+        repository="opentelemetry-collector",
+        schema_hash="dropdropdrop",
+    )
+
+    schemas_dir = manager.meta_schemas_dir()
+    schemas_dir.mkdir(parents=True, exist_ok=True)
+    (schemas_dir / "keepkeepkeep.yaml").write_text("type: object\n")
+    (schemas_dir / "dropdropdrop.yaml").write_text("type: object\n")
+
+    manager.prune_release_versions_not_in("core", [keep])
+
+    # Schema referenced only by the pruned version is removed; the kept one stays.
+    assert (schemas_dir / "keepkeepkeep.yaml").exists()
+    assert not (schemas_dir / "dropdropdrop.yaml").exists()
+
+
 def test_version_exists(temp_inventory_dir, sample_components, sample_version):
     manager = InventoryManager(str(temp_inventory_dir))
 

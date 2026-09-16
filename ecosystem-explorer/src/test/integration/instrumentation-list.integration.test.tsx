@@ -110,7 +110,9 @@ describe("JavaInstrumentationListPage — integration", () => {
 
     // Each group card links to one or more detail pages; verify at least one
     // link is rendered, which confirms the group cards actually rendered content.
-    const links = screen.getAllByRole("link");
+    // waitForList only waits for the count text; the cards (and their links) may
+    // paint a tick later, so use findAllByRole to retry until they appear.
+    const links = await screen.findAllByRole("link");
     expect(links.length).toBeGreaterThan(0);
   });
 

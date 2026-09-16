@@ -30,6 +30,9 @@
     "nextAriaLabel": "Next page",
     "status": "Page {{page}} of {{totalPages}}"
   },
+  "deprecated": {
+    "removedIn": "Removed in {{version}}"
+  },
   "emptyState": {
     "title": "No matching components",
     "leadFiltered": "Try removing one or two filters to see more results.",
@@ -51,6 +54,39 @@
         "distribution": "Distribution",
         "stability": "Stability"
       }
+    }
+  },
+  "facets": {
+    "panel": {
+      "label": "Filters",
+      "close": "Close filters"
+    },
+    "search": {
+      "title": "Search",
+      "placeholder": "Search name or description…"
+    },
+    "type": {
+      "title": "Type"
+    },
+    "signal": {
+      "title": "Signal",
+      "options": {
+        "traces": "Traces",
+        "metrics": "Metrics",
+        "logs": "Logs",
+        "baggage": "Baggage"
+      }
+    },
+    "stability": {
+      "title": "Stability"
+    },
+    "distribution": {
+      "title": "Distribution"
+    },
+    "version": {
+      "title": "Version",
+      "latest": "Latest",
+      "deprecated": "Deprecated"
     }
   }
 }

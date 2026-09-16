@@ -1,0 +1,63 @@
+{
+  "description": null,
+  "display_name": "Service Graph Connector",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-servicegraphconnector",
+  "markdown_hash": "7ddf2f0ed2d9",
+  "name": "servicegraphconnector",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "connector",
+    "codeowners": {
+      "active": [
+        "mapno",
+        "JaredTan95"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "traces_to_metrics"
+      ]
+    }
+  },
+  "telemetry": {
+    "metrics": {
+      "connector_servicegraph_dropped_spans": {
+        "description": "Number of spans dropped when trying to add edges",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "connector_servicegraph_expired_edges": {
+        "description": "Number of edges that expired before finding its matching span",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "connector_servicegraph_total_edges": {
+        "description": "Total number of unique edges",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      }
+    }
+  },
+  "type": "connector"
+}

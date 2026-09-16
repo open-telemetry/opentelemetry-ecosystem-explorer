@@ -1,0 +1,39 @@
+{
+  "description": null,
+  "display_name": "ClickHouse Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-clickhouseexporter",
+  "markdown_hash": "16472c0b2a67",
+  "name": "clickhouseexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "hanjm",
+        "Frapschen",
+        "SpencerTorres"
+      ],
+      "emeritus": [
+        "dmitryax"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ],
+      "beta": [
+        "logs",
+        "traces"
+      ],
+      "development": [
+        "profiles"
+      ]
+    }
+  },
+  "type": "exporter"
+}

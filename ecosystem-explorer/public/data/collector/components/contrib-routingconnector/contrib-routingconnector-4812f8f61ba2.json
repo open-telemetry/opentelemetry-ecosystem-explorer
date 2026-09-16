@@ -1,0 +1,47 @@
+{
+  "description": null,
+  "display_name": "Routing Connector",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "feature_gates": [
+    {
+      "description": "When enabled, the default error_mode is `ignore` instead of `propagate`.",
+      "from_version": "v0.155.0",
+      "id": "connector.routing.defaultErrorModeIgnore",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48418",
+      "stage": "alpha"
+    }
+  ],
+  "id": "contrib-routingconnector",
+  "markdown_hash": "a7145de38c06",
+  "name": "routingconnector",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "connector",
+    "codeowners": {
+      "active": [
+        "TylerHelmuth",
+        "evan-bradley",
+        "edmocosta",
+        "bogdandrutu",
+        "mwear"
+      ],
+      "emeritus": [
+        "jpkrohling"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "logs_to_logs",
+        "metrics_to_metrics",
+        "traces_to_traces"
+      ]
+    }
+  },
+  "type": "connector"
+}

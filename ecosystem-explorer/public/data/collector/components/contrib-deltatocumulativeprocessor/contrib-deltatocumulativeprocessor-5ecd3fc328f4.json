@@ -1,0 +1,77 @@
+{
+  "description": "The Delta to Cumulative Processor (`deltatocumulativeprocessor`) converts metrics from delta temporality to cumulative, by accumulating samples in memory.",
+  "display_name": "Delta to Cumulative Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-deltatocumulativeprocessor",
+  "markdown_hash": "f281ea4461ff",
+  "name": "deltatocumulativeprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "RichieSams"
+      ],
+      "emeritus": [
+        "tombrk"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    },
+    "warnings": [
+      "Statefulness"
+    ]
+  },
+  "telemetry": {
+    "metrics": {
+      "deltatocumulative_datapoints": {
+        "description": "total number of datapoints processed. may have 'error' attribute, if processing failed",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{datapoint}"
+      },
+      "deltatocumulative_streams_limit": {
+        "description": "upper limit of tracked streams",
+        "enabled": true,
+        "gauge": {
+          "value_type": "int"
+        },
+        "stability": "development",
+        "unit": "{stream}"
+      },
+      "deltatocumulative_streams_max_stale": {
+        "description": "duration after which streams inactive streams are dropped",
+        "enabled": true,
+        "gauge": {
+          "value_type": "int"
+        },
+        "stability": "development",
+        "unit": "s"
+      },
+      "deltatocumulative_streams_tracked": {
+        "description": "number of streams tracked",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "async": true,
+          "monotonic": false,
+          "value_type": "int"
+        },
+        "unit": "{dps}"
+      }
+    }
+  },
+  "type": "processor"
+}

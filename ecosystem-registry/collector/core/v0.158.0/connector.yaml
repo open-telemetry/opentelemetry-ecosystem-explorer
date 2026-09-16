@@ -1,0 +1,37 @@
+distribution: core
+version: 0.158.0
+repository: opentelemetry-collector
+component_type: connector
+schema_hash: a0135ca939d9
+components:
+- name: forwardconnector
+  metadata:
+    display_name: Forward Connector
+    github_project: open-telemetry/opentelemetry-collector
+    status:
+      class: connector
+      distributions:
+      - contrib
+      - core
+      - k8s
+      stability:
+        alpha:
+        - profiles_to_profiles
+        beta:
+        - logs_to_logs
+        - metrics_to_metrics
+        - traces_to_traces
+    type: forward
+- name: xconnector
+  metadata:
+    github_project: open-telemetry/opentelemetry-collector
+    status:
+      class: pkg
+      codeowners:
+        active:
+        - mx-psi
+        - dmathieu
+      stability:
+        alpha:
+        - profiles
+    type: xconnector

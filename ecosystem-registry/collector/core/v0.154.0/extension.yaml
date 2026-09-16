@@ -6,33 +6,39 @@ schema_hash: ed2f88264c14
 components:
 - name: memorylimiterextension
   metadata:
-    type: memory_limiter
     display_name: Memory Limiter Extension
+    github_project: open-telemetry/opentelemetry-collector
     status:
       class: extension
+      distributions: []
       stability:
         development:
         - extension
-      distributions: []
+    type: memory_limiter
 - name: xextension
   metadata:
-    type: xextension
+    github_project: open-telemetry/opentelemetry-collector
     status:
       class: pkg
+      codeowners: null
       stability:
         alpha:
         - profiles
-      codeowners: null
+    type: xextension
 - name: zpagesextension
   metadata:
-    type: zpages
     display_name: zPages Extension
+    github_project: open-telemetry/opentelemetry-collector
     status:
       class: extension
-      stability:
-        beta:
-        - extension
       distributions:
       - contrib
       - core
       - k8s
+      stability:
+        beta:
+        - extension
+      warnings:
+      - The zPages extension is incompatible with `service::telemetry::traces::level`
+        set to `none`
+    type: zpages

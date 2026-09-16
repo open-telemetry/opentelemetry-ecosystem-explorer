@@ -46,7 +46,7 @@ import {
 } from "@/lib/schema-defaults";
 import { hydrateStarterState } from "@/lib/state-hydrate";
 import { buildListItemIds } from "@/lib/build-list-item-ids";
-import { load as loadYaml } from "js-yaml";
+import { load as loadYaml, CORE_SCHEMA, mergeTag } from "js-yaml";
 import { isPlainObject } from "@/lib/value-guards";
 import {
   validateField as validateFieldNode,
@@ -62,6 +62,7 @@ export interface ConfigurationBuilderStateContextValue {
 export interface ConfigurationBuilderActionsContextValue {
   setValue: (path: string, value: ConfigValue) => void;
   setValueByPath: (path: Path, value: ConfigValue) => void;
+  mergeDefaults: (entries: { path: Path; value: ConfigValue }[]) => void;
   setCustomization: (module: string, status: "enabled" | "disabled" | "none") => void;
   pruneInstrumentations: (validModules: readonly string[]) => void;
   setEnabled: (section: string, enabled: boolean) => void;
@@ -182,6 +183,10 @@ export function useConfigurationBuilderState(
     dispatch({ type: "PRUNE_INSTRUMENTATIONS", validModules });
   }, []);
 
+  const mergeDefaults = useCallback((entries: { path: Path; value: ConfigValue }[]) => {
+    dispatch({ type: "MERGE_DEFAULTS", entries });
+  }, []);
+
   const setEnabled = useCallback((section: string, enabled: boolean) => {
     let defaults: ConfigValues | undefined;
     if (enabled) {
@@ -250,9 +255,16 @@ export function useConfigurationBuilderState(
   }, []);
 
   const loadFromYaml = useCallback(async (yaml: string) => {
+    // A blank paste is a no-op (loadYaml throws on empty input).
+    if (yaml.trim() === "") return;
     let parsed: unknown;
     try {
-      parsed = loadYaml(yaml);
+      // Enable YAML merge keys (`<<`) so pasted configs using anchors resolve.
+      parsed = loadYaml(yaml, {
+        schema: CORE_SCHEMA.withTags(mergeTag),
+        maxAliases: 100,
+        maxTotalMergeKeys: 10000,
+      });
     } catch (error) {
       throw new Error("Failed to parse YAML configuration", { cause: error });
     }
@@ -315,6 +327,7 @@ export function useConfigurationBuilderState(
     () => ({
       setValue,
       setValueByPath,
+      mergeDefaults,
       setCustomization,
       pruneInstrumentations,
       setEnabled,

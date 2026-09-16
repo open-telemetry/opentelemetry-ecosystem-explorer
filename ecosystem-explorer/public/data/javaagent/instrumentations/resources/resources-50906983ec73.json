@@ -1,0 +1,22 @@
+{
+  "configurations": [
+    {
+      "default": false,
+      "description": "Enables capture of process command-line resource attributes when v3 preview suppresses them by default.",
+      "name": "otel.instrumentation.resources.experimental.process-command-attributes.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation automatically detects and populates OpenTelemetry resource attributes for the host, OS, process, and container environment. It does not emit any telemetry on its own.",
+  "display_name": "Resource Detectors",
+  "features": [
+    "RESOURCE_DETECTOR"
+  ],
+  "has_standalone_library": true,
+  "markdown_hash": "1b42048a6f7b",
+  "name": "resources",
+  "scope": {
+    "name": "io.opentelemetry.resources"
+  },
+  "source_path": "instrumentation/resources"
+}

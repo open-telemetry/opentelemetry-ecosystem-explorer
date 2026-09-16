@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { render, screen } from "@testing-library/react";
+import i18n from "i18next";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { HomeV1 } from "./home-page";
@@ -64,6 +65,7 @@ describe("HomeV1 (composition)", () => {
 
     const primary = screen.getByRole("link", { name: "Browse components" });
     expect(primary).toHaveAttribute("href", "/collector");
+    expect(primary).toHaveClass("td-btn--lg");
   });
 
   it("renders the secondary CTA with the locked text, href, target, and rel", () => {
@@ -76,6 +78,7 @@ describe("HomeV1 (composition)", () => {
     );
     expect(secondary).toHaveAttribute("target", "_blank");
     expect(secondary).toHaveAttribute("rel", "noopener noreferrer");
+    expect(secondary).toHaveClass("td-btn--lg");
   });
 
   it("co-mounts SignalsRow and RecentActivityRail inside a single labelled box", () => {
@@ -125,5 +128,20 @@ describe("HomeV1 (composition)", () => {
     const combobox = cover!.querySelector('[role="combobox"]');
     expect(combobox).not.toBeNull();
     expect(combobox).toHaveAttribute("aria-label", "Search the ecosystem");
+  });
+
+  // Proves the home copy is namespace-resolved, not hardcoded: render in
+  // Spanish and assert the translated hero lead appears.
+  it("renders the Spanish hero lead when the language is switched", async () => {
+    const homeEs = await import("../../../../public/locales/es/home.json");
+    i18n.addResourceBundle("es", "home", homeEs.default, true, true);
+    await i18n.changeLanguage("es");
+
+    try {
+      renderHome();
+      expect(screen.getByText(i18n.t("homeV1.hero.lead", { ns: "home" }))).toBeInTheDocument();
+    } finally {
+      await i18n.changeLanguage("en");
+    }
   });
 });

@@ -1,0 +1,128 @@
+{
+  "breadcrumbs": {
+    "explorer": "Explorador",
+    "components": "Componentes"
+  },
+  "loading": "Cargando componente…",
+  "notFound": {
+    "title": "Componente no encontrado",
+    "lead": "El registro no tiene una entrada para este componente en esta versión. Es posible que se haya eliminado o que nunca se haya publicado aquí."
+  },
+  "header": {
+    "source": "Código fuente",
+    "docs": "Documentación"
+  },
+  "placement": {
+    "title": "Dónde encaja",
+    "lead": "Un pipeline típico del Collector. La etapa resaltada es el tipo al que pertenece este componente."
+  },
+  "siblingNav": {
+    "filterPlaceholder": "Filtrar…",
+    "filterAriaLabel": "Filtrar {{title}}",
+    "count": "{{filtered}} de {{total}}",
+    "empty": "Sin coincidencias."
+  },
+  "railLabel": "Componentes similares y navegación en la página",
+  "rightRailLabel": "Historial de versiones y compatibilidad",
+  "onPage": {
+    "title": "En esta página"
+  },
+  "timeline": {
+    "title": "Historial de versiones",
+    "latest": "Última versión",
+    "showAll": "Mostrar las {{count}} versiones",
+    "showFewer": "Mostrar menos"
+  },
+  "diffSelector": {
+    "title": "Comparar versiones",
+    "from": "Desde",
+    "to": "Hasta",
+    "submit": "Comparar →"
+  },
+  "compat": {
+    "title": "Compatibilidad",
+    "distributions": "Distribuciones"
+  },
+  "diff": {
+    "breadcrumbLabel": "Comparación",
+    "componentFallback": "Componente",
+    "loading": "Cargando ambas versiones…",
+    "errorTitle": "No se pudo cargar la comparación",
+    "invalidTitle": "Elige dos versiones para comparar",
+    "invalidLead": "Esta página necesita una versión `from` y otra `to` en la URL. Vuelve al componente y usa el selector de comparación de versiones para elegir dos publicaciones.",
+    "configTitle": "Esquema de configuración",
+    "configEmpty": "El registro todavía no expone un esquema de configuración por versión para este componente; la comparación de esquemas se completará cuando lleguen esos datos.",
+    "metadataTitle": "Metadatos",
+    "signalAdded": "+ señal {{signal}}",
+    "signalRemoved": "− señal {{signal}}",
+    "descriptionChanged": "Se actualizó la descripción.",
+    "noMetadataChanges": "No hay cambios de metadatos entre estas versiones.",
+    "buckets": {
+      "added": "Agregado",
+      "removed": "Eliminado",
+      "renamed": "Renombrado",
+      "typeChanged": "Tipo cambiado"
+    },
+    "notReleasedTitle": "No está en ambas versiones",
+    "notReleasedLead_one": "{{component}} no forma parte de la versión {{versions}}, así que no hay nada que comparar.",
+    "notReleasedLead_other": "{{component}} no forma parte de las versiones {{versions}}, así que no hay nada que comparar.",
+    "errorLead": "No se pudieron cargar esas dos versiones. Revisa los números de versión en la URL o vuelve al componente y elige el par de nuevo.",
+    "heading": "Comparando <name>{{name}}</name>",
+    "stabilityLevelsChanged": "<label>Niveles de estabilidad:</label> {{from}} → {{to}}",
+    "stabilityNone": "ninguno"
+  },
+  "anchors": {
+    "placement": "Dónde encaja",
+    "configuration": "Configuración",
+    "readme": "README",
+    "attributes": "Atributos emitidos",
+    "examples": "Ejemplos"
+  },
+  "tabs": {
+    "ariaLabel": "Secciones del componente",
+    "configuration": "Configuración",
+    "readme": "README",
+    "attributes": "Atributos",
+    "examples": "Ejemplos"
+  },
+  "configuration": {
+    "emptyTitle": "Aún no hay esquema de configuración",
+    "emptyLead": "El registro todavía no expone un esquema de configuración para este componente. Mientras tanto, consulta el repositorio de código fuente para ver las claves YAML canónicas.",
+    "openSource": "Abrir repositorio de código fuente →",
+    "columns": {
+      "key": "Clave",
+      "type": "Tipo",
+      "default": "Predeterminado",
+      "description": "Descripción"
+    }
+  },
+  "readme": {
+    "emptyTitle": "La incorporación del README está en camino",
+    "emptyLead": "Para v1 el README se aloja en el repositorio de código fuente. Ábrelo para ver la guía y los ejemplos actualizados.",
+    "openSource": "Abrir README en GitHub →"
+  },
+  "attributes": {
+    "emptyTitle": "Los atributos emitidos aún no están catalogados",
+    "emptyLead": "El pipeline de datos todavía no expone los atributos emitidos por componente para este componente.",
+    "columns": {
+      "name": "Nombre",
+      "kind": "Tipo",
+      "description": "Descripción"
+    },
+    "kinds": {
+      "metric": "Métrica",
+      "attribute": "Atributo",
+      "resource": "Atributo de recurso"
+    }
+  },
+  "examples": {
+    "emptyTitle": "Aún no hay ejemplos curados",
+    "emptyLead": "Por ahora, consulta el repositorio de código fuente del componente para ver ejemplos de configuración e implementaciones.",
+    "openSource": "Abrir directorio de ejemplos →"
+  },
+  "notReleased": {
+    "title": "No está en esta versión",
+    "lead": "{{component}} no forma parte de la versión {{version}} del Collector.",
+    "cta": "Ver {{version}} en su lugar"
+  }
+}

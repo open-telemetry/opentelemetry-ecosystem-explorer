@@ -92,21 +92,32 @@ shared `src/lib/seo` helpers, so a JS render and a non-JS fetch of the same URL 
 and is the delivery layer for non-JS clients. It:
 
 - **Negotiates content** — a request with `Accept: text/markdown` is served the route's generated
-  `.md` (falling back to the section index, then `llms.txt`).
+  `.md`. When no such file exists the section index is served instead, but only for paths that are
+  real routes; a fabricated path returns 404 rather than 200 with the index body, so an agent can
+  tell "your URL is wrong" from "here is your answer". The homepage falls back to `llms.txt`.
+- **Redirects the deprecated Java route** — `/java-agent/instrumentation/:version/:name` returns a
+  301 to `/java-agent/instrumentation/:name?version=:version`. The SPA performs the same hop with a
+  React `<Navigate>`, which HTTP-only clients never execute.
 - **Serves documentation assets** with correct content types and strict 404s — `llms.txt`,
   `/agent/**` Markdown, `/schemas` and `/data` JSON, `sitemap.xml`, and `robots.txt`. Passing
   through a conditional revalidation status (304) untouched is important; collapsing it to 404
   breaks data loading.
 - **Rewrites the HTML shell per route** — for page navigations it looks the path up in `routes.json`
   and injects a route-specific title, description, canonical link, Open Graph / Twitter tags, a
-  Markdown `alternate` link, and JSON-LD.
+  Markdown `alternate` link, and JSON-LD. The alternate is advertised in both `<head>` and a
+  `Link: <url>; rel="alternate"; type="text/markdown"` response header (so `HEAD` alone reveals it),
+  and only when the Markdown page actually exists — a route without one advertises no alternate.
+  `HEAD` is handled alongside `GET` for this reason, and answers with the same status and headers as
+  the `GET` but no body.
 - **Injects real body content** — it renders the route's generated Markdown into the empty `#root`
   (visually hidden and `aria-hidden` so human visitors never see it), so HTTP-only agents receive
   actual page content instead of an empty shell.
 - **Returns real 404s** for paths absent from the manifest, so crawlers don't index soft 404s.
   Parameterized routes that resolve client-side (versioned lists, instrumentation version routes)
   are allow-listed as known. If the manifest fails to load, every page is treated as known to avoid
-  false 404s.
+  false 404s — which is why the edge reads `routes.json` with an explicit `GET` rather than
+  `context.rewrite()` (that inherits the in-flight method, so a `HEAD` would return a body-less
+  manifest and make every fabricated path look known).
 
 ## Deployment wiring
 

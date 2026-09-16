@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import handler from "../agent-negotiation";
 
 type Rewrite = (path: string) => Promise<Response>;
@@ -79,6 +79,37 @@ function htmlContextWithMd(
   });
 }
 
+// Mirrors a HEAD request reaching origin: context.rewrite() carries the method
+// through, so every rewrite — the shell, the Markdown probe, and the manifest —
+// resolves with headers only. The handler therefore fetches /seo/routes.json
+// with an explicit GET, which this stubs; nothing else may go over fetch().
+function headContextWithMd(
+  routes: Record<string, { title: string; description: string }>,
+  mdPaths: string[]
+) {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async (input: URL | RequestInfo, init?: RequestInit) => {
+      expect(String(input)).toBe("https://explorer.opentelemetry.io/seo/routes.json");
+      expect(init?.method).toBe("GET");
+      return new Response(JSON.stringify(routes), { status: 200 });
+    })
+  );
+  return contextWith(async (path) => {
+    if (mdPaths.includes(path)) {
+      return new Response(null, { status: 200, headers: { "content-type": "text/markdown" } });
+    }
+    return new Response(null, { status: 200, headers: { "content-type": "text/html" } });
+  });
+}
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
+
+const head = (path: string) =>
+  new Request(`https://explorer.opentelemetry.io${path}`, { method: "HEAD" });
+
 describe("agent-negotiation edge function", () => {
   it("passes a 304 Not Modified through for /data instead of converting it to 404", async () => {
     const context = contextWith(async () => new Response(null, { status: 304 }));
@@ -109,6 +140,29 @@ describe("agent-negotiation edge function", () => {
     );
     const res = await handler(get("/data/configuration/versions-index.json"), context);
     expect(res?.status).toBe(404);
+  });
+
+  it("keeps the 404 explanation in the body for GET", async () => {
+    const context = contextWith(
+      async () =>
+        new Response("<!doctype html><html></html>", {
+          status: 200,
+          headers: { "content-type": "text/html" },
+        })
+    );
+    const res = await handler(get("/agent/nope.md"), context);
+    expect(res?.status).toBe(404);
+    expect(await res!.text()).toBe("Not Found");
+  });
+
+  it("returns a bodyless 404 for HEAD on an asset path", async () => {
+    const context = contextWith(
+      async () => new Response(null, { status: 200, headers: { "content-type": "text/html" } })
+    );
+    const res = await handler(head("/agent/nope.md"), context);
+    expect(res?.status).toBe(404);
+    expect(res?.body).toBeNull();
+    expect(await res!.text()).toBe("");
   });
 
   it("serves markdown for /javaagent with Accept: text/markdown", async () => {
@@ -164,7 +218,10 @@ describe("agent-negotiation HTML metadata injection", () => {
     const handler = await freshHandler();
     const res = await handler(
       get("/collector"),
-      htmlContext({ "/collector": { title: "Collector — X", description: "Browse components." } })
+      htmlContextWithMd(
+        { "/collector": { title: "Collector — X", description: "Browse components." } },
+        { "/collector.md": "# Collector" }
+      )
     );
     expect(res?.status).toBe(200);
     const html = await res!.text();
@@ -468,5 +525,218 @@ describe("agent-negotiation content negotiation", () => {
     expect(res?.status).toBe(200);
     expect(res?.headers.get("content-type")).toBe("text/plain; charset=UTF-8");
     expect(await res!.text()).toContain("# Index");
+  });
+});
+
+describe("agent-negotiation section-index fallback is gated on real routes", () => {
+  const COLLECTOR_INDEX = "# All Collector components";
+
+  // routes.json plus the Collector section index; every other path is the SPA shell.
+  const indexContext = (routes: Record<string, { title: string; description: string }>) =>
+    htmlContextWithMd(routes, { "/agent/collector/index.md": COLLECTOR_INDEX });
+
+  it("returns 404 instead of the section index for a fabricated path", async () => {
+    const handler = await freshHandler();
+    // Not a route in either route table: the Collector detail route is
+    // /collector/components/:distribution/:name, with no version segment.
+    const res = await handler(
+      get("/collector/components/v0.140.0/contrib/kafkareceiver", { accept: "text/markdown" }),
+      indexContext({
+        "/collector/components/contrib/kafkareceiver": { title: "K", description: "d" },
+      })
+    );
+    expect(res?.status).toBe(404);
+    expect(await res!.text()).not.toContain(COLLECTOR_INDEX);
+  });
+
+  it("still serves the section index for a known route with no Markdown page", async () => {
+    const handler = await freshHandler();
+    // Versioned Collector list: a real client-side route, absent from routes.json.
+    const res = await handler(
+      get("/collector/components/0.156.0", { accept: "text/markdown" }),
+      indexContext({ "/collector/components": { title: "C", description: "d" } })
+    );
+    expect(res?.status).toBe(200);
+    expect(await res!.text()).toContain(COLLECTOR_INDEX);
+  });
+
+  it("keeps the /javaagent alias resolving to the Java section index", async () => {
+    const handler = await freshHandler();
+    const res = await handler(
+      get("/javaagent", { accept: "text/markdown" }),
+      htmlContextWithMd(
+        { "/java-agent": { title: "Java Agent", description: "d" } },
+        { "/agent/javaagent/index.md": "# All Java agent instrumentations" }
+      )
+    );
+    expect(res?.status).toBe(200);
+    expect(await res!.text()).toContain("# All Java agent instrumentations");
+  });
+
+  it("404s a fabricated path under the /javaagent alias", async () => {
+    const handler = await freshHandler();
+    const res = await handler(
+      get("/javaagent/not/a/route", { accept: "text/markdown" }),
+      htmlContextWithMd(
+        { "/java-agent": { title: "Java Agent", description: "d" } },
+        { "/agent/javaagent/index.md": "# All Java agent instrumentations" }
+      )
+    );
+    expect(res?.status).toBe(404);
+  });
+
+  it("serves the section index when the routes manifest is unavailable", async () => {
+    const handler = await freshHandler();
+    const context = contextWith(async (path) => {
+      if (path === "/seo/routes.json") return new Response("missing", { status: 404 });
+      if (path === "/agent/collector/index.md") {
+        return new Response(COLLECTOR_INDEX, {
+          status: 200,
+          headers: { "content-type": "text/markdown" },
+        });
+      }
+      return htmlShell();
+    });
+    const res = await handler(
+      get("/collector/components/anything/at/all", { accept: "text/markdown" }),
+      context
+    );
+    expect(res?.status).toBe(200);
+    expect(await res!.text()).toContain(COLLECTOR_INDEX);
+  });
+});
+
+describe("agent-negotiation legacy Java version route", () => {
+  it("issues a real 301 to the query-param shape", async () => {
+    const context = contextWith(async () => htmlShell());
+    const res = await handler(get("/java-agent/instrumentation/2.31.1/apache-dubbo-2.7"), context);
+    expect(res?.status).toBe(301);
+    expect(res?.headers.get("location")).toBe(
+      "/java-agent/instrumentation/apache-dubbo-2.7?version=2.31.1"
+    );
+  });
+
+  it("redirects Markdown requests and the `latest` alias too", async () => {
+    const context = contextWith(async () => htmlShell());
+    const res = await handler(
+      get("/java-agent/instrumentation/latest/apache-dubbo-2.7", { accept: "text/markdown" }),
+      context
+    );
+    expect(res?.status).toBe(301);
+    expect(res?.headers.get("location")).toBe(
+      "/java-agent/instrumentation/apache-dubbo-2.7?version=latest"
+    );
+  });
+
+  it("preserves other query parameters", async () => {
+    const context = contextWith(async () => htmlShell());
+    const res = await handler(
+      get("/java-agent/instrumentation/2.31.1/apache-dubbo-2.7?tab=config"),
+      context
+    );
+    expect(res?.headers.get("location")).toBe(
+      "/java-agent/instrumentation/apache-dubbo-2.7?tab=config&version=2.31.1"
+    );
+  });
+
+  it("does not redirect a two-segment path whose first segment is not a version", async () => {
+    const handler = await freshHandler();
+    const res = await handler(
+      get("/java-agent/instrumentation/not-a-version/apache-dubbo-2.7"),
+      htmlContext({ "/java-agent/instrumentation": { title: "J", description: "d" } })
+    );
+    expect(res?.status).toBe(404);
+  });
+});
+
+describe("agent-negotiation Markdown alternate advertising", () => {
+  const routes = { "/collector": { title: "Collector — X", description: "d" } };
+
+  it("sets a Link: rel=alternate header when the route has Markdown", async () => {
+    const handler = await freshHandler();
+    const res = await handler(
+      get("/collector"),
+      htmlContextWithMd(routes, { "/collector.md": "# Collector" })
+    );
+    expect(res?.headers.get("link")).toBe(
+      '<https://explorer.opentelemetry.io/collector.md>; rel="alternate"; type="text/markdown"'
+    );
+  });
+
+  it("answers a HEAD request with the same header", async () => {
+    const handler = await freshHandler();
+    const res = await handler(head("/collector"), headContextWithMd(routes, ["/collector.md"]));
+    expect(res?.status).toBe(200);
+    expect(res?.headers.get("link")).toContain('rel="alternate"');
+  });
+
+  it("answers a HEAD request with headers only, no body", async () => {
+    const handler = await freshHandler();
+    const res = await handler(head("/collector"), headContextWithMd(routes, ["/collector.md"]));
+    expect(res?.status).toBe(200);
+    expect(res?.body).toBeNull();
+    expect(await res!.text()).toBe("");
+    expect(res?.headers.get("content-type")).toBe("text/html; charset=utf-8");
+    expect(res?.headers.get("content-length")).toBeNull();
+  });
+
+  it("advertises the alternate on HEAD even though the rewrites come back bodyless", async () => {
+    const handler = await freshHandler();
+    const res = await handler(head("/collector"), headContextWithMd(routes, ["/collector.md"]));
+    expect(res?.status).toBe(200);
+    expect(res?.headers.get("link")).toBe(
+      '<https://explorer.opentelemetry.io/collector.md>; rel="alternate"; type="text/markdown"'
+    );
+    expect(res?.body).toBeNull();
+  });
+
+  it("advertises no alternate on HEAD for a known route without Markdown", async () => {
+    const handler = await freshHandler();
+    const res = await handler(head("/collector"), headContextWithMd(routes, []));
+    expect(res?.status).toBe(200);
+    expect(res?.headers.get("link")).toBeNull();
+  });
+
+  it("returns a bodyless 404 for an unknown route on HEAD", async () => {
+    const handler = await freshHandler();
+    const context = headContextWithMd(routes, []);
+    const res = await handler(head("/nope-xyz"), context);
+    expect(res?.status).toBe(404);
+    expect(res?.body).toBeNull();
+    // The manifest must come from the GET fetch, not from a rewrite that HEAD
+    // would answer bodyless — an unparsed manifest makes every path look known.
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(context.rewrite).not.toHaveBeenCalledWith("/seo/routes.json");
+  });
+
+  it("404s a fabricated section path on HEAD with Accept: text/markdown", async () => {
+    const handler = await freshHandler();
+    const request = new Request("https://explorer.opentelemetry.io/collector/nope-xyz", {
+      method: "HEAD",
+      headers: { accept: "text/markdown" },
+    });
+    const res = await handler(request, headContextWithMd(routes, []));
+    expect(res?.status).toBe(404);
+    expect(res?.body).toBeNull();
+  });
+
+  it("advertises no alternate for a known route without a Markdown page", async () => {
+    const handler = await freshHandler();
+    const res = await handler(get("/collector"), htmlContext(routes));
+    expect(res?.status).toBe(200);
+    expect(res?.headers.get("link")).toBeNull();
+    const html = await res!.text();
+    expect(html).not.toContain('rel="alternate"');
+    // The llms.txt directive still renders, without the dangling Markdown claim.
+    expect(html).toContain('<a href="/llms.txt">/llms.txt</a>');
+    expect(html).not.toContain("A Markdown version of this page");
+  });
+
+  it("advertises no alternate on a 404", async () => {
+    const handler = await freshHandler();
+    const res = await handler(get("/collector/components/contrib/nope-xyz"), htmlContext(routes));
+    expect(res?.status).toBe(404);
+    expect(res?.headers.get("link")).toBeNull();
+    expect(await res!.text()).not.toContain('rel="alternate"');
   });
 });

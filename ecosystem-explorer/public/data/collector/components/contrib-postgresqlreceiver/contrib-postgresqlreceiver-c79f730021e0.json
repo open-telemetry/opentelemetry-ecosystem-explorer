@@ -1,0 +1,955 @@
+{
+  "attributes": {
+    "bg_buffer_source": {
+      "description": "The source of a buffer write.",
+      "enum": [
+        "backend",
+        "backend_fsync",
+        "bgwriter",
+        "checkpoints"
+      ],
+      "name_override": "source",
+      "requirement_level": "recommended",
+      "type": "string"
+    },
+    "bg_checkpoint_type": {
+      "description": "The type of checkpoint state.",
+      "enum": [
+        "requested",
+        "scheduled"
+      ],
+      "name_override": "type",
+      "requirement_level": "recommended",
+      "type": "string"
+    },
+    "bg_duration_type": {
+      "description": "The type of time spent during the checkpoint.",
+      "enum": [
+        "sync",
+        "write"
+      ],
+      "name_override": "type",
+      "requirement_level": "recommended",
+      "type": "string"
+    },
+    "db.collection.name": {
+      "description": "The name of the table within the database.",
+      "type": "string"
+    },
+    "db.namespace": {
+      "description": "The database namespace, following the `{database}|{schema}` format defined by OpenTelemetry semantic conventions for PostgreSQL.",
+      "type": "string"
+    },
+    "db.query.text": {
+      "description": "The text of the database query being executed.",
+      "type": "string"
+    },
+    "db.system.name": {
+      "description": "The database management system (DBMS) product as identified by the client instrumentation.",
+      "enum": [
+        "postgresql"
+      ],
+      "type": "string"
+    },
+    "function": {
+      "description": "The name of the function.",
+      "requirement_level": "recommended",
+      "type": "string"
+    },
+    "lock_type": {
+      "description": "Type of the lockable object.",
+      "requirement_level": "recommended",
+      "type": "string"
+    },
+    "mode": {
+      "description": "Name of the lock mode held or desired by the process.",
+      "requirement_level": "recommended",
+      "type": "string"
+    },
+    "network.peer.address": {
+      "description": "IP address of the client connected to this backend.",
+      "type": "string"
+    },
+    "network.peer.port": {
+      "description": "TCP port number that the client is using for communication with this backend.",
+      "type": "int"
+    },
+    "operation": {
+      "description": "The database operation.",
+      "enum": [
+        "del",
+        "hot_upd",
+        "ins",
+        "upd"
+      ],
+      "requirement_level": "recommended",
+      "type": "string"
+    },
+    "postgresql.application_name": {
+      "description": "Name of the application that is connected to this backend.",
+      "type": "string"
+    },
+    "postgresql.blocking.lock.mode": {
+      "description": "The lock mode being requested by the blocked session (e.g. RowExclusiveLock, AccessExclusiveLock). Empty string when not blocked.",
+      "type": "string"
+    },
+    "postgresql.blocking.lock.relation": {
+      "description": "The name of the relation (table) being waited on. Empty string when not blocked or when lock is not on a relation.",
+      "type": "string"
+    },
+    "postgresql.blocking.lock.type": {
+      "description": "The type of lock resource being waited on (e.g. relation, transactionid, tuple). Empty string when not blocked.",
+      "type": "string"
+    },
+    "postgresql.blocking.pids": {
+      "description": "Array of PIDs of sessions blocking this session (from pg_blocking_pids). Empty array when not blocked.",
+      "type": "string"
+    },
+    "postgresql.blocking.start_time": {
+      "description": "UTC timestamp (RFC3339) when the current lock wait began, derived from pg_locks.waitstart. Empty string when not blocked.",
+      "type": "string"
+    },
+    "postgresql.blocking.transaction.start_time": {
+      "description": "UTC timestamp (RFC3339) when the current transaction started. Empty string when no active transaction.",
+      "type": "string"
+    },
+    "postgresql.blocking.wait_duration": {
+      "description": "Whole seconds this session has been waiting for a lock, measured from pg_locks.waitstart. 0 when not blocked.",
+      "type": "int"
+    },
+    "postgresql.calls": {
+      "description": "Number of times the statement was executed, reported in delta value.",
+      "type": "int"
+    },
+    "postgresql.client_hostname": {
+      "description": "Host name of the connected client, as reported by a reverse DNS lookup of client_addr.",
+      "type": "string"
+    },
+    "postgresql.conflict.type": {
+      "description": "The type of recovery conflict that caused a query to be canceled on a standby server.",
+      "enum": [
+        "bufferpin",
+        "deadlock",
+        "lock",
+        "snapshot",
+        "tablespace"
+      ],
+      "requirement_level": "recommended",
+      "type": "string"
+    },
+    "postgresql.distance.function.name": {
+      "description": "The vector distance (similarity) function used by the query, one of the pgvector distance functions.",
+      "enum": [
+        "cosine",
+        "hamming",
+        "inner_product",
+        "jaccard",
+        "l1",
+        "l2"
+      ],
+      "requirement_level": "recommended",
+      "type": "string"
+    },
+    "postgresql.index.name": {
+      "description": "The name of the index on a table.",
+      "type": "string"
+    },
+    "postgresql.pid": {
+      "description": "Process ID of this backend.",
+      "type": "int"
+    },
+    "postgresql.query_id": {
+      "description": "Identifier of this backend's most recent query. If state is active this field shows the identifier of the currently executing query. In all other states, it shows the identifier of last query that was executed.",
+      "type": "string"
+    },
+    "postgresql.query_plan": {
+      "description": "The execution plan used by PostgreSQL for the query.",
+      "type": "string"
+    },
+    "postgresql.query_start": {
+      "description": "Time when the currently active query was started, or if state is not active, when the last query was started.",
+      "type": "string"
+    },
+    "postgresql.queryid": {
+      "description": "Hash code to identify identical normalized queries.",
+      "type": "string"
+    },
+    "postgresql.rolname": {
+      "description": "The name of the PostgreSQL role that executed the query.",
+      "type": "string"
+    },
+    "postgresql.rows": {
+      "description": "Total number of rows retrieved or affected by the statement, reported in delta value.",
+      "type": "int"
+    },
+    "postgresql.shared_blks_dirtied": {
+      "description": "Total number of shared blocks dirtied by the statement, reported in delta value.",
+      "type": "int"
+    },
+    "postgresql.shared_blks_hit": {
+      "description": "Total number of shared block cache hits by the statement, reported in delta value.",
+      "type": "int"
+    },
+    "postgresql.shared_blks_read": {
+      "description": "Total number of shared blocks read by the statement, reported in delta value.",
+      "type": "int"
+    },
+    "postgresql.shared_blks_written": {
+      "description": "Total number of shared blocks written by the statement, reported in delta value.",
+      "type": "int"
+    },
+    "postgresql.state": {
+      "description": "Current overall state of this backend",
+      "type": "string"
+    },
+    "postgresql.temp_blks_read": {
+      "description": "Total number of temp blocks read by the statement, reported in delta value.",
+      "type": "int"
+    },
+    "postgresql.temp_blks_written": {
+      "description": "Total number of temp blocks written by the statement, reported in delta value.",
+      "type": "int"
+    },
+    "postgresql.total_exec_time": {
+      "description": "Total time spent executing the statement, in delta seconds.",
+      "type": "double"
+    },
+    "postgresql.total_plan_time": {
+      "description": "Total time spent planning the statement, in delta seconds.",
+      "type": "double"
+    },
+    "postgresql.wait_event": {
+      "description": "Wait event name if backend is currently waiting, otherwise NULL.",
+      "type": "string"
+    },
+    "postgresql.wait_event_type": {
+      "description": "The type of event for which the backend is waiting, if any; otherwise NULL.",
+      "type": "string"
+    },
+    "relation": {
+      "description": "OID of the relation targeted by the lock, or null if the target is not a relation or part of a relation.",
+      "requirement_level": "recommended",
+      "type": "string"
+    },
+    "replication_client": {
+      "description": "The IP address of the client connected to this backend. If this field is \"unix\", it indicates either that the client is connected via a Unix socket.",
+      "requirement_level": "recommended",
+      "type": "string"
+    },
+    "source": {
+      "description": "The block read source type.",
+      "enum": [
+        "heap_hit",
+        "heap_read",
+        "idx_hit",
+        "idx_read",
+        "tidx_hit",
+        "tidx_read",
+        "toast_hit",
+        "toast_read"
+      ],
+      "requirement_level": "recommended",
+      "type": "string"
+    },
+    "state": {
+      "description": "The tuple (row) state.",
+      "enum": [
+        "dead",
+        "live"
+      ],
+      "requirement_level": "recommended",
+      "type": "string"
+    },
+    "user.name": {
+      "description": "Name of the user logged into this backend.",
+      "type": "string"
+    },
+    "wal_operation_lag": {
+      "description": "The operation which is responsible for the lag.",
+      "enum": [
+        "flush",
+        "replay",
+        "write"
+      ],
+      "name_override": "operation",
+      "requirement_level": "recommended",
+      "type": "string"
+    }
+  },
+  "description": "This receiver queries the PostgreSQL [statistics collector](https://www.postgresql.org/docs/13/monitoring-stats.html).",
+  "display_name": "PostgreSQL Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "feature_gates": [
+    {
+      "description": "Metric `postgresql.wal.lag` is replaced by more precise `postgresql.wal.delay`.",
+      "from_version": "v0.89.0",
+      "id": "postgresqlreceiver.preciselagmetrics",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/30831",
+      "skip_strict_validation": true,
+      "stage": "beta"
+    },
+    {
+      "description": "Use of connection pooling",
+      "from_version": "v0.96.0",
+      "id": "receiver.postgresql.connectionPool",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/30831",
+      "stage": "beta"
+    },
+    {
+      "description": "Moves Schema Names into dedicated Attribute",
+      "from_version": "v0.122.0",
+      "id": "receiver.postgresql.separateSchemaAttr",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/29559",
+      "stage": "alpha"
+    },
+    {
+      "description": "When enabled, uses a single resource per server with server.address, server.port, and service.instance.id (UUID v5) resource attributes, aligning with OpenTelemetry semantic conventions. When disabled, uses the legacy per-entity resource model with postgresql.database.name, postgresql.table.name, postgresql.index.name, and postgresql.schema.name resource attributes.",
+      "from_version": "v0.156.0",
+      "id": "receiver.postgresql.useOTelSemconv",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45347",
+      "stage": "alpha"
+    }
+  ],
+  "id": "contrib-postgresqlreceiver",
+  "markdown_hash": "6110ac51c61d",
+  "metrics": {
+    "postgresql.backends": {
+      "attributes": [
+        "db.namespace"
+      ],
+      "description": "The number of backend processes associated with each database. Counts backends across all connection states (active, idle, idle-in-transaction) and all backend types, including non-client backends such as autovacuum and parallel workers.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "postgresql.bgwriter.buffers.allocated": {
+      "description": "Number of buffers allocated.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{buffers}"
+    },
+    "postgresql.bgwriter.buffers.writes": {
+      "attributes": [
+        "bg_buffer_source"
+      ],
+      "description": "Number of buffers written.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{buffers}"
+    },
+    "postgresql.bgwriter.checkpoint.count": {
+      "attributes": [
+        "bg_checkpoint_type"
+      ],
+      "description": "The number of checkpoints performed.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{checkpoints}"
+    },
+    "postgresql.bgwriter.duration": {
+      "attributes": [
+        "bg_duration_type"
+      ],
+      "description": "Total time spent writing and syncing files to disk by checkpoints.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "double"
+      },
+      "unit": "ms"
+    },
+    "postgresql.bgwriter.maxwritten": {
+      "description": "Number of times the background writer stopped a cleaning scan because it had written too many buffers.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "postgresql.blks_hit": {
+      "attributes": [
+        "db.namespace"
+      ],
+      "description": "Number of times disk blocks were found already in the buffer cache.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{blks_hit}"
+    },
+    "postgresql.blks_read": {
+      "attributes": [
+        "db.namespace"
+      ],
+      "description": "Number of disk blocks read in this database.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{blks_read}"
+    },
+    "postgresql.blocks_read": {
+      "attributes": [
+        "db.collection.name",
+        "db.namespace",
+        "source"
+      ],
+      "description": "The number of blocks read.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "postgresql.commits": {
+      "attributes": [
+        "db.namespace"
+      ],
+      "description": "The number of commits.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "postgresql.connection.max": {
+      "description": "Configured maximum number of client connections allowed",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "{connections}"
+    },
+    "postgresql.database.count": {
+      "description": "Number of user databases.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{databases}"
+    },
+    "postgresql.database.locks": {
+      "attributes": [
+        "db.namespace",
+        "lock_type",
+        "mode",
+        "relation"
+      ],
+      "description": "The number of database locks.",
+      "enabled": false,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "{lock}"
+    },
+    "postgresql.db_size": {
+      "attributes": [
+        "db.namespace"
+      ],
+      "description": "The database disk usage.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "postgresql.deadlocks": {
+      "attributes": [
+        "db.namespace"
+      ],
+      "description": "The number of deadlocks.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{deadlock}"
+    },
+    "postgresql.function.calls": {
+      "attributes": [
+        "db.namespace",
+        "function"
+      ],
+      "description": "The number of calls made to a function. Requires `track_functions=pl|all` in Postgres config.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{call}"
+    },
+    "postgresql.index.scans": {
+      "attributes": [
+        "db.collection.name",
+        "db.namespace",
+        "postgresql.index.name"
+      ],
+      "description": "The number of index scans on a table.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{scans}"
+    },
+    "postgresql.index.size": {
+      "attributes": [
+        "db.collection.name",
+        "db.namespace",
+        "postgresql.index.name"
+      ],
+      "description": "The size of the index on disk.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "postgresql.operations": {
+      "attributes": [
+        "db.collection.name",
+        "db.namespace",
+        "operation"
+      ],
+      "description": "The number of db row operations.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "postgresql.query.conflicts": {
+      "attributes": [
+        "db.namespace",
+        "postgresql.conflict.type"
+      ],
+      "description": "Number of queries canceled due to conflicts with recovery on this database. Conflicts only occur on standby servers; this metric will be zero on primary servers.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{query}"
+    },
+    "postgresql.query.execution.time": {
+      "attributes": [
+        "db.namespace"
+      ],
+      "description": "The total execution time of SQL statements currently tracked by pg_stat_statements for the database.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "double"
+      },
+      "unit": "s"
+    },
+    "postgresql.replication.data_delay": {
+      "attributes": [
+        "replication_client"
+      ],
+      "description": "The amount of data delayed in replication.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "By"
+    },
+    "postgresql.rollbacks": {
+      "attributes": [
+        "db.namespace"
+      ],
+      "description": "The number of rollbacks.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "postgresql.rows": {
+      "attributes": [
+        "db.collection.name",
+        "db.namespace",
+        "state"
+      ],
+      "description": "The number of rows in the database.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "1"
+    },
+    "postgresql.sequential_scans": {
+      "attributes": [
+        "db.collection.name",
+        "db.namespace"
+      ],
+      "description": "The number of sequential scans.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{sequential_scan}"
+    },
+    "postgresql.table.count": {
+      "attributes": [
+        "db.namespace"
+      ],
+      "description": "Number of user tables in a database.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{table}"
+    },
+    "postgresql.table.size": {
+      "attributes": [
+        "db.collection.name",
+        "db.namespace"
+      ],
+      "description": "Disk space used by a table.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "postgresql.table.vacuum.count": {
+      "attributes": [
+        "db.collection.name",
+        "db.namespace"
+      ],
+      "description": "Number of times a table has manually been vacuumed.",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{vacuum}"
+    },
+    "postgresql.temp.io": {
+      "attributes": [
+        "db.namespace"
+      ],
+      "description": "Total amount of data written to temporary files by queries.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "By"
+    },
+    "postgresql.temp_files": {
+      "attributes": [
+        "db.namespace"
+      ],
+      "description": "The number of temp files.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{temp_file}"
+    },
+    "postgresql.tup_deleted": {
+      "attributes": [
+        "db.namespace"
+      ],
+      "description": "Number of rows deleted by queries in the database.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{tup_deleted}"
+    },
+    "postgresql.tup_fetched": {
+      "attributes": [
+        "db.namespace"
+      ],
+      "description": "Number of rows fetched by queries in the database.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{tup_fetched}"
+    },
+    "postgresql.tup_inserted": {
+      "attributes": [
+        "db.namespace"
+      ],
+      "description": "Number of rows inserted by queries in the database.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{tup_inserted}"
+    },
+    "postgresql.tup_returned": {
+      "attributes": [
+        "db.namespace"
+      ],
+      "description": "Number of rows returned by queries in the database.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{tup_returned}"
+    },
+    "postgresql.tup_updated": {
+      "attributes": [
+        "db.namespace"
+      ],
+      "description": "Number of rows updated by queries in the database.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{tup_updated}"
+    },
+    "postgresql.vector.insert.duration": {
+      "attributes": [
+        "db.namespace"
+      ],
+      "description": "The cumulative execution time of statements that insert vectors into pgvector tables.",
+      "enabled": false,
+      "extended_documentation": "Requires the `pg_stat_statements` extension, PostgreSQL 13 or later, and the `pgvector`\nextension in the scanned database.\n",
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "double"
+      },
+      "unit": "s"
+    },
+    "postgresql.vector.insert.rows": {
+      "attributes": [
+        "db.namespace"
+      ],
+      "description": "The number of vectors inserted into pgvector tables.",
+      "enabled": false,
+      "extended_documentation": "Requires the `pg_stat_statements` extension, PostgreSQL 13 or later, and the `pgvector`\nextension in the scanned database.\n",
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{vectors}"
+    },
+    "postgresql.vector.search.calls": {
+      "attributes": [
+        "db.namespace",
+        "postgresql.distance.function.name"
+      ],
+      "description": "The number of vector similarity search operations executed, grouped by the distance function used.",
+      "enabled": false,
+      "extended_documentation": "Requires the `pg_stat_statements` extension, PostgreSQL 13 or later, and the `pgvector`\nextension in the scanned database. The `l1`, `hamming`, and `jaccard` distance functions\nadditionally require pgvector 0.7.0 or later.\n",
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{search}"
+    },
+    "postgresql.vector.search.duration": {
+      "attributes": [
+        "db.namespace",
+        "postgresql.distance.function.name"
+      ],
+      "description": "The cumulative execution time of vector similarity searches, grouped by the distance function used.",
+      "enabled": false,
+      "extended_documentation": "Requires the `pg_stat_statements` extension, PostgreSQL 13 or later, and the `pgvector`\nextension in the scanned database. The `l1`, `hamming`, and `jaccard` distance functions\nadditionally require pgvector 0.7.0 or later.\n",
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "double"
+      },
+      "unit": "s"
+    },
+    "postgresql.vector.search.rows_returned": {
+      "attributes": [
+        "db.namespace",
+        "postgresql.distance.function.name"
+      ],
+      "description": "The cumulative number of rows returned by vector similarity searches, grouped by the distance function used.",
+      "enabled": false,
+      "extended_documentation": "Requires the `pg_stat_statements` extension, PostgreSQL 13 or later, and the `pgvector`\nextension in the scanned database. The `l1`, `hamming`, and `jaccard` distance functions\nadditionally require pgvector 0.7.0 or later.\n",
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": true,
+        "value_type": "int"
+      },
+      "unit": "{rows}"
+    },
+    "postgresql.wal.age": {
+      "description": "Age of the oldest WAL file.",
+      "enabled": true,
+      "extended_documentation": "This metric requires WAL to be enabled with at least one replica.\n",
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "s"
+    },
+    "postgresql.wal.delay": {
+      "attributes": [
+        "replication_client",
+        "wal_operation_lag"
+      ],
+      "description": "Time between flushing recent WAL locally and receiving notification that the standby server has completed an operation with it.",
+      "enabled": false,
+      "extended_documentation": "This metric requires WAL to be enabled with at least one replica.\n",
+      "gauge": {
+        "value_type": "double"
+      },
+      "stability": "development",
+      "unit": "s"
+    },
+    "postgresql.wal.lag": {
+      "attributes": [
+        "replication_client",
+        "wal_operation_lag"
+      ],
+      "description": "Time between flushing recent WAL locally and receiving notification that the standby server has completed an operation with it.",
+      "enabled": true,
+      "extended_documentation": "This metric requires WAL to be enabled with at least one replica.\n",
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "s"
+    }
+  },
+  "name": "postgresqlreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "antonblock",
+        "ishleenk17",
+        "Caleb-Hurshman",
+        "ebrdarSplunk",
+        "XSAM",
+        "akshays-19",
+        "sv-splunk",
+        "splunk-shanu"
+      ],
+      "emeritus": [
+        "djaglowski"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ],
+      "development": [
+        "logs"
+      ]
+    }
+  },
+  "type": "receiver"
+}

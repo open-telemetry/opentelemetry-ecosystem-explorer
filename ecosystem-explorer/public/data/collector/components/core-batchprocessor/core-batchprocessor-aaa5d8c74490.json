@@ -1,0 +1,122 @@
+{
+  "description": null,
+  "display_name": "Batch Processor",
+  "distribution": "core",
+  "ecosystem": "collector",
+  "id": "core-batchprocessor",
+  "markdown_hash": "c0822f91eabb",
+  "name": "batchprocessor",
+  "repository": "opentelemetry-collector",
+  "status": {
+    "class": "processor",
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "telemetry": {
+    "metrics": {
+      "processor_batch_batch_send_size": {
+        "description": "Number of units in the batch",
+        "enabled": true,
+        "histogram": {
+          "bucket_boundaries": [
+            10,
+            25,
+            50,
+            75,
+            100,
+            250,
+            500,
+            750,
+            1000,
+            2000,
+            3000,
+            4000,
+            5000,
+            6000,
+            7000,
+            8000,
+            9000,
+            10000,
+            20000,
+            30000,
+            50000,
+            100000
+          ],
+          "value_type": "int"
+        },
+        "stability": "development",
+        "unit": "{unit}"
+      },
+      "processor_batch_batch_send_size_bytes": {
+        "description": "Number of bytes in batch that was sent. Only available on detailed level.",
+        "enabled": true,
+        "histogram": {
+          "bucket_boundaries": [
+            128,
+            256,
+            512,
+            1024,
+            2048,
+            4096,
+            8192,
+            16384,
+            32768,
+            65536,
+            131072,
+            262144,
+            524288,
+            1048576,
+            2097152,
+            4194304,
+            8388608,
+            16777216
+          ],
+          "value_type": "int"
+        },
+        "stability": "development",
+        "unit": "By"
+      },
+      "processor_batch_batch_size_trigger_send": {
+        "description": "Number of times the batch was sent due to a size trigger",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{time}"
+      },
+      "processor_batch_metadata_cardinality": {
+        "description": "Number of distinct metadata value combinations being processed",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "async": true,
+          "value_type": "int"
+        },
+        "unit": "{combination}"
+      },
+      "processor_batch_timeout_trigger_send": {
+        "description": "Number of times the batch was sent due to a timeout trigger",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{time}"
+      }
+    }
+  },
+  "type": "processor"
+}

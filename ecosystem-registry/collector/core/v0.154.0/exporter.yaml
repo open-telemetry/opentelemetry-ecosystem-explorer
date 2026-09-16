@@ -6,29 +6,39 @@ schema_hash: ed2f88264c14
 components:
 - name: debugexporter
   metadata:
-    type: debug
     display_name: Debug Exporter
+    github_project: open-telemetry/opentelemetry-collector
     status:
       class: exporter
+      codeowners:
+        active:
+        - andrzej-stencel
+      distributions:
+      - contrib
+      - core
+      - k8s
       stability:
         alpha:
         - logs
         - metrics
         - profiles
         - traces
+      warnings:
+      - Unstable Output Format
+    type: debug
+- name: nopexporter
+  metadata:
+    display_name: No-op Exporter
+    github_project: open-telemetry/opentelemetry-collector
+    status:
+      class: exporter
+      codeowners:
+        active:
+        - evan-bradley
       distributions:
       - contrib
       - core
       - k8s
-      codeowners:
-        active:
-        - andrzej-stencel
-- name: nopexporter
-  metadata:
-    type: nop
-    display_name: No-op Exporter
-    status:
-      class: exporter
       stability:
         alpha:
         - profiles
@@ -36,19 +46,19 @@ components:
         - logs
         - metrics
         - traces
-      distributions:
-      - contrib
-      - core
-      - k8s
-      codeowners:
-        active:
-        - evan-bradley
+    type: nop
 - name: otlpexporter
   metadata:
-    type: otlp_grpc
+    deprecated_type: otlp
     display_name: OTLP gRPC Exporter
+    github_project: open-telemetry/opentelemetry-collector
     status:
       class: exporter
+      distributions:
+      - contrib
+      - core
+      - k8s
+      - otlp
       stability:
         alpha:
         - profiles
@@ -56,17 +66,19 @@ components:
         - logs
         - metrics
         - traces
-      distributions:
-      - contrib
-      - core
-      - k8s
-      - otlp
+    type: otlp_grpc
 - name: otlphttpexporter
   metadata:
-    type: otlp_http
+    deprecated_type: otlphttp
     display_name: OTLP HTTP Exporter
+    github_project: open-telemetry/opentelemetry-collector
     status:
       class: exporter
+      distributions:
+      - contrib
+      - core
+      - k8s
+      - otlp
       stability:
         alpha:
         - profiles
@@ -74,20 +86,17 @@ components:
         - logs
         - metrics
         - traces
-      distributions:
-      - contrib
-      - core
-      - k8s
-      - otlp
+    type: otlp_http
 - name: xexporter
   metadata:
-    type: xexporter
+    github_project: open-telemetry/opentelemetry-collector
     status:
       class: pkg
-      stability:
-        alpha:
-        - profiles
       codeowners:
         active:
         - mx-psi
         - dmathieu
+      stability:
+        alpha:
+        - profiles
+    type: xexporter

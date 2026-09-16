@@ -1,0 +1,35 @@
+{
+  "description": null,
+  "display_name": "Mezmo Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-mezmoexporter",
+  "markdown_hash": "8d4f10fbf9f5",
+  "name": "mezmoexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "dashpole",
+        "billmeyer",
+        "gjanco"
+      ]
+    },
+    "deprecation": {
+      "logs": {
+        "date": "2026-07-30",
+        "migration": "Use the OTLP/HTTP exporter to send logs directly to Mezmo instead. See https://docs.mezmo.com/telemetry-pipelines/otel-collector and https://docs.mezmo.com/telemetry-pipelines/open-telemetry-source for migration guidance. This component will be removed in a future release."
+      }
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "deprecated": [
+        "logs"
+      ]
+    }
+  },
+  "type": "exporter"
+}

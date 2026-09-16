@@ -1,0 +1,28 @@
+{
+  "description": "The Database Storage Extension can persist state to a relational database.",
+  "display_name": "Database Storage Extension",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-dbstorage",
+  "markdown_hash": "754c38783cff",
+  "name": "dbstorage",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "dmitryax",
+        "atoulme"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "extension"
+      ]
+    }
+  },
+  "type": "extension"
+}

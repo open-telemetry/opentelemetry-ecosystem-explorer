@@ -1,0 +1,60 @@
+{
+  "description": null,
+  "display_name": "Probabilistic Sampling Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-probabilisticsamplerprocessor",
+  "markdown_hash": "dca8dda9d7c6",
+  "name": "probabilisticsamplerprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "jmacd"
+      ],
+      "emeritus": [
+        "jpkrohling"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "logs"
+      ],
+      "beta": [
+        "traces"
+      ]
+    }
+  },
+  "telemetry": {
+    "metrics": {
+      "processor_probabilistic_sampler_count_logs_sampled": {
+        "description": "Count of logs that were sampled or not",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "processor_probabilistic_sampler_count_traces_sampled": {
+        "description": "Count of traces that were sampled or not",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      }
+    }
+  },
+  "type": "processor"
+}

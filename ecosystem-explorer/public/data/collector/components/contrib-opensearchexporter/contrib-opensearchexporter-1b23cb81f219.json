@@ -1,0 +1,39 @@
+{
+  "description": null,
+  "display_name": "OpenSearch Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-opensearchexporter",
+  "markdown_hash": "e41f5803aab4",
+  "name": "opensearchexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "ps48",
+        "kylehounslow"
+      ],
+      "emeritus": [
+        "Aneurysm9",
+        "MitchellGale",
+        "MaxKsyunz",
+        "YANG-DB"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "traces"
+      ],
+      "development": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "exporter"
+}

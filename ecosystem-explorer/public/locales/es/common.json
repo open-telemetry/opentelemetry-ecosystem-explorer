@@ -3,6 +3,15 @@
   "copy": "Copiar",
   "copied": "Copiado",
   "comingSoon": "Próximamente",
+  "stability": {
+    "development": "En desarrollo",
+    "alpha": "Alfa",
+    "beta": "Beta",
+    "stable": "Estable",
+    "deprecated": "Obsoleto",
+    "unmaintained": "Sin mantenimiento",
+    "new": "Nuevo"
+  },
   "notFound": {
     "title": "404 - Página no encontrada",
     "description": "La página que buscas no existe. Es posible que hayas escrito la dirección incorrectamente o que la página haya sido movida.",

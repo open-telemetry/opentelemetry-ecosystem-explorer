@@ -47,6 +47,29 @@ repos:
         files: ^ecosystem-explorer/(src/types/(collector|javaagent)\.ts|scripts/generate-schemas\.mjs)$
         stages: [pre-commit]
 
+      # Both Go hooks only fire when .go files are staged, so contributors who
+      # never touch Go do not need a Go toolchain. Those who do get a pointer to
+      # the installer rather than a bare "command not found".
+      - id: gofmt
+        name: gofmt (golang-instrumentation-watcher)
+        entry:
+          bash -c 'command -v gofmt >/dev/null || { echo "gofmt not found. Install Go
+          (https://go.dev/dl/) to commit changes to .go files."; exit 1; }; gofmt -l -w "$@"' --
+        language: system
+        files: ^ecosystem-automation/golang-instrumentation-watcher/.*\.go$
+        stages: [pre-commit]
+
+      - id: govet-golang-instrumentation-watcher
+        name: go vet (golang-instrumentation-watcher)
+        entry:
+          bash -c 'command -v go >/dev/null || { echo "go not found. Install Go (https://go.dev/dl/)
+          to commit changes to .go files."; exit 1; }; cd
+          ecosystem-automation/golang-instrumentation-watcher && go vet ./...'
+        language: system
+        pass_filenames: false
+        files: ^ecosystem-automation/golang-instrumentation-watcher/.*\.go$
+        stages: [pre-commit]
+
       - id: add-copyright-headers
         name: add copyright headers
         entry: uv run python scripts/add_copyright.py

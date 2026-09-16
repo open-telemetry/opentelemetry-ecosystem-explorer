@@ -1,0 +1,33 @@
+{
+  "description": null,
+  "display_name": "No-op Receiver",
+  "distribution": "core",
+  "ecosystem": "collector",
+  "id": "core-nopreceiver",
+  "markdown_hash": "4656287b01bd",
+  "name": "nopreceiver",
+  "repository": "opentelemetry-collector",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "evan-bradley"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "core"
+    ],
+    "stability": {
+      "alpha": [
+        "profiles"
+      ],
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "receiver"
+}

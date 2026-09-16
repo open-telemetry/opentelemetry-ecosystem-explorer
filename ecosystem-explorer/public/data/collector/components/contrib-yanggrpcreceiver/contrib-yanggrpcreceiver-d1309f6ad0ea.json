@@ -1,0 +1,27 @@
+{
+  "description": "The YANG/gRPC receiver receives metrics offered using the [YANG (Yet Another New Generation) data model](https://en.wikipedia.org/wiki/YANG), expressed over [gRPC](https://ciscolearning.github.io/cisco-learning-codelabs/posts/yangsuite-restconf/#0).",
+  "display_name": "YANG gRPC Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-yanggrpcreceiver",
+  "markdown_hash": "c38d31187ef2",
+  "name": "yanggrpcreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "atoulme"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver"
+}

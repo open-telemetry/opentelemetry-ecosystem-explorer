@@ -1,0 +1,34 @@
+{
+  "description": null,
+  "display_name": "OpenTelemetry Arrow Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-otelarrowexporter",
+  "markdown_hash": "4d074e492038",
+  "name": "otelarrowexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "jmacd",
+        "JakeDern"
+      ],
+      "emeritus": [
+        "moh-osman3"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "exporter"
+}

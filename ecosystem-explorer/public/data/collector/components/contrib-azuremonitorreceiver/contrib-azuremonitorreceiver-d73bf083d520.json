@@ -1,0 +1,31 @@
+{
+  "description": "The Azure Monitor Receiver scrapes the Azure Monitor API for resource metrics.",
+  "display_name": "Azure Monitor Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-azuremonitorreceiver",
+  "markdown_hash": "c47599d57c0b",
+  "name": "azuremonitorreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "celian-garcia",
+        "ishleenk17"
+      ],
+      "emeritus": [
+        "nslaughter"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver"
+}

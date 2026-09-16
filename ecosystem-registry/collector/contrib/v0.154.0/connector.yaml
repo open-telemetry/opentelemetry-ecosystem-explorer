@@ -6,19 +6,9 @@ schema_hash: ed2f88264c14
 components:
 - name: countconnector
   metadata:
-    type: count
     display_name: Count Connector
     status:
       class: connector
-      stability:
-        alpha:
-        - logs_to_metrics
-        - metrics_to_metrics
-        - profiles_to_metrics
-        - traces_to_metrics
-      distributions:
-      - contrib
-      - k8s
       codeowners:
         active:
         - akats7
@@ -26,18 +16,21 @@ components:
         - djaglowski
         - jpkrohling
         seeking_new: true
+      distributions:
+      - contrib
+      - k8s
+      stability:
+        alpha:
+        - logs_to_metrics
+        - metrics_to_metrics
+        - profiles_to_metrics
+        - traces_to_metrics
+    type: count
 - name: datadogconnector
   metadata:
-    type: datadog
     display_name: Datadog Connector
     status:
       class: connector
-      stability:
-        beta:
-        - traces_to_metrics
-        - traces_to_traces
-      distributions:
-      - contrib
       codeowners:
         active:
         - mx-psi
@@ -47,122 +40,149 @@ components:
         emeritus:
         - gbbr
         - ankitpatel96
+      distributions:
+      - contrib
+      stability:
+        beta:
+        - traces_to_metrics
+        - traces_to_traces
       unsupported_platforms:
       - aix
+    type: datadog
 - name: exceptionsconnector
   metadata:
-    type: exceptions
     display_name: Exceptions Connector
     status:
       class: connector
+      codeowners:
+        active:
+        - marctc
+      distributions:
+      - contrib
+      - k8s
       stability:
         alpha:
         - traces_to_logs
         - traces_to_metrics
-      distributions:
-      - contrib
-      - k8s
-      codeowners:
-        active:
-        - marctc
+    type: exceptions
 - name: failoverconnector
   metadata:
-    type: failover
     display_name: Failover Connector
     status:
       class: connector
+      codeowners:
+        active:
+        - akats7
+        - fatsheep9146
+      distributions:
+      - contrib
+      - k8s
       stability:
         alpha:
         - logs_to_logs
         - metrics_to_metrics
         - traces_to_traces
-      distributions:
-      - contrib
-      - k8s
-      codeowners:
-        active:
-        - akats7
-        - fatsheep9146
+    type: failover
 - name: grafanacloudconnector
   metadata:
-    type: grafanacloud
     display_name: Grafana Cloud Connector
     status:
       class: connector
-      stability:
-        alpha:
-        - traces_to_metrics
-      distributions:
-      - contrib
       codeowners:
         active:
         - rlankfo
         - jcreixell
         emeritus: []
         seeking_new: false
+      distributions:
+      - contrib
+      stability:
+        alpha:
+        - traces_to_metrics
+    telemetry:
+      metrics:
+        grafanacloud_datapoint_count:
+          description: Number of datapoints sent to Grafana Cloud
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '1'
+        grafanacloud_flush_count:
+          description: Number of metrics flushes
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '1'
+        grafanacloud_host_count:
+          description: Number of unique hosts
+          enabled: true
+          gauge:
+            async: true
+            value_type: int
+          stability: development
+          unit: '1'
+    type: grafanacloud
 - name: metricsaslogsconnector
   metadata:
-    type: metrics_as_logs
+    deprecated_type: metricsaslogs
     display_name: Metrics as Logs Connector
     status:
       class: connector
-      stability:
-        development:
-        - metrics_to_logs
-      distributions: []
       codeowners:
         active:
         - atoulme
+      distributions: []
+      stability:
+        development:
+        - metrics_to_logs
+    type: metrics_as_logs
 - name: otlpjsonconnector
   metadata:
-    type: otlp_json
+    deprecated_type: otlpjson
     display_name: OTLP JSON Connector
     status:
       class: connector
-      stability:
-        alpha:
-        - logs_to_logs
-        - logs_to_metrics
-        - logs_to_traces
-      distributions:
-      - contrib
-      - k8s
       codeowners:
         active:
         - ChrsMark
         emeritus:
         - djaglowski
+      distributions:
+      - contrib
+      - k8s
+      stability:
+        alpha:
+        - logs_to_logs
+        - logs_to_metrics
+        - logs_to_traces
+    type: otlp_json
 - name: roundrobinconnector
   metadata:
-    type: round_robin
+    deprecated_type: roundrobin
     display_name: Round-Robin Connector
     status:
       class: connector
+      codeowners:
+        active:
+        - bogdandrutu
+      distributions:
+      - contrib
+      - k8s
       stability:
         beta:
         - logs_to_logs
         - metrics_to_metrics
         - traces_to_traces
-      distributions:
-      - contrib
-      - k8s
-      codeowners:
-        active:
-        - bogdandrutu
+    type: round_robin
 - name: routingconnector
   metadata:
-    type: routing
     display_name: Routing Connector
     status:
       class: connector
-      stability:
-        alpha:
-        - logs_to_logs
-        - metrics_to_metrics
-        - traces_to_traces
-      distributions:
-      - contrib
-      - k8s
       codeowners:
         active:
         - TylerHelmuth
@@ -173,67 +193,133 @@ components:
         - jpkrohling
         - mwear
         seeking_new: true
-- name: servicegraphconnector
-  metadata:
-    type: service_graph
-    display_name: Service Graph Connector
-    status:
-      class: connector
-      stability:
-        alpha:
-        - traces_to_metrics
       distributions:
       - contrib
       - k8s
+      stability:
+        alpha:
+        - logs_to_logs
+        - metrics_to_metrics
+        - traces_to_traces
+    type: routing
+- name: servicegraphconnector
+  metadata:
+    deprecated_type: servicegraph
+    display_name: Service Graph Connector
+    status:
+      class: connector
       codeowners:
         active:
         - mapno
         - JaredTan95
+      distributions:
+      - contrib
+      - k8s
+      stability:
+        alpha:
+        - traces_to_metrics
+    telemetry:
+      metrics:
+        connector_servicegraph_dropped_spans:
+          description: Number of spans dropped when trying to add edges
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '1'
+        connector_servicegraph_expired_edges:
+          description: Number of edges that expired before finding its matching span
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '1'
+        connector_servicegraph_total_edges:
+          description: Total number of unique edges
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '1'
+    type: service_graph
 - name: signaltometricsconnector
   metadata:
-    type: signal_to_metrics
-    display_name: Signal to Metrics Connector
+    deprecated_type: signaltometrics
     description: Signal to metrics connector produces metrics from all signal types
       (traces, logs, or metrics).
+    display_name: Signal to Metrics Connector
     status:
       class: connector
+      codeowners:
+        active:
+        - ChrsMark
+        - lahsivjar
+      distributions:
+      - contrib
       stability:
         alpha:
         - logs_to_metrics
         - metrics_to_metrics
         - profiles_to_metrics
         - traces_to_metrics
-      distributions:
-      - contrib
-      codeowners:
-        active:
-        - ChrsMark
-        - lahsivjar
+    type: signal_to_metrics
 - name: slowsqlconnector
   metadata:
-    type: slow_sql
+    deprecated_type: slowsql
     display_name: Slow SQL Connector
     status:
       class: connector
-      stability:
-        development:
-        - traces_to_logs
       codeowners:
         active:
         - JaredTan95
         - Frapschen
         - atoulme
+      stability:
+        development:
+        - traces_to_logs
+    type: slow_sql
 - name: spanmetricsconnector
   metadata:
-    type: span_metrics
+    deprecated_type: spanmetrics
     display_name: Span Metrics Connector
+    feature_gates:
+    - description: When enabled, connector will exclude all resource attributes.
+      from_version: v0.137.0
+      id: connector.spanmetrics.excludeResourceMetrics
+      reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42103
+      skip_strict_validation: true
+      stage: alpha
+    - description: When enabled, connector add collector.instance.id to default dimensions.
+      from_version: v0.136.0
+      id: connector.spanmetrics.includeCollectorInstanceID
+      reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/40400
+      skip_strict_validation: true
+      stage: beta
+    - description: When enabled, connector uses legacy metric names.
+      from_version: v0.109.0
+      id: connector.spanmetrics.legacyMetricNames
+      reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/33227
+      skip_strict_validation: true
+      stage: alpha
+    - description: When enabled, connector use second as default unit for duration
+        metrics.
+      from_version: v0.137.0
+      id: connector.spanmetrics.useSecondAsDefaultMetricsUnit
+      reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/42462
+      skip_strict_validation: true
+      stage: alpha
+    - description: When enabled, generated metrics will use `otel.status_code=ERROR`
+        instead of `status.code=STATUS_CODE_ERROR`
+      from_version: v0.141.0
+      id: spanmetrics.statusCodeConvention.useOtelPrefix
+      reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/43000
+      skip_strict_validation: true
+      stage: alpha
     status:
       class: connector
-      stability:
-        alpha:
-        - traces_to_metrics
-      distributions:
-      - contrib
       codeowners:
         active:
         - portertech
@@ -242,21 +328,27 @@ components:
         emeritus:
         - albertteoh
         seeking_new: true
+      distributions:
+      - contrib
+      stability:
+        alpha:
+        - traces_to_metrics
+    type: span_metrics
 - name: sumconnector
   metadata:
-    type: sum
     display_name: Sum Connector
     status:
       class: connector
-      stability:
-        alpha:
-        - logs_to_metrics
-        - metrics_to_metrics
-        - traces_to_metrics
-      distributions:
-      - contrib
       codeowners:
         active:
         - greatestusername
         - shalper2
         - crobert-1
+      distributions:
+      - contrib
+      stability:
+        alpha:
+        - logs_to_metrics
+        - metrics_to_metrics
+        - traces_to_metrics
+    type: sum

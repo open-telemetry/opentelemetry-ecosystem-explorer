@@ -232,6 +232,28 @@ describe("useConfigurationBuilderState", () => {
       });
       expect(result.current.state.values).toEqual({});
     });
+
+    it("should treat blank YAML as a no-op", async () => {
+      const { result } = renderHook(() => useConfigurationBuilderState(mockSchema, "1.0.0", null));
+      vi.useRealTimers();
+      await act(async () => {
+        await result.current.loadFromYaml("  \n  ");
+      });
+      expect(result.current.state.values).toEqual({});
+      expect(result.current.state.isDirty).toBe(false);
+    });
+
+    it("should resolve YAML merge keys (`<<`)", async () => {
+      const { result } = renderHook(() => useConfigurationBuilderState(mockSchema, "1.0.0", null));
+      vi.useRealTimers();
+      await act(async () => {
+        await result.current.loadFromYaml(
+          "_base: &base\n  attribute_count_limit: 256\nattribute_limits:\n  <<: *base\n"
+        );
+      });
+      // Without merge-key support the `<<` would survive as a literal key.
+      expect(result.current.state.values.attribute_limits).toEqual({ attribute_count_limit: 256 });
+    });
   });
 
   describe("localStorage persistence", () => {
@@ -365,6 +387,31 @@ describe("useConfigurationBuilderState", () => {
     expect(result.current.state.enabledSections.resource).toBe(true);
     expect(result.current.state.enabledSections.tracer_provider).toBe(true);
     expect(result.current.state.enabledSections.file_format).toBeUndefined();
+  });
+
+  it("mergeDefaults fills missing leaves while preserving a customized value", () => {
+    const schema: ConfigNode = {
+      controlType: "group",
+      key: "root",
+      label: "Root",
+      path: "",
+      children: [],
+    };
+    const starter: ConfigStarter = {
+      enabledSections: {},
+      values: { "instrumentation/development": { foo: { enabled: false } } },
+    };
+    const { result } = renderHook(() => useConfigurationBuilderState(schema, "1.0.0", starter));
+    act(() =>
+      result.current.mergeDefaults([
+        { path: ["instrumentation/development", "foo", "enabled"], value: true },
+        { path: ["instrumentation/development", "foo", "limit"], value: 100 },
+      ])
+    );
+    expect(result.current.state.values["instrumentation/development"]).toEqual({
+      foo: { enabled: false, limit: 100 },
+    });
+    expect(result.current.state.isDirty).toBe(true);
   });
 
   it("selectPlugin works for a plugin_select inside a list item", () => {

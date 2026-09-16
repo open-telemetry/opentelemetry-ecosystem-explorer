@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { render, screen } from "@testing-library/react";
+import i18n from "i18next";
 import { describe, it, expect } from "vitest";
 import { StatusPill, type Stability } from "./status-pill";
 
@@ -34,14 +35,14 @@ const VARIANTS: ReadonlyArray<{
     base: "text-slate-600",
     dark: "dark:text-slate-400",
   },
-  { stability: "alpha", label: "Alpha", base: "text-orange-600", dark: "dark:text-orange-400" },
-  { stability: "beta", label: "Beta", base: "text-blue-600", dark: "dark:text-blue-400" },
-  { stability: "stable", label: "Stable", base: "text-green-600", dark: "dark:text-green-400" },
-  { stability: "deprecated", label: "Deprecated", base: "text-red-600", dark: "dark:text-red-400" },
+  { stability: "alpha", label: "Alpha", base: "text-orange-800", dark: "dark:text-orange-400" },
+  { stability: "beta", label: "Beta", base: "text-blue-700", dark: "dark:text-blue-400" },
+  { stability: "stable", label: "Stable", base: "text-green-800", dark: "dark:text-green-400" },
+  { stability: "deprecated", label: "Deprecated", base: "text-red-700", dark: "dark:text-red-400" },
   {
     stability: "unmaintained",
     label: "Unmaintained",
-    base: "text-red-600",
+    base: "text-red-700",
     dark: "dark:text-red-400",
   },
 ];
@@ -67,14 +68,29 @@ describe("StatusPill", () => {
     const deprecated = screen.getByText("Deprecated");
     const unmaintained = screen.getByText("Unmaintained");
     expect(deprecated).not.toBe(unmaintained);
-    expect(deprecated.className).toContain("text-red-600");
+    expect(deprecated.className).toContain("text-red-700");
     expect(deprecated.className).toContain("dark:text-red-400");
-    expect(unmaintained.className).toContain("text-red-600");
+    expect(unmaintained.className).toContain("text-red-700");
     expect(unmaintained.className).toContain("dark:text-red-400");
   });
 
   it("forwards className to the rendered element", () => {
     render(<StatusPill stability="stable" className="custom-class" />);
     expect(screen.getByText("Stable").className).toContain("custom-class");
+  });
+
+  // Labels resolve through `common:stability.*`: render in Spanish and assert
+  // the translated label appears.
+  it("renders the Spanish label when the language is switched", async () => {
+    const commonEs = await import("../../../public/locales/es/common.json");
+    i18n.addResourceBundle("es", "common", commonEs.default, true, true);
+    await i18n.changeLanguage("es");
+
+    try {
+      render(<StatusPill stability="stable" />);
+      expect(screen.getByText(i18n.t("stability.stable", { ns: "common" }))).toBeInTheDocument();
+    } finally {
+      await i18n.changeLanguage("en");
+    }
   });
 });

@@ -1,0 +1,137 @@
+{
+  "attributes": {
+    "endpoint": {
+      "description": "The endpoint of the backend",
+      "type": "string"
+    },
+    "resolver": {
+      "description": "Resolver used",
+      "enum": [
+        "aws",
+        "dns",
+        "k8s",
+        "static"
+      ],
+      "type": "string"
+    },
+    "success": {
+      "description": "Whether an outcome was successful",
+      "type": "bool"
+    }
+  },
+  "description": null,
+  "display_name": "Load Balancing Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-loadbalancingexporter",
+  "markdown_hash": "d8401f8a2659",
+  "name": "loadbalancingexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "rlankfo",
+        "iblancasa"
+      ],
+      "emeritus": [
+        "jpkrohling"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "traces"
+      ],
+      "development": [
+        "metrics"
+      ]
+    }
+  },
+  "telemetry": {
+    "metrics": {
+      "loadbalancer_backend_latency": {
+        "attributes": [
+          "endpoint"
+        ],
+        "description": "Response latency in ms for the backends.",
+        "enabled": true,
+        "histogram": {
+          "bucket_boundaries": [
+            5,
+            10,
+            20,
+            50,
+            100,
+            200,
+            500,
+            1000,
+            2000,
+            5000
+          ],
+          "value_type": "int"
+        },
+        "stability": "development",
+        "unit": "ms"
+      },
+      "loadbalancer_backend_outcome": {
+        "attributes": [
+          "success"
+        ],
+        "description": "Number of successes and failures for each endpoint.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{outcomes}"
+      },
+      "loadbalancer_num_backend_updates": {
+        "attributes": [
+          "resolver"
+        ],
+        "description": "Number of times the list of backends was updated.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{updates}"
+      },
+      "loadbalancer_num_backends": {
+        "attributes": [
+          "resolver"
+        ],
+        "description": "Current number of backends in use.",
+        "enabled": true,
+        "gauge": {
+          "value_type": "int"
+        },
+        "stability": "development",
+        "unit": "{backends}"
+      },
+      "loadbalancer_num_resolutions": {
+        "attributes": [
+          "resolver",
+          "success"
+        ],
+        "description": "Number of times the resolver has triggered new resolutions.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{resolutions}"
+      }
+    }
+  },
+  "type": "exporter"
+}

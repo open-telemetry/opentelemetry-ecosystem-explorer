@@ -1,0 +1,92 @@
+{
+  "description": null,
+  "display_name": "Service Graph Connector",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "feature_gates": [
+    {
+      "description": "When enabled, connector uses legacy latency metric names.",
+      "from_version": "v0.80.0",
+      "id": "connector.servicegraph.legacyLatencyMetricNames",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/18743",
+      "skip_strict_validation": true,
+      "stage": "deprecated",
+      "to_version": "v0.154.0"
+    },
+    {
+      "description": "When enabled, connector reports latency in milliseconds, instead of seconds.",
+      "from_version": "v0.89.0",
+      "id": "connector.servicegraph.legacyLatencyUnitMs",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/27488",
+      "skip_strict_validation": true,
+      "stage": "deprecated",
+      "to_version": "v0.154.0"
+    },
+    {
+      "description": "When enabled and setting `virtual_node_peer_attributes` is not empty, the connector looks for the presence of these attributes in span to create virtual server nodes.",
+      "from_version": "v0.73.0",
+      "id": "connector.servicegraph.virtualNode",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/17196",
+      "skip_strict_validation": true,
+      "stage": "stable",
+      "to_version": "v0.154.0"
+    }
+  ],
+  "id": "contrib-servicegraphconnector",
+  "markdown_hash": "7ddf2f0ed2d9",
+  "name": "servicegraphconnector",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "connector",
+    "codeowners": {
+      "active": [
+        "mapno",
+        "JaredTan95"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "traces_to_metrics"
+      ]
+    }
+  },
+  "telemetry": {
+    "metrics": {
+      "connector_servicegraph_dropped_spans": {
+        "description": "Number of spans dropped when trying to add edges",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "connector_servicegraph_expired_edges": {
+        "description": "Number of edges that expired before finding its matching span",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "connector_servicegraph_total_edges": {
+        "description": "Total number of unique edges",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      }
+    }
+  },
+  "type": "connector"
+}

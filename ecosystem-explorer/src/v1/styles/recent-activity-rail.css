@@ -29,13 +29,13 @@
 
 .td-subsection-title {
   margin: 0 0 0.25rem;
-  font-size: 1.125rem;
+  font-size: var(--td-fs-h5);
   font-weight: 700;
 }
 
 .td-subsection-lead {
   margin: 0 0 1rem;
-  font-size: 0.875rem;
+  font-size: var(--td-fs-sm);
   color: hsl(var(--muted-foreground-hsl));
 }
 
@@ -83,14 +83,14 @@
 
 .td-activity-title {
   font-weight: 600;
-  font-size: 0.9375rem;
+  font-size: var(--td-fs-base);
   margin: 0;
   word-break: break-word;
 }
 
 .td-activity-meta {
   display: block;
-  font-size: 0.75rem;
+  font-size: var(--td-fs-xs);
   color: hsl(var(--muted-foreground-hsl));
   margin-top: 0.125rem;
 }
@@ -105,14 +105,14 @@
 .td-activity-empty {
   padding: 1.5rem;
   text-align: center;
-  font-size: 0.875rem;
+  font-size: var(--td-fs-sm);
   color: hsl(var(--muted-foreground-hsl));
 }
 
 .td-activity-loading {
   padding: 1.5rem;
   text-align: center;
-  font-size: 0.875rem;
+  font-size: var(--td-fs-sm);
   color: hsl(var(--muted-foreground-hsl));
 }
 
@@ -124,7 +124,7 @@
   gap: 0.25rem;
   padding: 0.125rem 0.625rem;
   border-radius: 999px;
-  font-size: 0.75rem;
+  font-size: var(--td-fs-xs);
   font-weight: 600;
   text-transform: lowercase;
   white-space: nowrap;

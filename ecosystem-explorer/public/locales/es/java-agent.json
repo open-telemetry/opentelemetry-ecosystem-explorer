@@ -1,5 +1,9 @@
 {
   "landingV1": {
+    "seo": {
+      "title": "OpenTelemetry Java Agent — Ecosystem Explorer",
+      "description": "Explora la auto-instrumentación del agente Java de OpenTelemetry: bibliotecas compatibles, telemetría emitida y opciones de configuración."
+    },
     "hero": {
       "eyebrow": "Auto-instrumentación · JVM",
       "lead": "Auto-instrumentación sin código para aplicaciones Java. Cientos de bibliotecas y frameworks compatibles; configurable mediante propiedades del sistema o variables de entorno.",
@@ -58,6 +62,12 @@
     }
   },
   "explore": {
+    "infoBar": {
+      "instrumentationCount_one": "Instrumentación disponible",
+      "instrumentationCount_other": "Instrumentaciones disponibles",
+      "latestRelease": "Última versión publicada",
+      "error": "Error al cargar estadísticas: {{message}}"
+    },
     "resources": {
       "heading": "Recursos y documentación",
       "items": {
@@ -65,6 +75,11 @@
         "configReference": "Referencia de configuración del Java Agent",
         "githubRepo": "Repositorio de GitHub"
       }
+    },
+    "announcements": {
+      "heading": "Noticias y Anuncios",
+      "loading": "Cargando anuncios...",
+      "readMore": "Leer más"
     }
   },
   "list": {
@@ -181,7 +196,9 @@
     "metricName": "Nombre de la métrica",
     "metricDescription": "Descripción",
     "emittedBy": "Emitido por",
-    "release": "Versión {{version}}"
+    "release": "Versión {{version}}",
+    "noFilteredResults": "Ningún módulo coincide con los filtros seleccionados.",
+    "noFilteredResultsDesc": "Prueba a seleccionar otro estado, o borra el filtro para ver todos los cambios."
   },
   "configList": {
     "title": "Explorador de opciones de configuración",
@@ -222,7 +239,14 @@
     "spans": "Spans",
     "metrics": "Métricas",
     "javaAgent": "Java Agent",
-    "standalone": "Independiente"
+    "standalone": "Independiente",
+    "status": {
+      "label": "Estado",
+      "all": "Todos los estados",
+      "added": "Agregado",
+      "changed": "Modificado",
+      "removed": "Eliminado"
+    }
   },
   "badges": {
     "agent": {
@@ -422,6 +446,11 @@
       "customized_other": "· {{count}} personalizados",
       "loading": "Cargando instrumentaciones…",
       "error": "Error al cargar instrumentaciones.",
+      "addAll": {
+        "button": "Añadir todas las configuraciones de instrumentación",
+        "confirm_one": "¿Añadir {{count}} opción de configuración de instrumentación con su valor predeterminado? Los valores que ya hayas personalizado se conservarán.",
+        "confirm_other": "¿Añadir {{count}} opciones de configuración de instrumentación con sus valores predeterminados? Los valores que ya hayas personalizado se conservarán."
+      },
       "readout": {
         "search": "Buscar \"{{search}}\" · {{shown}} de {{total}}",
         "customized": "Personalizado · {{count}} de {{total}}",

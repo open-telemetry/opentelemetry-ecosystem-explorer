@@ -25,6 +25,7 @@
  */
 
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import { HOME_STATS, type StatItem } from "@/v1/lib/home-stats";
 
@@ -36,38 +37,44 @@ export interface StatsBandProps {
 }
 
 export function StatsBand({
-  title = "The OpenTelemetry Ecosystem",
+  title,
   stats = HOME_STATS,
   headingId = "stats-band-title",
 }: StatsBandProps) {
+  const { t } = useTranslation("home");
+  const resolvedTitle = title ?? t("homeV1.stats.title");
+
   return (
     <section className="td-stats-band" aria-labelledby={headingId}>
       <div className="td-stats-band__container">
         <h2 id={headingId} className="td-stats-band__title">
-          {title}
+          {resolvedTitle}
         </h2>
         <div className="td-stats-band__grid">
-          {stats.map((stat) => (
-            <div key={stat.key} className="td-stats-band__item">
-              <div className="td-stats-band__number">
-                {stat.external ? (
-                  <a
-                    href={stat.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`${stat.label}: ${stat.value}`}
-                  >
-                    {stat.value}
-                  </a>
-                ) : (
-                  <Link to={stat.href} aria-label={`${stat.label}: ${stat.value}`}>
-                    {stat.value}
-                  </Link>
-                )}
+          {stats.map((stat) => {
+            const label = t(`homeV1.stats.items.${stat.key}`, stat.label);
+            return (
+              <div key={stat.key} className="td-stats-band__item">
+                <div className="td-stats-band__number">
+                  {stat.external ? (
+                    <a
+                      href={stat.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${label}: ${stat.value}`}
+                    >
+                      {stat.value}
+                    </a>
+                  ) : (
+                    <Link to={stat.href} aria-label={`${label}: ${stat.value}`}>
+                      {stat.value}
+                    </Link>
+                  )}
+                </div>
+                <div className="td-stats-band__label">{label}</div>
               </div>
-              <div className="td-stats-band__label">{stat.label}</div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

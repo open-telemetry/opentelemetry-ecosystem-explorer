@@ -1,0 +1,28 @@
+{
+  "description": null,
+  "display_name": "AWS X-Ray Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-awsxrayreceiver",
+  "markdown_hash": "de4147e74e5d",
+  "name": "awsxrayreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "wangzlei",
+        "srprash"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "traces"
+      ]
+    }
+  },
+  "type": "receiver"
+}

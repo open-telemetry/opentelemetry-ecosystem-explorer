@@ -1,0 +1,32 @@
+{
+  "description": "Receives data via gRPC in OTel/STEF format.",
+  "display_name": "STEF Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-stefreceiver",
+  "markdown_hash": "e1be5604038e",
+  "name": "stefreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "tigrannajaryan",
+        "MovieStoreGuy",
+        "dmitryax",
+        "atoulme",
+        "pjanotti",
+        "crobert-1"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver"
+}

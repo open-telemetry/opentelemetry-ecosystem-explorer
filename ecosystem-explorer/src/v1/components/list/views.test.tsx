@@ -31,6 +31,7 @@ const rows: ListRow[] = [
     stability: "stable",
     signals: ["traces", "metrics", "logs"],
     href: "/collector/components/otlpreceiver",
+    deprecatedInVersion: "0.157.0",
   },
   {
     id: "kafka-exporter",
@@ -87,6 +88,18 @@ describe("CompactList", () => {
     expect(within(row).getByText("Stable")).toBeInTheDocument();
   });
 
+  it("renders removal metadata after signals with its own class", () => {
+    renderCompactList();
+    const row = screen.getByRole("link", { name: /OTLP Receiver/ });
+    const signals = within(row).getByText("traces, metrics, logs");
+    const removed = within(row).getByText("Removed in 0.157.0");
+
+    expect(removed).toHaveClass("td-row__removed");
+    expect(
+      signals.compareDocumentPosition(removed) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
+  });
+
   it("omits description and signals when a row has none", () => {
     renderCompactList();
     const row = screen.getByRole("link", { name: /Kafka Exporter/ });
@@ -109,6 +122,18 @@ describe("CardView", () => {
     expect(within(card).getByText(/Receives telemetry via gRPC/)).toBeInTheDocument();
     expect(within(card).getByText("core")).toBeInTheDocument();
     expect(within(card).getByText("Stable")).toBeInTheDocument();
+  });
+
+  it("renders removal metadata after distribution with its own class", () => {
+    renderCardView();
+    const card = screen.getByRole("link", { name: /OTLP Receiver/ });
+    const distribution = within(card).getByText("core");
+    const removed = within(card).getByText("Removed in 0.157.0");
+
+    expect(removed).toHaveClass("td-card__removed");
+    expect(
+      distribution.compareDocumentPosition(removed) & Node.DOCUMENT_POSITION_FOLLOWING
+    ).toBeTruthy();
   });
 });
 

@@ -1,0 +1,30 @@
+{
+  "description": null,
+  "display_name": null,
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-awsecsattributesprocessor",
+  "markdown_hash": "d0578141f9d9",
+  "name": "awsecsattributesprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "povilasv",
+        "iblancasa",
+        "dmitryax"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "logs",
+        "metrics",
+        "profiles",
+        "traces"
+      ]
+    }
+  },
+  "type": "processor"
+}

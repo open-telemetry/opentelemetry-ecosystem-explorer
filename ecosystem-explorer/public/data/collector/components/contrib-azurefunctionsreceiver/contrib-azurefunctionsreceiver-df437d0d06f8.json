@@ -1,0 +1,27 @@
+{
+  "description": null,
+  "display_name": "Azure Functions Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-azurefunctionsreceiver",
+  "markdown_hash": "7366ec9c7068",
+  "name": "azurefunctionsreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "jmacd",
+        "MichaelKatsoulis",
+        "constanca-m"
+      ]
+    },
+    "stability": {
+      "development": [
+        "logs",
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver"
+}

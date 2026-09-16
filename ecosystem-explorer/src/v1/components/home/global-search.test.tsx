@@ -111,10 +111,10 @@ describe("GlobalSearch", () => {
       { timeout: 2000 }
     );
     expect(option).toHaveAttribute("href", "/collector/components/contrib/kafka?version=v0.150.0");
-    expect(within(option).getByText("collector")).toBeInTheDocument(); // lead pill
+    expect(within(option).getByText("Collector")).toBeInTheDocument(); // lead pill
     expect(within(option).getByText("Beta")).toBeInTheDocument(); // StatusPill renders capitalized label
     expect(within(option).getByText("Receives messages from Apache Kafka")).toBeInTheDocument();
-    expect(within(option).getByText("collector · receiver · v0.150.0")).toBeInTheDocument();
+    expect(within(option).getByText("Collector · receiver · v0.150.0")).toBeInTheDocument();
   });
 
   it("omits the stability pill when a result has no stability (Java Agent items)", async () => {
@@ -133,9 +133,9 @@ describe("GlobalSearch", () => {
     fireEvent.change(screen.getByRole("combobox"), { target: { value: "kafka" } });
 
     const option = await screen.findByRole("option", { name: /Apache Kafka Client/i });
-    expect(within(option).getByText("java-agent")).toBeInTheDocument();
+    expect(within(option).getByText("Java Agent")).toBeInTheDocument();
     expect(within(option).queryByText(/^Beta$|^Stable$|^Alpha$/)).not.toBeInTheDocument();
-    expect(within(option).getByText("java-agent · 2.28.0")).toBeInTheDocument();
+    expect(within(option).getByText("Java Agent · 2.28.0")).toBeInTheDocument();
   });
 
   it("renders a standalone-library facet in the meta line for Java Agent items that ship as one", async () => {
@@ -155,7 +155,7 @@ describe("GlobalSearch", () => {
 
     const option = await screen.findByRole("option", { name: /JDBC Instrumentation/i });
     expect(
-      within(option).getByText("java-agent · standalone library · 2.28.0")
+      within(option).getByText("Java Agent · standalone library · 2.28.0")
     ).toBeInTheDocument();
   });
 

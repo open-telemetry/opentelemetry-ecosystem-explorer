@@ -1,0 +1,33 @@
+{
+  "description": "The File Storage Extension can persist state to the local file system.",
+  "display_name": "File Storage Extension",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-filestorage",
+  "markdown_hash": "ba6b58efb9ed",
+  "name": "filestorage",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "swiatekm",
+        "VihasMakwana"
+      ],
+      "emeritus": [
+        "djaglowski"
+      ],
+      "seeking_new": true
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "extension"
+      ]
+    }
+  },
+  "type": "extension"
+}

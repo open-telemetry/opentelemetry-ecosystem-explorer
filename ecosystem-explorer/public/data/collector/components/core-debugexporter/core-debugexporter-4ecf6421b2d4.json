@@ -1,0 +1,35 @@
+{
+  "description": null,
+  "display_name": "Debug Exporter",
+  "distribution": "core",
+  "ecosystem": "collector",
+  "id": "core-debugexporter",
+  "markdown_hash": "61a0217afe06",
+  "name": "debugexporter",
+  "repository": "opentelemetry-collector",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "andrzej-stencel"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "core",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "metrics",
+        "profiles",
+        "traces"
+      ]
+    },
+    "warnings": [
+      "Unstable Output Format"
+    ]
+  },
+  "type": "exporter"
+}

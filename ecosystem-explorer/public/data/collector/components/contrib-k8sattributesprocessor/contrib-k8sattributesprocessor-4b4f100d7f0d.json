@@ -1,0 +1,667 @@
+{
+  "attributes": {
+    "otelcol.signal": {
+      "description": "The signal type the telemetry metric is associated with",
+      "enum": [
+        "logs",
+        "metrics",
+        "profiles",
+        "traces"
+      ],
+      "type": "string"
+    },
+    "pod_identifier": {
+      "description": "The source(s) used to identify the pod, formatted as 'from/name' (e.g., 'connection', 'resource_attribute/k8s.pod.ip'). Does not contain actual identifier values to avoid high cardinality.",
+      "type": "string"
+    },
+    "status": {
+      "description": "The status of the pod association operation",
+      "enum": [
+        "error",
+        "success"
+      ],
+      "type": "string"
+    }
+  },
+  "description": "The Kubernetes Attributes Processor allows adding k8s metadata to resource attributes for spans, metrics and logs.",
+  "display_name": "Kubernetes Attributes Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "feature_gates": [
+    {
+      "description": "When enabled, semconv legacy attributes are disabled.",
+      "from_version": "v0.145.0",
+      "id": "processor.k8sattributes.DontEmitV0K8sConventions",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44589",
+      "skip_strict_validation": true,
+      "stage": "alpha"
+    },
+    {
+      "description": "When enabled, semconv stable attributes are enabled.",
+      "from_version": "v0.145.0",
+      "id": "processor.k8sattributes.EmitV1K8sConventions",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44589",
+      "skip_strict_validation": true,
+      "stage": "alpha"
+    },
+    {
+      "description": "When enabled, processor instances with identical configuration are shared across different signal type pipelines, reducing duplicate Kubernetes API watchers.",
+      "from_version": "v0.150.0",
+      "id": "processor.k8sattributes.ShareProcessorBetweenPipelines",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/2450",
+      "skip_strict_validation": true,
+      "stage": "alpha"
+    },
+    {
+      "description": "When enabled, old formatted internal telemetry metrics are disabled.",
+      "from_version": "v0.146.0",
+      "id": "processor.k8sattributes.telemetry.disableOldFormatMetrics",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45871",
+      "skip_strict_validation": true,
+      "stage": "alpha"
+    },
+    {
+      "description": "When enabled, new formatted internal telemetry metrics are enabled.",
+      "from_version": "v0.146.0",
+      "id": "processor.k8sattributes.telemetry.enableNewFormatMetrics",
+      "reference_url": "https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/45871",
+      "skip_strict_validation": true,
+      "stage": "alpha"
+    }
+  ],
+  "id": "contrib-k8sattributesprocessor",
+  "markdown_hash": "8d314f2ec9db",
+  "name": "k8sattributesprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "dmitryax",
+        "TylerHelmuth",
+        "ChrsMark",
+        "odubajDT"
+      ],
+      "emeritus": [
+        "rmfitzpatrick",
+        "fatsheep9146"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ],
+      "development": [
+        "profiles"
+      ]
+    },
+    "warnings": [
+      "Memory consumption",
+      "Other"
+    ]
+  },
+  "telemetry": {
+    "metrics": {
+      "k8s.pod.association": {
+        "attributes": [
+          "otelcol.signal",
+          "pod_identifier",
+          "status"
+        ],
+        "description": "Number of pod associations' evaluations",
+        "enabled": true,
+        "prefix": "otelcol.",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{resources}"
+      },
+      "k8s.watcher.daemonset.added": {
+        "description": "Number of daemonset add events received",
+        "enabled": false,
+        "prefix": "otelcol.",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "k8s.watcher.daemonset.deleted": {
+        "description": "Number of daemonset delete events received",
+        "enabled": false,
+        "prefix": "otelcol.",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "k8s.watcher.daemonset.updated": {
+        "description": "Number of daemonset update events received",
+        "enabled": false,
+        "prefix": "otelcol.",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "k8s.watcher.deployment.added": {
+        "description": "Number of deployment add events received",
+        "enabled": false,
+        "prefix": "otelcol.",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "k8s.watcher.deployment.deleted": {
+        "description": "Number of deployment delete events received",
+        "enabled": false,
+        "prefix": "otelcol.",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "k8s.watcher.deployment.updated": {
+        "description": "Number of deployment update events received",
+        "enabled": false,
+        "prefix": "otelcol.",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "k8s.watcher.job.added": {
+        "description": "Number of job add events received",
+        "enabled": true,
+        "prefix": "otelcol.",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "k8s.watcher.job.deleted": {
+        "description": "Number of job delete events received",
+        "enabled": true,
+        "prefix": "otelcol.",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "k8s.watcher.job.updated": {
+        "description": "Number of job update events received",
+        "enabled": true,
+        "prefix": "otelcol.",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "k8s.watcher.namespace.added": {
+        "description": "Number of namespace add events received",
+        "enabled": true,
+        "prefix": "otelcol.",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "k8s.watcher.namespace.deleted": {
+        "description": "Number of namespace delete events received",
+        "enabled": true,
+        "prefix": "otelcol.",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "k8s.watcher.namespace.updated": {
+        "description": "Number of namespace update events received",
+        "enabled": true,
+        "prefix": "otelcol.",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "k8s.watcher.node.added": {
+        "description": "Number of node add events received",
+        "enabled": true,
+        "prefix": "otelcol.",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "k8s.watcher.node.deleted": {
+        "description": "Number of node delete events received",
+        "enabled": true,
+        "prefix": "otelcol.",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "k8s.watcher.node.updated": {
+        "description": "Number of node update events received",
+        "enabled": true,
+        "prefix": "otelcol.",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "k8s.watcher.pod.added": {
+        "description": "Number of pod add events received",
+        "enabled": true,
+        "prefix": "otelcol.",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "k8s.watcher.pod.deleted": {
+        "description": "Number of pod delete events received",
+        "enabled": true,
+        "prefix": "otelcol.",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "k8s.watcher.pod.updated": {
+        "description": "Number of pod update events received",
+        "enabled": true,
+        "prefix": "otelcol.",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "k8s.watcher.pod_cache.size": {
+        "description": "Size of cache table containing pod info",
+        "enabled": true,
+        "gauge": {
+          "value_type": "int"
+        },
+        "prefix": "otelcol.",
+        "stability": "development",
+        "unit": "1"
+      },
+      "k8s.watcher.replicaset.added": {
+        "description": "Number of ReplicaSet add events received",
+        "enabled": true,
+        "prefix": "otelcol.",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "k8s.watcher.replicaset.deleted": {
+        "description": "Number of ReplicaSet delete events received",
+        "enabled": true,
+        "prefix": "otelcol.",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "k8s.watcher.replicaset.updated": {
+        "description": "Number of ReplicaSet update events received",
+        "enabled": true,
+        "prefix": "otelcol.",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "k8s.watcher.statefulset.added": {
+        "description": "Number of statefulset add events received",
+        "enabled": true,
+        "prefix": "otelcol.",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "k8s.watcher.statefulset.deleted": {
+        "description": "Number of statefulset delete events received",
+        "enabled": true,
+        "prefix": "otelcol.",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "k8s.watcher.statefulset.updated": {
+        "description": "Number of statefulset update events received",
+        "enabled": true,
+        "prefix": "otelcol.",
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "otelsvc_k8s_daemonset_added": {
+        "description": "Number of daemonset add events received",
+        "enabled": false,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "otelsvc_k8s_daemonset_deleted": {
+        "description": "Number of daemonset delete events received",
+        "enabled": false,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "otelsvc_k8s_daemonset_updated": {
+        "description": "Number of daemonset update events received",
+        "enabled": false,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "otelsvc_k8s_deployment_added": {
+        "description": "Number of deployment add events received",
+        "enabled": false,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "otelsvc_k8s_deployment_deleted": {
+        "description": "Number of deployment delete events received",
+        "enabled": false,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "otelsvc_k8s_deployment_updated": {
+        "description": "Number of deployment update events received",
+        "enabled": false,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "otelsvc_k8s_ip_lookup_miss": {
+        "deprecated": {
+          "note": "Use otelcol.k8s.pod.association instead",
+          "since": "0.146.0"
+        },
+        "description": "[DEPRECATED] Number of times pod by IP lookup failed",
+        "enabled": true,
+        "stability": "deprecated",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "otelsvc_k8s_job_added": {
+        "description": "Number of job add events received",
+        "enabled": false,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "otelsvc_k8s_job_deleted": {
+        "description": "Number of job delete events received",
+        "enabled": false,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "otelsvc_k8s_job_updated": {
+        "description": "Number of job update events received",
+        "enabled": false,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "otelsvc_k8s_namespace_added": {
+        "description": "Number of namespace add events received",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "otelsvc_k8s_namespace_deleted": {
+        "description": "Number of namespace delete events received",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "otelsvc_k8s_namespace_updated": {
+        "description": "Number of namespace update events received",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "otelsvc_k8s_node_added": {
+        "description": "Number of node add events received",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "otelsvc_k8s_node_deleted": {
+        "description": "Number of node delete events received",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "otelsvc_k8s_node_updated": {
+        "description": "Number of node update events received",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "otelsvc_k8s_pod_added": {
+        "description": "Number of pod add events received",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "otelsvc_k8s_pod_deleted": {
+        "description": "Number of pod delete events received",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "otelsvc_k8s_pod_table_size": {
+        "description": "Size of table containing pod info",
+        "enabled": true,
+        "gauge": {
+          "value_type": "int"
+        },
+        "stability": "development",
+        "unit": "1"
+      },
+      "otelsvc_k8s_pod_updated": {
+        "description": "Number of pod update events received",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "otelsvc_k8s_replicaset_added": {
+        "description": "Number of ReplicaSet add events received",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "otelsvc_k8s_replicaset_deleted": {
+        "description": "Number of ReplicaSet delete events received",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "otelsvc_k8s_replicaset_updated": {
+        "description": "Number of ReplicaSet update events received",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "otelsvc_k8s_statefulset_added": {
+        "description": "Number of statefulset add events received",
+        "enabled": false,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "otelsvc_k8s_statefulset_deleted": {
+        "description": "Number of statefulset delete events received",
+        "enabled": false,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "otelsvc_k8s_statefulset_updated": {
+        "description": "Number of statefulset update events received",
+        "enabled": false,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      }
+    }
+  },
+  "type": "processor"
+}

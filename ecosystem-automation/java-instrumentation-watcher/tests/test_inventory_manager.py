@@ -416,3 +416,66 @@ class TestLibraryReadme:
         # Should be able to load it using the original (unsanitized) name
         content = inventory_manager.load_library_readme_content(version, library_name, markdown_hash)
         assert content == "safe content"
+
+
+class TestJmxModels:
+    def test_jmx_models_index_exists_false_when_missing(self, inventory_manager):
+        version = Version("2.30.0")
+        assert not inventory_manager.jmx_models_index_exists(version)
+
+    def test_save_jmx_models_index_writes_shared_store_and_index(self, inventory_manager):
+        version = Version("2.30.0")
+        models = {
+            "jvm": "metrics:\n  - jvm_threads_live\n",
+            "tomcat": "metrics:\n  - tomcat_sessions\n",
+        }
+        manifest = "semantic_conventions: v1.43.0\n"
+
+        indexed_models, manifest_file = inventory_manager.save_jmx_models_index(
+            version=version,
+            models=models,
+            manifest=manifest,
+        )
+
+        assert set(indexed_models.keys()) == {"jvm", "tomcat"}
+        assert manifest_file is not None
+
+        jmx_dir = inventory_manager.get_jmx_store_dir()
+        assert (jmx_dir / indexed_models["jvm"]).exists()
+        assert (jmx_dir / indexed_models["tomcat"]).exists()
+        assert (jmx_dir / manifest_file).exists()
+
+        index_path = inventory_manager.get_version_dir(version) / "jmx-models.yaml"
+        assert index_path.exists()
+
+        index = yaml.safe_load(index_path.read_text(encoding="utf-8"))
+        assert index["models"] == indexed_models
+        assert index["manifest"] == manifest_file
+
+    def test_save_jmx_models_index_is_content_addressed(self, inventory_manager):
+        version_a = Version("2.30.0")
+        version_b = Version("2.31.0")
+        model_content = "metrics:\n  - jvm_threads_live\n"
+
+        first_models, _ = inventory_manager.save_jmx_models_index(
+            version=version_a,
+            models={"jvm": model_content},
+            manifest=None,
+        )
+        second_models, _ = inventory_manager.save_jmx_models_index(
+            version=version_b,
+            models={"jvm": model_content},
+            manifest=None,
+        )
+
+        assert first_models["jvm"] == second_models["jvm"]
+        assert len(list(inventory_manager.get_jmx_store_dir().glob("jvm-*.yaml"))) == 1
+
+    def test_save_jmx_models_index_skips_empty_payload(self, inventory_manager):
+        version = Version("2.29.0")
+        models, manifest = inventory_manager.save_jmx_models_index(version=version, models={}, manifest=None)
+
+        assert models == {}
+        assert manifest is None
+        assert not inventory_manager.jmx_models_index_exists(version)
+        assert not inventory_manager.get_jmx_store_dir().exists()

@@ -1,0 +1,82 @@
+{
+  "description": "This receiver runs a TCP server that accepts events via the [Fluent Forward protocol](https://github.com/fluent/fluentd/wiki/Forward-Protocol-Specification-v1).",
+  "display_name": "Fluent Forward Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-fluentforwardreceiver",
+  "markdown_hash": "b80583a9a30d",
+  "name": "fluentforwardreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "dmitryax"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "logs"
+      ]
+    }
+  },
+  "telemetry": {
+    "metrics": {
+      "fluent_closed_connections": {
+        "description": "Number of connections closed to the fluentforward receiver",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": null,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "fluent_events_parsed": {
+        "description": "Number of Fluent events parsed successfully",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": null,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "fluent_opened_connections": {
+        "description": "Number of connections opened to the fluentforward receiver",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": null,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "fluent_parse_failures": {
+        "description": "Number of times Fluent messages failed to be decoded",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": null,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "fluent_records_generated": {
+        "description": "Number of log records generated from Fluent forward input",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": null,
+          "value_type": "int"
+        },
+        "unit": "1"
+      }
+    }
+  },
+  "type": "receiver"
+}

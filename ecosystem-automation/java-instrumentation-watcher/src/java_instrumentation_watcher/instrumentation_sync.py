@@ -23,6 +23,7 @@ from semantic_version import Version
 from .instrumentation_parser import parse_instrumentation_yaml
 from .inventory_manager import InventoryManager
 from .java_instrumentation_client import GithubAPIError, JavaInstrumentationClient
+from .jmx_model_extractor import JmxModelExtractor
 from .readme_extractor import ReadmeExtractor
 
 logger = logging.getLogger(__name__)
@@ -38,16 +39,19 @@ class InstrumentationSync:
         client: JavaInstrumentationClient,
         inventory_manager: InventoryManager,
         readme_extractor: ReadmeExtractor | None = None,
+        jmx_model_extractor: JmxModelExtractor | None = None,
     ):
         """
         Args:
             client: GitHub API client for fetching data
             inventory_manager: Inventory manager for storing data
             readme_extractor: README extractor (defaults to ReadmeExtractor(client))
+            jmx_model_extractor: JMX model extractor (defaults to JmxModelExtractor(client))
         """
         self.client = client
         self.inventory_manager = inventory_manager
         self.readme_extractor = readme_extractor or ReadmeExtractor(client)
+        self.jmx_model_extractor = jmx_model_extractor or JmxModelExtractor(client)
 
     def sync(self) -> dict[str, Any]:
         """
@@ -96,6 +100,8 @@ class InstrumentationSync:
             if not self.inventory_manager.readme_dir_exists(version):
                 instrumentations = self.inventory_manager.load_versioned_inventory(version)
                 self._sync_library_readmes(version, tag_string, instrumentations)
+            if not self.inventory_manager.jmx_models_index_exists(version):
+                self._sync_jmx_models(version, tag_string)
             return None
 
         logger.info(f"  Fetching instrumentation list for {tag_string}...")
@@ -107,6 +113,7 @@ class InstrumentationSync:
             instrumentations=instrumentations,
         )
         self._sync_library_readmes(version, tag_string, instrumentations)
+        self._sync_jmx_models(version, tag_string)
 
         return version
 
@@ -198,3 +205,46 @@ class InstrumentationSync:
 
         written = self.inventory_manager.save_library_readmes(version, fetched)
         logger.info(f"  Stored {written} library README(s) for v{version}")
+
+    def _sync_jmx_models(self, version: Version, ref: str) -> None:
+        """Best-effort: fetch JMX weaver model files and write version index."""
+        try:
+            sha = ref if _SHA_RE.match(ref) else self.client.resolve_ref_to_sha(ref)
+            discovered_models, manifest_path = self.jmx_model_extractor.discover_jmx_model_paths(sha)
+        except GithubAPIError as e:
+            logger.warning(f"  JMX model discovery failed for {ref}: {e}")
+            return
+
+        if not discovered_models and manifest_path is None:
+            logger.info(f"  No JMX weaver model files found at {ref}")
+            return
+
+        models: dict[str, str] = {}
+        fetch_failed = False
+        for target_system, path in sorted(discovered_models.items()):
+            try:
+                models[target_system] = self.jmx_model_extractor.fetch_model(path, sha)
+            except GithubAPIError as e:
+                logger.warning(f"  JMX model fetch failed for {target_system}: {e}")
+                fetch_failed = True
+
+        manifest_content = None
+        if manifest_path is not None:
+            try:
+                manifest_content = self.jmx_model_extractor.fetch_model(manifest_path, sha)
+            except GithubAPIError as e:
+                logger.warning(f"  JMX manifest fetch failed: {e}")
+                fetch_failed = True
+
+        if fetch_failed:
+            logger.warning(f"  JMX model index not written for v{version}; fetch incomplete")
+            return
+
+        written_models, manifest_file = self.inventory_manager.save_jmx_models_index(
+            version=version,
+            models=models,
+            manifest=manifest_content,
+        )
+
+        suffix = " and manifest" if manifest_file else ""
+        logger.info(f"  Stored {len(written_models)} JMX model file(s){suffix} for v{version}")

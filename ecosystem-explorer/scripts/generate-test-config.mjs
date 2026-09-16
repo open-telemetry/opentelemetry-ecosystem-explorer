@@ -71,7 +71,8 @@ async function startServer() {
 /**
  * Orchestrates the browser automation using Playwright.
  * Launches a headless browser, navigates to the configuration builder page,
- * selects an OTLP exporter, and extracts the generated YAML configuration.
+ * selects an OTLP exporter, adds every instrumentation config option, and extracts
+ * the generated YAML configuration.
  * The YAML is then saved to the specified output file for use in acceptance tests.
  */
 async function generateConfig() {
@@ -92,6 +93,10 @@ async function generateConfig() {
       }
     });
 
+    // "Add all instrumentation configs" is gated behind window.confirm.
+    page.once("dialog", async (dialog) => {
+      await dialog.accept();
+    });
     await page.goto(`${BASE_URL}/java-agent/configuration/builder`, {
       waitUntil: "networkidle",
       timeout: 20000,
@@ -111,6 +116,17 @@ async function generateConfig() {
       throw e;
     }
 
+    // Switch to the Instrumentation tab and add every instrumentation config
+    // option at its default value, so the acceptance test exercises the full
+    // generated surface rather than just the exporter block. Builder state is
+    // hoisted above the tabs, so the exporter selection above survives.
+    await page.getByRole("tab", { name: "Instrumentation" }).click({ timeout: 10000 });
+    // click() auto-waits for the button to leave its disabled state, which it
+    // does once the instrumentation list has loaded.
+    await page
+      .getByRole("button", { name: "Add all instrumentation configs" })
+      .click({ timeout: 30000 });
+
     const yamlElement = page.locator("pre").first();
     await yamlElement.waitFor({ state: "visible", timeout: 10000 });
     let yamlContent = await yamlElement.textContent();
@@ -128,6 +144,12 @@ async function generateConfig() {
 
     if (!yamlContent.includes("otlp_http")) {
       throw new Error("YAML does not contain the expected OTLP exporter block.");
+    }
+
+    // Guard against a silently broken "Add all" click leaving a thin config behind:
+    // the acceptance test would then pass without covering the instrumentation keys.
+    if (!yamlContent.includes("instrumentation/development")) {
+      throw new Error("YAML does not contain the expected instrumentation/development block.");
     }
 
     const outputPath = process.argv[2]

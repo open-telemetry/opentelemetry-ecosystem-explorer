@@ -1,0 +1,30 @@
+{
+  "description": null,
+  "display_name": "AWS S3 Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-awss3receiver",
+  "markdown_hash": "d081e2b3628c",
+  "name": "awss3receiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "atoulme",
+        "adcharre"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "receiver"
+}

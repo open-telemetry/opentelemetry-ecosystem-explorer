@@ -26,7 +26,11 @@ from explorer_db_builder.collector_builder import run_collector_builder
 from explorer_db_builder.configuration_aggregator import build_global_configurations
 from explorer_db_builder.configuration_builder import run_configuration_builder
 from explorer_db_builder.database_writer import DatabaseWriter
-from explorer_db_builder.declarative_name_corrections import apply_declarative_name_corrections
+from explorer_db_builder.declarative_name_corrections import (
+    apply_declarative_name_corrections,
+    backfill_underdocumented_configs,
+    normalize_config_descriptions,
+)
 from explorer_db_builder.ecosystem_stats import count_unique_java_library_names
 from explorer_db_builder.instrumentation_transformer import (
     make_list_instrumentation,
@@ -171,19 +175,31 @@ def run_javaagent_builder(
         # Pre-load README maps for all versions to enable augmentation and backfilling
         readme_maps = {v: inventory_manager.load_library_readme_map(v) for v in versions}
 
-        # Publish all READMEs to the database
+        # Publish all READMEs to the database. Only those that actually landed get a
+        # markdown_hash below - sanitizing can leave a README empty, and stamping one
+        # that was never written would point the frontend at a missing file.
+        published_readmes: dict[Version, dict[str, str]] = {}
         for version, readme_map in readme_maps.items():
+            published = {}
             for library_name, markdown_hash in readme_map.items():
                 content = inventory_manager.load_library_readme_content(version, library_name, markdown_hash)
-                if content is not None:
-                    db_writer.write_markdown(library_name, markdown_hash, content)
+                if content is not None and db_writer.write_markdown(library_name, markdown_hash, content):
+                    published[library_name] = markdown_hash
+            published_readmes[version] = published
 
         def load_and_augment_inventory(version: Version) -> dict:
             inventory = inventory_manager.load_versioned_inventory(version)
-            readme_map = readme_maps.get(version, {})
+            readme_map = published_readmes.get(version, {})
 
-            # Correct known-bad declarative_name values before backfill and aggregation so the
-            # fix lands in both the per-version files and global-configurations.json.
+            # Resolve catalog/ref file formats (e.g. 0.6) to the inline 0.5 shape up front so every
+            # downstream correction/backfill step operates on inline `configurations`/`metrics`
+            # regardless of the registry file format. Corrections that walk inline configs were
+            # silent no-ops for 0.6 when this transform still ran later in process_version.
+            inventory = transform_instrumentation_format(inventory)
+
+            # Correct known-bad declarative_name values (and backfill missing config names) before
+            # backfill and aggregation so the fix lands in both the per-version files and
+            # global-configurations.json.
             apply_declarative_name_corrections(inventory)
             # Correct known-bad telemetry when-conditions:
             # - fold known test-harness artifact when-conditions back into "default"
@@ -218,6 +234,17 @@ def run_javaagent_builder(
             item_key="custom",
         )
 
+        # Pin reworded-but-unchanged config descriptions to their newest value across versions so
+        # cosmetic upstream rewordings of shared configs don't show as per-library changes in the
+        # release comparison. Runs after backfill (so config names are populated) and before both
+        # per-version writes and global-configurations aggregation. versions is newest-first.
+        normalize_config_descriptions([backfilled_inventories[v] for v in versions])
+
+        # Back-populate configs the agent supported before upstream documented them (e.g.
+        # url_template_rules, new in 2.29.1) into earlier versions, so they don't read as spuriously
+        # "added" in the release comparison.
+        backfill_underdocumented_configs([(v, backfilled_inventories[v]) for v in versions])
+
         # versions[0] is the latest release (the same version write_version_list
         # flags as is_latest), so the first processed version's instrumentations
         # feed the lightweight index.
@@ -232,6 +259,12 @@ def run_javaagent_builder(
 
         db_writer.write_version_list(versions, bundle_hashes)
         db_writer.write_index(latest_instrumentations)
+
+        # Incremental runs never overwrite the store, so files whose hash changed are left
+        # orphaned. Sweep them now that every version index (the reachability source) is on
+        # disk. Skipped after --clean, which already wiped everything.
+        if not clean:
+            db_writer.remove_orphans()
 
         global_configurations = build_global_configurations([backfilled_inventories[v] for v in versions])
         db_writer.write_global_configurations(global_configurations)

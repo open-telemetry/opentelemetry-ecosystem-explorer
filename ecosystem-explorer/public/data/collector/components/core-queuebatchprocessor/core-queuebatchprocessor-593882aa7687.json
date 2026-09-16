@@ -1,0 +1,29 @@
+{
+  "description": null,
+  "display_name": null,
+  "distribution": "core",
+  "ecosystem": "collector",
+  "id": "core-queuebatchprocessor",
+  "markdown_hash": "7263c908a345",
+  "name": "queuebatchprocessor",
+  "repository": "opentelemetry-collector",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "jmacd",
+        "iblancasa"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "logs",
+        "metrics",
+        "profiles",
+        "traces"
+      ]
+    }
+  },
+  "type": "processor"
+}

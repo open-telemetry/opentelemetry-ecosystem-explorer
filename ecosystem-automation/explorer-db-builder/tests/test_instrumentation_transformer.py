@@ -352,6 +352,110 @@ class TestTransformInstrumentationFormat:
             transform_instrumentation_format(data)
 
 
+class TestTransform06To05:
+    def _catalog_data(self):
+        """0.6 inventory: two libraries sharing one config/metric via the definitions catalog."""
+        return {
+            "file_format": 0.6,
+            "definitions": {
+                "configurations": {
+                    "http.known-methods": {
+                        "name": "otel.instrumentation.http.known-methods",
+                        "declarative_name": "java.common.http.known_methods",
+                        "description": "Configures known methods.",
+                        "type": "list",
+                        "default": "GET,POST",
+                    },
+                },
+                "metrics": {
+                    "http.server.request.duration-639e2d0b": {
+                        "name": "http.server.request.duration",
+                        "description": "Duration of HTTP server requests.",
+                        "instrument": "histogram",
+                        "data_type": "HISTOGRAM",
+                        "unit": "s",
+                    },
+                },
+            },
+            "libraries": [
+                {
+                    "name": "activej-http-6.0",
+                    "configuration_refs": ["http.known-methods"],
+                    "telemetry": [
+                        {"when": "default", "metric_refs": ["http.server.request.duration-639e2d0b"]},
+                    ],
+                },
+                {
+                    "name": "akka-http-10.0",
+                    "configuration_refs": ["http.known-methods"],
+                    "telemetry": [
+                        {"when": "default", "metric_refs": ["http.server.request.duration-639e2d0b"]},
+                    ],
+                },
+            ],
+        }
+
+    def test_resolves_refs_to_inline_shape(self):
+        result = transform_instrumentation_format(self._catalog_data())
+
+        assert result["file_format"] == 0.5
+        # Catalog and ref keys are dropped after resolution.
+        assert "definitions" not in result
+        lib = result["libraries"][0]
+        assert "configuration_refs" not in lib
+        assert "metric_refs" not in lib["telemetry"][0]
+        # References resolved into the inline 0.5 shape consumers expect.
+        assert lib["configurations"][0]["name"] == "otel.instrumentation.http.known-methods"
+        assert lib["telemetry"][0]["metrics"][0]["data_type"] == "HISTOGRAM"
+
+    def test_shared_definition_yields_independent_copies(self):
+        result = transform_instrumentation_format(self._catalog_data())
+
+        config_a = result["libraries"][0]["configurations"][0]
+        config_b = result["libraries"][1]["configurations"][0]
+        metric_a = result["libraries"][0]["telemetry"][0]["metrics"][0]
+        metric_b = result["libraries"][1]["telemetry"][0]["metrics"][0]
+
+        # Same values, but distinct objects so later in-place mutation can't leak across libraries.
+        assert config_a == config_b
+        assert config_a is not config_b
+        assert metric_a is not metric_b
+
+    def test_unknown_ref_is_skipped(self):
+        data = {
+            "file_format": 0.6,
+            "definitions": {"configurations": {}, "metrics": {}},
+            "libraries": [
+                {
+                    "name": "test-lib",
+                    "configuration_refs": ["does.not.exist"],
+                    "telemetry": [{"when": "default", "metric_refs": ["missing-metric"]}],
+                }
+            ],
+        }
+
+        result = transform_instrumentation_format(data)
+
+        lib = result["libraries"][0]
+        assert lib["configurations"] == []
+        assert lib["telemetry"][0]["metrics"] == []
+
+    def test_resolves_custom_libraries(self):
+        data = self._catalog_data()
+        data["custom"] = [
+            {
+                "name": "custom-lib",
+                "configuration_refs": ["http.known-methods"],
+                "telemetry": [],
+            }
+        ]
+
+        result = transform_instrumentation_format(data)
+
+        assert result["custom"][0]["configurations"][0]["name"] == "otel.instrumentation.http.known-methods"
+        assert "configuration_refs" not in result["custom"][0]
+
+
 class TestTransform01To02:
     def test_transforms_javaagent_and_library_fields(self):
         """Transforms target_versions to new format with both javaagent and library."""

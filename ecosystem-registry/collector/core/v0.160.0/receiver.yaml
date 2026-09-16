@@ -1,0 +1,45 @@
+distribution: core
+version: 0.160.0
+repository: opentelemetry-collector
+component_type: receiver
+schema_hash: a0135ca939d9
+components:
+- name: nopreceiver
+  metadata:
+    display_name: No-op Receiver
+    github_project: open-telemetry/opentelemetry-collector
+    status:
+      class: receiver
+      codeowners:
+        active:
+        - evan-bradley
+      distributions:
+      - contrib
+      - core
+      stability:
+        alpha:
+        - profiles
+        beta:
+        - logs
+        - metrics
+        - traces
+    type: nop
+- name: otlpreceiver
+  metadata:
+    display_name: OTLP Receiver
+    github_project: open-telemetry/opentelemetry-collector
+    status:
+      class: receiver
+      distributions:
+      - contrib
+      - core
+      - k8s
+      - otlp
+      stability:
+        alpha:
+        - profiles
+        stable:
+        - logs
+        - metrics
+        - traces
+    type: otlp

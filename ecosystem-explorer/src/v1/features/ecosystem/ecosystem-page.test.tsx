@@ -107,12 +107,16 @@ describe("Collector ecosystem landing", () => {
     expect(nav).toHaveTextContent(/OpenTelemetry Collector/);
   });
 
-  it("renders the three quick-entry cards", () => {
+  it("renders the existing quick entries plus deprecated components", () => {
     useEcosystemLandingData.mockReturnValue(errorState);
     renderRouter(<CollectorLandingV1 />);
     expect(screen.getByRole("heading", { name: /Most-used components/i })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /Core vs\. Contrib/i })).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: /Diff across versions/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Deprecated components/i })).toHaveAttribute(
+      "href",
+      "/collector/components?version=deprecated"
+    );
   });
 });
 
@@ -162,5 +166,15 @@ describe("Ecosystem landing i18n", () => {
     } finally {
       await i18n.changeLanguage("en");
     }
+  });
+});
+
+describe("Ecosystem landing hero CTAs", () => {
+  it("sizes every hero CTA like upstream's .btn-lg", () => {
+    useEcosystemLandingData.mockReturnValue(errorState);
+    const { container } = renderRouter(<CollectorLandingV1 />);
+    const ctas = container.querySelectorAll(".td-cover-block .td-btn");
+    expect(ctas.length).toBeGreaterThan(0);
+    for (const cta of ctas) expect(cta).toHaveClass("td-btn--lg");
   });
 });

@@ -1,0 +1,89 @@
+{
+  "attributes": {
+    "dns.rcode": {
+      "description": "DNS response code (RCODE) returned for the query. Only present when a response was received from the server, including non-success responses such as NXDOMAIN, SERVFAIL, or REFUSED. Absent when no response was received at all (e.g. timeout or network unreachable). See the RCODE Reference table in the README for the meaning of each value, based on the IANA DNS Parameters registry (https://www.iana.org/assignments/dns-parameters/dns-parameters.xhtml#dns-parameters-6).",
+      "requirement_level": "recommended",
+      "type": "int"
+    },
+    "dns.resolved.all.ips": {
+      "description": "All resolved IP addresses.",
+      "requirement_level": "recommended",
+      "type": "string"
+    },
+    "dns.resolved.ip": {
+      "description": "First/primary resolved IP address.",
+      "requirement_level": "recommended",
+      "type": "string"
+    },
+    "error.message": {
+      "description": "Error message recorded when the DNS check fails.",
+      "requirement_level": "recommended",
+      "type": "string"
+    }
+  },
+  "description": "The DNS Check Receiver can be used for synthetic checks against DNS servers.",
+  "display_name": "DNS Check Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-dnscheckreceiver",
+  "markdown_hash": "9e47ec833f6d",
+  "metrics": {
+    "dnscheck.duration": {
+      "attributes": [],
+      "description": "Round-trip duration of the DNS query.",
+      "enabled": true,
+      "gauge": {
+        "value_type": "int"
+      },
+      "stability": "development",
+      "unit": "ms"
+    },
+    "dnscheck.error": {
+      "attributes": [
+        "error.message"
+      ],
+      "description": "Number of errors recorded during the DNS check.",
+      "enabled": false,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "{error}"
+    },
+    "dnscheck.status": {
+      "attributes": [
+        "dns.rcode",
+        "dns.resolved.all.ips",
+        "dns.resolved.ip"
+      ],
+      "description": "1 if the DNS query returned successfully, 0 otherwise. The dns.resolved.ip and dns.resolved.all.ips attributes are only present when the value is 1 and the record type is A or AAAA. The dns.rcode attribute is present whenever a response was received from the server, including non-success responses such as NXDOMAIN, SERVFAIL, or REFUSED; it is absent only when no response was received at all (e.g. timeout or network unreachable).",
+      "enabled": true,
+      "stability": "development",
+      "sum": {
+        "aggregation_temporality": "cumulative",
+        "monotonic": false,
+        "value_type": "int"
+      },
+      "unit": "1"
+    }
+  },
+  "name": "dnscheckreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "dmitryax"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver"
+}
