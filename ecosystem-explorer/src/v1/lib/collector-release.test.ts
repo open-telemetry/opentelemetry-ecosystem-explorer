@@ -75,12 +75,13 @@ describe("Collector release context", () => {
   });
 
   it.each(["0.149.0", "v0.149.0"])(
-    "formats source tags for %s without changing data versions",
+    "normalizes %s to a bare data version with a tagged source ref",
     (version) => {
       const release = collectorReleaseContext({ searchParams: new URLSearchParams({ version }) });
+      // Data manifests are keyed without the tag prefix; the release strips it once at the boundary.
       expect(release.sourceHref(component)).toContain("/tree/v0.149.0/");
-      expect(release.dataVersion()).toBe(version);
-      expect(release.detailHref(component)).toContain(`?version=${version}`);
+      expect(release.dataVersion()).toBe("0.149.0");
+      expect(release.detailHref(component)).toContain("?version=0.149.0");
 
       const deprecated = collectorReleaseContext({
         searchParams: new URLSearchParams("version=deprecated"),
