@@ -1,0 +1,52 @@
+{
+  "description": null,
+  "display_name": null,
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-rollingspanlatencyprocessor",
+  "markdown_hash": "4f68b862e4f5",
+  "name": "rollingspanlatencyprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "atoulme",
+        "rnterbush",
+        "pavankrish123"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "traces"
+      ]
+    }
+  },
+  "telemetry": {
+    "metrics": {
+      "processor_rolling_span_latency_active_baselines": {
+        "description": "Current number of active per-key latency baselines tracked by the processor.",
+        "enabled": true,
+        "gauge": {
+          "async": true,
+          "value_type": "int"
+        },
+        "stability": "development",
+        "unit": "{baselines}"
+      },
+      "processor_rolling_span_latency_dropped_keys_total": {
+        "description": "Number of new baseline keys dropped because max_baselines was reached.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "async": true,
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "{keys}"
+      }
+    }
+  },
+  "type": "processor"
+}

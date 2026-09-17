@@ -1,0 +1,29 @@
+{
+  "description": null,
+  "display_name": "Metrics Transform Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-metricstransformprocessor",
+  "markdown_hash": "b816a5d436ad",
+  "name": "metricstransformprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "dmitryax",
+        "himanshu130700"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "processor"
+}

@@ -1,0 +1,27 @@
+{
+  "description": null,
+  "display_name": "Signing Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-signingprocessor",
+  "markdown_hash": "354dda5d2ffe",
+  "name": "signingprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "hilmarf",
+        "jmacd"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "logs"
+      ]
+    },
+    "warnings": []
+  },
+  "type": "processor"
+}

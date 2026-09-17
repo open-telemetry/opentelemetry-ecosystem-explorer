@@ -1,0 +1,35 @@
+{
+  "description": null,
+  "display_name": "Google Cloud Spanner Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-googlecloudspannerreceiver",
+  "markdown_hash": "a959903fcf00",
+  "name": "googlecloudspannerreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "dashpole",
+        "nsj07"
+      ],
+      "emeritus": [
+        "architjugran",
+        "dsimil",
+        "harishbohara11",
+        "KiranmayiB",
+        "varunraiko"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver"
+}
