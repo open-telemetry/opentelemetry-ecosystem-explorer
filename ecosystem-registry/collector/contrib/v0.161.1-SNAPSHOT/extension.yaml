@@ -401,6 +401,23 @@ components:
         alpha:
         - extension
     type: zipkin_encoding
+- name: filetelemetrypolicyextension
+  metadata:
+    description: The File Telemetry Policy Extension provides telemetry policies loaded
+      from local files.
+    display_name: File Telemetry Policy Extension
+    status:
+      class: extension
+      codeowners:
+        active:
+        - dashpole
+        - jaronoff97
+        - mx-psi
+      distributions: []
+      stability:
+        development:
+        - extension
+    type: file_telemetry_policy
 - name: googleclientauthextension
   metadata:
     description: This extension provides Google OAuth2 Client Credentials and Metadata

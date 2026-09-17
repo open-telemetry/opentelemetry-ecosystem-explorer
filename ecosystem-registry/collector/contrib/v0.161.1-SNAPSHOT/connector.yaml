@@ -62,6 +62,8 @@ components:
       - k8s
       stability:
         alpha:
+        - logs_to_logs
+        - logs_to_metrics
         - traces_to_logs
         - traces_to_metrics
     type: exceptions

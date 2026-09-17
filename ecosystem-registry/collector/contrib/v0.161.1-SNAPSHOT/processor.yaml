@@ -2594,6 +2594,27 @@ components:
             value_type: int
           unit: '{traces}'
     type: tail_sampling
+- name: telemetrypolicyprocessor
+  metadata:
+    description: The `telemetry_policy` processor natively interprets and enforces
+      standardized, declarative Telemetry Policies across traces, metrics, and logs
+      for sampling, filtering, and scoped transformations, with built-in hit/miss
+      observability.
+    display_name: Telemetry Policy Processor
+    status:
+      class: processor
+      codeowners:
+        active:
+        - dashpole
+        - jaronoff97
+        - mx-psi
+      distributions: []
+      stability:
+        development:
+        - logs
+        - metrics
+        - traces
+    type: telemetry_policy
 - name: transformprocessor
   metadata:
     display_name: Transform Processor
