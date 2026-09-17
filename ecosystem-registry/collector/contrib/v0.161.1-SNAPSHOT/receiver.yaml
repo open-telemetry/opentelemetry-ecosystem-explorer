@@ -11304,6 +11304,11 @@ components:
         - dyl10s
         - ishleenk17
         - shrenikjain38
+        - ebrdarSplunk
+        - XSAM
+        - akshays-19
+        - sv-splunk
+        - splunk-shanu
         seeking_new: true
       distributions:
       - contrib
