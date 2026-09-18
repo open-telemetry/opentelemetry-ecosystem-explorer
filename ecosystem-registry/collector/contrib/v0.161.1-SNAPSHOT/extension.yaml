@@ -126,6 +126,7 @@ components:
         - rogercoll
       distributions:
       - contrib
+      - k8s
       stability:
         alpha:
         - extension

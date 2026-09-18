@@ -1781,6 +1781,7 @@ components:
         - azure
         - azureappservice
         - azurecontainerapps
+        - azurefunctions
         - consul
         - digitalocean
         - docker
