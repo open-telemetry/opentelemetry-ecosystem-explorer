@@ -88,6 +88,7 @@ components:
     type: failover
 - name: grafanacloudconnector
   metadata:
+    deprecated_type: grafanacloud
     display_name: Grafana Cloud Connector
     status:
       class: connector
@@ -128,7 +129,7 @@ components:
             value_type: int
           stability: development
           unit: '1'
-    type: grafanacloud
+    type: grafana_cloud
 - name: metricsaslogsconnector
   metadata:
     deprecated_type: metricsaslogs

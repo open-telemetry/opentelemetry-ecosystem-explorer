@@ -1903,6 +1903,7 @@ components:
     type: aws_lambda
 - name: awss3receiver
   metadata:
+    deprecated_type: awss3
     display_name: AWS S3 Receiver
     status:
       class: receiver
@@ -1917,7 +1918,7 @@ components:
         - logs
         - metrics
         - traces
-    type: awss3
+    type: aws_s3
 - name: awsxrayreceiver
   metadata:
     display_name: AWS X-Ray Receiver
@@ -10608,6 +10609,32 @@ components:
         description: Whether the value carried by db.query.text is a truncated rendering
           of the MongoDB command, as indicated by `$truncated` in the currentOp output.
         type: bool
+      mongodb.replica.name:
+        description: The name of the replica, in host:port form.
+        requirement_level: recommended
+        type: string
+      mongodb.replica.state:
+        description: The state of a replica within the replica set.
+        enum:
+        - arbiter
+        - down
+        - primary
+        - recovering
+        - removed
+        - rollback
+        - secondary
+        - startup
+        - startup2
+        - unknown
+        requirement_level: recommended
+        type: string
+      mongodb.replica_set.lag.type:
+        description: The replication progress that the lag is measured against.
+        enum:
+        - applied
+        - durable
+        requirement_level: recommended
+        type: string
       mongodb.wt.concurrent_transaction.ticket.type:
         description: The WiredTiger concurrent-transaction ticket type.
         enum:
@@ -11088,6 +11115,35 @@ components:
           monotonic: true
           value_type: int
         unit: ms
+      mongodb.oplog.limit:
+        attributes: []
+        description: The maximum amount of storage the oplog is allowed to use.
+        enabled: false
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: false
+          value_type: int
+        unit: By
+      mongodb.oplog.usage:
+        attributes: []
+        description: The amount of storage the oplog is using.
+        enabled: false
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: false
+          value_type: int
+        unit: By
+      mongodb.oplog.window:
+        attributes: []
+        description: The time span between the oldest and the newest entry retained
+          in the oplog.
+        enabled: false
+        gauge:
+          value_type: double
+        stability: development
+        unit: s
       mongodb.page_faults:
         attributes: []
         description: The number of page faults.
@@ -11161,6 +11217,51 @@ components:
           value_type: double
         stability: development
         unit: '{update}/s'
+      mongodb.replica.status:
+        attributes:
+        - mongodb.replica.state
+        description: The current state of the scraped replica.
+        enabled: false
+        extended_documentation: A timeseries is produced for every possible state.
+          The value is 1 for the state the instance is currently in, and 0 for all
+          others.
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: false
+          value_type: int
+        unit: '1'
+      mongodb.replica_set.headroom:
+        attributes:
+        - mongodb.replica.name
+        description: The time margin a replica set member has before it falls off
+          the end of the oplog.
+        enabled: false
+        gauge:
+          value_type: double
+        stability: development
+        unit: s
+      mongodb.replica_set.lag:
+        attributes:
+        - mongodb.replica.name
+        - mongodb.replica_set.lag.type
+        description: The time a replica set member is behind the primary.
+        enabled: false
+        gauge:
+          value_type: double
+        stability: development
+        unit: s
+      mongodb.replica_set.member.count:
+        attributes:
+        - mongodb.replica.state
+        description: The number of members in the replica set.
+        enabled: false
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: false
+          value_type: int
+        unit: '{member}'
       mongodb.session.count:
         attributes: []
         description: The total number of active sessions.
@@ -12613,6 +12714,18 @@ components:
         description: Endpoint of the MySQL instance.
         enabled: true
         type: string
+      server.address:
+        description: The address of the monitored MySQL instance. A loopback endpoint
+          (for example localhost or 127.0.0.1) is reported as the host name of the
+          machine running the collector, since the instance is co-located with it.
+          With a Unix socket transport this is the socket path.
+        enabled: true
+        type: string
+      server.port:
+        description: The port of the monitored MySQL instance. Not reported with a
+          Unix socket transport.
+        enabled: true
+        type: int
       service.instance.id:
         description: A unique identifier of the MySQL instance as a UUID v5, derived
           from the endpoint using the OTel namespace.

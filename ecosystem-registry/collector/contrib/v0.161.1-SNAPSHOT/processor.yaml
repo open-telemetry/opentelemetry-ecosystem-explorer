@@ -2620,13 +2620,6 @@ components:
   metadata:
     display_name: Transform Processor
     feature_gates:
-    - description: Changes the default error_mode of the transform processor from
-        propagate to ignore
-      from_version: v0.150.0
-      id: processor.transform.defaultErrorModeIgnore
-      reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/47231
-      stage: stable
-      to_version: v0.159.0
     - description: Flatten log data prior to transformation so every record has a
         unique copy of the resource and scope. Regroups logs based on resource and
         scope after transformations.

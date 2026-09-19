@@ -757,7 +757,7 @@ components:
       distributions:
       - contrib
       stability:
-        development:
+        alpha:
         - extension
     type: sd_notify
 - name: sigv4authextension
