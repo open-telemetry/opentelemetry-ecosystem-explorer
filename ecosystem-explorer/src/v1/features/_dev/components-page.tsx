@@ -173,6 +173,7 @@ const LIST_ROWS: ListRow[] = [
     displayName: "OTLP Receiver",
     type: "receiver",
     distribution: "core",
+    distributions: ["core"],
     description: "Receives telemetry via gRPC or HTTP in OTLP format.",
     stability: "stable",
     signals: ["traces", "metrics", "logs"],
@@ -184,6 +185,7 @@ const LIST_ROWS: ListRow[] = [
     displayName: "Batch Processor",
     type: "processor",
     distribution: "core",
+    distributions: ["core"],
     description: "Batches telemetry before export to reduce outgoing connections.",
     stability: "beta",
     signals: ["traces", "metrics", "logs"],
@@ -195,6 +197,7 @@ const LIST_ROWS: ListRow[] = [
     displayName: "Kafka Exporter",
     type: "exporter",
     distribution: "contrib",
+    distributions: ["contrib"],
     description: "Exports telemetry to Apache Kafka topics.",
     stability: "alpha",
     signals: ["traces", "metrics"],
@@ -206,6 +209,7 @@ const LIST_ROWS: ListRow[] = [
     displayName: "Count Connector",
     type: "connector",
     distribution: "contrib",
+    distributions: ["contrib"],
     description: "Counts spans, data points, and log records into metrics.",
     stability: "development",
     signals: ["metrics"],
@@ -217,6 +221,7 @@ const LIST_ROWS: ListRow[] = [
     displayName: "Health Check",
     type: "extension",
     distribution: "core",
+    distributions: ["core"],
     description: null,
     stability: "deprecated",
     signals: [],
@@ -389,6 +394,7 @@ function FacetPanelShowcase() {
           signals: { traces: 112, metrics: 96, logs: 74, baggage: 8 },
           distributions: { core: 41, contrib: 182 },
         }}
+        distributions={["core", "contrib"]}
       />
     </div>
   );
