@@ -23,7 +23,7 @@
  *
  * URL shape (collector example):
  *   /collector/components?type=receiver,processor&signal=traces
- *     &stability=stable,beta&distribution=contrib&version=v0.150.0
+ *     &stability=stable,beta&distribution=contrib&version=0.150.0
  *     &q=kafka&sort=updated&density=compact&page=2
  *
  * Multi-select facets are CSV-joined (lowercase, deduped, stable order).

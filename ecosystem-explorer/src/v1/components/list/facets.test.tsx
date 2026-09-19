@@ -25,8 +25,8 @@ const TYPE_OPTIONS = [
 ];
 
 const VERSION_OPTIONS = [
-  { value: "v0.150.0", label: "v0.150.0" },
-  { value: "v0.149.0", label: "v0.149.0" },
+  { value: "0.150.0", label: "0.150.0" },
+  { value: "0.149.0", label: "0.149.0" },
 ];
 
 const renderCheckbox = (props: Partial<Parameters<typeof CheckboxFacet>[0]> = {}) =>
@@ -158,8 +158,8 @@ describe("SelectFacet", () => {
     const select = screen.getByRole("combobox", { name: "Version" });
     expect(select).toHaveValue("");
     expect(screen.getByRole("option", { name: "Latest" })).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "v0.150.0" })).toBeInTheDocument();
-    expect(screen.getByRole("option", { name: "v0.149.0" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "0.150.0" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "0.149.0" })).toBeInTheDocument();
   });
 
   it("fires onChange with the selected value", async () => {
@@ -167,14 +167,14 @@ describe("SelectFacet", () => {
     const user = userEvent.setup();
     renderSelect({ onChange });
 
-    await user.selectOptions(screen.getByRole("combobox", { name: "Version" }), "v0.149.0");
-    expect(onChange).toHaveBeenCalledWith("v0.149.0");
+    await user.selectOptions(screen.getByRole("combobox", { name: "Version" }), "0.149.0");
+    expect(onChange).toHaveBeenCalledWith("0.149.0");
   });
 
   it("fires onChange with null when the empty option is selected", async () => {
     const onChange = vi.fn();
     const user = userEvent.setup();
-    renderSelect({ onChange, value: "v0.150.0" });
+    renderSelect({ onChange, value: "0.150.0" });
 
     await user.selectOptions(screen.getByRole("combobox", { name: "Version" }), "Latest");
     expect(onChange).toHaveBeenCalledWith(null);
