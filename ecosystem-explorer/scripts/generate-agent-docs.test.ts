@@ -38,6 +38,37 @@ const latestVersion = (ecosystem: string): string => {
   return versions.find((v: { is_latest: boolean }) => v.is_latest).version;
 };
 
+type Doc = {
+  name?: string;
+  display_name?: string;
+  type?: string;
+  distribution?: string;
+  description?: string;
+  status?: { stability?: Record<string, string[]> };
+  telemetry?: unknown;
+};
+
+/** `{id: doc}` for every component in an ecosystem's latest release. */
+const latestDocs = (
+  ecosystem: string,
+  contentDir: string,
+  sections: string[]
+): Record<string, Doc> => {
+  const manifest = readJson(
+    resolve(dataDir, ecosystem, `versions/${latestVersion(ecosystem)}-index.json`)
+  );
+  const hashes: Record<string, string> = Object.assign(
+    {},
+    ...sections.map((section) => manifest[section] ?? {})
+  );
+  return Object.fromEntries(
+    Object.entries(hashes).map(([id, hash]) => [
+      id,
+      readJson(resolve(dataDir, ecosystem, contentDir, id, `${id}-${hash}.json`)),
+    ])
+  );
+};
+
 describe("agent docs: Java telemetry rendering", () => {
   // Mirrors Apache Dubbo: two `when` groups whose metrics are mutually
   // exclusive. Flattening them into one list is the bug this guards.
@@ -306,6 +337,12 @@ describe("agent docs: signal facets", () => {
   it("returns no Collector signals when stability is absent or malformed", () => {
     expect(collectorSignals({})).toEqual([]);
     expect(collectorSignals({ status: { stability: "beta" } })).toEqual([]);
+    // A malformed level contributes nothing rather than a non-signal entry.
+    expect(
+      collectorSignals({
+        status: { stability: { beta: "logs", development: [1, null, "traces"] } },
+      })
+    ).toEqual(["traces"]);
   });
 
   it("reports the telemetry kinds a Java instrumentation emits", () => {
@@ -456,25 +493,48 @@ describe("agent docs: reverse index and facets", () => {
           .map((line) => JSON.parse(line))
           .find((entry) => entry.id === id);
 
-      const kafka = row("collector", "contrib-kafkareceiver");
-      expect(kafka).toMatchObject({
-        name: "kafkareceiver",
-        type: "receiver",
-        distribution: "contrib",
-        page: "/collector/components/contrib/kafkareceiver",
-      });
-      expect(kafka.signals).toContain("logs");
-      expect(kafka.description).toBeTruthy();
-      // Derivable from the id via the documented alias pattern, so not stored.
-      expect(kafka.json).toBeUndefined();
+      // The subjects are picked out of the corpus rather than named, so an
+      // upstream rename or removal can't fail a test about field mapping.
+      // First match in id order keeps the pick deterministic.
+      const pick = (docs: Record<string, Doc>, signals: (doc: Doc) => string[]) => {
+        const id = Object.keys(docs)
+          .sort()
+          .find((candidate) => docs[candidate].description && signals(docs[candidate]).length > 0);
+        expect(id, "no corpus entry has both a description and signals").toBeDefined();
+        return { id: id as string, doc: docs[id as string] };
+      };
 
-      const dubbo = row("javaagent", "apache-dubbo-2.7");
-      expect(dubbo).toMatchObject({
-        display_name: "Apache Dubbo",
-        page: "/java-agent/instrumentation/apache-dubbo-2.7",
+      const collector = pick(
+        latestDocs("collector", "components", ["components"]),
+        collectorSignals
+      );
+      const component = row("collector", collector.id);
+      expect(component).toMatchObject({
+        name: collector.doc.name,
+        type: collector.doc.type,
+        distribution: collector.doc.distribution,
+        description: collector.doc.description,
+        page: `/collector/components/${collector.doc.distribution}/${collector.doc.name}`,
       });
-      expect(dubbo.signals).toEqual(["metrics", "spans"]);
-      expect(dubbo.json).toBeUndefined();
+      expect(component.signals).toEqual(collectorSignals(collector.doc));
+      // Derivable from the id via the documented alias pattern, so not stored.
+      expect(component.json).toBeUndefined();
+
+      const java = pick(
+        latestDocs("javaagent", "instrumentations", [
+          "instrumentations",
+          "custom_instrumentations",
+        ]),
+        javaSignals
+      );
+      const instrumentation = row("javaagent", java.id);
+      expect(instrumentation).toMatchObject({
+        display_name: java.doc.display_name || java.id,
+        description: java.doc.description,
+        page: `/java-agent/instrumentation/${java.id}`,
+      });
+      expect(instrumentation.signals).toEqual(javaSignals(java.doc));
+      expect(instrumentation.json).toBeUndefined();
     } finally {
       rmSync(outDir, { recursive: true, force: true });
     }

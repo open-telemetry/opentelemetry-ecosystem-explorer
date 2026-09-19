@@ -616,7 +616,13 @@ const DATA_STORES = [
 export function collectorSignals(component) {
   const stability = component?.status?.stability;
   if (!stability || typeof stability !== "object") return [];
-  return [...new Set(Object.values(stability).flat().filter(Boolean))].sort();
+  // Only string leaves count: a malformed level (a bare string, a number, an
+  // object) would otherwise land in the facet row and the Markdown table.
+  const signals = Object.values(stability)
+    .filter(Array.isArray)
+    .flat()
+    .filter((signal) => typeof signal === "string" && signal !== "");
+  return [...new Set(signals)].sort();
 }
 
 /**
@@ -736,7 +742,8 @@ async function collectStoreFacets(publicPath, store) {
         )
       );
     } catch (e) {
-      console.warn(`[WARN] Could not read ${ecosystem}/${id} for the reverse index: ${e.message}`);
+      const message = e instanceof Error ? e.message : String(e);
+      console.warn(`[WARN] Could not read ${ecosystem}/${id} for the reverse index: ${message}`);
       continue;
     }
 
@@ -755,7 +762,10 @@ async function collectStoreFacets(publicPath, store) {
  * compose without duplicating that text per lookup key.
  */
 function buildReverseIndexJson(ecosystem, version, key, map) {
-  const entries = {};
+  // Null-prototype: a key named `__proto__` would be swallowed by a plain
+  // object literal (it sets the prototype instead of an own property), dropping
+  // that metric or attribute from the index with no error.
+  const entries = Object.create(null);
   for (const name of [...map.keys()].sort()) {
     entries[name] = [...map.get(name)].sort();
   }
