@@ -17,7 +17,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { TimelineEvent, TimelineLaneDef } from "../types";
-import { positionFraction, type TimelineRange } from "../utils/timeline-layout";
+import { positionFraction, timelineDateWidth, type TimelineRange } from "../utils/timeline-layout";
 import { LANE_LABEL_WIDTH_CLASS, TimelineLane } from "./timeline-lane";
 
 export interface TimelineLaneGroup {
@@ -65,7 +65,10 @@ export function TimelineChart({
     if (trackWidth === 0) return [];
     const ticks: { year: number; x: number }[] = [];
     for (let year = range.startYear; year <= range.endYear; year++) {
-      ticks.push({ year, x: positionFraction(`${year}-01-01`, range) * trackWidth });
+      ticks.push({
+        year,
+        x: positionFraction(`${year}-01-01`, range) * timelineDateWidth(trackWidth),
+      });
     }
     return ticks;
   }, [range, trackWidth]);

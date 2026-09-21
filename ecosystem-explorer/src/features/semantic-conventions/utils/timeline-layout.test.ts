@@ -23,6 +23,7 @@ import {
   MARKER_LABEL_WIDTH,
   MARKER_SIZE,
   positionFraction,
+  timelineDateWidth,
 } from "./timeline-layout";
 import type { TimelineEvent } from "../types";
 
@@ -93,26 +94,27 @@ describe("durationLabel", () => {
 
 describe("layoutLaneMarkers", () => {
   it.each([552, 900, 1400])(
-    "keeps labels inside a %ipx track and markers at their dates",
+    "keeps every label to the right inside a %ipx track and markers at their dates",
     (width) => {
       const events = [
         makeEvent({ id: "start", date: "2020-01-01" }),
-        makeEvent({ id: "end", date: "2021-12-31" }),
+        makeEvent({ id: "end", date: "2022-01-01" }),
       ];
       const range = computeTimelineRange([events[0]]);
       const { markers } = layoutLaneMarkers(events, width, range);
       for (const marker of markers) {
-        expect(marker.x).toBe(positionFraction(marker.event.date, range) * width);
-        expect(marker.left).toBeGreaterThanOrEqual(0);
+        expect(marker.x).toBe(
+          positionFraction(marker.event.date, range) * timelineDateWidth(width)
+        );
+        expect(marker.left).toBeGreaterThan(marker.x);
         expect(marker.left + MARKER_LABEL_WIDTH).toBeLessThanOrEqual(width);
       }
-      expect(markers[0].left).toBeGreaterThan(markers[0].x);
-      expect(markers[1].left + MARKER_LABEL_WIDTH).toBeLessThan(markers[1].x);
+      expect(markers[1].left + MARKER_LABEL_WIDTH).toBe(width);
     }
   );
 
   it.each([552, 900, 1400])(
-    "reserves space for symbols and flipped labels on a %ipx track",
+    "reserves space for symbols and right-hand labels on a %ipx track",
     (width) => {
       const range = computeTimelineRange([makeEvent({ date: "2020-01-01" })]);
       const events = Array.from({ length: 24 }, (_, index) =>

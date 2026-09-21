@@ -111,6 +111,11 @@ const FIRST_ROW_TOP = 16;
 export const MARKER_SIZE = 16;
 const LABEL_OFFSET = MARKER_SIZE / 2 + MARKER_PAD;
 
+/** Reserve room after the date axis for the final marker's right-hand label. */
+export function timelineDateWidth(trackWidthPx: number): number {
+  return Math.max(0, trackWidthPx - LABEL_OFFSET - MARKER_LABEL_WIDTH);
+}
+
 export interface LaidOutMarker {
   event: TimelineEvent;
   x: number;
@@ -126,9 +131,8 @@ export interface LaneLayoutResult {
 }
 
 /**
- * Pack each date marker and its adjacent label as one interval. Labels flip left near the
- * right edge; those intervals can start before earlier events, so check both ends of every
- * occupied interval rather than assuming chronological order also means left-to-right order.
+ * Pack each date marker and its right-hand label as one interval. The date axis reserves
+ * a label-width gutter so even a marker at the end of the range has room for its label.
  * `events` must already be sorted by date.
  */
 export function layoutLaneMarkers(
@@ -136,13 +140,11 @@ export function layoutLaneMarkers(
   trackWidthPx: number,
   range: TimelineRange
 ): LaneLayoutResult {
+  const dateWidth = timelineDateWidth(trackWidthPx);
   const rows: { left: number; right: number }[][] = [];
   const markers: LaidOutMarker[] = events.map((event) => {
-    const x = positionFraction(event.date, range) * trackWidthPx;
-    const left =
-      x + LABEL_OFFSET + MARKER_LABEL_WIDTH <= trackWidthPx
-        ? x + LABEL_OFFSET
-        : x - LABEL_OFFSET - MARKER_LABEL_WIDTH;
+    const x = positionFraction(event.date, range) * dateWidth;
+    const left = x + LABEL_OFFSET;
     const bounds = {
       left: Math.min(left, x - MARKER_SIZE / 2),
       right: Math.max(left + MARKER_LABEL_WIDTH, x + MARKER_SIZE / 2),
