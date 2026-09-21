@@ -1619,7 +1619,7 @@ components:
         - VihasMakwana
       distributions: []
       stability:
-        development:
+        alpha:
         - logs
         - metrics
         - traces

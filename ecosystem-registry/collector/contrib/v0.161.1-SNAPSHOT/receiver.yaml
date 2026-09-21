@@ -78,7 +78,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: double
-        unit: '{binds}/s'
+        unit: '{bind}/s'
       active_directory.ds.ldap.bind.last_successful.time:
         description: The amount of time taken for the last successful LDAP bind.
         enabled: true
@@ -94,7 +94,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: double
-        unit: '{binds}/s'
+        unit: '{bind}/s'
       active_directory.ds.ldap.client.session.count:
         description: The number of connected LDAP client sessions.
         enabled: true
@@ -103,7 +103,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: int
-        unit: '{sessions}'
+        unit: '{session}'
       active_directory.ds.ldap.search.rate:
         description: The number of LDAP searches per second.
         enabled: true
@@ -112,7 +112,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: double
-        unit: '{searches}/s'
+        unit: '{search}/s'
       active_directory.ds.name_cache.hit_rate:
         description: The percentage of directory object name component lookups that
           are satisfied by the Directory System Agent's name cache.
@@ -130,7 +130,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: int
-        unit: '{notifications}'
+        unit: '{notification}'
       active_directory.ds.operation.rate:
         attributes:
         - operation_type
@@ -141,7 +141,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: double
-        unit: '{operations}/s'
+        unit: '{operation}/s'
       active_directory.ds.replication.network.io:
         attributes:
         - direction
@@ -166,7 +166,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: double
-        unit: '{objects}/s'
+        unit: '{object}/s'
       active_directory.ds.replication.operation.pending:
         description: The number of pending replication operations for the Directory
           Replication Agent.
@@ -176,7 +176,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: int
-        unit: '{operations}'
+        unit: '{operation}'
       active_directory.ds.replication.property.rate:
         attributes:
         - direction
@@ -188,7 +188,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: double
-        unit: '{properties}/s'
+        unit: '{property}/s'
       active_directory.ds.replication.sync.object.pending:
         description: The number of objects remaining until the full sync completes
           for the Directory Replication Agent.
@@ -198,7 +198,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: int
-        unit: '{objects}'
+        unit: '{object}'
       active_directory.ds.replication.sync.request.count:
         attributes:
         - sync_result
@@ -210,7 +210,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: true
           value_type: int
-        unit: '{requests}'
+        unit: '{request}'
       active_directory.ds.replication.value.rate:
         attributes:
         - direction
@@ -223,7 +223,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: double
-        unit: '{values}/s'
+        unit: '{value}/s'
       active_directory.ds.security_descriptor_propagations_event.queued:
         description: The number of security descriptor propagation events that are
           queued for processing.
@@ -233,7 +233,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: int
-        unit: '{events}'
+        unit: '{event}'
       active_directory.ds.suboperation.rate:
         attributes:
         - suboperation_type
@@ -244,7 +244,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: double
-        unit: '{suboperations}/s'
+        unit: '{suboperation}/s'
       active_directory.ds.thread.count:
         description: The number of threads in use by the directory service.
         enabled: true
@@ -253,7 +253,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: int
-        unit: '{threads}'
+        unit: '{thread}'
     status:
       class: receiver
       codeowners:
@@ -4966,7 +4966,7 @@ components:
         description: Elapsed time since last access of the file or folder, in seconds
           since Epoch.
         enabled: false
-        stability: development
+        stability: beta
         sum:
           aggregation_temporality: cumulative
           monotonic: false
@@ -4979,7 +4979,7 @@ components:
         enabled: false
         gauge:
           value_type: int
-        stability: development
+        stability: beta
         unit: '{file}'
       file.ctime:
         attributes:
@@ -4988,7 +4988,7 @@ components:
           seconds since Epoch. In addition to `file.mtime`, this metric tracks metadata
           changes such as permissions or renaming the file.
         enabled: false
-        stability: development
+        stability: beta
         sum:
           aggregation_temporality: cumulative
           monotonic: false
@@ -4998,7 +4998,7 @@ components:
         description: Elapsed time since the last modification of the file or folder,
           in seconds since Epoch.
         enabled: true
-        stability: development
+        stability: beta
         sum:
           aggregation_temporality: cumulative
           monotonic: false
@@ -5009,7 +5009,7 @@ components:
         enabled: true
         gauge:
           value_type: int
-        stability: development
+        stability: beta
         unit: b
     resource_attributes:
       file.name:
@@ -5959,8 +5959,8 @@ components:
         gauge:
           input_type: string
           value_type: int
-        stability: development
-        unit: '{servers}'
+        stability: beta
+        unit: '{server}'
       haproxy.backup:
         description: Number of backup servers (backend) or server is backup (server).
           Corresponds to HAProxy's `bck` metric.
@@ -5968,12 +5968,12 @@ components:
         gauge:
           input_type: string
           value_type: int
-        stability: development
-        unit: '{servers}'
+        stability: beta
+        unit: '{server}'
       haproxy.bytes.input:
         description: Bytes in. Corresponds to HAProxy's `bin` metric.
         enabled: true
-        stability: development
+        stability: beta
         sum:
           aggregation_temporality: cumulative
           input_type: string
@@ -5983,7 +5983,7 @@ components:
       haproxy.bytes.output:
         description: Bytes out. Corresponds to HAProxy's `bout` metric.
         enabled: true
-        stability: development
+        stability: beta
         sum:
           aggregation_temporality: cumulative
           input_type: string
@@ -5994,18 +5994,18 @@ components:
         description: Number of data transfers aborted by the client. Corresponds to
           HAProxy's `cli_abrt` metric
         enabled: false
-        stability: development
+        stability: beta
         sum:
           aggregation_temporality: cumulative
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{cancellations}'
+        unit: '{cancellation}'
       haproxy.compression.bypass:
         description: Number of bytes that bypassed the HTTP compressor (CPU/BW limit).
           Corresponds to HAProxy's `comp_byp` metric.
         enabled: false
-        stability: development
+        stability: beta
         sum:
           aggregation_temporality: cumulative
           input_type: string
@@ -6016,18 +6016,18 @@ components:
         description: Number of HTTP responses that were compressed. Corresponds to
           HAProxy's `comp_rsp` metric.
         enabled: false
-        stability: development
+        stability: beta
         sum:
           aggregation_temporality: cumulative
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{responses}'
+        unit: '{response}'
       haproxy.compression.input:
         description: Number of HTTP response bytes fed to the compressor. Corresponds
           to HAProxy's `comp_in` metric.
         enabled: false
-        stability: development
+        stability: beta
         sum:
           aggregation_temporality: cumulative
           input_type: string
@@ -6038,7 +6038,7 @@ components:
         description: Number of HTTP response bytes emitted by the compressor. Corresponds
           to HAProxy's `comp_out` metric.
         enabled: false
-        stability: development
+        stability: beta
         sum:
           aggregation_temporality: cumulative
           input_type: string
@@ -6052,20 +6052,20 @@ components:
         gauge:
           input_type: string
           value_type: double
-        stability: development
+        stability: beta
         unit: ms
       haproxy.connections.errors:
         description: Number of requests that encountered an error trying to connect
           to a backend server. The backend stat is the sum of the stat. Corresponds
           to HAProxy's `econ` metric
         enabled: true
-        stability: development
+        stability: beta
         sum:
           aggregation_temporality: cumulative
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{errors}'
+        unit: '{error}'
       haproxy.connections.rate:
         description: Number of connections over the last elapsed second (frontend).
           Corresponds to HAProxy's `conn_rate` metric.
@@ -6073,36 +6073,36 @@ components:
         gauge:
           input_type: string
           value_type: int
-        stability: development
-        unit: '{connections}'
+        stability: beta
+        unit: '{connection}'
       haproxy.connections.retries:
         description: Number of times a connection to a server was retried. Corresponds
           to HAProxy's `wretr` metric.
         enabled: true
-        stability: development
+        stability: beta
         sum:
           aggregation_temporality: cumulative
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{retries}'
+        unit: '{retry}'
       haproxy.connections.total:
         description: Cumulative number of connections (frontend). Corresponds to HAProxy's
           `conn_tot` metric.
         enabled: false
-        stability: development
+        stability: beta
         sum:
           aggregation_temporality: cumulative
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{connections}'
+        unit: '{connection}'
       haproxy.downtime:
         description: Total downtime (in seconds). The value for the backend is the
           downtime for the whole backend, not the sum of the server downtime. Corresponds
           to HAProxy's `downtime` metric
         enabled: false
-        stability: development
+        stability: beta
         sum:
           aggregation_temporality: cumulative
           input_type: string
@@ -6113,13 +6113,13 @@ components:
         description: Number of failed checks. (Only counts checks failed when the
           server is up). Corresponds to HAProxy's `chkfail` metric.
         enabled: false
-        stability: development
+        stability: beta
         sum:
           aggregation_temporality: cumulative
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{checks}'
+        unit: '{check}'
       haproxy.requests.average_time:
         description: Average queue time in ms over the 1024 last requests. Corresponds
           to HAProxy's `qtime` metric.
@@ -6127,41 +6127,41 @@ components:
         gauge:
           input_type: string
           value_type: double
-        stability: development
+        stability: beta
         unit: ms
       haproxy.requests.denied:
         description: Requests denied because of security concerns. Corresponds to
           HAProxy's `dreq` metric
         enabled: true
-        stability: development
+        stability: beta
         sum:
           aggregation_temporality: cumulative
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{requests}'
+        unit: '{request}'
       haproxy.requests.errors:
         description: Cumulative number of request errors. Corresponds to HAProxy's
           `ereq` metric.
         enabled: true
-        stability: development
+        stability: beta
         sum:
           aggregation_temporality: cumulative
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{errors}'
+        unit: '{error}'
       haproxy.requests.queued:
         description: Current queued requests. For the backend this reports the number
           queued without a server assigned. Corresponds to HAProxy's `qcur` metric.
         enabled: true
-        stability: development
+        stability: beta
         sum:
           aggregation_temporality: cumulative
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{requests}'
+        unit: '{request}'
       haproxy.requests.rate:
         description: HTTP requests per second over last elapsed second. Corresponds
           to HAProxy's `req_rate` metric.
@@ -6169,19 +6169,19 @@ components:
         gauge:
           input_type: string
           value_type: double
-        stability: development
-        unit: '{requests}'
+        stability: beta
+        unit: '{request}'
       haproxy.requests.redispatched:
         description: Number of times a request was redispatched to another server.
           Corresponds to HAProxy's `wredis` metric.
         enabled: true
-        stability: development
+        stability: beta
         sum:
           aggregation_temporality: cumulative
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{requests}'
+        unit: '{request}'
       haproxy.requests.total:
         attributes:
         - status_code
@@ -6189,13 +6189,13 @@ components:
           `req_tot`, `hrsp_1xx`, `hrsp_2xx`, `hrsp_3xx`, `hrsp_4xx`, `hrsp_5xx` and
           `hrsp_other` metrics.
         enabled: true
-        stability: development
+        stability: beta
         sum:
           aggregation_temporality: cumulative
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{requests}'
+        unit: '{request}'
       haproxy.responses.average_time:
         description: Average response time in ms over the 1024 last requests. Corresponds
           to HAProxy's `rtime` metric.
@@ -6203,40 +6203,40 @@ components:
         gauge:
           input_type: string
           value_type: double
-        stability: development
+        stability: beta
         unit: ms
       haproxy.responses.denied:
         description: Responses denied because of security concerns. Corresponds to
           HAProxy's `dresp` metric
         enabled: true
-        stability: development
+        stability: beta
         sum:
           aggregation_temporality: cumulative
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{responses}'
+        unit: '{response}'
       haproxy.responses.errors:
         description: Cumulative number of response errors. Corresponds to HAProxy's
           `eresp` metric, `srv_abrt` will be counted here also.
         enabled: true
-        stability: development
+        stability: beta
         sum:
           aggregation_temporality: cumulative
           monotonic: true
           value_type: int
-        unit: '{errors}'
+        unit: '{error}'
       haproxy.server_selected.total:
         description: Number of times a server was selected, either for new sessions
           or when re-dispatching. Corresponds to HAProxy's `lbtot` metric.
         enabled: true
-        stability: development
+        stability: beta
         sum:
           aggregation_temporality: cumulative
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{selections}'
+        unit: '{selection}'
       haproxy.sessions.average:
         description: Average total session time in ms over the last 1024 requests.
           Corresponds to HAProxy's `ttime` metric.
@@ -6244,7 +6244,7 @@ components:
         gauge:
           input_type: string
           value_type: double
-        stability: development
+        stability: beta
         unit: ms
       haproxy.sessions.count:
         description: Current sessions. Corresponds to HAProxy's `scur` metric.
@@ -6252,16 +6252,16 @@ components:
         gauge:
           input_type: string
           value_type: int
-        stability: development
-        unit: '{sessions}'
+        stability: beta
+        unit: '{session}'
       haproxy.sessions.limit:
         description: Configured session limit. Corresponds to HAProxy's `slim` metric.
         enabled: false
         gauge:
           input_type: string
           value_type: int
-        stability: development
-        unit: '{sessions}'
+        stability: beta
+        unit: '{session}'
       haproxy.sessions.rate:
         description: Number of sessions per second over last elapsed second. Corresponds
           to HAProxy's `rate` metric.
@@ -6269,19 +6269,19 @@ components:
         gauge:
           input_type: string
           value_type: double
-        stability: development
-        unit: '{sessions}'
+        stability: beta
+        unit: '{session}'
       haproxy.sessions.total:
         description: Cumulative number of sessions. Corresponds to HAProxy's `stot`
           metric.
         enabled: false
-        stability: development
+        stability: beta
         sum:
           aggregation_temporality: cumulative
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{sessions}'
+        unit: '{session}'
       haproxy.weight:
         description: Total effective weight (backend) or effective weight (server).
           Corresponds to HAProxy's `weight` metric.
@@ -6289,7 +6289,7 @@ components:
         gauge:
           input_type: string
           value_type: int
-        stability: development
+        stability: beta
         unit: '1'
     resource_attributes:
       haproxy.addr:
@@ -7926,7 +7926,7 @@ components:
           sum:
             monotonic: true
             value_type: int
-          unit: '{events}'
+          unit: '{event}'
     type: k8s_events
 - name: k8sobjectsreceiver
   metadata:
@@ -8670,8 +8670,13 @@ components:
         enabled: false
         gauge:
           value_type: double
-        stability: development
+        stability: deprecated
         unit: '1'
+        warnings:
+          if_enabled: This metric is deprecated and will be removed in a future release.
+            It uses node capacity as the limit. `container.cpu.usage / k8s.node.allocatable_cpu`
+            is an allocatable-based alternative (not an equivalent calculation) that
+            users could use.
       k8s.container.cpu_limit_utilization:
         attributes: []
         description: Container cpu utilization as a ratio of the container's limits
@@ -8705,8 +8710,13 @@ components:
         enabled: false
         gauge:
           value_type: double
-        stability: development
+        stability: deprecated
         unit: '1'
+        warnings:
+          if_enabled: This metric is deprecated and will be removed in a future release.
+            It uses node capacity as the limit. `container.memory.usage / k8s.node.allocatable_memory`
+            is an allocatable-based alternative (not an equivalent calculation) that
+            users could use.
       k8s.container.memory_limit_utilization:
         attributes: []
         description: Container memory utilization as a ratio of the container's limits
@@ -8911,8 +8921,13 @@ components:
         enabled: false
         gauge:
           value_type: double
-        stability: development
+        stability: deprecated
         unit: '1'
+        warnings:
+          if_enabled: This metric is deprecated and will be removed in a future release.
+            It uses node capacity as the limit. `k8s.pod.cpu.usage / k8s.node.allocatable_cpu`
+            is an allocatable-based alternative (not an equivalent calculation) that
+            users could use.
       k8s.pod.cpu.time:
         attributes: []
         description: Total cumulative CPU time (sum of all cores) spent by the container/pod/node
@@ -8997,8 +9012,13 @@ components:
         enabled: false
         gauge:
           value_type: double
-        stability: development
+        stability: deprecated
         unit: '1'
+        warnings:
+          if_enabled: This metric is deprecated and will be removed in a future release.
+            It uses node capacity as the limit. `k8s.pod.memory.usage / k8s.node.allocatable_memory`
+            is an allocatable-based alternative (not an equivalent calculation) that
+            users could use.
       k8s.pod.memory.page_faults:
         attributes: []
         description: Pod memory page_faults
