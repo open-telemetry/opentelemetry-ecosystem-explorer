@@ -66,6 +66,23 @@ const mockComponentWithTelemetry: CollectorComponent = {
   },
 };
 
+const mockComponentWithInternalTelemetry: CollectorComponent = {
+  ...mockComponentWithoutTelemetry,
+  telemetry: {
+    metrics: {
+      processor_test_internal_metric: {
+        description: "An internal self-observability metric",
+        enabled: true,
+        unit: "1",
+        sum: {
+          monotonic: true,
+          value_type: "int",
+        },
+      },
+    },
+  },
+};
+
 const mockComponentWithReadme: CollectorComponent = {
   ...mockComponentWithoutTelemetry,
   markdown_hash: "abc123def456",
@@ -214,6 +231,40 @@ describe("CollectorDetailPage", () => {
     ).toBeInTheDocument();
   });
 
+  it("shows an unavailable state instead of silently rendering nothing when Version Comparison is opened and the versions fetch failed", async () => {
+    // Regression guard: with ?version= present, the page can render before/without
+    // useCollectorVersions() resolving. If it settles with an error, `versionData` stays
+    // null forever, and the comparison toggle must show an explicit error state instead of
+    // rendering nothing.
+    const user = userEvent.setup();
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: null,
+      loading: false,
+      error: new Error("Failed to load collector-versions-index"),
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: mockComponentWithInternalTelemetry,
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver?version=0.150.0");
+
+    const internalTelemetryTab = screen.getByRole("tab", { name: "Internal Telemetry" });
+    await user.click(internalTelemetryTab);
+
+    const comparisonButton = screen.getByRole("button", { name: "Version Comparison" });
+    await user.click(comparisonButton);
+
+    expect(screen.getByText("Comparison unavailable")).toBeInTheDocument();
+    expect(
+      screen.getByText("Could not load the list of versions needed for comparison.")
+    ).toBeInTheDocument();
+    // This panel explains the failure in translated copy, unlike the whole-page error state
+    // above, which does surface the raw hook message. The raw error must not leak in here.
+    expect(screen.queryByText("Failed to load collector-versions-index")).not.toBeInTheDocument();
+  });
+
   it("resolves the version from the URL immediately when ?version= is present, independent of the versions fetch", () => {
     vi.mocked(useCollectorVersions).mockReturnValue({
       data: null,
@@ -310,6 +361,86 @@ describe("CollectorDetailPage", () => {
     await user.click(telemetryTab);
 
     expect(screen.getByText("my.metric.name")).toBeInTheDocument();
+  });
+
+  it("does not render Internal Telemetry tab when component has no telemetry field", () => {
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: mockComponentWithoutTelemetry,
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    expect(screen.queryByRole("tab", { name: "Internal Telemetry" })).not.toBeInTheDocument();
+  });
+
+  it("renders Internal Telemetry tab when component has internal telemetry and shows the Current view by default", async () => {
+    const user = userEvent.setup();
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: mockComponentWithInternalTelemetry,
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    const internalTelemetryTab = screen.getByRole("tab", { name: "Internal Telemetry" });
+    expect(internalTelemetryTab).toBeInTheDocument();
+
+    await user.click(internalTelemetryTab);
+
+    expect(screen.getByText("processor_test_internal_metric")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Current View" })).toHaveAttribute(
+      "aria-pressed",
+      "true"
+    );
+    expect(screen.getByRole("button", { name: "Version Comparison" })).toHaveAttribute(
+      "aria-pressed",
+      "false"
+    );
+  });
+
+  it("renders the existing Telemetry tab and the new Internal Telemetry tab independently when a component has both metrics and internal telemetry", async () => {
+    const user = userEvent.setup();
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: { versions: [{ version: "0.150.0", is_latest: true }] },
+      loading: false,
+      error: null,
+    });
+    vi.mocked(useCollectorComponent).mockReturnValue({
+      data: {
+        ...mockComponentWithTelemetry,
+        telemetry: mockComponentWithInternalTelemetry.telemetry,
+      },
+      loading: false,
+      error: null,
+    });
+
+    renderAtRoute("/collector/components/core/otlpreceiver");
+
+    const telemetryTab = screen.getByRole("tab", { name: "Telemetry" });
+    const internalTelemetryTab = screen.getByRole("tab", { name: "Internal Telemetry" });
+    expect(telemetryTab).toBeInTheDocument();
+    expect(internalTelemetryTab).toBeInTheDocument();
+
+    await user.click(telemetryTab);
+    expect(screen.getByText("my.metric.name")).toBeInTheDocument();
+    expect(screen.queryByText("processor_test_internal_metric")).not.toBeInTheDocument();
+
+    await user.click(internalTelemetryTab);
+    expect(screen.getByText("processor_test_internal_metric")).toBeInTheDocument();
+    expect(screen.queryByText("my.metric.name")).not.toBeInTheDocument();
   });
 
   it("does not render Feature Gates tab when component has no feature_gates", () => {

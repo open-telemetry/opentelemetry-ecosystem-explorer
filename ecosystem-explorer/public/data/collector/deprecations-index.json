@@ -49,6 +49,22 @@
       "type": "extension"
     },
     {
+      "component_hash": "e1cd7f5df5a6",
+      "deprecated_in_version": "0.161.0",
+      "description": null,
+      "display_name": "Mezmo Exporter",
+      "distribution": "contrib",
+      "has_readme": true,
+      "id": "contrib-mezmoexporter",
+      "last_version": "0.160.0",
+      "name": "mezmoexporter",
+      "signals": [
+        "logs"
+      ],
+      "stability": "deprecated",
+      "type": "exporter"
+    },
+    {
       "component_hash": "5a07ac237fdd",
       "deprecated_in_version": "0.159.0",
       "description": null,

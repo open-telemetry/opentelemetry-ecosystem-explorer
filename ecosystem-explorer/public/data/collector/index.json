@@ -823,19 +823,6 @@
     },
     {
       "description": null,
-      "display_name": "Mezmo Exporter",
-      "distribution": "contrib",
-      "has_readme": true,
-      "id": "contrib-mezmoexporter",
-      "name": "mezmoexporter",
-      "signals": [
-        "logs"
-      ],
-      "stability": "deprecated",
-      "type": "exporter"
-    },
-    {
-      "description": null,
       "display_name": "OpenSearch Exporter",
       "distribution": "contrib",
       "has_readme": true,
@@ -1868,7 +1855,7 @@
         "logs",
         "profiles"
       ],
-      "stability": "beta",
+      "stability": "stable",
       "type": "processor"
     },
     {
@@ -2029,6 +2016,19 @@
     },
     {
       "description": null,
+      "display_name": null,
+      "distribution": "contrib",
+      "has_readme": true,
+      "id": "contrib-rollingspanlatencyprocessor",
+      "name": "rollingspanlatencyprocessor",
+      "signals": [
+        "traces"
+      ],
+      "stability": "development",
+      "type": "processor"
+    },
+    {
+      "description": null,
       "display_name": "Schema Processor",
       "distribution": "contrib",
       "has_readme": true,
@@ -2044,7 +2044,7 @@
     },
     {
       "description": null,
-      "display_name": null,
+      "display_name": "Signing Processor",
       "distribution": "contrib",
       "has_readme": true,
       "id": "contrib-signingprocessor",

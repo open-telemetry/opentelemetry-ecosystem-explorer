@@ -36,7 +36,14 @@ core:
     subtype: null
 contrib:
   connector: []
-  exporter: []
+  exporter:
+  - name: mezmoexporter
+    last_version: v0.160.0
+    deprecated_in_version: v0.161.0
+    source_repo: opentelemetry-collector-contrib
+    distributions:
+    - contrib
+    subtype: null
   extension:
   - name: kafkatopicsobserver
     last_version: v0.158.0

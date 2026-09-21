@@ -180,8 +180,17 @@
       "details": "Detalles",
       "stability": "Estabilidad",
       "telemetry": "Telemetría",
+      "internalTelemetry": "Telemetría interna",
       "featureGates": "Feature Gates",
       "readme": "Readme"
+    },
+    "view": {
+      "current": "Vista actual",
+      "comparison": "Comparación de versiones",
+      "comparisonUnavailable": {
+        "title": "Comparación no disponible",
+        "message": "No se pudo cargar la lista de versiones necesaria para la comparación."
+      }
     },
     "sections": {
       "componentInfo": "Información del componente",
@@ -279,6 +288,109 @@
       "deprecatedIn": "Obsoleto en {{version}}",
       "reference": "Referencia"
     }
+  },
+  "telemetryComparison": {
+    "loading": "Cargando comparación...",
+    "error": {
+      "title": "Error al cargar la comparación",
+      "bothVersionsFailed": "No se pudieron cargar ambas versiones. Es posible que el componente no exista en estas versiones."
+    },
+    "warnings": {
+      "availability": {
+        "title": "Disponibilidad de versión",
+        "fromNotFound": "No se pudo cargar la telemetría interna para la versión {{fromVersion}}.",
+        "toNotFound": "No se pudo cargar la telemetría interna para la versión {{toVersion}}."
+      },
+      "sameVersion": {
+        "title": "Se seleccionó la misma versión",
+        "message": "Elige dos versiones diferentes para ver una comparación."
+      },
+      "insufficientVersions": {
+        "title": "Comparación de versiones no disponible",
+        "message": "Este componente solo está presente en una versión, por lo que no hay otra con la cual compararlo."
+      }
+    }
+  },
+  "versionSelectorPanel": {
+    "banner": "Compara las métricas de telemetría interna entre dos versiones del Collector.",
+    "from": "Desde",
+    "to": "Hasta",
+    "latestSuffix": "(última)"
+  },
+  "diffResults": {
+    "addedRemovedHeader": "Agregados y eliminados",
+    "changedHeader": "Modificados",
+    "empty": {
+      "title": "No se encontraron diferencias",
+      "description": "Las métricas de telemetría interna son idénticas entre estas dos versiones."
+    }
+  },
+  "diffCard": {
+    "status": {
+      "added": "Agregado",
+      "removed": "Eliminado",
+      "changed": "Modificado"
+    },
+    "unit": "Unidad",
+    "unitWas": "(antes: <unit>{{unit}}</unit>)",
+    "descriptionChanged": "Descripción modificada",
+    "extendedDocumentationChanged": "Documentación extendida modificada",
+    "enabledChanged": "Estado habilitado modificado",
+    "enabledValue": {
+      "enabled": "Habilitado",
+      "disabled": "Deshabilitado"
+    },
+    "optionalChanged": "Estado opcional modificado",
+    "optionalValue": {
+      "yes": "Sí",
+      "no": "No"
+    },
+    "stabilityChanged": "Estabilidad modificada",
+    "deprecatedChanged": "Estado de obsolescencia modificado",
+    "deprecatedValue": {
+      "deprecated": "Obsoleto",
+      "notDeprecated": "No obsoleto",
+      "withSince": "{{note}} (desde {{since}})"
+    },
+    "warningsChanged": "Advertencias modificadas",
+    "warningsFields": {
+      "ifEnabled": "Si está habilitado",
+      "ifEnabledNotSet": "Si «habilitado» no está definido",
+      "ifConfigured": "Si está configurado"
+    },
+    "prefixChanged": "Prefijo modificado",
+    "metricTypeChanged": "Tipo de métrica modificado",
+    "descriptorChanged": "Descriptor modificado",
+    "descriptorFields": {
+      "valueType": "Tipo de valor",
+      "monotonic": "Monótono",
+      "aggregationTemporality": "Temporalidad de agregación",
+      "async": "Asíncrono",
+      "bucketBoundaries": "Límites de los buckets"
+    },
+    "attributeChanges": "Cambios en atributos",
+    "metricRemoved": "Esta métrica se eliminó en la versión \"Hasta\" seleccionada."
+  },
+  "diffAttributeTable": {
+    "ariaLabel": "Cambios en atributos",
+    "columns": {
+      "status": "Estado",
+      "key": "Clave",
+      "type": "Tipo",
+      "changedFields": "Campos modificados"
+    },
+    "status": {
+      "added": "Agregado",
+      "removed": "Eliminado",
+      "modified": "Modificado"
+    },
+    "fields": {
+      "type": "Tipo",
+      "description": "Descripción",
+      "nameOverride": "Nombre alternativo",
+      "enum": "Enum"
+    },
+    "fieldSeparator": ", "
   },
   "explore": {
     "componentTypes": {

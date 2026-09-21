@@ -1,0 +1,391 @@
+## Getting Started
+
+To use the Oracle DB receiver you must define how to connect to your DB. This can be done in two ways,
+defined in the [Primary](#primary-configuration-option) and [Secondary](#secondary-configuration-option) configuration
+option sections. Defining one of the two configurations is required. If both are defined, the primary
+option will be used.
+
+### Primary Configuration Option
+
+Required options:
+- `datasource`: Oracle database connection string. Special characters must be encoded. Refer to [Oracle Go Driver go_ora documentation](https://github.com/sijms/go-ora) for full connection string options.
+
+Example:
+
+```yaml
+receivers:
+  oracledb:
+    datasource: "oracle://otel:password@localhost:51521/XE"
+```
+
+### Secondary Configuration Option
+
+Required options:
+- `endpoint`: Endpoint used to connect to the Oracle DB server. Must be in the format of `host:port`
+- `password`: Password for the Oracle DB connection. Special characters are allowed.
+- `service`: Oracle DB service that the receiver should connect to.
+- `username`: Username for the Oracle DB connection.
+
+Example:
+```yaml
+receivers:
+  oracledb:
+    endpoint: localhost:51521
+    password: p@sswo%d
+    service: XE
+    username: otel
+```
+
+### Optional Configuration Options
+
+- `collection_interval` (default = `10s`): The interval at which metrics should be emitted by this receiver.
+- `initial_delay` (default = `1s`): The initial time period this receiver waits before starting.
+- `timeout` (default = `0`): Timeout for each Oracle DB request. Disabled by default.
+
+## Resource attributes
+
+`server.address` and `server.port` identify the monitored Oracle instance and are emitted by default.
+When the receiver connects over loopback (for example `datasource: oracle://otel:password@localhost:51521/XE`
+or `endpoint: 127.0.0.1:51521`), `server.address` reports the host name of the machine running the
+collector, because the monitored instance is co-located with it and `localhost` would otherwise be
+shared by every monitored host. `server.port` defaults to `1521` when the connection string omits it.
+`service.instance.id` uses the same resolution and is reported as `server.address:server.port/service`.
+`host.name` is unaffected and keeps reporting the configured target.
+
+A `datasource` that is not in `oracle://user:password@host:port/service` form — a TNS descriptor, or
+an Easy Connect string without the `oracle://` prefix — carries no host the receiver can read. In
+that case `server.address` is omitted rather than guessed, `server.port` falls back to `1521`, and
+`service.instance.id` reports `unknown:1521`. Note that the driver does not currently connect with
+those forms either, so prefer the full `oracle://` datasource or the `endpoint` option, both of
+which always populate the server attributes.
+
+To stop emitting the server attributes, disable them individually:
+
+```yaml
+receivers:
+  oracledb:
+    resource_attributes:
+      server.address:
+        enabled: false
+      server.port:
+        enabled: false
+```
+
+See [documentation.md](./documentation.md) for the full list of resource attributes.
+
+## Permissions
+
+### Instance detection
+
+These grants are required to populate the `oracle.db.version`, `oracle.db.role`,
+`oracle.db.open_mode`, and `oracle.db.pdb` resource attributes.
+Detection is best-effort; failures are logged at warn level and the receiver continues.
+
+```sql
+GRANT SELECT ON V_$INSTANCE TO <username>;
+GRANT SELECT ON V_$DATABASE TO <username>;
+```
+
+> **Note:** `sys_context('USERENV', ...)` queries against `DUAL` require no
+> additional grant and are available to all database users.
+
+### Hosting type detection (Oracle >=19c only)
+
+These grants are required to populate the `oracle.db.hosting_type` resource attribute.
+Only applies to Oracle 19c and later. Detection is best-effort; failures are logged at
+warn level and the receiver continues.
+
+```sql
+GRANT SELECT ON V_$DATAFILE TO <username>;
+GRANT SELECT ON V_$PDBS TO <username>;        -- OCI detection, connected to PDB only
+GRANT SELECT ON CDB_SERVICES TO <username>;   -- OCI confirmation, connected to PDB only
+```
+
+### Metrics collection
+
+Depending on which metrics you collect, you will need to assign these
+permissions to the database user:
+
+```sql
+GRANT SELECT ON V_$SESSION TO <username>;
+GRANT SELECT ON V_$SYSSTAT TO <username>;
+GRANT SELECT ON V_$RESOURCE_LIMIT TO <username>;
+GRANT SELECT ON V_$OSSTAT TO <username>;
+GRANT SELECT ON DBA_TABLESPACES TO <username>;
+GRANT SELECT ON DBA_DATA_FILES TO <username>;
+GRANT SELECT ON DBA_TABLESPACE_USAGE_METRICS TO <username>;
+GRANT SELECT ON V_$SGAINFO TO <username>;
+```
+
+### ASM metrics
+
+Grants required for ASM metrics.
+
+```sql
+GRANT SELECT ON V_$ASM_DISKGROUP_STAT TO <username>;
+GRANT SELECT ON V_$ASM_DISK_STAT TO <username>;
+```
+
+### Per-PDB metrics (CDB multitenant deployments)
+
+When connected to a CDB root (Oracle 12c+), the receiver can collect per-PDB metrics
+by opting in to the `oracle.db.pdb` attribute. The monitoring user needs SELECT on
+these views (container-wide):
+
+```sql
+GRANT SELECT ON V_$CON_SYSSTAT TO <username> CONTAINER=ALL;
+GRANT SELECT ON V_$CON_SYSMETRIC TO <username> CONTAINER=ALL;
+GRANT SELECT ON V_$CONTAINERS TO <username> CONTAINER=ALL;
+GRANT SELECT ON CDB_TABLESPACE_USAGE_METRICS TO <username> CONTAINER=ALL;
+GRANT SELECT ON CDB_TABLESPACES TO <username> CONTAINER=ALL;
+GRANT SELECT ON CDB_DATA_FILES TO <username> CONTAINER=ALL;  -- only needed for oracledb.tablespace.limit
+```
+
+Users who already hold `SELECT_CATALOG_ROLE` (commonly granted to monitoring
+accounts) inherit SELECT on these views and don't need the explicit grants above.
+
+If the required access isn't present, the receiver detects this at startup and
+falls back to the single-container query set, emitting instance-wide metrics
+just as it did before per-PDB support was added. Existing CDB deployments
+upgrading without adding new grants continue to work unchanged.
+
+### Events collection
+
+The following grants are required for event collection. All four event types
+(`db.server.query_sample`, `db.server.top_query`, `db.server.session.wait_sample`,
+`db.server.top_procedure`) are disabled by default and must be explicitly enabled
+in configuration.
+
+#### All events (shared requirements)
+
+These grants are used by all event types for session context and PDB namespace resolution:
+
+```sql
+GRANT SELECT ON V_$SESSION TO <username>;
+GRANT SELECT ON V_$CONTAINERS TO <username>;     -- PDB/container name (DB_NAMESPACE attribute)
+```
+
+#### `db.server.query_sample`
+
+Captures currently executing queries and blocking/locking session information:
+
+```sql
+GRANT SELECT ON V_$SQL TO <username>;            -- SQL text and plan hash
+GRANT SELECT ON V_$LOCK TO <username>;           -- Lock type and mode for blocked sessions
+GRANT SELECT ON DBA_OBJECTS TO <username>;       -- Blocked object owner and name
+GRANT SELECT ON DBA_PROCEDURES TO <username>;    -- Stored procedure metadata (PL/SQL entry point)
+```
+
+#### `db.server.top_query`
+
+Captures the most expensive queries by elapsed time with execution plan details:
+
+```sql
+GRANT SELECT ON V_$SQL TO <username>;                    -- Query metrics and text
+GRANT SELECT ON V_$SQL_PLAN_STATISTICS_ALL TO <username>; -- Execution plan details
+GRANT SELECT ON DBA_PROCEDURES TO <username>;            -- Stored procedure metadata
+```
+
+> [!NOTE]
+> In the SQL query plan details, the `LAST_*`, `OUTPUT_ROWS`, and `STARTS` columns are
+> populated only when Oracle is configured to collect execution plan statistics (for example,
+> `STATISTICS_LEVEL=ALL` or the `GATHER_PLAN_STATISTICS` hint). Otherwise, these fields will
+> be NULL or empty. Configuring this Oracle instrumentation may introduce additional runtime
+> overhead. Enable it only if you need these runtime execution statistics for query
+> performance analysis.
+
+```sql
+ALTER SYSTEM SET statistics_level = ALL;
+```
+
+#### `db.server.session.wait_sample`
+
+Captures per-session wait event statistics from `V$SESSION_EVENT`:
+
+```sql
+GRANT SELECT ON V_$SESSION_EVENT TO <username>;  -- Wait event names, counts, and durations
+```
+
+#### `db.server.top_procedure`
+
+Captures aggregated performance metrics for stored procedures, derived by grouping `V$SQL` by
+`PROGRAM_ID` and joining to `DBA_PROCEDURES`. Correlates with `db.server.top_query` and
+`db.server.query_sample` via the `oracledb.procedure_id` attribute:
+
+```sql
+GRANT SELECT ON V_$SQL TO <username>;            -- Aggregated procedure execution/resource stats
+GRANT SELECT ON DBA_PROCEDURES TO <username>;    -- Stored procedure metadata (owner, name, type)
+```
+
+Cumulative counters are converted to per-scrape deltas. Rows are fetched up to
+`max_procedure_sample_count`, ranked in the collector by elapsed-time delta, and truncated to
+`top_procedure_count`. The fetch limit is deliberately larger than the reported set: ranking on
+deltas over a wider pool is what lets a procedure that is hot only in the current interval —
+newly deployed, a month-end batch, something that just started misbehaving — reach the report
+even though its lifetime totals are modest.
+
+A negative delta on any of the summed resource counters means a cursor aged out of the shared
+pool, so the row is discarded rather than emitted as a bogus value.
+
+> [!NOTE]
+> Oracle exposes no per-procedure cumulative execution counter, so
+> `oracledb.procedure_execution_count` is derived as the *minimum* statement execution count
+> across the procedure's cached statements. This is best effort: a newly loaded child cursor
+> starts at 1 and pulls the minimum down, and a statement in a branch that did not run holds it
+> flat. The receiver therefore treats this counter separately from the resource counters — it is
+> clamped to 0 instead of discarding the row. Resource counters (CPU, elapsed time, reads, writes, rows) are
+> summed across the procedure's statements and are not subject to this caveat.
+
+See "CDB-root connections and container-scoped dictionary views" below for how this event
+behaves on a CDB-root connection.
+
+### CDB-root connections and container-scoped dictionary views
+
+`DBA_*` dictionary views only expose the container you are connected to, while the `V$` views
+report rows for **every** container. Object ids are only unique within a container, so from a
+CDB root a dictionary join on object id alone is not just incomplete — it can attribute a PDB
+row to an unrelated root object that happens to share the id.
+
+When connected to a CDB root, the receiver therefore reads the `CDB_*` equivalents and matches
+on `CON_ID` as well as the object id:
+
+| Event | Affected lookup | Using `DBA_*` from a CDB root |
+|---|---|---|
+| `db.server.top_query` | `CDB_PROCEDURES`, plus `CON_ID` in the `PROCEDURE_EXECUTIONS` grouping | wrong or empty `procedure_name`; execution counts merged across PDBs |
+| `db.server.top_procedure` | `CDB_PROCEDURES` | wrong or empty `procedure_name`; procedures merged across PDBs |
+| `db.server.query_sample` | `CDB_PROCEDURES`, `CDB_OBJECTS` | wrong or empty `procedure_name` and blocked-object owner/name |
+
+`top_query` and `top_procedure` only need `CDB_PROCEDURES`; `query_sample` additionally needs
+`CDB_OBJECTS`. The two grants are probed independently at startup, so a CDB root with only
+`CDB_PROCEDURES` still gets container-qualified `top_query`/`top_procedure` results even while
+`query_sample` degrades to the `DBA_*` view:
+
+```sql
+GRANT SELECT ON CDB_PROCEDURES TO <username> CONTAINER=ALL;
+GRANT SELECT ON CDB_OBJECTS TO <username> CONTAINER=ALL;
+```
+
+Users holding `SELECT_CATALOG_ROLE` inherit both and need no explicit grant. Non-CDB and
+direct-PDB connections continue to use the `DBA_*` views and need nothing extra.
+
+> [!NOTE]
+> Each grant is probed once at startup. If a grant is missing, the receiver logs a warning and
+> falls back to the `DBA_*` view for the event(s) that need it, so events keep flowing with the
+> container-attribution limitation described above rather than failing with `ORA-00942`. This
+> mirrors how per-PDB metrics already degrade when their grants are absent — no upgrade requires
+> new grants to keep working.
+
+#### Combined grant statement
+
+For convenience, the complete set of grants required to enable all events:
+
+```sql
+GRANT SELECT ON V_$SESSION TO <username>;
+GRANT SELECT ON V_$SESSION_EVENT TO <username>;
+GRANT SELECT ON V_$SQL TO <username>;
+GRANT SELECT ON V_$SQL_PLAN_STATISTICS_ALL TO <username>;
+GRANT SELECT ON V_$LOCK TO <username>;
+GRANT SELECT ON V_$CONTAINERS TO <username>;
+GRANT SELECT ON DBA_OBJECTS TO <username>;
+GRANT SELECT ON DBA_PROCEDURES TO <username>;
+-- Optional, CDB-root connections only (see "CDB-root connections" above):
+GRANT SELECT ON CDB_PROCEDURES TO <username> CONTAINER=ALL;
+GRANT SELECT ON CDB_OBJECTS TO <username> CONTAINER=ALL;
+```
+
+## Enabling metrics.
+
+See [documentation](./documentation.md).
+
+You can enable or disable selective metrics.
+
+Example:
+
+```yaml
+receivers:
+  oracledb:
+    datasource: "oracle://otel:password@localhost:51521/XE"
+    metrics:
+      oracledb.query.cpu_time:
+        enabled: false
+      oracledb.query.physical_read_requests:
+        enabled: true
+```
+
+## Enabling events.
+
+
+The following is a generic configuration that can be used for the default logs and metrics scraped
+by the Oracle DB receiver.
+
+```yaml
+receivers:
+  oracledb:
+    collection_interval: 10s                     # interval for overall collection
+    datasource: "oracle://otel:password@localhost:51521/XE"
+    events:
+      db.server.query_sample:
+        enabled: true
+      db.server.top_query:
+        enabled: true
+      db.server.session.wait_sample:
+        enabled: true
+      db.server.top_procedure:
+        enabled: true
+    top_query_collection:                        # this collection exports the most expensive queries as logs
+      max_query_sample_count: 1000               # maximum number of samples collected from db to filter the top N
+      top_query_count: 200                       # The maximum number of queries (N) for which the metrics would be reported
+      collection_interval: 60s                   # collection interval for top query collection specifically
+      allowed_comment_keys: [application]        # keys to extract from leading SQL comments (see SQL Comment Extraction below)
+    query_sample_collection:                     # this collection exports the currently (relate to the query time) executing queries as logs
+      max_rows_per_query: 100                     # the maximum number of samples to bre reported.
+      allowed_comment_keys: [application]        # keys to extract from leading SQL comments (see SQL Comment Extraction below)
+    session_wait_event_collection:               # this collection exports per-session wait event statistics from v$session_event as logs
+      max_rows_per_query: 100                    # the maximum number of session wait event rows to be reported                 
+    top_procedure_collection:                # this collection exports aggregated stored procedure performance metrics as logs
+      max_procedure_sample_count: 1000           # maximum number of rows fetched from db to rank the top N by delta
+      top_procedure_count: 250                   # The maximum number of procedures (N) for which the metrics would be reported
+      collection_interval: 60s                   # collection interval for procedure metrics collection specifically
+```
+
+## SQL Comment Extraction
+
+When the `db.server.query_sample` and/or `db.server.top_query` events are enabled, the receiver can
+extract key-value pairs from leading SQL block comments (`/* key=value */`) and emit them as the
+`db.query.comment_tags` attribute on the corresponding logs.
+
+This behavior is controlled by the `allowed_comment_keys` option, which can be set independently
+under `top_query_collection` and `query_sample_collection`:
+
+- `allowed_comment_keys` (default = `[]`): A list of comment keys to extract. For each enabled
+  collection, only keys present in this allowlist are extracted from the leading SQL comment and
+  included (as comma-separated `key=value` pairs) in the `db.query.comment_tags` attribute.
+
+Extraction is disabled unless explicitly configured:
+
+- When `allowed_comment_keys` is empty or unset, no comments are extracted.
+- Only keys included in the allowlist are emitted; all other comment keys are ignored.
+- Only leading block comments are parsed; comments elsewhere in the query are ignored.
+
+Example:
+
+```yaml
+receivers:
+  oracledb:
+    datasource: "oracle://otel:password@localhost:51521/XE"
+    events:
+      db.server.query_sample:
+        enabled: true
+      db.server.top_query:
+        enabled: true
+    top_query_collection:
+      allowed_comment_keys: [application, team]
+    query_sample_collection:
+      allowed_comment_keys: [application, team]
+```
+
+Given a query such as `/* application=exampleApp,team=payments */ SELECT * FROM users`, the emitted
+log record will include `db.query.comment_tags` set to `application=exampleApp,team=payments`. When multiple
+keys are extracted, they are emitted as a comma-separated list of `key=value` pairs.
+
+See [documentation](./documentation.md) for details on the `db.query.comment_tags` attribute.
