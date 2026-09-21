@@ -30,6 +30,8 @@ describe("Collector release context", () => {
   it.each([
     ["version=0.148.0", "0.149.0", "0.148.0"],
     ["version=+0.148.0+", "0.149.0", "0.148.0"],
+    ["version=+v0.148.0+", "v0.149.0", "0.148.0"],
+    ["", " v0.149.0 ", "0.149.0"],
     ["version=+%09+", "0.149.0", "0.149.0"],
     ["version=+%09+", undefined, "0.150.0"],
     ["version=", "0.149.0", "0.149.0"],
@@ -78,7 +80,7 @@ describe("Collector release context", () => {
     "normalizes %s to a bare data version with a tagged source ref",
     (version) => {
       const release = collectorReleaseContext({ searchParams: new URLSearchParams({ version }) });
-      // Data manifests are keyed without the tag prefix; the release strips it once at the boundary.
+      // Data manifests use bare versions; source tags retain exactly one prefix.
       expect(release.sourceHref(component)).toContain("/tree/v0.149.0/");
       expect(release.dataVersion()).toBe("0.149.0");
       expect(release.detailHref(component)).toContain("?version=0.149.0");
@@ -108,6 +110,9 @@ describe("Collector release context", () => {
     );
     expect(release.sourceHref(component)).toContain("/tree/v0.150.0/");
     expect(release.detailHref(component, "0.149.0")).toBe(
+      "/collector/components/core/forwardconnector?version=0.149.0"
+    );
+    expect(release.detailHref(component, " v0.149.0 ")).toBe(
       "/collector/components/core/forwardconnector?version=0.149.0"
     );
   });

@@ -177,16 +177,34 @@ describe("CollectorListPageV1", () => {
   it.each([
     ["+0.149.0+", "0.149.0", "?version=0.149.0", "0.149.0"],
     ["+%09+", "0.150.0", "", ""],
+    ["v0.149.0", "0.149.0", "?version=0.149.0", "0.149.0"],
+    ["+v0.149.0+", "0.149.0", "?version=0.149.0", "0.149.0"],
   ])(
     "uses the same normalized version for the facet, data and links: %s",
-    (query, dataVersion, suffix, facetVersion) => {
+    async (query, dataVersion, suffix, facetVersion) => {
+      const user = userEvent.setup();
       renderPage(`/collector/components?version=${query}`);
-      expect(useCollectorComponents).toHaveBeenCalledWith(dataVersion);
+      expect(useCollectorComponents).toHaveBeenLastCalledWith(dataVersion);
       expect(screen.getByRole("combobox", { name: "Version" })).toHaveValue(facetVersion);
+      expect(screen.getByTestId("location")).toHaveTextContent(
+        `/collector/components?version=${query}`
+      );
+      if (facetVersion) {
+        expect(
+          screen.getByRole("button", { name: `Remove filter Version: ${facetVersion}` })
+        ).toBeInTheDocument();
+      } else {
+        expect(screen.queryByRole("button", { name: /Remove filter Version:/ })).toBeNull();
+      }
       expect(screen.getByRole("link", { name: /OTLP Receiver/ })).toHaveAttribute(
         "href",
         `/collector/components/core/otlpreceiver${suffix}`
       );
+      await user.click(screen.getByRole("button", { name: "Cards" }));
+      expect(screen.getByTestId("location").textContent).toBe(
+        `/collector/components${suffix ? `${suffix}&` : "?"}density=cards`
+      );
+      expect(useCollectorComponents).toHaveBeenLastCalledWith(dataVersion);
     }
   );
 

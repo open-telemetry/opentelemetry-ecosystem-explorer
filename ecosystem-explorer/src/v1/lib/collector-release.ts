@@ -19,6 +19,11 @@ import type { CollectorComponent, VersionsIndex } from "@/types/collector";
 type ComponentAddress = Pick<CollectorComponent, "distribution" | "name">;
 type ComponentSource = Pick<CollectorComponent, "repository" | "type" | "name">;
 
+/** URL releases use bare manifest versions; blank input leaves the release implicit. */
+export function normalizeCollectorRelease(value: string | null | undefined): string | null {
+  return value?.trim().replace(/^v(?=\d)/, "") || null;
+}
+
 /** Collector release selection and links share one policy across list and detail routes. */
 export function collectorReleaseContext({
   searchParams,
@@ -32,11 +37,8 @@ export function collectorReleaseContext({
   // The query string is the canonical carrier; a version in the path is the historical
   // route form and yields to it when both are present.
   const selectedVersion =
-    searchParams
-      .get("version")
-      ?.trim()
-      .replace(/^v(?=\d)/, "") ||
-    pathVersion?.trim().replace(/^v(?=\d)/, "") ||
+    normalizeCollectorRelease(searchParams.get("version")) ??
+    normalizeCollectorRelease(pathVersion) ??
     undefined;
   const deprecated = selectedVersion === "deprecated";
   const latestVersion = versions?.versions.find((v) => v.is_latest)?.version ?? "";
@@ -54,15 +56,16 @@ export function collectorReleaseContext({
       return deprecated ? (lastVersion ?? "") : (selectedVersion ?? latestVersion);
     },
     detailHref(component: ComponentAddress, version = selectedVersion): string {
-      const suffix = version ? `?version=${encodeURIComponent(version)}` : "";
+      const normalizedVersion = normalizeCollectorRelease(version);
+      const suffix = normalizedVersion ? `?version=${encodeURIComponent(normalizedVersion)}` : "";
       return `/collector/components/${component.distribution}/${component.name}${suffix}`;
     },
     sourceHref(component: ComponentSource, lastVersion?: string): string | null {
       if (!component.repository) return null;
-      const version = deprecated ? lastVersion : selectedVersion;
+      const version = deprecated ? normalizeCollectorRelease(lastVersion) : selectedVersion;
       if (deprecated && !version) return null;
       // An implicit latest view follows main; an explicit release is pinned to its tag.
-      const ref = version ? `v${version.replace(/^v/, "")}` : "main";
+      const ref = version ? `v${version}` : "main";
       return `https://github.com/open-telemetry/${component.repository}/tree/${ref}/${component.type}/${component.name}`;
     },
   };

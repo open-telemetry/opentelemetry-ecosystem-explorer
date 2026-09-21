@@ -27,7 +27,7 @@ let compiled: Root;
 let initializeTheme: () => void;
 
 beforeAll(async () => {
-  const from = resolve("src/styles/index.css");
+  const from = resolve(import.meta.dirname, "styles/index.css");
   // Compile the real entry point with the installed Tailwind plugin, including
   // its imports and selector flattening. jsdom cannot compute layered CSS.
   // Tailwind bundles another PostCSS 8 type tree; the runtime plugin API is shared.
@@ -35,7 +35,7 @@ beforeAll(async () => {
   const result = await postcss([plugin]).process(await readFile(from, "utf8"), { from });
   compiled = result.root;
   const html = new DOMParser().parseFromString(
-    await readFile(resolve("index.html"), "utf8"),
+    await readFile(resolve(import.meta.dirname, "../index.html"), "utf8"),
     "text/html"
   );
   const script = html.querySelector("head script:not([src])")?.textContent;

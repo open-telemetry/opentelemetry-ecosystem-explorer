@@ -151,12 +151,12 @@ function renderAtRoute(path: string) {
   );
 }
 
-describe("CollectorDetailPageV1", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    window.location.hash = "";
-  });
+beforeEach(() => {
+  vi.clearAllMocks();
+  window.location.hash = "";
+});
 
+describe("CollectorDetailPageV1", () => {
   it("resolves the latest version and renders when the URL carries no ?version=", () => {
     // Regression guard: the list page links to a bare
     // /collector/components/:distribution/:name (no ?version=). Without the
@@ -430,8 +430,6 @@ describe("CollectorDetailPageV1", () => {
 
 describe("Collector detail tab routing", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
-    window.location.hash = "";
     mockHooks();
   });
 
@@ -485,12 +483,14 @@ describe("Collector detail release changes", () => {
   it.each([
     ["+0.149.0+", "0.149.0", "?version=0.149.0", "v0.149.0"],
     ["+%09+", "0.150.0", "", "main"],
+    ["v0.149.0", "0.149.0", "?version=0.149.0", "v0.149.0"],
+    ["+v0.149.0+", "0.149.0", "?version=0.149.0", "v0.149.0"],
   ])(
     "keeps data, source and navigation consistent for version=%s",
     (query, version, suffix, ref) => {
       mockHooks();
       renderAtRoute(`/collector/components/core/otlpreceiver?version=${query}`);
-      expect(useCollectorComponent).toHaveBeenCalledWith("core", "otlpreceiver", version);
+      expect(useCollectorComponent).toHaveBeenLastCalledWith("core", "otlpreceiver", version);
       expect(screen.getByRole("link", { name: "Source" })).toHaveAttribute(
         "href",
         `https://github.com/open-telemetry/opentelemetry-collector/tree/${ref}/receiver/otlpreceiver`

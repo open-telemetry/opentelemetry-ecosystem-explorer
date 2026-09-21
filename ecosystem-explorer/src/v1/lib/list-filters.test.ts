@@ -43,8 +43,8 @@ describe("listFilters", () => {
     expect(parsed.signals).toEqual(["logs", "traces"]);
   });
 
-  it("parseFilters trims whitespace from version", () => {
-    expect(parseFilters("?version=%20v0.150.0%20").version).toBe("v0.150.0");
+  it("parseFilters normalizes the release to a bare version", () => {
+    expect(parseFilters("?version=%20v0.150.0%20").version).toBe("0.150.0");
     expect(parseFilters("?version=%20%20").version).toBeNull();
   });
 
@@ -56,7 +56,7 @@ describe("listFilters", () => {
 
   it("parseFilters handles single-value params and falls back on bad enum values", () => {
     const parsed = parseFilters("?version=v0.150.0&q=kafka&sort=bogus&density=compact&page=3");
-    expect(parsed.version).toBe("v0.150.0");
+    expect(parsed.version).toBe("0.150.0");
     expect(parsed.q).toBe("kafka");
     expect(parsed.sort).toBe("name"); // fallback
     expect(parsed.density).toBe("compact");
@@ -72,6 +72,15 @@ describe("listFilters", () => {
   it("serializeFilters omits default values from the URL", () => {
     const params = serializeFilters({});
     expect(params.toString()).toBe("");
+  });
+
+  it.each([
+    [" v0.150.0 ", "version=0.150.0"],
+    [" deprecated ", "version=deprecated"],
+    [" \t ", ""],
+    ["preview", "version=preview"],
+  ])("serializeFilters normalizes release %j", (version, expected) => {
+    expect(serializeFilters({ version }).toString()).toBe(expected);
   });
 
   it("serializeFilters sorts multi-select facets for stable URLs", () => {

@@ -34,6 +34,7 @@
 
 import type { CollectorComponentType } from "@/components/ui/type-stripe-colors";
 import type { Stability } from "@/types/collector";
+import { normalizeCollectorRelease } from "@/v1/lib/collector-release";
 
 export type Signal = "traces" | "metrics" | "logs" | "baggage";
 /** Stability facet vocabulary — the canonical six OTel levels from the registry types. */
@@ -131,7 +132,7 @@ export function parseFilters(input: string | URLSearchParams): ListFilters {
     signals: parseCsv(params.getAll("signal"), SIGNALS),
     stabilities: parseCsv(params.getAll("stability"), STABILITIES),
     distributions: parseCsv(params.getAll("distribution"), DISTRIBUTIONS),
-    version: params.get("version")?.trim() || null,
+    version: normalizeCollectorRelease(params.get("version")),
     q: params.get("q")?.trim() ?? "",
     sort: parseEnum(params.get("sort"), SORTS, "name"),
     density: parseEnum(params.get("density"), DENSITIES, "compact"),
@@ -154,7 +155,7 @@ export function serializeFilters(filters: Partial<ListFilters>): URLSearchParams
   set("signal", csv(merged.signals));
   set("stability", csv(merged.stabilities));
   set("distribution", csv(merged.distributions));
-  const version = merged.version?.trim();
+  const version = normalizeCollectorRelease(merged.version);
   if (version) set("version", version);
   const q = merged.q.trim();
   if (q) set("q", q);
