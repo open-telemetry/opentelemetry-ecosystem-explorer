@@ -20,8 +20,9 @@ import {
   durationLabel,
   eventReference,
   layoutLaneMarkers,
+  MARKER_LABEL_WIDTH,
+  MARKER_SIZE,
   positionFraction,
-  railBounds,
 } from "./timeline-layout";
 import type { TimelineEvent } from "../types";
 
@@ -91,6 +92,51 @@ describe("durationLabel", () => {
 });
 
 describe("layoutLaneMarkers", () => {
+  it.each([552, 900, 1400])(
+    "keeps labels inside a %ipx track and markers at their dates",
+    (width) => {
+      const events = [
+        makeEvent({ id: "start", date: "2020-01-01" }),
+        makeEvent({ id: "end", date: "2021-12-31" }),
+      ];
+      const range = computeTimelineRange([events[0]]);
+      const { markers } = layoutLaneMarkers(events, width, range);
+      for (const marker of markers) {
+        expect(marker.x).toBe(positionFraction(marker.event.date, range) * width);
+        expect(marker.left).toBeGreaterThanOrEqual(0);
+        expect(marker.left + MARKER_LABEL_WIDTH).toBeLessThanOrEqual(width);
+      }
+      expect(markers[0].left).toBeGreaterThan(markers[0].x);
+      expect(markers[1].left + MARKER_LABEL_WIDTH).toBeLessThan(markers[1].x);
+    }
+  );
+
+  it.each([552, 900, 1400])(
+    "reserves space for symbols and flipped labels on a %ipx track",
+    (width) => {
+      const range = computeTimelineRange([makeEvent({ date: "2020-01-01" })]);
+      const events = Array.from({ length: 24 }, (_, index) =>
+        makeEvent({
+          id: String(index),
+          date: `${2020 + Math.floor(index / 12)}-${String((index % 12) + 1).padStart(2, "0")}-01`,
+        })
+      );
+      const { markers } = layoutLaneMarkers(events, width, range);
+      const bounds = (marker: (typeof markers)[number]) => ({
+        left: Math.min(marker.left, marker.x - MARKER_SIZE / 2),
+        right: Math.max(marker.left + MARKER_LABEL_WIDTH, marker.x + MARKER_SIZE / 2),
+      });
+      for (let i = 0; i < markers.length; i++) {
+        for (const other of markers.slice(i + 1)) {
+          if (markers[i].row !== other.row) continue;
+          const a = bounds(markers[i]);
+          const b = bounds(other);
+          expect(a.right < b.left || b.right < a.left).toBe(true);
+        }
+      }
+    }
+  );
+
   it("packs non-overlapping events into a single row", () => {
     const range = computeTimelineRange([
       makeEvent({ id: "a", date: "2019-01-01" }),
@@ -117,23 +163,5 @@ describe("layoutLaneMarkers", () => {
     const { markers, rowCount } = layoutLaneMarkers(events, 900, range);
     expect(rowCount).toBe(2);
     expect(markers[0].row).not.toBe(markers[1].row);
-  });
-});
-
-describe("railBounds", () => {
-  it("returns null when fewer than two events are visible", () => {
-    const range = computeTimelineRange([makeEvent({ date: "2020-01-01" })]);
-    expect(railBounds([makeEvent({ date: "2020-01-01" })], 900, range)).toBeNull();
-  });
-
-  it("spans from the first to the last event when there are at least two", () => {
-    const events = [
-      makeEvent({ id: "a", date: "2019-01-01" }),
-      makeEvent({ id: "b", date: "2026-01-01" }),
-    ];
-    const range = computeTimelineRange(events);
-    const bounds = railBounds(events, 900, range);
-    expect(bounds).not.toBeNull();
-    expect(bounds!.width).toBeGreaterThan(0);
   });
 });

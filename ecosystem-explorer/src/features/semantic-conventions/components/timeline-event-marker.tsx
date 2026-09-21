@@ -45,12 +45,11 @@ export function TimelineEventMarker({
 
   return (
     <>
-      <div
+      <span
         aria-hidden="true"
-        className="bg-border absolute w-px"
-        style={{ left: x, top: 24, height: Math.max(0, top - 24) }}
-      />
-      <span aria-hidden="true" className="absolute -translate-x-1/2" style={{ left: x, top: 17 }}>
+        className="pointer-events-none absolute -translate-x-1/2"
+        style={{ left: x, top: top + 10 }}
+      >
         <TimelineMarkerShape type={event.type} className="h-4 w-4" />
       </span>
       <button
@@ -59,11 +58,11 @@ export function TimelineEventMarker({
         onClick={() => onSelect(event.id)}
         title={`${typeLabel} · ${formatDate(event.date, locale)}`}
         aria-label={`${event.title}, ${formatDate(event.date, locale)}, ${eventReference(event)}`}
-        style={{ left, top, width: MARKER_LABEL_WIDTH }}
+        style={{ left, top, width: MARKER_LABEL_WIDTH, height: 36 }}
         className={`focus-visible:ring-primary absolute cursor-pointer rounded-r-md border border-l-2 px-2 py-1 text-left text-[10px] leading-tight transition-[background-color,box-shadow] focus-visible:ring-2 focus-visible:outline-none ${style.accentBorderClass} ${
           selected
-            ? "border-primary bg-primary ring-primary z-10 text-white shadow-lg ring-2"
-            : "border-border/60 bg-card/90 text-foreground hover:bg-primary/10 hover:ring-primary/40 shadow-sm hover:shadow-md hover:ring-1"
+            ? "border-primary bg-primary ring-primary text-white shadow-lg ring-2"
+            : "border-border/60 bg-card text-foreground hover:bg-card-secondary hover:ring-primary/40 shadow-sm hover:shadow-md hover:ring-1"
         }`}
       >
         <span className="block truncate font-semibold">{event.short}</span>

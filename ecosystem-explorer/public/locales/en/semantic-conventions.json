@@ -23,7 +23,7 @@
       "loadError": "Failed to load the timeline: {{message}}"
     },
     "chartAriaLabel": "Calendar timeline, horizontally scrollable",
-    "readingNote": "Select a milestone for its exact date and source. Lines connect selected milestones; they do not declare a whole domain stable.",
+    "readingNote": "Each symbol marks a milestone’s date; nearby milestones use separate rows for readability. Select a milestone for its exact date and source. A milestone does not declare a whole domain stable.",
     "empty": "No milestones match these filters.",
     "lane": {
       "elapsed": "{{duration}} between shown milestones"

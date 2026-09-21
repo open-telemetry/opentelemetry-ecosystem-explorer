@@ -17,12 +17,7 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { TimelineEvent, TimelineLaneDef } from "../types";
-import {
-  durationLabel,
-  layoutLaneMarkers,
-  railBounds,
-  type TimelineRange,
-} from "../utils/timeline-layout";
+import { durationLabel, layoutLaneMarkers, type TimelineRange } from "../utils/timeline-layout";
 import { TimelineEventMarker } from "./timeline-event-marker";
 
 export const LANE_LABEL_WIDTH_CLASS = "w-40 shrink-0";
@@ -32,7 +27,6 @@ interface TimelineLaneProps {
   events: TimelineEvent[];
   trackWidthPx: number;
   range: TimelineRange;
-  yearTicks: { year: number; x: number }[];
   selectedId: string | null;
   locale: string;
   onSelect: (id: string) => void;
@@ -43,7 +37,6 @@ export function TimelineLane({
   events,
   trackWidthPx,
   range,
-  yearTicks,
   selectedId,
   locale,
   onSelect,
@@ -51,10 +44,6 @@ export function TimelineLane({
   const { t } = useTranslation("semantic-conventions");
   const { markers, trackHeight } = useMemo(
     () => layoutLaneMarkers(events, trackWidthPx, range),
-    [events, trackWidthPx, range]
-  );
-  const rail = useMemo(
-    () => railBounds(events, trackWidthPx, range),
     [events, trackWidthPx, range]
   );
 
@@ -71,23 +60,8 @@ export function TimelineLane({
           </small>
         )}
       </div>
-      {/* Keep raised cards within the track, behind the sticky lane label when scrolling. */}
-      <div className="relative isolate flex-1" style={{ height: trackHeight }}>
-        {yearTicks.map(({ year, x }) => (
-          <div
-            key={year}
-            aria-hidden="true"
-            className="border-border/40 absolute top-0 bottom-0 border-l"
-            style={{ left: x }}
-          />
-        ))}
-        {rail && (
-          <div
-            aria-hidden="true"
-            className="bg-border absolute h-0.5"
-            style={{ left: rail.left, width: rail.width, top: 24 }}
-          />
-        )}
+      {/* Keep markers within the track, behind the sticky lane label when scrolling. */}
+      <div className="relative isolate mx-3 flex-1" style={{ height: trackHeight }}>
         {markers.map((marker) => (
           <TimelineEventMarker
             key={marker.event.id}

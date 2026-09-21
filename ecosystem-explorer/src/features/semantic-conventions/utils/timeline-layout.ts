@@ -107,7 +107,9 @@ export function durationLabel(fromIso: string, toIso: string): string {
 const MARKER_PAD = 8;
 export const MARKER_LABEL_WIDTH = 200;
 const ROW_HEIGHT = 53;
-const FIRST_ROW_TOP = 43;
+const FIRST_ROW_TOP = 16;
+export const MARKER_SIZE = 16;
+const LABEL_OFFSET = MARKER_SIZE / 2 + MARKER_PAD;
 
 export interface LaidOutMarker {
   event: TimelineEvent;
@@ -123,11 +125,10 @@ export interface LaneLayoutResult {
   trackHeight: number;
 }
 
-/*
- * Greedy row-packing so event label cards never overlap: each event's label sits at its date's
- * x position (clamped so it doesn't run past either edge of the track), and drops into the first
- * row whose previous label has already cleared. Ported from the reference file's vanilla-JS
- * `layout()` function, which is small, well understood, and is the chart's core visual identity.
+/**
+ * Pack each date marker and its adjacent label as one interval. Labels flip left near the
+ * right edge; those intervals can start before earlier events, so check both ends of every
+ * occupied interval rather than assuming chronological order also means left-to-right order.
  * `events` must already be sorted by date.
  */
 export function layoutLaneMarkers(
@@ -135,31 +136,31 @@ export function layoutLaneMarkers(
   trackWidthPx: number,
   range: TimelineRange
 ): LaneLayoutResult {
-  const rowRightEdges: number[] = [];
+  const rows: { left: number; right: number }[][] = [];
   const markers: LaidOutMarker[] = events.map((event) => {
     const x = positionFraction(event.date, range) * trackWidthPx;
-    const left = Math.max(
-      MARKER_PAD,
-      Math.min(x - MARKER_PAD, trackWidthPx - MARKER_LABEL_WIDTH - MARKER_PAD)
+    const left =
+      x + LABEL_OFFSET + MARKER_LABEL_WIDTH <= trackWidthPx
+        ? x + LABEL_OFFSET
+        : x - LABEL_OFFSET - MARKER_LABEL_WIDTH;
+    const bounds = {
+      left: Math.min(left, x - MARKER_SIZE / 2),
+      right: Math.max(left + MARKER_LABEL_WIDTH, x + MARKER_SIZE / 2),
+    };
+    let row = rows.findIndex((intervals) =>
+      intervals.every(
+        (interval) =>
+          bounds.right + MARKER_PAD <= interval.left || interval.right + MARKER_PAD <= bounds.left
+      )
     );
-    let row = rowRightEdges.findIndex((rightEdge) => rightEdge + MARKER_PAD <= left);
-    if (row < 0) row = rowRightEdges.length;
-    rowRightEdges[row] = left + MARKER_LABEL_WIDTH;
+    if (row < 0) {
+      row = rows.length;
+      rows.push([]);
+    }
+    rows[row].push(bounds);
     return { event, x, left, top: FIRST_ROW_TOP + row * ROW_HEIGHT, row };
   });
 
-  const rowCount = Math.max(1, rowRightEdges.length);
-  return { markers, rowCount, trackHeight: 51 + rowCount * ROW_HEIGHT };
-}
-
-/** The horizontal line connecting the first and last visible marker in a lane, if there are >1. */
-export function railBounds(
-  events: TimelineEvent[],
-  trackWidthPx: number,
-  range: TimelineRange
-): { left: number; width: number } | null {
-  if (events.length < 2) return null;
-  const left = positionFraction(events[0].date, range) * trackWidthPx;
-  const right = positionFraction(events[events.length - 1].date, range) * trackWidthPx;
-  return { left, width: right - left };
+  const rowCount = Math.max(1, rows.length);
+  return { markers, rowCount, trackHeight: FIRST_ROW_TOP + rowCount * ROW_HEIGHT };
 }

@@ -84,11 +84,11 @@ export function TimelineChart({
       <div className="min-w-[46rem]">
         <div className="border-border flex border-b">
           <div className={LANE_LABEL_WIDTH_CLASS} />
-          <div ref={trackRef} className="relative h-11 flex-1">
+          <div ref={trackRef} className="relative mx-3 h-11 flex-1">
             {yearTicks.map(({ year, x }) => (
               <span
                 key={year}
-                className="text-muted-foreground absolute top-3 text-xs font-semibold"
+                className="text-muted-foreground border-border absolute top-3 bottom-0 border-l pl-1 text-xs font-semibold"
                 style={{ left: x }}
               >
                 {year}
@@ -103,7 +103,6 @@ export function TimelineChart({
             events={events}
             trackWidthPx={trackWidth}
             range={range}
-            yearTicks={yearTicks}
             selectedId={selectedId}
             locale={locale}
             onSelect={onSelect}
