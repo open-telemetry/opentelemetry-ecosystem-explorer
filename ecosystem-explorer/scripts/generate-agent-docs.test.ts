@@ -414,12 +414,18 @@ describe("agent docs: reverse index and facets", () => {
       const collectorDocs: Record<string, { metrics: string[]; attributes: string[] }> = {};
       for (const [id, hash] of Object.entries(collectorManifest.components)) {
         const doc = readJson(resolve(dataDir, `collector/components/${id}/${id}-${hash}.json`));
+        // Effective names, not map keys: a metric can carry a `prefix` applied
+        // at emission time, and an attribute can rename itself via
+        // `name_override` — the reverse index is keyed by what's actually
+        // emitted/exported, matching the fix in `telemetryKeys`.
+        const metricMaps = [doc.metrics ?? {}, doc.telemetry?.metrics ?? {}];
         collectorDocs[id] = {
-          metrics: [
-            ...Object.keys(doc.metrics ?? {}),
-            ...Object.keys(doc.telemetry?.metrics ?? {}),
-          ],
-          attributes: Object.keys(doc.attributes ?? {}),
+          metrics: metricMaps.flatMap((map) =>
+            Object.entries(map).map(([name, metric]) => `${metric?.prefix ?? ""}${name}`)
+          ),
+          attributes: Object.entries(doc.attributes ?? {}).map(
+            ([name, attribute]) => attribute?.name_override ?? name
+          ),
         };
       }
       check("collector", collectorDocs);

@@ -565,10 +565,21 @@ const DATA_STORES = [
     // Both metric shapes are indexed together: `metrics` is what the component
     // scrapes or emits, `telemetry.metrics` its own internal metrics. The
     // component page keeps them in separate sections when the distinction matters.
-    telemetryKeys: (doc) => ({
-      metrics: [...Object.keys(doc.metrics ?? {}), ...Object.keys(doc.telemetry?.metrics ?? {})],
-      attributes: Object.keys(doc.attributes ?? {}),
-    }),
+    // Keys in `metrics`/`telemetry.metrics`/`attributes` are the metadata map
+    // key, not the name a user or exporter actually sees: a metric can carry a
+    // `prefix` (e.g. `otelcol.`) applied at emission time, and an attribute can
+    // rename itself via `name_override`. The reverse index must be keyed by
+    // that effective name or a lookup for the real metric/attribute misses.
+    telemetryKeys: (doc) => {
+      const metricMaps = [doc.metrics ?? {}, doc.telemetry?.metrics ?? {}];
+      const metrics = metricMaps.flatMap((map) =>
+        Object.entries(map).map(([name, metric]) => `${metric?.prefix ?? ""}${name}`)
+      );
+      const attributes = Object.entries(doc.attributes ?? {}).map(
+        ([name, attribute]) => attribute?.name_override ?? name
+      );
+      return { metrics, attributes };
+    },
     facet: (doc, id) => ({
       id,
       name: doc.name,
@@ -743,8 +754,10 @@ async function collectStoreFacets(publicPath, store) {
       );
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
-      console.warn(`[WARN] Could not read ${ecosystem}/${id} for the reverse index: ${message}`);
-      continue;
+      // The reverse index and facets are advertised as authoritative: an agent
+      // that gets no match trusts it as a real "no". Skipping a component here
+      // would publish that promise while quietly missing it, so fail the build.
+      throw new Error(`Could not read ${ecosystem}/${id} for the reverse index: ${message}`);
     }
 
     const keys = store.telemetryKeys(doc);
