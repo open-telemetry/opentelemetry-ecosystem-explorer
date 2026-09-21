@@ -42,4 +42,5 @@ export const NAMESPACES = [
   "ecosystem",
   "list",
   "detail",
+  "semantic-conventions",
 ] as const;

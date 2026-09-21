@@ -1,0 +1,70 @@
+{
+  "landing": {
+    "page": {
+      "title": "Semantic Conventions",
+      "description": "The shared attribute and signal vocabulary that keeps telemetry consistent across languages, frameworks, and vendors."
+    },
+    "timelineCard": {
+      "title": "Semantic Convention Timeline",
+      "description": "Follow domains like HTTP, database, and messaging from their first introduction through stability milestones, deprecations, and migrations."
+    },
+    "resources": {
+      "heading": "Resources",
+      "items": {
+        "specSite": "OpenTelemetry Semantic Conventions Specification"
+      }
+    }
+  },
+  "timeline": {
+    "page": {
+      "eyebrow": "OpenTelemetry / Semantic Conventions",
+      "title": "Semantic Convention Timeline",
+      "description": "Follow major domains from early definitions through migrations and stability milestones. The space between events is elapsed time.",
+      "loadError": "Failed to load the timeline: {{message}}"
+    },
+    "chartAriaLabel": "Calendar timeline, horizontally scrollable",
+    "readingNote": "Select a milestone for its exact date and source. Lines connect selected milestones; they do not declare a whole domain stable.",
+    "empty": "No milestones match these filters.",
+    "lane": {
+      "elapsed": "{{duration}} between shown milestones"
+    },
+    "status": {
+      "summary": "{{count}} milestones · {{lanes}} domains"
+    },
+    "filters": {
+      "scope": {
+        "label": "Milestones",
+        "major": "Major domain stories",
+        "all": "All curated milestones"
+      },
+      "domain": {
+        "label": "Domain",
+        "all": "All domains"
+      },
+      "type": {
+        "label": "Event type",
+        "all": "All event types",
+        "domain": "Introduced",
+        "stability": "Stability",
+        "change": "Changed",
+        "deprecation": "Deprecated",
+        "removed": "Removed",
+        "moved": "Moved",
+        "tooling": "Model / tooling",
+        "release": "Release process"
+      },
+      "reset": "Reset view"
+    },
+    "legend": {
+      "heading": "Legend"
+    },
+    "detail": {
+      "empty": "Select a milestone to see its details.",
+      "sourceLink": "Read the source",
+      "lineageLink": "Earlier working draft · 13 May 2019",
+      "firstReleaseNote": "First specification tag containing this change: {{version}}.",
+      "specCommitDate": "Spec commit date (UTC)",
+      "releaseDate": "Release date (UTC)"
+    }
+  }
+}

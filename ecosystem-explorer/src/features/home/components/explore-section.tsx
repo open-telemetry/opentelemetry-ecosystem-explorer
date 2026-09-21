@@ -16,12 +16,13 @@
 import { useTranslation } from "react-i18next";
 import { JavaIcon } from "@/components/icons/java-icon";
 import { PipelineIcon } from "@/components/icons/pipeline-icon";
+import { SemanticConventionsIcon } from "@/components/icons/semantic-conventions-icon";
 import { NavigationCard } from "@/components/ui/navigation-card";
 
 export function ExploreSection() {
   const { t } = useTranslation("home");
   return (
-    <section className="bg-background relative px-6">
+    <section className="bg-background relative px-6" aria-labelledby="explore-heading">
       {/* Subtle ambient glow at top */}
       <div
         className="pointer-events-none absolute top-0 left-1/2 h-64 w-full max-w-3xl -translate-x-1/2 -translate-y-16"
@@ -32,19 +33,37 @@ export function ExploreSection() {
       />
 
       <div className="relative mx-auto max-w-6xl">
+        <div className="mb-6 flex items-center gap-3">
+          <span aria-hidden="true" className="bg-primary h-0.5 w-6" />
+          <h2 id="explore-heading" className="text-foreground text-lg font-semibold">
+            {t("explore.heading")}
+          </h2>
+        </div>
+
         {/* Navigation cards */}
-        <div className="grid gap-6 md:grid-cols-2">
-          <NavigationCard
-            title={t("explore.javaAgent.title")}
-            description={t("explore.javaAgent.description")}
-            href="/java-agent"
-            icon={<JavaIcon className="h-20 w-20" />}
-          />
+        <div className="grid gap-6 lg:grid-cols-3 lg:grid-rows-2">
+          <div className="lg:col-span-2 lg:row-span-2">
+            <NavigationCard
+              title={t("explore.javaAgent.title")}
+              description={t("explore.javaAgent.description")}
+              href="/java-agent"
+              icon={<JavaIcon className="h-14 w-14" />}
+              variant="featured"
+            />
+          </div>
           <NavigationCard
             title={t("explore.collector.title")}
             description={t("explore.collector.description")}
             href="/collector"
-            icon={<PipelineIcon className="h-20 w-20" />}
+            icon={<PipelineIcon className="h-8 w-8" />}
+            variant="compact"
+          />
+          <NavigationCard
+            title={t("explore.semanticConventions.title")}
+            description={t("explore.semanticConventions.description")}
+            href="/semantic-conventions"
+            icon={<SemanticConventionsIcon className="h-8 w-8" />}
+            variant="compact"
           />
         </div>
       </div>

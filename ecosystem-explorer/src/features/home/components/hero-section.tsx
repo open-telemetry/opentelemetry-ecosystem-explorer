@@ -42,19 +42,9 @@ export function HeroSection() {
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex flex-col items-center gap-6 px-6 text-center">
-        {/* Compass with glow ring */}
-        <div
-          className="inline-flex rounded-full p-4"
-          style={{
-            boxShadow: "0 0 60px hsl(var(--hero-accent-hsl) / 0.2)",
-          }}
-        >
-          <Compass className="text-foreground h-24 w-24 md:h-32 md:w-32" />
-        </div>
-
-        <div className="space-y-2">
-          <h1 className="text-3xl leading-tight font-bold tracking-tight text-balance md:text-4xl">
+      <div className="relative z-10 flex w-full max-w-6xl flex-col-reverse items-center gap-10 px-6 md:flex-row md:justify-between md:gap-16">
+        <div className="space-y-4 text-center md:text-left">
+          <h1 className="text-4xl leading-tight font-bold tracking-tight text-balance md:text-5xl lg:text-6xl">
             <span className="text-foreground">{t("hero.titlePrefix")}</span>
             <br />
             <span className="from-otel-blue to-otel-orange bg-gradient-to-r bg-clip-text text-transparent">
@@ -62,9 +52,19 @@ export function HeroSection() {
             </span>
           </h1>
 
-          <p className="text-muted-foreground mx-auto max-w-2xl text-sm leading-relaxed text-balance md:text-base">
+          <p className="text-muted-foreground mx-auto max-w-xl text-base leading-relaxed text-balance md:mx-0 md:text-lg">
             {t("hero.tagline")}
           </p>
+        </div>
+
+        {/* Compass with glow ring */}
+        <div
+          className="inline-flex flex-shrink-0 rounded-full p-4"
+          style={{
+            boxShadow: "0 0 60px hsl(var(--hero-accent-hsl) / 0.2)",
+          }}
+        >
+          <Compass className="text-foreground h-32 w-32 md:h-40 md:w-40" />
         </div>
       </div>
 
