@@ -31,7 +31,7 @@ export function TimelineDetailPanel({ event, locale }: TimelineDetailPanelProps)
 
   if (!event) {
     return (
-      <div aria-live="polite" className="border-border/60 border-t p-6">
+      <div aria-live="polite" className="p-6">
         <p className="text-muted-foreground text-sm">{t("timeline.detail.empty")}</p>
       </div>
     );
@@ -40,10 +40,7 @@ export function TimelineDetailPanel({ event, locale }: TimelineDetailPanelProps)
   const style = getEventTypeStyle(event.type);
 
   return (
-    <div
-      aria-live="polite"
-      className="border-border/60 grid gap-4 border-t p-6 md:grid-cols-[10rem_1fr]"
-    >
+    <div aria-live="polite" className="grid gap-4 p-6">
       <div>
         <div className="text-foreground text-2xl font-semibold tracking-tight">
           {formatDate(event.date, locale)}
@@ -61,6 +58,9 @@ export function TimelineDetailPanel({ event, locale }: TimelineDetailPanelProps)
         </div>
         <h3 className="text-foreground mt-1 text-lg font-semibold">{event.title}</h3>
         <p className="text-muted-foreground mt-2 text-sm leading-relaxed">{event.detail}</p>
+        {event.type === "baseline" && (
+          <p className="text-muted-foreground mt-2 text-sm">{t("timeline.detail.baselineNote")}</p>
+        )}
         {event.firstRelease && (
           <p className="text-muted-foreground mt-2 text-sm">
             {t("timeline.detail.firstReleaseNote", { version: event.firstRelease })}

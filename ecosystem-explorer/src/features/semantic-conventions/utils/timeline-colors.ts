@@ -32,13 +32,19 @@ interface EventTypeStyle {
  * The reference file assigns each event type a literal hex color via inline CSS. This app keeps
  * all color decisions in Tailwind's token-backed color scale (see `glow-badge.tsx` for the same
  * pattern applied to categorical badges) rather than hardcoding new hex values or adding new CSS
- * custom properties for an 8-way categorical set. Shape (circle/square/diamond) is the primary
+ * custom properties for the categorical set. Shape (circle/square/diamond) is the primary
  * differentiator so color is never the only signal.
  */
 const EVENT_TYPE_STYLES: Record<TimelineEventType, EventTypeStyle> = {
   domain: {
     shape: "circle",
     markerClass: "border-blue-500 bg-background dark:border-blue-400",
+    accentBorderClass: "border-l-blue-500 dark:border-l-blue-400",
+    textClass: "text-blue-700 dark:text-blue-400",
+  },
+  baseline: {
+    shape: "diamond",
+    markerClass: "border-blue-500 bg-blue-500 dark:border-blue-400 dark:bg-blue-400",
     accentBorderClass: "border-l-blue-500 dark:border-l-blue-400",
     textClass: "text-blue-700 dark:text-blue-400",
   },
@@ -55,10 +61,10 @@ const EVENT_TYPE_STYLES: Record<TimelineEventType, EventTypeStyle> = {
     textClass: "text-amber-800 dark:text-amber-400",
   },
   deprecation: {
-    shape: "circle",
-    markerClass: "border-orange-600 bg-background dark:border-orange-400",
-    accentBorderClass: "border-l-orange-600 dark:border-l-orange-400",
-    textClass: "text-orange-800 dark:text-orange-400",
+    shape: "square",
+    markerClass: "border-rose-600 bg-background dark:border-rose-400",
+    accentBorderClass: "border-l-rose-600 dark:border-l-rose-400",
+    textClass: "text-rose-800 dark:text-rose-400",
   },
   removed: {
     shape: "square",
@@ -72,18 +78,6 @@ const EVENT_TYPE_STYLES: Record<TimelineEventType, EventTypeStyle> = {
     accentBorderClass: "border-l-purple-600 dark:border-l-purple-400",
     textClass: "text-purple-700 dark:text-purple-400",
   },
-  tooling: {
-    shape: "circle",
-    markerClass: "border-slate-500 bg-background dark:border-slate-400",
-    accentBorderClass: "border-l-slate-500 dark:border-l-slate-400",
-    textClass: "text-slate-700 dark:text-slate-400",
-  },
-  release: {
-    shape: "circle",
-    markerClass: "border-slate-500 bg-background dark:border-slate-400",
-    accentBorderClass: "border-l-slate-500 dark:border-l-slate-400",
-    textClass: "text-slate-700 dark:text-slate-400",
-  },
 };
 
 export function getEventTypeStyle(type: TimelineEventType): EventTypeStyle {
@@ -92,11 +86,10 @@ export function getEventTypeStyle(type: TimelineEventType): EventTypeStyle {
 
 export const EVENT_TYPES: TimelineEventType[] = [
   "domain",
+  "baseline",
   "stability",
   "change",
   "deprecation",
   "removed",
   "moved",
-  "tooling",
-  "release",
 ];

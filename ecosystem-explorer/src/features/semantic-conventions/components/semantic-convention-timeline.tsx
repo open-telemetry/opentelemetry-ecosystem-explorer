@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { TimelineData, TimelineEvent } from "../types";
 import { computeTimelineRange } from "../utils/timeline-layout";
@@ -41,6 +41,17 @@ export function SemanticConventionTimeline({ data }: SemanticConventionTimelineP
   const [domain, setDomain] = useState<TimelineDomainFilter>("all");
   const [eventType, setEventType] = useState<TimelineTypeFilter>("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const detailRef = useRef<HTMLElement>(null);
+
+  function handleSelect(id: string) {
+    setSelectedId(id);
+    // On stacked layouts, bring the response to the selection into view.
+    if (!window.matchMedia("(min-width: 1024px)").matches) {
+      detailRef.current?.scrollIntoView({ block: "start" });
+      detailRef.current?.focus({ preventScroll: true });
+    }
+  }
 
   const range = useMemo(() => computeTimelineRange(data.events), [data.events]);
 
@@ -93,6 +104,11 @@ export function SemanticConventionTimeline({ data }: SemanticConventionTimelineP
       );
   }, [scopeFilteredEvents, effectiveDomain, effectiveEventType]);
 
+  const visibleTypes = useMemo(
+    () => EVENT_TYPES.filter((type) => visibleEvents.some((event) => event.type === type)),
+    [visibleEvents]
+  );
+
   const laneGroups: TimelineLaneGroup[] = useMemo(() => {
     return data.lanes
       .map((lane) => ({ lane, events: visibleEvents.filter((event) => event.lane === lane.id) }))
@@ -119,7 +135,7 @@ export function SemanticConventionTimeline({ data }: SemanticConventionTimelineP
   }
 
   return (
-    <div className="border-border bg-card overflow-hidden rounded-lg border">
+    <div className="border-border bg-card overflow-clip rounded-lg border">
       <TimelineFilterBar
         scope={scope}
         domain={effectiveDomain}
@@ -131,24 +147,41 @@ export function SemanticConventionTimeline({ data }: SemanticConventionTimelineP
         onEventTypeChange={setEventType}
         onReset={handleReset}
       />
-      <TimelineLegend />
+      <TimelineLegend types={visibleTypes} />
       <p className="border-border/60 text-muted-foreground border-b px-4 py-3 text-xs">
         {t("timeline.readingNote")}
       </p>
-      <TimelineChart
-        laneGroups={laneGroups}
-        range={range}
-        selectedId={effectiveSelectedId}
-        locale={locale}
-        onSelect={setSelectedId}
-      />
-      <p
-        role="status"
-        className="border-border/60 text-muted-foreground border-t px-4 py-3 text-xs"
-      >
-        {t("timeline.status.summary", { count: visibleEvents.length, lanes: laneGroups.length })}
-      </p>
-      <TimelineDetailPanel event={selectedEvent} locale={locale} />
+      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start">
+        <div className="min-w-0">
+          <TimelineChart
+            laneGroups={laneGroups}
+            range={range}
+            selectedId={effectiveSelectedId}
+            locale={locale}
+            onSelect={handleSelect}
+          />
+          <p
+            role="status"
+            className="border-border/60 text-muted-foreground border-t px-4 py-3 text-xs"
+          >
+            {t("timeline.status.summary", {
+              milestones: t("timeline.status.milestoneCount", { count: visibleEvents.length }),
+              domains: t("timeline.status.domainCount", { count: laneGroups.length }),
+            })}
+          </p>
+        </div>
+        <aside
+          ref={detailRef}
+          tabIndex={-1}
+          aria-label={t("timeline.detail.heading")}
+          className="border-border/60 bg-card focus-visible:ring-primary scroll-mt-24 border-t focus-visible:ring-2 focus-visible:outline-none lg:sticky lg:top-24 lg:max-h-[calc(100dvh-7rem)] lg:overflow-y-auto lg:border-t-0 lg:border-l"
+        >
+          <h2 className="text-muted-foreground px-6 pt-5 text-xs font-semibold tracking-wide uppercase">
+            {t("timeline.detail.heading")}
+          </h2>
+          <TimelineDetailPanel event={selectedEvent} locale={locale} />
+        </aside>
+      </div>
     </div>
   );
 }

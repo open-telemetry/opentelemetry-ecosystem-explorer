@@ -125,7 +125,7 @@ export function TimelineFilterBar({
       <button
         type="button"
         onClick={onReset}
-        className="text-primary hover:text-primary/80 ml-auto rounded-md px-2 py-2 text-sm font-semibold transition-colors"
+        className="text-primary hover:text-primary/80 ml-auto cursor-pointer rounded-md px-2 py-2 text-sm font-semibold transition-colors"
       >
         {t("timeline.filters.reset")}
       </button>

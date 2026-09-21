@@ -15,7 +15,7 @@
  */
 
 export type TimelineEventType =
-  "domain" | "stability" | "change" | "deprecation" | "removed" | "moved" | "tooling" | "release";
+  "domain" | "baseline" | "stability" | "change" | "deprecation" | "removed" | "moved";
 
 export interface TimelineLaneDef {
   id: string;

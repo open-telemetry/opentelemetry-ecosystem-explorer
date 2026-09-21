@@ -71,7 +71,8 @@ export function TimelineLane({
           </small>
         )}
       </div>
-      <div className="relative flex-1" style={{ height: trackHeight }}>
+      {/* Keep raised cards within the track, behind the sticky lane label when scrolling. */}
+      <div className="relative isolate flex-1" style={{ height: trackHeight }}>
         {yearTicks.map(({ year, x }) => (
           <div
             key={year}

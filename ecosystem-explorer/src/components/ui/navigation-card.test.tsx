@@ -67,4 +67,65 @@ describe("NavigationCard", () => {
     const link = screen.getByRole("link");
     expect(link).toHaveAttribute("href", "/test-path");
   });
+
+  // The three variants differ only in icon sizing and where the arrow affordance sits, so the
+  // tests pin those two details rather than the shared card chrome.
+  it("puts the arrow beside the title in the default variant", () => {
+    const { container } = render(
+      <MemoryRouter>
+        <NavigationCard
+          title="Test Title"
+          description="Test description"
+          href="/test"
+          icon={mockIcon}
+        />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByTestId("test-icon").parentElement).toHaveClass("h-24", "w-24");
+    expect(screen.getByRole("heading").parentElement?.querySelector("svg")).not.toBeNull();
+    // No circular arrow button; ArrowButton is the only `rounded-full` element in the card.
+    expect(container.querySelector(".rounded-full")).toBeNull();
+  });
+
+  it("stacks a smaller icon above the text and trails an arrow button in the featured variant", () => {
+    const { container } = render(
+      <MemoryRouter>
+        <NavigationCard
+          title="Test Title"
+          description="Test description"
+          href="/test"
+          icon={mockIcon}
+          variant="featured"
+        />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByTestId("test-icon").parentElement).toHaveClass("h-20", "w-20");
+    expect(screen.getByRole("heading").parentElement?.querySelector("svg")).toBeNull();
+    expect(container.querySelector(".rounded-full")).not.toBeNull();
+  });
+
+  it("renders a dense icon row with a trailing arrow button in the compact variant", () => {
+    const { container } = render(
+      <MemoryRouter>
+        <NavigationCard
+          title="Test Title"
+          description="Test description"
+          href="/test-path"
+          icon={mockIcon}
+          variant="compact"
+        />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByTestId("test-icon").parentElement).toHaveClass("h-14", "w-14");
+    expect(screen.getByRole("heading").parentElement?.querySelector("svg")).toBeNull();
+    expect(container.querySelector(".rounded-full")).not.toBeNull();
+
+    const link = screen.getByRole("link");
+    expect(link).toHaveAttribute("href", "/test-path");
+    expect(link).toHaveTextContent("Test Title");
+    expect(link).toHaveTextContent("Test description");
+  });
 });

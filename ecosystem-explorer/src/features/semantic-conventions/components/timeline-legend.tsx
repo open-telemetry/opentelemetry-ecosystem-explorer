@@ -15,22 +15,40 @@
  */
 
 import { useTranslation } from "react-i18next";
-import { EVENT_TYPES } from "../utils/timeline-colors";
-import { TimelineMarkerShape } from "./timeline-marker-shape";
+import { Tooltip } from "@/components/ui/tooltip";
+import type { TimelineEventType } from "@/features/semantic-conventions/types";
+import { TimelineMarkerShape } from "@/features/semantic-conventions/components/timeline-marker-shape";
 
-export function TimelineLegend() {
+interface TimelineLegendProps {
+  types: TimelineEventType[];
+}
+
+export function TimelineLegend({ types }: TimelineLegendProps) {
   const { t } = useTranslation("semantic-conventions");
+
+  if (types.length === 0) return null;
 
   return (
     <div
       aria-label={t("timeline.legend.heading")}
       className="border-border/60 text-muted-foreground flex flex-wrap gap-x-5 gap-y-2 border-b px-4 py-3 text-xs"
     >
-      {EVENT_TYPES.map((type) => (
-        <span key={type} className="flex items-center gap-1.5">
-          <TimelineMarkerShape type={type} />
-          {t(`timeline.filters.type.${type}`)}
-        </span>
+      {types.map((type) => (
+        <Tooltip
+          key={type}
+          content={t(`timeline.legend.descriptions.${type}`)}
+          className="max-w-xs text-left leading-relaxed"
+        >
+          <button
+            type="button"
+            className="hover:text-foreground focus-visible:ring-primary flex cursor-help items-center gap-1.5 rounded-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
+          >
+            <TimelineMarkerShape type={type} />
+            <span className="decoration-muted-foreground/50 underline decoration-dotted underline-offset-4">
+              {t(`timeline.filters.type.${type}`)}
+            </span>
+          </button>
+        </Tooltip>
       ))}
     </div>
   );

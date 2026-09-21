@@ -105,7 +105,7 @@ export function durationLabel(fromIso: string, toIso: string): string {
 }
 
 const MARKER_PAD = 8;
-export const MARKER_LABEL_WIDTH = 124;
+export const MARKER_LABEL_WIDTH = 200;
 const ROW_HEIGHT = 53;
 const FIRST_ROW_TOP = 43;
 

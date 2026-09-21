@@ -15,7 +15,7 @@
  */
 
 import { fireEvent, render, screen, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { SemanticConventionTimeline } from "./semantic-convention-timeline";
 import type { TimelineData } from "../types";
 
@@ -113,8 +113,7 @@ describe("SemanticConventionTimeline", () => {
 
     fireEvent.change(screen.getByLabelText("Domain"), { target: { value: "http" } });
 
-    expect(screen.getByRole("status")).toHaveTextContent("2 milestones");
-    expect(screen.getByRole("status")).toHaveTextContent("1 domains");
+    expect(screen.getByRole("status")).toHaveTextContent("2 milestones · 1 domain");
   });
 
   it("updates the detail panel and marker state when a marker is clicked", () => {
@@ -131,11 +130,35 @@ describe("SemanticConventionTimeline", () => {
     expect(screen.getByText("HTTP stable detail.")).toBeInTheDocument();
   });
 
+  it("brings details into view and focuses them on narrow screens", () => {
+    const media = vi.spyOn(window, "matchMedia").mockReturnValue({
+      matches: false,
+    } as MediaQueryList);
+    try {
+      render(<SemanticConventionTimeline data={SAMPLE_DATA} />);
+      const details = screen.getByRole("complementary", { name: "Milestone details" });
+      const scroll = vi.spyOn(details, "scrollIntoView");
+      scroll.mockClear();
+
+      fireEvent.click(
+        screen.getByRole("button", {
+          name: /Core HTTP semantic conventions stabilize/,
+        })
+      );
+
+      expect(details).toHaveFocus();
+      expect(details).toHaveTextContent("HTTP stable detail.");
+      expect(scroll).toHaveBeenCalledWith({ block: "start" });
+    } finally {
+      media.mockRestore();
+    }
+  });
+
   it("restores the default filters and selection on reset", () => {
     render(<SemanticConventionTimeline data={SAMPLE_DATA} />);
 
     fireEvent.change(screen.getByLabelText("Domain"), { target: { value: "http" } });
-    expect(screen.getByRole("status")).toHaveTextContent("1 domains");
+    expect(screen.getByRole("status")).toHaveTextContent("2 milestones · 1 domain");
 
     fireEvent.click(screen.getByRole("button", { name: "Reset view" }));
 
@@ -180,7 +203,7 @@ describe("SemanticConventionTimeline", () => {
     // once "All curated milestones" is active.
     fireEvent.change(screen.getByLabelText("Milestones"), { target: { value: "all" } });
     fireEvent.change(screen.getByLabelText("Event type"), { target: { value: "change" } });
-    expect(screen.getByRole("status")).toHaveTextContent("1 milestones");
+    expect(screen.getByRole("status")).toHaveTextContent("1 milestone · 1 domain");
 
     // Switching back to major-only milestones removes the only "change" event, so the
     // selection must fall back to "all" instead of silently showing nothing.
@@ -191,9 +214,29 @@ describe("SemanticConventionTimeline", () => {
     expect(screen.getByRole("status")).toHaveTextContent("2 domains");
   });
 
+  it("keeps the legend aligned with scope, domain, and event-type filters", () => {
+    render(<SemanticConventionTimeline data={SAMPLE_DATA} />);
+    const legendLabels = () =>
+      within(screen.getByLabelText("Legend"))
+        .getAllByRole("button")
+        .map((button) => button.textContent);
+
+    expect(legendLabels()).toEqual(["Introduced", "Stability"]);
+    fireEvent.change(screen.getByLabelText("Milestones"), { target: { value: "all" } });
+    expect(legendLabels()).toEqual(["Introduced", "Stability", "Changed"]);
+    fireEvent.change(screen.getByLabelText("Domain"), { target: { value: "db" } });
+    expect(legendLabels()).toEqual(["Introduced", "Changed"]);
+    fireEvent.change(screen.getByLabelText("Event type"), { target: { value: "change" } });
+    expect(legendLabels()).toEqual(["Changed"]);
+
+    fireEvent.click(screen.getByRole("button", { name: "Reset view" }));
+    expect(legendLabels()).toEqual(["Introduced", "Stability"]);
+  });
+
   it("shows the empty state when the dataset has no events at all", () => {
     render(<SemanticConventionTimeline data={{ ...SAMPLE_DATA, events: [] }} />);
 
+    expect(screen.queryByLabelText("Legend")).not.toBeInTheDocument();
     expect(screen.getByText("No milestones match these filters.")).toBeInTheDocument();
     expect(screen.getByText("Select a milestone to see its details.")).toBeInTheDocument();
   });
