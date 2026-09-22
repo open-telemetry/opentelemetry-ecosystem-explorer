@@ -62,7 +62,10 @@ describe("FacetPanel", () => {
   });
 
   it("surfaces facet counts next to the matching options", () => {
-    renderPanel({ counts: { types: { receiver: 98 }, distributions: { core: 41 } } });
+    renderPanel({
+      counts: { types: { receiver: 98 }, distributions: { core: 41 } },
+      distributions: ["core"],
+    });
 
     expect(screen.getByText("98")).toBeInTheDocument();
     expect(screen.getByText("41")).toBeInTheDocument();
