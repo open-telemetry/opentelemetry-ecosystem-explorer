@@ -2,7 +2,7 @@ distribution: contrib
 version: 0.161.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: receiver
-schema_hash: a0135ca939d9
+schema_hash: e7c32c80593c
 components:
 - name: activedirectorydsreceiver
   metadata:
@@ -78,7 +78,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: double
-        unit: '{bind}/s'
+        unit: '{binds}/s'
       active_directory.ds.ldap.bind.last_successful.time:
         description: The amount of time taken for the last successful LDAP bind.
         enabled: true
@@ -94,7 +94,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: double
-        unit: '{bind}/s'
+        unit: '{binds}/s'
       active_directory.ds.ldap.client.session.count:
         description: The number of connected LDAP client sessions.
         enabled: true
@@ -103,7 +103,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: int
-        unit: '{session}'
+        unit: '{sessions}'
       active_directory.ds.ldap.search.rate:
         description: The number of LDAP searches per second.
         enabled: true
@@ -112,7 +112,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: double
-        unit: '{search}/s'
+        unit: '{searches}/s'
       active_directory.ds.name_cache.hit_rate:
         description: The percentage of directory object name component lookups that
           are satisfied by the Directory System Agent's name cache.
@@ -130,7 +130,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: int
-        unit: '{notification}'
+        unit: '{notifications}'
       active_directory.ds.operation.rate:
         attributes:
         - operation_type
@@ -141,7 +141,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: double
-        unit: '{operation}/s'
+        unit: '{operations}/s'
       active_directory.ds.replication.network.io:
         attributes:
         - direction
@@ -166,7 +166,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: double
-        unit: '{object}/s'
+        unit: '{objects}/s'
       active_directory.ds.replication.operation.pending:
         description: The number of pending replication operations for the Directory
           Replication Agent.
@@ -176,7 +176,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: int
-        unit: '{operation}'
+        unit: '{operations}'
       active_directory.ds.replication.property.rate:
         attributes:
         - direction
@@ -188,7 +188,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: double
-        unit: '{property}/s'
+        unit: '{properties}/s'
       active_directory.ds.replication.sync.object.pending:
         description: The number of objects remaining until the full sync completes
           for the Directory Replication Agent.
@@ -198,7 +198,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: int
-        unit: '{object}'
+        unit: '{objects}'
       active_directory.ds.replication.sync.request.count:
         attributes:
         - sync_result
@@ -210,7 +210,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: true
           value_type: int
-        unit: '{request}'
+        unit: '{requests}'
       active_directory.ds.replication.value.rate:
         attributes:
         - direction
@@ -223,7 +223,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: double
-        unit: '{value}/s'
+        unit: '{values}/s'
       active_directory.ds.security_descriptor_propagations_event.queued:
         description: The number of security descriptor propagation events that are
           queued for processing.
@@ -233,7 +233,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: int
-        unit: '{event}'
+        unit: '{events}'
       active_directory.ds.suboperation.rate:
         attributes:
         - suboperation_type
@@ -244,7 +244,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: double
-        unit: '{suboperation}/s'
+        unit: '{suboperations}/s'
       active_directory.ds.thread.count:
         description: The number of threads in use by the directory service.
         enabled: true
@@ -253,7 +253,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: false
           value_type: int
-        unit: '{thread}'
+        unit: '{threads}'
     status:
       class: receiver
       codeowners:
@@ -5717,6 +5717,7 @@ components:
         - adrielp
         - crobert-1
         - TylerHelmuth
+        seeking_new: true
       distributions:
       - contrib
       stability:
@@ -5732,8 +5733,10 @@ components:
       codeowners:
         active:
         - adrielp
-        - atoulme
         - niwoerner
+        emeritus:
+        - atoulme
+        seeking_new: true
       distributions:
       - contrib
       stability:
@@ -12823,6 +12826,8 @@ components:
       stability:
         alpha:
         - logs
+      unsupported_platforms:
+      - solaris
     type: netflow
 - name: nginxreceiver
   metadata:
@@ -13352,7 +13357,7 @@ components:
           session is not currently waiting.
         type: double
       oracledb.query_plan:
-        description: The query execution plan used by the SQL Server.
+        description: The query execution plan used by the Oracle database.
         type: string
       oracledb.redo.request.type:
         description: The type of redo log buffer space request.
@@ -13506,6 +13511,16 @@ components:
       metrics.
     display_name: Oracle DB Receiver
     events:
+      db.server.query_plan:
+        attributes:
+        - db.namespace
+        - oracledb.child_address
+        - oracledb.child_number
+        - oracledb.plan_hash_value
+        - oracledb.query_plan
+        - oracledb.sql_id
+        description: The execution plan for a query.
+        enabled: false
       db.server.query_sample:
         attributes:
         - client.address
@@ -13800,7 +13815,7 @@ components:
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{gets}'
+        unit: '{get}'
       oracledb.cpu.usage.rate:
         attributes:
         - oracle.db.pdb
@@ -13917,7 +13932,7 @@ components:
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{gets}'
+        unit: '{get}'
       oracledb.ddl_statements_parallelized:
         attributes:
         - oracle.db.pdb
@@ -13929,7 +13944,7 @@ components:
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{statements}'
+        unit: '{statement}'
       oracledb.dml_locks.limit:
         description: Maximum limit of active DML (Data Manipulation Language) locks,
           -1 if unlimited.
@@ -13938,7 +13953,7 @@ components:
           input_type: string
           value_type: int
         stability: development
-        unit: '{locks}'
+        unit: '{lock}'
       oracledb.dml_locks.usage:
         description: Current count of active DML (Data Manipulation Language) locks.
         enabled: true
@@ -13946,7 +13961,7 @@ components:
           input_type: string
           value_type: int
         stability: development
-        unit: '{locks}'
+        unit: '{lock}'
       oracledb.dml_statements_parallelized:
         attributes:
         - oracle.db.pdb
@@ -13958,7 +13973,7 @@ components:
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{statements}'
+        unit: '{statement}'
       oracledb.enqueue.deadlocks.rate:
         attributes:
         - oracle.db.pdb
@@ -14001,7 +14016,7 @@ components:
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{deadlocks}'
+        unit: '{deadlock}'
       oracledb.enqueue_locks.limit:
         description: Maximum limit of active enqueue locks, -1 if unlimited.
         enabled: true
@@ -14009,7 +14024,7 @@ components:
           input_type: string
           value_type: int
         stability: development
-        unit: '{locks}'
+        unit: '{lock}'
       oracledb.enqueue_locks.usage:
         description: Current count of active enqueue locks.
         enabled: true
@@ -14017,7 +14032,7 @@ components:
           input_type: string
           value_type: int
         stability: development
-        unit: '{locks}'
+        unit: '{lock}'
       oracledb.enqueue_resources.limit:
         description: Maximum limit of active enqueue resources, -1 if unlimited.
         enabled: true
@@ -14025,7 +14040,7 @@ components:
           input_type: string
           value_type: int
         stability: development
-        unit: '{resources}'
+        unit: '{resource}'
       oracledb.enqueue_resources.usage:
         description: Current count of active enqueue resources.
         enabled: true
@@ -14033,7 +14048,7 @@ components:
           input_type: string
           value_type: int
         stability: development
-        unit: '{resources}'
+        unit: '{resource}'
       oracledb.exchange_deadlocks:
         attributes:
         - oracle.db.pdb
@@ -14047,7 +14062,7 @@ components:
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{deadlocks}'
+        unit: '{deadlock}'
       oracledb.execution.utilization:
         attributes:
         - oracle.db.pdb
@@ -14072,7 +14087,7 @@ components:
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{executions}'
+        unit: '{execution}'
       oracledb.executions.rate:
         attributes:
         - oracle.db.pdb
@@ -14105,7 +14120,7 @@ components:
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{parses}'
+        unit: '{parse}'
       oracledb.hard_parses.rate:
         attributes:
         - oracle.db.pdb
@@ -14225,7 +14240,7 @@ components:
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{reads}'
+        unit: '{read}'
       oracledb.logical_reads.rate:
         attributes:
         - oracle.db.pdb
@@ -14279,7 +14294,7 @@ components:
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{executions}'
+        unit: '{execution}'
       oracledb.parallel_operations_downgraded_25_to_50_pct:
         attributes:
         - oracle.db.pdb
@@ -14293,7 +14308,7 @@ components:
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{executions}'
+        unit: '{execution}'
       oracledb.parallel_operations_downgraded_50_to_75_pct:
         attributes:
         - oracle.db.pdb
@@ -14307,7 +14322,7 @@ components:
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{executions}'
+        unit: '{execution}'
       oracledb.parallel_operations_downgraded_75_to_99_pct:
         attributes:
         - oracle.db.pdb
@@ -14321,7 +14336,7 @@ components:
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{executions}'
+        unit: '{execution}'
       oracledb.parallel_operations_downgraded_to_serial:
         attributes:
         - oracle.db.pdb
@@ -14334,7 +14349,7 @@ components:
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{executions}'
+        unit: '{execution}'
       oracledb.parallel_operations_not_downgraded:
         attributes:
         - oracle.db.pdb
@@ -14347,7 +14362,7 @@ components:
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{executions}'
+        unit: '{execution}'
       oracledb.parse.cpu.time:
         description: Total CPU time spent on SQL parsing.
         enabled: false
@@ -14376,7 +14391,7 @@ components:
         gauge:
           value_type: double
         stability: development
-        unit: '{parses}/s'
+        unit: '{parse}/s'
       oracledb.parse.utilization:
         attributes:
         - oracle.db.pdb
@@ -14399,7 +14414,7 @@ components:
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{parses}'
+        unit: '{parse}'
       oracledb.pga.cache.utilization:
         description: Percentage of PGA work-area memory requests satisfied without
           spilling to temporary disk.
@@ -14432,7 +14447,7 @@ components:
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{writes}'
+        unit: '{write}'
       oracledb.physical_io.requests:
         attributes:
         - disk.io.block_size
@@ -14448,7 +14463,7 @@ components:
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{requests}'
+        unit: '{request}'
       oracledb.physical_io.requests.rate:
         attributes:
         - disk.io.direction
@@ -14506,7 +14521,7 @@ components:
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{requests}'
+        unit: '{request}'
       oracledb.physical_reads:
         attributes:
         - oracle.db.pdb
@@ -14518,7 +14533,7 @@ components:
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{reads}'
+        unit: '{read}'
       oracledb.physical_reads_direct:
         attributes:
         - oracle.db.pdb
@@ -14530,7 +14545,7 @@ components:
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{reads}'
+        unit: '{read}'
       oracledb.physical_write_io_requests:
         attributes:
         - oracle.db.pdb
@@ -14542,7 +14557,7 @@ components:
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{requests}'
+        unit: '{request}'
       oracledb.physical_writes:
         attributes:
         - oracle.db.pdb
@@ -14554,7 +14569,7 @@ components:
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{writes}'
+        unit: '{write}'
       oracledb.physical_writes_direct:
         attributes:
         - oracle.db.pdb
@@ -14566,7 +14581,7 @@ components:
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{writes}'
+        unit: '{write}'
       oracledb.processes.limit:
         description: Maximum limit of active processes, -1 if unlimited.
         enabled: true
@@ -14574,7 +14589,7 @@ components:
           input_type: string
           value_type: int
         stability: development
-        unit: '{processes}'
+        unit: '{process}'
       oracledb.processes.usage:
         description: Current count of active processes.
         enabled: true
@@ -14582,7 +14597,7 @@ components:
           input_type: string
           value_type: int
         stability: development
-        unit: '{processes}'
+        unit: '{process}'
       oracledb.queries_parallelized:
         attributes:
         - oracle.db.pdb
@@ -14594,7 +14609,7 @@ components:
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{queries}'
+        unit: '{query}'
       oracledb.recovery.blocks:
         description: Number of blocks read during instance or media recovery.
         enabled: false
@@ -14777,7 +14792,7 @@ components:
           input_type: string
           value_type: int
         stability: development
-        unit: '{sessions}'
+        unit: '{session}'
       oracledb.sessions.usage:
         attributes:
         - oracle.db.pdb
@@ -14789,7 +14804,7 @@ components:
           input_type: string
           value_type: int
         stability: development
-        unit: '{sessions}'
+        unit: '{session}'
       oracledb.sga.limit:
         description: Maximum size of the System Global Area (SGA).
         enabled: false
@@ -15011,7 +15026,7 @@ components:
           input_type: string
           value_type: int
         stability: development
-        unit: '{transactions}'
+        unit: '{transaction}'
       oracledb.transactions.rate:
         attributes:
         - oracle.db.pdb
@@ -15029,7 +15044,7 @@ components:
           input_type: string
           value_type: int
         stability: development
-        unit: '{transactions}'
+        unit: '{transaction}'
       oracledb.user_commits:
         attributes:
         - oracle.db.pdb
@@ -15044,7 +15059,7 @@ components:
           input_type: string
           monotonic: true
           value_type: int
-        unit: '{commits}'
+        unit: '{commit}'
       oracledb.user_rollbacks:
         attributes:
         - oracle.db.pdb
@@ -15416,6 +15431,9 @@ components:
       postgresql.application_name:
         description: Name of the application that is connected to this backend.
         type: string
+      postgresql.backend.connection.start:
+        description: UTC timestamp (RFC3339) when this backend was started.
+        type: string
       postgresql.blocking.lock.mode:
         description: The lock mode being requested by the blocked session (e.g. RowExclusiveLock,
           AccessExclusiveLock). Empty string when not blocked.
@@ -15597,6 +15615,7 @@ components:
         - network.peer.address
         - network.peer.port
         - postgresql.application_name
+        - postgresql.backend.connection.start
         - postgresql.blocking.lock.mode
         - postgresql.blocking.lock.relation
         - postgresql.blocking.lock.type
@@ -16359,6 +16378,7 @@ components:
         - traces
       unsupported_platforms:
       - aix
+      - solaris
     type: pulsar
 - name: purefareceiver
   metadata:
@@ -22519,7 +22539,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: true
           value_type: int
-        unit: '{restarts}'
+        unit: '{restart}'
       systemd.unit.state:
         attributes:
         - systemd.unit.active_state

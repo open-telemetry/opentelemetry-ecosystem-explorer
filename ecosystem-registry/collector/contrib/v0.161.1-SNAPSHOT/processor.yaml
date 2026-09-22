@@ -2,7 +2,7 @@ distribution: contrib
 version: 0.161.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: processor
-schema_hash: a0135ca939d9
+schema_hash: e7c32c80593c
 components:
 - name: adaptivetailsamplingprocessor
   metadata:
@@ -422,7 +422,7 @@ components:
           gauge:
             value_type: int
           stability: development
-          unit: '{clusters}'
+          unit: '{cluster}'
         processor_drain_log_records_annotated:
           description: Number of log records successfully annotated with a template.
           enabled: true
@@ -430,7 +430,7 @@ components:
           sum:
             monotonic: true
             value_type: int
-          unit: '{records}'
+          unit: '{record}'
         processor_drain_masks_duplicates:
           attributes:
           - mask
@@ -442,7 +442,7 @@ components:
           sum:
             monotonic: true
             value_type: int
-          unit: '{records}'
+          unit: '{record}'
     type: drain
 - name: filterprocessor
   metadata:
@@ -1936,7 +1936,7 @@ components:
             async: true
             value_type: int
           stability: development
-          unit: '{baselines}'
+          unit: '{baseline}'
         processor_rolling_span_latency_dropped_keys_total:
           description: Number of new baseline keys dropped because max_baselines was
             reached.
@@ -1946,7 +1946,7 @@ components:
             async: true
             monotonic: true
             value_type: int
-          unit: '{keys}'
+          unit: '{key}'
     type: rolling_span_latency
 - name: schemaprocessor
   metadata:
