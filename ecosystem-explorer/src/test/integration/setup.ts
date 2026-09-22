@@ -18,7 +18,7 @@
 // javaagent-data.ts evaluates `const idbEnabled = isIDBAvailable()` at
 // module load time.
 import "fake-indexeddb/auto";
-import "@testing-library/jest-dom";
+import "@/test/dom-matchers";
 import { beforeEach, vi } from "vitest";
 import { clearAllCached, closeDB } from "@/lib/api/idb-cache";
 import i18n from "i18next";

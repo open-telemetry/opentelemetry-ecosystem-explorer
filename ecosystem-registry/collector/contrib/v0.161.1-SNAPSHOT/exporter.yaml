@@ -2,7 +2,7 @@ distribution: contrib
 version: 0.161.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: exporter
-schema_hash: a0135ca939d9
+schema_hash: e7c32c80593c
 components:
 - name: alertmanagerexporter
   metadata:
@@ -325,6 +325,7 @@ components:
         - traces
       unsupported_platforms:
       - aix
+      - solaris
     type: datadog
 - name: datasetexporter
   metadata:
@@ -352,8 +353,9 @@ components:
       class: exporter
       codeowners:
         active:
-        - atoulme
         - joker-star-l
+        emeritus:
+        - atoulme
       distributions:
       - contrib
       stability:
@@ -1390,6 +1392,7 @@ components:
         - traces
       unsupported_platforms:
       - aix
+      - solaris
     type: pulsar
 - name: rabbitmqexporter
   metadata:

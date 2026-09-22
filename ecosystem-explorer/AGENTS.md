@@ -75,8 +75,10 @@ Key rules when working here:
 
 ## Styling
 
-- Color tokens are defined in `src/themes.ts` and applied via Tailwind classes. Do not hardcode
-  colors.
+- Color palettes are defined in `src/styles/tokens.css` and exposed as Tailwind utilities by
+  `src/styles/index.css`. Do not hardcode colors.
+- The resolved `data-theme` on `<html>` controls CSS tokens and Tailwind `dark:` utilities; Auto
+  follows the OS preference. `src/themes.ts` exports only the `ResolvedThemeId` type.
 - Every Radix primitive used in the app must have a wrapper in `src/components/ui/` that adds
   Tailwind styling and accessibility defaults.
 

@@ -31,7 +31,7 @@ pages re-rendering header/footer locally.
 - New explorer code ships **without comments**. Names, types, tests carry meaning. Flag added
   comments that restate code. Comments are only for non-obvious invariants, framework footguns, or
   workarounds — the "why" must be specific.
-- Color tokens live in `src/themes.ts`. Flag hex or `rgb()` literals in component code.
+- Color tokens live in `src/styles/tokens.css`. Flag hex or `rgb()` literals in component code.
 
 ## Data fetching
 

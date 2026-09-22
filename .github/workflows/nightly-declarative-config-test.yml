@@ -38,6 +38,8 @@ jobs:
           bun install --frozen-lockfile
 
       - name: Build explorer
+        env:
+          VITE_FEATURE_FLAG_V1_REDESIGN: "false"
         run: |
           cd ecosystem-explorer
           bun run build
@@ -48,6 +50,8 @@ jobs:
           bunx playwright install --with-deps chromium
 
       - name: Generate config file
+        env:
+          ACCEPTANCE_APP_MODE: legacy
         run: |
           cd ecosystem-explorer
           bun run scripts/generate-test-config.mjs ../acceptance-tests/declarative-config-acceptance/test-config.yaml

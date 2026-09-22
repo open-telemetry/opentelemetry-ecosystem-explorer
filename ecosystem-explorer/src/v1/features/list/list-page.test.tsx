@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
   useCollectorComponents,
@@ -24,7 +24,7 @@ import {
   useCollectorVersions,
 } from "@/hooks/use-collector-data";
 import type { DeprecatedIndexComponent, IndexComponent } from "@/types/collector";
-import { CollectorListPageV1 } from "./list-page";
+import { CollectorListPageV1 } from "@/v1/features/list/list-page";
 
 vi.mock("@/hooks/use-collector-data", () => ({
   useCollectorComponents: vi.fn(),
@@ -112,6 +112,12 @@ function renderPage(initialPath = "/collector/components") {
 }
 
 describe("CollectorListPageV1", () => {
+  afterEach(() => {
+    cleanup();
+    document.body.style.overflow = "";
+    vi.restoreAllMocks();
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
     window.localStorage.clear();
@@ -147,6 +153,18 @@ describe("CollectorListPageV1", () => {
     expect(screen.getByText("Showing 4 of 4 (4 total)")).toBeInTheDocument();
   });
 
+  it.each(["compact", "cards", "table"])(
+    "preserves the selected release in %s row links",
+    (density) => {
+      renderPage(`/collector/components?version=0.149.0&density=${density}`);
+      expect(useCollectorComponents).toHaveBeenCalledWith("0.149.0");
+      expect(screen.getByRole("link", { name: /OTLP Receiver/ })).toHaveAttribute(
+        "href",
+        "/collector/components/core/otlpreceiver?version=0.149.0"
+      );
+    }
+  );
+
   it("filters by type via the URL", () => {
     renderPage("/collector/components?type=receiver");
 
@@ -156,23 +174,60 @@ describe("CollectorListPageV1", () => {
     expect(screen.queryByText("Count Connector")).not.toBeInTheDocument();
   });
 
-  it("renders the deprecated catalog without changing the list layout", () => {
-    vi.mocked(useCollectorDeprecations).mockReturnValue({
-      data: { ecosystem: "collector", components: [deprecatedComponent] },
-      loading: false,
-      error: null,
-    });
+  it.each([
+    ["+0.149.0+", "0.149.0", "?version=0.149.0", "0.149.0"],
+    ["+%09+", "0.150.0", "", ""],
+    ["v0.149.0", "0.149.0", "?version=0.149.0", "0.149.0"],
+    ["+v0.149.0+", "0.149.0", "?version=0.149.0", "0.149.0"],
+  ])(
+    "uses the same normalized version for the facet, data and links: %s",
+    async (query, dataVersion, suffix, facetVersion) => {
+      const user = userEvent.setup();
+      renderPage(`/collector/components?version=${query}`);
+      expect(useCollectorComponents).toHaveBeenLastCalledWith(dataVersion);
+      expect(screen.getByRole("combobox", { name: "Version" })).toHaveValue(facetVersion);
+      expect(screen.getByTestId("location")).toHaveTextContent(
+        `/collector/components?version=${query}`
+      );
+      if (facetVersion) {
+        expect(
+          screen.getByRole("button", { name: `Remove filter Version: ${facetVersion}` })
+        ).toBeInTheDocument();
+      } else {
+        expect(screen.queryByRole("button", { name: /Remove filter Version:/ })).toBeNull();
+      }
+      expect(screen.getByRole("link", { name: /OTLP Receiver/ })).toHaveAttribute(
+        "href",
+        `/collector/components/core/otlpreceiver${suffix}`
+      );
+      await user.click(screen.getByRole("button", { name: "Cards" }));
+      expect(screen.getByTestId("location").textContent).toBe(
+        `/collector/components${suffix ? `${suffix}&` : "?"}density=cards`
+      );
+      expect(useCollectorComponents).toHaveBeenLastCalledWith(dataVersion);
+    }
+  );
 
-    renderPage("/collector/components?version=deprecated");
+  it.each(["deprecated", "+deprecated+"])(
+    "renders the %s catalog without changing the list layout",
+    (version) => {
+      vi.mocked(useCollectorDeprecations).mockReturnValue({
+        data: { ecosystem: "collector", components: [deprecatedComponent] },
+        loading: false,
+        error: null,
+      });
 
-    expect(screen.getByText("JMX Receiver")).toBeInTheDocument();
-    expect(screen.getByText("Removed in 0.157.0")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /JMX Receiver/ })).toHaveAttribute(
-      "href",
-      "/collector/components/contrib/jmxreceiver?version=deprecated"
-    );
-    expect(useCollectorComponents).toHaveBeenCalledWith("");
-  });
+      renderPage(`/collector/components?version=${version}`);
+
+      expect(screen.getByText("JMX Receiver")).toBeInTheDocument();
+      expect(screen.getByText("Removed in 0.157.0")).toBeInTheDocument();
+      expect(screen.getByRole("link", { name: /JMX Receiver/ })).toHaveAttribute(
+        "href",
+        "/collector/components/contrib/jmxreceiver?version=deprecated"
+      );
+      expect(useCollectorComponents).toHaveBeenCalledWith("");
+    }
+  );
 
   it("only matches the four known Signal literals — profiles and connector compound tokens don't count (decision #10)", () => {
     renderPage("/collector/components?signal=metrics");
@@ -219,6 +274,16 @@ describe("CollectorListPageV1", () => {
 
   it("opens the facet drawer as a modal from the toggle and restores focus on close", async () => {
     const user = userEvent.setup();
+    vi.spyOn(window, "matchMedia").mockImplementation((media) => ({
+      matches: false,
+      media,
+      onchange: null,
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
+    }));
     renderPage();
 
     const toggle = screen.getByRole("button", { name: "Open filters" });

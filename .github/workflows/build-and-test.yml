@@ -305,7 +305,12 @@ jobs:
       - name: Run lint
         run: bun run lint
 
+      - name: Install Playwright browsers
+        run: bunx playwright install --with-deps chromium
+
       - name: Run tests
+        env:
+          ACCEPTANCE_BROWSER_TESTS: "true"
         run: bun run test
 
       - name: Run integration tests

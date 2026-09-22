@@ -180,8 +180,17 @@
       "details": "Details",
       "stability": "Stability",
       "telemetry": "Telemetry",
+      "internalTelemetry": "Internal Telemetry",
       "featureGates": "Feature Gates",
       "readme": "Readme"
+    },
+    "view": {
+      "current": "Current View",
+      "comparison": "Version Comparison",
+      "comparisonUnavailable": {
+        "title": "Comparison unavailable",
+        "message": "Could not load the list of versions needed for comparison."
+      }
     },
     "sections": {
       "componentInfo": "Component Info",
@@ -279,6 +288,109 @@
       "deprecatedIn": "Deprecated in {{version}}",
       "reference": "Reference"
     }
+  },
+  "telemetryComparison": {
+    "loading": "Loading comparison...",
+    "error": {
+      "title": "Failed to load comparison",
+      "bothVersionsFailed": "Both versions could not be loaded. The component may not exist in these versions."
+    },
+    "warnings": {
+      "availability": {
+        "title": "Version availability",
+        "fromNotFound": "Could not load internal telemetry for version {{fromVersion}}.",
+        "toNotFound": "Could not load internal telemetry for version {{toVersion}}."
+      },
+      "sameVersion": {
+        "title": "Same version selected",
+        "message": "Choose two different versions to see a comparison."
+      },
+      "insufficientVersions": {
+        "title": "Version comparison unavailable",
+        "message": "This component is only present in one release, so there is no other version to compare it against."
+      }
+    }
+  },
+  "versionSelectorPanel": {
+    "banner": "Compare internal telemetry metrics between two Collector releases.",
+    "from": "From",
+    "to": "To",
+    "latestSuffix": "(latest)"
+  },
+  "diffResults": {
+    "addedRemovedHeader": "Added & Removed",
+    "changedHeader": "Changed",
+    "empty": {
+      "title": "No differences found",
+      "description": "Internal telemetry metrics are identical between these two versions."
+    }
+  },
+  "diffCard": {
+    "status": {
+      "added": "Added",
+      "removed": "Removed",
+      "changed": "Changed"
+    },
+    "unit": "Unit",
+    "unitWas": "(was: <unit>{{unit}}</unit>)",
+    "descriptionChanged": "Description changed",
+    "extendedDocumentationChanged": "Extended documentation changed",
+    "enabledChanged": "Enabled state changed",
+    "enabledValue": {
+      "enabled": "Enabled",
+      "disabled": "Disabled"
+    },
+    "optionalChanged": "Optional state changed",
+    "optionalValue": {
+      "yes": "Yes",
+      "no": "No"
+    },
+    "stabilityChanged": "Stability changed",
+    "deprecatedChanged": "Deprecation changed",
+    "deprecatedValue": {
+      "deprecated": "Deprecated",
+      "notDeprecated": "Not deprecated",
+      "withSince": "{{note}} (since {{since}})"
+    },
+    "warningsChanged": "Warnings changed",
+    "warningsFields": {
+      "ifEnabled": "If enabled",
+      "ifEnabledNotSet": "If enabled not set",
+      "ifConfigured": "If configured"
+    },
+    "prefixChanged": "Prefix changed",
+    "metricTypeChanged": "Metric type changed",
+    "descriptorChanged": "Descriptor changed",
+    "descriptorFields": {
+      "valueType": "Value type",
+      "monotonic": "Monotonic",
+      "aggregationTemporality": "Aggregation temporality",
+      "async": "Async",
+      "bucketBoundaries": "Bucket boundaries"
+    },
+    "attributeChanges": "Attribute Changes",
+    "metricRemoved": "This metric was removed in the selected \"to\" version."
+  },
+  "diffAttributeTable": {
+    "ariaLabel": "Attribute changes",
+    "columns": {
+      "status": "Status",
+      "key": "Key",
+      "type": "Type",
+      "changedFields": "Changed Fields"
+    },
+    "status": {
+      "added": "Added",
+      "removed": "Removed",
+      "modified": "Modified"
+    },
+    "fields": {
+      "type": "Type",
+      "description": "Description",
+      "nameOverride": "Name Override",
+      "enum": "Enum"
+    },
+    "fieldSeparator": ", "
   },
   "explore": {
     "componentTypes": {

@@ -82,7 +82,7 @@ src/
 ├── i18n/ # i18next runtime config (config.ts)
 ├── styles/ # Global CSS and design tokens (tokens.css, base.css, syntax.css)
 ├── theme-context.tsx # Theme provider (light / dark / auto)
-├── themes.ts # Typed reference for the color tokens
+├── themes.ts # ResolvedThemeId type; palettes live in styles/tokens.css
 ├── types/ # TypeScript type definitions
 │ ├── javaagent.ts # Java Agent data types
 │ ├── collector.ts # Collector data types
@@ -155,10 +155,9 @@ const instrumentations = useInstrumentations(version);
 
 ## Theme System
 
-Color tokens are defined as CSS custom properties in `src/styles/tokens.css` (the source of truth),
-with `src/themes.ts` providing a typed reference for use in TypeScript. Tokens follow an `--*-hsl`
-naming convention and are split per `[data-theme="dark"]` / `[data-theme="light"]`. Use them in your
-components:
+Color tokens are defined as CSS custom properties in `src/styles/tokens.css` (the source of truth).
+Tokens follow an `--*-hsl` naming convention and are split per `[data-theme="dark"]` /
+`[data-theme="light"]`. Use them in your components:
 
 **In JSX with Tailwind classes:**
 

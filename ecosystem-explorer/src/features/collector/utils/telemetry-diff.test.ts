@@ -1,0 +1,847 @@
+/*
+ * Copyright The OpenTelemetry Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import { describe, it, expect } from "vitest";
+import { compareCollectorTelemetry } from "./telemetry-diff";
+import type {
+  CollectorComponent,
+  CollectorMetric,
+  CollectorMetricWarnings,
+} from "@/types/collector";
+
+function makeMetric(overrides: Partial<CollectorMetric> = {}): CollectorMetric {
+  return {
+    description: "A test metric",
+    enabled: true,
+    unit: "1",
+    sum: { monotonic: true, value_type: "int" },
+    ...overrides,
+  };
+}
+
+function makeComponent(overrides: Partial<CollectorComponent> = {}): CollectorComponent {
+  return {
+    id: "core-testprocessor",
+    name: "testprocessor",
+    ecosystem: "collector",
+    type: "processor",
+    distribution: "core",
+    ...overrides,
+  };
+}
+
+describe("compareCollectorTelemetry", () => {
+  it("returns an empty diff when neither component has telemetry", () => {
+    const result = compareCollectorTelemetry(makeComponent(), makeComponent());
+    expect(result.metrics).toEqual([]);
+  });
+
+  it("returns an empty diff when both components have an empty telemetry.metrics map", () => {
+    const from = makeComponent({ telemetry: { metrics: {} } });
+    const to = makeComponent({ telemetry: { metrics: {} } });
+    expect(compareCollectorTelemetry(from, to).metrics).toEqual([]);
+  });
+
+  it("treats null components as having no telemetry, without throwing", () => {
+    expect(compareCollectorTelemetry(null, null).metrics).toEqual([]);
+  });
+
+  it("reports a metric only present on the 'to' side as added", () => {
+    const from = makeComponent({ telemetry: { metrics: {} } });
+    const to = makeComponent({ telemetry: { metrics: { "new.metric": makeMetric() } } });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics).toEqual([
+      { status: "added", name: "new.metric", metric: to.telemetry!.metrics!["new.metric"] },
+    ]);
+  });
+
+  it("reports a metric only present on the 'from' side as removed", () => {
+    const from = makeComponent({ telemetry: { metrics: { "old.metric": makeMetric() } } });
+    const to = makeComponent({ telemetry: { metrics: {} } });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics).toEqual([
+      { status: "removed", name: "old.metric", metric: from.telemetry!.metrics!["old.metric"] },
+    ]);
+  });
+
+  it("treats a component with no telemetry field as an empty side (all metrics added)", () => {
+    const from = makeComponent();
+    const to = makeComponent({ telemetry: { metrics: { "my.metric": makeMetric() } } });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics).toEqual([
+      { status: "added", name: "my.metric", metric: to.telemetry!.metrics!["my.metric"] },
+    ]);
+  });
+
+  it("reports a byte-identical metric as unchanged, with no changes payload", () => {
+    const metric = makeMetric();
+    const from = makeComponent({ telemetry: { metrics: { "my.metric": metric } } });
+    const to = makeComponent({ telemetry: { metrics: { "my.metric": { ...metric } } } });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics).toEqual([{ status: "unchanged", name: "my.metric", metric }]);
+  });
+
+  it("detects a description-only change", () => {
+    const from = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ description: "before" }) } },
+    });
+    const to = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ description: "after" }) } },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].status).toBe("changed");
+    expect(result.metrics[0].changes?.description).toEqual({ before: "before", after: "after" });
+    expect(result.metrics[0].changes?.unit).toBeUndefined();
+    expect(result.metrics[0].changes?.enabled).toBeUndefined();
+    expect(result.metrics[0].changes?.stability).toBeUndefined();
+    expect(result.metrics[0].changes?.metricType).toBeUndefined();
+  });
+
+  it("detects a unit-only change", () => {
+    const from = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ unit: "ms" }) } },
+    });
+    const to = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ unit: "s" }) } },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].changes?.unit).toEqual({ before: "ms", after: "s" });
+    expect(result.metrics[0].changes?.description).toBeUndefined();
+  });
+
+  it("detects an enabled-only change", () => {
+    const from = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ enabled: true }) } },
+    });
+    const to = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ enabled: false }) } },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].changes?.enabled).toEqual({ before: true, after: false });
+  });
+
+  it("detects a stability-only change", () => {
+    const from = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ stability: "alpha" }) } },
+    });
+    const to = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ stability: "beta" }) } },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].changes?.stability).toEqual({ before: "alpha", after: "beta" });
+  });
+
+  it("detects a metric-type change (sum -> gauge)", () => {
+    const from = makeComponent({
+      telemetry: {
+        metrics: { "my.metric": makeMetric({ sum: { monotonic: true, value_type: "int" } }) },
+      },
+    });
+    const to = makeComponent({
+      telemetry: {
+        metrics: {
+          "my.metric": makeMetric({ sum: undefined, gauge: { value_type: "int" } }),
+        },
+      },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].changes?.metricType).toEqual({ before: "sum", after: "gauge" });
+  });
+
+  it("detects a sub-field change within the same metric type (sum.monotonic flip) without misreporting it as a type change", () => {
+    // Regression guard: the metric type stays "sum" on both sides, so `metricType`
+    // must stay unset (previously this produced a misleading "sum -> sum" diff).
+    const from = makeComponent({
+      telemetry: {
+        metrics: { "my.metric": makeMetric({ sum: { monotonic: true, value_type: "int" } }) },
+      },
+    });
+    const to = makeComponent({
+      telemetry: {
+        metrics: { "my.metric": makeMetric({ sum: { monotonic: false, value_type: "int" } }) },
+      },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].status).toBe("changed");
+    expect(result.metrics[0].changes?.metricType).toBeUndefined();
+    expect(result.metrics[0].changes?.descriptor).toEqual({
+      monotonic: { before: true, after: false },
+    });
+  });
+
+  it("detects a value_type-only change within the same metric type", () => {
+    const from = makeComponent({
+      telemetry: {
+        metrics: { "my.metric": makeMetric({ sum: { monotonic: true, value_type: "int" } }) },
+      },
+    });
+    const to = makeComponent({
+      telemetry: {
+        metrics: { "my.metric": makeMetric({ sum: { monotonic: true, value_type: "double" } }) },
+      },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].changes?.metricType).toBeUndefined();
+    expect(result.metrics[0].changes?.descriptor).toEqual({
+      value_type: { before: "int", after: "double" },
+    });
+  });
+
+  it("detects an aggregation_temporality-only change within the same metric type", () => {
+    const from = makeComponent({
+      telemetry: {
+        metrics: {
+          "my.metric": makeMetric({
+            sum: { monotonic: true, value_type: "int", aggregation_temporality: "cumulative" },
+          }),
+        },
+      },
+    });
+    const to = makeComponent({
+      telemetry: {
+        metrics: {
+          "my.metric": makeMetric({
+            sum: { monotonic: true, value_type: "int", aggregation_temporality: "delta" },
+          }),
+        },
+      },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].changes?.metricType).toBeUndefined();
+    expect(result.metrics[0].changes?.descriptor).toEqual({
+      aggregation_temporality: { before: "cumulative", after: "delta" },
+    });
+  });
+
+  it("is not affected by descriptor object key ordering (no JSON.stringify comparison)", () => {
+    const fromSum = { value_type: "int", monotonic: true, aggregation_temporality: "cumulative" };
+    // Same content, keys inserted in a different order.
+    const toSum = { aggregation_temporality: "cumulative", monotonic: true, value_type: "int" };
+    const from = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ sum: fromSum }) } },
+    });
+    const to = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ sum: toSum }) } },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].status).toBe("unchanged");
+  });
+
+  it("detects a histogram bucket_boundaries change without misreporting it as a type change", () => {
+    const from = makeComponent({
+      telemetry: {
+        metrics: {
+          "my.metric": makeMetric({
+            sum: undefined,
+            histogram: { value_type: "int", bucket_boundaries: [1, 2, 3] },
+          }),
+        },
+      },
+    });
+    const to = makeComponent({
+      telemetry: {
+        metrics: {
+          "my.metric": makeMetric({
+            sum: undefined,
+            histogram: { value_type: "int", bucket_boundaries: [1, 2, 3, 4] },
+          }),
+        },
+      },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].status).toBe("changed");
+    expect(result.metrics[0].changes?.metricType).toBeUndefined();
+    expect(result.metrics[0].changes?.descriptor).toEqual({
+      bucket_boundaries: { before: [1, 2, 3], after: [1, 2, 3, 4] },
+    });
+  });
+
+  it("still reports a true metric-type change (sum -> gauge) via metricType, not descriptor", () => {
+    const from = makeComponent({
+      telemetry: {
+        metrics: { "my.metric": makeMetric({ sum: { monotonic: true, value_type: "int" } }) },
+      },
+    });
+    const to = makeComponent({
+      telemetry: {
+        metrics: {
+          "my.metric": makeMetric({ sum: undefined, gauge: { value_type: "int" } }),
+        },
+      },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].changes?.metricType).toEqual({ before: "sum", after: "gauge" });
+    expect(result.metrics[0].changes?.descriptor).toBeUndefined();
+  });
+
+  it("detects an extended_documentation-only change", () => {
+    const from = makeComponent({
+      telemetry: {
+        metrics: { "my.metric": makeMetric({ extended_documentation: "before" }) },
+      },
+    });
+    const to = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ extended_documentation: "after" }) } },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].changes?.extendedDocumentation).toEqual({
+      before: "before",
+      after: "after",
+    });
+    expect(result.metrics[0].changes?.description).toBeUndefined();
+  });
+
+  it("detects an optional-only change", () => {
+    const from = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ optional: false }) } },
+    });
+    const to = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ optional: true }) } },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].changes?.optional).toEqual({ before: false, after: true });
+  });
+
+  it("detects a prefix-only change", () => {
+    const from = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ prefix: "otelcol." }) } },
+    });
+    const to = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ prefix: "otelcol.v2." }) } },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].changes?.prefix).toEqual({
+      before: "otelcol.",
+      after: "otelcol.v2.",
+    });
+  });
+
+  it("detects a deprecated-only change", () => {
+    const from = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ deprecated: undefined }) } },
+    });
+    const to = makeComponent({
+      telemetry: {
+        metrics: {
+          "my.metric": makeMetric({
+            deprecated: { note: "Use my.other.metric instead", since: "0.150.0" },
+          }),
+        },
+      },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].changes?.deprecated).toEqual({
+      before: undefined,
+      after: { note: "Use my.other.metric instead", since: "0.150.0" },
+    });
+  });
+
+  it("detects a since-only deprecation change, where the note is unchanged", () => {
+    const from = makeComponent({
+      telemetry: {
+        metrics: { "my.metric": makeMetric({ deprecated: { note: "same", since: "0.140.0" } }) },
+      },
+    });
+    const to = makeComponent({
+      telemetry: {
+        metrics: { "my.metric": makeMetric({ deprecated: { note: "same", since: "0.150.0" } }) },
+      },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].status).toBe("changed");
+    expect(result.metrics[0].changes?.deprecated).toEqual({
+      before: { note: "same", since: "0.140.0" },
+      after: { note: "same", since: "0.150.0" },
+    });
+  });
+
+  it("reports an absent deprecated block vs an empty one as changed, since an empty block still means deprecated", () => {
+    // Unlike `warnings`, `deprecated` is presence-significant: the card renders an empty block
+    // as "Deprecated" and an absent one as "Not deprecated", so these must not collapse.
+    const from = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ deprecated: undefined }) } },
+    });
+    const to = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ deprecated: {} }) } },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].status).toBe("changed");
+    expect(result.metrics[0].changes?.deprecated).toEqual({ before: undefined, after: {} });
+  });
+
+  it("detects a change in a deprecated subfield beyond note/since, so a future upstream field is never silently dropped", () => {
+    // Regression guard: deprecatedEqual compared a hardcoded note/since pair, so any subfield
+    // added upstream would fall through to `status: "unchanged"`.
+    const fromDeprecated = { note: "same", since: "0.150.0" };
+    const toDeprecated = {
+      note: "same",
+      since: "0.150.0",
+      replacement: "my.other.metric",
+    } as unknown as CollectorMetric["deprecated"];
+    const from = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ deprecated: fromDeprecated }) } },
+    });
+    const to = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ deprecated: toDeprecated }) } },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].status).toBe("changed");
+    expect(result.metrics[0].changes?.deprecated).toEqual({
+      before: fromDeprecated,
+      after: toDeprecated,
+    });
+  });
+
+  it("detects a warnings-only change (added: from undefined to a populated warnings object)", () => {
+    const from = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ warnings: undefined }) } },
+    });
+    const to = makeComponent({
+      telemetry: {
+        metrics: {
+          "my.metric": makeMetric({
+            warnings: { if_enabled: "This metric is deprecated and will be removed soon." },
+          }),
+        },
+      },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].status).toBe("changed");
+    expect(result.metrics[0].changes?.warnings).toEqual({
+      before: undefined,
+      after: { if_enabled: "This metric is deprecated and will be removed soon." },
+    });
+    // Regression guard: a warnings-only change must not fall through as unchanged, and must
+    // not falsely populate unrelated change fields.
+    expect(result.metrics[0].changes?.description).toBeUndefined();
+    expect(result.metrics[0].changes?.deprecated).toBeUndefined();
+  });
+
+  it("detects a warnings-only change (removed: from a populated warnings object to undefined)", () => {
+    const from = makeComponent({
+      telemetry: {
+        metrics: {
+          "my.metric": makeMetric({
+            warnings: { if_configured: "Configuring this is deprecated." },
+          }),
+        },
+      },
+    });
+    const to = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ warnings: undefined }) } },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].changes?.warnings).toEqual({
+      before: { if_configured: "Configuring this is deprecated." },
+      after: undefined,
+    });
+  });
+
+  it("detects a warnings-only change when a single warning field differs (if_enabled)", () => {
+    const from = makeComponent({
+      telemetry: {
+        metrics: {
+          "my.metric": makeMetric({
+            warnings: { if_enabled: "old warning", if_configured: "same" },
+          }),
+        },
+      },
+    });
+    const to = makeComponent({
+      telemetry: {
+        metrics: {
+          "my.metric": makeMetric({
+            warnings: { if_enabled: "new warning", if_configured: "same" },
+          }),
+        },
+      },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].changes?.warnings).toEqual({
+      before: { if_enabled: "old warning", if_configured: "same" },
+      after: { if_enabled: "new warning", if_configured: "same" },
+    });
+  });
+
+  it("detects a warnings-only change when only if_enabled_not_set differs", () => {
+    const from = makeComponent({
+      telemetry: {
+        metrics: { "my.metric": makeMetric({ warnings: { if_enabled_not_set: "before" } }) },
+      },
+    });
+    const to = makeComponent({
+      telemetry: {
+        metrics: { "my.metric": makeMetric({ warnings: { if_enabled_not_set: "after" } }) },
+      },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].changes?.warnings).toEqual({
+      before: { if_enabled_not_set: "before" },
+      after: { if_enabled_not_set: "after" },
+    });
+  });
+
+  it("reports a metric with byte-identical warnings as unchanged", () => {
+    const warnings = { if_enabled: "same", if_configured: "same too" };
+    const from = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ warnings }) } },
+    });
+    const to = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ warnings: { ...warnings } }) } },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].status).toBe("unchanged");
+  });
+
+  it("reports a metric with both sides' warnings undefined as unchanged", () => {
+    const from = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ warnings: undefined }) } },
+    });
+    const to = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ warnings: undefined }) } },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].status).toBe("unchanged");
+    expect(result.metrics[0].changes?.warnings).toBeUndefined();
+  });
+
+  it("treats an absent warnings block and an empty one as equal, so the card never renders an empty Warnings section", () => {
+    // Regression guard: warningsEqual used to return false here (`!a` short-circuited to
+    // `a === b`), marking the metric changed while every per-field comparison in the card's
+    // render loop compared equal -- a "Warnings changed" heading above an empty container.
+    const from = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ warnings: undefined }) } },
+    });
+    const to = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ warnings: {} }) } },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].status).toBe("unchanged");
+    expect(result.metrics[0].changes?.warnings).toBeUndefined();
+  });
+
+  it("detects a warnings key being added alongside an unchanged key", () => {
+    const from = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ warnings: { if_enabled: "same" } }) } },
+    });
+    const to = makeComponent({
+      telemetry: {
+        metrics: {
+          "my.metric": makeMetric({
+            warnings: { if_enabled: "same", if_configured: "newly added" },
+          }),
+        },
+      },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].status).toBe("changed");
+    expect(result.metrics[0].changes?.warnings).toEqual({
+      before: { if_enabled: "same" },
+      after: { if_enabled: "same", if_configured: "newly added" },
+    });
+  });
+
+  it("detects a warnings key being removed while another key stays unchanged", () => {
+    const from = makeComponent({
+      telemetry: {
+        metrics: {
+          "my.metric": makeMetric({
+            warnings: { if_enabled: "same", if_configured: "going away" },
+          }),
+        },
+      },
+    });
+    const to = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ warnings: { if_enabled: "same" } }) } },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].status).toBe("changed");
+    expect(result.metrics[0].changes?.warnings).toEqual({
+      before: { if_enabled: "same", if_configured: "going away" },
+      after: { if_enabled: "same" },
+    });
+  });
+
+  it("detects a change when both sides have entirely different warning keys", () => {
+    const from = makeComponent({
+      telemetry: {
+        metrics: { "my.metric": makeMetric({ warnings: { if_enabled: "enabled warning" } }) },
+      },
+    });
+    const to = makeComponent({
+      telemetry: {
+        metrics: {
+          "my.metric": makeMetric({ warnings: { if_configured: "configured warning" } }),
+        },
+      },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].status).toBe("changed");
+    expect(result.metrics[0].changes?.warnings).toEqual({
+      before: { if_enabled: "enabled warning" },
+      after: { if_configured: "configured warning" },
+    });
+  });
+
+  it("detects a change in a warnings key beyond the three currently known fields, so a future upstream field is never silently dropped", () => {
+    // Regression guard: warningsEqual must compare the union of keys actually present at
+    // runtime rather than a hardcoded field list, so a warning field this type doesn't yet
+    // declare is still detected instead of silently falling through as "unchanged".
+    const fromWarnings = { if_enabled: "same" } as unknown as CollectorMetricWarnings;
+    const toWarnings = {
+      if_enabled: "same",
+      if_future_condition: "a warning field not yet modeled in CollectorMetricWarnings",
+    } as unknown as CollectorMetricWarnings;
+    const from = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ warnings: fromWarnings }) } },
+    });
+    const to = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ warnings: toWarnings }) } },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].status).toBe("changed");
+    expect(result.metrics[0].changes?.warnings).toEqual({
+      before: fromWarnings,
+      after: toWarnings,
+    });
+  });
+
+  it("detects an added attribute, resolving definitions from each version's own attributes map", () => {
+    const from = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ attributes: [] }) } },
+      attributes: {},
+    });
+    const to = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ attributes: ["outcome"] }) } },
+      attributes: { outcome: { description: "Result", type: "string" } },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].changes?.attributes.added).toEqual([
+      { key: "outcome", definition: { description: "Result", type: "string" } },
+    ]);
+    expect(result.metrics[0].changes?.attributes.removed).toEqual([]);
+    expect(result.metrics[0].changes?.attributes.changed).toEqual([]);
+  });
+
+  it("detects a removed attribute", () => {
+    const from = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ attributes: ["outcome"] }) } },
+      attributes: { outcome: { description: "Result", type: "string" } },
+    });
+    const to = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ attributes: [] }) } },
+      attributes: {},
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].changes?.attributes.removed).toEqual([
+      { key: "outcome", definition: { description: "Result", type: "string" } },
+    ]);
+  });
+
+  it("detects a changed attribute when the same key's resolved definition differs between versions", () => {
+    const from = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ attributes: ["outcome"] }) } },
+      attributes: { outcome: { description: "Result", type: "string" } },
+    });
+    const to = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ attributes: ["outcome"] }) } },
+      attributes: { outcome: { description: "Result", type: "int" } },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].changes?.attributes.changed).toEqual([
+      {
+        key: "outcome",
+        before: { description: "Result", type: "string" },
+        after: { description: "Result", type: "int" },
+      },
+    ]);
+  });
+
+  it("still resolves attributes from component.attributes alone when resource_attributes is absent", () => {
+    // component.attributes-only behavior must be unaffected by the resource_attributes merge.
+    const from = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ attributes: ["outcome"] }) } },
+      attributes: { outcome: { description: "Result", type: "string" } },
+    });
+    const to = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ attributes: ["outcome"] }) } },
+      attributes: { outcome: { description: "Result", type: "string" } },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].status).toBe("unchanged");
+  });
+
+  it("resolves a key defined only in resource_attributes, instead of treating it as removed (Copilot finding #1)", () => {
+    // Regression guard: the current view (collector-telemetry-tab.tsx) resolves
+    // `attributes?.[key] ?? resourceAttributes?.[key]`, so the diff must do the same -- a key
+    // that only exists in resource_attributes must not be reported as added/removed.
+    const from = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ attributes: ["region"] }) } },
+      attributes: {},
+      resource_attributes: { region: { description: "Cloud region", type: "string" } },
+    });
+    const to = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ attributes: ["region"] }) } },
+      attributes: {},
+      resource_attributes: { region: { description: "Cloud region", type: "string" } },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].status).toBe("unchanged");
+  });
+
+  it("detects a resource_attributes-only key being added between versions", () => {
+    const from = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ attributes: [] }) } },
+      resource_attributes: {},
+    });
+    const to = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ attributes: ["region"] }) } },
+      resource_attributes: { region: { description: "Cloud region", type: "string" } },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].changes?.attributes.added).toEqual([
+      { key: "region", definition: { description: "Cloud region", type: "string" } },
+    ]);
+  });
+
+  it("detects a resource_attributes-only key being removed between versions", () => {
+    const from = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ attributes: ["region"] }) } },
+      resource_attributes: { region: { description: "Cloud region", type: "string" } },
+    });
+    const to = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ attributes: [] }) } },
+      resource_attributes: {},
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].changes?.attributes.removed).toEqual([
+      { key: "region", definition: { description: "Cloud region", type: "string" } },
+    ]);
+  });
+
+  it("prefers component.attributes over resource_attributes for the same key, matching the Current View", () => {
+    const from = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ attributes: ["outcome"] }) } },
+      attributes: { outcome: { description: "From component.attributes", type: "string" } },
+      resource_attributes: { outcome: { description: "From resource_attributes", type: "int" } },
+    });
+    const to = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ attributes: ["outcome"] }) } },
+      attributes: { outcome: { description: "From component.attributes", type: "string" } },
+      resource_attributes: { outcome: { description: "From resource_attributes", type: "int" } },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    // Unchanged (not merely non-throwing) proves attributes -- not resource_attributes -- won
+    // on both sides; if resource_attributes had won, both sides would still resolve to the same
+    // (wrong) definition, so this alone wouldn't prove precedence. The next assertion does.
+    expect(result.metrics[0].status).toBe("unchanged");
+
+    // Now change only the component.attributes side of one version: if attributes truly takes
+    // precedence, this must be detected as a changed attribute.
+    const toChanged = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ attributes: ["outcome"] }) } },
+      attributes: {
+        outcome: { description: "From component.attributes (updated)", type: "string" },
+      },
+      resource_attributes: { outcome: { description: "From resource_attributes", type: "int" } },
+    });
+    const changedResult = compareCollectorTelemetry(from, toChanged);
+    expect(changedResult.metrics[0].changes?.attributes.changed).toEqual([
+      {
+        key: "outcome",
+        before: { description: "From component.attributes", type: "string" },
+        after: { description: "From component.attributes (updated)", type: "string" },
+      },
+    ]);
+  });
+
+  it("handles a metric with attributes: undefined the same as attributes: [] without throwing or reporting spurious changes", () => {
+    const from = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ attributes: undefined }) } },
+    });
+    const to = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ attributes: [] }) } },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].status).toBe("unchanged");
+  });
+
+  it("handles an attribute key with no resolvable definition on either side without throwing", () => {
+    const from = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ attributes: ["missing"] }) } },
+      attributes: {},
+    });
+    const to = makeComponent({
+      telemetry: { metrics: { "my.metric": makeMetric({ attributes: ["missing"] }) } },
+      attributes: {},
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics[0].status).toBe("unchanged");
+  });
+
+  it("supports multiple metric types present simultaneously without cross-type interference", () => {
+    const from = makeComponent({
+      telemetry: {
+        metrics: {
+          "sum.metric": makeMetric({ sum: { monotonic: true, value_type: "int" } }),
+          "gauge.metric": makeMetric({ sum: undefined, gauge: { value_type: "double" } }),
+          "histogram.metric": makeMetric({
+            sum: undefined,
+            histogram: { value_type: "int", bucket_boundaries: [1, 2] },
+          }),
+        },
+      },
+    });
+    const to = makeComponent({
+      telemetry: {
+        metrics: {
+          "sum.metric": makeMetric({ sum: { monotonic: true, value_type: "int" } }),
+          "gauge.metric": makeMetric({ sum: undefined, gauge: { value_type: "double" } }),
+          "histogram.metric": makeMetric({
+            sum: undefined,
+            histogram: { value_type: "int", bucket_boundaries: [1, 2] },
+          }),
+        },
+      },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics.every((m) => m.status === "unchanged")).toBe(true);
+    expect(result.metrics).toHaveLength(3);
+  });
+
+  it("produces deterministic, alphabetically sorted output regardless of input key order", () => {
+    const from = makeComponent({
+      telemetry: {
+        metrics: {
+          zeta: makeMetric(),
+          alpha: makeMetric(),
+          mu: makeMetric(),
+        },
+      },
+    });
+    const to = makeComponent({
+      telemetry: {
+        metrics: {
+          mu: makeMetric(),
+          zeta: makeMetric(),
+          alpha: makeMetric(),
+          beta: makeMetric({ description: "added" }),
+        },
+      },
+    });
+    const result = compareCollectorTelemetry(from, to);
+    expect(result.metrics.map((m) => m.name)).toEqual(["alpha", "beta", "mu", "zeta"]);
+  });
+});
