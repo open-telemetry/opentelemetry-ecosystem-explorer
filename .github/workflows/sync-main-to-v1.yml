@@ -5,7 +5,7 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# Git access uses a repository-scoped App token, including workflow-file writes.
+# Git access uses a repository-scoped fine-grained PAT, including workflow-file writes.
 permissions: {}
 
 concurrency:
@@ -21,37 +21,26 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Check App configuration
+      - name: Check sync token configuration
         env:
-          APP_CLIENT_ID: ${{ vars.OTELBOT_CLIENT_ID }}
-          APP_PRIVATE_KEY: ${{ secrets.OTELBOT_PRIVATE_KEY }}
+          V1_SYNC_TOKEN: ${{ secrets.V1_SYNC_TOKEN }}
         run: |
-          if [[ -z "$APP_CLIENT_ID" || -z "$APP_PRIVATE_KEY" ]]; then
-            echo "::error::Configure OTELBOT_CLIENT_ID and OTELBOT_PRIVATE_KEY. See docs/v1-sync.md."
+          if [[ -z "$V1_SYNC_TOKEN" ]]; then
+            echo "::error::Configure the V1_SYNC_TOKEN Actions secret. See docs/v1-sync.md."
             exit 1
           fi
-
-      - name: Create repository-scoped token
-        id: app-token
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
-        with:
-          client-id: ${{ vars.OTELBOT_CLIENT_ID }}
-          private-key: ${{ secrets.OTELBOT_PRIVATE_KEY }}
-          repositories: opentelemetry-ecosystem-explorer
-          permission-contents: write
-          permission-workflows: write
 
       - name: Checkout v1 history
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: v1
           fetch-depth: 0
-          token: ${{ steps.app-token.outputs.token }}
+          token: ${{ secrets.V1_SYNC_TOKEN }}
           persist-credentials: false
 
       - name: Merge and push without rewriting history
         env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          GH_TOKEN: ${{ secrets.V1_SYNC_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
@@ -88,7 +77,7 @@ jobs:
 
             git fetch --no-tags origin refs/heads/v1:refs/remotes/origin/v1
             if [[ "$previous_v1" == "$(git rev-parse origin/v1)" ]]; then
-              echo "::error::Push rejected without a concurrent v1 update. Check App permissions and branch rules (including EasyCLA)."
+              echo "::error::Push rejected without a concurrent v1 update. Check V1_SYNC_TOKEN expiry, approval, permissions and branch rules (including EasyCLA)."
               exit 1
             fi
             echo "v1 changed during attempt $attempt; merging the new tip before retrying."
