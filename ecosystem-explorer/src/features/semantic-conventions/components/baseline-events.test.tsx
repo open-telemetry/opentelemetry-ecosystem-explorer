@@ -59,7 +59,7 @@ describe("de facto baseline milestones", () => {
     ).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByText("Release date (UTC)")).toBeInTheDocument();
     expect(screen.getByText(/not when the guidance was added/)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Read the source" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "View changelog" })).toHaveAttribute(
       "href",
       "https://github.com/open-telemetry/semantic-conventions/blob/v1.44.0/docs/http/README.md"
     );

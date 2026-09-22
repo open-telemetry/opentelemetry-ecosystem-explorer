@@ -214,6 +214,25 @@ describe("SemanticConventionTimeline", () => {
     expect(screen.getByRole("status")).toHaveTextContent("2 domains");
   });
 
+  it("does not reactivate a filter that the UI has already reset to All", () => {
+    render(<SemanticConventionTimeline data={SAMPLE_DATA} />);
+
+    fireEvent.change(screen.getByLabelText("Milestones"), { target: { value: "all" } });
+    fireEvent.change(screen.getByLabelText("Domain"), { target: { value: "db" } });
+    fireEvent.change(screen.getByLabelText("Event type"), { target: { value: "change" } });
+
+    // Major-only scope drops the single "change" event, so both dependent filters reset.
+    fireEvent.change(screen.getByLabelText("Milestones"), { target: { value: "major" } });
+    expect(screen.getByLabelText("Domain")).toHaveValue("all");
+    expect(screen.getByLabelText("Event type")).toHaveValue("all");
+
+    // "Introduced" makes the database lane selectable again; the cleared domain must stay cleared.
+    fireEvent.change(screen.getByLabelText("Event type"), { target: { value: "domain" } });
+
+    expect(screen.getByLabelText("Domain")).toHaveValue("all");
+    expect(screen.getByRole("status")).toHaveTextContent("2 milestones · 2 domains");
+  });
+
   it("keeps the legend aligned with scope, domain, and event-type filters", () => {
     render(<SemanticConventionTimeline data={SAMPLE_DATA} />);
     const legendLabels = () =>

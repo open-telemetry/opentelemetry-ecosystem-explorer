@@ -72,7 +72,7 @@
     },
     "detail": {
       "empty": "Select a milestone to see its details.",
-      "sourceLink": "Read the source",
+      "sourceLink": "View changelog",
       "lineageLink": "Earlier working draft · 13 May 2019",
       "firstReleaseNote": "First specification tag containing this change: {{version}}.",
       "specCommitDate": "Spec commit date (UTC)",

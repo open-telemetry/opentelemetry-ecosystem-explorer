@@ -94,6 +94,16 @@ export function SemanticConventionTimeline({ data }: SemanticConventionTimelineP
   const effectiveEventType: TimelineTypeFilter =
     eventType === "all" || typeOptions.includes(eventType) ? eventType : "all";
 
+  /*
+   * Write the fallback back into state so a filter the UI has already reset to "All" cannot
+   * reactivate later: without this, a dropped-but-still-stored value silently reselects itself
+   * as soon as another filter change makes it valid again. Setting state during render is the
+   * supported way to reconcile derived state; "all" is always valid, so this converges in one
+   * extra pass.
+   */
+  if (effectiveDomain !== domain) setDomain(effectiveDomain);
+  if (effectiveEventType !== eventType) setEventType(effectiveEventType);
+
   const visibleEvents = useMemo(() => {
     return scopeFilteredEvents
       .filter((event) => effectiveDomain === "all" || event.lane === effectiveDomain)

@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 export function SemanticConventionsIcon({ className }: { className?: string }) {
+  // Always rendered next to a visible title, so it stays out of the accessibility tree.
   return (
-    <svg
-      viewBox="0 0 200 200"
-      className={className}
-      aria-label="Semantic Conventions Icon"
-      role="img"
-    >
-      {/* Baseline (timeline axis) */}
+    <svg viewBox="0 0 200 200" className={className} aria-hidden="true" focusable="false">
       <line
         x1="20"
         y1="150"
@@ -31,7 +26,6 @@ export function SemanticConventionsIcon({ className }: { className?: string }) {
         strokeWidth="3"
       />
 
-      {/* Milestone nodes at increasing spacing */}
       <circle cx="35" cy="150" r="8" fill="hsl(var(--otel-purple-hsl))" opacity="0.6" />
       <circle
         cx="80"
@@ -52,7 +46,6 @@ export function SemanticConventionsIcon({ className }: { className?: string }) {
         strokeWidth="3"
       />
 
-      {/* Stems rising to labeled attribute tags, echoing the timeline's lanes */}
       <line x1="35" y1="142" x2="35" y2="70" stroke="hsl(var(--otel-purple-hsl))" strokeWidth="2" />
       <line x1="80" y1="140" x2="80" y2="45" stroke="hsl(var(--otel-purple-hsl))" strokeWidth="2" />
       <line
