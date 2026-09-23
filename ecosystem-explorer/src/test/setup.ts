@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import "@testing-library/jest-dom";
+import "@/test/dom-matchers";
 import { beforeAll, vi } from "vitest";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
@@ -62,7 +62,9 @@ i18n.use(initReactI18next).init({
  * jsdom doesn't ship `window.matchMedia`, but `ThemeProvider` calls it on
  * mount (via `useSyncExternalStore`) to resolve `auto` mode. Provide a stub
  * globally so tests that render anything under the provider don't have to
- * wire it up themselves. `matches: true` defaults to "system prefers dark".
+ * wire it up themselves. It returns `matches: true` for every query, including
+ * dark-mode preferences and desktop breakpoints. Drawer and breakpoint tests
+ * must install an explicit viewport mock.
  *
  * beforeAll is correct here: the stub is a constant value that never needs
  * resetting between tests in the same file.

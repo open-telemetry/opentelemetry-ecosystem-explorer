@@ -22,7 +22,7 @@ jobs:
     permissions:
       contents: write # Push registry updates to the ecosystem branch
       pull-requests: write # Create or update the automated inventory-update PR
-    uses: ./.github/workflows/reusable-registry-sync.yml
+    uses: $/.github/workflows/reusable-registry-sync.yml
     with:
       watcher-command: "uv run js-instrumentation-watcher"
       registry-path: "ecosystem-registry/javascript/"
@@ -39,7 +39,7 @@ jobs:
       issues: write # Open or comment on the js-instrumentation-watcher failure-tracking issue
     needs: [synchronize-inventory]
     if: ${{ !cancelled() && needs.synchronize-inventory.result != 'skipped' }}
-    uses: ./.github/workflows/reusable-workflow-notification.yml
+    uses: $/.github/workflows/reusable-workflow-notification.yml
     with:
       success: ${{ needs.synchronize-inventory.result == 'success' }}
       watcher-name: "js-instrumentation-watcher"

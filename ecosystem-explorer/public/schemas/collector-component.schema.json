@@ -146,6 +146,42 @@
             "description": "Whether this metric is optional (only initialized under certain conditions).",
             "type": "boolean"
           },
+          "prefix": {
+            "description": "Metric name prefix applied at emission time (e.g. \"otelcol.\").",
+            "type": "string"
+          },
+          "deprecated": {
+            "description": "Present when the metric is deprecated; carries the replacement guidance and version.",
+            "type": "object",
+            "properties": {
+              "note": {
+                "type": "string"
+              },
+              "since": {
+                "type": "string"
+              }
+            },
+            "propertyOrder": ["note", "since"]
+          },
+          "warnings": {
+            "description": "Warnings shown to users under specific configuration conditions.",
+            "type": "object",
+            "properties": {
+              "if_enabled": {
+                "description": "Shown if the metric is enabled in user config (e.g. a deprecated default metric).",
+                "type": "string"
+              },
+              "if_enabled_not_set": {
+                "description": "Shown if `enabled` is not set explicitly in user config.",
+                "type": "string"
+              },
+              "if_configured": {
+                "description": "Shown if the metric is configured by the user in any way (e.g. a deprecated optional metric).",
+                "type": "string"
+              }
+            },
+            "propertyOrder": ["if_enabled", "if_enabled_not_set", "if_configured"]
+          },
           "sum": {
             "description": "Sum metric type descriptor. Present when the metric is a sum.",
             "allOf": [
@@ -158,7 +194,7 @@
                     "type": "string"
                   },
                   "aggregation_temporality": {
-                    "description": "Aggregation temporality (e.g., \"cumulative\", \"delta\"). Only present on sum metrics.",
+                    "description": "Aggregation temporality (e.g., \"cumulative\", \"delta\"), when applicable to this metric type.",
                     "type": "string"
                   },
                   "async": {
@@ -190,7 +226,7 @@
                 "type": "string"
               },
               "aggregation_temporality": {
-                "description": "Aggregation temporality (e.g., \"cumulative\", \"delta\"). Only present on sum metrics.",
+                "description": "Aggregation temporality (e.g., \"cumulative\", \"delta\"), when applicable to this metric type.",
                 "type": "string"
               },
               "async": {
@@ -213,7 +249,7 @@
                     "type": "string"
                   },
                   "aggregation_temporality": {
-                    "description": "Aggregation temporality (e.g., \"cumulative\", \"delta\"). Only present on sum metrics.",
+                    "description": "Aggregation temporality (e.g., \"cumulative\", \"delta\"), when applicable to this metric type.",
                     "type": "string"
                   },
                   "async": {
@@ -253,6 +289,9 @@
           "stability",
           "extended_documentation",
           "optional",
+          "prefix",
+          "deprecated",
+          "warnings",
           "sum",
           "gauge",
           "histogram",
@@ -373,6 +412,200 @@
     "markdown_hash": {
       "description": "Content hash of the component's README, if one was found. Used to lazily fetch the markdown file.",
       "type": "string"
+    },
+    "telemetry": {
+      "description": "Internal telemetry (self-observability metrics) emitted by this component about its own operation.",
+      "type": "object",
+      "properties": {
+        "metrics": {
+          "description": "Internal metrics, keyed by metric name. Shares the same shape as top-level `metrics`.",
+          "type": "object",
+          "additionalProperties": {
+            "description": "A single metric emitted by a Collector component.\nModeled after the metadata.yaml schema used by the collector-contrib repo.",
+            "type": "object",
+            "properties": {
+              "description": {
+                "description": "Description of what this metric measures.",
+                "type": "string"
+              },
+              "enabled": {
+                "description": "Whether the metric is collected by default.",
+                "type": "boolean"
+              },
+              "unit": {
+                "description": "Metric unit as defined by https://ucum.org/ucum.html.",
+                "type": "string"
+              },
+              "stability": {
+                "description": "Stability level of this specific metric.",
+                "enum": ["alpha", "beta", "deprecated", "development", "stable", "unmaintained"],
+                "type": "string"
+              },
+              "extended_documentation": {
+                "description": "Extended documentation beyond the description.",
+                "type": "string"
+              },
+              "optional": {
+                "description": "Whether this metric is optional (only initialized under certain conditions).",
+                "type": "boolean"
+              },
+              "prefix": {
+                "description": "Metric name prefix applied at emission time (e.g. \"otelcol.\").",
+                "type": "string"
+              },
+              "deprecated": {
+                "description": "Present when the metric is deprecated; carries the replacement guidance and version.",
+                "type": "object",
+                "properties": {
+                  "note": {
+                    "type": "string"
+                  },
+                  "since": {
+                    "type": "string"
+                  }
+                },
+                "propertyOrder": ["note", "since"]
+              },
+              "warnings": {
+                "description": "Warnings shown to users under specific configuration conditions.",
+                "type": "object",
+                "properties": {
+                  "if_enabled": {
+                    "description": "Shown if the metric is enabled in user config (e.g. a deprecated default metric).",
+                    "type": "string"
+                  },
+                  "if_enabled_not_set": {
+                    "description": "Shown if `enabled` is not set explicitly in user config.",
+                    "type": "string"
+                  },
+                  "if_configured": {
+                    "description": "Shown if the metric is configured by the user in any way (e.g. a deprecated optional metric).",
+                    "type": "string"
+                  }
+                },
+                "propertyOrder": ["if_enabled", "if_enabled_not_set", "if_configured"]
+              },
+              "sum": {
+                "description": "Sum metric type descriptor. Present when the metric is a sum.",
+                "allOf": [
+                  {
+                    "description": "Shared fields across sum, gauge, and histogram metric type descriptors.",
+                    "type": "object",
+                    "properties": {
+                      "value_type": {
+                        "description": "The numeric type of the metric's data points.",
+                        "type": "string"
+                      },
+                      "aggregation_temporality": {
+                        "description": "Aggregation temporality (e.g., \"cumulative\", \"delta\"), when applicable to this metric type.",
+                        "type": "string"
+                      },
+                      "async": {
+                        "description": "Whether this metric is observed asynchronously.",
+                        "type": "boolean"
+                      }
+                    },
+                    "propertyOrder": ["value_type", "aggregation_temporality", "async"],
+                    "required": ["value_type"]
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "monotonic": {
+                        "type": "boolean"
+                      }
+                    },
+                    "propertyOrder": ["monotonic"],
+                    "required": ["monotonic"]
+                  }
+                ]
+              },
+              "gauge": {
+                "description": "Gauge metric type descriptor. Present when the metric is a gauge.",
+                "type": "object",
+                "properties": {
+                  "value_type": {
+                    "description": "The numeric type of the metric's data points.",
+                    "type": "string"
+                  },
+                  "aggregation_temporality": {
+                    "description": "Aggregation temporality (e.g., \"cumulative\", \"delta\"), when applicable to this metric type.",
+                    "type": "string"
+                  },
+                  "async": {
+                    "description": "Whether this metric is observed asynchronously.",
+                    "type": "boolean"
+                  }
+                },
+                "propertyOrder": ["value_type", "aggregation_temporality", "async"],
+                "required": ["value_type"]
+              },
+              "histogram": {
+                "description": "Histogram metric type descriptor. Present when the metric is a histogram.",
+                "allOf": [
+                  {
+                    "description": "Shared fields across sum, gauge, and histogram metric type descriptors.",
+                    "type": "object",
+                    "properties": {
+                      "value_type": {
+                        "description": "The numeric type of the metric's data points.",
+                        "type": "string"
+                      },
+                      "aggregation_temporality": {
+                        "description": "Aggregation temporality (e.g., \"cumulative\", \"delta\"), when applicable to this metric type.",
+                        "type": "string"
+                      },
+                      "async": {
+                        "description": "Whether this metric is observed asynchronously.",
+                        "type": "boolean"
+                      }
+                    },
+                    "propertyOrder": ["value_type", "aggregation_temporality", "async"],
+                    "required": ["value_type"]
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "bucket_boundaries": {
+                        "type": "array",
+                        "items": {
+                          "type": "number"
+                        }
+                      }
+                    },
+                    "propertyOrder": ["bucket_boundaries"]
+                  }
+                ]
+              },
+              "attributes": {
+                "description": "Attribute keys referencing the component-level attributes map.",
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "propertyOrder": [
+              "description",
+              "enabled",
+              "unit",
+              "stability",
+              "extended_documentation",
+              "optional",
+              "prefix",
+              "deprecated",
+              "warnings",
+              "sum",
+              "gauge",
+              "histogram",
+              "attributes"
+            ],
+            "required": ["description", "enabled", "unit"]
+          },
+          "propertyOrder": []
+        }
+      },
+      "propertyOrder": ["metrics"]
     }
   },
   "propertyOrder": [
@@ -389,7 +622,8 @@
     "attributes",
     "resource_attributes",
     "feature_gates",
-    "markdown_hash"
+    "markdown_hash",
+    "telemetry"
   ],
   "required": ["distribution", "ecosystem", "id", "name", "type"],
   "$schema": "https://json-schema.org/draft-07/schema#"

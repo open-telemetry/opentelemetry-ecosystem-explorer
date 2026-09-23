@@ -13,7 +13,7 @@ command = """
 # via setup-bun's `bun-version-file`. Netlify cannot read a version file, so this
 # literal must mirror it; Renovate keeps both in sync (see .github/renovate.json5).
 [build.environment]
-BUN_VERSION = "1.4.0"
+BUN_VERSION = "1.4.2"
 BUN_FLAGS = "--frozen-lockfile"
 
 [context.production]
@@ -21,6 +21,10 @@ command = "bun run netlify-build:production"
 
 [context.production.environment]
 VITE_FARO_URL = "https://faro-collector-prod-us-east-2.grafana.net/collect/e587d17d38a90612e9dbedd3a3146b77"
+
+[context.v1.environment]
+VITE_FEATURE_FLAG_V1_REDESIGN = "true"
+VITE_FEATURE_FLAG_DEV_SHOWCASE = "true"
 
 [[edge_functions]]
 function = "agent-negotiation"

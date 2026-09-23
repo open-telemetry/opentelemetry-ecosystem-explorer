@@ -72,6 +72,18 @@ export interface CollectorComponent {
   feature_gates?: FeatureGate[];
   /** Content hash of the component's README, if one was found. Used to lazily fetch the markdown file. */
   markdown_hash?: string;
+  /** Internal telemetry (self-observability metrics) emitted by this component about its own operation. */
+  telemetry?: CollectorTelemetry;
+}
+
+/**
+ * Internal self-observability telemetry emitted by a component about its own operation,
+ * distinct from `CollectorComponent.metrics`, which describes signal data the component
+ * produces about the monitored system.
+ */
+export interface CollectorTelemetry {
+  /** Internal metrics, keyed by metric name. Shares the same shape as top-level `metrics`. */
+  metrics?: { [key: string]: CollectorMetric };
 }
 
 /**
@@ -106,6 +118,12 @@ export interface CollectorMetric {
   extended_documentation?: string;
   /** Whether this metric is optional (only initialized under certain conditions). */
   optional?: boolean;
+  /** Metric name prefix applied at emission time (e.g. "otelcol."). */
+  prefix?: string;
+  /** Present when the metric is deprecated; carries the replacement guidance and version. */
+  deprecated?: { note?: string; since?: string };
+  /** Warnings shown to users under specific configuration conditions. */
+  warnings?: CollectorMetricWarnings;
   /** Sum metric type descriptor. Present when the metric is a sum. */
   sum?: MetricValueDescriptor & { monotonic: boolean };
   /** Gauge metric type descriptor. Present when the metric is a gauge. */
@@ -117,12 +135,26 @@ export interface CollectorMetric {
 }
 
 /**
+ * Warnings shown to users under specific configuration conditions.
+ * Modeled after the `warnings` block in the metadata.yaml schema used by the
+ * collector-contrib repo (see `metrics.<metric.name>.warnings`).
+ */
+export interface CollectorMetricWarnings {
+  /** Shown if the metric is enabled in user config (e.g. a deprecated default metric). */
+  if_enabled?: string;
+  /** Shown if `enabled` is not set explicitly in user config. */
+  if_enabled_not_set?: string;
+  /** Shown if the metric is configured by the user in any way (e.g. a deprecated optional metric). */
+  if_configured?: string;
+}
+
+/**
  * Shared fields across sum, gauge, and histogram metric type descriptors.
  */
 export interface MetricValueDescriptor {
   /** The numeric type of the metric's data points. */
   value_type: string;
-  /** Aggregation temporality (e.g., "cumulative", "delta"). Only present on sum metrics. */
+  /** Aggregation temporality (e.g., "cumulative", "delta"), when applicable to this metric type. */
   aggregation_temporality?: string;
   /** Whether this metric is observed asynchronously. */
   async?: boolean;
@@ -195,4 +227,76 @@ export interface DeprecatedIndexComponent extends IndexComponent {
   component_hash: string;
   last_version: string;
   deprecated_in_version: string;
+}
+
+// Internal telemetry comparison types
+
+export type TelemetryDiffStatus = "added" | "removed" | "changed" | "unchanged";
+
+/** A single resolved attribute reference: the metric's attribute key plus its definition, if found. */
+export interface ResolvedCollectorAttribute {
+  key: string;
+  definition?: CollectorAttribute;
+}
+
+export interface CollectorAttributeChange {
+  key: string;
+  before?: CollectorAttribute;
+  after?: CollectorAttribute;
+}
+
+export interface CollectorAttributeChanges {
+  added: ResolvedCollectorAttribute[];
+  removed: ResolvedCollectorAttribute[];
+  changed: CollectorAttributeChange[];
+}
+
+/**
+ * Field-level changes within a metric's type-specific descriptor (sum/gauge/histogram),
+ * populated only when the metric's instrument type (see `metricType`) is unchanged but one
+ * or more of its descriptor fields differ.
+ */
+export interface CollectorMetricDescriptorChanges {
+  value_type?: { before?: string; after?: string };
+  /** Sum descriptors only. */
+  monotonic?: { before?: boolean; after?: boolean };
+  aggregation_temporality?: { before?: string; after?: string };
+  async?: { before?: boolean; after?: boolean };
+  /** Histogram descriptors only. */
+  bucket_boundaries?: { before?: number[]; after?: number[] };
+}
+
+export interface CollectorMetricChanges {
+  description?: { before: string; after: string };
+  unit?: { before: string; after: string };
+  enabled?: { before: boolean; after: boolean };
+  stability?: { before?: Stability; after?: Stability };
+  /** Set only when the metric's instrument type itself changed (e.g. sum -> gauge). */
+  metricType?: { before: string | null; after: string | null };
+  /** Set only when the instrument type is unchanged but descriptor fields differ. */
+  descriptor?: CollectorMetricDescriptorChanges;
+  extendedDocumentation?: { before?: string; after?: string };
+  optional?: { before?: boolean; after?: boolean };
+  prefix?: { before?: string; after?: string };
+  deprecated?: {
+    before?: { note?: string; since?: string };
+    after?: { note?: string; since?: string };
+  };
+  warnings?: {
+    before?: CollectorMetricWarnings;
+    after?: CollectorMetricWarnings;
+  };
+  attributes: CollectorAttributeChanges;
+}
+
+export interface CollectorMetricDiff {
+  status: TelemetryDiffStatus;
+  /** CollectorMetric has no embedded name (it's keyed by name in the metrics map), so the diff entry carries it explicitly. */
+  name: string;
+  metric: CollectorMetric;
+  changes?: CollectorMetricChanges;
+}
+
+export interface CollectorTelemetryDiffResult {
+  metrics: CollectorMetricDiff[];
 }
