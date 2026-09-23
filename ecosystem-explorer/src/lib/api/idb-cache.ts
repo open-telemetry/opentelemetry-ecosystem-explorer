@@ -83,6 +83,12 @@ export async function initDB(): Promise<IDBPDatabase> {
             db.createObjectStore(storeName, { keyPath: "key" });
           }
         },
+        // Another tab is upgrading to a newer DB_VERSION. Hold the connection
+        // open and its upgrade never completes, leaving that tab waiting on a
+        // promise that neither resolves nor rejects.
+        blocking() {
+          closeDB();
+        },
       });
       dbInstance = db;
       dbInitPromise = null;

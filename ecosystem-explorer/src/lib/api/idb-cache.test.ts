@@ -65,6 +65,24 @@ describe("idb-cache", () => {
     });
   });
 
+  describe("schema upgrades from another tab", () => {
+    it("closes the connection so a newer version is not blocked", async () => {
+      await initDB();
+
+      const outcome = await new Promise<string>((resolve) => {
+        const request = indexedDB.open("otel-explorer-cache", 999);
+        request.onblocked = () => resolve("blocked");
+        request.onerror = () => resolve("error");
+        request.onsuccess = () => {
+          request.result.close();
+          resolve("upgraded");
+        };
+      });
+
+      expect(outcome).toBe("upgraded");
+    });
+  });
+
   describe("setCached and getCached", () => {
     it("should store and retrieve data from instrumentations store", async () => {
       const key = "test-instrumentation";
