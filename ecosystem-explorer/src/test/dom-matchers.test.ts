@@ -13,6 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { expect, expectTypeOf, it } from "vitest";
 
-/** Resolved document theme; palettes are owned by CSS in styles/tokens.css. */
-export type ResolvedThemeId = "light" | "dark";
+it("preserves DOM matcher return types for sync and async assertions", async () => {
+  const element = document.createElement("button");
+  element.textContent = "Save changes";
+
+  expectTypeOf(expect(element).toHaveTextContent("Save")).toEqualTypeOf<void>();
+  const assertion = expect(Promise.resolve(element)).resolves.toHaveTextContent(/Save/);
+  expectTypeOf(assertion).toEqualTypeOf<Promise<void>>();
+  await assertion;
+
+  expect(element).not.toHaveTextContent("Cancel");
+  expect(element).toEqual(expect.toHaveTextContent("Save"));
+});

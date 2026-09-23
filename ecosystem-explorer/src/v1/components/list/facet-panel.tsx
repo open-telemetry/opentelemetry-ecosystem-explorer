@@ -34,13 +34,51 @@
  */
 
 import { X } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useEffectEvent, useRef, useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";
 import { TYPE_STRIPE_COLORS } from "@/components/ui/type-stripe-colors";
 import type { CollectorComponentType } from "@/components/ui/type-stripe-colors";
 import { DISTRIBUTIONS, SIGNALS, STABILITIES, TYPES } from "@/v1/lib/list-filters";
 import type { Distribution, ListFilters, Signal, StabilityFacet } from "@/v1/lib/list-filters";
 import { CheckboxFacet, type FacetOption, SearchFacet, SelectFacet } from "./facets";
+
+// Keep this boundary aligned with facet-panel.css: desktop is a persistent rail.
+const DESKTOP_QUERY = "(min-width: 992px)";
+
+function isDesktopViewport() {
+  return window.matchMedia(DESKTOP_QUERY).matches;
+}
+
+function subscribeViewport(onChange: () => void) {
+  const media = window.matchMedia(DESKTOP_QUERY);
+  media.addEventListener("change", onChange);
+  return () => media.removeEventListener("change", onChange);
+}
+
+function isVisible(element: HTMLElement): boolean {
+  for (let current: HTMLElement | null = element; current; current = current.parentElement) {
+    const style = getComputedStyle(current);
+    if (
+      current.hidden ||
+      current.hasAttribute("inert") ||
+      style.display === "none" ||
+      style.visibility === "hidden"
+    ) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function findFocusable(elements: NodeListOf<HTMLElement>, backwards = false) {
+  const step = backwards ? -1 : 1;
+  for (let i = backwards ? elements.length - 1 : 0; i >= 0 && i < elements.length; i += step) {
+    const element = elements[i];
+    if (element.tabIndex >= 0 && !element.matches(":disabled") && isVisible(element)) {
+      return element;
+    }
+  }
+}
 
 // Swatch palette for the stability facet. Typed against the contract union so
 // a newly added stability level fails typecheck until it gets a color.
@@ -88,39 +126,53 @@ export function FacetPanel({
 }: FacetPanelProps) {
   const { t } = useTranslation(["list", "collector"]);
   const panelRef = useRef<HTMLDivElement>(null);
-  const isDrawer = isOpen && onClose !== undefined;
+  const openerRef = useRef<HTMLElement | null>(null);
+  const isDesktop = useSyncExternalStore(subscribeViewport, isDesktopViewport, () => true);
+  const isDrawer = !isDesktop && isOpen && onClose !== undefined;
+  // Filter/URL updates can replace onClose without starting a new focus session.
+  const closeDrawer = useEffectEvent(() => onClose?.());
+
+  useEffect(() => {
+    if (!isOpen) openerRef.current = null;
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isDrawer) return;
     const panel = panelRef.current;
     if (!panel) return;
 
-    const focusables = () =>
-      Array.from(
-        panel.querySelectorAll<HTMLElement>(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        )
+    const candidates = () =>
+      panel.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
       );
 
-    // Captured before focus moves into the drawer so cleanup can hand it back
-    // to the opener (the FacetDrawerToggle).
-    const previouslyFocused =
+    // Retain the original opener across desktop/mobile crossings while the
+    // caller still requests an open drawer; rail controls may be hidden on close.
+    openerRef.current ??=
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    focusables()[0]?.focus();
+    findFocusable(candidates())?.focus();
+    let lastFocused = document.activeElement;
+    const onFocus = (event: FocusEvent) => {
+      if (event.target instanceof HTMLElement) lastFocused = event.target;
+    };
+    panel.addEventListener("focusin", onFocus);
 
     const bodyOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        onClose?.();
+        e.preventDefault();
+        closeDrawer();
         return;
       }
       if (e.key !== "Tab") return;
-      const els = focusables();
-      if (els.length === 0) return;
-      const first = els[0];
-      const last = els[els.length - 1];
+      // Controls can change while open. Search fresh boundaries, checking
+      // ancestor styles only until an eligible control is found at each end.
+      const els = candidates();
+      const first = findFocusable(els);
+      const last = findFocusable(els, true);
+      if (!first || !last) return;
       const active = document.activeElement;
       const inside = active instanceof HTMLElement && panel.contains(active);
       if (e.shiftKey && (active === first || !inside)) {
@@ -134,10 +186,22 @@ export function FacetPanel({
     document.addEventListener("keydown", onKey);
     return () => {
       document.removeEventListener("keydown", onKey);
+      panel.removeEventListener("focusin", onFocus);
       document.body.style.overflow = bodyOverflow;
-      previouslyFocused?.focus();
+      if (isDesktopViewport() && panel.isConnected) {
+        // The mobile opener is hidden on desktop. Keep a visible rail control
+        // focused, moving off Close if the breakpoint just hid it.
+        // Browsers may blur Close to body as CSS hides it, before this cleanup.
+        const active =
+          document.activeElement === document.body ? lastFocused : document.activeElement;
+        if (active instanceof HTMLElement && panel.contains(active) && !isVisible(active)) {
+          findFocusable(candidates())?.focus();
+        }
+      } else if (openerRef.current?.isConnected && isVisible(openerRef.current)) {
+        openerRef.current.focus();
+      }
     };
-  }, [isDrawer, onClose]);
+  }, [isDrawer]);
 
   // Every facet edit resets pagination: a new filter set is a new result set.
   const change = (next: Partial<ListFilters>) => onChange({ ...next, page: 1 });
@@ -177,6 +241,7 @@ export function FacetPanel({
           <button
             type="button"
             className="td-facet-panel__close"
+            hidden={!isDrawer}
             aria-label={t("facets.panel.close")}
             onClick={onClose}
           >

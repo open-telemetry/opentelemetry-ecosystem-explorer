@@ -1,0 +1,87 @@
+name: Sync main to v1
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Git access uses a repository-scoped fine-grained PAT, including workflow-file writes.
+permissions: {}
+
+concurrency:
+  group: sync-main-to-v1
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Merge main into v1
+    if: >-
+      github.repository == 'open-telemetry/opentelemetry-ecosystem-explorer' && github.ref ==
+      'refs/heads/main' && vars.V1_SYNC_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check sync token configuration
+        env:
+          V1_SYNC_TOKEN: ${{ secrets.V1_SYNC_TOKEN }}
+        run: |
+          if [[ -z "$V1_SYNC_TOKEN" ]]; then
+            echo "::error::Configure the V1_SYNC_TOKEN Actions secret. See docs/v1-sync.md."
+            exit 1
+          fi
+
+      - name: Checkout v1 history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: v1
+          fetch-depth: 0
+          token: ${{ secrets.V1_SYNC_TOKEN }}
+          persist-credentials: false
+
+      - name: Merge and push without rewriting history
+        env:
+          GH_TOKEN: ${{ secrets.V1_SYNC_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          gh auth setup-git
+          .github/scripts/use-cla-approved-bot.sh
+
+          merge_ref() {
+            if ! git -c core.hooksPath=/dev/null merge --no-edit "$1"; then
+              echo "::error::Cannot merge $1 into v1. Resolve conflicts manually; no changes were pushed."
+              git diff --name-only --diff-filter=U
+              git merge --abort || true
+              exit 1
+            fi
+          }
+
+          for attempt in 1 2 3; do
+            # Fetch current tips, not the triggering SHA: queued runs can arrive out of order.
+            git fetch --no-tags origin \
+              refs/heads/main:refs/remotes/origin/main \
+              refs/heads/v1:refs/remotes/origin/v1
+            merge_ref origin/v1
+            merge_ref origin/main
+
+            if [[ "$(git rev-parse HEAD)" == "$(git rev-parse origin/v1)" ]]; then
+              echo "v1 already contains main."
+              exit 0
+            fi
+
+            previous_v1=$(git rev-parse origin/v1)
+            if git -c core.hooksPath=/dev/null push origin HEAD:refs/heads/v1; then
+              echo "Merged main into v1. Netlify deployment must be verified separately."
+              exit 0
+            fi
+
+            git fetch --no-tags origin refs/heads/v1:refs/remotes/origin/v1
+            if [[ "$previous_v1" == "$(git rev-parse origin/v1)" ]]; then
+              echo "::error::Push rejected without a concurrent v1 update. Check V1_SYNC_TOKEN expiry, approval, permissions and branch rules (including EasyCLA)."
+              exit 1
+            fi
+            echo "v1 changed during attempt $attempt; merging the new tip before retrying."
+          done
+
+          echo "::error::v1 kept changing after three attempts. Retry this workflow on main."
+          exit 1

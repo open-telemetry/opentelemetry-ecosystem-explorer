@@ -2,7 +2,7 @@ distribution: contrib
 version: 0.161.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: connector
-schema_hash: a0135ca939d9
+schema_hash: e7c32c80593c
 components:
 - name: countconnector
   metadata:
@@ -48,6 +48,7 @@ components:
         - traces_to_traces
       unsupported_platforms:
       - aix
+      - solaris
     type: datadog
 - name: exceptionsconnector
   metadata:
@@ -308,6 +309,7 @@ components:
         active:
         - JaredTan95
         - Frapschen
+        emeritus:
         - atoulme
       stability:
         development:
