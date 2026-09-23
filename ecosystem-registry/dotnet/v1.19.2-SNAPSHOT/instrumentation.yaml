@@ -8,33 +8,38 @@ modules:
   description: OpenTelemetry Automatic Instrumentation package with all required components
     to enable automatic instrumentation.
   type: instrumentation
-  version: 1.16.0
+  version: 1.17.0
 - name: OpenTelemetry.AutoInstrumentation.AspNetCoreBootstrapper
   description: ASP.NET Core Bootstrapper used by the OpenTelemetry.AutoInstrumentation
     project.
   type: instrumentation
-  version: 1.16.0
+  version: 1.17.0
 - name: OpenTelemetry.AutoInstrumentation.BuildTasks
   description: Build tasks used by the OpenTelemetry.AutoInstrumentation project.
   type: instrumentation
-  version: 1.16.0
+  version: 1.17.0
 - name: OpenTelemetry.AutoInstrumentation.Loader
   description: Loader used by the OpenTelemetry.AutoInstrumentation project.
   type: instrumentation
-  version: 1.16.0
+  version: 1.17.0
+- name: OpenTelemetry.AutoInstrumentation.PluginApi
+  description: Provides extension points for an OpenTelemetry.AutoInstrumentation
+    plugin
+  type: instrumentation
+  version: 1.17.0
 - name: OpenTelemetry.AutoInstrumentation.Runtime.Managed
   description: Managed components used by the OpenTelemetry.AutoInstrumentation project.
   type: instrumentation
-  version: 1.16.0
+  version: 1.17.0
 - name: OpenTelemetry.AutoInstrumentation.Runtime.Native
   description: Native runtime components used by the OpenTelemetry.AutoInstrumentation
     project.
   type: instrumentation
-  version: 1.16.0
+  version: 1.17.0
 - name: OpenTelemetry.AutoInstrumentation.StartupHook
   description: StartupHook used by the OpenTelemetry.AutoInstrumentation project.
   type: instrumentation
-  version: 1.16.0
+  version: 1.17.0
 - name: OpenTelemetry.Exporter.Console
   description: Console exporter for OpenTelemetry .NET
   type: exporter
