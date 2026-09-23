@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import type { TimelineData, TimelineEvent } from "../types";
+import type { TimelineData, TimelineEvent, TimelineLaneDef } from "../types";
 import { computeTimelineRange } from "../utils/timeline-layout";
 import { EVENT_TYPES } from "../utils/timeline-colors";
 import {
@@ -33,16 +33,76 @@ interface SemanticConventionTimelineProps {
   data: TimelineData;
 }
 
+interface TimelineFilters {
+  scope: TimelineScope;
+  domain: TimelineDomainFilter;
+  eventType: TimelineTypeFilter;
+}
+
+const DEFAULT_FILTERS: TimelineFilters = { scope: "major", domain: "all", eventType: "all" };
+
+function eventsInScope(events: TimelineEvent[], scope: TimelineScope) {
+  return events.filter((event) => scope === "all" || event.major);
+}
+
+function domainOptionsFor(
+  lanes: TimelineLaneDef[],
+  events: TimelineEvent[],
+  eventType: TimelineTypeFilter
+) {
+  return lanes.filter((lane) =>
+    events.some(
+      (event) => event.lane === lane.id && (eventType === "all" || event.type === eventType)
+    )
+  );
+}
+
+function typeOptionsFor(events: TimelineEvent[], domain: TimelineDomainFilter) {
+  return EVENT_TYPES.filter((type) =>
+    events.some((event) => event.type === type && (domain === "all" || event.lane === domain))
+  );
+}
+
+/*
+ * Every filter change is resolved against the other two before it is stored, so state only ever
+ * holds a combination that can produce a result: a filter whose value the new selection strands
+ * drops back to "all" rather than surviving hidden and silently reselecting itself once another
+ * change makes it valid again. Domain is resolved first against the event type and the type then
+ * against the resolved domain, which keeps the two consistent no matter which one the user just
+ * changed. Reconciling here (rather than while deriving the render output) keeps the component
+ * free of render-phase state updates; the initial defaults are valid for any dataset, and the
+ * timeline only mounts once its data has loaded, so there is no other entry point to cover.
+ */
+function reconcileFilters(data: TimelineData, next: TimelineFilters): TimelineFilters {
+  const scopedEvents = eventsInScope(data.events, next.scope);
+  const domain =
+    next.domain === "all" ||
+    domainOptionsFor(data.lanes, scopedEvents, next.eventType).some(
+      (lane) => lane.id === next.domain
+    )
+      ? next.domain
+      : "all";
+  const eventType =
+    next.eventType === "all" || typeOptionsFor(scopedEvents, domain).includes(next.eventType)
+      ? next.eventType
+      : "all";
+  return { scope: next.scope, domain, eventType };
+}
+
 export function SemanticConventionTimeline({ data }: SemanticConventionTimelineProps) {
   const { t, i18n } = useTranslation("semantic-conventions");
   const locale = i18n.resolvedLanguage ?? i18n.language ?? "en";
 
-  const [scope, setScope] = useState<TimelineScope>("major");
-  const [domain, setDomain] = useState<TimelineDomainFilter>("all");
-  const [eventType, setEventType] = useState<TimelineTypeFilter>("all");
+  const [{ scope, domain, eventType }, setFilters] = useState<TimelineFilters>(DEFAULT_FILTERS);
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const detailRef = useRef<HTMLElement>(null);
+
+  const updateFilters = useCallback(
+    (change: Partial<TimelineFilters>) =>
+      setFilters((current) => reconcileFilters(data, { ...current, ...change })),
+    [data]
+  );
 
   function handleSelect(id: string) {
     setSelectedId(id);
@@ -56,63 +116,34 @@ export function SemanticConventionTimeline({ data }: SemanticConventionTimelineP
   const range = useMemo(() => computeTimelineRange(data.events), [data.events]);
 
   const scopeFilteredEvents = useMemo(
-    () => data.events.filter((event) => scope === "all" || event.major),
+    () => eventsInScope(data.events, scope),
     [data.events, scope]
   );
 
   /*
    * The dropdown options are dynamic, not the dataset's full static lists: a domain or event
    * type only appears as a choice if it can actually produce a result given the *other* active
-   * filter, so picking anything from either list can never land on an empty timeline. Domain
-   * options are checked against the raw (not-yet-resolved) event-type filter first, and type
-   * options against the resolved domain, which keeps the two mutually consistent no matter which
-   * one the user just changed (each render re-derives both from scratch, so a value that becomes
-   * incompatible always falls back to "all" rather than silently pointing at a dead end).
+   * filter, so picking anything from either list can never land on an empty timeline.
    */
   const domainOptions = useMemo(
-    () =>
-      data.lanes.filter((lane) =>
-        scopeFilteredEvents.some(
-          (event) => event.lane === lane.id && (eventType === "all" || event.type === eventType)
-        )
-      ),
+    () => domainOptionsFor(data.lanes, scopeFilteredEvents, eventType),
     [data.lanes, scopeFilteredEvents, eventType]
   );
-  const effectiveDomain: TimelineDomainFilter =
-    domain === "all" || domainOptions.some((lane) => lane.id === domain) ? domain : "all";
 
   const typeOptions = useMemo(
-    () =>
-      EVENT_TYPES.filter((type) =>
-        scopeFilteredEvents.some(
-          (event) =>
-            event.type === type && (effectiveDomain === "all" || event.lane === effectiveDomain)
-        )
-      ),
-    [scopeFilteredEvents, effectiveDomain]
+    () => typeOptionsFor(scopeFilteredEvents, domain),
+    [scopeFilteredEvents, domain]
   );
-  const effectiveEventType: TimelineTypeFilter =
-    eventType === "all" || typeOptions.includes(eventType) ? eventType : "all";
-
-  /*
-   * Write the fallback back into state so a filter the UI has already reset to "All" cannot
-   * reactivate later: without this, a dropped-but-still-stored value silently reselects itself
-   * as soon as another filter change makes it valid again. Setting state during render is the
-   * supported way to reconcile derived state; "all" is always valid, so this converges in one
-   * extra pass.
-   */
-  if (effectiveDomain !== domain) setDomain(effectiveDomain);
-  if (effectiveEventType !== eventType) setEventType(effectiveEventType);
 
   const visibleEvents = useMemo(() => {
     return scopeFilteredEvents
-      .filter((event) => effectiveDomain === "all" || event.lane === effectiveDomain)
-      .filter((event) => effectiveEventType === "all" || event.type === effectiveEventType)
+      .filter((event) => domain === "all" || event.lane === domain)
+      .filter((event) => eventType === "all" || event.type === eventType)
       .sort(
         (a: TimelineEvent, b: TimelineEvent) =>
           a.date.localeCompare(b.date) || a.id.localeCompare(b.id)
       );
-  }, [scopeFilteredEvents, effectiveDomain, effectiveEventType]);
+  }, [scopeFilteredEvents, domain, eventType]);
 
   const visibleTypes = useMemo(
     () => EVENT_TYPES.filter((type) => visibleEvents.some((event) => event.type === type)),
@@ -138,9 +169,7 @@ export function SemanticConventionTimeline({ data }: SemanticConventionTimelineP
   const effectiveSelectedId = selectedEvent?.id ?? null;
 
   function handleReset() {
-    setScope("major");
-    setDomain("all");
-    setEventType("all");
+    setFilters(DEFAULT_FILTERS);
     setSelectedId(null);
   }
 
@@ -148,13 +177,13 @@ export function SemanticConventionTimeline({ data }: SemanticConventionTimelineP
     <div className="border-border bg-card overflow-clip rounded-lg border">
       <TimelineFilterBar
         scope={scope}
-        domain={effectiveDomain}
-        eventType={effectiveEventType}
+        domain={domain}
+        eventType={eventType}
         domainOptions={domainOptions}
         typeOptions={typeOptions}
-        onScopeChange={setScope}
-        onDomainChange={setDomain}
-        onEventTypeChange={setEventType}
+        onScopeChange={(scope) => updateFilters({ scope })}
+        onDomainChange={(domain) => updateFilters({ domain })}
+        onEventTypeChange={(eventType) => updateFilters({ eventType })}
         onReset={handleReset}
       />
       <TimelineLegend types={visibleTypes} />

@@ -30,6 +30,7 @@ export function TimelineLegend({ types }: TimelineLegendProps) {
 
   return (
     <div
+      role="group"
       aria-label={t("timeline.legend.heading")}
       className="border-border/60 text-muted-foreground flex flex-wrap gap-x-5 gap-y-2 border-b px-4 py-3 text-xs"
     >

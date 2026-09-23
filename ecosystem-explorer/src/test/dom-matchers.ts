@@ -17,13 +17,13 @@ import * as matchers from "@testing-library/jest-dom/matchers";
 import type { TestingLibraryMatchers } from "@testing-library/jest-dom/matchers";
 import { expect } from "vitest";
 
-// jest-dom 7.0.1 still augments the pre-Vitest-5 Assertion<T> interface.
-// Register its matchers directly and preserve Vitest's sync/async return type.
+// jest-dom 7.0.1's own vitest.d.ts augments Assertion<T> with R = T, which makes every
+// matcher appear to return the received value. Augment Vitest's Matchers<T> instead: its
+// type parameter is the *received* type, and matchers return void — `.resolves`/`.rejects`
+// wrap that in a Promise via Vitest's own Promisify<Assertion<T>>.
 declare module "vitest" {
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type -- Module augmentation adds the DOM matchers.
-  interface Matchers<
-    R extends void | Promise<void> = void | Promise<void>,
-  > extends TestingLibraryMatchers<never, R> {}
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-object-type -- T must mirror Vitest's own Matchers<T = any> declaration for merging.
+  interface Matchers<T = any> extends TestingLibraryMatchers<never, void> {}
 }
 
 expect.extend(matchers);

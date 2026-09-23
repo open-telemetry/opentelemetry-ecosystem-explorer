@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { StrictMode } from "react";
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { SemanticConventionTimeline } from "./semantic-convention-timeline";
@@ -233,10 +234,30 @@ describe("SemanticConventionTimeline", () => {
     expect(screen.getByRole("status")).toHaveTextContent("2 milestones · 2 domains");
   });
 
+  it("reconciles filters without render-phase state updates under StrictMode", () => {
+    render(
+      <StrictMode>
+        <SemanticConventionTimeline data={SAMPLE_DATA} />
+      </StrictMode>
+    );
+
+    fireEvent.change(screen.getByLabelText("Milestones"), { target: { value: "all" } });
+    fireEvent.change(screen.getByLabelText("Domain"), { target: { value: "db" } });
+    fireEvent.change(screen.getByLabelText("Event type"), { target: { value: "change" } });
+    expect(screen.getByRole("status")).toHaveTextContent("1 milestone · 1 domain");
+
+    // StrictMode renders every commit twice; the filters must settle on the same reconciled
+    // values either way, with no stale value left to reactivate.
+    fireEvent.change(screen.getByLabelText("Milestones"), { target: { value: "major" } });
+    expect(screen.getByLabelText("Domain")).toHaveValue("all");
+    expect(screen.getByLabelText("Event type")).toHaveValue("all");
+    expect(screen.getByRole("status")).toHaveTextContent("3 milestones · 2 domains");
+  });
+
   it("keeps the legend aligned with scope, domain, and event-type filters", () => {
     render(<SemanticConventionTimeline data={SAMPLE_DATA} />);
     const legendLabels = () =>
-      within(screen.getByLabelText("Legend"))
+      within(screen.getByRole("group", { name: "Legend" }))
         .getAllByRole("button")
         .map((button) => button.textContent);
 
@@ -255,7 +276,7 @@ describe("SemanticConventionTimeline", () => {
   it("shows the empty state when the dataset has no events at all", () => {
     render(<SemanticConventionTimeline data={{ ...SAMPLE_DATA, events: [] }} />);
 
-    expect(screen.queryByLabelText("Legend")).not.toBeInTheDocument();
+    expect(screen.queryByRole("group", { name: "Legend" })).not.toBeInTheDocument();
     expect(screen.getByText("No milestones match these filters.")).toBeInTheDocument();
     expect(screen.getByText("Select a milestone to see its details.")).toBeInTheDocument();
   });
