@@ -5716,7 +5716,6 @@ components:
         active:
         - adrielp
         - crobert-1
-        - TylerHelmuth
         seeking_new: true
       distributions:
       - contrib
@@ -5754,7 +5753,6 @@ components:
       codeowners:
         active:
         - dashpole
-        - TylerHelmuth
         emeritus:
         - abhishek-at-cloudwerx
       distributions:
@@ -9258,7 +9256,6 @@ components:
       class: receiver
       codeowners:
         active:
-        - TylerHelmuth
         - mterhar
       distributions:
       - contrib
@@ -13050,7 +13047,7 @@ components:
         enabled: true
         gauge:
           value_type: int
-        stability: development
+        stability: beta
         unit: ns
     resource_attributes:
       ntp.host:
