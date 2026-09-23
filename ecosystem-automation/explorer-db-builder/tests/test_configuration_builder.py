@@ -144,11 +144,11 @@ class TestRunConfigurationBuilder:
             else:
                 assert entry["is_latest"] is False
 
-    def test_clean_preserves_defaults_folder(self, config_registry, output_dir):
-        defaults_dir = output_dir / "defaults"
-        defaults_dir.mkdir(parents=True)
-        defaults_file = defaults_dir / "sdk-configuration-defaults.json"
-        defaults_file.write_text('{"enabledSections": {"resource": true}, "values": {}}')
+    def test_clean_removes_files_the_builder_did_not_write(self, config_registry, output_dir):
+        stray_dir = output_dir / "defaults"
+        stray_dir.mkdir(parents=True)
+        stray_file = stray_dir / "sdk-configuration-defaults.json"
+        stray_file.write_text('{"enabledSections": {"resource": true}, "values": {}}')
 
         run_configuration_builder(
             registry_dir=str(config_registry),
@@ -161,7 +161,18 @@ class TestRunConfigurationBuilder:
             clean=True,
         )
 
-        assert defaults_file.exists()
+        assert not stray_file.exists()
+        assert not stray_dir.exists()
+
+    def test_clean_on_missing_output_dir(self, config_registry, output_dir):
+        result = run_configuration_builder(
+            registry_dir=str(config_registry),
+            output_dir=str(output_dir),
+            clean=True,
+        )
+
+        assert result == 0
+        assert (output_dir / "versions-index.json").exists()
 
     def test_clean_removes_stale_generated_files(self, config_registry, output_dir):
         run_configuration_builder(

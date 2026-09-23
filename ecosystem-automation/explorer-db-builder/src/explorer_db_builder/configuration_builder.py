@@ -29,7 +29,6 @@ from explorer_db_builder.schema_ui_mapper import map_schema_to_ui_tree
 logger = logging.getLogger(__name__)
 
 ROOT_SCHEMA_FILE = "opentelemetry_configuration.yaml"
-DEFAULTS_DIR_NAME = "defaults"
 
 REGISTRY_DIR = "ecosystem-registry/configuration"
 OUTPUT_DIR = "ecosystem-explorer/public/data/configuration"
@@ -45,22 +44,18 @@ def _load_yaml_registry(version_dir: Path) -> dict[str, Any]:
 
 
 def _clean_output(output_path: Path) -> None:
-    """
-    Remove all generated content from the output directory while preserving the
-    handcrafted defaults/ folder.
+    """Remove the output directory and recreate it empty.
 
-    The defaults/ folder contains hand-maintained template files (e.g.
-    sdk-configuration-defaults.json) that are committed alongside the generated
-    output and must survive a clean rebuild.
+    The directory is builder-owned: everything under it goes, including files this tool
+    did not write. Curated content the frontend fetches must live outside it (see the
+    "Methodology" section of the explorer-db-builder README).
     """
-    for child in output_path.iterdir():
-        if child.name == DEFAULTS_DIR_NAME:
-            continue
-        if child.is_dir():
-            shutil.rmtree(child)
-        else:
-            child.unlink()
-    logger.info(f"Cleaned {output_path} (preserved {DEFAULTS_DIR_NAME}/)")
+    if output_path.exists():
+        logger.info(f"Cleaning output directory: {output_path}")
+        shutil.rmtree(output_path)
+        logger.info("Output directory cleaned")
+
+    output_path.mkdir(parents=True, exist_ok=True)
 
 
 def run_configuration_builder(
@@ -72,7 +67,7 @@ def run_configuration_builder(
     try:
         output_path = Path(output_dir)
 
-        if clean and output_path.exists():
+        if clean:
             _clean_output(output_path)
 
         inventory = BaseInventoryManager(registry_dir)

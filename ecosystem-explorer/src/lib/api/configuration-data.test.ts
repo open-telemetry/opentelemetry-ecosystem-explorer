@@ -174,7 +174,7 @@ describe("configuration-data", () => {
       const result = await loadConfigStarter("1.0.0");
       expect(result).toEqual(body);
       expect(global.fetch).toHaveBeenCalledWith(
-        "/data/configuration/defaults/sdk-configuration-defaults-1.0.0.json"
+        "/data/defaults/configuration/sdk-configuration-defaults-1.0.0.json"
       );
     });
 
