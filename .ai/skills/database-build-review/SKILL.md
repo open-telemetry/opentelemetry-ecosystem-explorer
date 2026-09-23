@@ -36,9 +36,10 @@ Read this first — the review only makes sense against these mechanics.
   you exactly which (component, version) pairs changed, without reading blobs.
   - javaagent keys: `instrumentations`, `custom_instrumentations`; blobs in `instrumentations/<name>/`.
   - collector key: `components`; blobs in `components/<name>/`.
-  - configuration is a schema tree (`versions/<v>.json`, `defaults/`), **not** per-component
+  - configuration is a schema tree (`versions/<v>.json`), **not** per-component
     content-addressed — the hash-churn analysis below doesn't apply to it; review it by reading the
-    schema/defaults diff directly.
+    schema diff directly. Its starter templates are curated, not generated, and live outside the
+    builder-owned tree in `public/data/defaults/configuration/`.
 - **Incremental is add-only.** In the default (incremental) mode, the writer writes a new blob or
   skips an existing one — **it never deletes blobs that are no longer referenced by any manifest**
   (`database_writer.py` `write_libraries`). So when content changes, the old blob is orphaned but

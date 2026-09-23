@@ -88,7 +88,9 @@ were editing.
   the frontend until the next sync.
 - The `explorer-db-builder` output directories (`public/data/{javaagent,configuration,collector}/`)
   are builder-owned: `--clean` `rmtree`s them, so a curated file committed inside one disappears on
-  the next clean run (#882). Put hand-maintained frontend data in a sibling directory instead.
+  the next clean run (#882). Put hand-maintained frontend data in a sibling directory instead; the
+  builder README's Methodology section lists them. A new pipeline's output directory is
+  builder-owned and belongs in the list above.
 
 ## Before finishing
 

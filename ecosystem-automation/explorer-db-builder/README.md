@@ -11,8 +11,9 @@ under `ecosystem-explorer/public/data/`.
 Those three directories are owned **entirely** by this tool. A `--clean` build `rmtree`s each one
 before rebuilding, so any hand-maintained file placed inside them is deleted without warning — this
 is what silently removed the curated `javaagent/announcements.json` in #882. Curated content that
-the frontend fetches must live in a sibling directory the builder never writes to (for example
-`public/data/announcements/`).
+the frontend fetches must live in a sibling directory the builder never writes to. Today those are
+`public/data/announcements/`, `public/data/defaults/` and `public/data/activity/` (a v1 stub that a
+generated feed is expected to replace).
 
 The output file structure looks like:
 
@@ -38,7 +39,6 @@ ecosystem-explorer/
       configuration/
         versions-index.json         # List of available configuration schema versions
         versions/                    # Per-version schema manifests
-        defaults/                    # Resolved default values
       collector/
         index.json                  # Lightweight index for collector components
         deprecations-index.json     # Removed components pointing to their last-version data

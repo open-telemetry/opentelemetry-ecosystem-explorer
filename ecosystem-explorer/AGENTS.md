@@ -250,6 +250,11 @@ When reviewing UI components, always verify:
 - `bun run build` runs typecheck first; strict TypeScript blocks builds on unused locals or
   parameters.
 - Route params are unvalidated. Pages must validate URL params and handle missing data gracefully.
+- `public/data/{javaagent,configuration,collector}/` is generated and owned by
+  `explorer-db-builder`: a `--clean` build `rmtree`s each one, so a curated file committed inside
+  disappears without warning (#882). Hand-maintained data the frontend fetches goes in a sibling
+  directory instead; see the Methodology section of
+  `ecosystem-automation/explorer-db-builder/README.md`.
 
 ## Before finishing
 

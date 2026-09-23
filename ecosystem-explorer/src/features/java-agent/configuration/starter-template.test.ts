@@ -30,7 +30,7 @@ import { findNodeByPath } from "@/lib/schema-defaults";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 function loadJson<T>(relPath: string): T {
-  const abs = resolve(__dirname, "../../../../public/data/configuration", relPath);
+  const abs = resolve(__dirname, "../../../../public/data", relPath);
   return JSON.parse(readFileSync(abs, "utf-8")) as T;
 }
 
@@ -86,8 +86,10 @@ function walk(
 }
 
 describe("sdk-configuration-defaults-1.0.0.json shape", () => {
-  const schema = loadJson<ConfigNode>("versions/1.0.0.json");
-  const starter = loadJson<ConfigStarter>("defaults/sdk-configuration-defaults-1.0.0.json");
+  const schema = loadJson<ConfigNode>("configuration/versions/1.0.0.json");
+  const starter = loadJson<ConfigStarter>(
+    "defaults/configuration/sdk-configuration-defaults-1.0.0.json"
+  );
 
   it("every enabledSections key is a top-level group in the schema", () => {
     expect(schema.controlType).toBe("group");

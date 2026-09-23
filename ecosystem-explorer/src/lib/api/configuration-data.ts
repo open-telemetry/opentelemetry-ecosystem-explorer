@@ -18,6 +18,7 @@ import { STORES } from "./idb-cache";
 import { fetchWithCache } from "./fetch-with-cache";
 
 const BASE_PATH = "/data/configuration";
+const CURATED_DEFAULTS_PATH = "/data/defaults/configuration";
 
 export async function loadConfigVersions(): Promise<ConfigVersionsIndex> {
   const data = await fetchWithCache<ConfigVersionsIndex>(
@@ -47,7 +48,7 @@ export async function loadConfigSchema(version: string): Promise<ConfigNode> {
 export async function loadConfigStarter(version: string): Promise<ConfigStarter | null> {
   return fetchWithCache<ConfigStarter>(
     `config-starter-${version}`,
-    `${BASE_PATH}/defaults/sdk-configuration-defaults-${version}.json`,
+    `${CURATED_DEFAULTS_PATH}/sdk-configuration-defaults-${version}.json`,
     STORES.CONFIGURATION,
     {
       allow404: true,
