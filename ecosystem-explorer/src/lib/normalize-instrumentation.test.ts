@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 import { describe, it, expect } from "vitest";
-import { readFileSync, readdirSync, statSync } from "node:fs";
-import { join } from "node:path";
 import type { InstrumentationListEntry } from "@/types/javaagent";
 import { groupByModule, normalizeRegistryName } from "./normalize-instrumentation";
-
-const REGISTRY_DIR = "public/data/javaagent/instrumentations";
 
 function makeEntry(
   overrides: Partial<InstrumentationListEntry> & { name: string }
@@ -131,40 +127,5 @@ describe("groupByModule", () => {
       "jetty-11.0",
       "jetty-12.0",
     ]);
-  });
-});
-
-describe("snapshot: full registry", () => {
-  function loadAllEntries(): InstrumentationListEntry[] {
-    const entries: InstrumentationListEntry[] = [];
-    for (const dir of readdirSync(REGISTRY_DIR)) {
-      const dirPath = join(REGISTRY_DIR, dir);
-      if (!statSync(dirPath).isDirectory()) continue;
-      const files = readdirSync(dirPath)
-        .filter((f) => f.endsWith(".json"))
-        .map((f) => ({ f, mtime: statSync(join(dirPath, f)).mtimeMs }))
-        .sort((a, b) => b.mtime - a.mtime);
-      if (files.length === 0) continue;
-      const data = JSON.parse(readFileSync(join(dirPath, files[0].f), "utf8"));
-      entries.push(data);
-    }
-    return entries;
-  }
-
-  it("produces a stable partition with valid module names", () => {
-    const entries = loadAllEntries();
-    expect(entries.length).toBeGreaterThanOrEqual(250);
-    const modules = groupByModule(entries);
-    expect(modules.length).toBeGreaterThanOrEqual(170);
-    expect(modules.length).toBeLessThan(entries.length);
-
-    const totalCovered = modules.reduce((sum, m) => sum + m.coveredEntries.length, 0);
-    expect(totalCovered).toBe(entries.length);
-
-    for (const m of modules) {
-      expect(m.name).toMatch(/^[a-z][a-z0-9_]*$/);
-      const flags = new Set(m.coveredEntries.map((e) => e.disabled_by_default === true));
-      expect(flags.size, `module ${m.name} has mixed disabled_by_default`).toBe(1);
-    }
   });
 });

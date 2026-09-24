@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { describe, it, expect } from "vitest";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import type {
@@ -85,10 +85,21 @@ function walk(
   }
 }
 
-describe("sdk-configuration-defaults-1.0.0.json shape", () => {
-  const schema = loadJson<ConfigNode>("configuration/versions/1.0.0.json");
+const STARTERS_DIR = resolve(__dirname, "../../../../public/data/defaults/configuration");
+
+const starterVersions = readdirSync(STARTERS_DIR)
+  .map((f) => /^sdk-configuration-defaults-(.+)\.json$/.exec(f)?.[1])
+  .filter((v): v is string => Boolean(v))
+  .sort();
+
+it("finds at least one starter template to verify", () => {
+  expect(starterVersions.length).toBeGreaterThan(0);
+});
+
+describe.each(starterVersions)("sdk-configuration-defaults-%s.json shape", (version) => {
+  const schema = loadJson<ConfigNode>(`configuration/versions/${version}.json`);
   const starter = loadJson<ConfigStarter>(
-    "defaults/configuration/sdk-configuration-defaults-1.0.0.json"
+    `defaults/configuration/sdk-configuration-defaults-${version}.json`
   );
 
   it("every enabledSections key is a top-level group in the schema", () => {

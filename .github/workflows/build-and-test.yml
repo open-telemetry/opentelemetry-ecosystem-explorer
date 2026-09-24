@@ -325,6 +325,36 @@ jobs:
       - name: Run edge tests against the build output
         run: bun run test:edge
 
+  typecheck-without-database:
+    name: Typecheck and unit tests without the generated database
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ecosystem-explorer
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: .bun-version
+          cache: true
+          cache-dependency-path: ecosystem-explorer/bun.lock
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Remove the generated database
+        run: rm -rf public/data/javaagent public/data/collector public/data/configuration
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Unit tests
+        run: bun run test
+
   schemas-up-to-date:
     name: Schemas up to date
     runs-on: ubuntu-latest

@@ -19,20 +19,24 @@ import { fileURLToPath } from "node:url";
 import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import javaAgentVersionsIndex from "../../../public/data/javaagent/versions-index.json";
 import { normalizeRegistryName } from "@/lib/normalize-instrumentation";
+import type { VersionsIndex } from "@/types/javaagent";
 import { installFetchInterceptor, uninstallFetchInterceptor } from "./helpers/fetch-interceptor";
 import { renderBuilderPage as renderPage } from "./helpers/render-builder-page";
 import { openInstrumentationTab } from "./helpers/open-instrumentation-tab";
-
-const latestSchemaVersion = "1.0.0";
-const latestAgentVersion = javaAgentVersionsIndex.versions.find((v) => v.is_latest)!.version;
-const otherAgentVersion = javaAgentVersionsIndex.versions.find((v) => !v.is_latest)?.version;
 
 const MANIFESTS_DIR = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
   "../../../public/data/javaagent/versions"
 );
+
+const javaAgentVersionsIndex = JSON.parse(
+  fs.readFileSync(path.join(MANIFESTS_DIR, "..", "versions-index.json"), "utf-8")
+) as VersionsIndex;
+
+const latestSchemaVersion = "1.0.0";
+const latestAgentVersion = javaAgentVersionsIndex.versions.find((v) => v.is_latest)!.version;
+const otherAgentVersion = javaAgentVersionsIndex.versions.find((v) => !v.is_latest)?.version;
 
 function moduleNamesFor(version: string): Set<string> {
   const manifest = JSON.parse(
