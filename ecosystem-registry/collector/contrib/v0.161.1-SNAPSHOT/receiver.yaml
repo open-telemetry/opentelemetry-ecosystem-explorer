@@ -2,7 +2,7 @@ distribution: contrib
 version: 0.161.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: receiver
-schema_hash: e7c32c80593c
+schema_hash: ab5b05337c21
 components:
 - name: activedirectorydsreceiver
   metadata:
@@ -16318,7 +16318,8 @@ components:
       from_version: v0.148.0
       id: receiver.prometheusreceiver.IgnoreScopeInfoMetric
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/41502
-      stage: beta
+      stage: stable
+      to_version: v0.164.0
     status:
       class: receiver
       codeowners:
@@ -22598,7 +22599,7 @@ components:
         enabled: true
         gauge:
           value_type: int
-        stability: development
+        stability: alpha
         unit: ms
       tcpcheck.error:
         attributes:
@@ -22606,7 +22607,7 @@ components:
         - tcpcheck.endpoint
         description: Records errors occurring during TCP check.
         enabled: true
-        stability: development
+        stability: alpha
         sum:
           aggregation_temporality: cumulative
           monotonic: true
@@ -22619,7 +22620,7 @@ components:
         enabled: true
         gauge:
           value_type: int
-        stability: development
+        stability: alpha
         unit: '1'
     resource_attributes: {}
     status:
@@ -22865,7 +22866,7 @@ components:
     feature_gates:
     - description: Enables the memory usage type attribute for the vcenter.resource_pool.memory.usage
         metric
-      from_version: v0.153.0
+      from_version: v0.105.0
       id: receiver.vcenter.resourcePoolMemoryUsageAttribute
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/33741
       stage: beta
