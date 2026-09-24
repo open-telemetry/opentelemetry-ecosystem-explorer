@@ -32,11 +32,22 @@ import javaAgentEn from "../../../public/locales/en/java-agent.json";
 import aboutEn from "../../../public/locales/en/about.json";
 import listEn from "../../../public/locales/en/list.json";
 import detailEn from "../../../public/locales/en/detail.json";
+import semanticConventionsEn from "../../../public/locales/en/semantic-conventions.json";
 
 i18n.use(initReactI18next).init({
   lng: "en",
   fallbackLng: "en",
-  ns: ["common", "layout", "home", "collector", "java-agent", "about", "list", "detail"],
+  ns: [
+    "common",
+    "layout",
+    "home",
+    "collector",
+    "java-agent",
+    "about",
+    "list",
+    "detail",
+    "semantic-conventions",
+  ],
   defaultNS: "common",
   resources: {
     en: {
@@ -48,6 +59,7 @@ i18n.use(initReactI18next).init({
       about: aboutEn,
       list: listEn,
       detail: detailEn,
+      "semantic-conventions": semanticConventionsEn,
     },
   },
 });

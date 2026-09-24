@@ -1,0 +1,84 @@
+{
+  "landing": {
+    "page": {
+      "title": "Semantic Conventions",
+      "description": "The shared attribute and signal vocabulary that keeps telemetry consistent across languages, frameworks, and vendors."
+    },
+    "timelineCard": {
+      "title": "Semantic Convention Timeline",
+      "description": "Follow domains like HTTP, database, and messaging from their first introduction through stability milestones, deprecations, and migrations."
+    },
+    "resources": {
+      "heading": "Resources",
+      "items": {
+        "specSite": "OpenTelemetry Semantic Conventions Specification"
+      }
+    }
+  },
+  "timeline": {
+    "page": {
+      "eyebrow": "OpenTelemetry / Semantic Conventions",
+      "title": "Semantic Convention Timeline",
+      "description": "Follow major domains from early definitions through migrations and stability milestones. The space between events is elapsed time.",
+      "loadError": "Failed to load the timeline: {{message}}"
+    },
+    "chartAriaLabel": "Calendar timeline, horizontally scrollable",
+    "readingNote": "Each symbol marks a milestone’s date; nearby milestones use separate rows for readability. Select a milestone for its exact date and source. A milestone does not declare a whole domain stable.",
+    "empty": "No milestones match these filters.",
+    "lane": {
+      "elapsed": "{{duration}} between shown milestones"
+    },
+    "status": {
+      "summary": "{{milestones}} · {{domains}}",
+      "milestoneCount_one": "{{count}} milestone",
+      "milestoneCount_other": "{{count}} milestones",
+      "domainCount_one": "{{count}} domain",
+      "domainCount_other": "{{count}} domains"
+    },
+    "filters": {
+      "scope": {
+        "label": "Milestones",
+        "major": "Major domain stories",
+        "all": "All curated milestones"
+      },
+      "domain": {
+        "label": "Domain",
+        "all": "All domains"
+      },
+      "type": {
+        "label": "Event type",
+        "all": "All event types",
+        "domain": "Introduced",
+        "stability": "Stability",
+        "change": "Changed",
+        "deprecation": "Deprecated",
+        "removed": "Removed",
+        "moved": "Moved",
+        "baseline": "Base de facto"
+      },
+      "reset": "Reset view"
+    },
+    "legend": {
+      "heading": "Legend",
+      "descriptions": {
+        "domain": "Un dominio o una convención aparece por primera vez en la especificación.",
+        "baseline": "Una referencia de compatibilidad para la instrumentación existente: las directrices de OpenTelemetry citan esta versión al explicar qué valores predeterminados de telemetría conservar mientras evolucionan las convenciones. Esto ayuda a evitar cambios inesperados en paneles y alertas. No significa que las convenciones sean formalmente estables ni que todo el mundo utilice esta versión.",
+        "stability": "Se declaran estables determinadas convenciones. Consulta el alcance del hito; no significa necesariamente que todo el dominio sea estable.",
+        "change": "Cambian convenciones existentes, como nombres de atributos, definiciones o requisitos. Puede ser necesaria una migración.",
+        "deprecation": "Se desaconseja una convención en favor de una alternativa, pero todavía no se ha eliminado.",
+        "removed": "Se elimina de la especificación una convención definida anteriormente.",
+        "moved": "Las convenciones se trasladan a otra ubicación o repositorio."
+      }
+    },
+    "detail": {
+      "empty": "Select a milestone to see its details.",
+      "sourceLink": "Ver la fuente",
+      "lineageLink": "Earlier working draft · 13 May 2019",
+      "firstReleaseNote": "First specification tag containing this change: {{version}}.",
+      "specCommitDate": "Spec commit date (UTC)",
+      "releaseDate": "Release date (UTC)",
+      "baselineNote": "Aquí, «base de facto» significa una versión citada en las directrices de OpenTelemetry para mantener la compatibilidad de la instrumentación existente. Por ejemplo, cambiar los nombres de los atributos puede romper consultas, paneles y alertas, por lo que las directrices piden conservar los valores predeterminados existentes mientras evolucionan las nuevas convenciones. Esos valores pueden proceder de esta versión o de una anterior. Es una etiqueta de Explorer, no un estado oficial de estabilidad ni una afirmación de que todo el mundo utilice la misma versión. La fecha mostrada es la de publicación de la versión citada, no la de incorporación de las directrices ni la de su adopción generalizada.",
+      "heading": "Detalles del hito"
+    }
+  }
+}

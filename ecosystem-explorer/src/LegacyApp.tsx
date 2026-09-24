@@ -75,6 +75,16 @@ const ConfigurationBuilderPage = lazy(() =>
 const AboutPage = lazy(() =>
   import("@/features/about/about-page").then((m) => ({ default: m.AboutPage }))
 );
+const SemanticConventionsPage = lazy(() =>
+  import("@/features/semantic-conventions/semantic-conventions-page").then((m) => ({
+    default: m.SemanticConventionsPage,
+  }))
+);
+const SemanticConventionsTimelinePage = lazy(() =>
+  import("@/features/semantic-conventions/timeline-page").then((m) => ({
+    default: m.SemanticConventionsTimelinePage,
+  }))
+);
 const DevComponentsPage = lazy(() =>
   import("@/v1/features/_dev/components-page").then((m) => ({ default: m.DevComponentsPage }))
 );
@@ -125,6 +135,11 @@ export function LegacyApp() {
               <Route
                 path="/collector/components/:distribution/:name/diff"
                 element={<CollectorDiffPage />}
+              />
+              <Route path="/semantic-conventions" element={<SemanticConventionsPage />} />
+              <Route
+                path="/semantic-conventions/timeline"
+                element={<SemanticConventionsTimelinePage />}
               />
               <Route path="/about" element={<AboutPage />} />
               {isEnabled("DEV_SHOWCASE") && (

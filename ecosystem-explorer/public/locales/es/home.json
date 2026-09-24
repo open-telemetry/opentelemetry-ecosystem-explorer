@@ -5,6 +5,7 @@
     "tagline": "Navega el vasto panorama de OpenTelemetry."
   },
   "explore": {
+    "heading": "Explora el ecosistema",
     "javaAgent": {
       "title": "OpenTelemetry Java Agent",
       "description": "Explora la auto-instrumentación para aplicaciones Java. Descubre bibliotecas compatibles, opciones de configuración y telemetría emitida."
@@ -12,6 +13,10 @@
     "collector": {
       "title": "OpenTelemetry Collector",
       "description": "Navega los componentes del Collector como receptores, procesadores y exportadores."
+    },
+    "semanticConventions": {
+      "title": "Semantic Conventions",
+      "description": "Follow the shared attribute vocabulary and how it evolved — with an interactive convention-history timeline."
     }
   },
   "homeV1": {

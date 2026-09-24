@@ -1,0 +1,84 @@
+{
+  "landing": {
+    "page": {
+      "title": "Semantic Conventions",
+      "description": "The shared attribute and signal vocabulary that keeps telemetry consistent across languages, frameworks, and vendors."
+    },
+    "timelineCard": {
+      "title": "Semantic Convention Timeline",
+      "description": "Follow domains like HTTP, database, and messaging from their first introduction through stability milestones, deprecations, and migrations."
+    },
+    "resources": {
+      "heading": "Resources",
+      "items": {
+        "specSite": "OpenTelemetry Semantic Conventions Specification"
+      }
+    }
+  },
+  "timeline": {
+    "page": {
+      "eyebrow": "OpenTelemetry / Semantic Conventions",
+      "title": "Semantic Convention Timeline",
+      "description": "Follow major domains from early definitions through migrations and stability milestones. The space between events is elapsed time.",
+      "loadError": "Failed to load the timeline: {{message}}"
+    },
+    "chartAriaLabel": "Calendar timeline, horizontally scrollable",
+    "readingNote": "Each symbol marks a milestone’s date; nearby milestones use separate rows for readability. Select a milestone for its exact date and source. A milestone does not declare a whole domain stable.",
+    "empty": "No milestones match these filters.",
+    "lane": {
+      "elapsed": "{{duration}} between shown milestones"
+    },
+    "status": {
+      "summary": "{{milestones}} · {{domains}}",
+      "milestoneCount_one": "{{count}} milestone",
+      "milestoneCount_other": "{{count}} milestones",
+      "domainCount_one": "{{count}} domain",
+      "domainCount_other": "{{count}} domains"
+    },
+    "filters": {
+      "scope": {
+        "label": "Milestones",
+        "major": "Major domain stories",
+        "all": "All curated milestones"
+      },
+      "domain": {
+        "label": "Domain",
+        "all": "All domains"
+      },
+      "type": {
+        "label": "Event type",
+        "all": "All event types",
+        "domain": "Introduced",
+        "stability": "Stability",
+        "change": "Changed",
+        "deprecation": "Deprecated",
+        "removed": "Removed",
+        "moved": "Moved",
+        "baseline": "De facto baseline"
+      },
+      "reset": "Reset view"
+    },
+    "legend": {
+      "heading": "Legend",
+      "descriptions": {
+        "domain": "A domain or convention first appears in the specification.",
+        "baseline": "A compatibility reference for existing instrumentation: OpenTelemetry guidance names this version when explaining which telemetry defaults to preserve as conventions evolve. This helps avoid unexpected changes to dashboards and alerts. It does not mean the conventions are formally stable or that everyone uses this version.",
+        "stability": "Specific conventions are declared stable. Check the milestone for the scope; this does not necessarily mean the entire domain is stable.",
+        "change": "Existing conventions change, such as attribute names, definitions, or requirements. Migration may be needed.",
+        "deprecation": "A convention is discouraged in favor of a replacement but has not yet been removed.",
+        "removed": "A previously defined convention is removed from the specification.",
+        "moved": "Conventions move to a different location or repository."
+      }
+    },
+    "detail": {
+      "empty": "Select a milestone to see its details.",
+      "sourceLink": "View source",
+      "lineageLink": "Earlier working draft · 13 May 2019",
+      "firstReleaseNote": "First specification tag containing this change: {{version}}.",
+      "specCommitDate": "Spec commit date (UTC)",
+      "releaseDate": "Release date (UTC)",
+      "baselineNote": "Here, “de facto baseline” means a version named in OpenTelemetry guidance for keeping existing instrumentation compatible. For example, changing attribute names can break queries, dashboards, and alerts, so the guidance asks instrumentation to preserve existing defaults while newer conventions evolve. Those defaults may come from this version or an earlier one. This is an Explorer label, not an official stability status or a claim that everyone uses the same version. The date shown is the referenced version’s release date, not when the guidance was added or when adoption became widespread.",
+      "heading": "Milestone details"
+    }
+  }
+}

@@ -169,4 +169,16 @@ export const STATIC_ROUTE_META: Record<string, SeoMeta> = {
       "Compare OpenTelemetry Java agent releases to see which instrumentations and telemetry " +
       "changed between versions.",
   },
+  "/semantic-conventions": {
+    title: "Semantic Conventions — OpenTelemetry Ecosystem Explorer",
+    description:
+      "Explore OpenTelemetry semantic conventions: the shared attribute and signal vocabulary, " +
+      "plus an interactive timeline of how conventions evolved over time.",
+  },
+  "/semantic-conventions/timeline": {
+    title: "Semantic Convention Timeline — OpenTelemetry Ecosystem Explorer",
+    description:
+      "An interactive timeline of OpenTelemetry semantic-convention milestones — domain " +
+      "introductions, stability promotions, deprecations, and migrations.",
+  },
 };
