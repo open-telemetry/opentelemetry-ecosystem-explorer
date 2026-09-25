@@ -175,6 +175,24 @@ class PackageParser:
             entry["exclude"] = exclude
         return entry
 
+    def _versions_as_mapping(self, versions: object) -> object:
+        """
+        Normalize a .tav.yml `versions` value to the mapping form.
+
+        tav accepts `versions` either as a mapping (`include`, `mode`, ...) or
+        as a bare semver string, which is shorthand for `include` alone:
+
+            oracledb:
+              - versions: ">=6.10.0 <8"
+
+        Without this the string form falls through the mapping checks and the
+        entry is silently dropped. Anything else is returned unchanged so the
+        existing checks keep skipping it.
+        """
+        if isinstance(versions, str) and versions:
+            return {"include": versions}
+        return versions
+
     def _parse_tav_yml(self) -> list[dict]:
         """
         Parse .tav.yml for tested version ranges.
@@ -196,6 +214,11 @@ class PackageParser:
                     exclude: "3.529.0"
                     mode: max-7
                   commands: [...]
+
+        A `versions` value may also be a bare string, on an entry
+        (oracledb, socket.io and nestjs-core use this) or inside a top-level
+        `jobs` list, see _versions_as_mapping. `jobs` inside a list entry is
+        left as is, tav itself rejects that shape with "Missing versions".
 
         Results are sorted by (package, range, mode, exclude) for
         deterministic registry output, so upstream reordering of the
@@ -224,7 +247,7 @@ class PackageParser:
             if isinstance(config, list):
                 # Structure 1: list of entries each with a versions key
                 for entry in config:
-                    versions = entry.get("versions", {})
+                    versions = self._versions_as_mapping(entry.get("versions", {}))
                     if isinstance(versions, dict) and versions:
                         results.append(self._build_tav_entry(pkg_name, versions))
                         continue
@@ -240,12 +263,12 @@ class PackageParser:
                 jobs = config.get("jobs", [])
                 if jobs:
                     for job in jobs:
-                        v = job.get("versions", {})
+                        v = self._versions_as_mapping(job.get("versions", {}))
                         if isinstance(v, dict) and v:
                             results.append(self._build_tav_entry(pkg_name, v))
                 else:
                     # Flat versions key directly on the config dict
-                    versions = config.get("versions", {})
+                    versions = self._versions_as_mapping(config.get("versions", {}))
                     if isinstance(versions, dict) and versions:
                         results.append(self._build_tav_entry(pkg_name, versions))
 

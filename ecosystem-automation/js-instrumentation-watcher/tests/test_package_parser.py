@@ -207,6 +207,176 @@ def test_tested_versions_sorted_deterministically(tmp_package):
     assert ranges == sorted(ranges)
 
 
+def test_tav_versions_string_shorthand(tmp_package):
+    write_package_json(
+        tmp_package,
+        {
+            "name": "@opentelemetry/instrumentation-oracledb",
+            "version": "0.47.0",
+            "description": "test",
+        },
+    )
+    # Same shape as upstream oracledb, where every entry uses the string form.
+    # Before the fix this whole package came out as tested_versions: [].
+    tav = textwrap.dedent("""
+        oracledb:
+          - versions: "6.7.0"
+            commands: npm run test
+          - versions: ">=6.10.0 <8"
+            commands: npm run test
+    """)
+    (tmp_package / ".tav.yml").write_text(tav)
+
+    parser = PackageParser(
+        package_path=tmp_package,
+        bundle_membership=set(),
+        component_owners={},
+    )
+    result = parser.parse()
+
+    assert result is not None
+    assert result["tested_versions"] == [
+        {"package": "oracledb", "range": "6.7.0", "source": ".tav.yml"},
+        {"package": "oracledb", "range": ">=6.10.0 <8", "source": ".tav.yml"},
+    ]
+
+
+def test_tav_versions_string_mixed_with_mappings(tmp_package):
+    write_package_json(
+        tmp_package,
+        {
+            "name": "@opentelemetry/instrumentation-socket.io",
+            "version": "0.69.0",
+            "description": "test",
+        },
+    )
+    # Same shape as upstream socket.io: the string entry sits between two
+    # mapping entries, and was the only one being dropped.
+    tav = textwrap.dedent("""
+        socket.io:
+          - versions:
+              include: "^2.1.1"
+              mode: latest-minors
+            commands: npm run test
+          - versions: "^3.1.2"
+            commands: npm run test
+          - versions:
+              include: "^4.5.3"
+              mode: latest-minors
+            commands: npm run test
+    """)
+    (tmp_package / ".tav.yml").write_text(tav)
+
+    parser = PackageParser(
+        package_path=tmp_package,
+        bundle_membership=set(),
+        component_owners={},
+    )
+    result = parser.parse()
+
+    assert result is not None
+    assert [entry["range"] for entry in result["tested_versions"]] == ["^2.1.1", "^3.1.2", "^4.5.3"]
+    shorthand = result["tested_versions"][1]
+    assert "mode" not in shorthand
+    assert "exclude" not in shorthand
+
+
+def test_tav_versions_string_on_dict_config(tmp_package):
+    write_package_json(
+        tmp_package,
+        {
+            "name": "@opentelemetry/instrumentation-express",
+            "version": "0.66.0",
+            "description": "test",
+        },
+    )
+    # No upstream package uses this today, but the flat dict branch had the
+    # same dict-only check, so it gets the same shorthand handling.
+    tav = textwrap.dedent("""
+        express:
+          versions: ">=4.16.2 <6"
+          commands: npm test
+    """)
+    (tmp_package / ".tav.yml").write_text(tav)
+
+    parser = PackageParser(
+        package_path=tmp_package,
+        bundle_membership=set(),
+        component_owners={},
+    )
+    result = parser.parse()
+
+    assert result is not None
+    assert result["tested_versions"] == [
+        {"package": "express", "range": ">=4.16.2 <6", "source": ".tav.yml"},
+    ]
+
+
+def test_tav_versions_string_in_top_level_jobs(tmp_package):
+    write_package_json(
+        tmp_package,
+        {
+            "name": "@opentelemetry/instrumentation-knex",
+            "version": "0.58.0",
+            "description": "test",
+        },
+    )
+    # tav runs every entry of a top-level `jobs` list through the same code as
+    # a normal entry, so the string shorthand is valid here too.
+    tav = textwrap.dedent("""
+        knex:
+          jobs:
+            - versions: ">=0.22.0 <1"
+              commands: npm test
+            - versions:
+                include: ">=1 <4"
+                mode: latest-minors
+              commands: npm test
+    """)
+    (tmp_package / ".tav.yml").write_text(tav)
+
+    parser = PackageParser(
+        package_path=tmp_package,
+        bundle_membership=set(),
+        component_owners={},
+    )
+    result = parser.parse()
+
+    assert result is not None
+    assert result["tested_versions"] == [
+        {"package": "knex", "range": ">=0.22.0 <1", "source": ".tav.yml"},
+        {"package": "knex", "range": ">=1 <4", "mode": "latest-minors", "source": ".tav.yml"},
+    ]
+
+
+def test_tav_empty_versions_string_is_skipped(tmp_package):
+    write_package_json(
+        tmp_package,
+        {
+            "name": "@opentelemetry/instrumentation-express",
+            "version": "0.66.0",
+            "description": "test",
+        },
+    )
+    # An empty string must not turn into an entry with an empty range.
+    tav = textwrap.dedent("""
+        express:
+          - versions: ""
+            commands: npm test
+    """)
+    (tmp_package / ".tav.yml").write_text(tav)
+
+    parser = PackageParser(
+        package_path=tmp_package,
+        bundle_membership=set(),
+        component_owners={},
+    )
+    result = parser.parse()
+
+    assert result is not None
+    assert result["tested_versions"] == []
+
+
 def test_parse_handles_non_dict_engines(tmp_package):
     # A null/non-dict `engines` field must not raise and drop the package.
     write_package_json(
