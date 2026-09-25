@@ -2,7 +2,7 @@ distribution: contrib
 version: 0.161.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: receiver
-schema_hash: ab5b05337c21
+schema_hash: cf77c72094ec
 components:
 - name: activedirectorydsreceiver
   metadata:
@@ -13511,6 +13511,7 @@ components:
       db.server.query_plan:
         attributes:
         - db.namespace
+        - db.system.name
         - oracledb.child_address
         - oracledb.child_number
         - oracledb.plan_hash_value
@@ -13567,6 +13568,7 @@ components:
       db.server.session.wait_sample:
         attributes:
         - db.namespace
+        - db.system.name
         - oracledb.event
         - oracledb.serial
         - oracledb.sid

@@ -2,7 +2,7 @@ distribution: contrib
 version: 0.161.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: processor
-schema_hash: ab5b05337c21
+schema_hash: cf77c72094ec
 components:
 - name: adaptivetailsamplingprocessor
   metadata:
@@ -222,7 +222,7 @@ components:
             async: true
             monotonic: true
             value_type: int
-          unit: '{labels}'
+          unit: '{label}'
         processor_cardinality_savings.estimated:
           description: Cumulative estimated dollar value of time-series churn prevented
             by the processor.
@@ -232,7 +232,7 @@ components:
             async: true
             monotonic: true
             value_type: double
-          unit: '{dollars}'
+          unit: '{dollar}'
         processor_cardinality_top.offenders:
           description: Cardinality delta of the top-N highest-growth (metric, label)
             pairs from the last epoch rotation.
@@ -241,7 +241,7 @@ components:
             async: true
             value_type: int
           stability: development
-          unit: '{pairs}'
+          unit: '{pair}'
         processor_cardinality_trackers.active:
           description: Current number of active cardinality trackers across all shards.
           enabled: true
@@ -249,7 +249,7 @@ components:
             async: true
             value_type: int
           stability: development
-          unit: '{trackers}'
+          unit: '{tracker}'
         processor_cardinality_trackers.rejected:
           description: Number of new (metric, label) pairs ignored because max_tracker_count
             was reached.
@@ -259,7 +259,7 @@ components:
             async: true
             monotonic: true
             value_type: int
-          unit: '{trackers}'
+          unit: '{tracker}'
     type: cardinality_guardian
 - name: coralogixprocessor
   metadata:

@@ -2,7 +2,7 @@ distribution: core
 version: 0.161.1-SNAPSHOT
 repository: opentelemetry-collector
 component_type: processor
-schema_hash: ab5b05337c21
+schema_hash: cf77c72094ec
 components:
 - name: batchprocessor
   metadata:
@@ -194,4 +194,4 @@ components:
         - metrics
         - profiles
         - traces
-    type: queuebatch
+    type: queue_batch
