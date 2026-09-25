@@ -204,6 +204,100 @@ export async function loadAllInstrumentationDetails(
   return entries;
 }
 
+/**
+ * Builds `id -> content identity` for every instrumentation in a manifest.
+ *
+ * The identity folds in which manifest section the id came from: a module that
+ * keeps its content hash while moving between the library and custom sections
+ * has changed in a way callers care about, even though the detail file is
+ * byte-identical.
+ */
+function manifestIdentities(manifest: VersionManifest): Map<string, string> {
+  const identities = new Map<string, string>();
+  for (const [id, hash] of Object.entries(manifest.instrumentations || {})) {
+    identities.set(id, `library:${hash}`);
+  }
+  for (const [id, hash] of Object.entries(manifest.custom_instrumentations || {})) {
+    identities.set(id, `custom:${hash}`);
+  }
+  return identities;
+}
+
+export interface ComparisonDetails {
+  /** Detail for modules that differ between the two versions — the `from` side. */
+  fromData: InstrumentationData[];
+  /** Detail for modules that differ between the two versions — the `to` side. */
+  toData: InstrumentationData[];
+  /** Ids skipped because both manifests point at the identical detail file. */
+  unchangedIds: string[];
+}
+
+/**
+ * Loads the instrumentation detail needed to diff two versions, fetching only
+ * the modules that can actually differ.
+ *
+ * Detail files are content-addressed — the manifest hash is derived from the
+ * file contents — so when both manifests list the same hash for an id, the two
+ * versions resolve to the same file and the module is provably unchanged. Such
+ * modules produce an "unchanged" entry that the comparison UI filters out and
+ * that counts toward none of the totals, so skipping them is unobservable in
+ * the diff. For adjacent releases they are the large majority of the ~250
+ * modules in a version.
+ *
+ * Both sides share one concurrency pool so the bound applies to the comparison
+ * as a whole rather than per version.
+ */
+export async function loadComparisonDetails(
+  fromVersion: string,
+  toVersion: string
+): Promise<ComparisonDetails> {
+  const [fromManifest, toManifest] = await Promise.all([
+    loadVersionManifest(fromVersion),
+    loadVersionManifest(toVersion),
+  ]);
+
+  const fromIdentities = manifestIdentities(fromManifest);
+  const toIdentities = manifestIdentities(toManifest);
+
+  const unchangedIds: string[] = [];
+  const fromIds: string[] = [];
+  const toIds: string[] = [];
+
+  for (const [id, identity] of fromIdentities) {
+    if (toIdentities.get(id) === identity) {
+      unchangedIds.push(id);
+    } else {
+      fromIds.push(id);
+    }
+  }
+  for (const [id, identity] of toIdentities) {
+    if (fromIdentities.get(id) !== identity) {
+      toIds.push(id);
+    }
+  }
+
+  // Tag each request with its side so one shared pool can serve both versions.
+  const requests = [
+    ...fromIds.map((id) => ({ id, version: fromVersion, manifest: fromManifest, side: "from" })),
+    ...toIds.map((id) => ({ id, version: toVersion, manifest: toManifest, side: "to" })),
+  ];
+
+  const loaded = await mapWithConcurrency(
+    requests,
+    MAX_INSTRUMENTATION_FETCH_CONCURRENCY,
+    async (request) => ({
+      side: request.side,
+      data: await loadInstrumentation(request.id, request.version, request.manifest),
+    })
+  );
+
+  return {
+    fromData: loaded.filter((entry) => entry.side === "from").map((entry) => entry.data),
+    toData: loaded.filter((entry) => entry.side === "to").map((entry) => entry.data),
+    unchangedIds,
+  };
+}
+
 export async function loadLibraryReadme(
   libraryName: string,
   markdownHash: string
