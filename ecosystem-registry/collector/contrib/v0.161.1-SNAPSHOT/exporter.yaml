@@ -2,7 +2,7 @@ distribution: contrib
 version: 0.161.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: exporter
-schema_hash: ab5b05337c21
+schema_hash: cf77c72094ec
 components:
 - name: alertmanagerexporter
   metadata:
@@ -1206,10 +1206,11 @@ components:
       codeowners:
         active:
         - Aneurysm9
-        - rapphil
         - dashpole
         - ArthurSens
         - ywwg
+        emeritus:
+        - rapphil
       distributions:
       - contrib
       - core
