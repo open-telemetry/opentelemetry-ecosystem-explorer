@@ -13,6 +13,7 @@ dependencies = [
     "explorer-db-builder",
     "v1-registry-sync",
     "js-instrumentation-watcher",
+    "python-instrumentation-watcher",
 ]
 
 [tool.uv.workspace]
@@ -31,6 +32,7 @@ dotnet-instrumentation-watcher = { workspace = true }
 explorer-db-builder = { workspace = true }
 v1-registry-sync = { workspace = true }
 js-instrumentation-watcher = { workspace = true }
+python-instrumentation-watcher = { workspace = true }
 
 [dependency-groups]
 dev = [
@@ -54,6 +56,7 @@ select = ["E", "F", "I", "N", "W", "S"]
 "ecosystem-automation/watcher-common/src/watcher_common/version_detector.py" = ["S603"]
 "ecosystem-automation/watcher-common/src/watcher_common/testing.py" = ["S603"]
 "ecosystem-automation/configuration-watcher/src/configuration_watcher/repository_manager.py" = ["S603"]
+"ecosystem-automation/python-instrumentation-watcher/src/python_instrumentation_watcher/repository_manager.py" = ["S603"]
 ".ai/skills/database-build-review/diff_build_pr.py" = ["S603"]
 # pytest uses assert as its primary assertion mechanism; S101 is not meaningful here.
 # Tests also use fake/hardcoded credentials as fixtures (e.g. a dummy GitHub token), so the
