@@ -188,6 +188,28 @@ class TestWriteVersionList:
         assert data["versions"][0]["bundle_hash"] == "hashA"
         assert "bundle_hash" not in data["versions"][1]
 
+    def test_write_version_list_with_distributions(self, db_writer, temp_db_dir):
+        v1 = Version("0.161.0")
+        v2 = Version("0.160.0")
+        db_writer.write_version_list(
+            [v1, v2],
+            bundle_hashes={v1: "hash1", v2: "hash2"},
+            version_distributions={v1: ["core"], v2: ["core", "contrib"]},
+            distribution_latest={"core": "0.161.0", "contrib": "0.160.0"},
+        )
+
+        with open(temp_db_dir / "versions-index.json") as f:
+            data = json.load(f)
+
+        assert data["distributions"] == {
+            "contrib": {"latest": "0.160.0"},
+            "core": {"latest": "0.161.0"},
+        }
+        assert data["versions"][0]["version"] == "0.161.0"
+        assert data["versions"][0]["distributions"] == ["core"]
+        assert data["versions"][1]["version"] == "0.160.0"
+        assert data["versions"][1]["distributions"] == ["core", "contrib"]
+
 
 class TestWriteVersionBundle:
     def test_writes_bundle_and_returns_hash(self, db_writer, temp_db_dir, sample_components):

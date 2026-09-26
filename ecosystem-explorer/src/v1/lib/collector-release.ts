@@ -29,10 +29,12 @@ export function collectorReleaseContext({
   searchParams,
   pathVersion,
   versions,
+  distribution,
 }: {
   searchParams: URLSearchParams;
   pathVersion?: string;
   versions?: VersionsIndex | null;
+  distribution?: string;
 }) {
   // The query string is the canonical carrier; a version in the path is the historical
   // route form and yields to it when both are present.
@@ -41,7 +43,10 @@ export function collectorReleaseContext({
     normalizeCollectorRelease(pathVersion) ??
     undefined;
   const deprecated = selectedVersion === "deprecated";
-  const latestVersion = versions?.versions.find((v) => v.is_latest)?.version ?? "";
+  const latestVersion =
+    (distribution && versions?.distributions?.[distribution]?.latest) ||
+    versions?.versions.find((v) => v.is_latest)?.version ||
+    "";
   const listParams = new URLSearchParams(searchParams);
   if (selectedVersion) listParams.set("version", selectedVersion);
   else listParams.delete("version");

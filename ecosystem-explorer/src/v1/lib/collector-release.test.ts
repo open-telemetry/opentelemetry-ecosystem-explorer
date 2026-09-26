@@ -142,4 +142,30 @@ describe("Collector release context", () => {
     });
     expect(release.sourceHref({ ...component, repository: undefined })).toBeNull();
   });
+
+  it("resolves unpinned version to distribution-specific latest when out of sync", () => {
+    const outOfSyncVersions = {
+      versions: [
+        { version: "0.151.0", is_latest: true, distributions: ["core"] },
+        { version: "0.150.0", is_latest: false, distributions: ["core", "contrib"] },
+      ],
+      distributions: {
+        core: { latest: "0.151.0" },
+        contrib: { latest: "0.150.0" },
+      },
+    };
+    const releaseCore = collectorReleaseContext({
+      searchParams: new URLSearchParams(),
+      versions: outOfSyncVersions,
+      distribution: "core",
+    });
+    expect(releaseCore.dataVersion()).toBe("0.151.0");
+
+    const releaseContrib = collectorReleaseContext({
+      searchParams: new URLSearchParams(),
+      versions: outOfSyncVersions,
+      distribution: "contrib",
+    });
+    expect(releaseContrib.dataVersion()).toBe("0.150.0");
+  });
 });

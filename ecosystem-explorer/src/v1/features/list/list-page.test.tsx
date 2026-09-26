@@ -176,7 +176,7 @@ describe("CollectorListPageV1", () => {
 
   it.each([
     ["+0.149.0+", "0.149.0", "?version=0.149.0", "0.149.0"],
-    ["+%09+", "0.150.0", "", ""],
+    ["+%09+", "", "", ""],
     ["v0.149.0", "0.149.0", "?version=0.149.0", "0.149.0"],
     ["+v0.149.0+", "0.149.0", "?version=0.149.0", "0.149.0"],
   ])(
@@ -225,7 +225,7 @@ describe("CollectorListPageV1", () => {
         "href",
         "/collector/components/contrib/jmxreceiver?version=deprecated"
       );
-      expect(useCollectorComponents).toHaveBeenCalledWith("");
+      expect(useCollectorComponents).toHaveBeenCalledWith(null);
     }
   );
 

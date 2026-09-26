@@ -138,7 +138,7 @@ export function useCollectorDeprecations(enabled = true): DataState<CollectorDep
   return state;
 }
 
-export function useCollectorComponents(version: string): DataState<IndexComponent[]> {
+export function useCollectorComponents(version?: string | null): DataState<IndexComponent[]> {
   const [state, setState] = useState<DataState<IndexComponent[]>>({
     data: null,
     loading: true,
@@ -149,7 +149,7 @@ export function useCollectorComponents(version: string): DataState<IndexComponen
     let cancelled = false;
 
     async function loadData() {
-      if (!version) {
+      if (version === null) {
         setState({ data: null, loading: false, error: null });
         return;
       }
@@ -157,7 +157,9 @@ export function useCollectorComponents(version: string): DataState<IndexComponen
       setState({ data: null, loading: true, error: null });
 
       try {
-        const data = await collectorData.loadAllComponents(version);
+        const data = version
+          ? await collectorData.loadAllComponents(version)
+          : await collectorData.loadAllComponents();
         if (!cancelled) {
           setState({ data, loading: false, error: null });
         }

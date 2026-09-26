@@ -155,11 +155,11 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
   const currentVersion = useMemo(() => {
     if (urlVersion) return urlVersion;
     if (versionQuery === "deprecated") return versionQuery;
-    return versionData?.versions.find((v) => v.is_latest)?.version || "";
-  }, [urlVersion, versionData, versionQuery]);
+    return "";
+  }, [urlVersion, versionQuery]);
   const deprecatedView = currentVersion === "deprecated";
 
-  const componentsQuery = useCollectorComponents(deprecatedView ? "" : currentVersion);
+  const componentsQuery = useCollectorComponents(deprecatedView ? null : currentVersion);
   const deprecationsQuery = useCollectorDeprecations(deprecatedView);
   const components: (IndexComponent | DeprecatedIndexComponent)[] | null | undefined =
     deprecatedView ? deprecationsQuery.data?.components : componentsQuery.data;
@@ -182,6 +182,22 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
     set.add("contrib");
     return Array.from(set).sort();
   }, [components]);
+
+  const availableVersions = useMemo(() => {
+    if (!versionData?.versions) return [];
+    if (distributionFilter === "all") return versionData.versions;
+    return versionData.versions.filter(
+      (v) => !v.distributions || v.distributions.includes(distributionFilter)
+    );
+  }, [versionData, distributionFilter]);
+
+  const selectedVersion = useMemo(() => {
+    if (deprecatedView) return "deprecated";
+    if (currentVersion && availableVersions.some((v) => v.version === currentVersion)) {
+      return currentVersion;
+    }
+    return "";
+  }, [deprecatedView, currentVersion, availableVersions]);
 
   const filteredComponents = useMemo(() => {
     if (!components) return [];
@@ -225,9 +241,9 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
     } else {
       params.delete("version");
     }
-
     navigate({
-      pathname: val === "deprecated" ? "/collector/components" : `/collector/components/${val}`,
+      pathname:
+        val === "deprecated" || !val ? "/collector/components" : `/collector/components/${val}`,
       search: params.size > 0 ? `?${params.toString()}` : "",
     });
   };
@@ -244,11 +260,17 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
 
   const getDetailLink = (component: { distribution: string; name: string }) => {
     const params = new URLSearchParams(searchParams);
-    params.set("version", currentVersion);
+    if (deprecatedView) {
+      params.set("version", "deprecated");
+    } else if (currentVersion) {
+      params.set("version", currentVersion);
+    } else {
+      params.delete("version");
+    }
 
     return {
       pathname: `/collector/components/${component.distribution}/${component.name}`,
-      search: `?${params.toString()}`,
+      search: params.size > 0 ? `?${params.toString()}` : "",
     };
   };
 
@@ -256,8 +278,35 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
     const params = new URLSearchParams(searchParams);
     if (newDistribution === "all") {
       params.delete("distribution");
+      if (currentVersion !== "deprecated") {
+        params.delete("version");
+      }
+      if (urlVersion) {
+        navigate({
+          pathname: "/collector/components",
+          search: params.size > 0 ? `?${params.toString()}` : "",
+        });
+        return;
+      }
     } else {
       params.set("distribution", newDistribution);
+      if (currentVersion && currentVersion !== "deprecated") {
+        const hasVersion = versionData?.versions.some(
+          (v) =>
+            v.version === currentVersion &&
+            (!v.distributions || v.distributions.includes(newDistribution))
+        );
+        if (!hasVersion) {
+          params.delete("version");
+          if (urlVersion) {
+            navigate({
+              pathname: "/collector/components",
+              search: params.size > 0 ? `?${params.toString()}` : "",
+            });
+            return;
+          }
+        }
+      }
     }
     setSearchParams(params);
   };
@@ -386,36 +435,53 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label htmlFor="version-select" className="text-muted-foreground text-sm font-medium">
-                {t("filters.version.label")}
-              </label>
-              <div className="relative">
-                <select
-                  id="version-select"
-                  value={currentVersion}
-                  onChange={(e) => handleVersionChange(e.target.value)}
-                  disabled={versionsLoading}
-                  className="border-border/60 bg-background/80 focus:border-primary/50 focus:ring-primary/20 w-[160px] cursor-pointer appearance-none rounded-lg border py-2.5 pr-10 pl-3 text-sm font-medium backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none disabled:opacity-50"
+            {(distributionFilter !== "all" || deprecatedView) && (
+              <div className="space-y-2">
+                <label
+                  htmlFor="version-select"
+                  className="text-muted-foreground text-sm font-medium"
                 >
-                  {/* Gated on the version list: `currentVersion` is "" until it resolves, and a
-                      select falls back to displaying its first option when the value matches none —
-                      so an ungated option here labels the loading state "Deprecated". */}
-                  {versionData && (
-                    <option value="deprecated">{t("filters.version.deprecated")}</option>
-                  )}
-                  {versionData?.versions.map((v) => (
-                    <option key={v.version} value={v.version}>
-                      v{v.version} {v.is_latest ? t("filters.version.latest") : ""}
-                    </option>
-                  ))}
-                </select>
-                <ChevronDown
-                  className="text-muted-foreground pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2"
-                  aria-hidden="true"
-                />
+                  {t("filters.version.label")}
+                </label>
+                <div className="relative">
+                  <select
+                    id="version-select"
+                    value={selectedVersion}
+                    onChange={(e) => handleVersionChange(e.target.value)}
+                    disabled={versionsLoading}
+                    className="border-border/60 bg-background/80 focus:border-primary/50 focus:ring-primary/20 w-[160px] cursor-pointer appearance-none rounded-lg border py-2.5 pr-10 pl-3 text-sm font-medium backdrop-blur-sm transition-all duration-200 focus:ring-2 focus:outline-none disabled:opacity-50"
+                  >
+                    {/* Gated on the version list: `currentVersion` is "" until it resolves, and a
+                        select falls back to displaying its first option when the value matches none —
+                        so an ungated option here labels the loading state "Deprecated". */}
+                    {versionData && (
+                      <option value="deprecated">{t("filters.version.deprecated")}</option>
+                    )}
+                    {versionData && (
+                      <option value="">
+                        {t("filters.version.latestOption", { defaultValue: "Latest" })}
+                      </option>
+                    )}
+                    {availableVersions.map((v) => {
+                      const isLatestForDist =
+                        distributionFilter !== "all" &&
+                        versionData?.distributions?.[distributionFilter]
+                          ? v.version === versionData.distributions[distributionFilter].latest
+                          : v.is_latest;
+                      return (
+                        <option key={v.version} value={v.version}>
+                          v{v.version} {isLatestForDist ? t("filters.version.latest") : ""}
+                        </option>
+                      );
+                    })}
+                  </select>
+                  <ChevronDown
+                    className="text-muted-foreground pointer-events-none absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2"
+                    aria-hidden="true"
+                  />
+                </div>
               </div>
-            </div>
+            )}
 
             <div className="space-y-2">
               <label
@@ -478,7 +544,10 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
           <h3 className="text-xl font-semibold">{t("states.error.title")}</h3>
           <p className="text-muted-foreground">{t("states.error.description")}</p>
         </div>
-      ) : componentsLoading || versionsLoading || !currentVersion ? (
+      ) : componentsLoading ||
+        versionsLoading ||
+        components === null ||
+        components === undefined ? (
         <div className="flex flex-col items-center justify-center space-y-4 py-32">
           <div className="inline-flex animate-pulse rounded-full p-4 shadow-[0_0_60px_hsl(var(--primary-hsl)/0.2)]">
             <Loader2 className="text-primary h-10 w-10 animate-spin" aria-hidden="true" />

@@ -99,6 +99,7 @@
     "version": {
       "label": "Versión",
       "latest": "(más reciente)",
+      "latestOption": "Más reciente",
       "deprecated": "Obsoletos"
     },
     "distribution": {
@@ -396,6 +397,10 @@
     "componentTypes": {
       "heading": "Tipos de componentes",
       "latestVersion": "Última versión de datos",
+      "all": {
+        "label": "Todos los componentes",
+        "description": "Explora la lista completa de receptores, procesadores, exportadores, extensiones y conectores en todas las distribuciones"
+      },
       "deprecated": {
         "label": "Obsoletos",
         "description": "Explora componentes eliminados de las versiones actuales del Collector"

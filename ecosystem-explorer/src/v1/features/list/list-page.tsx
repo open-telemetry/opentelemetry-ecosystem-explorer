@@ -210,14 +210,21 @@ export function CollectorListPageV1() {
     () => collectorReleaseContext({ searchParams, versions: versionsData }),
     [searchParams, versionsData]
   );
-  const currentVersion = release.dataVersion();
+  const currentVersion = filters.version ?? "";
   const deprecatedView = release.deprecated;
-  const allVersions = useMemo(
-    () => ["deprecated", ...(versionsData?.versions.map((v) => v.version) ?? [])],
-    [versionsData]
-  );
+  const allVersions = useMemo(() => {
+    if (!versionsData?.versions) return undefined;
+    if (filters.distributions.length === 1) {
+      const dist = filters.distributions[0];
+      const matchingVersions = versionsData.versions
+        .filter((v) => !v.distributions || v.distributions.includes(dist))
+        .map((v) => v.version);
+      return ["deprecated", ...matchingVersions];
+    }
+    return ["deprecated", ...versionsData.versions.map((v) => v.version)];
+  }, [versionsData, filters.distributions]);
 
-  const componentsQuery = useCollectorComponents(deprecatedView ? "" : currentVersion);
+  const componentsQuery = useCollectorComponents(deprecatedView ? null : currentVersion);
   const deprecationsQuery = useCollectorDeprecations(deprecatedView);
   const componentsData = deprecatedView ? deprecationsQuery.data?.components : componentsQuery.data;
   const componentsLoading = deprecatedView ? deprecationsQuery.loading : componentsQuery.loading;

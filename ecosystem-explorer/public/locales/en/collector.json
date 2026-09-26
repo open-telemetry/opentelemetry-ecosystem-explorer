@@ -99,6 +99,7 @@
     "version": {
       "label": "Version",
       "latest": "(latest)",
+      "latestOption": "Latest",
       "deprecated": "Deprecated"
     },
     "distribution": {
@@ -396,6 +397,10 @@
     "componentTypes": {
       "heading": "Component Types",
       "latestVersion": "Latest data version",
+      "all": {
+        "label": "All Components",
+        "description": "Browse the complete list of receivers, processors, exporters, extensions, and connectors across all distributions"
+      },
       "deprecated": {
         "label": "Deprecated",
         "description": "Browse components removed from current Collector releases"

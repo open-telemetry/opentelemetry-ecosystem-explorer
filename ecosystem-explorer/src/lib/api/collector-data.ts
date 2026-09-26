@@ -197,7 +197,16 @@ export async function loadComponentBundle(
   return data;
 }
 
-export async function loadAllComponents(version: string): Promise<IndexComponent[]> {
+export async function loadAllComponents(): Promise<IndexComponent[]>;
+export async function loadAllComponents(version: string): Promise<IndexComponent[]>;
+export async function loadAllComponents(version?: string): Promise<IndexComponent[]> {
+  // If no version is specified or "latest", return the pre-computed active catalog
+  // from index.json across all distributions.
+  if (!version || version === "latest") {
+    const index = await loadIndex();
+    return index.components;
+  }
+
   // Primary path: one request for the whole version via the consolidated bundle,
   // when the versions index advertises a bundle hash. Falls back to the
   // per-component fan-out for old cached indexes (no bundle hash), a missing

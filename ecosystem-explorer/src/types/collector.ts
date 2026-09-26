@@ -15,6 +15,7 @@
  */
 
 export interface VersionsIndex {
+  distributions?: Record<string, { latest: string }>;
   versions: VersionInfo[];
 }
 
@@ -28,6 +29,10 @@ export interface VersionInfo {
    * missing bundles) degrade gracefully to the per-component fan-out.
    */
   bundle_hash?: string;
+  /**
+   * Distributions available in this release version (e.g. ["core", "contrib"]).
+   */
+  distributions?: string[];
 }
 
 export interface VersionManifest {

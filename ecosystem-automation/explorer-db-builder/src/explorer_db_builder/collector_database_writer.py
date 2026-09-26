@@ -250,7 +250,13 @@ class CollectorDatabaseWriter:
 
         return bundle_hash
 
-    def write_version_list(self, versions: list[Version], bundle_hashes: dict[Version, str] | None = None) -> None:
+    def write_version_list(
+        self,
+        versions: list[Version],
+        bundle_hashes: dict[Version, str] | None = None,
+        version_distributions: dict[Version, list[str]] | None = None,
+        distribution_latest: dict[str, str] | None = None,
+    ) -> None:
         """Write the top-level versions-index.json listing all available versions.
 
         Args:
@@ -260,6 +266,10 @@ class CollectorDatabaseWriter:
                 the frontend uses to fetch the single per-version bundle. The
                 field is omitted for versions without a hash so old clients and
                 missing bundles degrade gracefully to the per-component fan-out.
+            version_distributions: Optional map of version to the list of distributions
+                it contains.
+            distribution_latest: Optional map of distribution name to its latest
+                release version string.
 
         Raises:
             ValueError: If versions list is empty.
@@ -275,29 +285,37 @@ class CollectorDatabaseWriter:
             bundle_hash = (bundle_hashes or {}).get(v)
             if bundle_hash:
                 entry["bundle_hash"] = bundle_hash
+            if version_distributions and v in version_distributions:
+                entry["distributions"] = version_distributions[v]
             version_list.append(entry)
+
+        data: dict[str, Any] = {"versions": version_list}
+        if distribution_latest:
+            data["distributions"] = {dist: {"latest": ver} for dist, ver in sorted(distribution_latest.items())}
+
         versions_file = self.database_dir / "versions-index.json"
 
         try:
-            self._write_json(versions_file, {"versions": version_list})
+            self._write_json(versions_file, data)
             logger.info("Wrote collector versions-index with %d versions (latest: %s)", len(versions), versions[0])
         except OSError as e:
             logger.error("Failed to write versions-index: %s", e)
             raise
 
-    def write_index(self, latest_components: list[dict[str, Any]]) -> None:
+    def write_index(self, active_components: list[dict[str, Any]]) -> None:
         """Write the per-ecosystem index.json with taxonomy and lightweight component list.
 
         Derives the taxonomy (distributions, types) from what is actually present in the data.
 
         Args:
-            latest_components: Full canonical component dicts from the latest release version.
+            active_components: Full canonical component dicts representing the active catalog
+                (combining latest components from each distribution).
         """
         self.database_dir.mkdir(parents=True, exist_ok=True)
 
         distributions_seen: list[str] = []
         types_seen: list[str] = []
-        for component in latest_components:
+        for component in active_components:
             dist = component.get("distribution", "")
             ctype = component.get("type", "")
             if dist and dist not in distributions_seen:
@@ -315,7 +333,7 @@ class CollectorDatabaseWriter:
                 "distributions": distributions_sorted,
                 "types": types_ordered,
             },
-            "components": [make_index_component(c) for c in latest_components],
+            "components": [make_index_component(c) for c in active_components],
         }
 
         index_file = self.database_dir / "index.json"
@@ -323,7 +341,7 @@ class CollectorDatabaseWriter:
             self._write_json(index_file, index_data)
             logger.info(
                 "Wrote collector index with %d components (distributions: %s, types: %s)",
-                len(latest_components),
+                len(active_components),
                 distributions_sorted,
                 types_ordered,
             )

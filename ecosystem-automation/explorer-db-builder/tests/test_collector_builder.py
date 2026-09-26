@@ -879,3 +879,45 @@ class TestReadmePublishingIsolation:
         markdown_files = [p.name for p in markdown_dir.glob("*.md")]
         assert not any("badreceiver" in name for name in markdown_files)
         assert any("goodreceiver" in name for name in markdown_files)
+
+    def test_out_of_sync_distribution_versions_merged_into_index(self, tmp_path):
+        """When core releases ahead of contrib, index.json merges the latest of each distribution."""
+        v_core_new = Version("0.156.0")
+        v_both_old = Version("0.155.0")
+
+        manager = _make_mock_inventory_manager(
+            versions_by_distribution={
+                "core": [v_core_new, v_both_old],
+                "contrib": [v_both_old],
+            },
+            inventories={
+                ("core", v_core_new): _make_core_inventory("0.156.0"),
+                ("core", v_both_old): _make_core_inventory("0.155.0"),
+                ("contrib", v_both_old): _make_contrib_inventory("0.155.0"),
+            },
+        )
+
+        db_writer = CollectorDatabaseWriter(database_dir=str(tmp_path / "collector"))
+        exit_code = run_collector_builder(inventory_manager=manager, db_writer=db_writer)
+        assert exit_code == 0
+
+        # index.json must include both core (from 0.156.0) and contrib (from 0.155.0)
+        with open(tmp_path / "collector" / "index.json") as f:
+            index_data = json.load(f)
+
+        component_ids = {c["id"] for c in index_data["components"]}
+        assert "core-nopreceiver" in component_ids
+        assert "contrib-otlpreceiver" in component_ids
+        assert index_data["taxonomy"]["distributions"] == ["contrib", "core"]
+
+        # versions-index.json must track per-distribution latest and per-version distributions
+        with open(tmp_path / "collector" / "versions-index.json") as f:
+            versions_data = json.load(f)
+
+        assert versions_data["distributions"] == {
+            "contrib": {"latest": "0.155.0"},
+            "core": {"latest": "0.156.0"},
+        }
+        v_map = {entry["version"]: entry for entry in versions_data["versions"]}
+        assert v_map["0.156.0"]["distributions"] == ["core"]
+        assert v_map["0.155.0"]["distributions"] == ["core", "contrib"]

@@ -139,7 +139,11 @@ describe("CollectorExploreLanding", () => {
     expect(screen.getByRole("heading", { name: "Component Types" })).toBeInTheDocument();
     expect(screen.getByText(/latest data version/i)).toBeInTheDocument();
     expect(screen.getByText(/v0\.150\.0/i)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Receiver/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /^All Components/i })).toHaveAttribute(
+      "href",
+      "/collector/components"
+    );
+    expect(screen.getByRole("link", { name: /^Receiver/i })).toHaveAttribute(
       "href",
       "/collector/components?type=receiver"
     );
@@ -247,11 +251,40 @@ describe("CollectorExploreLanding", () => {
     );
 
     expect(screen.getByRole("heading", { name: "Tipos de componentes" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Receptor/i })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: /^Todos los componentes/i })).toHaveAttribute(
+      "href",
+      "/collector/components"
+    );
+    expect(screen.getByRole("link", { name: /^Receptor/i })).toHaveAttribute(
       "href",
       "/collector/components?type=receiver"
     );
     expect(screen.getByRole("link", { name: /Ver componentes Core/i })).toBeInTheDocument();
     expect(screen.queryByText("Component Types")).not.toBeInTheDocument();
+  });
+
+  it("renders per-distribution versions when distributions are out of sync", () => {
+    vi.mocked(useCollectorVersions).mockReturnValue({
+      data: {
+        versions: [
+          { version: "0.151.0", is_latest: true, distributions: ["core"] },
+          { version: "0.150.0", is_latest: false, distributions: ["core", "contrib"] },
+        ],
+        distributions: {
+          contrib: { latest: "0.150.0" },
+          core: { latest: "0.151.0" },
+        },
+      },
+      loading: false,
+      error: null,
+    });
+
+    render(
+      <MemoryRouter>
+        <CollectorExploreLanding />
+      </MemoryRouter>
+    );
+
+    expect(screen.getByText("Core: v0.151.0 • Contrib: v0.150.0")).toBeInTheDocument();
   });
 });

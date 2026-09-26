@@ -15,11 +15,17 @@
  */
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
-import { useCollectorDeprecations, useComponentReadme } from "./use-collector-data";
+import {
+  useCollectorComponents,
+  useCollectorDeprecations,
+  useComponentReadme,
+} from "./use-collector-data";
+import type { IndexComponent } from "@/types/collector";
 
 vi.mock("@/lib/api/collector-data", () => ({
   loadDeprecationsIndex: vi.fn(),
   loadComponentReadme: vi.fn(),
+  loadAllComponents: vi.fn(),
 }));
 
 import * as collectorData from "@/lib/api/collector-data";
@@ -100,5 +106,42 @@ describe("useCollectorDeprecations", () => {
 
     await waitFor(() => expect(result.current.loading).toBe(false));
     expect(collectorData.loadDeprecationsIndex).not.toHaveBeenCalled();
+  });
+});
+
+describe("useCollectorComponents", () => {
+  it("stays disabled and does not fetch when version is null", async () => {
+    const { result } = renderHook(() => useCollectorComponents(null));
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.data).toBeNull();
+    expect(result.current.error).toBeNull();
+    expect(collectorData.loadAllComponents).not.toHaveBeenCalled();
+  });
+
+  it("loads active catalog when version is empty string or undefined", async () => {
+    const mockData: IndexComponent[] = [
+      { id: "core-otlp", name: "otlp", type: "receiver", distribution: "core" },
+    ];
+    vi.mocked(collectorData.loadAllComponents).mockResolvedValue(mockData);
+
+    const { result } = renderHook(() => useCollectorComponents(""));
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.data).toEqual(mockData);
+    expect(collectorData.loadAllComponents).toHaveBeenCalledWith();
+  });
+
+  it("loads specific version when version is provided", async () => {
+    const mockData: IndexComponent[] = [
+      { id: "core-otlp", name: "otlp", type: "receiver", distribution: "core" },
+    ];
+    vi.mocked(collectorData.loadAllComponents).mockResolvedValue(mockData);
+
+    const { result } = renderHook(() => useCollectorComponents("0.150.0"));
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.data).toEqual(mockData);
+    expect(collectorData.loadAllComponents).toHaveBeenCalledWith("0.150.0");
   });
 });

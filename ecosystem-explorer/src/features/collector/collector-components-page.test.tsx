@@ -116,9 +116,13 @@ describe("CollectorComponentsPage", () => {
     vi.mocked(useCollectorVersions).mockReturnValue({
       data: {
         versions: [
-          { version: "0.150.0", is_latest: true },
-          { version: "0.149.0", is_latest: false },
+          { version: "0.150.0", is_latest: true, distributions: ["core"] },
+          { version: "0.149.0", is_latest: false, distributions: ["core", "contrib"] },
         ],
+        distributions: {
+          core: { latest: "0.150.0" },
+          contrib: { latest: "0.149.0" },
+        },
       },
       loading: false,
       error: null,
@@ -158,26 +162,56 @@ describe("CollectorComponentsPage", () => {
 
   it("uses the version query when selecting deprecated components", async () => {
     const user = userEvent.setup();
-    renderPage("/collector/components?type=receiver");
+    renderPage("/collector/components?type=receiver&distribution=core");
 
     await user.selectOptions(screen.getByRole("combobox", { name: "Version" }), "deprecated");
 
     expect(screen.getByTestId("location")).toHaveTextContent(
-      "/collector/components?type=receiver&version=deprecated"
+      "/collector/components?type=receiver&distribution=core&version=deprecated"
     );
   });
 
   it("ignores real Collector versions in the version query", () => {
-    renderPage("/collector/components?version=0.149.0");
+    renderPage("/collector/components?version=0.149.0&distribution=core");
 
-    expect(useCollectorComponents).toHaveBeenCalledWith("0.150.0");
-    expect(screen.getByRole("combobox", { name: "Version" })).toHaveValue("0.150.0");
+    expect(useCollectorComponents).toHaveBeenCalledWith("");
+    expect(screen.getByRole("combobox", { name: "Version" })).toHaveValue("");
+  });
+
+  it("hides the version dropdown when distribution is all", () => {
+    renderPage("/collector/components");
+    expect(screen.queryByRole("combobox", { name: "Version" })).not.toBeInTheDocument();
+  });
+
+  it("shows the version dropdown when a specific distribution is selected", () => {
+    renderPage("/collector/components?distribution=core");
+    expect(screen.getByRole("combobox", { name: "Version" })).toBeInTheDocument();
+  });
+
+  it("filters version dropdown options by selected distribution", () => {
+    renderPage("/collector/components?distribution=contrib");
+    const select = screen.getByRole("combobox", { name: "Version" });
+    const options = within(select)
+      .getAllByRole("option")
+      .map((opt) => (opt as HTMLOptionElement).value);
+    expect(options).toEqual(["deprecated", "", "0.149.0"]);
+  });
+
+  it("preserves deprecated version when switching distribution filter to all", async () => {
+    const user = userEvent.setup();
+    renderPage("/collector/components?distribution=core&version=deprecated");
+
+    await user.selectOptions(screen.getByRole("combobox", { name: "Distribution" }), "all");
+
+    expect(screen.getByTestId("location")).toHaveTextContent(
+      "/collector/components?version=deprecated"
+    );
   });
 
   it("does not label the version select 'Deprecated' while the version list loads", () => {
     vi.mocked(useCollectorVersions).mockReturnValue({ data: null, loading: true, error: null });
 
-    renderPage("/collector/components");
+    renderPage("/collector/components?distribution=core");
 
     // `currentVersion` is "" until the version list resolves. A select falls back to displaying its
     // first option when its value matches none, so an ungated "deprecated" option would make the
@@ -188,12 +222,21 @@ describe("CollectorComponentsPage", () => {
     expect(select.value).toBe("");
   });
 
-  it("builds detail links with distribution, component name, version, and filters", () => {
+  it("builds detail links with distribution, component name, and filters on active catalog", () => {
     renderPage("/collector/components?type=receiver");
 
     expect(screen.getByRole("link", { name: /OTLP Receiver/i })).toHaveAttribute(
       "href",
-      "/collector/components/core/otlpreceiver?type=receiver&version=0.150.0"
+      "/collector/components/core/otlpreceiver?type=receiver"
+    );
+  });
+
+  it("includes version in detail links when browsing a specific version", () => {
+    renderPage("/collector/components/0.149.0?type=receiver");
+
+    expect(screen.getByRole("link", { name: /OTLP Receiver/i })).toHaveAttribute(
+      "href",
+      "/collector/components/core/otlpreceiver?type=receiver&version=0.149.0"
     );
   });
 
@@ -212,7 +255,7 @@ describe("CollectorComponentsPage", () => {
       "href",
       "/collector/components/contrib/jmxreceiver?version=deprecated"
     );
-    expect(useCollectorComponents).toHaveBeenCalledWith("");
+    expect(useCollectorComponents).toHaveBeenCalledWith(null);
   });
 
   it("treats deprecated catalog entries as deprecated when filtering", () => {

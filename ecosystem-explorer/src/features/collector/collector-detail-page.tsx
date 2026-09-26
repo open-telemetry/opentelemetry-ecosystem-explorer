@@ -80,7 +80,10 @@ export function CollectorDetailPage() {
   );
   const version = deprecatedView
     ? (deprecatedEntry?.last_version ?? "")
-    : rawVersion || versionData?.versions.find((v) => v.is_latest)?.version || "";
+    : rawVersion ||
+      (distribution && versionData?.distributions?.[distribution]?.latest) ||
+      versionData?.versions.find((v) => v.is_latest)?.version ||
+      "";
 
   // Once the versions fetch has settled with an error, stop waiting for a
   // version to resolve — `version` will never become non-empty otherwise,

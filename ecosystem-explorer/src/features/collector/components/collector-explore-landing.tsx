@@ -21,6 +21,7 @@ import {
   ArchiveX,
   ArrowRight,
   Box,
+  Boxes,
   ExternalLink,
   Layers,
   Loader2,
@@ -43,6 +44,15 @@ const COMPONENT_TYPES = [
   { type: "extension", icon: Plug },
   { type: "connector", icon: Workflow },
 ] as const;
+
+const COMPONENT_CARD_ITEMS = [
+  { key: "all" as const, icon: Boxes, to: "/collector/components" },
+  ...COMPONENT_TYPES.map(({ type, icon }) => ({
+    key: type,
+    icon,
+    to: `/collector/components?type=${type}`,
+  })),
+];
 
 const DISTRIBUTIONS = [{ distribution: "core" }, { distribution: "contrib" }] as const;
 
@@ -156,6 +166,28 @@ export function CollectorExploreLanding() {
     );
   }, [collectorIndex, versionData]);
 
+  const distributionVersionsText = useMemo(() => {
+    if (!versionData?.distributions) return null;
+    const dists = DISTRIBUTIONS.map((d) => d.distribution).filter(
+      (d) => versionData.distributions![d]?.latest
+    );
+    if (dists.length === 0) return null;
+    const versions = dists.map((d) => versionData.distributions![d]?.latest);
+    const allSame = versions.every((v) => v === versions[0]);
+    if (allSame && versions[0]) {
+      return `v${versions[0]}`;
+    }
+    return dists
+      .map((d) => {
+        const label = t(`filters.distribution.${d}`, {
+          defaultValue: d.charAt(0).toUpperCase() + d.slice(1),
+        });
+        const v = versionData.distributions![d]?.latest;
+        return `${label}: v${v}`;
+      })
+      .join(" • ");
+  }, [versionData, t]);
+
   const error = indexError ?? versionsError;
 
   if (error) {
@@ -191,46 +223,56 @@ export function CollectorExploreLanding() {
             <h2 id="collector-component-types" className="text-foreground text-2xl font-bold">
               {t("explore.componentTypes.heading")}
             </h2>
-            {stats.latestVersion && (
+            {(distributionVersionsText || stats.latestVersion) && (
               <p className="text-muted-foreground text-sm font-medium">
                 {t("explore.componentTypes.latestVersion")}{" "}
-                <span className="text-foreground font-semibold">v{stats.latestVersion}</span>
+                <span className="text-foreground font-semibold">
+                  {distributionVersionsText ?? `v${stats.latestVersion}`}
+                </span>
               </p>
             )}
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {COMPONENT_TYPES.map(({ type, icon: Icon }) => (
-              <Link
-                key={type}
-                to={`/collector/components?type=${type}`}
-                className="group focus-visible:ring-primary block rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-              >
-                <article className="border-border/60 bg-card/80 hover:border-primary/40 hover:bg-card h-full rounded-lg border p-6 transition-all duration-200 hover:-translate-y-0.5">
-                  <div className="flex h-full flex-col gap-4">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="bg-primary/10 text-primary flex h-11 w-11 items-center justify-center rounded-lg">
-                        <Icon className="h-5 w-5" aria-hidden="true" />
+            {COMPONENT_CARD_ITEMS.map(({ key, icon: Icon, to }) => {
+              const label =
+                key === "all"
+                  ? t("explore.componentTypes.all.label")
+                  : t(`explore.componentTypes.types.${key}.label`);
+              const count = key === "all" ? stats.total : stats.byType[key];
+              const description =
+                key === "all"
+                  ? t("explore.componentTypes.all.description")
+                  : t(`explore.componentTypes.types.${key}.description`);
+
+              return (
+                <Link
+                  key={key}
+                  to={to}
+                  className="group focus-visible:ring-primary block rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                >
+                  <article className="border-border/60 bg-card/80 hover:border-primary/40 hover:bg-card h-full rounded-lg border p-6 transition-all duration-200 hover:-translate-y-0.5">
+                    <div className="flex h-full flex-col gap-4">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="bg-primary/10 text-primary flex h-11 w-11 items-center justify-center rounded-lg">
+                          <Icon className="h-5 w-5" aria-hidden="true" />
+                        </div>
+                        <ArrowRight
+                          className="text-muted-foreground/50 group-hover:text-primary h-5 w-5 transition-all duration-200 group-hover:translate-x-1"
+                          aria-hidden="true"
+                        />
                       </div>
-                      <ArrowRight
-                        className="text-muted-foreground/50 group-hover:text-primary h-5 w-5 transition-all duration-200 group-hover:translate-x-1"
-                        aria-hidden="true"
-                      />
+                      <div className="space-y-1">
+                        <h3 className="text-foreground group-hover:text-primary text-lg font-semibold transition-colors">
+                          {label}
+                        </h3>
+                        <p className="text-3xl font-bold">{numberFormatter.format(count)}</p>
+                      </div>
+                      <p className="text-muted-foreground text-sm leading-relaxed">{description}</p>
                     </div>
-                    <div className="space-y-1">
-                      <h3 className="text-foreground group-hover:text-primary text-lg font-semibold transition-colors">
-                        {t(`explore.componentTypes.types.${type}.label`)}
-                      </h3>
-                      <p className="text-3xl font-bold">
-                        {numberFormatter.format(stats.byType[type])}
-                      </p>
-                    </div>
-                    <p className="text-muted-foreground text-sm leading-relaxed">
-                      {t(`explore.componentTypes.types.${type}.description`)}
-                    </p>
-                  </div>
-                </article>
-              </Link>
-            ))}
+                  </article>
+                </Link>
+              );
+            })}
             <Link
               to="/collector/components?version=deprecated"
               className="group focus-visible:ring-primary block rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
@@ -280,9 +322,16 @@ export function CollectorExploreLanding() {
                 <div className="flex flex-1 flex-col gap-4">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <h3 className="text-foreground text-xl font-semibold">
-                        {t(`filters.distribution.${distribution}`)}
-                      </h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-foreground text-xl font-semibold">
+                          {t(`filters.distribution.${distribution}`)}
+                        </h3>
+                        {versionData?.distributions?.[distribution]?.latest && (
+                          <span className="text-muted-foreground bg-muted/60 rounded px-2 py-0.5 font-mono text-xs font-medium">
+                            v{versionData.distributions[distribution].latest}
+                          </span>
+                        )}
+                      </div>
                       <p className="text-muted-foreground mt-1 text-sm">
                         {t("explore.distributions.componentCount", {
                           count: stats.byDistribution[distribution],
