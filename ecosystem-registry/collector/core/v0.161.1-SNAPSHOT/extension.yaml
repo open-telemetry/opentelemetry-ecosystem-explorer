@@ -6,6 +6,10 @@ schema_hash: cf77c72094ec
 components:
 - name: memorylimiterextension
   metadata:
+    attributes:
+      transport:
+        description: The transport protocol used for the request (e.g., grpc, http).
+        type: string
     display_name: Memory Limiter Extension
     github_project: open-telemetry/opentelemetry-collector
     status:
@@ -14,6 +18,19 @@ components:
       stability:
         beta:
         - extension
+    telemetry:
+      metrics:
+        memorylimiter_refused_requests:
+          attributes:
+          - transport
+          description: Number of requests refused by the memory limiter extension.
+          enabled: true
+          stability: alpha
+          sum:
+            aggregated: cumulative
+            monotonic: true
+            value_type: int
+          unit: '1'
     type: memory_limiter
 - name: zpagesextension
   metadata:

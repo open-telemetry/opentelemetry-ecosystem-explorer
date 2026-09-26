@@ -8322,7 +8322,16 @@ components:
           - topic
           description: Current message offset
           enabled: true
+          extended_documentation: Reported only for currently assigned partitions
+            after processing at least one record. Reporting stops when a partition
+            is lost, revoked, or terminally paused, and resumes after a reassigned
+            partition processes a record. Temporary backpressure and rewind pauses
+            continue reporting the last observed offset. With eager group_rebalance_strategies
+            (e.g. range), every rebalance revokes all partitions, so each series pauses
+            until that partition's next record; the default cooperative-sticky strategy
+            only affects moved partitions.
           gauge:
+            async: true
             value_type: int
           stability: development
           unit: '1'
@@ -8366,7 +8375,16 @@ components:
           - topic
           description: Current offset lag
           enabled: true
+          extended_documentation: Reported only for currently assigned partitions
+            after processing at least one record. Reporting stops when a partition
+            is lost, revoked, or terminally paused, and resumes after a reassigned
+            partition processes a record. Temporary backpressure and rewind pauses
+            continue reporting the last observed lag. With eager group_rebalance_strategies
+            (e.g. range), every rebalance revokes all partitions, so each series pauses
+            until that partition's next record; the default cooperative-sticky strategy
+            only affects moved partitions.
           gauge:
+            async: true
             value_type: int
           stability: development
           unit: '1'
@@ -16222,6 +16240,11 @@ components:
     override_value_enabled: true
     reaggregation_enabled: true
     resource_attributes:
+      db.system.version:
+        description: The database version of the instance. Examples include "13.18"
+          and "17.2".
+        enabled: false
+        type: string
       postgresql.database.name:
         description: The name of the database.
         enabled: true
@@ -21088,6 +21111,8 @@ components:
     events:
       db.server.query_plan:
         attributes:
+        - db.namespace
+        - db.system.name
         - sqlserver.query_hash
         - sqlserver.query_plan
         - sqlserver.query_plan_hash
@@ -22614,7 +22639,7 @@ components:
           aggregation_temporality: cumulative
           monotonic: true
           value_type: int
-        unit: '{errors}'
+        unit: '{error}'
       tcpcheck.status:
         attributes:
         - tcpcheck.endpoint
@@ -23747,25 +23772,6 @@ components:
         - profiles
         - traces
     type: vcr
-- name: wavefrontreceiver
-  metadata:
-    display_name: Wavefront Receiver
-    status:
-      class: receiver
-      codeowners:
-        active:
-        - samiura
-      deprecation:
-        metrics:
-          date: '2026-02-13'
-          migration: There is no replacement. This component will be removed in a
-            future release.
-      distributions:
-      - contrib
-      stability:
-        deprecated:
-        - metrics
-    type: wavefront
 - name: webhookeventreceiver
   metadata:
     deprecated_type: webhookevent
