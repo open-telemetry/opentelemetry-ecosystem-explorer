@@ -15,6 +15,7 @@
 """Tests for main entry point."""
 
 import json
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -514,6 +515,7 @@ class TestMain:
         mock_args.clean = False
         mock_args.ecosystem = "all"
         mock_args.collector_audit_report = None
+        mock_args.emit_archives = None
         mock_parse_args.return_value = mock_args
         mock_run_builder.return_value = 0
 
@@ -532,6 +534,7 @@ class TestMain:
         mock_args.clean = False
         mock_args.ecosystem = "all"
         mock_args.collector_audit_report = None
+        mock_args.emit_archives = None
         mock_parse_args.return_value = mock_args
         mock_run_builder.return_value = 1
 
@@ -550,6 +553,7 @@ class TestMain:
         mock_args.clean = True
         mock_args.ecosystem = "all"
         mock_args.collector_audit_report = None
+        mock_args.emit_archives = None
         mock_parse_args.return_value = mock_args
         mock_run_builder.return_value = 0
 
@@ -569,6 +573,7 @@ class TestMain:
         mock_args.clean = False
         mock_args.ecosystem = "collector"
         mock_args.collector_audit_report = None
+        mock_args.emit_archives = None
         mock_parse_args.return_value = mock_args
         mock_run_builder.return_value = 0
 
@@ -576,6 +581,69 @@ class TestMain:
 
         mock_run_builder.assert_called_once_with(clean=False, ecosystem="collector", collector_audit_report=None)
         mock_exit.assert_called_once_with(0)
+
+    @patch("explorer_db_builder.main.emit_archives")
+    @patch("explorer_db_builder.main.run_builder")
+    @patch("explorer_db_builder.main.sys.exit")
+    @patch("explorer_db_builder.main.argparse.ArgumentParser.parse_args")
+    def test_main_emits_archives_after_a_successful_build(
+        self, mock_parse_args, mock_exit, mock_run_builder, mock_emit
+    ):
+        from explorer_db_builder.main import main
+
+        mock_args = MagicMock()
+        mock_args.clean = True
+        mock_args.ecosystem = "all"
+        mock_args.collector_audit_report = None
+        mock_args.emit_archives = "archives-out"
+        mock_parse_args.return_value = mock_args
+        mock_run_builder.return_value = 0
+        mock_emit.return_value = 0
+
+        main()
+
+        mock_emit.assert_called_once_with(Path("archives-out"))
+        mock_exit.assert_called_once_with(0)
+
+    @patch("explorer_db_builder.main.emit_archives")
+    @patch("explorer_db_builder.main.run_builder")
+    @patch("explorer_db_builder.main.sys.exit")
+    @patch("explorer_db_builder.main.argparse.ArgumentParser.parse_args")
+    def test_main_skips_archives_when_the_build_failed(self, mock_parse_args, mock_exit, mock_run_builder, mock_emit):
+        from explorer_db_builder.main import main
+
+        mock_args = MagicMock()
+        mock_args.clean = True
+        mock_args.ecosystem = "all"
+        mock_args.collector_audit_report = None
+        mock_args.emit_archives = "archives-out"
+        mock_parse_args.return_value = mock_args
+        mock_run_builder.return_value = 1
+
+        main()
+
+        mock_emit.assert_not_called()
+        mock_exit.assert_called_once_with(1)
+
+    @patch("explorer_db_builder.main.emit_archives")
+    @patch("explorer_db_builder.main.run_builder")
+    @patch("explorer_db_builder.main.argparse.ArgumentParser.parse_args")
+    def test_main_rejects_archives_for_a_single_ecosystem(self, mock_parse_args, mock_run_builder, mock_emit):
+        from explorer_db_builder.main import main
+
+        mock_args = MagicMock()
+        mock_args.clean = True
+        mock_args.ecosystem = "collector"
+        mock_args.collector_audit_report = None
+        mock_args.emit_archives = "archives-out"
+        mock_parse_args.return_value = mock_args
+
+        with pytest.raises(SystemExit) as excinfo:
+            main()
+
+        assert excinfo.value.code == 2
+        mock_run_builder.assert_not_called()
+        mock_emit.assert_not_called()
 
 
 class TestRunBuilderOrchestrator:

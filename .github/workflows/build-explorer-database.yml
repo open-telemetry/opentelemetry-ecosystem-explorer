@@ -2,20 +2,12 @@ name: Build Explorer Database
 
 on:
   schedule:
-    # Nightly incremental build of all ecosystems at 06:00 UTC.
+    # Nightly clean build of all ecosystems at 06:00 UTC.
     - cron: "0 6 * * *"
   workflow_dispatch:
     inputs:
-      build_mode:
-        description: "Build mode"
-        required: true
-        type: choice
-        options:
-          - "incremental"
-          - "clean"
-        default: "incremental"
       ecosystem:
-        description: "Ecosystem to build"
+        description: "Ecosystem to promote (the build always covers all three)"
         required: true
         type: choice
         options:
@@ -74,12 +66,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          # Persist GITHUB_TOKEN as the git credential for the branch push. A
-          # push authenticated with GITHUB_TOKEN does not start workflows, so the
-          # "Commit and push changes" step re-triggers the required checks on the
-          # new head by closing/reopening the PR with the otelbot App token.
-          token: ${{ secrets.GITHUB_TOKEN }}
-          persist-credentials: true
+          # No credential is left in .git/config. Everything between this checkout and the push
+          # runs third-party code inside a contents: write job: `uv sync` builds the workspace
+          # through PEP 517 backends, and the contract gate loads the explorer's whole JS
+          # dependency tree. A persisted credential would be readable by all of it for the length
+          # of the job, so the token is handed to the one step that pushes instead. A push
+          # authenticated with GITHUB_TOKEN does not start workflows, so that same step
+          # re-triggers the required checks on the new head by closing/reopening the PR with the
+          # otelbot App token.
+          persist-credentials: false
 
       - name: Configure git (primary repository)
         if: steps.repo_check.outputs.is_primary == 'true'
@@ -105,28 +100,59 @@ jobs:
       - name: Install dependencies
         run: uv sync --locked
 
-      - name: Build explorer database (incremental)
-        # Scheduled runs don't set dispatch inputs, so `inputs.build_mode` is
-        # empty; default to an incremental build in that case.
-        if: ${{ (inputs.build_mode || 'incremental') == 'incremental' }}
-        env:
-          ECOSYSTEM: ${{ inputs.ecosystem || 'all' }}
-        # --collector-audit-report writes a build artifact (not committed to the database)
-        # consumed by the "Sync missing-display_name tracking issue" step below.
-        run:
-          uv run explorer-db-builder --ecosystem "$ECOSYSTEM" --collector-audit-report
-          "${RUNNER_TEMP}/collector-missing-display-names.json"
+      # Always clean and always every ecosystem: the builder's incremental mode reads back its own
+      # previous output, which carries silent corruption forward and never sweeps stale version
+      # indexes. Measured at 12.34s clean against 12.50s warm incremental, so there is nothing to
+      # win. The dispatch input selects what gets promoted, not what gets built.
+      - name: Build explorer database
+        run: |
+          set -euo pipefail
+          uv run explorer-db-builder \
+            --clean \
+            --ecosystem all \
+            --collector-audit-report "${RUNNER_TEMP}/collector-missing-display-names.json" \
+            --emit-archives "${RUNNER_TEMP}/archives"
 
-      - name: Build explorer database (clean)
-        if: inputs.build_mode == 'clean'
+      # The contract gate below installs and executes the explorer's whole JS dependency tree
+      # inside this contents: write job, between packing and upload. Pinning the hashes here and
+      # re-checking them before upload means tampered archives are caught rather than published,
+      # digested by GitHub and pinned by the manifest.
+      - name: Pin the archive hashes
+        id: archive_hashes
         env:
-          ECOSYSTEM: ${{ inputs.ecosystem }}
-        run:
-          uv run explorer-db-builder --ecosystem "$ECOSYSTEM" --clean --collector-audit-report
-          "${RUNNER_TEMP}/collector-missing-display-names.json"
+          ARCHIVES: ${{ runner.temp }}/archives
+        run: |
+          set -euo pipefail
+          {
+            echo "sums<<ARCHIVE_SUMS_EOF"
+            sha256sum "$ARCHIVES"/*.tar.gz "$ARCHIVES/archive-plan.json"
+            echo "ARCHIVE_SUMS_EOF"
+          } >> "$GITHUB_OUTPUT"
 
+      - name: Resolve which ecosystems to promote
+        id: promote
+        env:
+          PROMOTE: ${{ inputs.ecosystem || 'all' }}
+          PLAN: ${{ runner.temp }}/archives/archive-plan.json
+        run: |
+          set -euo pipefail
+          # The builder is the source of truth for which ecosystems exist; assert it still matches
+          # what unpack-archives.sh checks, so the two lists cannot drift apart silently.
+          test "$(jq -r 'keys | join(" ")' "$PLAN")" = "collector configuration javaagent"
+          if [ "$PROMOTE" = "all" ]; then
+            echo "ecosystems=collector configuration javaagent" >> "$GITHUB_OUTPUT"
+          else
+            echo "ecosystems=$PROMOTE" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Only on the upstream repository: a fork usually has issues disabled, where `gh issue list`
+      # exits 1 and would fail the run for a reason unrelated to the database.
       - name: Sync missing-display_name tracking issue
+        if: steps.repo_check.outputs.is_primary == 'true'
         env:
+          # Pin every gh call to the repository running this workflow. Left to resolve on its
+          # own, gh prefers a fork's parent, so a dispatch on a fork could act on upstream.
+          GH_REPO: ${{ github.repository }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPORT_FILE: ${{ runner.temp }}/collector-missing-display-names.json
           REPO: ${{ github.repository }}
@@ -199,18 +225,211 @@ jobs:
             echo "Created tracking issue ($COUNT components missing display_name)."
           fi
 
+      # Two detectors run side by side: what git sees under the generated directories, and what the
+      # content digest says. Only one direction of disagreement is a bug. Git seeing a change the
+      # digest missed means the digest is computed wrongly, so the run stops. The reverse is normal:
+      # it happens the first time a manifest is written, and afterwards whenever a pull request
+      # regenerated the data without updating the manifest.
       - name: Check for database changes
         id: check_changes
+        env:
+          ECOSYSTEMS: ${{ steps.promote.outputs.ecosystems }}
+          PLAN: ${{ runner.temp }}/archives/archive-plan.json
         run: |
-          git add -N ecosystem-explorer/public/data/ 2>/dev/null || true
-          if git diff --quiet ecosystem-explorer/public/data/ && [ -z "$(git ls-files --others --exclude-standard ecosystem-explorer/public/data/)" ]; then
-            echo "has_changes=false" >> $GITHUB_OUTPUT
-          else
-            echo "has_changes=true" >> $GITHUB_OUTPUT
+          set -euo pipefail
+          data_changed=false
+          manifest_changed=false
+
+          for eco in $ECOSYSTEMS; do
+            digest_changed=$(jq -r --arg e "$eco" '.[$e].changed' "$PLAN")
+
+            # One command that sees modifications, additions and deletions alike. The older
+            # `git add -N` plus `git diff` pair staged deletions, which made a deletion-only
+            # build look unchanged to both halves of the check.
+            if [ -n "$(git status --porcelain --untracked-files=all -- "ecosystem-explorer/public/data/$eco/")" ]; then
+              git_changed=true
+            else
+              git_changed=false
+            fi
+
+            if [ "$git_changed" = "true" ] && [ "$digest_changed" != "true" ]; then
+              echo "::error::$eco: git sees changed files but the tree digest does not. The digest implementation is wrong."
+              exit 1
+            fi
+
+            if [ "$git_changed" = "true" ]; then
+              data_changed=true
+            fi
+            if [ "$digest_changed" = "true" ]; then
+              manifest_changed=true
+            fi
+            echo "$eco: git_changed=$git_changed digest_changed=$digest_changed"
+          done
+
+          echo "data_changed=$data_changed" >> "$GITHUB_OUTPUT"
+          echo "manifest_changed=$manifest_changed" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Bun
+        if: steps.check_changes.outputs.manifest_changed == 'true'
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: .bun-version
+
+      - name: Install Bun dependencies
+        if: steps.check_changes.outputs.manifest_changed == 'true'
+        run: bun install --frozen-lockfile
+        working-directory: ecosystem-explorer
+
+      # The archive becomes a public release asset the moment it is uploaded, so the contract runs
+      # against the bytes about to be uploaded rather than the build directory. Note this replaces
+      # the working tree with the unpacked archives, so what the automated pull request commits is
+      # the unpacked tree. That is the stronger arrangement: the diff a reviewer sees is what the
+      # archive actually contains. Unpromoted ecosystems are unpacked too but never staged.
+      - name: Verify the archives reproduce the build
+        if: steps.check_changes.outputs.manifest_changed == 'true'
+        env:
+          ARCHIVES: ${{ runner.temp }}/archives
+        run: |
+          set -euo pipefail
+          cp -a ecosystem-explorer/public/data "${RUNNER_TEMP}/built-tree"
+          .github/scripts/unpack-archives.sh "$ARCHIVES"
+
+          for eco in collector configuration javaagent; do
+            # diff -r catches what a digest comparison cannot: both digests come from the same
+            # file-selection code, so a file the archive silently omits would agree with itself.
+            diff -r --no-dereference "${RUNNER_TEMP}/built-tree/$eco" "ecosystem-explorer/public/data/$eco"
+
+            expected=$(jq -r --arg e "$eco" '.[$e].content_digest' "$ARCHIVES/archive-plan.json")
+            actual=$(.github/scripts/content-digest.sh "ecosystem-explorer/public/data/$eco")
+            if [ "$expected" != "$actual" ]; then
+              echo "::error::$eco: the unpacked tree digests to $actual but the plan says $expected"
+              exit 1
+            fi
+            echo "$eco: unpacked tree matches $expected"
+          done
+          rm -rf "${RUNNER_TEMP}/built-tree"
+
+      - name: Run the database contract
+        if: steps.check_changes.outputs.manifest_changed == 'true'
+        run: bun run test:integration
+        working-directory: ecosystem-explorer
+
+      # Nothing may be committed before this succeeds. A partial publication would otherwise push
+      # data whose manifest pins only part of it, on a pull request that looks mergeable because
+      # the run's own failure is not one of its checks. Failing here costs a night: the tags derive
+      # from the content digest, so the next run re-derives them and reuses what this one published.
+      - name: Publish the data releases
+        if: steps.check_changes.outputs.manifest_changed == 'true'
+        env:
+          # Pin every gh call to the repository running this workflow. Left to resolve on its
+          # own, gh prefers a fork's parent, so a dispatch on a fork could act on upstream.
+          GH_REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ECOSYSTEMS: ${{ steps.promote.outputs.ecosystems }}
+          ARCHIVES: ${{ runner.temp }}/archives
+          PINNED_SUMS: ${{ steps.archive_hashes.outputs.sums }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          # Nothing between packing and here may have altered the bytes we are about to publish.
+          printf '%s\n' "$PINNED_SUMS" | sha256sum --check --strict --quiet
+
+          PLAN="$ARCHIVES/archive-plan.json"
+          failed=false
+
+          for eco in $ECOSYSTEMS; do
+            changed=$(jq -r --arg e "$eco" '.[$e].changed' "$PLAN")
+            if [ "$changed" != "true" ]; then
+              echo "$eco: content unchanged, nothing to publish"
+              continue
+            fi
+
+            tag=$(jq -r --arg e "$eco" '.[$e].release_tag' "$PLAN")
+            digest=$(jq -r --arg e "$eco" '.[$e].content_digest' "$PLAN")
+            asset=$(jq -r --arg e "$eco" '.[$e].asset' "$PLAN")
+
+            if view=$(gh release view "$tag" --json isDraft 2>&1); then
+              state=$(printf '%s' "$view" | jq -r 'if .isDraft then "draft" else "published" end')
+            elif printf '%s' "$view" | grep -q "release not found"; then
+              state=absent
+            else
+              echo "::error::$eco: cannot read release $tag: $view"
+              failed=true
+              continue
+            fi
+
+            # A draft is debris from a run that failed between create and publish. No tag exists
+            # behind a draft, so deleting one burns nothing, while an immutable tag would.
+            if [ "$state" = "draft" ]; then
+              echo "$eco: deleting the leftover draft $tag"
+              gh release delete "$tag" --yes
+              state=absent
+            fi
+
+            if [ "$state" = "absent" ]; then
+              notes="${RUNNER_TEMP}/notes-$eco.md"
+              cat > "$notes" <<NOTES
+          Generated explorer database for \`$eco\`.
+
+          - content_digest: \`$digest\`
+          - registry_commit: \`$SHA\`
+
+          Published by the Build Explorer Database workflow and pinned by
+          \`ecosystem-explorer/public/data-manifest.json\`.
+          NOTES
+              # Marked as a pre-release because these carry generated data, not a version of the
+              # software. GitHub picks its "Latest release" from non-draft, non-prerelease releases
+              # only, so this is what keeps a nightly data drop off the repository's front page.
+              # `--latest=false` does not achieve that: it declines to promote a release over an
+              # existing latest, but something still has to be latest when nothing else qualifies.
+              gh release create "$tag" --draft --prerelease --target "$SHA" \
+                --title "$eco data $(date -u +%Y-%m-%d)" --notes-file "$notes"
+              gh release upload "$tag" "$ARCHIVES/$asset"
+              gh release edit "$tag" --draft=false
+              echo "$eco: published $tag"
+            else
+              # Reconcile the flag: a release published before this workflow started marking data
+              # releases as pre-releases would otherwise keep the Latest badge for good.
+              gh release edit "$tag" --prerelease
+              echo "$eco: $tag is already published, reusing it"
+            fi
+
+            # The manifest must carry the published asset's hash, not the bytes this run built: a
+            # rerun on another runner image can compress identical content differently, and whoever
+            # downloads the asset checks it against this value. The field can lag briefly after the
+            # upload, hence the retry.
+            asset_digest=""
+            for attempt in 1 2 3 4 5; do
+              asset_digest=$(ASSET="$asset" gh api "repos/$REPO/releases/tags/$tag" \
+                --jq '.assets[] | select(.name == env.ASSET) | .digest' || true)
+              if [ -n "$asset_digest" ]; then break; fi
+              sleep 5
+            done
+            if ! printf '%s' "$asset_digest" | grep -Eq '^sha256:[0-9a-f]{64}$'; then
+              echo "::error::$eco: $tag returned no usable asset digest for $asset (got '$asset_digest')"
+              failed=true
+              continue
+            fi
+
+            uv run python -m explorer_db_builder.data_manifest \
+              --ecosystem "$eco" \
+              --release-tag "$tag" \
+              --content-digest "$digest" \
+              --archive-sha256 "${asset_digest#sha256:}" \
+              --registry-commit "$SHA"
+          done
+
+          # The loop runs past a failing ecosystem so that one run names all of them, but the step
+          # still fails, which stops the job before anything is staged.
+          if [ "$failed" = "true" ]; then
+            echo "::error::One or more data releases failed to publish; nothing will be committed."
+            exit 1
           fi
 
       - name: Increment DB cache schema version
-        if: steps.check_changes.outputs.has_changes == 'true'
+        if: steps.check_changes.outputs.data_changed == 'true'
         run: |
           FILE="ecosystem-explorer/src/lib/api/idb-cache.ts"
           CURRENT=$(grep -oP 'const DB_VERSION = \K[0-9]+' "$FILE")
@@ -227,30 +446,59 @@ jobs:
           fi
 
       - name: Commit and push changes
-        if: steps.check_changes.outputs.has_changes == 'true'
+        if:
+          steps.check_changes.outputs.data_changed == 'true' ||
+          steps.check_changes.outputs.manifest_changed == 'true'
         env:
+          # Pin every gh call to the repository running this workflow. Left to resolve on its
+          # own, gh prefers a fork's parent, so a dispatch on a fork could act on upstream.
+          GH_REPO: ${{ github.repository }}
           GH_TOKEN:
             ${{ steps.repo_check.outputs.is_primary == 'true' && steps.otelbot-token.outputs.token
             || secrets.GITHUB_TOKEN }}
+          # The otelbot App token above can only touch pull requests, so the branch push
+          # authenticates as GITHUB_TOKEN instead. It cannot be named GITHUB_TOKEN here: gh's
+          # credential helper reads GH_TOKEN first and would ignore it, so the push overrides
+          # GH_TOKEN with this value for that one command.
+          PUSH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ECOSYSTEM: ${{ inputs.ecosystem || 'all' }}
-          BUILD_MODE: ${{ inputs.build_mode || 'incremental' }}
+          ECOSYSTEMS: ${{ steps.promote.outputs.ecosystems }}
           # On scheduled runs github.actor doesn't reflect a human who triggered
           # the build, so attribute those runs to the schedule instead.
           ACTOR: ${{ github.event_name == 'schedule' && 'nightly schedule' || github.actor }}
         run: |
           BRANCH="otelbot/automated-explorer-database-update-${ECOSYSTEM}"
 
-          git add ecosystem-explorer/public/data/ ecosystem-explorer/src/lib/api/idb-cache.ts
+          for eco in $ECOSYSTEMS; do
+            git add "ecosystem-explorer/public/data/$eco/"
+          done
+          # The manifest exists only once a release has been published, and `git add` on a missing
+          # path exits 128, so the path is guarded rather than assumed.
+          if [ -f ecosystem-explorer/public/data-manifest.json ]; then
+            git add ecosystem-explorer/public/data-manifest.json
+          fi
+          git add ecosystem-explorer/src/lib/api/idb-cache.ts
+
+          # Nothing staged means there is no pull request to open, and `git commit` would exit 1
+          # and take the step down with it.
+          if git diff --cached --quiet; then
+            echo "Nothing staged, so there is no pull request to open."
+            exit 0
+          fi
 
           git commit -m "Update explorer database (${ECOSYSTEM})"
 
-          git push -f origin HEAD:${BRANCH}
+          # Make gh git's credential helper for this push. Nothing is written to disk: the helper
+          # resolves GH_TOKEN every time git asks for a credential, so prefixing the push is what
+          # picks GITHUB_TOKEN while the `gh pr` calls below keep the step's own token.
+          gh auth setup-git
+          GH_TOKEN="$PUSH_TOKEN" git push -f origin HEAD:${BRANCH}
 
           PR_TITLE="[automated] Update explorer database (${ECOSYSTEM})"
           PR_BODY="$(cat <<EOF
           Automated database build.
 
-          Build mode: ${BUILD_MODE}
+          Build: clean, all ecosystems
           Ecosystem: ${ECOSYSTEM}
           Triggered by: ${ACTOR}
           ---
@@ -286,6 +534,8 @@ jobs:
           fi
 
       - name: No changes detected
-        if: steps.check_changes.outputs.has_changes == 'false'
+        if:
+          steps.check_changes.outputs.data_changed == 'false' &&
+          steps.check_changes.outputs.manifest_changed == 'false'
         run: |
           echo "No database changes detected. Skipping PR creation."

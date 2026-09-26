@@ -63,10 +63,33 @@ uv run explorer-db-builder --clean
 
 # Build a single ecosystem pipeline (default: all)
 uv run explorer-db-builder --ecosystem collector
+
+# Also write one reproducible archive per ecosystem, plus archive-plan.json
+uv run explorer-db-builder --clean --emit-archives ./archives
 ```
 
-`--ecosystem` accepts `javaagent`, `configuration`, `collector`, or `all` (the default). Nightly CI
-passes this flag to rebuild a single ecosystem when only its registry data changed.
+`--ecosystem` accepts `javaagent`, `configuration`, `collector`, or `all` (the default). The nightly
+workflow always builds every ecosystem from clean, because incremental mode reads back its own
+previous output and cannot notice that a file it wrote earlier no longer hashes to its own name.
+
+`--emit-archives DIR` requires `--ecosystem all`, because the plan it writes describes every
+ecosystem and a single-pipeline build would pin digests for trees it did not produce. It packs each
+ecosystem directory into a byte-reproducible `DIR/<ecosystem>.tar.gz` and writes
+`DIR/archive-plan.json` beside them, recording each ecosystem's content digest, the release tag that
+digest implies, the asset name, and whether it differs from the digest pinned in
+`ecosystem-explorer/public/data-manifest.json`. That digest comparison is what lets the workflow
+skip republishing unchanged data; the archive bytes play no part in it. The archives are
+byte-reproducible for a different reason, so that rebuilding the same registry state does not churn
+an already published asset.
+
+The manifest itself is written separately, once a release exists, because it records the published
+asset's checksum rather than the bytes a given run happened to compress:
+
+```bash
+uv run python -m explorer_db_builder.data_manifest \
+  --ecosystem collector --release-tag data-collector-<digest> \
+  --content-digest <64 hex> --archive-sha256 <64 hex> --registry-commit <sha>
+```
 
 ## Development
 

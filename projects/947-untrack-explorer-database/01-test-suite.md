@@ -3,8 +3,8 @@ title: "Phase 1 — Data-independent test suite"
 issue: 947
 type: plan
 phase: 1
-status: in-progress
-last_updated: "2026-09-23"
+status: complete
+last_updated: "2026-09-24"
 ---
 
 > [!NOTE]
@@ -106,5 +106,3 @@ None blocking.
   `normalize-instrumentation.integration.test.ts` is inherited from the test it replaces. It asserts
   that at least one module groups two or more entries, so a legitimate upstream change could fail it
   for a pure data reason — the same objection that justified removing the count floors.
-- The `statSync` catch-all in `src/test/integration/global-setup.ts` reports a permissions error as
-  a missing database, so the remedy it prints would not help in that case.

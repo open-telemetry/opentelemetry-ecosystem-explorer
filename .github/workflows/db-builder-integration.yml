@@ -7,6 +7,10 @@ on:
       - "ecosystem-automation/watcher-common/**"
       - "ecosystem-registry/**"
       - "ecosystem-explorer/src/lib/api/**"
+      # The contract gate calls these, so a pull request touching only them must still run.
+      - ".github/scripts/content-digest.sh"
+      - ".github/scripts/unpack-archives.sh"
+      - ".github/workflows/db-builder-integration.yml"
 
 permissions:
   contents: read
@@ -49,7 +53,85 @@ jobs:
         working-directory: ecosystem-explorer
 
       - name: Build DB
-        run: uv run explorer-db-builder --clean
+        run: uv run explorer-db-builder --clean --emit-archives "${RUNNER_TEMP}/archives"
+
+      # The real corpus has paths over 100 bytes, which take the GNU LongLink header, and file
+      # counts a temp-directory tree never reaches. Packing it twice is the only determinism check
+      # that covers what actually ships.
+      - name: Archives are byte-reproducible
+        run: |
+          set -euo pipefail
+          uv run explorer-db-builder --clean --emit-archives "${RUNNER_TEMP}/archives-again"
+          for eco in collector configuration javaagent; do
+            first=$(sha256sum "${RUNNER_TEMP}/archives/$eco.tar.gz" | cut -d' ' -f1)
+            second=$(sha256sum "${RUNNER_TEMP}/archives-again/$eco.tar.gz" | cut -d' ' -f1)
+            if [ "$first" != "$second" ]; then
+              echo "::error::$eco: two clean builds produced different archive bytes"
+              exit 1
+            fi
+          done
+
+      - name: Tree digests match an independent implementation
+        run: |
+          set -euo pipefail
+          for eco in collector configuration javaagent; do
+            expected=$(jq -r --arg e "$eco" '.[$e].content_digest' "${RUNNER_TEMP}/archives/archive-plan.json")
+            actual=$(.github/scripts/content-digest.sh "ecosystem-explorer/public/data/$eco")
+            if [ "$expected" != "$actual" ]; then
+              echo "::error::$eco: builder says $expected, the sha256sum pipeline says $actual"
+              exit 1
+            fi
+          done
+
+      - name: Archives round trip over an emptied tree
+        run: |
+          set -euo pipefail
+          cp -a ecosystem-explorer/public/data "${RUNNER_TEMP}/built-tree"
+          .github/scripts/unpack-archives.sh "${RUNNER_TEMP}/archives"
+          for eco in collector configuration javaagent; do
+            # Compare against the built tree, never against HEAD: this workflow runs on builder and
+            # registry pull requests, which legitimately produce output that differs from HEAD.
+            diff -r --no-dereference "${RUNNER_TEMP}/built-tree/$eco" "ecosystem-explorer/public/data/$eco"
+          done
+          rm -rf "${RUNNER_TEMP}/built-tree"
+
+      - name: The manifest writer emits prettier-clean output and rewrites only changed blocks
+        env:
+          # Beside the real manifest, so prettier finds the repository's own config by searching
+          # upward and bunx resolves the explorer's installed prettier. A probe under RUNNER_TEMP
+          # would get prettier's defaults and an unpinned download, a weaker check than
+          # format:check. Not the real path: that file is tracked once the first nightly lands, and
+          # this step would overwrite it with fabricated values while later steps still run.
+          MANIFEST: ecosystem-explorer/public/data-manifest-probe.json
+          PLAN: ${{ runner.temp }}/archives/archive-plan.json
+        run: |
+          set -euo pipefail
+          for eco in collector configuration javaagent; do
+            digest=$(jq -r --arg e "$eco" '.[$e].content_digest' "$PLAN")
+            tag=$(jq -r --arg e "$eco" '.[$e].release_tag' "$PLAN")
+            uv run python -m explorer_db_builder.data_manifest --manifest "$MANIFEST" \
+              --ecosystem "$eco" --release-tag "$tag" --content-digest "$digest" \
+              --archive-sha256 "$(sha256sum "${RUNNER_TEMP}/archives/$eco.tar.gz" | cut -d' ' -f1)" \
+              --registry-commit "$GITHUB_SHA"
+          done
+          (cd ecosystem-explorer && bunx prettier --check public/data-manifest-probe.json --ignore-path ../.prettierignore)
+
+          # Rewriting one block must leave the other two byte-identical.
+          cp "$MANIFEST" "${RUNNER_TEMP}/manifest-before.json"
+          before=$(sha256sum "$MANIFEST" | cut -d' ' -f1)
+          uv run python -m explorer_db_builder.data_manifest --manifest "$MANIFEST" \
+            --ecosystem javaagent --release-tag data-javaagent-ffffffffffff \
+            --content-digest "$(printf 'f%.0s' {1..64})" \
+            --archive-sha256 "$(printf 'e%.0s' {1..64})" --registry-commit "$GITHUB_SHA"
+          if [ "$(sha256sum "$MANIFEST" | cut -d' ' -f1)" = "$before" ]; then
+            echo "::error::the manifest did not change when javaagent was rewritten"
+            exit 1
+          fi
+          diff <(jq -S '.ecosystems.collector, .ecosystems.configuration' "${RUNNER_TEMP}/manifest-before.json") \
+               <(jq -S '.ecosystems.collector, .ecosystems.configuration' "$MANIFEST")
+
+          # The integration suite runs next; leave the tree as this job found it.
+          rm -f "$MANIFEST"
 
       - name: Run integration tests
         run: bun run test:integration
