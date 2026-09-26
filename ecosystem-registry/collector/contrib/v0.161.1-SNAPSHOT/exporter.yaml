@@ -1086,6 +1086,23 @@ components:
         - logs
         - traces
     type: logzio
+- name: natsexporter
+  metadata:
+    display_name: NATS Exporter
+    status:
+      class: exporter
+      codeowners:
+        active:
+        - suckatrash
+        - kalebpace
+        - ChrsMark
+      distributions: []
+      stability:
+        development:
+        - logs
+        - metrics
+        - traces
+    type: nats
 - name: opensearchexporter
   metadata:
     display_name: OpenSearch Exporter
