@@ -3,8 +3,8 @@ title: "Phase 5 — Component detail page"
 issue: 84
 type: plan
 phase: 5
-status: in-progress
-last_updated: "2026-07-20"
+status: complete
+last_updated: "2026-09-29"
 ---
 
 > [!NOTE]

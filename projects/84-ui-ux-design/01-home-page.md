@@ -3,8 +3,8 @@ title: "Phase 2 — Home page"
 issue: 84
 type: plan
 phase: 2
-status: in-progress
-last_updated: "2026-05-30"
+status: complete
+last_updated: "2026-09-29"
 ---
 
 > [!NOTE]
