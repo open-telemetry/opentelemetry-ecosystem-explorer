@@ -53,3 +53,7 @@ git add -f .claude/skills/<name>
   (`.github/workflows/build-explorer-database.yml`): verify the generated diff is correct, triage
   content-hash churn, and decide whether a change needs a corrections overlay. Bundles
   `diff_build_pr.py`, which diffs the content-addressed database between a base ref and a PR/head ref.
+- `skills/v1-page-review/` — review a page of the V1 redesign (#84) before go-live: readiness mode
+  (legacy parity, visuals, design, React Doctor, accessibility, i18n, performance, tests) or audit
+  mode (conformance with the UX research's guiding principles), reported as `v1:finding` drafts.
+  Bundles `readiness.md`, `audit.md`, and the `checklist.md` report templates.
