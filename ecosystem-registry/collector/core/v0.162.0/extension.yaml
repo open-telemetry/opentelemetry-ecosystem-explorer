@@ -1,0 +1,51 @@
+distribution: core
+version: 0.162.0
+repository: opentelemetry-collector
+component_type: extension
+schema_hash: cf77c72094ec
+components:
+- name: memorylimiterextension
+  metadata:
+    attributes:
+      transport:
+        description: The transport protocol used for the request (e.g., grpc, http).
+        type: string
+    display_name: Memory Limiter Extension
+    github_project: open-telemetry/opentelemetry-collector
+    status:
+      class: extension
+      distributions: []
+      stability:
+        beta:
+        - extension
+    telemetry:
+      metrics:
+        memorylimiter_refused_requests:
+          attributes:
+          - transport
+          description: Number of requests refused by the memory limiter extension.
+          enabled: true
+          stability: alpha
+          sum:
+            aggregated: cumulative
+            monotonic: true
+            value_type: int
+          unit: '1'
+    type: memory_limiter
+- name: zpagesextension
+  metadata:
+    display_name: zPages Extension
+    github_project: open-telemetry/opentelemetry-collector
+    status:
+      class: extension
+      distributions:
+      - contrib
+      - core
+      - k8s
+      stability:
+        beta:
+        - extension
+      warnings:
+      - The zPages extension is incompatible with `service::telemetry::traces::level`
+        set to `none`
+    type: zpages

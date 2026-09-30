@@ -67,3 +67,10 @@ contrib:
     distributions:
     - contrib
     subtype: null
+  - name: wavefrontreceiver
+    last_version: v0.161.0
+    deprecated_in_version: v0.162.0
+    source_repo: opentelemetry-collector-contrib
+    distributions:
+    - contrib
+    subtype: null
