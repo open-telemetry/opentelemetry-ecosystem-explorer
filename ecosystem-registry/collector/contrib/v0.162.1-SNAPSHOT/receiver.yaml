@@ -21944,7 +21944,7 @@ components:
         description: Number of free list stalls.
         enabled: false
         gauge:
-          value_type: int
+          value_type: double
         stability: development
         unit: '{stalls}/s'
       sqlserver.page.buffer_cache.hit_ratio:
@@ -23853,7 +23853,7 @@ components:
       distributions:
       - contrib
       stability:
-        alpha:
+        beta:
         - logs
       unsupported_platforms:
       - darwin

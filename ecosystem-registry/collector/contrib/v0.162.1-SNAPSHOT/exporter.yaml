@@ -192,8 +192,9 @@ components:
       class: exporter
       codeowners:
         active:
-        - pcwiese
         - hgaol
+        emeritus:
+        - pcwiese
       distributions:
       - contrib
       stability:
@@ -685,11 +686,12 @@ components:
       class: exporter
       codeowners:
         active:
-        - VinozzZ
+        - robbkidd
         emeritus:
         - TylerHelmuth
         - fchikwekwe
         - codeboten
+        - VinozzZ
       distributions:
       - contrib
       stability:

@@ -1957,9 +1957,10 @@ components:
         - atoulme
         - rnterbush
         - pavankrish123
-      distributions: []
+      distributions:
+      - contrib
       stability:
-        development:
+        alpha:
         - traces
     telemetry:
       metrics:
