@@ -18,8 +18,7 @@ disposition for each gap; the triage decides.
 Audit each page at the level it belongs to.
 
 1. **Shell** (`/` and the shared layout): the four entry points of the IA recommendation (Search,
-   Ecosystems, Signals, Recent Activities) exist and each one leads somewhere useful. The GenAI entry
-   point is `n/a` until the explorer has a GenAI surface.
+   Ecosystems, Signals, Recent Activities) exist and each one leads somewhere useful.
 2. **Ecosystem** (each ecosystem's landing and list pages):
    - Rule 1: the ecosystem is reachable through a browsable path, not search alone.
    - Rule 4, preview level: list cards and search results summarize each component's telemetry.
