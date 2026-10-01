@@ -1,0 +1,28 @@
+{
+  "description": null,
+  "display_name": "sd_notify Extension",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-sdnotifyextension",
+  "markdown_hash": "e06337f485b4",
+  "name": "sdnotifyextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "VihasMakwana",
+        "iypetrov"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "extension"
+      ]
+    }
+  },
+  "type": "extension"
+}

@@ -65,6 +65,22 @@
       "type": "exporter"
     },
     {
+      "component_hash": "b8289e04272d",
+      "deprecated_in_version": "0.162.0",
+      "description": null,
+      "display_name": "Wavefront Receiver",
+      "distribution": "contrib",
+      "has_readme": true,
+      "id": "contrib-wavefrontreceiver",
+      "last_version": "0.161.0",
+      "name": "wavefrontreceiver",
+      "signals": [
+        "metrics"
+      ],
+      "stability": "deprecated",
+      "type": "receiver"
+    },
+    {
       "component_hash": "5a07ac237fdd",
       "deprecated_in_version": "0.159.0",
       "description": null,

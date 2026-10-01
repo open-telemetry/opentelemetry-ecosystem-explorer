@@ -1,0 +1,49 @@
+## Prerequisites
+
+This receiver has been built to support ESXi and vCenter versions:
+
+- 8
+- 7.0
+
+A “Read Only” user assigned to a vSphere with permissions to the vCenter server, cluster and all subsequent resources being monitored must be specified in order for the receiver to retrieve information about them.
+
+## Configuration
+
+
+| Parameter           | Default | Type             | Notes                                                                                                                                                                                                                                           |
+| ------------------- | ------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| endpoint            |         | String           | Endpoint to the vCenter Server or ESXi host that has the sdk path enabled. Required. The expected format is `<protocol>://<hostname>` <br><br> i.e: `https://vcsa.hostname.localnet`                                                            |
+| username            |         | String           | Required                                                                                                                                                                                                                                        |
+| password            |         | String           | Required                                                                                                                                                                                                                                        |
+| tls                 |         | TLSClientSetting | Not Required. Will use defaults for [configtls.ClientConfig](https://github.com/open-telemetry/opentelemetry-collector/blob/main/config/configtls/README.md). By default insecure settings are rejected and certificate verification is on. |
+| proxy_url           |         | String           | Not Required. URL of the proxy to use when connecting to the vCenter SDK endpoint <br><br> i.e: `socks5://proxy.hostname.localnet:1080`. The `http`, `https`, `socks5` and `socks5h` schemes are supported. When unset, the standard `HTTP_PROXY`/`HTTPS_PROXY`/`NO_PROXY` environment variables apply. Unlike those, this setting is scoped to a single receiver instance, so several `vcenter/<name>` receivers in one collector can each use a different proxy. <br><br> When it is set, those environment variables are ignored for this receiver and all SDK traffic is sent to the proxy. |
+| collection_interval | 2m      | Duration         | This receiver collects metrics on an interval. If the vCenter is fairly large, this value may need to be increased. Valid time units are `ns`, `us` (or `µs`), `ms`, `s`, `m`, `h`                                                              |
+| initial_delay       | 1s      | Duration         | Defines how long this receiver waits before starting.                                                                                                                                                                                           |
+| max_query_metrics   | 256     | int              | Maximum number of metric IDs per `QueryPerf` API call. Should match or be lower than your vCenter's `vpxd.stats.maxQueryMetrics` setting (default 256). Set to `0` to disable batching. See [VMware KB 301449](https://knowledge.broadcom.com/external/article?articleNumber=301449). |
+
+### Example Configuration
+
+```yaml
+receivers:
+  vcenter:
+    endpoint: http://localhost:15672
+    username: otelu
+    password: ${env:VCENTER_PASSWORD}
+    collection_interval: 5m
+    initial_delay: 1s
+    metrics: []
+```
+
+The full list of settings exposed for this receiver are documented in [config.go](./config.go) with detailed sample configurations in [testdata/config.yaml](./testdata/config.yaml). TLS config is documented further under the [opentelemetry collector's configtls package](https://github.com/open-telemetry/opentelemetry-collector/blob/main/config/configtls/README.md).
+
+## Metrics
+
+Details about the metrics produced by this receiver can be found in [metadata.yaml](./metadata.yaml) with further documentation in [documentation.md](./documentation.md)
+
+### Feature gates
+
+**BETA**: `receiver.vcenter.resourcePoolMemoryUsageAttribute`
+
+This feature gate is enabled by default. It adds the `memory_usage_type` attribute to the
+`vcenter.resource_pool.memory.usage` metric. Disabling the gate retains the previous behavior:
+only guest memory usage is emitted, without the attribute.

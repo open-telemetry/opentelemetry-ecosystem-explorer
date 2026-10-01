@@ -1,0 +1,33 @@
+{
+  "description": null,
+  "display_name": "Cgroup Go Runtime Extension",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-cgroupruntimeextension",
+  "markdown_hash": "7caa49d589cc",
+  "name": "cgroupruntimeextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "mx-psi",
+        "rogercoll"
+      ]
+    },
+    "distributions": [
+      "contrib",
+      "k8s"
+    ],
+    "stability": {
+      "alpha": [
+        "extension"
+      ]
+    },
+    "unsupported_platforms": [
+      "darwin",
+      "windows"
+    ]
+  },
+  "type": "extension"
+}

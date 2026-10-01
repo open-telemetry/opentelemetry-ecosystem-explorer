@@ -1,0 +1,27 @@
+{
+  "description": "The File Telemetry Policy Extension provides telemetry policies loaded from local files.",
+  "display_name": "File Telemetry Policy Extension",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-filetelemetrypolicyextension",
+  "markdown_hash": "41699cbadc0a",
+  "name": "filetelemetrypolicyextension",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "extension",
+    "codeowners": {
+      "active": [
+        "dashpole",
+        "jaronoff97",
+        "mx-psi"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "extension"
+      ]
+    }
+  },
+  "type": "extension"
+}

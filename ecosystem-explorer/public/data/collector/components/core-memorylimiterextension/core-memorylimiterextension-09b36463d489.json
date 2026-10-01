@@ -1,0 +1,44 @@
+{
+  "attributes": {
+    "transport": {
+      "description": "The transport protocol used for the request (e.g., grpc, http).",
+      "type": "string"
+    }
+  },
+  "description": null,
+  "display_name": "Memory Limiter Extension",
+  "distribution": "core",
+  "ecosystem": "collector",
+  "id": "core-memorylimiterextension",
+  "markdown_hash": "3aa2d2a02315",
+  "name": "memorylimiterextension",
+  "repository": "opentelemetry-collector",
+  "status": {
+    "class": "extension",
+    "distributions": [],
+    "stability": {
+      "beta": [
+        "extension"
+      ]
+    }
+  },
+  "telemetry": {
+    "metrics": {
+      "memorylimiter_refused_requests": {
+        "attributes": [
+          "transport"
+        ],
+        "description": "Number of requests refused by the memory limiter extension.",
+        "enabled": true,
+        "stability": "alpha",
+        "sum": {
+          "aggregated": "cumulative",
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      }
+    }
+  },
+  "type": "extension"
+}

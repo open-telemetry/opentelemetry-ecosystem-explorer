@@ -1,0 +1,28 @@
+{
+  "description": null,
+  "display_name": "Slow SQL Connector",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-slowsqlconnector",
+  "markdown_hash": "e7bac14ca9fc",
+  "name": "slowsqlconnector",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "connector",
+    "codeowners": {
+      "active": [
+        "JaredTan95",
+        "Frapschen"
+      ],
+      "emeritus": [
+        "atoulme"
+      ]
+    },
+    "stability": {
+      "development": [
+        "traces_to_logs"
+      ]
+    }
+  },
+  "type": "connector"
+}
