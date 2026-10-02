@@ -1,0 +1,13 @@
+description: OpenTelemetry unhandled exceptions instrumentation
+entry_points:
+- name: exceptions
+  value: opentelemetry.instrumentation.exceptions:UnhandledExceptionInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-exceptions
+instruments: []
+name: opentelemetry-instrumentation-exceptions
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: null
+source_path: instrumentation/opentelemetry-instrumentation-exceptions
+supports_metrics: false
+version: 0.66b0

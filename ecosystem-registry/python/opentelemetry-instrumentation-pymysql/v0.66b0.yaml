@@ -1,0 +1,16 @@
+description: OpenTelemetry PyMySQL instrumentation
+entry_points:
+- name: pymysql
+  value: opentelemetry.instrumentation.pymysql:PyMySQLInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-pymysql
+instruments:
+- library: PyMySQL
+  source_key: instruments
+  version_range: < 2
+name: opentelemetry-instrumentation-pymysql
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: migration
+source_path: instrumentation/opentelemetry-instrumentation-pymysql
+supports_metrics: null
+version: 0.66b0

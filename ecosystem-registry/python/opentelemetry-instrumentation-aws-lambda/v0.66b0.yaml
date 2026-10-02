@@ -1,0 +1,13 @@
+description: OpenTelemetry AWS Lambda instrumentation
+entry_points:
+- name: aws-lambda
+  value: opentelemetry.instrumentation.aws_lambda:AwsLambdaInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-aws-lambda
+instruments: []
+name: opentelemetry-instrumentation-aws-lambda
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: null
+source_path: instrumentation/opentelemetry-instrumentation-aws-lambda
+supports_metrics: null
+version: 0.66b0

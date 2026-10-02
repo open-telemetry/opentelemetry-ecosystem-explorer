@@ -1,0 +1,16 @@
+description: OpenTelemetry aiokafka instrumentation
+entry_points:
+- name: aiokafka
+  value: opentelemetry.instrumentation.aiokafka:AIOKafkaInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-aiokafka
+instruments:
+- library: aiokafka
+  source_key: instruments
+  version_range: '>= 0.8, < 1.0'
+name: opentelemetry-instrumentation-aiokafka
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: null
+source_path: instrumentation/opentelemetry-instrumentation-aiokafka
+supports_metrics: null
+version: 0.66b0

@@ -1,0 +1,16 @@
+description: OpenTelemetry psycopg instrumentation
+entry_points:
+- name: psycopg
+  value: opentelemetry.instrumentation.psycopg:PsycopgInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-psycopg
+instruments:
+- library: psycopg
+  source_key: instruments
+  version_range: '>= 3.1.0'
+name: opentelemetry-instrumentation-psycopg
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: migration
+source_path: instrumentation/opentelemetry-instrumentation-psycopg
+supports_metrics: null
+version: 0.66b0

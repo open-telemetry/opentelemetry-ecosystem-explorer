@@ -1,0 +1,16 @@
+description: OpenTelemetry aiopg instrumentation
+entry_points:
+- name: aiopg
+  value: opentelemetry.instrumentation.aiopg:AiopgInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-aiopg
+instruments:
+- library: aiopg
+  source_key: instruments
+  version_range: '>= 0.13.0, < 2.0.0'
+name: opentelemetry-instrumentation-aiopg
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: migration
+source_path: instrumentation/opentelemetry-instrumentation-aiopg
+supports_metrics: true
+version: 0.66b0

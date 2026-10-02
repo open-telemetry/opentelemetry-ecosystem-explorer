@@ -1,0 +1,16 @@
+description: OpenTelemetry requests instrumentation
+entry_points:
+- name: requests
+  value: opentelemetry.instrumentation.requests:RequestsInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-requests
+instruments:
+- library: requests
+  source_key: instruments
+  version_range: ~= 2.0
+name: opentelemetry-instrumentation-requests
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: migration
+source_path: instrumentation/opentelemetry-instrumentation-requests
+supports_metrics: true
+version: 0.66b0

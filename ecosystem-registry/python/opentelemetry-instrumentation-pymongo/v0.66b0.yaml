@@ -1,0 +1,16 @@
+description: OpenTelemetry pymongo instrumentation
+entry_points:
+- name: pymongo
+  value: opentelemetry.instrumentation.pymongo:PymongoInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-pymongo
+instruments:
+- library: pymongo
+  source_key: instruments
+  version_range: '>= 3.1, < 5.0'
+name: opentelemetry-instrumentation-pymongo
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: migration
+source_path: instrumentation/opentelemetry-instrumentation-pymongo
+supports_metrics: null
+version: 0.66b0

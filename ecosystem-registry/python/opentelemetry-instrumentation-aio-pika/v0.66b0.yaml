@@ -1,0 +1,16 @@
+description: OpenTelemetry Aio-pika instrumentation
+entry_points:
+- name: aio-pika
+  value: opentelemetry.instrumentation.aio_pika:AioPikaInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-aio-pika
+instruments:
+- library: aio_pika
+  source_key: instruments
+  version_range: '>= 7.2.0, < 11.0.0'
+name: opentelemetry-instrumentation-aio-pika
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: null
+source_path: instrumentation/opentelemetry-instrumentation-aio-pika
+supports_metrics: null
+version: 0.66b0

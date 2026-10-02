@@ -1,0 +1,16 @@
+description: OpenTelemetry mysqlclient instrumentation
+entry_points:
+- name: mysqlclient
+  value: opentelemetry.instrumentation.mysqlclient:MySQLClientInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-mysqlclient
+instruments:
+- library: mysqlclient
+  source_key: instruments
+  version_range: < 3
+name: opentelemetry-instrumentation-mysqlclient
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: migration
+source_path: instrumentation/opentelemetry-instrumentation-mysqlclient
+supports_metrics: null
+version: 0.66b0

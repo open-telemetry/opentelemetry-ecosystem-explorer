@@ -1,0 +1,16 @@
+description: Boto3 SQS service tracing for OpenTelemetry
+entry_points:
+- name: boto3
+  value: opentelemetry.instrumentation.boto3sqs:Boto3SQSInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-boto3sqs
+instruments:
+- library: boto3
+  source_key: instruments
+  version_range: ~= 1.0
+name: opentelemetry-instrumentation-boto3sqs
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: null
+source_path: instrumentation/opentelemetry-instrumentation-boto3sqs
+supports_metrics: null
+version: 0.66b0

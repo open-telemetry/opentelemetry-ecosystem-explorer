@@ -1,0 +1,16 @@
+description: OpenTelemetry pymssql instrumentation
+entry_points:
+- name: pymssql
+  value: opentelemetry.instrumentation.pymssql:PyMSSQLInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-pymssql
+instruments:
+- library: pymssql
+  source_key: instruments
+  version_range: '>= 2.1.5, < 3'
+name: opentelemetry-instrumentation-pymssql
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: migration
+source_path: instrumentation/opentelemetry-instrumentation-pymssql
+supports_metrics: null
+version: 0.66b0
