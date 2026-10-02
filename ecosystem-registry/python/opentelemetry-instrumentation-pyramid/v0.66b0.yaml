@@ -1,0 +1,16 @@
+description: OpenTelemetry Pyramid instrumentation
+entry_points:
+- name: pyramid
+  value: opentelemetry.instrumentation.pyramid:PyramidInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-pyramid
+instruments:
+- library: pyramid
+  source_key: instruments
+  version_range: '>= 1.7'
+name: opentelemetry-instrumentation-pyramid
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: migration
+source_path: instrumentation/opentelemetry-instrumentation-pyramid
+supports_metrics: true
+version: 0.66b0

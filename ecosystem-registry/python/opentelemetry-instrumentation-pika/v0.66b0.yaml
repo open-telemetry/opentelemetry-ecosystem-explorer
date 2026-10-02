@@ -1,0 +1,16 @@
+description: OpenTelemetry pika instrumentation
+entry_points:
+- name: pika
+  value: opentelemetry.instrumentation.pika:PikaInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-pika
+instruments:
+- library: pika
+  source_key: instruments
+  version_range: '>= 0.12.0'
+name: opentelemetry-instrumentation-pika
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: null
+source_path: instrumentation/opentelemetry-instrumentation-pika
+supports_metrics: null
+version: 0.66b0

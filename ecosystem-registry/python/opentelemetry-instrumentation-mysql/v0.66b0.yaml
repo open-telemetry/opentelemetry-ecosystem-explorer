@@ -1,0 +1,16 @@
+description: OpenTelemetry MySQL instrumentation
+entry_points:
+- name: mysql
+  value: opentelemetry.instrumentation.mysql:MySQLInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-mysql
+instruments:
+- library: mysql-connector-python
+  source_key: instruments
+  version_range: '>= 8.0'
+name: opentelemetry-instrumentation-mysql
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: migration
+source_path: instrumentation/opentelemetry-instrumentation-mysql
+supports_metrics: null
+version: 0.66b0

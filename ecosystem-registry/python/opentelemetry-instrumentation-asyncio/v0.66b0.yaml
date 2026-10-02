@@ -1,0 +1,13 @@
+description: OpenTelemetry instrumentation for asyncio
+entry_points:
+- name: asyncio
+  value: opentelemetry.instrumentation.asyncio:AsyncioInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-asyncio
+instruments: []
+name: opentelemetry-instrumentation-asyncio
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: null
+source_path: instrumentation/opentelemetry-instrumentation-asyncio
+supports_metrics: null
+version: 0.66b0

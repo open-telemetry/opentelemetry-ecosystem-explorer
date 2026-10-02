@@ -1,0 +1,13 @@
+description: OpenTelemetry SQLite3 instrumentation
+entry_points:
+- name: sqlite3
+  value: opentelemetry.instrumentation.sqlite3:SQLite3Instrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-sqlite3
+instruments: []
+name: opentelemetry-instrumentation-sqlite3
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: migration
+source_path: instrumentation/opentelemetry-instrumentation-sqlite3
+supports_metrics: null
+version: 0.66b0

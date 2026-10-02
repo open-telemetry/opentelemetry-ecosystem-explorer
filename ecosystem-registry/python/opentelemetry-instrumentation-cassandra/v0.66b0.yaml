@@ -1,0 +1,19 @@
+description: OpenTelemetry Cassandra instrumentation
+entry_points:
+- name: cassandra
+  value: opentelemetry.instrumentation.cassandra:CassandraInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-cassandra
+instruments:
+- library: cassandra-driver
+  source_key: instruments-any
+  version_range: ~= 3.25
+- library: scylla-driver
+  source_key: instruments-any
+  version_range: ~= 3.25
+name: opentelemetry-instrumentation-cassandra
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: migration
+source_path: instrumentation/opentelemetry-instrumentation-cassandra
+supports_metrics: null
+version: 0.66b0

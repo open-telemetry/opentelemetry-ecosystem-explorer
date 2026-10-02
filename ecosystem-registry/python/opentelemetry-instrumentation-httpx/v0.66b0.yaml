@@ -1,0 +1,21 @@
+description: OpenTelemetry HTTPX Instrumentation
+entry_points:
+- name: httpx
+  value: opentelemetry.instrumentation.httpx:HTTPXClientInstrumentor
+- name: httpx2
+  value: opentelemetry.instrumentation.httpx:HTTPX2ClientInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-httpx
+instruments:
+- library: httpx
+  source_key: instruments-any
+  version_range: '>= 0.18.0'
+- library: httpx2
+  source_key: instruments-any
+  version_range: '>= 2.0.0'
+name: opentelemetry-instrumentation-httpx
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: migration
+source_path: instrumentation/opentelemetry-instrumentation-httpx
+supports_metrics: true
+version: 0.66b0

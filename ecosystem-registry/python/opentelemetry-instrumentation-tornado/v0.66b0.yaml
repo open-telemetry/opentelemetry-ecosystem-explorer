@@ -1,0 +1,16 @@
+description: Tornado instrumentation for OpenTelemetry
+entry_points:
+- name: tornado
+  value: opentelemetry.instrumentation.tornado:TornadoInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-tornado
+instruments:
+- library: tornado
+  source_key: instruments
+  version_range: '>= 5.1.1'
+name: opentelemetry-instrumentation-tornado
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: migration
+source_path: instrumentation/opentelemetry-instrumentation-tornado
+supports_metrics: true
+version: 0.66b0

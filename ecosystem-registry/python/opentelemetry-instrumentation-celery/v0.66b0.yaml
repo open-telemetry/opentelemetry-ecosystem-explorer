@@ -1,0 +1,16 @@
+description: OpenTelemetry Celery Instrumentation
+entry_points:
+- name: celery
+  value: opentelemetry.instrumentation.celery:CeleryInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-celery
+instruments:
+- library: celery
+  source_key: instruments
+  version_range: '>= 4.0, < 6.0'
+name: opentelemetry-instrumentation-celery
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: null
+source_path: instrumentation/opentelemetry-instrumentation-celery
+supports_metrics: null
+version: 0.66b0

@@ -1,0 +1,16 @@
+description: OpenTelemetry aiohttp client instrumentation
+entry_points:
+- name: aiohttp-client
+  value: opentelemetry.instrumentation.aiohttp_client:AioHttpClientInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-aiohttp-client
+instruments:
+- library: aiohttp
+  source_key: instruments
+  version_range: ~= 3.0
+name: opentelemetry-instrumentation-aiohttp-client
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: migration
+source_path: instrumentation/opentelemetry-instrumentation-aiohttp-client
+supports_metrics: true
+version: 0.66b0
