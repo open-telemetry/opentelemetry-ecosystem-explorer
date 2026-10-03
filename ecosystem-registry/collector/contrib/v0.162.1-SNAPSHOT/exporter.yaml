@@ -1079,8 +1079,9 @@ components:
       codeowners:
         active:
         - bogdandrutu
-        - khyatigandhi6
         - avadhut123pisal
+        emeritus:
+        - khyatigandhi6
       distributions:
       - contrib
       stability:
@@ -1526,6 +1527,24 @@ components:
         - traces
         development:
         - profiles
+    telemetry:
+      metrics:
+        exporter_splunkhec_heartbeats_failed:
+          description: Number of heartbeats failed by the Splunk HEC exporter.
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '1'
+        exporter_splunkhec_heartbeats_sent:
+          description: Number of heartbeats sent by the Splunk HEC exporter.
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '1'
     type: splunk_hec
 - name: stefexporter
   metadata:
