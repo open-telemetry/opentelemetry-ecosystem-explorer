@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-long-task",
+  "packages": {
+    "instrumentation-long-task": "ed543ac681bb"
+  },
+  "version": "0.64.0"
+}

@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-connect",
+  "packages": {
+    "instrumentation-connect": "ad0b75b9ab99"
+  },
+  "version": "0.64.0"
+}

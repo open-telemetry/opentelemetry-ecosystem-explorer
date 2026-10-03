@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-kafkajs",
+  "packages": {
+    "instrumentation-kafkajs": "51fef7493c46"
+  },
+  "version": "0.29.0"
+}

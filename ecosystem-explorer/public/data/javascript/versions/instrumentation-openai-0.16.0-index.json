@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-openai",
+  "packages": {
+    "instrumentation-openai": "496004883bb1"
+  },
+  "version": "0.16.0"
+}

@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-oracledb",
+  "packages": {
+    "instrumentation-oracledb": "5d379e1ae84c"
+  },
+  "version": "0.43.0"
+}

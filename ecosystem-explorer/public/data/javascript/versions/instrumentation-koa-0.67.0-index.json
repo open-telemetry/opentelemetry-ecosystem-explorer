@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-koa",
+  "packages": {
+    "instrumentation-koa": "15117f9de08f"
+  },
+  "version": "0.67.0"
+}

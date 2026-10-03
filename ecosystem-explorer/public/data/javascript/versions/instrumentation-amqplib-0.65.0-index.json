@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-amqplib",
+  "packages": {
+    "instrumentation-amqplib": "50ea312e7056"
+  },
+  "version": "0.65.0"
+}

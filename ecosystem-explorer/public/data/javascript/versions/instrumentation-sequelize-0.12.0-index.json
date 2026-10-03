@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-sequelize",
+  "packages": {
+    "instrumentation-sequelize": "31417e18c30d"
+  },
+  "version": "0.12.0"
+}

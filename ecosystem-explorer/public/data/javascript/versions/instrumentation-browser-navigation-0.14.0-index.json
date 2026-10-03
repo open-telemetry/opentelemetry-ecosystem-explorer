@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-browser-navigation",
+  "packages": {
+    "instrumentation-browser-navigation": "c972d2e804bf"
+  },
+  "version": "0.14.0"
+}

@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-router",
+  "packages": {
+    "instrumentation-router": "a741148db88d"
+  },
+  "version": "0.64.0"
+}

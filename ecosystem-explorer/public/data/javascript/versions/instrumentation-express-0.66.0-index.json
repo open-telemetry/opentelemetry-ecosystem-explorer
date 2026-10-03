@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-express",
+  "packages": {
+    "instrumentation-express": "faa99ee891c5"
+  },
+  "version": "0.66.0"
+}

@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-typeorm",
+  "packages": {
+    "instrumentation-typeorm": "3e824803302f"
+  },
+  "version": "0.20.0"
+}

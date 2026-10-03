@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-web-exception",
+  "packages": {
+    "instrumentation-web-exception": "6098374898dc"
+  },
+  "version": "0.12.0"
+}

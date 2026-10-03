@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-mongodb",
+  "packages": {
+    "instrumentation-mongodb": "b686b9a5d645"
+  },
+  "version": "0.75.0"
+}

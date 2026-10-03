@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-nestjs-core",
+  "packages": {
+    "instrumentation-nestjs-core": "a37ff0a32346"
+  },
+  "version": "0.64.0"
+}

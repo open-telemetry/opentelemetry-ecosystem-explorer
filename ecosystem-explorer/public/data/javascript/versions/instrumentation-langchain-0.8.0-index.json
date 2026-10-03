@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-langchain",
+  "packages": {
+    "instrumentation-langchain": "914a14aa2415"
+  },
+  "version": "0.8.0"
+}

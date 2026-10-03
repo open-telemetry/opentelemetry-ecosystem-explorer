@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-aws-lambda",
+  "packages": {
+    "instrumentation-aws-lambda": "d793f0e2a334"
+  },
+  "version": "0.72.0"
+}

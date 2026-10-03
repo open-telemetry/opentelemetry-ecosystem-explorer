@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-restify",
+  "packages": {
+    "instrumentation-restify": "bf78fe4679b8"
+  },
+  "version": "0.64.0"
+}

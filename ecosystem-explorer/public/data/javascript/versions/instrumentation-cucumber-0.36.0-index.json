@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-cucumber",
+  "packages": {
+    "instrumentation-cucumber": "4cbf7a18420d"
+  },
+  "version": "0.36.0"
+}

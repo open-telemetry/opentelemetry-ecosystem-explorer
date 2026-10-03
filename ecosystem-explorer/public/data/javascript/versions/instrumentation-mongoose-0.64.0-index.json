@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-mongoose",
+  "packages": {
+    "instrumentation-mongoose": "ee4cd6701342"
+  },
+  "version": "0.64.0"
+}

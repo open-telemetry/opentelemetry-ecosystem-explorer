@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-socket.io",
+  "packages": {
+    "instrumentation-socket.io": "1ece1cfd6cbf"
+  },
+  "version": "0.68.0"
+}

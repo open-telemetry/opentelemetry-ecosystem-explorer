@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-user-interaction",
+  "packages": {
+    "instrumentation-user-interaction": "0ef82a9305de"
+  },
+  "version": "0.64.0"
+}

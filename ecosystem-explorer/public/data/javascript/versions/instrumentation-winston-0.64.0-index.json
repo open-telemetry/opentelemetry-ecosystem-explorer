@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-winston",
+  "packages": {
+    "instrumentation-winston": "26612d2e39c5"
+  },
+  "version": "0.64.0"
+}

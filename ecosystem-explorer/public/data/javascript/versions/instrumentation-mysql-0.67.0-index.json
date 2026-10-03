@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-mysql",
+  "packages": {
+    "instrumentation-mysql": "88607b806bf6"
+  },
+  "version": "0.67.0"
+}

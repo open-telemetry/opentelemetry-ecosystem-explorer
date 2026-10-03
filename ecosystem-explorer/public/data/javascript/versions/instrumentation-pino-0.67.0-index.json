@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-pino",
+  "packages": {
+    "instrumentation-pino": "98401cb6f8a4"
+  },
+  "version": "0.67.0"
+}

@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-redis",
+  "packages": {
+    "instrumentation-redis": "a1f17830256c"
+  },
+  "version": "0.70.0"
+}
