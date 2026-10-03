@@ -34,6 +34,7 @@ projects/
 | [`154-genai-ecosystem/`](./154-genai-ecosystem/)                     | [#154](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/154)   | Research GenAI ecosystem — survey of GenAI/LLM instrumentation libraries and semantic convention coverage across languages.     | in-progress |
 | [`9-javascript-instrumentation/`](./9-javascript-instrumentation/)   | [#9](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/9)       | Research JavaScript instrumentation metadata - survey of js-contrib packages, telemetry coverage, and proposed registry schema. | in-progress |
 | [`947-untrack-explorer-database/`](./947-untrack-explorer-database/) | [#947](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/947)   | Stop committing the generated explorer database; publish it as per-ecosystem release assets pinned by a committed manifest.     | in-progress |
+| [`1187-browser-instrumentation/`](./1187-browser-instrumentation/)   | [#1187](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/1187) | Research browser instrumentation metadata - audit of opentelemetry-browser, watcher coupling, and presentation with JavaScript. | in-progress |
 
 ---
 
