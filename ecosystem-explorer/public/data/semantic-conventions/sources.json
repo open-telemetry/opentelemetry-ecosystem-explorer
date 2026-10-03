@@ -1,0 +1,466 @@
+{
+  "schemaVersion": 1,
+  "sources": [
+    {
+      "id": "semantic-conventions",
+      "repository": "https://github.com/open-telemetry/semantic-conventions",
+      "mode": "release",
+      "paths": ["CHANGELOG.md", "docs", "model"],
+      "reviewedStart": {
+        "tag": "v1.44.0",
+        "commit": "e10a930844c6951757a43b849d364f7d056ac32b"
+      }
+    },
+    {
+      "id": "semantic-conventions-genai",
+      "repository": "https://github.com/open-telemetry/semantic-conventions-genai",
+      "mode": "commit",
+      "paths": ["changelog.d", "docs", "model"],
+      "reviewedStart": {
+        "commit": "ebe3d1fb9fdda3398099e11ef91c4c490912f88d"
+      }
+    },
+    {
+      "id": "opentelemetry-specification",
+      "repository": "https://github.com/open-telemetry/opentelemetry-specification",
+      "mode": "frozen",
+      "paths": []
+    }
+  ],
+  "releases": [
+    {
+      "key": "1.0.0",
+      "source": "opentelemetry-specification",
+      "tag": "v1.0.0",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "1.0.1",
+      "source": "opentelemetry-specification",
+      "tag": "v1.0.1",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "1.1.0",
+      "source": "opentelemetry-specification",
+      "tag": "v1.1.0",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "1.2.0",
+      "source": "opentelemetry-specification",
+      "tag": "v1.2.0",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "1.3.0",
+      "source": "opentelemetry-specification",
+      "tag": "v1.3.0",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "1.4.0",
+      "source": "opentelemetry-specification",
+      "tag": "v1.4.0",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "1.5.0",
+      "source": "opentelemetry-specification",
+      "tag": "v1.5.0",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "1.6.0",
+      "source": "opentelemetry-specification",
+      "tag": "v1.6.0",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "1.7.0",
+      "source": "opentelemetry-specification",
+      "tag": "v1.7.0",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "1.8.0",
+      "source": "opentelemetry-specification",
+      "tag": "v1.8.0",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "1.9.0",
+      "source": "opentelemetry-specification",
+      "tag": "v1.9.0",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "1.10.0",
+      "source": "opentelemetry-specification",
+      "tag": "v1.10.0",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "1.11.0",
+      "source": "opentelemetry-specification",
+      "tag": "v1.11.0",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "1.12.0",
+      "source": "opentelemetry-specification",
+      "tag": "v1.12.0",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "1.13.0",
+      "source": "opentelemetry-specification",
+      "tag": "v1.13.0",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "1.14.0",
+      "source": "opentelemetry-specification",
+      "tag": "v1.14.0",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "1.15.0",
+      "source": "opentelemetry-specification",
+      "tag": "v1.15.0",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "1.16.0",
+      "source": "opentelemetry-specification",
+      "tag": "v1.16.0",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "1.17.0",
+      "source": "opentelemetry-specification",
+      "tag": "v1.17.0",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "1.18.0",
+      "source": "opentelemetry-specification",
+      "tag": "v1.18.0",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "1.19.0",
+      "source": "opentelemetry-specification",
+      "tag": "v1.19.0",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "1.20.0",
+      "source": "opentelemetry-specification",
+      "tag": "v1.20.0",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "1.21.0",
+      "source": "semantic-conventions",
+      "tag": "v1.21.0",
+      "commit": "e531541025992b68177a68b87628c5dc75c4f7d9",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "1.22.0",
+      "source": "semantic-conventions",
+      "tag": "v1.22.0",
+      "commit": "cadfe53949266d33476b15ca52c92f682600a29c",
+      "baseline": "1.21.0",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "1.23.0",
+      "source": "semantic-conventions",
+      "tag": "v1.23.0",
+      "commit": "da1dbb567f0f0c866dde79a7564a58ab8019b1cf",
+      "baseline": "1.22.0",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "1.23.1",
+      "source": "semantic-conventions",
+      "tag": "v1.23.1",
+      "commit": "73720582560b5a020df8aee90504fcb411f62713",
+      "baseline": "1.23.0",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "1.24.0",
+      "source": "semantic-conventions",
+      "tag": "v1.24.0",
+      "commit": "cafda7127683b7f667e27cdbd3220510b6f998c9",
+      "baseline": "1.23.0",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "1.25.0",
+      "source": "semantic-conventions",
+      "tag": "v1.25.0",
+      "commit": "f1be1511d91743a457974ed9a21b9193b2fe0e51",
+      "baseline": "1.24.0",
+      "dateBasis": "release-published-at"
+    },
+    {
+      "key": "1.26.0",
+      "source": "semantic-conventions",
+      "tag": "v1.26.0",
+      "commit": "9adff435c76ea3b8cba89babefc832d3dd3c1ab9",
+      "baseline": "1.25.0",
+      "dateBasis": "release-published-at"
+    },
+    {
+      "key": "1.27.0",
+      "source": "semantic-conventions",
+      "tag": "v1.27.0",
+      "commit": "01c542ccacd869ee8a329aa33c65fb2c47bf2815",
+      "baseline": "1.26.0",
+      "dateBasis": "release-published-at"
+    },
+    {
+      "key": "1.28.0",
+      "source": "semantic-conventions",
+      "tag": "v1.28.0",
+      "commit": "96f8bda9bab363cb01e2441820bc83a5dad15801",
+      "baseline": "1.27.0",
+      "dateBasis": "release-published-at"
+    },
+    {
+      "key": "1.29.0",
+      "source": "semantic-conventions",
+      "tag": "v1.29.0",
+      "commit": "0edb9e2b42e37739fe53e10623d93809269dd300",
+      "baseline": "1.28.0",
+      "dateBasis": "release-published-at"
+    },
+    {
+      "key": "1.30.0",
+      "source": "semantic-conventions",
+      "tag": "v1.30.0",
+      "commit": "ac424df0d09fae721913f2a399b90ac16ba960fd",
+      "baseline": "1.29.0",
+      "dateBasis": "release-published-at"
+    },
+    {
+      "key": "1.31.0",
+      "source": "semantic-conventions",
+      "tag": "v1.31.0",
+      "commit": "c01aa89d9a13042e56536c60975139c50e764796",
+      "baseline": "1.30.0",
+      "dateBasis": "release-published-at"
+    },
+    {
+      "key": "1.32.0",
+      "source": "semantic-conventions",
+      "tag": "v1.32.0",
+      "commit": "6814d83dac7ebd6b29dada91c669a99275f674c8",
+      "baseline": "1.31.0",
+      "dateBasis": "release-published-at"
+    },
+    {
+      "key": "1.33.0",
+      "source": "semantic-conventions",
+      "tag": "v1.33.0",
+      "commit": "9e993af31e53177cac4ccda014809ab0b5395835",
+      "baseline": "1.32.0",
+      "dateBasis": "release-published-at"
+    },
+    {
+      "key": "1.34.0",
+      "source": "semantic-conventions",
+      "tag": "v1.34.0",
+      "commit": "e96d8de9e807b51fb39d823e1d73be172aa27835",
+      "baseline": "1.33.0",
+      "dateBasis": "release-published-at"
+    },
+    {
+      "key": "1.35.0",
+      "source": "semantic-conventions",
+      "tag": "v1.35.0",
+      "commit": "a4977286793718856ab397fabab6796d136bcd9b",
+      "baseline": "1.34.0",
+      "dateBasis": "release-published-at"
+    },
+    {
+      "key": "1.36.0",
+      "source": "semantic-conventions",
+      "tag": "v1.36.0",
+      "commit": "4b2c0e6544d740178c9c77809d25705e77acd0b0",
+      "baseline": "1.35.0",
+      "dateBasis": "release-published-at"
+    },
+    {
+      "key": "1.37.0",
+      "source": "semantic-conventions",
+      "tag": "v1.37.0",
+      "commit": "aec6e9d3e86754683dab7c707655d69d953b2768",
+      "baseline": "1.36.0",
+      "dateBasis": "release-published-at"
+    },
+    {
+      "key": "1.38.0",
+      "source": "semantic-conventions",
+      "tag": "v1.38.0",
+      "commit": "8e16df7981f94b70ed1b9795c995094af995184f",
+      "baseline": "1.37.0",
+      "dateBasis": "release-published-at"
+    },
+    {
+      "key": "1.39.0",
+      "source": "semantic-conventions",
+      "tag": "v1.39.0",
+      "commit": "6d05e92070f0a5c9a5bbcd396d2ebe2103377f8c",
+      "baseline": "1.38.0",
+      "dateBasis": "release-published-at"
+    },
+    {
+      "key": "1.40.0",
+      "source": "semantic-conventions",
+      "tag": "v1.40.0",
+      "commit": "7fe537301d17919af7d7eb65b32e9be35da2c497",
+      "baseline": "1.39.0",
+      "dateBasis": "release-published-at"
+    },
+    {
+      "key": "1.41.0",
+      "source": "semantic-conventions",
+      "tag": "v1.41.0",
+      "commit": "e018fe6f91862f5ed63c082f87697cddac596784",
+      "baseline": "1.40.0",
+      "dateBasis": "release-published-at"
+    },
+    {
+      "key": "1.41.1",
+      "source": "semantic-conventions",
+      "tag": "v1.41.1",
+      "commit": "ead83b9b0fa36540c1642fce46e874f002ac23f1",
+      "baseline": "1.41.0",
+      "dateBasis": "release-published-at"
+    },
+    {
+      "key": "1.42.0",
+      "source": "semantic-conventions",
+      "tag": "v1.42.0",
+      "commit": "ae3a98640194ed405c4c797281502e4d3bd258b3",
+      "baseline": "1.41.0",
+      "dateBasis": "release-published-at"
+    },
+    {
+      "key": "1.43.0",
+      "source": "semantic-conventions",
+      "tag": "v1.43.0",
+      "commit": "89aae438b3b3b0a8dd33003c9d70592baf7dbd0d",
+      "baseline": "1.42.0",
+      "dateBasis": "release-published-at"
+    },
+    {
+      "key": "1.44.0",
+      "source": "semantic-conventions",
+      "tag": "v1.44.0",
+      "commit": "e10a930844c6951757a43b849d364f7d056ac32b",
+      "baseline": "1.43.0",
+      "dateBasis": "release-published-at"
+    }
+  ],
+  "lanes": [
+    {
+      "lane": "http",
+      "namespaces": ["http"]
+    },
+    {
+      "lane": "db",
+      "namespaces": ["db"]
+    },
+    {
+      "lane": "rpc",
+      "namespaces": ["rpc"]
+    },
+    {
+      "lane": "jvm",
+      "namespaces": ["jvm"]
+    },
+    {
+      "lane": "messaging",
+      "namespaces": ["messaging"]
+    },
+    {
+      "lane": "k8s",
+      "namespaces": ["container", "k8s"]
+    },
+    {
+      "lane": "browser",
+      "namespaces": ["browser"]
+    },
+    {
+      "lane": "genai",
+      "namespaces": ["gen-ai", "mcp", "openai"],
+      "migration": {
+        "eventId": "genai-moved",
+        "from": "semantic-conventions",
+        "to": "semantic-conventions-genai"
+      }
+    },
+    {
+      "lane": "delivery",
+      "namespaces": ["cicd", "vcs"]
+    },
+    {
+      "lane": "runtime",
+      "namespaces": ["cpython", "process", "system"]
+    },
+    {
+      "lane": "signals",
+      "namespaces": ["cli", "cloudevents", "feature-flags", "geo", "graphql", "profile"]
+    }
+  ],
+  "evidence": [
+    {
+      "eventId": "genai-moved",
+      "source": "semantic-conventions",
+      "release": "1.42.0",
+      "namespaces": ["gen-ai", "mcp", "openai"],
+      "links": [
+        "https://github.com/open-telemetry/semantic-conventions/pull/3696",
+        "https://github.com/open-telemetry/semantic-conventions/commit/c9e48b1d1af565454b73b9e14f0841bca4670ada",
+        "https://github.com/open-telemetry/semantic-conventions-genai/commit/ebe3d1fb9fdda3398099e11ef91c4c490912f88d"
+      ],
+      "reviewStatus": "accepted"
+    },
+    {
+      "eventId": "http-freeze",
+      "source": "semantic-conventions",
+      "release": "1.21.0",
+      "namespaces": ["http"],
+      "links": [
+        "https://github.com/open-telemetry/semantic-conventions/blob/v1.21.0/docs/http/http-spans.md"
+      ],
+      "reviewStatus": "accepted"
+    },
+    {
+      "eventId": "process-attributes-rc",
+      "source": "semantic-conventions",
+      "release": "1.42.0",
+      "namespaces": ["process"],
+      "links": [
+        "https://github.com/open-telemetry/semantic-conventions/commit/e6ce0d219ee61af553f8fc1118c25a266eda6122"
+      ],
+      "reviewStatus": "accepted"
+    },
+    {
+      "eventId": "process-rc",
+      "source": "semantic-conventions",
+      "release": "1.43.0",
+      "namespaces": ["process"],
+      "links": [
+        "https://github.com/open-telemetry/semantic-conventions/commit/a03df15a2b528ee2b18e400aafd58aba48664aa9"
+      ],
+      "reviewStatus": "accepted"
+    }
+  ]
+}

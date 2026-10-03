@@ -18,6 +18,7 @@ import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 import { STATIC_ROUTE_META } from "../src/lib/seo/derive.ts";
+import { projectAcceptedHistory } from "../src/features/semantic-conventions/history/accepted-history.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -165,7 +166,7 @@ function buildJavaAgentVersions(versions) {
  * individual component/instrumentation or top-level pages, so those are
  * documented with the `.md` suffix only.)
  */
-function buildLlmsTxt(staticPages, collectorPages, javaPages) {
+function buildLlmsTxt(staticPages, collectorPages, javaPages, semconvPages = []) {
   const pageList = (pages) =>
     pages.map(({ label, pageUrl }) => `- [${label}](${pageUrl})`).join("\n");
 
@@ -181,6 +182,7 @@ For agent consumption, we provide index files that point to our structured JSON 
 - [Collector Versions](/agent/collector/versions.md)
 - [Java Agent Instrumentations](/agent/javaagent/index.md)
 - [Java Agent Versions](/agent/javaagent/versions.md)
+- [Semantic Convention History](/agent/semantic-conventions/index.md)
 
 **For a single-file version of all documentation, see [llms-full.txt](/llms-full.txt).**
 
@@ -196,6 +198,7 @@ To help agents parse our JSON data, we provide the following JSON Schemas:
 
 - [Collector Component Schema](/schemas/collector-component.schema.json)
 - [Java Agent Instrumentation Schema](/schemas/javaagent-instrumentation.schema.json)
+- [Semantic Convention History Schema](/schemas/semantic-conventions-history.schema.json)
 
 ## Navigation Patterns
 
@@ -234,6 +237,12 @@ The facet file is also the cheapest way to filter the ecosystem by stability, si
 ## Version Comparison Guide
 
 To find what changed in a component between versions, compare its hash in the two version index JSONs; different hashes mean the component changed.
+
+## Semantic Convention History
+
+Accepted, maintainer-reviewed milestones per domain, with source and revision coverage. Machine-readable: [/data/semantic-conventions/accepted-history.json](/data/semantic-conventions/accepted-history.json). Unreviewed candidates are never published.
+
+${pageList(semconvPages)}
 
 ## Collector Components
 
@@ -838,6 +847,107 @@ export async function writeFacetArtifacts(publicPath, outDir = distDir) {
   return collected;
 }
 
+/**
+ * Coverage sentence for a source. Accepted history only covers what a maintainer has reviewed,
+ * so every source states where that coverage ends.
+ */
+function semconvCoverage(source) {
+  if (source.mode === "frozen") {
+    return "Frozen legacy source: referenced by historical events, not monitored.";
+  }
+  const start = source.reviewedStart;
+  const label = start.tag ? `\`${start.tag}\` (\`${start.commit}\`)` : `commit \`${start.commit}\``;
+  return `Accepted history is reviewed through ${label}; later changes are not covered.`;
+}
+
+/** Builds `/agent/semantic-conventions/index.md` from the accepted-history projection. */
+export function buildSemanticConventionsIndex(history) {
+  let md = `> For the complete documentation index, see [llms.txt](/llms.txt)\n\n# Semantic Convention History\n\n<!-- llms-txt-link: /llms.txt -->\n\nAccepted, maintainer-reviewed milestones in the history of OpenTelemetry semantic conventions. Candidates that have not been reviewed are never listed here.\n\n**JSON Schema**: [semantic-conventions-history.schema.json](/schemas/semantic-conventions-history.schema.json)\n\n**Machine-readable**: [/data/semantic-conventions/accepted-history.json](/data/semantic-conventions/accepted-history.json)\n\nRelease keys are source-qualified (\`{source}@{tag}\`) because two repositories can publish the same tag.\n\n## Sources\n\n| Source | Repository | Mode | Coverage |\n| --- | --- | --- | --- |\n`;
+  for (const source of history.sources) {
+    md += `| \`${source.id}\` | ${source.repository} | ${source.mode} | ${escapeCell(semconvCoverage(source))} |\n`;
+  }
+  md += `\n## Domains\n\n| Domain | Namespaces | Events | Page |\n| --- | --- | --- | --- |\n`;
+  for (const lane of history.lanes) {
+    md += `| ${escapeCell(lane.title)} | ${escapeCell(lane.namespaces.join(", "))} | ${lane.events.length} | [/agent/semantic-conventions/${lane.id}.md](/agent/semantic-conventions/${lane.id}.md) |\n`;
+  }
+  return md;
+}
+
+/** Builds `/agent/semantic-conventions/{lane}.md` for one domain. */
+export function buildSemanticConventionsDomainPage(lane) {
+  const lines = [
+    "> For the complete documentation index, see [llms.txt](/llms.txt)",
+    "",
+    `# Semantic Convention History: ${lane.title}`,
+    "",
+    "<!-- llms-txt-link: /llms.txt -->",
+    "",
+    `${lane.subtitle}. Namespaces: ${lane.namespaces.map((n) => `\`${n}\``).join(", ")}.`,
+    "",
+  ];
+  if (lane.migration) {
+    lines.push(
+      `Migration: this domain moved from \`${lane.migration.from}\` to \`${lane.migration.to}\` (event \`${lane.migration.eventId}\`).`,
+      ""
+    );
+  }
+  lines.push(
+    "[All domains](/agent/semantic-conventions/index.md)",
+    "",
+    "## Events",
+    "",
+    "| Date | Release | Type | Event ID | Title | Source |",
+    "| --- | --- | --- | --- | --- | --- |"
+  );
+  for (const event of lane.events) {
+    lines.push(
+      `| ${event.date} | ${escapeCell(event.releaseKey ?? "pre-release")} | ${event.type} | \`${event.id}\` | ${escapeCell(event.title)} | [${escapeCell(event.sourceId)}](${event.source}) |`
+    );
+  }
+  for (const event of lane.events) {
+    lines.push("", `### ${event.id}`, "", event.detail);
+    if (event.transition) lines.push("", `Transition: ${event.transition}`);
+    for (const evidence of event.evidence) {
+      lines.push(
+        "",
+        `Evidence (${evidence.source}): ${evidence.links.map((l) => `<${l}>`).join(", ")}`
+      );
+    }
+  }
+  return lines.join("\n") + "\n";
+}
+
+/**
+ * Projects the accepted semantic-convention history and writes its machine-readable record and
+ * Markdown pages. Returns the `{ label, pageUrl }` listing for llms.txt plus the index Markdown.
+ */
+export async function writeSemanticConventionsHistory(publicPath, outDir = distDir) {
+  const dataDir = path.join(publicPath, "data/semantic-conventions");
+  const timeline = JSON.parse(await fs.readFile(path.join(dataDir, "timeline.json"), "utf-8"));
+  const manifest = JSON.parse(await fs.readFile(path.join(dataDir, "sources.json"), "utf-8"));
+  const history = projectAcceptedHistory(timeline, manifest);
+
+  const jsonDir = path.join(outDir, "data/semantic-conventions");
+  const mdDir = path.join(outDir, "agent/semantic-conventions");
+  await fs.mkdir(jsonDir, { recursive: true });
+  await fs.mkdir(mdDir, { recursive: true });
+
+  await fs.writeFile(
+    path.join(jsonDir, "accepted-history.json"),
+    JSON.stringify(history, null, 2) + "\n"
+  );
+  const indexMd = buildSemanticConventionsIndex(history);
+  await fs.writeFile(path.join(mdDir, "index.md"), indexMd);
+  const pages = [
+    { label: "Semantic Convention History", pageUrl: "/agent/semantic-conventions/index.md" },
+  ];
+  for (const lane of history.lanes) {
+    await fs.writeFile(path.join(mdDir, `${lane.id}.md`), buildSemanticConventionsDomainPage(lane));
+    pages.push({ label: lane.title, pageUrl: `/agent/semantic-conventions/${lane.id}.md` });
+  }
+  return { pages, indexMd };
+}
+
 /** Maps a route pathname to its Markdown file path in dist (\`/\` -> index.md). */
 function staticRouteMdPath(pathname) {
   const rel = pathname === "/" ? "index.md" : `${pathname.replace(/^\//, "")}.md`;
@@ -1006,8 +1116,10 @@ async function generateDocs() {
   const javaPages = await generateJavaPages(publicDir);
   console.log(` - Generated ${javaPages.length} Java agent instrumentation pages`);
   await writeLatestJsonAliases(publicDir);
+  const semconv = await writeSemanticConventionsHistory(publicDir);
+  console.log(` - Generated ${semconv.pages.length} semantic convention history pages`);
 
-  const llmsTxt = buildLlmsTxt(staticPages, collectorPages, javaPages);
+  const llmsTxt = buildLlmsTxt(staticPages, collectorPages, javaPages, semconv.pages);
 
   await fs.writeFile(path.join(collectorAgentDir, "index.md"), collectorIndexMd);
   console.log(" - Generated dist/agent/collector/index.md");
@@ -1034,6 +1146,8 @@ async function generateDocs() {
     javaagentIndexMd,
     "\n---\n",
     javaagentVersionsMd,
+    "\n---\n",
+    semconv.indexMd,
   ].join("\n");
 
   await fs.writeFile(path.join(distDir, "llms-full.txt"), llmsFullTxt);

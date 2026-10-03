@@ -1,0 +1,297 @@
+{
+  "description": "Published accepted history (`accepted-history.json`).",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "type": "number"
+    },
+    "sources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "description": "Repository-qualified identity, e.g. `semantic-conventions`.",
+            "type": "string"
+          },
+          "repository": {
+            "type": "string"
+          },
+          "mode": {
+            "enum": ["commit", "frozen", "release"],
+            "type": "string"
+          },
+          "paths": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "reviewedStart": {
+            "description": "Absent for frozen sources, which are not monitored.",
+            "type": "object",
+            "properties": {
+              "tag": {
+                "type": "string"
+              },
+              "commit": {
+                "type": "string"
+              }
+            },
+            "propertyOrder": ["tag", "commit"],
+            "required": ["commit"]
+          }
+        },
+        "propertyOrder": ["id", "repository", "mode", "paths", "reviewedStart"],
+        "required": ["id", "mode", "paths", "repository"]
+      }
+    },
+    "releases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "description": "`{source}@{tag}`",
+            "type": "string"
+          },
+          "legacyKey": {
+            "description": "Bare key used by `timeline.json`.",
+            "type": "string"
+          },
+          "source": {
+            "description": "Repository-qualified identity, e.g. `semantic-conventions`.",
+            "type": "string"
+          },
+          "tag": {
+            "type": "string"
+          },
+          "commit": {
+            "type": "string"
+          },
+          "baseline": {
+            "description": "Comparison baseline as a qualified release key.",
+            "type": "string"
+          },
+          "date": {
+            "description": "ISO date (YYYY-MM-DD), UTC.",
+            "type": "string"
+          },
+          "dateBasis": {
+            "description": "How a release date was established; mirrors the bases documented in the data README.",
+            "enum": ["changelog-heading", "release-published-at"],
+            "type": "string"
+          }
+        },
+        "propertyOrder": [
+          "key",
+          "legacyKey",
+          "source",
+          "tag",
+          "commit",
+          "baseline",
+          "date",
+          "dateBasis"
+        ],
+        "required": ["date", "dateBasis", "key", "legacyKey", "source", "tag"]
+      }
+    },
+    "lanes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "namespaces": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "migration": {
+            "type": "object",
+            "properties": {
+              "eventId": {
+                "type": "string"
+              },
+              "from": {
+                "description": "Repository-qualified identity, e.g. `semantic-conventions`.",
+                "type": "string"
+              },
+              "to": {
+                "description": "Repository-qualified identity, e.g. `semantic-conventions`.",
+                "type": "string"
+              }
+            },
+            "propertyOrder": ["eventId", "from", "to"],
+            "required": ["eventId", "from", "to"]
+          },
+          "events": {
+            "type": "array",
+            "items": {
+              "description": "An accepted timeline event plus derived source identity.",
+              "type": "object",
+              "properties": {
+                "sourceId": {
+                  "description": "Source whose repository `source` points into.",
+                  "type": "string"
+                },
+                "releaseKey": {
+                  "description": "`{source}@{tag}` for `release`, or null for pre-release events.",
+                  "type": ["null", "string"]
+                },
+                "evidence": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "source": {
+                        "description": "Repository-qualified identity, e.g. `semantic-conventions`.",
+                        "type": "string"
+                      },
+                      "releaseKey": {
+                        "type": ["null", "string"]
+                      },
+                      "namespaces": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "links": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "reviewStatus": {
+                        "type": "string",
+                        "const": "accepted"
+                      }
+                    },
+                    "propertyOrder": [
+                      "source",
+                      "releaseKey",
+                      "namespaces",
+                      "links",
+                      "reviewStatus"
+                    ],
+                    "required": ["links", "namespaces", "releaseKey", "reviewStatus", "source"]
+                  }
+                },
+                "id": {
+                  "type": "string"
+                },
+                "lane": {
+                  "type": "string"
+                },
+                "release": {
+                  "type": ["null", "string"]
+                },
+                "type": {
+                  "enum": [
+                    "baseline",
+                    "change",
+                    "deprecation",
+                    "domain",
+                    "moved",
+                    "removed",
+                    "stability"
+                  ],
+                  "type": "string"
+                },
+                "short": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "detail": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string"
+                },
+                "major": {
+                  "type": "boolean"
+                },
+                "date": {
+                  "description": "ISO date (YYYY-MM-DD), UTC.",
+                  "type": "string"
+                },
+                "transition": {
+                  "type": "string"
+                },
+                "dateBasis": {
+                  "const": "specification-commit",
+                  "type": "string"
+                },
+                "commit": {
+                  "type": "string"
+                },
+                "pullRequest": {
+                  "type": "number"
+                },
+                "firstRelease": {
+                  "type": "string"
+                },
+                "lineageSource": {
+                  "type": "string"
+                }
+              },
+              "propertyOrder": [
+                "sourceId",
+                "releaseKey",
+                "evidence",
+                "id",
+                "lane",
+                "release",
+                "type",
+                "short",
+                "title",
+                "detail",
+                "source",
+                "major",
+                "date",
+                "transition",
+                "dateBasis",
+                "commit",
+                "pullRequest",
+                "firstRelease",
+                "lineageSource"
+              ],
+              "required": [
+                "date",
+                "detail",
+                "evidence",
+                "id",
+                "lane",
+                "major",
+                "release",
+                "releaseKey",
+                "short",
+                "source",
+                "sourceId",
+                "title",
+                "type"
+              ]
+            }
+          },
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "subtitle": {
+            "type": "string"
+          }
+        },
+        "propertyOrder": ["namespaces", "migration", "events", "id", "title", "subtitle"],
+        "required": ["events", "id", "namespaces", "subtitle", "title"]
+      }
+    }
+  },
+  "propertyOrder": ["schemaVersion", "sources", "releases", "lanes"],
+  "required": ["lanes", "releases", "schemaVersion", "sources"],
+  "$schema": "https://json-schema.org/draft-07/schema#"
+}
