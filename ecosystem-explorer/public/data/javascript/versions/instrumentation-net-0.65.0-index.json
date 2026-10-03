@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-net",
+  "packages": {
+    "instrumentation-net": "c83eb7902e69"
+  },
+  "version": "0.65.0"
+}

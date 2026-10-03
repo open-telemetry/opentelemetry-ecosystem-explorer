@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-knex",
+  "packages": {
+    "instrumentation-knex": "d2dbe2eadc49"
+  },
+  "version": "0.62.0"
+}

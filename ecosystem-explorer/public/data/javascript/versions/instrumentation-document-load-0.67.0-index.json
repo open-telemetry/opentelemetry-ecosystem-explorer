@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-document-load",
+  "packages": {
+    "instrumentation-document-load": "162b2c35f413"
+  },
+  "version": "0.67.0"
+}

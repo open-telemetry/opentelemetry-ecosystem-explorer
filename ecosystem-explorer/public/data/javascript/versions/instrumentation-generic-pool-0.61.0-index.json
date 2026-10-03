@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-generic-pool",
+  "packages": {
+    "instrumentation-generic-pool": "395666e45e03"
+  },
+  "version": "0.61.0"
+}

@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-lru-memoizer",
+  "packages": {
+    "instrumentation-lru-memoizer": "e2b6c212cde5"
+  },
+  "version": "0.64.0"
+}

@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-aws-sdk",
+  "packages": {
+    "instrumentation-aws-sdk": "13ae8cd11359"
+  },
+  "version": "0.75.0"
+}

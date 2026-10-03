@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-fs",
+  "packages": {
+    "instrumentation-fs": "34d3f4f8ba8c"
+  },
+  "version": "0.38.0"
+}

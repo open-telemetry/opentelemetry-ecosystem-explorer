@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-cassandra-driver",
+  "packages": {
+    "instrumentation-cassandra-driver": "c803b5b3fe62"
+  },
+  "version": "0.65.0"
+}

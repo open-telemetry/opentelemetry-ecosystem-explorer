@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-undici",
+  "packages": {
+    "instrumentation-undici": "8d673b97613f"
+  },
+  "version": "0.31.0"
+}

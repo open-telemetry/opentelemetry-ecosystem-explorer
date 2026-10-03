@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-ioredis",
+  "packages": {
+    "instrumentation-ioredis": "61bb6484e4e0"
+  },
+  "version": "0.70.0"
+}

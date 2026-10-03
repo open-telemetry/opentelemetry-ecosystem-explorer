@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-console",
+  "packages": {
+    "instrumentation-console": "c1c9fe605686"
+  },
+  "version": "0.4.0"
+}

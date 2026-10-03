@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-dataloader",
+  "packages": {
+    "instrumentation-dataloader": "b497897d1aac"
+  },
+  "version": "0.35.0"
+}

@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-bunyan",
+  "packages": {
+    "instrumentation-bunyan": "f82252049f8e"
+  },
+  "version": "0.63.0"
+}

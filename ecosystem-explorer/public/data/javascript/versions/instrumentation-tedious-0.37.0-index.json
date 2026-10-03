@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-tedious",
+  "packages": {
+    "instrumentation-tedious": "3c24fe7badef"
+  },
+  "version": "0.37.0"
+}

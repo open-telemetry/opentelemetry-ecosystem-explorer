@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-memcached",
+  "packages": {
+    "instrumentation-memcached": "9bf3b9ba59e4"
+  },
+  "version": "0.62.0"
+}

@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-hapi",
+  "packages": {
+    "instrumentation-hapi": "6e7c37022d9d"
+  },
+  "version": "0.67.0"
+}

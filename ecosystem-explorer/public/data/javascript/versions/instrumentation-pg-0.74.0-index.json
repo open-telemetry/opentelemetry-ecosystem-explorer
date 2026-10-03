@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-pg",
+  "packages": {
+    "instrumentation-pg": "8db2808cb75b"
+  },
+  "version": "0.74.0"
+}

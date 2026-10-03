@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-runtime-node",
+  "packages": {
+    "instrumentation-runtime-node": "8b0a899bed59"
+  },
+  "version": "0.33.0"
+}

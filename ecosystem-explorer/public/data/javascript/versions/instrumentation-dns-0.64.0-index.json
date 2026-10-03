@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-dns",
+  "packages": {
+    "instrumentation-dns": "9a3015170087"
+  },
+  "version": "0.64.0"
+}

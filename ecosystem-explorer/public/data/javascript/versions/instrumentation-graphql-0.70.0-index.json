@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-graphql",
+  "packages": {
+    "instrumentation-graphql": "aeca60754df8"
+  },
+  "version": "0.70.0"
+}

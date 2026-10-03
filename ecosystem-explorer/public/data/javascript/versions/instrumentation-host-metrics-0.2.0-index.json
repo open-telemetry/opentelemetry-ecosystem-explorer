@@ -1,0 +1,7 @@
+{
+  "package": "instrumentation-host-metrics",
+  "packages": {
+    "instrumentation-host-metrics": "fcb6907db2a7"
+  },
+  "version": "0.2.0"
+}
