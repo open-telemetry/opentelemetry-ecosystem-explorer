@@ -20,7 +20,7 @@ import { resolveDataPath } from "@/lib/api/fetch-with-cache";
 import type { TimelineData } from "../types";
 
 /*
- * Curated content, so it deliberately lives outside `data/{javaagent,collector,configuration}/`:
+ * Curated content, so it deliberately lives outside the generated `data/<ecosystem>/` directories:
  * explorer-db-builder owns those directories and `--clean` rmtree's them wholesale, which
  * previously deleted a hand-maintained file placed inside one of them (#882). A future automated
  * watcher may take over keeping this file current, but it still has to write outside the

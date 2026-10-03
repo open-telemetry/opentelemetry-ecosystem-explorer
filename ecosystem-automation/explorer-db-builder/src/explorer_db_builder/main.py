@@ -17,11 +17,13 @@
 import argparse
 import logging
 import sys
+from pathlib import Path
 from typing import Optional
 
 from semantic_version import Version
 from watcher_common.inventory_manager import JavaagentInventoryManager
 
+from explorer_db_builder.archive_plan import emit_archives, snapshot_digests
 from explorer_db_builder.collector_builder import run_collector_builder
 from explorer_db_builder.configuration_aggregator import build_global_configurations
 from explorer_db_builder.configuration_builder import run_configuration_builder
@@ -32,6 +34,7 @@ from explorer_db_builder.declarative_name_corrections import (
     normalize_config_descriptions,
 )
 from explorer_db_builder.ecosystem_stats import count_unique_java_library_names
+from explorer_db_builder.ecosystems import ECOSYSTEMS
 from explorer_db_builder.instrumentation_transformer import (
     make_list_instrumentation,
     transform_instrumentation_format,
@@ -307,8 +310,7 @@ def run_builder(clean: bool = False, ecosystem: str = "all", collector_audit_rep
 
     Args:
         clean: If True, wipe the output directories before building.
-        ecosystem: Which pipeline to run: "javaagent", "configuration", "collector",
-            "javascript", or "all".
+        ecosystem: Which pipeline to run: one of ECOSYSTEMS, or "all".
         collector_audit_report: If set, the collector build writes a JSON report of
             active catalog components missing a display_name to this path.
 
@@ -353,7 +355,7 @@ def main() -> None:
     )
     parser.add_argument(
         "--ecosystem",
-        choices=["javaagent", "configuration", "collector", "javascript", "all"],
+        choices=[*ECOSYSTEMS, "all"],
         default="all",
         help="Which ecosystem pipeline to run (default: all)",
     )
@@ -366,8 +368,22 @@ def main() -> None:
             "display_name to PATH. Only produced when the collector pipeline runs."
         ),
     )
+    parser.add_argument(
+        "--emit-archives",
+        default=None,
+        metavar="DIR",
+        help=(
+            "After a successful build, write one byte-reproducible <ecosystem>.tar.gz per "
+            "ecosystem to DIR, plus archive-plan.json describing what to publish."
+        ),
+    )
 
     args = parser.parse_args()
+
+    # The plan always describes every ecosystem, so archiving a single-pipeline build would pin
+    # digests and release tags for trees this invocation did not produce.
+    if args.emit_archives and args.ecosystem != "all":
+        parser.error("--emit-archives requires --ecosystem all")
 
     configure_logging()
 
@@ -376,11 +392,28 @@ def main() -> None:
     logger.info("=" * 60)
     logger.info("")
 
-    exit_code = run_builder(
-        clean=args.clean,
-        ecosystem=args.ecosystem,
-        collector_audit_report=args.collector_audit_report,
-    )
+    exit_code = 0
+    previous_digests: dict[str, Optional[str]] = {}
+    if args.emit_archives:
+        # Must run before any pipeline cleans its directory, or it digests the new build instead.
+        try:
+            previous_digests = snapshot_digests()
+        except (ValueError, OSError) as error:
+            logger.error(f"❌ {error}")
+            exit_code = 1
+
+    if exit_code == 0:
+        exit_code = run_builder(
+            clean=args.clean,
+            ecosystem=args.ecosystem,
+            collector_audit_report=args.collector_audit_report,
+        )
+
+    # Archiving reads the built tree, so it only runs once every selected pipeline succeeded.
+    if exit_code == 0 and args.emit_archives:
+        logger.info("--- Archives ---")
+        exit_code = emit_archives(Path(args.emit_archives), previous_digests)
+
     sys.exit(exit_code)
 
 
