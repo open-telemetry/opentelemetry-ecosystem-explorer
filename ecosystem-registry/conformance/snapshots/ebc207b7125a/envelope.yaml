@@ -1,0 +1,40 @@
+schema_version: 1.0.0
+upstream_schema_version: 1
+importer_version: 0.1.0
+provenance:
+  source_repository: https://github.com/open-telemetry/semantic-conventions-conformance
+  source_revision: 6f85d0aa70eb55116d161c5c0737a6ba55faf101
+  report_path: docs/data/conformance.json
+  report_digest: sha256:ebc207b7125a084ab273f5244cc189627665b02b52530a0ceac969984764a5d6
+  report_url: https://github.com/open-telemetry/semantic-conventions-conformance/blob/6f85d0aa70eb55116d161c5c0737a6ba55faf101/docs/data/conformance.json
+domains:
+  database-conformance:
+    registry_dir: model
+    registry_ref: v1.44.0
+    registry_repo: open-telemetry/semantic-conventions
+  genai-conformance:
+    registry_dir: model
+    registry_ref: 4a39b6ef1363fab57bc40e18c82abb32cc89ebcd
+    registry_repo: open-telemetry/semantic-conventions-genai
+  http-conformance:
+    registry_dir: model
+    registry_ref: v1.44.0
+    registry_repo: open-telemetry/semantic-conventions
+targets_summary:
+  total_targets: 130
+  languages:
+  - dotnet
+  - go
+  - java
+  - js
+  - php
+  - python
+  - ruby
+  runners:
+  - database-conformance
+  - genai-conformance
+  - http-conformance
+  domains:
+  - database
+  - gen-ai
+  - http

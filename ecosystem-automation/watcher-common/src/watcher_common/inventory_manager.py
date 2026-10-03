@@ -18,6 +18,7 @@ import logging
 import re
 import shutil
 from collections.abc import Iterable
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -336,3 +337,174 @@ class JavaagentInventoryManager(BaseInventoryManager):
         if match:
             return match.group(1), match.group(2)
         return None
+
+
+@dataclass(frozen=True)
+class SnapshotRecord:
+    """Record describing an imported report snapshot in the inventory."""
+
+    id: str
+    content_digest: str
+    source_repository: str
+    source_revision: str
+    upstream_schema_version: int
+    target_count: int
+    path: str
+    extra: dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert record to dictionary for index serialization."""
+        data = {
+            "id": self.id,
+            "content_digest": self.content_digest,
+            "source_repository": self.source_repository,
+            "source_revision": self.source_revision,
+            "upstream_schema_version": self.upstream_schema_version,
+            "target_count": self.target_count,
+            "path": self.path,
+        }
+        if self.extra:
+            data.update(self.extra)
+        return data
+
+
+class SnapshotInventoryManager:
+    """Manages content- and commit-addressed snapshot inventories.
+
+    Directory structure:
+        inventory_dir/
+            index.yaml
+            current.yaml
+            snapshots/
+                <snapshot-id>/
+                    envelope.yaml
+                    report.json
+                    targets.yaml
+    """
+
+    INDEX_FILE = "index.yaml"
+    CURRENT_FILE = "current.yaml"
+    SNAPSHOTS_DIR = "snapshots"
+
+    def __init__(self, inventory_dir: str | Path):
+        self.inventory_dir = Path(inventory_dir)
+        self.snapshots_dir = self.inventory_dir / self.SNAPSHOTS_DIR
+        self.index_file = self.inventory_dir / self.INDEX_FILE
+        self.current_file = self.inventory_dir / self.CURRENT_FILE
+
+    def get_snapshot_dir(self, snapshot_id: str) -> Path:
+        """Get directory path for a specific snapshot ID."""
+        return self.snapshots_dir / snapshot_id
+
+    def snapshot_exists(self, snapshot_id: str) -> bool:
+        """Check if snapshot directory exists and contains basic artifacts."""
+        snap_dir = self.get_snapshot_dir(snapshot_id)
+        return snap_dir.exists() and (snap_dir / "report.json").exists() and (snap_dir / "envelope.yaml").exists()
+
+    def load_index(self) -> dict[str, Any]:
+        """Load index.yaml or return a default empty index."""
+        if not self.index_file.exists():
+            return {
+                "schema_version": "1.0.0",
+                "current_snapshot_id": None,
+                "snapshots": [],
+            }
+        try:
+            with open(self.index_file, "r", encoding="utf-8") as f:
+                data = yaml.safe_load(f) or {}
+            if not isinstance(data, dict):
+                return {
+                    "schema_version": "1.0.0",
+                    "current_snapshot_id": None,
+                    "snapshots": [],
+                }
+            if "snapshots" not in data or not isinstance(data["snapshots"], list):
+                data["snapshots"] = []
+            return data
+        except OSError as e:
+            logger.error("Failed to read %s: %s", self.index_file, e)
+            return {
+                "schema_version": "1.0.0",
+                "current_snapshot_id": None,
+                "snapshots": [],
+            }
+
+    def save_index(self, index_data: dict[str, Any]) -> None:
+        """Save index.yaml atomically."""
+        self.inventory_dir.mkdir(parents=True, exist_ok=True)
+        tmp_file = self.inventory_dir / f".{self.INDEX_FILE}.tmp"
+        with open(tmp_file, "w", encoding="utf-8") as f:
+            yaml.safe_dump(index_data, f, default_flow_style=False, sort_keys=False, allow_unicode=True)
+        tmp_file.replace(self.index_file)
+
+    def get_current_snapshot(self) -> dict[str, Any] | None:
+        """Load current.yaml pointer if present."""
+        if not self.current_file.exists():
+            return None
+        try:
+            with open(self.current_file, "r", encoding="utf-8") as f:
+                data = yaml.safe_load(f)
+            return data if isinstance(data, dict) else None
+        except OSError as e:
+            logger.error("Failed to read %s: %s", self.current_file, e)
+            return None
+
+    def save_current(self, current_data: dict[str, Any]) -> None:
+        """Save current.yaml atomically."""
+        self.inventory_dir.mkdir(parents=True, exist_ok=True)
+        tmp_file = self.inventory_dir / f".{self.CURRENT_FILE}.tmp"
+        with open(tmp_file, "w", encoding="utf-8") as f:
+            yaml.safe_dump(current_data, f, default_flow_style=False, sort_keys=False, allow_unicode=True)
+        tmp_file.replace(self.current_file)
+
+    def has_digest(self, content_digest: str) -> bool:
+        """Check if an identical report content digest has already been registered in the index."""
+        index = self.load_index()
+        for snap in index.get("snapshots", []):
+            if snap.get("content_digest") == content_digest:
+                return True
+        return False
+
+    def get_snapshot_by_id(self, snapshot_id: str) -> dict[str, Any] | None:
+        """Find a snapshot record by ID from the index."""
+        index = self.load_index()
+        for snap in index.get("snapshots", []):
+            if snap.get("id") == snapshot_id:
+                return snap
+        return None
+
+    def list_snapshots(self) -> list[dict[str, Any]]:
+        """List all snapshots from the index."""
+        index = self.load_index()
+        return list(index.get("snapshots", []))
+
+    def register_snapshot(self, record: SnapshotRecord, set_as_current: bool = True) -> None:
+        """Register snapshot in index.yaml and optionally update current.yaml."""
+        index = self.load_index()
+        snapshots = index.get("snapshots", [])
+
+        updated = False
+        record_dict = record.to_dict()
+        for i, snap in enumerate(snapshots):
+            if snap.get("id") == record.id:
+                snapshots[i] = record_dict
+                updated = True
+                break
+        if not updated:
+            snapshots.append(record_dict)
+
+        if set_as_current:
+            index["current_snapshot_id"] = record.id
+
+        index["snapshots"] = snapshots
+        self.save_index(index)
+
+        if set_as_current:
+            current_data = {
+                "snapshot_id": record.id,
+                "path": record.path,
+                "content_digest": record.content_digest,
+                "source_repository": record.source_repository,
+                "source_revision": record.source_revision,
+            }
+            self.save_current(current_data)
