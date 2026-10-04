@@ -189,4 +189,15 @@ describe("defaultConfigValue", () => {
       })
     ).toBe(true);
   });
+
+  it("returns null for an entry without a default instead of inventing one", () => {
+    expect(
+      defaultConfigValue({
+        name: "otel.instrumentation.jdbc.query-sanitization.enabled",
+        declarative_name: "java.jdbc.query_sanitization.enabled",
+        description: "Enables query sanitization for database queries.",
+        type: "boolean",
+      })
+    ).toBeNull();
+  });
 });

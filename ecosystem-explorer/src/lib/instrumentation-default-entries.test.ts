@@ -225,6 +225,40 @@ describe("buildInstrumentationDefaultEntries", () => {
     expect(buildInstrumentationDefaultEntries(modules, { includeScopes: ALL_SCOPES })).toEqual([]);
   });
 
+  it("omits configs without a default so nothing is invented for them", () => {
+    const modules = [
+      makeModule("jdbc", [
+        makeEntry("jdbc", [
+          {
+            name: "otel.instrumentation.jdbc.query-sanitization.enabled",
+            declarative_name: "java.jdbc.query_sanitization.enabled",
+            description: "Enables query sanitization for database queries.",
+            type: "boolean",
+          },
+          {
+            name: "otel.semconv.db.version",
+            declarative_name: "general.db.semconv.version",
+            description: "The database semantic conventions version.",
+            type: "int",
+          },
+          {
+            name: "otel.instrumentation.jdbc.datasource.enabled",
+            declarative_name: "java.jdbc.datasource.enabled",
+            description: "Enables DataSource instrumentation.",
+            type: "boolean",
+            default: false,
+          },
+        ]),
+      ]),
+    ];
+    expect(buildInstrumentationDefaultEntries(modules, { includeScopes: ALL_SCOPES })).toEqual([
+      {
+        path: ["instrumentation/development", "java", "jdbc", "datasource", "enabled"],
+        value: false,
+      },
+    ]);
+  });
+
   it("returns empty for no modules", () => {
     expect(buildInstrumentationDefaultEntries([], { includeScopes: ALL_SCOPES })).toEqual([]);
   });
