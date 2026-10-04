@@ -16,6 +16,7 @@
 
 import copy
 
+import pytest
 from explorer_db_builder.configuration_aggregator import build_global_configurations
 
 
@@ -104,6 +105,31 @@ class TestBuildGlobalConfigurations:
         result = build_global_configurations(inventories)
 
         assert result[0]["description"] == "from old"
+
+    def test_default_absent_on_newest_is_not_inherited(self):
+        """A newest entry without a default (unset falls back to another setting) stays without one."""
+        inventories = [
+            _inventory(libraries=[{"name": "jdbc", "configurations": [_config("otel.c", type="boolean")]}]),
+            _inventory(
+                libraries=[{"name": "jdbc", "configurations": [_config("otel.c", type="boolean", default=True)]}]
+            ),
+        ]
+
+        result = build_global_configurations(inventories)
+
+        assert "default" not in result[0]
+
+    @pytest.mark.parametrize("newest_default", [False, ""])
+    def test_falsy_default_on_newest_is_not_overwritten(self, newest_default):
+        """A false or empty default on the newest entry is a real value, not a gap to fill."""
+        inventories = [
+            _inventory(libraries=[{"name": "ext", "configurations": [_config("otel.c", default=newest_default)]}]),
+            _inventory(libraries=[{"name": "ext", "configurations": [_config("otel.c", default=True)]}]),
+        ]
+
+        result = build_global_configurations(inventories)
+
+        assert result[0]["default"] == newest_default
 
     def test_reads_from_both_libraries_and_custom(self):
         """Configs are collected from both libraries and custom lists."""
@@ -253,6 +279,42 @@ class TestBuildGlobalConfigurationsEdgeCases:
         assert build_global_configurations([]) == []
 
 
+class TestBuildGlobalConfigurationsAgentLevel:
+    def test_included_with_empty_instrumentations(self):
+        """Agent-level configs are listed alongside module configs, used by no instrumentation."""
+        inventories = [
+            {
+                "global_configurations": [_config("otel.instrumentation.common.v3-preview", default=False)],
+                "libraries": [{"name": "jdbc", "configurations": [_config("otel.j")]}],
+            }
+        ]
+
+        result = build_global_configurations(inventories)
+
+        assert [c["name"] for c in result] == ["otel.instrumentation.common.v3-preview", "otel.j"]
+        assert result[0]["instrumentations"] == []
+        assert result[0]["default"] is False
+        assert result[1]["instrumentations"] == ["jdbc"]
+
+    def test_older_value_fills_field_absent_in_newest(self):
+        """Agent-level configs merge across versions the same way module configs do."""
+        inventories = [
+            {"global_configurations": [_config("otel.g", description="")]},
+            {"global_configurations": [_config("otel.g", description="from old")]},
+        ]
+
+        result = build_global_configurations(inventories)
+
+        assert result[0]["description"] == "from old"
+        assert result[0]["instrumentations"] == []
+
+    def test_nameless_config_is_skipped(self):
+        """Names are filled from declarative_name before aggregation; one still nameless is skipped."""
+        inventories = [{"global_configurations": [{"declarative_name": "general.db.semconv.version"}]}]
+
+        assert build_global_configurations(inventories) == []
+
+
 class TestBuildGlobalConfigurationsImmutability:
     def test_does_not_mutate_input_inventories(self):
         """Aggregation must not mutate the input inventory dicts or their nested values."""
@@ -260,6 +322,15 @@ class TestBuildGlobalConfigurationsImmutability:
             _inventory(libraries=[{"name": "ext", "configurations": [_config("otel.c", examples=["GET,POST"])]}]),
             _inventory(libraries=[{"name": "ext", "configurations": [_config("otel.c", description="older")]}]),
         ]
+        snapshot = copy.deepcopy(inventories)
+
+        build_global_configurations(inventories)
+
+        assert inventories == snapshot
+
+    def test_does_not_mutate_input_global_configurations(self):
+        """Seeding the empty instrumentations list must not touch the input global configs."""
+        inventories = [{"global_configurations": [_config("otel.g", description="d")]}]
         snapshot = copy.deepcopy(inventories)
 
         build_global_configurations(inventories)

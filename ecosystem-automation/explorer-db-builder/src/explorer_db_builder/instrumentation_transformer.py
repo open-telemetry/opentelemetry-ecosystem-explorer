@@ -41,9 +41,11 @@ def transform_instrumentation_format(inventory_data: dict[str, Any]) -> dict[str
 
     file_format = inventory_data["file_format"]
 
-    if file_format == 0.6:
-        logger.debug("File format 0.6 detected, resolving definition references to 0.5 inline shape")
-        return _transform_0_6_to_0_5(inventory_data)
+    # 0.7 existed only briefly on upstream main and was never released, so it is deliberately
+    # unsupported (the watcher rejects it too).
+    if file_format in (0.6, 0.8):
+        logger.debug("File format %s detected, resolving definition references to 0.5 inline shape", file_format)
+        return _transform_catalog_to_0_5(inventory_data)
     if file_format == 0.5:
         logger.debug("File format 0.5 detected, no transformation needed")
         return inventory_data
@@ -184,32 +186,42 @@ def _transform_0_3_to_0_5(inventory_data: dict[str, Any]) -> dict[str, Any]:
     return transformed_data
 
 
+def _lookup_refs(refs: list[str], definitions: dict[str, Any], kind: str, owner: str) -> list[dict[str, Any]]:
+    """Look up each ref in a definitions catalog and return deep copies, in ref order.
+
+    Definitions are deep-copied so the same shared definition referenced from
+    several places yields independent objects (downstream passes mutate these in
+    place). Refs with no matching definition are logged and skipped rather than
+    crashing the build.
+    """
+    resolved = []
+    for ref in refs:
+        definition = definitions.get(ref)
+        if definition is None:
+            logger.warning("%s references unknown %s '%s'", owner, kind, ref)
+            continue
+        resolved.append(copy.deepcopy(definition))
+    return resolved
+
+
 def _resolve_refs(
     library: dict[str, Any],
     configuration_defs: dict[str, Any],
     metric_defs: dict[str, Any],
+    event_defs: dict[str, Any],
 ) -> dict[str, Any]:
     """Resolve a single library's ``*_refs`` into the inline 0.5 shape.
 
     ``configuration_refs`` becomes an inline ``configurations`` list and each
-    telemetry entry's ``metric_refs`` becomes an inline ``metrics`` list, looked
-    up in the top-level definitions catalog. Definitions are deep-copied so the
-    same shared definition referenced by multiple libraries yields independent
-    objects (downstream passes mutate these in place). Refs with no matching
-    definition are logged and skipped rather than crashing the build.
+    telemetry entry's ``metric_refs``/``event_refs`` become inline ``metrics``/
+    ``events`` lists, looked up in the top-level definitions catalog.
     """
     resolved = library.copy()
+    owner = f"Library {library.get('name')}"
 
     config_refs = resolved.pop("configuration_refs", None)
     if config_refs is not None:
-        configurations = []
-        for ref in config_refs:
-            definition = configuration_defs.get(ref)
-            if definition is None:
-                logger.warning("Library %s references unknown configuration '%s'", library.get("name"), ref)
-                continue
-            configurations.append(copy.deepcopy(definition))
-        resolved["configurations"] = configurations
+        resolved["configurations"] = _lookup_refs(config_refs, configuration_defs, "configuration", owner)
 
     telemetry = resolved.get("telemetry")
     if telemetry is not None:
@@ -218,32 +230,32 @@ def _resolve_refs(
             resolved_entry = entry.copy()
             metric_refs = resolved_entry.pop("metric_refs", None)
             if metric_refs is not None:
-                metrics = []
-                for ref in metric_refs:
-                    definition = metric_defs.get(ref)
-                    if definition is None:
-                        logger.warning("Library %s references unknown metric '%s'", library.get("name"), ref)
-                        continue
-                    metrics.append(copy.deepcopy(definition))
-                resolved_entry["metrics"] = metrics
+                resolved_entry["metrics"] = _lookup_refs(metric_refs, metric_defs, "metric", owner)
+            event_refs = resolved_entry.pop("event_refs", None)
+            if event_refs is not None:
+                resolved_entry["events"] = _lookup_refs(event_refs, event_defs, "event", owner)
             resolved_telemetry.append(resolved_entry)
         resolved["telemetry"] = resolved_telemetry
 
     return resolved
 
 
-def _transform_0_6_to_0_5(inventory_data: dict[str, Any]) -> dict[str, Any]:
-    """Transform file_format 0.6 to the inline 0.5 common schema.
+def _transform_catalog_to_0_5(inventory_data: dict[str, Any]) -> dict[str, Any]:
+    """Transform a catalog file_format (0.6 or 0.8) to the inline 0.5 common schema.
 
     0.6 hoists shared metrics and configurations into a top-level ``definitions``
     catalog; libraries reference them by id via ``configuration_refs`` and
-    ``telemetry[].metric_refs``. Downstream consumers (list/index projection,
-    configuration aggregator, and the frontend) all expect the fully-inline 0.5
-    shape, so we resolve every reference against the catalog, drop the ``*_refs``
-    keys and the ``definitions`` block, and tag the result as 0.5.
+    ``telemetry[].metric_refs``. 0.8 adds an ``events`` catalog referenced via
+    ``telemetry[].event_refs``, and top-level ``global_configuration_refs`` for
+    settings read by the agent itself rather than by any module. Downstream
+    consumers (list/index projection, configuration aggregator, and the frontend)
+    all expect the fully-inline 0.5 shape, so we resolve every reference against
+    the catalog, drop the ``*_refs`` keys and the ``definitions`` block, and tag
+    the result as 0.5. Global refs become a top-level ``global_configurations``
+    list, which only the configuration aggregator reads.
 
     Args:
-        inventory_data: Inventory data in format 0.6
+        inventory_data: Inventory data in format 0.6 or 0.8
 
     Returns:
         Inventory data with references resolved inline, tagged as format 0.5
@@ -251,6 +263,7 @@ def _transform_0_6_to_0_5(inventory_data: dict[str, Any]) -> dict[str, Any]:
     definitions = inventory_data.get("definitions") or {}
     configuration_defs = definitions.get("configurations") or {}
     metric_defs = definitions.get("metrics") or {}
+    event_defs = definitions.get("events") or {}
 
     transformed_data = inventory_data.copy()
     transformed_data.pop("definitions", None)
@@ -259,11 +272,17 @@ def _transform_0_6_to_0_5(inventory_data: dict[str, Any]) -> dict[str, Any]:
         library_list = inventory_data.get(key)
         if library_list is not None:
             transformed_data[key] = [
-                _resolve_refs(library, configuration_defs, metric_defs) for library in library_list
+                _resolve_refs(library, configuration_defs, metric_defs, event_defs) for library in library_list
             ]
 
+    global_refs = transformed_data.pop("global_configuration_refs", None)
+    if global_refs is not None:
+        transformed_data["global_configurations"] = _lookup_refs(
+            global_refs, configuration_defs, "configuration", "global_configuration_refs"
+        )
+
     transformed_data["file_format"] = 0.5
-    logger.info("Transformed inventory from format 0.6 to 0.5")
+    logger.info("Transformed inventory from format %s to 0.5", inventory_data["file_format"])
     return transformed_data
 
 
