@@ -24,8 +24,9 @@ or a bug/regression (not fine). Most of the work here is telling those apart.
 
 Read this first — the review only makes sense against these mechanics.
 
-- **Four pipelines**: `javaagent`, `configuration`, `collector`, `javascript`. `--ecosystem` selects one (default
-  `all`). Each writes its own subtree under `ecosystem-explorer/public/data/`.
+- **One pipeline per ecosystem**: `javaagent`, `configuration`, `collector`, `javascript` (the
+  `ECOSYSTEMS` tuple in `ecosystems.py`). `--ecosystem` selects one (default `all`). Each writes
+  its own subtree under `ecosystem-explorer/public/data/`.
 - **Content addressing.** Each component version is written to `<name>-<hash>.json` where `hash` is
   a 12-char SHA-256 over the component's key-sorted, whitespace-normalized JSON
   (`content_hashing.py`). **The hash is deterministic** — identical content always yields the same
@@ -43,18 +44,29 @@ Read this first — the review only makes sense against these mechanics.
     content-addressed — the hash-churn analysis below doesn't apply to it; review it by reading the
     schema diff directly. Its starter templates are curated, not generated, and live outside the
     builder-owned tree in `public/data/defaults/configuration/`.
-- **Incremental is add-only.** In the default (incremental) mode, the writer writes a new blob or
-  skips an existing one — **it never deletes blobs that are no longer referenced by any manifest**
-  (`database_writer.py` `write_libraries`). So when content changes, the old blob is orphaned but
-  stays on disk. This is why a normal PR shows **many additions and zero deletions**.
-- **`--clean` is the only thing that deletes.** It `rmtree`s the whole ecosystem directory and
-  rebuilds, so orphaned blobs disappear — but every still-referenced blob is rewritten too, making a
-  clean PR huge. Use a clean rebuild as a *diagnostic* (see below), not as the normal path.
+- **The nightly always builds clean.** It `rmtree`s each ecosystem directory and rebuilds every
+  blob, so the tree in an automated PR is exactly what the registry produces and nothing survives
+  from an earlier run. Deletions are therefore normal in a data PR: they are stale blobs and stale
+  version indexes going away, not data loss.
+- **Incremental mode still exists locally and is add-only.** The writer writes a new blob or skips
+  an existing one, and never deletes blobs no longer referenced by any manifest
+  (`database_writer.py` `write_libraries`), so a local incremental build accumulates orphans. It
+  also cannot notice that a file it wrote earlier no longer hashes to its own name, which is why
+  the nightly stopped using it.
 - **`bundles/<v>-<hash>.json`** (per-version slim list for the catalog view) and **`index.json` /
   `versions-index.json` / `global-configurations.json` / `ecosystem-stats.json`** are regenerated
   every run; expect them to change whenever any component or the version set changes.
-- The workflow also bumps `DB_VERSION` in `src/lib/api/idb-cache.ts` whenever data changes (cache
-  bust) — that one-line change is expected in every data PR.
+- The workflow bumps `DB_VERSION` in `src/lib/api/idb-cache.ts` (cache bust) only when the generated
+  files themselves changed. A pull request carrying a manifest update and nothing else will not have
+  it, and that is correct rather than an omission.
+- **`ecosystem-explorer/public/data-manifest.json`** pins, per ecosystem, the release that carries
+  that ecosystem's archive: its tag, the digest of the unpacked tree and the checksum of the
+  published asset. Only the blocks whose data changed are rewritten, so a single-ecosystem
+  promotion touches one block and leaves the others untouched. The two can legitimately move
+  apart. A block changing with no data change is the first run or data a pull request regenerated
+  by hand. Data changing with no block change is a build repairing a committed tree that had
+  drifted (for example two data pull requests merged out of order), and it comes with a
+  `DB_VERSION` bump. Anything else is worth asking about.
 
 ## Mental model: why *historical* versions get rewritten
 
@@ -93,8 +105,8 @@ gh pr list --repo open-telemetry/opentelemetry-ecosystem-explorer \
 gh pr view <PR> --repo open-telemetry/opentelemetry-ecosystem-explorer --json title,body
 ```
 
-The body records `Build mode` (incremental/clean), `Ecosystem`, and trigger. Note the mode — a
-`clean` build is *expected* to be large and to delete orphans; an `incremental` one is not.
+The body records the promoted `Ecosystem` and what triggered the run. Every automated build is a
+clean build, so a PR that both adds and deletes blobs is the normal shape.
 
 Establish what *should* have changed: usually a single new registry release (e.g. a new
 `ecosystem-registry/java/javaagent/.../v2.30.0/`). That sets your expectation for the diff.
@@ -123,8 +135,9 @@ Read the report top-down:
   nonzero count is only OK if it maps to a known cross-version step (step 3).
 - **Grouped field-level changes** — each group is one distinct edit and how many (component,
   version) pairs it hit. This is where you see *what* actually changed.
-- **Orphaned blobs** — blobs no longer referenced by any manifest. In incremental mode these are
-  expected leftovers from rewrites (see step 5), not a bug in themselves.
+- **Orphaned blobs** — blobs no longer referenced by any manifest. A clean build leaves none, so in
+  an automated PR any orphan is worth explaining; in a local incremental build they are expected
+  leftovers from rewrites (see step 5).
 
 ### 3. Classify each change group
 
@@ -165,24 +178,24 @@ removed once upstream backfills the fix into historical metadata. After editing,
 and re-run this review to confirm the churn is gone:
 
 ```bash
-uv run explorer-db-builder --ecosystem javaagent   # incremental, to your working tree
+uv run explorer-db-builder --clean --ecosystem javaagent   # same mode the nightly uses
 uv run pytest ecosystem-automation/explorer-db-builder/tests
 ```
 
 ### 5. Deletions and orphans
 
-Incremental builds legitimately produce **zero deletions** — that is not a bug by itself. But every
-rewrite orphans the old blob, and orphans accumulate forever across releases. When reviewing:
+A clean build removes whatever the new run no longer produces, so deletions in an automated pull
+request are routine. A hand-built incremental tree is the opposite: it produces zero deletions, every
+rewrite orphans the old blob, and orphans accumulate across releases. When reviewing:
 
 - Confirm the PR's orphan set (from the analyzer) corresponds to blobs the rewrites *replaced*, not
   to blobs that are still needed. A referenced blob going missing is a real bug.
-- If orphan buildup is the concern, the remedies are a `--clean` rebuild (deletes everything
-  unreferenced, but rewrites all blobs → huge PR) or a dedicated prune/GC step. Deciding/adding
-  pruning is out of scope for a single review — flag it, don't improvise it into a data PR.
+- Orphan buildup is no longer a standing concern for automated PRs, because every one of them comes
+  from a clean rebuild. It still applies to a tree someone has been building incrementally by hand.
 
-To prove a diff is *only* orphan cruft + intended rewrites, compare an incremental build against a
-clean one on the same input: a clean rebuild's set of *referenced* hashes should match the
-incremental PR's referenced hashes exactly; only the orphan leftovers differ.
+To prove a diff is *only* orphan cruft plus intended rewrites in such a tree, compare it against a
+clean build of the same input: the clean rebuild's set of *referenced* hashes should match the
+incremental one's exactly, and only the orphan leftovers should differ.
 
 ### 6. Determinism / regression check
 
@@ -198,7 +211,7 @@ If churn has no input or code explanation, rule out non-determinism before mergi
 
 ## Reporting
 
-Summarize for the human reviewer: build mode + ecosystem; new versions added; count of historical
+Summarize for the human reviewer: the promoted ecosystem; new versions added; count of historical
 rewrites and the distinct change groups behind them (with the upstream cause for each); whether each
 group is intended-normalization / correction-opportunity / regression; orphan count and whether it's
 expected; and a merge recommendation (merge / merge-after-corrections / investigate). Cite files as

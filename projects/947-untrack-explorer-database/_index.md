@@ -4,7 +4,7 @@ issue: 947
 type: index
 phase: meta
 status: in-progress
-last_updated: "2026-09-23"
+last_updated: "2026-10-01"
 ---
 
 > [!NOTE]
@@ -14,10 +14,9 @@ last_updated: "2026-09-23"
 
 ## Issue #947 — Untrack the explorer database
 
-Stop committing the generated database in
-`ecosystem-explorer/public/data/{javaagent,collector,configuration}/`. Publish it instead as
-per-ecosystem `.tar.gz` GitHub Release assets, pinned by a committed `data-manifest.json`. Merging a
-manifest bump stays the promotion event that moves the live site.
+Stop committing the generated database in `ecosystem-explorer/public/data/<ecosystem>/`. Publish it
+instead as per-ecosystem `.tar.gz` GitHub Release assets, pinned by a committed
+`data-manifest.json`. Merging a manifest bump stays the promotion event that moves the live site.
 
 Tracking issue:
 [#947](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/issues/947)
@@ -60,10 +59,11 @@ and never re-stored, and the history-to-tree ratio has fallen from 2.7x to 2.3x.
 | meta  | [`_index.md`](./_index.md)                     | This file. Stable folder landing page.                               | —           |
 | meta  | [`NEXT-STEPS.md`](./NEXT-STEPS.md)             | Rolling roadmap: sequence, gates, known defects, decision log.       | —           |
 | meta  | [`design-decisions.md`](./design-decisions.md) | The six design decisions, alternatives considered, and the evidence. | —           |
-| 1     | [`01-test-suite.md`](./01-test-suite.md)       | Make the test suite independent of the generated database.           | in-progress |
+| 1     | [`01-test-suite.md`](./01-test-suite.md)       | Make the test suite independent of the generated database.           | complete    |
+| 2     | [`02-producer.md`](./02-producer.md)           | Emit reproducible archives and the manifest; publish the releases.   | in-progress |
 
 `status` reflects the work the document describes, not the document itself. Documents for pull
-requests 2 to 4 are added as each is planned.
+requests 3 and 4 are added as each is planned.
 
 ## Prior work
 

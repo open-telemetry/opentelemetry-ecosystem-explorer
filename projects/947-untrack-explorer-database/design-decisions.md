@@ -4,7 +4,7 @@ issue: 947
 type: brief
 phase: meta
 status: in-progress
-last_updated: "2026-09-23"
+last_updated: "2026-09-24"
 ---
 
 ## Design decisions
@@ -137,8 +137,9 @@ flips fork deploy previews to requiring manual approval under Netlify's default 
 ## 4. Browser cache invalidation
 
 **Question.** The `DB_VERSION` bump is triggered today by git seeing changed files. That signal
-disappears. This one is **not settled**: it is owned by phase 2, which must choose. The
-recommendation below is what the evidence supports.
+disappears. This one was left open for phase 2, which **settled it on 2026-09-23** by taking the
+split described below. It ships in a pull request of its own between phases 2 and 3; see
+[`02-producer.md`](./02-producer.md#1-db_version-takes-the-split-in-a-pull-request-of-its-own).
 
 **Alternatives considered.**
 
@@ -152,10 +153,10 @@ recommendation below is what the evidence supports.
   data pull request path entirely. It is the only piece of this work that touches code running in
   users' browsers.
 
-**Recommendation. The split: keep `DB_VERSION` as a schema-only monotonic integer.** Inject the
-data's `content_digest` at build time and stamp each cache entry with the value it was written
-under; a mismatch is a miss. Apply it only to mutable keys, selected by an explicit
-`immutable: true` flag on `fetchWithCache`, never by object store.
+**Decision. The split: keep `DB_VERSION` as a schema-only monotonic integer.** Inject the data's
+`content_digest` at build time and stamp each cache entry with the value it was written under; a
+mismatch is a miss. Apply it only to mutable keys, selected by an explicit `immutable: true` flag on
+`fetchWithCache`, never by object store.
 
 **Evidence.**
 
