@@ -14,6 +14,8 @@ detect any changes.
 Process:
 
 - Fetch the latest release tag from GitHub
+- Backfill missing README indexes for all tracked releases from their own upstream tags; skip
+  releases with completed indexes
 - Download the `instrumentation-list.yaml` file for the release
 - Parse and normalize the data using version-specific parsers
 - Create or update versioned snapshots of instrumentation metadata in YAML format
@@ -28,9 +30,10 @@ It maintains a versioned inventory of instrumentation snapshots in the
 `ecosystem-registry/java/javaagent` directory. Each version directory contains the aggregated
 `instrumentation.yaml` plus a `library-readmes.yaml` index mapping raw library names to filenames in
 the shared `library_readmes/` store. An empty index records successful discovery with no matching
-READMEs; failed discovery or fetches leave no new completion index and are retried. Releases that
-include JMX weaver models also contain `jmx-models.yaml`, which points at shared content-addressed
-files in `ecosystem-registry/java/javaagent/jmx/`.
+READMEs; failed discovery or fetches leave no new completion index and are retried on subsequent
+runs, including for historical releases after a newer release appears. Releases that include JMX
+weaver models also contain `jmx-models.yaml`, which points at shared content-addressed files in
+`ecosystem-registry/java/javaagent/jmx/`.
 
 ### Data Processing
 

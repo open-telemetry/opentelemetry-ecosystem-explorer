@@ -58,7 +58,7 @@ class InstrumentationSync:
         Synchronize Java instrumentation metadata.
 
         This will:
-        1. Process the latest release (if new)
+        1. Backfill missing release README indexes and process the latest release (if new)
         2. Update the snapshot from main branch
 
         Returns:
@@ -86,7 +86,7 @@ class InstrumentationSync:
 
     def process_latest_release(self) -> Version | None:
         """
-        Process the latest release if not already tracked.
+        Repair missing README indexes for tracked releases, then process the latest release.
 
         Returns:
             Version if newly processed, None if already exists
@@ -95,11 +95,9 @@ class InstrumentationSync:
         logger.info(f"  Latest release tag: {tag_string}")
 
         version = Version(tag_string.lstrip("v"))
+        self.backfill_missing_readmes()
 
         if self.inventory_manager.version_exists(version):
-            if not self.inventory_manager.readme_index_exists(version):
-                instrumentations = self.inventory_manager.load_versioned_inventory(version)
-                self._sync_library_readmes(version, tag_string, instrumentations)
             if not self.inventory_manager.jmx_models_index_exists(version):
                 self._sync_jmx_models(version, tag_string)
             return None
@@ -116,6 +114,23 @@ class InstrumentationSync:
         self._sync_jmx_models(version, tag_string)
 
         return version
+
+    def backfill_missing_readmes(self) -> list[Version]:
+        """Complete README discovery for tracked releases lacking a valid index.
+
+        Use each release's tag and existing inventory. Failed fetches remain retryable
+        even after a newer release appears; completed indexes require no network calls.
+        Snapshots are handled separately by update_snapshot().
+        """
+        completed = []
+        for version in self.inventory_manager.list_release_versions():
+            if self.inventory_manager.readme_index_exists(version):
+                continue
+            logger.info("  Backfilling library READMEs for v%s", version)
+            instrumentations = self.inventory_manager.load_versioned_inventory(version)
+            if self._sync_library_readmes(version, f"v{version}", instrumentations):
+                completed.append(version)
+        return completed
 
     def update_snapshot(self) -> Version:
         """
