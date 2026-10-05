@@ -248,18 +248,18 @@ class TestInventoryManager:
 
     # --- save_library_readmes ---
 
-    def test_readme_dir_exists_false_when_no_readmes(self, inventory_manager):
+    def test_readme_index_exists_false_when_no_readmes(self, inventory_manager):
         version = Version("2.10.0")
         inventory_manager.save_versioned_inventory(
             version=version,
             instrumentations={"file_format": 0.1, "libraries": []},
         )
-        assert not inventory_manager.readme_dir_exists(version)
+        assert not inventory_manager.readme_index_exists(version)
 
-    def test_readme_dir_exists_true_after_save(self, inventory_manager):
+    def test_readme_index_exists_true_after_save(self, inventory_manager):
         version = Version("2.10.0")
         inventory_manager.save_library_readmes(version, [("mylib", "# content")])
-        assert inventory_manager.readme_dir_exists(version)
+        assert inventory_manager.readme_index_exists(version)
 
     def test_save_library_readmes_writes_content_addressed_files(self, inventory_manager):
         version = Version("2.10.0")
@@ -271,7 +271,7 @@ class TestInventoryManager:
         written = inventory_manager.save_library_readmes(version, readmes)
 
         assert written == 2
-        readme_dir = inventory_manager.get_version_dir(version) / "library_readmes"
+        readme_dir = inventory_manager.inventory_dir / "library_readmes"
         files = list(readme_dir.glob("*.md"))
         assert len(files) == 2
         names = {f.stem.split("-")[0] for f in files}
@@ -286,7 +286,7 @@ class TestInventoryManager:
 
         inventory_manager.save_library_readmes(version, [("mylib-1.0", content)])
 
-        readme_dir = inventory_manager.get_version_dir(version) / "library_readmes"
+        readme_dir = inventory_manager.inventory_dir / "library_readmes"
         expected_file = readme_dir / f"mylib-1.0-{expected_hash}.md"
         assert expected_file.exists()
         assert expected_file.read_text(encoding="utf-8") == content
@@ -309,7 +309,7 @@ class TestInventoryManager:
 
         assert first == 1
         assert second == 1
-        readme_dir = inventory_manager.get_version_dir(version) / "library_readmes"
+        readme_dir = inventory_manager.inventory_dir / "library_readmes"
         assert len(list(readme_dir.glob("*.md"))) == 2
 
     def test_cleanup_snapshots_removes_library_readmes(self, inventory_manager):
@@ -321,7 +321,7 @@ class TestInventoryManager:
         inventory_manager.save_library_readmes(snapshot, [("mylib-1.0", "# Content")])
 
         snapshot_dir = inventory_manager.get_version_dir(snapshot)
-        assert (snapshot_dir / "library_readmes").exists()
+        assert (snapshot_dir / "library-readmes.yaml").exists()
 
         inventory_manager.cleanup_snapshots()
 
@@ -331,80 +331,15 @@ class TestInventoryManager:
 class TestLibraryReadme:
     """Tests for library README discovery and loading."""
 
-    def test_parse_readme_filename(self, inventory_manager):
-        # Valid cases (12 char hash)
-        assert inventory_manager._parse_readme_filename("mylib-abc123def456.md") == ("mylib", "abc123def456")
-        assert inventory_manager._parse_readme_filename("my-lib-1.0-abc123def456.md") == ("my-lib-1.0", "abc123def456")
-
-        # Invalid cases
-        assert inventory_manager._parse_readme_filename("mylib-abc123.md") is None  # Too short
-        assert inventory_manager._parse_readme_filename("mylib-abc123def4567.md") is None  # Too long
-        assert inventory_manager._parse_readme_filename("-abc123def456.md") is None  # Empty name
-        assert inventory_manager._parse_readme_filename("mylib.md") is None  # No hash
-
-    def test_load_library_readme_map_deterministic_selection(self, inventory_manager, tmp_path):
-        import time
-
+    def test_load_library_readme_map_uses_published_index(self, inventory_manager):
         version = Version("1.0.0")
-        readme_dir = inventory_manager.get_version_dir(version) / "library_readmes"
-        readme_dir.mkdir(parents=True)
-
-        # Create three files for the same library with different mtimes
-        # We need to sleep slightly to ensure different mtimes if the OS resolution is low,
-        # but for unit tests we can also mock or just hope the filesystem is fast enough to show diffs
-        # actually stat.st_mtime_ns is very precise.
-
-        p1 = readme_dir / "mylib-abc123def456.md"
-        p1.write_text("old content")
-        # Ensure p1 is definitely older
-
-        p2 = readme_dir / "mylib-fed4321cba98.md"
-        p2.write_text("new content")
-
-        p3 = readme_dir / "mylib-ffffff000000.md"
-        p3.write_text("newest content")
-
-        # Manually set mtimes to be sure
-        import os
-
-        now = time.time_ns()
-        os.utime(p1, ns=(now - 1000000, now - 1000000))
-        os.utime(p2, ns=(now, now))
-        os.utime(p3, ns=(now + 1000000, now + 1000000))
-
-        readme_map = inventory_manager.load_library_readme_map(version)
-
-        # Should pick p3 (ffffff...) because it has the newest mtime
-        assert len(readme_map) == 1
-        assert readme_map["mylib"] == "ffffff000000"
-
-    def test_load_library_readme_map_lexicographical_fallback(self, inventory_manager):
-        version = Version("1.0.0")
-        readme_dir = inventory_manager.get_version_dir(version) / "library_readmes"
-        readme_dir.mkdir(parents=True)
-
-        p1 = readme_dir / "mylib-aaaaaa111111.md"
-        p1.write_text("content a")
-
-        p2 = readme_dir / "mylib-bbbbbb222222.md"
-        p2.write_text("content b")
-
-        # Set same mtime
-        import os
-        import time
-
-        now = time.time_ns()
-        os.utime(p1, ns=(now, now))
-        os.utime(p2, ns=(now, now))
-
-        readme_map = inventory_manager.load_library_readme_map(version)
-
-        # Should pick p2 (bbbbbb...) because b > a lexicographically
-        assert readme_map["mylib"] == "bbbbbb222222"
+        inventory_manager.save_library_readmes(version, [("mylib", "old")])
+        inventory_manager.save_library_readmes(version, [("mylib", "new")])
+        index = inventory_manager.load_library_readme_map(version)
+        assert inventory_manager.load_library_readme_content("mylib", index["mylib"]) == "new"
 
     def test_load_library_readme_content_sanitization(self, inventory_manager, tmp_path):
-        version = Version("1.0.0")
-        readme_dir = inventory_manager.get_version_dir(version) / "library_readmes"
+        readme_dir = inventory_manager.inventory_dir / "library_readmes"
         readme_dir.mkdir(parents=True)
 
         # Save a file with a potentially dangerous name that gets sanitized
@@ -414,7 +349,7 @@ class TestLibraryReadme:
         (readme_dir / f"{sanitized_name}-{markdown_hash}.md").write_text("safe content")
 
         # Should be able to load it using the original (unsanitized) name
-        content = inventory_manager.load_library_readme_content(version, library_name, markdown_hash)
+        content = inventory_manager.load_library_readme_content(library_name, markdown_hash)
         assert content == "safe content"
 
 

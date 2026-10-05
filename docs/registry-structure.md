@@ -10,12 +10,13 @@ JSON for the web application.
 ecosystem-registry/
 ├── java/
 │   └── javaagent/
+│       ├── library_readmes/              # Shared content-addressed README markdown
 │       ├── v2.28.0/
 │       │   ├── instrumentation.yaml      # All instrumentations for this version
-│       │   └── library_readmes/          # Per-library README markdown (content-addressed)
+│       │   └── library-readmes.yaml      # Raw library name -> shared filename
 │       └── v2.28.1-SNAPSHOT/
 │           ├── instrumentation.yaml
-│           └── library_readmes/
+│           └── library-readmes.yaml
 ├── dotnet/
 │   ├── v1.15.3/
 │   │   └── instrumentation.yaml          # All .NET instrumentations/exporters/extensions
@@ -44,21 +45,25 @@ ecosystem-registry/
     ├── meta/
     │   └── schemas/                     # Content-addressed metadata-schema snapshots
     ├── core/
+    │   ├── readmes/                     # Shared core README store
     │   ├── v0.153.0/
     │   │   ├── receiver.yaml            # All core receivers
     │   │   ├── processor.yaml           # All core processors
     │   │   ├── exporter.yaml            # All core exporters
     │   │   ├── connector.yaml           # All core connectors
-    │   │   └── extension.yaml           # All core extensions
+    │   │   ├── extension.yaml           # All core extensions
+    │   │   └── component-readmes.yaml   # Raw component name -> shared filename
     │   └── v0.153.1-SNAPSHOT/
     │       └── ...
     └── contrib/
+        ├── readmes/                     # Shared contrib README store
         ├── v0.153.0/
         │   ├── receiver.yaml            # All contrib receivers
         │   ├── processor.yaml
         │   ├── exporter.yaml
         │   ├── connector.yaml
-        │   └── extension.yaml
+        │   ├── extension.yaml
+        │   └── component-readmes.yaml
         └── v0.153.1-SNAPSHOT/
             └── ...
 ```
@@ -80,16 +85,22 @@ ecosystem-registry/
 ```text
 java/
 └── javaagent/
+    ├── library_readmes/
+    │   └── {safe_name}-{hash12}.md
     └── {version}/
         ├── instrumentation.yaml
-        └── library_readmes/
-            └── {name}-{hash}.md
+        └── library-readmes.yaml
 ```
 
-**One aggregated file** per version containing all instrumentations, plus a `library_readmes/`
-directory holding the upstream `library/README.md` for each instrumentation that ships one. The
-README files are content-addressed (`{name}-{hash}.md`) so identical content is shared across
-versions.
+**One aggregated file** per version contains all instrumentations. A `library-readmes.yaml` index
+maps raw library names to content-addressed filenames in the shared `library_readmes/` store.
+Collector versions use `component-readmes.yaml` with the same mapping format and a separate
+`readmes/` store per distribution. Index keys are sorted; filenames use sanitized names and the
+first 12 hex characters of the SHA-256 hash of the original bytes. An explicit empty mapping (`{}`)
+is a completed sync; a missing index means READMEs have not been synced successfully. The Java and
+Collector watchers retry missing indexes for every tracked release using that release's upstream
+tag, including historical versions. All indexes are validated before unreferenced shared files are
+pruned.
 
 ### File Format
 

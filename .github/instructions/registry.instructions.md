@@ -34,10 +34,12 @@ The only acceptable hand-touched changes are:
 Each version directory ships a fixed set of files. Flag partial writes:
 
 - **Collector** (`collector/{core,contrib}/v.../`): 5 files — `connector.yaml`, `exporter.yaml`,
-  `extension.yaml`, `processor.yaml`, `receiver.yaml`.
+  `extension.yaml`, `processor.yaml`, `receiver.yaml`, plus `component-readmes.yaml` referencing the
+  shared distribution-level `readmes/` store.
 - **Configuration** (`configuration/v.../`): 13 schema YAML files
   (`opentelemetry_configuration.yaml`, `tracer_provider.yaml`, etc.).
-- **Java javaagent** (`java/javaagent/v.../`): `instrumentation.yaml` plus `library_readmes/`.
+- **Java javaagent** (`java/javaagent/v.../`): `instrumentation.yaml` plus `library-readmes.yaml`,
+  referencing the shared distribution-level `library_readmes/` store.
 - **.NET** (`dotnet/v.../`): a single aggregated `instrumentation.yaml`.
 - **JavaScript** (`javascript/{package-name}/`): one file per package version (`v{version}.yaml`).
   Packages version independently, so this ecosystem is per-package rather than per-version-directory

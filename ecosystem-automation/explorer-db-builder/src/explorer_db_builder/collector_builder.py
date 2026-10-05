@@ -181,19 +181,12 @@ def _process_version(
             for component_name, markdown_hash in readme_map.items():
                 try:
                     content = inventory_manager.load_component_readme_content(
-                        distribution, version, component_name, markdown_hash
+                        distribution, component_name, markdown_hash
                     )
                     if content is not None and db_writer.write_markdown(component_name, markdown_hash, content):
                         published_readmes[component_name] = markdown_hash
                 except OSError as e:
-                    # Defensive: neither load_component_readme_content nor
-                    # write_markdown currently raise OSError (both swallow
-                    # their own failures and signal via return value - see
-                    # `content is not None and db_writer.write_markdown(...)`
-                    # above, which is what actually gates the stamp). This
-                    # stays as a safety net in case that changes, so one
-                    # component's failure still can't take down the rest of
-                    # this distribution's READMEs or the component inventory.
+                    # A single unreadable blob must not suppress other components' READMEs.
                     logger.warning(
                         "  Failed to load/publish README for component '%s' in %s %s: %s",
                         component_name,
@@ -203,7 +196,7 @@ def _process_version(
                     )
         except OSError as e:
             # Covers a failure in load_component_readme_map itself (e.g. the
-            # component_readmes directory becoming unreadable mid-scan).
+            # README index becoming unreadable).
             logger.warning("  Failed to load component READMEs for %s %s: %s", distribution, version, e)
 
         components = transform_collector_components(inventory, distribution, published_readmes)

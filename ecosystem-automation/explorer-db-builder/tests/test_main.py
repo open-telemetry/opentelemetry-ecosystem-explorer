@@ -283,6 +283,8 @@ class TestRunJavaagentBuilder:
         # Verify READMEs were loaded and written
         assert mock_inventory_manager.load_library_readme_map.call_count == 1
         assert mock_inventory_manager.load_library_readme_content.call_count == 2
+        mock_inventory_manager.load_library_readme_content.assert_any_call("lib1", "abc123def456")
+        mock_inventory_manager.load_library_readme_content.assert_any_call("custom1", "fed4321cba98")
         assert mock_db_writer.write_markdown.call_count == 2
         mock_db_writer.write_markdown.assert_any_call("lib1", "abc123def456", readme_content)
         mock_db_writer.write_markdown.assert_any_call("custom1", "fed4321cba98", readme_content)

@@ -581,7 +581,7 @@ def test_save_version_discovers_and_saves_component_readmes(
     readme_map = collector_sync.inventory_manager.load_component_readme_map("core", version)
     assert "otlpreceiver" in readme_map
     content = collector_sync.inventory_manager.load_component_readme_content(
-        "core", version, "otlpreceiver", readme_map["otlpreceiver"]
+        "core", "otlpreceiver", readme_map["otlpreceiver"]
     )
     assert content == "# OTLP Receiver"
 
@@ -592,9 +592,7 @@ def test_save_version_with_no_readmes_persists_no_readme_content(collector_sync,
 
     collector_sync.save_version("core", version, sample_components)
 
-    # save_component_readmes always creates the target dir (matching java's
-    # save_library_readmes exactly), so check for absence of content, not
-    # absence of the directory itself.
+    assert (collector_sync.inventory_manager.get_version_dir("core", version) / "component-readmes.yaml").is_file()
     assert collector_sync.inventory_manager.load_component_readme_map("core", version) == {}
 
 
@@ -691,13 +689,8 @@ def test_backfill_versions_deletes_stale_readmes_before_rescanning(
     collector_sync, sample_components, temp_inventory_dir, temp_git_repos
 ):
     """
-    save_versioned_inventory() already fully overwrites every component-type
-    YAML on every call, so it's self-cleaning regardless of deletion. What
-    delete_version() actually guards is component_readmes/: it's purely
-    additive and content-addressed (save_component_readmes never removes old
-    hash-named files), so if a README's content changes between the original
-    tracking and a backfill run, the old hash-named file would otherwise
-    linger forever as an orphan rather than being replaced.
+    Deleting the old version before backfill prunes content that lost its last
+    reference. The replacement index then points only to the updated content.
     """
     version = Version("0.111.0")
     repo_path = Path(temp_git_repos["core"])
@@ -736,14 +729,14 @@ def test_backfill_versions_deletes_stale_readmes_before_rescanning(
 
         collector_sync.backfill_versions("core", versions=[version])
 
-    readme_dir_on_disk = temp_inventory_dir / "core" / "v0.111.0" / "component_readmes"
+    readme_dir_on_disk = temp_inventory_dir / "core" / "readmes"
     files = [p.name for p in readme_dir_on_disk.glob("otlpreceiver-*.md")]
     assert len(files) == 1, f"expected exactly one otlpreceiver readme file after backfill, found: {files}"
     assert original_hash not in files[0]
 
     new_map = collector_sync.inventory_manager.load_component_readme_map("core", version)
     content = collector_sync.inventory_manager.load_component_readme_content(
-        "core", version, "otlpreceiver", new_map["otlpreceiver"]
+        "core", "otlpreceiver", new_map["otlpreceiver"]
     )
     assert content == "# Updated content"
 
@@ -754,15 +747,14 @@ def test_backfill_versions_picks_up_readmes_for_a_previously_tracked_version(
     """
     Regression guard for the actual production scenario this feature exists
     for: a version was tracked before readme discovery existed in
-    save_version(), so it has real component data but no component_readmes.
+    save_version(), so it has real component data but no indexed READMEs.
     Running --backfill on it must pick up the readme now, with no watcher
     code changes beyond what's already in backfill_versions().
     """
     version = Version("0.111.0")
     collector_sync.save_version("core", version, sample_components)
     assert collector_sync.inventory_manager.version_exists("core", version)
-    # save_component_readmes always mkdirs component_readmes/, check for
-    # absence of actual content rather than absence of the directory.
+    # A successful empty discovery publishes an empty index.
     assert collector_sync.inventory_manager.load_component_readme_map("core", version) == {}
 
     # A README.md genuinely exists in the repo at this tag, it just was never
@@ -788,7 +780,7 @@ def test_backfill_versions_picks_up_readmes_for_a_previously_tracked_version(
     readme_map = collector_sync.inventory_manager.load_component_readme_map("core", version)
     assert "otlpreceiver" in readme_map
     content = collector_sync.inventory_manager.load_component_readme_content(
-        "core", version, "otlpreceiver", readme_map["otlpreceiver"]
+        "core", "otlpreceiver", readme_map["otlpreceiver"]
     )
     assert content == "# OTLP Receiver\n\nBackfilled readme content."
 
@@ -885,3 +877,86 @@ def test_backfill_prune_unlisted_resets_deprecations_for_distribution(
 
     # The stale entry is cleared so deprecations.yaml reflects only surviving versions.
     assert collector_sync.deprecations["core"]["receiver"] == []
+
+
+@pytest.mark.parametrize("distribution", ["core", "contrib"])
+@pytest.mark.parametrize("failure_stage", ["store", "index"])
+def test_tracked_release_retries_readme_write_failure(
+    collector_sync, sample_components, temp_git_repos, distribution, failure_stage
+):
+    version = Version("0.112.0")
+    repo = Path(temp_git_repos[distribution])
+    readme = repo / "receiver" / "otlpreceiver" / "README.md"
+    readme.parent.mkdir(parents=True)
+    readme.write_text("# Tagged README")
+    run_git(repo, "add", "-A")
+    run_git(repo, "commit", "-m", "add release README")
+    run_git(repo, "tag", "-f", f"v{version}")
+    target = (
+        "watcher_common.readme_store._atomic_write"
+        if failure_stage == "store"
+        else "collector_watcher.inventory_manager.write_readme_index"
+    )
+    with (
+        patch("collector_watcher.collector_sync.ComponentScanner") as scanner,
+        patch(target, side_effect=OSError("disk full")),
+    ):
+        scanner.return_value.scan_all_components.return_value = sample_components
+        assert collector_sync.process_latest_release(distribution) == version
+    manager = collector_sync.inventory_manager
+    assert manager.version_exists(distribution, version)
+    assert not manager.readme_index_exists(distribution, version)
+    version_dir = manager.get_version_dir(distribution, version)
+    original = {path: path.read_bytes() for path in version_dir.glob("*.yaml")}
+    with patch(target, side_effect=OSError("still unavailable")):
+        assert collector_sync.process_latest_release(distribution) is None
+    assert not manager.readme_index_exists(distribution, version)
+
+    # Leave the clone on newer content: retry must explicitly check out the release tag.
+    run_git(repo, "checkout", "main")
+    readme.write_text("# Main README")
+    run_git(repo, "add", "-A")
+    run_git(repo, "commit", "-m", "change README on main")
+    with (
+        patch.object(collector_sync, "save_version") as save,
+        patch.object(collector_sync, "detect_and_track_deprecations") as deprecations,
+    ):
+        assert collector_sync.process_latest_release(distribution) is None
+        save.assert_not_called()
+        deprecations.assert_not_called()
+    assert manager.readme_index_exists(distribution, version)
+    digest = manager.load_component_readme_map(distribution, version)["otlpreceiver"]
+    assert manager.load_component_readme_content(distribution, "otlpreceiver", digest) == "# Tagged README"
+    assert all(path.read_bytes() == data for path, data in original.items())
+    with patch.object(collector_sync.version_detectors[distribution], "checkout_version") as checkout:
+        assert collector_sync.process_latest_release(distribution) is None
+        checkout.assert_not_called()
+
+
+def test_readme_retry_includes_older_releases_and_accepts_empty_indexes(collector_sync, sample_components):
+    manager = collector_sync.inventory_manager
+    old, latest = Version("0.111.0"), Version("0.112.0")
+    for version in [old, latest]:
+        manager.save_versioned_inventory("core", version, sample_components, "opentelemetry-collector")
+    manager.save_component_readmes("core", latest, [])
+    with patch.object(collector_sync.version_detectors["core"], "checkout_version") as checkout:
+        assert collector_sync.process_latest_release("core") is None
+        checkout.assert_called_once_with(old)
+        assert manager.readme_index_exists("core", old)
+        assert manager.load_component_readme_map("core", old) == {}
+        checkout.reset_mock()
+        collector_sync.process_latest_release("core")
+        checkout.assert_not_called()
+
+
+def test_malformed_readme_index_is_not_overwritten_by_retry(collector_sync, sample_components):
+    manager = collector_sync.inventory_manager
+    version = Version("0.112.0")
+    manager.save_versioned_inventory("core", version, sample_components, "opentelemetry-collector")
+    path = manager.get_version_dir("core", version) / manager.README_INDEX_FILE
+    path.write_text("invalid: [")
+    with patch.object(collector_sync.version_detectors["core"], "checkout_version") as checkout:
+        with pytest.raises(ValueError, match="Invalid README index"):
+            collector_sync.process_latest_release("core")
+        checkout.assert_not_called()
+    assert path.read_text() == "invalid: ["

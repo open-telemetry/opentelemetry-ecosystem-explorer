@@ -15,12 +15,13 @@
 """Tests for instrumentation sync orchestrator."""
 
 import tempfile
-from unittest.mock import Mock
+from unittest.mock import Mock, call
 
 import pytest
 import yaml
 from java_instrumentation_watcher.instrumentation_sync import InstrumentationSync
 from java_instrumentation_watcher.inventory_manager import InventoryManager
+from java_instrumentation_watcher.java_instrumentation_client import GithubAPIError
 from semantic_version import Version
 
 
@@ -261,8 +262,9 @@ libraries:
 
         sync = InstrumentationSync(mock_client, inventory_manager, jmx_model_extractor=mock_jmx_model_extractor)
         version = sync.process_latest_release()
+        assert inventory_manager.readme_index_exists(version)
 
-        readme_dir = inventory_manager.get_version_dir(version) / "library_readmes"
+        readme_dir = inventory_manager.inventory_dir / "library_readmes"
         assert readme_dir.exists()
         assert len(list(readme_dir.glob("*.md"))) == 2
         # Called twice: _sync_library_readmes and _sync_jmx_models
@@ -278,7 +280,7 @@ libraries:
         sync = InstrumentationSync(mock_client, inventory_manager, jmx_model_extractor=mock_jmx_model_extractor)
         snapshot_version = sync.update_snapshot()
 
-        readme_dir = inventory_manager.get_version_dir(snapshot_version) / "library_readmes"
+        readme_dir = inventory_manager.inventory_dir / "library_readmes"
         assert readme_dir.exists()
         # Called twice: once in update_snapshot, once in _sync_library_readmes
         assert mock_client.resolve_ref_to_sha.call_count == 2
@@ -304,8 +306,10 @@ libraries:
         result = sync.process_latest_release()
 
         assert result is None
-        readme_dir = inventory_manager.get_version_dir(version) / "library_readmes"
-        assert readme_dir.exists()
+        assert inventory_manager.readme_index_exists(version)
+        mock_client.fetch_tree.reset_mock()
+        sync.process_latest_release()
+        mock_client.fetch_tree.assert_not_called()
 
     def test_process_latest_release_skips_backfill_when_readmes_exist(
         self, mock_client, inventory_manager, mock_jmx_model_extractor
@@ -326,7 +330,9 @@ libraries:
         assert result is None
         mock_client.resolve_ref_to_sha.assert_not_called()
 
-    def test_one_readme_fetch_failure_others_written(self, mock_client, inventory_manager, mock_jmx_model_extractor):
+    def test_one_readme_fetch_failure_retries_complete_index(
+        self, mock_client, inventory_manager, mock_jmx_model_extractor
+    ):
         from java_instrumentation_watcher.java_instrumentation_client import GithubAPIError
 
         mock_client.get_latest_release_tag.return_value = "v2.10.0"
@@ -342,8 +348,14 @@ libraries:
         version = sync.process_latest_release()
 
         assert version == Version("2.10.0")
-        readme_dir = inventory_manager.get_version_dir(version) / "library_readmes"
-        assert len(list(readme_dir.glob("*.md"))) == 1
+        readme_dir = inventory_manager.inventory_dir / "library_readmes"
+        assert not inventory_manager.readme_index_exists(version)
+        assert not list(readme_dir.glob("*.md"))
+        mock_client.fetch_raw_file.side_effect = None
+        mock_client.fetch_raw_file.return_value = "# Recovered"
+        sync.process_latest_release()
+        assert inventory_manager.readme_index_exists(version)
+        assert len(inventory_manager.load_library_readme_map(version)) == 2
 
     def test_resolve_ref_failure_does_not_abort_sync(self, mock_client, inventory_manager, mock_jmx_model_extractor):
         from java_instrumentation_watcher.java_instrumentation_client import GithubAPIError
@@ -357,7 +369,7 @@ libraries:
 
         assert version == Version("2.10.0")
         assert inventory_manager.version_exists(version)
-        readme_dir = inventory_manager.get_version_dir(version) / "library_readmes"
+        readme_dir = inventory_manager.inventory_dir / "library_readmes"
         assert not readme_dir.exists()
 
     def test_library_without_source_path_skipped(self, mock_client, inventory_manager, mock_jmx_model_extractor):
@@ -471,3 +483,117 @@ libraries:
         assert version == Version("2.30.0")
         assert not inventory_manager.jmx_models_index_exists(version)
         assert not inventory_manager.get_jmx_store_dir().exists()
+
+
+@pytest.mark.parametrize("failure", [None, "discovery", "fetch"])
+def test_snapshot_prunes_only_after_complete_fetch(tmp_path, failure):
+    manager = InventoryManager(str(tmp_path))
+    old = Version("1.0.1-SNAPSHOT")
+    manager.save_library_readmes(old, [("old", "snapshot-only")])
+    old_file = next((tmp_path / "library_readmes").glob("*.md"))
+    client = Mock()
+    client.get_latest_release_tag.return_value = "v2.0.0"
+    client.resolve_ref_to_sha.return_value = "a" * 40
+    client.fetch_instrumentation_list.return_value = (
+        "file_format: 0.5\nlibraries:\n  instrumentation:\n  - name: new\n    source_path: instrumentation/new\n"
+    )
+    extractor = Mock()
+    extractor.discover_library_readmes.return_value = {"instrumentation/new": "new/README.md"}
+    extractor.fetch_readme.return_value = "replacement"
+    if failure == "discovery":
+        extractor.discover_library_readmes.side_effect = GithubAPIError("discovery failed")
+    elif failure == "fetch":
+        extractor.fetch_readme.side_effect = GithubAPIError("fetch failed")
+    sync = InstrumentationSync(client, manager, readme_extractor=extractor)
+    version = sync.update_snapshot()
+    assert old_file.exists() == (failure is not None)
+    assert manager.readme_index_exists(version) == (failure is None)
+    assert not manager.get_version_dir(old).exists()
+
+
+@pytest.mark.parametrize("failure", ["discovery", "fetch"])
+def test_discovery_failure_retries_release_and_preserves_existing_index(tmp_path, failure):
+    manager = InventoryManager(str(tmp_path))
+    client = Mock()
+    client.get_latest_release_tag.return_value = "v2.0.0"
+    client.resolve_ref_to_sha.return_value = "a" * 40
+    client.fetch_instrumentation_list.return_value = "file_format: 0.5\nlibraries: []\n"
+    extractor = Mock()
+    extractor.discover_library_readmes.side_effect = GithubAPIError("discovery failed")
+    jmx = Mock()
+    jmx.discover_jmx_model_paths.return_value = ({}, None)
+    sync = InstrumentationSync(client, manager, readme_extractor=extractor, jmx_model_extractor=jmx)
+    version = sync.process_latest_release()
+    assert not manager.readme_index_exists(version)
+    extractor.discover_library_readmes.side_effect = None
+    extractor.discover_library_readmes.return_value = {}
+    sync.process_latest_release()
+    assert manager.readme_index_exists(version)
+    index_path = manager.get_version_dir(version) / manager.README_INDEX_FILE
+    assert index_path.read_text() == "{}\n"
+    extractor.discover_library_readmes.reset_mock()
+    sync.process_latest_release()
+    extractor.discover_library_readmes.assert_not_called()
+    manager.save_library_readmes(version, [("retained", "original")])
+    before = index_path.read_bytes()
+    if failure == "discovery":
+        extractor.discover_library_readmes.side_effect = GithubAPIError("unavailable")
+    else:
+        extractor.discover_library_readmes.return_value = {"path": "README.md"}
+        extractor.fetch_readme.side_effect = GithubAPIError("unavailable")
+    inventory = {"libraries": [{"name": "retained", "source_path": "path"}]}
+    assert not sync._sync_library_readmes(version, "a" * 40, inventory)
+    assert index_path.read_bytes() == before
+
+
+@pytest.mark.parametrize("failure", ["discovery", "fetch"])
+def test_historical_readmes_retry_after_latest_release_advances(tmp_path, failure):
+    manager = InventoryManager(str(tmp_path))
+    old, latest = Version("2.26.1"), Version("2.31.1")
+    inventory = {"file_format": 0.5, "libraries": [{"name": "lib", "source_path": "instrumentation/lib"}]}
+    for version in [old, latest]:
+        manager.save_versioned_inventory(version, inventory)
+    manager.save_library_readmes(latest, [])  # Successful empty discoveries must not be retried.
+    manager.save_jmx_models_index(latest, models={"jvm": "metrics: []\n"}, manifest=None)
+    before = (manager.get_version_dir(old) / manager.FILE_NAME).read_bytes()
+    client = Mock()
+    client.get_latest_release_tag.return_value = f"v{latest}"
+    client.resolve_ref_to_sha.return_value = "a" * 40
+    extractor = Mock()
+    extractor.discover_library_readmes.return_value = {"instrumentation/lib": "instrumentation/lib/library/README.md"}
+    extractor.fetch_readme.return_value = "# Historical README"
+    failing = extractor.discover_library_readmes if failure == "discovery" else extractor.fetch_readme
+    failing.side_effect = GithubAPIError("temporary failure")
+    sync = InstrumentationSync(client, manager, readme_extractor=extractor)
+
+    assert sync.process_latest_release() is None
+    assert not manager.readme_index_exists(old)
+    failing.side_effect = None
+    assert sync.process_latest_release() is None
+    assert manager.readme_index_exists(old)
+    index = manager.load_library_readme_map(old)
+    assert manager.load_library_readme_content("lib", index["lib"]) == "# Historical README"
+    assert (manager.get_version_dir(old) / manager.FILE_NAME).read_bytes() == before
+    assert client.resolve_ref_to_sha.call_args_list == [call(f"v{old}"), call(f"v{old}")]
+    client.fetch_instrumentation_list.assert_not_called()
+    client.resolve_ref_to_sha.reset_mock()
+    sync.process_latest_release()
+    client.resolve_ref_to_sha.assert_not_called()
+
+
+def test_backfill_continues_after_failed_release_and_skips_snapshots(tmp_path):
+    manager = InventoryManager(str(tmp_path))
+    versions = [Version("1.0.0"), Version("2.0.0"), Version("2.0.1-SNAPSHOT")]
+    for version in versions:
+        manager.save_versioned_inventory(version, {"file_format": 0.5, "libraries": []})
+    client = Mock()
+    client.resolve_ref_to_sha.side_effect = [GithubAPIError("unavailable"), "a" * 40]
+    extractor = Mock()
+    extractor.discover_library_readmes.return_value = {}
+    sync = InstrumentationSync(client, manager, readme_extractor=extractor)
+
+    assert sync.backfill_missing_readmes() == [versions[0]]
+    assert manager.readme_index_exists(versions[0])
+    assert not manager.readme_index_exists(versions[1])
+    assert not manager.readme_index_exists(versions[2])
+    assert client.resolve_ref_to_sha.call_args_list == [call("v2.0.0"), call("v1.0.0")]

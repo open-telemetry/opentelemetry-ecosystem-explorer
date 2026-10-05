@@ -15,7 +15,6 @@
 """Inventory management for component tracking."""
 
 import logging
-import re
 import shutil
 from collections.abc import Iterable
 from pathlib import Path
@@ -23,7 +22,13 @@ from typing import Any
 
 import yaml
 from semantic_version import Version
-from watcher_common.content_hashing import compute_content_hash
+from watcher_common.readme_store import (
+    ReadmeStore,
+    parse_readme_filename,
+    read_readme_index,
+    sanitize_name,
+    write_readme_index,
+)
 
 from .type_defs import COMPONENT_TYPES, DistributionName
 
@@ -33,7 +38,8 @@ logger = logging.getLogger(__name__)
 class InventoryManager:
     """Manages component inventory storage and retrieval."""
 
-    README_DIR = "component_readmes"
+    README_DIR = "readmes"
+    README_INDEX_FILE = "component-readmes.yaml"
 
     def __init__(self, inventory_dir: str = "ecosystem-registry/collector"):
         """
@@ -192,141 +198,41 @@ class InventoryManager:
             "components": components,
         }
 
-    def readme_dir_exists(self, distribution: DistributionName, version: Version) -> bool:
-        """Return True if the component_readmes directory exists for this distribution/version."""
-        return (self.get_version_dir(distribution, version) / self.README_DIR).exists()
-
-    def _sanitize_name(self, name: str) -> str:
-        """Sanitizes a name for use as a filename to prevent path traversal."""
-        return re.sub(r"[^a-zA-Z0-9._\-]", "_", name)
+    def readme_index_exists(self, distribution: DistributionName, version: Version) -> bool:
+        """Accept only a validated index as the README sync completion signal."""
+        path = self.get_version_dir(distribution, version) / self.README_INDEX_FILE
+        read_readme_index(path)
+        return path.is_file()
 
     def save_component_readmes(
-        self,
-        distribution: DistributionName,
-        version: Version,
-        readmes: Iterable[tuple[str, str]],  # (component_name, content)
+        self, distribution: DistributionName, version: Version, readmes: Iterable[tuple[str, str]]
     ) -> int:
-        """
-        Write each README content-addressed. Returns count newly written.
-
-        Args:
-            distribution: Distribution name (core or contrib)
-            version: Version object
-            readmes: Iterable of (component_name, content) pairs, e.g. from
-                     readme_scanner.discover_component_readmes()
-
-        Returns:
-            Number of README files newly written (existing content-addressed
-            files are left untouched, matching save_versioned_inventory's
-            general approach of not rewriting unchanged data).
-        """
-        target_dir = self.get_version_dir(distribution, version) / self.README_DIR
-        target_dir.mkdir(parents=True, exist_ok=True)
-        written = 0
-        for name, content in readmes:
-            digest = compute_content_hash(content)
-            safe_name = self._sanitize_name(name)
-            file_path = target_dir / f"{safe_name}-{digest}.md"
-            if file_path.exists():
-                continue
-            file_path.write_text(content, encoding="utf-8")
-            written += 1
+        """Store all content before publishing the version's completion index."""
+        index, written = ReadmeStore(self.inventory_dir / distribution / self.README_DIR).save(readmes)
+        write_readme_index(self.get_version_dir(distribution, version) / self.README_INDEX_FILE, index)
         return written
 
     def load_component_readme_map(self, distribution: DistributionName, version: Version) -> dict[str, str]:
-        """
-        Scan component_readmes/ and build a map of sanitized component_name -> markdown_hash.
-
-        Args:
-            distribution: Distribution name (core or contrib)
-            version: Version to scan
-
-        Returns:
-            Dictionary mapping sanitized component names to their markdown content hashes
-        """
-        readme_dir = self.get_version_dir(distribution, version) / self.README_DIR
-        if not readme_dir.exists():
-            return {}
-
-        selected_readmes: dict[str, tuple[str, int, str]] = {}
-        seen_hashes: dict[str, set[str]] = {}
-
-        for item in sorted(readme_dir.iterdir(), key=lambda p: p.name):
-            if item.is_file() and item.suffix == ".md":
-                parsed = self._parse_readme_filename(item.name)
-                if parsed:
-                    component_name, markdown_hash = parsed
-                    seen_hashes.setdefault(component_name, set()).add(markdown_hash)
-
-                    try:
-                        mtime_ns = item.stat().st_mtime_ns
-                    except OSError:
-                        logger.warning("Failed to stat README file in %s %s: %s", distribution, version, item.name)
-                        continue
-
-                    current = selected_readmes.get(component_name)
-                    if current is None:
-                        selected_readmes[component_name] = (markdown_hash, mtime_ns, item.name)
-                    else:
-                        _, current_mtime_ns, current_name = current
-                        if mtime_ns > current_mtime_ns or (mtime_ns == current_mtime_ns and item.name > current_name):
-                            selected_readmes[component_name] = (markdown_hash, mtime_ns, item.name)
-                else:
-                    logger.warning("Malformed README filename in %s %s: %s", distribution, version, item.name)
-
-        readme_map = {}
-        for component_name, (markdown_hash, _, selected_name) in selected_readmes.items():
-            readme_map[component_name] = markdown_hash
-            hashes = seen_hashes.get(component_name, set())
-            if len(hashes) > 1:
-                logger.warning(
-                    "Multiple README files found for component '%s' in %s %s; "
-                    "selected '%s' with hash '%s'. Available hashes: %s",
-                    component_name,
-                    distribution,
-                    version,
-                    selected_name,
-                    markdown_hash,
-                    sorted(hashes),
-                )
-
-        return readme_map
+        """Return raw component names mapped to indexed README hashes."""
+        index = read_readme_index(self.get_version_dir(distribution, version) / self.README_INDEX_FILE)
+        return {name: parse_readme_filename(filename)[1] for name, filename in index.items()}
 
     def load_component_readme_content(
-        self, distribution: DistributionName, version: Version, component_name: str, markdown_hash: str
+        self, distribution: DistributionName, component_name: str, markdown_hash: str
     ) -> str | None:
-        """
-        Load the content of a specific component README.
+        """Load content from this distribution's shared README store."""
+        return ReadmeStore(self.inventory_dir / distribution / self.README_DIR).read(
+            f"{sanitize_name(component_name)}-{markdown_hash}.md"
+        )
 
-        Args:
-            distribution: Distribution name (core or contrib)
-            version: Version to load from
-            component_name: Name of the component
-            markdown_hash: Content hash of the markdown
-
-        Returns:
-            The markdown content, or None if it doesn't exist or cannot be read
-        """
-        safe_name = self._sanitize_name(component_name)
-        file_path = self.get_version_dir(distribution, version) / self.README_DIR / f"{safe_name}-{markdown_hash}.md"
-        if not file_path.exists():
-            return None
-
-        try:
-            return file_path.read_text(encoding="utf-8")
-        except OSError as e:
-            logger.error("Failed to read README file '%s': %s", file_path, e)
-            return None
-
-    def _parse_readme_filename(self, filename: str) -> tuple[str, str] | None:
-        """
-        Parse a README filename into (component_name, markdown_hash).
-        Format: {component-name}-{hash}.md
-        """
-        match = re.match(r"^(.+)-([a-f0-9]{12})\.md$", filename)
-        if match:
-            return match.group(1), match.group(2)
-        return None
+    def prune_orphan_readmes(self, distribution: DistributionName) -> int:
+        """Validate all references before deleting blobs in this distribution."""
+        referenced = set()
+        for version in self.list_versions(distribution):
+            referenced.update(
+                read_readme_index(self.get_version_dir(distribution, version) / self.README_INDEX_FILE).values()
+            )
+        return ReadmeStore(self.inventory_dir / distribution / self.README_DIR).prune(referenced)
 
     def list_versions(self, distribution: DistributionName) -> list[Version]:
         """
@@ -399,6 +305,7 @@ class InventoryManager:
                 count += 1
 
         if count > 0:
+            self.prune_orphan_readmes(distribution)
             self.prune_orphan_schemas()
 
         return count
@@ -431,6 +338,7 @@ class InventoryManager:
                 removed += 1
 
         if removed > 0:
+            self.prune_orphan_readmes(distribution)
             self.prune_orphan_schemas()
 
         return removed
@@ -463,6 +371,7 @@ class InventoryManager:
         version_dir = self.get_version_dir(distribution, version)
         if version_dir.exists():
             shutil.rmtree(version_dir)
+            self.prune_orphan_readmes(distribution)
             self.prune_orphan_schemas()
             return True
         return False

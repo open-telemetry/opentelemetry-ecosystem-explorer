@@ -49,7 +49,10 @@ This will:
 
 - Process the latest release version for each distribution (if not already tracked)
 - Update the SNAPSHOT version from the main branch
-- Skip versions that already exist in the inventory
+- Skip component metadata processing for versions already in the inventory
+- Retry missing `component-readmes.yaml` indexes for all tracked releases using their own tags.
+  Completed indexes (including empty maps) are skipped; README write failures are logged and retried
+  on the next run without rewriting component metadata or updating the deprecation baseline.
 
 ### Backfill Mode
 
