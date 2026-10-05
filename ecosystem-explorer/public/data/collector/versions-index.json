@@ -1,47 +1,91 @@
 {
+  "distributions": {
+    "contrib": {
+      "latest": "0.162.0"
+    },
+    "core": {
+      "latest": "0.162.0"
+    }
+  },
   "versions": [
     {
       "bundle_hash": "0dcfb0051abf",
+      "distributions": [
+        "core",
+        "contrib"
+      ],
       "is_latest": true,
       "version": "0.162.0"
     },
     {
       "bundle_hash": "e1a949c3156d",
+      "distributions": [
+        "core",
+        "contrib"
+      ],
       "is_latest": false,
       "version": "0.161.0"
     },
     {
       "bundle_hash": "c356b2a5bc83",
+      "distributions": [
+        "core",
+        "contrib"
+      ],
       "is_latest": false,
       "version": "0.160.0"
     },
     {
       "bundle_hash": "aa8829df5b84",
+      "distributions": [
+        "core",
+        "contrib"
+      ],
       "is_latest": false,
       "version": "0.159.0"
     },
     {
       "bundle_hash": "4cfee0a3ee96",
+      "distributions": [
+        "core",
+        "contrib"
+      ],
       "is_latest": false,
       "version": "0.158.0"
     },
     {
       "bundle_hash": "504eb3c1870c",
+      "distributions": [
+        "core",
+        "contrib"
+      ],
       "is_latest": false,
       "version": "0.157.0"
     },
     {
       "bundle_hash": "d09032931aaa",
+      "distributions": [
+        "core",
+        "contrib"
+      ],
       "is_latest": false,
       "version": "0.156.0"
     },
     {
       "bundle_hash": "475091234305",
+      "distributions": [
+        "core",
+        "contrib"
+      ],
       "is_latest": false,
       "version": "0.155.0"
     },
     {
       "bundle_hash": "9ee8c143918a",
+      "distributions": [
+        "core",
+        "contrib"
+      ],
       "is_latest": false,
       "version": "0.154.0"
     }
