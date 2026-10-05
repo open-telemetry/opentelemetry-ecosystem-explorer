@@ -306,6 +306,34 @@ class TestConfigNameFallback:
 
         assert "name" not in inventory["libraries"][0]["configurations"][0]
 
+    def test_global_configuration_gets_name_from_declarative_name(self):
+        """Agent-level configs (file_format 0.8) get the same fallback so aggregation keeps them."""
+        inventory = {
+            "global_configurations": [
+                {"declarative_name": "general.db.semconv.version"},
+                _config("otel.instrumentation.common.v3-preview", "java.common.v3_preview"),
+            ]
+        }
+
+        apply_declarative_name_corrections(inventory)
+
+        names = [c["name"] for c in inventory["global_configurations"]]
+        assert names == ["general.db.semconv.version", "otel.instrumentation.common.v3-preview"]
+
+    def test_global_configuration_declarative_name_is_corrected(self):
+        """Known-bad declarative names are rewritten on agent-level configs too, before the fallback."""
+        inventory = {
+            "global_configurations": [
+                {"declarative_name": "general.sanitization.url.sensitive_query_parameters/development"},
+            ]
+        }
+
+        apply_declarative_name_corrections(inventory)
+
+        config = inventory["global_configurations"][0]
+        assert config["declarative_name"] == "general.sanitization.url.sensitive_query_parameters"
+        assert config["name"] == "general.sanitization.url.sensitive_query_parameters"
+
 
 class TestNormalizeConfigDescriptions:
     _DN = "java.common.db.query_sanitization.enabled"

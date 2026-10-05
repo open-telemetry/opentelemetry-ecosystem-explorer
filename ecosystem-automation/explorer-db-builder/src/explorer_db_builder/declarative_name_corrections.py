@@ -36,6 +36,7 @@ See:
 """
 
 import copy
+import itertools
 import logging
 from typing import Any
 
@@ -92,9 +93,10 @@ UNDERDOCUMENTED_CONFIG_BACKFILL: dict[str, str | None] = {
 def apply_declarative_name_corrections(inventory: dict[str, Any]) -> dict[str, Any]:
     """Rewrite known-bad configuration ``declarative_name`` values in place.
 
-    Walks every configuration entry under the inventory's ``libraries`` and ``custom`` lists and
-    replaces any ``declarative_name`` found in ``DECLARATIVE_NAME_CORRECTIONS`` with its corrected
-    value. The inventory is mutated in place and also returned for convenience.
+    Walks every configuration entry under the inventory's ``libraries`` and ``custom`` lists (plus
+    the top-level ``global_configurations``) and replaces any ``declarative_name`` found in
+    ``DECLARATIVE_NAME_CORRECTIONS`` with its corrected value. The inventory is mutated in place
+    and also returned for convenience.
 
     Args:
         inventory: Raw inventory data from the registry.
@@ -105,78 +107,76 @@ def apply_declarative_name_corrections(inventory: dict[str, Any]) -> dict[str, A
     if not DECLARATIVE_NAME_CORRECTIONS:
         return inventory
 
-    for key in ("libraries", "custom"):
-        for item in inventory.get(key) or []:
-            if not isinstance(item, dict):
-                continue
-            for config in item.get("configurations") or []:
-                if not isinstance(config, dict):
-                    continue
-                original_name = config.get("declarative_name")
-                corrected = DECLARATIVE_NAME_CORRECTIONS.get(original_name)
+    # Agent-level configs (file_format 0.8 ``global_configuration_refs``) also feed
+    # global-configurations.json, which keys on ``name`` too, so they get the same corrections.
+    module_configs = (config for _, config in _iter_configs(inventory))
+    global_configs = (config for config in inventory.get("global_configurations") or [] if isinstance(config, dict))
+    for config in itertools.chain(module_configs, global_configs):
+        original_name = config.get("declarative_name")
+        corrected = DECLARATIVE_NAME_CORRECTIONS.get(original_name)
 
-                if corrected is not None:
-                    config["declarative_name"] = corrected
-                    logger.debug(
-                        "Corrected declarative_name %r -> %r for config %r",
-                        original_name,
-                        corrected,
-                        config.get("name"),
-                    )
+        if corrected is not None:
+            config["declarative_name"] = corrected
+            logger.debug(
+                "Corrected declarative_name %r -> %r for config %r",
+                original_name,
+                corrected,
+                config.get("name"),
+            )
 
-                current_name = config.get("declarative_name")
-                # Key off the stable config ``name`` (not declarative_name): the registry shape of
-                # peer-service-mapping drifted across releases and converges only here.
-                #   <=2.27.0 : declarative_name unset, type=map, no schema
-                #   2.28.x   : declarative_name set, type=map, structured schema present
-                #   2.29.0   : type regressed to structured_list
-                # Forcing the full canonical shape on every version (see upstream PR #19077) removes
-                # the spurious cross-version diff: type=map on the system-property/env-var form,
-                # declarative_type=structured_list only on the declarative form. This is idempotent
-                # once #19077 lands in a release.
-                if config.get("name") == "otel.instrumentation.common.peer-service-mapping":
-                    config["declarative_name"] = "java.common.service_peer_mapping"
-                    config["type"] = "map"
-                    config["declarative_type"] = "structured_list"
-                    config["declarative_schema"] = {
-                        "type": "object",
-                        "required": ["peer", "service_name"],
-                        "properties": {
-                            "peer": {"type": "string", "description": "Host name or IP address to match against."},
-                            "service_name": {
-                                "type": "string",
-                                "description": "Peer service name to record for matching peers.",
-                            },
-                        },
-                    }
-                elif current_name and current_name.endswith("url_template_rules"):
-                    config["declarative_type"] = "structured_list"
-                    config["declarative_schema"] = {
-                        "type": "object",
-                        "required": ["pattern", "template"],
-                        "properties": {
-                            "pattern": {
-                                "type": "string",
-                                "description": "Regular expression matched against the request URL.",
-                            },
-                            "template": {
-                                "type": "string",
-                                "description": "Template used to derive the low-cardinality route.",
-                            },
-                            "override": {
-                                "type": "boolean",
-                                "default": False,
-                                "description": "Whether this rule overrides an already-applied template.",
-                            },
-                        },
-                    }
+        current_name = config.get("declarative_name")
+        # Key off the stable config ``name`` (not declarative_name): the registry shape of
+        # peer-service-mapping drifted across releases and converges only here.
+        #   <=2.27.0 : declarative_name unset, type=map, no schema
+        #   2.28.x   : declarative_name set, type=map, structured schema present
+        #   2.29.0   : type regressed to structured_list
+        # Forcing the full canonical shape on every version (see upstream PR #19077) removes
+        # the spurious cross-version diff: type=map on the system-property/env-var form,
+        # declarative_type=structured_list only on the declarative form. This is idempotent
+        # once #19077 lands in a release.
+        if config.get("name") == "otel.instrumentation.common.peer-service-mapping":
+            config["declarative_name"] = "java.common.service_peer_mapping"
+            config["type"] = "map"
+            config["declarative_type"] = "structured_list"
+            config["declarative_schema"] = {
+                "type": "object",
+                "required": ["peer", "service_name"],
+                "properties": {
+                    "peer": {"type": "string", "description": "Host name or IP address to match against."},
+                    "service_name": {
+                        "type": "string",
+                        "description": "Peer service name to record for matching peers.",
+                    },
+                },
+            }
+        elif current_name and current_name.endswith("url_template_rules"):
+            config["declarative_type"] = "structured_list"
+            config["declarative_schema"] = {
+                "type": "object",
+                "required": ["pattern", "template"],
+                "properties": {
+                    "pattern": {
+                        "type": "string",
+                        "description": "Regular expression matched against the request URL.",
+                    },
+                    "template": {
+                        "type": "string",
+                        "description": "Template used to derive the low-cardinality route.",
+                    },
+                    "override": {
+                        "type": "boolean",
+                        "default": False,
+                        "description": "Whether this rule overrides an already-applied template.",
+                    },
+                },
+            }
 
-                # Name fallback for declarative-only configs (file_format 0.6+): downstream keys
-                # configs on ``name``, so use the declarative_name as the stable identifier when the
-                # legacy system-property name is absent. Done last so it sees the corrected
-                # declarative_name above.
-                if not config.get("name") and current_name:
-                    config["name"] = current_name
+        # Name fallback for declarative-only configs (file_format 0.6+): downstream keys
+        # configs on ``name``, so use the declarative_name as the stable identifier when the
+        # legacy system-property name is absent. Done last so it sees the corrected
+        # declarative_name above.
+        if not config.get("name") and current_name:
+            config["name"] = current_name
 
     return inventory
 

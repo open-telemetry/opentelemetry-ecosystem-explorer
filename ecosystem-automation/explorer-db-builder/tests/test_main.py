@@ -479,6 +479,65 @@ class TestRunJavaagentBuilder:
         assert data[0]["type"] == "list"
         assert data[0]["instrumentations"] == ["jdbc"]
 
+    def test_builds_file_format_0_8(self, tmp_path):
+        """A 0.8 inventory resolves events inline, lists global configs, and keeps a missing default."""
+        query_sanitization = {
+            "name": "otel.instrumentation.jdbc.query-sanitization.enabled",
+            "declarative_name": "java.jdbc.query_sanitization.enabled",
+            "type": "boolean",
+        }
+        inventory_manager = MagicMock()
+        inventory_manager.list_versions.return_value = [Version("2.1.0"), Version("2.0.0")]
+        inventory_manager.load_library_readme_map.return_value = {}
+        inventory_manager.load_versioned_inventory.side_effect = lambda v: {
+            Version("2.1.0"): {
+                "file_format": 0.8,
+                "definitions": {
+                    "configurations": {
+                        "jdbc.query-sanitization": query_sanitization,
+                        "db.semconv.version": {"declarative_name": "general.db.semconv.version", "type": "int"},
+                    },
+                    "events": {"db.exception-83d4cffb": {"name": "db.client.operation.exception", "severity": "WARN"}},
+                },
+                "global_configuration_refs": ["db.semconv.version"],
+                "libraries": [
+                    {
+                        "name": "jdbc",
+                        "configuration_refs": ["jdbc.query-sanitization"],
+                        "telemetry": [{"when": "default", "event_refs": ["db.exception-83d4cffb"]}],
+                    }
+                ],
+            },
+            Version("2.0.0"): {
+                "file_format": 0.6,
+                "definitions": {"configurations": {"jdbc.query-sanitization": {**query_sanitization, "default": True}}},
+                "libraries": [{"name": "jdbc", "configuration_refs": ["jdbc.query-sanitization"]}],
+            },
+        }[v]
+
+        db_writer = DatabaseWriter(database_dir=str(tmp_path))
+
+        exit_code = run_javaagent_builder(inventory_manager, db_writer)
+
+        assert exit_code == 0
+        data = json.loads((tmp_path / "global-configurations.json").read_text(encoding="utf-8"))
+        assert [c["name"] for c in data] == [
+            "general.db.semconv.version",
+            "otel.instrumentation.jdbc.query-sanitization.enabled",
+        ]
+        assert data[0]["instrumentations"] == []
+        assert data[1]["instrumentations"] == ["jdbc"]
+        assert "default" not in data[1]
+
+        version_index = json.loads((tmp_path / "versions" / "2.1.0-index.json").read_text(encoding="utf-8"))
+        jdbc_hash = version_index["instrumentations"]["jdbc"]
+        jdbc = json.loads(
+            (tmp_path / "instrumentations" / "jdbc" / f"jdbc-{jdbc_hash}.json").read_text(encoding="utf-8")
+        )
+        assert "default" not in jdbc["configurations"][0]
+        assert jdbc["telemetry"][0]["events"] == [{"name": "db.client.operation.exception", "severity": "WARN"}]
+        assert "event_refs" not in jdbc["telemetry"][0]
+
     def test_writes_ecosystem_stats(self, tmp_path):
         """run_javaagent_builder writes ecosystem-stats.json with version and unique library counts."""
         inventory_manager = MagicMock()

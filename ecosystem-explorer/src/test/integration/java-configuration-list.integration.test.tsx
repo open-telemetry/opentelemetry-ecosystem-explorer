@@ -53,9 +53,7 @@ describe("JavaConfigurationListPage — integration", () => {
     expect(screen.getByText(countRegex)).toBeInTheDocument();
 
     // Check for a specific known configuration description from global-configurations.json
-    const descriptions = screen.getAllByText(
-      /Enables statement sanitization for database queries./i
-    );
+    const descriptions = screen.getAllByText(/Enables query sanitization for database queries\./i);
     expect(descriptions.length).toBeGreaterThan(0);
   });
 

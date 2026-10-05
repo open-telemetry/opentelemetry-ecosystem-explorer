@@ -74,7 +74,7 @@ For javaagent, `run_javaagent_builder` (`main.py`) runs several **cross-version*
 before writing. These intentionally rewrite already-published versions based on the *newest*
 release, and they are the usual explanation for a big diff:
 
-- `transform_instrumentation_format` — resolves file formats (0.1/0.2/0.6 catalog+refs) to the
+- `transform_instrumentation_format` — resolves file formats (0.1/0.2/0.6/0.8 catalog+refs) to the
   inline shape. A format/parser change rewrites everything.
 - `apply_declarative_name_corrections` (`declarative_name_corrections.py`) — rewrites known-bad
   `declarative_name`s and falls back a missing config `name` to `declarative_name`.

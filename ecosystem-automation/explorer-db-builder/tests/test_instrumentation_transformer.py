@@ -351,6 +351,13 @@ class TestTransformInstrumentationFormat:
         with pytest.raises(ValueError, match="Unsupported file format: 0.9"):
             transform_instrumentation_format(data)
 
+    def test_file_format_0_7_is_unsupported(self):
+        """0.7 was never released upstream, so only 0.8 is supported for the events catalog."""
+        data = {"file_format": 0.7, "definitions": {}, "libraries": []}
+
+        with pytest.raises(ValueError, match="Unsupported file format: 0.7"):
+            transform_instrumentation_format(data)
+
 
 class TestTransform06To05:
     def _catalog_data(self):
@@ -454,6 +461,164 @@ class TestTransform06To05:
 
         assert result["custom"][0]["configurations"][0]["name"] == "otel.instrumentation.http.known-methods"
         assert "configuration_refs" not in result["custom"][0]
+
+    def test_no_global_configurations_without_global_refs(self):
+        result = transform_instrumentation_format(self._catalog_data())
+
+        assert "global_configurations" not in result
+
+
+class TestTransform08To05:
+    def _catalog_data(self):
+        """0.8 inventory: adds an events catalog, global refs, and deprecated/default-less configs."""
+        return {
+            "file_format": 0.8,
+            "definitions": {
+                "configurations": {
+                    "otel.instrumentation.jdbc.query-sanitization.enabled": {
+                        "name": "otel.instrumentation.jdbc.query-sanitization.enabled",
+                        "declarative_name": "java.jdbc.query_sanitization.enabled",
+                        "description": "When unset, the common setting applies.",
+                        "type": "boolean",
+                    },
+                    "otel.instrumentation.jdbc.statement-sanitizer.enabled": {
+                        "name": "otel.instrumentation.jdbc.statement-sanitizer.enabled",
+                        "declarative_name": "java.jdbc.statement_sanitizer.enabled",
+                        "description": "Deprecated: use the query-sanitization setting instead.",
+                        "type": "boolean",
+                        "deprecated": True,
+                        "replaced_by": "otel.instrumentation.jdbc.query-sanitization.enabled",
+                    },
+                    "span-suppression-strategy": {
+                        "name": "otel.instrumentation.common.span-suppression-strategy",
+                        "declarative_name": "java.common.span_suppression_strategy",
+                        "type": "string",
+                        "default": "semconv",
+                    },
+                    "db.semconv.version": {
+                        "declarative_name": "general.db.semconv.version",
+                        "type": "int",
+                    },
+                },
+                "metrics": {
+                    "db.client.operation.duration-18bcff8b": {
+                        "name": "db.client.operation.duration",
+                        "instrument": "histogram",
+                        "data_type": "HISTOGRAM",
+                        "unit": "s",
+                    },
+                },
+                "events": {
+                    "db.client.operation.exception-83d4cffb": {
+                        "name": "db.client.operation.exception",
+                        "severity": "WARN",
+                        "attributes": [{"name": "exception.type", "type": "STRING"}],
+                    },
+                },
+            },
+            "global_configuration_refs": ["span-suppression-strategy", "db.semconv.version"],
+            "libraries": [
+                {
+                    "name": "jdbc",
+                    "configuration_refs": [
+                        "otel.instrumentation.jdbc.query-sanitization.enabled",
+                        "otel.instrumentation.jdbc.statement-sanitizer.enabled",
+                    ],
+                    "telemetry": [
+                        {"when": "default", "metric_refs": ["db.client.operation.duration-18bcff8b"]},
+                        {
+                            "when": "otel.semconv.exception.signal.preview=logs",
+                            "event_refs": ["db.client.operation.exception-83d4cffb"],
+                        },
+                    ],
+                },
+                {
+                    "name": "hbase-client-2.0",
+                    "telemetry": [
+                        {
+                            "when": "otel.semconv.exception.signal.preview=logs",
+                            "event_refs": ["db.client.operation.exception-83d4cffb"],
+                        },
+                    ],
+                },
+            ],
+        }
+
+    def test_resolves_to_inline_0_5_shape(self):
+        result = transform_instrumentation_format(self._catalog_data())
+
+        assert result["file_format"] == 0.5
+        assert "definitions" not in result
+        assert "global_configuration_refs" not in result
+        lib = result["libraries"][0]
+        assert "configuration_refs" not in lib
+        assert [c["name"] for c in lib["configurations"]] == [
+            "otel.instrumentation.jdbc.query-sanitization.enabled",
+            "otel.instrumentation.jdbc.statement-sanitizer.enabled",
+        ]
+        assert lib["telemetry"][0]["metrics"][0]["name"] == "db.client.operation.duration"
+
+    def test_resolves_event_refs_to_inline_events(self):
+        result = transform_instrumentation_format(self._catalog_data())
+
+        jdbc_entry = result["libraries"][0]["telemetry"][1]
+        hbase_entry = result["libraries"][1]["telemetry"][0]
+        assert "event_refs" not in jdbc_entry
+        assert jdbc_entry["events"] == [
+            {
+                "name": "db.client.operation.exception",
+                "severity": "WARN",
+                "attributes": [{"name": "exception.type", "type": "STRING"}],
+            }
+        ]
+        # A shared event definition yields independent copies per library.
+        assert hbase_entry["events"] == jdbc_entry["events"]
+        assert hbase_entry["events"][0] is not jdbc_entry["events"][0]
+
+    def test_unknown_event_ref_is_skipped(self):
+        data = self._catalog_data()
+        data["libraries"][1]["telemetry"][0]["event_refs"].append("missing-event")
+
+        result = transform_instrumentation_format(data)
+
+        assert [e["name"] for e in result["libraries"][1]["telemetry"][0]["events"]] == [
+            "db.client.operation.exception"
+        ]
+
+    def test_resolves_global_configuration_refs(self):
+        result = transform_instrumentation_format(self._catalog_data())
+
+        assert result["global_configurations"] == [
+            {
+                "name": "otel.instrumentation.common.span-suppression-strategy",
+                "declarative_name": "java.common.span_suppression_strategy",
+                "type": "string",
+                "default": "semconv",
+            },
+            {"declarative_name": "general.db.semconv.version", "type": "int"},
+        ]
+
+    def test_unknown_global_configuration_ref_is_skipped(self):
+        data = self._catalog_data()
+        data["global_configuration_refs"].append("does.not.exist")
+
+        result = transform_instrumentation_format(data)
+
+        assert len(result["global_configurations"]) == 2
+
+    def test_missing_default_is_preserved(self):
+        result = transform_instrumentation_format(self._catalog_data())
+
+        query_sanitization = result["libraries"][0]["configurations"][0]
+        assert "default" not in query_sanitization
+        assert "default" not in result["global_configurations"][1]
+
+    def test_deprecated_and_replaced_by_pass_through(self):
+        result = transform_instrumentation_format(self._catalog_data())
+
+        statement_sanitizer = result["libraries"][0]["configurations"][1]
+        assert statement_sanitizer["deprecated"] is True
+        assert statement_sanitizer["replaced_by"] == "otel.instrumentation.jdbc.query-sanitization.enabled"
 
 
 class TestTransform01To02:
