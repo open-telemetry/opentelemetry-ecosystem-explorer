@@ -23,13 +23,11 @@ import { defaultConfigValue, isStructuredListEntry } from "@/lib/declarative-nam
 import { getByPath } from "@/lib/config-path";
 import { useConfigurationBuilder } from "@/hooks/use-configuration-builder";
 import { SwitchPill } from "@/components/ui/switch-pill";
-import type { SelectNode } from "@/types/configuration";
 import {
   FocusManagedInputList,
   type FocusManagedInputListHandle,
 } from "./controls/focus-managed-input-list";
 import { INPUT_CLASS, LIST_INPUT_CLASS } from "./controls/control-styles";
-import { SelectControl } from "./controls/select-control";
 
 export interface InstrumentationConfigFieldProps {
   config: AggregatedConfig;
@@ -61,29 +59,26 @@ function BooleanRenderer({ value, onChange, ariaLabel, disabled }: ControlRender
   );
 }
 
-const BOOLEAN_OPTIONS: SelectNode["enumOptions"] = [
-  { value: "true", description: "" },
-  { value: "false", description: "" },
-];
-
-function NullableBooleanRenderer({ value, onChange, onClear, ariaLabel }: ControlRendererProps) {
+function NullableBooleanRenderer({
+  value,
+  onChange,
+  onClear,
+  ariaLabel,
+  disabled,
+}: ControlRendererProps) {
   const { t } = useTranslation("java-agent");
   return (
-    <SelectControl
-      node={{
-        controlType: "select",
-        key: ariaLabel,
-        label: ariaLabel,
-        path: ariaLabel,
-        nullable: true,
-        nullBehavior: t("builder.field.unsetOption"),
-        hideLabel: true,
-        enumOptions: BOOLEAN_OPTIONS,
-      }}
-      path={ariaLabel}
-      value={typeof value === "boolean" ? String(value) : null}
-      onChange={(_, next) => (next === null ? onClear() : onChange(next === "true"))}
-    />
+    <select
+      aria-label={ariaLabel}
+      disabled={disabled}
+      value={typeof value === "boolean" ? String(value) : ""}
+      onChange={(e) => (e.target.value === "" ? onClear() : onChange(e.target.value === "true"))}
+      className={INPUT_CLASS}
+    >
+      <option value="">{t("builder.field.unsetOption")}</option>
+      <option value="true">true</option>
+      <option value="false">false</option>
+    </select>
   );
 }
 
@@ -390,7 +385,7 @@ export function InstrumentationConfigField({
   const hasDefault = defaultRaw !== undefined;
   const isCustomized = currentValue !== undefined && currentValue !== null;
   const isEditing = isCustomized || (isEditingUnset && !hasDefault);
-  const hasControlsRow = isReadOnly || isEditing || hasDefault;
+  const hasControlsRow = isEditing || hasDefault;
   const isStructuredList = isStructuredListEntry(entry);
   const typeMismatch =
     isCustomized && !valueMatchesType(currentValue, entry.type, isStructuredList);

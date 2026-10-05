@@ -30,7 +30,6 @@ vi.mock("@/hooks/use-configuration-builder", () => ({
     state: mockState,
     setValueByPath: (...args: unknown[]) => setValueByPath(...args),
     removeMapEntry: (...args: unknown[]) => removeMapEntry(...args),
-    validateField: () => null,
   }),
 }));
 
@@ -403,6 +402,11 @@ describe("InstrumentationConfigField — config without a default", () => {
       "Overrides the common setting for this instrumentation; when unset, that setting applies.",
     type: "boolean",
   });
+  const dbSemconvVersion = makeAggregated({
+    declarative_name: "general.db.semconv.version",
+    description: "Database semantic convention version to emit.",
+    type: "int",
+  });
 
   beforeEach(() => {
     setValueByPath.mockClear();
@@ -415,6 +419,23 @@ describe("InstrumentationConfigField — config without a default", () => {
     expect(screen.queryByText(/default:/i)).toBeNull();
     expect(screen.getByText(jdbcQuerySanitization.entry.description).nextElementSibling).toBeNull();
     expect(screen.getByRole("button", { name: /customize/i })).toBeInTheDocument();
+  });
+
+  it("renders no control for a read-only config without a default or a value", () => {
+    render(<InstrumentationConfigField config={dbSemconvVersion} onJumpToGeneral={vi.fn()} />);
+    expect(screen.queryByRole("spinbutton")).toBeNull();
+    expect(screen.getByText(dbSemconvVersion.entry.description).nextElementSibling).toBeNull();
+  });
+
+  it("shows the value set in General for a read-only config without a default", () => {
+    mockState = {
+      ...baseState,
+      values: { "instrumentation/development": { general: { db: { semconv: { version: 1 } } } } },
+    };
+    render(<InstrumentationConfigField config={dbSemconvVersion} onJumpToGeneral={vi.fn()} />);
+    const input = screen.getByRole("spinbutton");
+    expect(input).toHaveValue(1);
+    expect(input).toBeDisabled();
   });
 
   it("keeps rendering an empty-string default as (empty)", () => {
@@ -590,5 +611,35 @@ describe("InstrumentationConfigField — config without a default", () => {
       ["instrumentation/development", "java", "example", "max_queue"],
       7
     );
+  });
+
+  it("Customize on a list opens an empty editor and writes only the items the user adds", async () => {
+    const user = userEvent.setup();
+    const cfg = makeAggregated({
+      name: "otel.semconv-stability.preview",
+      declarative_name: "java.common.semconv_stability.preview",
+      type: "list",
+    });
+    setValueByPath.mockImplementationOnce((_p: unknown, v: unknown) => {
+      mockState = {
+        ...baseState,
+        values: {
+          "instrumentation/development": {
+            java: { common: { semconv_stability: { preview: v as ConfigValue } } },
+          },
+        },
+      };
+    });
+    const { rerender } = render(
+      <InstrumentationConfigField config={cfg} onJumpToGeneral={vi.fn()} />
+    );
+    await user.click(screen.getByRole("button", { name: /customize/i }));
+    expect(setValueByPath).not.toHaveBeenCalled();
+    expect(screen.queryByRole("textbox")).toBeNull();
+    await user.click(screen.getByRole("button", { name: /^add$/i }));
+    expect(setValueByPath).toHaveBeenLastCalledWith(cfg.path, [""]);
+    rerender(<InstrumentationConfigField config={cfg} onJumpToGeneral={vi.fn()} />);
+    await user.type(screen.getByRole("textbox"), "x");
+    expect(setValueByPath).toHaveBeenLastCalledWith(cfg.path, ["x"]);
   });
 });
