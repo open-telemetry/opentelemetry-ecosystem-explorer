@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { useState, useMemo, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Search, Settings } from "lucide-react";
 import { Loader } from "@/components/ui/loader";
 import { BackButton } from "@/components/ui/back-button";
@@ -54,8 +55,51 @@ function useGlobalConfigurations() {
 
 export function JavaConfigurationListPage() {
   const { t } = useTranslation("java-agent");
-  const [format, setFormat] = useState<ConfigurationFormat>("declarative");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const formatParam = searchParams.get("format");
+  // Route params are unvalidated; anything unrecognised falls back to the default tab.
+  const format: ConfigurationFormat =
+    formatParam === "system-property" ? "system-property" : "declarative";
+  const urlSearch = searchParams.get("search") ?? "";
+
+  // Local state keeps the input responsive; the URL is updated alongside it.
+  const [searchQuery, setSearchQuery] = useState(urlSearch);
+  // Resync on external URL changes (back/forward) using the derived-state-during-render pattern.
+  const [syncedUrlSearch, setSyncedUrlSearch] = useState(urlSearch);
+  if (syncedUrlSearch !== urlSearch) {
+    setSyncedUrlSearch(urlSearch);
+    setSearchQuery(urlSearch);
+  }
+
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    // Replace while typing to avoid polluting browser history.
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev);
+        if (value) {
+          next.set("search", value);
+        } else {
+          next.delete("search");
+        }
+        return next;
+      },
+      { replace: true }
+    );
+  };
+
+  const handleFormatChange = (value: ConfigurationFormat) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (value === "declarative") {
+        next.delete("format");
+      } else {
+        next.set("format", value);
+      }
+      return next;
+    });
+  };
+
   const formatTabs = [
     { value: "system-property", label: t("configTabs.systemProperties") },
     { value: "declarative", label: t("configTabs.declarativeConfiguration") },
@@ -114,13 +158,16 @@ export function JavaConfigurationListPage() {
                 aria-label={t("configList.search.ariaLabel")}
                 placeholder={t("configList.search.placeholder")}
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 className="border-border bg-background focus:border-primary focus:ring-primary w-full rounded-md border py-2 pr-4 pl-10 text-sm focus:ring-1 focus:outline-none"
               />
             </div>
 
             <div className="w-full shrink-0 md:w-auto">
-              <Tabs value={format} onValueChange={(v) => setFormat(v as ConfigurationFormat)}>
+              <Tabs
+                value={format}
+                onValueChange={(v) => handleFormatChange(v as ConfigurationFormat)}
+              >
                 <SegmentedTabList tabs={formatTabs} value={format} fullWidth={false} />
               </Tabs>
             </div>

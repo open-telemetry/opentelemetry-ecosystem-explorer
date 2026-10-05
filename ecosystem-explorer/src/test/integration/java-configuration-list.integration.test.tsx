@@ -16,19 +16,25 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import { installFetchInterceptor, uninstallFetchInterceptor } from "./helpers/fetch-interceptor";
 import { JavaConfigurationListPage } from "@/features/java-agent/java-configuration-list-page";
 
 beforeAll(() => installFetchInterceptor());
 afterAll(() => uninstallFetchInterceptor());
 
-function renderPage() {
+function LocationProbe() {
+  const location = useLocation();
+  return <div data-testid="location-search">{location.search}</div>;
+}
+
+function renderPage(initialUrl = "/java-agent/configuration") {
   return render(
-    <MemoryRouter initialEntries={["/java-agent/configuration"]}>
+    <MemoryRouter initialEntries={[initialUrl]}>
       <Routes>
         <Route path="/java-agent/configuration" element={<JavaConfigurationListPage />} />
       </Routes>
+      <LocationProbe />
     </MemoryRouter>
   );
 }
@@ -108,6 +114,73 @@ describe("JavaConfigurationListPage — integration", () => {
         screen.getByText("otel.instrumentation.common.db-statement-sanitizer.enabled")
       ).toBeInTheDocument();
       expect(systemPropsTab).toHaveAttribute("aria-selected", "true");
+    });
+  });
+
+  it("restores search and format from the URL", async () => {
+    renderPage("/java-agent/configuration?search=elasticsearch&format=system-property");
+
+    await waitFor(
+      () => {
+        expect(screen.queryByText("Loading configurations...")).not.toBeInTheDocument();
+      },
+      { timeout: 10_000 }
+    );
+
+    expect(
+      screen.getByPlaceholderText("Search configurations, descriptions, or instrumentations...")
+    ).toHaveValue("elasticsearch");
+    expect(screen.getByRole("tab", { name: /System Properties/i })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+  });
+
+  it("falls back to declarative for an unrecognised format param", async () => {
+    renderPage("/java-agent/configuration?format=bogus");
+
+    await waitFor(
+      () => {
+        expect(screen.queryByText("Loading configurations...")).not.toBeInTheDocument();
+      },
+      { timeout: 10_000 }
+    );
+
+    expect(screen.getByRole("tab", { name: /Declarative Configuration/i })).toHaveAttribute(
+      "aria-selected",
+      "true"
+    );
+  });
+
+  it("writes search and format changes to the URL", async () => {
+    const user = userEvent.setup();
+    renderPage();
+
+    await waitFor(
+      () => {
+        expect(screen.queryByText("Loading configurations...")).not.toBeInTheDocument();
+      },
+      { timeout: 10_000 }
+    );
+
+    await user.type(
+      screen.getByPlaceholderText("Search configurations, descriptions, or instrumentations..."),
+      "kafka"
+    );
+    await user.click(screen.getByRole("tab", { name: /System Properties/i }));
+
+    await waitFor(() => {
+      const params = new URLSearchParams(screen.getByTestId("location-search").textContent ?? "");
+      expect(params.get("search")).toBe("kafka");
+      expect(params.get("format")).toBe("system-property");
+    });
+
+    // Switching back to the default drops the param rather than leaving format=declarative.
+    await user.click(screen.getByRole("tab", { name: /Declarative Configuration/i }));
+    await waitFor(() => {
+      const params = new URLSearchParams(screen.getByTestId("location-search").textContent ?? "");
+      expect(params.has("format")).toBe(false);
+      expect(params.get("search")).toBe("kafka");
     });
   });
 });
