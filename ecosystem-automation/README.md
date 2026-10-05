@@ -15,6 +15,7 @@ repository root using `uv` commands.**
 - **js-instrumentation-watcher**: Collects metadata from the OpenTelemetry JavaScript
   Instrumentation (js-contrib) project
 - **configuration-watcher**: Collects the OpenTelemetry declarative configuration schema
+- **conformance-watcher**: Imports published semantic-convention conformance reports
 - **explorer-db-builder**: Builds the database for the ecosystem explorer web application
 - **v1-registry-sync**: Compares the collector registry against the upstream OpenTelemetry v1
   registry

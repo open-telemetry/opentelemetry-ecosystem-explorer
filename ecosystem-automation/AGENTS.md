@@ -9,6 +9,7 @@ Python pipelines that watch upstream OpenTelemetry projects and write versioned 
 - `js-instrumentation-watcher/` — JavaScript (js-contrib) instrumentations
 - `python-instrumentation-watcher/` — Python (python-contrib) instrumentations
 - `configuration-watcher/` — Declarative configuration schema
+- `conformance-watcher/` — Semantic-convention conformance reports
 - `explorer-db-builder/` — Builds the content-addressed database the frontend reads
 - `v1-registry-sync/` — Compares the collector registry against the upstream v1 registry
 - `watcher-common/` — Shared base classes for inventory and version detection

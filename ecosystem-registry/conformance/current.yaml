@@ -1,0 +1,5 @@
+snapshot_id: ebc207b7125a
+path: snapshots/ebc207b7125a
+content_digest: sha256:ebc207b7125a084ab273f5244cc189627665b02b52530a0ceac969984764a5d6
+source_repository: open-telemetry/semantic-conventions-conformance
+source_revision: 6f85d0aa70eb55116d161c5c0737a6ba55faf101
