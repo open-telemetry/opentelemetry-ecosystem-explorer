@@ -16,8 +16,8 @@
 """Analyze the diff produced by a Build Explorer Database run.
 
 Companion to the ``database-build-review`` skill. Diffs the content-addressed database between a
-base ref and a PR/head ref by reading the ``versions/<v>-index.json`` manifests (the source of
-truth for which blob each version uses), and reports:
+base ref and a PR/head ref by reading the ``versions/<v>-index.json`` manifests, or ``index.json``
+for javascript (the source of truth for which blob each version uses), and reports:
 
 * versions added / removed
 * per-component hash churn, split into NEW-VERSION blobs vs HISTORICAL REWRITES (a version that
@@ -29,7 +29,8 @@ truth for which blob each version uses), and reports:
 
 Only the content-addressed ecosystems (``javaagent``, ``collector``, ``javascript``) are supported;
 ``configuration`` is a schema tree, not per-component content-addressed -- review its diff directly.
-javascript has one manifest per package release, so its "versions" are ``<package>-<version>``.
+javascript has no per-version manifests: ``index.json`` lists every release with its hash, so its
+"versions" are read from there as ``<package>-<version>``.
 
 Examples:
     python diff_build_pr.py --repo-root . --ecosystem javaagent --pr 889
@@ -58,9 +59,10 @@ UPSTREAM_SLUG = "open-telemetry/opentelemetry-ecosystem-explorer"
 ECOSYSTEMS = {
     "javaagent": {"map_keys": ["instrumentations", "custom_instrumentations"], "content_subdir": "instrumentations"},
     "collector": {"map_keys": ["components"], "content_subdir": "components"},
-    # Packages version independently, so many manifests share a "version" value. Key each one by
-    # its filename (<package>-<version>) instead, or same-version packages overwrite each other.
-    "javascript": {"map_keys": ["packages"], "content_subdir": "packages", "key_by_filename": True},
+    # Packages version independently and there are no versions/ manifests: index.json lists each
+    # package's releases as {version, hash}. Each release is keyed as <package>-<version>, or
+    # same-version packages would overwrite each other.
+    "javascript": {"map_keys": ["packages"], "content_subdir": "packages", "releases_in_index": True},
 }
 
 
@@ -126,10 +128,26 @@ def _bare_component(component: str) -> str:
     return component.rsplit(_NS_SEP, 1)[-1]
 
 
+def load_index_releases(root: str, ref: str, ecosystem: str) -> dict[str, dict[str, str]]:
+    """Return {<package>-<version>: {namespaced package: hash}} from ``index.json`` at ``ref``."""
+    raw = git_show(root, ref, f"{DATA_ROOT}/{ecosystem}/index.json")
+    if raw is None:
+        return {}
+    section = ECOSYSTEMS[ecosystem]["map_keys"][0]
+    manifests: dict[str, dict[str, str]] = {}
+    for package in json.loads(raw).get("packages") or []:
+        name = package["name"]
+        for release in package.get("releases") or []:
+            manifests[f"{name}-{release['version']}"] = {f"{section}{_NS_SEP}{name}": release["hash"]}
+    return manifests
+
+
 def load_manifests(root: str, ref: str, ecosystem: str) -> dict[str, dict[str, str]]:
     """Return {version: {section-namespaced component: hash}} for every manifest at ``ref``."""
+    if ECOSYSTEMS[ecosystem].get("releases_in_index"):
+        return load_index_releases(root, ref, ecosystem)
+
     map_keys = ECOSYSTEMS[ecosystem]["map_keys"]
-    key_by_filename = ECOSYSTEMS[ecosystem].get("key_by_filename", False)
     manifests: dict[str, dict[str, str]] = {}
     for path in list_manifest_paths(root, ref, ecosystem):
         raw = git_show(root, ref, path)
@@ -137,7 +155,7 @@ def load_manifests(root: str, ref: str, ecosystem: str) -> dict[str, dict[str, s
             continue
         data = json.loads(raw)
         stem = path.rsplit("/", 1)[-1].removesuffix("-index.json")
-        version = stem if key_by_filename else (data.get("version") or stem)
+        version = data.get("version") or stem
         combined: dict[str, str] = {}
         for key in map_keys:
             for name, digest in (data.get(key) or {}).items():
@@ -163,8 +181,11 @@ def compare(base: dict[str, dict[str, str]], head: dict[str, dict[str, str]]) ->
     report.new_versions = sorted(set(head) - set(base))
     report.removed_versions = sorted(set(base) - set(head))
 
-    for version in report.new_versions:
-        report.new_version_blob_count += len(head[version])
+    # New versions mostly point at blobs that already exist (unchanged components, or javascript
+    # releases that only bumped the version), so count distinct blobs base doesn't reference.
+    base_refs = {(component, digest) for manifest in base.values() for component, digest in manifest.items()}
+    new_refs = {(component, digest) for version in report.new_versions for component, digest in head[version].items()}
+    report.new_version_blob_count = len(new_refs - base_refs)
 
     for version in sorted(set(base) & set(head)):
         base_map, head_map = base[version], head[version]

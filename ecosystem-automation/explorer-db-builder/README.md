@@ -50,18 +50,18 @@ ecosystem-explorer/
             core-otlpreceiver-<hash>.json
           ...
       javascript/
-        index.json                  # Every package at its latest version, with its version list
-        versions/                    # One manifest per package release: {package: content-hash}
-          instrumentation-express-0.70.0-index.json
-          ...
-        packages/                    # Content-addressed data for each package release
+        index.json                  # Every package, its releases, and the hash each release uses
+        packages/                    # Content-addressed package metadata, shared across releases
           instrumentation-express/
             instrumentation-express-<hash>.json
           ...
 ```
 
-js-contrib packages version independently, so `javascript/` has no `versions-index.json`. Each
-package release is its own manifest instead, which keeps the shared orphan GC unchanged.
+js-contrib packages version independently, so `javascript/` has no `versions-index.json` or
+per-version manifests. Package files leave out the version, and most releases only bump it, so
+releases with identical metadata hash to the same file. `index.json` maps each release to its hash
+and is the only manifest. The published fields are listed in `PACKAGE_FIELDS` in
+`javascript_builder.py`.
 
 ## Usage
 

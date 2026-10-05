@@ -37,8 +37,10 @@ Read this first — the review only makes sense against these mechanics.
   you exactly which (component, version) pairs changed, without reading blobs.
   - javaagent keys: `instrumentations`, `custom_instrumentations`; blobs in `instrumentations/<name>/`.
   - collector key: `components`; blobs in `components/<name>/`.
-  - javascript has no ecosystem-wide version. Each package release gets its own manifest,
-    `versions/<package>-<v>-index.json`, key `packages` (one entry); blobs in `packages/<name>/`.
+  - javascript has no ecosystem-wide version and no `versions/` directory. `index.json` lists each
+    package's `releases` as `{version, hash}`; blobs in `packages/<name>/` carry no version, so
+    several releases can point at the same blob. A new release that reuses an existing hash adds no
+    blob, only an `index.json` change.
     `diff_build_pr.py` reports its "versions" as `<package>-<v>`.
   - configuration is a schema tree (`versions/<v>.json`), **not** per-component
     content-addressed — the hash-churn analysis below doesn't apply to it; review it by reading the

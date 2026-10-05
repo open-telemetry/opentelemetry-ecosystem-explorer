@@ -14,16 +14,13 @@
 #
 """Writes JavaScript instrumentation data to content-addressed file storage.
 
-js-contrib packages version independently, so there is no ecosystem-wide release
-to key a version manifest on the way javaagent and collector do. Each package
-release gets its own manifest instead:
+js-contrib packages version independently and most releases only bump the version
+number, so package files don't carry a version. Releases with identical metadata
+hash to the same file, and index.json maps each version to its file:
 
     javascript/
-        index.json                                  # every package at its latest version
-        versions/{package}-{version}-index.json     # manifest for one package release
-        packages/{package}/{package}-{hash}.json    # full metadata for one package release
-
-Keeping one manifest per release means the shared orphan GC walk works unchanged.
+        index.json                                  # every package, its releases, version -> hash
+        packages/{package}/{package}-{hash}.json    # metadata shared by one or more releases
 """
 
 import json
@@ -33,10 +30,8 @@ import shutil
 from pathlib import Path
 from typing import Any
 
-from semantic_version import Version
-
-from explorer_db_builder import orphan_gc
 from explorer_db_builder.content_hashing import content_hash
+from explorer_db_builder.orphan_gc import read_json
 
 logger = logging.getLogger(__name__)
 
@@ -61,24 +56,18 @@ class JavascriptDatabaseWriter:
         self.total_bytes += len(content.encode("utf-8"))
 
     def _package_file(self, package_name: str, package_hash: str) -> Path:
-        """Content-addressed path for one package release (does not create its directory)."""
+        """Content-addressed path for package metadata (does not create its directory)."""
         safe_name = self._sanitize_name(package_name)
         return self.database_dir / "packages" / safe_name / f"{safe_name}-{package_hash}.json"
 
-    def _markdown_file(self, package_name: str, markdown_hash: str) -> Path:
-        """Content-addressed path for a package README (does not create its directory).
-
-        Nothing publishes JS READMEs yet. The path is defined so orphan GC already
-        knows where they will live.
-        """
-        safe_name = self._sanitize_name(package_name)
-        return self.database_dir / "markdown" / f"{safe_name}-{markdown_hash}.md"
-
     def write_package(self, package: dict[str, Any]) -> str:
-        """Write one package release to its content-addressed file.
+        """Write package metadata to its content-addressed file.
+
+        Callers pass metadata without a version, so releases that only bumped the
+        version share one file.
 
         Args:
-            package: Registry metadata for one package release. Must have a "name".
+            package: Package metadata. Must have a "name".
 
         Returns:
             The 12-char content hash.
@@ -103,32 +92,12 @@ class JavascriptDatabaseWriter:
         logger.debug("Wrote package '%s' hash %s", package_name, package_hash)
         return package_hash
 
-    def write_package_version_index(self, package_name: str, version: Version, package_hash: str) -> None:
-        """Write the manifest for one package release.
-
-        The "packages" map has a single entry. It uses the same shape as the other
-        ecosystems' manifests so orphan GC can read it without special casing.
-
-        Raises:
-            OSError: If file writing fails.
-        """
-        versions_dir = self.database_dir / "versions"
-        versions_dir.mkdir(parents=True, exist_ok=True)
-
-        safe_name = self._sanitize_name(package_name)
-        version_file = versions_dir / f"{safe_name}-{version}-index.json"
-        data = {
-            "package": package_name,
-            "version": str(version),
-            "packages": {package_name: package_hash},
-        }
-        self._write_json(version_file, data)
-
     def write_index(self, packages: list[dict[str, Any]]) -> None:
-        """Write index.json, the list of every package at its latest version.
+        """Write index.json, the list of every package and the file each release uses.
 
         Args:
-            packages: Slim index entries, already sorted.
+            packages: Index entries, already sorted. Each has a "releases" list of
+                {"version", "hash"}.
 
         Raises:
             OSError: If file writing fails.
@@ -142,17 +111,47 @@ class JavascriptDatabaseWriter:
         return {"files_written": self.files_written, "total_bytes": self.total_bytes}
 
     def remove_orphans(self) -> int:
-        """Delete content-addressed files no longer referenced by any manifest.
+        """Delete package files no index.json release points to.
 
-        See :func:`explorer_db_builder.orphan_gc.remove_orphans`.
+        index.json is the only manifest here, so this can't use the shared
+        ``orphan_gc`` walk, which reads per-version ``versions/*-index.json`` files.
+
+        Returns:
+            The number of files deleted.
         """
-        return orphan_gc.remove_orphans(
-            self.database_dir,
-            content_dir="packages",
-            index_sections=("packages",),
-            content_file=self._package_file,
-            markdown_file=self._markdown_file,
-        )
+        index = read_json(self.database_dir / "index.json")
+        if index is None:
+            # Without a readable index, reachability is unknown and an empty live
+            # set would delete everything. Skip rather than guess.
+            logger.warning("Skipping javascript orphan GC: no readable index.json in %s", self.database_dir)
+            return 0
+
+        live: set[Path] = set()
+        for package in index.get("packages") or []:
+            for release in package.get("releases") or []:
+                live.add(self._package_file(package["name"], release["hash"]))
+
+        packages_dir = self.database_dir / "packages"
+        if not packages_dir.is_dir():
+            return 0
+
+        removed = 0
+        for path in packages_dir.glob("*/*.json"):
+            if path in live:
+                continue
+            try:
+                path.unlink()
+                removed += 1
+            except OSError as e:
+                logger.warning("Failed to remove orphaned file %s: %s", path, e)
+
+        for child in packages_dir.iterdir():
+            if child.is_dir() and not any(child.iterdir()):
+                child.rmdir()
+
+        if removed:
+            logger.info("Removed %d orphaned file(s) from %s", removed, self.database_dir)
+        return removed
 
     def clean(self) -> None:
         """Remove the javascript database directory and recreate it empty.

@@ -27,24 +27,46 @@ logger = logging.getLogger(__name__)
 REGISTRY_DIR = "ecosystem-registry/javascript"
 
 
-def make_index_package(package: dict[str, Any], versions: list[Version]) -> dict[str, Any]:
-    """Build the slim index.json entry for a package from its latest release.
+# Fields published per package. Everything else in the registry stays out:
+# `version` lives in index.json so releases that only bumped it share one file,
+# `repository` is the same for every package, and owners aren't published for
+# any other ecosystem either.
+PACKAGE_FIELDS = (
+    "name",
+    "npm_package",
+    "description",
+    "source_path",
+    "node_engine",
+    "in_auto_instrumentations_node",
+    "supported_versions",
+    "tested_versions",
+)
+
+
+def make_package(release: dict[str, Any]) -> dict[str, Any]:
+    """Reduce one registry release to the published package metadata."""
+    return {field: release[field] for field in PACKAGE_FIELDS if field in release}
+
+
+def make_index_package(package: dict[str, Any], releases: list[dict[str, str]]) -> dict[str, Any]:
+    """Build the index.json entry for a package.
 
     Args:
-        package: Registry metadata for the package's latest release.
-        versions: Every version of the package, newest first.
+        package: Published metadata of the package's latest release.
+        releases: {"version", "hash"} for every release, newest first. A list
+            rather than a version -> hash mapping, because the JSON is written
+            with sorted keys and 0.10.0 would sort below 0.9.0.
 
     Returns:
-        The fields the list page needs, plus the version list so a version picker
-        doesn't have to fetch every manifest to know what exists.
+        The fields the list page needs, plus where to find each release.
     """
     return {
         "name": package["name"],
         "npm_package": package.get("npm_package"),
         "description": package.get("description"),
-        "version": str(versions[0]),
-        "versions": [str(v) for v in versions],
         "in_auto_instrumentations_node": bool(package.get("in_auto_instrumentations_node")),
+        "version": releases[0]["version"],
+        "releases": releases,
     }
 
 
@@ -55,8 +77,9 @@ def run_javascript_builder(
 ) -> int:
     """Run the JavaScript instrumentation database build.
 
-    Every stored release of every package is published, not just the latest, so
-    the detail page can offer a version picker later without a schema change.
+    Every stored release of every package is listed in index.json, not just the
+    latest, so the detail page can offer a version picker later without a schema
+    change. Releases with identical metadata share one package file.
 
     Args:
         inventory_manager: Optional inventory manager (for testing).
@@ -86,22 +109,24 @@ def run_javascript_builder(
             versions = sorted((Version(v) for v in inventory_manager.list_versions(package_name)), reverse=True)
 
             latest: dict[str, Any] = {}
+            releases: list[dict[str, str]] = []
             for version in versions:
-                package = inventory_manager.load(package_name, str(version))
-                if package.get("name") != package_name:
-                    raise ValueError(f"Registry file for {package_name} v{version} has name {package.get('name')!r}")
+                release = inventory_manager.load(package_name, str(version))
+                if release.get("name") != package_name:
+                    raise ValueError(f"Registry file for {package_name} v{version} has name {release.get('name')!r}")
 
+                package = make_package(release)
                 package_hash = db_writer.write_package(package)
-                db_writer.write_package_version_index(package_name, version, package_hash)
+                releases.append({"version": str(version), "hash": package_hash})
                 release_count += 1
                 if not latest:
                     latest = package
 
-            index_entries.append(make_index_package(latest, versions))
+            index_entries.append(make_index_package(latest, releases))
 
         db_writer.write_index(index_entries)
 
-        # Manifests (the reachability source) are all on disk now. Skipped after
+        # index.json (the reachability source) is on disk now. Skipped after
         # --clean, which already wiped everything.
         if not clean:
             db_writer.remove_orphans()

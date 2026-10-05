@@ -24,11 +24,14 @@ from js_instrumentation_watcher.inventory_manager import InventoryManager
 
 
 def _release(name: str, version: str, **extra) -> dict:
+    """A registry release shaped like what the watcher writes."""
     return {
         "name": name,
         "npm_package": f"@opentelemetry/{name}",
         "version": version,
         "description": f"Instrumentation for {name}",
+        "repository": "open-telemetry/opentelemetry-js-contrib",
+        "component_owners": ["someone"],
         "in_auto_instrumentations_node": True,
         **extra,
     }
@@ -38,6 +41,7 @@ def _release(name: str, version: str, **extra) -> dict:
 def registry(tmp_path):
     """A small registry written through the watcher's own InventoryManager."""
     manager = InventoryManager(registry_dir=str(tmp_path / "registry"))
+    # Two express releases that differ only in version, like most of the real registry.
     for version in ("0.9.0", "0.10.0"):
         manager.save("instrumentation-express", version, _release("instrumentation-express", version))
     manager.save(
@@ -57,27 +61,101 @@ def _read(path):
     return json.loads(path.read_text())
 
 
-def test_success_writes_index_manifests_and_packages(registry, writer):
+def _index_entry(writer, name):
+    return next(p for p in _read(writer.database_dir / "index.json")["packages"] if p["name"] == name)
+
+
+def _package_for(writer, name, version):
+    """Follow index.json to the package file a release uses."""
+    entry = _index_entry(writer, name)
+    package_hash = next(r["hash"] for r in entry["releases"] if r["version"] == version)
+    return _read(writer.database_dir / "packages" / name / f"{name}-{package_hash}.json")
+
+
+def test_success_writes_only_index_and_packages(registry, writer):
     assert run_javascript_builder(inventory_manager=registry, db_writer=writer) == 0
 
     db = writer.database_dir
-    assert (db / "index.json").exists()
-    assert sorted(p.name for p in (db / "versions").iterdir()) == [
-        "instrumentation-express-0.10.0-index.json",
-        "instrumentation-express-0.9.0-index.json",
-        "instrumentation-oracledb-0.47.0-index.json",
-    ]
-    assert len(list((db / "packages").glob("*/*.json"))) == 3
+    assert sorted(p.name for p in db.iterdir()) == ["index.json", "packages"]
 
 
-def test_index_uses_latest_version_by_semver(registry, writer):
+def test_releases_differing_only_in_version_share_one_file(registry, writer):
     run_javascript_builder(inventory_manager=registry, db_writer=writer)
 
-    index = _read(writer.database_dir / "index.json")
-    express = next(p for p in index["packages"] if p["name"] == "instrumentation-express")
+    express = _index_entry(writer, "instrumentation-express")
+    assert express["releases"][0]["hash"] == express["releases"][1]["hash"]
+    assert len(list((writer.database_dir / "packages" / "instrumentation-express").iterdir())) == 1
+
+
+def test_releases_with_different_metadata_get_separate_files(registry, writer):
+    registry.save(
+        "instrumentation-express",
+        "0.11.0",
+        _release("instrumentation-express", "0.11.0", node_engine=">=20"),
+    )
+
+    run_javascript_builder(inventory_manager=registry, db_writer=writer)
+
+    assert _package_for(writer, "instrumentation-express", "0.11.0")["node_engine"] == ">=20"
+    assert "node_engine" not in _package_for(writer, "instrumentation-express", "0.10.0")
+    assert len(list((writer.database_dir / "packages" / "instrumentation-express").iterdir())) == 2
+
+
+def test_package_file_drops_unpublished_fields(registry, writer):
+    run_javascript_builder(inventory_manager=registry, db_writer=writer)
+
+    assert _package_for(writer, "instrumentation-oracledb", "0.47.0") == {
+        "name": "instrumentation-oracledb",
+        "npm_package": "@opentelemetry/instrumentation-oracledb",
+        "description": "Instrumentation for instrumentation-oracledb",
+        "in_auto_instrumentations_node": False,
+    }
+
+
+def test_package_file_keeps_published_fields(registry, writer):
+    tested = [{"package": "oracledb", "range": "6.7.0", "source": ".tav.yml"}]
+    supported = [{"package": "oracledb", "version_range": ">=6.7.0 <7", "source": "README.md"}]
+    registry.save(
+        "instrumentation-oracledb",
+        "0.48.0",
+        _release(
+            "instrumentation-oracledb",
+            "0.48.0",
+            source_path="packages/instrumentation-oracledb",
+            node_engine="^18.19.0 || >=20.6.0",
+            supported_versions=supported,
+            tested_versions=tested,
+        ),
+    )
+
+    run_javascript_builder(inventory_manager=registry, db_writer=writer)
+
+    package = _package_for(writer, "instrumentation-oracledb", "0.48.0")
+    assert package["source_path"] == "packages/instrumentation-oracledb"
+    assert package["node_engine"] == "^18.19.0 || >=20.6.0"
+    assert package["supported_versions"] == supported
+    assert package["tested_versions"] == tested
+
+
+def test_index_lists_releases_newest_first_by_semver(registry, writer):
+    run_javascript_builder(inventory_manager=registry, db_writer=writer)
+
+    express = _index_entry(writer, "instrumentation-express")
     # Sorted as text, 0.9.0 would come before 0.10.0.
     assert express["version"] == "0.10.0"
-    assert express["versions"] == ["0.10.0", "0.9.0"]
+    assert [r["version"] for r in express["releases"]] == ["0.10.0", "0.9.0"]
+
+
+def test_index_metadata_comes_from_newest_release(registry, writer):
+    registry.save(
+        "instrumentation-express",
+        "0.11.0",
+        _release("instrumentation-express", "0.11.0", description="Reworded upstream"),
+    )
+
+    run_javascript_builder(inventory_manager=registry, db_writer=writer)
+
+    assert _index_entry(writer, "instrumentation-express")["description"] == "Reworded upstream"
 
 
 def test_index_entry_shape(registry, writer):
@@ -86,41 +164,15 @@ def test_index_entry_shape(registry, writer):
     index = _read(writer.database_dir / "index.json")
     assert index["ecosystem"] == "javascript"
     assert [p["name"] for p in index["packages"]] == ["instrumentation-express", "instrumentation-oracledb"]
-    assert index["packages"][1] == {
+    oracledb = index["packages"][1]
+    assert oracledb == {
         "name": "instrumentation-oracledb",
         "npm_package": "@opentelemetry/instrumentation-oracledb",
         "description": "Instrumentation for instrumentation-oracledb",
-        "version": "0.47.0",
-        "versions": ["0.47.0"],
         "in_auto_instrumentations_node": False,
+        "version": "0.47.0",
+        "releases": [{"version": "0.47.0", "hash": oracledb["releases"][0]["hash"]}],
     }
-
-
-def test_manifest_points_at_that_release(registry, writer):
-    run_javascript_builder(inventory_manager=registry, db_writer=writer)
-
-    db = writer.database_dir
-    manifest = _read(db / "versions" / "instrumentation-express-0.9.0-index.json")
-    package_hash = manifest["packages"]["instrumentation-express"]
-    package = _read(db / "packages" / "instrumentation-express" / f"instrumentation-express-{package_hash}.json")
-    assert package == _release("instrumentation-express", "0.9.0")
-
-
-def test_package_file_matches_registry_exactly(registry, writer):
-    tested = [{"package": "oracledb", "range": "6.7.0", "source": ".tav.yml"}]
-    registry.save(
-        "instrumentation-oracledb",
-        "0.48.0",
-        _release("instrumentation-oracledb", "0.48.0", tested_versions=tested),
-    )
-
-    run_javascript_builder(inventory_manager=registry, db_writer=writer)
-
-    db = writer.database_dir
-    manifest = _read(db / "versions" / "instrumentation-oracledb-0.48.0-index.json")
-    package_hash = manifest["packages"]["instrumentation-oracledb"]
-    package = _read(db / "packages" / "instrumentation-oracledb" / f"instrumentation-oracledb-{package_hash}.json")
-    assert package == registry.load("instrumentation-oracledb", "0.48.0")
 
 
 def test_rebuild_is_byte_identical(registry, writer):
@@ -156,7 +208,7 @@ def test_returns_1_on_unhashable_value(registry, writer):
     # hashing raises TypeError. That must fail the build, not crash it.
     path = registry.registry_dir / "instrumentation-pg" / "v0.60.0.yaml"
     path.parent.mkdir()
-    path.write_text("name: instrumentation-pg\nversion: 0.60.0\nreleased: 2026-09-30\n")
+    path.write_text("name: instrumentation-pg\nversion: 0.60.0\nnode_engine: 2026-09-30\n")
 
     assert run_javascript_builder(inventory_manager=registry, db_writer=writer) == 1
 

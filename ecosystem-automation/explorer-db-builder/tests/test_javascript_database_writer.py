@@ -15,14 +15,19 @@
 """Tests for JavascriptDatabaseWriter."""
 
 import json
+from pathlib import Path
 
 import pytest
 from explorer_db_builder.javascript_database_writer import JavascriptDatabaseWriter
-from semantic_version import Version
 
 
-def _package(version: str = "0.70.0", **extra) -> dict:
-    return {"name": "instrumentation-express", "version": version, **extra}
+def _package(**extra) -> dict:
+    return {"name": "instrumentation-express", "description": "Express instrumentation", **extra}
+
+
+def _write_index(writer, name: str, *hashes: str) -> None:
+    releases = [{"version": f"0.{i}.0", "hash": h} for i, h in enumerate(hashes)]
+    writer.write_index([{"name": name, "releases": releases}])
 
 
 def test_write_package_is_content_addressed(tmp_path):
@@ -47,8 +52,8 @@ def test_write_package_skips_existing_file(tmp_path):
 def test_write_package_different_content_gets_different_file(tmp_path):
     writer = JavascriptDatabaseWriter(str(tmp_path))
 
-    old = writer.write_package(_package("0.69.0"))
-    new = writer.write_package(_package("0.70.0"))
+    old = writer.write_package(_package(node_engine=">=14"))
+    new = writer.write_package(_package(node_engine=">=18"))
 
     assert old != new
     assert len(list((tmp_path / "packages" / "instrumentation-express").glob("*.json"))) == 2
@@ -58,29 +63,16 @@ def test_write_package_requires_name(tmp_path):
     writer = JavascriptDatabaseWriter(str(tmp_path))
 
     with pytest.raises(ValueError, match="missing a 'name'"):
-        writer.write_package({"version": "0.70.0"})
+        writer.write_package({"description": "no name"})
 
 
 def test_package_name_is_sanitized_in_paths(tmp_path):
     writer = JavascriptDatabaseWriter(str(tmp_path))
 
-    package_hash = writer.write_package({"name": "../escape", "version": "1.0.0"})
+    package_hash = writer.write_package({"name": "../escape"})
 
     assert (tmp_path / "packages" / ".._escape" / f".._escape-{package_hash}.json").exists()
     assert not (tmp_path.parent / "escape").exists()
-
-
-def test_write_package_version_index(tmp_path):
-    writer = JavascriptDatabaseWriter(str(tmp_path))
-
-    writer.write_package_version_index("instrumentation-express", Version("0.70.0"), "abc123def456")
-
-    data = json.loads((tmp_path / "versions" / "instrumentation-express-0.70.0-index.json").read_text())
-    assert data == {
-        "package": "instrumentation-express",
-        "version": "0.70.0",
-        "packages": {"instrumentation-express": "abc123def456"},
-    }
 
 
 def test_write_index(tmp_path):
@@ -95,11 +87,11 @@ def test_write_index(tmp_path):
 
 def test_remove_orphans_keeps_referenced_and_removes_unreferenced(tmp_path):
     writer = JavascriptDatabaseWriter(str(tmp_path))
-    live = writer.write_package(_package("0.70.0"))
-    writer.write_package_version_index("instrumentation-express", Version("0.70.0"), live)
-    # Written but never referenced by a manifest, e.g. left behind after the
-    # builder's output shape changed.
-    stale = writer.write_package(_package("0.70.0", description="old shape"))
+    live = writer.write_package(_package())
+    # Written but not in index.json, e.g. left behind after the published
+    # fields changed.
+    stale = writer.write_package(_package(description="old shape"))
+    _write_index(writer, "instrumentation-express", live)
 
     removed = writer.remove_orphans()
 
@@ -109,19 +101,64 @@ def test_remove_orphans_keeps_referenced_and_removes_unreferenced(tmp_path):
     assert not (package_dir / f"instrumentation-express-{stale}.json").exists()
 
 
-def test_remove_orphans_keeps_referenced_markdown(tmp_path):
+def test_remove_orphans_keeps_file_shared_by_several_releases(tmp_path):
     writer = JavascriptDatabaseWriter(str(tmp_path))
-    package_hash = writer.write_package(_package(markdown_hash="aaaaaaaaaaaa"))
-    writer.write_package_version_index("instrumentation-express", Version("0.70.0"), package_hash)
-    markdown_dir = tmp_path / "markdown"
-    markdown_dir.mkdir()
-    (markdown_dir / "instrumentation-express-aaaaaaaaaaaa.md").write_text("# live")
-    (markdown_dir / "instrumentation-express-bbbbbbbbbbbb.md").write_text("# stale")
+    shared = writer.write_package(_package())
+    _write_index(writer, "instrumentation-express", shared, shared, shared)
+
+    assert writer.remove_orphans() == 0
+    assert len(list((tmp_path / "packages").glob("*/*.json"))) == 1
+
+
+def test_remove_orphans_drops_emptied_package_directory(tmp_path):
+    writer = JavascriptDatabaseWriter(str(tmp_path))
+    # A package that dropped out of the registry entirely.
+    writer.write_package({"name": "instrumentation-removed"})
+    live = writer.write_package(_package())
+    _write_index(writer, "instrumentation-express", live)
 
     writer.remove_orphans()
 
-    assert (markdown_dir / "instrumentation-express-aaaaaaaaaaaa.md").exists()
-    assert not (markdown_dir / "instrumentation-express-bbbbbbbbbbbb.md").exists()
+    assert not (tmp_path / "packages" / "instrumentation-removed").exists()
+
+
+def test_remove_orphans_skips_without_index(tmp_path):
+    writer = JavascriptDatabaseWriter(str(tmp_path))
+    package_hash = writer.write_package(_package())
+
+    # No index.json means nothing is known to be live, so nothing is deleted.
+    assert writer.remove_orphans() == 0
+    assert (tmp_path / "packages" / "instrumentation-express" / f"instrumentation-express-{package_hash}.json").exists()
+
+
+def test_remove_orphans_with_no_packages_directory(tmp_path):
+    writer = JavascriptDatabaseWriter(str(tmp_path))
+    writer.write_index([])
+
+    assert writer.remove_orphans() == 0
+
+
+def test_remove_orphans_keeps_going_when_a_delete_fails(tmp_path, monkeypatch):
+    writer = JavascriptDatabaseWriter(str(tmp_path))
+    live = writer.write_package(_package())
+    writer.write_package(_package(description="stale one"))
+    writer.write_package(_package(description="stale two"))
+    _write_index(writer, "instrumentation-express", live)
+
+    real_unlink = Path.unlink
+    calls = []
+
+    def flaky_unlink(self, *args, **kwargs):
+        calls.append(self)
+        if len(calls) == 1:
+            raise OSError("permission denied")
+        return real_unlink(self, *args, **kwargs)
+
+    monkeypatch.setattr(Path, "unlink", flaky_unlink)
+
+    # The first delete fails and is logged; the second still happens.
+    assert writer.remove_orphans() == 1
+    assert len(list((tmp_path / "packages").glob("*/*.json"))) == 2
 
 
 def test_clean_removes_everything(tmp_path):
