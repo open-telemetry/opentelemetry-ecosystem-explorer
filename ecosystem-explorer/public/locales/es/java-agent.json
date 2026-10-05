@@ -496,7 +496,8 @@
         "mismatch_list": "el valor importado no es una lista",
         "mismatch_map": "el valor importado no es un mapa"
       },
-      "defaultPreview": "predeterminado: {{value}}"
+      "defaultPreview": "predeterminado: {{value}}",
+      "unsetOption": "Sin definir"
     },
     "controls": {
       "default": "predeterminado",

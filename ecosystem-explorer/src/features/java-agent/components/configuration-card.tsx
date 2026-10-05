@@ -43,8 +43,8 @@ export function ConfigurationCard({ config, format, instrumentations }: Configur
   const flatName = config.name;
   const copyText = showDeclarative ? yamlCode : flatName;
 
-  const isEmptyDefault =
-    config.default === "" || config.default === null || config.default === undefined;
+  const hasDefault = config.default !== undefined;
+  const isEmptyDefault = config.default === "" || config.default === null;
   const defaultValue = isEmptyDefault
     ? "(empty)"
     : typeof config.default === "boolean"
@@ -97,12 +97,14 @@ export function ConfigurationCard({ config, format, instrumentations }: Configur
           </p>
         )}
 
-        <div className="border-border/30 bg-muted/30 flex items-start gap-2 rounded-lg border p-3">
-          <span className="text-muted-foreground shrink-0 text-xs font-medium">
-            {t("configCard.default")}
-          </span>
-          <code className="flex-1 text-xs break-all">{defaultValue}</code>
-        </div>
+        {hasDefault && (
+          <div className="border-border/30 bg-muted/30 flex items-start gap-2 rounded-lg border p-3">
+            <span className="text-muted-foreground shrink-0 text-xs font-medium">
+              {t("configCard.default")}
+            </span>
+            <code className="flex-1 text-xs break-all">{defaultValue}</code>
+          </div>
+        )}
 
         {config.examples && config.examples.length > 0 && (
           <div className="space-y-1">

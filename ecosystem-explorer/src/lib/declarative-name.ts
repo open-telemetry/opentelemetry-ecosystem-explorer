@@ -42,8 +42,9 @@ export function defaultConfigValue(entry: Configuration): ConfigValue {
 
 export function parseDefault(
   type: Configuration["type"],
-  raw: string | boolean | number
+  raw: Configuration["default"]
 ): ConfigValue {
+  if (raw === undefined) return null;
   switch (type) {
     case "boolean":
       return Boolean(raw);

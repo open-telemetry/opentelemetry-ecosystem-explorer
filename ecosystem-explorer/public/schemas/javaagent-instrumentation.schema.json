@@ -100,7 +100,7 @@
             "type": "string"
           },
           "default": {
-            "description": "The default value if not specified.",
+            "description": "The default value if not specified. Absent when an unset value falls back to another setting.",
             "type": ["string", "number", "boolean"]
           },
           "examples": {
@@ -148,7 +148,7 @@
           "declarative_type",
           "declarative_schema"
         ],
-        "required": ["default", "description", "name", "type"]
+        "required": ["description", "name", "type"]
       }
     },
     "telemetry": {

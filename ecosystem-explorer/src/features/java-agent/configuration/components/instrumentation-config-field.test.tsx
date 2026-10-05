@@ -50,7 +50,7 @@ function makeAggregated(
     name: partial.name ?? "otel.placeholder",
     description: partial.description ?? "Description.",
     type: partial.type,
-    default: partial.default ?? "",
+    ...(partial.default !== undefined ? { default: partial.default } : {}),
     declarative_name: partial.declarative_name,
   };
   const scope = partial.declarative_name.startsWith("general.")
@@ -391,5 +391,255 @@ describe("InstrumentationConfigField — map entries grow", () => {
     rerender(<InstrumentationConfigField config={cfg} onJumpToGeneral={vi.fn()} />);
     expect(screen.getAllByRole("button", { name: /remove entry/i })).toHaveLength(2);
     void stored;
+  });
+});
+
+describe("InstrumentationConfigField — config without a default", () => {
+  const jdbcQuerySanitization = makeAggregated({
+    name: "otel.instrumentation.jdbc.query-sanitization.enabled",
+    declarative_name: "java.jdbc.query_sanitization.enabled",
+    description:
+      "Overrides the common setting for this instrumentation; when unset, that setting applies.",
+    type: "boolean",
+  });
+  const dbSemconvVersion = makeAggregated({
+    declarative_name: "general.db.semconv.version",
+    description: "Database semantic convention version to emit.",
+    type: "int",
+  });
+
+  beforeEach(() => {
+    setValueByPath.mockClear();
+    removeMapEntry.mockClear();
+    mockState = { ...baseState, values: {} };
+  });
+
+  it("does not render a default preview or an empty controls row when the default is absent", () => {
+    render(<InstrumentationConfigField config={jdbcQuerySanitization} onJumpToGeneral={vi.fn()} />);
+    expect(screen.queryByText(/default:/i)).toBeNull();
+    expect(screen.getByText(jdbcQuerySanitization.entry.description).nextElementSibling).toBeNull();
+    expect(screen.getByRole("button", { name: /customize/i })).toBeInTheDocument();
+  });
+
+  it("renders no control for a read-only config without a default or a value", () => {
+    render(<InstrumentationConfigField config={dbSemconvVersion} onJumpToGeneral={vi.fn()} />);
+    expect(screen.queryByRole("spinbutton")).toBeNull();
+    expect(screen.getByText(dbSemconvVersion.entry.description).nextElementSibling).toBeNull();
+  });
+
+  it("shows the value set in General for a read-only config without a default", () => {
+    mockState = {
+      ...baseState,
+      values: { "instrumentation/development": { general: { db: { semconv: { version: 1 } } } } },
+    };
+    render(<InstrumentationConfigField config={dbSemconvVersion} onJumpToGeneral={vi.fn()} />);
+    const input = screen.getByRole("spinbutton");
+    expect(input).toHaveValue(1);
+    expect(input).toBeDisabled();
+  });
+
+  it("keeps rendering an empty-string default as (empty)", () => {
+    const cfg = makeAggregated({
+      declarative_name: "java.executors.include",
+      type: "string",
+      default: "",
+    });
+    render(<InstrumentationConfigField config={cfg} onJumpToGeneral={vi.fn()} />);
+    expect(screen.getByText("default: (empty)")).toBeInTheDocument();
+  });
+
+  it("Customize on a boolean opens an unset select without writing a value", async () => {
+    const user = userEvent.setup();
+    render(<InstrumentationConfigField config={jdbcQuerySanitization} onJumpToGeneral={vi.fn()} />);
+    await user.click(screen.getByRole("button", { name: /customize/i }));
+    expect(setValueByPath).not.toHaveBeenCalled();
+    expect(screen.queryByRole("switch")).toBeNull();
+    const select = screen.getByRole("combobox", { name: "java.jdbc.query_sanitization.enabled" });
+    expect(select).toHaveValue("");
+    expect(
+      Array.from(select.querySelectorAll("option")).map((o) => (o as HTMLOptionElement).value)
+    ).toEqual(["", "true", "false"]);
+    expect(screen.getByRole("option", { name: "Not set" })).toHaveValue("");
+  });
+
+  it("writes the boolean the user picks from the select", async () => {
+    const user = userEvent.setup();
+    render(<InstrumentationConfigField config={jdbcQuerySanitization} onJumpToGeneral={vi.fn()} />);
+    await user.click(screen.getByRole("button", { name: /customize/i }));
+    await user.selectOptions(screen.getByRole("combobox"), "false");
+    expect(setValueByPath).toHaveBeenCalledWith(jdbcQuerySanitization.path, false);
+  });
+
+  it("picking the unset option removes the value instead of storing null and keeps the select open", async () => {
+    const user = userEvent.setup();
+    mockState = {
+      ...baseState,
+      values: {
+        "instrumentation/development": {
+          java: { jdbc: { query_sanitization: { enabled: true } } },
+        },
+      },
+    };
+    removeMapEntry.mockImplementationOnce(() => {
+      mockState = { ...baseState, values: {} };
+    });
+    const { rerender } = render(
+      <InstrumentationConfigField config={jdbcQuerySanitization} onJumpToGeneral={vi.fn()} />
+    );
+    const select = screen.getByRole("combobox");
+    expect(select).toHaveValue("true");
+    await user.selectOptions(select, "");
+    rerender(
+      <InstrumentationConfigField config={jdbcQuerySanitization} onJumpToGeneral={vi.fn()} />
+    );
+    expect(removeMapEntry).toHaveBeenCalledWith(
+      "instrumentation/development.java.jdbc.query_sanitization",
+      "enabled"
+    );
+    expect(setValueByPath).not.toHaveBeenCalled();
+    expect(screen.getByRole("combobox")).toHaveValue("");
+  });
+
+  it("Reset closes the unset editor and returns to Customize", async () => {
+    const user = userEvent.setup();
+    render(<InstrumentationConfigField config={jdbcQuerySanitization} onJumpToGeneral={vi.fn()} />);
+    await user.click(screen.getByRole("button", { name: /customize/i }));
+    await user.click(screen.getByRole("button", { name: /reset/i }));
+    expect(removeMapEntry).not.toHaveBeenCalled();
+    expect(screen.queryByRole("combobox")).toBeNull();
+    expect(screen.getByRole("button", { name: /customize/i })).toBeInTheDocument();
+  });
+
+  it("collapses back to Customize when a global reset clears the value the user picked", async () => {
+    const user = userEvent.setup();
+    setValueByPath.mockImplementationOnce((_p: unknown, v: unknown) => {
+      mockState = {
+        ...baseState,
+        values: {
+          "instrumentation/development": {
+            java: { jdbc: { query_sanitization: { enabled: v as ConfigValue } } },
+          },
+        },
+      };
+    });
+    const { rerender } = render(
+      <InstrumentationConfigField config={jdbcQuerySanitization} onJumpToGeneral={vi.fn()} />
+    );
+    await user.click(screen.getByRole("button", { name: /customize/i }));
+    await user.selectOptions(screen.getByRole("combobox"), "true");
+    rerender(
+      <InstrumentationConfigField config={jdbcQuerySanitization} onJumpToGeneral={vi.fn()} />
+    );
+    expect(screen.getByRole("combobox")).toHaveValue("true");
+    mockState = { ...baseState, values: {} };
+    rerender(
+      <InstrumentationConfigField config={jdbcQuerySanitization} onJumpToGeneral={vi.fn()} />
+    );
+    expect(screen.queryByRole("combobox")).toBeNull();
+    expect(screen.getByRole("button", { name: /customize/i })).toBeInTheDocument();
+  });
+
+  it("drops the unset editor when a rerender gives the same config a default", async () => {
+    const user = userEvent.setup();
+    const { rerender } = render(
+      <InstrumentationConfigField config={jdbcQuerySanitization} onJumpToGeneral={vi.fn()} />
+    );
+    await user.click(screen.getByRole("button", { name: /customize/i }));
+    expect(screen.getByRole("combobox")).toBeInTheDocument();
+    const withDefault: AggregatedConfig = {
+      ...jdbcQuerySanitization,
+      entry: { ...jdbcQuerySanitization.entry, default: true },
+    };
+    rerender(<InstrumentationConfigField config={withDefault} onJumpToGeneral={vi.fn()} />);
+    expect(screen.queryByRole("combobox")).toBeNull();
+    expect(screen.getByRole("button", { name: /customize/i })).toBeInTheDocument();
+    expect(screen.getByText("default: true")).toBeInTheDocument();
+    expect(setValueByPath).not.toHaveBeenCalled();
+  });
+
+  it("erasing a typed string removes the entry instead of storing an empty string", async () => {
+    const user = userEvent.setup();
+    const cfg = makeAggregated({
+      name: "otel.instrumentation.experimental.span-suppression-strategy",
+      declarative_name: "java.common.span_suppression_strategy/development",
+      type: "string",
+    });
+    setValueByPath.mockImplementationOnce((_p: unknown, v: unknown) => {
+      mockState = {
+        ...baseState,
+        values: {
+          "instrumentation/development": {
+            java: { common: { "span_suppression_strategy/development": v as ConfigValue } },
+          },
+        },
+      };
+    });
+    removeMapEntry.mockImplementationOnce(() => {
+      mockState = { ...baseState, values: {} };
+    });
+    const { rerender } = render(
+      <InstrumentationConfigField config={cfg} onJumpToGeneral={vi.fn()} />
+    );
+    await user.click(screen.getByRole("button", { name: /customize/i }));
+    await user.type(screen.getByRole("textbox"), "x");
+    rerender(<InstrumentationConfigField config={cfg} onJumpToGeneral={vi.fn()} />);
+    await user.clear(screen.getByRole("textbox"));
+    rerender(<InstrumentationConfigField config={cfg} onJumpToGeneral={vi.fn()} />);
+    expect(setValueByPath).toHaveBeenCalledTimes(1);
+    expect(setValueByPath).not.toHaveBeenCalledWith(expect.anything(), "");
+    expect(removeMapEntry).toHaveBeenCalledWith(
+      "instrumentation/development.java.common",
+      "span_suppression_strategy/development"
+    );
+    expect(screen.getByRole("textbox")).toHaveValue("");
+  });
+
+  it("Customize on an int opens an empty input and writes only what the user types", async () => {
+    const user = userEvent.setup();
+    const cfg = makeAggregated({
+      name: "otel.instrumentation.example.max-queue",
+      declarative_name: "java.example.max_queue",
+      type: "int",
+    });
+    render(<InstrumentationConfigField config={cfg} onJumpToGeneral={vi.fn()} />);
+    await user.click(screen.getByRole("button", { name: /customize/i }));
+    expect(setValueByPath).not.toHaveBeenCalled();
+    const input = screen.getByRole("spinbutton");
+    expect(input).toHaveValue(null);
+    await user.type(input, "7");
+    expect(setValueByPath).toHaveBeenCalledWith(
+      ["instrumentation/development", "java", "example", "max_queue"],
+      7
+    );
+  });
+
+  it("Customize on a list opens an empty editor and writes only the items the user adds", async () => {
+    const user = userEvent.setup();
+    const cfg = makeAggregated({
+      name: "otel.semconv-stability.preview",
+      declarative_name: "java.common.semconv_stability.preview",
+      type: "list",
+    });
+    setValueByPath.mockImplementationOnce((_p: unknown, v: unknown) => {
+      mockState = {
+        ...baseState,
+        values: {
+          "instrumentation/development": {
+            java: { common: { semconv_stability: { preview: v as ConfigValue } } },
+          },
+        },
+      };
+    });
+    const { rerender } = render(
+      <InstrumentationConfigField config={cfg} onJumpToGeneral={vi.fn()} />
+    );
+    await user.click(screen.getByRole("button", { name: /customize/i }));
+    expect(setValueByPath).not.toHaveBeenCalled();
+    expect(screen.queryByRole("textbox")).toBeNull();
+    await user.click(screen.getByRole("button", { name: /^add$/i }));
+    expect(setValueByPath).toHaveBeenLastCalledWith(cfg.path, [""]);
+    rerender(<InstrumentationConfigField config={cfg} onJumpToGeneral={vi.fn()} />);
+    await user.type(screen.getByRole("textbox"), "x");
+    expect(setValueByPath).toHaveBeenLastCalledWith(cfg.path, ["x"]);
   });
 });

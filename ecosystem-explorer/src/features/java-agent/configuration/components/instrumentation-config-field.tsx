@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useRef, type JSX } from "react";
+import { useRef, useState, type JSX } from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, RotateCcw, X } from "lucide-react";
 import type { Configuration } from "@/types/javaagent";
@@ -56,6 +56,29 @@ function BooleanRenderer({ value, onChange, ariaLabel, disabled }: ControlRender
       }}
       ariaLabel={ariaLabel}
     />
+  );
+}
+
+function NullableBooleanRenderer({
+  value,
+  onChange,
+  onClear,
+  ariaLabel,
+  disabled,
+}: ControlRendererProps) {
+  const { t } = useTranslation("java-agent");
+  return (
+    <select
+      aria-label={ariaLabel}
+      disabled={disabled}
+      value={typeof value === "boolean" ? String(value) : ""}
+      onChange={(e) => (e.target.value === "" ? onClear() : onChange(e.target.value === "true"))}
+      className={INPUT_CLASS}
+    >
+      <option value="">{t("builder.field.unsetOption")}</option>
+      <option value="true">true</option>
+      <option value="false">false</option>
+    </select>
   );
 }
 
@@ -339,6 +362,11 @@ const RENDER_BY_TYPE: Record<Configuration["type"], ControlRenderer> = {
   map: KeyValueMapRenderer,
 };
 
+const RENDER_WITHOUT_DEFAULT_BY_TYPE: Record<Configuration["type"], ControlRenderer> = {
+  ...RENDER_BY_TYPE,
+  boolean: NullableBooleanRenderer,
+};
+
 export function InstrumentationConfigField({
   config,
   onJumpToGeneral,
@@ -351,8 +379,13 @@ export function InstrumentationConfigField({
 
   const { state, setValueByPath, removeMapEntry } = useConfigurationBuilder();
   const currentValue = getByPath(state.values, path);
+  const [isEditingUnset, setIsEditingUnset] = useState(false);
 
+  const defaultRaw = entry.default;
+  const hasDefault = defaultRaw !== undefined;
   const isCustomized = currentValue !== undefined && currentValue !== null;
+  const isEditing = isCustomized || (isEditingUnset && !hasDefault);
+  const hasControlsRow = isEditing || hasDefault;
   const isStructuredList = isStructuredListEntry(entry);
   const typeMismatch =
     isCustomized && !valueMatchesType(currentValue, entry.type, isStructuredList);
@@ -361,18 +394,34 @@ export function InstrumentationConfigField({
   const leafKey = String(path[path.length - 1]);
 
   const handleCustomization = () => {
-    setValueByPath(path, defaultConfigValue(entry));
+    const seed = defaultConfigValue(entry);
+    if (seed === null) {
+      setIsEditingUnset(true);
+      return;
+    }
+    setValueByPath(path, seed);
   };
 
-  const handleReset = () => {
-    removeMapEntry(parentPath, leafKey);
+  const removeValue = (keepEditorOpen: boolean) => {
+    if (isCustomized) removeMapEntry(parentPath, leafKey);
+    setIsEditingUnset(keepEditorOpen);
   };
+
+  const handleClear = () => removeValue(!hasDefault);
+
+  const handleReset = () => removeValue(false);
 
   const handleChange = (next: ConfigValue) => {
+    if (!hasDefault && next === "") {
+      handleClear();
+      return;
+    }
     setValueByPath(path, next);
+    setIsEditingUnset(false);
   };
 
   const Render = RENDER_BY_TYPE[entry.type];
+  const EditRender = (hasDefault ? RENDER_BY_TYPE : RENDER_WITHOUT_DEFAULT_BY_TYPE)[entry.type];
 
   return (
     <div
@@ -398,7 +447,7 @@ export function InstrumentationConfigField({
             >
               {t("builder.field.editInGeneral")}
             </button>
-          ) : isCustomized ? (
+          ) : isEditing ? (
             <button
               type="button"
               onClick={handleReset}
@@ -427,53 +476,55 @@ export function InstrumentationConfigField({
           <p className="text-muted-foreground text-sm leading-relaxed">{entry.description}</p>
         ) : null}
 
-        <div className="flex flex-wrap items-center gap-3">
-          {isReadOnly ? (
-            isStructuredList ? (
-              <StructuredListRenderer
-                value={currentValue ?? []}
-                onChange={() => {}}
-                onClear={() => {}}
-                ariaLabel={declarativeName}
-                disabled={true}
-                showAdd={false}
-                schema={entry.declarative_schema!}
-              />
-            ) : Render ? (
-              <Render
-                value={currentValue ?? defaultRenderValue(entry.type)}
-                onChange={() => {}}
-                onClear={() => {}}
-                ariaLabel={declarativeName}
-                disabled={true}
-                showAdd={false}
-              />
-            ) : null
-          ) : isCustomized ? (
-            isStructuredList ? (
-              <StructuredListRenderer
-                value={currentValue as ConfigValue}
-                onChange={handleChange}
-                onClear={handleReset}
-                ariaLabel={declarativeName}
-                disabled={false}
-                showAdd={true}
-                schema={entry.declarative_schema!}
-              />
-            ) : Render ? (
-              <Render
-                value={currentValue as ConfigValue}
-                onChange={handleChange}
-                onClear={handleReset}
-                ariaLabel={declarativeName}
-                disabled={false}
-                showAdd={true}
-              />
-            ) : null
-          ) : (
-            <DefaultPreview type={entry.type} raw={entry.default} />
-          )}
-        </div>
+        {hasControlsRow ? (
+          <div className="flex flex-wrap items-center gap-3">
+            {isReadOnly ? (
+              isStructuredList ? (
+                <StructuredListRenderer
+                  value={currentValue ?? []}
+                  onChange={() => {}}
+                  onClear={() => {}}
+                  ariaLabel={declarativeName}
+                  disabled={true}
+                  showAdd={false}
+                  schema={entry.declarative_schema!}
+                />
+              ) : Render ? (
+                <Render
+                  value={currentValue ?? defaultRenderValue(entry.type)}
+                  onChange={() => {}}
+                  onClear={() => {}}
+                  ariaLabel={declarativeName}
+                  disabled={true}
+                  showAdd={false}
+                />
+              ) : null
+            ) : isEditing ? (
+              isStructuredList ? (
+                <StructuredListRenderer
+                  value={currentValue as ConfigValue}
+                  onChange={handleChange}
+                  onClear={handleClear}
+                  ariaLabel={declarativeName}
+                  disabled={false}
+                  showAdd={true}
+                  schema={entry.declarative_schema!}
+                />
+              ) : EditRender ? (
+                <EditRender
+                  value={currentValue ?? null}
+                  onChange={handleChange}
+                  onClear={handleClear}
+                  ariaLabel={declarativeName}
+                  disabled={false}
+                  showAdd={true}
+                />
+              ) : null
+            ) : hasDefault ? (
+              <DefaultPreview type={entry.type} raw={defaultRaw} />
+            ) : null}
+          </div>
+        ) : null}
       </div>
     </div>
   );

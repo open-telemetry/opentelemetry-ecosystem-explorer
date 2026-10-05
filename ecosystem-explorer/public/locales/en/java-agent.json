@@ -496,7 +496,8 @@
         "mismatch_list": "imported value not a list",
         "mismatch_map": "imported value not a map"
       },
-      "defaultPreview": "default: {{value}}"
+      "defaultPreview": "default: {{value}}",
+      "unsetOption": "Not set"
     },
     "controls": {
       "default": "default",
