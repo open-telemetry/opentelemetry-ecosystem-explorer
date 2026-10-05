@@ -97,9 +97,9 @@ maps raw library names to content-addressed filenames in the shared `library_rea
 Collector versions use `component-readmes.yaml` with the same mapping format and a separate
 `readmes/` store per distribution. Index keys are sorted; filenames use sanitized names and the
 first 12 hex characters of the SHA-256 hash of the original bytes. An explicit empty mapping (`{}`)
-is a completed sync; a missing index means READMEs have not been synced successfully. The Java
-watcher retries missing indexes for every tracked release using that release's upstream tag,
-including historical versions. All indexes are validated before unreferenced shared files are
+is a completed sync; a missing index means READMEs have not been synced successfully. The Java and
+Collector watchers retry missing indexes for every tracked release using that release's upstream
+tag, including historical versions. All indexes are validated before unreferenced shared files are
 pruned.
 
 ### File Format

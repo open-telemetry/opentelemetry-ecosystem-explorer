@@ -217,6 +217,13 @@ class CollectorSync:
         # completed, version_exists() would incorrectly report the version
         # as already tracked despite zero real component data ever being
         # written - causing process_latest_release() to skip it forever.
+        self._save_component_readmes(distribution, version, components)
+        logger.info("  Saved %s %s (schema_hash=%s)", distribution, version, schema_hash)
+
+    def _save_component_readmes(
+        self, distribution: DistributionName, version: Version, components: dict[str, list[dict[str, Any]]]
+    ) -> bool:
+        """Publish READMEs from the current checkout, leaving write failures retryable."""
         repo_path = self.repos[distribution]
         try:
             readmes = discover_component_readmes(repo_path, components)
@@ -227,8 +234,21 @@ class CollectorSync:
             # README publishing is best-effort and must never fail the sync -
             # the component inventory itself is the critical data.
             logger.warning("  Failed to save component READMEs for %s %s: %s", distribution, version, e)
+            return False
+        return True
 
-        logger.info("  Saved %s %s (schema_hash=%s)", distribution, version, schema_hash)
+    def backfill_missing_readmes(self, distribution: DistributionName) -> list[Version]:
+        """Retry incomplete tracked releases from their tags without rewriting component metadata."""
+        completed = []
+        for version in self.inventory_manager.list_release_versions(distribution):
+            if self.inventory_manager.readme_index_exists(distribution, version):
+                continue
+            logger.info("  Backfilling component READMEs for %s %s", distribution, version)
+            self.version_detectors[distribution].checkout_version(version)
+            inventory = self.inventory_manager.load_versioned_inventory(distribution, version)
+            if self._save_component_readmes(distribution, version, inventory["components"]):
+                completed.append(version)
+        return completed
 
     def _resolve_schema_hash(self, version: Version) -> str:
         """Store and return the core schema hash for ``version``.
@@ -358,7 +378,7 @@ class CollectorSync:
 
     def process_latest_release(self, distribution: DistributionName) -> Version | None:
         """
-        Process the latest release version if not already tracked.
+        Retry missing release README indexes, then process the latest release if new.
 
         Args:
             distribution: Distribution name
@@ -373,6 +393,7 @@ class CollectorSync:
             logger.info("No releases found for %s", distribution)
             return None
 
+        self.backfill_missing_readmes(distribution)
         if self.inventory_manager.version_exists(distribution, latest):
             logger.info("Version %s %s already tracked", distribution, latest)
             return None

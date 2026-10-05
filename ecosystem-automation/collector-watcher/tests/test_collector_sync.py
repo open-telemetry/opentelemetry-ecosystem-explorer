@@ -877,3 +877,86 @@ def test_backfill_prune_unlisted_resets_deprecations_for_distribution(
 
     # The stale entry is cleared so deprecations.yaml reflects only surviving versions.
     assert collector_sync.deprecations["core"]["receiver"] == []
+
+
+@pytest.mark.parametrize("distribution", ["core", "contrib"])
+@pytest.mark.parametrize("failure_stage", ["store", "index"])
+def test_tracked_release_retries_readme_write_failure(
+    collector_sync, sample_components, temp_git_repos, distribution, failure_stage
+):
+    version = Version("0.112.0")
+    repo = Path(temp_git_repos[distribution])
+    readme = repo / "receiver" / "otlpreceiver" / "README.md"
+    readme.parent.mkdir(parents=True)
+    readme.write_text("# Tagged README")
+    run_git(repo, "add", "-A")
+    run_git(repo, "commit", "-m", "add release README")
+    run_git(repo, "tag", "-f", f"v{version}")
+    target = (
+        "watcher_common.readme_store._atomic_write"
+        if failure_stage == "store"
+        else "collector_watcher.inventory_manager.write_readme_index"
+    )
+    with (
+        patch("collector_watcher.collector_sync.ComponentScanner") as scanner,
+        patch(target, side_effect=OSError("disk full")),
+    ):
+        scanner.return_value.scan_all_components.return_value = sample_components
+        assert collector_sync.process_latest_release(distribution) == version
+    manager = collector_sync.inventory_manager
+    assert manager.version_exists(distribution, version)
+    assert not manager.readme_index_exists(distribution, version)
+    version_dir = manager.get_version_dir(distribution, version)
+    original = {path: path.read_bytes() for path in version_dir.glob("*.yaml")}
+    with patch(target, side_effect=OSError("still unavailable")):
+        assert collector_sync.process_latest_release(distribution) is None
+    assert not manager.readme_index_exists(distribution, version)
+
+    # Leave the clone on newer content: retry must explicitly check out the release tag.
+    run_git(repo, "checkout", "main")
+    readme.write_text("# Main README")
+    run_git(repo, "add", "-A")
+    run_git(repo, "commit", "-m", "change README on main")
+    with (
+        patch.object(collector_sync, "save_version") as save,
+        patch.object(collector_sync, "detect_and_track_deprecations") as deprecations,
+    ):
+        assert collector_sync.process_latest_release(distribution) is None
+        save.assert_not_called()
+        deprecations.assert_not_called()
+    assert manager.readme_index_exists(distribution, version)
+    digest = manager.load_component_readme_map(distribution, version)["otlpreceiver"]
+    assert manager.load_component_readme_content(distribution, "otlpreceiver", digest) == "# Tagged README"
+    assert all(path.read_bytes() == data for path, data in original.items())
+    with patch.object(collector_sync.version_detectors[distribution], "checkout_version") as checkout:
+        assert collector_sync.process_latest_release(distribution) is None
+        checkout.assert_not_called()
+
+
+def test_readme_retry_includes_older_releases_and_accepts_empty_indexes(collector_sync, sample_components):
+    manager = collector_sync.inventory_manager
+    old, latest = Version("0.111.0"), Version("0.112.0")
+    for version in [old, latest]:
+        manager.save_versioned_inventory("core", version, sample_components, "opentelemetry-collector")
+    manager.save_component_readmes("core", latest, [])
+    with patch.object(collector_sync.version_detectors["core"], "checkout_version") as checkout:
+        assert collector_sync.process_latest_release("core") is None
+        checkout.assert_called_once_with(old)
+        assert manager.readme_index_exists("core", old)
+        assert manager.load_component_readme_map("core", old) == {}
+        checkout.reset_mock()
+        collector_sync.process_latest_release("core")
+        checkout.assert_not_called()
+
+
+def test_malformed_readme_index_is_not_overwritten_by_retry(collector_sync, sample_components):
+    manager = collector_sync.inventory_manager
+    version = Version("0.112.0")
+    manager.save_versioned_inventory("core", version, sample_components, "opentelemetry-collector")
+    path = manager.get_version_dir("core", version) / manager.README_INDEX_FILE
+    path.write_text("invalid: [")
+    with patch.object(collector_sync.version_detectors["core"], "checkout_version") as checkout:
+        with pytest.raises(ValueError, match="Invalid README index"):
+            collector_sync.process_latest_release("core")
+        checkout.assert_not_called()
+    assert path.read_text() == "invalid: ["

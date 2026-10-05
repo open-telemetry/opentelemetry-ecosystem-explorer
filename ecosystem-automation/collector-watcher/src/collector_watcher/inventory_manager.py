@@ -198,6 +198,12 @@ class InventoryManager:
             "components": components,
         }
 
+    def readme_index_exists(self, distribution: DistributionName, version: Version) -> bool:
+        """Accept only a validated index as the README sync completion signal."""
+        path = self.get_version_dir(distribution, version) / self.README_INDEX_FILE
+        read_readme_index(path)
+        return path.is_file()
+
     def save_component_readmes(
         self, distribution: DistributionName, version: Version, readmes: Iterable[tuple[str, str]]
     ) -> int:
