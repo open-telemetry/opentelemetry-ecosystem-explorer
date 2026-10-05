@@ -176,7 +176,7 @@ class CollectorSync:
         drift detection and parser routing.
 
         Also discovers and stores each component's README.md, if present,
-        content-addressed under ``component_readmes/``. README publishing
+        content-addressed under the distribution's shared ``readmes/``. README publishing
         is best-effort: a failure here is logged and does not fail the sync.
         This always runs after the inventory write below, never before -
         see the comment at that call site for why the order matters.
@@ -188,7 +188,8 @@ class CollectorSync:
         Registry layout after this call:
             ecosystem-registry/collector/
                 {distribution}/v{version}/*.yaml               (component data, each with schema_hash)
-                {distribution}/v{version}/component_readmes/    (one file per distinct README content)
+                {distribution}/v{version}/component-readmes.yaml (raw name -> shared filename)
+                {distribution}/readmes/                        (one file per distinct README content)
                 meta/schemas/{hash}.yaml                        (one file per distinct schema)
 
         Args:

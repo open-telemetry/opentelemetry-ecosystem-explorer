@@ -702,7 +702,7 @@ class TestRunCollectorBuilderReadmes:
         assert exit_code == 0
 
         # README content was loaded and published.
-        manager.load_component_readme_content.assert_any_call("core", version, "otlpreceiver", "abc123def456")
+        manager.load_component_readme_content.assert_any_call("core", "otlpreceiver", "abc123def456")
         markdown_file = tmp_path / "collector" / "markdown" / "otlpreceiver-abc123def456.md"
         assert markdown_file.exists()
         assert markdown_file.read_text(encoding="utf-8") == readme_content
@@ -767,7 +767,7 @@ class TestReadmePublishingIsolation:
         readme_map = {"badreceiver": "aaa111aaa111", "goodreceiver": "bbb222bbb222"}
         manager.load_component_readme_map.side_effect = lambda dist, ver: readme_map if dist == "core" else {}
 
-        def load_content(dist, ver, name, h):
+        def load_content(dist, name, h):
             if name == "badreceiver":
                 raise OSError("simulated disk error reading this one file")
             return f"# {name}"
@@ -870,7 +870,7 @@ class TestReadmePublishingIsolation:
         )
         readme_map = {"badreceiver": "aaa111aaa111", "goodreceiver": "bbb222bbb222"}
         manager.load_component_readme_map.side_effect = lambda dist, ver: readme_map if dist == "core" else {}
-        manager.load_component_readme_content.side_effect = lambda dist, ver, name, h: f"# {name}"
+        manager.load_component_readme_content.side_effect = lambda dist, name, h: f"# {name}"
 
         db_writer = CollectorDatabaseWriter(database_dir=str(tmp_path / "collector"))
 

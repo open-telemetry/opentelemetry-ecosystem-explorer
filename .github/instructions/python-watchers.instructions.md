@@ -32,9 +32,10 @@ Old registry files are immutable history. Breaking the schema breaks history.
 - **Aggregated YAML per component type per version.** All expected files must be written together,
   even if some are empty:
   - Collector versions ship 5 component-type files (connector, exporter, extension, processor,
-    receiver).
+    receiver), plus `component-readmes.yaml` referencing the distribution-level `readmes/` store.
   - Configuration versions ship 13 schema files.
-  - Java javaagent ships `instrumentation.yaml` plus `library_readmes/`.
+  - Java javaagent ships `instrumentation.yaml` plus `library-readmes.yaml`, referencing the shared
+    distribution-level `library_readmes/` store.
   - .NET versions ship a single aggregated `instrumentation.yaml` (`dotnet/v.../`).
   - JavaScript is the exception to aggregation: js-contrib packages version independently, so each
     package is written as one file per version — `javascript/{package-name}/v{version}.yaml` — not

@@ -581,7 +581,7 @@ def test_save_version_discovers_and_saves_component_readmes(
     readme_map = collector_sync.inventory_manager.load_component_readme_map("core", version)
     assert "otlpreceiver" in readme_map
     content = collector_sync.inventory_manager.load_component_readme_content(
-        "core", version, "otlpreceiver", readme_map["otlpreceiver"]
+        "core", "otlpreceiver", readme_map["otlpreceiver"]
     )
     assert content == "# OTLP Receiver"
 
@@ -592,9 +592,7 @@ def test_save_version_with_no_readmes_persists_no_readme_content(collector_sync,
 
     collector_sync.save_version("core", version, sample_components)
 
-    # save_component_readmes always creates the target dir (matching java's
-    # save_library_readmes exactly), so check for absence of content, not
-    # absence of the directory itself.
+    assert (collector_sync.inventory_manager.get_version_dir("core", version) / "component-readmes.yaml").is_file()
     assert collector_sync.inventory_manager.load_component_readme_map("core", version) == {}
 
 
@@ -691,13 +689,8 @@ def test_backfill_versions_deletes_stale_readmes_before_rescanning(
     collector_sync, sample_components, temp_inventory_dir, temp_git_repos
 ):
     """
-    save_versioned_inventory() already fully overwrites every component-type
-    YAML on every call, so it's self-cleaning regardless of deletion. What
-    delete_version() actually guards is component_readmes/: it's purely
-    additive and content-addressed (save_component_readmes never removes old
-    hash-named files), so if a README's content changes between the original
-    tracking and a backfill run, the old hash-named file would otherwise
-    linger forever as an orphan rather than being replaced.
+    Deleting the old version before backfill prunes content that lost its last
+    reference. The replacement index then points only to the updated content.
     """
     version = Version("0.111.0")
     repo_path = Path(temp_git_repos["core"])
@@ -736,14 +729,14 @@ def test_backfill_versions_deletes_stale_readmes_before_rescanning(
 
         collector_sync.backfill_versions("core", versions=[version])
 
-    readme_dir_on_disk = temp_inventory_dir / "core" / "v0.111.0" / "component_readmes"
+    readme_dir_on_disk = temp_inventory_dir / "core" / "readmes"
     files = [p.name for p in readme_dir_on_disk.glob("otlpreceiver-*.md")]
     assert len(files) == 1, f"expected exactly one otlpreceiver readme file after backfill, found: {files}"
     assert original_hash not in files[0]
 
     new_map = collector_sync.inventory_manager.load_component_readme_map("core", version)
     content = collector_sync.inventory_manager.load_component_readme_content(
-        "core", version, "otlpreceiver", new_map["otlpreceiver"]
+        "core", "otlpreceiver", new_map["otlpreceiver"]
     )
     assert content == "# Updated content"
 
@@ -754,15 +747,14 @@ def test_backfill_versions_picks_up_readmes_for_a_previously_tracked_version(
     """
     Regression guard for the actual production scenario this feature exists
     for: a version was tracked before readme discovery existed in
-    save_version(), so it has real component data but no component_readmes.
+    save_version(), so it has real component data but no indexed READMEs.
     Running --backfill on it must pick up the readme now, with no watcher
     code changes beyond what's already in backfill_versions().
     """
     version = Version("0.111.0")
     collector_sync.save_version("core", version, sample_components)
     assert collector_sync.inventory_manager.version_exists("core", version)
-    # save_component_readmes always mkdirs component_readmes/, check for
-    # absence of actual content rather than absence of the directory.
+    # A successful empty discovery publishes an empty index.
     assert collector_sync.inventory_manager.load_component_readme_map("core", version) == {}
 
     # A README.md genuinely exists in the repo at this tag, it just was never
@@ -788,7 +780,7 @@ def test_backfill_versions_picks_up_readmes_for_a_previously_tracked_version(
     readme_map = collector_sync.inventory_manager.load_component_readme_map("core", version)
     assert "otlpreceiver" in readme_map
     content = collector_sync.inventory_manager.load_component_readme_content(
-        "core", version, "otlpreceiver", readme_map["otlpreceiver"]
+        "core", "otlpreceiver", readme_map["otlpreceiver"]
     )
     assert content == "# OTLP Receiver\n\nBackfilled readme content."
 

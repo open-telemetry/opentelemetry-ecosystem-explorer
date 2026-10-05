@@ -97,7 +97,7 @@ class InstrumentationSync:
         version = Version(tag_string.lstrip("v"))
 
         if self.inventory_manager.version_exists(version):
-            if not self.inventory_manager.readme_dir_exists(version):
+            if not self.inventory_manager.readme_index_exists(version):
                 instrumentations = self.inventory_manager.load_versioned_inventory(version)
                 self._sync_library_readmes(version, tag_string, instrumentations)
             if not self.inventory_manager.jmx_models_index_exists(version):
@@ -159,7 +159,11 @@ class InstrumentationSync:
             version=snapshot_version,
             instrumentations=instrumentations,
         )
-        self._sync_library_readmes(snapshot_version, main_ref, instrumentations)
+        if self._sync_library_readmes(snapshot_version, main_ref, instrumentations):
+            removed_readmes = self.inventory_manager.prune_orphan_readmes()
+            logger.info("  Pruned %s orphan README(s)", removed_readmes)
+        else:
+            logger.warning("  Skipping README pruning after incomplete snapshot fetch")
 
         return snapshot_version
 
@@ -168,18 +172,14 @@ class InstrumentationSync:
         version: Version,
         ref: str,
         instrumentations: dict,
-    ) -> None:
-        """Best-effort: fetch library READMEs at `ref` and persist content-addressed.
-
-        Per-file failures are logged and skipped; tree-discovery failure aborts
-        only this step, never the sync.
-        """
+    ) -> bool:
+        """Publish a completion index only when discovery and every applicable fetch succeed."""
         try:
             sha = ref if _SHA_RE.match(ref) else self.client.resolve_ref_to_sha(ref)
             discovered = self.readme_extractor.discover_library_readmes(sha)
         except GithubAPIError as e:
             logger.warning(f"  README discovery failed for {ref}: {e}")
-            return
+            return False
 
         libraries_raw = instrumentations.get("libraries", [])
         # Parsed YAML may keep grouped format {tag: [lib, ...]} or flat list
@@ -192,6 +192,7 @@ class InstrumentationSync:
             lib["source_path"]: lib["name"] for lib in libraries if lib.get("source_path") and lib.get("name")
         }
 
+        fetch_failed = False
         fetched: list[tuple[str, str]] = []
         for source_path, blob_path in discovered.items():
             name = name_by_source.get(source_path)
@@ -201,10 +202,15 @@ class InstrumentationSync:
                 content = self.readme_extractor.fetch_readme(blob_path, sha)
                 fetched.append((name, content))
             except GithubAPIError as e:
-                logger.warning(f"  Skipping README for {name}: {e}")
+                logger.warning(f"  README fetch failed for {name}: {e}")
+                fetch_failed = True
+
+        if fetch_failed:
+            return False
 
         written = self.inventory_manager.save_library_readmes(version, fetched)
         logger.info(f"  Stored {written} library README(s) for v{version}")
+        return True
 
     def _sync_jmx_models(self, version: Version, ref: str) -> None:
         """Best-effort: fetch JMX weaver model files and write version index."""
