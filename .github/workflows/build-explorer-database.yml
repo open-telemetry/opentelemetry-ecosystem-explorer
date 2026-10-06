@@ -83,10 +83,10 @@ jobs:
           # runs third-party code inside a contents: write job: `uv sync` builds the workspace
           # through PEP 517 backends, and the contract gate loads the explorer's whole JS
           # dependency tree. A persisted credential would be readable by all of it for the length
-          # of the job, so the token is handed to the one step that pushes instead. The runs a
-          # push authenticated with GITHUB_TOKEN starts wait for a maintainer's approval, so that
-          # same step starts the required checks on the new head by closing/reopening the PR with
-          # the otelbot App token.
+          # of the job, so the token is handed to the one step that pushes instead. Runs started by
+          # a push authenticated with GITHUB_TOKEN wait for a maintainer's approval, so that same
+          # step starts the required checks on the new head by closing/reopening the PR with the
+          # otelbot App token.
           persist-credentials: false
 
       - name: Configure git (primary repository)
