@@ -6,6 +6,27 @@
       "content_digest": "95dcbb3e56e019591be7320a7f75f388f09106513a00af1301462dd72b1948da",
       "archive_sha256": "42dc7502cf5d2d3b5217af9e7ea6775b892a24c5395fb99cc52ab57e79774bdd",
       "registry_commit": "6696119549678aa4729266acf1900ad5b99efdff"
+    },
+    "configuration": {
+      "release_tag": "data-configuration-ff3eb0ebf3a6",
+      "asset": "configuration.tar.gz",
+      "content_digest": "ff3eb0ebf3a6517cc7e25e5a06f14db8cd2b247eec230a2000cefffb24f16d6b",
+      "archive_sha256": "1c6cc2df946d65e4cc0bcb40e7f6dcf91092513d9d461eb9edaa0b686b40ca2d",
+      "registry_commit": "ff7282a76b176211e4740f4a740d66e359e28a90"
+    },
+    "javaagent": {
+      "release_tag": "data-javaagent-750077d492c4",
+      "asset": "javaagent.tar.gz",
+      "content_digest": "750077d492c4251543f2e7c0ae0529f1589f22c01c5c09826727720051aba01b",
+      "archive_sha256": "e3f36af0777106a9253e965744a612ff214a8f750f22ee3cea929eb68140fadd",
+      "registry_commit": "ff7282a76b176211e4740f4a740d66e359e28a90"
+    },
+    "javascript": {
+      "release_tag": "data-javascript-d9775d841fe8",
+      "asset": "javascript.tar.gz",
+      "content_digest": "d9775d841fe8882e680f4efdccd899b83ce214d4710aa172d1a8dc49596c5e1a",
+      "archive_sha256": "305e848befea2c4089da11b49a96259ec31f836296f0483d6f97ede481e9c149",
+      "registry_commit": "ff7282a76b176211e4740f4a740d66e359e28a90"
     }
   }
 }

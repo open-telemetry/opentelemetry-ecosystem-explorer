@@ -1,0 +1,19 @@
+{
+  "description": "This instrumentation propagates context between the nodes of a Pekko cluster, over artery and over classic remoting, it does not emit any telemetry on its own.",
+  "display_name": "Pekko Remote",
+  "features": [
+    "CONTEXT_PROPAGATION"
+  ],
+  "has_javaagent": true,
+  "javaagent_target_versions": [
+    "org.apache.pekko:pekko-remote_2.12:[1.0,)",
+    "org.apache.pekko:pekko-remote_2.13:[1.0,)",
+    "org.apache.pekko:pekko-remote_3:[1.0,)"
+  ],
+  "library_link": "https://pekko.apache.org/docs/pekko/current/remoting-artery.html",
+  "name": "pekko-remote-1.0",
+  "scope": {
+    "name": "io.opentelemetry.pekko-remote-1.0"
+  },
+  "source_path": "instrumentation/pekko/pekko-remote-1.0"
+}

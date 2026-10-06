@@ -1,0 +1,211 @@
+{
+  "configurations": [
+    {
+      "declarative_name": "java.couchbase.emit_experimental_telemetry/development",
+      "default": false,
+      "description": "Enables experimental span attributes emitted from the underlying Couchbase library. When v3 preview is enabled, also enables the request_encoding and dispatch_to_server internal spans.",
+      "name": "otel.instrumentation.couchbase.emit-experimental-telemetry",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.couchbase.experimental_span_attributes/development",
+      "default": false,
+      "deprecated": true,
+      "description": "Deprecated and will be removed in the next minor release. Use otel.instrumentation.couchbase.emit-experimental-telemetry instead.",
+      "name": "otel.instrumentation.couchbase.experimental-span-attributes",
+      "replaced_by": "otel.instrumentation.couchbase.emit-experimental-telemetry",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation uses the Couchbase tracing SPI to create database client spans for Couchbase Java SDK 3.1.",
+  "display_name": "Couchbase Client",
+  "has_javaagent": true,
+  "javaagent_target_versions": [
+    "com.couchbase.client:java-client:[3.1,3.2)"
+  ],
+  "library_link": "https://github.com/couchbase/couchbase-java-client",
+  "name": "couchbase-3.1",
+  "scope": {
+    "name": "io.opentelemetry.couchbase-3.1"
+  },
+  "semantic_conventions": [
+    "DATABASE_CLIENT_SPANS"
+  ],
+  "source_path": "instrumentation/couchbase/couchbase-3.1",
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "db.couchbase.collection",
+              "type": "STRING"
+            },
+            {
+              "name": "db.couchbase.local_id",
+              "type": "STRING"
+            },
+            {
+              "name": "db.couchbase.operation_id",
+              "type": "LONG"
+            },
+            {
+              "name": "db.couchbase.scope",
+              "type": "STRING"
+            },
+            {
+              "name": "db.couchbase.server_duration",
+              "type": "LONG"
+            },
+            {
+              "name": "db.couchbase.service",
+              "type": "STRING"
+            },
+            {
+              "name": "db.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system",
+              "type": "STRING"
+            },
+            {
+              "name": "net.host.name",
+              "type": "STRING"
+            },
+            {
+              "name": "net.host.port",
+              "type": "LONG"
+            },
+            {
+              "name": "net.peer.name",
+              "type": "STRING"
+            },
+            {
+              "name": "net.peer.port",
+              "type": "LONG"
+            },
+            {
+              "name": "net.transport",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "db.collection.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.namespace",
+              "type": "STRING"
+            },
+            {
+              "name": "db.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.query.text",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system.name",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.address",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.port",
+              "type": "LONG"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "otel.semconv-stability.opt-in=database"
+    },
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "db.collection.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.couchbase.local_id",
+              "type": "STRING"
+            },
+            {
+              "name": "db.couchbase.operation_id",
+              "type": "STRING"
+            },
+            {
+              "name": "db.couchbase.operation_id",
+              "type": "LONG"
+            },
+            {
+              "name": "db.couchbase.scope",
+              "type": "STRING"
+            },
+            {
+              "name": "db.couchbase.server_duration",
+              "type": "LONG"
+            },
+            {
+              "name": "db.couchbase.service",
+              "type": "STRING"
+            },
+            {
+              "name": "db.namespace",
+              "type": "STRING"
+            },
+            {
+              "name": "db.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.query.text",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system.name",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.address",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.port",
+              "type": "LONG"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "otel.semconv-stability.opt-in=database,otel.instrumentation.couchbase.emit-experimental-telemetry=true"
+    }
+  ]
+}

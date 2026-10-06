@@ -1,0 +1,264 @@
+{
+  "configurations": [
+    {
+      "declarative_name": "java.oshi.experimental_metrics/development.enabled",
+      "default": false,
+      "deprecated": true,
+      "description": "Deprecated. Outside v3 preview, enables the experimental `runtime.java.memory` and `runtime.java.cpu_time` metrics. This setting is ignored when `otel.instrumentation.common.v3-preview=true`. Will be removed in 3.0. Use the standard JVM metrics `jvm.memory.used` and `jvm.cpu.time` instead. These are not exact replacements: `jvm.memory.used` measures JVM memory pools rather than process RSS or virtual memory, and `jvm.cpu.time` does not separate user and system CPU time.",
+      "name": "otel.instrumentation.oshi.experimental-metrics.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "When the OSHI library is detected on the classpath, this instrumentation enables system metrics for memory, disk, and network operations.",
+  "display_name": "OSHI",
+  "has_javaagent": true,
+  "has_standalone_library": true,
+  "javaagent_target_versions": [
+    "com.github.oshi:oshi-core:[5.0.0,)"
+  ],
+  "library_link": "https://github.com/oshi/oshi/",
+  "markdown_hash": "bfd5c32a149f",
+  "name": "oshi-5.0",
+  "scope": {
+    "name": "io.opentelemetry.oshi-5.0",
+    "schema_url": "https://opentelemetry.io/schemas/1.44.0"
+  },
+  "semantic_conventions": [
+    "SYSTEM_METRICS"
+  ],
+  "source_path": "instrumentation/oshi-5.0",
+  "telemetry": [
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "disk.io.direction",
+              "type": "STRING"
+            },
+            {
+              "name": "system.device",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "Disk bytes transferred.",
+          "instrument": "counter",
+          "name": "system.disk.io",
+          "unit": "By"
+        },
+        {
+          "attributes": [
+            {
+              "name": "disk.io.direction",
+              "type": "STRING"
+            },
+            {
+              "name": "system.device",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "Disk operations count.",
+          "instrument": "counter",
+          "name": "system.disk.operations",
+          "unit": "{operation}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "system.memory.state",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "Reports memory in use by state.",
+          "instrument": "updowncounter",
+          "name": "system.memory.usage",
+          "unit": "By"
+        },
+        {
+          "attributes": [
+            {
+              "name": "system.memory.state",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "DOUBLE_GAUGE",
+          "description": "Percentage of memory bytes in use.",
+          "instrument": "gauge",
+          "name": "system.memory.utilization",
+          "unit": "1"
+        },
+        {
+          "attributes": [
+            {
+              "name": "network.interface.name",
+              "type": "STRING"
+            },
+            {
+              "name": "network.io.direction",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "Count of network errors detected.",
+          "instrument": "counter",
+          "name": "system.network.errors",
+          "unit": "{error}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "network.interface.name",
+              "type": "STRING"
+            },
+            {
+              "name": "network.io.direction",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The number of bytes transmitted and received.",
+          "instrument": "counter",
+          "name": "system.network.io",
+          "unit": "By"
+        },
+        {
+          "attributes": [
+            {
+              "name": "network.io.direction",
+              "type": "STRING"
+            },
+            {
+              "name": "system.device",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The number of packets transferred.",
+          "instrument": "counter",
+          "name": "system.network.packet.count",
+          "unit": "{packet}"
+        }
+      ],
+      "when": "otel.instrumentation.common.v3-preview=true"
+    },
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "disk.io.direction",
+              "type": "STRING"
+            },
+            {
+              "name": "system.device",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "Disk bytes transferred.",
+          "instrument": "counter",
+          "name": "system.disk.io",
+          "unit": "By"
+        },
+        {
+          "attributes": [
+            {
+              "name": "disk.io.direction",
+              "type": "STRING"
+            },
+            {
+              "name": "system.device",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "Disk operations count.",
+          "instrument": "counter",
+          "name": "system.disk.operations",
+          "unit": "{operation}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "system.memory.state",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "Reports memory in use by state.",
+          "instrument": "updowncounter",
+          "name": "system.memory.usage",
+          "unit": "By"
+        },
+        {
+          "attributes": [
+            {
+              "name": "system.memory.state",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "DOUBLE_GAUGE",
+          "description": "Percentage of memory bytes in use.",
+          "instrument": "gauge",
+          "name": "system.memory.utilization",
+          "unit": "1"
+        },
+        {
+          "attributes": [
+            {
+              "name": "network.interface.name",
+              "type": "STRING"
+            },
+            {
+              "name": "network.io.direction",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "Count of network errors detected.",
+          "instrument": "counter",
+          "name": "system.network.errors",
+          "unit": "{error}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "network.interface.name",
+              "type": "STRING"
+            },
+            {
+              "name": "network.io.direction",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The number of bytes transmitted and received.",
+          "instrument": "counter",
+          "name": "system.network.io",
+          "unit": "By"
+        },
+        {
+          "attributes": [
+            {
+              "name": "network.io.direction",
+              "type": "STRING"
+            },
+            {
+              "name": "system.device",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "The number of packets transferred.",
+          "instrument": "counter",
+          "name": "system.network.packet.count",
+          "unit": "{packet}"
+        }
+      ],
+      "when": "otel.instrumentation.common.v3-preview=true,otel.instrumentation.oshi.experimental-metrics.enabled=true"
+    }
+  ]
+}

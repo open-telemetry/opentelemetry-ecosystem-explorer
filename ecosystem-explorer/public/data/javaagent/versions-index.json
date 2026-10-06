@@ -1,42 +1,47 @@
 {
   "versions": [
     {
-      "bundle_hash": "cfbae5694104",
+      "bundle_hash": "c1a54a97d3e2",
       "is_latest": true,
+      "version": "2.32.0"
+    },
+    {
+      "bundle_hash": "03c2563b3252",
+      "is_latest": false,
       "version": "2.31.1"
     },
     {
-      "bundle_hash": "cfbae5694104",
+      "bundle_hash": "03c2563b3252",
       "is_latest": false,
       "version": "2.31.0"
     },
     {
-      "bundle_hash": "67ee9993703e",
+      "bundle_hash": "e61ac3f97ad3",
       "is_latest": false,
       "version": "2.30.0"
     },
     {
-      "bundle_hash": "04ca01b6b3bd",
+      "bundle_hash": "3223747f100f",
       "is_latest": false,
       "version": "2.29.0"
     },
     {
-      "bundle_hash": "fd90bde03e93",
+      "bundle_hash": "3b849176de0a",
       "is_latest": false,
       "version": "2.28.1"
     },
     {
-      "bundle_hash": "fd90bde03e93",
+      "bundle_hash": "3b849176de0a",
       "is_latest": false,
       "version": "2.28.0"
     },
     {
-      "bundle_hash": "624791ccf4a9",
+      "bundle_hash": "570e278b849d",
       "is_latest": false,
       "version": "2.27.0"
     },
     {
-      "bundle_hash": "9cb610e4d926",
+      "bundle_hash": "e31195018416",
       "is_latest": false,
       "version": "2.26.1"
     }

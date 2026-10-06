@@ -1,5 +1,147 @@
 [
   {
+    "declarative_name": "general.code.semconv.dual_emit",
+    "default": false,
+    "description": "With `version: 1`, emits both the old and the stable code semantic conventions. Not supported under v3 preview.",
+    "instrumentations": [],
+    "name": "general.code.semconv.dual_emit",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "general.code.semconv.version",
+    "description": "Code semantic convention version to emit: `0` for the old conventions or `1` for the stable conventions. Takes precedence over `stability_opt_in_list`; when unset, `stability_opt_in_list` selects the conventions. Under v3 preview only `1` is supported and it is the default.",
+    "instrumentations": [],
+    "name": "general.code.semconv.version",
+    "type": "int"
+  },
+  {
+    "declarative_name": "general.db.semconv.dual_emit",
+    "default": false,
+    "description": "With `version: 1`, emits both the old and the stable database semantic conventions. Not supported under v3 preview.",
+    "instrumentations": [],
+    "name": "general.db.semconv.dual_emit",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "general.db.semconv.version",
+    "description": "Database semantic convention version to emit: `0` for the old conventions or `1` for the stable conventions. Takes precedence over `stability_opt_in_list`; when unset, `stability_opt_in_list` selects the conventions. Under v3 preview only `1` is supported and it is the default.",
+    "instrumentations": [],
+    "name": "general.db.semconv.version",
+    "type": "int"
+  },
+  {
+    "declarative_name": "general.messaging.semconv.dual_emit",
+    "default": false,
+    "description": "With `version: 1` and `experimental: true`, emits both the current and the preview messaging semantic conventions. Not supported under v3 preview.",
+    "instrumentations": [],
+    "name": "general.messaging.semconv.dual_emit",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "general.messaging.semconv.experimental",
+    "default": false,
+    "description": "With `version: 1`, selects the preview messaging semantic conventions. Required, because version 1 of the messaging semantic conventions is not yet stable.",
+    "instrumentations": [],
+    "name": "general.messaging.semconv.experimental",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "general.messaging.semconv.version",
+    "description": "Messaging semantic convention version to emit: `0` for the current conventions or `1` together with `experimental: true` for the preview conventions. Takes precedence over the semantic convention opt-in settings; when unset, those settings select the conventions. Under v3 preview only the preview conventions are supported and they are the default.",
+    "instrumentations": [],
+    "name": "general.messaging.semconv.version",
+    "type": "int"
+  },
+  {
+    "declarative_name": "general.rpc.semconv.dual_emit",
+    "default": false,
+    "description": "With `version: 1` and `experimental: true`, emits both the current and the preview RPC semantic conventions.",
+    "instrumentations": [],
+    "name": "general.rpc.semconv.dual_emit",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "general.rpc.semconv.experimental",
+    "default": false,
+    "description": "With `version: 1`, selects the preview RPC semantic conventions. Required, because version 1 of the RPC semantic conventions is not yet stable.",
+    "instrumentations": [],
+    "name": "general.rpc.semconv.experimental",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "general.rpc.semconv.version",
+    "description": "RPC semantic convention version to emit: `0` for the current conventions or `1` together with `experimental: true` for the preview conventions. Takes precedence over the semantic convention opt-in settings; when unset, those settings select the conventions.",
+    "instrumentations": [],
+    "name": "general.rpc.semconv.version",
+    "type": "int"
+  },
+  {
+    "declarative_name": "general.semconv_stability.opt_in",
+    "default": "",
+    "deprecated": true,
+    "description": "Deprecated: use `general.stability_opt_in_list` instead. It is ignored when `general.stability_opt_in_list` is configured.",
+    "instrumentations": [],
+    "name": "general.semconv_stability.opt_in",
+    "replaced_by": "general.stability_opt_in_list",
+    "type": "list"
+  },
+  {
+    "declarative_name": "java.common.database.sqlcommenter/development.enabled",
+    "default": false,
+    "deprecated": true,
+    "description": "Deprecated: use `java.common.db.sqlcommenter/development.enabled` instead. It is ignored under v3 preview.",
+    "instrumentations": [
+      "jdbc",
+      "r2dbc-1.0"
+    ],
+    "name": "java.common.database.sqlcommenter/development.enabled",
+    "replaced_by": "java.common.db.sqlcommenter/development.enabled",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.common.database.statement_sanitizer.enabled",
+    "default": true,
+    "deprecated": true,
+    "description": "Deprecated: use `java.common.db.query_sanitization.enabled` instead. It is ignored under v3 preview.",
+    "instrumentations": [
+      "camel-2.20",
+      "cassandra-3.0",
+      "cassandra-4.0",
+      "cassandra-4.4",
+      "clickhouse-client-v1-0.5",
+      "clickhouse-client-v2-0.8",
+      "couchbase-2.0",
+      "elasticsearch-rest-5.0",
+      "elasticsearch-rest-6.4",
+      "elasticsearch-rest-7.0",
+      "geode-1.4",
+      "hibernate-3.3",
+      "hibernate-4.0",
+      "hibernate-6.0",
+      "influxdb-2.4",
+      "jdbc",
+      "jedis-1.4",
+      "jedis-2.0",
+      "jedis-3.0",
+      "jedis-4.0",
+      "lettuce-5.0",
+      "lettuce-5.1",
+      "mongo-3.1",
+      "mongo-4.0",
+      "mongo-async-3.3",
+      "opensearch-java-3.0",
+      "r2dbc-1.0",
+      "redisson-3.0",
+      "redisson-3.17",
+      "vertx-redis-client-4.0",
+      "vertx-sql-client-4.0",
+      "vertx-sql-client-5.0"
+    ],
+    "name": "java.common.database.statement_sanitizer.enabled",
+    "replaced_by": "java.common.db.query_sanitization.enabled",
+    "type": "boolean"
+  },
+  {
     "declarative_name": "java.common.http.client.url_template_rules",
     "declarative_schema": {
       "properties": {
@@ -54,6 +196,7 @@
       "play-ws-1.0",
       "play-ws-2.0",
       "play-ws-2.1",
+      "ratpack-1.4",
       "ratpack-1.7",
       "reactor-netty-1.0",
       "spring-web-6.0",
@@ -153,6 +296,16 @@
     "type": "boolean"
   },
   {
+    "declarative_name": "java.aws_sdk.message_create_spans.enabled",
+    "description": "Determines whether to create a producer span for each eligible message in an SQS batch send when stable messaging semantic conventions are enabled. Overrides `otel.instrumentation.common.messaging.message-create-spans.enabled` for this instrumentation; when unset, that setting applies.",
+    "instrumentations": [
+      "aws-sdk-1.11",
+      "aws-sdk-2.2"
+    ],
+    "name": "otel.instrumentation.aws-sdk.message-create-spans.enabled",
+    "type": "boolean"
+  },
+  {
     "declarative_name": "java.camel.experimental_span_attributes/development",
     "default": false,
     "description": "Enable the capture of experimental `camel.uri`, `camel.kafka.partitionKey`, `camel.kafka.key` and `camel.kafka.offset` span attributes.",
@@ -163,52 +316,119 @@
     "type": "boolean"
   },
   {
+    "declarative_name": "java.camel.query_sanitization.enabled",
+    "description": "Enables query sanitization for database queries traced through Camel. Overrides `otel.instrumentation.common.db.query-sanitization.enabled` for this instrumentation; when unset, that setting applies.",
+    "instrumentations": [
+      "camel-2.20"
+    ],
+    "name": "otel.instrumentation.camel.query-sanitization.enabled",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.camel.statement_sanitizer.enabled",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.camel.query-sanitization.enabled` instead. It is ignored under v3 preview and will be removed in 3.0. When unset, this setting falls back to `otel.instrumentation.common.db.query-sanitization.enabled` (including its deprecated aliases).",
+    "instrumentations": [
+      "camel-2.20"
+    ],
+    "name": "otel.instrumentation.camel.statement-sanitizer.enabled",
+    "replaced_by": "otel.instrumentation.camel.query-sanitization.enabled",
+    "type": "boolean"
+  },
+  {
     "declarative_name": "java.cassandra.query_sanitization.enabled",
-    "default": true,
-    "description": "Enables query sanitization for Cassandra queries. Takes precedence over otel.instrumentation.common.db.query-sanitization.enabled.",
+    "description": "Enables query sanitization for Cassandra queries. Overrides `otel.instrumentation.common.db.query-sanitization.enabled` for this instrumentation; when unset, that setting applies.",
     "instrumentations": [
       "cassandra-3.0",
+      "cassandra-4.0",
       "cassandra-4.4"
     ],
     "name": "otel.instrumentation.cassandra.query-sanitization.enabled",
     "type": "boolean"
   },
   {
-    "default": true,
-    "description": "Enables statement sanitization for database queries.",
+    "declarative_name": "java.cassandra.statement_sanitizer.enabled",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.cassandra.query-sanitization.enabled` instead. It is ignored under v3 preview and will be removed in 3.0. When unset, this setting falls back to `otel.instrumentation.common.db.query-sanitization.enabled` (including its deprecated aliases).",
     "instrumentations": [
       "cassandra-3.0",
       "cassandra-4.0",
-      "cassandra-4.4",
-      "clickhouse-client-v1-0.5",
-      "clickhouse-client-v2-0.8",
-      "couchbase-2.0",
-      "couchbase-2.6",
-      "geode-1.4",
-      "influxdb-2.4",
-      "jdbc",
-      "jedis-1.4",
-      "jedis-3.0",
-      "jedis-4.0",
-      "lettuce-5.0",
-      "lettuce-5.1",
-      "mongo-3.1",
-      "mongo-3.7",
-      "mongo-4.0",
-      "mongo-async-3.3",
-      "r2dbc-1.0",
-      "vertx-redis-client-4.0",
-      "vertx-sql-client-4.0",
-      "vertx-sql-client-5.0"
+      "cassandra-4.4"
     ],
-    "name": "otel.instrumentation.common.db-statement-sanitizer.enabled",
+    "name": "otel.instrumentation.cassandra.statement-sanitizer.enabled",
+    "replaced_by": "otel.instrumentation.cassandra.query-sanitization.enabled",
     "type": "boolean"
   },
   {
-    "declarative_name": "java.common.db.query_sanitization.enabled",
-    "default": true,
-    "description": "Enables query sanitization for database queries.",
+    "declarative_name": "java.clickhouse.query_sanitization.enabled",
+    "description": "Enables query sanitization for ClickHouse queries. Overrides `otel.instrumentation.common.db.query-sanitization.enabled` for this instrumentation; when unset, that setting applies.",
     "instrumentations": [
+      "clickhouse-client-v1-0.5",
+      "clickhouse-client-v2-0.8"
+    ],
+    "name": "otel.instrumentation.clickhouse.query-sanitization.enabled",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.clickhouse.statement_sanitizer.enabled",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.clickhouse.query-sanitization.enabled` instead. It is ignored under v3 preview and will be removed in 3.0. When unset, this setting falls back to `otel.instrumentation.common.db.query-sanitization.enabled` (including its deprecated aliases).",
+    "instrumentations": [
+      "clickhouse-client-v1-0.5",
+      "clickhouse-client-v2-0.8"
+    ],
+    "name": "otel.instrumentation.clickhouse.statement-sanitizer.enabled",
+    "replaced_by": "otel.instrumentation.clickhouse.query-sanitization.enabled",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.common.controller_telemetry.enabled",
+    "default": false,
+    "description": "Enables the creation of experimental controller spans.",
+    "instrumentations": [
+      "finatra-2.9",
+      "grails-3.0",
+      "jaxrs-1.0",
+      "jaxrs-2.0-annotations",
+      "jaxrs-2.0-cxf-3.2",
+      "jaxrs-2.0-jersey-2.0",
+      "jaxrs-2.0-resteasy-3.0",
+      "jaxrs-2.0-resteasy-3.1",
+      "jaxrs-3.0-annotations",
+      "jaxrs-3.0-jersey-3.0",
+      "jaxrs-3.0-resteasy-6.0",
+      "jaxws-2.0",
+      "jaxws-2.0-axis2-1.6",
+      "jaxws-2.0-cxf-3.0",
+      "jaxws-2.0-metro-2.2",
+      "jaxws-jws-api-1.1",
+      "jfinal-3.2",
+      "jsf-mojarra-1.2",
+      "jsf-mojarra-3.0",
+      "jsf-myfaces-1.2",
+      "jsf-myfaces-3.0",
+      "play-mvc-2.4",
+      "play-mvc-2.6",
+      "ratpack-1.4",
+      "ratpack-1.7",
+      "spring-webflux-5.0",
+      "spring-webmvc-3.1",
+      "spring-webmvc-6.0",
+      "spring-ws-2.0",
+      "struts-2.3",
+      "struts-7.0",
+      "tapestry-5.4",
+      "vaadin-14.2"
+    ],
+    "name": "otel.instrumentation.common.controller-telemetry.enabled",
+    "type": "boolean"
+  },
+  {
+    "default": true,
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.common.db.query-sanitization.enabled` instead. It is ignored under v3 preview and will be removed in 3.0.",
+    "instrumentations": [
+      "camel-2.20",
       "cassandra-3.0",
       "cassandra-4.0",
       "cassandra-4.4",
@@ -216,7 +436,13 @@
       "clickhouse-client-v2-0.8",
       "couchbase-2.0",
       "couchbase-2.6",
+      "elasticsearch-rest-5.0",
+      "elasticsearch-rest-6.4",
+      "elasticsearch-rest-7.0",
       "geode-1.4",
+      "hibernate-3.3",
+      "hibernate-4.0",
+      "hibernate-6.0",
       "influxdb-2.4",
       "jdbc",
       "jedis-1.4",
@@ -229,7 +455,65 @@
       "mongo-3.7",
       "mongo-4.0",
       "mongo-async-3.3",
+      "opensearch-java-3.0",
       "r2dbc-1.0",
+      "redisson-3.0",
+      "redisson-3.17",
+      "vertx-redis-client-4.0",
+      "vertx-sql-client-4.0",
+      "vertx-sql-client-5.0"
+    ],
+    "name": "otel.instrumentation.common.db-statement-sanitizer.enabled",
+    "replaced_by": "otel.instrumentation.common.db.query-sanitization.enabled",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.common.db.sqlcommenter/development.enabled",
+    "default": false,
+    "description": "Enables augmenting queries with a comment containing tracing information. An instrumentation-specific setting takes precedence. See [sqlcommenter](https://google.github.io/sqlcommenter/) for more info. WARNING: augmenting queries with tracing context will make query texts unique, which may have adverse impact on database performance.",
+    "instrumentations": [
+      "jdbc",
+      "r2dbc-1.0"
+    ],
+    "name": "otel.instrumentation.common.db.experimental.sqlcommenter.enabled",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.common.db.query_sanitization.enabled",
+    "default": true,
+    "description": "Enables query sanitization for database queries.",
+    "instrumentations": [
+      "camel-2.20",
+      "cassandra-3.0",
+      "cassandra-4.0",
+      "cassandra-4.4",
+      "clickhouse-client-v1-0.5",
+      "clickhouse-client-v2-0.8",
+      "couchbase-2.0",
+      "couchbase-2.6",
+      "elasticsearch-rest-5.0",
+      "elasticsearch-rest-6.4",
+      "elasticsearch-rest-7.0",
+      "geode-1.4",
+      "hibernate-3.3",
+      "hibernate-4.0",
+      "hibernate-6.0",
+      "influxdb-2.4",
+      "jdbc",
+      "jedis-1.4",
+      "jedis-2.0",
+      "jedis-3.0",
+      "jedis-4.0",
+      "lettuce-5.0",
+      "lettuce-5.1",
+      "mongo-3.1",
+      "mongo-3.7",
+      "mongo-4.0",
+      "mongo-async-3.3",
+      "opensearch-java-3.0",
+      "r2dbc-1.0",
+      "redisson-3.0",
+      "redisson-3.17",
       "vertx-redis-client-4.0",
       "vertx-sql-client-4.0",
       "vertx-sql-client-5.0"
@@ -270,7 +554,8 @@
   {
     "declarative_name": "java.common.controller_telemetry/development.enabled",
     "default": false,
-    "description": "Enables the creation of experimental controller spans.",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.common.controller-telemetry.enabled` instead. This setting is ignored under v3-preview and will be removed in 3.0.",
     "instrumentations": [
       "finatra-2.9",
       "grails-3.0",
@@ -309,12 +594,14 @@
       "vaadin-14.2"
     ],
     "name": "otel.instrumentation.common.experimental.controller-telemetry.enabled",
+    "replaced_by": "otel.instrumentation.common.controller-telemetry.enabled",
     "type": "boolean"
   },
   {
     "declarative_name": "java.common.view_telemetry/development.enabled",
     "default": false,
-    "description": "Enables the creation of experimental view spans.",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.common.view-telemetry.enabled` instead. This setting is ignored under v3-preview and will be removed in 3.0.",
     "instrumentations": [
       "dropwizard-views-0.7",
       "jsp-2.3",
@@ -322,19 +609,24 @@
       "spring-webmvc-6.0"
     ],
     "name": "otel.instrumentation.common.experimental.view-telemetry.enabled",
+    "replaced_by": "otel.instrumentation.common.view-telemetry.enabled",
     "type": "boolean"
   },
   {
     "declarative_name": "java.common.logging.span_id",
     "default": "span_id",
-    "description": "Specifies the key name used to store the span ID in the logging context.",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.common.logging.span-id-key` instead. It is ignored under v3 preview and will be removed in 3.0.",
     "instrumentations": [
+      "jboss-logmanager-mdc-1.1",
+      "log4j-appender-2.17",
       "log4j-context-data-2.17",
       "log4j-context-data-2.7",
       "log4j-mdc-1.2",
       "logback-mdc-1.0"
     ],
     "name": "otel.instrumentation.common.logging.span-id",
+    "replaced_by": "otel.instrumentation.common.logging.span-id-key",
     "type": "string"
   },
   {
@@ -342,6 +634,8 @@
     "default": "span_id",
     "description": "Specifies the key name used to store the span ID in the logging context.",
     "instrumentations": [
+      "jboss-logmanager-mdc-1.1",
+      "log4j-appender-2.17",
       "log4j-context-data-2.17",
       "log4j-context-data-2.7",
       "log4j-mdc-1.2",
@@ -351,16 +645,42 @@
     "type": "string"
   },
   {
+    "declarative_name": "java.common.logging.structured_attributes.excluded",
+    "default": "",
+    "description": "Comma-separated list of case-sensitive glob patterns for event-local structured log attribute keys not to capture. Applies to Log4j MapMessage entries, SLF4J key-value pairs, Logback Logstash markers, and Logstash structured arguments. Excluded patterns take precedence over included patterns. An exclude-only selector captures every key not excluded; \"*\" captures no structured attributes. This does not affect otel.event.name, MDC, or logger context.",
+    "instrumentations": [
+      "log4j-appender-2.17",
+      "logback-appender-1.0"
+    ],
+    "name": "otel.instrumentation.common.logging.structured-attributes.excluded",
+    "type": "list"
+  },
+  {
+    "declarative_name": "java.common.logging.structured_attributes.included",
+    "default": "",
+    "description": "Comma-separated list of case-sensitive glob patterns for event-local structured log attribute keys to capture. Applies to Log4j MapMessage entries, SLF4J key-value pairs, Logback Logstash markers, and Logstash structured arguments. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence. An exclude-only selector captures every key not excluded. Under v3-preview, an absent or empty selector captures all structured attributes by default. MDC and logger-context attributes remain separate and opt-in.",
+    "instrumentations": [
+      "log4j-appender-2.17",
+      "logback-appender-1.0"
+    ],
+    "name": "otel.instrumentation.common.logging.structured-attributes.included",
+    "type": "list"
+  },
+  {
     "declarative_name": "java.common.logging.trace_flags",
     "default": "trace_flags",
-    "description": "Specifies the key name used to store the trace flags in the logging context.",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.common.logging.trace-flags-key` instead. It is ignored under v3 preview and will be removed in 3.0.",
     "instrumentations": [
+      "jboss-logmanager-mdc-1.1",
+      "log4j-appender-2.17",
       "log4j-context-data-2.17",
       "log4j-context-data-2.7",
       "log4j-mdc-1.2",
       "logback-mdc-1.0"
     ],
     "name": "otel.instrumentation.common.logging.trace-flags",
+    "replaced_by": "otel.instrumentation.common.logging.trace-flags-key",
     "type": "string"
   },
   {
@@ -368,6 +688,8 @@
     "default": "trace_flags",
     "description": "Specifies the key name used to store the trace flags in the logging context.",
     "instrumentations": [
+      "jboss-logmanager-mdc-1.1",
+      "log4j-appender-2.17",
       "log4j-context-data-2.17",
       "log4j-context-data-2.7",
       "log4j-mdc-1.2",
@@ -379,14 +701,18 @@
   {
     "declarative_name": "java.common.logging.trace_id",
     "default": "trace_id",
-    "description": "Specifies the key name used to store the trace ID in the logging context.",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.common.logging.trace-id-key` instead. It is ignored under v3 preview and will be removed in 3.0.",
     "instrumentations": [
+      "jboss-logmanager-mdc-1.1",
+      "log4j-appender-2.17",
       "log4j-context-data-2.17",
       "log4j-context-data-2.7",
       "log4j-mdc-1.2",
       "logback-mdc-1.0"
     ],
     "name": "otel.instrumentation.common.logging.trace-id",
+    "replaced_by": "otel.instrumentation.common.logging.trace-id-key",
     "type": "string"
   },
   {
@@ -394,6 +720,8 @@
     "default": "trace_id",
     "description": "Specifies the key name used to store the trace ID in the logging context.",
     "instrumentations": [
+      "jboss-logmanager-mdc-1.1",
+      "log4j-appender-2.17",
       "log4j-context-data-2.17",
       "log4j-context-data-2.7",
       "log4j-mdc-1.2",
@@ -425,12 +753,95 @@
     "type": "list"
   },
   {
+    "declarative_name": "java.common.messaging.receive_telemetry/development.enabled",
     "default": false,
-    "description": "Enables the creation of consumer spans on messaging receive operations. These spans will measure the time between receiving a message and the consumer processing that message.",
+    "description": "Enables experimental receive telemetry, which will cause consumers to start a new trace, with only a span link connecting it to the producer trace.",
     "instrumentations": [
-      "rabbitmq-2.7"
+      "aws-sdk-1.11",
+      "aws-sdk-2.2",
+      "jms-1.1",
+      "jms-3.0",
+      "kafka-clients-0.11",
+      "kafka-streams-0.11",
+      "pulsar-2.8",
+      "rabbitmq-2.7",
+      "reactor-kafka-1.0",
+      "rocketmq-client-5.0",
+      "spring-jms-2.0",
+      "spring-jms-6.0",
+      "spring-kafka-2.7",
+      "spring-pulsar-1.0",
+      "vertx-kafka-client-3.6"
     ],
     "name": "otel.instrumentation.common.messaging.experimental.receive-telemetry.enabled",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.common.messaging.headers.excluded",
+    "default": "",
+    "description": "A comma-separated list of case-sensitive message header name glob patterns to exclude from span attributes. `?` matches one character and `*` matches zero or more characters. Excluded patterns take precedence over included patterns. An absent or empty selector captures no headers; an exclude-only selector captures every header not excluded, which may expose sensitive information.",
+    "instrumentations": [
+      "aws-sdk-1.11",
+      "aws-sdk-2.2",
+      "jms-1.1",
+      "jms-3.0",
+      "kafka-clients-0.11",
+      "kafka-streams-0.11",
+      "nats-2.17",
+      "pulsar-2.8",
+      "rabbitmq-2.7",
+      "reactor-kafka-1.0",
+      "rocketmq-client-4.8",
+      "rocketmq-client-5.0",
+      "spring-integration-4.1",
+      "spring-jms-2.0",
+      "spring-jms-6.0",
+      "spring-kafka-2.7",
+      "spring-pulsar-1.0",
+      "spring-rabbit-1.0",
+      "vertx-kafka-client-3.6"
+    ],
+    "name": "otel.instrumentation.common.messaging.headers.excluded",
+    "type": "list"
+  },
+  {
+    "declarative_name": "java.common.messaging.headers.included",
+    "default": "",
+    "description": "A comma-separated list of case-sensitive message header name glob patterns to capture as span attributes. `?` matches one character and `*` matches zero or more characters. Excluded patterns take precedence over included patterns. An absent or empty selector captures no headers; an exclude-only selector captures every header not excluded.",
+    "instrumentations": [
+      "aws-sdk-1.11",
+      "aws-sdk-2.2",
+      "jms-1.1",
+      "jms-3.0",
+      "kafka-clients-0.11",
+      "kafka-streams-0.11",
+      "nats-2.17",
+      "pulsar-2.8",
+      "rabbitmq-2.7",
+      "reactor-kafka-1.0",
+      "rocketmq-client-4.8",
+      "rocketmq-client-5.0",
+      "spring-integration-4.1",
+      "spring-jms-2.0",
+      "spring-jms-6.0",
+      "spring-kafka-2.7",
+      "spring-pulsar-1.0",
+      "spring-rabbit-1.0",
+      "vertx-kafka-client-3.6"
+    ],
+    "name": "otel.instrumentation.common.messaging.headers.included",
+    "type": "list"
+  },
+  {
+    "declarative_name": "java.common.messaging.message_create_spans.enabled",
+    "default": true,
+    "description": "Provides the default for whether to create a producer span for each eligible message in a batch send when stable messaging semantic conventions are enabled. An instrumentation-specific setting takes precedence.",
+    "instrumentations": [
+      "aws-sdk-1.11",
+      "aws-sdk-2.2",
+      "rocketmq-client-4.8"
+    ],
+    "name": "otel.instrumentation.common.messaging.message-create-spans.enabled",
     "type": "boolean"
   },
   {
@@ -454,7 +865,7 @@
     },
     "declarative_type": "structured_list",
     "default": "",
-    "description": "Used to specify a mapping from host names or IP addresses to peer services.",
+    "description": "Used to specify a mapping from server addresses or configured targets to peer services. Configured targets containing commas or equals signs can only be mapped with declarative `service_peer_mapping`.",
     "instrumentations": [
       "akka-http-10.0",
       "apache-dubbo-2.7",
@@ -492,6 +903,7 @@
       "play-ws-2.0",
       "play-ws-2.1",
       "r2dbc-1.0",
+      "ratpack-1.4",
       "ratpack-1.7",
       "reactor-netty-1.0",
       "sofa-rpc-5.4",
@@ -502,6 +914,14 @@
     ],
     "name": "otel.instrumentation.common.peer-service-mapping",
     "type": "map"
+  },
+  {
+    "declarative_name": "java.common.span_suppression_strategy",
+    "default": "semconv",
+    "description": "Strategy for suppressing nested instrumentation spans: `semconv` suppresses a span nested in a span of the same semantic convention type, `span-kind` suppresses a span nested in a span of the same span kind, and `none` disables suppression.",
+    "instrumentations": [],
+    "name": "otel.instrumentation.common.span-suppression-strategy",
+    "type": "string"
   },
   {
     "declarative_name": "java.common.user.name.enabled",
@@ -524,18 +944,75 @@
     "type": "boolean"
   },
   {
-    "declarative_name": "java.couchbase.experimental_span_attributes/development",
+    "declarative_name": "java.common.v3_preview",
+    "default": false,
+    "description": "Enables a preview of the behavior planned for version 3.0 of the agent, such as emitting the stable database and code semantic conventions and the new messaging semantic conventions by default, and ignoring deprecated settings. The set of changes it enables can grow in any release.",
+    "instrumentations": [],
+    "name": "otel.instrumentation.common.v3-preview",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.common.view_telemetry.enabled",
+    "default": false,
+    "description": "Enables the creation of experimental view spans.",
+    "instrumentations": [
+      "dropwizard-views-0.7",
+      "jsp-2.3",
+      "spring-webmvc-3.1",
+      "spring-webmvc-6.0"
+    ],
+    "name": "otel.instrumentation.common.view-telemetry.enabled",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.couchbase.emit_experimental_telemetry/development",
     "default": false,
     "description": "Enables experimental span attributes `couchbase.operation_id` and `couchbase.local.address`. Different operation types receive different experimental attributes.",
     "instrumentations": [
       "couchbase-2.0",
+      "couchbase-3.0",
+      "couchbase-3.1",
+      "couchbase-3.2"
+    ],
+    "name": "otel.instrumentation.couchbase.emit-experimental-telemetry",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.couchbase.experimental_span_attributes/development",
+    "default": false,
+    "deprecated": true,
+    "description": "Deprecated and will be removed in the next minor release. Use otel.instrumentation.couchbase.emit-experimental-telemetry instead.",
+    "instrumentations": [
+      "couchbase-2.0",
       "couchbase-2.6",
+      "couchbase-3.0",
       "couchbase-3.1",
       "couchbase-3.1.6",
       "couchbase-3.2",
       "couchbase-3.4"
     ],
     "name": "otel.instrumentation.couchbase.experimental-span-attributes",
+    "replaced_by": "otel.instrumentation.couchbase.emit-experimental-telemetry",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.couchbase.query_sanitization.enabled",
+    "description": "Enables query sanitization for Couchbase queries. Overrides `otel.instrumentation.common.db.query-sanitization.enabled` for this instrumentation; when unset, that setting applies.",
+    "instrumentations": [
+      "couchbase-2.0"
+    ],
+    "name": "otel.instrumentation.couchbase.query-sanitization.enabled",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.couchbase.statement_sanitizer.enabled",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.couchbase.query-sanitization.enabled` instead. It is ignored under v3 preview and will be removed in 3.0. When unset, this setting falls back to `otel.instrumentation.common.db.query-sanitization.enabled` (including its deprecated aliases).",
+    "instrumentations": [
+      "couchbase-2.0"
+    ],
+    "name": "otel.instrumentation.couchbase.statement-sanitizer.enabled",
+    "replaced_by": "otel.instrumentation.couchbase.query-sanitization.enabled",
     "type": "boolean"
   },
   {
@@ -551,7 +1028,8 @@
   {
     "declarative_name": "java.elasticsearch.capture_search_query",
     "default": false,
-    "description": "Enable the capture of search query bodies. It is important to note that Elasticsearch queries may contain personal or sensitive information.",
+    "deprecated": true,
+    "description": "Deprecated for removal in 3.0 with no replacement. Outside v3-preview, explicitly set this to capture or omit search query bodies. Under v3-preview and in 3.0, the setting is ignored and search query bodies are always captured. Sanitization remains separately configurable with otel.instrumentation.elasticsearch.query-sanitization.enabled.",
     "instrumentations": [
       "elasticsearch-rest-5.0",
       "elasticsearch-rest-6.4",
@@ -570,6 +1048,30 @@
       "elasticsearch-transport-6.0"
     ],
     "name": "otel.instrumentation.elasticsearch.experimental-span-attributes",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.elasticsearch.query_sanitization.enabled",
+    "description": "Enables sanitization of the captured search query bodies. Overrides `otel.instrumentation.common.db.query-sanitization.enabled` for this instrumentation; when unset, that setting applies.",
+    "instrumentations": [
+      "elasticsearch-rest-5.0",
+      "elasticsearch-rest-6.4",
+      "elasticsearch-rest-7.0"
+    ],
+    "name": "otel.instrumentation.elasticsearch.query-sanitization.enabled",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.elasticsearch.statement_sanitizer.enabled",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.elasticsearch.query-sanitization.enabled` instead. It is ignored under v3 preview and will be removed in 3.0. When unset, this setting falls back to `otel.instrumentation.common.db.query-sanitization.enabled` (including its deprecated aliases).",
+    "instrumentations": [
+      "elasticsearch-rest-5.0",
+      "elasticsearch-rest-6.4",
+      "elasticsearch-rest-7.0"
+    ],
+    "name": "otel.instrumentation.elasticsearch.statement-sanitizer.enabled",
+    "replaced_by": "otel.instrumentation.elasticsearch.query-sanitization.enabled",
     "type": "boolean"
   },
   {
@@ -595,6 +1097,15 @@
     ],
     "name": "otel.instrumentation.executors.include-all",
     "type": "boolean"
+  },
+  {
+    "declarative_name": "java.common.span_suppression_strategy/development",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.common.span-suppression-strategy` or `java.common.span_suppression_strategy` instead. This setting will be removed in 3.0.",
+    "instrumentations": [],
+    "name": "otel.instrumentation.experimental.span-suppression-strategy",
+    "replaced_by": "otel.instrumentation.common.span-suppression-strategy",
+    "type": "string"
   },
   {
     "declarative_name": "java.external_annotations.exclude_methods",
@@ -636,13 +1147,36 @@
     "type": "boolean"
   },
   {
+    "declarative_name": "java.geode.query_sanitization.enabled",
+    "description": "Enables query sanitization for Geode queries. Overrides `otel.instrumentation.common.db.query-sanitization.enabled` for this instrumentation; when unset, that setting applies.",
+    "instrumentations": [
+      "geode-1.4"
+    ],
+    "name": "otel.instrumentation.geode.query-sanitization.enabled",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.geode.statement_sanitizer.enabled",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.geode.query-sanitization.enabled` instead. It is ignored under v3 preview and will be removed in 3.0. When unset, this setting falls back to `otel.instrumentation.common.db.query-sanitization.enabled` (including its deprecated aliases).",
+    "instrumentations": [
+      "geode-1.4"
+    ],
+    "name": "otel.instrumentation.geode.statement-sanitizer.enabled",
+    "replaced_by": "otel.instrumentation.geode.query-sanitization.enabled",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.graphql.add_operation_name_to_span_name.enabled",
     "default": false,
-    "description": "Whether GraphQL operation name is added to the span name. WARNING: The GraphQL operation name is provided by the client and can have high cardinality. Use only when the server is not exposed to malicious clients.",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.graphql.operation-name-in-span-name.enabled` instead. It is ignored under v3 preview and will be removed in 3.0.",
     "instrumentations": [
       "graphql-java-12.0",
       "graphql-java-20.0"
     ],
     "name": "otel.instrumentation.graphql.add-operation-name-to-span-name.enabled",
+    "replaced_by": "otel.instrumentation.graphql.operation-name-in-span-name.enabled",
     "type": "boolean"
   },
   {
@@ -689,13 +1223,16 @@
     "type": "boolean"
   },
   {
+    "declarative_name": "java.graphql.query_sanitizer.enabled",
     "default": true,
-    "description": "Enables sanitization of sensitive information from queries so they aren't added as span attributes.",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.graphql.query-sanitization.enabled` instead. It is ignored under v3 preview and will be removed in 3.0.",
     "instrumentations": [
       "graphql-java-12.0",
       "graphql-java-20.0"
     ],
     "name": "otel.instrumentation.graphql.query-sanitizer.enabled",
+    "replaced_by": "otel.instrumentation.graphql.query-sanitization.enabled",
     "type": "boolean"
   },
   {
@@ -711,6 +1248,7 @@
   {
     "declarative_name": "java.grpc.capture_metadata.client.request",
     "default": "",
+    "deprecated": true,
     "description": "Deprecated: use `otel.instrumentation.grpc.client.request-metadata.included` instead. A comma-separated list of request metadata keys to capture on client spans. It does not support glob patterns: an entry containing `*` or `?` is ignored with a warning, and every other entry is matched as a literal metadata key.",
     "examples": [
       "custom-request-header",
@@ -720,16 +1258,19 @@
       "grpc-1.6"
     ],
     "name": "otel.instrumentation.grpc.capture-metadata.client.request",
+    "replaced_by": "otel.instrumentation.grpc.client.request-metadata.included",
     "type": "list"
   },
   {
     "declarative_name": "java.grpc.capture_metadata.server.request",
     "default": "",
+    "deprecated": true,
     "description": "Deprecated: use `otel.instrumentation.grpc.server.request-metadata.included` instead. A comma-separated list of request metadata keys to capture on server spans. It does not support glob patterns: an entry containing `*` or `?` is ignored with a warning, and every other entry is matched as a literal metadata key.",
     "instrumentations": [
       "grpc-1.6"
     ],
     "name": "otel.instrumentation.grpc.capture-metadata.server.request",
+    "replaced_by": "otel.instrumentation.grpc.server.request-metadata.included",
     "type": "list"
   },
   {
@@ -830,6 +1371,30 @@
     "type": "boolean"
   },
   {
+    "declarative_name": "java.hibernate.query_sanitization.enabled",
+    "description": "Enables query sanitization for Hibernate queries. Overrides `otel.instrumentation.common.db.query-sanitization.enabled` for this instrumentation; when unset, that setting applies.",
+    "instrumentations": [
+      "hibernate-3.3",
+      "hibernate-4.0",
+      "hibernate-6.0"
+    ],
+    "name": "otel.instrumentation.hibernate.query-sanitization.enabled",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.hibernate.statement_sanitizer.enabled",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.hibernate.query-sanitization.enabled` instead. It is ignored under v3 preview and will be removed in 3.0. When unset, this setting falls back to `otel.instrumentation.common.db.query-sanitization.enabled` (including its deprecated aliases).",
+    "instrumentations": [
+      "hibernate-3.3",
+      "hibernate-4.0",
+      "hibernate-6.0"
+    ],
+    "name": "otel.instrumentation.hibernate.statement-sanitizer.enabled",
+    "replaced_by": "otel.instrumentation.hibernate.query-sanitization.enabled",
+    "type": "boolean"
+  },
+  {
     "declarative_name": "general.http.client.request_captured_headers",
     "default": "",
     "description": "List of HTTP request headers to capture in HTTP client telemetry.",
@@ -861,6 +1426,7 @@
       "play-ws-1.0",
       "play-ws-2.0",
       "play-ws-2.1",
+      "ratpack-1.4",
       "ratpack-1.7",
       "reactor-netty-1.0",
       "vertx-http-client-3.0",
@@ -902,6 +1468,7 @@
       "play-ws-1.0",
       "play-ws-2.0",
       "play-ws-2.1",
+      "ratpack-1.4",
       "ratpack-1.7",
       "reactor-netty-1.0",
       "vertx-http-client-3.0",
@@ -943,6 +1510,7 @@
       "play-ws-1.0",
       "play-ws-2.0",
       "play-ws-2.1",
+      "ratpack-1.4",
       "ratpack-1.7",
       "reactor-netty-1.0",
       "spring-web-6.0",
@@ -1040,6 +1608,7 @@
       "play-ws-1.0",
       "play-ws-2.0",
       "play-ws-2.1",
+      "ratpack-1.4",
       "ratpack-1.7",
       "reactor-netty-1.0",
       "restlet-1.1",
@@ -1162,12 +1731,22 @@
   },
   {
     "declarative_name": "java.influxdb.query_sanitization.enabled",
-    "default": true,
-    "description": "Enables query sanitization for InfluxDB queries. Takes precedence over otel.instrumentation.common.db.query-sanitization.enabled.",
+    "description": "Enables query sanitization for InfluxDB queries. Overrides `otel.instrumentation.common.db.query-sanitization.enabled` for this instrumentation; when unset, that setting applies.",
     "instrumentations": [
       "influxdb-2.4"
     ],
     "name": "otel.instrumentation.influxdb.query-sanitization.enabled",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.influxdb.statement_sanitizer.enabled",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.influxdb.query-sanitization.enabled` instead. It is ignored under v3 preview and will be removed in 3.0. When unset, this setting falls back to `otel.instrumentation.common.db.query-sanitization.enabled` (including its deprecated aliases).",
+    "instrumentations": [
+      "influxdb-2.4"
+    ],
+    "name": "otel.instrumentation.influxdb.statement-sanitizer.enabled",
+    "replaced_by": "otel.instrumentation.influxdb.query-sanitization.enabled",
     "type": "boolean"
   },
   {
@@ -1250,6 +1829,7 @@
   {
     "declarative_name": "java.jboss_logmanager.capture_mdc_attributes/development",
     "default": "",
+    "deprecated": true,
     "description": "Deprecated: use `otel.instrumentation.jboss-logmanager.experimental.mdc-attributes.included` instead. Entries are matched as exact MDC keys rather than as glob patterns, except that a list containing only `*` captures all MDC attributes; in a multi-entry list, `*` and `?` are literal characters. It is ignored when an included or excluded pattern is configured, and it may be removed in the next minor release.",
     "examples": [
       "custom-mdc-key",
@@ -1259,6 +1839,7 @@
       "jboss-logmanager-appender-1.1"
     ],
     "name": "otel.instrumentation.jboss-logmanager.experimental.capture-mdc-attributes",
+    "replaced_by": "otel.instrumentation.jboss-logmanager.experimental.mdc-attributes.included",
     "type": "list"
   },
   {
@@ -1320,8 +1901,7 @@
   },
   {
     "declarative_name": "java.jdbc.sqlcommenter/development.enabled",
-    "default": false,
-    "description": "Enables augmenting queries with a comment containing the tracing information. See [sqlcommenter](https://google.github.io/sqlcommenter/) for more info. WARNING: augmenting queries with tracing context will make query texts unique, which may have adverse impact on database performance. Consult with database experts before enabling.",
+    "description": "Enables augmenting queries with a comment containing the tracing information. See [sqlcommenter](https://google.github.io/sqlcommenter/) for more info. Overrides `otel.instrumentation.common.db.experimental.sqlcommenter.enabled` for this instrumentation; when unset, that setting applies. WARNING: augmenting queries with tracing context will make query texts unique, which may have adverse impact on database performance. Consult with database experts before enabling.",
     "instrumentations": [
       "jdbc"
     ],
@@ -1340,8 +1920,7 @@
   },
   {
     "declarative_name": "java.jdbc.query_sanitization.enabled",
-    "default": true,
-    "description": "Enables query sanitization for database queries. Takes precedence over otel.instrumentation.common.db.query-sanitization.enabled.",
+    "description": "Enables query sanitization for database queries. Overrides `otel.instrumentation.common.db.query-sanitization.enabled` for this instrumentation; when unset, that setting applies.",
     "instrumentations": [
       "jdbc"
     ],
@@ -1349,12 +1928,40 @@
     "type": "boolean"
   },
   {
-    "default": true,
-    "description": "Enables statement sanitization for database queries. Takes precedent to otel.instrumentation.common.db-statement-sanitizer.enabled.",
+    "declarative_name": "java.jdbc.statement_sanitizer.enabled",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.jdbc.query-sanitization.enabled` instead. It is ignored under v3 preview and will be removed in 3.0. When unset, this setting falls back to `otel.instrumentation.common.db.query-sanitization.enabled` (including its deprecated aliases).",
     "instrumentations": [
       "jdbc"
     ],
     "name": "otel.instrumentation.jdbc.statement-sanitizer.enabled",
+    "replaced_by": "otel.instrumentation.jdbc.query-sanitization.enabled",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.jedis.query_sanitization.enabled",
+    "description": "Enables query sanitization for Jedis queries. Overrides `otel.instrumentation.common.db.query-sanitization.enabled` for this instrumentation; when unset, that setting applies.",
+    "instrumentations": [
+      "jedis-1.4",
+      "jedis-2.0",
+      "jedis-3.0",
+      "jedis-4.0"
+    ],
+    "name": "otel.instrumentation.jedis.query-sanitization.enabled",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.jedis.statement_sanitizer.enabled",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.jedis.query-sanitization.enabled` instead. It is ignored under v3 preview and will be removed in 3.0. When unset, this setting falls back to `otel.instrumentation.common.db.query-sanitization.enabled` (including its deprecated aliases).",
+    "instrumentations": [
+      "jedis-1.4",
+      "jedis-2.0",
+      "jedis-3.0",
+      "jedis-4.0"
+    ],
+    "name": "otel.instrumentation.jedis.statement-sanitizer.enabled",
+    "replaced_by": "otel.instrumentation.jedis.query-sanitization.enabled",
     "type": "boolean"
   },
   {
@@ -1435,6 +2042,28 @@
     "type": "boolean"
   },
   {
+    "declarative_name": "java.lettuce.query_sanitization.enabled",
+    "description": "Enables query sanitization for Lettuce queries. Overrides `otel.instrumentation.common.db.query-sanitization.enabled` for this instrumentation; when unset, that setting applies.",
+    "instrumentations": [
+      "lettuce-5.0",
+      "lettuce-5.1"
+    ],
+    "name": "otel.instrumentation.lettuce.query-sanitization.enabled",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.lettuce.statement_sanitizer.enabled",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.lettuce.query-sanitization.enabled` instead. It is ignored under v3 preview and will be removed in 3.0. When unset, this setting falls back to `otel.instrumentation.common.db.query-sanitization.enabled` (including its deprecated aliases).",
+    "instrumentations": [
+      "lettuce-5.0",
+      "lettuce-5.1"
+    ],
+    "name": "otel.instrumentation.lettuce.statement-sanitizer.enabled",
+    "replaced_by": "otel.instrumentation.lettuce.query-sanitization.enabled",
+    "type": "boolean"
+  },
+  {
     "declarative_name": "java.log4j_appender.experimental_log_attributes/development",
     "default": false,
     "description": "Enables the capture of experimental log attributes, including thread name and thread ID.",
@@ -1479,11 +2108,13 @@
   {
     "declarative_name": "java.log4j_appender.capture_map_message_attributes/development",
     "default": false,
-    "description": "Deprecated boolean alias for otel.instrumentation.log4j-appender.experimental.map-message-attributes.included, where true captures all MapMessage attributes and false captures none. It is ignored when an included or excluded pattern is configured, and it may be removed in the next minor release.",
+    "deprecated": true,
+    "description": "Deprecated; use otel.instrumentation.common.logging.structured-attributes.included instead. This setting is ignored under v3-preview and will be removed in 3.0. Outside v3-preview, true captures all MapMessage attributes and false captures none. It is ignored when a source-specific included or excluded pattern is configured.",
     "instrumentations": [
       "log4j-appender-2.17"
     ],
     "name": "otel.instrumentation.log4j-appender.experimental.capture-map-message-attributes",
+    "replaced_by": "otel.instrumentation.common.logging.structured-attributes.included",
     "type": "boolean"
   },
   {
@@ -1499,6 +2130,7 @@
   {
     "declarative_name": "java.log4j_appender.capture_mdc_attributes/development",
     "default": "",
+    "deprecated": true,
     "description": "Deprecated include-only alias for otel.instrumentation.log4j-appender.experimental.mdc-attributes.included. It does not support glob patterns: a list containing only \"*\" captures all MDC attributes, and otherwise every entry, including one containing \"*\" or \"?\", is matched as a literal MDC key. It is ignored when an included or excluded pattern is configured, and it may be removed in the next minor release.",
     "examples": [
       "custom-mdc-key",
@@ -1509,6 +2141,7 @@
       "log4j-appender-2.17"
     ],
     "name": "otel.instrumentation.log4j-appender.experimental.capture-mdc-attributes",
+    "replaced_by": "otel.instrumentation.log4j-appender.experimental.mdc-attributes.included",
     "type": "list"
   },
   {
@@ -1524,7 +2157,8 @@
   {
     "declarative_name": "java.log4j_appender.map_message_attributes/development.excluded",
     "default": "",
-    "description": "Comma-separated list of case-sensitive glob patterns for MapMessage keys not to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No MapMessage attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.log4j-appender.experimental.capture-map-message-attributes setting is configured; configuring only excluded patterns captures all MapMessage attributes that do not match them. Captured MapMessage attributes may contain sensitive information.",
+    "deprecated": true,
+    "description": "Deprecated; use otel.instrumentation.common.logging.structured-attributes.excluded instead. This setting is ignored under v3-preview and will be removed in 3.0. Comma-separated list of case-sensitive glob patterns for MapMessage keys not to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No MapMessage attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.log4j-appender.experimental.capture-map-message-attributes setting is configured; configuring only excluded patterns captures all MapMessage attributes that do not match them. Captured MapMessage attributes may contain sensitive information.",
     "examples": [
       "*-secret",
       "password,token"
@@ -1533,12 +2167,14 @@
       "log4j-appender-2.17"
     ],
     "name": "otel.instrumentation.log4j-appender.experimental.map-message-attributes.excluded",
+    "replaced_by": "otel.instrumentation.common.logging.structured-attributes.excluded",
     "type": "list"
   },
   {
     "declarative_name": "java.log4j_appender.map_message_attributes/development.included",
     "default": "",
-    "description": "Comma-separated list of case-sensitive glob patterns for MapMessage keys to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No MapMessage attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.log4j-appender.experimental.capture-map-message-attributes setting is configured; configuring only excluded patterns captures all MapMessage attributes that do not match them. Captured MapMessage attributes may contain sensitive information.",
+    "deprecated": true,
+    "description": "Deprecated; use otel.instrumentation.common.logging.structured-attributes.included instead. This setting is ignored under v3-preview and will be removed in 3.0. Comma-separated list of case-sensitive glob patterns for MapMessage keys to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No MapMessage attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.log4j-appender.experimental.capture-map-message-attributes setting is configured; configuring only excluded patterns captures all MapMessage attributes that do not match them. Captured MapMessage attributes may contain sensitive information.",
     "examples": [
       "custom-map-message-key",
       "request-*,user-?"
@@ -1547,6 +2183,7 @@
       "log4j-appender-2.17"
     ],
     "name": "otel.instrumentation.log4j-appender.experimental.map-message-attributes.included",
+    "replaced_by": "otel.instrumentation.common.logging.structured-attributes.included",
     "type": "list"
   },
   {
@@ -1633,41 +2270,49 @@
   {
     "declarative_name": "java.logback_appender.capture_key_value_pair_attributes/development",
     "default": false,
-    "description": "Deprecated setting that enables the capture of all attributes from Logback key value pairs. It is ignored when otel.instrumentation.logback-appender.experimental.key-value-pair-attributes.included or otel.instrumentation.logback-appender.experimental.key-value-pair-attributes.excluded is configured, and it may be removed in the next minor release. Use otel.instrumentation.logback-appender.experimental.key-value-pair-attributes.included instead.",
+    "deprecated": true,
+    "description": "Deprecated; use otel.instrumentation.common.logging.structured-attributes.included instead. This setting is ignored under v3-preview and will be removed in 3.0. Outside v3-preview, it enables capture of all Logback key-value pair attributes unless a source-specific included or excluded pattern is configured.",
     "instrumentations": [
       "logback-appender-1.0"
     ],
     "name": "otel.instrumentation.logback-appender.experimental.capture-key-value-pair-attributes",
+    "replaced_by": "otel.instrumentation.common.logging.structured-attributes.included",
     "type": "boolean"
   },
   {
     "declarative_name": "java.logback_appender.capture_logger_context_attributes/development",
     "default": false,
+    "deprecated": true,
     "description": "Deprecated setting that enables the capture of all attributes from the Logback logger context. It is ignored when otel.instrumentation.logback-appender.experimental.logger-context-attributes.included or otel.instrumentation.logback-appender.experimental.logger-context-attributes.excluded is configured, and it may be removed in the next minor release. Use otel.instrumentation.logback-appender.experimental.logger-context-attributes.included instead.",
     "instrumentations": [
       "logback-appender-1.0"
     ],
     "name": "otel.instrumentation.logback-appender.experimental.capture-logger-context-attributes",
+    "replaced_by": "otel.instrumentation.logback-appender.experimental.logger-context-attributes.included",
     "type": "boolean"
   },
   {
     "declarative_name": "java.logback_appender.capture_logstash_marker_attributes/development",
     "default": false,
-    "description": "Deprecated setting that enables the capture of all attributes from Logstash markers, supported are those added to logs via Markers.append(), Markers.appendEntries(), Markers.appendArray() and Markers.appendRaw() methods. It is ignored when otel.instrumentation.logback-appender.experimental.logstash-marker-attributes.included or otel.instrumentation.logback-appender.experimental.logstash-marker-attributes.excluded is configured, and it may be removed in the next minor release. Use otel.instrumentation.logback-appender.experimental.logstash-marker-attributes.included instead.",
+    "deprecated": true,
+    "description": "Deprecated; use otel.instrumentation.common.logging.structured-attributes.included instead. This setting is ignored under v3-preview and will be removed in 3.0. Outside v3-preview, it enables capture of attributes added via Markers.append(), Markers.appendEntries(), Markers.appendArray(), and Markers.appendRaw() unless a source-specific included or excluded pattern is configured.",
     "instrumentations": [
       "logback-appender-1.0"
     ],
     "name": "otel.instrumentation.logback-appender.experimental.capture-logstash-marker-attributes",
+    "replaced_by": "otel.instrumentation.common.logging.structured-attributes.included",
     "type": "boolean"
   },
   {
     "declarative_name": "java.logback_appender.capture_logstash_structured_arguments/development",
     "default": false,
-    "description": "Deprecated setting that enables the capture of all attributes from Logstash structured arguments (e.g., StructuredArguments.v() and StructuredArguments.keyValue()). It is ignored when otel.instrumentation.logback-appender.experimental.logstash-structured-argument-attributes.included or otel.instrumentation.logback-appender.experimental.logstash-structured-argument-attributes.excluded is configured, and it may be removed in the next minor release. Use otel.instrumentation.logback-appender.experimental.logstash-structured-argument-attributes.included instead.",
+    "deprecated": true,
+    "description": "Deprecated; use otel.instrumentation.common.logging.structured-attributes.included instead. This setting is ignored under v3-preview and will be removed in 3.0. Outside v3-preview, it enables capture of Logstash structured arguments unless a source-specific included or excluded pattern is configured.",
     "instrumentations": [
       "logback-appender-1.0"
     ],
     "name": "otel.instrumentation.logback-appender.experimental.capture-logstash-structured-arguments",
+    "replaced_by": "otel.instrumentation.common.logging.structured-attributes.included",
     "type": "boolean"
   },
   {
@@ -1683,6 +2328,7 @@
   {
     "declarative_name": "java.logback_appender.capture_mdc_attributes/development",
     "default": "",
+    "deprecated": true,
     "description": "Deprecated comma-separated list of MDC keys to capture as log attributes. Keys are matched literally, including \"*\" and \"?\", except that the single value \"*\" captures all MDC attributes. It is ignored when otel.instrumentation.logback-appender.experimental.mdc-attributes.included or otel.instrumentation.logback-appender.experimental.mdc-attributes.excluded is configured, and it may be removed in the next minor release. Use otel.instrumentation.logback-appender.experimental.mdc-attributes.included instead.",
     "examples": [
       "custom-mdc-key",
@@ -1692,6 +2338,7 @@
       "logback-appender-1.0"
     ],
     "name": "otel.instrumentation.logback-appender.experimental.capture-mdc-attributes",
+    "replaced_by": "otel.instrumentation.logback-appender.experimental.mdc-attributes.included",
     "type": "list"
   },
   {
@@ -1707,7 +2354,8 @@
   {
     "declarative_name": "java.logback_appender.key_value_pair_attributes/development.excluded",
     "default": "",
-    "description": "Comma-separated list of case-sensitive glob patterns for Logback key value pair keys not to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No key value pair attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-key-value-pair-attributes setting is configured; configuring only excluded patterns captures all key value pair attributes that do not match them. Captured key value pair attributes may contain sensitive information.",
+    "deprecated": true,
+    "description": "Deprecated; use otel.instrumentation.common.logging.structured-attributes.excluded instead. This setting is ignored under v3-preview and will be removed in 3.0. Comma-separated list of case-sensitive glob patterns for Logback key value pair keys not to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No key value pair attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-key-value-pair-attributes setting is configured; configuring only excluded patterns captures all key value pair attributes that do not match them. Captured key value pair attributes may contain sensitive information.",
     "examples": [
       "*-secret",
       "password,token"
@@ -1716,12 +2364,14 @@
       "logback-appender-1.0"
     ],
     "name": "otel.instrumentation.logback-appender.experimental.key-value-pair-attributes.excluded",
+    "replaced_by": "otel.instrumentation.common.logging.structured-attributes.excluded",
     "type": "list"
   },
   {
     "declarative_name": "java.logback_appender.key_value_pair_attributes/development.included",
     "default": "",
-    "description": "Comma-separated list of case-sensitive glob patterns for Logback key value pair keys to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character, so \"*\" captures all key value pair attributes. Excluded patterns take precedence over included patterns. No key value pair attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-key-value-pair-attributes setting is configured; configuring only excluded patterns captures all key value pair attributes that do not match them. Captured key value pair attributes may contain sensitive information.",
+    "deprecated": true,
+    "description": "Deprecated; use otel.instrumentation.common.logging.structured-attributes.included instead. This setting is ignored under v3-preview and will be removed in 3.0. Comma-separated list of case-sensitive glob patterns for Logback key value pair keys to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character, so \"*\" captures all key value pair attributes. Excluded patterns take precedence over included patterns. No key value pair attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-key-value-pair-attributes setting is configured; configuring only excluded patterns captures all key value pair attributes that do not match them. Captured key value pair attributes may contain sensitive information.",
     "examples": [
       "custom-key",
       "request-*,user-?"
@@ -1730,6 +2380,7 @@
       "logback-appender-1.0"
     ],
     "name": "otel.instrumentation.logback-appender.experimental.key-value-pair-attributes.included",
+    "replaced_by": "otel.instrumentation.common.logging.structured-attributes.included",
     "type": "list"
   },
   {
@@ -1763,7 +2414,8 @@
   {
     "declarative_name": "java.logback_appender.logstash_marker_attributes/development.excluded",
     "default": "",
-    "description": "Comma-separated list of case-sensitive glob patterns for Logstash marker keys not to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No Logstash marker attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-logstash-marker-attributes setting is configured; configuring only excluded patterns captures all Logstash marker attributes that do not match them. Captured Logstash marker attributes may contain sensitive information.",
+    "deprecated": true,
+    "description": "Deprecated; use otel.instrumentation.common.logging.structured-attributes.excluded instead. This setting is ignored under v3-preview and will be removed in 3.0. Comma-separated list of case-sensitive glob patterns for Logstash marker keys not to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No Logstash marker attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-logstash-marker-attributes setting is configured; configuring only excluded patterns captures all Logstash marker attributes that do not match them. Captured Logstash marker attributes may contain sensitive information.",
     "examples": [
       "*-secret",
       "password,token"
@@ -1772,12 +2424,14 @@
       "logback-appender-1.0"
     ],
     "name": "otel.instrumentation.logback-appender.experimental.logstash-marker-attributes.excluded",
+    "replaced_by": "otel.instrumentation.common.logging.structured-attributes.excluded",
     "type": "list"
   },
   {
     "declarative_name": "java.logback_appender.logstash_marker_attributes/development.included",
     "default": "",
-    "description": "Comma-separated list of case-sensitive glob patterns for Logstash marker keys to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character, so \"*\" captures all Logstash marker attributes. Excluded patterns take precedence over included patterns. No Logstash marker attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-logstash-marker-attributes setting is configured; configuring only excluded patterns captures all Logstash marker attributes that do not match them. Captured Logstash marker attributes may contain sensitive information.",
+    "deprecated": true,
+    "description": "Deprecated; use otel.instrumentation.common.logging.structured-attributes.included instead. This setting is ignored under v3-preview and will be removed in 3.0. Comma-separated list of case-sensitive glob patterns for Logstash marker keys to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character, so \"*\" captures all Logstash marker attributes. Excluded patterns take precedence over included patterns. No Logstash marker attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-logstash-marker-attributes setting is configured; configuring only excluded patterns captures all Logstash marker attributes that do not match them. Captured Logstash marker attributes may contain sensitive information.",
     "examples": [
       "custom-key",
       "request-*,user-?"
@@ -1786,12 +2440,14 @@
       "logback-appender-1.0"
     ],
     "name": "otel.instrumentation.logback-appender.experimental.logstash-marker-attributes.included",
+    "replaced_by": "otel.instrumentation.common.logging.structured-attributes.included",
     "type": "list"
   },
   {
     "declarative_name": "java.logback_appender.logstash_structured_argument_attributes/development.excluded",
     "default": "",
-    "description": "Comma-separated list of case-sensitive glob patterns for Logstash structured argument keys not to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No Logstash structured argument attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-logstash-structured-arguments setting is configured; configuring only excluded patterns captures all Logstash structured argument attributes that do not match them. Captured Logstash structured argument attributes may contain sensitive information.",
+    "deprecated": true,
+    "description": "Deprecated; use otel.instrumentation.common.logging.structured-attributes.excluded instead. This setting is ignored under v3-preview and will be removed in 3.0. Comma-separated list of case-sensitive glob patterns for Logstash structured argument keys not to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. No Logstash structured argument attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-logstash-structured-arguments setting is configured; configuring only excluded patterns captures all Logstash structured argument attributes that do not match them. Captured Logstash structured argument attributes may contain sensitive information.",
     "examples": [
       "*-secret",
       "password,token"
@@ -1800,12 +2456,14 @@
       "logback-appender-1.0"
     ],
     "name": "otel.instrumentation.logback-appender.experimental.logstash-structured-argument-attributes.excluded",
+    "replaced_by": "otel.instrumentation.common.logging.structured-attributes.excluded",
     "type": "list"
   },
   {
     "declarative_name": "java.logback_appender.logstash_structured_argument_attributes/development.included",
     "default": "",
-    "description": "Comma-separated list of case-sensitive glob patterns for Logstash structured argument keys to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character, so \"*\" captures all Logstash structured argument attributes. Excluded patterns take precedence over included patterns. No Logstash structured argument attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-logstash-structured-arguments setting is configured; configuring only excluded patterns captures all Logstash structured argument attributes that do not match them. Captured Logstash structured argument attributes may contain sensitive information.",
+    "deprecated": true,
+    "description": "Deprecated; use otel.instrumentation.common.logging.structured-attributes.included instead. This setting is ignored under v3-preview and will be removed in 3.0. Comma-separated list of case-sensitive glob patterns for Logstash structured argument keys to capture as log attributes. \"*\" matches any number of characters and \"?\" matches one character, so \"*\" captures all Logstash structured argument attributes. Excluded patterns take precedence over included patterns. No Logstash structured argument attributes are captured unless an included pattern, an excluded pattern, or the deprecated otel.instrumentation.logback-appender.experimental.capture-logstash-structured-arguments setting is configured; configuring only excluded patterns captures all Logstash structured argument attributes that do not match them. Captured Logstash structured argument attributes may contain sensitive information.",
     "examples": [
       "custom-key",
       "request-*,user-?"
@@ -1814,6 +2472,7 @@
       "logback-appender-1.0"
     ],
     "name": "otel.instrumentation.logback-appender.experimental.logstash-structured-argument-attributes.included",
+    "replaced_by": "otel.instrumentation.common.logging.structured-attributes.included",
     "type": "list"
   },
   {
@@ -1857,7 +2516,8 @@
   {
     "declarative_name": "java.common.messaging.capture_headers/development",
     "default": "",
-    "description": "Deprecated: use `otel.instrumentation.messaging.experimental.headers.included` instead. A comma-separated list of header names to capture as span attributes. It does not support glob patterns: an entry containing `*` or `?` is ignored with a warning, and every other entry is matched as a literal header name.",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.common.messaging.headers.included` instead. Ignored without a warning under v3-preview; may be removed in a later minor release and will be removed no later than 3.0. A comma-separated list of header names to capture as span attributes. It does not support glob patterns: an entry containing `*` or `?` is ignored with a warning, and every other entry is matched as a literal header name.",
     "instrumentations": [
       "aws-sdk-1.11",
       "aws-sdk-2.2",
@@ -1880,12 +2540,14 @@
       "vertx-kafka-client-3.6"
     ],
     "name": "otel.instrumentation.messaging.experimental.capture-headers",
+    "replaced_by": "otel.instrumentation.common.messaging.headers.included",
     "type": "list"
   },
   {
     "declarative_name": "java.common.messaging.headers/development.excluded",
     "default": "",
-    "description": "A comma-separated list of message header name patterns to exclude from span attributes. Excluded patterns take precedence over included patterns. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters. If included is not configured, all non-excluded headers are captured, which may expose sensitive information.",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.common.messaging.headers.excluded` instead. Ignored without a warning under v3-preview; may be removed in a later minor release and will be removed no later than 3.0.",
     "instrumentations": [
       "aws-sdk-1.11",
       "aws-sdk-2.2",
@@ -1908,12 +2570,14 @@
       "vertx-kafka-client-3.6"
     ],
     "name": "otel.instrumentation.messaging.experimental.headers.excluded",
+    "replaced_by": "otel.instrumentation.common.messaging.headers.excluded",
     "type": "list"
   },
   {
     "declarative_name": "java.common.messaging.headers/development.included",
     "default": "",
-    "description": "A comma-separated list of message header name patterns to capture as span attributes. Matching is case-sensitive. `?` matches one character and `*` matches zero or more characters.",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.common.messaging.headers.included` instead. Ignored without a warning under v3-preview; may be removed in a later minor release and will be removed no later than 3.0.",
     "instrumentations": [
       "aws-sdk-1.11",
       "aws-sdk-2.2",
@@ -1936,12 +2600,14 @@
       "vertx-kafka-client-3.6"
     ],
     "name": "otel.instrumentation.messaging.experimental.headers.included",
+    "replaced_by": "otel.instrumentation.common.messaging.headers.included",
     "type": "list"
   },
   {
     "declarative_name": "java.common.messaging.receive_telemetry/development.enabled",
     "default": false,
-    "description": "Enables experimental receive telemetry, which will cause consumers to start a new trace, with only a span link connecting it to the producer trace.",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.common.messaging.experimental.receive-telemetry.enabled` instead. It may be removed in the next minor release.",
     "instrumentations": [
       "aws-sdk-1.11",
       "aws-sdk-2.2",
@@ -1960,6 +2626,7 @@
       "vertx-kafka-client-3.6"
     ],
     "name": "otel.instrumentation.messaging.experimental.receive-telemetry.enabled",
+    "replaced_by": "otel.instrumentation.common.messaging.experimental.receive-telemetry.enabled",
     "type": "boolean"
   },
   {
@@ -2003,11 +2670,13 @@
   {
     "declarative_name": "java.micrometer.histogram_gauges.enabled",
     "default": false,
+    "deprecated": true,
     "description": "Deprecated alias for `otel.instrumentation.micrometer.experimental.histogram-gauges.enabled`. It will be removed in 3.0.",
     "instrumentations": [
       "micrometer-1.5"
     ],
     "name": "otel.instrumentation.micrometer.histogram-gauges.enabled",
+    "replaced_by": "otel.instrumentation.micrometer.experimental.histogram-gauges.enabled",
     "type": "boolean"
   },
   {
@@ -2022,8 +2691,7 @@
   },
   {
     "declarative_name": "java.mongo.query_sanitization.enabled",
-    "default": true,
-    "description": "Enables query sanitization for MongoDB queries. Takes precedence over otel.instrumentation.common.db.query-sanitization.enabled.",
+    "description": "Enables query sanitization for MongoDB queries. Overrides `otel.instrumentation.common.db.query-sanitization.enabled` for this instrumentation; when unset, that setting applies.",
     "instrumentations": [
       "mongo-3.1",
       "mongo-3.7",
@@ -2034,8 +2702,9 @@
     "type": "boolean"
   },
   {
-    "default": true,
-    "description": "Enables statement sanitization for MongoDB queries. Takes precedence over otel.instrumentation.common.db-statement-sanitizer.enabled.",
+    "declarative_name": "java.mongo.statement_sanitizer.enabled",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.mongo.query-sanitization.enabled` instead. It is ignored under v3 preview and will be removed in 3.0. When unset, this setting falls back to `otel.instrumentation.common.db.query-sanitization.enabled` (including its deprecated aliases).",
     "instrumentations": [
       "mongo-3.1",
       "mongo-3.7",
@@ -2043,6 +2712,7 @@
       "mongo-async-3.3"
     ],
     "name": "otel.instrumentation.mongo.statement-sanitizer.enabled",
+    "replaced_by": "otel.instrumentation.mongo.query-sanitization.enabled",
     "type": "boolean"
   },
   {
@@ -2070,11 +2740,32 @@
   {
     "declarative_name": "java.opensearch.capture_search_query",
     "default": true,
-    "description": "Enable the capture of sanitized search query bodies. Search queries may contain personal or sensitive information.",
+    "deprecated": true,
+    "description": "Deprecated and will be removed in 3.0, when search query bodies are always captured. There is no replacement. Until then, set this to false to disable capture. Search queries may contain personal or sensitive information.",
     "instrumentations": [
       "opensearch-java-3.0"
     ],
     "name": "otel.instrumentation.opensearch.capture-search-query",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.opensearch.query_sanitization.enabled",
+    "description": "Enables sanitization of captured search query bodies. Overrides `otel.instrumentation.common.db.query-sanitization.enabled` for this instrumentation; when unset, that setting applies. When disabled, bodies are captured verbatim and may contain personal or sensitive information.",
+    "instrumentations": [
+      "opensearch-java-3.0"
+    ],
+    "name": "otel.instrumentation.opensearch.query-sanitization.enabled",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.opensearch.statement_sanitizer.enabled",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.opensearch.query-sanitization.enabled` instead. It is ignored under v3 preview and will be removed in 3.0. When unset, this setting falls back to `otel.instrumentation.common.db.query-sanitization.enabled` (including its deprecated aliases).",
+    "instrumentations": [
+      "opensearch-java-3.0"
+    ],
+    "name": "otel.instrumentation.opensearch.statement-sanitizer.enabled",
+    "replaced_by": "otel.instrumentation.opensearch.query-sanitization.enabled",
     "type": "boolean"
   },
   {
@@ -2108,7 +2799,8 @@
   {
     "declarative_name": "java.oshi.experimental_metrics/development.enabled",
     "default": false,
-    "description": "Enable the experimental `runtime.java.memory` and `runtime.java.cpu_time` metrics.",
+    "deprecated": true,
+    "description": "Deprecated. Outside v3 preview, enables the experimental `runtime.java.memory` and `runtime.java.cpu_time` metrics. This setting is ignored when `otel.instrumentation.common.v3-preview=true`. Will be removed in 3.0. Use the standard JVM metrics `jvm.memory.used` and `jvm.cpu.time` instead. These are not exact replacements: `jvm.memory.used` measures JVM memory pools rather than process RSS or virtual memory, and `jvm.cpu.time` does not separate user and system CPU time.",
     "instrumentations": [
       "oshi",
       "oshi-5.0"
@@ -2149,8 +2841,7 @@
   },
   {
     "declarative_name": "java.r2dbc.sqlcommenter/development.enabled",
-    "default": false,
-    "description": "Enables augmenting queries with a comment containing the tracing information. See [sqlcommenter](https://google.github.io/sqlcommenter/) for more info. WARNING: augmenting queries with tracing context will make query texts unique, which may have adverse impact on database performance.",
+    "description": "Enables augmenting queries with a comment containing the tracing information. See [sqlcommenter](https://google.github.io/sqlcommenter/) for more info. Overrides `otel.instrumentation.common.db.experimental.sqlcommenter.enabled` for this instrumentation; when unset, that setting applies. WARNING: augmenting queries with tracing context will make query texts unique, which may have adverse impact on database performance.",
     "instrumentations": [
       "r2dbc-1.0"
     ],
@@ -2159,8 +2850,7 @@
   },
   {
     "declarative_name": "java.r2dbc.query_sanitization.enabled",
-    "default": true,
-    "description": "Enables query sanitization for database queries. Takes precedence over otel.instrumentation.common.db.query-sanitization.enabled.",
+    "description": "Enables query sanitization for database queries. Overrides `otel.instrumentation.common.db.query-sanitization.enabled` for this instrumentation; when unset, that setting applies.",
     "instrumentations": [
       "r2dbc-1.0"
     ],
@@ -2168,18 +2858,20 @@
     "type": "boolean"
   },
   {
-    "default": true,
-    "description": "Enables statement sanitization for database queries. Takes precedence over otel.instrumentation.common.db-statement-sanitizer.enabled.",
+    "declarative_name": "java.r2dbc.statement_sanitizer.enabled",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.r2dbc.query-sanitization.enabled` instead. It is ignored under v3 preview and will be removed in 3.0. When unset, this setting falls back to `otel.instrumentation.common.db.query-sanitization.enabled` (including its deprecated aliases).",
     "instrumentations": [
       "r2dbc-1.0"
     ],
     "name": "otel.instrumentation.r2dbc.statement-sanitizer.enabled",
+    "replaced_by": "otel.instrumentation.r2dbc.query-sanitization.enabled",
     "type": "boolean"
   },
   {
     "declarative_name": "java.rabbitmq.experimental_span_attributes/development",
     "default": false,
-    "description": "Enables experimental span attributes `rabbitmq.command`, `rabbitmq.delivery_mode`, `rabbitmq.queue`, and `rabbitmq.record.queue_time_ms`.",
+    "description": "Enables experimental span attributes `rabbitmq.command`, `rabbitmq.delivery_mode`, `rabbitmq.queue`, `rabbitmq.record.queue_time_ms`, `messaging.rabbitmq.vhost.name`, and `messaging.rabbitmq.cluster.name`.",
     "instrumentations": [
       "rabbitmq-2.7"
     ],
@@ -2207,6 +2899,28 @@
     "type": "boolean"
   },
   {
+    "declarative_name": "java.redisson.query_sanitization.enabled",
+    "description": "Enables query sanitization for Redisson queries. Overrides `otel.instrumentation.common.db.query-sanitization.enabled` for this instrumentation; when unset, that setting applies.",
+    "instrumentations": [
+      "redisson-3.0",
+      "redisson-3.17"
+    ],
+    "name": "otel.instrumentation.redisson.query-sanitization.enabled",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.redisson.statement_sanitizer.enabled",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.redisson.query-sanitization.enabled` instead. It is ignored under v3 preview and will be removed in 3.0. When unset, this setting falls back to `otel.instrumentation.common.db.query-sanitization.enabled` (including its deprecated aliases).",
+    "instrumentations": [
+      "redisson-3.0",
+      "redisson-3.17"
+    ],
+    "name": "otel.instrumentation.redisson.statement-sanitizer.enabled",
+    "replaced_by": "otel.instrumentation.redisson.query-sanitization.enabled",
+    "type": "boolean"
+  },
+  {
     "default": false,
     "description": "Enables capture of process command-line resource attributes when v3 preview suppresses them by default.",
     "instrumentations": [
@@ -2223,6 +2937,51 @@
       "rocketmq-client-4.8"
     ],
     "name": "otel.instrumentation.rocketmq-client.experimental-span-attributes",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.rocketmq_client.message_create_spans.enabled",
+    "default": true,
+    "description": "Enables per-message Create spans for batch sends when stable messaging semantic conventions are enabled. Overrides the common messaging setting. Disabling this retains Send spans and context propagation and does not affect single-message sends.",
+    "instrumentations": [
+      "rocketmq-client-4.8"
+    ],
+    "name": "otel.instrumentation.rocketmq-client.message-create-spans.enabled",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.runtime_telemetry_java17.enable_all",
+    "default": false,
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.runtime-telemetry.experimental.jfr-metrics.included=*` instead. It will be removed in 3.0.",
+    "instrumentations": [
+      "runtime-telemetry"
+    ],
+    "name": "otel.instrumentation.runtime-telemetry-java17.enable-all",
+    "replaced_by": "otel.instrumentation.runtime-telemetry.experimental.jfr-metrics.included",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.runtime_telemetry_java17.enabled",
+    "default": false,
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.runtime-telemetry.emit-experimental-jfr-metrics` instead. It will be removed in 3.0.",
+    "instrumentations": [
+      "runtime-telemetry"
+    ],
+    "name": "otel.instrumentation.runtime-telemetry-java17.enabled",
+    "replaced_by": "otel.instrumentation.runtime-telemetry.emit-experimental-jfr-metrics",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.runtime_telemetry.capture_gc_cause",
+    "default": false,
+    "deprecated": true,
+    "description": "Deprecated: will be removed in 3.0, when the GC cause is always captured. There is no replacement. Enables capturing the `jvm.gc.cause` attribute; under v3 preview the GC cause is always captured.",
+    "instrumentations": [
+      "runtime-telemetry"
+    ],
+    "name": "otel.instrumentation.runtime-telemetry.capture-gc-cause",
     "type": "boolean"
   },
   {
@@ -2243,6 +3002,18 @@
       "runtime-telemetry"
     ],
     "name": "otel.instrumentation.runtime-telemetry.emit-experimental-metrics",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.runtime_telemetry.emit_experimental_telemetry/development",
+    "default": false,
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.runtime-telemetry.emit-experimental-metrics` instead. It will be removed in 3.0.",
+    "instrumentations": [
+      "runtime-telemetry"
+    ],
+    "name": "otel.instrumentation.runtime-telemetry.emit-experimental-telemetry",
+    "replaced_by": "otel.instrumentation.runtime-telemetry.emit-experimental-metrics",
     "type": "boolean"
   },
   {
@@ -2294,12 +3065,38 @@
   {
     "declarative_name": "java.runtime_telemetry.prefer_jfr/development",
     "default": false,
+    "deprecated": true,
     "description": "Deprecated: use `otel.instrumentation.runtime-telemetry.experimental.jfr-metrics.included` instead. Prefer JFR over JMX for metrics available from both sources, on Java 17+.",
     "instrumentations": [
       "runtime-telemetry"
     ],
     "name": "otel.instrumentation.runtime-telemetry.experimental.prefer-jfr",
+    "replaced_by": "otel.instrumentation.runtime-telemetry.experimental.jfr-metrics.included",
     "type": "boolean"
+  },
+  {
+    "declarative_name": "java.runtime_telemetry.package_emitter.enabled",
+    "default": false,
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.runtime-telemetry.experimental.package-emitter.enabled` instead. It will be removed in 3.0.",
+    "instrumentations": [
+      "runtime-telemetry"
+    ],
+    "name": "otel.instrumentation.runtime-telemetry.package-emitter.enabled",
+    "replaced_by": "otel.instrumentation.runtime-telemetry.experimental.package-emitter.enabled",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.runtime_telemetry.package_emitter.jars_per_second",
+    "default": 10,
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.runtime-telemetry.experimental.package-emitter.jars-per-second` instead. It will be removed in 3.0.",
+    "instrumentations": [
+      "runtime-telemetry"
+    ],
+    "name": "otel.instrumentation.runtime-telemetry.package-emitter.jars-per-second",
+    "replaced_by": "otel.instrumentation.runtime-telemetry.experimental.package-emitter.jars-per-second",
+    "type": "int"
   },
   {
     "declarative_name": "java.rxjava.experimental_span_attributes/development",
@@ -2345,6 +3142,7 @@
       "play-ws-1.0",
       "play-ws-2.0",
       "play-ws-2.1",
+      "ratpack-1.4",
       "ratpack-1.7",
       "reactor-netty-1.0",
       "vertx-http-client-3.0",
@@ -2395,6 +3193,7 @@
   {
     "declarative_name": "java.servlet.capture_request_parameters/development",
     "default": "",
+    "deprecated": true,
     "description": "Deprecated include-only alias for `otel.instrumentation.servlet.experimental.request-parameters.included`. It does not support glob patterns: an entry containing `*` or `?` is ignored with a warning, and every other entry is matched as a literal request parameter name. It may be removed in the next minor release.",
     "instrumentations": [
       "liberty-20.0",
@@ -2405,6 +3204,7 @@
       "tomcat-7.0"
     ],
     "name": "otel.instrumentation.servlet.experimental.capture-request-parameters",
+    "replaced_by": "otel.instrumentation.servlet.experimental.request-parameters.included",
     "type": "list"
   },
   {
@@ -2598,6 +3398,48 @@
     "type": "boolean"
   },
   {
+    "declarative_name": "java.vertx_redis_client.query_sanitization.enabled",
+    "description": "Enables query sanitization for Vert.x Redis client queries. Overrides `otel.instrumentation.common.db.query-sanitization.enabled` for this instrumentation; when unset, that setting applies.",
+    "instrumentations": [
+      "vertx-redis-client-4.0"
+    ],
+    "name": "otel.instrumentation.vertx-redis-client.query-sanitization.enabled",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.vertx_redis_client.statement_sanitizer.enabled",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.vertx-redis-client.query-sanitization.enabled` instead. It is ignored under v3 preview and will be removed in 3.0. When unset, this setting falls back to `otel.instrumentation.common.db.query-sanitization.enabled` (including its deprecated aliases).",
+    "instrumentations": [
+      "vertx-redis-client-4.0"
+    ],
+    "name": "otel.instrumentation.vertx-redis-client.statement-sanitizer.enabled",
+    "replaced_by": "otel.instrumentation.vertx-redis-client.query-sanitization.enabled",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.vertx_sql_client.query_sanitization.enabled",
+    "description": "Enables query sanitization for Vert.x SQL client queries. Overrides `otel.instrumentation.common.db.query-sanitization.enabled` for this instrumentation; when unset, that setting applies.",
+    "instrumentations": [
+      "vertx-sql-client-4.0",
+      "vertx-sql-client-5.0"
+    ],
+    "name": "otel.instrumentation.vertx-sql-client.query-sanitization.enabled",
+    "type": "boolean"
+  },
+  {
+    "declarative_name": "java.vertx_sql_client.statement_sanitizer.enabled",
+    "deprecated": true,
+    "description": "Deprecated: use `otel.instrumentation.vertx-sql-client.query-sanitization.enabled` instead. It is ignored under v3 preview and will be removed in 3.0. When unset, this setting falls back to `otel.instrumentation.common.db.query-sanitization.enabled` (including its deprecated aliases).",
+    "instrumentations": [
+      "vertx-sql-client-4.0",
+      "vertx-sql-client-5.0"
+    ],
+    "name": "otel.instrumentation.vertx-sql-client.statement-sanitizer.enabled",
+    "replaced_by": "otel.instrumentation.vertx-sql-client.query-sanitization.enabled",
+    "type": "boolean"
+  },
+  {
     "declarative_name": "java.xxl_job.experimental_span_attributes/development",
     "default": false,
     "description": "Enables experimental span attributes `job.system`, `scheduling.xxl-job.glue.type`, and `scheduling.xxl-job.job.id`.",
@@ -2640,14 +3482,63 @@
     "type": "boolean"
   },
   {
+    "declarative_name": "java.jmx.metrics.excluded",
+    "default": "",
+    "description": "Comma-separated list of case-sensitive glob patterns for metric names not to collect. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. When no included patterns are configured, all metrics that are not excluded are collected. With neither selector property configured, all metrics are collected.",
+    "examples": [
+      "jvm.memory.limit,kafka.connect.*"
+    ],
+    "instrumentations": [
+      "jmx-metrics"
+    ],
+    "name": "otel.jmx.metrics.excluded",
+    "type": "list"
+  },
+  {
+    "declarative_name": "java.jmx.metrics.experimental.included",
+    "default": "",
+    "description": "Comma-separated list of case-sensitive glob patterns for unstable (experimental) bundled metric names to opt in to. \"*\" matches any number of characters and \"?\" matches one character. Normal metric include and exclude filters also apply. Custom metric definitions do not require experimental opt-in.",
+    "examples": [
+      "jetty.*,kafka.*"
+    ],
+    "instrumentations": [
+      "jmx-metrics"
+    ],
+    "name": "otel.jmx.metrics.experimental.included",
+    "type": "list"
+  },
+  {
+    "declarative_name": "java.jmx.metrics.included",
+    "default": "",
+    "description": "Comma-separated list of case-sensitive glob patterns for metric names to collect. \"*\" matches any number of characters and \"?\" matches one character. Excluded patterns take precedence over included patterns. When no included patterns are configured, all metrics that are not excluded are collected. With neither selector property configured, all metrics are collected.",
+    "examples": [
+      "jvm.memory.*,jvm.thread.count"
+    ],
+    "instrumentations": [
+      "jmx-metrics"
+    ],
+    "name": "otel.jmx.metrics.included",
+    "type": "list"
+  },
+  {
     "declarative_name": "java.jmx.target.system",
     "default": "",
-    "description": "List of predefined JMX target systems to collect metrics for.",
+    "deprecated": true,
+    "description": "Deprecated list of predefined JMX target systems to collect metrics for, including their unstable metrics. Used when `otel.jmx.metrics.experimental.included` is empty. A nonempty experimental inclusion takes precedence. Remove this setting to use automatic stable metric collection and select unstable metrics by name. This setting will be removed in 3.0.",
     "instrumentations": [
       "jmx-metrics"
     ],
     "name": "otel.jmx.target.system",
     "type": "list"
+  },
+  {
+    "default": false,
+    "description": "Enables host ID resource detection in the Java agent.",
+    "instrumentations": [
+      "resources"
+    ],
+    "name": "otel.resource.providers.host-id.enabled",
+    "type": "boolean"
   },
   {
     "declarative_name": "general.stability_opt_in_list",
@@ -2657,6 +3548,8 @@
     "instrumentations": [
       "alibaba-druid-1.0",
       "apache-dbcp-2.0",
+      "redisson-metrics-2.3",
+      "redisson-metrics-3.18",
       "redisson-metrics-3.26",
       "tomcat-dbcp-8.0",
       "tomcat-jdbc",
@@ -2664,5 +3557,19 @@
     ],
     "name": "otel.semconv-stability.opt-in",
     "type": "list"
+  },
+  {
+    "declarative_name": "java.common.semconv_stability.preview",
+    "description": "Opt-in to emit preview (not yet stable) semantic conventions for the `rpc`, `messaging`, and `service.peer` groups. Use `<group>/dup` to emit both the old and the preview conventions simultaneously. Outside v3 preview these groups are also accepted by `otel.semconv-stability.opt-in`; under v3 preview only this setting selects them for `rpc` and `service.peer`, and messaging always uses the preview conventions. The flat `otel.semconv-stability.preview` property is read only from system properties and environment variables, not from the agent configuration file.",
+    "instrumentations": [],
+    "name": "otel.semconv-stability.preview",
+    "type": "list"
+  },
+  {
+    "declarative_name": "general.semconv_exception.signal.preview",
+    "description": "Preview of emitting exceptions as log records instead of span events. `logs` emits log records only and `logs/dup` emits both log records and span events. When unset, exceptions are recorded as span events.",
+    "instrumentations": [],
+    "name": "otel.semconv.exception.signal.preview",
+    "type": "string"
   }
 ]

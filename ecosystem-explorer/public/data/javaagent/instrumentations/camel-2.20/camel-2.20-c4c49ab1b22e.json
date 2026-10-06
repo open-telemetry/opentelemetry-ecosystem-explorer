@@ -1,0 +1,963 @@
+{
+  "configurations": [
+    {
+      "declarative_name": "java.common.database.statement_sanitizer.enabled",
+      "default": true,
+      "deprecated": true,
+      "description": "Deprecated: use `java.common.db.query_sanitization.enabled` instead. It is ignored under v3 preview.",
+      "name": "java.common.database.statement_sanitizer.enabled",
+      "replaced_by": "java.common.db.query_sanitization.enabled",
+      "type": "boolean"
+    },
+    {
+      "default": true,
+      "deprecated": true,
+      "description": "Deprecated: use `otel.instrumentation.common.db.query-sanitization.enabled` instead. It is ignored under v3 preview and will be removed in 3.0.",
+      "name": "otel.instrumentation.common.db-statement-sanitizer.enabled",
+      "replaced_by": "otel.instrumentation.common.db.query-sanitization.enabled",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.common.db.query_sanitization.enabled",
+      "default": true,
+      "description": "Enables query sanitization for database queries.",
+      "name": "otel.instrumentation.common.db.query-sanitization.enabled",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.camel.experimental_span_attributes/development",
+      "default": false,
+      "description": "Enable the capture of experimental `camel.uri`, `camel.kafka.partitionKey`, `camel.kafka.key` and `camel.kafka.offset` span attributes.",
+      "name": "otel.instrumentation.camel.experimental-span-attributes",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.camel.query_sanitization.enabled",
+      "description": "Enables query sanitization for database queries traced through Camel. Overrides `otel.instrumentation.common.db.query-sanitization.enabled` for this instrumentation; when unset, that setting applies.",
+      "name": "otel.instrumentation.camel.query-sanitization.enabled",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.camel.statement_sanitizer.enabled",
+      "deprecated": true,
+      "description": "Deprecated: use `otel.instrumentation.camel.query-sanitization.enabled` instead. It is ignored under v3 preview and will be removed in 3.0. When unset, this setting falls back to `otel.instrumentation.common.db.query-sanitization.enabled` (including its deprecated aliases).",
+      "name": "otel.instrumentation.camel.statement-sanitizer.enabled",
+      "replaced_by": "otel.instrumentation.camel.query-sanitization.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enables tracing and messaging metrics for Apache Camel 2.x applications. For Camel versions 3.5 and newer, users should instead use the native 'camel-opentelemetry' component provided directly by the Camel project.",
+  "display_name": "Apache Camel",
+  "features": [
+    "HTTP_ROUTE"
+  ],
+  "has_javaagent": true,
+  "javaagent_target_versions": [
+    "org.apache.camel:camel-core:[2.19,3)"
+  ],
+  "library_link": "https://camel.apache.org/",
+  "name": "camel-2.20",
+  "scope": {
+    "name": "io.opentelemetry.camel-2.20",
+    "schema_url": "https://opentelemetry.io/schemas/1.43.0"
+  },
+  "semantic_conventions": [
+    "HTTP_CLIENT_SPANS",
+    "HTTP_SERVER_SPANS",
+    "DATABASE_CLIENT_SPANS",
+    "MESSAGING_SPANS"
+  ],
+  "source_path": "instrumentation/camel-2.20",
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "db.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.statement",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system",
+              "type": "STRING"
+            },
+            {
+              "name": "http.request.method",
+              "type": "STRING"
+            },
+            {
+              "name": "http.response.status_code",
+              "type": "LONG"
+            },
+            {
+              "name": "url.full",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CLIENT"
+        },
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.message.id",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CONSUMER"
+        },
+        {
+          "attributes": [
+            {
+              "name": "http.request.method",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.message.id",
+              "type": "STRING"
+            },
+            {
+              "name": "url.full",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        },
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "PRODUCER"
+        },
+        {
+          "attributes": [
+            {
+              "name": "http.request.method",
+              "type": "STRING"
+            },
+            {
+              "name": "http.response.status_code",
+              "type": "LONG"
+            },
+            {
+              "name": "url.full",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "SERVER"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "camel.uri",
+              "type": "STRING"
+            },
+            {
+              "name": "db.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.statement",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system",
+              "type": "STRING"
+            },
+            {
+              "name": "http.request.method",
+              "type": "STRING"
+            },
+            {
+              "name": "http.response.status_code",
+              "type": "LONG"
+            },
+            {
+              "name": "url.full",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CLIENT"
+        },
+        {
+          "attributes": [
+            {
+              "name": "camel.uri",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.message.id",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CONSUMER"
+        },
+        {
+          "attributes": [
+            {
+              "name": "camel.uri",
+              "type": "STRING"
+            },
+            {
+              "name": "http.request.method",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.message.id",
+              "type": "STRING"
+            },
+            {
+              "name": "url.full",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        },
+        {
+          "attributes": [
+            {
+              "name": "camel.uri",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "PRODUCER"
+        },
+        {
+          "attributes": [
+            {
+              "name": "camel.uri",
+              "type": "STRING"
+            },
+            {
+              "name": "http.request.method",
+              "type": "STRING"
+            },
+            {
+              "name": "http.response.status_code",
+              "type": "LONG"
+            },
+            {
+              "name": "url.full",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "SERVER"
+        }
+      ],
+      "when": "otel.instrumentation.camel.experimental-span-attributes=true"
+    },
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "error.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.partition.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "Number of messages that were delivered to the application.",
+          "instrument": "counter",
+          "name": "messaging.client.consumed.messages",
+          "unit": "{message}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "error.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "HISTOGRAM",
+          "description": "Duration of messaging operation initiated by a producer or consumer client.",
+          "instrument": "histogram",
+          "name": "messaging.client.operation.duration",
+          "unit": "s"
+        },
+        {
+          "attributes": [
+            {
+              "name": "error.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "Number of messages producer attempted to send to the broker.",
+          "instrument": "counter",
+          "name": "messaging.client.sent.messages",
+          "unit": "{message}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "error.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.partition.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "HISTOGRAM",
+          "description": "Duration of processing operation.",
+          "instrument": "histogram",
+          "name": "messaging.process.duration",
+          "unit": "s"
+        }
+      ],
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "http.request.method",
+              "type": "STRING"
+            },
+            {
+              "name": "http.response.status_code",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.message.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            },
+            {
+              "name": "url.full",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CLIENT"
+        },
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.message.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CONSUMER"
+        },
+        {
+          "attributes": [
+            {
+              "name": "http.request.method",
+              "type": "STRING"
+            },
+            {
+              "name": "url.full",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        },
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.message.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "PRODUCER"
+        },
+        {
+          "attributes": [
+            {
+              "name": "http.request.method",
+              "type": "STRING"
+            },
+            {
+              "name": "http.response.status_code",
+              "type": "LONG"
+            },
+            {
+              "name": "url.full",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "SERVER"
+        }
+      ],
+      "when": "otel.instrumentation.common.v3-preview=true"
+    },
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "Number of messages that were delivered to the application.",
+          "instrument": "counter",
+          "name": "messaging.client.consumed.messages",
+          "unit": "{message}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "HISTOGRAM",
+          "description": "Duration of messaging operation initiated by a producer or consumer client.",
+          "instrument": "histogram",
+          "name": "messaging.client.operation.duration",
+          "unit": "s"
+        },
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "Number of messages producer attempted to send to the broker.",
+          "instrument": "counter",
+          "name": "messaging.client.sent.messages",
+          "unit": "{message}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "HISTOGRAM",
+          "description": "Duration of processing operation.",
+          "instrument": "histogram",
+          "name": "messaging.process.duration",
+          "unit": "s"
+        }
+      ],
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "http.request.method",
+              "type": "STRING"
+            },
+            {
+              "name": "http.response.status_code",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.message.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            },
+            {
+              "name": "url.full",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CLIENT"
+        },
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.message.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CONSUMER"
+        },
+        {
+          "attributes": [
+            {
+              "name": "http.request.method",
+              "type": "STRING"
+            },
+            {
+              "name": "url.full",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        },
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.message.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "PRODUCER"
+        },
+        {
+          "attributes": [
+            {
+              "name": "http.request.method",
+              "type": "STRING"
+            },
+            {
+              "name": "http.response.status_code",
+              "type": "LONG"
+            },
+            {
+              "name": "url.full",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "SERVER"
+        }
+      ],
+      "when": "otel.semconv-stability.opt-in=database,messaging"
+    },
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "error.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.partition.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "Number of messages that were delivered to the application.",
+          "instrument": "counter",
+          "name": "messaging.client.consumed.messages",
+          "unit": "{message}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "error.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "HISTOGRAM",
+          "description": "Duration of messaging operation initiated by a producer or consumer client.",
+          "instrument": "histogram",
+          "name": "messaging.client.operation.duration",
+          "unit": "s"
+        },
+        {
+          "attributes": [
+            {
+              "name": "error.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "Number of messages producer attempted to send to the broker.",
+          "instrument": "counter",
+          "name": "messaging.client.sent.messages",
+          "unit": "{message}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "error.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.partition.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "HISTOGRAM",
+          "description": "Duration of processing operation.",
+          "instrument": "histogram",
+          "name": "messaging.process.duration",
+          "unit": "s"
+        }
+      ],
+      "when": "otel.semconv-stability.opt-in=messaging"
+    },
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "error.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.partition.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "Number of messages that were delivered to the application.",
+          "instrument": "counter",
+          "name": "messaging.client.consumed.messages",
+          "unit": "{message}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "error.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "HISTOGRAM",
+          "description": "Duration of messaging operation initiated by a producer or consumer client.",
+          "instrument": "histogram",
+          "name": "messaging.client.operation.duration",
+          "unit": "s"
+        },
+        {
+          "attributes": [
+            {
+              "name": "error.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "Number of messages producer attempted to send to the broker.",
+          "instrument": "counter",
+          "name": "messaging.client.sent.messages",
+          "unit": "{message}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "error.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.partition.id",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            }
+          ],
+          "data_type": "HISTOGRAM",
+          "description": "Duration of processing operation.",
+          "instrument": "histogram",
+          "name": "messaging.process.duration",
+          "unit": "s"
+        }
+      ],
+      "when": "otel.semconv-stability.opt-in=messaging/dup"
+    }
+  ]
+}

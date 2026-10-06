@@ -1,0 +1,97 @@
+{
+  "configurations": [
+    {
+      "declarative_name": "java.couchbase.emit_experimental_telemetry/development",
+      "default": false,
+      "description": "Enables experimental span attributes emitted from the underlying Couchbase library. When v3 preview is enabled, also enables the request_encoding and dispatch_to_server internal spans.",
+      "name": "otel.instrumentation.couchbase.emit-experimental-telemetry",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.couchbase.experimental_span_attributes/development",
+      "default": false,
+      "deprecated": true,
+      "description": "Deprecated and will be removed in the next minor release. Use otel.instrumentation.couchbase.emit-experimental-telemetry instead.",
+      "name": "otel.instrumentation.couchbase.experimental-span-attributes",
+      "replaced_by": "otel.instrumentation.couchbase.emit-experimental-telemetry",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation uses the Couchbase tracing SPI to create spans for Couchbase Java SDK 3.0.",
+  "display_name": "Couchbase Client",
+  "has_javaagent": true,
+  "javaagent_target_versions": [
+    "com.couchbase.client:java-client:[3.0,3.1)"
+  ],
+  "library_link": "https://github.com/couchbase/couchbase-java-client",
+  "name": "couchbase-3.0",
+  "scope": {
+    "name": "io.opentelemetry.couchbase-3.0"
+  },
+  "semantic_conventions": [
+    "DATABASE_CLIENT_SPANS"
+  ],
+  "source_path": "instrumentation/couchbase/couchbase-3.0",
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "couchbase.client_context.request_id",
+              "type": "STRING"
+            },
+            {
+              "name": "couchbase.document_id",
+              "type": "STRING"
+            },
+            {
+              "name": "couchbase.operation_id",
+              "type": "STRING"
+            },
+            {
+              "name": "peer.latency",
+              "type": "LONG"
+            },
+            {
+              "name": "peer.service",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "couchbase.client_context.request_id",
+              "type": "STRING"
+            },
+            {
+              "name": "couchbase.document_id",
+              "type": "STRING"
+            },
+            {
+              "name": "couchbase.operation_id",
+              "type": "STRING"
+            },
+            {
+              "name": "peer.latency",
+              "type": "LONG"
+            },
+            {
+              "name": "peer.service",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "otel.semconv-stability.opt-in=database"
+    }
+  ]
+}
