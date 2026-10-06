@@ -1,0 +1,225 @@
+{
+  "configurations": [
+    {
+      "declarative_name": "java.common.messaging.capture_headers/development",
+      "default": "",
+      "deprecated": true,
+      "description": "Deprecated: use `otel.instrumentation.common.messaging.headers.included` instead. Ignored without a warning under v3-preview; may be removed in a later minor release and will be removed no later than 3.0. A comma-separated list of header names to capture as span attributes. It does not support glob patterns: an entry containing `*` or `?` is ignored with a warning, and every other entry is matched as a literal header name.",
+      "name": "otel.instrumentation.messaging.experimental.capture-headers",
+      "replaced_by": "otel.instrumentation.common.messaging.headers.included",
+      "type": "list"
+    },
+    {
+      "default": "",
+      "deprecated": true,
+      "description": "Deprecated: use `otel.instrumentation.common.messaging.headers.excluded` instead. Ignored without a warning under v3-preview; may be removed in a later minor release and will be removed no later than 3.0.",
+      "name": "otel.instrumentation.messaging.experimental.headers.excluded",
+      "replaced_by": "otel.instrumentation.common.messaging.headers.excluded",
+      "type": "list"
+    },
+    {
+      "default": "",
+      "deprecated": true,
+      "description": "Deprecated: use `otel.instrumentation.common.messaging.headers.included` instead. Ignored without a warning under v3-preview; may be removed in a later minor release and will be removed no later than 3.0.",
+      "name": "otel.instrumentation.messaging.experimental.headers.included",
+      "replaced_by": "otel.instrumentation.common.messaging.headers.included",
+      "type": "list"
+    },
+    {
+      "declarative_name": "java.common.messaging.headers.excluded",
+      "default": "",
+      "description": "A comma-separated list of case-sensitive message header name glob patterns to exclude from span attributes. `?` matches one character and `*` matches zero or more characters. Excluded patterns take precedence over included patterns. An absent or empty selector captures no headers; an exclude-only selector captures every header not excluded, which may expose sensitive information.",
+      "name": "otel.instrumentation.common.messaging.headers.excluded",
+      "type": "list"
+    },
+    {
+      "declarative_name": "java.common.messaging.headers.included",
+      "default": "",
+      "description": "A comma-separated list of case-sensitive message header name glob patterns to capture as span attributes. `?` matches one character and `*` matches zero or more characters. Excluded patterns take precedence over included patterns. An absent or empty selector captures no headers; an exclude-only selector captures every header not excluded.",
+      "name": "otel.instrumentation.common.messaging.headers.included",
+      "type": "list"
+    }
+  ],
+  "description": "This instrumentation enables consumer messaging spans for Spring RabbitMQ listeners.",
+  "display_name": "Spring Rabbit",
+  "has_javaagent": true,
+  "javaagent_target_versions": [
+    "org.springframework.amqp:spring-rabbit:(,)"
+  ],
+  "library_link": "https://spring.io/projects/spring-amqp",
+  "name": "spring-rabbit-1.0",
+  "scope": {
+    "name": "io.opentelemetry.spring-rabbit-1.0",
+    "schema_url": "https://opentelemetry.io/schemas/1.43.0"
+  },
+  "semantic_conventions": [
+    "MESSAGING_SPANS"
+  ],
+  "source_path": "instrumentation/spring/spring-rabbit-1.0",
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.message.body.size",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.address",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.port",
+              "type": "LONG"
+            },
+            {
+              "name": "network.type",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CONSUMER"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "error.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "data_type": "LONG_SUM",
+          "description": "Number of messages that were delivered to the application.",
+          "instrument": "counter",
+          "name": "messaging.client.consumed.messages",
+          "unit": "{message}"
+        },
+        {
+          "attributes": [
+            {
+              "name": "error.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "data_type": "HISTOGRAM",
+          "description": "Duration of processing operation.",
+          "instrument": "histogram",
+          "name": "messaging.process.duration",
+          "unit": "s"
+        }
+      ],
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "error.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.destination.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.operation.type",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.rabbitmq.destination.routing_key",
+              "type": "STRING"
+            },
+            {
+              "name": "messaging.rabbitmq.message.delivery_tag",
+              "type": "LONG"
+            },
+            {
+              "name": "messaging.system",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.address",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.port",
+              "type": "LONG"
+            },
+            {
+              "name": "network.type",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "span_kind": "CONSUMER"
+        }
+      ],
+      "when": "otel.semconv-stability.preview=messaging"
+    }
+  ]
+}

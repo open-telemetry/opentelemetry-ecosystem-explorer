@@ -1,0 +1,257 @@
+{
+  "configurations": [
+    {
+      "declarative_name": "java.common.database.statement_sanitizer.enabled",
+      "default": true,
+      "deprecated": true,
+      "description": "Deprecated: use `java.common.db.query_sanitization.enabled` instead. It is ignored under v3 preview.",
+      "name": "java.common.database.statement_sanitizer.enabled",
+      "replaced_by": "java.common.db.query_sanitization.enabled",
+      "type": "boolean"
+    },
+    {
+      "default": true,
+      "deprecated": true,
+      "description": "Deprecated: use `otel.instrumentation.common.db.query-sanitization.enabled` instead. It is ignored under v3 preview and will be removed in 3.0.",
+      "name": "otel.instrumentation.common.db-statement-sanitizer.enabled",
+      "replaced_by": "otel.instrumentation.common.db.query-sanitization.enabled",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.common.db.query_sanitization.enabled",
+      "default": true,
+      "description": "Enables query sanitization for database queries.",
+      "name": "otel.instrumentation.common.db.query-sanitization.enabled",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.cassandra.query_sanitization.enabled",
+      "description": "Enables query sanitization for Cassandra queries. Overrides `otel.instrumentation.common.db.query-sanitization.enabled` for this instrumentation; when unset, that setting applies.",
+      "name": "otel.instrumentation.cassandra.query-sanitization.enabled",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.cassandra.statement_sanitizer.enabled",
+      "deprecated": true,
+      "description": "Deprecated: use `otel.instrumentation.cassandra.query-sanitization.enabled` instead. It is ignored under v3 preview and will be removed in 3.0. When unset, this setting falls back to `otel.instrumentation.common.db.query-sanitization.enabled` (including its deprecated aliases).",
+      "name": "otel.instrumentation.cassandra.statement-sanitizer.enabled",
+      "replaced_by": "otel.instrumentation.cassandra.query-sanitization.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enables database client spans and database client metrics for the DataStax Cassandra Driver.",
+  "display_name": "Cassandra Driver",
+  "has_javaagent": true,
+  "javaagent_target_versions": [
+    "com.datastax.oss:java-driver-core-shaded:[4.0,4.4)",
+    "com.datastax.oss:java-driver-core:[4.0,4.4)"
+  ],
+  "library_link": "https://github.com/apache/cassandra-java-driver",
+  "name": "cassandra-4.0",
+  "scope": {
+    "name": "io.opentelemetry.cassandra-4.0",
+    "schema_url": "https://opentelemetry.io/schemas/1.44.0"
+  },
+  "semantic_conventions": [
+    "DATABASE_CLIENT_SPANS",
+    "DATABASE_CLIENT_METRICS"
+  ],
+  "source_path": "instrumentation/cassandra/cassandra-4.0",
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "db.cassandra.consistency_level",
+              "type": "STRING"
+            },
+            {
+              "name": "db.cassandra.coordinator.dc",
+              "type": "STRING"
+            },
+            {
+              "name": "db.cassandra.coordinator.id",
+              "type": "STRING"
+            },
+            {
+              "name": "db.cassandra.idempotence",
+              "type": "BOOLEAN"
+            },
+            {
+              "name": "db.cassandra.page_size",
+              "type": "LONG"
+            },
+            {
+              "name": "db.cassandra.speculative_execution_count",
+              "type": "LONG"
+            },
+            {
+              "name": "db.cassandra.table",
+              "type": "STRING"
+            },
+            {
+              "name": "db.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "db.statement",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.address",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.port",
+              "type": "LONG"
+            },
+            {
+              "name": "network.type",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "span_kind": "CLIENT"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "db.collection.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.query.summary",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system.name",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.address",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.port",
+              "type": "LONG"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "data_type": "HISTOGRAM",
+          "description": "Duration of database client operations.",
+          "instrument": "histogram",
+          "name": "db.client.operation.duration",
+          "unit": "s"
+        }
+      ],
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "cassandra.consistency.level",
+              "type": "STRING"
+            },
+            {
+              "name": "cassandra.coordinator.dc",
+              "type": "STRING"
+            },
+            {
+              "name": "cassandra.coordinator.id",
+              "type": "STRING"
+            },
+            {
+              "name": "cassandra.page.size",
+              "type": "LONG"
+            },
+            {
+              "name": "cassandra.query.idempotent",
+              "type": "BOOLEAN"
+            },
+            {
+              "name": "cassandra.speculative_execution.count",
+              "type": "LONG"
+            },
+            {
+              "name": "db.collection.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.namespace",
+              "type": "STRING"
+            },
+            {
+              "name": "db.operation.batch.size",
+              "type": "LONG"
+            },
+            {
+              "name": "db.operation.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.query.summary",
+              "type": "STRING"
+            },
+            {
+              "name": "db.query.text",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system.name",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.address",
+              "type": "STRING"
+            },
+            {
+              "name": "network.peer.port",
+              "type": "LONG"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "span_kind": "CLIENT"
+        }
+      ],
+      "when": "otel.semconv-stability.opt-in=database"
+    }
+  ]
+}

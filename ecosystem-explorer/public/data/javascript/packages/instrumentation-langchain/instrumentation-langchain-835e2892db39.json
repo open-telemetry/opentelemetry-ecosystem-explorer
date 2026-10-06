@@ -1,0 +1,17 @@
+{
+  "description": "OpenTelemetry instrumentation for the `langchain` LangChain.js library",
+  "in_auto_instrumentations_node": false,
+  "name": "instrumentation-langchain",
+  "node_engine": "^18.19.0 || >=20.6.0",
+  "npm_package": "@opentelemetry/instrumentation-langchain",
+  "source_path": "packages/instrumentation-langchain",
+  "supported_versions": [],
+  "tested_versions": [
+    {
+      "mode": "max-5",
+      "package": "langchain",
+      "range": ">=1.0.0",
+      "source": ".tav.yml"
+    }
+  ]
+}

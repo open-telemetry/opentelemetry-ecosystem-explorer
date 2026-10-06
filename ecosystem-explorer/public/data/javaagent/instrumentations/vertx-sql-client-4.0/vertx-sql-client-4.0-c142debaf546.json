@@ -1,0 +1,180 @@
+{
+  "configurations": [
+    {
+      "declarative_name": "java.common.database.statement_sanitizer.enabled",
+      "default": true,
+      "deprecated": true,
+      "description": "Deprecated: use `java.common.db.query_sanitization.enabled` instead. It is ignored under v3 preview.",
+      "name": "java.common.database.statement_sanitizer.enabled",
+      "replaced_by": "java.common.db.query_sanitization.enabled",
+      "type": "boolean"
+    },
+    {
+      "default": true,
+      "deprecated": true,
+      "description": "Deprecated: use `otel.instrumentation.common.db.query-sanitization.enabled` instead. It is ignored under v3 preview and will be removed in 3.0.",
+      "name": "otel.instrumentation.common.db-statement-sanitizer.enabled",
+      "replaced_by": "otel.instrumentation.common.db.query-sanitization.enabled",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.common.db.query_sanitization.enabled",
+      "default": true,
+      "description": "Enables query sanitization for database queries.",
+      "name": "otel.instrumentation.common.db.query-sanitization.enabled",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.vertx_sql_client.query_sanitization.enabled",
+      "description": "Enables query sanitization for Vert.x SQL client queries. Overrides `otel.instrumentation.common.db.query-sanitization.enabled` for this instrumentation; when unset, that setting applies.",
+      "name": "otel.instrumentation.vertx-sql-client.query-sanitization.enabled",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.vertx_sql_client.statement_sanitizer.enabled",
+      "deprecated": true,
+      "description": "Deprecated: use `otel.instrumentation.vertx-sql-client.query-sanitization.enabled` instead. It is ignored under v3 preview and will be removed in 3.0. When unset, this setting falls back to `otel.instrumentation.common.db.query-sanitization.enabled` (including its deprecated aliases).",
+      "name": "otel.instrumentation.vertx-sql-client.statement-sanitizer.enabled",
+      "replaced_by": "otel.instrumentation.vertx-sql-client.query-sanitization.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enables database client spans and database client metrics for Vert.x SQL Client operations.",
+  "display_name": "Vert.x SQL Client",
+  "has_javaagent": true,
+  "javaagent_target_versions": [
+    "io.vertx:vertx-sql-client:[4.0.0,5)"
+  ],
+  "library_link": "https://github.com/eclipse-vertx/vertx-sql-client",
+  "name": "vertx-sql-client-4.0",
+  "scope": {
+    "name": "io.opentelemetry.vertx-sql-client-4.0",
+    "schema_url": "https://opentelemetry.io/schemas/1.44.0"
+  },
+  "semantic_conventions": [
+    "DATABASE_CLIENT_SPANS",
+    "DATABASE_CLIENT_METRICS"
+  ],
+  "source_path": "instrumentation/vertx/vertx-sql-client/vertx-sql-client-4.0",
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "db.name",
+              "type": "STRING"
+            },
+            {
+              "name": "db.operation",
+              "type": "STRING"
+            },
+            {
+              "name": "db.sql.table",
+              "type": "STRING"
+            },
+            {
+              "name": "db.statement",
+              "type": "STRING"
+            },
+            {
+              "name": "db.user",
+              "type": "STRING"
+            },
+            {
+              "name": "peer.service",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "span_kind": "CLIENT"
+        }
+      ],
+      "when": "default"
+    },
+    {
+      "metrics": [
+        {
+          "attributes": [
+            {
+              "name": "db.namespace",
+              "type": "STRING"
+            },
+            {
+              "name": "db.query.summary",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system.name",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            }
+          ],
+          "data_type": "HISTOGRAM",
+          "description": "Duration of database client operations.",
+          "instrument": "histogram",
+          "name": "db.client.operation.duration",
+          "unit": "s"
+        }
+      ],
+      "spans": [
+        {
+          "attributes": [
+            {
+              "name": "db.namespace",
+              "type": "STRING"
+            },
+            {
+              "name": "db.operation.batch.size",
+              "type": "LONG"
+            },
+            {
+              "name": "db.query.summary",
+              "type": "STRING"
+            },
+            {
+              "name": "db.query.text",
+              "type": "STRING"
+            },
+            {
+              "name": "db.system.name",
+              "type": "STRING"
+            },
+            {
+              "name": "error.type",
+              "type": "STRING"
+            },
+            {
+              "name": "server.address",
+              "type": "STRING"
+            },
+            {
+              "name": "server.port",
+              "type": "LONG"
+            },
+            {
+              "name": "service.peer.name",
+              "type": "STRING"
+            }
+          ],
+          "span_kind": "CLIENT"
+        }
+      ],
+      "when": "otel.semconv-stability.opt-in=database,service.peer"
+    }
+  ]
+}

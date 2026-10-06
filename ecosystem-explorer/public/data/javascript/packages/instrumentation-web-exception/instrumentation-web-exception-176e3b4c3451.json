@@ -1,0 +1,10 @@
+{
+  "description": "OpenTelemetry instrumentation for web exceptions",
+  "in_auto_instrumentations_node": false,
+  "name": "instrumentation-web-exception",
+  "node_engine": "^18.19.0 || >=20.6.0",
+  "npm_package": "@opentelemetry/instrumentation-web-exception",
+  "source_path": "packages/instrumentation-web-exception",
+  "supported_versions": [],
+  "tested_versions": []
+}

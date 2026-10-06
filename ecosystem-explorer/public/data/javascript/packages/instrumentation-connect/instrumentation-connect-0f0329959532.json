@@ -1,0 +1,16 @@
+{
+  "description": "OpenTelemetry instrumentation for `connect` http middleware framework",
+  "in_auto_instrumentations_node": true,
+  "name": "instrumentation-connect",
+  "node_engine": "^18.19.0 || >=20.6.0",
+  "npm_package": "@opentelemetry/instrumentation-connect",
+  "source_path": "packages/instrumentation-connect",
+  "supported_versions": [
+    {
+      "package": "connect",
+      "source": "README.md",
+      "version_range": ">=3.0.0 <4"
+    }
+  ],
+  "tested_versions": []
+}

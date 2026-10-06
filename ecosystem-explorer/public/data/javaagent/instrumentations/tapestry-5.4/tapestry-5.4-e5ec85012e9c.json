@@ -1,0 +1,47 @@
+{
+  "configurations": [
+    {
+      "declarative_name": "java.common.controller_telemetry.enabled",
+      "default": false,
+      "description": "Enables the creation of experimental controller spans.",
+      "name": "otel.instrumentation.common.controller-telemetry.enabled",
+      "type": "boolean"
+    },
+    {
+      "declarative_name": "java.common.controller_telemetry/development.enabled",
+      "default": false,
+      "deprecated": true,
+      "description": "Deprecated: use `otel.instrumentation.common.controller-telemetry.enabled` instead. This setting is ignored under v3-preview and will be removed in 3.0.",
+      "name": "otel.instrumentation.common.experimental.controller-telemetry.enabled",
+      "replaced_by": "otel.instrumentation.common.controller-telemetry.enabled",
+      "type": "boolean"
+    }
+  ],
+  "description": "This instrumentation enriches HTTP server spans with route information, and enables controller spans for Apache Tapestry component events (controller spans are disabled by default).",
+  "display_name": "Apache Tapestry",
+  "features": [
+    "HTTP_ROUTE",
+    "CONTROLLER_SPANS"
+  ],
+  "has_javaagent": true,
+  "javaagent_target_versions": [
+    "org.apache.tapestry:tapestry-core:[5.4.0,)"
+  ],
+  "library_link": "https://tapestry.apache.org/",
+  "name": "tapestry-5.4",
+  "scope": {
+    "name": "io.opentelemetry.tapestry-5.4"
+  },
+  "source_path": "instrumentation/tapestry-5.4",
+  "telemetry": [
+    {
+      "spans": [
+        {
+          "attributes": [],
+          "span_kind": "INTERNAL"
+        }
+      ],
+      "when": "otel.instrumentation.common.controller-telemetry.enabled=true"
+    }
+  ]
+}

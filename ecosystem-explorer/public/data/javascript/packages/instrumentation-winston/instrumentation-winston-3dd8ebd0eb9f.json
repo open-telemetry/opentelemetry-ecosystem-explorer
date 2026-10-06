@@ -1,0 +1,28 @@
+{
+  "description": "OpenTelemetry instrumentation for `winston` logger",
+  "in_auto_instrumentations_node": true,
+  "name": "instrumentation-winston",
+  "node_engine": "^18.19.0 || >=20.6.0",
+  "npm_package": "@opentelemetry/instrumentation-winston",
+  "source_path": "packages/instrumentation-winston",
+  "supported_versions": [
+    {
+      "package": "winston",
+      "source": "README.md",
+      "version_range": ">=1.0.0 <4"
+    },
+    {
+      "package": "winston",
+      "source": "README.md",
+      "version_range": ">=3.0.0 <4"
+    }
+  ],
+  "tested_versions": [
+    {
+      "mode": "max-7",
+      "package": "winston",
+      "range": ">=2.0.0 <4",
+      "source": ".tav.yml"
+    }
+  ]
+}
