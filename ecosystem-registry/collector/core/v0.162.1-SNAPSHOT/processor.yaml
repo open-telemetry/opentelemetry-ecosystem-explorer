@@ -2,7 +2,7 @@ distribution: core
 version: 0.162.1-SNAPSHOT
 repository: opentelemetry-collector
 component_type: processor
-schema_hash: 78c51a7415b2
+schema_hash: 5fc3596bf444
 components:
 - name: batchprocessor
   metadata:

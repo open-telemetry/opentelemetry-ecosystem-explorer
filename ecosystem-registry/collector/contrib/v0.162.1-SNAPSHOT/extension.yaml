@@ -2,7 +2,7 @@ distribution: contrib
 version: 0.162.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: extension
-schema_hash: 78c51a7415b2
+schema_hash: 5fc3596bf444
 components:
 - name: ackextension
   metadata:
@@ -267,6 +267,7 @@ components:
         - constanca-m
         emeritus:
         - axw
+        seeking_new: true
       distributions:
       - contrib
       stability:
@@ -294,6 +295,7 @@ components:
         - constanca-m
         emeritus:
         - alexvanboxel
+        seeking_new: true
       distributions:
       - contrib
       stability:
@@ -771,6 +773,7 @@ components:
       codeowners:
         active:
         - Aneurysm9
+        emeritus:
         - erichsueh3
       distributions:
       - contrib

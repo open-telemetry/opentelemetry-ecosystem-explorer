@@ -2,12 +2,19 @@ distribution: core
 version: 0.162.1-SNAPSHOT
 repository: opentelemetry-collector
 component_type: exporter
-schema_hash: 78c51a7415b2
+schema_hash: 5fc3596bf444
 components:
 - name: debugexporter
   metadata:
     display_name: Debug Exporter
     github_project: open-telemetry/opentelemetry-collector
+    sending_queue:
+      overrides:
+        batch:
+          enabled: false
+        enabled: false
+      rationale: Debug output is synchronous and unbatched by default.
+      support: has_overrides
     status:
       class: exporter
       codeowners:
@@ -30,6 +37,9 @@ components:
   metadata:
     display_name: No-op Exporter
     github_project: open-telemetry/opentelemetry-collector
+    sending_queue:
+      rationale: No-op drops telemetry.
+      support: omitted
     status:
       class: exporter
       codeowners:
@@ -52,6 +62,8 @@ components:
     deprecated_type: otlp
     display_name: OTLP gRPC Exporter
     github_project: open-telemetry/opentelemetry-collector
+    sending_queue:
+      support: default
     status:
       class: exporter
       distributions:
@@ -72,6 +84,8 @@ components:
     deprecated_type: otlphttp
     display_name: OTLP HTTP Exporter
     github_project: open-telemetry/opentelemetry-collector
+    sending_queue:
+      support: default
     status:
       class: exporter
       distributions:
