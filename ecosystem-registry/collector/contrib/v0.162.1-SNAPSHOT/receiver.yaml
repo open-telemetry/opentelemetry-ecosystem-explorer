@@ -2,7 +2,7 @@ distribution: contrib
 version: 0.162.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: receiver
-schema_hash: 78c51a7415b2
+schema_hash: 5fc3596bf444
 components:
 - name: activedirectorydsreceiver
   metadata:
@@ -5778,6 +5778,7 @@ components:
         - constanca-m
         emeritus:
         - axw
+        seeking_new: true
       distributions:
       - contrib
       stability:
@@ -11201,6 +11202,33 @@ components:
           value_type: double
         stability: development
         unit: '{query}/s'
+      mongodb.query_executor.collection_scan.count:
+        description: The number of queries that performed a collection scan.
+        enabled: false
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+        unit: '{query}'
+      mongodb.query_executor.document.scanned.count:
+        description: The number of documents scanned by the query executor.
+        enabled: false
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+        unit: '{document}'
+      mongodb.query_executor.index_key.scanned.count:
+        description: The number of index keys scanned by the query executor.
+        enabled: false
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+        unit: '{index_key}'
       mongodb.repl_commands_per_sec:
         description: The number of replicated commands executed per second.
         enabled: false
@@ -11550,7 +11578,8 @@ components:
         requirement_level: recommended
         type: string
       db.namespace:
-        description: The database the statement ran in, or empty if none is known.
+        description: The name of the database the statement was executed against,
+          or empty if not available.
         type: string
       db.query.text:
         description: The SQL statement text for the event.
@@ -11695,6 +11724,14 @@ components:
         description: The statement digest SHA-256 value as a string of 64 hexadecimal
           characters, or empty if the statements_digest consumer is no.
         type: string
+      mysql.events_statements_summary_by_digest.examined_rows:
+        description: The number of rows examined by the statement, reported as a delta
+          value.
+        type: int
+      mysql.events_statements_summary_by_digest.returned_rows:
+        description: The number of rows returned by the statement, reported as a delta
+          value.
+        type: int
       mysql.events_statements_summary_by_digest.sum_timer_wait:
         description: The total time spent executing the statement, report in delta
           seconds.
@@ -11944,6 +11981,8 @@ components:
         - db.system.name
         - mysql.events_statements_summary_by_digest.count_star
         - mysql.events_statements_summary_by_digest.digest
+        - mysql.events_statements_summary_by_digest.examined_rows
+        - mysql.events_statements_summary_by_digest.returned_rows
         - mysql.events_statements_summary_by_digest.sum_timer_wait
         - mysql.query_plan
         - mysql.query_plan.hash
@@ -21137,7 +21176,8 @@ components:
         - waiting_for_cpu
         requirement_level: recommended
         type: string
-    description: The `sqlserver` receiver grabs metrics/logs about a Microsoft SQL
+    deprecated_type: sqlserver
+    description: The `sql_server` receiver grabs metrics/logs about a Microsoft SQL
       Server instance. The receiver works by either using the Windows Performance
       Counters, or by directly connecting to the instance and querying it. Windows
       Performance Counters are only available when running on Windows.
@@ -22367,7 +22407,7 @@ components:
         - metrics
         development:
         - logs
-    type: sqlserver
+    type: sql_server
 - name: sshcheckreceiver
   metadata:
     attributes:
@@ -22695,6 +22735,7 @@ components:
         - atoulme
         - michael-burt
         - chengchuanpeng
+        emeritus:
         - yanfeng1992
       distributions:
       - contrib

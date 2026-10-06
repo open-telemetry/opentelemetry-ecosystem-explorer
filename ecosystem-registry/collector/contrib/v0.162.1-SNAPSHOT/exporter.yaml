@@ -2,7 +2,7 @@ distribution: contrib
 version: 0.162.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: exporter
-schema_hash: 78c51a7415b2
+schema_hash: 5fc3596bf444
 components:
 - name: alertmanagerexporter
   metadata:
@@ -337,8 +337,9 @@ components:
         active:
         - atoulme
         - martin-majlis-s1
-        - zdaratom-s1
         - tomaz-s1
+        emeritus:
+        - zdaratom-s1
       distributions:
       - contrib
       stability:

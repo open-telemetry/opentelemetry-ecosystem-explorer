@@ -2,7 +2,7 @@ distribution: contrib
 version: 0.162.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: processor
-schema_hash: 78c51a7415b2
+schema_hash: 5fc3596bf444
 components:
 - name: adaptivetailsamplingprocessor
   metadata:
@@ -18,9 +18,10 @@ components:
         - MikeGoldsmith
         - VinozzZ
         - jmacd
-      distributions: []
+      distributions:
+      - contrib
       stability:
-        development:
+        alpha:
         - traces
     telemetry:
       metrics:
@@ -1718,6 +1719,28 @@ components:
         beta:
         - metrics
     type: metrics_transform
+- name: partitioningprocessor
+  metadata:
+    description: The `partitioning` processor splits incoming batches into sub-batches
+      using OTTL value expressions, and forwards each sub-batch with the evaluated
+      partition keys added to the outgoing request metadata.
+    display_name: Partitioning Processor
+    status:
+      class: processor
+      codeowners:
+        active:
+        - paulojmdias
+        - dmitryax
+        emeritus:
+        - axw
+      distributions: []
+      stability:
+        development:
+        - logs
+        - metrics
+        - profiles
+        - traces
+    type: partitioning
 - name: probabilisticsamplerprocessor
   metadata:
     display_name: Probabilistic Sampling Processor
