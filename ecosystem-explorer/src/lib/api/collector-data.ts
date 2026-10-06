@@ -170,7 +170,8 @@ export async function loadComponent(
   const data = await fetchWithCache<CollectorComponent>(
     `collector-component-${hash}`,
     `${BASE_PATH}/components/${id}/${filename}`,
-    STORES.INSTRUMENTATIONS
+    STORES.INSTRUMENTATIONS,
+    { immutable: true }
   );
   if (!data) throw new Error(`Collector component "${id}" returned null unexpectedly`);
   return data;
@@ -191,7 +192,7 @@ export async function loadComponentBundle(
     `collector-bundle-${version}-${bundleHash}`,
     `${BASE_PATH}/bundles/${version}-${bundleHash}.json`,
     STORES.INSTRUMENTATIONS,
-    { validate: (d) => Array.isArray(d) && d.length > 0 }
+    { validate: (d) => Array.isArray(d) && d.length > 0, immutable: true }
   );
   if (!data) throw new Error(`Collector bundle for ${version} returned null unexpectedly`);
   return data;

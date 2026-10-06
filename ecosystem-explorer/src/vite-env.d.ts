@@ -13,17 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
-import { missingGeneratedData, missingGeneratedDataMessage } from "../../../scripts/generated-data";
-
-export default function setup(): void {
-  const dataDir = resolve(dirname(fileURLToPath(import.meta.url)), "../../../public/data");
-  const missing = missingGeneratedData(dataDir);
-
-  if (missing.length > 0) {
-    throw new Error(
-      `${missingGeneratedDataMessage(missing)}\nThe integration suite runs against the real database.`
-    );
-  }
+interface ImportMetaEnv {
+  readonly DATA_CONTENT_ID: string;
 }

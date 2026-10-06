@@ -96,6 +96,8 @@ describe("collector-data", () => {
   afterEach(() => {
     vi.restoreAllMocks();
     idbCache.closeDB();
+    vi.useRealTimers();
+    vi.unstubAllEnvs();
   });
 
   describe("loadDeprecationsIndex", () => {
@@ -143,7 +145,8 @@ describe("collector-data", () => {
       expect(result).toEqual(bundle);
       expect(getCachedSpy).toHaveBeenCalledWith(
         "collector-bundle-0.150.0-bundlehash",
-        idbCache.STORES.INSTRUMENTATIONS
+        idbCache.STORES.INSTRUMENTATIONS,
+        { immutable: true }
       );
       // The manifest fan-out must not run when the bundle succeeds.
       const manifestCalls = getCachedSpy.mock.calls.filter(
@@ -272,6 +275,42 @@ describe("collector-data", () => {
     });
   });
 
+  describe("immutable call sites", () => {
+    const bundle = [otlpReceiverIndex, otlpHttpExporterIndex];
+
+    it.each([
+      {
+        key: "collector-component-hash1",
+        seeded: otlpReceiver,
+        load: () =>
+          collectorData.loadComponent("core", "otlpreceiver", "0.150.0", mockVersionManifest),
+        expected: otlpReceiver,
+      },
+      {
+        key: "collector-bundle-0.150.0-bundlehash",
+        seeded: bundle,
+        load: () => collectorData.loadComponentBundle("0.150.0", "bundlehash"),
+        expected: bundle,
+      },
+    ])(
+      "keeps serving $key across a deploy and a day, without refetching",
+      async ({ key, seeded, load, expected }) => {
+        vi.useFakeTimers({ toFake: ["Date"] });
+        vi.stubEnv("DATA_CONTENT_ID", "previous-build");
+        await idbCache.setCached(key, seeded, idbCache.STORES.INSTRUMENTATIONS);
+
+        vi.advanceTimersByTime(48 * 60 * 60 * 1000);
+        vi.stubEnv("DATA_CONTENT_ID", "next-build");
+        (global.fetch as ReturnType<typeof vi.fn>).mockRejectedValue(new Error("offline"));
+
+        const result = await load();
+
+        expect(result).toEqual(expected);
+        expect(global.fetch).not.toHaveBeenCalled();
+      }
+    );
+  });
+
   describe("loadComponentVersions", () => {
     // Three releases covering both ways a component can be absent: 0.152.1 is
     // tagged by core alone, so its manifest carries no contrib entries, and
@@ -380,5 +419,87 @@ describe("collector-data", () => {
         collectorData.loadComponentReadme("otlpreceiver", "abc123def456")
       ).rejects.toThrow(/returned null unexpectedly/);
     });
+
+    it("refetches the README after a deploy even though the cached entry has not expired", async () => {
+      vi.stubEnv("DATA_CONTENT_ID", "previous-build");
+      await idbCache.setCached("collector-readme-otlp-h3", "stale", idbCache.STORES.METADATA);
+      vi.stubEnv("DATA_CONTENT_ID", "next-build");
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: new Headers({ "content-type": "text/markdown" }),
+        text: async () => "fresh",
+      });
+
+      const result = await collectorData.loadComponentReadme("otlp", "h3");
+
+      expect(result).toBe("fresh");
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("cache lookup options", () => {
+    it.each([
+      {
+        key: "collector-versions-index",
+        store: idbCache.STORES.METADATA,
+        cached: versionsIndexNoBundle,
+        load: () => collectorData.loadVersions(),
+        immutable: false,
+      },
+      {
+        key: "collector-component-index",
+        store: idbCache.STORES.METADATA,
+        cached: { ecosystem: "collector", components: [] },
+        load: () => collectorData.loadIndex(),
+        immutable: false,
+      },
+      {
+        key: "collector-deprecations-index",
+        store: idbCache.STORES.METADATA,
+        cached: { ecosystem: "collector", components: [] },
+        load: () => collectorData.loadDeprecationsIndex(),
+        immutable: false,
+      },
+      {
+        key: "collector-manifest-0.150.0",
+        store: idbCache.STORES.METADATA,
+        cached: mockVersionManifest,
+        load: () => collectorData.loadVersionManifest("0.150.0"),
+        immutable: false,
+      },
+      {
+        key: "collector-component-hash1",
+        store: idbCache.STORES.INSTRUMENTATIONS,
+        cached: otlpReceiver,
+        load: () =>
+          collectorData.loadComponent("core", "otlpreceiver", "0.150.0", mockVersionManifest),
+        immutable: true,
+      },
+      {
+        key: "collector-bundle-0.150.0-bundlehash",
+        store: idbCache.STORES.INSTRUMENTATIONS,
+        cached: [otlpReceiverIndex],
+        load: () => collectorData.loadComponentBundle("0.150.0", "bundlehash"),
+        immutable: true,
+      },
+      {
+        key: "collector-readme-otlp-h3",
+        store: idbCache.STORES.METADATA,
+        cached: "# README",
+        load: () => collectorData.loadComponentReadme("otlp", "h3"),
+        immutable: false,
+      },
+    ])(
+      "looks up $key with immutable $immutable",
+      async ({ key, store, cached, load, immutable }) => {
+        const getCachedSpy = vi.spyOn(idbCache, "getCached").mockResolvedValue(cached);
+
+        await load();
+
+        expect(getCachedSpy.mock.calls).toEqual([[key, store, { immutable }]]);
+        expect(global.fetch).not.toHaveBeenCalled();
+      }
+    );
   });
 });

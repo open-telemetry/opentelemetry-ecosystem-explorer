@@ -19,6 +19,7 @@ import logging
 
 import pytest
 from explorer_db_builder.collector_database_writer import CollectorDatabaseWriter
+from explorer_db_builder.content_hashing import content_hash
 from semantic_version import Version
 
 
@@ -594,3 +595,16 @@ class TestRemoveOrphans:
         assert "Skipping orphan GC: no readable version index found" in caplog.text
         first_id = next(iter(component_map))
         assert db_writer._component_file(first_id, component_map[first_id]).exists()
+
+
+class TestContentAddressedFilesMatchTheirNames:
+    def test_every_hashed_json_file_parses_to_its_hash(self, db_writer, temp_db_dir, sample_components):
+        db_writer.write_components(sample_components)
+        db_writer.write_version_bundle(Version("0.150.0"), sample_components)
+
+        files = [*temp_db_dir.glob("components/**/*.json"), *temp_db_dir.glob("bundles/*.json")]
+
+        assert len(files) == len(sample_components) + 1
+        for file in files:
+            with open(file, encoding="utf-8") as handle:
+                assert file.stem.rsplit("-", 1)[1] == content_hash(json.load(handle)), file

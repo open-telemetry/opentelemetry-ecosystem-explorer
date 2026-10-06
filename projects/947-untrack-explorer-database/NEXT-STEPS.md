@@ -4,21 +4,28 @@ issue: 947
 type: roadmap
 phase: meta
 status: in-progress
-last_updated: "2026-10-01"
+last_updated: "2026-10-06"
 ---
 
 ## Next steps
 
 Phase 1 merged on 2026-09-24 ([`01-test-suite.md`](./01-test-suite.md)), as did the `blocking`
-handler fix from the known-defects table below. Phase 2 is written up in
-[`02-producer.md`](./02-producer.md), implemented, and rehearsed on a fork on 2026-09-24. What that
-rehearsal established, and the one question it could not answer, are recorded in that document. It
-is in review as
-[#1161](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/1161), not merged,
-and has merged a `main` that added a fourth ecosystem, `javascript`, through
-[#1202](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/1202). Phases 3 and
-4 have their decisions settled in [`design-decisions.md`](./design-decisions.md) but no phase
-document yet.
+handler fix from the known-defects table below. Phase 2, written up in
+[`02-producer.md`](./02-producer.md), merged on 2026-10-05 as
+[#1161](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/1161), which also
+archives a fourth ecosystem, `javascript`, added by
+[#1202](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/1202). What its fork
+rehearsal established is recorded in that document. Its first upstream run, dispatched by hand the
+same day with ecosystem `collector`, published `data-collector-95dcbb3e56e0`, so publication passed
+the tag ruleset, and opened the bootstrap pull request,
+[#1236](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/1236), which merged
+with the first `data-manifest.json`. The first nightly, on 2026-10-06, published the other three
+ecosystems and force-pushed the branch of
+[#1214](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/1214), which merged
+too, so the manifest on `main` pins all four. The `split` pull request is next, planned in
+[`02-cache-split.md`](./02-cache-split.md), whose merge order lists the steps between phase 2's
+merge and opening it. Phases 3 and 4 have their decisions settled in
+[`design-decisions.md`](./design-decisions.md) but no phase document yet.
 
 ## Sequence
 
@@ -29,8 +36,8 @@ with a plain `git revert`.
 | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- | ----------- |
 | micro | Add the missing `blocking` handler to `openDB` (see known defects)                                                                                | yes        | merged      |
 | 1     | Test suite runs without the generated database, plus these initiative documents                                                                   | yes        | merged      |
-| 2     | Producer: builder emits reproducible per-ecosystem archives and the manifest; the nightly publishes releases and detects change by content digest | yes        | in review   |
-| split | `DB_VERSION` becomes schema-only, each cache entry carries the content id, and the `sed` bump step is deleted in the same change                  | yes        | not planned |
+| 2     | Producer: builder emits reproducible per-ecosystem archives and the manifest; the nightly publishes releases and detects change by content digest | yes        | merged      |
+| split | `DB_VERSION` becomes schema-only, each cache entry carries the content id, and the `sed` bump step is deleted in the same change                  | yes        | in progress |
 | 3     | Consumer: the `fetch-database` script wired in front of every consumer, inert while the data is present, plus the equivalence job                 | yes        | not planned |
 | 4     | **The flip** — `git rm -r --cached` plus `.gitignore`                                                                                             | **no**     | not planned |
 
@@ -52,7 +59,9 @@ inside it.
 - **Hygiene**: deleting `orphan_gc`, `_is_current`, `remove_orphans` and the builder's `--clean`
   flag, now that every build is a clean build. A follow-up, done when convenient. The workflow's
   `build_mode` input went with phase 2, because an input that no longer changes anything is worse
-  than no input at all.
+  than no input at all. The README follow-up from the `split` pull request belongs with it, because
+  both touch the same writers: hash the sanitized README instead of the upstream one, so READMEs
+  become content-addressed and can be fetched with `immutable: true` in the browser.
 
 ## The dual-run window
 
@@ -68,13 +77,19 @@ archive **omits**, which is the failure that matters.
 
 - Phase 1 landed; `bunx tsc -b` exits 0 with the generated directories removed. Done.
 - The bootstrap release exists and is **published**, not a draft. Draft assets are not downloadable
-  anonymously, and Netlify builds unauthenticated.
+  anonymously, and Netlify builds unauthenticated. Done.
 - Phase 3's equivalence check is green on several consecutive nightly data pull requests, covering
   at least one collector, one javaagent, one configuration and one javascript change.
 - At least one Netlify **production** deploy has built from the release rather than from the
   committed tree.
 - Every open `otelbot/automated-explorer-database-update-*` pull request is closed or merged. They
   carry the old large diff and would conflict irreconcilably.
+- The split is merged and no workflow step edits `idb-cache.ts`.
+- Every `vite build` runs after the data fetch: the `Run build` step in `build-and-test.yml`, the
+  `Build explorer` step in `nightly-declarative-config-test.yml`, the `build`,
+  `netlify-build:preview` and `netlify-build:production` scripts, and the build steps of
+  `screenshots-baseline.yml` and `screenshots-capture.yml`. Since the split, a build without the
+  generated data fails instead of shipping a broken site.
 - The nightly schedule is paused for the flip window and re-enabled after the first successful
   post-flip run.
 
@@ -85,10 +100,6 @@ the flip.
 
 ### What later phases must carry
 
-- **Split**: the split branch's sentinels (`scripts/generated-data.ts`) check only
-  `{javaagent,collector,configuration}/versions-index.json`. `javascript` has no
-  `versions-index.json`; its sentinel is `javascript/index.json`, added once its data is tracked or
-  consumed.
 - **Phase 3**: the fetch script takes the ecosystem list from the manifest's `ecosystems` keys, not
   from a literal. It checks the unpacked tree against `content_digest` as well as the download
   against `archive_sha256`: the latter only records what GitHub served when the block was written,
@@ -114,24 +125,26 @@ generated directories, so `previous_digest` is null, `data_changed` is true on e
 why the split must delete the step. Phase 2 chose **the split**, as recommended in
 [`design-decisions.md` §4](./design-decisions.md#4-browser-cache-invalidation): `DB_VERSION` becomes
 a schema-only integer, each cache entry carries the content id it was written under, and an explicit
-`immutable: true` flag exempts content-addressed entries from both the stamp and the 24-hour expiry.
+`immutable: true` flag exempts content-addressed JSON entries from both the stamp and the 24-hour
+expiry.
 
-It ships in a pull request of its own, between phases 2 and 3, and that pull request **must delete
-the `sed` bump step in the same change**. Leaving the step in place lets the next nightly increment
-the integer anyway, which turns any later deploy rollback into a permanent `VersionError`. The
-reasoning is in
+The `split` pull request, planned in [`02-cache-split.md`](./02-cache-split.md), carried it on its
+own between phases 2 and 3 and **deleted the `sed` bump step in the same change**. Leaving the step
+in place would have let the next nightly increment the integer anyway, so a later deploy rollback
+would have hit a `VersionError` that disables the cache until a build with a version at least as
+high ships. The reasoning is in
 [`02-producer.md`](./02-producer.md#1-db_version-takes-the-split-in-a-pull-request-of-its-own).
 
-The deadline is phase 4, not phase 2: while `public/data/` is tracked, the existing bump keeps
-working.
+The deadline was phase 4, not phase 2, because the bump kept working while `public/data/` stayed
+tracked.
 
 ## Known defects recorded during design
 
 | What                                                                                                                                                                                                                                                          | Where                                                                                                | Disposition                                                                                    |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `openDB` registers no `blocking` handler, so after a `DB_VERSION` bump a user with an old tab open waits on a promise that never resolves and never rejects, so nothing is logged                                                                             | `ecosystem-explorer/src/lib/api/idb-cache.ts:77`                                                     | fixed in [#1158](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/1158) |
-| Two open data pull requests make the identical `DB_VERSION` 28→29 edit; git's 3-way merge accepts the second silently, so the second merge never invalidates any cache                                                                                        | the `Increment DB cache schema version` step of `build-explorer-database.yml`                        | **disappears** with the split, which is now decided; see the `split` row in the sequence       |
-| Content-addressed entries expire after 24 hours like everything else, so the 91.7% of the cache that can never go stale is refetched daily                                                                                                                    | `ecosystem-explorer/src/lib/api/idb-cache.ts:20`                                                     | addressed by the `immutable: true` flag, part of the `split` pull request                      |
+| `openDB` registers no `blocking` handler, so after a `DB_VERSION` bump a user with an old tab open waits on a promise that never resolves and never rejects, so nothing is logged                                                                             | `openDB` in `ecosystem-explorer/src/lib/api/idb-cache.ts`                                            | fixed in [#1158](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/1158) |
+| Two open data pull requests make the identical `DB_VERSION` 28→29 edit; git's 3-way merge accepts the second silently, so the second merge never invalidates any cache                                                                                        | the `Increment DB cache schema version` step of `build-explorer-database.yml`                        | fixed by the `split` pull request                                                              |
+| Content-addressed entries expire after 24 hours like everything else, so the 63% of the cache that can never go stale is refetched daily                                                                                                                      | `CACHE_EXPIRATION_MS` in `ecosystem-explorer/src/lib/api/idb-cache.ts`                               | fixed by the `split` pull request                                                              |
 | Five `core-x*` packages are listed as deprecated in 0.159.0; they were never components and still ship upstream, so the site shows 9 deprecations where 4 are real. The root cause (#991) is fixed in #993, but only for versions extracted after that landed | `ecosystem-registry/collector/deprecations.yaml`, `ecosystem-automation/collector-watcher/README.md` | registry-side and out of scope here; needs its own issue for the already-published versions    |
 | Corpus files selected by mtime, which is extraction time once data arrives by untar                                                                                                                                                                           | `ecosystem-explorer/src/lib/normalize-instrumentation.test.ts`                                       | the selection was removed in phase 1, task 3                                                   |
 
@@ -149,4 +162,5 @@ working.
 | 2026-09-23 | Packing, both digests and the manifest live in the Python builder; only the `gh` calls stay in the workflow                            | `db-builder-integration.yml` already builds clean on every relevant pull request, so the computation gets regression coverage for free. `tarfile` was re-verified as byte-deterministic, and unlike shelling out to `tar` it behaves the same on macOS                                   |
 | 2026-09-23 | The `DB_VERSION` split ships in its own pull request between phases 2 and 3                                                            | It is the only part of #947 that runs in users' browsers, and the pull request that introduces it must delete the `sed` bump step in the same change                                                                                                                                     |
 | 2026-09-23 | `data-manifest.json` lives at `ecosystem-explorer/public/data-manifest.json`                                                           | Netlify's `base` is `ecosystem-explorer` and no `ignore` command is set, so a manifest at the repository root would leave the promotion merge building nothing                                                                                                                           |
+| 2026-09-27 | READMEs stay mutable in the browser cache                                                                                              | `markdown_hash` hashes the upstream README, not the sanitizer's output, so a sanitizer change rewrites a README under the same name and an immutable one would stay stale. Hashing the sanitized README is a builder change, recorded beside the Hygiene item                            |
 | 2026-10-01 | `javascript` joins as the fourth archive ecosystem in #1161                                                                            | #1202 builds it under `--ecosystem all`, which `--emit-archives` requires, so leaving it out would build it every night and never archive or commit it                                                                                                                                   |

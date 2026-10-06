@@ -15,7 +15,7 @@
 """Audit collector components for a missing display_name, for the nightly tracking issue.
 
 The report is a build artifact, deliberately NOT written to the content-addressed database,
-so it stays out of the DB diff, the DB_VERSION bump, and the automated database PR.
+so it stays out of the DB diff, the content id, and the automated database PR.
 """
 
 import json

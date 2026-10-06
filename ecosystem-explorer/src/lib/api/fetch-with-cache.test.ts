@@ -28,9 +28,11 @@ describe("fetchWithCache", () => {
     idbCache.closeDB();
   });
 
-  afterEach(() => {
+  afterEach(async () => {
     vi.restoreAllMocks();
+    await idbCache.clearAllCached();
     idbCache.closeDB();
+    vi.unstubAllEnvs();
   });
 
   it("should fetch and cache on cache miss", async () => {
@@ -46,9 +48,40 @@ describe("fetchWithCache", () => {
     const result = await fetchWithCache<typeof data>("key", "/url", idbCache.STORES.METADATA);
 
     expect(result).toEqual(data);
-    expect(getCachedSpy).toHaveBeenCalledWith("key", idbCache.STORES.METADATA);
+    expect(getCachedSpy).toHaveBeenCalledWith("key", idbCache.STORES.METADATA, {
+      immutable: false,
+    });
     expect(global.fetch).toHaveBeenCalledWith("/url");
     expect(setCachedSpy).toHaveBeenCalledWith("key", data, idbCache.STORES.METADATA);
+  });
+
+  it("passes immutable to the primary cache lookup", async () => {
+    const getCachedSpy = vi.spyOn(idbCache, "getCached").mockResolvedValue({ test: "cached" });
+
+    await fetchWithCache("key", "/url", idbCache.STORES.INSTRUMENTATIONS, { immutable: true });
+
+    expect(getCachedSpy).toHaveBeenCalledWith("key", idbCache.STORES.INSTRUMENTATIONS, {
+      immutable: true,
+    });
+  });
+
+  it("serves an entry written by a previous build when the network fails", async () => {
+    vi.stubEnv("DATA_CONTENT_ID", "previous-build");
+    await idbCache.setCached("key", { test: "stale" }, idbCache.STORES.METADATA);
+    vi.stubEnv("DATA_CONTENT_ID", "next-build");
+    (global.fetch as ReturnType<typeof vi.fn>).mockRejectedValue(new Error("offline"));
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    const result = await fetchWithCache("key", "/url", idbCache.STORES.METADATA, {
+      retryCount: 1,
+    });
+
+    expect(result).toEqual({ test: "stale" });
+    expect(warn).toHaveBeenCalledWith(
+      "Network error, serving stale cache:",
+      "key",
+      expect.any(Error)
+    );
   });
 
   it("should return cached data on cache hit without fetching", async () => {

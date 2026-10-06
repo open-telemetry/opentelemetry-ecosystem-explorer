@@ -4,7 +4,7 @@ issue: 947
 type: brief
 phase: meta
 status: in-progress
-last_updated: "2026-09-24"
+last_updated: "2026-09-27"
 ---
 
 ## Design decisions
@@ -153,28 +153,35 @@ split described below. It ships in a pull request of its own between phases 2 an
   data pull request path entirely. It is the only piece of this work that touches code running in
   users' browsers.
 
-**Decision. The split: keep `DB_VERSION` as a schema-only monotonic integer.** Inject the data's
-`content_digest` at build time and stamp each cache entry with the value it was written under; a
-mismatch is a miss. Apply it only to mutable keys, selected by an explicit `immutable: true` flag on
-`fetchWithCache`, never by object store.
+**Decision. The split: keep `DB_VERSION` as a schema-only monotonic integer.** Inject a content id
+computed over the whole of `public/data` at build time and stamp each cache entry with the value it
+was written under; a mismatch is a miss. Apply it only to mutable keys, selected by an explicit
+`immutable: true` flag on `fetchWithCache`, never by object store.
 
 **Evidence.**
 
 Deriving the IndexedDB version from a hash is ruled out by the specification: the version is an
 unsigned integer, and opening with a lower one throws `VersionError`. A digest is effectively
-random, so a lower value eventually appears, and `idb-cache.ts:90-95` latches `dbInitFailed`
-permanently — recoverable only by the user clearing site data.
+random, so a lower value eventually appears, and opening the database then fails on every page load
+until a build with a higher digest ships. Every such build raises the stored version further, so in
+practice it is recoverable only by the user clearing site data.
 
 The current design also discards more than it needs to. Of the cache, **91.7% (17.99 MB, 2,018
-files) is content-addressed** and cannot go stale; the mutable part is 1.62 MB across 30 files (28
-at `HEAD`, because #1155 moved two curated files out of `configuration/`). Every bump discards all
-of it to invalidate 8.3%, and 21 of the 31 commits touching `idb-cache.ts` are automated bumps, so a
-bump lands about once a week.
+files) carries a hash in its name**; the rest is 1.62 MB across 30 fixed-name files (28 at `HEAD`,
+because #1155 moved two curated files out of `configuration/`). Not all of that 91.7% is
+content-addressed. Measured on 2026-09-27, the JSON is 1,434 files and 12.0 MB, 61% of
+`public/data`, and its hash is computed over what it holds, so it cannot go stale. The READMEs are
+584 files and 6.0 MB, another 30.5%, and are named by the hash of the upstream README while they
+hold the sanitizer's output, so a sanitizer change rewrites them under the same name. They stay
+mutable. Every bump discards all of it, the immutable 61% included, to invalidate the mutable
+remainder, and 21 of the 31 commits touching `idb-cache.ts` are automated bumps, so a bump lands
+about once a week.
 
 A separate limit already caps what any of this preserves, and it changes what "migration cost"
-means. `idb-cache.ts:20` sets `CACHE_EXPIRATION_MS` to 24 hours, and `getCached` treats anything
-older as a miss unless the caller passes `allowExpired`, which only the network-failure fallbacks in
-`fetch-with-cache.ts` do. The content-addressed 91.7% is therefore refetched daily regardless of
+means. `CACHE_EXPIRATION_MS` in `idb-cache.ts` is 24 hours, and `getCached` treats anything older as
+a miss unless the caller passes `allowExpired`, which `fetch-with-cache.ts` does only when the
+network fails or returns something unusable: a network error, a non-OK status, an HTML 200, or a
+response that fails validation. The immutable 61% is therefore refetched daily regardless of
 `DB_VERSION`, even though a content-addressed path can never serve stale content. That is the
 strongest argument for the `immutable: true` flag: the same classification that selects which
 entries the stamp applies to is the one that lets those entries skip expiry. Without it, a per-entry
@@ -183,7 +190,8 @@ stamp only changes which mechanism discards them.
 So the cutover is cheap because of what it does **not** impose, not because of what it preserves:
 provided the cutover pull request does not bump `DB_VERSION`, an absent stamp counts as a mismatch
 on mutable keys only, so legacy mutable entries refetch once and nothing else changes. A bump would
-additionally create a `VersionError` trap on rollback.
+additionally create a `VersionError` trap on rollback, which disables the cache until a build with a
+version at least as high ships.
 
 Per-entry stamping beats a startup compare-and-clear because it removes the multi-tab race: a stale
 tab writing after a deploy stamps its own old id, so a new tab treats those entries as a miss.
@@ -193,9 +201,10 @@ tab writing after a deploy stamps its own old id, so a new tab treats those entr
 today: the workflow only bumps on bot runs, so a human pull request editing a starter template ships
 with no invalidation.
 
-Content-addressed READMEs live in the `METADATA` store next to mutable indexes
-(`javaagent-data.ts:214-219`, `collector-data.ts:242-247`), which is why classification must be per
-call rather than per store.
+Classification must be per call rather than per store. Today the four immutable call sites are
+exactly the `INSTRUMENTATIONS` store, but READMEs live in `METADATA` next to the indexes, so hashing
+the sanitized README would put immutable entries in `METADATA`, and a mutable key added to
+`INSTRUMENTATIONS` later must not inherit immutability.
 
 ---
 

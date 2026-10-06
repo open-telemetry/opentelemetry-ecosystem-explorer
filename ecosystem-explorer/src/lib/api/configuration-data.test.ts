@@ -195,4 +195,33 @@ describe("configuration-data", () => {
       await expect(loadConfigStarter("1.0.0")).rejects.toThrow(/500/);
     });
   });
+
+  describe("cache lookup options", () => {
+    it.each([
+      {
+        key: "config-versions-index",
+        cached: mockVersionsIndex,
+        load: () => configData.loadConfigVersions(),
+      },
+      {
+        key: "config-schema-1.0.0",
+        cached: mockSchema,
+        load: () => configData.loadConfigSchema("1.0.0"),
+      },
+      {
+        key: "config-starter-1.0.0",
+        cached: { enabledSections: {}, values: {} },
+        load: () => configData.loadConfigStarter("1.0.0"),
+      },
+    ])("looks up $key as mutable", async ({ key, cached, load }) => {
+      const getCachedSpy = vi.spyOn(idbCache, "getCached").mockResolvedValue(cached);
+
+      await load();
+
+      expect(getCachedSpy.mock.calls).toEqual([
+        [key, idbCache.STORES.CONFIGURATION, { immutable: false }],
+      ]);
+      expect(global.fetch).not.toHaveBeenCalled();
+    });
+  });
 });

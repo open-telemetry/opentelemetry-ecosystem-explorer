@@ -3,14 +3,17 @@ title: "Phase 2 — Producer"
 issue: 947
 type: plan
 phase: 2
-status: in-progress
-last_updated: "2026-10-01"
+status: complete
+last_updated: "2026-10-06"
 ---
 
 > [!NOTE]
 >
 > The sequence and the gates live in [`NEXT-STEPS.md`](./NEXT-STEPS.md). The decisions behind this
 > phase are in [`design-decisions.md`](./design-decisions.md).
+>
+> The `DB_VERSION` bump step described here was removed by the split, see
+> [`02-cache-split.md`](./02-cache-split.md).
 
 ## Phase 2 — Producer
 
@@ -84,8 +87,8 @@ It is the only part of #947 that runs in users' browsers, so it deserves a revie
 not shared with tar recipes and workflow YAML. And whichever pull request introduces it **must
 delete the `sed` bump step in the same change**: if the step survives, the next nightly still
 increments the integer, and a subsequent deploy rollback then leaves the browser holding a database
-at version _N_ while the code asks for _N−1_. `openDB` throws `VersionError` on the lower value and
-`idb-cache.ts` latches `dbInitFailed` permanently, recoverable only by the user clearing site data.
+at version _N_ while the code asks for _N−1_. `openDB` throws `VersionError` on the lower value, and
+the cache stays disabled on every page load until a build with a version at least as high ships.
 
 The deadline is phase 4, not this phase: while `public/data/` is tracked, the git-triggered bump
 keeps doing its job.
@@ -447,13 +450,18 @@ with ecosystem `all`. The fork had no releases and no manifest yet:
 A personal fork carries none of the organization's rulesets, so it cannot exercise the tag ruleset
 at all. That question was answered by reading the ruleset instead: `5576619` is the only ruleset
 targeting tags, and its rules are `deletion`, `non_fast_forward` and `update`, with no `creation`
-rule, so automation may create `refs/tags/data-*`. What is left untried is the first real execution
-against it.
+rule, so automation may create `refs/tags/data-*`. The first real execution against it passed. On
+2026-10-05 the workflow was dispatched by hand on upstream with ecosystem `collector`: it published
+`data-collector-95dcbb3e56e0` and opened the bootstrap pull request,
+[#1236](https://github.com/open-telemetry/opentelemetry-ecosystem-explorer/pull/1236). The first
+nightly, on 2026-10-06, published `data-configuration-ff3eb0ebf3a6`, `data-javaagent-750077d492c4`
+and `data-javascript-d9775d841fe8`. All four are pre-releases, and their assets download
+anonymously.
 
 ## Follow-ups
 
-- The bootstrap releases and the first manifest are produced by the first upstream run of this
-  workflow, which satisfies the phase 4 gate requiring a published, non-draft release.
+- The first two upstream runs of this workflow, described above, produced the bootstrap releases and
+  the manifest, which satisfies the phase 4 gate requiring a published, non-draft release.
 - A JSON schema for the manifest was not written. The consumer in phase 3 is the first thing that
   parses it, and it is the better place to decide whether the shape needs validating.
 - `public/data/` holds hand-maintained directories beside the generated ones, and the set grows:

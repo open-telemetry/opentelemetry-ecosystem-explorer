@@ -45,10 +45,11 @@ pages re-rendering header/footer locally.
 
 - Flag `setState` in render bodies — StrictMode double-invocation has bitten this codebase. Move to
   `useEffect` or event handlers.
-- **Do NOT bump `DB_VERSION` in `src/lib/api/idb-cache.ts` in feature PRs.** It is auto-bumped by
-  `.github/workflows/build-explorer-database.yml` when `public/data/` changes. Manual bumps are
-  correct only when the IDB schema actually changes (`STORES`, `CACHE_EXPIRATION_MS`, upgrade
-  logic).
+- `DB_VERSION` in `src/lib/api/idb-cache.ts` is a schema version, not a data version. No workflow
+  bumps it. Bump it by hand only when `STORES`, a store's `keyPath` or the `upgrade` handler change,
+  or when the value cached under an existing immutable key changes shape; in that last case prefer
+  renaming the key prefix, which invalidates only those entries. `CACHE_EXPIRATION_MS` is not a
+  reason, because expiry is evaluated at read time.
 - The destructive upgrade handler in `initDB` is intentional. Don't propose preserving stores across
   version changes.
 

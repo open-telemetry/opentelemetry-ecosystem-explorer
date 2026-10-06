@@ -18,6 +18,7 @@ import json
 from pathlib import Path
 
 import pytest
+from explorer_db_builder.content_hashing import content_hash
 from explorer_db_builder.database_writer import DatabaseWriter
 from semantic_version import Version
 
@@ -893,3 +894,20 @@ class TestRemoveOrphans:
         assert db_writer.remove_orphans() == 0
         assert "Skipping orphan GC: no readable version index found" in caplog.text
         assert db_writer._instrumentation_file("lib1", library_map["lib1"]).exists()
+
+
+class TestContentAddressedFilesMatchTheirNames:
+    def test_every_hashed_json_file_parses_to_its_hash(self, db_writer, temp_db_dir, sample_libraries):
+        libraries = [
+            *sample_libraries,
+            {"name": "unicode-lib", "description": "café → 1.5e-3", "nested": {"b": 2, "a": [1.0, None]}},
+        ]
+        db_writer.write_libraries(libraries)
+        db_writer.write_version_bundle(Version("2.0.0"), [{"name": "lib1", "has_spans": True}])
+
+        files = [*temp_db_dir.glob("instrumentations/**/*.json"), *temp_db_dir.glob("bundles/*.json")]
+
+        assert len(files) == len(libraries) + 1
+        for file in files:
+            with open(file, encoding="utf-8") as handle:
+                assert file.stem.rsplit("-", 1)[1] == content_hash(json.load(handle)), file

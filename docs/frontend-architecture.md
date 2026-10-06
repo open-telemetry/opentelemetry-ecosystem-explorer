@@ -39,10 +39,15 @@ interface CacheEntry<T> {
   data: T;
   cachedAt: number; // Used for the 24h TTL and pruning
   lastAccessedAt?: number;
+  contentId?: string;
 }
 ```
 
-Entries expire after 24 hours (`CACHE_EXPIRATION_MS`) and are pruned on a 24-hour interval.
+`contentId` is the content id of the build that wrote the entry, a hash over `public/data` computed
+at build time. A mutable entry is a miss once it is older than 24 hours (`CACHE_EXPIRATION_MS`) or
+when its `contentId` differs from the current build's. Entries fetched with `immutable: true` skip
+both checks. Every entry, immutable or not, is pruned once it has gone unused for seven days, and
+pruning runs on a 24-hour interval.
 
 ### Request Flow
 

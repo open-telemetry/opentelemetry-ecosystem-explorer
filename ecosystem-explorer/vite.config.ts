@@ -16,9 +16,10 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
+import { dataContentIdPlugin } from "./scripts/data-content-id.ts";
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), dataContentIdPlugin(path.resolve(import.meta.dirname, "public/data"))],
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "./src"),

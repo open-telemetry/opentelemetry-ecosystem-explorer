@@ -136,8 +136,11 @@ layer consists of three main parts:
 
 1. IDB Cache (`src/lib/api/idb-cache.ts`) - Browser-persistent storage with four object stores:
    `metadata` (versions, manifests), `instrumentations` (content-addressed data), `configuration`
-   (declarative configuration schema data), and `global-configurations`. Bump `DB_VERSION` when
-   changing the schema.
+   (declarative configuration schema data), and `global-configurations`. Each entry records the
+   content id of the build that wrote it, a hash over `public/data` computed at build time. A
+   mutable entry is a miss once it is older than 24 hours or when that id differs from the current
+   build's; entries fetched with `immutable: true` skip both checks. When to bump `DB_VERSION` is
+   covered in [`AGENTS.md`](./AGENTS.md#data-fetching).
 
 2. Data APIs (`src/lib/api/`) - Per-ecosystem fetching layers (`javaagent-data.ts`,
    `collector-data.ts`, `configuration-data.ts`) built on the shared `fetch-with-cache.ts` helper,

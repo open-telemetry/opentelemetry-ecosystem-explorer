@@ -46,9 +46,14 @@ ecosystem-explorer/public/data/
 
 Hash in filename guarantees immutable content:
 
-- Enables aggressive CDN caching: `Cache-Control: public, max-age=31536000, immutable`
+- Would allow aggressive CDN caching (`Cache-Control: public, max-age=31536000, immutable`),
+  although `netlify.toml` sets no such header for `/data/**` today
 - No cache invalidation needed
 - Same hash = identical content
+
+This holds for the JSON files, whose hash is computed over the content they hold. README files are
+different: they are named by the hash of the upstream README, while the file holds the sanitized
+output, so the same name is rewritten with new content whenever the sanitizer changes.
 
 ## Key Files
 
@@ -136,7 +141,8 @@ Caching: Long TTL (doesn't change after version release)
 }
 ```
 
-Caching: Immutable (cache forever)
+Caching: content-addressed, so the browser cache fetches it with `immutable: true`, which skips
+expiry and the content id check; `netlify.toml` sets no long-lived header for it
 
 ## Data Loading Patterns
 
