@@ -1,0 +1,16 @@
+description: OpenTelemetry SQLAlchemy instrumentation
+entry_points:
+- name: sqlalchemy
+  value: opentelemetry.instrumentation.sqlalchemy:SQLAlchemyInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-sqlalchemy
+instruments:
+- library: sqlalchemy
+  source_key: instruments
+  version_range: '>= 1.0.0, < 2.1.0'
+name: opentelemetry-instrumentation-sqlalchemy
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: migration
+source_path: instrumentation/opentelemetry-instrumentation-sqlalchemy
+supports_metrics: true
+version: 0.66b1

@@ -1,0 +1,16 @@
+description: OpenTelemetry Instrumentation for Django
+entry_points:
+- name: django
+  value: opentelemetry.instrumentation.django:DjangoInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-django
+instruments:
+- library: django
+  source_key: instruments
+  version_range: '>= 2.0'
+name: opentelemetry-instrumentation-django
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: null
+source_path: instrumentation/opentelemetry-instrumentation-django
+supports_metrics: true
+version: 0.66b1

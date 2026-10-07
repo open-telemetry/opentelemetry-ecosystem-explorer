@@ -1,0 +1,16 @@
+description: OpenTelemetry structlog instrumentation
+entry_points:
+- name: structlog
+  value: opentelemetry.instrumentation.structlog:StructlogInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-structlog
+instruments:
+- library: structlog
+  source_key: instruments
+  version_range: '>= 21.1'
+name: opentelemetry-instrumentation-structlog
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: null
+source_path: instrumentation/opentelemetry-instrumentation-structlog
+supports_metrics: null
+version: 0.66b1

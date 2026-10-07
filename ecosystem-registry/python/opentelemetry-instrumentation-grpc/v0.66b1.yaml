@@ -1,0 +1,22 @@
+description: OpenTelemetry gRPC instrumentation
+entry_points:
+- name: grpc_aio_client
+  value: opentelemetry.instrumentation.grpc:GrpcAioInstrumentorClient
+- name: grpc_aio_server
+  value: opentelemetry.instrumentation.grpc:GrpcAioInstrumentorServer
+- name: grpc_client
+  value: opentelemetry.instrumentation.grpc:GrpcInstrumentorClient
+- name: grpc_server
+  value: opentelemetry.instrumentation.grpc:GrpcInstrumentorServer
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-grpc
+instruments:
+- library: grpcio
+  source_key: instruments
+  version_range: '>= 1.42.0'
+name: opentelemetry-instrumentation-grpc
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: null
+source_path: instrumentation/opentelemetry-instrumentation-grpc
+supports_metrics: null
+version: 0.66b1

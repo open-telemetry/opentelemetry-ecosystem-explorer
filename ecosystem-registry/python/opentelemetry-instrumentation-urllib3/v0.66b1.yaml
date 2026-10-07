@@ -1,0 +1,16 @@
+description: OpenTelemetry urllib3 instrumentation
+entry_points:
+- name: urllib3
+  value: opentelemetry.instrumentation.urllib3:URLLib3Instrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-urllib3
+instruments:
+- library: urllib3
+  source_key: instruments
+  version_range: '>= 1.0.0, < 3.0.0'
+name: opentelemetry-instrumentation-urllib3
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: migration
+source_path: instrumentation/opentelemetry-instrumentation-urllib3
+supports_metrics: true
+version: 0.66b1

@@ -1,0 +1,16 @@
+description: OpenTelemetry System Metrics Instrumentation
+entry_points:
+- name: system_metrics
+  value: opentelemetry.instrumentation.system_metrics:SystemMetricsInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-system-metrics
+instruments:
+- library: psutil
+  source_key: instruments
+  version_range: '>= 5'
+name: opentelemetry-instrumentation-system-metrics
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: null
+source_path: instrumentation/opentelemetry-instrumentation-system-metrics
+supports_metrics: null
+version: 0.66b1

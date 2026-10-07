@@ -1,0 +1,11 @@
+description: OpenTelemetry Database API instrumentation
+entry_points: []
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-dbapi
+instruments: []
+name: opentelemetry-instrumentation-dbapi
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: migration
+source_path: instrumentation/opentelemetry-instrumentation-dbapi
+supports_metrics: null
+version: 0.66b1

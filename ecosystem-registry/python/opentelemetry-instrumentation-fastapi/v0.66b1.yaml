@@ -1,0 +1,16 @@
+description: OpenTelemetry FastAPI Instrumentation
+entry_points:
+- name: fastapi
+  value: opentelemetry.instrumentation.fastapi:FastAPIInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-fastapi
+instruments:
+- library: fastapi
+  source_key: instruments
+  version_range: ~= 0.92
+name: opentelemetry-instrumentation-fastapi
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: migration
+source_path: instrumentation/opentelemetry-instrumentation-fastapi
+supports_metrics: true
+version: 0.66b1

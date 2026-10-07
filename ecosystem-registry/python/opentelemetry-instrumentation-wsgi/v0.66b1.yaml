@@ -1,0 +1,11 @@
+description: WSGI Middleware for OpenTelemetry
+entry_points: []
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-wsgi
+instruments: []
+name: opentelemetry-instrumentation-wsgi
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: migration
+source_path: instrumentation/opentelemetry-instrumentation-wsgi
+supports_metrics: true
+version: 0.66b1

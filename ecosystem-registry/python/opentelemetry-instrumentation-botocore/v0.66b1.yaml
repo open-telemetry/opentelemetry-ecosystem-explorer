@@ -1,0 +1,21 @@
+description: OpenTelemetry Botocore instrumentation
+entry_points:
+- name: aiobotocore
+  value: opentelemetry.instrumentation.botocore:AiobotocoreInstrumentor
+- name: botocore
+  value: opentelemetry.instrumentation.botocore:BotocoreInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-botocore
+instruments:
+- library: aiobotocore
+  source_key: instruments-any
+  version_range: '>= 2.0, < 4.0'
+- library: botocore
+  source_key: instruments-any
+  version_range: ~= 1.0
+name: opentelemetry-instrumentation-botocore
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: null
+source_path: instrumentation/opentelemetry-instrumentation-botocore
+supports_metrics: null
+version: 0.66b1
