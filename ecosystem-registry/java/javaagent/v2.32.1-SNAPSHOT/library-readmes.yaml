@@ -7,9 +7,9 @@ armeria-1.3: armeria-1.3-977075160b7e.md
 aws-lambda-core-1.0: aws-lambda-core-1.0-5846db79cc39.md
 aws-lambda-events-3.11: aws-lambda-events-3.11-6d2c8fd10301.md
 aws-sdk-1.11: aws-sdk-1.11-58b918ec054f.md
-aws-sdk-2.2: aws-sdk-2.2-991a9ba88a69.md
+aws-sdk-2.2: aws-sdk-2.2-9a92fc96761e.md
 c3p0-0.9: c3p0-0.9-0bbe5ea098b1.md
-cassandra-4.4: cassandra-4.4-390942d47a0f.md
+cassandra-4.4: cassandra-4.4-4ce0be2ed41d.md
 failsafe-3.0: failsafe-3.0-887d0b4888d8.md
 graphql-java-12.0: graphql-java-12.0-a6a4fce29908.md
 graphql-java-20.0: graphql-java-20.0-02ee39ca8234.md
@@ -21,7 +21,7 @@ java-http-server: java-http-server-1fbd5c1c2bbc.md
 jdbc: jdbc-d7f0013877c5.md
 jetty-httpclient-12.0: jetty-httpclient-12.0-f1c4f6282b92.md
 jetty-httpclient-9.2: jetty-httpclient-9.2-bc893ec6a7c1.md
-kafka-clients-2.6: kafka-clients-2.6-3f7fcfe40f2f.md
+kafka-clients-2.6: kafka-clients-2.6-b6e149f15634.md
 ktor-1.0: ktor-1.0-92f09c5442e6.md
 ktor-2.0: ktor-2.0-3dae6fcf9ded.md
 ktor-3.0: ktor-3.0-7fcda34c7937.md
@@ -30,12 +30,12 @@ log4j-appender-2.17: log4j-appender-2.17-98e19048c988.md
 logback-appender-1.0: logback-appender-1.0-14908fa0178b.md
 logback-mdc-1.0: logback-mdc-1.0-271b39a27eba.md
 micrometer-1.5: micrometer-1.5-33d3de7e3942.md
-mongo-3.1: mongo-3.1-a3a14787cef1.md
+mongo-3.1: mongo-3.1-002825f2a967.md
 nats-2.17: nats-2.17-b5f153b0ee5c.md
 netty-4.1: netty-4.1-1aee978bf28a.md
 okhttp-3.0: okhttp-3.0-957ce54517b8.md
 openai-java-1.1: openai-java-1.1-43a58f3274d2.md
-oracle-ucp-11.2: oracle-ucp-11.2-c9bb5ce1e9f0.md
+oracle-ucp-11.2: oracle-ucp-11.2-f736cddb6533.md
 oshi-5.0: oshi-5.0-bfd5c32a149f.md
 quartz-2.0: quartz-2.0-4b4e201cb808.md
 r2dbc-1.0: r2dbc-1.0-4ef8ee1cb8e6.md

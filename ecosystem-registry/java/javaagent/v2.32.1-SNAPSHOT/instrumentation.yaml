@@ -2411,18 +2411,6 @@ definitions:
         type: STRING
       - name: server.port
         type: LONG
-    db.client.connection.count-2e6ba9b7:
-      name: db.client.connection.count
-      description: The number of connections that are currently in state described
-        by the state attribute.
-      instrument: updowncounter
-      data_type: LONG_SUM
-      unit: '{connection}'
-      attributes:
-      - name: db.client.connection.pool.name
-        type: STRING
-      - name: db.client.connection.state
-        type: STRING
     db.client.connection.count-f1e2cae3:
       name: db.client.connection.count
       description: The number of connections that are currently in state described
@@ -2437,7 +2425,7 @@ definitions:
         type: STRING
       - name: db.system.name
         type: STRING
-    db.client.connection.create_time-4f586679:
+    db.client.connection.create_time-23c73da1:
       name: db.client.connection.create_time
       description: The time it took to create a new connection.
       instrument: histogram
@@ -2445,6 +2433,12 @@ definitions:
       unit: s
       attributes:
       - name: db.client.connection.pool.name
+        type: STRING
+      - name: db.namespace
+        type: STRING
+      - name: db.system.name
+        type: STRING
+      - name: server.address
         type: STRING
     db.client.connection.idle.max-50075a96:
       name: db.client.connection.idle.max
@@ -2463,24 +2457,6 @@ definitions:
         type: STRING
       - name: server.port
         type: LONG
-    db.client.connection.idle.max-b95e4f5c:
-      name: db.client.connection.idle.max
-      description: The maximum number of idle open connections allowed.
-      instrument: updowncounter
-      data_type: LONG_SUM
-      unit: '{connection}'
-      attributes:
-      - name: db.client.connection.pool.name
-        type: STRING
-    db.client.connection.idle.min-73bdafbc:
-      name: db.client.connection.idle.min
-      description: The minimum number of idle open connections allowed.
-      instrument: updowncounter
-      data_type: LONG_SUM
-      unit: '{connection}'
-      attributes:
-      - name: db.client.connection.pool.name
-        type: STRING
     db.client.connection.idle.min-a027c25a:
       name: db.client.connection.idle.min
       description: The minimum number of idle open connections allowed.
@@ -2519,15 +2495,6 @@ definitions:
       - name: db.client.connection.pool.name
         type: STRING
       - name: db.system.name
-        type: STRING
-    db.client.connection.limit-12f711ee:
-      name: db.client.connection.limit
-      description: The maximum number of open connections allowed.
-      instrument: updowncounter
-      data_type: LONG_SUM
-      unit: '{connection}'
-      attributes:
-      - name: db.client.connection.pool.name
         type: STRING
     db.client.connection.limit-a51cb0ee:
       name: db.client.connection.limit
@@ -2574,15 +2541,6 @@ definitions:
         type: STRING
       - name: db.system.name
         type: STRING
-    db.client.connection.pending_requests-a0f41111:
-      name: db.client.connection.pending_requests
-      description: The number of current pending requests for an open connection.
-      instrument: updowncounter
-      data_type: LONG_SUM
-      unit: '{request}'
-      attributes:
-      - name: db.client.connection.pool.name
-        type: STRING
     db.client.connection.timeouts-d2dbfa58:
       name: db.client.connection.timeouts
       description: The number of connection timeouts that have occurred trying to
@@ -2593,7 +2551,7 @@ definitions:
       attributes:
       - name: db.client.connection.pool.name
         type: STRING
-    db.client.connection.use_time-a06760eb:
+    db.client.connection.use_time-ad426bf0:
       name: db.client.connection.use_time
       description: The time between borrowing a connection and returning it to the
         pool.
@@ -2603,7 +2561,13 @@ definitions:
       attributes:
       - name: db.client.connection.pool.name
         type: STRING
-    db.client.connection.wait_time-40a55682:
+      - name: db.namespace
+        type: STRING
+      - name: db.system.name
+        type: STRING
+      - name: server.address
+        type: STRING
+    db.client.connection.wait_time-11b10d74:
       name: db.client.connection.wait_time
       description: The time it took to obtain an open connection from the pool.
       instrument: histogram
@@ -2611,6 +2575,12 @@ definitions:
       unit: s
       attributes:
       - name: db.client.connection.pool.name
+        type: STRING
+      - name: db.namespace
+        type: STRING
+      - name: db.system.name
+        type: STRING
+      - name: server.address
         type: STRING
     db.client.connections.create_time-6f641171:
       name: db.client.connections.create_time
@@ -2903,6 +2873,29 @@ definitions:
         type: STRING
       - name: server.port
         type: LONG
+    db.client.operation.duration-83708a92:
+      name: db.client.operation.duration
+      description: Duration of database client operations.
+      instrument: histogram
+      data_type: HISTOGRAM
+      unit: s
+      attributes:
+      - name: db.namespace
+        type: STRING
+      - name: db.query.summary
+        type: STRING
+      - name: db.system.name
+        type: STRING
+      - name: error.type
+        type: STRING
+      - name: network.peer.address
+        type: STRING
+      - name: network.peer.port
+        type: LONG
+      - name: server.address
+        type: STRING
+      - name: server.port
+        type: LONG
     db.client.operation.duration-8ae2b8ce:
       name: db.client.operation.duration
       description: Duration of database client operations.
@@ -2979,42 +2972,6 @@ definitions:
         type: STRING
       - name: server.port
         type: LONG
-    db.client.operation.duration-ec9463db:
-      name: db.client.operation.duration
-      description: Duration of database client operations.
-      instrument: histogram
-      data_type: HISTOGRAM
-      unit: s
-      attributes:
-      - name: db.namespace
-        type: STRING
-      - name: db.query.summary
-        type: STRING
-      - name: db.system.name
-        type: STRING
-      - name: network.peer.address
-        type: STRING
-      - name: network.peer.port
-        type: LONG
-      - name: server.address
-        type: STRING
-      - name: server.port
-        type: LONG
-    db.client.operation.duration-f0613d87:
-      name: db.client.operation.duration
-      description: Duration of database client operations.
-      instrument: histogram
-      data_type: HISTOGRAM
-      unit: s
-      attributes:
-      - name: db.collection.name
-        type: STRING
-      - name: db.operation.name
-        type: STRING
-      - name: db.system.name
-        type: STRING
-      - name: server.address
-        type: STRING
     db.client.operation.duration-fce1854c:
       name: db.client.operation.duration
       description: Duration of database client operations.
@@ -5750,23 +5707,6 @@ definitions:
         type: STRING
       - name: messaging.system
         type: STRING
-    messaging.client.consumed.messages-bda2d99f:
-      name: messaging.client.consumed.messages
-      description: Number of messages that were delivered to the application.
-      instrument: counter
-      data_type: LONG_SUM
-      unit: '{message}'
-      attributes:
-      - name: error.type
-        type: STRING
-      - name: messaging.operation.name
-        type: STRING
-      - name: messaging.system
-        type: STRING
-      - name: server.address
-        type: STRING
-      - name: server.port
-        type: LONG
     messaging.client.consumed.messages-c0fc17f6:
       name: messaging.client.consumed.messages
       description: Number of messages that were delivered to the application.
@@ -5816,7 +5756,7 @@ definitions:
         type: STRING
       - name: server.port
         type: LONG
-    messaging.client.operation.duration-4afb25bc:
+    messaging.client.operation.duration-2dcc8fe4:
       name: messaging.client.operation.duration
       description: Duration of messaging operation initiated by a producer or consumer
         client.
@@ -5824,6 +5764,10 @@ definitions:
       data_type: HISTOGRAM
       unit: s
       attributes:
+      - name: error.type
+        type: STRING
+      - name: messaging.destination.name
+        type: STRING
       - name: messaging.operation.name
         type: STRING
       - name: messaging.operation.type
@@ -5850,7 +5794,7 @@ definitions:
         type: STRING
       - name: messaging.system
         type: STRING
-    messaging.client.operation.duration-bcc65266:
+    messaging.client.operation.duration-83802976:
       name: messaging.client.operation.duration
       description: Duration of messaging operation initiated by a producer or consumer
         client.
@@ -5858,6 +5802,8 @@ definitions:
       data_type: HISTOGRAM
       unit: s
       attributes:
+      - name: messaging.consumer.group.name
+        type: STRING
       - name: messaging.destination.name
         type: STRING
       - name: messaging.destination.partition.id
@@ -5906,6 +5852,46 @@ definitions:
         type: STRING
       - name: server.port
         type: LONG
+    messaging.client.operation.duration-df200871:
+      name: messaging.client.operation.duration
+      description: Duration of messaging operation initiated by a producer or consumer
+        client.
+      instrument: histogram
+      data_type: HISTOGRAM
+      unit: s
+      attributes:
+      - name: messaging.destination.name
+        type: STRING
+      - name: messaging.destination.subscription.name
+        type: STRING
+      - name: messaging.operation.name
+        type: STRING
+      - name: messaging.operation.type
+        type: STRING
+      - name: messaging.system
+        type: STRING
+      - name: server.address
+        type: STRING
+      - name: server.port
+        type: LONG
+    messaging.client.operation.duration-f4822aab:
+      name: messaging.client.operation.duration
+      description: Duration of messaging operation initiated by a producer or consumer
+        client.
+      instrument: histogram
+      data_type: HISTOGRAM
+      unit: s
+      attributes:
+      - name: messaging.consumer.group.name
+        type: STRING
+      - name: messaging.destination.name
+        type: STRING
+      - name: messaging.operation.name
+        type: STRING
+      - name: messaging.operation.type
+        type: STRING
+      - name: messaging.system
+        type: STRING
     messaging.client.sent.messages-38a90199:
       name: messaging.client.sent.messages
       description: Number of messages producer attempted to send to the broker.
@@ -5938,6 +5924,25 @@ definitions:
         type: STRING
       - name: messaging.system
         type: STRING
+    messaging.client.sent.messages-90cfa605:
+      name: messaging.client.sent.messages
+      description: Number of messages producer attempted to send to the broker.
+      instrument: counter
+      data_type: LONG_SUM
+      unit: '{message}'
+      attributes:
+      - name: error.type
+        type: STRING
+      - name: messaging.destination.name
+        type: STRING
+      - name: messaging.operation.name
+        type: STRING
+      - name: messaging.system
+        type: STRING
+      - name: server.address
+        type: STRING
+      - name: server.port
+        type: LONG
     messaging.client.sent.messages-a16c8de0:
       name: messaging.client.sent.messages
       description: Number of messages producer attempted to send to the broker.
@@ -6021,23 +6026,6 @@ definitions:
         type: STRING
       - name: messaging.system
         type: STRING
-    messaging.process.duration-45bdc9e6:
-      name: messaging.process.duration
-      description: Duration of processing operation.
-      instrument: histogram
-      data_type: HISTOGRAM
-      unit: s
-      attributes:
-      - name: error.type
-        type: STRING
-      - name: messaging.operation.name
-        type: STRING
-      - name: messaging.system
-        type: STRING
-      - name: server.address
-        type: STRING
-      - name: server.port
-        type: LONG
     messaging.process.duration-5301bc21:
       name: messaging.process.duration
       description: Duration of processing operation.
@@ -6147,7 +6135,7 @@ definitions:
         type: STRING
       - name: server.port
         type: LONG
-    messaging.publish.duration-05731f17:
+    messaging.publish.duration-da85138c:
       name: messaging.publish.duration
       description: Measures the duration of publish operation.
       instrument: histogram
@@ -6155,6 +6143,8 @@ definitions:
       unit: s
       attributes:
       - name: messaging.destination.name
+        type: STRING
+      - name: messaging.destination.partition.id
         type: STRING
       - name: messaging.operation
         type: STRING
@@ -6900,11 +6890,11 @@ libraries:
     - db.client.connections.usage-5ef1d5ef
   - when: otel.semconv-stability.opt-in=database
     metric_refs:
-    - db.client.connection.count-2e6ba9b7
-    - db.client.connection.idle.max-b95e4f5c
-    - db.client.connection.idle.min-73bdafbc
-    - db.client.connection.limit-12f711ee
-    - db.client.connection.pending_requests-a0f41111
+    - db.client.connection.count-255e75e8
+    - db.client.connection.idle.max-50075a96
+    - db.client.connection.idle.min-a027c25a
+    - db.client.connection.limit-a51cb0ee
+    - db.client.connection.pending_requests-42efb2dd
 - name: apache-commons-pool-2.0
   display_name: Apache Commons Pool
   description: This instrumentation enables object pool metrics for Apache Commons
@@ -6971,10 +6961,10 @@ libraries:
     - db.client.connections.usage-5ef1d5ef
   - when: otel.semconv-stability.opt-in=database
     metric_refs:
-    - db.client.connection.count-2e6ba9b7
-    - db.client.connection.idle.max-b95e4f5c
-    - db.client.connection.idle.min-73bdafbc
-    - db.client.connection.limit-12f711ee
+    - db.client.connection.count-255e75e8
+    - db.client.connection.idle.max-50075a96
+    - db.client.connection.idle.min-a027c25a
+    - db.client.connection.limit-a51cb0ee
 - name: apache-dubbo-2.7
   display_name: Apache Dubbo
   description: The Apache Dubbo instrumentation provides RPC client spans and metrics,
@@ -8150,8 +8140,8 @@ libraries:
         type: STRING
   - when: otel.instrumentation.common.v3-preview=true
     metric_refs:
-    - messaging.client.consumed.messages-e8268bc3
-    - messaging.process.duration-ab13a22e
+    - messaging.client.consumed.messages-2353494f
+    - messaging.process.duration-800050f8
     spans:
     - span_kind: CONSUMER
       attributes:
@@ -8187,8 +8177,8 @@ libraries:
         type: STRING
   - when: otel.semconv-stability.preview=messaging
     metric_refs:
-    - messaging.client.consumed.messages-e8268bc3
-    - messaging.process.duration-ab13a22e
+    - messaging.client.consumed.messages-2353494f
+    - messaging.process.duration-800050f8
     spans:
     - span_kind: CONSUMER
       attributes:
@@ -8224,8 +8214,8 @@ libraries:
         type: STRING
   - when: otel.semconv-stability.preview=messaging/dup
     metric_refs:
-    - messaging.client.consumed.messages-e8268bc3
-    - messaging.process.duration-ab13a22e
+    - messaging.client.consumed.messages-2353494f
+    - messaging.process.duration-800050f8
     spans:
     - span_kind: CONSUMER
       attributes:
@@ -9177,8 +9167,8 @@ libraries:
     - db.client.connections.usage-5ef1d5ef
   - when: otel.semconv-stability.opt-in=database
     metric_refs:
-    - db.client.connection.count-f1e2cae3
-    - db.client.connection.pending_requests-68c56df0
+    - db.client.connection.count-255e75e8
+    - db.client.connection.pending_requests-42efb2dd
 - name: camel-2.20
   display_name: Apache Camel
   description: This instrumentation enables tracing and messaging metrics for Apache
@@ -9371,10 +9361,10 @@ libraries:
         type: STRING
   - when: otel.semconv-stability.opt-in=database,messaging
     metric_refs:
-    - messaging.client.consumed.messages-e8268bc3
+    - messaging.client.consumed.messages-c0fc17f6
     - messaging.client.operation.duration-68138657
     - messaging.client.sent.messages-a16c8de0
-    - messaging.process.duration-ab13a22e
+    - messaging.process.duration-0ca61f76
     spans:
     - span_kind: CLIENT
       attributes:
@@ -9776,7 +9766,7 @@ libraries:
         type: LONG
   - when: otel.semconv-stability.opt-in=database
     metric_refs:
-    - db.client.operation.duration-ec9463db
+    - db.client.operation.duration-83708a92
     spans:
     - span_kind: CLIENT
       attributes:
@@ -9838,7 +9828,7 @@ libraries:
         type: LONG
   - when: otel.semconv-stability.opt-in=database
     metric_refs:
-    - db.client.operation.duration-ec9463db
+    - db.client.operation.duration-83708a92
     spans:
     - span_kind: CLIENT
       attributes:
@@ -10449,12 +10439,7 @@ libraries:
 - name: elasticsearch-rest-7.0
   display_name: Elasticsearch REST Client
   description: This instrumentation enables database client spans and database client
-    metrics for Elasticsearch REST clients. The library artifacts are deprecated and
-    will be removed in 3.0. Elasticsearch Java API Client users should use its native
-    OpenTelemetry support (https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/8.10/opentelemetry.html),
-    available in 7.17.20+ on the 7.x line and 8.10+. Applications that use the REST
-    Client directly have no drop-in library replacement; they can use the javaagent
-    or migrate to the Java API Client.
+    metrics for Elasticsearch REST clients through the Java agent.
   semantic_conventions:
   - DATABASE_CLIENT_SPANS
   - DATABASE_CLIENT_METRICS
@@ -10463,7 +10448,6 @@ libraries:
   scope:
     name: io.opentelemetry.elasticsearch-rest-7.0
     schema_url: https://opentelemetry.io/schemas/1.44.0
-  has_standalone_library: true
   has_javaagent: true
   javaagent_target_versions:
   - org.elasticsearch.client:elasticsearch-rest-client:[7.0,)
@@ -10684,8 +10668,6 @@ libraries:
         type: LONG
       - name: server.address
         type: STRING
-      - name: server.port
-        type: LONG
 - name: elasticsearch-transport-6.0
   display_name: Elasticsearch Transport Client
   description: This instrumentation enables database client spans and database client
@@ -10776,8 +10758,6 @@ libraries:
         type: LONG
       - name: server.address
         type: STRING
-      - name: server.port
-        type: LONG
 - name: executors
   display_name: Java Executors
   description: The executor instrumentation ensures that context is automatically
@@ -10898,7 +10878,7 @@ libraries:
         type: LONG
   - when: otel.semconv-stability.opt-in=database
     metric_refs:
-    - db.client.operation.duration-f0613d87
+    - db.client.operation.duration-5d89ffb2
     spans:
     - span_kind: CLIENT
       attributes:
@@ -11783,14 +11763,14 @@ libraries:
     - db.client.connections.wait_time-e6bdd10e
   - when: otel.semconv-stability.opt-in=database
     metric_refs:
-    - db.client.connection.count-2e6ba9b7
-    - db.client.connection.create_time-4f586679
-    - db.client.connection.idle.min-73bdafbc
-    - db.client.connection.limit-12f711ee
-    - db.client.connection.pending_requests-a0f41111
+    - db.client.connection.count-255e75e8
+    - db.client.connection.create_time-23c73da1
+    - db.client.connection.idle.min-a027c25a
+    - db.client.connection.limit-a51cb0ee
+    - db.client.connection.pending_requests-42efb2dd
     - db.client.connection.timeouts-d2dbfa58
-    - db.client.connection.use_time-a06760eb
-    - db.client.connection.wait_time-40a55682
+    - db.client.connection.use_time-ad426bf0
+    - db.client.connection.wait_time-11b10d74
 - name: http-url-connection
   display_name: HttpURLConnection
   description: This instrumentation enables HTTP client spans and HTTP client metrics
@@ -14036,7 +14016,7 @@ libraries:
     - kafka.producer.txn_send_offsets_time_ns_total-f560779c
     - kafka.producer.waiting_threads-d28449be
     - messaging.client.consumed.messages-554a6d90
-    - messaging.client.operation.duration-bcc65266
+    - messaging.client.operation.duration-83802976
     - messaging.client.sent.messages-fec1f156
     - messaging.process.duration-6404ad2a
     spans:
@@ -14317,8 +14297,8 @@ libraries:
     - kafka.producer.successful_reauthentication_total-efc692e3
     - kafka.producer.waiting_threads-d28449be
     - messaging.client.consumed.messages-554a6d90
-    - messaging.client.operation.duration-bcc65266
-    - messaging.client.sent.messages-a16c8de0
+    - messaging.client.operation.duration-83802976
+    - messaging.client.sent.messages-fec1f156
     - messaging.process.duration-6404ad2a
     spans:
     - span_kind: CLIENT
@@ -15138,7 +15118,7 @@ libraries:
         type: LONG
   - when: otel.instrumentation.common.v3-preview=true
     metric_refs:
-    - db.client.operation.duration-fce1854c
+    - db.client.operation.duration-8ae2b8ce
     spans:
     - span_kind: CLIENT
       attributes:
@@ -15180,7 +15160,7 @@ libraries:
         type: LONG
   - when: otel.instrumentation.lettuce.connection-telemetry.enabled=true,otel.semconv-stability.opt-in=database,service.peer
     metric_refs:
-    - db.client.operation.duration-fce1854c
+    - db.client.operation.duration-8ae2b8ce
     spans:
     - span_kind: CLIENT
       attributes:
@@ -15226,7 +15206,7 @@ libraries:
         type: LONG
   - when: otel.semconv-stability.opt-in=database,service.peer
     metric_refs:
-    - db.client.operation.duration-fce1854c
+    - db.client.operation.duration-8ae2b8ce
     spans:
     - span_kind: CLIENT
       attributes:
@@ -15677,7 +15657,7 @@ libraries:
         type: LONG
   - when: otel.semconv-stability.opt-in=database
     metric_refs:
-    - db.client.operation.duration-e36c6087
+    - db.client.operation.duration-1bd4857e
     spans:
     - span_kind: CLIENT
       attributes:
@@ -15838,8 +15818,8 @@ libraries:
   - when: otel.semconv-stability.preview=messaging
     metric_refs:
     - messaging.client.consumed.messages-2353494f
-    - messaging.client.operation.duration-68138657
-    - messaging.client.sent.messages-a16c8de0
+    - messaging.client.operation.duration-d165a8db
+    - messaging.client.sent.messages-4c72bd1e
     - messaging.process.duration-800050f8
     spans:
     - span_kind: CLIENT
@@ -17216,7 +17196,7 @@ libraries:
   telemetry:
   - when: otel.instrumentation.common.messaging.experimental.receive-telemetry.enabled=true
     metric_refs:
-    - messaging.publish.duration-05731f17
+    - messaging.publish.duration-da85138c
     - messaging.receive.duration-4b4a91de
     - messaging.receive.messages-2499c5ac
     spans:
@@ -17260,7 +17240,7 @@ libraries:
         type: LONG
   - when: otel.instrumentation.pulsar.experimental-span-attributes=true
     metric_refs:
-    - messaging.publish.duration-05731f17
+    - messaging.publish.duration-da85138c
     - messaging.receive.duration-4b4a91de
     - messaging.receive.messages-2499c5ac
     spans:
@@ -17307,7 +17287,7 @@ libraries:
   - when: otel.semconv-stability.preview=messaging
     metric_refs:
     - messaging.client.consumed.messages-5c21579f
-    - messaging.client.operation.duration-dab7c60a
+    - messaging.client.operation.duration-df200871
     - messaging.client.sent.messages-38a90199
     - messaging.process.duration-9ee3dd0a
     spans:
@@ -17634,10 +17614,10 @@ libraries:
         type: LONG
   - when: otel.semconv-stability.preview=messaging
     metric_refs:
-    - messaging.client.consumed.messages-bda2d99f
-    - messaging.client.operation.duration-4afb25bc
-    - messaging.client.sent.messages-38a90199
-    - messaging.process.duration-45bdc9e6
+    - messaging.client.consumed.messages-f3bb81cb
+    - messaging.client.operation.duration-2dcc8fe4
+    - messaging.client.sent.messages-90cfa605
+    - messaging.process.duration-049f91c8
     spans:
     - span_kind: CLIENT
       attributes:
@@ -18769,7 +18749,7 @@ libraries:
   - when: otel.semconv-stability.preview=messaging
     metric_refs:
     - messaging.client.consumed.messages-73097de6
-    - messaging.client.operation.duration-68138657
+    - messaging.client.operation.duration-f4822aab
     - messaging.client.sent.messages-a16c8de0
     - messaging.process.duration-b45860c7
     spans:
@@ -19452,10 +19432,10 @@ libraries:
         type: STRING
   - when: otel.semconv-stability.preview=messaging
     metric_refs:
-    - messaging.client.consumed.messages-e8268bc3
+    - messaging.client.consumed.messages-2353494f
     - messaging.client.operation.duration-68138657
     - messaging.client.sent.messages-a16c8de0
-    - messaging.process.duration-ab13a22e
+    - messaging.process.duration-800050f8
     spans:
     - span_kind: CONSUMER
       attributes:
@@ -20786,10 +20766,10 @@ libraries:
     - db.client.connections.usage-5ef1d5ef
   - when: otel.semconv-stability.opt-in=database
     metric_refs:
-    - db.client.connection.count-2e6ba9b7
-    - db.client.connection.idle.max-b95e4f5c
-    - db.client.connection.idle.min-73bdafbc
-    - db.client.connection.limit-12f711ee
+    - db.client.connection.count-255e75e8
+    - db.client.connection.idle.max-50075a96
+    - db.client.connection.idle.min-a027c25a
+    - db.client.connection.limit-a51cb0ee
 - name: tomcat-jdbc-8.5
   display_name: Tomcat JDBC
   description: This instrumentation enables database connection pool metrics for Tomcat
@@ -21269,7 +21249,7 @@ libraries:
         type: STRING
   - when: otel.semconv-stability.preview=messaging
     metric_refs:
-    - messaging.process.duration-5301bc21
+    - messaging.process.duration-0ca61f76
     spans:
     - span_kind: CONSUMER
       attributes:
@@ -21552,8 +21532,8 @@ libraries:
     - db.client.connections.usage-5ef1d5ef
   - when: otel.semconv-stability.opt-in=database
     metric_refs:
-    - db.client.connection.count-2e6ba9b7
-    - db.client.connection.limit-12f711ee
+    - db.client.connection.count-255e75e8
+    - db.client.connection.limit-a51cb0ee
 - name: wicket-8.0
   display_name: Apache Wicket
   description: This instrumentation enriches HTTP server spans with route information
