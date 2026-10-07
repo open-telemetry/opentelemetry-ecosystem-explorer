@@ -1662,8 +1662,9 @@ components:
       codeowners:
         active:
         - mx-psi
-        - jordivilaseca
         - MoreraAlejandro
+        emeritus:
+        - jordivilaseca
       distributions:
       - contrib
       stability:

@@ -10539,6 +10539,16 @@ components:
         name_override: type
         requirement_level: recommended
         type: string
+      mongodb.assert.type:
+        description: The type of assertion raised by the server.
+        enum:
+        - msg
+        - regular
+        - tripwire
+        - user
+        - warning
+        requirement_level: recommended
+        type: string
       mongodb.client.app.name:
         description: The identifier of the client application which ran the operation,
           as set by the driver's `appName` connection option.
@@ -10571,6 +10581,13 @@ components:
         type: string
       mongodb.explain_plan.text:
         description: The obfuscated query explain plan, if collection is enabled.
+        type: string
+      mongodb.global_lock.queue.type:
+        description: The type of operation waiting for the global lock.
+        enum:
+        - read
+        - write
+        requirement_level: recommended
         type: string
       mongodb.lsid.id:
         description: The UUID portion of the logical session identifier associated
@@ -10807,6 +10824,17 @@ components:
           monotonic: false
           value_type: int
         unit: '{writes}'
+      mongodb.assert.count:
+        attributes:
+        - mongodb.assert.type
+        description: The number of assertions raised since the server process started.
+        enabled: false
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+        unit: '{assert}'
       mongodb.cache.operations:
         attributes:
         - type
@@ -10942,6 +10970,17 @@ components:
           value_type: double
         stability: development
         unit: '{getmore}/s'
+      mongodb.global_lock.queue.count:
+        attributes:
+        - mongodb.global_lock.queue.type
+        description: The number of operations queued waiting for the global lock.
+        enabled: false
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: false
+          value_type: int
+        unit: '{operation}'
       mongodb.global_lock.time:
         attributes: []
         description: The time the global lock has been held.
@@ -11370,6 +11409,28 @@ components:
           monotonic: true
           value_type: int
         unit: ms
+      mongodb.write_concern.wait.time:
+        attributes: []
+        description: The cumulative time spent waiting for write concern acknowledgement.
+        enabled: false
+        extended_documentation: 'Increments for write operations that specify a write
+          concern greater than w:1, which includes
+
+          the w:"majority" default applied to replica sets since MongoDB 5.0. Accumulates
+          under an
+
+          ordinary replica set workload and stays at zero on a standalone deployment
+          and for writes that
+
+          specify w:1.
+
+          '
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: double
+        unit: s
       mongodb.wt.concurrent_transaction.ticket.in_use:
         attributes:
         - mongodb.wt.concurrent_transaction.ticket.type
@@ -19184,9 +19245,10 @@ components:
       class: receiver
       codeowners:
         active:
-        - tamir-michaeli
+        - ajimenez1503
         emeritus:
         - StefanKurek
+        - tamir-michaeli
       distributions:
       - contrib
       stability:
