@@ -45,7 +45,6 @@ You can also reach out in either `#otel-ecosystem-explorer` or `#otel-comms` cha
 ## Maintainers
 
 - [Jay DeLuca](https://github.com/jaydeluca), Grafana Labs
-- [Severin Neumann](https://github.com/svrnm), Causely
 - [Vitor Vasconcellos](https://github.com/vitorvasc)
 - [Luca Cavenaghi](https://github.com/lucacavenaghi97), Akamas Labs
 
