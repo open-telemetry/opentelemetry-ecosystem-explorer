@@ -1,0 +1,16 @@
+description: OpenTelemetry Starlette Instrumentation
+entry_points:
+- name: starlette
+  value: opentelemetry.instrumentation.starlette:StarletteInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-starlette
+instruments:
+- library: starlette
+  source_key: instruments
+  version_range: '>= 0.13'
+name: opentelemetry-instrumentation-starlette
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: null
+source_path: instrumentation/opentelemetry-instrumentation-starlette
+supports_metrics: true
+version: 0.66b1

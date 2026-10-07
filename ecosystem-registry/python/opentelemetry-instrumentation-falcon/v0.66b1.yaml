@@ -1,0 +1,16 @@
+description: Falcon instrumentation for OpenTelemetry
+entry_points:
+- name: falcon
+  value: opentelemetry.instrumentation.falcon:FalconInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-falcon
+instruments:
+- library: falcon
+  source_key: instruments
+  version_range: '>= 1.4.1, < 5.0.0'
+name: opentelemetry-instrumentation-falcon
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: migration
+source_path: instrumentation/opentelemetry-instrumentation-falcon
+supports_metrics: true
+version: 0.66b1

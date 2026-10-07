@@ -1,0 +1,19 @@
+description: OpenTelemetry Instrumentation for Tortoise ORM
+entry_points:
+- name: tortoiseorm
+  value: opentelemetry.instrumentation.tortoiseorm:TortoiseORMInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-tortoiseorm
+instruments:
+- library: pydantic
+  source_key: instruments
+  version_range: '>= 1.10.2'
+- library: tortoise-orm
+  source_key: instruments
+  version_range: '>= 0.17.0'
+name: opentelemetry-instrumentation-tortoiseorm
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: migration
+source_path: instrumentation/opentelemetry-instrumentation-tortoiseorm
+supports_metrics: null
+version: 0.66b1

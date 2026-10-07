@@ -1,0 +1,14 @@
+description: ASGI instrumentation for OpenTelemetry
+entry_points: []
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-asgi
+instruments:
+- library: asgiref
+  source_key: instruments
+  version_range: ~= 3.0
+name: opentelemetry-instrumentation-asgi
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: migration
+source_path: instrumentation/opentelemetry-instrumentation-asgi
+supports_metrics: true
+version: 0.66b1

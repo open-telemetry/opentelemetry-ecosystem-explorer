@@ -1,0 +1,16 @@
+description: OpenTelemetry Confluent Kafka instrumentation
+entry_points:
+- name: confluent_kafka
+  value: opentelemetry.instrumentation.confluent_kafka:ConfluentKafkaInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-confluent-kafka
+instruments:
+- library: confluent-kafka
+  source_key: instruments
+  version_range: '>= 1.8.2, < 3.0.0'
+name: opentelemetry-instrumentation-confluent-kafka
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: null
+source_path: instrumentation/opentelemetry-instrumentation-confluent-kafka
+supports_metrics: null
+version: 0.66b1

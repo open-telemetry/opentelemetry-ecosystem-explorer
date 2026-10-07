@@ -1,0 +1,16 @@
+description: OpenTelemetry Redis instrumentation
+entry_points:
+- name: redis
+  value: opentelemetry.instrumentation.redis:RedisInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-redis
+instruments:
+- library: redis
+  source_key: instruments
+  version_range: '>= 2.6'
+name: opentelemetry-instrumentation-redis
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: migration
+source_path: instrumentation/opentelemetry-instrumentation-redis
+supports_metrics: null
+version: 0.66b1

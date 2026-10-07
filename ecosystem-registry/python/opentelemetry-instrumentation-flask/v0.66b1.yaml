@@ -1,0 +1,16 @@
+description: Flask instrumentation for OpenTelemetry
+entry_points:
+- name: flask
+  value: opentelemetry.instrumentation.flask:FlaskInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-flask
+instruments:
+- library: flask
+  source_key: instruments
+  version_range: '>= 1.0'
+name: opentelemetry-instrumentation-flask
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: migration
+source_path: instrumentation/opentelemetry-instrumentation-flask
+supports_metrics: true
+version: 0.66b1

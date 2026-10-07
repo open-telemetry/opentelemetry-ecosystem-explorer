@@ -1,0 +1,16 @@
+description: Async Click instrumentation for OpenTelemetry
+entry_points:
+- name: asyncclick
+  value: opentelemetry.instrumentation.asyncclick:AsyncClickInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/instrumentation/opentelemetry-instrumentation-asyncclick
+instruments:
+- library: asyncclick
+  source_key: instruments
+  version_range: ~= 8.0
+name: opentelemetry-instrumentation-asyncclick
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: null
+source_path: instrumentation/opentelemetry-instrumentation-asyncclick
+supports_metrics: null
+version: 0.66b1

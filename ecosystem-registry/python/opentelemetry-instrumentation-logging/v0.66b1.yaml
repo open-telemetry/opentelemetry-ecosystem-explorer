@@ -1,0 +1,13 @@
+description: OpenTelemetry Logging instrumentation
+entry_points:
+- name: logging
+  value: opentelemetry.instrumentation.logging:LoggingInstrumentor
+homepage: https://github.com/open-telemetry/opentelemetry-python-contrib/tree/main/instrumentation/opentelemetry-instrumentation-logging
+instruments: []
+name: opentelemetry-instrumentation-logging
+repository: open-telemetry/opentelemetry-python-contrib
+requires_python: '>=3.10'
+semantic_convention_status: null
+source_path: instrumentation/opentelemetry-instrumentation-logging
+supports_metrics: null
+version: 0.66b1
