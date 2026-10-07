@@ -83,9 +83,9 @@ jobs:
           # runs third-party code inside a contents: write job: `uv sync` builds the workspace
           # through PEP 517 backends, and the contract gate loads the explorer's whole JS
           # dependency tree. A persisted credential would be readable by all of it for the length
-          # of the job, so the token is handed to the one step that pushes instead. A push
-          # authenticated with GITHUB_TOKEN does not start workflows, so that same step
-          # re-triggers the required checks on the new head by closing/reopening the PR with the
+          # of the job, so the token is handed to the one step that pushes instead. Runs started by
+          # a push authenticated with GITHUB_TOKEN wait for a maintainer's approval, so that same
+          # step starts the required checks on the new head by closing/reopening the PR with the
           # otelbot App token.
           persist-credentials: false
 
@@ -555,6 +555,7 @@ jobs:
           # the build, so attribute those runs to the schedule instead.
           ACTOR: ${{ github.event_name == 'schedule' && 'nightly schedule' || github.actor }}
         run: |
+          set -euo pipefail
           BRANCH="otelbot/automated-explorer-database-update-${ECOSYSTEM}"
 
           for eco in $ECOSYSTEMS; do
@@ -595,30 +596,24 @@ jobs:
           EOF
           )"
 
-          # Try to create PR, or update if it already exists
-          if ! gh pr create --title "${PR_TITLE}" --body "${PR_BODY}" --base main --head ${BRANCH} 2>&1 | tee pr-output.txt; then
-            if grep -q "already exists" pr-output.txt; then
-              echo "PR already exists, updating..."
-              PR_NUMBER="$(gh pr list --head ${BRANCH} --state open --json number --jq '.[0].number // empty')"
-              if [ -z "$PR_NUMBER" ]; then
-                echo "Failed to find existing PR for branch ${BRANCH}"
-                cat pr-output.txt
-                exit 1
-              fi
-              gh pr edit "$PR_NUMBER" --title "${PR_TITLE}" --body "${PR_BODY}"
-              # The force-push above is authenticated with GITHUB_TOKEN, which
-              # does not start workflows, so CodeQL never re-runs for the new
-              # head and the PR stays blocked on the "Code scanning results"
-              # merge rule. Closing and reopening the PR with the otelbot App
-              # token emits a `pull_request: reopened` event that re-runs the
-              # required checks against the updated head.
-              gh pr close "$PR_NUMBER"
-              gh pr reopen "$PR_NUMBER"
-            else
-              echo "Failed to create PR"
-              cat pr-output.txt
-              exit 1
-            fi
+          # Look the pull request up first instead of trying to create it and parsing gh's error.
+          # `--head` also matches a fork's pull request from a branch with the same name, so those
+          # are skipped.
+          PR_NUMBER="$(gh pr list --head "${BRANCH}" --base main --state open \
+            --json number,isCrossRepository \
+            --jq 'map(select(.isCrossRepository | not)) | .[0].number // empty')"
+
+          if [ -z "$PR_NUMBER" ]; then
+            gh pr create --title "${PR_TITLE}" --body "${PR_BODY}" --base main --head "${BRANCH}"
+          else
+            echo "Updating pull request #${PR_NUMBER}"
+            gh pr edit "$PR_NUMBER" --title "${PR_TITLE}" --body "${PR_BODY}"
+            # The force-push above is authenticated with GITHUB_TOKEN, so the runs it starts wait
+            # for a maintainer to approve them, CodeQL included. Closing and reopening the PR with
+            # the otelbot App token emits a `pull_request: reopened` event whose runs start on
+            # their own, so the required checks cover the updated head without anyone stepping in.
+            gh pr close "$PR_NUMBER"
+            gh pr reopen "$PR_NUMBER"
           fi
 
       - name: No changes detected
