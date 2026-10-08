@@ -54,9 +54,15 @@ const COUNT_BADGE_CLASS = "min-w-[5.5rem] justify-center whitespace-nowrap tabul
 
 interface InstrumentationDiffCardProps {
   diff: InstrumentationDiff;
+  fromVersion: string;
+  toVersion: string;
 }
 
-export function InstrumentationDiffCard({ diff }: InstrumentationDiffCardProps) {
+export function InstrumentationDiffCard({
+  diff,
+  fromVersion,
+  toVersion,
+}: InstrumentationDiffCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const changedMetricsCount = diff.telemetryDiff.metrics.filter(
@@ -69,6 +75,8 @@ export function InstrumentationDiffCard({ diff }: InstrumentationDiffCardProps) 
     (diff.configDiff?.changed.length || 0);
 
   const statusInfo = STATUS_CONFIG[diff.status];
+  // A removed module does not exist in the target release, so link to the source release where it exists.
+  const detailVersion = diff.status === "removed" ? fromVersion : toVersion;
   const { t } = useTranslation("java-agent");
 
   const tooltipContent =
@@ -93,7 +101,7 @@ export function InstrumentationDiffCard({ diff }: InstrumentationDiffCardProps) 
             <div className="flex items-center gap-2">
               <h3 className="text-sm font-semibold">{diff.displayName}</h3>
               <Link
-                to={`/java-agent/instrumentation/${diff.id}`}
+                to={`/java-agent/instrumentation/${diff.id}?version=${detailVersion}`}
                 className="text-muted-foreground hover:text-primary transition-colors"
                 aria-label={t("diffCard.viewInstrumentation")}
               >

@@ -461,7 +461,12 @@ export function JavaReleaseComparisonPage() {
                   ) : (
                     <div className="grid gap-4">
                       {filteredInstrumentations.map((instr) => (
-                        <InstrumentationDiffCard key={instr.id} diff={instr} />
+                        <InstrumentationDiffCard
+                          key={instr.id}
+                          diff={instr}
+                          fromVersion={fromVersion}
+                          toVersion={toVersion}
+                        />
                       ))}
                     </div>
                   )}
