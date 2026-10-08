@@ -75,7 +75,7 @@ export function InstrumentationDiffCard({
     (diff.configDiff?.changed.length || 0);
 
   const statusInfo = STATUS_CONFIG[diff.status];
-  // A removed module no longer exists in the "to" release, so link to the release it was last in.
+  // A removed module does not exist in the target release, so link to the source release where it exists.
   const detailVersion = diff.status === "removed" ? fromVersion : toVersion;
   const { t } = useTranslation("java-agent");
 
