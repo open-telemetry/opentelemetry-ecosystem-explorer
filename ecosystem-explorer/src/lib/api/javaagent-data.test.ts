@@ -52,6 +52,8 @@ describe("javaagent-data", () => {
     },
   };
 
+  const mockBundle = [{ ...mockInstrumentationData, has_spans: true, _is_custom: false }];
+
   beforeEach(async () => {
     vi.resetAllMocks();
     global.fetch = vi.fn();
@@ -62,6 +64,8 @@ describe("javaagent-data", () => {
   afterEach(() => {
     vi.restoreAllMocks();
     idbCache.closeDB();
+    vi.useRealTimers();
+    vi.unstubAllEnvs();
   });
 
   describe("loadVersions", () => {
@@ -77,7 +81,9 @@ describe("javaagent-data", () => {
       const result = await javaagentData.loadVersions();
 
       expect(result).toEqual(mockVersionsIndex);
-      expect(getCachedSpy).toHaveBeenCalledWith("versions-index", idbCache.STORES.METADATA);
+      expect(getCachedSpy).toHaveBeenCalledWith("versions-index", idbCache.STORES.METADATA, {
+        immutable: false,
+      });
       expect(global.fetch).toHaveBeenCalledWith("/data/javaagent/versions-index.json");
       expect(setCachedSpy).toHaveBeenCalledWith(
         "versions-index",
@@ -93,7 +99,9 @@ describe("javaagent-data", () => {
       const result = await javaagentData.loadVersions();
 
       expect(result).toEqual(mockVersionsIndex);
-      expect(getCachedSpy).toHaveBeenCalledWith("versions-index", idbCache.STORES.METADATA);
+      expect(getCachedSpy).toHaveBeenCalledWith("versions-index", idbCache.STORES.METADATA, {
+        immutable: false,
+      });
       expect(global.fetch).not.toHaveBeenCalled();
       expect(setCachedSpy).not.toHaveBeenCalled();
     });
@@ -185,7 +193,9 @@ describe("javaagent-data", () => {
       const result = await javaagentData.loadVersionManifest("2.10.0");
 
       expect(result).toEqual(mockVersionManifest);
-      expect(getCachedSpy).toHaveBeenCalledWith("manifest-2.10.0", idbCache.STORES.METADATA);
+      expect(getCachedSpy).toHaveBeenCalledWith("manifest-2.10.0", idbCache.STORES.METADATA, {
+        immutable: false,
+      });
       expect(global.fetch).toHaveBeenCalledWith("/data/javaagent/versions/2.10.0-index.json");
       expect(setCachedSpy).toHaveBeenCalledWith(
         "manifest-2.10.0",
@@ -233,7 +243,8 @@ describe("javaagent-data", () => {
       expect(result).toEqual(mockIndex);
       expect(getCachedSpy).toHaveBeenCalledWith(
         "javaagent-instrumentation-index",
-        idbCache.STORES.METADATA
+        idbCache.STORES.METADATA,
+        { immutable: false }
       );
       expect(global.fetch).toHaveBeenCalledWith("/data/javaagent/index.json");
       expect(setCachedSpy).toHaveBeenCalledWith(
@@ -266,10 +277,13 @@ describe("javaagent-data", () => {
       const result = await javaagentData.loadInstrumentation("akka-actor", "2.10.0");
 
       expect(result).toEqual({ ...mockInstrumentationData, _is_custom: false });
-      expect(getCachedSpy).toHaveBeenCalledWith("manifest-2.10.0", idbCache.STORES.METADATA);
+      expect(getCachedSpy).toHaveBeenCalledWith("manifest-2.10.0", idbCache.STORES.METADATA, {
+        immutable: false,
+      });
       expect(getCachedSpy).toHaveBeenCalledWith(
         "instrumentation-abc123",
-        idbCache.STORES.INSTRUMENTATIONS
+        idbCache.STORES.INSTRUMENTATIONS,
+        { immutable: true }
       );
     });
 
@@ -308,6 +322,39 @@ describe("javaagent-data", () => {
     });
   });
 
+  describe("immutable call sites", () => {
+    it.each([
+      {
+        key: "instrumentation-abc123",
+        seeded: mockInstrumentationData,
+        load: () => javaagentData.loadInstrumentation("akka-actor", "2.10.0", mockVersionManifest),
+        expected: { ...mockInstrumentationData, _is_custom: false },
+      },
+      {
+        key: "bundle-2.10.0-bundlehash",
+        seeded: mockBundle,
+        load: () => javaagentData.loadInstrumentationBundle("2.10.0", "bundlehash"),
+        expected: mockBundle,
+      },
+    ])(
+      "keeps serving $key across a deploy and a day, without refetching",
+      async ({ key, seeded, load, expected }) => {
+        vi.useFakeTimers({ toFake: ["Date"] });
+        vi.stubEnv("DATA_CONTENT_ID", "previous-build");
+        await idbCache.setCached(key, seeded, idbCache.STORES.INSTRUMENTATIONS);
+
+        vi.advanceTimersByTime(48 * 60 * 60 * 1000);
+        vi.stubEnv("DATA_CONTENT_ID", "next-build");
+        (global.fetch as ReturnType<typeof vi.fn>).mockRejectedValue(new Error("offline"));
+
+        const result = await load();
+
+        expect(result).toEqual(expected);
+        expect(global.fetch).not.toHaveBeenCalled();
+      }
+    );
+  });
+
   describe("loadAllInstrumentations (bundle path)", () => {
     // versions-index advertising a bundle hash for 2.10.0.
     const versionsIndexWithBundle: VersionsIndex = {
@@ -334,7 +381,8 @@ describe("javaagent-data", () => {
       expect(result).toEqual(bundle);
       expect(getCachedSpy).toHaveBeenCalledWith(
         "bundle-2.10.0-bundlehash",
-        idbCache.STORES.INSTRUMENTATIONS
+        idbCache.STORES.INSTRUMENTATIONS,
+        { immutable: true }
       );
       // The manifest fan-out must not run when the bundle succeeds.
       const manifestCalls = getCachedSpy.mock.calls.filter((call) => call[0] === "manifest-2.10.0");
@@ -528,6 +576,23 @@ describe("javaagent-data", () => {
         /Failed to load readme-mylib-abc123def456 from.*: 404 Not Found/
       );
     });
+
+    it("refetches the README after a deploy even though the cached entry has not expired", async () => {
+      vi.stubEnv("DATA_CONTENT_ID", "previous-build");
+      await idbCache.setCached("readme-lib-h1", "stale", idbCache.STORES.METADATA);
+      vi.stubEnv("DATA_CONTENT_ID", "next-build");
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+        ok: true,
+        status: 200,
+        headers: new Headers({ "content-type": "text/markdown" }),
+        text: async () => "fresh",
+      });
+
+      const result = await javaagentData.loadLibraryReadme("lib", "h1");
+
+      expect(result).toBe("fresh");
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe("loadGlobalConfigurations", () => {
@@ -555,5 +620,69 @@ describe("javaagent-data", () => {
         /Failed to load global-configurations from .*: 500 Server Error/
       );
     });
+  });
+
+  describe("cache lookup options", () => {
+    it.each([
+      {
+        key: "versions-index",
+        store: idbCache.STORES.METADATA,
+        cached: mockVersionsIndex,
+        load: () => javaagentData.loadVersions(),
+        immutable: false,
+      },
+      {
+        key: "manifest-2.10.0",
+        store: idbCache.STORES.METADATA,
+        cached: mockVersionManifest,
+        load: () => javaagentData.loadVersionManifest("2.10.0"),
+        immutable: false,
+      },
+      {
+        key: "javaagent-instrumentation-index",
+        store: idbCache.STORES.METADATA,
+        cached: { ecosystem: "javaagent", components: [] },
+        load: () => javaagentData.loadIndex(),
+        immutable: false,
+      },
+      {
+        key: "instrumentation-abc123",
+        store: idbCache.STORES.INSTRUMENTATIONS,
+        cached: mockInstrumentationData,
+        load: () => javaagentData.loadInstrumentation("akka-actor", "2.10.0", mockVersionManifest),
+        immutable: true,
+      },
+      {
+        key: "bundle-2.10.0-bundlehash",
+        store: idbCache.STORES.INSTRUMENTATIONS,
+        cached: mockBundle,
+        load: () => javaagentData.loadInstrumentationBundle("2.10.0", "bundlehash"),
+        immutable: true,
+      },
+      {
+        key: "readme-lib-h1",
+        store: idbCache.STORES.METADATA,
+        cached: "# README",
+        load: () => javaagentData.loadLibraryReadme("lib", "h1"),
+        immutable: false,
+      },
+      {
+        key: "global-configurations",
+        store: idbCache.STORES.GLOBAL_CONFIGURATIONS,
+        cached: [],
+        load: () => javaagentData.loadGlobalConfigurations(),
+        immutable: false,
+      },
+    ])(
+      "looks up $key with immutable $immutable",
+      async ({ key, store, cached, load, immutable }) => {
+        const getCachedSpy = vi.spyOn(idbCache, "getCached").mockResolvedValue(cached);
+
+        await load();
+
+        expect(getCachedSpy.mock.calls).toEqual([[key, store, { immutable }]]);
+        expect(global.fetch).not.toHaveBeenCalled();
+      }
+    );
   });
 });

@@ -72,8 +72,15 @@ globally, so do not duplicate it per page. A new static route also needs an entr
 ## Data fetching
 
 Wrap data fetching in custom hooks with explicit loading/data/error state. Do not fetch directly
-inside components. IndexedDB is used for client-side caching with a 24-hour expiry. Bump the
-IndexedDB schema version when changing it, or integration tests will fail with stale schema.
+inside components. IndexedDB is used for client-side caching. Mutable entries expire after 24 hours
+or when the build's content id changes, and entries fetched with `immutable: true` never expire,
+though any entry unused for seven days is still pruned.
+
+`DB_VERSION` in `src/lib/api/idb-cache.ts` is a schema version, not a data version. No workflow
+bumps it. Bump it by hand only when `STORES`, a store's `keyPath` or the `upgrade` handler change,
+or when the value cached under an existing immutable key changes shape; in that last case prefer
+renaming the key prefix, which invalidates only those entries. `CACHE_EXPIRATION_MS` is not a
+reason, because expiry is evaluated at read time.
 
 ## SEO and agent delivery
 

@@ -46,7 +46,6 @@ version, update all callers together.
 
 ## Repo-specific gotchas
 
-- `build-explorer-database.yml` auto-bumps `DB_VERSION` via
-  `sed -i "s/const DB_VERSION = ${CURRENT};/const DB_VERSION = ${NEW};/"`. The `grep` pattern is
-  `const DB_VERSION = \K[0-9]+`. Renaming the constant in `idb-cache.ts` breaks this workflow
-  silently.
+- No workflow bumps `DB_VERSION` in `ecosystem-explorer/src/lib/api/idb-cache.ts`. It is a schema
+  version, and the browser cache notices data changes through the content id the build computes over
+  `public/data`. Flag any workflow step that edits `idb-cache.ts`.

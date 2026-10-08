@@ -307,7 +307,7 @@ def run_collector_builder(
 
         if audit_report_path:
             # Enforce the "outside the database directory" invariant: a report written
-            # inside it would be committed and bump DB_VERSION. Fail fast if so.
+            # inside it would be committed and change the content id. Fail fast if so.
             report_path = Path(audit_report_path).resolve()
             db_dir = db_writer.database_dir.resolve()
             if report_path == db_dir or db_dir in report_path.parents:

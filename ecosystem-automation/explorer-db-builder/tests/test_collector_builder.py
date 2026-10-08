@@ -652,7 +652,7 @@ class TestRunCollectorBuilderAuditReport:
         manager = _make_mock_inventory_manager()
         db_dir = tmp_path / "collector"
         db_writer = CollectorDatabaseWriter(database_dir=str(db_dir))
-        # A report written inside the DB dir would get committed / bump DB_VERSION.
+        # A report written inside the DB dir would get committed / change the content id.
         report_path = db_dir / "audit" / "missing.json"
 
         result = run_collector_builder(

@@ -518,23 +518,6 @@ jobs:
             exit 1
           fi
 
-      - name: Increment DB cache schema version
-        if: steps.check_changes.outputs.data_changed == 'true'
-        run: |
-          FILE="ecosystem-explorer/src/lib/api/idb-cache.ts"
-          CURRENT=$(grep -oP 'const DB_VERSION = \K[0-9]+' "$FILE")
-          if [ -z "$CURRENT" ]; then
-            echo "Could not find DB_VERSION in $FILE"
-            exit 1
-          fi
-          NEW=$((CURRENT + 1))
-          sed -i "s/const DB_VERSION = ${CURRENT};/const DB_VERSION = ${NEW};/" "$FILE"
-          VERIFY=$(grep -oP 'const DB_VERSION = \K[0-9]+' "$FILE")
-          if [ "$VERIFY" != "$NEW" ]; then
-            echo "sed replacement failed: expected DB_VERSION=$NEW but found $VERIFY"
-            exit 1
-          fi
-
       - name: Commit and push changes
         if: steps.check_changes.outputs.any_changed == 'true'
         env:
@@ -566,7 +549,6 @@ jobs:
           if [ -f ecosystem-explorer/public/data-manifest.json ]; then
             git add ecosystem-explorer/public/data-manifest.json
           fi
-          git add ecosystem-explorer/src/lib/api/idb-cache.ts
 
           # Nothing staged means there is no pull request to open, and `git commit` would exit 1
           # and take the step down with it.

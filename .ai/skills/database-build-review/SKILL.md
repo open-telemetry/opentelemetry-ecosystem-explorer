@@ -58,17 +58,17 @@ Read this first — the review only makes sense against these mechanics.
 - **`bundles/<v>-<hash>.json`** (per-version slim list for the catalog view) and **`index.json` /
   `versions-index.json` / `global-configurations.json` / `ecosystem-stats.json`** are regenerated
   every run; expect them to change whenever any component or the version set changes.
-- The workflow bumps `DB_VERSION` in `src/lib/api/idb-cache.ts` (cache bust) only when the generated
-  files themselves changed. A pull request carrying a manifest update and nothing else will not have
-  it, and that is correct rather than an omission.
+- A data pull request never touches `src/lib/api/idb-cache.ts`. One whose diff does was opened
+  before `DB_VERSION` became schema-only and the workflow stopped bumping it, so it is stale: do not
+  merge it.
 - **`ecosystem-explorer/public/data-manifest.json`** pins, per ecosystem, the release that carries
   that ecosystem's archive: its tag, the digest of the unpacked tree and the checksum of the
   published asset. Only the blocks whose data changed are rewritten, so a single-ecosystem
   promotion touches one block and leaves the others untouched. The two can legitimately move
   apart. A block changing with no data change is the first run or data a pull request regenerated
   by hand. Data changing with no block change is a build repairing a committed tree that had
-  drifted (for example two data pull requests merged out of order), and it comes with a
-  `DB_VERSION` bump. Anything else is worth asking about.
+  drifted (for example two data pull requests merged out of order). Anything else is worth asking
+  about.
 
 ## Mental model: why *historical* versions get rewritten
 

@@ -106,7 +106,8 @@ export async function loadInstrumentation(
   const data = await fetchWithCache<InstrumentationData>(
     `instrumentation-${hash}`,
     resolveDataPath(BASE_DIR, "instrumentations", id, filename),
-    STORES.INSTRUMENTATIONS
+    STORES.INSTRUMENTATIONS,
+    { immutable: true }
   );
   if (!data) throw new Error(`Instrumentation "${id}" returned null unexpectedly`);
 
@@ -128,7 +129,7 @@ export async function loadInstrumentationBundle(
     `bundle-${version}-${bundleHash}`,
     resolveDataPath(BASE_DIR, "bundles", `${version}-${bundleHash}.json`),
     STORES.INSTRUMENTATIONS,
-    { validate: (d) => Array.isArray(d) && d.length > 0 }
+    { validate: (d) => Array.isArray(d) && d.length > 0, immutable: true }
   );
   if (!data) throw new Error(`Instrumentation bundle for ${version} returned null unexpectedly`);
   return data;

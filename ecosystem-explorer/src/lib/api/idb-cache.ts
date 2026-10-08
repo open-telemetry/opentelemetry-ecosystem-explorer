@@ -20,6 +20,7 @@ const DB_VERSION = 32;
 const CACHE_EXPIRATION_MS = 24 * 60 * 60 * 1000;
 const PRUNE_INTERVAL_MS = 24 * 60 * 60 * 1000;
 const PRUNE_KEY = "__internal_last_pruned_at";
+const ACCESS_REFRESH_INTERVAL_MS = 60 * 60 * 1000;
 
 export const STORES = {
   METADATA: "metadata",
@@ -35,6 +36,7 @@ interface CacheEntry<T> {
   data: T;
   cachedAt: number;
   lastAccessedAt?: number;
+  contentId?: string;
 }
 
 let dbInstance: IDBPDatabase | null = null;
@@ -45,6 +47,15 @@ function isExpired(cachedAt: number): boolean {
   const now = Date.now();
   if (cachedAt > now) return true;
   return now - cachedAt > CACHE_EXPIRATION_MS;
+}
+
+function currentContentId(): string {
+  return import.meta.env.DATA_CONTENT_ID;
+}
+
+function hasCurrentContentId(entry: CacheEntry<unknown>): boolean {
+  const contentId = currentContentId();
+  return Boolean(contentId) && entry.contentId === contentId;
 }
 
 /**
@@ -107,7 +118,7 @@ export async function initDB(): Promise<IDBPDatabase> {
 export async function getCached<T>(
   key: string,
   store: StoreName,
-  options?: { allowExpired?: boolean }
+  options?: { allowExpired?: boolean; immutable?: boolean }
 ): Promise<T | null> {
   try {
     const db = await initDB();
@@ -115,22 +126,14 @@ export async function getCached<T>(
     if (!entry) return null;
 
     const cacheEntry = entry as CacheEntry<T>;
-    if (isExpired(cacheEntry.cachedAt)) {
-      if (options?.allowExpired) {
-        const now = Date.now();
-        const lastAccessed = cacheEntry.lastAccessedAt ?? 0;
-        if (now - lastAccessed > 60 * 60 * 1000) {
-          cacheEntry.lastAccessedAt = now;
-          db.put(store, cacheEntry).catch(() => {});
-        }
-        return cacheEntry.data;
-      }
-      return null;
-    }
+    const usable =
+      options?.immutable ||
+      options?.allowExpired ||
+      (!isExpired(cacheEntry.cachedAt) && hasCurrentContentId(cacheEntry));
+    if (!usable) return null;
 
     const now = Date.now();
-    const lastAccessed = cacheEntry.lastAccessedAt ?? 0;
-    if (now - lastAccessed > 60 * 60 * 1000) {
+    if (now - (cacheEntry.lastAccessedAt ?? 0) > ACCESS_REFRESH_INTERVAL_MS) {
       cacheEntry.lastAccessedAt = now;
       db.put(store, cacheEntry).catch(() => {});
     }
@@ -149,6 +152,7 @@ export async function setCached<T>(key: string, data: T, store: StoreName): Prom
       data,
       cachedAt: Date.now(),
       lastAccessedAt: Date.now(),
+      contentId: currentContentId(),
     };
     await db.put(store, entry);
   } catch (error) {

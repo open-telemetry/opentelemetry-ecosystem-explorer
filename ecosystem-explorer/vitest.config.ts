@@ -24,6 +24,9 @@ export default defineConfig({
       "@": path.resolve(import.meta.dirname, "./src"),
     },
   },
+  define: {
+    "import.meta.env.DATA_CONTENT_ID": JSON.stringify("test-content-id"),
+  },
   test: {
     globals: true,
     environment: "jsdom",

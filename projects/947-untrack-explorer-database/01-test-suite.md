@@ -34,8 +34,8 @@ for every later phase, and it ships value on its own even if #947 is abandoned.
 - Move three corpus-reading test groups into the integration suite: the registry snapshot in
   `normalize-instrumentation.test.ts`, `starter-template.test.ts`, and the corpus half of
   `scripts/generate-agent-docs.test.ts`.
-- Renaming is sufficient for the two under `src/`: `vitest.config.ts:31` excludes
-  `**/*.integration.test.{ts,tsx}` and `vitest.integration.config.ts:32` includes
+- Renaming is sufficient for the two under `src/`: `vitest.config.ts` excludes
+  `**/*.integration.test.{ts,tsx}` and `vitest.integration.config.ts` includes
   `src/**/*.integration.test.{ts,tsx}`. `scripts/generate-agent-docs.test.ts` sits outside `src/`,
   so the integration config's `include` must also gain `scripts/**/*.integration.test.{ts,tsx}`, or
   that file would leave the unit suite without joining the integration suite and stop running

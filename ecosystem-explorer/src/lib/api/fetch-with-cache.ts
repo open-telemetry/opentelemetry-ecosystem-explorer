@@ -85,6 +85,7 @@ export interface FetchWithCacheOptions<T = unknown> {
    * `{ versions: [] }`) from being served to the caller.
    */
   validate?: (data: T) => boolean;
+  immutable?: boolean;
 }
 
 export async function fetchWithCache<T>(
@@ -100,7 +101,9 @@ export async function fetchWithCache<T>(
   const request = (async () => {
     try {
       if (isIDBAvailable()) {
-        const cachedData = await getCached<T>(cacheKey, storeType);
+        const cachedData = await getCached<T>(cacheKey, storeType, {
+          immutable: options?.immutable ?? false,
+        });
         if (cachedData !== null) {
           if (!options?.validate) return cachedData;
           try {

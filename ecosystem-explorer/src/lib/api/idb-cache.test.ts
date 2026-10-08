@@ -40,6 +40,7 @@ describe("idb-cache", () => {
   afterEach(() => {
     vi.useRealTimers();
     closeDB();
+    vi.unstubAllEnvs();
   });
 
   describe("initDB", () => {
@@ -272,6 +273,85 @@ describe("idb-cache", () => {
       } finally {
         consoleError.mockRestore();
       }
+    });
+  });
+
+  describe("content id", () => {
+    const HOUR = 60 * 60 * 1000;
+
+    it("hits under the id it was written under and misses after a deploy, keeping the entry", async () => {
+      vi.stubEnv("DATA_CONTENT_ID", "previous-build");
+      await setCached("versions-index", { v: 1 }, STORES.METADATA);
+      expect(await getCached("versions-index", STORES.METADATA)).toEqual({ v: 1 });
+
+      vi.stubEnv("DATA_CONTENT_ID", "next-build");
+      expect(await getCached("versions-index", STORES.METADATA)).toBeNull();
+      expect(await getCached("versions-index", STORES.METADATA, { allowExpired: true })).toEqual({
+        v: 1,
+      });
+    });
+
+    it.each([undefined, ""])(
+      "misses every mutable entry when the build has no content id (%j)",
+      async (contentId) => {
+        vi.stubEnv("DATA_CONTENT_ID", contentId);
+        await setCached("versions-index", { v: 1 }, STORES.METADATA);
+
+        expect(await getCached("versions-index", STORES.METADATA)).toBeNull();
+        expect(await getCached("versions-index", STORES.METADATA, { allowExpired: true })).toEqual({
+          v: 1,
+        });
+        expect(await getCached("versions-index", STORES.METADATA, { immutable: true })).toEqual({
+          v: 1,
+        });
+      }
+    );
+
+    it("misses a mutable entry written before entries carried a content id", async () => {
+      const db = await initDB();
+      const now = Date.now();
+      await db.put(STORES.METADATA, {
+        key: "legacy",
+        data: { v: 1 },
+        cachedAt: now,
+        lastAccessedAt: now,
+      });
+
+      expect(await getCached("legacy", STORES.METADATA)).toBeNull();
+    });
+
+    it("hits an immutable entry with no content id after 48 hours", async () => {
+      const db = await initDB();
+      const now = Date.now();
+      await db.put(STORES.INSTRUMENTATIONS, {
+        key: "instrumentation-abc",
+        data: { name: "x" },
+        cachedAt: now,
+        lastAccessedAt: now,
+      });
+      vi.setSystemTime(now + 48 * HOUR);
+
+      expect(
+        await getCached("instrumentation-abc", STORES.INSTRUMENTATIONS, { immutable: true })
+      ).toEqual({
+        name: "x",
+      });
+    });
+
+    it("keeps an immutable entry in use through pruning", async () => {
+      const now = Date.now();
+      await setCached("instrumentation-abc", { name: "x" }, STORES.INSTRUMENTATIONS);
+      vi.setSystemTime(now + 6 * 24 * HOUR);
+      await getCached("instrumentation-abc", STORES.INSTRUMENTATIONS, { immutable: true });
+
+      vi.setSystemTime(now + 8 * 24 * HOUR);
+      await pruneOldEntries(7);
+
+      expect(
+        await getCached("instrumentation-abc", STORES.INSTRUMENTATIONS, { immutable: true })
+      ).toEqual({
+        name: "x",
+      });
     });
   });
 });
