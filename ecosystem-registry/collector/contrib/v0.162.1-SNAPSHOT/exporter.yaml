@@ -7,6 +7,8 @@ components:
 - name: alertmanagerexporter
   metadata:
     display_name: Alertmanager Exporter
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:
@@ -42,6 +44,13 @@ components:
 - name: awscloudwatchlogsexporter
   metadata:
     display_name: AWS CloudWatch Logs Exporter
+    sending_queue:
+      overrides:
+        batch:
+          enabled: true
+        enabled: true
+        num_consumers: 1
+      support: has_overrides
     status:
       class: exporter
       codeowners:
@@ -94,6 +103,8 @@ components:
 - name: awskinesisexporter
   metadata:
     display_name: AWS Kinesis Exporter
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:
@@ -111,6 +122,8 @@ components:
 - name: awss3exporter
   metadata:
     display_name: AWS S3 Exporter
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:
@@ -152,6 +165,8 @@ components:
     deprecated_type: azureblob
     display_name: Azure Blob Storage Exporter
     scope_name: otelcol/azureblobexporter
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:
@@ -169,6 +184,13 @@ components:
 - name: azuredataexplorerexporter
   metadata:
     display_name: Azure Data Explorer Exporter
+    sending_queue:
+      overrides:
+        batch:
+          enabled: false
+        enabled: false
+      rationale: Sending queue is disabled by default.
+      support: has_overrides
     status:
       class: exporter
       codeowners:
@@ -188,6 +210,8 @@ components:
   metadata:
     deprecated_type: azuremonitor
     display_name: Azure Monitor Exporter
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:
@@ -239,6 +263,8 @@ components:
 - name: clickhouseexporter
   metadata:
     display_name: ClickHouse Exporter
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:
@@ -262,6 +288,8 @@ components:
 - name: coralogixexporter
   metadata:
     display_name: Coralogix Exporter
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:
@@ -302,6 +330,8 @@ components:
       id: exporter.datadogexporter.metricexportserializerclient
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/37930
       stage: beta
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:
@@ -331,6 +361,8 @@ components:
 - name: datasetexporter
   metadata:
     display_name: DataSet Exporter
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:
@@ -351,6 +383,8 @@ components:
   metadata:
     display_name: Apache Doris Exporter
     scope_name: otelcol/doris
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:
@@ -395,6 +429,18 @@ components:
         - too_many
         type: string
     display_name: Elasticsearch Exporter
+    sending_queue:
+      overrides:
+        batch:
+          enabled: true
+          flush_timeout: 10s
+          max_size: 5000000
+          min_size: 1000000
+          sizer: bytes
+        block_on_overflow: true
+        enabled: true
+        queue_size: 10
+      support: has_overrides
     status:
       class: exporter
       codeowners:
@@ -551,6 +597,8 @@ components:
 - name: faroexporter
   metadata:
     display_name: Faro Exporter
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:
@@ -607,6 +655,8 @@ components:
       id: exporter.googlecloud.CustomMonitoredResources
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/38331
       stage: alpha
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:
@@ -628,6 +678,13 @@ components:
 - name: googlecloudpubsubexporter
   metadata:
     display_name: Google Cloud Pub/Sub Exporter
+    sending_queue:
+      overrides:
+        batch:
+          enabled: false
+        enabled: false
+      rationale: Sending queue is disabled by default.
+      support: has_overrides
     status:
       class: exporter
       codeowners:
@@ -645,6 +702,8 @@ components:
   metadata:
     deprecated_type: googlecloudstorage
     display_name: Google Cloud Storage Exporter
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:
@@ -663,6 +722,8 @@ components:
 - name: googlemanagedprometheusexporter
   metadata:
     display_name: Google Cloud Managed Prometheus Exporter
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:
@@ -683,6 +744,13 @@ components:
   metadata:
     deprecated_type: honeycombmarker
     display_name: Honeycomb Marker Exporter
+    sending_queue:
+      overrides:
+        batch:
+          enabled: false
+        enabled: false
+      rationale: Sending queue is disabled by default.
+      support: has_overrides
     status:
       class: exporter
       codeowners:
@@ -702,6 +770,8 @@ components:
 - name: influxdbexporter
   metadata:
     display_name: InfluxDB Exporter
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:
@@ -745,6 +815,8 @@ components:
       id: exporter.kafka.useRequestType
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/48090
       stage: alpha
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:
@@ -976,6 +1048,8 @@ components:
         type: bool
     deprecated_type: loadbalancing
     display_name: Load Balancing Exporter
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:
@@ -1075,6 +1149,8 @@ components:
 - name: logicmonitorexporter
   metadata:
     display_name: LogicMonitor Exporter
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:
@@ -1093,6 +1169,8 @@ components:
 - name: logzioexporter
   metadata:
     display_name: Logz.io Exporter
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:
@@ -1125,6 +1203,8 @@ components:
 - name: opensearchexporter
   metadata:
     display_name: OpenSearch Exporter
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:
@@ -1149,6 +1229,20 @@ components:
 - name: otelarrowexporter
   metadata:
     display_name: OpenTelemetry Arrow Exporter
+    sending_queue:
+      overrides:
+        batch:
+          enabled: true
+          flush_timeout: 1s
+          max_size: 1500
+          min_size: 1000
+          sizer: items
+        block_on_overflow: true
+        enabled: true
+        num_consumers: 100
+        queue_size: 100000
+        sizer: items
+      support: has_overrides
     status:
       class: exporter
       codeowners:
@@ -1183,6 +1277,13 @@ components:
       id: exporter.prometheusexporter.DisableAddMetricSuffixes
       reference_url: https://github.com/open-telemetry/opentelemetry-specification/pull/4533
       stage: beta
+    sending_queue:
+      overrides:
+        batch:
+          enabled: false
+        enabled: false
+      rationale: The exporter is pull-based and does not use a sending queue.
+      support: has_overrides
     status:
       class: exporter
       codeowners:
@@ -1237,6 +1338,9 @@ components:
       id: exporter.prometheusremotewritexporter.removeTopLevelHTTPSettings
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/46209
       stage: alpha
+    sending_queue:
+      rationale: The exporter uses a dedicated remote_write_queue configuration.
+      support: omitted
     status:
       class: exporter
       codeowners:
@@ -1413,6 +1517,8 @@ components:
 - name: pulsarexporter
   metadata:
     display_name: Pulsar Exporter
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:
@@ -1452,6 +1558,8 @@ components:
 - name: sematextexporter
   metadata:
     display_name: Sematext Exporter
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:
@@ -1466,6 +1574,8 @@ components:
 - name: sentryexporter
   metadata:
     display_name: Sentry Exporter
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:
@@ -1489,6 +1599,8 @@ components:
       id: exporter.signalfx.consumeEntityEvents
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/45595
       stage: alpha
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:
@@ -1513,6 +1625,8 @@ components:
 - name: splunkhecexporter
   metadata:
     display_name: Splunk HTTP Event Collector (HEC) Exporter
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:
@@ -1550,6 +1664,8 @@ components:
 - name: stefexporter
   metadata:
     display_name: STEF Exporter
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:
@@ -1565,6 +1681,17 @@ components:
 - name: sumologicexporter
   metadata:
     display_name: Sumo Logic Exporter
+    sending_queue:
+      overrides:
+        batch:
+          enabled: true
+          flush_timeout: 1s
+          max_size: 2048
+          min_size: 1024
+          sizer: items
+        enabled: true
+        queue_size: 1024000
+      support: has_overrides
     status:
       class: exporter
       codeowners:
@@ -1625,6 +1752,8 @@ components:
 - name: syslogexporter
   metadata:
     display_name: Syslog Exporter
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:
@@ -1657,6 +1786,8 @@ components:
 - name: tinybirdexporter
   metadata:
     display_name: Tinybird Exporter
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:
@@ -1676,6 +1807,8 @@ components:
 - name: zipkinexporter
   metadata:
     display_name: Zipkin Exporter
+    sending_queue:
+      support: default
     status:
       class: exporter
       codeowners:

@@ -28,7 +28,7 @@ awsxrayexporter: awsxrayexporter-2a22b6f15062.md
 awsxrayreceiver: awsxrayreceiver-de4147e74e5d.md
 azureauthextension: azureauthextension-b03d0fb009bc.md
 azureblobexporter: azureblobexporter-a7fa067d3c08.md
-azureblobreceiver: azureblobreceiver-c1f4bb08075e.md
+azureblobreceiver: azureblobreceiver-5a2414b353f9.md
 azuredataexplorerexporter: azuredataexplorerexporter-63c1f9d011fb.md
 azureencodingextension: azureencodingextension-05c4eed96f63.md
 azureeventhubreceiver: azureeventhubreceiver-ae75090054ad.md
@@ -151,7 +151,7 @@ mongodbatlasreceiver: mongodbatlasreceiver-3ed0141e1849.md
 mongodbreceiver: mongodbreceiver-084ed97a3fbf.md
 mysqlreceiver: mysqlreceiver-a40819b65844.md
 namedpipereceiver: namedpipereceiver-29c60887101b.md
-natsexporter: natsexporter-ec6f5afee7c3.md
+natsexporter: natsexporter-918562548f1d.md
 netflowreceiver: netflowreceiver-e3da7afa531a.md
 nginxreceiver: nginxreceiver-547140c05ac4.md
 nsxtreceiver: nsxtreceiver-7260e4db3b92.md
@@ -167,7 +167,7 @@ otelarrowreceiver: otelarrowreceiver-047ae5449620.md
 otlpencodingextension: otlpencodingextension-c06127b96cca.md
 otlpjsonconnector: otlpjsonconnector-981c27fe5515.md
 otlpjsonfilereceiver: otlpjsonfilereceiver-dd45637b669f.md
-partitioningprocessor: partitioningprocessor-ad793d5064ae.md
+partitioningprocessor: partitioningprocessor-f1c488177c7e.md
 podmanreceiver: podmanreceiver-88fe9c256d04.md
 postgresqlreceiver: postgresqlreceiver-4c951b014634.md
 pprofextension: pprofextension-9fa7804ade7e.md
@@ -211,7 +211,7 @@ simpleprometheusreceiver: simpleprometheusreceiver-bc91845a130a.md
 skywalkingencodingextension: skywalkingencodingextension-e0efca3ee488.md
 skywalkingreceiver: skywalkingreceiver-e84af729f5f6.md
 slowsqlconnector: slowsqlconnector-e7bac14ca9fc.md
-snmpreceiver: snmpreceiver-ee6341c53d2d.md
+snmpreceiver: snmpreceiver-813988a9eb0b.md
 snowflakereceiver: snowflakereceiver-93f0790ff769.md
 solacereceiver: solacereceiver-cbb6494ddb14.md
 solarwindsapmsettingsextension: solarwindsapmsettingsextension-d1cacc091c78.md
