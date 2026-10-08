@@ -16,7 +16,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, within, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter, Route, Routes, useNavigate } from "react-router-dom";
+import { MemoryRouter, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { InstrumentationDetailPage } from "./instrumentation-detail-page";
 import type { InstrumentationData } from "@/types/javaagent";
 
@@ -68,12 +68,18 @@ const mockInstrumentationWithSemconv: InstrumentationData = {
   semantic_conventions: ["HTTP_CLIENT_SPANS", "DATABASE_CLIENT_SPANS", "UNKNOWN_CONVENTION"],
 };
 
+function LocationDisplay() {
+  const location = useLocation();
+  return <div data-testid="location">{location.pathname + location.search}</div>;
+}
+
 function renderWithRouter(initialPath: string) {
   return render(
     <MemoryRouter initialEntries={[initialPath]}>
       <Routes>
         <Route path="/java-agent/instrumentation/:param" element={<InstrumentationDetailPage />} />
       </Routes>
+      <LocationDisplay />
     </MemoryRouter>
   );
 }
@@ -299,5 +305,86 @@ describe("InstrumentationDetailPage", () => {
       }),
       undefined
     );
+  });
+  describe("tab URL state", () => {
+    beforeEach(() => {
+      vi.mocked(useInstrumentation).mockReturnValue({
+        data: mockInstrumentation,
+        loading: false,
+        error: null,
+      });
+    });
+
+    it("restores the selected tab from the URL", () => {
+      renderWithRouter("/java-agent/instrumentation/jdbc?tab=telemetry");
+
+      expect(screen.getByRole("tab", { name: /Telemetry/i })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+      expect(screen.getByRole("tab", { name: /Details/i })).toHaveAttribute(
+        "aria-selected",
+        "false"
+      );
+    });
+
+    it("falls back to Details when the tab param is invalid", () => {
+      renderWithRouter("/java-agent/instrumentation/jdbc?tab=bogus");
+
+      expect(screen.getByRole("tab", { name: /Details/i })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+    });
+
+    it("falls back to Details, without rewriting the URL, when the standalone library tab is unavailable", () => {
+      renderWithRouter("/java-agent/instrumentation/jdbc?tab=standalone-library");
+
+      expect(screen.getByRole("tab", { name: /Details/i })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+      expect(screen.getByTestId("location").textContent).toBe(
+        "/java-agent/instrumentation/jdbc?tab=standalone-library"
+      );
+    });
+
+    it("writes the tab to the URL, keeps other params, and omits the default tab", async () => {
+      const user = userEvent.setup();
+      renderWithRouter("/java-agent/instrumentation/jdbc?version=1.9.0");
+
+      await user.click(screen.getByRole("tab", { name: /Telemetry/i }));
+      expect(screen.getByTestId("location").textContent).toBe(
+        "/java-agent/instrumentation/jdbc?version=1.9.0&tab=telemetry"
+      );
+
+      await user.click(screen.getByRole("tab", { name: /Details/i }));
+      expect(screen.getByTestId("location").textContent).toBe(
+        "/java-agent/instrumentation/jdbc?version=1.9.0"
+      );
+    });
+
+    it("keeps the tab when the version changes", () => {
+      renderWithRouter("/java-agent/instrumentation/jdbc?tab=telemetry");
+
+      const select = screen.getByRole("combobox", { name: /version/i });
+      fireEvent.change(select, { target: { value: "1.9.0" } });
+      expect(mockNavigate).toHaveBeenCalledWith(
+        "/java-agent/instrumentation/jdbc?version=1.9.0&tab=telemetry"
+      );
+
+      fireEvent.change(select, { target: { value: "2.0.0" } });
+      expect(mockNavigate).toHaveBeenCalledWith("/java-agent/instrumentation/jdbc?tab=telemetry");
+    });
+
+    it("keeps the tab when redirecting from 'latest' to the resolved version", () => {
+      vi.mocked(useInstrumentation).mockReturnValue({ data: null, loading: false, error: null });
+
+      renderWithRouter("/java-agent/instrumentation/jdbc?version=latest&tab=telemetry");
+
+      expect(mockNavigate).toHaveBeenCalledWith("/java-agent/instrumentation/jdbc?tab=telemetry", {
+        replace: true,
+      });
+    });
   });
 });

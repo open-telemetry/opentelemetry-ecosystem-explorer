@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { AlertCircle, Loader2, ArrowRight, ExternalLink, ChevronDown } from "lucide-react";
@@ -45,6 +45,16 @@ function parseStatusParam(value: string | null): ModuleChangeStatus | "" {
   return "";
 }
 
+const VALID_TABS = ["changes", "metrics"] as const;
+type ComparisonTab = (typeof VALID_TABS)[number];
+
+function parseTabParam(value: string | null): ComparisonTab {
+  if (value && (VALID_TABS as readonly string[]).includes(value)) {
+    return value as ComparisonTab;
+  }
+  return "changes";
+}
+
 function parseTelemetryParam(value: string | null): Set<TelemetryType> {
   const result = new Set<TelemetryType>();
   if (!value) return result;
@@ -59,7 +69,6 @@ function parseTelemetryParam(value: string | null): Set<TelemetryType> {
 export function JavaReleaseComparisonPage() {
   const { t } = useTranslation("java-agent");
   const [searchParams, setSearchParams] = useSearchParams();
-  const [activeTab, setActiveTab] = useState<"changes" | "metrics">("changes");
 
   const { data: versionsData, loading: versionsLoading } = useVersions();
 
@@ -110,6 +119,20 @@ export function JavaReleaseComparisonPage() {
       const params = new URLSearchParams(prev);
       params.set("from", fromVersion);
       params.set("to", version);
+      return params;
+    });
+  };
+
+  const activeTab = useMemo(() => parseTabParam(searchParams.get("tab")), [searchParams]);
+
+  const setActiveTab = (next: ComparisonTab) => {
+    setSearchParams((prev) => {
+      const params = new URLSearchParams(prev);
+      if (next === "changes") {
+        params.delete("tab");
+      } else {
+        params.set("tab", next);
+      }
       return params;
     });
   };

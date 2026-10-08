@@ -54,6 +54,16 @@ import { InstrumentationConfigurationTab } from "./components/instrumentation-co
 import { StandaloneLibraryTab } from "./components/standalone-library-tab";
 import { renderWithInlineCode } from "@/lib/render-inline-code";
 
+const DETAIL_TABS = ["details", "telemetry", "configuration", "standalone-library"] as const;
+type DetailTab = (typeof DETAIL_TABS)[number];
+
+function parseTabParam(value: string | null): DetailTab {
+  if (value && (DETAIL_TABS as readonly string[]).includes(value)) {
+    return value as DetailTab;
+  }
+  return "details";
+}
+
 function buildSourceUrl(sourcePath: string): string {
   try {
     new URL(sourcePath);
@@ -67,12 +77,12 @@ function buildSourceUrl(sourcePath: string): string {
 
 export function InstrumentationDetailPage() {
   const { t } = useTranslation("java-agent");
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { param } = useParams<{ param: string }>();
 
   const navigate = useNavigate();
   const [showComparison, setShowComparison] = useState(false);
-  const [activeTab, setActiveTab] = useState("details");
+  const tab = parseTabParam(searchParams.get("tab"));
 
   const { data: versionsData, loading: versionsLoading, error: versionsError } = useVersions();
 
@@ -99,17 +109,31 @@ export function InstrumentationDetailPage() {
   useEffect(() => {
     if (version === "latest" && versionsData) {
       if (latestVersion && param) {
-        navigate(`/java-agent/instrumentation/${param}`, { replace: true });
+        navigate(`/java-agent/instrumentation/${param}${tab !== "details" ? `?tab=${tab}` : ""}`, {
+          replace: true,
+        });
       }
     }
-  }, [version, param, versionsData, navigate, latestVersion]);
+  }, [version, param, versionsData, navigate, latestVersion, tab]);
 
   const handleVersionChange = (newVersion: string) => {
-    navigate(
-      newVersion != latestVersion
-        ? `/java-agent/instrumentation/${param}?version=${newVersion}`
-        : `/java-agent/instrumentation/${param}`
-    );
+    const query = new URLSearchParams();
+    if (newVersion != latestVersion) query.set("version", newVersion);
+    if (tab !== "details") query.set("tab", tab);
+    const queryString = query.toString();
+    navigate(`/java-agent/instrumentation/${param}${queryString ? `?${queryString}` : ""}`);
+  };
+
+  const handleTabChange = (value: string) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      if (value === "details") {
+        next.delete("tab");
+      } else {
+        next.set("tab", value);
+      }
+      return next;
+    });
   };
 
   if (loading) {
@@ -213,6 +237,12 @@ export function InstrumentationDetailPage() {
 
   const seo = deriveInstrumentationMeta(instrumentation);
 
+  // Derived from the URL on every render; an unavailable tab falls back without rewriting the URL.
+  const hasStandaloneLibraryTab = !!(
+    instrumentation.has_standalone_library && instrumentation.markdown_hash
+  );
+  const activeTab = tab === "standalone-library" && !hasStandaloneLibraryTab ? "details" : tab;
+
   return (
     <PageContainer>
       <Seo title={seo.title} description={seo.description} />
@@ -306,7 +336,7 @@ export function InstrumentationDetailPage() {
             />
           </div>
 
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="relative z-10">
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="relative z-10">
             <div className="px-4 pt-4 pb-0 sm:px-6">
               <SegmentedTabList
                 fullWidth
