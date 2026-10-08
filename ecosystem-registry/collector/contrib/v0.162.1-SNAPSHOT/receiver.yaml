@@ -1953,9 +1953,10 @@ components:
       class: receiver
       codeowners:
         active:
-        - eedorenko
         - mx-psi
         - dyl10s
+        emeritus:
+        - eedorenko
       distributions:
       - contrib
       stability:
@@ -19246,6 +19247,7 @@ components:
       codeowners:
         active:
         - ajimenez1503
+        - svencowart
         emeritus:
         - StefanKurek
         - tamir-michaeli
