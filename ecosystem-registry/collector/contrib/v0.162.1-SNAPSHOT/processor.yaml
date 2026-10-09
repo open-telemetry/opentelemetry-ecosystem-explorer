@@ -2,7 +2,7 @@ distribution: contrib
 version: 0.162.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: processor
-schema_hash: 5fc3596bf444
+schema_hash: 0faf6634f107
 components:
 - name: adaptivetailsamplingprocessor
   metadata:

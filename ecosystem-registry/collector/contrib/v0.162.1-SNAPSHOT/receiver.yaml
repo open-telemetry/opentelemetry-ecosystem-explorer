@@ -2,7 +2,7 @@ distribution: contrib
 version: 0.162.1-SNAPSHOT
 repository: opentelemetry-collector-contrib
 component_type: receiver
-schema_hash: 5fc3596bf444
+schema_hash: 0faf6634f107
 components:
 - name: activedirectorydsreceiver
   metadata:
@@ -19209,13 +19209,14 @@ components:
     status:
       class: receiver
       codeowners:
-        active: []
+        active:
+        - s3onghyun
         emeritus:
         - fatsheep9146
       distributions:
       - contrib
       stability:
-        unmaintained:
+        beta:
         - metrics
     type: prometheus_simple
 - name: skywalkingreceiver
