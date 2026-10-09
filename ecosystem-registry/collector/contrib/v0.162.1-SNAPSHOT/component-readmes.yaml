@@ -39,13 +39,13 @@ basicauthextension: basicauthextension-4dda2adbc1b8.md
 bearertokenauthextension: bearertokenauthextension-e6bf0a60fe6b.md
 bmchelixexporter: bmchelixexporter-acce4a4b9fce.md
 carbonreceiver: carbonreceiver-86d662c7520e.md
-cardinalityguardianprocessor: cardinalityguardianprocessor-7f5718df0a82.md
+cardinalityguardianprocessor: cardinalityguardianprocessor-d32a2f12cc8b.md
 cassandraexporter: cassandraexporter-d5a68683a543.md
 cfgardenobserver: cfgardenobserver-c21b9c3531e5.md
 cgroupruntimeextension: cgroupruntimeextension-7caa49d589cc.md
 chronyreceiver: chronyreceiver-44f1d6984dbc.md
 ciscoosreceiver: ciscoosreceiver-122626552e8c.md
-clickhouseexporter: clickhouseexporter-b1ff1a03b44b.md
+clickhouseexporter: clickhouseexporter-645197abef04.md
 cloudflarereceiver: cloudflarereceiver-7a66a00e3fa5.md
 cloudfoundryreceiver: cloudfoundryreceiver-f2d667c47144.md
 collectdreceiver: collectdreceiver-1b405a65d939.md
@@ -130,7 +130,7 @@ k8sobjectsreceiver: k8sobjectsreceiver-0ca2b37eaebb.md
 k8sobserver: k8sobserver-a932c191778a.md
 kafkaexporter: kafkaexporter-14949bdead60.md
 kafkametricsreceiver: kafkametricsreceiver-563454e2cbd3.md
-kafkareceiver: kafkareceiver-41519f524da9.md
+kafkareceiver: kafkareceiver-3442eed2a340.md
 kubeletstatsreceiver: kubeletstatsreceiver-f2fa773a3a08.md
 libhoneyreceiver: libhoneyreceiver-56d3322b6dc1.md
 loadbalancingexporter: loadbalancingexporter-036723484433.md
@@ -172,7 +172,7 @@ podmanreceiver: podmanreceiver-88fe9c256d04.md
 postgresqlreceiver: postgresqlreceiver-4c951b014634.md
 pprofextension: pprofextension-9fa7804ade7e.md
 pprofreceiver: pprofreceiver-e4fb21cb46c1.md
-probabilisticsamplerprocessor: probabilisticsamplerprocessor-dca8dda9d7c6.md
+probabilisticsamplerprocessor: probabilisticsamplerprocessor-b09e1f007a3f.md
 prometheusexporter: prometheusexporter-2c7fb860a00b.md
 prometheusreceiver: prometheusreceiver-2792406ac353.md
 prometheusremotewriteexporter: prometheusremotewriteexporter-12a0cf641684.md
@@ -207,7 +207,7 @@ signalfxreceiver: signalfxreceiver-a3afb864c4d9.md
 signaltometricsconnector: signaltometricsconnector-af6d13501b12.md
 signingprocessor: signingprocessor-9fc53fae628d.md
 sigv4authextension: sigv4authextension-c2ade90cc4bc.md
-simpleprometheusreceiver: simpleprometheusreceiver-bc91845a130a.md
+simpleprometheusreceiver: simpleprometheusreceiver-c0497fd646a2.md
 skywalkingencodingextension: skywalkingencodingextension-e0efca3ee488.md
 skywalkingreceiver: skywalkingreceiver-e84af729f5f6.md
 slowsqlconnector: slowsqlconnector-e7bac14ca9fc.md
@@ -242,7 +242,7 @@ tencentcloudlogserviceexporter: tencentcloudlogserviceexporter-1a26be4309cc.md
 textencodingextension: textencodingextension-c67e02537a76.md
 tinybirdexporter: tinybirdexporter-baaf55f56413.md
 tlscheckreceiver: tlscheckreceiver-4a247b27cd04.md
-transformprocessor: transformprocessor-f01ad1a480d2.md
+transformprocessor: transformprocessor-c04713b0f987.md
 udplogreceiver: udplogreceiver-4a5286ba32ce.md
 unrollprocessor: unrollprocessor-7421d6ff0f0a.md
 vcenterreceiver: vcenterreceiver-b391850b0976.md
