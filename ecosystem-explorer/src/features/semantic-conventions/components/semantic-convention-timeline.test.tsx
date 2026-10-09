@@ -33,18 +33,24 @@ function typeOptionLabels() {
 }
 
 const SAMPLE_DATA: TimelineData = {
+  schemaVersion: 1,
+  sources: [],
+  releases: [],
   lanes: [
-    { id: "http", title: "HTTP", subtitle: "Core conventions" },
-    { id: "db", title: "Database", subtitle: "Core conventions" },
+    { id: "http", title: "HTTP", subtitle: "Core conventions", namespaces: ["http"] },
+    { id: "db", title: "Database", subtitle: "Core conventions", namespaces: ["db"] },
     // Defined in the dataset but with zero events below - must never appear as a domain
     // dropdown option, since selecting it could only ever produce an empty timeline.
-    { id: "rpc", title: "RPC", subtitle: "Core conventions" },
+    { id: "rpc", title: "RPC", subtitle: "Core conventions", namespaces: ["rpc"] },
   ],
   events: [
     {
       id: "http-origin",
       lane: "http",
-      release: null,
+      revision: {
+        source: "opentelemetry-specification",
+        commit: "4ac49aa1e86633887f49ab1f58221b78b4888e24",
+      },
       pullRequest: 82,
       type: "domain",
       short: "HTTP enters the spec",
@@ -57,7 +63,7 @@ const SAMPLE_DATA: TimelineData = {
     {
       id: "http-stable",
       lane: "http",
-      release: "1.23.0",
+      revision: "semantic-conventions@v1.23.0",
       type: "stability",
       short: "Core stable",
       title: "Core HTTP semantic conventions stabilize",
@@ -69,7 +75,10 @@ const SAMPLE_DATA: TimelineData = {
     {
       id: "db-origin",
       lane: "db",
-      release: null,
+      revision: {
+        source: "opentelemetry-specification",
+        commit: "4ac49aa1e86633887f49ab1f58221b78b4888e24",
+      },
       pullRequest: 19,
       type: "domain",
       short: "DB enters the spec",
@@ -82,7 +91,7 @@ const SAMPLE_DATA: TimelineData = {
     {
       id: "db-minor-change",
       lane: "db",
-      release: "1.25.0",
+      revision: "semantic-conventions@v1.25.0",
       type: "change",
       short: "Minor db change",
       title: "A minor database change",
@@ -92,7 +101,6 @@ const SAMPLE_DATA: TimelineData = {
       date: "2024-01-01",
     },
   ],
-  dates: {},
 };
 
 describe("SemanticConventionTimeline", () => {

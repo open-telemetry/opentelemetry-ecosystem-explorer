@@ -1,66 +1,452 @@
 {
+  "$schema": "../../schemas/semantic-conventions-history.schema.json",
+  "schemaVersion": 1,
+  "sources": [
+    {
+      "id": "semantic-conventions",
+      "repository": "https://github.com/open-telemetry/semantic-conventions",
+      "mode": "release",
+      "paths": ["CHANGELOG.md", "docs", "model"],
+      "reviewedThrough": {
+        "tag": "v1.44.0",
+        "commit": "e10a930844c6951757a43b849d364f7d056ac32b"
+      }
+    },
+    {
+      "id": "semantic-conventions-genai",
+      "repository": "https://github.com/open-telemetry/semantic-conventions-genai",
+      "mode": "commit",
+      "paths": ["changelog.d", "docs", "model"],
+      "reviewedThrough": {
+        "commit": "ebe3d1fb9fdda3398099e11ef91c4c490912f88d"
+      }
+    },
+    {
+      "id": "opentelemetry-specification",
+      "repository": "https://github.com/open-telemetry/opentelemetry-specification",
+      "mode": "frozen",
+      "paths": []
+    }
+  ],
+  "releases": [
+    {
+      "key": "opentelemetry-specification@v1.0.0",
+      "tag": "v1.0.0",
+      "date": "2021-02-10",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "opentelemetry-specification@v1.0.1",
+      "tag": "v1.0.1",
+      "date": "2021-02-11",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "opentelemetry-specification@v1.1.0",
+      "tag": "v1.1.0",
+      "date": "2021-03-11",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "opentelemetry-specification@v1.2.0",
+      "tag": "v1.2.0",
+      "date": "2021-04-14",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "opentelemetry-specification@v1.3.0",
+      "tag": "v1.3.0",
+      "date": "2021-05-05",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "opentelemetry-specification@v1.4.0",
+      "tag": "v1.4.0",
+      "date": "2021-06-07",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "opentelemetry-specification@v1.5.0",
+      "tag": "v1.5.0",
+      "date": "2021-07-08",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "opentelemetry-specification@v1.6.0",
+      "tag": "v1.6.0",
+      "date": "2021-08-06",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "opentelemetry-specification@v1.7.0",
+      "tag": "v1.7.0",
+      "date": "2021-09-30",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "opentelemetry-specification@v1.8.0",
+      "tag": "v1.8.0",
+      "date": "2021-11-12",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "opentelemetry-specification@v1.9.0",
+      "tag": "v1.9.0",
+      "date": "2022-02-10",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "opentelemetry-specification@v1.10.0",
+      "tag": "v1.10.0",
+      "date": "2022-04-01",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "opentelemetry-specification@v1.11.0",
+      "tag": "v1.11.0",
+      "date": "2022-05-04",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "opentelemetry-specification@v1.12.0",
+      "tag": "v1.12.0",
+      "date": "2022-06-10",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "opentelemetry-specification@v1.13.0",
+      "tag": "v1.13.0",
+      "date": "2022-09-19",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "opentelemetry-specification@v1.14.0",
+      "tag": "v1.14.0",
+      "date": "2022-10-04",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "opentelemetry-specification@v1.15.0",
+      "tag": "v1.15.0",
+      "date": "2022-11-09",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "opentelemetry-specification@v1.16.0",
+      "tag": "v1.16.0",
+      "date": "2022-12-08",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "opentelemetry-specification@v1.17.0",
+      "tag": "v1.17.0",
+      "date": "2023-01-17",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "opentelemetry-specification@v1.18.0",
+      "tag": "v1.18.0",
+      "date": "2023-02-09",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "opentelemetry-specification@v1.19.0",
+      "tag": "v1.19.0",
+      "date": "2023-03-06",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "opentelemetry-specification@v1.20.0",
+      "tag": "v1.20.0",
+      "date": "2023-04-07",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "semantic-conventions@v1.21.0",
+      "tag": "v1.21.0",
+      "commit": "e531541025992b68177a68b87628c5dc75c4f7d9",
+      "date": "2023-07-13",
+      "dateBasis": "changelog-heading"
+    },
+    {
+      "key": "semantic-conventions@v1.22.0",
+      "tag": "v1.22.0",
+      "commit": "cadfe53949266d33476b15ca52c92f682600a29c",
+      "date": "2023-10-12",
+      "dateBasis": "changelog-heading",
+      "baseline": "semantic-conventions@v1.21.0"
+    },
+    {
+      "key": "semantic-conventions@v1.23.0",
+      "tag": "v1.23.0",
+      "commit": "da1dbb567f0f0c866dde79a7564a58ab8019b1cf",
+      "date": "2023-11-03",
+      "dateBasis": "changelog-heading",
+      "baseline": "semantic-conventions@v1.22.0"
+    },
+    {
+      "key": "semantic-conventions@v1.23.1",
+      "tag": "v1.23.1",
+      "commit": "73720582560b5a020df8aee90504fcb411f62713",
+      "date": "2023-11-17",
+      "dateBasis": "changelog-heading",
+      "baseline": "semantic-conventions@v1.23.0"
+    },
+    {
+      "key": "semantic-conventions@v1.24.0",
+      "tag": "v1.24.0",
+      "commit": "cafda7127683b7f667e27cdbd3220510b6f998c9",
+      "date": "2023-12-15",
+      "dateBasis": "changelog-heading",
+      "baseline": "semantic-conventions@v1.23.0"
+    },
+    {
+      "key": "semantic-conventions@v1.25.0",
+      "tag": "v1.25.0",
+      "commit": "f1be1511d91743a457974ed9a21b9193b2fe0e51",
+      "date": "2024-04-04",
+      "dateBasis": "release-published-at",
+      "baseline": "semantic-conventions@v1.24.0"
+    },
+    {
+      "key": "semantic-conventions@v1.26.0",
+      "tag": "v1.26.0",
+      "commit": "9adff435c76ea3b8cba89babefc832d3dd3c1ab9",
+      "date": "2024-05-21",
+      "dateBasis": "release-published-at",
+      "baseline": "semantic-conventions@v1.25.0"
+    },
+    {
+      "key": "semantic-conventions@v1.27.0",
+      "tag": "v1.27.0",
+      "commit": "01c542ccacd869ee8a329aa33c65fb2c47bf2815",
+      "date": "2024-08-02",
+      "dateBasis": "release-published-at",
+      "baseline": "semantic-conventions@v1.26.0"
+    },
+    {
+      "key": "semantic-conventions@v1.28.0",
+      "tag": "v1.28.0",
+      "commit": "96f8bda9bab363cb01e2441820bc83a5dad15801",
+      "date": "2024-10-08",
+      "dateBasis": "release-published-at",
+      "baseline": "semantic-conventions@v1.27.0"
+    },
+    {
+      "key": "semantic-conventions@v1.29.0",
+      "tag": "v1.29.0",
+      "commit": "0edb9e2b42e37739fe53e10623d93809269dd300",
+      "date": "2024-11-28",
+      "dateBasis": "release-published-at",
+      "baseline": "semantic-conventions@v1.28.0"
+    },
+    {
+      "key": "semantic-conventions@v1.30.0",
+      "tag": "v1.30.0",
+      "commit": "ac424df0d09fae721913f2a399b90ac16ba960fd",
+      "date": "2025-01-24",
+      "dateBasis": "release-published-at",
+      "baseline": "semantic-conventions@v1.29.0"
+    },
+    {
+      "key": "semantic-conventions@v1.31.0",
+      "tag": "v1.31.0",
+      "commit": "c01aa89d9a13042e56536c60975139c50e764796",
+      "date": "2025-03-11",
+      "dateBasis": "release-published-at",
+      "baseline": "semantic-conventions@v1.30.0"
+    },
+    {
+      "key": "semantic-conventions@v1.32.0",
+      "tag": "v1.32.0",
+      "commit": "6814d83dac7ebd6b29dada91c669a99275f674c8",
+      "date": "2025-03-31",
+      "dateBasis": "release-published-at",
+      "baseline": "semantic-conventions@v1.31.0"
+    },
+    {
+      "key": "semantic-conventions@v1.33.0",
+      "tag": "v1.33.0",
+      "commit": "9e993af31e53177cac4ccda014809ab0b5395835",
+      "date": "2025-05-02",
+      "dateBasis": "release-published-at",
+      "baseline": "semantic-conventions@v1.32.0"
+    },
+    {
+      "key": "semantic-conventions@v1.34.0",
+      "tag": "v1.34.0",
+      "commit": "e96d8de9e807b51fb39d823e1d73be172aa27835",
+      "date": "2025-05-19",
+      "dateBasis": "release-published-at",
+      "baseline": "semantic-conventions@v1.33.0"
+    },
+    {
+      "key": "semantic-conventions@v1.35.0",
+      "tag": "v1.35.0",
+      "commit": "a4977286793718856ab397fabab6796d136bcd9b",
+      "date": "2025-06-30",
+      "dateBasis": "release-published-at",
+      "baseline": "semantic-conventions@v1.34.0"
+    },
+    {
+      "key": "semantic-conventions@v1.36.0",
+      "tag": "v1.36.0",
+      "commit": "4b2c0e6544d740178c9c77809d25705e77acd0b0",
+      "date": "2025-07-05",
+      "dateBasis": "release-published-at",
+      "baseline": "semantic-conventions@v1.35.0"
+    },
+    {
+      "key": "semantic-conventions@v1.37.0",
+      "tag": "v1.37.0",
+      "commit": "aec6e9d3e86754683dab7c707655d69d953b2768",
+      "date": "2025-08-25",
+      "dateBasis": "release-published-at",
+      "baseline": "semantic-conventions@v1.36.0"
+    },
+    {
+      "key": "semantic-conventions@v1.38.0",
+      "tag": "v1.38.0",
+      "commit": "8e16df7981f94b70ed1b9795c995094af995184f",
+      "date": "2025-10-29",
+      "dateBasis": "release-published-at",
+      "baseline": "semantic-conventions@v1.37.0"
+    },
+    {
+      "key": "semantic-conventions@v1.39.0",
+      "tag": "v1.39.0",
+      "commit": "6d05e92070f0a5c9a5bbcd396d2ebe2103377f8c",
+      "date": "2026-01-12",
+      "dateBasis": "release-published-at",
+      "baseline": "semantic-conventions@v1.38.0"
+    },
+    {
+      "key": "semantic-conventions@v1.40.0",
+      "tag": "v1.40.0",
+      "commit": "7fe537301d17919af7d7eb65b32e9be35da2c497",
+      "date": "2026-02-19",
+      "dateBasis": "release-published-at",
+      "baseline": "semantic-conventions@v1.39.0"
+    },
+    {
+      "key": "semantic-conventions@v1.41.0",
+      "tag": "v1.41.0",
+      "commit": "e018fe6f91862f5ed63c082f87697cddac596784",
+      "date": "2026-04-28",
+      "dateBasis": "release-published-at",
+      "baseline": "semantic-conventions@v1.40.0"
+    },
+    {
+      "key": "semantic-conventions@v1.41.1",
+      "tag": "v1.41.1",
+      "commit": "ead83b9b0fa36540c1642fce46e874f002ac23f1",
+      "date": "2026-05-11",
+      "dateBasis": "release-published-at",
+      "baseline": "semantic-conventions@v1.41.0"
+    },
+    {
+      "key": "semantic-conventions@v1.42.0",
+      "tag": "v1.42.0",
+      "commit": "ae3a98640194ed405c4c797281502e4d3bd258b3",
+      "date": "2026-06-12",
+      "dateBasis": "release-published-at",
+      "baseline": "semantic-conventions@v1.41.0"
+    },
+    {
+      "key": "semantic-conventions@v1.43.0",
+      "tag": "v1.43.0",
+      "commit": "89aae438b3b3b0a8dd33003c9d70592baf7dbd0d",
+      "date": "2026-07-03",
+      "dateBasis": "release-published-at",
+      "baseline": "semantic-conventions@v1.42.0"
+    },
+    {
+      "key": "semantic-conventions@v1.44.0",
+      "tag": "v1.44.0",
+      "commit": "e10a930844c6951757a43b849d364f7d056ac32b",
+      "date": "2026-08-04",
+      "dateBasis": "release-published-at",
+      "baseline": "semantic-conventions@v1.43.0"
+    }
+  ],
   "lanes": [
     {
       "id": "http",
       "title": "HTTP",
-      "subtitle": "Core conventions"
+      "subtitle": "Core conventions",
+      "namespaces": ["http"]
     },
     {
       "id": "db",
       "title": "Database",
-      "subtitle": "Core + selected SQL systems"
+      "subtitle": "Core + selected SQL systems",
+      "namespaces": ["db"]
     },
     {
       "id": "rpc",
       "title": "RPC",
-      "subtitle": "Core, gRPC + Dubbo"
+      "subtitle": "Core, gRPC + Dubbo",
+      "namespaces": ["rpc"]
     },
     {
       "id": "jvm",
       "title": "JVM",
-      "subtitle": "Runtime metrics"
+      "subtitle": "Runtime metrics",
+      "namespaces": ["jvm"]
     },
     {
       "id": "messaging",
       "title": "Messaging",
-      "subtitle": "Spans + selected metrics"
+      "subtitle": "Spans + selected metrics",
+      "namespaces": ["messaging"]
     },
     {
       "id": "k8s",
       "title": "Kubernetes",
-      "subtitle": "Selected attributes + metrics"
+      "subtitle": "Selected attributes + metrics",
+      "namespaces": ["container", "k8s"]
     },
     {
       "id": "browser",
       "title": "Browser",
-      "subtitle": "Attributes + web vitals"
+      "subtitle": "Attributes + web vitals",
+      "namespaces": ["browser"]
     },
     {
       "id": "genai",
       "title": "Generative AI",
-      "subtitle": "History in the core repository"
+      "subtitle": "History in the core repository",
+      "namespaces": ["gen-ai", "mcp", "openai"],
+      "migration": {
+        "eventId": "genai-moved",
+        "from": "semantic-conventions",
+        "to": "semantic-conventions-genai"
+      }
     },
     {
       "id": "delivery",
       "title": "CI/CD + VCS",
-      "subtitle": "Delivery conventions"
+      "subtitle": "Delivery conventions",
+      "namespaces": ["cicd", "vcs"]
     },
     {
       "id": "runtime",
       "title": "Other runtimes",
-      "subtitle": "System + process"
+      "subtitle": "System + process",
+      "namespaces": ["cpython", "process", "system"]
     },
     {
       "id": "signals",
       "title": "Other domains",
-      "subtitle": "Selected introductions"
+      "subtitle": "Selected introductions",
+      "namespaces": ["cli", "cloudevents", "feature-flags", "geo", "graphql", "profile"]
     }
   ],
   "events": [
     {
       "id": "http-stable",
       "lane": "http",
-      "release": "1.23.0",
+      "revision": "semantic-conventions@v1.23.0",
       "type": "stability",
       "short": "Core stable",
       "title": "Core HTTP semantic conventions stabilize",
@@ -73,7 +459,7 @@
     {
       "id": "db-rc",
       "lane": "db",
-      "release": "1.28.0",
+      "revision": "semantic-conventions@v1.28.0",
       "type": "stability",
       "short": "Core reaches RC",
       "title": "Core database conventions reach release candidate",
@@ -86,7 +472,7 @@
     {
       "id": "db-stable",
       "lane": "db",
-      "release": "1.33.0",
+      "revision": "semantic-conventions@v1.33.0",
       "type": "stability",
       "short": "Core stable",
       "title": "The database core stabilizes",
@@ -99,7 +485,7 @@
     {
       "id": "rpc-rc",
       "lane": "rpc",
-      "release": "1.40.0",
+      "revision": "semantic-conventions@v1.40.0",
       "type": "stability",
       "short": "Core RPC reaches RC",
       "title": "Core RPC, gRPC, and Dubbo conventions reach release candidate",
@@ -112,7 +498,7 @@
     {
       "id": "jvm-stable",
       "lane": "jvm",
-      "release": "1.24.0",
+      "revision": "semantic-conventions@v1.24.0",
       "type": "stability",
       "short": "JVM stable",
       "title": "JVM metrics become stable",
@@ -125,7 +511,7 @@
     {
       "id": "cpython",
       "lane": "runtime",
-      "release": "1.32.0",
+      "revision": "semantic-conventions@v1.32.0",
       "type": "domain",
       "short": "CPython GC metrics",
       "title": "CPython garbage-collector metrics are introduced",
@@ -137,7 +523,7 @@
     {
       "id": "k8s-alpha",
       "lane": "k8s",
-      "release": "1.39.0",
+      "revision": "semantic-conventions@v1.39.0",
       "type": "stability",
       "short": "Selected attrs alpha",
       "title": "Selected Kubernetes and container attributes reach alpha",
@@ -150,7 +536,7 @@
     {
       "id": "k8s-container-stable",
       "lane": "k8s",
-      "release": "1.42.0",
+      "revision": "semantic-conventions@v1.42.0",
       "type": "stability",
       "short": "Selected attrs stable",
       "title": "Selected Kubernetes and container registry attributes stabilize",
@@ -163,7 +549,7 @@
     {
       "id": "process-attributes-rc",
       "lane": "runtime",
-      "release": "1.42.0",
+      "revision": "semantic-conventions@v1.42.0",
       "type": "stability",
       "short": "Process attrs RC",
       "title": "Process attributes reach release candidate",
@@ -171,12 +557,21 @@
       "source": "https://github.com/open-telemetry/semantic-conventions/blob/v1.44.0/CHANGELOG.md#v1420",
       "transition": "process attributes → release candidate",
       "major": false,
-      "date": "2026-06-12"
+      "date": "2026-06-12",
+      "evidence": [
+        {
+          "source": "semantic-conventions",
+          "namespaces": ["process"],
+          "links": [
+            "https://github.com/open-telemetry/semantic-conventions/commit/e6ce0d219ee61af553f8fc1118c25a266eda6122"
+          ]
+        }
+      ]
     },
     {
       "id": "kafka-metrics",
       "lane": "messaging",
-      "release": "1.12.0",
+      "revision": "opentelemetry-specification@v1.12.0",
       "type": "domain",
       "short": "Kafka metrics",
       "title": "Messaging gains Kafka metric conventions",
@@ -188,7 +583,7 @@
     {
       "id": "kafka-removed",
       "lane": "messaging",
-      "release": "1.22.0",
+      "revision": "semantic-conventions@v1.22.0",
       "type": "removed",
       "short": "Kafka metrics removed",
       "title": "Experimental Kafka metrics are removed",
@@ -200,7 +595,7 @@
     {
       "id": "messaging-rework",
       "lane": "messaging",
-      "release": "1.27.0",
+      "revision": "semantic-conventions@v1.27.0",
       "type": "change",
       "short": "Generic operations",
       "title": "Messaging operations and metric names are generalized",
@@ -212,7 +607,7 @@
     {
       "id": "vcs-metrics",
       "lane": "delivery",
-      "release": "1.29.0",
+      "revision": "semantic-conventions@v1.29.0",
       "type": "domain",
       "short": "VCS metrics",
       "title": "Version-control-system metrics are introduced",
@@ -224,7 +619,7 @@
     {
       "id": "cicd-vcs-resources",
       "lane": "delivery",
-      "release": "1.33.0",
+      "revision": "semantic-conventions@v1.33.0",
       "type": "domain",
       "short": "CI/CD resources",
       "title": "CI/CD and VCS resource conventions arrive",
@@ -236,7 +631,7 @@
     {
       "id": "cicd-vcs-rc",
       "lane": "delivery",
-      "release": "1.43.0",
+      "revision": "semantic-conventions@v1.43.0",
       "type": "stability",
       "short": "CI/CD + VCS RC",
       "title": "CI/CD and VCS conventions reach release candidate",
@@ -249,7 +644,7 @@
     {
       "id": "graphql",
       "lane": "signals",
-      "release": "1.13.0",
+      "revision": "opentelemetry-specification@v1.13.0",
       "type": "domain",
       "short": "GraphQL",
       "title": "GraphQL semantic conventions are introduced",
@@ -261,7 +656,7 @@
     {
       "id": "feature-flags",
       "lane": "signals",
-      "release": "1.16.0",
+      "revision": "opentelemetry-specification@v1.16.0",
       "type": "domain",
       "short": "Feature flags",
       "title": "Feature-flag conventions are introduced",
@@ -273,7 +668,7 @@
     {
       "id": "profiles",
       "lane": "signals",
-      "release": "1.28.0",
+      "revision": "semantic-conventions@v1.28.0",
       "type": "domain",
       "short": "Profiles",
       "title": "Profiling semantic conventions are introduced",
@@ -285,7 +680,7 @@
     {
       "id": "browser-vitals",
       "lane": "browser",
-      "release": "1.33.0",
+      "revision": "semantic-conventions@v1.33.0",
       "type": "domain",
       "short": "Web vitals",
       "title": "Browser web-vital events are introduced",
@@ -297,7 +692,7 @@
     {
       "id": "browser-document",
       "lane": "browser",
-      "release": "1.42.0",
+      "revision": "semantic-conventions@v1.42.0",
       "type": "domain",
       "short": "Browser document",
       "title": "A browser document entity is introduced",
@@ -309,7 +704,7 @@
     {
       "id": "genai-introduced",
       "lane": "genai",
-      "release": "1.26.0",
+      "revision": "semantic-conventions@v1.26.0",
       "type": "domain",
       "short": "Client conventions",
       "title": "Generative-AI client conventions are introduced",
@@ -321,7 +716,7 @@
     {
       "id": "genai-events",
       "lane": "genai",
-      "release": "1.28.0",
+      "revision": "semantic-conventions@v1.28.0",
       "type": "change",
       "short": "Content events",
       "title": "GenAI input and output content moves to log-based events",
@@ -333,7 +728,7 @@
     {
       "id": "genai-chat-rework",
       "lane": "genai",
-      "release": "1.37.0",
+      "revision": "semantic-conventions@v1.37.0",
       "type": "change",
       "short": "Structured chat content",
       "title": "GenAI chat content moves to structured attributes",
@@ -345,19 +740,39 @@
     {
       "id": "genai-moved",
       "lane": "genai",
-      "release": "1.42.0",
+      "revision": "semantic-conventions@v1.42.0",
       "type": "moved",
       "short": "Moved out of core",
       "title": "Core gen_ai conventions are deprecated and moved to a dedicated repository",
       "detail": "All gen_ai.* conventions are deprecated in the core repository as the GenAI work moves to its dedicated semantic-conventions repository. This is a repository migration, not the end of GenAI conventions.",
       "source": "https://github.com/open-telemetry/semantic-conventions/blob/v1.44.0/CHANGELOG.md#v1420",
       "major": true,
-      "date": "2026-06-12"
+      "date": "2026-06-12",
+      "evidence": [
+        {
+          "source": "semantic-conventions",
+          "namespaces": ["gen-ai", "mcp", "openai"],
+          "links": [
+            "https://github.com/open-telemetry/semantic-conventions/pull/3696",
+            "https://github.com/open-telemetry/semantic-conventions/commit/c9e48b1d1af565454b73b9e14f0841bca4670ada"
+          ]
+        },
+        {
+          "source": "semantic-conventions-genai",
+          "namespaces": ["gen-ai", "mcp", "openai"],
+          "links": [
+            "https://github.com/open-telemetry/semantic-conventions-genai/commit/ebe3d1fb9fdda3398099e11ef91c4c490912f88d"
+          ]
+        }
+      ]
     },
     {
       "id": "http-origin",
       "lane": "http",
-      "release": null,
+      "revision": {
+        "source": "opentelemetry-specification",
+        "commit": "4ac49aa1e86633887f49ab1f58221b78b4888e24"
+      },
       "date": "2019-06-13",
       "type": "domain",
       "short": "HTTP enters the spec",
@@ -366,7 +781,6 @@
       "source": "https://github.com/open-telemetry/opentelemetry-specification/commit/4ac49aa1e86633887f49ab1f58221b78b4888e24",
       "major": true,
       "dateBasis": "specification-commit",
-      "commit": "4ac49aa1e86633887f49ab1f58221b78b4888e24",
       "pullRequest": 82,
       "firstRelease": "0.1",
       "lineageSource": "https://github.com/open-telemetry/opentelemetry-specification/blob/c4b7f4307de79009c97b3a98563e91fee39b7ba3/work_in_progress/opencensus/HTTP.md"
@@ -374,7 +788,10 @@
     {
       "id": "db-origin",
       "lane": "db",
-      "release": null,
+      "revision": {
+        "source": "opentelemetry-specification",
+        "commit": "4d3dfa74937c977b4b90eb07971c3f8d1192ea7b"
+      },
       "date": "2019-05-23",
       "type": "domain",
       "short": "DB enters the spec",
@@ -383,7 +800,6 @@
       "source": "https://github.com/open-telemetry/opentelemetry-specification/commit/4d3dfa74937c977b4b90eb07971c3f8d1192ea7b",
       "major": true,
       "dateBasis": "specification-commit",
-      "commit": "4d3dfa74937c977b4b90eb07971c3f8d1192ea7b",
       "pullRequest": 19,
       "firstRelease": "0.1",
       "lineageSource": "https://github.com/open-telemetry/opentelemetry-specification/blob/c4b7f4307de79009c97b3a98563e91fee39b7ba3/work_in_progress/database/database.md"
@@ -391,7 +807,10 @@
     {
       "id": "rpc-origin",
       "lane": "rpc",
-      "release": null,
+      "revision": {
+        "source": "opentelemetry-specification",
+        "commit": "f1b7b8a12e063a58dc9f27a40462e414288d2c0d"
+      },
       "date": "2019-06-05",
       "type": "domain",
       "short": "gRPC enters the spec",
@@ -400,7 +819,6 @@
       "source": "https://github.com/open-telemetry/opentelemetry-specification/commit/f1b7b8a12e063a58dc9f27a40462e414288d2c0d",
       "major": true,
       "dateBasis": "specification-commit",
-      "commit": "f1b7b8a12e063a58dc9f27a40462e414288d2c0d",
       "pullRequest": 28,
       "firstRelease": "0.1",
       "lineageSource": "https://github.com/open-telemetry/opentelemetry-specification/blob/c4b7f4307de79009c97b3a98563e91fee39b7ba3/work_in_progress/gRPC/gRPC.md"
@@ -408,7 +826,10 @@
     {
       "id": "messaging-origin",
       "lane": "messaging",
-      "release": null,
+      "revision": {
+        "source": "opentelemetry-specification",
+        "commit": "6b296676983a88ef2528ba90808ab1d6b9d50254"
+      },
       "date": "2020-04-07",
       "type": "domain",
       "short": "Messaging enters spec",
@@ -417,7 +838,6 @@
       "source": "https://github.com/open-telemetry/opentelemetry-specification/commit/6b296676983a88ef2528ba90808ab1d6b9d50254",
       "major": true,
       "dateBasis": "specification-commit",
-      "commit": "6b296676983a88ef2528ba90808ab1d6b9d50254",
       "pullRequest": 418,
       "firstRelease": "v0.4.0",
       "lineageSource": "https://github.com/open-telemetry/opentelemetry-specification/blob/c4b7f4307de79009c97b3a98563e91fee39b7ba3/work_in_progress/opentracing/semantic_conventions.md"
@@ -425,7 +845,10 @@
     {
       "id": "k8s-origin",
       "lane": "k8s",
-      "release": null,
+      "revision": {
+        "source": "opentelemetry-specification",
+        "commit": "6a5af6b645cc0d6217efdabcdadf6c5e0ba1bc7d"
+      },
       "date": "2019-10-22",
       "type": "domain",
       "short": "K8s enters the spec",
@@ -434,7 +857,6 @@
       "source": "https://github.com/open-telemetry/opentelemetry-specification/commit/6a5af6b645cc0d6217efdabcdadf6c5e0ba1bc7d",
       "major": true,
       "dateBasis": "specification-commit",
-      "commit": "6a5af6b645cc0d6217efdabcdadf6c5e0ba1bc7d",
       "pullRequest": 303,
       "firstRelease": "0.3",
       "lineageSource": "https://github.com/open-telemetry/opentelemetry-specification/blob/c4b7f4307de79009c97b3a98563e91fee39b7ba3/work_in_progress/opencensus/StandardResources.md"
@@ -442,7 +864,7 @@
     {
       "id": "jvm-memory",
       "lane": "jvm",
-      "release": "1.9.0",
+      "revision": "opentelemetry-specification@v1.9.0",
       "date": "2022-02-10",
       "type": "domain",
       "short": "Memory metrics",
@@ -454,7 +876,7 @@
     {
       "id": "browser-introduced",
       "lane": "browser",
-      "release": "1.12.0",
+      "revision": "opentelemetry-specification@v1.12.0",
       "date": "2022-06-10",
       "type": "domain",
       "short": "Browser attributes",
@@ -466,7 +888,10 @@
     {
       "id": "rpc-generalized",
       "lane": "rpc",
-      "release": null,
+      "revision": {
+        "source": "opentelemetry-specification",
+        "commit": "99b31d4510b7e62a3d89cfede4c0118e3de58650"
+      },
       "date": "2020-06-17",
       "type": "change",
       "short": "General RPC added",
@@ -474,7 +899,6 @@
       "detail": "The specification adds common remote procedure call conventions, rpc.system and rpc.method, and support for non-gRPC systems. This extends the gRPC-specific conventions that entered the specification in June 2019.",
       "source": "https://github.com/open-telemetry/opentelemetry-specification/commit/99b31d4510b7e62a3d89cfede4c0118e3de58650",
       "dateBasis": "specification-commit",
-      "commit": "99b31d4510b7e62a3d89cfede4c0118e3de58650",
       "pullRequest": 604,
       "firstRelease": "v0.6.0",
       "major": true
@@ -482,7 +906,7 @@
     {
       "id": "http-baseline",
       "lane": "http",
-      "release": "1.20.0",
+      "revision": "opentelemetry-specification@v1.20.0",
       "type": "baseline",
       "short": "De facto baseline",
       "title": "HTTP de facto baseline v1.20.0 is released",
@@ -494,7 +918,7 @@
     {
       "id": "db-baseline",
       "lane": "db",
-      "release": "1.24.0",
+      "revision": "semantic-conventions@v1.24.0",
       "type": "baseline",
       "short": "De facto baseline",
       "title": "Database de facto baseline v1.24.0 is released",
@@ -506,7 +930,7 @@
     {
       "id": "messaging-baseline",
       "lane": "messaging",
-      "release": "1.24.0",
+      "revision": "semantic-conventions@v1.24.0",
       "type": "baseline",
       "short": "De facto baseline",
       "title": "Messaging de facto baseline v1.24.0 is released",
@@ -518,7 +942,7 @@
     {
       "id": "rpc-baseline",
       "lane": "rpc",
-      "release": "1.37.0",
+      "revision": "semantic-conventions@v1.37.0",
       "type": "baseline",
       "short": "De facto baseline",
       "title": "RPC de facto baseline v1.37.0 is released",
@@ -530,7 +954,7 @@
     {
       "id": "system-baseline",
       "lane": "runtime",
-      "release": "1.21.0",
+      "revision": "semantic-conventions@v1.21.0",
       "type": "baseline",
       "short": "System metrics baseline",
       "title": "System metrics de facto baseline v1.21.0 is released",
@@ -542,7 +966,7 @@
     {
       "id": "process-baseline",
       "lane": "runtime",
-      "release": "1.21.0",
+      "revision": "semantic-conventions@v1.21.0",
       "type": "baseline",
       "short": "Process metrics baseline",
       "title": "Process metrics de facto baseline v1.21.0 is released",
@@ -554,7 +978,7 @@
     {
       "id": "genai-baseline",
       "lane": "genai",
-      "release": "1.36.0",
+      "revision": "semantic-conventions@v1.36.0",
       "type": "baseline",
       "short": "De facto baseline",
       "title": "GenAI de facto baseline v1.36.0 is released",
@@ -566,7 +990,7 @@
     {
       "id": "http-freeze",
       "lane": "http",
-      "release": "1.21.0",
+      "revision": "semantic-conventions@v1.21.0",
       "type": "stability",
       "short": "Feature freeze",
       "title": "HTTP conventions enter feature freeze with a transition plan",
@@ -574,12 +998,21 @@
       "source": "https://github.com/open-telemetry/semantic-conventions/blob/v1.44.0/CHANGELOG.md#v1210-2023-07-13",
       "major": true,
       "date": "2023-07-13",
-      "transition": "experimental → feature freeze"
+      "transition": "experimental → feature freeze",
+      "evidence": [
+        {
+          "source": "semantic-conventions",
+          "namespaces": ["http"],
+          "links": [
+            "https://github.com/open-telemetry/semantic-conventions/blob/v1.21.0/docs/http/http-spans.md"
+          ]
+        }
+      ]
     },
     {
       "id": "k8s-attributes-rc",
       "lane": "k8s",
-      "release": "1.41.0",
+      "revision": "semantic-conventions@v1.41.0",
       "type": "stability",
       "short": "Selected attrs RC",
       "title": "Selected Kubernetes and container attributes reach release candidate",
@@ -592,7 +1025,7 @@
     {
       "id": "k8s-cpu-rc",
       "lane": "k8s",
-      "release": "1.42.0",
+      "revision": "semantic-conventions@v1.42.0",
       "type": "stability",
       "short": "CPU time metrics RC",
       "title": "Kubernetes and container CPU time metrics reach release candidate",
@@ -605,7 +1038,7 @@
     {
       "id": "process-rc",
       "lane": "runtime",
-      "release": "1.43.0",
+      "revision": "semantic-conventions@v1.43.0",
       "type": "stability",
       "short": "Process metrics RC",
       "title": "Process metrics and entity reach release candidate",
@@ -613,12 +1046,21 @@
       "source": "https://github.com/open-telemetry/semantic-conventions/blob/v1.44.0/CHANGELOG.md#v1430",
       "major": true,
       "date": "2026-07-03",
-      "transition": "process metrics and entity → release candidate"
+      "transition": "process metrics and entity → release candidate",
+      "evidence": [
+        {
+          "source": "semantic-conventions",
+          "namespaces": ["process"],
+          "links": [
+            "https://github.com/open-telemetry/semantic-conventions/commit/a03df15a2b528ee2b18e400aafd58aba48664aa9"
+          ]
+        }
+      ]
     },
     {
       "id": "k8s-memory-rc",
       "lane": "k8s",
-      "release": "1.44.0",
+      "revision": "semantic-conventions@v1.44.0",
       "type": "stability",
       "short": "Memory metrics RC",
       "title": "Selected Kubernetes and container memory metrics reach release candidate",
@@ -631,7 +1073,7 @@
     {
       "id": "javascript-runtime",
       "lane": "runtime",
-      "release": "1.10.0",
+      "revision": "opentelemetry-specification@v1.10.0",
       "type": "domain",
       "short": "JavaScript runtime",
       "title": "JavaScript runtime conventions are introduced",
@@ -643,7 +1085,7 @@
     {
       "id": "cloudevents",
       "lane": "signals",
-      "release": "1.10.0",
+      "revision": "opentelemetry-specification@v1.10.0",
       "type": "domain",
       "short": "CloudEvents",
       "title": "CloudEvents span conventions are introduced",
@@ -655,7 +1097,7 @@
     {
       "id": "cli",
       "lane": "signals",
-      "release": "1.30.0",
+      "revision": "semantic-conventions@v1.30.0",
       "type": "domain",
       "short": "CLI execution",
       "title": "CLI application execution spans are introduced",
@@ -667,7 +1109,7 @@
     {
       "id": "geo",
       "lane": "signals",
-      "release": "1.30.0",
+      "revision": "semantic-conventions@v1.30.0",
       "type": "domain",
       "short": "Geographic attributes",
       "title": "Geographic attributes enter the registry",
@@ -676,55 +1118,5 @@
       "major": false,
       "date": "2025-01-24"
     }
-  ],
-  "dates": {
-    "1.24.0": "2023-12-15",
-    "1.23.1": "2023-11-17",
-    "1.23.0": "2023-11-03",
-    "1.22.0": "2023-10-12",
-    "1.21.0": "2023-07-13",
-    "1.20.0": "2023-04-07",
-    "1.19.0": "2023-03-06",
-    "1.18.0": "2023-02-09",
-    "1.17.0": "2023-01-17",
-    "1.16.0": "2022-12-08",
-    "1.15.0": "2022-11-09",
-    "1.14.0": "2022-10-04",
-    "1.13.0": "2022-09-19",
-    "1.12.0": "2022-06-10",
-    "1.11.0": "2022-05-04",
-    "1.10.0": "2022-04-01",
-    "1.9.0": "2022-02-10",
-    "1.8.0": "2021-11-12",
-    "1.7.0": "2021-09-30",
-    "1.6.0": "2021-08-06",
-    "1.5.0": "2021-07-08",
-    "1.4.0": "2021-06-07",
-    "1.3.0": "2021-05-05",
-    "1.2.0": "2021-04-14",
-    "1.1.0": "2021-03-11",
-    "1.0.1": "2021-02-11",
-    "1.0.0": "2021-02-10",
-    "1.44.0": "2026-08-04",
-    "1.43.0": "2026-07-03",
-    "1.42.0": "2026-06-12",
-    "1.41.1": "2026-05-11",
-    "1.41.0": "2026-04-28",
-    "1.40.0": "2026-02-19",
-    "1.39.0": "2026-01-12",
-    "1.38.0": "2025-10-29",
-    "1.37.0": "2025-08-25",
-    "1.36.0": "2025-07-05",
-    "1.35.0": "2025-06-30",
-    "1.34.0": "2025-05-19",
-    "1.33.0": "2025-05-02",
-    "1.32.0": "2025-03-31",
-    "1.31.0": "2025-03-11",
-    "1.30.0": "2025-01-24",
-    "1.29.0": "2024-11-28",
-    "1.28.0": "2024-10-08",
-    "1.27.0": "2024-08-02",
-    "1.26.0": "2024-05-21",
-    "1.25.0": "2024-04-04"
-  }
+  ]
 }

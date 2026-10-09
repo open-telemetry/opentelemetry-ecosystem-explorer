@@ -17,6 +17,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import type { TimelineData } from "@/features/semantic-conventions/types";
+import { revisionKey } from "@/features/semantic-conventions/history/accepted-history";
 import { EVENT_TYPES } from "@/features/semantic-conventions/utils/timeline-colors";
 
 const data: TimelineData = JSON.parse(
@@ -47,11 +48,11 @@ describe("curated timeline data", () => {
   });
 
   it("keeps HTTP's feature freeze before stability and excludes the later list repair", () => {
-    expect(domainHistory("http").map(({ id, release }) => [id, release])).toEqual([
-      ["http-origin", null],
-      ["http-baseline", "1.20.0"],
-      ["http-freeze", "1.21.0"],
-      ["http-stable", "1.23.0"],
+    expect(domainHistory("http").map(({ id, revision }) => [id, revisionKey(revision)])).toEqual([
+      ["http-origin", "opentelemetry-specification@4ac49aa1e86633887f49ab1f58221b78b4888e24"],
+      ["http-baseline", "opentelemetry-specification@v1.20.0"],
+      ["http-freeze", "semantic-conventions@v1.21.0"],
+      ["http-stable", "semantic-conventions@v1.23.0"],
     ]);
     expect(domainHistory("http").filter((event) => event.type === "deprecation")).toEqual([]);
   });
@@ -68,19 +69,19 @@ describe("curated timeline data", () => {
   it("dates process RC independently from Kubernetes metric promotions", () => {
     expect(data.events.find((event) => event.id === "process-rc")).toMatchObject({
       lane: "runtime",
-      release: "1.43.0",
+      revision: "semantic-conventions@v1.43.0",
       date: "2026-07-03",
       type: "stability",
     });
     expect(data.events.find((event) => event.id === "k8s-memory-rc")).toMatchObject({
       lane: "k8s",
-      release: "1.44.0",
+      revision: "semantic-conventions@v1.44.0",
       date: "2026-08-04",
       type: "stability",
     });
     expect(data.events.find((event) => event.id === "k8s-cpu-rc")).toMatchObject({
       lane: "k8s",
-      release: "1.42.0",
+      revision: "semantic-conventions@v1.42.0",
       type: "stability",
     });
   });
@@ -92,11 +93,11 @@ describe("curated timeline data", () => {
       expect(data.lanes.some((lane) => lane.id === event.lane)).toBe(true);
       expect(new Date(event.date).toISOString().slice(0, 10)).toBe(event.date);
       expect(new URL(event.source).protocol).toBe("https:");
-      if (event.release) {
-        expect(event.date).toBe(data.dates[event.release]);
+      if (typeof event.revision === "string") {
+        expect(event.date).toBe(data.releases.find((r) => r.key === event.revision)?.date);
       } else {
         expect(event.dateBasis).toBe("specification-commit");
-        expect(event.source).toContain(`/commit/${event.commit}`);
+        expect(event.source).toContain(`/commit/${event.revision.commit}`);
       }
     }
   });

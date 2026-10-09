@@ -18,6 +18,7 @@ import { describe, it, expect } from "vitest";
 import {
   buildJavaInstrumentationPage,
   buildCollectorComponentPage,
+  buildStaticRoutePage,
   collectorSignals,
   javaSignals,
 } from "./generate-agent-docs.mjs";
@@ -222,5 +223,28 @@ describe("agent docs: signal facets", () => {
       })
     ).toEqual(["metrics", "spans"]);
     expect(javaSignals({ telemetry: [{ when: "default", metrics: [], spans: [] }] })).toEqual([]);
+  });
+});
+
+describe("agent docs: static route pages", () => {
+  const semconv = "/agent/semantic-conventions/index.md";
+
+  it("points the semantic-convention routes at the history index", () => {
+    for (const route of ["/semantic-conventions", "/semantic-conventions/timeline"]) {
+      expect(buildStaticRoutePage("Title", "Description", route)).toContain(`(${semconv})`);
+    }
+  });
+
+  it("matches only the exact route or its children, not a similarly prefixed path", () => {
+    for (const route of ["/semantic-conventions-foo", "/semantic-conventionsx"]) {
+      expect(buildStaticRoutePage("Title", "Description", route)).not.toContain(semconv);
+    }
+  });
+
+  it("leaves other routes' links unchanged", () => {
+    const page = buildStaticRoutePage("Title", "Description", "/collector");
+    expect(page).not.toContain(semconv);
+    expect(page).toContain("(/agent/collector/index.md)");
+    expect(page).toContain("(/agent/javaagent/index.md)");
   });
 });

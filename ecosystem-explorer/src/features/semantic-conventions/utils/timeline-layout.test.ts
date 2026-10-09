@@ -31,7 +31,7 @@ function makeEvent(overrides: Partial<TimelineEvent>): TimelineEvent {
   return {
     id: "evt",
     lane: "http",
-    release: "1.0.0",
+    revision: "semantic-conventions@v1.0.0",
     type: "domain",
     short: "short",
     title: "title",
@@ -69,12 +69,25 @@ describe("positionFraction", () => {
 });
 
 describe("eventReference", () => {
-  it("prefers the release version when present", () => {
-    expect(eventReference(makeEvent({ release: "1.23.0" }))).toBe("v1.23.0");
+  const commit = "4ac49aa1e86633887f49ab1f58221b78b4888e24";
+
+  it("labels a release by its tag", () => {
+    expect(eventReference(makeEvent({ revision: "semantic-conventions@v1.23.0" }))).toBe("v1.23.0");
   });
 
-  it("falls back to the spec PR number", () => {
-    expect(eventReference(makeEvent({ release: null, pullRequest: 82 }))).toBe("spec PR #82");
+  it("falls back to the spec PR number for a spec commit", () => {
+    const revision = { source: "opentelemetry-specification", commit };
+    expect(eventReference(makeEvent({ revision, pullRequest: 82 }))).toBe("spec PR #82");
+  });
+
+  it("labels a commit without a pull request by its short SHA", () => {
+    const revision = { source: "semantic-conventions-genai", commit };
+    expect(eventReference(makeEvent({ revision }))).toBe("4ac49aa");
+  });
+
+  it("does not call another source's pull request a spec PR", () => {
+    const revision = { source: "semantic-conventions-genai", commit };
+    expect(eventReference(makeEvent({ revision, pullRequest: 123 }))).toBe("4ac49aa");
   });
 });
 

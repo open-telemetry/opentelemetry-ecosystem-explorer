@@ -76,6 +76,7 @@
       "lineageLink": "Earlier working draft · 13 May 2019",
       "firstReleaseNote": "First specification tag containing this change: {{version}}.",
       "specCommitDate": "Spec commit date (UTC)",
+      "commitDate": "Commit date (UTC)",
       "releaseDate": "Release date (UTC)",
       "baselineNote": "Aquí, «base de facto» significa una versión citada en las directrices de OpenTelemetry para mantener la compatibilidad de la instrumentación existente. Por ejemplo, cambiar los nombres de los atributos puede romper consultas, paneles y alertas, por lo que las directrices piden conservar los valores predeterminados existentes mientras evolucionan las nuevas convenciones. Esos valores pueden proceder de esta versión o de una anterior. Es una etiqueta de Explorer, no un estado oficial de estabilidad ni una afirmación de que todo el mundo utilice la misma versión. La fecha mostrada es la de publicación de la versión citada, no la de incorporación de las directrices ni la de su adopción generalizada.",
       "heading": "Detalles del hito"

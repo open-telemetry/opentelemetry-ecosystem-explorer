@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { TimelineEventType } from "../types";
+import { TIMELINE_EVENT_TYPES, type TimelineEventType } from "../types";
 
 export type MarkerShape = "circle" | "square" | "diamond";
 
@@ -84,12 +84,4 @@ export function getEventTypeStyle(type: TimelineEventType): EventTypeStyle {
   return EVENT_TYPE_STYLES[type];
 }
 
-export const EVENT_TYPES: TimelineEventType[] = [
-  "domain",
-  "baseline",
-  "stability",
-  "change",
-  "deprecation",
-  "removed",
-  "moved",
-];
+export const EVENT_TYPES: TimelineEventType[] = [...TIMELINE_EVENT_TYPES];

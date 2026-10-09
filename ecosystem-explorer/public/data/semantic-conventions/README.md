@@ -5,6 +5,43 @@ This directory is hand-maintained frontend data, outside the generated ecosystem
 See [the event audit](EVENT-AUDIT.md) for selection criteria, source checks, and the rationale for
 retaining, correcting, splitting, or removing each non-baseline event.
 
+## Accepted history
+
+`timeline.json` is the single hand-authored record of accepted history; it is curated by hand and not
+generated from upstream. The timeline UI and the agent output read these same records. Its `$schema`
+(`public/schemas/semantic-conventions-history.schema.json`, generated from `TimelineData`) lets
+editors flag mistakes, and `validateHistory`
+(`src/features/semantic-conventions/history/accepted-history.ts`) checks it in tests and in the
+agent-docs build.
+
+- `sources`: repository-qualified source IDs (`semantic-conventions`, `semantic-conventions-genai`,
+  and a frozen `opentelemetry-specification` that existing events cite but nothing monitors), their
+  monitoring mode, relevant paths, and `reviewedThrough`, the revision accepted history covers.
+  Later upstream changes are not yet reviewed. GenAI has no release tags, so its mark is a commit:
+  the first commit made in the destination repository, not imported core history.
+- `releases`: keyed `{source}@{tag}` because two repositories can publish the same tag
+  (`1.0.0`–`1.20.0` are spec-era; `1.21.0` onward are core). Each has its `tag`, immutable `commit`
+  (absent for the frozen source), `date`, `dateBasis`, and `baseline`, the nearest ancestor release
+  of the same source. A comparison baseline is not a timeline `baseline` event.
+- `lanes`: the display fields plus the upstream model `namespaces` each lane covers and, for GenAI,
+  the `migration` boundary.
+- `events`: `revision` is a release key, or `{ source, commit }` for a source without releases
+  (spec-era origins today, GenAI milestones later). Optional inline `evidence` links each cite a
+  source's own repository.
+
+Candidates proposed by upstream discovery are not accepted history and do not belong in this
+directory. A maintainer accepts one by editing `timeline.json`. Event wording and the historical
+formatting of older events are intentionally preserved.
+
+The agent output is published at `/agent/semantic-conventions/`. `accepted-history.json`, beside
+it under `/data/semantic-conventions/`, is the stable agent-facing alias of `timeline.json`: the
+build validates `timeline.json` and writes the same records, so the two never differ in content.
+Edit only `timeline.json`.
+
+`dateBasis` on an event is set only for a commit revision: `specification-commit` for the
+specification's UTC committer date, `commit-date` for the same on any other source (for example a
+GenAI milestone). A release revision takes its date and basis from the release.
+
 ## De facto baselines
 
 `baseline` events identify explicit version references in upstream guidance that asks existing

@@ -103,6 +103,12 @@ async function main() {
       "javaagent-instrumentation.schema.json"
     );
 
+    await generateSchema(
+      "src/features/semantic-conventions/types.ts",
+      "TimelineData",
+      "semantic-conventions-history.schema.json"
+    );
+
     console.log("\n✓ JSON Schemas generated successfully.");
   } catch (err) {
     console.error("❌ Schema generation failed:", err);

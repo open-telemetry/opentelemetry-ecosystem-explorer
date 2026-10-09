@@ -20,12 +20,15 @@ import { useSemanticConventionsTimeline } from "./use-semantic-conventions-timel
 import type { TimelineData } from "../types";
 
 const SAMPLE_DATA: TimelineData = {
-  lanes: [{ id: "http", title: "HTTP", subtitle: "Core conventions" }],
+  schemaVersion: 1,
+  sources: [],
+  releases: [],
+  lanes: [{ id: "http", title: "HTTP", subtitle: "Core conventions", namespaces: ["http"] }],
   events: [
     {
       id: "http-stable",
       lane: "http",
-      release: "1.23.0",
+      revision: "semantic-conventions@v1.23.0",
       type: "stability",
       short: "Core stable",
       title: "Core HTTP semantic conventions stabilize",
@@ -35,7 +38,6 @@ const SAMPLE_DATA: TimelineData = {
       date: "2023-11-03",
     },
   ],
-  dates: { "1.23.0": "2023-11-03" },
 };
 
 describe("useSemanticConventionsTimeline", () => {

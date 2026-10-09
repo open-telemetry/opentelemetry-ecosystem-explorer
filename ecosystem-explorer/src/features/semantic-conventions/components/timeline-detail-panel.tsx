@@ -49,7 +49,9 @@ export function TimelineDetailPanel({ event, locale }: TimelineDetailPanelProps)
         <div className="text-muted-foreground mt-1 text-xs">
           {event.dateBasis === "specification-commit"
             ? t("timeline.detail.specCommitDate")
-            : t("timeline.detail.releaseDate")}
+            : event.dateBasis === "commit-date"
+              ? t("timeline.detail.commitDate")
+              : t("timeline.detail.releaseDate")}
         </div>
       </div>
       <div>

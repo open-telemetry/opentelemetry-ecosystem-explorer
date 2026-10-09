@@ -76,6 +76,7 @@
       "lineageLink": "Earlier working draft · 13 May 2019",
       "firstReleaseNote": "First specification tag containing this change: {{version}}.",
       "specCommitDate": "Spec commit date (UTC)",
+      "commitDate": "Commit date (UTC)",
       "releaseDate": "Release date (UTC)",
       "baselineNote": "Here, “de facto baseline” means a version named in OpenTelemetry guidance for keeping existing instrumentation compatible. For example, changing attribute names can break queries, dashboards, and alerts, so the guidance asks instrumentation to preserve existing defaults while newer conventions evolve. Those defaults may come from this version or an earlier one. This is an Explorer label, not an official stability status or a claim that everyone uses the same version. The date shown is the referenced version’s release date, not when the guidance was added or when adoption became widespread.",
       "heading": "Milestone details"

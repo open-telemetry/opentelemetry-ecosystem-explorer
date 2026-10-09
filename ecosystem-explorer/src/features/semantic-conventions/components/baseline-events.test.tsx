@@ -27,18 +27,18 @@ const data: TimelineData = JSON.parse(
 describe("de facto baseline milestones", () => {
   it("dates documented baselines to their releases and includes them in major stories", () => {
     const baselines = data.events.filter((event) => event.type === "baseline");
-    expect(baselines.map(({ id, release, date }) => [id, release, date])).toEqual([
-      ["http-baseline", "1.20.0", "2023-04-07"],
-      ["db-baseline", "1.24.0", "2023-12-15"],
-      ["messaging-baseline", "1.24.0", "2023-12-15"],
-      ["rpc-baseline", "1.37.0", "2025-08-25"],
-      ["system-baseline", "1.21.0", "2023-07-13"],
-      ["process-baseline", "1.21.0", "2023-07-13"],
-      ["genai-baseline", "1.36.0", "2025-07-05"],
+    expect(baselines.map(({ id, revision, date }) => [id, revision, date])).toEqual([
+      ["http-baseline", "opentelemetry-specification@v1.20.0", "2023-04-07"],
+      ["db-baseline", "semantic-conventions@v1.24.0", "2023-12-15"],
+      ["messaging-baseline", "semantic-conventions@v1.24.0", "2023-12-15"],
+      ["rpc-baseline", "semantic-conventions@v1.37.0", "2025-08-25"],
+      ["system-baseline", "semantic-conventions@v1.21.0", "2023-07-13"],
+      ["process-baseline", "semantic-conventions@v1.21.0", "2023-07-13"],
+      ["genai-baseline", "semantic-conventions@v1.36.0", "2025-07-05"],
     ]);
     for (const event of baselines) {
       expect(event.major).toBe(true);
-      expect(event.date).toBe(data.dates[event.release!]);
+      expect(event.date).toBe(data.releases.find((r) => r.key === event.revision)?.date);
       expect(data.lanes.some((lane) => lane.id === event.lane)).toBe(true);
       expect(event.source).toContain(
         "https://github.com/open-telemetry/semantic-conventions/blob/v"
