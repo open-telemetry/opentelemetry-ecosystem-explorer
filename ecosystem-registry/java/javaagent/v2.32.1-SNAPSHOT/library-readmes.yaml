@@ -26,10 +26,10 @@ ktor-1.0: ktor-1.0-92f09c5442e6.md
 ktor-2.0: ktor-2.0-3dae6fcf9ded.md
 ktor-3.0: ktor-3.0-7fcda34c7937.md
 lettuce-5.1: lettuce-5.1-ed5ad2dbb2a0.md
-log4j-appender-2.17: log4j-appender-2.17-98e19048c988.md
+log4j-appender-2.17: log4j-appender-2.17-0e2f8f7f9b65.md
 logback-appender-1.0: logback-appender-1.0-14908fa0178b.md
 logback-mdc-1.0: logback-mdc-1.0-271b39a27eba.md
-micrometer-1.5: micrometer-1.5-33d3de7e3942.md
+micrometer-1.5: micrometer-1.5-f55961edda5c.md
 mongo-3.1: mongo-3.1-002825f2a967.md
 nats-2.17: nats-2.17-b5f153b0ee5c.md
 netty-4.1: netty-4.1-1aee978bf28a.md
@@ -48,11 +48,11 @@ rocketmq-client-4.8: rocketmq-client-4.8-6ec7ead2fb9f.md
 runtime-telemetry: runtime-telemetry-63d159df8ead.md
 rxjava-2.0: rxjava-2.0-74c683fe6342.md
 rxjava-3.1.1: rxjava-3.1.1-3fe2760c29d5.md
-servlet-3.0: servlet-3.0-912041bd5544.md
-servlet-5.0: servlet-5.0-611d874908b9.md
+servlet-3.0: servlet-3.0-18e512817f02.md
+servlet-5.0: servlet-5.0-91c5f028eebe.md
 spring-integration-4.1: spring-integration-4.1-1e7a5f390454.md
 spring-kafka-2.7: spring-kafka-2.7-b6cf57901b0f.md
-spring-security-config-6.0: spring-security-config-6.0-42e7aba5862d.md
+spring-security-config-6.0: spring-security-config-6.0-46f57e960726.md
 spring-web-3.1: spring-web-3.1-46ca6f181736.md
 spring-webflux-5.3: spring-webflux-5.3-4c5fcd44b987.md
 spring-webmvc-5.3: spring-webmvc-5.3-24f8868ceb14.md
