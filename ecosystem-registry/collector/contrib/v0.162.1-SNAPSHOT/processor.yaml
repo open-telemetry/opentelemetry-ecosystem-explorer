@@ -52,6 +52,24 @@ components:
             value_type: int
           stability: development
           unit: us
+        processor_adaptive_tail_sampling_fleet_member_count:
+          description: Current fleet member count reported by the fleet_tracker extension;
+            the processor divides each rule's goal_throughput by this value. Not emitted
+            when fleet_tracker is unset.
+          enabled: true
+          gauge:
+            value_type: int
+          stability: development
+          unit: '{instances}'
+        processor_adaptive_tail_sampling_fleet_tracker_errors:
+          description: Number of non-positive member counts received from the fleet
+            tracker; the last good count is kept.
+          enabled: true
+          stability: development
+          sum:
+            monotonic: true
+            value_type: int
+          unit: '{errors}'
         processor_adaptive_tail_sampling_incoming_tracestate_unparseable:
           description: Number of spans whose incoming W3C tracestate could not be
             parsed when applying the sampling threshold.

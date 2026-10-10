@@ -1,7 +1,7 @@
 ackextension: ackextension-35803769cc8e.md
 activedirectorydsreceiver: activedirectorydsreceiver-c9695e5737d2.md
 activedirectoryinvreceiver: activedirectoryinvreceiver-ce8dd20d2629.md
-adaptivetailsamplingprocessor: adaptivetailsamplingprocessor-658f1fc4176a.md
+adaptivetailsamplingprocessor: adaptivetailsamplingprocessor-d2f85e143895.md
 aerospikereceiver: aerospikereceiver-4623055b7500.md
 alertmanagerexporter: alertmanagerexporter-eb58d596c89f.md
 alibabacloudlogserviceexporter: alibabacloudlogserviceexporter-065b018f810e.md
@@ -35,7 +35,7 @@ azureeventhubreceiver: azureeventhubreceiver-ae75090054ad.md
 azurefunctionsreceiver: azurefunctionsreceiver-7366ec9c7068.md
 azuremonitorexporter: azuremonitorexporter-8e7e77a71457.md
 azuremonitorreceiver: azuremonitorreceiver-11ef5bb6f0c4.md
-basicauthextension: basicauthextension-4dda2adbc1b8.md
+basicauthextension: basicauthextension-8fcb57b5d102.md
 bearertokenauthextension: bearertokenauthextension-e6bf0a60fe6b.md
 bmchelixexporter: bmchelixexporter-acce4a4b9fce.md
 carbonreceiver: carbonreceiver-86d662c7520e.md
@@ -54,8 +54,8 @@ coralogixprocessor: coralogixprocessor-06d527c94dc7.md
 couchdbreceiver: couchdbreceiver-8f8ae18ff7e8.md
 countconnector: countconnector-1ea801c643fa.md
 cumulativetodeltaprocessor: cumulativetodeltaprocessor-63f71fbe62d5.md
-datadogconnector: datadogconnector-2a73dce3af44.md
-datadogexporter: datadogexporter-8632de73ab5f.md
+datadogconnector: datadogconnector-947c512b4f56.md
+datadogexporter: datadogexporter-be19074ed62d.md
 datadogextension: datadogextension-2eb40097be3a.md
 datadogreceiver: datadogreceiver-82eab2df3fcf.md
 datasetexporter: datasetexporter-4b17c5c85368.md
@@ -68,7 +68,7 @@ dockerstatsreceiver: dockerstatsreceiver-a5542b7cee7c.md
 dorisexporter: dorisexporter-bbbde6730da5.md
 drainprocessor: drainprocessor-c48b9f0eef30.md
 ecsobserver: ecsobserver-3866653a5f5d.md
-elasticsearchexporter: elasticsearchexporter-38f362937acb.md
+elasticsearchexporter: elasticsearchexporter-2622741ca216.md
 elasticsearchreceiver: elasticsearchreceiver-2410ca03b7ea.md
 envoyalsreceiver: envoyalsreceiver-024720e32435.md
 exceptionsconnector: exceptionsconnector-8b4d5832dd69.md
@@ -92,9 +92,9 @@ googleclientauthextension: googleclientauthextension-249b36f6d740.md
 googlecloudexporter: googlecloudexporter-6e563a24edaa.md
 googlecloudlogentryencodingextension: googlecloudlogentryencodingextension-1bb6128efa96.md
 googlecloudmonitoringreceiver: googlecloudmonitoringreceiver-a73a0c71dea5.md
-googlecloudpubsubexporter: googlecloudpubsubexporter-2b790135be90.md
+googlecloudpubsubexporter: googlecloudpubsubexporter-e0aa994403c3.md
 googlecloudpubsubpushreceiver: googlecloudpubsubpushreceiver-75344c06ff1e.md
-googlecloudpubsubreceiver: googlecloudpubsubreceiver-b284fd6091fd.md
+googlecloudpubsubreceiver: googlecloudpubsubreceiver-a40627583bb9.md
 googlecloudspannerreceiver: googlecloudspannerreceiver-a959903fcf00.md
 googlecloudstorageexporter: googlecloudstorageexporter-5cc80bbbfaf1.md
 googlemanagedprometheusexporter: googlemanagedprometheusexporter-ad7269e7b20d.md
@@ -190,7 +190,7 @@ redisreceiver: redisreceiver-b3328e775a9a.md
 redisstorageextension: redisstorageextension-023d563890dc.md
 remotetapextension: remotetapextension-01716b8c7d82.md
 remotetapprocessor: remotetapprocessor-3132e6579248.md
-resourcedetectionprocessor: resourcedetectionprocessor-6751a947f486.md
+resourcedetectionprocessor: resourcedetectionprocessor-f3a5d72d1860.md
 resourceprocessor: resourceprocessor-49c236801aec.md
 riakreceiver: riakreceiver-15d07954f4c1.md
 rollingspanlatencyprocessor: rollingspanlatencyprocessor-ab77ddf4eb8c.md
@@ -207,7 +207,7 @@ signalfxreceiver: signalfxreceiver-a3afb864c4d9.md
 signaltometricsconnector: signaltometricsconnector-af6d13501b12.md
 signingprocessor: signingprocessor-9fc53fae628d.md
 sigv4authextension: sigv4authextension-c2ade90cc4bc.md
-simpleprometheusreceiver: simpleprometheusreceiver-c0497fd646a2.md
+simpleprometheusreceiver: simpleprometheusreceiver-556a1f5b2819.md
 skywalkingencodingextension: skywalkingencodingextension-e0efca3ee488.md
 skywalkingreceiver: skywalkingreceiver-e84af729f5f6.md
 slowsqlconnector: slowsqlconnector-e7bac14ca9fc.md

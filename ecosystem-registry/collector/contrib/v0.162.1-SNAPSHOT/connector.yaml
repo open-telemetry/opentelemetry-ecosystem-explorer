@@ -49,6 +49,8 @@ components:
       unsupported_platforms:
       - aix
       - solaris
+      warnings:
+      - Statefulness
     type: datadog
 - name: exceptionsconnector
   metadata:

@@ -26,8 +26,8 @@ ktor-1.0: ktor-1.0-92f09c5442e6.md
 ktor-2.0: ktor-2.0-3dae6fcf9ded.md
 ktor-3.0: ktor-3.0-7fcda34c7937.md
 lettuce-5.1: lettuce-5.1-ed5ad2dbb2a0.md
-log4j-appender-2.17: log4j-appender-2.17-0e2f8f7f9b65.md
-logback-appender-1.0: logback-appender-1.0-14908fa0178b.md
+log4j-appender-2.17: log4j-appender-2.17-cb1b2299587b.md
+logback-appender-1.0: logback-appender-1.0-cdd4d49333c3.md
 logback-mdc-1.0: logback-mdc-1.0-271b39a27eba.md
 micrometer-1.5: micrometer-1.5-f55961edda5c.md
 mongo-3.1: mongo-3.1-002825f2a967.md
