@@ -356,6 +356,7 @@ components:
         - traces
       unsupported_platforms:
       - aix
+      - freebsd
       - solaris
     type: datadog
 - name: datasetexporter
@@ -454,9 +455,9 @@ components:
       stability:
         beta:
         - logs
+        - metrics
         - traces
         development:
-        - metrics
         - profiles
     telemetry:
       metrics:
@@ -690,6 +691,8 @@ components:
       codeowners:
         active:
         - alexvanboxel
+        - braydonk
+        - dpaasman00
       distributions:
       - contrib
       stability:

@@ -5871,6 +5871,8 @@ components:
       codeowners:
         active:
         - alexvanboxel
+        - braydonk
+        - dpaasman00
       distributions:
       - contrib
       stability:
@@ -21937,7 +21939,8 @@ components:
       sqlserver.lock.wait_time.avg:
         description: Average wait time for all lock requests that had to wait.
         enabled: true
-        extended_documentation: This metric is only available when running on Windows.
+        extended_documentation: This metric is available when running on Windows via
+          PDH or when the receiver is configured to directly connect to SQL Server.
         gauge:
           value_type: double
         stability: development
@@ -22086,7 +22089,8 @@ components:
       sqlserver.page.lazy_write.rate:
         description: Number of lazy writes moving dirty pages to disk.
         enabled: true
-        extended_documentation: This metric is only available when running on Windows.
+        extended_documentation: This metric is available when running on Windows via
+          PDH or when the receiver is configured to directly connect to SQL Server.
         gauge:
           value_type: double
         stability: development
@@ -22113,7 +22117,8 @@ components:
         - page.operations
         description: Number of physical database page operations issued.
         enabled: true
-        extended_documentation: This metric is only available when running on Windows.
+        extended_documentation: This metric is available when running on Windows via
+          PDH or when the receiver is configured to directly connect to SQL Server.
         gauge:
           value_type: double
         stability: development
@@ -22294,7 +22299,8 @@ components:
         description: Number of transactions started for the database (not including
           XTP-only transactions).
         enabled: true
-        extended_documentation: This metric is only available when running on Windows.
+        extended_documentation: This metric is available when running on Windows via
+          PDH or when the receiver is configured to directly connect to SQL Server.
         gauge:
           value_type: double
         stability: development
@@ -22334,7 +22340,8 @@ components:
       sqlserver.transaction_log.growth.count:
         description: Total number of transaction log expansions for a database.
         enabled: true
-        extended_documentation: This metric is only available when running on Windows.
+        extended_documentation: This metric is available when running on Windows via
+          PDH or when the receiver is configured to directly connect to SQL Server.
         stability: development
         sum:
           aggregation_temporality: cumulative
