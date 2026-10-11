@@ -156,6 +156,7 @@ components:
         - extension
       unsupported_platforms:
       - aix
+      - freebsd
       - solaris
     type: datadog
 - name: avrologencodingextension
