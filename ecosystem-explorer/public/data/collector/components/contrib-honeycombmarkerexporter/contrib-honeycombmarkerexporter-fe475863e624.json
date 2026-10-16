@@ -1,0 +1,33 @@
+{
+  "description": null,
+  "display_name": "Honeycomb Marker Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-honeycombmarkerexporter",
+  "markdown_hash": "71cd611d305a",
+  "name": "honeycombmarkerexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "robbkidd"
+      ],
+      "emeritus": [
+        "TylerHelmuth",
+        "fchikwekwe",
+        "codeboten",
+        "VinozzZ"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs"
+      ]
+    }
+  },
+  "type": "exporter"
+}

@@ -49,7 +49,7 @@
       "signals": [
         "traces"
       ],
-      "stability": "development",
+      "stability": "alpha",
       "type": "processor"
     },
     {
@@ -2311,6 +2311,22 @@
       "type": "receiver"
     },
     {
+      "description": "The `partitioning` processor splits incoming batches into sub-batches using OTTL value expressions, and forwards each sub-batch with the evaluated partition keys added to the outgoing request metadata.",
+      "display_name": "Partitioning Processor",
+      "distribution": "contrib",
+      "has_readme": true,
+      "id": "contrib-partitioningprocessor",
+      "name": "partitioningprocessor",
+      "signals": [
+        "traces",
+        "metrics",
+        "logs",
+        "profiles"
+      ],
+      "stability": "development",
+      "type": "processor"
+    },
+    {
       "description": "The Podman Stats Receiver queries the Podman service API to fetch stats for all running containers on a configured interval. These stats are for container resource usage of cpu, memory, network, and the [blkio controller](https://www.kernel.org/doc/Documentation/cgroup-v1/blkio-controller.txt).",
       "display_name": "Podman Stats Receiver",
       "distribution": "contrib",
@@ -2666,7 +2682,7 @@
       "signals": [
         "traces"
       ],
-      "stability": "development",
+      "stability": "alpha",
       "type": "processor"
     },
     {
@@ -2862,7 +2878,7 @@
       "signals": [
         "metrics"
       ],
-      "stability": "unmaintained",
+      "stability": "beta",
       "type": "receiver"
     },
     {
@@ -2997,7 +3013,7 @@
       "type": "processor"
     },
     {
-      "description": "The Splunk Enterprise Receiver is a pull based tool which enables the ingestion of performance metrics describing the operational status of a user's Splunk Enterprise deployment to an appropriate observability tool. It is designed to leverage several different data sources to gather these metrics including the [introspection api endpoint](https://help.splunk.com/en/splunk-enterprise/leverage-rest-apis/rest-api-reference/9.1/introspection-endpoints/introspection-endpoint-descriptions) and serializing results from ad-hoc searches. Because of this, care must be taken by users when enabling metrics as running searches can effect your Splunk Enterprise Deployment and introspection may fail to report for Splunk Cloud deployments. The primary purpose of this receiver is to empower those tasked with the maintenance and care of a Splunk Enterprise deployment to leverage opentelemetry and their observability toolset in their jobs.",
+      "description": "The Splunk Enterprise Receiver is a pull based tool which enables the ingestion of performance metrics describing the operational status of a user's Splunk Enterprise deployment to an appropriate observability tool. It is designed to leverage several different data sources to gather these metrics including the [introspection api endpoint](https://help.splunk.com/en/splunk-enterprise/leverage-rest-apis/rest-api-reference/9.1/introspection-endpoints/introspection-endpoint-descriptions) and serializing results from ad-hoc searches. Because of this, care must be taken by users when enabling metrics as running searches can affect your Splunk Enterprise Deployment and introspection may fail to report for Splunk Cloud deployments. The primary purpose of this receiver is to empower those tasked with the maintenance and care of a Splunk Enterprise deployment to leverage opentelemetry and their observability toolset in their jobs.",
       "display_name": "Splunk Enterprise Receiver",
       "distribution": "contrib",
       "has_readme": true,
@@ -3054,7 +3070,7 @@
       "type": "receiver"
     },
     {
-      "description": "The `sqlserver` receiver grabs metrics/logs about a Microsoft SQL Server instance. The receiver works by either using the Windows Performance Counters, or by directly connecting to the instance and querying it. Windows Performance Counters are only available when running on Windows.",
+      "description": "The `sql_server` receiver grabs metrics/logs about a Microsoft SQL Server instance. The receiver works by either using the Windows Performance Counters, or by directly connecting to the instance and querying it. Windows Performance Counters are only available when running on Windows.",
       "display_name": "Microsoft SQL Server Receiver",
       "distribution": "contrib",
       "has_readme": true,
@@ -3418,7 +3434,7 @@
       "signals": [
         "logs"
       ],
-      "stability": "alpha",
+      "stability": "beta",
       "type": "receiver"
     },
     {

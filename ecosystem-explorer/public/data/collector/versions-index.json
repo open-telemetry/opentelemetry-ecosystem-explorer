@@ -1,20 +1,29 @@
 {
   "distributions": {
     "contrib": {
-      "latest": "0.162.0"
+      "latest": "0.163.0"
     },
     "core": {
-      "latest": "0.162.0"
+      "latest": "0.163.0"
     }
   },
   "versions": [
+    {
+      "bundle_hash": "e7917fdd9717",
+      "distributions": [
+        "core",
+        "contrib"
+      ],
+      "is_latest": true,
+      "version": "0.163.0"
+    },
     {
       "bundle_hash": "0dcfb0051abf",
       "distributions": [
         "core",
         "contrib"
       ],
-      "is_latest": true,
+      "is_latest": false,
       "version": "0.162.0"
     },
     {

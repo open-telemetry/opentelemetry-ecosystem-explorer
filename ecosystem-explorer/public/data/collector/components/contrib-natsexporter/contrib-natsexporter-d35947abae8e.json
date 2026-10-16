@@ -1,0 +1,29 @@
+{
+  "description": null,
+  "display_name": "NATS Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-natsexporter",
+  "markdown_hash": "918562548f1d",
+  "name": "natsexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "suckatrash",
+        "kalebpace",
+        "ChrsMark"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "logs",
+        "metrics",
+        "traces"
+      ]
+    }
+  },
+  "type": "exporter"
+}

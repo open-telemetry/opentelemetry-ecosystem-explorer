@@ -1,0 +1,57 @@
+{
+  "description": null,
+  "display_name": "Splunk HTTP Event Collector (HEC) Exporter",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-splunkhecexporter",
+  "markdown_hash": "1668091b3125",
+  "name": "splunkhecexporter",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "exporter",
+    "codeowners": {
+      "active": [
+        "atoulme",
+        "dmitryax"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "logs",
+        "metrics",
+        "traces"
+      ],
+      "development": [
+        "profiles"
+      ]
+    }
+  },
+  "telemetry": {
+    "metrics": {
+      "exporter_splunkhec_heartbeats_failed": {
+        "description": "Number of heartbeats failed by the Splunk HEC exporter.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      },
+      "exporter_splunkhec_heartbeats_sent": {
+        "description": "Number of heartbeats sent by the Splunk HEC exporter.",
+        "enabled": true,
+        "stability": "development",
+        "sum": {
+          "monotonic": true,
+          "value_type": "int"
+        },
+        "unit": "1"
+      }
+    }
+  },
+  "type": "exporter"
+}

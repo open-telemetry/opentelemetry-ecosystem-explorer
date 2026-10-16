@@ -1,0 +1,30 @@
+{
+  "description": "This receiver provides a simple configuration interface to configure the prometheus receiver to scrape metrics from a single target.",
+  "display_name": "Simple Prometheus Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-simpleprometheusreceiver",
+  "markdown_hash": "556a1f5b2819",
+  "name": "simpleprometheusreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "s3onghyun"
+      ],
+      "emeritus": [
+        "fatsheep9146"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "beta": [
+        "metrics"
+      ]
+    }
+  },
+  "type": "receiver"
+}

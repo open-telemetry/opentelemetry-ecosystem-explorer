@@ -1,0 +1,32 @@
+{
+  "description": "The `partitioning` processor splits incoming batches into sub-batches using OTTL value expressions, and forwards each sub-batch with the evaluated partition keys added to the outgoing request metadata.",
+  "display_name": "Partitioning Processor",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-partitioningprocessor",
+  "markdown_hash": "fc1401c7217e",
+  "name": "partitioningprocessor",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "processor",
+    "codeowners": {
+      "active": [
+        "paulojmdias",
+        "dmitryax"
+      ],
+      "emeritus": [
+        "axw"
+      ]
+    },
+    "distributions": [],
+    "stability": {
+      "development": [
+        "logs",
+        "metrics",
+        "profiles",
+        "traces"
+      ]
+    }
+  },
+  "type": "processor"
+}

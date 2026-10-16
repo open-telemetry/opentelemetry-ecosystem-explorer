@@ -1,0 +1,32 @@
+{
+  "description": null,
+  "display_name": "Azure Blob Receiver",
+  "distribution": "contrib",
+  "ecosystem": "collector",
+  "id": "contrib-azureblobreceiver",
+  "markdown_hash": "5a2414b353f9",
+  "name": "azureblobreceiver",
+  "repository": "opentelemetry-collector-contrib",
+  "status": {
+    "class": "receiver",
+    "codeowners": {
+      "active": [
+        "mx-psi",
+        "dyl10s"
+      ],
+      "emeritus": [
+        "eedorenko"
+      ]
+    },
+    "distributions": [
+      "contrib"
+    ],
+    "stability": {
+      "alpha": [
+        "logs",
+        "traces"
+      ]
+    }
+  },
+  "type": "receiver"
+}
