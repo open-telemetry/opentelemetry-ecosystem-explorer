@@ -77,7 +77,7 @@ failoverconnector: failoverconnector-026bb99d9c0c.md
 faroexporter: faroexporter-5cbc0cbd7bc4.md
 faroreceiver: faroreceiver-ec52920788df.md
 fileexporter: fileexporter-f9c508865bab.md
-filelogreceiver: filelogreceiver-eb653a39f3b2.md
+filelogreceiver: filelogreceiver-dc2c05a539d3.md
 filestatsreceiver: filestatsreceiver-d5a57c615231.md
 filestorage: filestorage-ba6b58efb9ed.md
 filetelemetrypolicyextension: filetelemetrypolicyextension-41699cbadc0a.md
@@ -129,9 +129,9 @@ k8seventsreceiver: k8seventsreceiver-e2fb062682e1.md
 k8sleaderelector: k8sleaderelector-6fd3aa97b5cc.md
 k8sobjectsreceiver: k8sobjectsreceiver-0ca2b37eaebb.md
 k8sobserver: k8sobserver-a932c191778a.md
-kafkaexporter: kafkaexporter-14949bdead60.md
+kafkaexporter: kafkaexporter-7d6c3aa540b4.md
 kafkametricsreceiver: kafkametricsreceiver-563454e2cbd3.md
-kafkareceiver: kafkareceiver-e174cea76835.md
+kafkareceiver: kafkareceiver-6d5d640536ab.md
 kubeletstatsreceiver: kubeletstatsreceiver-000955ad6d86.md
 libhoneyreceiver: libhoneyreceiver-56d3322b6dc1.md
 loadbalancingexporter: loadbalancingexporter-036723484433.md
@@ -153,13 +153,14 @@ mongodbreceiver: mongodbreceiver-084ed97a3fbf.md
 mysqlreceiver: mysqlreceiver-a40819b65844.md
 namedpipereceiver: namedpipereceiver-29c60887101b.md
 natsexporter: natsexporter-918562548f1d.md
+natsreceiver: natsreceiver-2da0d0ab1af0.md
 netflowreceiver: netflowreceiver-e3da7afa531a.md
 nginxreceiver: nginxreceiver-547140c05ac4.md
 nsxtreceiver: nsxtreceiver-7260e4db3b92.md
 ntpreceiver: ntpreceiver-b78abe617036.md
 oauth2clientauthextension: oauth2clientauthextension-73fdda3405a4.md
 oidcauthextension: oidcauthextension-ab36634ca61a.md
-opampextension: opampextension-b09ff5516f64.md
+opampextension: opampextension-0e3e7d5b8ea6.md
 opensearchexporter: opensearchexporter-e41f5803aab4.md
 oracledbreceiver: oracledbreceiver-1f6203081e36.md
 osqueryreceiver: osqueryreceiver-90ed43f627ac.md
@@ -203,7 +204,7 @@ sdnotifyextension: sdnotifyextension-e06337f485b4.md
 sematextexporter: sematextexporter-c344e12ba758.md
 sentryexporter: sentryexporter-6fedc52a6616.md
 servicegraphconnector: servicegraphconnector-4178bd512ba1.md
-signalfxexporter: signalfxexporter-4dcd88974d60.md
+signalfxexporter: signalfxexporter-bda09e56812d.md
 signalfxreceiver: signalfxreceiver-a3afb864c4d9.md
 signaltometricsconnector: signaltometricsconnector-af6d13501b12.md
 signingprocessor: signingprocessor-9fc53fae628d.md
@@ -250,7 +251,7 @@ vcenterreceiver: vcenterreceiver-b391850b0976.md
 vcrreceiver: vcrreceiver-226c96ee4c45.md
 webhookeventreceiver: webhookeventreceiver-abab38931b98.md
 windowseventlogreceiver: windowseventlogreceiver-429d622f1d9d.md
-windowsperfcountersreceiver: windowsperfcountersreceiver-f1062e8a7590.md
+windowsperfcountersreceiver: windowsperfcountersreceiver-b1ed02244cf4.md
 windowsservicereceiver: windowsservicereceiver-cf3eff88b286.md
 yanggrpcreceiver: yanggrpcreceiver-b1013fc41368.md
 zipkinencodingextension: zipkinencodingextension-0ebb43bdf084.md

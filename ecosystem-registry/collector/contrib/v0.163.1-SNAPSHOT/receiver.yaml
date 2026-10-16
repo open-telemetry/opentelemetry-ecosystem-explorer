@@ -12986,6 +12986,23 @@ components:
       - darwin
       - windows
     type: named_pipe
+- name: natsreceiver
+  metadata:
+    display_name: NATS Receiver
+    status:
+      class: receiver
+      codeowners:
+        active:
+        - suckatrash
+        - kalebpace
+        - ChrsMark
+      distributions: []
+      stability:
+        development:
+        - logs
+        - metrics
+        - traces
+    type: nats
 - name: netflowreceiver
   metadata:
     description: The Netflow Receiver can listen for [netflow](https://en.wikipedia.org/wiki/NetFlow),
@@ -24060,8 +24077,9 @@ components:
       codeowners:
         active:
         - dashpole
-        - alxbl
         - pjanotti
+        emeritus:
+        - alxbl
         seeking_new: true
       distributions:
       - contrib
