@@ -11206,14 +11206,27 @@ components:
           monotonic: true
           value_type: int
         unit: '{operations}'
+      mongodb.operation.latency.count:
+        attributes:
+        - operation_latency
+        description: The number of operations included in the operation latency statistics.
+        enabled: false
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+        unit: '{operation}'
       mongodb.operation.latency.time:
         attributes:
         - operation_latency
-        description: The latency of operations.
+        description: Cumulative latency of operations.
         enabled: false
-        gauge:
-          value_type: int
         stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
         unit: us
       mongodb.operation.repl.count:
         attributes:
@@ -11287,6 +11300,16 @@ components:
         unit: '{query}/s'
       mongodb.query_executor.collection_scan.count:
         description: The number of queries that performed a collection scan.
+        enabled: false
+        stability: development
+        sum:
+          aggregation_temporality: cumulative
+          monotonic: true
+          value_type: int
+        unit: '{query}'
+      mongodb.query_executor.collection_scan.non_tailable.count:
+        description: The number of queries that performed a collection scan without
+          a tailable cursor.
         enabled: false
         stability: development
         sum:
@@ -11810,6 +11833,11 @@ components:
         name_override: operation
         requirement_level: recommended
         type: string
+      mysql.client.name:
+        description: The client driver's self-reported identity at connection time,
+          e.g. "MySQL Connector/J" or "libmysql". Empty if the client reported no
+          connect attributes or the connect-attrs feature is disabled server-side.
+        type: string
       mysql.event_id:
         description: The thread associated with the event and the thread current event
           number when the event starts.
@@ -12059,6 +12087,7 @@ components:
         - db.namespace
         - db.query.text
         - db.system.name
+        - mysql.client.name
         - mysql.event_id
         - mysql.events_statements_current.digest
         - mysql.events_statements_current.timer_wait

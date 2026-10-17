@@ -873,6 +873,12 @@ components:
       id: processor.k8sattributes.EmitV1K8sConventions
       reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/44589
       stage: beta
+    - description: When enabled, k8sattributesprocessor can use kubelet /pods polling
+        as the pod metadata source.
+      from_version: v0.164.0
+      id: processor.k8sattributes.EnableKubeletPodSource
+      reference_url: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/14475
+      stage: alpha
     - description: When enabled, processor instances with identical configuration
         are shared across different signal type pipelines, reducing duplicate Kubernetes
         API watchers.
