@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Optional
 
 from semantic_version import Version
-from watcher_common.inventory_manager import JavaagentInventoryManager
+from watcher_common.inventory_manager import JavaagentInventoryManager  # decoupled from java-instrumentation-watcher
 
 from explorer_db_builder.archive_plan import emit_archives, snapshot_digests
 from explorer_db_builder.collector_builder import run_collector_builder
@@ -41,6 +41,7 @@ from explorer_db_builder.instrumentation_transformer import (
 )
 from explorer_db_builder.javascript_builder import run_javascript_builder
 from explorer_db_builder.metadata_backfiller import backfill_metadata
+from explorer_db_builder.semconv_enricher import SemconvEnricher
 from explorer_db_builder.telemetry_when_corrections import apply_telemetry_when_corrections
 
 logger = logging.getLogger(__name__)
@@ -118,6 +119,13 @@ def process_version(
         inventory = inventory_manager.load_versioned_inventory(version)
 
     transformed_inventory = transform_instrumentation_format(inventory)
+
+    # Enrich with semantic convention compliance
+    try:
+        enricher = SemconvEnricher()
+        enricher.enrich_inventory(transformed_inventory)
+    except Exception as e:
+        logger.warning(f"Semantic convention enrichment failed for version {version}: {e}")
 
     if "libraries" not in transformed_inventory and "custom" not in transformed_inventory:
         raise KeyError(f"Inventory for version {version} missing 'libraries' and 'custom' keys")
@@ -288,7 +296,7 @@ def run_javaagent_builder(
         logger.info(f"  Files written: {stats['files_written']}")
         logger.info(f"  Total size: {stats['total_bytes']:,} bytes ({total_mb:.2f} MB)")
         logger.info("")
-        logger.info("[*] Database build completed successfully")
+        logger.info("✓ Database build completed successfully")
         return 0
 
     except ValueError as e:
