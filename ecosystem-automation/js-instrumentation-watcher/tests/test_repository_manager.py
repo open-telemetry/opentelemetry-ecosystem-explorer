@@ -24,6 +24,7 @@ from js_instrumentation_watcher.repository_manager import (
     REPO_ENV_VAR,
     REPO_NAME,
     REPO_URL,
+    BrowserRepositoryManager,
     JsContribRepositoryManager,
 )
 from watcher_common.repository_manager import _GIT
@@ -132,3 +133,18 @@ def test_repo_constants_point_at_js_contrib():
     assert REPO_NAME == "opentelemetry-js-contrib"
     assert REPO_URL.endswith("opentelemetry-js-contrib.git")
     assert REPO_ENV_VAR == "JS_CONTRIB_REPO_PATH"
+
+
+def test_browser_repo_uses_override(tmp_path, monkeypatch):
+    monkeypatch.setenv("BROWSER_REPO_PATH", str(tmp_path))
+    assert BrowserRepositoryManager().setup() == tmp_path
+
+
+def test_browser_repo_clones_separate_source(tmp_path, monkeypatch):
+    monkeypatch.delenv("BROWSER_REPO_PATH", raising=False)
+    manager = BrowserRepositoryManager(str(tmp_path))
+    with patch.object(manager, "_clone_repository") as clone:
+        assert manager.setup() == tmp_path / "opentelemetry-browser"
+    clone.assert_called_once_with(
+        "https://github.com/open-telemetry/opentelemetry-browser.git", tmp_path / "opentelemetry-browser"
+    )

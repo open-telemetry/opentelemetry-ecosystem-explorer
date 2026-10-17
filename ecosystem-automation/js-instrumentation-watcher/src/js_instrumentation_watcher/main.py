@@ -18,9 +18,10 @@
 import logging
 import os
 
+from .browser_sync import BrowserSync
 from .instrumentation_sync import InstrumentationSync
 from .inventory_manager import InventoryManager
-from .repository_manager import JsContribRepositoryManager
+from .repository_manager import BrowserRepositoryManager, JsContribRepositoryManager
 
 logger = logging.getLogger(__name__)
 
@@ -56,3 +57,9 @@ def main() -> None:
     summary = sync.sync()
 
     logger.info("Sync complete: %s", summary)
+
+    browser_path = BrowserRepositoryManager(base_dir=base_dir).setup()
+    browser_summary = BrowserSync(browser_path, inventory_manager).sync()
+    logger.info("Browser sync complete: %s", browser_summary)
+    if browser_summary["failed"]:
+        raise RuntimeError(f"Browser releases failed: {browser_summary['failed']}")

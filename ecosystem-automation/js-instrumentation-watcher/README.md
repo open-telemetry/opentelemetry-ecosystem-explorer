@@ -3,8 +3,7 @@
 Automation tool for synchronizing OpenTelemetry JavaScript instrumentation metadata to the ecosystem
 registry.
 
-The metadata source is the contrib repository:
-<https://github.com/open-telemetry/opentelemetry-js-contrib>
+The contrib metadata source is: <https://github.com/open-telemetry/opentelemetry-js-contrib>
 
 ## Methodology
 
@@ -104,3 +103,26 @@ uv run python -m js_instrumentation_watcher
 ```bash
 uv add --package js-instrumentation-watcher <package-name>
 ```
+
+## Browser instrumentation releases
+
+The same command also syncs `open-telemetry/opentelemetry-browser` into
+`javascript/browser-instrumentation/v{version}.yaml`. Set `BROWSER_REPO_PATH` to use an existing
+checkout, otherwise the watcher clones it alongside js-contrib under `JS_CONTRIB_REPOS_DIR`. Tags
+are fetched on every run, including when using an existing checkout.
+
+Only stable `browser-instrumentation-v{version}` tags are considered. All missing tagged versions
+are backfilled, existing registry entries are skipped. The manifest and module source are read from
+each tag using git blob reads, so unreleased working-tree changes cannot enter a release entry.
+Default repository setup pulls `main` before these reads. An explicit `BROWSER_REPO_PATH` skips that
+setup pull and preserves the checkout, while still fetching tags. The manifest name and version must
+match the release tag.
+
+Each entry contains package metadata and a sorted `modules` list with `name`, `import_path` and
+`source_path`. A module must have an `./experimental/` export and a matching `src/{name}/index.ts`
+at that tag. SDK releases and utility exports are excluded. Browser metadata has no Node engine,
+Node bundle membership or tested target-library ranges, so these fields are omitted. Scope names,
+platform filtering, module search and telemetry are follow-up work under #1187.
+
+A failed browser release is logged and other releases are still attempted, then the command exits
+with an error so the scheduled workflow can report the failure.

@@ -54,3 +54,19 @@ class JsContribRepositoryManager(BaseRepositoryManager):
             self._clone_repository(REPO_URL, repo_path)
 
         return repo_path
+
+
+class BrowserRepositoryManager(BaseRepositoryManager):
+    """Manage a separate checkout of the browser instrumentation source."""
+
+    def setup(self) -> Path:
+        """Use the supplied checkout or clone/update the browser repository."""
+        existing = self._get_repository_path("BROWSER_REPO_PATH")
+        if existing:
+            return existing
+        repo_path = self.base_dir / "opentelemetry-browser"
+        if repo_path.exists():
+            self._pull_latest(repo_path)
+        else:
+            self._clone_repository("https://github.com/open-telemetry/opentelemetry-browser.git", repo_path)
+        return repo_path
