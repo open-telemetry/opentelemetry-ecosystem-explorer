@@ -10,6 +10,8 @@ Python pipelines that watch upstream OpenTelemetry projects and write versioned 
 - `python-instrumentation-watcher/` — Python (python-contrib) instrumentations
 - `configuration-watcher/` — Declarative configuration schema
 - `explorer-db-builder/` — Builds the content-addressed database the frontend reads
+- `semconv-timeline-watcher/` — Proposes semantic-convention timeline candidates for review (see its
+  README; it never writes `timeline.json`)
 - `v1-registry-sync/` — Compares the collector registry against the upstream v1 registry
 - `watcher-common/` — Shared base classes for inventory and version detection
   (`watcher-common/src/watcher_common/`)
@@ -83,6 +85,11 @@ clients. After changing anything in `watcher-common`, run the full suite, not ju
 were editing.
 
 ## Footguns
+
+- `semconv-timeline-watcher` keeps two different marks apart: `reviewedThrough` in `timeline.json`
+  (accepted coverage, moved only by a maintainer's merged change) and the processing `cursor` in its
+  state (never past a pending revision). Do not derive one from the other, and never let the watcher
+  write the accepted file.
 
 - Skipping the version-existence check causes nightly re-processing and large noisy PRs.
 - Manually deleting a version directory shifts the deprecation baseline for the collector watcher

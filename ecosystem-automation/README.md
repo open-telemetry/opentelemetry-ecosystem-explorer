@@ -18,6 +18,8 @@ repository root using `uv` commands.**
 - **explorer-db-builder**: Builds the database for the ecosystem explorer web application
 - **v1-registry-sync**: Compares the collector registry against the upstream OpenTelemetry v1
   registry
+- **semconv-timeline-watcher**: Discovers upstream semantic-convention releases and commit ranges
+  and proposes candidate timeline history for maintainer review
 - **watcher-common**: Shared base classes for inventory management, version detection, and content
   hashing used by the watchers and the db-builder
 

@@ -1,0 +1,320 @@
+name: Nightly Semantic Convention Timeline Discovery
+
+on:
+  schedule:
+    # Run daily at 2:30 AM UTC, after the registry watchers
+    - cron: "30 2 * * *"
+  workflow_dispatch:
+    inputs:
+      source:
+        description: "Source to process; replay inputs below need exactly one"
+        type: choice
+        options: [all, semantic-conventions, semantic-conventions-genai]
+        default: all
+      tag:
+        description: "Replay one published core release (e.g. v1.45.0)"
+        type: string
+        default: ""
+      from:
+        description: "Replay or backfill: range start, exclusive (commit, tag or branch)"
+        type: string
+        default: ""
+      to:
+        description: "Replay or backfill: range end, inclusive (commit, tag or branch)"
+        type: string
+        default: ""
+      force:
+        description: "Re-extract unchanged revisions (maintainer dispositions are kept)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read # Default minimum; jobs declare their own elevated scopes below
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  validate-inputs:
+    name: Validate dispatch inputs
+    runs-on: ubuntu-latest
+    permissions: {}
+    outputs:
+      core-args: ${{ steps.args.outputs.core-args }}
+      genai-args: ${{ steps.args.outputs.genai-args }}
+    steps:
+      # Replay inputs act on exactly one source. Reject combinations that would otherwise be silently dropped,
+      # and build the extra watcher arguments here so that the discover jobs only forward them.
+      - name: Validate replay inputs and build watcher arguments
+        id: args
+        env:
+          SOURCE: ${{ inputs.source }}
+          TAG: ${{ inputs.tag }}
+          FROM_REF: ${{ inputs.from }}
+          TO_REF: ${{ inputs.to }}
+          FORCE: ${{ inputs.force }}
+        run: |
+          fail() { echo "::error title=Invalid replay inputs::$1"; exit 1; }
+          [ "$FORCE" = "true" ] || FORCE=""
+          if [ -z "$TAG$FROM_REF$TO_REF$FORCE" ]; then
+            echo "core-args=" >> "$GITHUB_OUTPUT"
+            echo "genai-args=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          case "$SOURCE" in
+            semantic-conventions | semantic-conventions-genai) ;;
+            *) fail "tag, from, to and force replay a single source: set source to semantic-conventions or semantic-conventions-genai (got '${SOURCE:-all}'), or clear the replay inputs." ;;
+          esac
+          for ref in "$TAG" "$FROM_REF" "$TO_REF"; do
+            [ -z "$ref" ] || [[ "$ref" =~ ^[A-Za-z0-9][A-Za-z0-9._/-]*$ ]] || fail "'$ref' is not a plain tag, branch or commit."
+          done
+          [ -z "$TO_REF" ] || [ -n "$FROM_REF" ] || fail "'to' needs 'from'."
+          [ -z "$TAG" ] || { [ -z "$FROM_REF" ] && [ -z "$TO_REF" ]; } || fail "'tag' cannot be combined with 'from' or 'to'."
+          if [ "$SOURCE" = "semantic-conventions-genai" ]; then
+            [ -z "$TAG" ] || fail "'tag' replays a published core release; use semantic-conventions, or 'from'/'to' for genai."
+          else
+            [ -z "$FROM_REF" ] || [ -n "$TO_REF" ] || fail "a core range needs both 'from' and 'to'."
+          fi
+          args=""
+          [ -z "$TAG" ] || args="$args --tag $TAG"
+          [ -z "$FROM_REF" ] || args="$args --from $FROM_REF"
+          [ -z "$TO_REF" ] || args="$args --to $TO_REF"
+          [ -z "$FORCE" ] || args="$args --force"
+          if [ "$SOURCE" = "semantic-conventions" ]; then
+            echo "core-args=$args" >> "$GITHUB_OUTPUT"
+            echo "genai-args=" >> "$GITHUB_OUTPUT"
+          else
+            echo "core-args=" >> "$GITHUB_OUTPUT"
+            echo "genai-args=$args" >> "$GITHUB_OUTPUT"
+          fi
+
+  core-discover:
+    name: Discover semantic-conventions
+    needs: [validate-inputs]
+    if: >-
+      (github.event_name != 'schedule' || github.repository ==
+      'open-telemetry/opentelemetry-ecosystem-explorer') && (inputs.source == '' || inputs.source ==
+      'all' || inputs.source == 'semantic-conventions')
+    permissions:
+      contents: write # Push candidate files and processing state to the automation branch
+      pull-requests: write # Create or update the automated candidate PR
+    uses: $/.github/workflows/reusable-registry-sync.yml
+    with:
+      # Replay arguments come from validate-inputs, which rejects any that do not apply to a single source.
+      watcher-command:
+        "uv run semconv-timeline-watcher run --source semantic-conventions${{
+        needs.validate-inputs.outputs.core-args }}"
+      registry-path: "ecosystem-registry/semantic-conventions/semantic-conventions/"
+      branch-name: "otelbot/automated-semconv-timeline-core"
+      pr-title: "[automated] Update semantic-conventions timeline candidates"
+      pr-body: |
+        Automated discovery of upstream `semantic-conventions` changes.
+
+        This PR only records candidate evidence and processing state. Merging it accepts nothing: a maintainer
+        records dispositions in the candidate files and edits `timeline.json` in a separate change.
+        See `ecosystem-automation/semconv-timeline-watcher/README.md`.
+      cache-key-suffix: "semconv-timeline-core"
+    secrets:
+      OTELBOT_PRIVATE_KEY: ${{ secrets.OTELBOT_PRIVATE_KEY }}
+
+  core-review:
+    name: Update semantic-conventions review issues
+    needs: [core-discover]
+    if: ${{ !cancelled() && needs.core-discover.result == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # Read candidate files
+      issues: write # Create or update review issues
+      pull-requests: read # Find the open automation PR
+    env:
+      BRANCH: otelbot/automated-semconv-timeline-core
+    steps:
+      - name: Find an open automation PR
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          if gh pr list --repo "$REPO" --head "$BRANCH" --state open --json number --jq '.[0].number' | grep -q .; then
+            echo "open=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "open=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # All code that runs with the issue-writing token comes from this trusted checkout of the default branch.
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # The automation branch is only read as data (JSON candidate files) into a separate directory; nothing in
+      # it is installed, imported or executed.
+      - name:
+          Checkout the automation branch as data (its candidates are not on the default branch yet)
+        if: steps.pr.outputs.open == 'true'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.BRANCH }}
+          path: automation-data
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version-file: ".python-version"
+
+      - name: Install dependencies
+        run: uv sync --locked
+
+      - name: Create or update review issues
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          REGISTRY_DIR:
+            ${{ steps.pr.outputs.open == 'true' &&
+            'automation-data/ecosystem-registry/semantic-conventions' ||
+            'ecosystem-registry/semantic-conventions' }}
+        run:
+          uv run semconv-timeline-watcher --registry-dir "$REGISTRY_DIR" review --source
+          semantic-conventions
+
+      # After the issues exist, fail the job (and so notify) on anything a maintainer must fix: failed
+      # revisions, invalid files or dispositions, and moved tags.
+      - name: Validate state and dispositions
+        if: ${{ !cancelled() }}
+        env:
+          REGISTRY_DIR:
+            ${{ steps.pr.outputs.open == 'true' &&
+            'automation-data/ecosystem-registry/semantic-conventions' ||
+            'ecosystem-registry/semantic-conventions' }}
+        run:
+          uv run semconv-timeline-watcher --registry-dir "$REGISTRY_DIR" check --source
+          semantic-conventions
+
+  genai-discover:
+    name: Discover semantic-conventions-genai
+    needs: [validate-inputs]
+    if: >-
+      (github.event_name != 'schedule' || github.repository ==
+      'open-telemetry/opentelemetry-ecosystem-explorer') && (inputs.source == '' || inputs.source ==
+      'all' || inputs.source == 'semantic-conventions-genai')
+    permissions:
+      contents: write # Push candidate files and processing state to the automation branch
+      pull-requests: write # Create or update the automated candidate PR
+    uses: $/.github/workflows/reusable-registry-sync.yml
+    with:
+      # Replay arguments come from validate-inputs, which rejects any that do not apply to a single source.
+      watcher-command:
+        "uv run semconv-timeline-watcher run --source semantic-conventions-genai${{
+        needs.validate-inputs.outputs.genai-args }}"
+      registry-path: "ecosystem-registry/semantic-conventions/semantic-conventions-genai/"
+      branch-name: "otelbot/automated-semconv-timeline-genai"
+      pr-title: "[automated] Update semantic-conventions-genai timeline candidates"
+      pr-body: |
+        Automated discovery of upstream `semantic-conventions-genai` changes.
+
+        This PR only records candidate evidence and processing state. Merging it accepts nothing: a maintainer
+        records dispositions in the candidate files and edits `timeline.json` in a separate change.
+        See `ecosystem-automation/semconv-timeline-watcher/README.md`.
+      cache-key-suffix: "semconv-timeline-genai"
+    secrets:
+      OTELBOT_PRIVATE_KEY: ${{ secrets.OTELBOT_PRIVATE_KEY }}
+
+  genai-review:
+    name: Update semantic-conventions-genai review issues
+    needs: [genai-discover]
+    if: ${{ !cancelled() && needs.genai-discover.result == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # Read candidate files
+      issues: write # Create or update review issues
+      pull-requests: read # Find the open automation PR
+    env:
+      BRANCH: otelbot/automated-semconv-timeline-genai
+    steps:
+      - name: Find an open automation PR
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+        run: |
+          if gh pr list --repo "$REPO" --head "$BRANCH" --state open --json number --jq '.[0].number' | grep -q .; then
+            echo "open=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "open=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # All code that runs with the issue-writing token comes from this trusted checkout of the default branch.
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # The automation branch is only read as data (JSON candidate files) into a separate directory; nothing in
+      # it is installed, imported or executed.
+      - name:
+          Checkout the automation branch as data (its candidates are not on the default branch yet)
+        if: steps.pr.outputs.open == 'true'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ env.BRANCH }}
+          path: automation-data
+          persist-credentials: false
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version-file: ".python-version"
+
+      - name: Install dependencies
+        run: uv sync --locked
+
+      - name: Create or update review issues
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          REGISTRY_DIR:
+            ${{ steps.pr.outputs.open == 'true' &&
+            'automation-data/ecosystem-registry/semantic-conventions' ||
+            'ecosystem-registry/semantic-conventions' }}
+        run:
+          uv run semconv-timeline-watcher --registry-dir "$REGISTRY_DIR" review --source
+          semantic-conventions-genai
+
+      # After the issues exist, fail the job (and so notify) on anything a maintainer must fix: failed
+      # revisions, invalid files or dispositions, and moved tags.
+      - name: Validate state and dispositions
+        if: ${{ !cancelled() }}
+        env:
+          REGISTRY_DIR:
+            ${{ steps.pr.outputs.open == 'true' &&
+            'automation-data/ecosystem-registry/semantic-conventions' ||
+            'ecosystem-registry/semantic-conventions' }}
+        run:
+          uv run semconv-timeline-watcher --registry-dir "$REGISTRY_DIR" check --source
+          semantic-conventions-genai
+
+  notify:
+    name: Notify on semconv-timeline-watcher failure
+    permissions:
+      contents: read # Checkout reusable workflow source
+      issues: write # Open or comment on the semconv-timeline-watcher failure-tracking issue
+    needs: [core-discover, core-review, genai-discover, genai-review]
+    if:
+      ${{ !cancelled() && (needs.core-discover.result != 'skipped' || needs.genai-discover.result !=
+      'skipped') }}
+    uses: $/.github/workflows/reusable-workflow-notification.yml
+    with:
+      success: ${{ !contains(needs.*.result, 'failure') }}
+      watcher-name: "semconv-timeline-watcher"

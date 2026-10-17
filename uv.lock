@@ -12,6 +12,7 @@ members = [
     "js-instrumentation-watcher",
     "opentelemetry-ecosystem-explorer",
     "python-instrumentation-watcher",
+    "semconv-timeline-watcher",
     "v1-registry-sync",
     "watcher-common",
 ]
@@ -537,6 +538,7 @@ dependencies = [
     { name = "java-instrumentation-watcher" },
     { name = "js-instrumentation-watcher" },
     { name = "python-instrumentation-watcher" },
+    { name = "semconv-timeline-watcher" },
     { name = "v1-registry-sync" },
 ]
 
@@ -557,6 +559,7 @@ requires-dist = [
     { name = "java-instrumentation-watcher", editable = "ecosystem-automation/java-instrumentation-watcher" },
     { name = "js-instrumentation-watcher", editable = "ecosystem-automation/js-instrumentation-watcher" },
     { name = "python-instrumentation-watcher", editable = "ecosystem-automation/python-instrumentation-watcher" },
+    { name = "semconv-timeline-watcher", editable = "ecosystem-automation/semconv-timeline-watcher" },
     { name = "v1-registry-sync", editable = "ecosystem-automation/v1-registry-sync" },
 ]
 
@@ -789,6 +792,32 @@ sdist = { url = "https://files.pythonhosted.org/packages/7d/31/f2289ce78b9b473d5
 wheels = [
     { url = "https://files.pythonhosted.org/packages/6a/23/8146aad7d88f4fcb3a6218f41a60f6c2d4e3a72de72da1825dc7c8f7877c/semantic_version-2.10.0-py2.py3-none-any.whl", hash = "sha256:de78a3b8e0feda74cabc54aab2da702113e33ac9d9eb9d2389bcf1f58b7d9177", size = 15552, upload-time = "2022-05-26T13:35:21.206Z" },
 ]
+
+[[package]]
+name = "semconv-timeline-watcher"
+version = "0.1.0"
+source = { editable = "ecosystem-automation/semconv-timeline-watcher" }
+dependencies = [
+    { name = "pyyaml" },
+    { name = "requests" },
+    { name = "watcher-common" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "pytest" },
+    { name = "pytest-cov" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0.0" },
+    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.1.0" },
+    { name = "pyyaml", specifier = ">=6.0.1" },
+    { name = "requests", specifier = ">=2.31.0" },
+    { name = "watcher-common", editable = "ecosystem-automation/watcher-common" },
+]
+provides-extras = ["dev"]
 
 [[package]]
 name = "tomli"
