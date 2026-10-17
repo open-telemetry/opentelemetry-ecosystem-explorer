@@ -141,7 +141,7 @@ modules:
 - name: OpenTelemetry.Instrumentation.EventCounters
   description: OpenTelemetry Metrics instrumentation for .NET EventCounters.
   type: instrumentation
-  version: 1.20.0-alpha.1
+  version: 1.20.0-alpha.2
 - name: OpenTelemetry.Instrumentation.GrpcCore
   description: .NET gRPC Core based client and server interceptors for OpenTelemetry.
   type: instrumentation
@@ -185,7 +185,7 @@ modules:
 - name: OpenTelemetry.Instrumentation.ServiceFabricRemoting
   description: ServiceFabric Remoting instrumentation for OpenTelemetry .NET.
   type: instrumentation
-  version: 1.20.0-beta.1
+  version: 1.20.0-beta.2
 - name: OpenTelemetry.Instrumentation.SqlClient
   description: SqlClient instrumentation for OpenTelemetry .NET.
   type: instrumentation
