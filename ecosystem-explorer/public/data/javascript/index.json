@@ -401,6 +401,10 @@
       "releases": [
         {
           "hash": "d0252543f250",
+          "version": "0.71.1"
+        },
+        {
+          "hash": "d0252543f250",
           "version": "0.71.0"
         },
         {
@@ -424,7 +428,7 @@
           "version": "0.66.0"
         }
       ],
-      "version": "0.71.0"
+      "version": "0.71.1"
     },
     {
       "description": "OpenTelemetry instrumentation for `node:fs` file system interactions module",
@@ -726,6 +730,10 @@
       "npm_package": "@opentelemetry/instrumentation-langchain",
       "releases": [
         {
+          "hash": "41dea99e4d42",
+          "version": "0.12.0"
+        },
+        {
           "hash": "835e2892db39",
           "version": "0.11.0"
         },
@@ -750,7 +758,7 @@
           "version": "0.6.0"
         }
       ],
-      "version": "0.11.0"
+      "version": "0.12.0"
     },
     {
       "description": "OpenTelemetry instrumentation for long task Web API",
@@ -925,6 +933,10 @@
       "releases": [
         {
           "hash": "1c98bd462732",
+          "version": "0.69.1"
+        },
+        {
+          "hash": "1c98bd462732",
           "version": "0.69.0"
         },
         {
@@ -948,7 +960,7 @@
           "version": "0.64.0"
         }
       ],
-      "version": "0.69.0"
+      "version": "0.69.1"
     },
     {
       "description": "OpenTelemetry instrumentation for `mysql2` database client for MySQL",
@@ -990,6 +1002,10 @@
       "npm_package": "@opentelemetry/instrumentation-nestjs-core",
       "releases": [
         {
+          "hash": "6b9eb4120062",
+          "version": "0.70.0"
+        },
+        {
           "hash": "400f1f710452",
           "version": "0.69.0"
         },
@@ -1014,7 +1030,7 @@
           "version": "0.64.0"
         }
       ],
-      "version": "0.69.0"
+      "version": "0.70.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `node:net` network API module",
@@ -1123,6 +1139,10 @@
       "releases": [
         {
           "hash": "87edead6ebc5",
+          "version": "0.76.0"
+        },
+        {
+          "hash": "87edead6ebc5",
           "version": "0.75.0"
         },
         {
@@ -1146,7 +1166,7 @@
           "version": "0.70.0"
         }
       ],
-      "version": "0.75.0"
+      "version": "0.76.0"
     },
     {
       "description": "OpenTelemetry instrumentation for `pino` logger",
@@ -1288,6 +1308,10 @@
       "releases": [
         {
           "hash": "f06ae82b6863",
+          "version": "0.36.1"
+        },
+        {
+          "hash": "f06ae82b6863",
           "version": "0.36.0"
         },
         {
@@ -1311,7 +1335,7 @@
           "version": "0.31.0"
         }
       ],
-      "version": "0.36.0"
+      "version": "0.36.1"
     },
     {
       "description": "OpenTelemetry instrumentation for `sequelize` ORM",
@@ -1552,6 +1576,10 @@
       "releases": [
         {
           "hash": "3dd8ebd0eb9f",
+          "version": "0.68.0"
+        },
+        {
+          "hash": "3dd8ebd0eb9f",
           "version": "0.67.0"
         },
         {
@@ -1575,7 +1603,7 @@
           "version": "0.62.0"
         }
       ],
-      "version": "0.67.0"
+      "version": "0.68.0"
     }
   ]
 }
