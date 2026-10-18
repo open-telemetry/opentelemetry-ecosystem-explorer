@@ -731,6 +731,10 @@
       "releases": [
         {
           "hash": "41dea99e4d42",
+          "version": "0.13.0"
+        },
+        {
+          "hash": "41dea99e4d42",
           "version": "0.12.0"
         },
         {
@@ -758,7 +762,7 @@
           "version": "0.6.0"
         }
       ],
-      "version": "0.12.0"
+      "version": "0.13.0"
     },
     {
       "description": "OpenTelemetry instrumentation for long task Web API",
@@ -1576,6 +1580,10 @@
       "releases": [
         {
           "hash": "3dd8ebd0eb9f",
+          "version": "0.68.1"
+        },
+        {
+          "hash": "3dd8ebd0eb9f",
           "version": "0.68.0"
         },
         {
@@ -1603,7 +1611,7 @@
           "version": "0.62.0"
         }
       ],
-      "version": "0.68.0"
+      "version": "0.68.1"
     }
   ]
 }
