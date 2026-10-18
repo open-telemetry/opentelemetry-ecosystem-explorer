@@ -24,10 +24,10 @@
     "format:check": "prettier --check . --ignore-path ../.prettierignore",
     "preview": "vp preview",
     "test": "vp test run",
-    "test:watch": "vp test",
+    "test:watch": "vp test watch",
     "test:integration": "vp test run --config vitest.integration.config.ts",
     "test:edge": "vp test run --config vitest.dist.config.ts",
-    "test:integration:watch": "vp test --config vitest.integration.config.ts",
+    "test:integration:watch": "vp test watch --config vitest.integration.config.ts",
     "screenshots:capture": "bun scripts/take-screenshots.mjs",
     "screenshots:diff": "bun scripts/diff-screenshots.mjs"
   },
