@@ -15,7 +15,9 @@
     },
     "pipeline": {
       "title": "Categorías de instrumentación",
-      "lead": "Las auto-instrumentaciones de Java se agrupan por categoría. Haz clic en cualquier categoría para filtrar la lista de instrumentaciones."
+      "lead": "Las auto-instrumentaciones de Java se agrupan por categoría. Haz clic en cualquier categoría para filtrar la lista de instrumentaciones.",
+      "leadWithTotal_one": "Explora {{count}} auto-instrumentación de Java por categoría. Haz clic en cualquier categoría para filtrar la lista de instrumentaciones.",
+      "leadWithTotal_other": "Explora {{count}} auto-instrumentaciones de Java por categoría. Haz clic en cualquier categoría para filtrar la lista de instrumentaciones."
     },
     "stages": {
       "http": { "label": "HTTP", "description": "Servidores y clientes" },
@@ -36,6 +38,18 @@
       "supported-libs": {
         "title": "Bibliotecas compatibles",
         "description": "Explora el catálogo completo de bibliotecas y frameworks compatibles."
+      },
+      "configuration": {
+        "title": "Opciones de configuración",
+        "description": "Descubre las opciones para configurar el Java Agent y la instrumentación."
+      },
+      "getting-started": {
+        "title": "Primeros pasos",
+        "description": "Configura el Java Agent con la guía de instrumentación sin código."
+      },
+      "config-reference": {
+        "title": "Referencia de configuración",
+        "description": "Consulta la referencia completa de configuración del Java Agent en opentelemetry.io."
       }
     }
   },

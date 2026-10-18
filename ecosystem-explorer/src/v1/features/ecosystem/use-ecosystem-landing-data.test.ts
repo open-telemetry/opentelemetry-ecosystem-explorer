@@ -105,6 +105,8 @@ describe("useEcosystemLandingData — collector", () => {
       exporter: 1,
     });
     expect(result.current.data?.release.version).toBe("v0.154.0");
+    // The total is Java Agent only; Collector leaves it unset.
+    expect(result.current.data?.total).toBeUndefined();
     // added: `c-new` is new in latest; changed: `b`'s hash moved; deprecated:
     // only `b` flipped to deprecated this release (`d` was already deprecated).
     expect(result.current.data?.release.deltas).toEqual({ added: 1, changed: 1, deprecated: 1 });
@@ -143,6 +145,8 @@ describe("useEcosystemLandingData — java-agent", () => {
     await waitFor(() => expect(result.current.loading).toBe(false));
 
     expect(result.current.data?.stageCounts).toEqual({ http: 2, db: 1, runtime: 1 });
+    // The total counts every instrumentation, including the one no stage matches.
+    expect(result.current.data?.total).toBe(4);
     expect(result.current.data?.release.version).toBe("v2.28.1");
     // No stability field on instrumentations → version-only release card.
     expect(result.current.data?.release.deltas).toBeNull();

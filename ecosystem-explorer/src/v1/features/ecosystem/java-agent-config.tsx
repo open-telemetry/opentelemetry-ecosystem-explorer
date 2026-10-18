@@ -28,7 +28,7 @@
  * deltas (version-only). The pipeline renders as a no-flow grid of categories.
  */
 
-import { Box, GitCompare, Layers } from "lucide-react";
+import { BookOpen, Box, FileText, GitCompare, Layers, Settings } from "lucide-react";
 import { TYPE_STRIPE_COLORS } from "@/components/ui/type-stripe-colors";
 import { JavaIcon } from "@/components/icons/java-icon";
 import type { EcosystemConfig } from "./types";
@@ -132,6 +132,29 @@ export const javaAgentConfig: EcosystemConfig = {
       description: "landingV1.quickEntries.supported-libs.description",
       href: javaInstrumentationPath,
       icon: <Layers className="h-5 w-5" aria-hidden />,
+    },
+    {
+      id: "configuration",
+      title: "landingV1.quickEntries.configuration.title",
+      description: "landingV1.quickEntries.configuration.description",
+      href: "/java-agent/configuration",
+      icon: <Settings className="h-5 w-5" aria-hidden />,
+    },
+    {
+      id: "getting-started",
+      title: "landingV1.quickEntries.getting-started.title",
+      description: "landingV1.quickEntries.getting-started.description",
+      href: "https://opentelemetry.io/docs/zero-code/java/",
+      external: true,
+      icon: <BookOpen className="h-5 w-5" aria-hidden />,
+    },
+    {
+      id: "config-reference",
+      title: "landingV1.quickEntries.config-reference.title",
+      description: "landingV1.quickEntries.config-reference.description",
+      href: "https://opentelemetry.io/docs/zero-code/java/agent/configuration/",
+      external: true,
+      icon: <FileText className="h-5 w-5" aria-hidden />,
     },
   ],
   release: {

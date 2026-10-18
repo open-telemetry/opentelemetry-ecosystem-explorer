@@ -93,7 +93,14 @@ export function EcosystemPage({ config }: EcosystemPageProps) {
   }));
 
   const resolvedPipelineTitle = pipelineTitle ? t(pipelineTitle) : undefined;
-  const resolvedPipelineLead = pipelineLead ? t(pipelineLead) : undefined;
+  // With a live total, the lead gets a pluralised "N instrumentations" variant
+  // (`<pipelineLead>WithTotal_*` keys); otherwise it falls back to the static lead
+  // so no number is hard-coded.
+  const resolvedPipelineLead = pipelineLead
+    ? data?.total !== undefined
+      ? t(`${pipelineLead}WithTotal`, { count: data.total })
+      : t(pipelineLead)
+    : undefined;
 
   const resolvedVersion = data?.release.version ?? release.version;
   const resolvedDeltas = data?.release.deltas ?? release.deltas ?? null;

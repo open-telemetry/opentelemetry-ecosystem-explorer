@@ -145,6 +145,77 @@ describe("Java Agent ecosystem landing", () => {
     expect(screen.getByRole("link", { name: /^HTTP — 32 components$/ })).toBeInTheDocument();
     // The static fallback is version-only too — never a fabricated delta strip.
     expect(screen.queryByRole("list", { name: "Changes in this release" })).not.toBeInTheDocument();
+    // No live total on the fallback path, so the static lead renders with no number.
+    expect(
+      screen.getByText(/^Java auto-instrumentations are grouped by category\./)
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/^Browse \d+ Java auto-instrumentation/)).not.toBeInTheDocument();
+  });
+
+  it("shows the live total instrumentation count in the categories lead", () => {
+    useEcosystemLandingData.mockReturnValue(
+      success({
+        stageCounts: { http: 92, db: 13, messaging: 24, frameworks: 7, runtime: 3 },
+        total: 256,
+        release: { version: "v2.28.1", deltas: null },
+      })
+    );
+    renderRouter(<JavaAgentLandingV1 />);
+    expect(
+      screen.getByText(/^Browse 256 Java auto-instrumentations by category\./)
+    ).toBeInTheDocument();
+  });
+
+  it("uses the singular lead when there is exactly one instrumentation", () => {
+    useEcosystemLandingData.mockReturnValue(
+      success({
+        stageCounts: { http: 1 },
+        total: 1,
+        release: { version: "v2.28.1", deltas: null },
+      })
+    );
+    renderRouter(<JavaAgentLandingV1 />);
+    expect(
+      screen.getByText(/^Browse 1 Java auto-instrumentation by category\./)
+    ).toBeInTheDocument();
+  });
+
+  it("renders the six quick entries, with the docs links opening in a new tab", () => {
+    useEcosystemLandingData.mockReturnValue(errorState);
+    renderRouter(<JavaAgentLandingV1 />);
+
+    const titles = screen
+      .getAllByRole("heading", { level: 3 })
+      .map((heading) => heading.textContent)
+      .filter((text) =>
+        [
+          "Configuration builder",
+          "Compare releases",
+          "Supported libraries",
+          "Configuration options",
+          "Getting started",
+          "Configuration reference",
+        ].includes(text ?? "")
+      );
+    expect(titles).toHaveLength(6);
+
+    // Configuration options is an in-app link: no new tab.
+    const configuration = screen.getByRole("link", { name: /Configuration options/i });
+    expect(configuration).toHaveAttribute("href", "/java-agent/configuration");
+    expect(configuration).not.toHaveAttribute("target");
+
+    const gettingStarted = screen.getByRole("link", { name: /Getting started/i });
+    expect(gettingStarted).toHaveAttribute("href", "https://opentelemetry.io/docs/zero-code/java/");
+    expect(gettingStarted).toHaveAttribute("target", "_blank");
+    expect(gettingStarted).toHaveAttribute("rel", expect.stringContaining("noopener"));
+
+    const reference = screen.getByRole("link", { name: /Configuration reference/i });
+    expect(reference).toHaveAttribute(
+      "href",
+      "https://opentelemetry.io/docs/zero-code/java/agent/configuration/"
+    );
+    expect(reference).toHaveAttribute("target", "_blank");
+    expect(reference).toHaveAttribute("rel", expect.stringContaining("noopener"));
   });
 });
 

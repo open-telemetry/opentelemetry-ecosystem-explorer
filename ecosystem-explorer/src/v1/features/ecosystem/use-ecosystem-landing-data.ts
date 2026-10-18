@@ -44,6 +44,8 @@ import * as javaagentData from "@/lib/api/javaagent-data";
 export interface EcosystemLandingData {
   /** Live count per stage id (matches the `stages[].id`s in the per-ecosystem config). */
   stageCounts: Record<string, number>;
+  /** Total instrumentations in the latest release. Java Agent only; unset for Collector. */
+  total?: number;
   release: {
     version: string | null;
     /** Null when deltas are not computable (e.g. Java Agent has no stability). */
@@ -159,8 +161,10 @@ async function loadJavaAgentLandingData(
   const latestVersion = versions.versions.find((v) => v.is_latest) ?? versions.versions[0];
 
   const stageCounts: Record<string, number> = {};
+  let total: number | undefined;
   if (latestVersion) {
     const instrumentations = await javaagentData.loadAllInstrumentations(latestVersion.version);
+    total = instrumentations.length;
     for (const [stageId, term] of Object.entries(searchTermsByStageId)) {
       stageCounts[stageId] = instrumentations.filter((i) => matchesSearch(i, term)).length;
     }
@@ -168,6 +172,7 @@ async function loadJavaAgentLandingData(
 
   return {
     stageCounts,
+    total,
     // Instrumentation records have no stability field, so deprecated/changed are
     // not computable. Pass deltas: null — the ReleaseCard renders version-only.
     release: { version: latestVersion ? `v${latestVersion.version}` : null, deltas: null },
