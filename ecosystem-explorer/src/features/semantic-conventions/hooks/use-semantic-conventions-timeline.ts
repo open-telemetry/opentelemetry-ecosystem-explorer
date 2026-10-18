@@ -62,7 +62,7 @@ export function useSemanticConventionsTimeline(): DataState<TimelineData> {
       }
     }
 
-    loadTimeline();
+    void loadTimeline();
 
     return () => {
       cancelled = true;

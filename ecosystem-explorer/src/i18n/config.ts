@@ -19,7 +19,7 @@ import { languageDetector } from "@/i18n/language-detector";
 import { httpBackend } from "@/i18n/http-backend";
 import { NAMESPACES, SUPPORTED_LANGUAGES } from "@/i18n/languages";
 
-i18n
+void i18n
   .use(httpBackend)
   .use(languageDetector)
   .use(initReactI18next)

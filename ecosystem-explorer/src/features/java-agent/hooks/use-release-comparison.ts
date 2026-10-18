@@ -90,7 +90,7 @@ export function useReleaseComparison(
       }
     }
 
-    loadComparison();
+    void loadComparison();
 
     return () => {
       cancelled = true;

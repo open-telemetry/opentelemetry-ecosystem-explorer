@@ -342,4 +342,4 @@ async function takeScreenshots() {
   }
 }
 
-takeScreenshots();
+void takeScreenshots();

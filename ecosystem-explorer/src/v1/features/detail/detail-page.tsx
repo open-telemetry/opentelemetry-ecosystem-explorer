@@ -138,7 +138,7 @@ export function CollectorDetailPageV1() {
 
   // Router location is the tab state, including Link, replace and Back/Forward navigation.
   function selectTab(next: DetailTabId) {
-    navigate(
+    void navigate(
       { pathname: location.pathname, search: location.search, hash: `#${next}` },
       { replace: true, state: location.state }
     );

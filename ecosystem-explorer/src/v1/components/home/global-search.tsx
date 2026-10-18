@@ -184,7 +184,7 @@ export function GlobalSearch({ placeholder, onSelect }: GlobalSearchProps) {
   const selectResult = useCallback(
     (path: string) => {
       if (onSelect) onSelect(path);
-      else navigate(path);
+      else void navigate(path);
       setIsOpen(false);
     },
     [navigate, onSelect]

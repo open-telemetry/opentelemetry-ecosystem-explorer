@@ -62,11 +62,11 @@ export function JavaInstrumentationListPage() {
       const query = params.toString();
 
       if (!versionParam || versionParam === "latest") {
-        navigate(`/java-agent/instrumentation${query ? `?${query}` : ""}`, {
+        void navigate(`/java-agent/instrumentation${query ? `?${query}` : ""}`, {
           replace: true,
         });
       } else if (!isVersionValid) {
-        navigate(`/java-agent/instrumentation?${query}&redirectedFrom=${versionParam}`, {
+        void navigate(`/java-agent/instrumentation?${query}&redirectedFrom=${versionParam}`, {
           replace: true,
         });
       }
@@ -296,7 +296,7 @@ export function JavaInstrumentationListPage() {
 
     const query = params.toString();
 
-    navigate(`/java-agent/instrumentation${query ? `?${query}` : ""}`);
+    void navigate(`/java-agent/instrumentation${query ? `?${query}` : ""}`);
   };
 
   return (

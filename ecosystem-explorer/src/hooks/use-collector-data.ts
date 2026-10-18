@@ -51,7 +51,7 @@ export function useCollectorVersions(): DataState<VersionsIndex> {
       }
     }
 
-    loadData();
+    void loadData();
 
     return () => {
       cancelled = true;
@@ -88,7 +88,7 @@ export function useCollectorIndex(): DataState<CollectorIndex> {
       }
     }
 
-    loadData();
+    void loadData();
 
     return () => {
       cancelled = true;
@@ -129,7 +129,7 @@ export function useCollectorDeprecations(enabled = true): DataState<CollectorDep
       }
     }
 
-    loadData();
+    void loadData();
     return () => {
       cancelled = true;
     };
@@ -174,7 +174,7 @@ export function useCollectorComponents(version?: string | null): DataState<Index
       }
     }
 
-    loadData();
+    void loadData();
 
     return () => {
       cancelled = true;
@@ -226,7 +226,7 @@ export function useComponentVersions(distribution: string, name: string): DataSt
       }
     }
 
-    loadData();
+    void loadData();
 
     return () => {
       cancelled = true;
@@ -274,7 +274,7 @@ export function useCollectorComponent(
       }
     }
 
-    loadData();
+    void loadData();
 
     return () => {
       cancelled = true;
@@ -324,7 +324,7 @@ export function useComponentReadme(
       }
     }
 
-    loadData();
+    void loadData();
 
     return () => {
       cancelled = true;

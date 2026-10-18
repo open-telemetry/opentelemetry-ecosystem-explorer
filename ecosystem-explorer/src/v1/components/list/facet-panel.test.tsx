@@ -175,7 +175,7 @@ describe("FacetPanel", () => {
     const search = screen.getByRole("searchbox", { name: "Search" });
     search.focus();
     fireEvent.change(search, { target: { value: "otlp" } });
-    act(() => vi.advanceTimersByTime(250));
+    void act(() => vi.advanceTimersByTime(250));
 
     expect(screen.getByLabelText("URL filters")).toHaveTextContent("q=otlp");
     expect(search).toHaveFocus();

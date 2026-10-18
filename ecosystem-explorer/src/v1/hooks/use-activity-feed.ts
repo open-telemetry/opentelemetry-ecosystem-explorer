@@ -72,7 +72,7 @@ export function useActivityFeed({
       }
     }
 
-    load();
+    void load();
 
     return () => {
       cancelled = true;

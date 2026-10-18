@@ -92,9 +92,9 @@ async function generateConfig() {
     await page.route("**/*", (route) => {
       const hostname = new URL(route.request().url()).hostname;
       if (["googletagmanager.com", "google-analytics.com"].includes(hostname)) {
-        route.abort();
+        void route.abort();
       } else {
-        route.continue();
+        void route.continue();
       }
     });
 
@@ -184,4 +184,4 @@ async function generateConfig() {
   }
 }
 
-generateConfig();
+void generateConfig();

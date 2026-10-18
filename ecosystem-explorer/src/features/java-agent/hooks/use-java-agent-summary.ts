@@ -68,7 +68,7 @@ export function useJavaAgentSummary(): DataState<JavaAgentSummary> {
       }
     }
 
-    loadSummary();
+    void loadSummary();
 
     return () => {
       cancelled = true;

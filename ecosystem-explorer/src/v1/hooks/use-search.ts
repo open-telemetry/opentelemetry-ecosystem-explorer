@@ -54,7 +54,7 @@ export function useSearch(query: string): DataState<SearchResult[]> {
       }
     }
 
-    run();
+    void run();
     return () => {
       cancelled = true;
     };

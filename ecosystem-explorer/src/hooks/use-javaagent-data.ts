@@ -49,7 +49,7 @@ export function useVersions(): DataState<VersionsIndex> {
       }
     }
 
-    loadData();
+    void loadData();
 
     return () => {
       cancelled = true;
@@ -102,7 +102,7 @@ export function useInstrumentations(version: string): DataState<InstrumentationL
       }
     }
 
-    loadData();
+    void loadData();
 
     return () => {
       cancelled = true;
@@ -149,7 +149,7 @@ export function useLibraryReadme(
       }
     }
 
-    loadData();
+    void loadData();
 
     return () => {
       cancelled = true;
@@ -193,7 +193,7 @@ export function useInstrumentation(name: string, version: string): DataState<Ins
       }
     }
 
-    loadData();
+    void loadData();
 
     return () => {
       cancelled = true;

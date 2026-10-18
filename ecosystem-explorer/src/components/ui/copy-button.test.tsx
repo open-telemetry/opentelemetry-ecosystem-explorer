@@ -46,7 +46,7 @@ describe("CopyButton", () => {
 
     expect(screen.getByRole("button", { name: "Copied" })).toBeInTheDocument();
 
-    act(() => vi.runAllTimers());
+    void act(() => vi.runAllTimers());
 
     expect(screen.getByRole("button", { name: "Copy" })).toBeInTheDocument();
   });

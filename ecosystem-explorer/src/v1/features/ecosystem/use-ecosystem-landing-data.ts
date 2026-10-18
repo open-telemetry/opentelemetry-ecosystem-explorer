@@ -212,7 +212,7 @@ export function useEcosystemLandingData(
       }
     }
 
-    load();
+    void load();
 
     return () => {
       cancelled = true;

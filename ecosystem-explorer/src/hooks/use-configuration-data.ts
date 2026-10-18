@@ -45,7 +45,7 @@ export function useConfigVersions(): DataState<ConfigVersionsIndex> {
       }
     }
 
-    loadData();
+    void loadData();
 
     return () => {
       cancelled = true;
@@ -89,7 +89,7 @@ export function useConfigSchema(version: string): DataState<ConfigNode> {
       }
     }
 
-    loadData();
+    void loadData();
 
     return () => {
       cancelled = true;
@@ -127,7 +127,7 @@ export function useConfigStarter(version: string): DataState<ConfigStarter | nul
         }
       }
     }
-    loadData();
+    void loadData();
     return () => {
       cancelled = true;
     };

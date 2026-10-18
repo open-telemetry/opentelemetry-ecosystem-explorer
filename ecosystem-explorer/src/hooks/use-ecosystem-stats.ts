@@ -79,7 +79,7 @@ export function useEcosystemStats({
       }
     }
 
-    load();
+    void load();
 
     return () => {
       cancelled = true;

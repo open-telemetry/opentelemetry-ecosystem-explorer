@@ -191,7 +191,7 @@ export function CollectorListPageV1() {
   function updateFilters(patch: Partial<ListFilters>, replace = false) {
     const next: ListFilters = { ...filters, ...patch };
     const qs = serializeFilters(next).toString();
-    navigate({ pathname: "/collector/components", search: qs ? `?${qs}` : "" }, { replace });
+    void navigate({ pathname: "/collector/components", search: qs ? `?${qs}` : "" }, { replace });
     if (patch.density) {
       try {
         window.localStorage.setItem(DENSITY_STORAGE_KEY, patch.density);

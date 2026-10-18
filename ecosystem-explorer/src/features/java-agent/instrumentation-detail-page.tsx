@@ -109,9 +109,12 @@ export function InstrumentationDetailPage() {
   useEffect(() => {
     if (version === "latest" && versionsData) {
       if (latestVersion && param) {
-        navigate(`/java-agent/instrumentation/${param}${tab !== "details" ? `?tab=${tab}` : ""}`, {
-          replace: true,
-        });
+        void navigate(
+          `/java-agent/instrumentation/${param}${tab !== "details" ? `?tab=${tab}` : ""}`,
+          {
+            replace: true,
+          }
+        );
       }
     }
   }, [version, param, versionsData, navigate, latestVersion, tab]);
@@ -121,7 +124,7 @@ export function InstrumentationDetailPage() {
     if (newVersion != latestVersion) query.set("version", newVersion);
     if (tab !== "details") query.set("tab", tab);
     const queryString = query.toString();
-    navigate(`/java-agent/instrumentation/${param}${queryString ? `?${queryString}` : ""}`);
+    void navigate(`/java-agent/instrumentation/${param}${queryString ? `?${queryString}` : ""}`);
   };
 
   const handleTabChange = (value: string) => {

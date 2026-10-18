@@ -122,7 +122,7 @@ export function useTelemetryComparison(
       }
     }
 
-    loadComparison();
+    void loadComparison();
 
     return () => {
       cancelled = true;

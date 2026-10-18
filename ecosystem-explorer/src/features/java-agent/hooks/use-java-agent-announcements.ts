@@ -73,7 +73,7 @@ export function useJavaAgentAnnouncements(): DataState<Announcement[]> {
       }
     }
 
-    loadAnnouncements();
+    void loadAnnouncements();
 
     return () => {
       cancelled = true;

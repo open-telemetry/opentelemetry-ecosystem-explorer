@@ -246,7 +246,7 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
     } else {
       params.delete("version");
     }
-    navigate({
+    void navigate({
       pathname:
         val === "deprecated" || !val ? "/collector/components" : `/collector/components/${val}`,
       search: params.size > 0 ? `?${params.toString()}` : "",
@@ -287,7 +287,7 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
         params.delete("version");
       }
       if (urlVersion) {
-        navigate({
+        void navigate({
           pathname: "/collector/components",
           search: params.size > 0 ? `?${params.toString()}` : "",
         });
@@ -304,7 +304,7 @@ function CollectorComponentsContent({ urlVersion }: { urlVersion?: string }) {
         if (!hasVersion) {
           params.delete("version");
           if (urlVersion) {
-            navigate({
+            void navigate({
               pathname: "/collector/components",
               search: params.size > 0 ? `?${params.toString()}` : "",
             });
