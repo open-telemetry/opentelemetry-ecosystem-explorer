@@ -1,0 +1,31 @@
+description: OpenTelemetry browser instrumentations.
+modules:
+- import_path: '@opentelemetry/browser-instrumentation/experimental/console'
+  name: console
+  scope_name: '@opentelemetry/browser-instrumentation/console'
+  source_path: packages/instrumentation/src/console
+- import_path: '@opentelemetry/browser-instrumentation/experimental/navigation'
+  name: navigation
+  scope_name: '@opentelemetry/browser-instrumentation/navigation'
+  source_path: packages/instrumentation/src/navigation
+- import_path: '@opentelemetry/browser-instrumentation/experimental/navigation-timing'
+  name: navigation-timing
+  scope_name: '@opentelemetry/browser-instrumentation/navigation-timing'
+  source_path: packages/instrumentation/src/navigation-timing
+- import_path: '@opentelemetry/browser-instrumentation/experimental/resource-timing'
+  name: resource-timing
+  scope_name: '@opentelemetry/browser-instrumentation/resource-timing'
+  source_path: packages/instrumentation/src/resource-timing
+- import_path: '@opentelemetry/browser-instrumentation/experimental/user-action'
+  name: user-action
+  scope_name: '@opentelemetry/browser-instrumentation/user-action'
+  source_path: packages/instrumentation/src/user-action
+- import_path: '@opentelemetry/browser-instrumentation/experimental/web-vitals'
+  name: web-vitals
+  scope_name: '@opentelemetry/browser-instrumentation/web-vitals'
+  source_path: packages/instrumentation/src/web-vitals
+name: browser-instrumentation
+npm_package: '@opentelemetry/browser-instrumentation'
+repository: open-telemetry/opentelemetry-browser
+source_path: packages/instrumentation
+version: 0.4.0
