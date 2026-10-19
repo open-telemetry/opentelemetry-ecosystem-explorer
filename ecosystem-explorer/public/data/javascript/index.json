@@ -2,33 +2,86 @@
   "ecosystem": "javascript",
   "packages": [
     {
+      "description": "OpenTelemetry browser instrumentations.",
+      "in_auto_instrumentations_node": false,
+      "name": "browser-instrumentation",
+      "npm_package": "@opentelemetry/browser-instrumentation",
+      "releases": [
+        {
+          "hash": "bb9d18a5f614",
+          "version": "0.8.2"
+        },
+        {
+          "hash": "bb9d18a5f614",
+          "version": "0.8.1"
+        },
+        {
+          "hash": "bb9d18a5f614",
+          "version": "0.8.0"
+        },
+        {
+          "hash": "a4c38297c98c",
+          "version": "0.7.0"
+        },
+        {
+          "hash": "a4c38297c98c",
+          "version": "0.6.0"
+        },
+        {
+          "hash": "a4c38297c98c",
+          "version": "0.5.2"
+        },
+        {
+          "hash": "a4c38297c98c",
+          "version": "0.5.1"
+        },
+        {
+          "hash": "a4c38297c98c",
+          "version": "0.5.0"
+        },
+        {
+          "hash": "dd9b515737be",
+          "version": "0.4.0"
+        },
+        {
+          "hash": "be316b47cb30",
+          "version": "0.3.0"
+        },
+        {
+          "hash": "335b93807bed",
+          "version": "0.2.0"
+        }
+      ],
+      "version": "0.8.2"
+    },
+    {
       "description": "OpenTelemetry instrumentation for the `amqplib` messaging client for RabbitMQ",
       "in_auto_instrumentations_node": true,
       "name": "instrumentation-amqplib",
       "npm_package": "@opentelemetry/instrumentation-amqplib",
       "releases": [
         {
-          "hash": "d1ec64669f61",
+          "hash": "4da3372671ca",
           "version": "0.70.0"
         },
         {
-          "hash": "d1ec64669f61",
+          "hash": "4da3372671ca",
           "version": "0.69.0"
         },
         {
-          "hash": "d1ec64669f61",
+          "hash": "4da3372671ca",
           "version": "0.68.0"
         },
         {
-          "hash": "d1ec64669f61",
+          "hash": "4da3372671ca",
           "version": "0.67.0"
         },
         {
-          "hash": "d1ec64669f61",
+          "hash": "4da3372671ca",
           "version": "0.66.0"
         },
         {
-          "hash": "cf72cf73e269",
+          "hash": "982f6e7ac5a2",
           "version": "0.65.0"
         }
       ],
@@ -41,27 +94,27 @@
       "npm_package": "@opentelemetry/instrumentation-aws-lambda",
       "releases": [
         {
-          "hash": "a49c790dde31",
+          "hash": "fabec5c119c2",
           "version": "0.75.0"
         },
         {
-          "hash": "a49c790dde31",
+          "hash": "fabec5c119c2",
           "version": "0.74.0"
         },
         {
-          "hash": "a49c790dde31",
+          "hash": "fabec5c119c2",
           "version": "0.73.0"
         },
         {
-          "hash": "a49c790dde31",
+          "hash": "fabec5c119c2",
           "version": "0.72.0"
         },
         {
-          "hash": "a49c790dde31",
+          "hash": "fabec5c119c2",
           "version": "0.71.0"
         },
         {
-          "hash": "a49c790dde31",
+          "hash": "fabec5c119c2",
           "version": "0.70.0"
         }
       ],
@@ -74,27 +127,27 @@
       "npm_package": "@opentelemetry/instrumentation-aws-sdk",
       "releases": [
         {
-          "hash": "0060f98579c6",
+          "hash": "3b8e5afbb0ff",
           "version": "0.78.0"
         },
         {
-          "hash": "0060f98579c6",
+          "hash": "3b8e5afbb0ff",
           "version": "0.77.0"
         },
         {
-          "hash": "0060f98579c6",
+          "hash": "3b8e5afbb0ff",
           "version": "0.76.0"
         },
         {
-          "hash": "0060f98579c6",
+          "hash": "3b8e5afbb0ff",
           "version": "0.75.0"
         },
         {
-          "hash": "0060f98579c6",
+          "hash": "3b8e5afbb0ff",
           "version": "0.74.0"
         },
         {
-          "hash": "0060f98579c6",
+          "hash": "3b8e5afbb0ff",
           "version": "0.73.0"
         }
       ],
@@ -107,27 +160,27 @@
       "npm_package": "@opentelemetry/instrumentation-browser-navigation",
       "releases": [
         {
-          "hash": "bab9b24ced95",
+          "hash": "39e595930621",
           "version": "0.16.0"
         },
         {
-          "hash": "bab9b24ced95",
+          "hash": "39e595930621",
           "version": "0.15.0"
         },
         {
-          "hash": "bab9b24ced95",
+          "hash": "39e595930621",
           "version": "0.14.0"
         },
         {
-          "hash": "bab9b24ced95",
+          "hash": "39e595930621",
           "version": "0.13.0"
         },
         {
-          "hash": "bab9b24ced95",
+          "hash": "39e595930621",
           "version": "0.12.0"
         },
         {
-          "hash": "bab9b24ced95",
+          "hash": "39e595930621",
           "version": "0.11.0"
         }
       ],
@@ -140,27 +193,27 @@
       "npm_package": "@opentelemetry/instrumentation-bunyan",
       "releases": [
         {
-          "hash": "cdc201819b0b",
+          "hash": "b68bfec69fb2",
           "version": "0.68.0"
         },
         {
-          "hash": "cdc201819b0b",
+          "hash": "b68bfec69fb2",
           "version": "0.67.0"
         },
         {
-          "hash": "cdc201819b0b",
+          "hash": "b68bfec69fb2",
           "version": "0.66.0"
         },
         {
-          "hash": "cdc201819b0b",
+          "hash": "b68bfec69fb2",
           "version": "0.65.0"
         },
         {
-          "hash": "cdc201819b0b",
+          "hash": "b68bfec69fb2",
           "version": "0.64.0"
         },
         {
-          "hash": "cdc201819b0b",
+          "hash": "b68bfec69fb2",
           "version": "0.63.0"
         }
       ],
@@ -173,27 +226,27 @@
       "npm_package": "@opentelemetry/instrumentation-cassandra-driver",
       "releases": [
         {
-          "hash": "a4877a9689da",
+          "hash": "cf9186526b48",
           "version": "0.68.0"
         },
         {
-          "hash": "a4877a9689da",
+          "hash": "cf9186526b48",
           "version": "0.67.0"
         },
         {
-          "hash": "a4877a9689da",
+          "hash": "cf9186526b48",
           "version": "0.66.0"
         },
         {
-          "hash": "a4877a9689da",
+          "hash": "cf9186526b48",
           "version": "0.65.0"
         },
         {
-          "hash": "a4877a9689da",
+          "hash": "cf9186526b48",
           "version": "0.64.0"
         },
         {
-          "hash": "a4877a9689da",
+          "hash": "cf9186526b48",
           "version": "0.63.0"
         }
       ],
@@ -206,27 +259,27 @@
       "npm_package": "@opentelemetry/instrumentation-connect",
       "releases": [
         {
-          "hash": "0f0329959532",
+          "hash": "41b2184c4da4",
           "version": "0.66.0"
         },
         {
-          "hash": "0f0329959532",
+          "hash": "41b2184c4da4",
           "version": "0.65.0"
         },
         {
-          "hash": "0f0329959532",
+          "hash": "41b2184c4da4",
           "version": "0.64.0"
         },
         {
-          "hash": "0f0329959532",
+          "hash": "41b2184c4da4",
           "version": "0.63.0"
         },
         {
-          "hash": "0f0329959532",
+          "hash": "41b2184c4da4",
           "version": "0.62.0"
         },
         {
-          "hash": "0f0329959532",
+          "hash": "41b2184c4da4",
           "version": "0.61.0"
         }
       ],
@@ -239,23 +292,23 @@
       "npm_package": "@opentelemetry/instrumentation-console",
       "releases": [
         {
-          "hash": "1689d5465c71",
+          "hash": "4297ba01f190",
           "version": "0.5.0"
         },
         {
-          "hash": "1689d5465c71",
+          "hash": "4297ba01f190",
           "version": "0.4.0"
         },
         {
-          "hash": "1689d5465c71",
+          "hash": "4297ba01f190",
           "version": "0.3.0"
         },
         {
-          "hash": "1689d5465c71",
+          "hash": "4297ba01f190",
           "version": "0.2.0"
         },
         {
-          "hash": "1689d5465c71",
+          "hash": "4297ba01f190",
           "version": "0.1.0"
         }
       ],
@@ -268,27 +321,27 @@
       "npm_package": "@opentelemetry/instrumentation-cucumber",
       "releases": [
         {
-          "hash": "c34b9d50f608",
+          "hash": "81cae89b5020",
           "version": "0.39.0"
         },
         {
-          "hash": "c34b9d50f608",
+          "hash": "81cae89b5020",
           "version": "0.38.0"
         },
         {
-          "hash": "c34b9d50f608",
+          "hash": "81cae89b5020",
           "version": "0.37.0"
         },
         {
-          "hash": "c34b9d50f608",
+          "hash": "81cae89b5020",
           "version": "0.36.0"
         },
         {
-          "hash": "c34b9d50f608",
+          "hash": "81cae89b5020",
           "version": "0.35.0"
         },
         {
-          "hash": "62c0962d9085",
+          "hash": "48b7cbfffc0e",
           "version": "0.34.0"
         }
       ],
@@ -301,27 +354,27 @@
       "npm_package": "@opentelemetry/instrumentation-dataloader",
       "releases": [
         {
-          "hash": "ad013381cc9b",
+          "hash": "09a528edada8",
           "version": "0.40.0"
         },
         {
-          "hash": "ad013381cc9b",
+          "hash": "09a528edada8",
           "version": "0.39.0"
         },
         {
-          "hash": "ad013381cc9b",
+          "hash": "09a528edada8",
           "version": "0.38.0"
         },
         {
-          "hash": "ad013381cc9b",
+          "hash": "09a528edada8",
           "version": "0.37.0"
         },
         {
-          "hash": "ad013381cc9b",
+          "hash": "09a528edada8",
           "version": "0.36.0"
         },
         {
-          "hash": "ad013381cc9b",
+          "hash": "09a528edada8",
           "version": "0.35.0"
         }
       ],
@@ -334,27 +387,27 @@
       "npm_package": "@opentelemetry/instrumentation-dns",
       "releases": [
         {
-          "hash": "9e08946afd92",
+          "hash": "debfd921f68b",
           "version": "0.66.0"
         },
         {
-          "hash": "9e08946afd92",
+          "hash": "debfd921f68b",
           "version": "0.65.0"
         },
         {
-          "hash": "9e08946afd92",
+          "hash": "debfd921f68b",
           "version": "0.64.0"
         },
         {
-          "hash": "9e08946afd92",
+          "hash": "debfd921f68b",
           "version": "0.63.0"
         },
         {
-          "hash": "9e08946afd92",
+          "hash": "debfd921f68b",
           "version": "0.62.0"
         },
         {
-          "hash": "9e08946afd92",
+          "hash": "debfd921f68b",
           "version": "0.61.0"
         }
       ],
@@ -367,27 +420,27 @@
       "npm_package": "@opentelemetry/instrumentation-document-load",
       "releases": [
         {
-          "hash": "dc327cc9e617",
+          "hash": "ff70ec12375a",
           "version": "0.68.0"
         },
         {
-          "hash": "dc327cc9e617",
+          "hash": "ff70ec12375a",
           "version": "0.67.0"
         },
         {
-          "hash": "dc327cc9e617",
+          "hash": "ff70ec12375a",
           "version": "0.66.0"
         },
         {
-          "hash": "dc327cc9e617",
+          "hash": "ff70ec12375a",
           "version": "0.65.0"
         },
         {
-          "hash": "dc327cc9e617",
+          "hash": "ff70ec12375a",
           "version": "0.64.0"
         },
         {
-          "hash": "dc327cc9e617",
+          "hash": "ff70ec12375a",
           "version": "0.63.0"
         }
       ],
@@ -400,31 +453,31 @@
       "npm_package": "@opentelemetry/instrumentation-express",
       "releases": [
         {
-          "hash": "d0252543f250",
+          "hash": "bebf75b527e7",
           "version": "0.71.1"
         },
         {
-          "hash": "d0252543f250",
+          "hash": "bebf75b527e7",
           "version": "0.71.0"
         },
         {
-          "hash": "d0252543f250",
+          "hash": "bebf75b527e7",
           "version": "0.70.0"
         },
         {
-          "hash": "d0252543f250",
+          "hash": "bebf75b527e7",
           "version": "0.69.0"
         },
         {
-          "hash": "d0252543f250",
+          "hash": "bebf75b527e7",
           "version": "0.68.0"
         },
         {
-          "hash": "d0252543f250",
+          "hash": "bebf75b527e7",
           "version": "0.67.0"
         },
         {
-          "hash": "d0252543f250",
+          "hash": "bebf75b527e7",
           "version": "0.66.0"
         }
       ],
@@ -437,27 +490,27 @@
       "npm_package": "@opentelemetry/instrumentation-fs",
       "releases": [
         {
-          "hash": "41cedd071454",
+          "hash": "7400a376dfba",
           "version": "0.42.0"
         },
         {
-          "hash": "41cedd071454",
+          "hash": "7400a376dfba",
           "version": "0.41.0"
         },
         {
-          "hash": "41cedd071454",
+          "hash": "7400a376dfba",
           "version": "0.40.0"
         },
         {
-          "hash": "41cedd071454",
+          "hash": "7400a376dfba",
           "version": "0.39.0"
         },
         {
-          "hash": "41cedd071454",
+          "hash": "7400a376dfba",
           "version": "0.38.0"
         },
         {
-          "hash": "41cedd071454",
+          "hash": "7400a376dfba",
           "version": "0.37.0"
         }
       ],
@@ -470,27 +523,27 @@
       "npm_package": "@opentelemetry/instrumentation-generic-pool",
       "releases": [
         {
-          "hash": "166a06fa68f0",
+          "hash": "fda43638d7d3",
           "version": "0.66.0"
         },
         {
-          "hash": "166a06fa68f0",
+          "hash": "fda43638d7d3",
           "version": "0.65.0"
         },
         {
-          "hash": "166a06fa68f0",
+          "hash": "fda43638d7d3",
           "version": "0.64.0"
         },
         {
-          "hash": "166a06fa68f0",
+          "hash": "fda43638d7d3",
           "version": "0.63.0"
         },
         {
-          "hash": "166a06fa68f0",
+          "hash": "fda43638d7d3",
           "version": "0.62.0"
         },
         {
-          "hash": "166a06fa68f0",
+          "hash": "fda43638d7d3",
           "version": "0.61.0"
         }
       ],
@@ -503,27 +556,27 @@
       "npm_package": "@opentelemetry/instrumentation-graphql",
       "releases": [
         {
-          "hash": "b28532734c34",
+          "hash": "10a1749d034e",
           "version": "0.71.0"
         },
         {
-          "hash": "b28532734c34",
+          "hash": "10a1749d034e",
           "version": "0.70.0"
         },
         {
-          "hash": "b28532734c34",
+          "hash": "10a1749d034e",
           "version": "0.69.0"
         },
         {
-          "hash": "b28532734c34",
+          "hash": "10a1749d034e",
           "version": "0.68.0"
         },
         {
-          "hash": "b28532734c34",
+          "hash": "10a1749d034e",
           "version": "0.67.0"
         },
         {
-          "hash": "b28532734c34",
+          "hash": "10a1749d034e",
           "version": "0.66.0"
         }
       ],
@@ -536,27 +589,27 @@
       "npm_package": "@opentelemetry/instrumentation-hapi",
       "releases": [
         {
-          "hash": "feee2a8dab29",
+          "hash": "e6272f0421a3",
           "version": "0.69.0"
         },
         {
-          "hash": "feee2a8dab29",
+          "hash": "e6272f0421a3",
           "version": "0.68.0"
         },
         {
-          "hash": "feee2a8dab29",
+          "hash": "e6272f0421a3",
           "version": "0.67.0"
         },
         {
-          "hash": "feee2a8dab29",
+          "hash": "e6272f0421a3",
           "version": "0.66.0"
         },
         {
-          "hash": "feee2a8dab29",
+          "hash": "e6272f0421a3",
           "version": "0.65.0"
         },
         {
-          "hash": "feee2a8dab29",
+          "hash": "e6272f0421a3",
           "version": "0.64.0"
         }
       ],
@@ -569,23 +622,23 @@
       "npm_package": "@opentelemetry/instrumentation-host-metrics",
       "releases": [
         {
-          "hash": "b18438ca55a5",
+          "hash": "ac95fca44462",
           "version": "0.6.0"
         },
         {
-          "hash": "b18438ca55a5",
+          "hash": "ac95fca44462",
           "version": "0.5.0"
         },
         {
-          "hash": "b18438ca55a5",
+          "hash": "ac95fca44462",
           "version": "0.4.0"
         },
         {
-          "hash": "b18438ca55a5",
+          "hash": "ac95fca44462",
           "version": "0.3.0"
         },
         {
-          "hash": "b18438ca55a5",
+          "hash": "ac95fca44462",
           "version": "0.2.0"
         }
       ],
@@ -598,27 +651,27 @@
       "npm_package": "@opentelemetry/instrumentation-ioredis",
       "releases": [
         {
-          "hash": "17347f93743f",
+          "hash": "89758e666e31",
           "version": "0.71.0"
         },
         {
-          "hash": "17347f93743f",
+          "hash": "89758e666e31",
           "version": "0.70.0"
         },
         {
-          "hash": "6be34d87a14f",
+          "hash": "867b5b772a7f",
           "version": "0.69.0"
         },
         {
-          "hash": "6be34d87a14f",
+          "hash": "867b5b772a7f",
           "version": "0.68.0"
         },
         {
-          "hash": "6be34d87a14f",
+          "hash": "867b5b772a7f",
           "version": "0.67.0"
         },
         {
-          "hash": "6be34d87a14f",
+          "hash": "867b5b772a7f",
           "version": "0.66.0"
         }
       ],
@@ -631,27 +684,27 @@
       "npm_package": "@opentelemetry/instrumentation-kafkajs",
       "releases": [
         {
-          "hash": "db01b5dd1c8b",
+          "hash": "23f87fbf9279",
           "version": "0.32.0"
         },
         {
-          "hash": "db01b5dd1c8b",
+          "hash": "23f87fbf9279",
           "version": "0.31.0"
         },
         {
-          "hash": "db01b5dd1c8b",
+          "hash": "23f87fbf9279",
           "version": "0.30.0"
         },
         {
-          "hash": "db01b5dd1c8b",
+          "hash": "23f87fbf9279",
           "version": "0.29.0"
         },
         {
-          "hash": "db01b5dd1c8b",
+          "hash": "23f87fbf9279",
           "version": "0.28.0"
         },
         {
-          "hash": "db01b5dd1c8b",
+          "hash": "23f87fbf9279",
           "version": "0.27.0"
         }
       ],
@@ -664,27 +717,27 @@
       "npm_package": "@opentelemetry/instrumentation-knex",
       "releases": [
         {
-          "hash": "ad72309327a7",
+          "hash": "7005c50c71de",
           "version": "0.67.0"
         },
         {
-          "hash": "ad72309327a7",
+          "hash": "7005c50c71de",
           "version": "0.66.0"
         },
         {
-          "hash": "ad72309327a7",
+          "hash": "7005c50c71de",
           "version": "0.65.0"
         },
         {
-          "hash": "ad72309327a7",
+          "hash": "7005c50c71de",
           "version": "0.64.0"
         },
         {
-          "hash": "ad72309327a7",
+          "hash": "7005c50c71de",
           "version": "0.63.0"
         },
         {
-          "hash": "ad72309327a7",
+          "hash": "7005c50c71de",
           "version": "0.62.0"
         }
       ],
@@ -697,27 +750,27 @@
       "npm_package": "@opentelemetry/instrumentation-koa",
       "releases": [
         {
-          "hash": "7d7f527bfd31",
+          "hash": "c629f210ff24",
           "version": "0.71.0"
         },
         {
-          "hash": "7d7f527bfd31",
+          "hash": "c629f210ff24",
           "version": "0.70.0"
         },
         {
-          "hash": "7d7f527bfd31",
+          "hash": "c629f210ff24",
           "version": "0.69.0"
         },
         {
-          "hash": "7d7f527bfd31",
+          "hash": "c629f210ff24",
           "version": "0.68.0"
         },
         {
-          "hash": "7d7f527bfd31",
+          "hash": "c629f210ff24",
           "version": "0.67.0"
         },
         {
-          "hash": "cc4a172bfc1a",
+          "hash": "fd70e134a8a7",
           "version": "0.66.0"
         }
       ],
@@ -730,35 +783,35 @@
       "npm_package": "@opentelemetry/instrumentation-langchain",
       "releases": [
         {
-          "hash": "41dea99e4d42",
+          "hash": "7c909838341f",
           "version": "0.13.0"
         },
         {
-          "hash": "41dea99e4d42",
+          "hash": "7c909838341f",
           "version": "0.12.0"
         },
         {
-          "hash": "835e2892db39",
+          "hash": "572d0ba0a6cf",
           "version": "0.11.0"
         },
         {
-          "hash": "835e2892db39",
+          "hash": "572d0ba0a6cf",
           "version": "0.10.0"
         },
         {
-          "hash": "835e2892db39",
+          "hash": "572d0ba0a6cf",
           "version": "0.9.0"
         },
         {
-          "hash": "835e2892db39",
+          "hash": "572d0ba0a6cf",
           "version": "0.8.0"
         },
         {
-          "hash": "835e2892db39",
+          "hash": "572d0ba0a6cf",
           "version": "0.7.0"
         },
         {
-          "hash": "835e2892db39",
+          "hash": "572d0ba0a6cf",
           "version": "0.6.0"
         }
       ],
@@ -771,27 +824,27 @@
       "npm_package": "@opentelemetry/instrumentation-long-task",
       "releases": [
         {
-          "hash": "463527a22711",
+          "hash": "fca25baf5344",
           "version": "0.67.0"
         },
         {
-          "hash": "463527a22711",
+          "hash": "fca25baf5344",
           "version": "0.66.0"
         },
         {
-          "hash": "463527a22711",
+          "hash": "fca25baf5344",
           "version": "0.65.0"
         },
         {
-          "hash": "463527a22711",
+          "hash": "fca25baf5344",
           "version": "0.64.0"
         },
         {
-          "hash": "463527a22711",
+          "hash": "fca25baf5344",
           "version": "0.63.0"
         },
         {
-          "hash": "463527a22711",
+          "hash": "fca25baf5344",
           "version": "0.62.0"
         }
       ],
@@ -804,27 +857,27 @@
       "npm_package": "@opentelemetry/instrumentation-lru-memoizer",
       "releases": [
         {
-          "hash": "b19fc03897b5",
+          "hash": "be5fd318592c",
           "version": "0.67.0"
         },
         {
-          "hash": "b19fc03897b5",
+          "hash": "be5fd318592c",
           "version": "0.66.0"
         },
         {
-          "hash": "b19fc03897b5",
+          "hash": "be5fd318592c",
           "version": "0.65.0"
         },
         {
-          "hash": "b19fc03897b5",
+          "hash": "be5fd318592c",
           "version": "0.64.0"
         },
         {
-          "hash": "b19fc03897b5",
+          "hash": "be5fd318592c",
           "version": "0.63.0"
         },
         {
-          "hash": "b19fc03897b5",
+          "hash": "be5fd318592c",
           "version": "0.62.0"
         }
       ],
@@ -837,27 +890,27 @@
       "npm_package": "@opentelemetry/instrumentation-memcached",
       "releases": [
         {
-          "hash": "84a91c6ac181",
+          "hash": "7fe3910cae63",
           "version": "0.66.0"
         },
         {
-          "hash": "84a91c6ac181",
+          "hash": "7fe3910cae63",
           "version": "0.65.0"
         },
         {
-          "hash": "84a91c6ac181",
+          "hash": "7fe3910cae63",
           "version": "0.64.0"
         },
         {
-          "hash": "84a91c6ac181",
+          "hash": "7fe3910cae63",
           "version": "0.63.0"
         },
         {
-          "hash": "84a91c6ac181",
+          "hash": "7fe3910cae63",
           "version": "0.62.0"
         },
         {
-          "hash": "84a91c6ac181",
+          "hash": "7fe3910cae63",
           "version": "0.61.0"
         }
       ],
@@ -870,27 +923,27 @@
       "npm_package": "@opentelemetry/instrumentation-mongodb",
       "releases": [
         {
-          "hash": "5a6f8a9a58b7",
+          "hash": "882b8431f616",
           "version": "0.76.0"
         },
         {
-          "hash": "5a6f8a9a58b7",
+          "hash": "882b8431f616",
           "version": "0.75.0"
         },
         {
-          "hash": "5a6f8a9a58b7",
+          "hash": "882b8431f616",
           "version": "0.74.0"
         },
         {
-          "hash": "5a6f8a9a58b7",
+          "hash": "882b8431f616",
           "version": "0.73.0"
         },
         {
-          "hash": "5a6f8a9a58b7",
+          "hash": "882b8431f616",
           "version": "0.72.0"
         },
         {
-          "hash": "5a6f8a9a58b7",
+          "hash": "882b8431f616",
           "version": "0.71.0"
         }
       ],
@@ -903,27 +956,27 @@
       "npm_package": "@opentelemetry/instrumentation-mongoose",
       "releases": [
         {
-          "hash": "a65e0b0aaa62",
+          "hash": "813c9204d433",
           "version": "0.69.0"
         },
         {
-          "hash": "a65e0b0aaa62",
+          "hash": "813c9204d433",
           "version": "0.68.0"
         },
         {
-          "hash": "a65e0b0aaa62",
+          "hash": "813c9204d433",
           "version": "0.67.0"
         },
         {
-          "hash": "a65e0b0aaa62",
+          "hash": "813c9204d433",
           "version": "0.66.0"
         },
         {
-          "hash": "a65e0b0aaa62",
+          "hash": "813c9204d433",
           "version": "0.65.0"
         },
         {
-          "hash": "a65e0b0aaa62",
+          "hash": "813c9204d433",
           "version": "0.64.0"
         }
       ],
@@ -936,31 +989,31 @@
       "npm_package": "@opentelemetry/instrumentation-mysql",
       "releases": [
         {
-          "hash": "1c98bd462732",
+          "hash": "115a67f086e8",
           "version": "0.69.1"
         },
         {
-          "hash": "1c98bd462732",
+          "hash": "115a67f086e8",
           "version": "0.69.0"
         },
         {
-          "hash": "1c98bd462732",
+          "hash": "115a67f086e8",
           "version": "0.68.0"
         },
         {
-          "hash": "1c98bd462732",
+          "hash": "115a67f086e8",
           "version": "0.67.0"
         },
         {
-          "hash": "1c98bd462732",
+          "hash": "115a67f086e8",
           "version": "0.66.0"
         },
         {
-          "hash": "1c98bd462732",
+          "hash": "115a67f086e8",
           "version": "0.65.0"
         },
         {
-          "hash": "1c98bd462732",
+          "hash": "115a67f086e8",
           "version": "0.64.0"
         }
       ],
@@ -973,27 +1026,27 @@
       "npm_package": "@opentelemetry/instrumentation-mysql2",
       "releases": [
         {
-          "hash": "ec32e4f84e85",
+          "hash": "0e4a038262ba",
           "version": "0.69.0"
         },
         {
-          "hash": "ec32e4f84e85",
+          "hash": "0e4a038262ba",
           "version": "0.68.0"
         },
         {
-          "hash": "ec32e4f84e85",
+          "hash": "0e4a038262ba",
           "version": "0.67.0"
         },
         {
-          "hash": "ec32e4f84e85",
+          "hash": "0e4a038262ba",
           "version": "0.66.0"
         },
         {
-          "hash": "ec32e4f84e85",
+          "hash": "0e4a038262ba",
           "version": "0.65.0"
         },
         {
-          "hash": "ec32e4f84e85",
+          "hash": "0e4a038262ba",
           "version": "0.64.0"
         }
       ],
@@ -1006,31 +1059,31 @@
       "npm_package": "@opentelemetry/instrumentation-nestjs-core",
       "releases": [
         {
-          "hash": "6b9eb4120062",
+          "hash": "c2a61774284e",
           "version": "0.70.0"
         },
         {
-          "hash": "400f1f710452",
+          "hash": "0e45bf2fc41b",
           "version": "0.69.0"
         },
         {
-          "hash": "7755f93562c5",
+          "hash": "fdfd33f488f6",
           "version": "0.68.0"
         },
         {
-          "hash": "7755f93562c5",
+          "hash": "fdfd33f488f6",
           "version": "0.67.0"
         },
         {
-          "hash": "7755f93562c5",
+          "hash": "fdfd33f488f6",
           "version": "0.66.0"
         },
         {
-          "hash": "7755f93562c5",
+          "hash": "fdfd33f488f6",
           "version": "0.65.0"
         },
         {
-          "hash": "138049f2dc3f",
+          "hash": "14f90479c64d",
           "version": "0.64.0"
         }
       ],
@@ -1043,27 +1096,27 @@
       "npm_package": "@opentelemetry/instrumentation-net",
       "releases": [
         {
-          "hash": "9af7f5348bc7",
+          "hash": "d6a669e380cf",
           "version": "0.67.0"
         },
         {
-          "hash": "9af7f5348bc7",
+          "hash": "d6a669e380cf",
           "version": "0.66.0"
         },
         {
-          "hash": "9af7f5348bc7",
+          "hash": "d6a669e380cf",
           "version": "0.65.0"
         },
         {
-          "hash": "9af7f5348bc7",
+          "hash": "d6a669e380cf",
           "version": "0.64.0"
         },
         {
-          "hash": "9af7f5348bc7",
+          "hash": "d6a669e380cf",
           "version": "0.63.0"
         },
         {
-          "hash": "9af7f5348bc7",
+          "hash": "d6a669e380cf",
           "version": "0.62.0"
         }
       ],
@@ -1076,27 +1129,27 @@
       "npm_package": "@opentelemetry/instrumentation-openai",
       "releases": [
         {
-          "hash": "b2e1645a183d",
+          "hash": "80af5be8103a",
           "version": "0.21.0"
         },
         {
-          "hash": "b2e1645a183d",
+          "hash": "80af5be8103a",
           "version": "0.20.0"
         },
         {
-          "hash": "b2e1645a183d",
+          "hash": "80af5be8103a",
           "version": "0.19.0"
         },
         {
-          "hash": "b2e1645a183d",
+          "hash": "80af5be8103a",
           "version": "0.18.0"
         },
         {
-          "hash": "b2e1645a183d",
+          "hash": "80af5be8103a",
           "version": "0.17.0"
         },
         {
-          "hash": "b2e1645a183d",
+          "hash": "80af5be8103a",
           "version": "0.16.0"
         }
       ],
@@ -1109,27 +1162,27 @@
       "npm_package": "@opentelemetry/instrumentation-oracledb",
       "releases": [
         {
-          "hash": "04f7dc18254d",
+          "hash": "b2e9b5182bb5",
           "version": "0.48.0"
         },
         {
-          "hash": "3ae48ef5f1c1",
+          "hash": "742482c8433f",
           "version": "0.47.0"
         },
         {
-          "hash": "3ae48ef5f1c1",
+          "hash": "742482c8433f",
           "version": "0.46.0"
         },
         {
-          "hash": "06deee117145",
+          "hash": "23ac90eaa572",
           "version": "0.45.0"
         },
         {
-          "hash": "06deee117145",
+          "hash": "23ac90eaa572",
           "version": "0.44.0"
         },
         {
-          "hash": "06deee117145",
+          "hash": "23ac90eaa572",
           "version": "0.43.0"
         }
       ],
@@ -1142,31 +1195,31 @@
       "npm_package": "@opentelemetry/instrumentation-pg",
       "releases": [
         {
-          "hash": "87edead6ebc5",
+          "hash": "e76a25a31bc7",
           "version": "0.76.0"
         },
         {
-          "hash": "87edead6ebc5",
+          "hash": "e76a25a31bc7",
           "version": "0.75.0"
         },
         {
-          "hash": "87edead6ebc5",
+          "hash": "e76a25a31bc7",
           "version": "0.74.0"
         },
         {
-          "hash": "87edead6ebc5",
+          "hash": "e76a25a31bc7",
           "version": "0.73.0"
         },
         {
-          "hash": "87edead6ebc5",
+          "hash": "e76a25a31bc7",
           "version": "0.72.0"
         },
         {
-          "hash": "87edead6ebc5",
+          "hash": "e76a25a31bc7",
           "version": "0.71.0"
         },
         {
-          "hash": "87edead6ebc5",
+          "hash": "e76a25a31bc7",
           "version": "0.70.0"
         }
       ],
@@ -1179,27 +1232,27 @@
       "npm_package": "@opentelemetry/instrumentation-pino",
       "releases": [
         {
-          "hash": "a62678894e2e",
+          "hash": "326e6cc9e554",
           "version": "0.69.0"
         },
         {
-          "hash": "a62678894e2e",
+          "hash": "326e6cc9e554",
           "version": "0.68.0"
         },
         {
-          "hash": "a62678894e2e",
+          "hash": "326e6cc9e554",
           "version": "0.67.0"
         },
         {
-          "hash": "a62678894e2e",
+          "hash": "326e6cc9e554",
           "version": "0.66.0"
         },
         {
-          "hash": "a62678894e2e",
+          "hash": "326e6cc9e554",
           "version": "0.65.0"
         },
         {
-          "hash": "e7e859623917",
+          "hash": "a44d6f95926d",
           "version": "0.64.0"
         }
       ],
@@ -1212,27 +1265,27 @@
       "npm_package": "@opentelemetry/instrumentation-redis",
       "releases": [
         {
-          "hash": "8be057a27947",
+          "hash": "b53399afe0fa",
           "version": "0.71.0"
         },
         {
-          "hash": "8be057a27947",
+          "hash": "b53399afe0fa",
           "version": "0.70.0"
         },
         {
-          "hash": "8be057a27947",
+          "hash": "b53399afe0fa",
           "version": "0.69.0"
         },
         {
-          "hash": "268d996a54cc",
+          "hash": "48659fbe24f1",
           "version": "0.68.0"
         },
         {
-          "hash": "268d996a54cc",
+          "hash": "48659fbe24f1",
           "version": "0.67.0"
         },
         {
-          "hash": "268d996a54cc",
+          "hash": "48659fbe24f1",
           "version": "0.66.0"
         }
       ],
@@ -1245,27 +1298,27 @@
       "npm_package": "@opentelemetry/instrumentation-restify",
       "releases": [
         {
-          "hash": "e17cc53f02c3",
+          "hash": "c1d32943abb3",
           "version": "0.68.0"
         },
         {
-          "hash": "fa3ab39510f7",
+          "hash": "accf8d2ae862",
           "version": "0.67.0"
         },
         {
-          "hash": "fa3ab39510f7",
+          "hash": "accf8d2ae862",
           "version": "0.66.0"
         },
         {
-          "hash": "fa3ab39510f7",
+          "hash": "accf8d2ae862",
           "version": "0.65.0"
         },
         {
-          "hash": "fa3ab39510f7",
+          "hash": "accf8d2ae862",
           "version": "0.64.0"
         },
         {
-          "hash": "fa3ab39510f7",
+          "hash": "accf8d2ae862",
           "version": "0.63.0"
         }
       ],
@@ -1278,27 +1331,27 @@
       "npm_package": "@opentelemetry/instrumentation-router",
       "releases": [
         {
-          "hash": "5d33cf103b2e",
+          "hash": "3dc25490ec88",
           "version": "0.67.0"
         },
         {
-          "hash": "5d33cf103b2e",
+          "hash": "3dc25490ec88",
           "version": "0.66.0"
         },
         {
-          "hash": "7c8bc2b04525",
+          "hash": "07467f32a8d8",
           "version": "0.65.0"
         },
         {
-          "hash": "7c8bc2b04525",
+          "hash": "07467f32a8d8",
           "version": "0.64.0"
         },
         {
-          "hash": "7c8bc2b04525",
+          "hash": "07467f32a8d8",
           "version": "0.63.0"
         },
         {
-          "hash": "7c8bc2b04525",
+          "hash": "07467f32a8d8",
           "version": "0.62.0"
         }
       ],
@@ -1311,31 +1364,31 @@
       "npm_package": "@opentelemetry/instrumentation-runtime-node",
       "releases": [
         {
-          "hash": "f06ae82b6863",
+          "hash": "4617d5a92f77",
           "version": "0.36.1"
         },
         {
-          "hash": "f06ae82b6863",
+          "hash": "4617d5a92f77",
           "version": "0.36.0"
         },
         {
-          "hash": "f06ae82b6863",
+          "hash": "4617d5a92f77",
           "version": "0.35.0"
         },
         {
-          "hash": "f06ae82b6863",
+          "hash": "4617d5a92f77",
           "version": "0.34.0"
         },
         {
-          "hash": "f06ae82b6863",
+          "hash": "4617d5a92f77",
           "version": "0.33.0"
         },
         {
-          "hash": "f06ae82b6863",
+          "hash": "4617d5a92f77",
           "version": "0.32.0"
         },
         {
-          "hash": "f06ae82b6863",
+          "hash": "4617d5a92f77",
           "version": "0.31.0"
         }
       ],
@@ -1348,27 +1401,27 @@
       "npm_package": "@opentelemetry/instrumentation-sequelize",
       "releases": [
         {
-          "hash": "4674356dec90",
+          "hash": "0bcc540bd13b",
           "version": "0.16.0"
         },
         {
-          "hash": "4674356dec90",
+          "hash": "0bcc540bd13b",
           "version": "0.15.0"
         },
         {
-          "hash": "4674356dec90",
+          "hash": "0bcc540bd13b",
           "version": "0.14.0"
         },
         {
-          "hash": "4674356dec90",
+          "hash": "0bcc540bd13b",
           "version": "0.13.0"
         },
         {
-          "hash": "4674356dec90",
+          "hash": "0bcc540bd13b",
           "version": "0.12.0"
         },
         {
-          "hash": "4674356dec90",
+          "hash": "0bcc540bd13b",
           "version": "0.11.0"
         }
       ],
@@ -1381,27 +1434,27 @@
       "npm_package": "@opentelemetry/instrumentation-socket.io",
       "releases": [
         {
-          "hash": "c23f9e184c4c",
+          "hash": "cd5eb98bde3f",
           "version": "0.70.0"
         },
         {
-          "hash": "ce665b5aa035",
+          "hash": "540783a267e0",
           "version": "0.69.0"
         },
         {
-          "hash": "ce665b5aa035",
+          "hash": "540783a267e0",
           "version": "0.68.0"
         },
         {
-          "hash": "ce665b5aa035",
+          "hash": "540783a267e0",
           "version": "0.67.0"
         },
         {
-          "hash": "ce665b5aa035",
+          "hash": "540783a267e0",
           "version": "0.66.0"
         },
         {
-          "hash": "ce665b5aa035",
+          "hash": "540783a267e0",
           "version": "0.65.0"
         }
       ],
@@ -1414,27 +1467,27 @@
       "npm_package": "@opentelemetry/instrumentation-tedious",
       "releases": [
         {
-          "hash": "736fed1e92f9",
+          "hash": "d50db52d9c28",
           "version": "0.42.0"
         },
         {
-          "hash": "736fed1e92f9",
+          "hash": "d50db52d9c28",
           "version": "0.41.0"
         },
         {
-          "hash": "736fed1e92f9",
+          "hash": "d50db52d9c28",
           "version": "0.40.0"
         },
         {
-          "hash": "736fed1e92f9",
+          "hash": "d50db52d9c28",
           "version": "0.39.0"
         },
         {
-          "hash": "c669949d7bfc",
+          "hash": "66fc529b2070",
           "version": "0.38.0"
         },
         {
-          "hash": "d5a077887e46",
+          "hash": "504953cf2ac6",
           "version": "0.37.0"
         }
       ],
@@ -1447,27 +1500,27 @@
       "npm_package": "@opentelemetry/instrumentation-typeorm",
       "releases": [
         {
-          "hash": "3d70701d1697",
+          "hash": "2adc4c11ff92",
           "version": "0.23.0"
         },
         {
-          "hash": "3d70701d1697",
+          "hash": "2adc4c11ff92",
           "version": "0.22.0"
         },
         {
-          "hash": "61ffb3fc4451",
+          "hash": "ba5378d1a3c9",
           "version": "0.21.0"
         },
         {
-          "hash": "61ffb3fc4451",
+          "hash": "ba5378d1a3c9",
           "version": "0.20.0"
         },
         {
-          "hash": "61ffb3fc4451",
+          "hash": "ba5378d1a3c9",
           "version": "0.19.0"
         },
         {
-          "hash": "2ca51dc72437",
+          "hash": "ed988502314c",
           "version": "0.18.0"
         }
       ],
@@ -1480,27 +1533,27 @@
       "npm_package": "@opentelemetry/instrumentation-undici",
       "releases": [
         {
-          "hash": "fb3093abea2e",
+          "hash": "c229458323c7",
           "version": "0.33.0"
         },
         {
-          "hash": "fb3093abea2e",
+          "hash": "c229458323c7",
           "version": "0.32.0"
         },
         {
-          "hash": "fb3093abea2e",
+          "hash": "c229458323c7",
           "version": "0.31.0"
         },
         {
-          "hash": "fb3093abea2e",
+          "hash": "c229458323c7",
           "version": "0.30.0"
         },
         {
-          "hash": "fb3093abea2e",
+          "hash": "c229458323c7",
           "version": "0.29.0"
         },
         {
-          "hash": "fb3093abea2e",
+          "hash": "c229458323c7",
           "version": "0.28.0"
         }
       ],
@@ -1513,27 +1566,27 @@
       "npm_package": "@opentelemetry/instrumentation-user-interaction",
       "releases": [
         {
-          "hash": "66a8698fbf57",
+          "hash": "6dbcf7d483b0",
           "version": "0.67.0"
         },
         {
-          "hash": "66a8698fbf57",
+          "hash": "6dbcf7d483b0",
           "version": "0.66.0"
         },
         {
-          "hash": "66a8698fbf57",
+          "hash": "6dbcf7d483b0",
           "version": "0.65.0"
         },
         {
-          "hash": "66a8698fbf57",
+          "hash": "6dbcf7d483b0",
           "version": "0.64.0"
         },
         {
-          "hash": "66a8698fbf57",
+          "hash": "6dbcf7d483b0",
           "version": "0.63.0"
         },
         {
-          "hash": "66a8698fbf57",
+          "hash": "6dbcf7d483b0",
           "version": "0.62.0"
         }
       ],
@@ -1546,27 +1599,27 @@
       "npm_package": "@opentelemetry/instrumentation-web-exception",
       "releases": [
         {
-          "hash": "176e3b4c3451",
+          "hash": "9cb51536a920",
           "version": "0.16.0"
         },
         {
-          "hash": "176e3b4c3451",
+          "hash": "9cb51536a920",
           "version": "0.15.0"
         },
         {
-          "hash": "176e3b4c3451",
+          "hash": "9cb51536a920",
           "version": "0.14.0"
         },
         {
-          "hash": "176e3b4c3451",
+          "hash": "9cb51536a920",
           "version": "0.13.0"
         },
         {
-          "hash": "176e3b4c3451",
+          "hash": "9cb51536a920",
           "version": "0.12.0"
         },
         {
-          "hash": "176e3b4c3451",
+          "hash": "9cb51536a920",
           "version": "0.11.0"
         }
       ],
@@ -1579,35 +1632,35 @@
       "npm_package": "@opentelemetry/instrumentation-winston",
       "releases": [
         {
-          "hash": "3dd8ebd0eb9f",
+          "hash": "276fb81a5b7b",
           "version": "0.68.1"
         },
         {
-          "hash": "3dd8ebd0eb9f",
+          "hash": "276fb81a5b7b",
           "version": "0.68.0"
         },
         {
-          "hash": "3dd8ebd0eb9f",
+          "hash": "276fb81a5b7b",
           "version": "0.67.0"
         },
         {
-          "hash": "3dd8ebd0eb9f",
+          "hash": "276fb81a5b7b",
           "version": "0.66.0"
         },
         {
-          "hash": "3dd8ebd0eb9f",
+          "hash": "276fb81a5b7b",
           "version": "0.65.0"
         },
         {
-          "hash": "3dd8ebd0eb9f",
+          "hash": "276fb81a5b7b",
           "version": "0.64.0"
         },
         {
-          "hash": "3dd8ebd0eb9f",
+          "hash": "276fb81a5b7b",
           "version": "0.63.0"
         },
         {
-          "hash": "3dd8ebd0eb9f",
+          "hash": "276fb81a5b7b",
           "version": "0.62.0"
         }
       ],
